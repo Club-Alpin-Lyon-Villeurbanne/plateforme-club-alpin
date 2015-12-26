@@ -1,0 +1,32 @@
+<?php
+// URL
+$url='article/'.html_utf8($article['code_article']).'-'.intval($article['id_article']).'.html';
+if($current_commission) $url.='?commission='.$current_commission;
+
+// check image
+if(is_file('ftp/articles/'.intval($article['id_article']).'/min-figure.jpg'))
+	$img='ftp/articles/'.intval($article['id_article']).'/min-figure.jpg';
+else
+	$img='ftp/articles/0/min-figure.jpg';
+
+?>
+
+<div class="encart_article_small">
+	<!-- image -->
+	<a target="_top" title="Voir cet article" href="<?php echo $url; ?>" class="illustration fader" style="background-image:url('<?php echo $img;?>')"></a>
+
+	<!-- titre + lien article -->
+	<h2>
+		<a target="_top" href="<?php echo $url; ?>" title="Voir cet article">
+			<?php echo html_utf8($article['titre_article']); ?>
+		</a>
+	</h2>
+	<!-- summup -->
+	<p class="summup">
+		<?php echo limiterTexte((strip_tags($article['cont_article'])), 170); ?>
+		<a target="_top" href="<?php echo $url; ?>" title="Voir cet article">
+			[...]
+		</a>
+	</p>
+	<br style="clear:both" />
+</div>

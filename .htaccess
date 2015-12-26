@@ -1,0 +1,313 @@
+#30/07/2013-SECURITE DU SITE DE DEV
+AuthUserFile "/homez.461/clubalpi/test/www/.htpasswd"
+AuthName "Page protege »
+AuthType Basic
+<limit GET POST>
+require valid-user
+</limit>
+
+
+SetEnv PHP_VER 5_4
+SetEnv REGISTER_GLOBALS 0
+
+#02/09/2013-Fichier d'origine HereWeCom
+# ----------------------------------------------------------------------
+# UTF-8 encoding
+# ----------------------------------------------------------------------
+
+# Use UTF-8 encoding for anything served text/plain or text/html
+AddDefaultCharset utf-8
+
+# Force UTF-8 for a number of file formats
+AddCharset utf-8 .html .css .js .xml .json .rss .atom
+
+# ----------------------------------------------------------------------
+# Custom 404 page
+# ----------------------------------------------------------------------
+
+# You can add custom pages to handle 500 or 403 pretty easily, if you like.
+ErrorDocument 404 /site-caf/index.php?p1=404
+
+# ----------------------------------------------------------------------
+# URL REWRITING
+# ----------------------------------------------------------------------
+
+# URL rewriting
+<IfModule mod_rewrite.c>
+	Options +FollowSymlinks
+	RewriteEngine On
+
+	# Monolangue :
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^([a-zA-Z0-9-]+)\.html$  /index.php?p1=$1 [QSA,L]
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)\.html$  /index.php?p1=$1&p2=$2 [QSA,L]
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)\.html$  /index.php?p1=$1&p2=$2&p3=$3 [QSA,L]
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)\.html$  /index.php?p1=$1&p2=$2&p3=$3&p4=$4 [QSA,L]
+
+	# Image customisées
+	RewriteRule ^img/(adresse-website\.png|logo\.png)$  /index.php?cstImg=$1 [QSA,L]
+
+	
+	# Flux RSS
+	# RewriteCond %{REQUEST_FILENAME} !-d
+	# RewriteCond %{REQUEST_FILENAME} !-f
+	# RewriteRule ^rss\.xml$  /rss.php [QSA,L]
+	RewriteRule ^rss\.xml$  /rss.php
+	
+
+	# Multilangues :
+	#RewriteCond %{REQUEST_FILENAME} !-d
+	#RewriteCond %{REQUEST_FILENAME} !-f
+	#RewriteRule ^([a-z][a-z])/([a-zA-Z0-9-]+)\.html$  /site-caf/index.php?lang=$1&p1=$2 [QSA,L]
+	#RewriteCond %{REQUEST_FILENAME} !-d
+	#RewriteCond %{REQUEST_FILENAME} !-f
+	#RewriteRule ^([a-z][a-z])/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)\.html$  /site-caf/index.php?lang=$1&p1=$2&p2=$3&p3=$4 [QSA,L]
+	#RewriteCond %{REQUEST_FILENAME} !-d
+	#RewriteCond %{REQUEST_FILENAME} !-f
+	#RewriteRule ^([a-z][a-z])/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)\.html$  /site-caf/index.php?lang=$1&p1=$2&p2=$3&p3=$4 [QSA,L]
+	#RewriteCond %{REQUEST_FILENAME} !-d
+	#RewriteCond %{REQUEST_FILENAME} !-f
+	#RewriteRule ^([a-z][a-z])/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)\.html$  /site-caf/index.php?lang=$1&p1=$2&p2=$3&p3=$4&p4=$5 [QSA,L]
+	
+</IfModule>
+
+# ----------------------------------------------------------------------
+# 1&1 PHP version
+# ----------------------------------------------------------------------
+
+#AddType x-mapp-php5 .php
+
+# ----------------------------------------------------------------------
+# Better website experience for IE users
+# ----------------------------------------------------------------------
+
+# Force the latest IE version, in various cases when it may fall back to IE7 mode
+#  github.com/rails/rails/commit/123eb25#commitcomment-118920
+# Use ChromeFrame if it's installed for a better experience for the poor IE folk
+
+<IfModule mod_headers.c>
+    Header set X-UA-Compatible "IE=Edge,chrome=1"
+    # mod_headers can't match by content-type, but we don't want to send this header on *everything*...
+    <FilesMatch "\.(js|css|gif|png|jpe?g|pdf|xml|oga|ogg|m4a|ogv|mp4|m4v|webm|svg|svgz|eot|ttf|otf|woff|ico|webp|appcache|manifest|htc|crx|xpi|safariextz|vcf)$" >
+      Header unset X-UA-Compatible
+    </FilesMatch>
+</IfModule>
+
+
+
+# ----------------------------------------------------------------------
+# Proper MIME type for all files
+# ----------------------------------------------------------------------
+
+
+# JavaScript
+#   Normalize to standard type (it's sniffed in IE anyways) 
+#   tools.ietf.org/html/rfc4329#section-7.2
+AddType application/javascript         js
+
+# Audio
+AddType audio/ogg                      oga ogg
+AddType audio/mp4                      m4a
+
+# Video
+AddType video/ogg                      ogv
+AddType video/mp4                      mp4 m4v
+AddType video/webm                     webm
+
+# SVG.
+#   Required for svg webfonts on iPad
+#   twitter.com/FontSquirrel/status/14855840545
+AddType     image/svg+xml              svg svgz 
+AddEncoding gzip                       svgz
+                                       
+# Webfonts                             
+AddType application/vnd.ms-fontobject eot
+AddType font/ttf ttf
+AddType font/otf otf
+AddType application/x-font-woff woff
+# AddType Font woff
+
+# Assorted types                                      
+AddType image/x-icon                   ico
+AddType image/webp                     webp
+AddType text/cache-manifest            appcache manifest
+AddType text/x-component               htc
+AddType application/x-chrome-extension crx
+AddType application/x-xpinstall        xpi
+AddType application/octet-stream       safariextz
+AddType text/x-vcard                   vcf
+
+
+# ----------------------------------------------------------------------
+# Stop screen flicker in IE on CSS rollovers
+# ----------------------------------------------------------------------
+
+# The following directives stop screen flicker in IE on CSS rollovers - in
+# combination with the "ExpiresByType" rules for images (see above). If
+# needed, un-comment the following rules.
+
+# BrowserMatch "MSIE" brokenvary=1
+# BrowserMatch "Mozilla/4.[0-9]{2}" brokenvary=1
+# BrowserMatch "Opera" !brokenvary
+# SetEnvIf brokenvary 1 force-no-vary
+
+
+# ----------------------------------------------------------------------
+# Suppress or force the "www." at the beginning of URLs
+# ----------------------------------------------------------------------
+
+# The same content should never be available under two different URLs - especially not with and
+# without "www." at the beginning, since this can cause SEO problems (duplicate content).
+# That's why you should choose one of the alternatives and redirect the other one.
+
+# By default option 1 (no "www.") is activated. Remember: Shorter URLs are sexier.
+# no-www.org/faq.php?q=class_b
+
+# If you rather want to use option 2, just comment out all option 1 lines
+# and uncomment option 2.
+# IMPORTANT: NEVER USE BOTH RULES AT THE SAME TIME!
+
+# ----------------------------------------------------------------------
+
+# Option 1:
+# Rewrite "www.example.com -> example.com" 
+
+#<IfModule mod_rewrite.c>
+#  RewriteCond %{HTTPS} !=on
+#  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+#  RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
+#</IfModule>
+
+# ----------------------------------------------------------------------
+
+# Option 2:
+# To rewrite "example.com -> www.example.com" uncomment the following lines.
+# Be aware that the following rule might not be a good idea if you
+# use "real" subdomains for certain parts of your website.
+
+# <IfModule mod_rewrite.c>
+#   RewriteCond %{HTTPS} !=on
+#   RewriteCond %{HTTP_HOST} !^www\..+$ [NC]
+#   RewriteRule ^ http://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+# </IfModule>
+
+
+
+# ----------------------------------------------------------------------
+# Prevent SSL cert warnings
+# ----------------------------------------------------------------------
+
+# Rewrite secure requests properly to prevent SSL cert warnings, e.g. prevent 
+# https://www.example.com when your cert only allows https://secure.example.com
+# Uncomment the following lines to use this feature.
+
+# <IfModule mod_rewrite.c>
+#   RewriteCond %{SERVER_PORT} !^443
+#   RewriteRule ^ https://example-domain-please-change-me.com%{REQUEST_URI} [R=301,L]
+# </IfModule>
+
+
+
+# ----------------------------------------------------------------------
+# Prevent 404 errors for non-existing redirected folders
+# ----------------------------------------------------------------------
+
+# without -MultiViews, Apache will give a 404 for a rewrite if a folder of the same name does not exist 
+#   e.g. /blog/hello : webmasterworld.com/apache/3808792.htm
+
+Options -MultiViews 
+
+
+
+
+
+# ----------------------------------------------------------------------
+# A little more security
+# ----------------------------------------------------------------------
+
+
+# Do we want to advertise the exact version number of Apache we're running?
+# Probably not.
+## This can only be enabled if used in httpd.conf - It will not work in .htaccess
+# ServerTokens Prod
+
+
+# "-Indexes" will have Apache block users from browsing folders without a default document
+# Usually you should leave this activated, because you shouldn't allow everybody to surf through
+# every folder on your server (which includes rather private places like CMS system folders).
+Options -Indexes
+
+
+# Block access to "hidden" directories whose names begin with a period. This
+# includes directories used by version control systems such as Subversion or Git.
+<IfModule mod_rewrite.c>
+  RewriteRule "(^|/)\." - [F]
+</IfModule>
+
+
+# If your server is not already configured as such, the following directive
+# should be uncommented in order to set PHP's register_globals option to OFF.
+# This closes a major security hole that is abused by most XSS (cross-site
+# scripting) attacks. For more information: http://php.net/register_globals
+#
+# IF REGISTER_GLOBALS DIRECTIVE CAUSES 500 INTERNAL SERVER ERRORS :
+#
+# Your server does not allow PHP directives to be set via .htaccess. In that
+# case you must make this change in your php.ini file instead. If you are
+# using a commercial web host, contact the administrators for assistance in
+# doing this. Not all servers allow local php.ini files, and they should
+# include all PHP configurations (not just this one), or you will effectively
+# reset everything to PHP defaults. Consult www.php.net for more detailed
+# information about setting PHP directives.
+
+# php_flag register_globals Off
+
+# Rename session cookie to something else, than PHPSESSID
+# php_value session.name sid
+
+# Do not show you are using PHP
+# Note: Move this line to php.ini since it won't work in .htaccess
+# php_flag expose_php Off
+
+# Level of log detail - log all errors
+# php_value error_reporting -1
+
+# Write errors to log file
+# php_flag log_errors On
+
+# Do not display errors in browser (production - Off, development - On)
+# php_flag display_errors Off
+
+# Do not display startup errors (production - Off, development - On)
+# php_flag display_startup_errors Off
+
+# Format errors in plain text
+# Note: Leave this setting 'On' for xdebug's var_dump() output
+# php_flag html_errors Off
+
+# Show multiple occurrence of error
+# php_flag ignore_repeated_errors Off
+
+# Show same errors from different sources
+# php_flag ignore_repeated_source Off
+
+# Size limit for error messages
+# php_value log_errors_max_len 1024
+
+# Don't precede error with string (doesn't accept empty string, use whitespace if you need)
+# php_value error_prepend_string " "
+
+# Don't prepend to error (doesn't accept empty string, use whitespace if you need)
+# php_value error_append_string " "
+
+# Increase cookie security
+<IfModule php5_module>
+	php_value session.cookie_httponly true
+</IfModule>

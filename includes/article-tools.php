@@ -1,0 +1,93 @@
+<?php
+if(user()){
+	?>
+	<div class="article-tools">
+
+		<?php
+		// statut de l'article
+		if($article['topubly_article']==0) echo "<p class='draft'>Brouillon : vous n'avez pas demandé à publier cet article pour le moment.</p>";
+		elseif($article['status_article']==0) echo "<p class='alerte'>En attente : cet article n'a pas encore été publié par un responsable.</p>";
+		elseif($article['status_article']==1) echo "<p class='info'>Publié : cet article est en ligne, ".$article['nb_vues_article']." vues</p>";
+		elseif($article['status_article']==2) echo "<p class='erreur'>Désactivé : cet article a été refusé par un responsable</p>";
+
+
+		// BOUTONS
+		// publié ? voir
+		if($article['status_article']==1) {
+			?>
+			<a href="article/<?php echo html_utf8($article['code_article'].'-'.$article['id_article']);?>.html" title="" class="nice2">
+				Voir
+			</a>
+			<?php
+		}
+
+		// Sinon : apercu
+		else{
+			?>
+			<a href="article/<?php echo html_utf8($article['code_article'].'-'.$article['id_article']);?>.html?forceshow=true" title="" class="nice2">
+				Aperçu
+			</a>
+			<?php
+		}
+
+		// lier des co-rédacs
+		/*
+		?>
+		<a href="javascript:void(0)" title="" class="nice2">
+			Co-rédacteurs
+		</a>
+		<?php
+		*/
+
+		// on peut toujours modifier
+		?>
+		<a href="article-edit/<?php echo intval($article['id_article']);?>.html" title="" class="nice2 orange">
+			Modifier
+		</a>
+		<?php
+
+		// si publié : dépublier
+		if($article['status_article']==1){
+			?>
+			<a href="javascript:$.fancybox($('#depublier-form-<?php echo $article['id_article']; ?>').html());" title="" class="nice2 red" id="button-depublier">
+				Dépublier
+			</a>
+			<div id="depublier-form-<?php echo $article['id_article']; ?>" style="display:none">
+				<form action="<?php echo $versCettePage;?>" method="post" style="width:600px; text-align:left">
+					<input type="hidden" name="operation" value="article_depublier" />
+					<input type="hidden" name="id_article" value="<?php echo $article['id_article']; ?>" />
+					<p>Voulez-vous vraiment retirer cet article du site ? Il repassera en "Brouillon" et vous devrez à nouveau
+					le faire publier par un responsable si vous désirez le publier à nouveau.</p>
+
+					<input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
+					<input type="submit" class="nice2 orange" value="Dépublier mon article" />
+				</form>
+			</div>
+			<?php
+		}
+
+		// si dépublié : supprimer
+		if($article['status_article']!=1){
+			?>
+			<a href="javascript:$.fancybox($('#supprimer-form-<?php echo $article['id_article']; ?>').html());" title="" class="nice2 red">
+				Supprimer
+			</a>
+			<div id="supprimer-form-<?php echo $article['id_article']; ?>" style="display:none">
+				<form action="<?php echo $versCettePage;?>" method="post" style="width:600px; text-align:left">
+					<input type="hidden" name="operation" value="article_del" />
+					<input type="hidden" name="id_article" value="<?php echo $article['id_article']; ?>" />
+					<p>Voulez-vous vraiment supprimer définitivement cet article ? <br />Cette action est irréversible.</p>
+
+					<input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
+					<input type="submit" class="nice2 red" value="Supprimer mon article" />
+				</form>
+			</div>
+			<?php
+		}
+		?>
+
+		<br style="clear:both" />
+	</div>
+	<?php
+}
+?>

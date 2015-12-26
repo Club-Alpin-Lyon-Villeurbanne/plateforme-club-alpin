@@ -1,0 +1,50 @@
+
+/* file upload */
+.imgUploadStandby{ 
+cursor:move;
+background:white; padding:2px; margin:2px 0px; -webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px; border:1px solid silver; white-space:nowrap; 
+}
+
+
+.qq-uploader { position:relative; width: 100%;}
+
+.qq-upload-button {
+    padding: 3px 0; text-align:center;    
+    background:#f8f8f8; 
+	color:gray;
+	height:20px;
+	line-height:20px;
+}
+.qq-upload-button img{ vertical-align:middle; }
+.qq-upload-button-hover {color:black; background:#fff;}
+.qq-upload-button-focus {outline:1px dotted black;}
+
+.qq-upload-drop-area {
+    position:absolute; top:0; left:0; width:100%; height:100%; z-index:2;
+    background:url(../img/base/braies-light.png) #cbe1f2; text-align:center; line-height:20px;
+	box-shadow:inset 0 0 15px silver; 
+}
+.qq-upload-drop-area span {
+    display:block; position:absolute; top: 50%; width:100%; margin-top:-8px; font-size:16px;
+}
+.qq-upload-drop-area-active {background-color:#acd4f3; box-shadow:inset 0 0 15px gray; }
+
+.qq-upload-list {margin:0; padding:0; list-style:none;}
+.qq-upload-list li { 
+	margin:0; padding:3px 5px; line-height:15px; height:15px; font-size:12px;
+	background:url(../img/base/travaux.gif) white; border-bottom:1px solid silver; border-left:1px solid silver; border-right:1px solid silver;
+}
+
+	.qq-upload-list li.qq-upload-fail{
+	background:#f4cbcb; padding:3px 5px; margin:2px 0px; font-size:9px;
+	border:1px solid silver; white-space:nowrap; 
+	}
+
+.qq-upload-file, .qq-upload-spinner, .qq-upload-size, .qq-upload-cancel, .qq-upload-failed-text {
+    margin-right: 7px;
+}
+.qq-upload-file {}
+.qq-upload-spinner {display:inline-block; background: url("../img/base/spinner.gif"); width:15px; height:15px; vertical-align:text-bottom;}
+.qq-upload-size,.qq-upload-cancel {font-size:11px;}
+
+.qq-upload-fail .qq-upload-failed-text {display:inline;}

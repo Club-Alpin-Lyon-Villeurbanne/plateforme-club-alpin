@@ -1,0 +1,23 @@
+
+
+
+/* masquer */
+#mainHeader, 
+#top-openers, 
+#inscription-gestion, 
+#right1,
+.noprint,
+#mainfooter { display:none }
+
+/* articles */
+#fiche-article .titleimage{
+height:auto; 
+width:auto; 
+background:none;
+}
+#fiche-article .titleimage h1{
+color:black;
+}
+/* aside { display:none } gardons les comemntaires */
+#comment-form { display:none } 
+.share-h2, .sharebox { display:none } 

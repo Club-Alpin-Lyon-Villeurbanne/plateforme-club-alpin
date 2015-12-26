@@ -1,0 +1,54 @@
+
+	body{
+	font-family:Arial;
+	padding:130px 0px 0px 0px;
+	margin: 0px 0px 0px;
+	background:url('../img/logo.png') no-repeat center 20px;
+	}
+	p.info{
+	margin:0px 0px 0px 0px;
+	border-top:1px solid silver;
+	border-bottom:1px solid silver;
+	text-align:center;
+	background:#e4e4e4;
+	padding:3px 0px;
+	position:absolute;
+	width:100%;
+	}
+	h2{padding:0px; margin:0px; }
+	.bloc{
+	width:250px;
+	margin:auto;
+	padding:10px;
+	text-align:left;
+	border:1px solid silver;
+	background:#e4e4e4;
+	
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+    -khtml-border-radius: 10px; 
+	border-radius: 10px;
+	}
+	.bigbutton{ 
+	display:block; margin:10px 0px; padding:5px; text-align:center; background:#70b5de; color:white; font-weight:bold;
+	text-decoration:none; border:1px solid gray;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+    -khtml-border-radius: 10px; 
+	border-radius: 10px;
+	}
+	.bigbutton:hover{ background:#5e9dc2; }
+	.error ul{ list-style-position:inside; padding:0px; margin:0px;  }
+	.error{
+	width:250px;
+	margin:auto;
+	padding:10px;
+	text-align:left;
+	border:1px solid silver;
+	background:#ffafaf;
+	
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+    -khtml-border-radius: 10px; 
+	border-radius: 10px;
+	}

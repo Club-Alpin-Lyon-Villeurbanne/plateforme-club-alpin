@@ -1,0 +1,34 @@
+/* css communs admin/public */
+/* 
+// EX
+.article{ width:600px; color:#58585A; }
+	.article h2{ font-size:21px; line-height:23px; text-transform:uppercase; }
+	.article p{ font-size:12px; line-height:23px; }
+*/
+
+
+
+/* TABLEAU D'ATTRIBUTION DES DROITS AUX TYPES D'UTILISATEURS */
+.user-right-edit-table  { margin:0; width:100%; border-collapse:collapse; color:black; }
+.user-right-edit-table th, .user-right-edit-table td{ padding:2px 7px; }
+.user-right-edit-table thead th{ text-align:center; vertical-align:bottom; }
+.user-right-edit-table tr.rightline:hover { background-color:#e9f0f1; }
+.user-right-edit-table td.left { width:310px }
+.user-right-edit-table td.left input { display:none; padding:0; margin:0; border:0; background:none; width:100%; height:100%; outline:0; }
+.user-right-edit-table td.left.selected span { display:none }
+.user-right-edit-table td.left.selected input { display:block; }
+.user-right-edit-table td b { display:block; padding:20px 0 0 0; color:#6e7475;  }
+.user-right-edit-table td .clair { color:rgba(255, 255, 255, 0.7) }
+.user-right-edit-table td.toggle { text-align:center; cursor:pointer; height:20px; border-top:2px solid white; border-bottom:2px solid white; border-left:1px solid white; border-right:1px solid white;  }
+.user-right-edit-table td.toggle:hover{ box-shadow:inset 0 0 10px silver; }
+.user-right-edit-table td.toggle.false { background-color:#e4e4e4; }
+.user-right-edit-table td.toggle.true { background-color:#60b28e; }
+.user-right-edit-table td.toggle.edited { background-image:url(../img/base/braies.png); }
+
+
+/* ATTRIBUTION DES TYPES AUX USERS */
+.nice-checkboxes{ padding:10px 0; }
+.nice-checkboxes label{ display:inline-block; padding:3px 10px; margin:2px 5px 1px 0; border-radius:3px; background: #ececec; box-shadow:0 0 6px -1px #959595; }
+.nice-checkboxes label:hover{ background: #e6e6e6; }
+.nice-checkboxes label.up{ background:#c7d2e7; }
+.nice-checkboxes label *{ vertical-align:middle; }

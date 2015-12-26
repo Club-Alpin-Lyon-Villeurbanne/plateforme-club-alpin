@@ -1,0 +1,118 @@
+<?php
+if(!admin()) echo 'Session expirée';
+else{
+	// LISTAGE DES DROITS
+
+	// ************************
+	// OPERATIONS
+
+	// ************************
+	// AFFICHAGE
+	$typeTab=Array();
+	$rightTab=Array();
+	$attrTab=Array();
+	$tmp='';
+
+	include SCRIPTS.'connect_mysqli.php';;
+
+	// tous les types
+	$req="
+	SELECT id_usertype, code_usertype, title_usertype
+	FROM caf_usertype
+	ORDER BY hierarchie_usertype
+	";
+	$handleSql=$mysqli->query($req);
+	while($handle=$handleSql->fetch_array(MYSQLI_ASSOC)){
+		// var_dump($handle); echo '<hr />';
+		$typeTab[]=$handle;
+	}
+
+	// tous les droits
+	$req="
+	SELECT id_userright, code_userright, title_userright, parent_userright
+	FROM caf_userright
+	ORDER BY parent_userright, ordre_userright
+	";
+	$handleSql=$mysqli->query($req);
+	while($handle=$handleSql->fetch_array(MYSQLI_ASSOC)){
+		// var_dump($handle); echo '<hr />';
+		$rightTab[]=$handle;
+	}
+
+	// toutes les attributions de droits aux types
+	$req="
+	SELECT type_usertype_attr, right_usertype_attr
+	FROM caf_usertype_attr
+	";
+	$handleSql=$mysqli->query($req);
+	while($handle=$handleSql->fetch_array(MYSQLI_ASSOC)){
+		// var_dump($handle); echo '<hr />';
+		$attrTab[]=$handle['type_usertype_attr'].'-'.$handle['right_usertype_attr'];
+	}
+	$mysqli->close();
+	?>
+	<h1>Matrice des droits</h1>
+	<p>
+		Définit quel type d'adhérent est autorisé à quelles actions. Cliquer sur les intitulés à gauche pour afficher le code correspondant.
+	</p>
+	<br />
+	<form style="background:white; padding:10px; max-width:1300px;  " action="<?php echo $versCettePage;?>" method="post" onsubmit="return(confirm('Ces valeurs vont remplacer les valeurs existantes, OK ?'))">
+		<input type="hidden" name="operation" value="usertype_attr_edit" />
+
+		<?php
+
+		if($_POST['operation'] == 'usertype_attr_edit' && sizeof($errTab))	echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+		if($_POST['operation'] == 'usertype_attr_edit' && !sizeof($errTab))	echo '<div class="info">Mise à jour effectuée à '.date("H:i:s", $p_time).'.</div>';
+
+		// on fait courir le tableau
+		echo '<table class="user-right-edit-table"><thead><tr><th></th>';
+		foreach($typeTab as $usertype) echo '<th>'.html_utf8($usertype['title_usertype']).'</th>'; // types (abscisses)
+		echo '</tr></thead>';
+		echo '<tbody>';
+		foreach($rightTab as $userright){ // types (ordonnées)
+			if($tmp != $userright['parent_userright']){
+				$tmp=$userright['parent_userright'];
+				echo '<tr><td colspan="'.(sizeof($typeTab)+1).'"><b>'.html_utf8($userright['parent_userright']).'</b></td></tr>';
+			}
+			echo '<tr class="rightline"><td class="left"><span>'.html_utf8($userright['title_userright']).'</span><input type="text" value="'.html_utf8($userright['code_userright']).'" /></td>';
+			for($i=0; $i<sizeof($typeTab); $i++){
+				// right>type : autorisé ou pas ? valeur true || false
+				$on = (in_array($typeTab[$i]['id_usertype'].'-'.$userright['id_userright'], $attrTab)?true:false);
+				echo '<td class="toggle '.($on?'true':'false').'">'
+					.'<input '.($on?'':'disabled="disabled"').' type="hidden" name="usertype_attr[]" value="'.$typeTab[$i]['id_usertype'].'-'.$userright['id_userright'].'" />' // Paire d'ID
+					.'<span class="clair">'.html_utf8($typeTab[$i]['title_usertype']).'</span>'
+					.'</td>';
+			}
+			echo '</tr>';
+		}
+		echo '</tbody></table>';
+
+		?>
+		<br />
+		<input type="submit" value="Enregistrer la matrice dans cet état" class="nice" />
+
+		<script type="text/javascript">
+		$().ready(function(){
+			// afficher/selectionner le code d'un droit
+			$('.user-right-edit-table td.left').click(function(){
+				$(this).addClass('selected').find('input:visible').focus().bind('blur', function(){
+					$(this).parents('td').removeClass('selected');
+				});
+			});
+			// change attribution
+			$('.user-right-edit-table td.toggle').click(function(){
+				$(this)	.toggleClass('edited')
+						.toggleClass('false')
+						.toggleClass('true');
+
+				if($(this).hasClass('true'))	$(this).find('input').removeAttr('disabled');
+				else							$(this).find('input').attr('disabled', 'disabled');
+			});
+		});
+		</script>
+	</form>
+
+	<?php
+	echo '<br /><br /><br /><br />';
+}
+?>

@@ -1,0 +1,234 @@
+*{margin:0; padding:0;}
+
+
+#pagesLibres{ border-collapse:collapse; }
+	#pagesLibres tr.vis-off td{ background-image:url(../img/base/braies-light.png); color:rgba(0,0,0,0.5); }
+
+
+/* version 2 du dossier FTP */
+#frameFtp{ min-height:300px; }
+#ftp-2{ text-align:left; font-size:11px; line-height:12px; }
+	#ftp-2-arbo{ float:left; width:20%; overflow:hidden; white-space:nowrap; border-right:1px solid silver; padding:0 10px 0 0; margin:0 10px 0 0; }
+	#ftp-2-arbo .level{ 
+	padding-left:2px; margin:0 0 0 7px; border-left:1px solid silver; overflow:hidden; 
+	display:none;
+	/* height:0px; */ /* padding-bottom:2px; */
+	}
+	#ftp-2-arbo .level.top{ padding:0 0 2px 0; margin:0 0 0 0; border-left:none; height:auto; display:block; }
+	#ftp-2-arbo .level.level0{ height:auto; display:block; }
+	#ftp-2-arbo .level a.dirtrigger{ 
+	display:block; float:left; padding:0; width:15px; height:15px; text-align:center;
+	background:url(../img/base/puce-mini-off.png) no-repeat center;
+	}
+	#ftp-2-arbo .level a.dirtrigger.open{ background:url(../img/base/puce-mini-on.png) no-repeat center; }
+	#ftp-2-arbo .level a.dirtrigger.off{ cursor:default; opacity:0.3; }
+	#ftp-2-arbo .level a.dirlink{ 
+	color:#676767;
+	display:block; margin-left:15px; white-space:nowrap; background:url(../img/base/folder.png) no-repeat top left; padding:3px 2px 2px 20px; 
+	}
+	#ftp-2-arbo .level a.dirlink:hover, #ftp-2-arbo .level a.dirlink:focus{ text-decoration:none; color:black; }
+	#ftp-2-arbo .level a.dirlink.selected{ background-color:rgba(255, 255, 255, 0.3); }
+	
+	#ftp-2-droite th{ white-space:nowrap; }
+	#ftp-2-droite{ float:right; width:690px; }
+	#ftp-2-droite .erreur{ margin:0; }
+	
+	#ftp-2-droite .ftp-ico{ max-height:16px; max-width:16px; }
+	
+	#ftp-2-droite .filename{ white-space:nowrap; width:230px; overflow:hidden; padding:0 }
+	#ftp-2-droite .filename a{ display:inline-block; white-space:nowrap; max-width:230px; overflow:hidden; direction:rtl; padding:5px 0 }
+	#ftp-2-droite .filesize{ white-space:nowrap }
+	#ftp-2-droite .filesize img{ vertical-align:bottom; }
+	#ftp-2-droite .ftp-imgsize-ok .filesize{ /* color:green; */ }
+	#ftp-2-droite .ftp-imgsize-big .filesize{ color:#99723f; }
+	#ftp-2-droite .ftp-imgsize-toobig .filesize{ color:#d92727; }
+	#ftp-2-droite acronym{ cursor:help }
+	#ftp-2-droite .ftp-tools { white-space:nowrap; text-align:right; }
+	#ftp-2-droite .ftp-tools img{ 		background:rgba(255,255,255,0.3); cursor:pointer; padding:1px 2px; box-radius:4px; margin:0 3px 0 0; }
+	#ftp-2-droite .ftp-tools img:hover{ 	background:rgba(255,255,255,0.8); box-shadow:0 0 6px silver; }
+	
+	/* tableau des fichiers */
+	#ftp-2-fichiers{ width:100%; border-collapse:collapse; }
+	#ftp-2-fichiers tr:hover{ outline:1px solid rgba(60, 60, 60, 0.1);  }
+	#ftp-2-fichiers tr.line-dir{ cursor:pointer; }
+	#ftp-2-fichiers tr td:first-child{ width:20px; }
+	
+	#ftp-ariane{ width:520px; position:absolute; z-index:30; padding:5px 0 2px 0; overflow:hidden; direction:rtl; }
+	#ftp-ariane span{ color:gray; padding:0 2px; }
+	
+.ftp-frame{ background:white; }
+	.ftp-frame .urlSelecter{ display:block; width:94%; padding:4px 2%; border:1px solid gray; background:#f0f5f6; cursor:pointer; }
+	.ftp-frame .urlSelecter:focus{ outline:0; box-shadow:inset 0 0 17px silver; }
+
+.ftp-dir-add{
+	padding: 2px 0;
+	text-align: center;
+	background: #f8f8f8;
+	color: gray;
+	height: 20px;
+	line-height: 20px;
+	cursor:pointer;
+}
+	.ftp-dir-add:hover{ color:black; background:white; }
+	.ftp-dir-add img{ vertical-align:middle; }
+	
+	
+	
+	
+	
+
+#commsTable{ border-collapse:collapse; }
+#commsTable tr{ border-bottom: 5px solid #eeeeee;  }
+#commsTable th{ background:none;  }
+#commsTable tr td{ background:#fff; padding:5px;  }
+
+.previewuploadimg { display:block; float:left; background:#fff; }
+.previewuploadimg img{ height:52px; padding:5px; }
+.delpreview{ float:left; width:50px; }
+.delpreview img{ position:absolute; }
+.qq-upload-file{ clear:both; }
+
+#lp-image-editor{ width:100%; max-height:100%;  }
+	#lp-image-editor .source{ width:880px; overflow:hidden; text-align:center; padding:8px; }
+	#lp-image-editor p{ background:white; border:1px solid silver; border-radius:6px; margin:2px 0; position:relative; bottom:2px; }
+	#lp-image-editor .lp-image-editor-source{ 
+	/* max-width:880px; */ margin:10px; 
+	-moz-box-shadow:0px 0px 10px #7f7f7f; -webkit-box-shadow:0px 0px 10px #7f7f7f; box-shadow:0px 0px 10px #7f7f7f;
+	}
+
+.pageSelect a{ background:#d5d5d5; padding:1px 3px; }
+.pageSelect a.up{ font-weight:bold;background:silver;  }
+
+.admin-imagelist{ }
+	.admin-imagelist li{ padding:3px; margin:5px 0px; border:1px solid silver; background:white; -webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;  }
+
+.onglets-admin{  }
+	.onglets-admin .onglets-admin-nav {  }
+	.onglets-admin .onglets-admin-nav a{ 
+	display:block; float:left; background:#eaeaea; font-size:14px; line-height:15px; padding:7px 15px; margin-right:10px; color:#636363;
+	position:relative; top:1px; 
+	-webkit-border-top-left-radius: 6px;
+	-webkit-border-top-right-radius: 6px;
+	-moz-border-radius-topleft: 6px;
+	-moz-border-radius-topright: 6px;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	
+	-moz-box-shadow:inset 0px -5px 7px 0px #cecece;
+	-webkit-box-shadow:inset 0px -5px 7px 0px #cecece;
+	box-shadow:inset 0px -5px 7px 0px #cecece;
+	}
+	.onglets-admin .onglets-admin-nav a:hover{ color:black; text-decoration:none; }
+	.onglets-admin .onglets-admin-nav a.up{ 
+	box-shadow:none; color:#000; background:#dedede;	
+	border-top:1px solid #a5a5a5; border-left:1px solid #a5a5a5; border-right:1px solid #a5a5a5;
+	}
+	.onglets-admin .onglets-admin-contenu{ 
+	clear:both; background:#dedede; border : 1px solid #a5a5a5; padding:10px 10px; margin-right:10px;
+	-webkit-border-radius: 6px;
+	-webkit-border-top-left-radius: 0;
+	-moz-border-radius: 6px;
+	-moz-border-radius-topleft: 0;
+	border-radius: 6px;
+	border-top-left-radius: 0;
+	}
+
+
+html{
+}
+body{
+font-size:11px;
+font-family:Arial;
+text-align:left;
+background:#eeeeee;
+}
+.grab{ cursor:move; }
+.placeholder1{
+padding:7px 0px; 
+background:url(../img/base/braies.png) #e1e1e1; 
+-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px; 
+-moz-box-shadow:inset 0px 0px 15px gray; -webkit-box-shadow:inset 0px 0px 15px gray; box-shadow:inset 0px 0px 15px gray;
+}
+
+.placeholder2{
+margin-right:3px; width:39px; height:33px; display:block; float:left;
+background:url(../img/base/braies.png) #e1e1e1; 
+-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px; 
+-moz-box-shadow:inset 0px 0px 15px gray; -webkit-box-shadow:inset 0px 0px 15px gray; box-shadow:inset 0px 0px 15px gray;
+}
+
+.placeholder3{
+background:url(../img/base/braies.png) #e1e1e1; /* min-height:25px; */ opacity:0.5;
+-moz-box-shadow:inset 0px 0px 15px gray; -webkit-box-shadow:inset 0px 0px 15px gray; box-shadow:inset 0px 0px 15px gray;
+
+clear:both; 
+-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px; 
+padding:5px; margin:5px 0px 2px 0px;
+}
+
+.placeholder4{
+margin-right:3px 3px 0 0; width:70px; height:70px; display:block; float:left;
+background:url(../img/base/braies.png) #e1e1e1; 
+-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px; 
+-moz-box-shadow:inset 0px 0px 15px gray; -webkit-box-shadow:inset 0px 0px 15px gray; box-shadow:inset 0px 0px 15px gray;
+}
+
+#pageAdmin{ padding:0px 20px 20px 20px ; color:#4b4b4b; min-width:950px; }
+	#pageAdmin .userList{ }
+	#pageAdmin .userList li{ 
+	margin:3px 0px; padding:3px; border:1px solid silver; background:white;
+	-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px; 
+	}
+	#pageAdmin .userList .infosUser{ float:left; padding:1%; }
+	#pageAdmin .userList .tools { float:right; margin-right:3px; }
+
+h1{ font-size:27px; font-weight:100; padding:25px 0px 10px 0px;}
+h2{ font-size:20px; font-weight:100; padding:15px 0px 10px 0px;}
+h3{ font-size:17px; font-weight:100; padding:2px 0px 5px 0px;}
+
+a{ text-decoration:none; color:black; }
+	a:hover, a:focus{ text-decoration:underline; }
+ul{ list-style-type:none;}
+p{padding:3px 0px;}
+
+.type1{ 
+-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px; 
+-moz-box-shadow:inset 0px 0px 4px #000000; -webkit-box-shadow:inset 0px 0px 4px #000000; box-shadow:inset 0px 0px 4px #000000;
+border:none; background:url('../img/base/fd-admin-hwc.jpg') center #2e2e2e; color:white; font-weight:bold; padding:4px; margin:2px 0px 5px 0px; width:300px;
+}
+	.type1:focus{ -moz-box-shadow:inset 0px 0px 15px #000000; -webkit-box-shadow:inset 0px 0px 15px #000000; box-shadow:inset 0px 0px 15px #000000;}
+
+
+.bigButton{
+float:left; text-decoration:none; margin:3px 6px 3px 0px; padding:2px 5px; display:block; background:white; color:#575757; text-align:center;
+border-radius:5px; border:1px solid silver; box-shadow:0 0 5px silver;
+}
+	.bigButton:focus, .bigButton:hover{ text-decoration:none; color:black; box-shadow:0 0 5px gray; }
+	.bigButton img{ vertical-align:middle; }
+
+.page-element{ 
+clear:both;  min-height:15px; 
+-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px; 
+background-color: rgba(79, 186, 255, 0.3);
+border:none; padding:5px; margin:5px 0px 2px 0px;
+}
+.page-element.invisible{ background-color: rgba(200, 200, 200, 0.3); background-image:url(../img/base/braies-light.png); color:#6c7e82; }
+.page-element-info-1{ width:20%; float:left; padding-right:15px;}
+.page-element-info-2{ 
+width:20px; height:18px; padding:1px; margin:0 5px 0 0; text-align:center;  float:left; text-align:center; position:relative; bottom:3px; 
+-webkit-border-radius: 3px;-moz-border-radius: 3px;border-radius: 3px; 
+}
+.page-element-info-2.on{ background-color: rgba(255, 255, 255, 0.7);  }
+.page-element-info-2.off{ opacity:0.4;  }
+.page-element-info-3{ 
+width:20px; height:18px; padding:1px; margin:0 0 0 0; text-align:center;  float:left; text-align:center; position:relative; bottom:3px; cursor:move; 
+/* border-right:1px dotted gray;  */
+-webkit-border-radius: 3px;-moz-border-radius: 3px;border-radius: 3px; 
+}
+.page-element-separator{ float:left; width:1px; height:16px; border-right:1px dotted white; margin:0 8px 0 2px;  }
+.sortablepagelist{  min-height:1px; padding:3px 0 2px 0; clear:both;  }
+.sortablepagelist.niv1{  min-height:5px; clear:both;  }
+
+
+
+

@@ -1,0 +1,18 @@
+
+ accès à 12:39:40
+srcImg=../ftp/transit/retouches/fd-image01-edit.jpg
+destImg=../ftp/manu/fd-image01-edit.jpg
+wDest=840
+wDestNocrop=840
+hDest=498
+hDestNocrop=498
+xDest=0
+yDest=0
+
+ Vars ok
+
+ dir=../ftp/transit/retouches/
+
+ filename=fd-image01-edit.jpg 
+ 
+ FIN

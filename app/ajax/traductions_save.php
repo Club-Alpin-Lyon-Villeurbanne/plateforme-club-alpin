@@ -1,0 +1,61 @@
+<?php
+
+$log .= "\n accès à ".date("H:i:s");
+
+if(admin()){
+	
+	include SCRIPTS.'connect_mysqli.php';
+	
+	
+	$id_content_inline=intval($_POST['id']);
+		$log.="\n id_content_inline :  ".$id_content_inline;
+	$code_content_inline=$_POST['code_content_inline'];
+	$contenu_content_inline=$_POST['contenu_content_inline'];
+		$log.="\n contenu_content_inline :  \n".$contenu_content_inline;
+	$contenu_content_inline=html_entity_decode($contenu_content_inline, ENT_QUOTES, 'UTF-8');
+		$log.="\n html_entity_decode :  \n".$contenu_content_inline;
+	$groupe_content_inline=intval($_POST['groupe_content_inline']);
+		$log.="\n groupe_content_inline :  \n".$groupe_content_inline;
+	$lang_content_inline=stripslashes(utf8_encode($_POST['lang_content_inline']));
+		$log.="\n lang_content_inline :  \n".$lang_content_inline;
+	$linkedtopage_content_inline=stripslashes(utf8_encode($_POST['linkedtopage_content_inline']));
+		$log.="\n linkedtopage_content_inline :  \n".$linkedtopage_content_inline;
+	
+	if(isset($_POST['id_content_inline']) && isset($_POST['lang_content_inline'])  && isset($_POST['contenu_content_inline'])){
+		
+		$code_content_inline=$mysqli->real_escape_string($code_content_inline);
+		$contenu_content_inline=$mysqli->real_escape_string($contenu_content_inline);
+		$lang_content_inline=$mysqli->real_escape_string($lang_content_inline);
+		$linkedtopage_content_inline=$mysqli->real_escape_string($linkedtopage_content_inline);
+		
+		// entrée à créer
+		if(!$id_content_inline)
+			$req="INSERT INTO  `".$pbd."content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
+														VALUES (NULL ,  '$groupe_content_inline',  '$code_content_inline',  '$lang_content_inline',  '$contenu_content_inline',  '$p_time',  '$linkedtopage_content_inline');";
+		// entrée existante
+		else
+			$req="UPDATE  `".$pbd."content_inline` SET  `contenu_content_inline` =  '$contenu_content_inline', `date_content_inline` =  '$p_time'  WHERE  `".$pbd."content_inline`.`id_content_inline` =$id_content_inline LIMIT 1 ;";
+		
+		$log.="\n SQL : ";  
+		if(!$mysqli->query($req))	$log.="ERREUR : $req";  
+		else{
+			$log.="\n OK ";  
+			$result['success']=true;
+			$result['req']=$req;
+			$result['content']=stripslashes($contenu_content_inline);
+		}
+	}
+	
+	$mysqli->close();
+	
+	// to pass data through iframe you will need to encode all html tags
+	echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
+	
+	if($p_devmode){
+		$log.=" \n \n FIN";
+		$fp = fopen('dev.txt', 'w');
+		fwrite($fp, $log);
+		fclose($fp);
+	}
+}
+?>

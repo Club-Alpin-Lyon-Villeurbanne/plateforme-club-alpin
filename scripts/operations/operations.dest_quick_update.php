@@ -1,0 +1,67 @@
+<?php
+
+$id = NULL;
+if ($_POST['id_dest_to_update'])
+    $id = intval($_POST['id_dest_to_update']);
+if (!$id) $errTab[] = "Identifiant manquant.";
+
+if ($_POST['operation'] == 'dest_validate') {
+    if (isset($_POST['publie'])) {
+        $publie = intval($_POST['publie']);
+    }
+}
+if ($_POST['operation'] == 'dest_lock' || $_POST['operation'] == 'dest_validate') {
+    if (isset($_POST['inscription_locked'])) {
+        $inscription_locked = intval($_POST['inscription_locked']);
+    }
+}
+if ($_POST['operation'] == 'dest_annuler') {
+    if (isset($_POST['annule'])) {
+        $annule = intval($_POST['annule']);
+    }
+    if (isset($_POST['msg'])) {
+        $msg = trim(stripslashes($_POST['msg']));
+        if (empty($msg) && $annule) $errTab[] = "Vous devez saisir un message à destination des inscrits pour leur expliquer la raison de l'annulation.";
+    }
+}
+
+if (!sizeof($errTab)) {
+    include SCRIPTS.'connect_mysqli.php';
+
+    $comma = null;
+    $sql = "UPDATE `".$pbd."destination` SET ";
+    if (isset($publie))  {
+        $publie = $mysqli->real_escape_string($publie);
+        $sql .= "`publie` = '$publie'".$comma;
+        $comma = ", ";
+    }
+    if (isset($inscription_locked))  {
+        $inscription_locked = $mysqli->real_escape_string($inscription_locked);
+        $sql .= "`inscription_locked` = '$inscription_locked'".$comma;
+        $comma = ", ";
+    }
+    if (isset($annule)) {
+        $annule = $mysqli->real_escape_string($annule);
+        $sql .= "`annule` = '$annule'";
+    }
+    $sql .= " WHERE `id` = $id";
+
+
+    if(!$mysqli->query($sql)) $errTab[]="Erreur SQL lors de la modification de la destination";
+    else {
+        // Envoi de tous les emails
+        if (isset($msg)) {
+            // On annule aussi les sorties
+            // On récupère les sorties liées et non annulées
+
+            // On annule les sorties
+
+
+            // On envoie les emails
+            // TODO ToDo todo @todo
+        }
+    }
+}
+
+$mysqli->close;
+
