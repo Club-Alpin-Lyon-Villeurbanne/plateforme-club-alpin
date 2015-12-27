@@ -38,7 +38,8 @@ $().ready(function() {
 		'transitionOut'	:	'elastic',
 		'overlayColor'	:	'#000',
 		'width'			:	950,
-		'height'		:	'98%',
+		//'height'		:	'98%',
+		'minHeight'     :   '98%',
 		'speedIn'		:	400, 
 		'speedOut'		:	200
 	});
@@ -50,7 +51,8 @@ $().ready(function() {
 		'transitionOut'	:	'elastic',
 		'overlayColor'	:	'#000',
 		'width'			:	950,
-		'height'		:	'98%',
+		//'height'		:	'98%',
+		'minHeight'     :   '98%',
 		'speedIn'		:	400, 
 		'speedOut'		:	200
 		// beforeClose: function(){ alert('beforeClose'); return false; }
