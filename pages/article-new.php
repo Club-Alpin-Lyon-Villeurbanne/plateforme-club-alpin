@@ -282,8 +282,8 @@ if($_GET['compterendu']){
 						file_browser_callback : 'userfilebrowser',
 
 						// forecolor,backcolor,|,
-						theme_advanced_buttons1 : "newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,styleselect,formatselect,|,removeformat,cleanup",
-						theme_advanced_buttons2 : "undo,redo,|,cut,copy,paste,pastetext,|,bullist,numlist,|,link,unlink,image,|,charmap,sub,sup",
+						theme_advanced_buttons1 : "newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,styleselect,formatselect,|,removeformat,cleanup,code",
+						theme_advanced_buttons2 : "undo,redo,|,cut,copy,paste,pastetext,|,bullist,numlist,|,link,unlink,image,media,|,charmap,sub,sup",
 						theme_advanced_buttons3 : "tablecontrols,|,hr,visualaid,|,fullscreen",
 
 						theme_advanced_toolbar_location : "top",
@@ -301,7 +301,7 @@ if($_GET['compterendu']){
 						relative_urls : true,
 						convert_urls : false,
 						remove_script_host : false,
-						theme_advanced_blockformats : "p,h3,h4,h5,ul,li",
+						theme_advanced_blockformats : "p,h2,h3,h4,h5,ul,li",
 
 						theme_advanced_resize_horizontal : false,
 						theme_advanced_resizing : true,
