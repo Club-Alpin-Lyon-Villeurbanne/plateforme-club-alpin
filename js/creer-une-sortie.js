@@ -80,7 +80,7 @@ $().ready(function() {
 		dateFormat: "dd/mm/yy",
 		firstDay: 1,
 		dayNamesMin:["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa" ],
-		monthNames:["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Spetembre", "Octobre", "Novembre", "Décembre" ]
+		monthNames:["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre" ]
 	});
 
 	// timepickers
@@ -107,7 +107,6 @@ $().ready(function() {
 		//
 		hour:'19',
 		minute:'00'
-
 	});
 	
 });
