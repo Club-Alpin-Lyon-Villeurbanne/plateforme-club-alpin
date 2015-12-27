@@ -4,7 +4,6 @@
 	<!-- partie gauche -->
 	<div id="left1">
 		<div class="main-type">
-			<br />
 			<?php
 			inclure($p1, 'vide');
 			
@@ -12,12 +11,10 @@
 			ksort($comTab);
 			
 			// la requete se fait ds la boucle
-			include SCRIPTS.'connect_mysqli.php';;
 			foreach($comTab as $code=>$data){
 				$dejaVus=array(); // IDs des users déja mis en responsable dans cette commsision (evite les doublons pour qqn à la fois resp. de comm' et encadrant...)
 				
-				echo '<h2>&gt; '.html_utf8($data['title_commission']).'</h2>';
-				
+				echo '<h2><a id="'.$data['code_commission'].'">&gt; '.html_utf8($data['title_commission']).'</a></h2>';
 				$req=" SELECT
 						id_user, civ_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user
 						, title_usertype
@@ -29,8 +26,9 @@
 						(
 							code_usertype LIKE 'responsable-commission' 
 							|| code_usertype LIKE 'encadrant' 
-							|| code_usertype LIKE 'coencadrant' 
-						)
+							|| code_usertype LIKE 'coencadrant'  
+							|| code_usertype LIKE 'benevole'  
+						) 
 					AND usertype_user_attr = id_usertype
 					AND user_user_attr = id_user
 					AND params_user_attr LIKE 'commission:".$code."'
@@ -61,4 +59,5 @@
 	?>
 	
 	<br style="clear:both" />
+
 </div>
