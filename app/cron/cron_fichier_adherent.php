@@ -285,7 +285,7 @@ foreach($fileTab as $file){
 }
 
 // blocage des comptes expires ( inscription < 31/08/Y-1 ) ou non mis ŕ jour depuis + de 10j
-$req="UPDATE caf_user SET doit_renouveler_user=1 WHERE id_user!=1 nomade_user=0 AND manuel_user=0 AND (
+$req="UPDATE caf_user SET doit_renouveler_user=1 WHERE id_user!=1 AND nomade_user=0 AND manuel_user=0 AND (
     FROM_UNIXTIME( date_adhesion_user ) < MAKEDATE(".(date("Y")-1).", 240 )
     OR ts_update_user < (UNIX_TIMESTAMP( ) - ( 86400 *10 ))
 )";
