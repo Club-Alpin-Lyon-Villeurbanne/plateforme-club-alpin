@@ -421,7 +421,7 @@
 				return;
 			}
 
-			// Handle script
+			// Handle scripts
 			if (this.editor.settings.media_use_script) {
 				replacement = new Node('script', 1).attr('type', 'text/javascript');
 
@@ -677,7 +677,7 @@
 			if (!node.parent)
 				return;
 
-			// Handle media script
+			// Handle media scripts
 			if (node.name === 'script') {
 				if (node.firstChild)
 					matches = scriptRegExp.exec(node.firstChild.value);

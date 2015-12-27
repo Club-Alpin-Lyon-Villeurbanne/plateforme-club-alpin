@@ -266,7 +266,7 @@ foreach($fileTab as $file){
 			VALUES (NULL , 'import-ffcam',  'INSERT: $nb_insert, UPDATE:$nb_update, fichier ".basename($file)."', '127.0.0.1', '".time()."');";
 		if(!$mysqli->query($req)){
 			$errTab[]="Erreur SQL lors du log";
-			error_log(mysql_error());
+			error_log($mysqli->error);
 		}
 
 	}
@@ -278,7 +278,7 @@ foreach($fileTab as $file){
 			VALUES (NULL , 'import-ffcam',  'fichier inexistant : $file', '127.0.0.1', '".time()."');";
 		if(!$mysqli->query($req)){
 			$errTab[]="Erreur SQL lors du log";
-			error_log(mysql_error());
+			error_log($mysqli->error);
 		}
 
 	}
@@ -291,7 +291,7 @@ $req="UPDATE caf_user SET doit_renouveler_user=1 WHERE id_user!=1 nomade_user=0 
 )";
 
 if(!$mysqli->query($req)){
-    print "Erreur SQL lors du log:".$mysqli->error();
+    print "Erreur SQL lors du log:".$mysqli->error;
 }
 
 // suppression des filiations sur comptes non mis ŕ jour depuis + de 200j
@@ -300,7 +300,7 @@ $req="UPDATE caf_user SET cafnum_parent_user = '' WHERE
 ";
 
 if(!$mysqli->query($req)){
-    print "Erreur SQL lors du log:".$mysqli->error();
+    print "Erreur SQL lors du log:".$mysqli->error;
 }
 
 mysqli_close($mysqli);

@@ -462,7 +462,7 @@ else{
                     echo '<tr>
 							<td>
 								'
-                        .(allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">'.strtoupper(html_utf8($tmpUser['lastname_user'])).', '.ucfirst(strtolower(html_utf8($tmpUser['firstname_user']))).'</p>' :'' )
+                        .(allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">'.html_utf8(strtoupper($tmpUser['lastname_user'])).', '.html_utf8(ucfirst(strtolower($tmpUser['firstname_user']))).'</p>' :'' )
                         .userlink($tmpUser['id_user'], $tmpUser['nickname_user'])
 
                         .'</td>
@@ -477,7 +477,7 @@ else{
 					echo '<tr>
 							<td>
 								'.userlink($tmpUser['id_user'], $tmpUser['nickname_user'])
-								.(allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">'.strtoupper(html_utf8($tmpUser['lastname_user'])).', '.ucfirst(strtolower(html_utf8($tmpUser['firstname_user']))).'</p>' :'' )
+								.(allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">'.html_utf8(strtoupper($tmpUser['lastname_user'])).', '.html_utf8(ucfirst(strtolower($tmpUser['firstname_user']))).'</p>' :'' )
 							.'</td>
 							<td class="small">'.( allowed('user_read_private', 'commission:'.$evt['code_commission']) ? $tmpUser['tel_user'] :'' ).'</td>
 							<td class="small">'.( allowed('user_read_private', 'commission:'.$evt['code_commission']) ? $tmpUser['tel2_user'] :'' ).'</td>
@@ -488,8 +488,13 @@ else{
 				echo '</table>';
 			}
 
-			// INSCRIPTIONS SI ON EST DANS LE BON TIMING :
-            include(INCLUDES.'evt'.DS.'user_inscription.php');
+            // Patch le 23/08/15 car pas de bloquage des inscriptions internet
+            // lorsque le nombre de places disponibles via internet = 0
+            if ($nPlacesRestantesOnline>0){
+                include(INCLUDES.'evt'.DS.'user_inscription.php');
+            } else {
+                echo "<p>Le nombre de places disponibles à la réservation depuis internet est atteint.</p>";
+            }
 		}
 	}
 

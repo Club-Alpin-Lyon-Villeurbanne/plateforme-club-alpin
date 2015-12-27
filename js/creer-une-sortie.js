@@ -51,7 +51,20 @@ $().ready(function() {
 		"Vanoise",
 		"Vercors",
 		"Vosges"
+	]; 
+    // CAF CLERMONT AUVERGNE
+    /* 
+	var availableTags = [
+		"Cantal",
+		"Cézallier",
+		"Forez",
+		"Jura",
+		"Livradois",
+		"Pyrénées",
+		"Sancy",
+		"Vosges"
 	];
+    */
 	$("input[name=massif_evt]").autocomplete({
 		source: availableTags,
 		minLength: 0,
@@ -94,6 +107,7 @@ $().ready(function() {
 		//
 		hour:'19',
 		minute:'00'
+
 	});
 	
 });

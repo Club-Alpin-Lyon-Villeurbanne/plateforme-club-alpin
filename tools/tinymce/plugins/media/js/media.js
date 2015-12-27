@@ -325,26 +325,6 @@
 						setVal('src', src);
 						setVal('media_type', data.type);
 					}
-
-				}
-
-				// dailymotion 
-				if (src.match(/dailymotion\.com\/video\//)) {
-					data.width = 480;
-					data.height = 270;
-					data.params.frameborder = '0';
-					data.type = 'iframe';
-					src = 'http://www.dailymotion.com/embed/video/' + src.match(/video\/(.+)/)[1];
-					setVal('src', src);
-					setVal('media_type', data.type);
-				} else if (src.match(/dai\.ly\//)) {
-					data.width = 480;
-					data.height = 270';
-					data.params.frameborder = '0';
-					data.type = 'iframe';
-					src = 'http://www.dailymotion.com/embed/video/' + src.match(/dai\.ly\/(.+)/)[1];
-					setVal('src', src);
-					setVal('media_type', data.type);
 				}
 
 				// Google video

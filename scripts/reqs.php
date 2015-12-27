@@ -531,7 +531,7 @@ elseif($p1=='agenda'){
         if ( $id_dest = is_sortie_in_destination($handle['id_evt']) ) {
             $destination = get_destination($id_dest, false);
             $status_dest = is_destination_status($destination, 'publie');
-            $annule_dest = is_destination_status($destination, 'publie');
+            $annule_dest = is_destination_status($destination, 'annule');
             if ($status_dest == true) $use = true;
             if ($annule_dest == true) $handle['cancelled_evt'] = 1;
             $handle['destination'] = $destination;
@@ -703,8 +703,10 @@ elseif($p1=='creer-une-sortie'){
 				AND usertype_user_attr=id_usertype
 				AND code_usertype='encadrant'
 				AND params_user_attr='commission:$com'
-				ORDER BY  lastname_user ASC
-				LIMIT 0 , 50";
+				ORDER BY  lastname_user ASC";
+				// CRI - 29/08/2015
+				// Correctif car la commission du jeudi compte plus de 50 encadrants
+				// LIMIT 0 , 50";
 			$handleSql=$mysqli->query($req);
 			while($handle=$handleSql->fetch_array(MYSQLI_ASSOC)){
 				$encadrantsTab[]=$handle;
@@ -720,8 +722,10 @@ elseif($p1=='creer-une-sortie'){
 				AND usertype_user_attr=id_usertype
 				AND code_usertype='coencadrant'
 				AND params_user_attr='commission:$com'
-				ORDER BY  lastname_user ASC
-				LIMIT 0 , 50";
+				ORDER BY  lastname_user ASC";
+				// CRI - 29/08/2015
+				// Correctif car la commission du jeudi compte plus de 50 encadrants
+				// LIMIT 0 , 50";
 			$handleSql=$mysqli->query($req);
 			while($handle=$handleSql->fetch_array(MYSQLI_ASSOC)){
 				$coencadrantsTab[]=$handle;
@@ -1142,8 +1146,14 @@ elseif($p1=='sortie' || $p1=='destination' || $p1=='feuille-de-sortie'){
     elseif ($id_destination) {
         get_all_encadrants_destination($id_destination);
         $dest = get_destination($id_destination, true);
-        if(
-            $p1 == 'destination' && $dest['publie'] === '1'
+        
+	// Correctif CRI le 23/08/15 car demande impression fiche destination retourne une erreur 404
+	// Remplacement de:
+	// $p1 =='destination'
+	// par :
+	// ($p1 == 'destination' || $p1 == 'feuille-de-sortie')
+	if(
+            ($p1 == 'destination' || $p1 == 'feuille-de-sortie') && $dest['publie'] === '1' // Correctif CRI le 23/08/15
             || (
                 user() &&
                 ($dest['id_user_who_create']==$_SESSION['user']['id_user'] // ou j'en suis l'auteur

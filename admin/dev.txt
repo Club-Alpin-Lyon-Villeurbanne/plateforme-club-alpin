@@ -1,11 +1,11 @@
 
- accès à 12:39:40
-srcImg=../ftp/transit/retouches/fd-image01-edit.jpg
-destImg=../ftp/manu/fd-image01-edit.jpg
-wDest=840
-wDestNocrop=840
-hDest=498
-hDestNocrop=498
+ accès à 17:18:37
+srcImg=../ftp/transit/retouches/lac.jpg
+destImg=../ftp/images/lac.jpg
+wDest=415
+wDestNocrop=415
+hDest=311
+hDestNocrop=311
 xDest=0
 yDest=0
 
@@ -13,6 +13,6 @@ yDest=0
 
  dir=../ftp/transit/retouches/
 
- filename=fd-image01-edit.jpg 
+ filename=lac.jpg 
  
  FIN

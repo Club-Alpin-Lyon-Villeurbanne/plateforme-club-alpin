@@ -107,14 +107,16 @@
 
         function setDay() {
             // datepicker
+            
             <?php
 
                 $dest_date = explode(' ',$bus['destination']['date']);
                 $date = explode('-', $dest_date[0]);
                 $hour = explode(':', $dest_date[1]);
             ?>
-            var lockDate = new Date(<?php echo $date[0]; ?>, <?php echo $date[1]; ?>, <?php echo $date[2]; ?>, <?php echo $hour[0]; ?>, <?php echo $hour[1]; ?>);
-            var maxLockDate = new Date(<?php echo $date[0]; ?>, <?php echo $date[1]; ?>, <?php echo $date[2]; ?>, 23, 59);
+            
+            var lockDate = new Date(<?php echo $date[0]; ?>, <?php echo $date[1]-1; ?>, <?php echo $date[2]; ?>, <?php echo $hour[0]; ?>, <?php echo $hour[1]; ?>);
+            var maxLockDate = new Date(<?php echo $date[0]; ?>, <?php echo $date[1]-1; ?>, <?php echo $date[2]; ?>, 23, 59);
             $("#bus_dest_lieu_date").datepicker( "option", "minDate", lockDate ).datetimepicker( "option", "minDateTime", lockDate );
             $("#bus_dest_lieu_date").datepicker( "option", "maxDate", maxLockDate ).datetimepicker( "option", "maxDateTime", maxLockDate );
             return false;

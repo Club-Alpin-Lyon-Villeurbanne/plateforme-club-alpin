@@ -9,7 +9,7 @@ if(admin()){
 
 	// bien connecté ?
 	$id_user=intval($_SESSION['user']['id_user']);
-	if(!$id_user){ echo 'ERREUR : id invalide'; exit();	}
+	if(!$id_user && !admin()){ echo 'ERREUR : id invalide'; exit();	}
 
 	// recuperation du dossier
 	$type=$_GET['type'];
@@ -39,9 +39,9 @@ if(admin()){
 		<script type="text/javascript" src="../js/fonctionsAdmin.js"></script>
 
 		<!-- fancybox -->
-		<link rel="stylesheet" href="../tools/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../tools/fancybox/jquery.fancybox-1.3.4.pack.js" charset="utf-8"></script>
-		<script type="text/javascript" src="../tools/fancybox/jquery.mousewheel-3.0.4.pack.js" charset="utf-8"></script>
+		<link rel="stylesheet" href="../tools/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+		<script type="text/javascript" src="../tools/fancybox/jquery.fancybox.pack.js" charset="utf-8"></script>
+		<!-- <script type="text/javascript" src="../tools/fancybox/jquery.mousewheel-3.0.4.pack.js" charset="utf-8"></script> -->
 
 		<!-- Datatables -->
 		<link rel="stylesheet" href="../tools/datatables/media/css/jquery.dataTables.sobre.css" type="text/css" media="screen" />

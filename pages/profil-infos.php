@@ -149,7 +149,7 @@ if(user()){
                         if ($tmpUser['date_adhesion_user'] > 0) {
                             echo date("d/m/Y", $tmpUser['date_adhesion_user']);
                         } else {
-                            echo "auncune date connue.";
+                            echo "aucune date connue.";
                         }
                     if($tmpUser['alerte_renouveler_user'])	echo '</span>';
                 ?>
