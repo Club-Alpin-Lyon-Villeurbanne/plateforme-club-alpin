@@ -379,7 +379,13 @@ function getYearsSinceDate($then){
     if ($mnow < $mthen || ($mnow==$mthen && $dnow<$dthen)) {
         $years--;
     }
-    return $years;
+    
+    // gestion des dates NULL
+    if ($then == NULL) {
+        return "inconnu";
+    } else {
+        return $years;
+    }
 }
 
 // utile ci dessus
