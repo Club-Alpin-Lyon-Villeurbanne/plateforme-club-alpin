@@ -10,7 +10,7 @@ if($lbxMsg){
             $msg='<p><center><img src="img/base/tick.png" alt="" title="" /></center> <br />La sortie vient d\'être supprimée.<br /><center><input type="button" value="continuer" class="nice2" onclick="$.fancybox.close()"/></center></p>';
             break;
         case 'evt_create_success':
-            $msg='<p><center><img src="img/base/tick.png" alt="" title="" /></center> <br />Votre sortie a bien été enregistrée, elle est actuellement en attente de validation par les modérateurs du site.<br /><center><input type="button" value="continuer" class="nice2" onclick="$.fancybox.close()"/></center></p>';
+            $msg='<p><center><img src="img/base/tick.png" alt="" title="" /></center> <br />Votre sortie a bien été enregistrée, elle est actuellement en attente de validation par le responsable de commission.<br /><center><input type="button" value="continuer" class="nice2" onclick="$.fancybox.close()"/></center></p>';
             break;
         case 'evt_create_success_newcycle':
             $msg='<p><center><img src="img/base/tick.png" alt="" title="" /></center> <br />Votre sortie a bien été enregistrée. Vous avez indiqué qu\'elle fait partie d\'un cycle. Vous pouvez d\'ores et déja ajouter une nouvelle sortie à ce cycle : nous avons préremplie la page ci-dessous pour vous faciliter la saisie. Si vous ne souhaitez pas entrer une nouvelle sortie maintenant, vous pouvez le faire à tout moment.<br /><center><input type="button" value="continuer" class="nice2" onclick="$.fancybox.close()"/></center></p>';
