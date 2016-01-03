@@ -112,7 +112,7 @@ if(admin()){
 							convert_urls : false,
 							remove_script_host : false,
 							theme_advanced_blockformats : "p,h1,h2,h3,h4,h5,ul,li",
-
+                                                        height: 500,
 							theme_advanced_resize_horizontal : false,
 							theme_advanced_resizing : true,
 							apply_source_formatting : true,

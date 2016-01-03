@@ -130,9 +130,11 @@ presidence();
                 <td <?php echo count($destination['bus'])>1 ? " width='30%' ":""; ?> >
                     <ul>
                         <?php foreach ($bus['ramassage'] as $point) { ?>
-                            <?php $cpuv = count($point['utilisateurs']['valide']); if ($cpuv>0) { ?>
-                                <li><?php echo $point['nom']; ?> à <?php echo display_time($point['date']); ?>&nbsp;&nbsp;[<?php echo $cpuv; ?> p.]</li>
-                            <?php } ?>
+                            <?php $cpuv = count($point['utilisateurs']['valide']); ?>
+                            <li>
+                                <?php echo $point['nom']; ?> à <?php echo display_time($point['date']); ?>
+                                <?php if ($cpuv>0) { ?>&nbsp;&nbsp;[<?php echo $cpuv; ?> p.]<?php } ?>
+                            </li>
                         <?php } ?>
                     </ul>
                 </td>

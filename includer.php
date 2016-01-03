@@ -21,7 +21,7 @@ else{
 	if($pageAdmin)			include 'pages/header-admin.php';
 	else					include 'pages/header.php';
 
-	echo '<div id="includer-stuff" style="padding:10px;">';
+	echo '<div id="includer-stuff">';
 	if(file_exists($p)) include $p;
 	else echo 'Fichier introuvable : '.$p;
 	echo '</div>

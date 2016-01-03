@@ -5,43 +5,28 @@
     // var necessaire : $destination
 
     if(sizeof($errTab) && (in_array ($_POST['operation'], array('dest_validate','dest_lock','dest_annuler','dest_mailer'))))
-        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>'; ?>
+        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
 
-    <?php
     if(!$destination || empty($destination) ) echo '<p class="erreur">Erreur : destination non définie</p>';
-    else {
-        $nInscritDestination = 0;
-        if (!isset($destination['bus'])) {
-            echo '<p class="erreur">pas de bus définit</p>';
-        }
-        else {
-            foreach ($destination['bus'] as $id_bus => $bus) {
-                if (!isset($bus['ramassage'])) {
-                    echo '<p class="erreur">pas de point de rammassage pour le bus</p>';
-                }
-                else {
-                    foreach ($bus['ramassage'] as $id_point => $point) {
-                        if ($point['utilisateurs']['valide']) {
-                            $nInscritDestination += count($point['utilisateurs']['valide']);
-                            $destination['bus'][$id_bus]['countUtilisateurs'] += count($point['utilisateurs']['valide']);
-                        }
-                    }
-                }
-            }
-        }
-    } ?>
-    <?php
-    if (!isset($destination['sorties'])) {
-        echo '<p class="erreur">pas de sortie associée à la destination</p>';
-    }
-    else {
-        foreach ($destination['sorties'] as $e => $evt) {
-            if ($evt['status_evt'] == 1) {
-                $depose[$evt['destination']['id_lieu_depose']][$evt['destination']['date_depose']][] = 'Gp'.$e;
-                $reprise[$evt['destination']['id_lieu_reprise']][$evt['destination']['date_reprise']][] = 'Gp'.$e;
-            }
-        }
-    } ?>
+    else{ ?>
+
+        <?php $nInscritDestination = 0; ?>
+        <?php if (!isset($destination['bus'])) { echo '<p class="erreur">pas de bus définit</p>'; } else { foreach ($destination['bus'] as $id_bus => $bus) { ?>
+            <?php if (!isset($bus['ramassage'])) { echo '<p class="erreur">pas de point de rammassage pour le bus</p>'; } else { foreach ($bus['ramassage'] as $id_point => $point) {  ?>
+                <?php if ($point['utilisateurs']['valide']) {
+                    $nInscritDestination += count($point['utilisateurs']['valide']);
+                    $destination['bus'][$id_bus]['countUtilisateurs'] += count($point['utilisateurs']['valide']);
+                } ?>
+            <?php } } ?>
+        <?php } } ?>
+        <?php if (!isset($destination['sorties'])) { echo '<p class="erreur">pas de sortie associée à la destination</p>'; } else { foreach ($destination['sorties'] as $e => $evt) { ?>
+        <?php if ($evt['status_evt'] == 1) { ?>
+            <?php
+            $depose[$evt['destination']['id_lieu_depose']][$evt['destination']['date_depose']][] = 'Gp'.$e;
+            $reprise[$evt['destination']['id_lieu_reprise']][$evt['destination']['date_reprise']][] = 'Gp'.$e;
+            ?>
+            <?php } ?>
+        <?php } } ?>
 
         <?php include (INCLUDES.'dest'.DS.'admin_status.php'); ?>
 

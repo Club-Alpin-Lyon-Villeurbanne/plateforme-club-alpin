@@ -1,6 +1,0 @@
-diff a/css/base.css b/css/base.css	(rejected hunks)
-@@ -3,3 +4,4 @@
-+/*  Loïc Pennamen  */
- 
- #bodytinymce_user{ overflow:auto; margin:0; padding:5px 3px;  }
- 

@@ -1,6 +1,6 @@
 $().ready(function() {
 	
-	// débug ie8 et older : placeholders
+	// dÃ©bug ie8 et older : placeholders
 	if($.browser.msie && $.browser.version < 9){
 		$('input[type!=password],textarea').each(function(){
 			var phval=$(this).attr('placeholder');
@@ -41,7 +41,8 @@ $().ready(function() {
 		//'height'		:	'98%',
 		'minHeight'     :   '98%',
 		'speedIn'		:	400, 
-		'speedOut'		:	200
+		'speedOut'		:	200,
+		'autoSize' : false
 	});
 	$("a.fancyframeadmin").fancybox({
 		'hideOnOverlayClick':false,

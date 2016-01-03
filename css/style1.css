@@ -41,7 +41,7 @@ a.mini, .mini a{font-weight:100; color:black;}
 .article-tools .nice2{padding:1px 5px !important; margin:0 2px 2px 0;}
 .article-tools-valid{padding:5px 10px; background:white; margin:0 0 5px 0;}
 .article-tools-valid .nice2{padding:1px 5px !important; margin:0 2px 2px 0;}
-#includer-stuff{background:#f7f8fc; text-align:left;}
+#includer-stuff{background:#f7f8fc; text-align:left;padding:10px;float:left;}
 #includer-stuff h1{font-size:25px; padding:5px 0 10px 0;}
 #includer-stuff .tiers{float:left; width:32%; padding:5px 10px 5px 0;}
 #includer-stuff .tiers.clear{clear:both}

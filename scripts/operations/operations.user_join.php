@@ -2,6 +2,7 @@
 
 
 
+    // Destination : ai-je choisi mon moyen de transport ?
     $is_destination = false;
     if ($_POST['id_destination']) {
         $is_destination = true;
@@ -12,17 +13,22 @@
             $id_bus_lieu_destination = intval($_POST['id_bus_lieu_destination']);
     }
 
-
-	$id_evt=intval($_POST['id_evt']);
-	$id_user=intval($_SESSION['user']['id_user']);
+    // Filiations
 	if($_POST['filiations']=='on')	$filiations=true;
 	else							$filiations=false;
 
+    // Evenement défini et utilisateur aussi
+	$id_evt=intval($_POST['id_evt']);
+	$id_user=intval($_SESSION['user']['id_user']);
 	if(!$id_user or !$id_evt) $errTab[]="Erreur de données";
+
+    // CGUs
 	if($_POST['confirm']!='on') $errTab[]="Merci de cocher la case &laquo; J'ai lu les conditions...&raquo;";
+
 
 	if(!sizeof($errTab)){
 
+        // Bénévole
 		if($_POST['jeveuxetrebenevole']=='on') $role_evt_join='benevole';
 		else $role_evt_join='inscrit';
 
@@ -64,7 +70,10 @@
 		$row = $result->fetch_row();
 		if($row[0]) $errTab[]="Cette sortie a deja demarrée";
 
+        // destination : 
         if ($is_destination) {
+            
+            // Inscriptions ouvertes ?
             $inscriptions_status = inscriptions_status_destination($id_destination);
             if ($inscriptions_status['status'] != true) $errTab[]="Les inscriptions ne sont pas possibles";
 
@@ -73,6 +82,8 @@
                 $nbp = nb_places_restante_bus_ramassage($id_bus_lieu_destination);
                 if ($nbp <= 0) $errTab[]="Ce bus est désormais plein. Merci de choisir un autre lieu de ramassage.";
             }
+            
+            
         } else {
             // verification du timing de la sortie : inscriptions
             $req="SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND join_start_evt > $p_time LIMIT 1";
@@ -81,6 +92,8 @@
             if($row[0]) $errTab[]="Les inscriptions ne sont pas encore ouvertes";
         }
 
+        
+        // Doit on faire une mise à jour ?
         $update = false;
 
 		// verification de l'existence de cette demande

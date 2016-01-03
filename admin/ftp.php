@@ -77,7 +77,18 @@ else{
 						global $p_ftp_masquer;
 						$one=false; // booleen : un dossier trouve au moins
 						$opendir=opendir($dir);
-						while($file=readdir($opendir)){
+                                                
+                                                // Patch CRI pour affichage des dossiers dans ordre alphabétique
+                                                // 19/09/2015
+                                                $j=0;// compte des fichiers
+                                                while($f = readdir($opendir)){
+                                                    $files[$j] = $f;
+                                                    $j++;
+                                                }
+                                                sort($files);
+                                                
+                                                foreach($files as $file){
+						//while($file=readdir($opendir)){
 							// c'est un dossier, non masqué
 							if(is_dir($dir.$file) && !in_array($file, $p_ftp_masquer)){
 								$one=true;

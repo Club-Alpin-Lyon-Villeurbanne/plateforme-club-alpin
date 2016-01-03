@@ -196,7 +196,7 @@
 
     }
 
-print_r($queries);
+// print_r($queries);
 
     include SCRIPTS.'connect_mysqli.php';
     foreach ($queries as $query) {

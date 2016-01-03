@@ -165,8 +165,8 @@ if($evt['cancelled_evt']!='1'){
                             echo '<tr class="status'.($row['status_evt_join']).'" style="color:gray; font-size:10px;">';
 
                                     echo '<td>'
-                                        .strtoupper(html_utf8($row['lastname_user'])).', '
-                                        .ucfirst(strtolower(html_utf8($row['firstname_user']))).'<br />'
+                                        .html_utf8(strtoupper($row['lastname_user'])).', '
+                                        .html_utf8(ucfirst(strtolower($row['firstname_user']))).'<br />'
                                         .userlink($row['id_user'], $row['nickname_user']);
                                     // expiré
                                     if($row['doit_renouveler_user']){
@@ -310,7 +310,7 @@ if($evt['cancelled_evt']!='1'){
                                     if ($evt['repas_restaurant'] == 1) {
                                         echo '<td><img src="img/base/'.($row['is_restaurant'] == '1' ? 'resto-oui.png' : ($row['is_restaurant'] == '0' ? 'resto-non.png' :'resto-nsp.png')).'" title="'.($row['is_restaurant'] == '1' ? 'Oui' : ($row['is_restaurant'] == '0' ? 'Non' :'NSP')).'" /></td>';
                                     }
-                                    if ($destination) {print_r($tmp);
+                                    if ($destination) { 
                                         echo '<td>'.((is_null($row['is_covoiturage']) && is_null($row['id_bus_lieu_destination']))?'<img src="img/base/error.png" title="Mettre à jour les préférences" width="16px">':($row['is_covoiturage']?'<img src="img/voiture.png" title="Covoiturage" width="16px">':'')).'</th>';
                                     }
                                 echo '</tr>';

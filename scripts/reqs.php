@@ -897,7 +897,6 @@ elseif($p1=='creer-une-sortie'){
 // PAGE SORTIE
 elseif($p1=='sortie' || $p1=='destination' || $p1=='feuille-de-sortie'){
 
-
     $evt = $dest = false;
     $errPage = false; // message d'erreur spécifique à la page courante si besoin
 
@@ -920,6 +919,7 @@ elseif($p1=='sortie' || $p1=='destination' || $p1=='feuille-de-sortie'){
     }
 
     if ($id_evt) {
+
 
         // selection complete, non conditionnelle par rapport au statut
         $req="SELECT
@@ -945,7 +945,8 @@ elseif($p1=='sortie' || $p1=='destination' || $p1=='feuille-de-sortie'){
 
             // Cette sortie fait partie d'une destination ?
             $is_dest = is_sortie_in_destination($id_evt);
-            if ($is_dest) {
+            // sortie de destination
+            if ($is_dest) { 
                 $destination = get_destination($is_dest, true);
                 if (is_destination_status($destination, 'publie') == 0) {
                     $on_peut_voir = false;
@@ -956,17 +957,19 @@ elseif($p1=='sortie' || $p1=='destination' || $p1=='feuille-de-sortie'){
                 // ou je suis responsable de la destination
                 if ($destination['id_user_who_create'] == $_SESSION['user']['id_user']
                         || $destination['id_user_responsable'] == $_SESSION['user']['id_user']
-                        || $destination['id_user_adjoint'] == $_SESSION['user']['id_user'] ) {
+                        || $destination['id_user_adjoint'] == $_SESSION['user']['id_user'] 
+                ) {
                     $on_peut_voir = true;
                 }
-            }
+            } 
 
             // on a le droit de voir cette page ?
             if(
-                $on_peut_voir && ($handle['status_evt']==1 // publiée
+                ($on_peut_voir && ($handle['status_evt']==1)) // publiée
                 || (allowed('evt_validate') && $_GET['forceshow']) // ou mode validateur
+                || (allowed('evt_validate_all') && $_GET['forceshow']) // ou mode validateur
                 ||  $handle['user_evt']==$_SESSION['user']['id_user'] // ou j'en suis l'auteur ? QUID de l'encadrant ?
-                )){
+            ){
                 $current_commission = $handle['code_commission'];
 
                 // Groupe de niveau

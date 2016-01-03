@@ -35,8 +35,16 @@ else{
 	}
 
 	// imprimer la fiche de sortie
-    $ids_encadrants = get_encadrants($id_evt, true);
-	if((allowed('evt_print', 'commission:'.$current_commission) || in_array($_SESSION['user']['id_user'], $ids_encadrants) ) && $evt['cancelled_evt']!='1'){
+	$ids_encadrants = get_encadrants($id_evt, true);
+	// Correctif CRI 25/09/2015
+	// ajout de is_array($ids_encadrants) && 
+	// Car affichage warning sur certaines sorties car personne consultant la page pas encadrant
+	if(
+        (
+            allowed('evt_print', 'commission:'.$current_commission) 
+            || ( is_array($ids_encadrants) && in_array($_SESSION['user']['id_user'], $ids_encadrants) ) 
+        ) && $evt['cancelled_evt']!='1'
+    ){
 		?>
 		<!--
 		<a href="javascript:void(0)" onclick="window.print()" title="Imprimer cette fiche" class="nice2 noprint">
@@ -487,10 +495,41 @@ else{
 
 				echo '</table>';
 			}
+            
 
             // Patch le 23/08/15 car pas de bloquage des inscriptions internet
             // lorsque le nombre de places disponibles via internet = 0
-            if ($nPlacesRestantesOnline>0){
+            $acces_au_module = array();
+            $statut_access = array(
+                'inscrit', 
+                'manuel', 
+                'encadrant', 
+                'coencadrant', 
+                'benevole', 
+                'enattente'
+            );
+            foreach ($statut_access as $statut_acces) {
+                if (sizeof($evt['joins'][$statut_acces])) {
+                    foreach($evt['joins'][$statut_acces] as $user_access) {
+                        $acces_au_module[] = $user_access['id_user'];
+                    }
+                }
+            }
+            
+            /*
+            if ($_SERVER['REMOTE_ADDR'] == '176.145.21.240') {
+                echo '<pre>';
+                print_r($evt['joins']);
+                print_r($_SESSION);
+                print_r($acces_au_module);
+                echo '</pre>';
+            } */
+            
+            
+            if (
+                $nPlacesRestantesOnline > 0 
+                    OR in_array($_SESSION['user']['id_user'] , $acces_au_module)
+            ){
                 include(INCLUDES.'evt'.DS.'user_inscription.php');
             } else {
                 echo "<p>Le nombre de places disponibles à la réservation depuis internet est atteint.</p>";

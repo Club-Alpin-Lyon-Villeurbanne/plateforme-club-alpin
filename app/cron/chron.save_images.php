@@ -35,7 +35,7 @@
 		$nb_copies=0;
 
 		echo "nombre d'images : ".$nb_matches."<br />\n";
-		print_r($matches);
+		// print_r($matches);
 		echo "<br />\n";
 
 /*
