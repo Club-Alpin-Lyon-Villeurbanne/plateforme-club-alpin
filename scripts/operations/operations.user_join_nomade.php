@@ -63,7 +63,7 @@
 
 
 			$req="INSERT INTO caf_user(id_user, email_user, mdp_user, cafnum_user, firstname_user, lastname_user, nickname_user, created_user, birthday_user, tel_user, tel2_user, adresse_user, cp_user, ville_user, pays_user, civ_user, moreinfo_user, auth_contact_user, valid_user ,cookietoken_user, manuel_user, nomade_user, nomade_parent_user)
-							VALUES (NULL ,  '',  '',  '$cafnum_user',  '$firstname_user',  '$lastname_user',  '$nickname_user',  '$p_time',  NULL,  '$tel_user',  '$tel2_user',  '',  '',  '',  '',  '$civ_user',  '',  'none',  '1',  '',  '0',  '1',  '".intval($_SESSION['user']['id_user'])."' )";
+							VALUES (NULL ,  '',  '',  'N_$cafnum_user',  '$firstname_user',  '$lastname_user',  '$nickname_user',  '$p_time',  NULL,  '$tel_user',  '$tel2_user',  '',  '',  '',  '',  '$civ_user',  '',  'none',  '1',  '',  '0',  '1',  '".intval($_SESSION['user']['id_user'])."' )";
 			if(!$mysqli->query($req)) $errTab[]="Erreur SQL :".$mysqli->error;
 			else{
 				$id_user=$mysqli->insert_id;
