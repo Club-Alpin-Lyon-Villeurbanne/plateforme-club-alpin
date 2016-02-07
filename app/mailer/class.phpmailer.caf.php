@@ -112,13 +112,24 @@ class CAFPHPMailer extends PHPMailer {
 		$this->MsgHTML($this->content_full);
 
 		$nb_recipients=0;
-		error_log ("PHPMAILER : nb_recipients=".count($this->recipients));
+		$log_coupure_mail = false;
+		# Retiré par CRI le 06/12/2015
+		# Inutile de logger le nombre de destinataires si < 50. Surtout si tout est Ok.
+		# error_log ("PHPMAILER : nb_recipients=".count($this->recipients));
 		
         if (is_array($this->recipients)) {
             foreach ($this->recipients as $address=>$name){
-                error_log ("PHPMAILER : TO=".$address);
-                parent::AddBCC($address, $name);
-                $nb_recipients++;
+                
+				/*
+				 * CRI 16/01/2016 - enregistrement dans les logs que si $address ou $name vide
+				 * Inutile de le faire pour les couples $address / $name valides
+				*/
+				if ( empty($address) || empty($name) ){
+					error_log ("PHPMAILER : TO=".$address);
+				} else {
+					parent::AddBCC($address, $name);
+					$nb_recipients++;
+				}
 
                 if($nb_recipients > 50){
                     # trop de destinataires on coupe le mail
@@ -126,6 +137,11 @@ class CAFPHPMailer extends PHPMailer {
                     # RAZ destinataires
                     parent::ClearAddresses();
                     $nb_recipients=0;
+					# CRI 16/01/2016 - On signal de l'on a coupé le mail
+					if (!$log_coupure_mail){
+						error_log ("PHPMAILER : Destinataires > 50 - nb_recipients=".count($this->recipients));
+						$log_coupure_mail = true;
+					}
                 }
             }
 		}
