@@ -143,9 +143,7 @@ foreach($fileTab as $file){
 					$ville_user=$mysqli->real_escape_string($line[16]);
 					$civ_user=$mysqli->real_escape_string($line[8]);
 					$doit_renouveler_user='0';
-					// $date_adhesion_user='';
-					$tab2=explode('-', $line[7]);
-					$date_adhesion_user=mktime(1, 0, 0, $tab2[1], $tab2[2], $tab2[0]);
+					// $date_adhesion_user=''; # calculé plus loin avec des tests supplémentaires
 					$alerte_renouveler_user='0';
 					$nickname_user = str_replace(array(' ', '-', '\''), '', ucfirst (strtolower(normalizeChars($firstname_user))) . substr(strtoupper($lastname_user), 0, 1));
                     
