@@ -435,11 +435,12 @@ else{
 
 			// participants
 			$nInscritsHorsEncadrement	=	sizeof($evt['joins']['inscrit']) + sizeof($evt['joins']['benevole']) + sizeof($evt['joins']['manuel']);
-			$nInscritsTotal = $nInscritsHorsEncadrement + sizeof($evt['joins']['benevole']) + sizeof($evt['joins']['coencadrant']) + sizeof($evt['joins']['encadrant']);
+			$nInscritsTotal = $nInscritsHorsEncadrement + sizeof($evt['joins']['coencadrant']) + sizeof($evt['joins']['encadrant']);
 			$nPlacesRestantesOnline		=	$evt['join_max_evt'] - sizeof($evt['joins']['inscrit']) - sizeof($evt['joins']['benevole']);
 			$nEnAttente					=	sizeof($evt['joins']['enattente']);
 
 			if($nPlacesRestantesOnline < 0)	$nPlacesRestantesOnline =0;
+			if($nPlacesRestantesOnline > ($evt['ngens_max_evt'] - $nInscritsTotal) )	$nPlacesRestantesOnline = 0;
 
 			echo '<hr />'
 			.'<ul class="nice-list">'
@@ -452,8 +453,8 @@ else{
 			.'<p>
 				<span class="temoin-places-dispos '.($nPlacesRestantesOnline>0?'on':'off').'"></span>
 				<span  style="font-size:14px; font-family:DINBold; color:#666666">
-					'.$nInscritsHorsEncadrement.' PARTICIPANT'.($nInscritsHorsEncadrement>1?'S':'').' INSCRIT'.($nInscritsHorsEncadrement>1?'S':'').'
-					SUR  '.$evt['ngens_max_evt'].' PLACE'.($evt['ngens_max_evt']>1?'S':'').' AU TOTAL ('.($evt['ngens_max_evt']>0?sprintf("%2d%%", (100*$nInscritsHorsEncadrement/$evt['ngens_max_evt'])):'0').')
+					'.$nInscritsTotal.' PARTICIPANT'.($nInscritsTotal>1?'S':'').' INSCRIT'.($nInscritsTotal>1?'S':'').'
+					SUR  '.$evt['ngens_max_evt'].' PLACE'.($evt['ngens_max_evt']>1?'S':'').' AU TOTAL ('.($evt['ngens_max_evt']>0?sprintf("%2d%%", (100*$nInscritsTotal/$evt['ngens_max_evt'])):'0').')
 				</span><br />
 				'.$nPlacesRestantesOnline.' place'.($nPlacesRestantesOnline>1?'s':'').' restante'.($nPlacesRestantesOnline>1?'s':'').' pour les inscriptions en ligne
 				'.($nEnAttente ? ' - '.$nEnAttente.' inscriptions en attente de confirmation' :'').'
