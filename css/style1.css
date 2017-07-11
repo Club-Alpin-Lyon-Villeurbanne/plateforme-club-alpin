@@ -213,6 +213,7 @@ label.in_front {margin-top:15px; display:block; float:none; width:93%; backgroun
 .right-light-in{width:270px; margin:10px 0 20px 25px; background:#f0f4f7; min-height:25px;}
 .right-light-in h1{font-size:16px; text-transform:none; font-family:DINBold; line-height:18px; padding:10px 0 15px 0;}
 .right-light-in h2{font-size:14px; text-transform:none; font-family:DINBold; line-height:16px; padding:7px 0 6px 0;}
+.right-light .partenaires-h1{font-family:DINBold; font-weight:100; color:#000; font-size:18px; padding:3px 0 10px 40px; margin:3px 0 10px 0;background:url(../img/partenaires.png) no-repeat top left; border-bottom:1px solid #cccccc;text-transform:uppercase;}
 .right-green{}
 .right-green-in{width:270px; margin:5px 0 20px 25px; background:#8cc63e; min-height:25px; color:#000;}
 .right-green-in hr{border-color:#c1df98;}
@@ -369,6 +370,8 @@ tr.status-1 {border-top:1px solid #d3d3d3;background-image:url(../img/red-overla
 #feuille-de-sortie table{margin:20px 0; width:900px;}
 #feuille-de-sortie table td, #feuille-de-sortie table th{border:1px solid gray; padding:5px 10px; font-size:12px; font-family:Arial;}
 #feuille-de-sortie table th{background:#e7e7e7;}
+#slides{display:none;text-align: center;}
+#slides img{max-width:250px;}
 .niveau  {position:relative; border:1px solid #ccc; padding:5px;margin:5px;}
 .niveau .picto {display: block;float: left;}
 .niveau .droite {display: block;float: left;padding:10px;}

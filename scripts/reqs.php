@@ -1452,6 +1452,33 @@ elseif(($p1=='adherents' && allowed('user_see_all')) || ($p1=='admin-users' && a
 	}
 }
 
+// GESTION PARTENAIRES
+elseif($p1=='admin-partenaires' && admin()){
+	$partenairesTab=array();
+	$show='all';
+	// fonctions disponibles
+	if(in_array($_GET['show'], array('all','public','private','enabled','disabled'))) {
+		 $show=$_GET['show'];
+	}
+	$show = $mysqli->real_escape_string($show);
+
+	$req="SELECT part_id, part_name, part_url, part_desc, part_image, part_type, part_enable, part_order, part_click
+		FROM caf_partenaires "
+		.($show=='private'?' WHERE part_type=1 ':'')
+		.($show=='public'?' WHERE part_type=2 ':'')
+		.($show=='enabled'?' WHERE part_enable=1 ':'')
+		.($show=='disabled'?' WHERE part_enable != 1':'')
+		.' ORDER BY part_order, part_type, part_name ASC
+		LIMIT 1000';
+
+	$handleSql=$mysqli->query($req);
+	while($row = $handleSql->fetch_assoc()){
+		$partenairesTab[]=$row;
+	}
+
+//	print_r($partenairesTab);exit;
+}
+
 // FICHE USER
 elseif($p1=='user-full'){
 	// id du profil

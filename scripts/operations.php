@@ -27,6 +27,11 @@ if($p1=='user-confirm'){
 	include ($operationsDir.'operations.user-confirm.php');
 }
 
+// GOTO
+if($p1=='goto' && $p2 && $p3){
+	include ($operationsDir.'operations.goto.php');
+}
+
 // COMMISSIONS : ACTIVER / DESACTIVER
 if($_POST['operation']=='commission_majvis' && user()){
 	include ($operationsDir.'operations.commission_majvis.php');
@@ -185,6 +190,16 @@ if($_POST['operation']=='comment'){
 // ARTICLES : SUPPRIMER UN COMMENTAIRE
 if($_POST['operation']=='comment_hide'){
 	include ($operationsDir.'operations.comment_hide.php');
+}
+
+// PARTENAIRE : EDIT or ADD
+if($_POST['operation']=='partenaire_edit' || $_POST['operation']=='partenaire_add'){
+	include ($operationsDir.'operations.partenaire_edit.php');
+}
+
+// PARTENAIRE : DELETE
+if($_POST['operation']=='partenaire_delete' ){
+	include ($operationsDir.'operations.partenaire_delete.php');
 }
 
 // USER : DELETE PROFIL IMG

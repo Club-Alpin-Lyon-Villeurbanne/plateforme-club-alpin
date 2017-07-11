@@ -86,6 +86,8 @@ $p_tsp_max_pour_rappel_redac_cr = strtotime("midnight"); // cette nuit à minuit
 // nombre de versions des contenus à garder dans l'historique (entier positif)
 $p_nmaxversions=5;
 
+// PARTENAIRES
+$p_showPartenairesSlider = '';
 
 // modules activés
 $p_modules=array();

@@ -188,6 +188,9 @@ $min_year = intval(date("Y"))-3;
 			// PRESENTATION DE LA COMMISSINO
 			inclure('presentation-'.($current_commission?$current_commission:'general'),'right-light-in');
 
+			// SLIDER PARTENAIRES
+			include(INCLUDES.'droite-partenaires.php');
+
 			// RECHERCHE
 			include(INCLUDES.'recherche.php');
 			?>
