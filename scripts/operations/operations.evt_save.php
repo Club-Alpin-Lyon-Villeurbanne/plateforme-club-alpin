@@ -34,15 +34,15 @@ if(!sizeof($errTab)){
     if ($tarif_evt == '0.00' || empty($tarif_evt)) {
         $tarif_evt = 'NULL';
     }
-    if (!empty($tarif_evt) && !is_numeric($tarif_evt)) $errTab[]="Erreur dans le champ 'Tarif du repas' : ".$tarif_restaurant." n'est pas une valeur numérique";
+    if (!empty($tarif_restaurant) && !is_numeric($tarif_restaurant)) $errTab[]="Erreur dans le champ 'Tarif du repas' : ".$tarif_restaurant." n'est pas une valeur numérique";
     if ($tarif_restaurant == '0.00' || empty($tarif_restaurant)) {
         $tarif_restaurant = 'NULL';
     }
-    if (!empty($tarif_evt) && !is_numeric($tarif_evt)) $errTab[]="Erreur dans le champ 'Distance' : ".$distance_evt." n'est pas une valeur numérique";
+    if (!empty($distance_evt) && !is_numeric($distance_evt)) $errTab[]="Erreur dans le champ 'Distance' : ".$distance_evt." n'est pas une valeur numérique";
     if ($distance_evt == '0.00' || empty($distance_evt)) {
         $distance_evt = 'NULL';
     }
-    if (!empty($tarif_evt) && !is_numeric($tarif_evt)) $errTab[]="Erreur dans le champ 'Dénivellé' : ".$denivele_evt." n'est pas une valeur numérique";
+    if (!empty($denivele_evt) && !is_numeric($denivele_evt)) $errTab[]="Erreur dans le champ 'Dénivellé' : ".$denivele_evt." n'est pas une valeur numérique";
     if ($denivele_evt == '0' || empty($denivele_evt)) {
         $denivele_evt = 'NULL';
     }
