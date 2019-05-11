@@ -408,6 +408,12 @@
             <input type="text" name="tarif_evt" class="type2" value="<?php echo inputVal('tarif_evt', '');?>" placeholder="ex : 35.50 " />€
         </div>
         <br style="clear:both" />
+        
+        <div style="float:left; padding:0 20px 5px 0;">
+            <input type="checkbox" name="cb_evt" <?php if($_POST['cb_evt']==1 OR $_POST['cb_evt']=='on') echo 'checked="checked"'; ?>/> paiement en ligne possible
+        </div>
+        <br style="clear:both" />
+        
         <?php
         inclure('infos-tarifs', 'mini');
         ?>

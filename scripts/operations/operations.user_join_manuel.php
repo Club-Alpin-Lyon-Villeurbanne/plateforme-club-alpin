@@ -63,6 +63,16 @@
 
 			$id_user=intval($_POST['id_user'][$i]);
 			$role_evt_join=stripslashes($_POST['role_evt_join'][$i]);
+			
+			if ($_POST['is_cb']) {
+                $is_cb = $_POST['is_cb'][$i];
+                if      ($is_cb == '1') $is_cb = 1;
+                elseif  ($is_cb == '0') $is_cb = 0;
+                else                    $is_cb = 'NULL';
+            } else {
+                $is_cb = 'NULL';
+            }
+            
             if ($_POST['is_restaurant']) {
                 $is_restaurant = $_POST['is_restaurant'][$i];
                 if      ($is_restaurant == '1') $is_restaurant = 1;
@@ -111,11 +121,11 @@
 				$req="INSERT INTO ".$pbd."evt_join(
 				            id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join,
 				            lastchange_when_evt_join, lastchange_who_evt_join,
-				            is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
+				            is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
 					    VALUES (
 					        NULL ,		$status_evt_join, '$id_evt',    '$id_user',  '$role_evt_join', $p_time,
 					        $p_time, 			".intval($_SESSION['user']['id_user']).",
-					        $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage );";
+					        $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage );";
 				if(!$mysqli->query($req)) {
 					$errTab="Erreur SQL : ".$mysqli->error;
 					error_log($mysqli->error);
@@ -126,6 +136,7 @@
                       unset($_POST['firstname_user'][$i]);
                       unset($_POST['nickname_user'][$i]);
                       unset($_POST['role_evt_join'][$i]);
+                      unset($_POST['is_cb'][$i]);
                       unset($_POST['is_restaurant'][$i]);
                       unset($_POST['id_bus_lieu_destination'][$i]);
                 }

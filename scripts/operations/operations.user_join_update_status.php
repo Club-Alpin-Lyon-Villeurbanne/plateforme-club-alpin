@@ -30,6 +30,32 @@
 	$row = $result->fetch_row();
 	if($row[0]>0) $suis_auteur=true;
 
+    // Informations sur l'événement
+    $req="SELECT id_evt, titre_evt, tsp_evt, tarif_evt FROM caf_evt WHERE id_evt=$id_evt LIMIT 1";
+    $result = $mysqli->query($req);
+	$row = $result->fetch_row();
+	if($row) {
+		$evtId = html_utf8($row[0]);
+		$evtTitre = html_utf8($row[1]);
+		$evtDate = html_utf8(date("d-m-Y", $row[2]));
+		$evtTarif = html_utf8($row[3]);
+	}
+                                            
+    // Informations sur l'encadrant
+    $req="SELECT B.firstname_user, B.lastname_user, B.email_user
+			FROM caf_evt_join AS A
+			LEFT JOIN caf_user AS B
+				ON A.user_evt_join = B.id_user
+			WHERE A.evt_evt_join=$id_evt
+			AND (A.role_evt_join LIKE 'encadrant')
+			LIMIT 1";
+	$result = $mysqli->query($req);
+	$row = $result->fetch_row();
+	if($row) {
+		$encName=html_utf8($row[0]." ".$row[1]);
+		$encEmail=html_utf8($row[2]);
+	}
+	
 
 	if(!allowed('evt_join_doall') && !allowed('evt_join_notme') && !$suis_encadrant && !$suis_auteur)
 		$errTab[] = "Opération interdite : Il semble que vous ne soyez pas autorisé à modifier les inscrits.";
@@ -75,13 +101,14 @@
 				}
 
 				// récupération de la valeur actuelle, savoir si on la change ou pas
-				$req="SELECT status_evt_join, user_evt_join, affiliant_user_join, role_evt_join, evt_evt_join FROM caf_evt_join WHERE id_evt_join=$id_evt_join ORDER BY tsp_evt_join DESC LIMIT 1 ";
+				$req="SELECT status_evt_join, user_evt_join, affiliant_user_join, role_evt_join, evt_evt_join, is_cb FROM caf_evt_join WHERE id_evt_join=$id_evt_join ORDER BY tsp_evt_join DESC LIMIT 1 ";
 
 				$result=$mysqli->query($req);
 
 				$status_evt_join=0;
 				$user_evt_join=0;
 				$evt_evt_join=0;
+				$is_cb=0;
 				$isFiliation=false; // si cette inscription a été enregistrée par un parent : autre e-mail de contact (voir plus loin)
 
 				if($row=$result->fetch_assoc()){
@@ -90,6 +117,7 @@
 					$evt_evt_join=intval($row['evt_evt_join']);
 					$affiliant_user_join=intval($row['affiliant_user_join']);
 					$role_evt_join=$row['role_evt_join'];
+					$is_cb=$row['is_cb'];
 
 					if($affiliant_user_join > 0) $isFiliation = true;
 				}
@@ -134,7 +162,7 @@
 									$toMail='';
 									$toName='';
 									$isNomade=false;
-									$req="SELECT email_user, firstname_user, lastname_user, civ_user, nomade_user, tel_user, tel2_user FROM caf_user WHERE id_user=$user_evt_join LIMIT 1";
+									$req="SELECT email_user, firstname_user, lastname_user, civ_user, nomade_user, tel_user, tel2_user, cafnum_user FROM caf_user WHERE id_user=$user_evt_join LIMIT 1";
 									$result=$mysqli->query($req);
 									while($row=$result->fetch_assoc()){
 										$toMail=$row['email_user'];
@@ -142,6 +170,7 @@
 										$toNameFull=$row['firstname_user'].' '.$row['lastname_user'];
 										$toTel=$row['tel_user'].' '.($row['tel2_user']?' - '.$row['tel2_user'] :'');
 										$isNomade=intval($row['nomade_user']);
+										$toCafNum=$row['cafnum_user'];
 									}
 
 									// nomade ?
@@ -246,6 +275,86 @@
 											if(!$mail->Send()){
 												$errTabMail[]="Échec à l'envoi du mail à ".html_utf8($toMail).". Plus d'infos : ".($mail->ErrorInfo);
 											}
+											
+											
+											// paiement en ligne
+											// envoi d'un email pour indiquer la validation par l'encadrant d'un participant avec paiement en ligne
+											if($is_cb==1){
+												$toMail=$p_email_paiement;
+												
+												// contenu
+												if($status_evt_join_new==1){
+													$subject='Inscription avec paiement en ligne validée';
+													$content_main="<h2>$subject</h2>
+														<p>
+															Bonjour,<br />
+															Un participant ayant payé en ligne vient d'être <span color='green'>validé</span> à la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;.
+														</p>
+														<p>
+															Merci d'aller valider le paiement sur $p_url_validation_paiement.
+														</p>
+														<p>
+															Informations supplémentaires :<br />
+															<ul>
+																<li>Transaction : $evtName du $evtDate - $toNameFull</li>
+																<li>Sortie : $evtName du $evtDate</li>
+																<li>Montant : $evtTarif</li>
+																<li>Adhérent : $toNameFull / $toCafNum</li>
+																<li>Endadrant : $encName / $encEmail</li>
+															</ul>
+															<br />
+															Bonne journée.
+														</p>
+													";
+												}
+												
+												if($status_evt_join_new==2){
+													$subject='Inscription avec paiement en ligne refusée';
+													$content_main="<h2>$subject</h2>
+														<p>
+															Bonjour,<br />
+															Un participant ayant payé en ligne vient d'être <span color='red'>refusé</span> à la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;.
+														</p>
+														<p>
+															Merci d'aller annuler le paiement sur $p_url_validation_paiement.
+														</p>
+														<p>
+															Informations supplémentaires :<br />
+															<ul>
+																<li>Transaction : $evtName du $evtDate - $toNameFull</li>
+																<li>Sortie : $evtName du $evtDate</li>
+																<li>Montant : $evtTarif</li>
+																<li>Adhérent : $toNameFull / $toCafNum</li>
+																<li>Endadrant : $encName / $encEmail</li>
+															</ul>
+															<br />
+															Bonne journée.
+														</p>
+													";
+												}
+												
+												
+
+												$content_header="";
+												$content_footer="";
+
+												$mail=new CAFPHPMailer(); // defaults to using php "mail()"
+
+												$mail->SetFrom($p_noreply, $p_sitename);
+												$mail->Subject  = $subject;
+												$mail->setMailBody($content_main);
+												$mail->setMailHeader ($content_header);
+												$mail->setMailFooter ($content_footer);
+												$mail->AddAddress($toMail, $toName);
+
+												// débug local
+												if($_SERVER['HTTP_HOST'] == '127.0.0.1')	$mail->IsMail();
+
+												if(!$mail->Send()){
+													$errTabMail[]="Échec à l'envoi du mail à ".html_utf8($toMail).". Plus d'infos : ".($mail->ErrorInfo);
+												}
+											}
+											// fin paiement en ligne
 										}
 									}
 								}

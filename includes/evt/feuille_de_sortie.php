@@ -222,6 +222,7 @@ presidence();
         <th>AGE</th>
         <th>TÉL. PERSONNEL</th>
         <th>TÉL. <abbr title="En cas d'urgence">I.C.E</abbr></th>
+        <?php if($evt['cb_evt']=='1'){ ?><th><abbr title="Paiement en ligne"><img src="img/base/cb-oui.png"/></abbr></th><?php } ?>
         <?php if($evt['repas_restaurant']=='1'){ ?><th><abbr title="Restaurant"><img src="img/base/resto-oui.png"/></abbr></th><?php } ?>
         <?php if ($destination) { ?><th><abbr title="Transport"><img src="img/bus.png" title="bus" width="14px"  />&nbsp;<img src="img/voiture.png" title="covoiturage" width="14px" /></abbr></th><?php } ?>
     </tr>
@@ -252,6 +253,7 @@ presidence();
                 <td><?php echo getYearsSinceDate($tmp['birthday_user']); ?></td>
                 <td><?php echo html_utf8($tmp['tel_user']); ?></td>
                 <td><?php echo html_utf8($tmp['tel2_user']); ?></td>
+                <?php if($evt['cb_evt']=='1'){ ?><td><?php if ($tmp['is_cb'] == '1') {echo 'OUI';} elseif ($tmp['is_cb'] == '0') {echo '-';} else {echo '<small>NSP</small>';} ?></td><?php } ?>
                 <?php if($evt['repas_restaurant']=='1'){ ?><td><?php if ($tmp['is_restaurant'] == '1') {echo 'OUI';} elseif ($tmp['is_restaurant'] == '0') {echo '-';} else {echo '<small>NSP</small>';} ?></td><?php } ?>
                 <?php if($destination){ ?><td><?php if ($tmp['is_covoiturage'] == null) { echo '<img src="img/base/error.png" title="Non renseigné !" width="12px" />'; } elseif ($tmp['is_covoiturage'] == '1') {echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="img/voiture.png" title="covoiturage" width="12px" />';} elseif ($tmp['id_bus_lieu_destination'] > 0) {echo '<img src="img/bus.png" title="bus" width="12px" /> '.$busses[$tmp['id_bus_lieu_destination']]['short'];} else {echo '<small>NSP</small>';} ?></td><?php } ?>
             </tr>
@@ -269,6 +271,7 @@ presidence();
                 <td></td>
                 <td></td>
                 <td></td>
+                <?php if($evt['cb_evt']=='1'){ ?><td></td><?php } ?>
                 <?php if($evt['repas_restaurant']=='1'){ ?><td></td><?php } ?>
             </tr>
         <?php

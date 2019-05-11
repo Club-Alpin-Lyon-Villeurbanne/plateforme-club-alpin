@@ -262,12 +262,16 @@ else{
 		.'<hr style="clear:both" />';
 
         // TARIFICATIONS DE LA SORTIE (réservé aux membres)
-        if(allowed('user_read_limited') && ($evt['tarif_evt']>0 || $evt['tarif_detail'] || $evt['repas_restaurant']>0)){
+        if(allowed('user_read_limited') && ($evt['tarif_evt']>0 || $evt['cb_evt']>0 || $evt['tarif_detail'] || $evt['repas_restaurant']>0)){
             echo '<ul class="nice-list">'
 				// tarif ?
 				.($evt['tarif_evt']>0 ?
 					'<li class="wide"><b>TARIF :</b> '.str_replace(',', '.', floatVal($evt['tarif_evt'])).'&nbsp;Euros '.($destination ? ' <small>(hors transport collectif : + '.str_replace(',', '.', floatVal($destination['cout_transport'])).'&nbsp;Euros)</small>':'').'</li>'
 				:'')
+				// Paiement en ligne
+                .($evt['cb_evt']>0 ?
+                    '<li class="wide"><b>Paiement en ligne :</b> le paiement en ligne pour cette sortie est possible </li>'
+                :'')
                 // Détail du tarif
                 .($evt['tarif_detail'] ?
                     '<li class="wide"><b>DÉTAIL :</b> '.html_utf8($evt['tarif_detail']).'</li>'

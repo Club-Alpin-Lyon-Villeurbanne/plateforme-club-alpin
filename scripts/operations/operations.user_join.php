@@ -127,6 +127,15 @@
 		// SI PAS DE PB, INTÉGRATION BDD
 		if(!sizeof($errTab)){
             
+            if ($_POST['jeveuxpayerenligne']=='on') $is_cb = 1;
+            else {
+                if (isset($_POST['is_cb'])) {
+                    $is_cb = 0;
+                } else {
+                    $is_cb = 'NULL';
+                }
+            }
+            
             if ($_POST['jeveuxmangerauresto']=='on') $is_restaurant = 1;
             else {
                 if (isset($_POST['is_restaurant'])) {
@@ -161,13 +170,13 @@
                 } else { */
 
                     if (!$update) {
-                        $req="INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
-                              VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', $p_time, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
+                        $req="INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
+                              VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', $p_time, $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
                     }
                     elseif (in_array($id_user, $update)) {
                         $req = "UPDATE `".$pbd."evt_join`
                                 SET
-                                    `id_bus_lieu_destination` = $id_bus_lieu_destination, `id_destination` = $id_destination, `is_covoiturage` = $is_covoiturage, `is_restaurant` = $is_restaurant
+                                    `id_bus_lieu_destination` = $id_bus_lieu_destination, `id_destination` = $id_destination, `is_covoiturage` = $is_covoiturage, `is_cb` = $is_cb, `is_restaurant` = $is_restaurant
                                 WHERE
                                     `user_evt_join` = $id_user AND evt_evt_join = $id_evt;";
                     }
@@ -183,13 +192,13 @@
 
                     } else { */
                         if (!$update || !in_array($id_user_tmp, $update)) {
-                            $req="INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, affiliant_user_join, role_evt_join, tsp_evt_join, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
-                                  VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user_tmp',  '$id_user',  	'$role_evt_join', $p_time, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
+                            $req="INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, affiliant_user_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
+                                  VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user_tmp',  '$id_user',  	'$role_evt_join', $p_time, $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
                         }
                         elseif (in_array($id_user_tmp, $update)) {
                             $req = "UPDATE `".$pbd."evt_join`
                                 SET
-                                    `id_bus_lieu_destination` = $id_bus_lieu_destination, `id_destination` = $id_destination, `is_covoiturage` = $is_covoiturage, `is_restaurant` = $is_restaurant
+                                    `id_bus_lieu_destination` = $id_bus_lieu_destination, `id_destination` = $id_destination, `is_covoiturage` = $is_covoiturage, `is_cb` = $is_cb, `is_restaurant` = $is_restaurant
                                 WHERE
                                     `user_evt_join` = $id_user_tmp AND evt_evt_join = $id_evt;";
                         }
@@ -281,6 +290,7 @@
 							Pseudo : ".html_utf8($cetinscrit['nickname_user'])." <br />";
 							//Age : ".getYearsSinceDate($cetinscrit['birthday_user'])." ans <br />
 							$content_main.="Rôle : ".$role_evt_join.
+							($is_cb != 'NULL' ? "<br />".'Paiement en ligne : ' .($is_cb == 1 ? 'oui':'non') :'').
                             ($is_restaurant != 'NULL' ? "<br />".'Restaurant : ' .($is_restaurant == 1 ? 'oui':'non') :'').
                             ($id_destination != 'NULL' ? " <br />".($is_covoiturage == 1 ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif') :'')
                             ."
@@ -367,6 +377,7 @@
 						Pseudo : ".html_utf8($cetinscrit['nickname_user'])." <br />";
 						//Age : ".getYearsSinceDate($cetinscrit['birthday_user'])." ans <br />
 						$content_main.="Rôle : ".$role_evt_join.
+						    ($is_cb != 'NULL' ? " <br />".'Paiement en ligne : ' .($is_cb == 1 ? 'oui':'non') :'').
                             ($is_restaurant != 'NULL' ? " <br />".'Restaurant : ' .($is_restaurant == 1 ? 'oui':'non') :'').
                             ($id_destination != 'NULL' ? " <br />".($is_covoiturage == 1 ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif'.($ramassage?' : ramassage le '.$ramassage['date'].' à '.$ramassage['lieu']['nom']:'')) :'')
                         ."
@@ -396,6 +407,7 @@
 							Pseudo : ".html_utf8($cetinscrit['nickname_user'])." <br />";
 							//Age : ".getYearsSinceDate($cetinscrit['birthday_user'])." ans <br />
 							$content_main.="Rôle : ".$role_evt_join.
+							($is_cb != 'NULL' ? " <br />".'Paiement en ligne : ' .($is_cb == 1 ? 'oui':'non') :'').
                             ($is_restaurant != 'NULL' ? " <br />".'Restaurant : ' .($is_restaurant == 1 ? 'oui':'non') :'').
                             ($id_destination != 'NULL' ? " <br />".($is_covoiturage == 1 ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif'.($ramassage?' : ramassage le '.$ramassage['date'].' à '.$ramassage['lieu']['nom']:'')) :'')
                         ."
@@ -425,7 +437,8 @@
 								Nom : ".html_utf8($cetinscrit['civ_user'].' '.$cetinscrit['firstname_user'].' '.$cetinscrit['lastname_user'])." <br />
 								Pseudo : ".html_utf8($cetinscrit['nickname_user'])." <br />";
 								//Age : ".getYearsSinceDate($cetinscrit['birthday_user'])." ans <br />".
-                                $content_main.=($is_restaurant != 'NULL' ? 'Restaurant : ' .($is_restaurant == 1 ? 'oui':'non') :'').
+                                $content_main.=($is_cb != 'NULL' ? 'Paiement en ligne : ' .($is_cb == 1 ? 'oui':'non') :'').
+                                    ($is_restaurant != 'NULL' ? 'Restaurant : ' .($is_restaurant == 1 ? 'oui':'non') :'').
                                     ($id_destination != 'NULL' ? " <br />".($is_covoiturage == 1 ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif'.($ramassage?' : ramassage le '.$ramassage['date'].' à '.$ramassage['lieu']['nom']:'')) :'')
                                 ."
 							</p>

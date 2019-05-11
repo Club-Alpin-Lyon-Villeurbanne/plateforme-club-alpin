@@ -326,6 +326,7 @@ presidence();
                                             $number=1;
                                             foreach($point['utilisateurs']['valide'] as $id_user) {
                                                 $tmpUser = get_user($id_user, false);
+                                                $tmpUser['is_cb'] = user_in_cb($id_user);
                                                 $tmpUser['is_restaurant'] = user_in_destination_repas($id_user, $destination['id']);
                                                 $tmpUser['sortie'] = user_sortie_in_dest($id_user, $destination['id']);
                                                 $tmpUsers[$tmpUser['lastname_user'].$tmpUser['firstname_user'].$tmpUser['id_user']] = $tmpUser;
@@ -345,6 +346,7 @@ presidence();
                                                     <td><?php echo getYearsSinceDate($tmp['birthday_user']); ?></td>
                                                     <td><?php echo html_utf8($tmp['tel_user']); ?></td>
                                                     <td><?php echo html_utf8($tmp['tel2_user']); ?></td>
+                                                    <td><?php if($evt['cb_evt']=='1'){ ?><?php if ($tmp['is_cb'] == '1') {echo 'OUI';} elseif ($tmp['is_cb'] == '0') {echo '-';} else {echo '<small>NSP</small>';} ?><?php } else {echo '-';} ?></td>
                                                     <td><?php if($evt['repas_restaurant']=='1'){ ?><?php if ($tmp['is_restaurant'] == '1') {echo 'OUI';} elseif ($tmp['is_restaurant'] == '0') {echo '-';} else {echo '<small>NSP</small>';} ?><?php } else {echo '-';} ?></td>
                                                 </tr>
                                             <?php } ?>
@@ -406,6 +408,7 @@ presidence();
                                     <td><?php echo getYearsSinceDate($tmp['birthday_user']); ?></td>
                                     <td><?php echo html_utf8($tmp['tel_user']); ?></td>
                                     <td><?php echo html_utf8($tmp['tel2_user']); ?></td>
+                                    <?php if($evt['cb_evt']=='1'){ ?><td><?php if ($tmp['is_cb'] == '1') {echo 'OUI';} elseif ($tmp['is_cb'] == '0') {echo '-';} else {echo '<small>NSP</small>';} ?></td><?php } ?>
                                     <?php if($evt['repas_restaurant']=='1'){ ?><td><?php if ($tmp['is_restaurant'] == '1') {echo 'OUI';} elseif ($tmp['is_restaurant'] == '0') {echo '-';} else {echo '<small>NSP</small>';} ?></td><?php } ?>
                                 </tr>
                             <?php } ?>

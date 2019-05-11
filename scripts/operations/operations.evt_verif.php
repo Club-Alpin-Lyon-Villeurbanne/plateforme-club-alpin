@@ -13,6 +13,7 @@ $id_groupe=intval($_POST['id_groupe']);
 $titre_evt=trim(stripslashes($_POST['titre_evt']));
 
 $tarif_evt=floatval($_POST['tarif_evt']); $tarif_evt = str_replace(',', '.', $tarif_evt);
+$cb_evt=$_POST['cb_evt']=='on'?1:0;
 $tarif_detail=$_POST['tarif_detail']=trim(stripslashes($_POST['tarif_detail']));
 $repas_restaurant=$_POST['repas_restaurant']=='on'?1:0;
 $tarif_restaurant=floatval($_POST['tarif_restaurant']); $tarif_restaurant = str_replace(',', '.', $tarif_restaurant);
