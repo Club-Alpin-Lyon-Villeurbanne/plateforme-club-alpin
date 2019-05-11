@@ -439,8 +439,8 @@ else{
 			$nPlacesRestantesOnline		=	$evt['join_max_evt'] - sizeof($evt['joins']['inscrit']) - sizeof($evt['joins']['benevole']);
 			$nEnAttente					=	sizeof($evt['joins']['enattente']);
 
-			if($nPlacesRestantesOnline < 0)	$nPlacesRestantesOnline =0;
-			if($nPlacesRestantesOnline > ($evt['ngens_max_evt'] - $nInscritsTotal) )	$nPlacesRestantesOnline = 0;
+			if($nPlacesRestantesOnline > ($evt['ngens_max_evt'] - $nInscritsTotal) )	$nPlacesRestantesOnline = ($evt['ngens_max_evt'] - $nInscritsTotal);
+			if($nPlacesRestantesOnline < 0)	$nPlacesRestantesOnline = 0;
 
 			echo '<hr />'
 			.'<ul class="nice-list">'
