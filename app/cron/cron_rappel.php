@@ -268,8 +268,8 @@ if($lastTsp < $minTsp){
 
 			// liste des evts
 			$evtList=array();
-//			foreach($evtdatas as $tmp) $evtList[] = '<a href="'.$p_racine.'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html">'.html_utf8($tmp['titre_evt']).'</a>';
-			foreach($evtdatas as $tmp) $evtList[] = '<a href="'.$p_racine.'gestion-des-sorties.html">'.date('d/m/Y', $tmp['tsp_evt']).' - '.html_utf8($tmp['titre_evt']).'</a>';
+			foreach($evtdatas as $tmp) $evtList[] = '<a href="'.$p_racine.'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html">'.date('d/m/Y', $tmp['tsp_evt']).' - '.html_utf8($tmp['titre_evt']).'</a>';
+//			foreach($evtdatas as $tmp) $evtList[] = '<a href="'.$p_racine.'gestion-des-sorties.html">'.date('d/m/Y', $tmp['tsp_evt']).' - '.html_utf8($tmp['titre_evt']).'</a>';
 
 			// vars d'envoi
 			$datas=array();
