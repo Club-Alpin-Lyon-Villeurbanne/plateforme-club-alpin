@@ -116,11 +116,18 @@ if($evt['cancelled_evt']!='1'){
                             <th width='15%'>Statut</th>
                             <th width='15%'>Rôle</th>
                             <th width='10%'>Date</th>
-                            <?php if ($evt['repas_restaurant'] == 1) { ?>
+                            <?php if ($evt['cb_evt'] == 1 && $evt['repas_restaurant'] == 1) { ?>
+							<th width='20%'>Contact</th>
+							<?php } elseif (($evt['cb_evt'] == 1 && $evt['repas_restaurant'] == 0) || ($evt['cb_evt'] == 0 && $evt['repas_restaurant'] == 1)) { ?>
                             <th width='25%'>Contact</th>
-                            <th><abbr title="Restaurant">R.</abbr></th>
                             <?php } else { ?>
                             <th width='30%'>Contact</th>
+                            <?php } ?>
+                            <?php if ($evt['cb_evt'] == 1) { ?>
+                            <th width='5%'><abbr title="Paiement en ligne">P.</abbr></th>
+                            <?php } ?>
+                            <?php if ($evt['repas_restaurant'] == 1) { ?>
+                            <th width='5%'><abbr title="Restaurant">R.</abbr></th>
                             <?php } ?>
                             <?php if ($destination) { ?>
                             <th><abbr title="Covoiturage">C.</abbr></th>
@@ -130,13 +137,13 @@ if($evt['cancelled_evt']!='1'){
                     <tbody>
                         <?php
                         // vars pour les stats sous le tableau
-                        $nDemandes = $nAcceptees = $nRefusees = $nAbsents = $nRestaurant = $nRestaurant_nsp=0;
+                        $nDemandes = $nAcceptees = $nRefusees = $nAbsents = $nCb = $nCb_nsp =$nRestaurant = $nRestaurant_nsp = 0;
 
                         // requete SQL in page
                         include SCRIPTS.'connect_mysqli.php';;
                         // participants non filtrés
                         $req="SELECT id_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user
-                                    , id_evt_join , role_evt_join, tsp_evt_join, status_evt_join, doit_renouveler_user, is_restaurant, is_covoiturage, id_destination, id_bus_lieu_destination
+                                    , id_evt_join , role_evt_join, tsp_evt_join, status_evt_join, doit_renouveler_user, is_cb, is_restaurant, is_covoiturage, id_destination, id_bus_lieu_destination
                             FROM caf_evt_join, caf_user
                             WHERE evt_evt_join =$id_evt
                             AND user_evt_join = id_user
@@ -149,6 +156,8 @@ if($evt['cancelled_evt']!='1'){
                             $nDemandes++;
                             if($row['status_evt_join']==1)	{
                                 $nAcceptees++;
+                                if($row['is_cb']==1)	$nCb++;
+                                if(is_null($row['is_cb']))	$nCb_nsp++;
                                 if($row['is_restaurant']==1)	$nRestaurant++;
                                 if(is_null($row['is_restaurant']))	$nRestaurant_nsp++;
                             }
@@ -307,6 +316,9 @@ if($evt['cancelled_evt']!='1'){
                                         '.html_utf8($row['tel_user']).'<br />
                                         '.html_utf8($row['tel2_user']).'
                                     </td>';
+                                    if ($evt['cb_evt'] == 1) {
+                                        echo '<td><img src="img/base/'.($row['is_cb'] == '1' ? 'cb-oui.png' : ($row['is_cb'] == '0' ? 'cb-non.png' :'cb-nsp.png')).'" title="'.($row['is_cb'] == '1' ? 'Oui' : ($row['is_cb'] == '0' ? 'Non' :'NSP')).'" /></td>';
+                                    }
                                     if ($evt['repas_restaurant'] == 1) {
                                         echo '<td><img src="img/base/'.($row['is_restaurant'] == '1' ? 'resto-oui.png' : ($row['is_restaurant'] == '0' ? 'resto-non.png' :'resto-nsp.png')).'" title="'.($row['is_restaurant'] == '1' ? 'Oui' : ($row['is_restaurant'] == '0' ? 'Non' :'NSP')).'" /></td>';
                                     }
@@ -329,6 +341,11 @@ if($evt['cancelled_evt']!='1'){
                         <b id="nRefusees"><?php echo $nRefusees; ?></b> refusée(s).
                     </li>
                     <li><b id="nRefusees"><?php echo $nAbsents; ?></b> absent(s).</li>
+                    <?php if ($evt['cb_evt'] == '1') { ?>
+                    <li>
+                        <b id="nCb"><?php echo $nCb; ?></b> paiement en ligne confirmé<?php if ($nCb_nsp) { ?>,
+                        <b id="nCb_nsp"><?php echo $nCb_nsp; ?></b> NSP <small>(inscriptions manuelles, nomades et organisateur)</small><?php } ?>.
+                    </li><?php } ?>
                     <?php if ($evt['repas_restaurant'] == '1') { ?>
                     <li>
                         <b id="nRestaurant"><?php echo $nRestaurant; ?></b> restaurant confirmé<?php if ($nRestaurant_nsp) { ?>,

@@ -142,9 +142,19 @@ if(user()){
 				<input type="text" name="tel2_user" class="type1" value="<?php echo inputVal('tel2_user', '');?>" placeholder="Facultatif" style="width:90%" />
 			</div>
 
-            <?php if ($sortie['repas_restaurant'] == '1' OR $id_dest)  { ?>
+            <?php if ($sortie['cb_evt'] == '1' OR $sortie['repas_restaurant'] == '1' OR $id_dest)  { ?>
             <hr class="  clear">
                 <h2>Options :</h2>
+            <?php } ?>
+            <?php if ($sortie['cb_evt'] == '1')  { ?>
+            <div class=" tiers clear">
+                <label for="is_cb"><b>Paiement en ligne : </b></label><br>
+                <select name="is_cb" class="type1" style="width:90%">
+                    <option value="-1" <?php echo ($_POST['is_cb'] == '-1' ? ' selected="selected" ' : ''); ?> >NSP</option>
+                    <option value="0" <?php echo ($_POST['is_cb'] == '0' ? ' selected="selected" ' : ''); ?> >Non</option>
+                    <option value="1" <?php echo ($_POST['is_cb'] == '1' ? ' selected="selected" ' : ''); ?> >Oui</option>
+                </select>
+            </div>
             <?php } ?>
             <?php if ($sortie['repas_restaurant'] == '1')  { ?>
             <div class=" tiers clear">
@@ -158,7 +168,7 @@ if(user()){
             <?php } ?>
             <?php if ($id_dest) { ?>
                 <div class="lft" style="padding: 5px 10px 5px 0;">
-                <label for="is_restaurant"><b>Transport : </b></label><br>
+                <label for="id_bus_lieu_destination"><b>Transport : </b></label><br>
                 <select name="id_bus_lieu_destination" class="type1" style="width:90%">
                     <option value="-1" <?php echo ($_POST['id_bus_lieu_destination'][$i] == '-1' ? ' selected="selected" ' : ''); ?> >Covoiturage</option>
                     <?php

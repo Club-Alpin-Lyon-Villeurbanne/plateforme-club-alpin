@@ -195,6 +195,21 @@
         $app_version = set_version_nb('1.1');
 
     }
+    
+    // Nouvelle version mineure : gestion du paiement en ligne
+    
+    if ($app_version < '1.1.1') {
+		
+		/* Paiement en ligne */
+        $queries[] = 
+            "ALTER TABLE `".$pbd."evt` ADD `cb_evt` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER `tarif_evt`;";
+
+        // Utilisateur choisit de payer en ligne (facultatif : null (non proposé, 0, 1)
+        $queries[] =
+            "ALTER TABLE `".$pbd."evt_join` ADD `is_cb` TINYINT(1) UNSIGNED NULL DEFAULT NULL ;";
+		$app_version = set_version_nb('1.1');
+
+    }
 
 // print_r($queries);
 

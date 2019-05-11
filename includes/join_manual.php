@@ -237,6 +237,7 @@ if(user()){
 							<th style="font-size:12px; text-align:left">Nom</th>
 							<th style="font-size:12px; text-align:left">Pseudo</th>
 							<th style="font-size:12px; text-align:left">Rôle</th>
+							<?php if ($sortie['cb_evt'] == '1') { ?><th style="font-size:12px; text-align:left">Paiement en ligne</th><?php } ?>
                             <?php if ($sortie['repas_restaurant'] == '1') { ?><th style="font-size:12px; text-align:left">Restaurant</th><?php } ?>
                             <?php if ($id_dest) { ?><th style="font-size:12px; text-align:left">Transport</th><?php } ?>
 						</thead>
@@ -269,6 +270,13 @@ if(user()){
                                             // .'<option value="encadrant">Encadrant</option>'
                                         .'</select>'
                                     .'</td>'
+                                    .($sortie['cb_evt'] == '1' ? '<td>'
+                                        .'<select name="is_cb[]">'
+                                            .'<option value="-1" '.($_POST['is_cb'][$i] == '-1' ? ' selected="selected" ' : '').'>NSP</option>'
+                                            .'<option value="0" '.($_POST['is_cb'][$i] == '0' ? ' selected="selected" ' : '').'>Non</option>'
+                                            .'<option value="1" '.($_POST['is_cb'][$i] == '1' ? ' selected="selected" ' : '').'>Oui</option>'
+                                        .'</select>'
+                                    .'</td>' : '')
                                     .($sortie['repas_restaurant'] == '1' ? '<td>'
                                         .'<select name="is_restaurant[]">'
                                             .'<option value="-1" '.($_POST['is_restaurant'][$i] == '-1' ? ' selected="selected" ' : '').'>NSP</option>'

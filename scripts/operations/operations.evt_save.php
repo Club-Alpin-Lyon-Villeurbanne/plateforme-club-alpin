@@ -9,6 +9,7 @@ if(!sizeof($errTab)){
     // sécurisation BDD
     $titre_evt=$mysqli->real_escape_string($titre_evt);
     $tarif_evt=$mysqli->real_escape_string($tarif_evt);
+    $cb_evt=$mysqli->real_escape_string($cb_evt);
     $tarif_detail=$mysqli->real_escape_string($tarif_detail);
     $repas_restaurant=$mysqli->real_escape_string($repas_restaurant);
     $tarif_restaurant=$mysqli->real_escape_string($tarif_restaurant);
@@ -52,8 +53,8 @@ if(!sizeof($errTab)){
 
 
     if ($_POST['operation'] == 'evt_create') {
-        $req="INSERT INTO ".$pbd."evt(id_evt ,status_evt ,status_legal_evt ,user_evt ,commission_evt ,tsp_evt ,tsp_end_evt ,tsp_crea_evt ,place_evt ,titre_evt ,code_evt ,massif_evt ,rdv_evt ,tarif_evt , tarif_detail, repas_restaurant, tarif_restaurant, denivele_evt ,distance_evt ,lat_evt ,long_evt ,matos_evt ,itineraire, difficulte_evt ,description_evt , need_benevoles_evt , join_start_evt, join_max_evt, ngens_max_evt, cycle_master_evt ,cycle_parent_evt ,child_version_from_evt ,child_version_tosubmit, id_groupe)
-					VALUES (NULL , '0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '$place_evt', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$tarif_detail', '$repas_restaurant', $tarif_restaurant, $denivele_evt, $distance_evt, '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', '$cycle_master_evt', '$cycle_parent_evt', '0', '0', $id_groupe);";
+        $req="INSERT INTO ".$pbd."evt(id_evt ,status_evt ,status_legal_evt ,user_evt ,commission_evt ,tsp_evt ,tsp_end_evt ,tsp_crea_evt ,place_evt ,titre_evt ,code_evt ,massif_evt ,rdv_evt ,tarif_evt, cb_evt, tarif_detail, repas_restaurant, tarif_restaurant, denivele_evt ,distance_evt ,lat_evt ,long_evt ,matos_evt ,itineraire, difficulte_evt ,description_evt , need_benevoles_evt , join_start_evt, join_max_evt, ngens_max_evt, cycle_master_evt ,cycle_parent_evt ,child_version_from_evt ,child_version_tosubmit, id_groupe)
+					VALUES (NULL , '0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '$place_evt', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$cb_evt', '$tarif_detail', '$repas_restaurant', $tarif_restaurant, $denivele_evt, $distance_evt, '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', '$cycle_master_evt', '$cycle_parent_evt', '0', '0', $id_groupe);";
 
     }
     elseif ($_POST['operation'] == 'evt_update') {
@@ -67,6 +68,7 @@ if(!sizeof($errTab)){
 				`massif_evt` =  '$massif_evt',
 				`rdv_evt` =  '$rdv_evt',
 				`tarif_evt` =  $tarif_evt,
+				`cb_evt` =  $cb_evt,
 				`tarif_detail` =  '$tarif_detail',
 				`repas_restaurant` =  '$repas_restaurant',
 				`tarif_restaurant` =  $tarif_restaurant,
