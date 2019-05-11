@@ -98,9 +98,9 @@ function codeAddress(address) {
 			google.maps.event.addListener(marker, 'dragend', function() { updatePosition(marker); } );
 			return true;
 		}
-		else{
-			$('#place_finder_error').html("Désolé, Google n'arrive pas à trouver cet endroit. Vous pouvez entrer un nom de ville, et déplacer le marqueur plus précisément.").fadeIn();
-		}
+//		else{
+//			$('#place_finder_error').html("Désolé, Google n'arrive pas à trouver cet endroit. Vous pouvez entrer un nom de ville, et déplacer le marqueur plus précisément.").fadeIn();
+//		}
 	});
 	return false;
 }
