@@ -1,13 +1,4 @@
-#30/07/2013-SECURITE DU SITE DE DEV
-AuthUserFile "/homez.461/clubalpi/test/www/.htpasswd"
-AuthName "Page protege »
-AuthType Basic
-<limit GET POST>
-require valid-user
-</limit>
 
-
-SetEnv PHP_VER 5_4
 SetEnv REGISTER_GLOBALS 0
 
 #02/09/2013-Fichier d'origine HereWeCom
