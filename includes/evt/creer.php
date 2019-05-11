@@ -364,9 +364,13 @@
             <?php
             inclure('infos-carte', 'mini');
             ?>
-            <input type="button" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le point sur la carte" />
+<!--            <input type="button" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le point sur la carte" />
             <input type="hidden" name="lat_evt" value="<?php echo inputVal('lat_evt', '');?>" />
             <input type="hidden" name="long_evt" value="<?php echo inputVal('long_evt', '');?>" />
+-->            
+            <input type="hidden" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le point sur la carte" />
+            <input type="hidden" name="lat_evt" value="45.7337532" />
+            <input type="hidden" name="long_evt" value="4.9092352" />
         </div>
         <br style="clear:both" />
 
