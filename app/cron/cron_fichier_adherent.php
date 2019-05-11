@@ -178,7 +178,7 @@ foreach($fileTab as $file){
 					if($line[7] == '0000-00-00'){
 						// on vérifie la date, car il y a un battement entre le 25 aout (pour prendre large) et le 31 décembre
 						// où le non-renouvellement de licence est toléré
-						if(intval(date('m')) < 8 or (date('m')==8 && date('d') < 25)){
+						if((intval(date('m')) < 8 or (intval(date('m'))==8 && intval(date('d')) < 25)) || (intval(date('m')) > 10)) {
 							// avant le 25.08 - desactivation
 							$doit_renouveler_user = '1';
 							$alerte_renouveler_user = '1';
@@ -215,13 +215,19 @@ foreach($fileTab as $file){
 					} elseif($idUser = mysqli_result($handleSql, 0)){
 						// adherent existant : mise a jour
 						
-						
 						echo  "UPDATE $cafnum_user - $idUser \n";
-
-						$req="UPDATE caf_user SET ts_update_user=".time().", firstname_user='$firstname_user', lastname_user='$lastname_user', doit_renouveler_user='$doit_renouveler_user', birthday_user='$birthday_user', civ_user='$civ_user', cafnum_parent_user='$cafnum_parent_user', tel_user='$tel_user',	tel2_user='$tel2_user', adresse_user='$adresse_user', cp_user='$cp_user', ville_user='$ville_user', alerte_renouveler_user='$alerte_renouveler_user', nickname_user='$nickname_user', manuel_user=0, nomade_user=0 ".
-						$date_adhesion_user
-						." WHERE id_user=$idUser AND cafnum_user = '$cafnum_user'";
-						$nb_update++;
+						
+						// si l'adhérent n'a pas encore ré-adhéré, on ne met pas à jour la date d'adhésion
+						if($line[7] == '0000-00-00'){
+							$req="UPDATE caf_user SET ts_update_user=".time().", firstname_user='$firstname_user', lastname_user='$lastname_user', doit_renouveler_user='$doit_renouveler_user', birthday_user='$birthday_user', civ_user='$civ_user', cafnum_parent_user='$cafnum_parent_user', tel_user='$tel_user',	tel2_user='$tel2_user', adresse_user='$adresse_user', cp_user='$cp_user', ville_user='$ville_user', alerte_renouveler_user='$alerte_renouveler_user', nickname_user='$nickname_user', manuel_user=0, nomade_user=0 WHERE id_user=$idUser AND cafnum_user = '$cafnum_user'";
+							$nb_update++;
+						}
+						else{
+							$req="UPDATE caf_user SET ts_update_user=".time().", firstname_user='$firstname_user', lastname_user='$lastname_user', doit_renouveler_user='$doit_renouveler_user', birthday_user='$birthday_user', civ_user='$civ_user', cafnum_parent_user='$cafnum_parent_user', tel_user='$tel_user',	tel2_user='$tel2_user', adresse_user='$adresse_user', cp_user='$cp_user', ville_user='$ville_user', alerte_renouveler_user='$alerte_renouveler_user', nickname_user='$nickname_user', manuel_user=0, nomade_user=0 ".
+							$date_adhesion_user
+							." WHERE id_user=$idUser AND cafnum_user = '$cafnum_user'";
+							$nb_update++;
+						}
 
 					}
 					else{
