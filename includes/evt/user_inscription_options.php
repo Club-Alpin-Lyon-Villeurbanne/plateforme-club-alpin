@@ -10,7 +10,7 @@
     
     <?php if($_POST['is_cb'] == 1) $my_choices['is_cb'] = $_POST['is_cb']; 
     
-        $title = iconv('UTF-8', 'ASCII//TRANSLIT', $evt['titre_evt']);
+        $title = iconv('UTF-8', 'ASCII//TRANSLIT', str_replace(")", "", str_replace("(", "", str_replace("!", "",$evt['titre_evt']))));
         $compl = " du ".date("d-m-Y", $evt[tsp_evt])." ".$_SESSION['user']['firstname_user']." ".$_SESSION['user']['lastname_user'];
         $size_title = strlen($title);
         $size_compl = strlen($compl);
@@ -84,7 +84,7 @@
     <br />
     <?php foreach($filiations as $enfant){ 
         
-        $title = iconv('UTF-8', 'ASCII//TRANSLIT', $evt['titre_evt']);
+        $title = iconv('UTF-8', 'ASCII//TRANSLIT', str_replace(")", "", str_replace("(", "", str_replace("!", "", $evt['titre_evt']))));
         $compl = " du ".date("d-m-Y", $evt[tsp_evt])." ".$enfant['firstname_user']." ".$enfant['lastname_user'];
         $size_title = strlen($title);
         $size_compl = strlen($compl);
