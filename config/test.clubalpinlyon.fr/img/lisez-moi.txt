@@ -1,7 +1,0 @@
-Deux images doivent être générée : 
-
-- adresse-website.png : 
-l'email de contact générique du site (peut etre différent du mail de la configuration SMTP, qui sert à envoyer les emails)
-
-- logo.png :
-le logo du caf, accompagné du nom de la ville / section
