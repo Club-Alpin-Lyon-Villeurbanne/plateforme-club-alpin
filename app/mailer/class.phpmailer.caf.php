@@ -1,135 +1,149 @@
 <?php
+/**
+ * This example shows how to extend PHPMailer to simplify your coding.
+ * If PHPMailer doesn't do something the way you want it to, or your code
+ * contains too much boilerplate, don't edit the library files,
+ * create a subclass instead and customise that.
+ * That way all your changes will be retained when PHPMailer is updated.
+ */
 
-include('class.phpmailer.php');
-include('class.smtp.php');
+//Import PHPMailer classes into the global namespace
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
-class CAFPHPMailer extends PHPMailer {
-	protected $content_full='';
-	protected $headerSet = false;
-	protected $footerSet = false;
-	protected $bodySet = false;
+require 'Exception.php';
+require 'PHPMailer.php';
+require 'SMTP.php';
 
-	public function __construct($exceptions = false, $useBCC = false) {
-		parent::__construct($exceptions);
+/**
+ * Use PHPMailer as a base class and extend it
+ */
+class CAFPHPMailer extends PHPMailer
+{
+    /**
+     * myPHPMailer constructor.
+     *
+     * @param bool|null $exceptions
+     * @param string    $body A default HTML message body
+     */
+    public function __construct($exceptions = false, $useBCC = false)
+    {
+        //Don't forget to do this or other things may not be set correctly!
+        parent::__construct($exceptions);
 
-		$this->content_full=implode("\n", file(APP.'templates/email1.html'));
-		$this->content_full=str_replace('templateimgs/', $p_racine.'app/templates/templateimgs/', $this->content_full);
-		$this->content_full=str_replace('[RACINE]', $p_racine, $this->content_full);
-		$this->content_full=str_replace('[SITENAME]', $p_sitename, $this->content_full);
-		
-		// CONFIG SMTP GANDI
-				/*
-				$this->IsSMTP();
-				$this->SMTPAuth = true;
-				$this->Host = 'mail.gandi.net';
-				$this->Port = 465;
-				$this->Username = 'utilisateur@domaine.tld';
-				$this->Password = 'pass';
-				*/
-				// END CONFIG SMTP GANDI
-		
-		// CONFIG SMTP OVH
-				/*
-				$this->IsSMTP();
-				$this->SMTPAuth = true;
-				$this->Host = 'smtp.domaine.tld';
-				$this->Port = 5025;
-				$this->Username = 'utilisateur@domaine.tld';
-				$this->Password = 'pass';
-				*/
-				// END CONFIG SMTP OVH
-				
-		// CONFIG SMTP GMAIL
-				/*
-				$this->IsSMTP();
-				$this->SMTPAuth = true;
-				$this->Host = "tls://smtp.gmail.com";
-				$this->Port = 465;
-				$this->Username = 'X0X0X0X0X';
-				$this->Password = 'X0X0X0X0X';
-				*/
-				// END CONFIG SMTP GMAIL
-				
-		GLOBAL $p_smtp_use;
-		GLOBAL $p_smtp;
-		if ($p_smtp_use) {
-			$this->IsSMTP();
-			$this->SMTPAuth = true;
-			if ($p_smtp['host'] == 'smtp.gmail.com') $this->SMTPSecure = 'ssl';
-			$this->Host = $p_smtp['host'];
-			$this->Port = $p_smtp['port'];
-			$this->Username = $p_smtp['user'];
-			$this->Password = $p_smtp['pass'];
-			if (isset($p_smtp['debug']) && $p_smtp['debug'] === true) {
-				$this->SMTPDebug  = 2;
-			}
-		}
-		
-		GLOBAL $p_noreply;
-		GLOBAL $p_sitename;
-		$this->SetFrom($p_noreply, $p_sitename);
-		$this->CharSet = 'UTF-8';
-		$this->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-		$this->IsHTML(true);
-		$this->XMailer = 'CAF-Mailer';
+        $this->content_full=implode("\n", file(APP.'templates/email1.html'));
+        $this->content_full=str_replace('templateimgs/', $p_racine.'app/templates/templateimgs/', $this->content_full);
+        $this->content_full=str_replace('[RACINE]', $p_racine, $this->content_full);
+        $this->content_full=str_replace('[SITENAME]', $p_sitename, $this->content_full);
 
-		if ($useBCC) $this->AddBCC ($p_noreply);
+        GLOBAL $p_smtp_use;
+        GLOBAL $p_smtp;
+        GLOBAL $p_noreply;
+        GLOBAL $p_sitename;
 
-	}
+        // Paramétrer le Mailer pour utiliser SMTP
+        if ($p_smtp_use) {
+            $this->isSMTP();
+
+            // Spécifier le serveur SMTP
+            $this->Host = $p_smtp['host'];
+            $this->Port = $p_smtp['port'];
+            // Accepter SSL
+            $this->SMTPSecure = 'ssl';
+            // Activer authentication SMTP
+            $this->SMTPAuth = true;
+            // Votre adresse email d'envoi
+            $this->Username = $p_smtp['user'];
+            // Le mot de passe de cette adresse email
+            $this->Password = $p_smtp['pass'];
+
+            //$this->SMTPDebug = 4;
+        }
+
+        $this->SetFrom($p_noreply, $p_sitename);
+        $this->CharSet = 'UTF-8';
+        $this->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
+        $this->IsHTML(true);
+        $this->XMailer = 'CAF-Mailer';
+
+        if ($useBCC) $this->AddBCC($p_noreply);
+
+        //This should be the same as the domain of your From address
+        //$mail->DKIM_domain = 'clubalpinlyon.fr';
+        //See the DKIM_gen_keys.phps script for making a key pair -
+        //here we assume you've already done that.
+        //Path to your private key:
+        //$mail->DKIM_private = 'dkim_private.pem';
+        //Set this to your own selector
+        //$mail->DKIM_selector = 'caf';
+        //Put your private key's passphrase in here if it has one
+        //$mail->DKIM_passphrase = '';
+        //The identity you're signing as - usually your From address
+        //$mail->DKIM_identity = $mail->From;
+        //Suppress listing signed header fields in signature, defaults to true for debugging purpose
+        //$mail->DKIM_copyHeaderFields = false;
+        //Optionally you can add extra headers for signing to meet special requirements
+        //$mail->DKIM_extraHeaders = ['List-Unsubscribe', 'List-Help'];
+
+    }
 
     public function AddBCC($address, $name = '') {
-		$this->recipients[$address] = $name;
-	}
+        $this->recipients[$address] = $name;
+    }
 
-	public function setMailHeader ($content_header) {
-		$this->headerSet = true;
-		$this->content_full=str_replace('[HEADER]', $content_header, $this->content_full);
-	}
+    public function setMailHeader ($content_header) {
+        $this->headerSet = true;
+        $this->content_full=str_replace('[HEADER]', $content_header, $this->content_full);
+    }
 
-	public function setMailFooter ($content_footer) {
-		$this->footerSet = true;
-		$this->content_full=str_replace('[FOOTER]', $content_footer, $this->content_full);
-	}
+    public function setMailFooter ($content_footer) {
+        $this->footerSet = true;
+        $this->content_full=str_replace('[FOOTER]', $content_footer, $this->content_full);
+    }
 
-	public function setMailBody ($content_main) {
-		$this->bodySet = true;
-		$this->content_full=str_replace('[MAIN]', $content_main, $this->content_full);
-	}
+    public function setMailBody ($content_main) {
+        $this->bodySet = true;
+        $this->content_full=str_replace('[MAIN]', $content_main, $this->content_full);
+    }
 
-	public function setAltMailBody ($content_alt) {
-		$this->AltBody = $content_alt;
-	}
+    public function setAltMailBody ($content_alt) {
+        $this->AltBody = $content_alt;
+    }
 
-	public function Send() {
+    //Extend the send function
+    public function send()
+    {
+        if ($this->headerSet == false) {
+            $this->setMailHeader('');
+        }
+        if ($this->footerSet == false) {
+            $this->setMailFooter('');
+        }
 
-		if ($this->headerSet == false) {
-			$this->setMailHeader('');
-		}
-		if ($this->footerSet == false) {
-			$this->setMailFooter('');
-		}
+        $this->MsgHTML($this->content_full);
 
-		$this->MsgHTML($this->content_full);
+        $this->Subject = $this->Subject;
 
-		$nb_recipients=0;
-		$log_coupure_mail = false;
-		# Retiré par CRI le 06/12/2015
-		# Inutile de logger le nombre de destinataires si < 50. Surtout si tout est Ok.
-		# error_log ("PHPMAILER : nb_recipients=".count($this->recipients));
-		
+        $nb_recipients=0;
+        $log_coupure_mail = false;
+        # Retiré par CRI le 06/12/2015
+        # Inutile de logger le nombre de destinataires si < 50. Surtout si tout est Ok.
+        # error_log ("PHPMAILER : nb_recipients=".count($this->recipients));
+
         if (is_array($this->recipients)) {
             foreach ($this->recipients as $address=>$name){
-                
-				/*
-				 * CRI 16/01/2016 - enregistrement dans les logs que si $address ou $name vide
-				 * Inutile de le faire pour les couples $address / $name valides
-				*/
-				if ( empty($address) || empty($name) ){
-					error_log ("PHPMAILER : TO=".$address);
-				} else {
-					parent::AddBCC($address, $name);
-					$nb_recipients++;
-				}
+
+                /*
+                * CRI 16/01/2016 - enregistrement dans les logs que si $address ou $name vide
+                * Inutile de le faire pour les couples $address / $name valides
+                */
+                if ( empty($address) || empty($name) ){
+                    error_log ("PHPMAILER : TO=".$address);
+                } else {
+                    parent::AddBCC($address, $name);
+                    $nb_recipients++;
+                }
 
                 if($nb_recipients > 50){
                     # trop de destinataires on coupe le mail
@@ -137,17 +151,17 @@ class CAFPHPMailer extends PHPMailer {
                     # RAZ destinataires
                     parent::ClearAddresses();
                     $nb_recipients=0;
-					# CRI 16/01/2016 - On signal de l'on a coupé le mail
-					if (!$log_coupure_mail){
-						error_log ("PHPMAILER : Destinataires > 50 - nb_recipients=".count($this->recipients));
-						$log_coupure_mail = true;
-					}
+                    # CRI 16/01/2016 - On signal de l'on a coupé le mail
+                    if (!$log_coupure_mail){
+                        error_log ("PHPMAILER : Destinataires > 50 - nb_recipients=".count($this->recipients));
+                        $log_coupure_mail = true;
+                    }
                 }
             }
-		}
-		return parent::Send();
-	}
+        }
+        return parent::Send();
 
+    }
 }
 
 
