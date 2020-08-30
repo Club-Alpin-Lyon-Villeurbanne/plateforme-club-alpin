@@ -95,7 +95,7 @@ if($_POST['login']){
 	<link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
 	<script src="../js/fonctions.js" language="javascript" type="text/javascript"></script>
     <!-- jquery -->
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
 	<link rel="stylesheet" href="../css/loginadmin.css" type="text/css"  media="screen" />
 	<!--[if IE]>
 		<style type="text/css">
@@ -155,7 +155,7 @@ if($_POST['login']){
 	?>
 	<br />
 	Un site réalisé par :<br />
-	<a href="http://www.herewecom.fr" title="Conception de sites internet dynamiques à chambéry, Savoie"><img src="logo-hwc.gif" alt="Conception de sites internet dynamiques à chambéry, Savoie" title="Conception de sites internet dynamiques à chambéry, Savoie" /></a>
+	<a href="https://www.herewecom.fr" title="Conception de sites internet dynamiques à chambéry, Savoie"><img src="logo-hwc.gif" alt="Conception de sites internet dynamiques à chambéry, Savoie" title="Conception de sites internet dynamiques à chambéry, Savoie" /></a>
 
 
 </body>

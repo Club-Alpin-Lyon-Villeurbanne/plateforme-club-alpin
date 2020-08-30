@@ -22,8 +22,8 @@ if(user()){
 	else{					echo "ERREUR : type invalide ($type / $dossier)"; exit();	}
 
 	?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr">
+	"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	<html xmlns="https://www.w3.org/1999/xhtml" xml:lang="fr">
 		<head>
 		<title><?php if($type=='image') echo 'Vos images en ligne'; else echo 'Vos fichiers en ligne'; ?></title>
 
@@ -39,7 +39,7 @@ if(user()){
 		<!-- jquery
 		<script type="text/javascript" src="../js/jquery-1.5.2.min.js"></script>
 		-->
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
 		<script type="text/javascript" src="../js/fonctionsAdmin.js"></script>
 
 		<!-- fancybox -->
@@ -224,7 +224,7 @@ if(user()){
 						$monUrl=substr($dossier, 3, strlen($dossier)).$fichier;
 					}
 					else{
-						$domaine='http://'.$_SERVER['HTTP_HOST'].substr($_SERVER['PHP_SELF'], 0, -31);
+						$domaine='https://'.$_SERVER['HTTP_HOST'].substr($_SERVER['PHP_SELF'], 0, -31);
 						$monUrl=$domaine.'/'.substr($dossier, 3, strlen($dossier)).$fichier;
 					}
 

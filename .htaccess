@@ -186,7 +186,7 @@ AddType text/x-vcard                   vcf
 <IfModule mod_rewrite.c>
   RewriteCond %{HTTPS} !=on
   RewriteCond %{HTTP_HOST} !^www\..+$ [NC]
-  RewriteRule ^ http://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+  RewriteRule ^ https://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 </IfModule>
 
 

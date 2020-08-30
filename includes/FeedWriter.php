@@ -36,7 +36,7 @@
 
 		// Setting default value for assential channel elements
 		$this->channels['title']        = $version . ' Feed';
-		$this->channels['link']         = 'http://www.ajaxray.com/blog';
+		$this->channels['link']         = 'https://www.ajaxray.com/blog';
 
 		//Tag names to encode in CDATA
 		$this->CDATAEncoding = array('description', 'content:encoded', 'summary');
@@ -213,21 +213,21 @@
 		if($this->version == RSS2)
 		{
 			$out .= '<rss version="2.0"
-					xmlns:content="http://purl.org/rss/1.0/modules/content/"
-					xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+					xmlns:content="https://purl.org/rss/1.0/modules/content/"
+					xmlns:wfw="https://wellformedweb.org/CommentAPI/"
 				  >' . PHP_EOL;
 		}
 		elseif($this->version == RSS1)
 		{
 			$out .= '<rdf:RDF
-					 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-					 xmlns="http://purl.org/rss/1.0/"
-					 xmlns:dc="http://purl.org/dc/elements/1.1/"
+					 xmlns:rdf="https://www.w3.org/1999/02/22-rdf-syntax-ns#"
+					 xmlns="https://purl.org/rss/1.0/"
+					 xmlns:dc="https://purl.org/dc/elements/1.1/"
 					>' . PHP_EOL;;
 		}
 		else if($this->version == ATOM)
 		{
-			$out .= '<feed xmlns="http://www.w3.org/2005/Atom">' . PHP_EOL;;
+			$out .= '<feed xmlns="https://www.w3.org/2005/Atom">' . PHP_EOL;;
 		}
 		echo $out;
 	}

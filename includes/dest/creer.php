@@ -177,7 +177,7 @@
         <div id="geoloc">
             <h2 class="trigger-h2">Aperçu topographique du secteur :</h2>
             <div class="trigger-me">
-                <label for="ign_dest">Extrait IGN : <small>Insérez le code de partage fourni par <a href="http://www.geoportail.gouv.fr/" target="_blank">GeoPortail</a>.</small></label>
+                <label for="ign_dest">Extrait IGN : <small>Insérez le code de partage fourni par <a href="https://www.geoportail.gouv.fr/" target="_blank">GeoPortail</a>.</small></label>
                 <textarea name="ign" id="ign_dest" style="width:95%;height:80px;" class="type2"><?php if (inputVal('ign', '')) echo display_frame_geoportail(inputVal('ign', ''), 425, 350); ?></textarea>
                 <?php if (inputVal('ign', '') != '') echo display_frame_geoportail(inputVal('ign', ''), 620, 350); ?>
             </div>

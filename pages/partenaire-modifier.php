@@ -34,7 +34,7 @@ else{
 		} else{
 			$partenaireTab['part_name'] = '';
 			$partenaireTab['part_desc'] = '';
-			$partenaireTab['part_url'] = 'http://';
+			$partenaireTab['part_url'] = 'https://';
 			$partenaireTab['part_image'] = null;
 			$partenaireTab['part_type'] = 1;
 			$partenaireTab['part_order'] = 999;

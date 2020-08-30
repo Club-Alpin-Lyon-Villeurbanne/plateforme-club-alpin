@@ -565,7 +565,7 @@ function antiCache($mode){
 }
 
 // assurer un lien http
-function linker($link){	$link=trim($link);	if(substr($link, 0, 7)!='http://' && substr($link, 0, 8)!='https://')	$link='http://'.$link;	return $link;	}
+function linker($link){	$link=trim($link);	if(substr($link, 0, 7)!='http://' && substr($link, 0, 8)!='https://')	$link='https://'.$link;	return $link;	}
 
 // vider les champs vides d'un tableau
 function array_noempty($tab){	$tempTab=array();	foreach($tab as $temp){		if($temp && $temp!='')			$tempTab[]=$temp;	}	return $tempTab;}

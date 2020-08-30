@@ -45,8 +45,8 @@ CREATE TABLE `caf_partenaires` (
 --
 
 INSERT INTO `caf_partenaires` (`part_id`, `part_name`, `part_url`, `part_desc`, `part_image`, `part_type`, `part_enable`, `part_order`, `part_click`) VALUES
-(1, 'PARTENAIRE1', 'http://www.cafchambery.com/', 'PARTENAIRE1', 'partenaire1.png', 1, 1, 999, 1),
-(2, 'FFCAM', 'http://www.ffcam.fr/', 'FFCAM', 'ffcam.png', 1, 1, 999, 1);
+(1, 'PARTENAIRE1', 'https://www.cafchambery.com/', 'PARTENAIRE1', 'partenaire1.png', 1, 1, 999, 1),
+(2, 'FFCAM', 'https://www.ffcam.fr/', 'FFCAM', 'ffcam.png', 1, 1, 999, 1);
 
 
 --

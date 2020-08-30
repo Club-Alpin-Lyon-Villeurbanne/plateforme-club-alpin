@@ -165,7 +165,7 @@ $CafFeed->setLink($p_racine);
 $CafFeed->setDescription($rss_datas['description']);
 
 //Image title and link must match with the 'title' and 'link' channel elements for RSS 2.0
-//$CafFeed->setImage('Testing the RSS writer class','http://www.ajaxray.com/projects/rss','http://www.rightbrainsolution.com/images/logo.gif');
+//$CafFeed->setImage('Testing the RSS writer class','https://www.ajaxray.com/projects/rss','https://www.rightbrainsolution.com/images/logo.gif');
 
 //Use core setChannelElement() function for other optional channels
 $CafFeed->setChannelElement('language', 'fr-fr');

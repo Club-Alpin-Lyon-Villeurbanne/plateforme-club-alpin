@@ -11,7 +11,7 @@ $pageAdmin=$_GET['admin'];
 // verification d'inclusion
 if(substr($p, 0, 6)!='pages/' && substr($p, 0, 9)!='includes/') 	echo 'err 1';
 elseif(strpos($p, '../')) 		echo 'err 2';
-elseif(strpos($p, 'http://')) 		echo 'err 3';
+elseif(strpos($p, 'https://')) 		echo 'err 3';
 else{
 	// lien vers cette page (pour formulaires, ou ancres)
 	$versCettePage = 'includer.php?null=0';
