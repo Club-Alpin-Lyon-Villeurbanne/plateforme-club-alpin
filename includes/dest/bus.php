@@ -43,7 +43,7 @@
             <div data-id_lieu="<?php echo $point['id_lieu'];?>" style="position:relative;">
                 <?php echo display_edit_lieu_link($point['id_lieu'], $point['nom']); ?>
                 <b><?php echo htmlspecialchars($point['nom']);?></b>, à <?php echo display_time($point['date']); ?><br>
-                <div class="gmapmarker" data-lat="<?php echo $point['lat'];?>" data-lng="<?php echo $point['lng'];?>"></div>
+                <div class="mapmarker" data-lat="<?php echo $point['lat'];?>" data-lng="<?php echo $point['lng'];?>"></div>
                 <div class="ign"><?php echo display_frame_geoportail($point['ign'], 620, 350); ?></div>
                 <div class="description"><?php echo $point['description'];?></div>
                 <label>
@@ -69,11 +69,13 @@
 
 
 
-<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBLPpp74nSsABceW6k1ajybyGi2n7I9tfM&sensor=false"></script>
 <link rel="stylesheet" href="tools/jquery-ui-1.11.2/jquery-ui.css" type="text/css"  media="screen" />
 <script type="text/javascript" charset="utf-8" src="tools/jquery-ui-1.11.2/jquery-ui.min.js"></script>
 <script type="text/javascript" charset="utf-8" src="js/jquery-ui-timepicker-addon.js"></script>
-<script type="text/javascript" src="js/gmap-organiser.js"></script>
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+                            integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+                            crossorigin=""></script>
+                    <script type="text/javascript" src="js/osm-organiser.js"></script>
 
 <script>
 
@@ -144,7 +146,6 @@
         $('#modify_lieu').click(function(e){
             e.preventDefault();
             $('#new_lieu').html(new_lieu_dest+old_lieux_ramasse+new_lieu);
-            initialiserGmap();
             buildDay();
 
             $('#modify_lieu').hide();

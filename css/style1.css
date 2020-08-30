@@ -251,8 +251,8 @@ label.in_front {margin-top:15px; display:block; float:none; width:93%; backgroun
 #home-slider-nav2 .arrow-right{float:right;}
 #home-slider-nav2 .arrow-left img{position:relative; top:150px; left:35px;}
 #home-slider-nav2 .arrow-right img{position:relative; top:150px; right:35px;}
-#gmap-creersortie{width:100%; height:350px; background:url(../img/base/braies-light.png); margin:auto; margin-top:8px;}
-.gmap-creersortie{width:100%; height:350px; background:url(../img/base/braies-light.png); margin:auto; margin-top:8px;}
+#map-creersortie{width:100%; height:350px; background:url(../img/base/braies-light.png); margin:auto; margin-top:8px;}
+.map-creersortie{width:100%; height:350px; background:url(../img/base/braies-light.png); margin:auto; margin-top:8px;}
 #map_dr{width:100%; height:350px; background:url(../img/base/braies-light.png); margin:auto; margin-top:8px;}
 .encart_article{width:620px; clear:both; padding:17px 0 5px 0; color:#4D4D4D;}
 .encart_article a{font-weight:100;}
@@ -323,7 +323,7 @@ tr.status1 {border-top:1px solid #d3d3d3;background-image:url(../img/green-overl
 tr.status2 {border-top:1px solid #d3d3d3;background-image:url(../img/red-overlay.png)}
 tr.status3 {border-top:1px solid #d3d3d3;background-image:url(../img/red-overlay.png)}
 tr.status-1 {border-top:1px solid #d3d3d3;background-image:url(../img/red-overlay.png)}
-#gmap-fichesortie{width:100%; height:280px; background:url(../img/base/braies-light.png); margin:auto; margin-top:8px;}
+#map-fichesortie{width:100%; height:350px; background:url(../img/base/braies-light.png); margin:auto; margin-top:8px;}
 .status-legal, .note{background:white; box-shadow:0 0 15px -8px black; padding:3px 15px; margin:0px 30px 0 0;}
 .note{padding:15px;margin:0}
 .imgprofil{box-shadow:0 0 20px -7px black; border:2px solid white;}

@@ -272,7 +272,7 @@
                     <div class="display_lieu" data-id_lieu="<?php echo $_POST['lieu']['depose']['id'];?>" style="position:relative;">
                         <?php echo display_edit_lieu_link($_POST['lieu']['depose']['id'], inputVal('lieu|depose|nom', '')); ?>
                         <b><?php echo inputVal('lieu|depose|nom', ''); ?></b><br>
-                        <div class="gmap" data-lat="" data-lng=""></div>
+                        <div class="map" data-lat="" data-lng=""></div>
                         <?php if ($_POST['lieu']['depose']['ign']) { ?>
                             <div class="ign"><?php echo display_frame_geoportail(inputVal('lieu|depose|ign', ''), 620, 350); ?></div>
                         <?php } ?>
@@ -314,7 +314,7 @@
                     <div class="display_lieu" data-id_lieu="<?php echo $_POST['lieu']['reprise']['id'];?>" style="position:relative;">
                         <?php echo display_edit_lieu_link($_POST['lieu']['reprise']['id'], inputVal('lieu|reprise|nom', '')); ?>
                         <b><?php echo inputVal('lieu|reprise|nom', ''); ?></b><br>
-                        <div class="gmap" data-lat="" data-lng=""></div>
+                        <div class="map" data-lat="" data-lng=""></div>
                         <?php if ($_POST['lieu']['reprise']['ign']) { ?>
                             <div class="ign"><?php echo display_frame_geoportail(inputVal('lieu|reprise|ign', ''), 620, 350); ?></div>
                         <?php } ?>
@@ -364,18 +364,20 @@
             <?php
             inclure('infos-carte', 'mini');
             ?>
-<!--            <input type="button" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le point sur la carte" />
+            <input type="button" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le point sur la carte" />
             <input type="hidden" name="lat_evt" value="<?php echo inputVal('lat_evt', '');?>" />
             <input type="hidden" name="long_evt" value="<?php echo inputVal('long_evt', '');?>" />
--->            
+
+            <!--
             <input type="hidden" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le point sur la carte" />
             <input type="hidden" name="lat_evt" value="45.7337532" />
             <input type="hidden" name="long_evt" value="4.9092352" />
+            -->
         </div>
         <br style="clear:both" />
 
         <div id="place_finder_error" class="erreur" style="display:none"></div>
-        <div id="gmap-creersortie"></div>
+        <div id="map-creersortie"></div>
 
         <br />
         <div style="width:45%; padding-right:3%; float:left">
@@ -642,15 +644,6 @@
 </script>
 <!-- /tinyMCE -->
 
-<!-- ****************** script gmap -->
-<!--<script type="text/javascript" src="js/jquery.ba-throttle-debounce.min.js"></script>-->
-<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBLPpp74nSsABceW6k1ajybyGi2n7I9tfM&sensor=false"></script>
-<script type="text/javascript" src="js/markerclusterer.js"></script>
-<script type="text/javascript" src="js/gmap-organiser.js"></script>
-<!-- ****************** // gmap-->
-
-
-
 <!-- ****************** sélection des adhérents -->
 <script type="text/javascript">
     // un même user ne peut être à la fois Encadrant et bénévole
@@ -708,6 +701,16 @@
     });
 
 </script>
+
+<!-- ****************** scripts osm -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+   crossorigin=""></script>
+<script type="text/javascript" src="js/osm-organiser.js"></script>
+<!-- ****************** // osm-->
 
 <?php if ($destination) { ?>
 <script type="text/javascript">
@@ -772,33 +775,9 @@
             setDay( $('#date_reprise'), '<?php echo $destination['date_fin']; ?>');
         <?php } ?>
 
-
-        // Carte de prévisualisation des points de dépose et reprise
-        gmap_initialize('map_dr');
-        var markers_dr = [
-            <?php $l = 0; if ($_POST['lieu']) { foreach($_POST['lieu'] as $type => $lieu) { ?><?php if ($l > 0) echo ','; ?>["<?php if (!empty($lieu['nom'])) echo html_utf8($lieu['nom']); ?>",<?php if (!empty($lieu['lat'])) echo $lieu['lat']; ?>,<?php if (!empty($lieu['lng'])) echo $lieu['lng']; ?><?php
-                if ($type == 'depose') echo ', "depose"';
-                else echo ', "reprise"';?>]<?php $l++; }}  ?>
-        ];
-        var infos_dr = [
-            <?php $l = 0; if ($_POST['lieu']) { foreach($_POST['lieu'] as $type => $lieu) { ?><?php if ($l > 0) echo ','; ?>
-                ["<?php
-                    echo '<b>';
-                    if ($type == 'depose') echo 'Lieu de dépose : ';
-                    else echo 'Lieu de reprise : ';
-                    echo '</b><br>';
-                    if (!empty($lieu['nom'])) echo html_utf8($lieu['nom']);
-                    if ($type == 'depose' && $lieu['date_depose']) echo ', à '.display_time($lieu['date_depose']);
-                    else if($type == 'reprise' && $lieu['date_reprise']) echo ', à '.display_time($lieu['date_reprise']);
-                    ?>"]
-            <?php $l++; }}  ?>
-        ];
-        renderMultipleMarkers(markers_dr, infos_dr);
-
     });
 
 </script>
-
 
     <script>
         var previous_lieux_reprise = '<?php echo display_previous_lieux('reprise', $destination['id']); ?>';

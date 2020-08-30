@@ -307,16 +307,21 @@ else{
 
                 // MAP TRANSPORT
                 ?>
-                <div id="gmap-fichesortie"></div>
-                <!-- ****************** script gmap -->
-                <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
-                <script type="text/javascript">
-                var latMap = <?php echo str_replace(',', '.', floatVal($evt['lat_evt'])); ?>;
-                var lonMap = <?php echo str_replace(',', '.', floatVal($evt['long_evt'])); ?>;
-                var rdvMap = '<?php echo addslashes(strip_tags($evt['rdv_evt'])); ?>';
-                </script>
-                <script type="text/javascript" src="js/gmap-fichesortie.js"></script>
-                <!-- ****************** // gmap-->
+                <div id="map-fichesortie"></div>
+                <!-- ****************** // CARTE RDV -->
+                    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+                        integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+                        crossorigin="">
+                    </script>
+                    <script>
+                    var lat            = <?php echo str_replace(',', '.', floatVal($evt['lat_evt'])); ?>;
+                    var lon            = <?php echo str_replace(',', '.', floatVal($evt['long_evt'])); ?>;
+                    var zoom           = 16;
+                    var mymap = L.map('map-fichesortie').setView([lat, lon], zoom);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar', attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(mymap);
+                    var marker = L.marker([lat, lon]).addTo(mymap);
+                    </script>
+                <!-- ****************** // FIN CARTE RDV -->
 
                 <?php
             }
@@ -341,13 +346,17 @@ else{
 
                 <?php if ($destination) { ?>
 
-                    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
-                    <script type="text/javascript" src="js/gmap-organiser.js"></script>
-                    <script type="text/javascript">
+                    <!-- ****************** scripts osm -->
+                    <!--<script type="text/javascript" src="js/jquery.ba-throttle-debounce.min.js"></script>-->
+                    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+                            integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+                            crossorigin=""></script>
+                    <script type="text/javascript" src="js/osm-organiser.js"></script>
+                    <!-- ****************** // osm-->
 
                         $(document).ready(function(){
                             // Carte de prévisualisation des points de dépose et reprise
-                            gmap_initialize('map_dr');
+                            map_initialize('map_dr');
                             var markers_dr = [
                                 <?php
                                     $l = 0;

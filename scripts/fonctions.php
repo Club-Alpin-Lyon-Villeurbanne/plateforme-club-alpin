@@ -961,7 +961,7 @@ function display_new_lieu() {
             '</div>'.
             '<br style="clear:both" />'.
             '<div id="place_finder_error" class="erreur" style="display:none"></div>'.
-            '<div id="gmap-creersortie"></div>'.
+            '<div id="map-creersortie"></div>'.
             '<br>'/*.
             '<label for="ign">Extrait IGN : <small>Insérez le code de partage fourni par <a href="http://www.geoportail.gouv.fr/" target="_blank">GeoPortail</a>.</small></label>'.
             '<textarea name="lieu[ign]" id="ign" style="width:95%;height:80px;" class="type2">'.inputVal('lieu|ign', '').'</textarea>'*/;
@@ -1060,7 +1060,7 @@ function display_new_lieu_complexe($name=null,$reset=false) {
     '</div>'.
     '<br style="clear:both" />'.
     '<div class="place_finder_error" class="erreur" style="display:none"></div>'.
-    '<div class="gmap-creersortie" id="gmap-creersortie-lieu_'.$name.'"></div>'.
+    '<div class="map-creersortie" id="map-creersortie-lieu_'.$name.'"></div>'.
     '<br>'/*.
     '<label for="ign'.$name.'">Extrait IGN : <small>Insérez le code de partage fourni par <a href="http://www.geoportail.gouv.fr/" target="_blank">GeoPortail</a>.</small></label>'.
     '<textarea name="lieu'.$arg.'[ign]" id="ign'.$name.'" style="width:95%;height:80px;" class="type2">'.inputVal('lieu'.$val.'|ign', '').'</textarea>'*/.'</div>';

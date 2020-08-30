@@ -157,7 +157,7 @@
                     <div class="display_lieu" data-id_lieu="<?php echo $id_lieu;?>" style="position:relative;">
                         <?php echo display_edit_lieu_link($id_lieu, inputVal('ancien_lieu|nom', '')); ?>
                         <b><?php echo inputVal('ancien_lieu|nom', ''); ?></b><br>
-                        <div class="gmap" data-lat="" data-lng=""></div>
+                        <div class="map" data-lat="" data-lng=""></div>
                         <?php if ($destination['ancine_lieu']['ign']) { ?>
                         <div class="ign"><?php echo display_frame_geoportail(inputVal('ancien_lieu|ign', ''), 620, 350); ?></div>
                         <?php } ?>
@@ -251,8 +251,10 @@
     
 </div>
 
-<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBLPpp74nSsABceW6k1ajybyGi2n7I9tfM&sensor=false"></script>
-<script type="text/javascript" src="js/gmap-organiser.js"></script>
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+        integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+        crossorigin=""></script>
+<script type="text/javascript" src="js/osm-organiser.js"></script>
 
 <?php if ($id_lieu) { ?>
     <script>
@@ -260,7 +262,6 @@
         $('#modify_lieu').click(function(e){
             e.preventDefault();
             $('#new_lieu').html('<a href="" id="cancel_lieu" class="cancel">Annuler le changement de lieu</a><br>'+new_lieu);
-            initialiserGmap();
             $('#modify_lieu').hide();
             $('#cancel_lieu').on('click', function(e){
                 e.preventDefault();
