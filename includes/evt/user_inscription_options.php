@@ -14,7 +14,20 @@
         $compl = " du ".date("d-m-Y", $evt[tsp_evt])." ".$_SESSION['user']['firstname_user']." ".$_SESSION['user']['lastname_user'];
         $size_title = strlen($title);
         $size_compl = strlen($compl);
-        $new_title = substr($title, 0, 64-$size_compl).$compl;    
+        $new_title = substr($title, 0, 64-$size_compl).$compl;
+        
+        
+        if ($evt['joins']['encadrant'][0]) {
+            $encadrant_name = $evt['joins']['encadrant'][0]['firstname_user']." ".$evt['joins']['encadrant'][0]['lastname_user'];
+        } 
+        elseif ($evt['joins']['coencadrant'][0]) {
+            $encadrant_name = $evt['joins']['coencadrant'][0]['firstname_user']." ".$evt['joins']['coencadrant'][0]['lastname_user'];
+        }
+        if ($evt['joins']['encadrant'][0]) {
+            $encadrant_email = $evt['joins']['encadrant'][0]['email_user'];
+        } elseif ($evt['joins']['coencadrant'][0]) {
+            $encadrant_email = $evt['joins']['coencadrant'][0]['email_user'];
+        }
 
     ?>
 
@@ -27,8 +40,8 @@
             <a style="border:1px solid red; background:rgba(255,153,153,.4);"
                 href="<?php echo $p_url_paiement ?>
 ?lck_vads_order_id=<?php echo rawurlencode(html_utf8($new_title)); ?>
-&lck_vads_ext_info_Encadrant=<?php echo rawurlencode(html_utf8($evt['joins']['encadrant'][0]['firstname_user']." ".$evt['joins']['encadrant'][0]['lastname_user'])); ?>
-&lck_vads_ext_info_E-mail%20encadrant=<?php echo rawurlencode(html_utf8($evt['joins']['encadrant'][0]['email_user'])); ?>
+&lck_vads_ext_info_Encadrant=<?php echo rawurlencode(html_utf8($encadrant_name)); ?>
+&lck_vads_ext_info_E-mail%20encadrant=<?php echo rawurlencode(html_utf8($encadrant_email)); ?>
 &lck_vads_ext_info_Sortie=<?php echo rawurlencode(html_utf8($title." - ".$evt['id_evt']." du ".date("d-m-Y", $evt[tsp_evt]))); ?>
 &lck_vads_cust_first_name=<?php echo rawurlencode(html_utf8($_SESSION['user']['firstname_user'])); ?>
 &lck_vads_cust_last_name=<?php echo rawurlencode(html_utf8($_SESSION['user']['lastname_user'])); ?>
@@ -90,6 +103,18 @@
         $size_compl = strlen($compl);
         $new_title = substr($title, 0, 64-$size_compl).$compl;
         
+        if ($evt['joins']['encadrant'][0]) {
+            $encadrant_name = $evt['joins']['encadrant'][0]['firstname_user']." ".$evt['joins']['encadrant'][0]['lastname_user'];
+        } 
+        elseif ($evt['joins']['coencadrant'][0]) {
+            $encadrant_name = $evt['joins']['coencadrant'][0]['firstname_user']." ".$evt['joins']['coencadrant'][0]['lastname_user'];
+        }
+        if ($evt['joins']['encadrant'][0]) {
+            $encadrant_email = $evt['joins']['encadrant'][0]['email_user'];
+        } elseif ($evt['joins']['coencadrant'][0]) {
+            $encadrant_email = $evt['joins']['coencadrant'][0]['email_user'];
+        }
+        
         ?>
         
         <br />
@@ -107,8 +132,8 @@
                 <a style="border:1px solid red; background:rgba(255,153,153,.4);"
                     href="<?php echo $p_url_paiement ?>
 ?lck_vads_order_id=<?php echo rawurlencode(html_utf8($new_title)); ?>
-&lck_vads_ext_info_Encadrant=<?php echo rawurlencode(html_utf8($evt['joins']['encadrant'][0]['firstname_user']." ".$evt['joins']['encadrant'][0]['lastname_user'])); ?>
-&lck_vads_ext_info_E-mail%20encadrant=<?php echo rawurlencode(html_utf8($evt['joins']['encadrant'][0]['email_user'])); ?>
+&lck_vads_ext_info_Encadrant=<?php echo rawurlencode(html_utf8($encadrant_name)); ?>
+&lck_vads_ext_info_E-mail%20encadrant=<?php echo rawurlencode(html_utf8($encadrant_email)); ?>
 &lck_vads_ext_info_Sortie=<?php echo rawurlencode(html_utf8($title." - ".$evt['id_evt']." du ".date("d-m-Y", $evt[tsp_evt]))); ?>
 &lck_vads_cust_first_name=<?php echo rawurlencode(html_utf8($enfant['firstname_user'])); ?>
 &lck_vads_cust_last_name=<?php echo rawurlencode(html_utf8($enfant['lastname_user'])); ?>
