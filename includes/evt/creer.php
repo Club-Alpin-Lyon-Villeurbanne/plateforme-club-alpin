@@ -410,12 +410,12 @@
             <input type="text" name="tarif_evt" class="type2" value="<?php echo inputVal('tarif_evt', '');?>" placeholder="ex : 35.50 " />€
         </div>
         <br style="clear:both" />
-        
+
         <div style="float:left; padding:0 20px 5px 0;">
             <input type="checkbox" name="cb_evt" <?php if($_POST['cb_evt']==1 OR $_POST['cb_evt']=='on') echo 'checked="checked"'; ?>/> paiement en ligne possible
         </div>
         <br style="clear:both" />
-        
+
         <?php
         inclure('infos-tarifs', 'mini');
         ?>
@@ -514,7 +514,7 @@
                 <option value="Sac de couchage (avec sac à viande), tapis de sol, popote (assiette + bol), gourde, couverts, lampe de poche (frontale c'est mieux), petit nécessaire de toilette">Camping </option>
                 <option value="Baudrier, chaussons d'escalade, casque">Escalade en falaise </option>
                 <option value="Carte CAF, vêtements pour activité extérieure, fourrure polaire, coupe-vent, casquette, lunettes de soleil, crème solaire, appareil photos">Affaires personnelles </option>
-                <option value="Piolet, casque, baudrier, crampons avec anti-bottes (impérativement), 1 mousquetons à vis, 2 cordassons ou ficelous (pour auto-assurance), gourde, sac à dos (40-50 litres), chaussures à semelles rigides (cuirs ou coques), lampe frontale, lunettes de glacier. VETEMENTS : système 3 couches : veste, et pantalon gore-tex ou équivalent, maillot en carline, fourrure polaire, guêtres, gants (prévoir une paire de rechange), cagoule ou bonnet ou serre-tête. ">Alpinisme </option>
+                <option value="Piolet, casque, baudrier, crampons avec anti-bottes (impérativement), 1 mousquetons à vis, 2 cordassons ou ficelous (pour auto-assurance), gourde, sac à dos (40-50 litres), chaussures à semelles rigides (cuirs ou coques), lampe frontale, lunettes de glacier. VETEMENTS : système 3 couches : veste, et pantalon gore-tex ou équivalent, maillot en carline, fourrure polaire, guêtres, gants (prévoir une paire de rechange), cagoule ou bonnet ou serre-tête. ">Alpinisme</option>
                 <option value="Une paire de piolets techniques, une paire de crampons techniques, grosses chaussures à tiges rigides, 2 voire 3 paires de gants (dont imperméables), veste imperméable, vêtements chauds, bonnet, thé chaud...">Cascade de glace </option>
                 <option value="Casque, gants et protections, chaussures, eau et nourriture de course, une chambre à air, une pompe, démonte-pneus, un multi-tool, une attache rapide de chaine, une patte de dérailleur, et un VTT en bon état de fonctionnement: freins, pneus, transmission, serrages... Et savoir réparer les petites pannes!">Vélo de Montagne</option>
             </select>
