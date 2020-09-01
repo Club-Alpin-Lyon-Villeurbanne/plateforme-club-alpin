@@ -45,13 +45,13 @@ ErrorDocument 404 /site-caf/index.php?p1=404
 	# Image customisées
 	RewriteRule ^img/(adresse-website\.png|logo\.png)$  /index.php?cstImg=$1 [QSA,L]
 
-	
+
 	# Flux RSS
 	# RewriteCond %{REQUEST_FILENAME} !-d
 	# RewriteCond %{REQUEST_FILENAME} !-f
 	# RewriteRule ^rss\.xml$  /rss.php [QSA,L]
 	RewriteRule ^rss\.xml$  /rss.php
-	
+
 
 	# Multilangues :
 	#RewriteCond %{REQUEST_FILENAME} !-d
@@ -66,7 +66,7 @@ ErrorDocument 404 /site-caf/index.php?p1=404
 	#RewriteCond %{REQUEST_FILENAME} !-d
 	#RewriteCond %{REQUEST_FILENAME} !-f
 	#RewriteRule ^([a-z][a-z])/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)/([a-zA-Z0-9-]+)\.html$  /site-caf/index.php?lang=$1&p1=$2&p2=$3&p3=$4&p4=$5 [QSA,L]
-	
+
 </IfModule>
 
 # ----------------------------------------------------------------------
@@ -99,7 +99,7 @@ ErrorDocument 404 /site-caf/index.php?p1=404
 
 
 # JavaScript
-#   Normalize to standard type (it's sniffed in IE anyways) 
+#   Normalize to standard type (it's sniffed in IE anyways)
 #   tools.ietf.org/html/rfc4329#section-7.2
 AddType application/javascript         js
 
@@ -115,17 +115,17 @@ AddType video/webm                     webm
 # SVG.
 #   Required for svg webfonts on iPad
 #   twitter.com/FontSquirrel/status/14855840545
-AddType     image/svg+xml              svg svgz 
+AddType     image/svg+xml              svg svgz
 AddEncoding gzip                       svgz
-                                       
-# Webfonts                             
+
+# Webfonts
 AddType application/vnd.ms-fontobject eot
 AddType font/ttf ttf
 AddType font/otf otf
 AddType application/x-font-woff woff
 # AddType Font woff
 
-# Assorted types                                      
+# Assorted types
 AddType image/x-icon                   ico
 AddType image/webp                     webp
 AddType text/cache-manifest            appcache manifest
@@ -168,7 +168,7 @@ AddType text/x-vcard                   vcf
 # ----------------------------------------------------------------------
 
 # Option 1:
-# Rewrite "www.example.com -> example.com" 
+# Rewrite "www.example.com -> example.com"
 
 #<IfModule mod_rewrite.c>
 #  RewriteCond %{HTTPS} !=on
@@ -190,12 +190,18 @@ AddType text/x-vcard                   vcf
 </IfModule>
 
 
+<IfModule mod_rewrite.c>
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+
 
 # ----------------------------------------------------------------------
 # Prevent SSL cert warnings
 # ----------------------------------------------------------------------
 
-# Rewrite secure requests properly to prevent SSL cert warnings, e.g. prevent 
+# Rewrite secure requests properly to prevent SSL cert warnings, e.g. prevent
 # https://www.example.com when your cert only allows https://secure.example.com
 # Uncomment the following lines to use this feature.
 
@@ -210,10 +216,10 @@ AddType text/x-vcard                   vcf
 # Prevent 404 errors for non-existing redirected folders
 # ----------------------------------------------------------------------
 
-# without -MultiViews, Apache will give a 404 for a rewrite if a folder of the same name does not exist 
+# without -MultiViews, Apache will give a 404 for a rewrite if a folder of the same name does not exist
 #   e.g. /blog/hello : webmasterworld.com/apache/3808792.htm
 
-Options -MultiViews 
+Options -MultiViews
 
 
 
