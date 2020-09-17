@@ -22,17 +22,10 @@ Le code de cet environment se trouve dans `/home/kahe0589/test` et la db utilis�
 
 ## local setup
 
-- ajouter une entrée dans votre fichier `/etc/hosts`. Par ex: dev.clubalpinlyon.fr
-- créer un dossier `dev.clubalpinlyon.fr` dans le repertoire `config`.
-- dans ce nouveau dossier, ajouter les fichiers `db_config.php` et `params.php`
-- installer apache et php (`brew install httpd php`)
-- installer un certificat SSL localement pour le domaine `dev.clubalpinlyon.fr` et localhost
-- configurer un hote pour le domaine `dev.clubalpinlyon.fr` (incluant 443 et le ssl nouvellement créé)
-- pointer ce hote vers le repertoire contenant ce repo
-
-
+ - installer Docker
+ - executer Docker host manager (https://github.com/iamluc/docker-hostmanager)
+ - executer `make up`
+ - vous avez désormais accès au site sur `http://cafsite.caf/`, PHPMyAdmin sur `http://phpmyadmin.caf/`
+ 
 Todo
-- ajouter une redirection pour https://clubalpinlyon.fr/
-- corriger les erreurs 404: https://error404.atomseo.com/SeoCheck/Report/www.clubalpinlyon.fr/2021-09-10/free?from=
-- ajouter disallow dans le robots.txt de test
-- 
+ - corriger les erreurs 404: https://error404.atomseo.com/SeoCheck/Report/www.clubalpinlyon.fr/2021-09-10/free?from=
