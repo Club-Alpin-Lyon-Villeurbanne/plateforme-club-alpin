@@ -503,7 +503,7 @@ function user_login($identifiant, $connectme=true){
         // CRÉATION DU COOKIE POUR RESTER CONNECTÉ
         $cookietoken=md5(rand(100, 999));
         $id_user=intval($handle['id_user']);
-        setcookie('cafuser', $id_user.'-'.$cookietoken, $p_time+(86400*365), '/'); // duree : un an
+        setcookie('cafuser', $id_user.'-'.$cookietoken, $p_time+(86400*7), '/', '', (isset($_SERVER['HTTPS']) ? true : false), true); // duree : un an
         // sauvegarde du token en BD
         $mysqli->query("UPDATE  `".$pbd."user` SET  `cookietoken_user` =  '$cookietoken' WHERE  `id_user` =$id_user LIMIT 1 ;");
 
