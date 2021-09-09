@@ -1,6 +1,9 @@
 ftp/*
 *.old
-config/www.clubalpinlyon.fr*
+config/www.clubalpinlyon.fr/db_config.php
+config/www.clubalpinlyon.fr/params.php
+config/www.clubalpinlyon.fr/params_forum.php
 config/test.clubalpinlyon.fr*
 backup/*
 forum*
+.DS_Store

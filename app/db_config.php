@@ -8,7 +8,7 @@
 			if (file_exists($configParams)) {
 				include($configParams);
 			} else {
-				die("Aucun fichier de configuration \"".basename(__FILE__)."\" n'a été trouvé");
+				die("Aucun fichier de configuration \"".CONFIG.MON_DOMAINE.DS.basename(__FILE__)."\" n'a été trouvé");
 			}
 		}
 	}
