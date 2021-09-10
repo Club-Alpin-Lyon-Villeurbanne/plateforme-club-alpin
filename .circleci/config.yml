@@ -27,6 +27,6 @@ jobs:
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$DEV_DB_PASSWORD/g" "$DEV_CONFIG_PATH/db_config.php"
                     sed -i "s/DB_USER_TO_REPLACE/$DEV_DB_USER/g" "$DEV_CONFIG_PATH/db_config.php"
                     sed -i "s/DB_NAME_TO_REPLACE/$DEV_DB_NAME/g" "$DEV_CONFIG_PATH/db_config.php"
-                    ncftpput -R -v -u $DEV_FTP_USERNAME -p $DEV_FTP_PASSWORD $FTP_SERVER $DEV_WEBSITE_PATH .
+                    ncftpput -R -v -u $DEV_FTP_USERNAME -p $DEV_FTP_PASSWORD $FTP_SERVER . .
                   ;;
             esac
