@@ -34,4 +34,5 @@ Le code de cet environment se trouve dans `/home/kahe0589/test` et la db utilis√
 Todo
 - ajouter une redirection pour https://clubalpinlyon.fr/
 - corriger les erreurs 404: https://error404.atomseo.com/SeoCheck/Report/www.clubalpinlyon.fr/2021-09-10/free?from=
+- ajouter disallow dans le robots.txt de test
 - 
