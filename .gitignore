@@ -1,7 +1,5 @@
 ftp/*
 *.old
-config/www.clubalpinlyon.fr*
-config/test.clubalpinlyon.fr*
 backup/*
 forum*
 .DS_Store

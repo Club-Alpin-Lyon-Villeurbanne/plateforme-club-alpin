@@ -1,0 +1,3 @@
+Renommer les deux templates .tpl en db_config.php et params.php.
+
+Configurer ces deux fichiers selon vos préférences et paramètres d'hébergement.
