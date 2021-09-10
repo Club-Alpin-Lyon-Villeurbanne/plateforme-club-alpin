@@ -1,12 +1,24 @@
 # Code source pour le site du Club Alpin Francais de Lyon-Villeurbanne
 
+[![CircleCI](https://circleci.com/gh/Club-Alpin-Lyon-Villeurbanne/caflyon/tree/main.svg?style=shield&circle-token=843b806ceb348fde38d421c902bcfb734ed58668)](https://circleci.com/gh/Club-Alpin-Lyon-Villeurbanne/caflyon/tree/main)
+
 Ce repo contient le code source du site https://www.clubalpinlyon.fr/.
 Le site a été développé en php par l'agence HereWeCom il y a quelques années (environ 2010) et ils nous ont ensuite donné le code.
 C'est du php sans framework particulier, avec une structure relativement complexe.
 Il utilise une base mariadb.
-Le deployement se fait manuellement sur [o2switch](https://missouri.o2switch.net:2083). Un processus de deploiement continu est en train d'etre mis en place.
 
-Un environment de dev est accessible sur https://test.clubalpinlyon.fr. Le code de cet environment se trouve dans `/home/kahe0589/test` et la db utilisée est `kahe0589_dev`.
+# Deployement
+
+Le deployement se fait automatiquement par [circleci](https://circleci.com/gh/Club-Alpin-Lyon-Villeurbanne/caflyon/tree/main).  
+Pusher un commit (ou mergé une PR) sur `main` lancer le deployment [sur l'env de dev](https://test.clubalpinlyon.fr).  
+Pusher les changements sur la branche `production` fera la meme chose [sur le site final](https://www.clubalpinlyon.fr).  
+CircleCI va remplacer les credentials pour la DB par les vrais puis enverra en FTP les fichiers sur le server.
+Les secrets (mot de passe de db, mot de passe ftp, etc...) sont stockés en tant [que variable d'environment dans circleci](https://app.circleci.com/settings/project/github/Club-Alpin-Lyon-Villeurbanne/caflyon/environment-variables).  
+
+## Environments
+
+Un environment de dev est accessible sur https://test.clubalpinlyon.fr.  
+Le code de cet environment se trouve dans `/home/kahe0589/test` et la db utilisée est `kahe0589_dev`.
 
 ## local setup
 
