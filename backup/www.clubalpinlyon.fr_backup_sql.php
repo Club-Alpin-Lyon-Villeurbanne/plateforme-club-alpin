@@ -5,10 +5,10 @@
 
 
 // Personnalisez ici vos données d'accès
-$host = 'localhost';
-$user = 'DB_USER_TO_REPLACE';
-$pass = 'DB_PASS_TO_REPLACE';
-$db =   'DB_USER_TO_REPLACE';
+$host = 'mysql51-39.bdb';
+$user = 'clubalpi001';
+$pass = 'clublyon007';
+$db =   'clubalpi001';
 $site = 'www.clubalpinlyon.fr';
 $date = date('Ymd_His');
 $root = getenv('DOCUMENT_ROOT');
