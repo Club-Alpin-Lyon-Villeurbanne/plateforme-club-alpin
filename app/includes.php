@@ -7,12 +7,12 @@
     define ('PAGES', ROOT.'pages'.DS);					// Pages
     define ('CONFIG', ROOT.'config'.DS);					// Pages
     define ('INCLUDES', ROOT.'includes'.DS);					// Pages
-    
+
     /*
         Ce script ne fonctionnera plus le jour où plusieurs sites seront hébergés dans le même ROOT, car il existera plusieurs dossiers de configuration dans CONFIG.
         Il faudra alors définir un paramètre pour les tâches CRON !
     */
-    if ($_SERVER && $_SERVER['HTTP_HOST']) {
+    if ($_SERVER && array_key_exists('HTTP_HOST', $_SERVER)) {
         define ('MON_DOMAINE', $_SERVER['HTTP_HOST']);
     } else {
         if($dossier = opendir(CONFIG)) {
@@ -31,7 +31,7 @@
     //_________________________________________________ FONCTIONS MAISON
     include APP.'fonctions.php';
     //_________________________________________________ VARIABLES "GLOBALES" DU SITE
-    include APP.'params.php'; 
+    include APP.'params.php';
     //_________________________________________________ LANGUES
     include APP.'langs.php';
     //_________________________________________________ FONCTIONS PARTAGEES
