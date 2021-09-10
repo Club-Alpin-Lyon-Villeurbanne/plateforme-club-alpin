@@ -1,6 +1,5 @@
 <?php
-
-	header("Cache-Control: max-age=1"); // don't cache ourself
+header("Cache-Control: max-age=1"); // don't cache ourself
 
 	//_________________________________________________ DEFINITION DES DOSSIERS
 	define ('DS', DIRECTORY_SEPARATOR);
@@ -17,7 +16,7 @@
 	/ftp/articles/{id}/
 */
 
-	chdir("D:/wamp/www/CAF");
+	// chdir("D:/wamp/www/CAF");
 
 	/*
 		selection des articles publiés, agés de plus de 2j et qui ont des images
@@ -50,18 +49,18 @@
 		foreach ($matches[0] as $k=>$v) {
 			$v = str_replace ('src="', '', $v);
 
-			if(! is_dir("./ftp/articles/".$article['id_article'])){
-				mkdir ("./ftp/articles/".$article['id_article']);
+			if(! is_dir(ROOT.DS."ftp".DS."articles".DS.$article['id_article'])){
+				mkdir (ROOT.DS."ftp".DS."articles".DS.$article['id_article']);
 			}
 
 			$dest = preg_replace('@ftp/user/(\d+)/images/@', "ftp/articles/".$article['id_article']."/$1_", $v );
 			//echo $dest."<hr />";
 			// controle si fichier source present
-			if(file_exists('./'.$v)) {
+			if(file_exists(ROOT.DS.$v)) {
 				// controle si fichier destination deja present
-				if (!file_exists('./'.$dest)) {
+				if (!file_exists(ROOT.DS.$dest)) {
 					// le fichier destination n'a pas deja ete copie, on le copie
-					if(copy ('./'.$v, './'.$dest)) {
+					if(copy (ROOT.DS.$v, ROOT.DS.$dest)) {
 						// copie fichier OK
 						//echo "copie du fichier de '".$v."' vers '".$dest."'<br />\n";
 						$nb_copies++;
@@ -69,25 +68,25 @@
 
 /*
 					// le fichier destination n'existe pas, on le deplace
-					if(rename('./'.$v, './'.$dest)){
+					if(rename(ROOT.DS.$v, ROOT.DS.$dest)){
 						$nb_copies++;
 					}
 */
 				}
 
 				// controle si fichier destination est present et la taille equivalente
-				if(file_exists('./'.$dest)) {
-					if (filesize('./'.$v) == filesize('./'.$dest)) {
+				if(file_exists(ROOT.DS.$dest)) {
+					if (filesize(ROOT.DS.$v) == filesize(ROOT.DS.$dest)) {
 						//  on remplace le chemin de l'image dans le texte de l'article
 						//echo "remplacement du chemin de l'image '".$dest."'<br />\n";
 						$dest_cont_article = str_replace ($v, $dest, $dest_cont_article);
 					} else {
-						unlink ('./'.$dest);
+						unlink (ROOT.DS.$dest);
 					}
 				}
 
 			} else {
-				echo "fichier source absent :" . './'.$v."<br />\n";
+				echo "fichier source absent :".ROOT.DS.$v."<br />\n";
 				$nb_matches--;
 			}
 		}
@@ -101,8 +100,8 @@
 				/*
 				foreach ($matches[0] as $k=>$v){
 					$v = str_replace ('src="', '', $v);
-					if(file_exists('./'.$v))	{
-						unlink ('./'.$v);
+					if(file_exists(ROOT.DS.$v))	{
+						unlink (ROOT.DS.$v);
 					}
 				}
 				*/
@@ -110,6 +109,6 @@
 		}
 	}
 
-	mysqli_close($mysqli);
+	$mysqli->close;
 
 ?>
