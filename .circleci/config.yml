@@ -23,7 +23,7 @@ jobs:
                     sed -i "s/DB_NAME_TO_REPLACE/$PROD_DB_NAME/g" "$PROD_CONFIG_PATH/db_config.php"
                     ncftpput -R -v -u $ftp_username -p $ftp_password $FTP_SERVER . .
                   ;;
-                "circleci-setup" )
+                "main" )
                     rm -rf .git
                     sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "$DEV_CONFIG_PATH/params.php"
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$DEV_DB_PASSWORD/g" "$DEV_CONFIG_PATH/db_config.php"
