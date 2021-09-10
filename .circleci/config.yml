@@ -1,0 +1,29 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/php:5.6-node-browsers
+      # - image: circleci/mysql:5.7-ram
+
+    steps:
+      - checkout
+
+      - run: sudo apt update
+      - run: sudo apt install rsync
+
+      - run:
+          name: Deploy the codebase on the server
+          command: |
+            ssh-keyscan -t rsa clubalpinlyon.fr > ~/.ssh/known_hosts
+            case ${CIRCLE_BRANCH} in
+                production )
+                    sed -i "s/DB_PASSWORD_TO_REPLACE/$PROD_DB_PASSWORD/g" "$PROD_WEBSITE_PATH/$PROD_CONFIG_PATH/db_config.php"
+                    sed -i "s/DB_USER_TO_REPLACE/$PROD_DB_USER/g" "$PROD_WEBSITE_PATH/$PROD_CONFIG_PATH/db_config.php"
+                    sed -i "s/DB_NAME_TO_REPLACE/$PROD_DB_NAME/g" "$PROD_WEBSITE_PATH/$PROD_CONFIG_PATH/db_config.php"
+                    rsync --exclude '.git' -avzh . kahe0589@clubalpinlyon.fr:$PROD_WEBSITE_PATH ;;
+                master )
+                    sed -i "s/DB_PASSWORD_TO_REPLACE/$DEV_DB_PASSWORD/g" "$DEV_WEBSITE_PATH/$DEV_CONFIG_PATH/db_config.php"
+                    sed -i "s/DB_USER_TO_REPLACE/$DEV_DB_USER/g" "$DEV_WEBSITE_PATH/$DEV_CONFIG_PATH/db_config.php"
+                    sed -i "s/DB_NAME_TO_REPLACE/$DEV_DB_NAME/g" "$DEV_WEBSITE_PATH/$DEV_CONFIG_PATH/db_config.php"
+                    rsync --exclude '.git' -avzh . kahe0589@clubalpinlyon.fr:$DEV_WEBSITE_PATH ;;
+            esac
