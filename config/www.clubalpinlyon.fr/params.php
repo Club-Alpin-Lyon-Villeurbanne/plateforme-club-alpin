@@ -181,5 +181,3 @@ if(substr($p_racine, -8)=='scripts/') $p_racine=substr($p_racine, 0, strlen($p_r
 $p_time=time();
 // par défaut, la page courante n'est pas admin (modifié en aval dans pages.php)
 $p_pageadmin=false;
-
-?>
