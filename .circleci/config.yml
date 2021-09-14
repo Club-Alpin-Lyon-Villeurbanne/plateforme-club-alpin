@@ -1,0 +1,34 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/php:5.6
+      # - image: circleci/mysql:5.7-ram
+
+    steps:
+      - checkout
+
+      - run: sudo apt-get -yq update
+      - run: sudo apt-get install ncftp
+
+      - run:
+          name: Deploy the codebase on the server
+          command: |
+            case ${CIRCLE_BRANCH} in
+                "production" )
+                    rm -rf .git
+                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "$PROD_CONFIG_PATH/params.php"
+                    sed -i "s/DB_PASSWORD_TO_REPLACE/$PROD_DB_PASSWORD/g" "$PROD_CONFIG_PATH/db_config.php"
+                    sed -i "s/DB_USER_TO_REPLACE/$PROD_DB_USER/g" "$PROD_CONFIG_PATH/db_config.php"
+                    sed -i "s/DB_NAME_TO_REPLACE/$PROD_DB_NAME/g" "$PROD_CONFIG_PATH/db_config.php"
+                    ncftpput -R -v -u $ftp_username -p $ftp_password $FTP_SERVER . .
+                  ;;
+                "main" )
+                    rm -rf .git
+                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "$DEV_CONFIG_PATH/params.php"
+                    sed -i "s/DB_PASSWORD_TO_REPLACE/$DEV_DB_PASSWORD/g" "$DEV_CONFIG_PATH/db_config.php"
+                    sed -i "s/DB_USER_TO_REPLACE/$DEV_DB_USER/g" "$DEV_CONFIG_PATH/db_config.php"
+                    sed -i "s/DB_NAME_TO_REPLACE/$DEV_DB_NAME/g" "$DEV_CONFIG_PATH/db_config.php"
+                    ncftpput -R -v -u $DEV_FTP_USERNAME -p $DEV_FTP_PASSWORD $FTP_SERVER . .
+                  ;;
+            esac
