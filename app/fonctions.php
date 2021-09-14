@@ -517,7 +517,7 @@ function user_login($identifiant, $connectme=true){
 }
 // logout user
 function user_logout(){
-    setcookie('cafuser', '', -1, '/'); // suppression cookie
+    setcookie('cafuser', '', -1, '/', '.clubalpinlyon.fr', (isset($_SERVER['HTTPS']) ? true : false), true); // suppression cookie
     unset($_SESSION['user']);
 }
 function user(){
