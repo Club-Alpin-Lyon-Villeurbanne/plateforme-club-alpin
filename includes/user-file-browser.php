@@ -189,113 +189,118 @@ if(user()){
 					<!--<th>Créé le</th>-->
 				</thead>
 				<?php
-                // tableau des fichiers
-                $tabFichiers = array();
-                $extTab = $p_ftpallowed;
+				// tableau des fichiers
+				$tabFichiers= array ();
 
-                // restrion au type image
-                if ($type === 'image') {
-                    $extTab = array('jpg', 'jpeg', 'png');
-                }
+				// extensions autorisées ici en fonction du type demandé
+				if($type=='image')	$extTab=array('jpg','jpeg','png');
+				if($type=='file')	$extTab=$p_ftpallowed;
 
-                // ouverture du dossier demande
-                $handle = opendir($dossier);
+				// ouverture du dossier demande
+				$handle=opendir($dossier);
+				$j=0;// compte des fichiers
+				while($fichier=readdir($handle)){
+					// ext
+					$ext=strtolower(substr(strrchr($fichier, '.'), 1));
 
-                while($fichier = readdir($handle)){
-                    $filepath = $dossier.$fichier;
-                    $extension = strtolower(pathinfo($fichier, PATHINFO_EXTENSION));
+					//Selection des fichiers a afficher ou pas
+					if(in_array($ext, $extTab)) {
+						// est-ce bien un fichier
+						if(!is_dir($dossier.'/'.$fichier)){
+							$tabFichiers[$j]=$fichier;
+							$j++;
+						}
+					}
+				}
 
-                    // on ne liste pas les dossiers
-                    if (is_dir($filepath)) {
-                        continue;
-                    }
+				// AFFICHAGE DU FICHIER
+				$k=0;
+				foreach($tabFichiers as $fichier){
+					$k++;
 
-                    // on ne liste pas ce qui ne matche pas les extensions
-                    if (in_array($extension, $extTab, true)) {
-                        continue;
-                    }
+					// afficahge URL
+					$mode='relatif';
+					if($mode=='relatif'){
+						$monUrl=substr($dossier, 3, strlen($dossier)).$fichier;
+					}
+					else{
+						$domaine='https://'.$_SERVER['HTTP_HOST'].substr($_SERVER['PHP_SELF'], 0, -31);
+						$monUrl=$domaine.'/'.substr($dossier, 3, strlen($dossier)).$fichier;
+					}
 
-                    if($type === 'image'){
-                        $icon = $filepath;
-                    } else{
-                        switch ($extension) {
-                            case 'jpg':
-                            case 'png':
-                            case 'gif':
-                            case 'jpeg':
-                                $icon = '../img/base/image.png';
-                                break;
-                            case 'odt':
-                                $icon = '../img/base/OOffice.jpg';
-                                break;
-                            case 'doc':
-                                $icon = '../img/base/iconeDoc.gif';
-                                break;
-                            case 'pdf':
-                                $icon = '../img/base/pdf.png';
-                                break;
-                            default:
-                                $icon = '../img/base/fichier.png';
-                                break;
-                        }
-                    }
+					// icone du fichier ou miniature de l'image
+					if($type=='image'){
+						$icon=$dossier.''.$fichier;
+					}
+					else{
+						$ext=strtolower(substr(strrchr($fichier, '.'), 1));
+						switch ($ext) { // on indique sur quelle variable on travaille
+							// IMAGES
+							case 'jpg':
+							case 'png':
+							case 'gif':
+							case 'JPEG':
+							case 'jpeg': $icon='../img/base/image.png';		break;
+							// TTT DE TEXTES
+							case 'odt': $icon='../img/base/OOffice.jpg';	break;
+							case 'doc': $icon='../img/base/iconeDoc.gif';	break;
+							case 'pdf': $icon='../img/base/pdf.png';		break;
+							// DEFAUT
+							default: $icon="../img/base/fichier.png";
+						}
+					}
 
-                    $tabFichiers[] = [
-                        'file' => $fichier,
-                        'filepath' => $filepath,
-                        'url' => substr($filepath, 3),
-                        'size' => filesize($filepath),
-                        'mtime' => filemtime($filepath),
-                        'ctime' => filectime($filepath),
-                        'icon' => $icon,
-                    ];
-                }
+					// taille (octets)
+					$fsize=filesize($dossier.'/'.$fichier);
 
-                closedir($dossier);
+					// date (tsp) de modif
+					$mtime=filemtime($dossier.'/'.$fichier);
 
-                // tri par mtime descendant
-                usort($tabFichiers, function ($fileA, $fileB) {
-                    if ($fileA === $fileB) {
-                        return 0;
-                    }
+					// date (tsp) de crea
+					$ctime=filemtime($dossier.'/'.$fichier);
 
-                    return $fileA['mtime'] > $fileB['mtime'] ? -1 : 1;
-                });
-
-                foreach($tabFichiers as $fichier){
-                    echo '
+					// ///////////////////////
+					// AFFICHAGE DE LA LIGNE
+					echo '
 					<tr>
 						<td style="width:30px; text-align:center">
-							<img src="../img/base/add.png" alt="Insérer" title="Insérer ce fichier" style="cursor:pointer" onclick="inserer(\''.$fichier['url'].'\')" />
+							<img src="../img/base/add.png" alt="Insérer" title="Insérer ce fichier" style="cursor:pointer" onclick="inserer(\''.$monUrl.'\')" />
 						</td>
 						<td>
 							'.($type=='image'?
-                            '<a class="fancybox" href="'.$fichier['icon'].'" title="'.html_utf8($fichier['file']).'"><img src="'.$fichier['icon'].'" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
-                            :
-                            '<a target="_blank" href="'.$fichier['filepath'].'" title="Ouvrir '.html_utf8($fichier['file']).' dans une nouvelle fenêtre"><img src="'.$fichier['icon'].'" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
-                        ).'
+								'<a class="fancybox" href="'.$icon.'" title="'.html_utf8($fichier).'"><img src="'.$icon.'" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
+							:
+								'<a target="_blank" href="'.$dossier.$fichier.'" title="Ouvrir '.html_utf8($fichier).' dans une nouvelle fenêtre"><img src="'.$icon.'" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
+							).'
 						</td>
 						<td>
 							'.($type=='image'?
-                            '<a class="fancybox" href="'.$fichier['icon'].'" title="'.html_utf8($fichier['file']).'">'.substr($fichier['file'], 0, 70).'</a>'
-                            :
-                            '<a target="_blank" href="'.$fichier['filepath'].'" title="Ouvrir '.html_utf8($fichier['file']).' dans une nouvelle fenêtre">'.substr($fichier['file'], 0, 70).'</a>'
-                        ).'
+								'<a class="fancybox" href="'.$icon.'" title="'.html_utf8($fichier).'">'.substr($fichier, 0, 70).'</a>'
+							:
+								'<a target="_blank" href="'.$dossier.$fichier.'" title="Ouvrir '.html_utf8($fichier).' dans une nouvelle fenêtre">'.substr($fichier, 0, 70).'</a>'
+							).'
 						</td>
 						<td>
-							<span style="display:none">'.$fichier['size'].'</span>
-							'.formatSize($fichier['size']).'
+							<span style="display:none">'.$fsize.'</span>
+							'.formatSize($fsize).'
 						</td>
 						<td>
-							<span style="display:none">'.$fichier['mtime'].'</span>'
-                        // Supprimer : le lien est intégré ici pour raison graphique
-                        .'<img class="file-delete" src="../img/base/bullet_delete.png" title="Supprimer" alt="" style="float:right; cursor:pointer;" />'
-                        .date('d/m/y H:i', $fichier['mtime']).'
+							<span style="display:none">'.$mtime.'</span>'
+							// Supprimer : le lien est intégré ici pour raison graphique
+							.'<img class="file-delete" src="../img/base/bullet_delete.png" title="Supprimer" alt="" style="float:right; cursor:pointer;" />'
+							.date('d/m/y H:i', $mtime).'
+						</td>'
+						/*
+						<td>
+							<span style="display:none">'.$ctime.'</span>
+							'.date('d/m/y H:i', $ctime).'
 						</td>
+						*/
+						.'
 					</tr>';
-                }
-                ?>
-            </table>
+				}
+				?>
+			</table>
 		</div>
 	</body>
 	</html>
