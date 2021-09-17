@@ -5,3 +5,4 @@ config/test.clubalpinlyon.fr/ffcam/
 backup/*
 forum*
 .DS_Store
+robots.txt
