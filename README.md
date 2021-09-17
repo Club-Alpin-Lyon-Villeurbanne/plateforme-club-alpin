@@ -7,28 +7,6 @@ Le site a été développé en php par l'agence HereWeCom il y a quelques année
 C'est du php sans framework particulier, avec une structure relativement complexe.
 Il utilise une base mariadb.
 
-## fonctionnalités du site
-
-- affichage, ajout et modification de pages
-- affichage, ajout et modification d'articles
-- affichage des sorties
-- activation compte adhérent, gestion de son profil perso
-- création, modification et suppression de sorties
-- 
-
-## Règles de contribution
-
-- créer une nouvelle branche git localement
-- faire les modifs nécessaires localement
-- tester localement
-- pusher les modifs dans la branche sur github
-- créer une PR et assigner un reviewer. La PR doit contenir les infos permettant de tester la fonctionnalité.
-- seul le créateur de la PR peut merger la PR
-- une fois mergée, la fonctionnalité doit etre testé sur test.clubalpinlyon.fr
-- une fois validée, une PR de main -> production doit etre créee
-- la PR doit etre validée par un autre contributeur
-- si d'autres PR sont inclues dans ce push to prod, informez les responsables
-
 # Deployement
 
 Le deployement se fait automatiquement par [circleci](https://circleci.com/gh/Club-Alpin-Lyon-Villeurbanne/caflyon/tree/main).  

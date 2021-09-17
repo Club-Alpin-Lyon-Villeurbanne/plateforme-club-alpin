@@ -17,7 +17,7 @@ AddCharset utf-8 .html .css .js .xml .json .rss .atom
 # ----------------------------------------------------------------------
 
 # You can add custom pages to handle 500 or 403 pretty easily, if you like.
-ErrorDocument 404 /index.php?p1=404
+ErrorDocument 404 /site-caf/index.php?p1=404
 
 # ----------------------------------------------------------------------
 # URL REWRITING
