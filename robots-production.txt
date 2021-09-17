@@ -1,4 +1,5 @@
 User-agent: *
+
 Disallow: /admin/
 Disallow: /app/
 Disallow: /config/
@@ -11,3 +12,4 @@ Disallow: /js/
 Disallow: /scripts/
 Disallow: /templates/
 Disallow: /tools/
+Sitemap: https://www.clubalpinlyon.fr/sitemap.xml

@@ -17,6 +17,7 @@ jobs:
             case ${CIRCLE_BRANCH} in
                 "production" )
                     rm -rf .git
+                    mv robots-production.txt robots.txt
                     sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$PROD_ADMIN_PASSWORD/g" "config/www.clubalpinlyon.fr/params.php"
                     sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "config/www.clubalpinlyon.fr/params.php"
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$PROD_DB_PASSWORD/g" "config/www.clubalpinlyon.fr/db_config.php"
@@ -26,6 +27,7 @@ jobs:
                   ;;
                 "main" )
                     rm -rf .git
+                    mv robots-dev.txt robots.txt
                     sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$DEV_ADMIN_PASSWORD/g" "config/test.clubalpinlyon.fr/params.php"
                     sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "config/test.clubalpinlyon.fr/params.php"
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$DEV_DB_PASSWORD/g" "config/test.clubalpinlyon.fr/db_config.php"
