@@ -23,7 +23,7 @@ $p_showPartenairesSlider = true;
 
 // ADMIN
 $p_admin_login 		= 'caflyon';
-$p_admin_password 	= md5('tmp');
+$p_admin_password 	= md5('ADMIN_PASSWORD_TO_REPLACE');
 
 // NOM DU SITE ( apparaît notamment dans les e-mailings )
 $p_sitename='CAF Lyon Villeurbanne';
