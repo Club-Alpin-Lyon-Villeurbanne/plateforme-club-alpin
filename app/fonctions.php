@@ -517,7 +517,14 @@ function user_login($identifiant, $connectme=true){
 }
 // logout user
 function user_logout(){
-    setcookie('cafuser', '', -1, '/', '.clubalpinlyon.fr', (isset($_SERVER['HTTPS']) ? true : false), true); // suppression cookie
+    setcookie('cafuser', '', time() - 3600, '/', '.clubalpinlyon.fr', false, true); // suppression cookie
+    setcookie('cafuser', '', time() - 3600, '/', '.clubalpinlyon.fr', true, true); // suppression cookie
+    setcookie('cafuser', '', time() - 3600, '/', 'www.clubalpinlyon.fr', true, true); // suppression cookie
+    setcookie('cafuser', '', time() - 3600, '/', 'www.clubalpinlyon.fr', false, true); // suppression cookie
+    setcookie('cafuser', '', time() - 3600, '/', '', true, true); // suppression cookie
+    setcookie('cafuser', '', time() - 3600, '/', '', false, true); // suppression cookie
+    setcookie('cafuser', '', time() - 3600, '/', 'clubalpinlyon.fr', true, true); // suppression cookie
+    setcookie('cafuser', '', time() - 3600, '/', 'clubalpinlyon.fr', false, true); // suppression cookie
     unset($_SESSION['user']);
 }
 function user(){
