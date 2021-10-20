@@ -1,32 +1,51 @@
 FROM php:7.2-apache
-MAINTAINER Club Alpin Francais Chambery <webmaster@cafchambery.com>
-#https://github.com/webgriffe/docker-php-apache-base
-LABEL version="1.0"
 
-# update
-RUN apt-get update
+COPY --from=composer:2.1.8 /usr/bin/composer /usr/bin/composer
 
-# Install GD
-RUN apt-get update \
-	&& apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
-	&& docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-	&& docker-php-ext-install gd
+RUN apt update && \
+    apt install -y \
+        librabbitmq-dev \
+        uuid-dev \
+        libldap2-dev \
+        libmagickwand-dev \
+        libpq-dev \
+        libpcre3-dev \
+        libonig-dev \
+        libzip-dev \
+        libicu-dev \
+        libpng-dev \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        curl \
+        wget \
+        unzip \
+        git \
+        gpg \
+        nano \
+        vim \
+        jq \
+        cron \
+        supervisor && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install Mysql for php
-RUN docker-php-ext-install mysqli pdo_mysql
+RUN /usr/local/bin/docker-php-ext-install -j$(nproc) mysqli pdo_mysql && \
+    /usr/local/bin/docker-php-ext-install -j$(nproc) zip && \
+    /usr/local/bin/docker-php-ext-install -j$(nproc) opcache && \
+    /usr/local/bin/docker-php-ext-install -j$(nproc) mbstring && \
+    /usr/local/bin/docker-php-ext-install -j$(nproc) pcntl && \
+    /usr/local/bin/docker-php-ext-install -j$(nproc) sockets && \
+    /usr/local/bin/docker-php-ext-install -j$(nproc) intl && \
+    /usr/local/bin/docker-php-ext-install -j$(nproc) gd
 
-# Install mbstring
-RUN docker-php-ext-install mbstring
-
-# Install opcache
-RUN docker-php-ext-install opcache
-
-# Install XDEBUG
-ENV XDEBUG_ENABLE 0
-RUN pecl config-set preferred_state beta \
-    && pecl install -o -f xdebug \
-    && rm -rf /tmp/pear \
-    && pecl config-set preferred_state stable
+RUN pecl install igbinary-3.2.6 && \
+    echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/ext-igbinary.ini && \
+    pecl install apcu-5.1.20 && \
+    echo "extension=apcu.so" > /usr/local/etc/php/conf.d/ext-apcu.ini && \
+    pecl install apcu_bc-1.0.5 && \
+    echo "extension=apc.so" > /usr/local/etc/php/conf.d/ext-apcu_bc.ini && \
+    pecl install uuid-1.2.0 && \
+    echo "extension=uuid.so" > /usr/local/etc/php/conf.d/ext-uuid.ini
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
@@ -43,6 +62,14 @@ COPY ./utils/docker-99-xdebug.ini.disabled /usr/local/etc/php/conf.d/99-xdebug.i
 COPY ./utils/docker-phpinfo.php /var/www/html/phpinfo.php
 COPY ./utils/docker-start-apache.sh /usr/local/bin/start-apache.sh
 RUN chmod +x /usr/local/bin/start-apache.sh
+
+RUN wget -O phive.phar "https://github.com/phar-io/phive/releases/download/0.15.0/phive-0.15.0.phar" && \
+    wget -O phive.phar.asc "https://github.com/phar-io/phive/releases/download/0.15.0/phive-0.15.0.phar.asc" && \
+    gpg --no-tty --keyserver hkps://keys.openpgp.org --recv-keys 0x9D8A98B29B2D5D79 && \
+    gpg --no-tty --verify phive.phar.asc phive.phar && \
+    rm phive.phar.asc && \
+    chmod +x phive.phar && \
+    mv phive.phar /usr/local/bin/phive
 
 # network
 EXPOSE 80

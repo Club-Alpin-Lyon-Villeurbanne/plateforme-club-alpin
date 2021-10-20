@@ -1,51 +1,50 @@
 <?php
 // Cette page sert à joindre manuellement un user à une sortie
 
-if(user()){
-
-	// id de la sortie
-	$id_evt=intval($_GET['id_evt']);
+if (user()) {
+    // id de la sortie
+    $id_evt = (int) ($_GET['id_evt']);
     $id_dest = is_sortie_in_destination($id_evt);
     if ($id_dest) {
         $busses = get_bus_destination($id_dest);
     }
     include SCRIPTS.'connect_mysqli.php';
-    $req = "SELECT * FROM `".$pbd."evt` WHERE `id_evt` = ".$id_evt;
+    $req = 'SELECT * FROM `'.$pbd.'evt` WHERE `id_evt` = '.$id_evt;
     $result = $mysqli->query($req);
-    while($sorties = $result->fetch_assoc()){
+    while ($sorties = $result->fetch_assoc()) {
         $sortie = $sorties;
     }
 
-	if(!$id_evt){
-		echo '<p class="erreur">ID de sortie non spécifié</p>';
-	}
-	else{
-		?>
+    if (!$id_evt) {
+        echo '<p class="erreur">ID de sortie non spécifié</p>';
+    } else {
+        ?>
 
 		<h1>Inscrire un invité "nomade" à cette sortie</h1>
 
 		<?php inclure('explication-nomades', 'vide'); ?>
 
-		<form action="<?php echo $versCettePage;?>" method="post" class="loading">
+		<form action="<?php echo $versCettePage; ?>" method="post" class="loading">
 			<input type="hidden" name="operation" value="user_join_nomade" />
             <?php if ($id_dest) { ?>
                 <input type="hidden" name="id_destination" value="<?php echo $id_dest; ?>" />
             <?php } ?>
 
 			<?php
-			// MESSAGES A LA SOUMISSION
-			if($_POST['operation'] == 'user_join_nomade' && sizeof($errTab))	echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
-			// redirection en cas de réussite
-			if($_POST['operation'] == 'user_join_nomade' && !sizeof($errTab)){
-				?>
+            // MESSAGES A LA SOUMISSION
+            if ('user_join_nomade' == $_POST['operation'] && count($errTab)) {
+                echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+            }
+        // redirection en cas de réussite
+        if ('user_join_nomade' == $_POST['operation'] && !count($errTab)) {
+            ?>
 				<p class="info">Envoi effectué. Actualisez cette page pour afficher les modifications.</p>
 				<script type="text/javascript">
 					top.window.location.href=top.window.location.href;
 					top.window.location.reload();
 				</script>
 				<?php
-			}
-			?>
+        } ?>
 			<hr />
 
 			<div>
@@ -58,31 +57,33 @@ if(user()){
 					var prefilled = new Array();
 				</script>
 				<select name="id_user" class="type1" style="width:40%">
-					<option value="0" <?php if($_POST['id_user']=='0') echo 'selected="selected"';?>>- Non merci, créer un nouvel adhérent nomade</option>
+					<option value="0" <?php if ('0' == $_POST['id_user']) {
+            echo 'selected="selected"';
+        } ?>>- Non merci, créer un nouvel adhérent nomade</option>
 					<?php
-					// liste des adhérents (table user) créés par moi
-					include SCRIPTS.'connect_mysqli.php';
-					$req="SELECT  id_user, cafnum_user, firstname_user, lastname_user, civ_user
+                    // liste des adhérents (table user) créés par moi
+                    include SCRIPTS.'connect_mysqli.php';
+        $req = 'SELECT  id_user, cafnum_user, firstname_user, lastname_user, civ_user
 								, created_user, tel_user, tel2_user
 						FROM  caf_user
 						WHERE valid_user=1
 						AND nomade_user=1
 						ORDER BY created_user DESC
-						LIMIT 1000";
-						//AND nomade_parent_user=".intval($_SESSION['user']['id_user'])."
-					$result = $mysqli->query($req);
-					while($row = $result->fetch_assoc()){
-						echo '<option value="'.intval($row['id_user']).'">'.html_utf8($row['cafnum_user'].' - '.$row['firstname_user'].' '.$row['lastname_user']).' - le '.date('d/m/y', $row['created_user']).'</option>';
-						/*
-						echo '<input type="hidden" id="prefilled-1-'.intval($row['id_user']).'" value="'.html_utf8($row['civ_user']).'" />'
-							.'<input type="hidden" id="prefilled-2-'.intval($row['id_user']).'" value="'.html_utf8($row['firstname_user']).'" />'
-							.'<input type="hidden" id="prefilled-3-'.intval($row['id_user']).'" value="'.html_utf8($row['lastname_user']).'" />'
-							.'<input type="hidden" id="prefilled-4-'.intval($row['id_user']).'" value="'.html_utf8($row['nickname_user']).'" />'
-							.'<input type="hidden" id="prefilled-5-'.intval($row['id_user']).'" value="'.html_utf8($row['tel_user']).'" />'
-							.'<input type="hidden" id="prefilled-6-'.intval($row['id_user']).'" value="'.html_utf8($row['tel2_user']).'" />'
-							;
-							*/
-						echo '
+						LIMIT 1000';
+        //AND nomade_parent_user=".intval($_SESSION['user']['id_user'])."
+        $result = $mysqli->query($req);
+        while ($row = $result->fetch_assoc()) {
+            echo '<option value="'.(int) ($row['id_user']).'">'.html_utf8($row['cafnum_user'].' - '.$row['firstname_user'].' '.$row['lastname_user']).' - le '.date('d/m/y', $row['created_user']).'</option>';
+            /*
+            echo '<input type="hidden" id="prefilled-1-'.intval($row['id_user']).'" value="'.html_utf8($row['civ_user']).'" />'
+                .'<input type="hidden" id="prefilled-2-'.intval($row['id_user']).'" value="'.html_utf8($row['firstname_user']).'" />'
+                .'<input type="hidden" id="prefilled-3-'.intval($row['id_user']).'" value="'.html_utf8($row['lastname_user']).'" />'
+                .'<input type="hidden" id="prefilled-4-'.intval($row['id_user']).'" value="'.html_utf8($row['nickname_user']).'" />'
+                .'<input type="hidden" id="prefilled-5-'.intval($row['id_user']).'" value="'.html_utf8($row['tel_user']).'" />'
+                .'<input type="hidden" id="prefilled-6-'.intval($row['id_user']).'" value="'.html_utf8($row['tel2_user']).'" />'
+                ;
+                */
+            echo '
 						<script type="text/javascript">
 							prefilled[prefilled.length] = {
 								"civ_user": "'.addslashes(($row['civ_user'])).'",
@@ -93,9 +94,8 @@ if(user()){
 								"tel2_user": "'.addslashes(($row['tel2_user'])).'"
 							};
 						</script>';
-					}
-					$mysqli->close;
-					?>
+        }
+        $mysqli->close; ?>
 				</select>
 			</div>
 			<hr />
@@ -103,25 +103,31 @@ if(user()){
 
 			<div class="tiers clear">
 				<b>Numéro de licence CAF :</b><br />
-				<input type="text" name="cafnum_user" class="type1" value="<?php echo inputVal('cafnum_user', '');?>" placeholder="Requis" style="width:90%" />
+				<input type="text" name="cafnum_user" class="type1" value="<?php echo inputVal('cafnum_user', ''); ?>" placeholder="Requis" style="width:90%" />
 			</div>
 
 			<div class="tiers clear">
 				<b>Civilité :</b><br />
 				<select name="civ_user" class="type1" style="width:30%">
-					<option value="M." <?php if($_POST['civ_user']=='M.') echo 'selected="selected"';?>>M.</option>
-					<option value="Mme." <?php if($_POST['civ_user']=='Mme.') echo 'selected="selected"';?>>Mme.</option>
-					<option value="Mlle." <?php if($_POST['civ_user']=='Mlle.') echo 'selected="selected"';?>>Mlle.</option>
+					<option value="M." <?php if ('M.' == $_POST['civ_user']) {
+            echo 'selected="selected"';
+        } ?>>M.</option>
+					<option value="Mme." <?php if ('Mme.' == $_POST['civ_user']) {
+            echo 'selected="selected"';
+        } ?>>Mme.</option>
+					<option value="Mlle." <?php if ('Mlle.' == $_POST['civ_user']) {
+            echo 'selected="selected"';
+        } ?>>Mlle.</option>
 				</select>
 			</div>
 
 			<div class="tiers clear">
 				<b>Nom :</b><br />
-				<input type="text" name="lastname_user" class="type1" value="<?php echo inputVal('lastname_user', '');?>" placeholder="Requis" style="width:90%" />
+				<input type="text" name="lastname_user" class="type1" value="<?php echo inputVal('lastname_user', ''); ?>" placeholder="Requis" style="width:90%" />
 			</div>
 			<div class="tiers">
 				<b>Prenom :</b><br />
-				<input type="text" name="firstname_user" class="type1" value="<?php echo inputVal('firstname_user', '');?>" placeholder="Requis" style="width:90%" />
+				<input type="text" name="firstname_user" class="type1" value="<?php echo inputVal('firstname_user', ''); ?>" placeholder="Requis" style="width:90%" />
 			</div>
 
 			<div class="tiers clear">
@@ -135,34 +141,34 @@ if(user()){
 			</div>
 			<div class="tiers">
 				<b>Téléphone :</b><br />
-				<input type="text" name="tel_user" class="type1" value="<?php echo inputVal('tel_user', '');?>" placeholder="Facultatif" style="width:90%" />
+				<input type="text" name="tel_user" class="type1" value="<?php echo inputVal('tel_user', ''); ?>" placeholder="Facultatif" style="width:90%" />
 			</div>
 			<div class="tiers">
 				<b>Téléphone sécurité :</b><br />
-				<input type="text" name="tel2_user" class="type1" value="<?php echo inputVal('tel2_user', '');?>" placeholder="Facultatif" style="width:90%" />
+				<input type="text" name="tel2_user" class="type1" value="<?php echo inputVal('tel2_user', ''); ?>" placeholder="Facultatif" style="width:90%" />
 			</div>
 
-            <?php if ($sortie['cb_evt'] == '1' OR $sortie['repas_restaurant'] == '1' OR $id_dest)  { ?>
+            <?php if ('1' == $sortie['cb_evt'] || '1' == $sortie['repas_restaurant'] || $id_dest) { ?>
             <hr class="  clear">
                 <h2>Options :</h2>
             <?php } ?>
-            <?php if ($sortie['cb_evt'] == '1')  { ?>
+            <?php if ('1' == $sortie['cb_evt']) { ?>
             <div class=" tiers clear">
                 <label for="is_cb"><b>Paiement en ligne : </b></label><br>
                 <select name="is_cb" class="type1" style="width:90%">
-                    <option value="-1" <?php echo ($_POST['is_cb'] == '-1' ? ' selected="selected" ' : ''); ?> >NSP</option>
-                    <option value="0" <?php echo ($_POST['is_cb'] == '0' ? ' selected="selected" ' : ''); ?> >Non</option>
-                    <option value="1" <?php echo ($_POST['is_cb'] == '1' ? ' selected="selected" ' : ''); ?> >Oui</option>
+                    <option value="-1" <?php echo '-1' == $_POST['is_cb'] ? ' selected="selected" ' : ''; ?> >NSP</option>
+                    <option value="0" <?php echo '0' == $_POST['is_cb'] ? ' selected="selected" ' : ''; ?> >Non</option>
+                    <option value="1" <?php echo '1' == $_POST['is_cb'] ? ' selected="selected" ' : ''; ?> >Oui</option>
                 </select>
             </div>
             <?php } ?>
-            <?php if ($sortie['repas_restaurant'] == '1')  { ?>
+            <?php if ('1' == $sortie['repas_restaurant']) { ?>
             <div class=" tiers clear">
                 <label for="is_restaurant"><b>Restaurant : </b></label><br>
                 <select name="is_restaurant" class="type1" style="width:90%">
-                    <option value="-1" <?php echo ($_POST['is_restaurant'] == '-1' ? ' selected="selected" ' : ''); ?> >NSP</option>
-                    <option value="0" <?php echo ($_POST['is_restaurant'] == '0' ? ' selected="selected" ' : ''); ?> >Non</option>
-                    <option value="1" <?php echo ($_POST['is_restaurant'] == '1' ? ' selected="selected" ' : ''); ?> >Oui</option>
+                    <option value="-1" <?php echo '-1' == $_POST['is_restaurant'] ? ' selected="selected" ' : ''; ?> >NSP</option>
+                    <option value="0" <?php echo '0' == $_POST['is_restaurant'] ? ' selected="selected" ' : ''; ?> >Non</option>
+                    <option value="1" <?php echo '1' == $_POST['is_restaurant'] ? ' selected="selected" ' : ''; ?> >Oui</option>
                 </select>
             </div>
             <?php } ?>
@@ -170,17 +176,23 @@ if(user()){
                 <div class="lft" style="padding: 5px 10px 5px 0;">
                 <label for="id_bus_lieu_destination"><b>Transport : </b></label><br>
                 <select name="id_bus_lieu_destination" class="type1" style="width:90%">
-                    <option value="-1" <?php echo ($_POST['id_bus_lieu_destination'][$i] == '-1' ? ' selected="selected" ' : ''); ?> >Covoiturage</option>
+                    <option value="-1" <?php echo '-1' == $_POST['id_bus_lieu_destination'][$i] ? ' selected="selected" ' : ''; ?> >Covoiturage</option>
                     <?php
                         $b = 1; foreach ($busses as $bus) {
-                        if ($bus['ramassage']) {
-                        foreach ($bus['ramassage'] as $point) {
-                        if ($bus['places_disponibles'] > 0) {
-                    ?>
-                    <option value="<?php echo $point['bdl_id']; ?>" <?php if ($_POST['id_bus_lieu_destination'] == $point['bdl_id']) echo  ' selected="selected" '; ?>>
+                            if ($bus['ramassage']) {
+                                foreach ($bus['ramassage'] as $point) {
+                                    if ($bus['places_disponibles'] > 0) {
+                                        ?>
+                    <option value="<?php echo $point['bdl_id']; ?>" <?php if ($_POST['id_bus_lieu_destination'] == $point['bdl_id']) {
+                                            echo ' selected="selected" ';
+                                        } ?>>
                         <?php echo $bus['intitule']; ?> - <?php echo $point['nom']; ?>, à <?php echo display_time($point['date']); ?> (<?php echo $bus['places_disponibles']; ?> places restantes)
                     </option>
-                    <?php } } } } ?>
+                    <?php
+                                    }
+                                }
+                            }
+                        } ?>
                 </select>
                 </div>
             <?php } ?>
@@ -223,5 +235,5 @@ if(user()){
 		});
 		</script>
 		<?php
-	}
+    }
 }

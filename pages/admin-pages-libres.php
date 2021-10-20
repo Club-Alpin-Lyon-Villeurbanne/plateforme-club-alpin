@@ -1,41 +1,37 @@
 <?php
-	// ********************************************
-	// TODO :
-	// NE SUPPORTE PAS LE MULTILINGUE POUR L'INSTANT
+    // ********************************************
+    // TODO :
+    // NE SUPPORTE PAS LE MULTILINGUE POUR L'INSTANT
 
-
-	if(!admin()){
-		echo 'Votre session administrateur a expiré';
-	}
-	else{
-		include SCRIPTS.'connect_mysqli.php';
-		$tab=array();
-		$req="SELECT * FROM `".$pbd."page` WHERE `pagelibre_page` =1 ORDER BY `ordre_page` DESC LIMIT 1000";
-		$result = $mysqli->query($req);
-		while($row = $result->fetch_assoc()){
-
-			// récupération de la date de dernière modification de l'élément contenu si existant
-			$id_page=$row['id_page'];
-			$lang_content_html=$mysqli->real_escape_string($p_langs[0]); // dans la langue par défaut
-			$req="SELECT `date_content_html`
+    if (!admin()) {
+        echo 'Votre session administrateur a expiré';
+    } else {
+        include SCRIPTS.'connect_mysqli.php';
+        $tab = [];
+        $req = 'SELECT * FROM `'.$pbd.'page` WHERE `pagelibre_page` =1 ORDER BY `ordre_page` DESC LIMIT 1000';
+        $result = $mysqli->query($req);
+        while ($row = $result->fetch_assoc()) {
+            // récupération de la date de dernière modification de l'élément contenu si existant
+            $id_page = $row['id_page'];
+            $lang_content_html = $mysqli->real_escape_string($p_langs[0]); // dans la langue par défaut
+            $req = "SELECT `date_content_html`
 				FROM `caf_content_html`
 				WHERE `code_content_html` LIKE 'main-pagelibre-$id_page'
 				AND `lang_content_html` LIKE '$lang_content_html'
 				ORDER BY `date_content_html` ASC
 				LIMIT 1";
-			$result2 = $mysqli->query($req);
-			if(!$result2->num_rows)
-				$row['lastedit_page']=0;
-			else{
-				while($row2=$result2->fetch_array(MYSQLI_ASSOC))
-					$row['lastedit_page']=$row2['date_content_html'];
-			}
+            $result2 = $mysqli->query($req);
+            if (!$result2->num_rows) {
+                $row['lastedit_page'] = 0;
+            } else {
+                while ($row2 = $result2->fetch_array(\MYSQLI_ASSOC)) {
+                    $row['lastedit_page'] = $row2['date_content_html'];
+                }
+            }
 
-			$tab[]=$row;
-		}
-		$mysqli->close;
-
-		?>
+            $tab[] = $row;
+        }
+        $mysqli->close; ?>
 
 		<h1>Gestion des pages &laquo;libres&raquo; du site</h2>
 		<p>
@@ -98,31 +94,29 @@
 			</thead>
 			<tbody>
 				<?php
-				$total=0;
+                $total = 0;
 
-				for($i=0; $i<sizeof($tab); $i++){
-					$elt=$tab[$i];
+        for ($i = 0; $i < count($tab); ++$i) {
+            $elt = $tab[$i];
 
-					echo '<tr id="tr-'.$elt['id_page'].'" class="'.($elt['vis_page']?'vis-on':'vis-off').'">'
-						.'<td style="width:120px">'
-							.'<a class="delete" href="javascript:void(0)" rel="'.intval($elt['id_page']).'|'.$elt['code_page'].'" title="Supprimer définitivement cette page"><img src="img/base/delete.png" alt="DEL" title="Supprimer" /></a> &nbsp;'
-							.'<a href="'.$p_racine.'pages/'.html_utf8($elt['code_page']).'.html" title="Modifier cette page"><img src="img/base/page_edit.png" alt="EDIT" title="Modifier cette page" /></a> &nbsp;'
-							.'<a class="fancyframe" href="includer.php?admin=true&p=pages/admin-pages-libres-edit.php&amp;id_page='.intval($elt['id_page']).'" title="Modifier les METAS"><img src="img/base/application_form_edit.png" alt="EDIT METAS" title="Modifier les metas" /></a> &nbsp;'
-							.'<a class="majVis" href="javascript:void(0)" rel="'.intval($elt['id_page']).'|'.$elt['lastedit_page'].'" title="Afficher/masquer cette page aux visiteurs du site"><img src="img/base/vis-'.($elt['vis_page']?'on':'off').'.png" alt="VIS" title="Afficher/masquer" /></a> &nbsp;'
-						.'</td>'
-						.'<td>'.intval($elt['id_page']).'</td>'
-						// .'<td>'.intval($elt['vis_page']).'</td>'
-						.'<td>'.html_utf8($elt['code_page']).'</td>'
-						.'<td>'.html_utf8($elt['default_name_page']).'</td>'
-						.'<td><a href="/pages/'.html_utf8($elt['code_page']).'.html" title="">/pages/'.html_utf8($elt['code_page']).'.html</a></td>'
-						.'<td>'.substr(html_utf8($elt['default_name_page']), 0, 200).'</td>'
-						.'<td>'.(intval($elt['priority_page'])*10).'%</td>'
-						.'<td><span style="display:none">'.$elt['created_page'].'</span> '.date('d/m/Y H:i', $elt['created_page']).'</td>'
-						.'<td><span style="display:none">'.$elt['lastedit_page'].'</span> '.(!$elt['lastedit_page']?'Jamais':date('d/m/Y H:i', $elt['lastedit_page'])).'</td>'
-					. '</tr>'."\n";
-				}
-
-				?>
+            echo '<tr id="tr-'.$elt['id_page'].'" class="'.($elt['vis_page'] ? 'vis-on' : 'vis-off').'">'
+                        .'<td style="width:120px">'
+                            .'<a class="delete" href="javascript:void(0)" rel="'.(int) ($elt['id_page']).'|'.$elt['code_page'].'" title="Supprimer définitivement cette page"><img src="img/base/delete.png" alt="DEL" title="Supprimer" /></a> &nbsp;'
+                            .'<a href="'.$p_racine.'pages/'.html_utf8($elt['code_page']).'.html" title="Modifier cette page"><img src="img/base/page_edit.png" alt="EDIT" title="Modifier cette page" /></a> &nbsp;'
+                            .'<a class="fancyframe" href="includer.php?admin=true&p=pages/admin-pages-libres-edit.php&amp;id_page='.(int) ($elt['id_page']).'" title="Modifier les METAS"><img src="img/base/application_form_edit.png" alt="EDIT METAS" title="Modifier les metas" /></a> &nbsp;'
+                            .'<a class="majVis" href="javascript:void(0)" rel="'.(int) ($elt['id_page']).'|'.$elt['lastedit_page'].'" title="Afficher/masquer cette page aux visiteurs du site"><img src="img/base/vis-'.($elt['vis_page'] ? 'on' : 'off').'.png" alt="VIS" title="Afficher/masquer" /></a> &nbsp;'
+                        .'</td>'
+                        .'<td>'.(int) ($elt['id_page']).'</td>'
+                        // .'<td>'.intval($elt['vis_page']).'</td>'
+                        .'<td>'.html_utf8($elt['code_page']).'</td>'
+                        .'<td>'.html_utf8($elt['default_name_page']).'</td>'
+                        .'<td><a href="/pages/'.html_utf8($elt['code_page']).'.html" title="">/pages/'.html_utf8($elt['code_page']).'.html</a></td>'
+                        .'<td>'.substr(html_utf8($elt['default_name_page']), 0, 200).'</td>'
+                        .'<td>'.((int) ($elt['priority_page']) * 10).'%</td>'
+                        .'<td><span style="display:none">'.$elt['created_page'].'</span> '.date('d/m/Y H:i', $elt['created_page']).'</td>'
+                        .'<td><span style="display:none">'.$elt['lastedit_page'].'</span> '.(!$elt['lastedit_page'] ? 'Jamais' : date('d/m/Y H:i', $elt['lastedit_page'])).'</td>'
+                    .'</tr>'."\n";
+        } ?>
 			</tbody>
 		</table>
 
@@ -272,5 +266,5 @@
 		</script>
 		<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 		<?php
-	}
-	?>
+    }
+    ?>

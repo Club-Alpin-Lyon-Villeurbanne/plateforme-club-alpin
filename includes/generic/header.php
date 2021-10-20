@@ -40,13 +40,13 @@
 	<!-- <script type="text/javascript" src="tools/fancybox/jquery.mousewheel-3.0.4.pack.js"></script> -->
 
 	<!-- script persos -->
-    <script src="js/fonctions.js<?php antiCache('localonly');?>" type="text/javascript"></script>
+    <script src="js/fonctions.js<?php antiCache('localonly'); ?>" type="text/javascript"></script>
 	<!-- script scroll up -->
     <script src="js/scrollup.js" type="text/javascript"></script>
 
-	<?php if(admin()){ ?>
+	<?php if (admin()) { ?>
 		<!-- script admin -->
-		<script src="js/fonctionsAdmin.js<?php antiCache('localonly');?>" type="text/javascript"></script>
+		<script src="js/fonctionsAdmin.js<?php antiCache('localonly'); ?>" type="text/javascript"></script>
 	<?php } ?>
 
 	<!-- cufon
@@ -58,18 +58,18 @@
 	-->
 
     <script src="js/onready.js" type="text/javascript"></script>
-    <script src="js/onready-site.js<?php antiCache('localonly');?>" type="text/javascript"></script>
+    <script src="js/onready-site.js<?php antiCache('localonly'); ?>" type="text/javascript"></script>
 
 
 	<!-- OPENGRAPHS -->
-	<meta property="og:title" content="<?php echo html_utf8($meta_title);?>" />
-	<meta property="og:description" content="<?php echo htmlspecialchars_decode(html_utf8($meta_description));?>" />
+	<meta property="og:title" content="<?php echo html_utf8($meta_title); ?>" />
+	<meta property="og:description" content="<?php echo htmlspecialchars_decode(html_utf8($meta_description)); ?>" />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="<?php echo $versCettePage; ?>" />
-	<?php if($ogImage){ ?>
+	<?php if ($ogImage) { ?>
 		<meta property="og:image" content="<?php echo $ogImage; ?>" />
 	<?php } ?>
-	<meta property="og:site_name" content="<?php echo html_utf8($p_sitename);?>" />
+	<meta property="og:site_name" content="<?php echo html_utf8($p_sitename); ?>" />
 
 	<!-- RSS -->
-	<link rel="alternate" type="application/rss+xml" title="RSS" href="<?php echo $p_racine;?>rss.xml?mode=articles" />
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="<?php echo $p_racine; ?>rss.xml?mode=articles" />

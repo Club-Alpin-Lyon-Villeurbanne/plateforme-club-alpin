@@ -4,49 +4,62 @@
     // affichage complete d'une destination.
     // var necessaire : $destination
 
-    if(sizeof($errTab) && (in_array ($_POST['operation'], array('dest_validate','dest_lock','dest_annuler','dest_mailer'))))
+    if (count($errTab) && (in_array($_POST['operation'], ['dest_validate', 'dest_lock', 'dest_annuler', 'dest_mailer'], true))) {
         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+    }
 
-    if(!$destination || empty($destination) ) echo '<p class="erreur">Erreur : destination non définie</p>';
-    else{ ?>
+    if (!$destination || empty($destination)) {
+        echo '<p class="erreur">Erreur : destination non définie</p>';
+    } else { ?>
 
         <?php $nInscritDestination = 0; ?>
-        <?php if (!isset($destination['bus'])) { echo '<p class="erreur">pas de bus définit</p>'; } else { foreach ($destination['bus'] as $id_bus => $bus) { ?>
-            <?php if (!isset($bus['ramassage'])) { echo '<p class="erreur">pas de point de rammassage pour le bus</p>'; } else { foreach ($bus['ramassage'] as $id_point => $point) {  ?>
+        <?php if (!isset($destination['bus'])) {
+        echo '<p class="erreur">pas de bus définit</p>';
+    } else {
+        foreach ($destination['bus'] as $id_bus => $bus) { ?>
+            <?php if (!isset($bus['ramassage'])) {
+            echo '<p class="erreur">pas de point de rammassage pour le bus</p>';
+        } else {
+            foreach ($bus['ramassage'] as $id_point => $point) {  ?>
                 <?php if ($point['utilisateurs']['valide']) {
-                    $nInscritDestination += count($point['utilisateurs']['valide']);
-                    $destination['bus'][$id_bus]['countUtilisateurs'] += count($point['utilisateurs']['valide']);
-                } ?>
-            <?php } } ?>
-        <?php } } ?>
-        <?php if (!isset($destination['sorties'])) { echo '<p class="erreur">pas de sortie associée à la destination</p>'; } else { foreach ($destination['sorties'] as $e => $evt) { ?>
-        <?php if ($evt['status_evt'] == 1) { ?>
+                $nInscritDestination += count($point['utilisateurs']['valide']);
+                $destination['bus'][$id_bus]['countUtilisateurs'] += count($point['utilisateurs']['valide']);
+            } ?>
+            <?php }
+        } ?>
+        <?php }
+    } ?>
+        <?php if (!isset($destination['sorties'])) {
+        echo '<p class="erreur">pas de sortie associée à la destination</p>';
+    } else {
+        foreach ($destination['sorties'] as $e => $evt) { ?>
+        <?php if (1 == $evt['status_evt']) { ?>
             <?php
             $depose[$evt['destination']['id_lieu_depose']][$evt['destination']['date_depose']][] = 'Gp'.$e;
             $reprise[$evt['destination']['id_lieu_reprise']][$evt['destination']['date_reprise']][] = 'Gp'.$e;
             ?>
             <?php } ?>
-        <?php } } ?>
+        <?php }
+    } ?>
 
-        <?php include (INCLUDES.'dest'.DS.'admin_status.php'); ?>
+        <?php include INCLUDES.'dest'.DS.'admin_status.php'; ?>
 
         <?php /* envoyer les emails de cloture */
-        if( allowed('destination_mailer')
-            || $destination['id_user_who_create']==$_SESSION['user']['id_user']
-            || $destination['id_user_responsable']==$_SESSION['user']['id_user']
-            || $destination['id_user_adjoint']==$_SESSION['user']['id_user'] // je suis l'un des co/encadrant de l'une des sorties
-        ){
-
+        if (allowed('destination_mailer')
+            || $destination['id_user_who_create'] == $_SESSION['user']['id_user']
+            || $destination['id_user_responsable'] == $_SESSION['user']['id_user']
+            || $destination['id_user_adjoint'] == $_SESSION['user']['id_user'] // je suis l'un des co/encadrant de l'une des sorties
+        ) {
             ?>
 
-            <?php if ($destination['mail'] == 0 ) { ?>
-                <?php if ( date('Y-m-d H:i:s') > $destination['inscription_fin'] ) { ?>
+            <?php if (0 == $destination['mail']) { ?>
+                <?php if (date('Y-m-d H:i:s') > $destination['inscription_fin']) { ?>
                 <div class="note mr10">
                     <form action="<?php echo $versCettePage; ?>" method="post">
                         <input type="hidden" name="operation" value="dest_mailer"/>
                         <input type="hidden" name="id_destination" value="<?php echo $destination['id']; ?>"/>
 
-                        <?php if ($p_transporteurs && sizeof($p_transporteurs)) { ?>
+                        <?php if ($p_transporteurs && count($p_transporteurs)) { ?>
                         <label for="transporteur"><b>Tranporteur :</b></label><br>
                         <select name="transporteur" class="type1" style="width:97%">
                             <option value="">- Sélectionner un transporteur</option>
@@ -61,25 +74,26 @@
                         <textarea class="type1" name="content_mail" style="width:95%;height:400px;" ><?php
                             echo "Bonjour,\n\n";
                             echo "Le $p_sitename organise des sorties le ".display_date($destination['date'])." et vous sollicite pour le transport de ses adhérents.\n";
-                            echo "\n# ".$destination['nom']."\nSecteur : ".$destination['lieu']['nom']." [GPS] (".substr($destination['lieu']['lat'],0,8).', '. substr($destination['lieu']['lng'],0,8).")"."\n";
+                            echo "\n# ".$destination['nom']."\nSecteur : ".$destination['lieu']['nom'].' [GPS] ('.substr($destination['lieu']['lat'], 0, 8).', '.substr($destination['lieu']['lng'], 0, 8).')'."\n";
                             echo "\n# Nombre total de participants transportés : $nInscritDestination\n";
                             echo "\n# Lieux et horaires de ramasse : \n";
                         ?><?php
                             $b = 1;
                             foreach ($destination['bus'] as $bus) {
                                 if ($bus['ramassage']) {
-                                    if ($bus['countUtilisateurs'])
-                                    echo "\n".$bus['intitule'].' - '.$bus['countUtilisateurs'].' personne(s)'."\n";
+                                    if ($bus['countUtilisateurs']) {
+                                        echo "\n".$bus['intitule'].' - '.$bus['countUtilisateurs'].' personne(s)'."\n";
+                                    }
                                     foreach ($bus['ramassage'] as $point) {
                                         $cpuv = count($point['utilisateurs']['valide']);
-                                        $tmpUsers = array();
+                                        $tmpUsers = [];
                                         if ($point['utilisateurs']['valide']) { ?>[<?php echo $b++; ?>]  : <?php echo $point['nom']; ?>, à <?php echo display_time($point['date']); ?> : <?php echo $cpuv; ?> personne(s)  [GPS] (<?php echo substr($point['lat'], 0, 8); ?>, <?php echo substr($point['lng'], 0, 8); ?>)<?php echo "\n";
-                                         } else {}
+                                         }
                                     }
                                 }
                             }
                             echo "\n# Destinations : \n";
-                            $lieux = array();
+                            $lieux = [];
 
                             echo "\n- Lieux de dépose : \n";
                             foreach ($depose as $id_d => $hours) {
@@ -91,7 +105,7 @@
                                         $lieu = $lieux[$id_d];
                                     }
                                     echo $lieu['nom'];
-                                    echo ', à '.display_time($hour)." [GPS] (".substr($lieu['lat'],0,8).', '. substr($lieu['lng'],0,8).")\n";
+                                    echo ', à '.display_time($hour).' [GPS] ('.substr($lieu['lat'], 0, 8).', '.substr($lieu['lng'], 0, 8).")\n";
                                 }
                             }
                             echo "\n- Lieux de reprise : \n";
@@ -104,20 +118,18 @@
                                         $lieu = $lieux[$id_d];
                                     }
                                     echo $lieu['nom'];
-                                    echo ', à '.display_time($hour)." [GPS] (".substr($lieu['lat'],0,8).', '. substr($lieu['lng'],0,8).")\n";
+                                    echo ', à '.display_time($hour).' [GPS] ('.substr($lieu['lat'], 0, 8).', '.substr($lieu['lng'], 0, 8).")\n";
                                 }
                             }
                             echo "\n# Coordonnées du responsable de destination : \n";
                             if (is_array($destination['responsable'])) {
                                 $um = $destination['responsable'];
-                            }
-                            elseif (is_array($destination['co-responsable'])) {
+                            } elseif (is_array($destination['co-responsable'])) {
                                 $um = $destination['responsable'];
-                            }
-                            else {
+                            } else {
                                 $um = $destination['createur'];
                             }
-                            echo $um['ci_user'].' '.$um['lastname_user'].' '.$um['firstname_user']. ' - '.$um['email_user']. ' - '.$um['tel_user']. ' - '.$um['tel2_user']."\n";
+                            echo $um['ci_user'].' '.$um['lastname_user'].' '.$um['firstname_user'].' - '.$um['email_user'].' - '.$um['tel_user'].' - '.$um['tel2_user']."\n";
                             echo "\nEnvoyé par : $p_sitename \n";
                         ?></textarea>
 
@@ -147,7 +159,8 @@
             <?php } ?>
 
 
-        <?php } ?>
+        <?php
+        } ?>
 
         <?php
             // titre
@@ -158,18 +171,19 @@
         ?>
 
         <?php /* imprimer la fiche de destination */
-        if( allowed('destination_print')
-            || $destination['id_user_who_create']==$_SESSION['user']['id_user']
-            || $destination['id_user_responsable']==$_SESSION['user']['id_user']
-            || $destination['id_user_adjoint']==$_SESSION['user']['id_user']
-            || in_array($_SESSION['user']['id_user'], get_all_encadrants_destination($destination['id'])) // je suis l'un des co/encadrant de l'une des sorties
-        ){
+        if (allowed('destination_print')
+            || $destination['id_user_who_create'] == $_SESSION['user']['id_user']
+            || $destination['id_user_responsable'] == $_SESSION['user']['id_user']
+            || $destination['id_user_adjoint'] == $_SESSION['user']['id_user']
+            || in_array($_SESSION['user']['id_user'], get_all_encadrants_destination($destination['id']), true) // je suis l'un des co/encadrant de l'une des sorties
+        ) {
             ?>
-            <a href="<?php echo 'feuille-de-sortie/dest-'.intval($destination['id']).'.html'; ?>" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
+            <a href="<?php echo 'feuille-de-sortie/dest-'.(int) ($destination['id']).'.html'; ?>" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
                 <img src="img/base/print.png" alt="PRINT" title="" style="height:20px" />
                 Imprimer la fiche de destination
             </a><br />
-        <?php } ?>
+        <?php
+        } ?>
 
         <?php
             $p_date = date('Y-m-d', $p_time);
@@ -178,23 +192,23 @@
             $destTime = new DateTime($expDate[0]);
             $interval = $nowTime->diff($destTime);
 
-            if($destination['id_user_responsable']==$_SESSION['user']['id_user'] || $destination['id_user_adjoint']==$_SESSION['user']['id_user']){
+            if ($destination['id_user_responsable'] == $_SESSION['user']['id_user'] || $destination['id_user_adjoint'] == $_SESSION['user']['id_user']) {
                 // avant l'evt
-                if($interval->invert == 0) {
+                if (0 == $interval->invert) {
                     echo '<p class="info"><img src="img/inscrit-encadrant.png" alt="" title="" style="float:left" /> <br />Vous êtes &laquo; '.
-                        ($destination['id_user_responsable']==$_SESSION['user']['id_user'] ? '' : 'co-').'responsable &raquo; de l\'organisation de cette destination.<br />&nbsp;
+                        ($destination['id_user_responsable'] == $_SESSION['user']['id_user'] ? '' : 'co-').'responsable &raquo; de l\'organisation de cette destination.<br />&nbsp;
                     </p><br />';
                 }
                 // apres l'evt
                 else {
                     echo '<p class="info"><img src="img/inscrit-encadrant.png" alt="" title="" style="float:left" /> <br />Vous avez organisé cette destination en temps que &laquo; '.
-                        ($destination['id_user_responsable']==$_SESSION['user']['id_user'] ? '' : 'co-').'responsable &raquo;.<br />&nbsp;
+                        ($destination['id_user_responsable'] == $_SESSION['user']['id_user'] ? '' : 'co-').'responsable &raquo;.<br />&nbsp;
                     </p><br />';
                 }
             }
         ?>
 
-        <?php include(INCLUDES.'dest'.DS.'display.php'); ?>
+        <?php include INCLUDES.'dest'.DS.'display.php'; ?>
 
         <?php if (user_in_destination($_SESSION['user']['id_user'], $destination['id'])
             || $destination[id_user_who_create] == $_SESSION['id_user']
@@ -213,7 +227,7 @@
                         <div class="note mr20 bbox">
                             <ul class="transport ">
                             <?php foreach ($bus['ramassage'] as $point) { ?>
-                                <?php $tmpUsers = array(); ?>
+                                <?php $tmpUsers = []; ?>
                                 <?php if ($point['utilisateurs']['valide']) { ?>
                                 <li class="wide bbox">
                                     <div class="presentation">
@@ -224,13 +238,13 @@
                                         <?php $cpuv = count($point['utilisateurs']['valide']); ?>
                                         <br><p class="small">
                                             <b>Organisez-vous ! </b><br>
-                                            <b class="bleucaf"><?php echo $cpuv; ?> personne<?php echo $cpuv > 1 ? 's':''; ?></b>
-                                            <?php echo $cpuv > 1 ? 'peuvent':'peut'; ?> être intéressée<?php echo $cpuv > 1 ? 's':''; ?>
+                                            <b class="bleucaf"><?php echo $cpuv; ?> personne<?php echo $cpuv > 1 ? 's' : ''; ?></b>
+                                            <?php echo $cpuv > 1 ? 'peuvent' : 'peut'; ?> être intéressée<?php echo $cpuv > 1 ? 's' : ''; ?>
                                             pour covoiturer jusqu'à ce point de ramassage.
                                         </p>
                                         <?php
                                         echo '<table class="big-lines-table" style="">';
-                                        foreach($point['utilisateurs']['valide'] as $id_user) {
+                                        foreach ($point['utilisateurs']['valide'] as $id_user) {
                                             $tmpUser = get_user($id_user, false);
                                             $tmpUser['sortie'] = user_sortie_in_dest($id_user, $destination['id']);
                                             $tmpUsers[$tmpUser['lastname_user'].$tmpUser['firstname_user'].$tmpUser['id_user']] = $tmpUser;
@@ -238,13 +252,13 @@
                                         ksort($tmpUsers);
                                         foreach ($tmpUsers as $tmpUser) {
                                             echo '<tr><td>'
-                                                .(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? '<p class="mini">'.strtoupper(html_utf8($tmpUser['lastname_user'])).', '.ucfirst(strtolower(html_utf8($tmpUser['firstname_user']))).'</p>' :'' )
+                                                .(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? '<p class="mini">'.strtoupper(html_utf8($tmpUser['lastname_user'])).', '.ucfirst(strtolower(html_utf8($tmpUser['firstname_user']))).'</p>' : '')
                                                 .userlink($tmpUser['id_user'], $tmpUser['nickname_user'])
                                                 .'</td>
-                                                <td class="small">'.( allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? $tmpUser['tel_user'] :'' ).'</td>
-                                                <td class="small">'.( allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? $tmpUser['tel2_user'] :'' ).'</td>
-                                                <td class="small">'.( allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? '<a href="mailto:'.$tmpUser['email_user'].'">'.$tmpUser['email_user'].'</a>' :'' ).'</td>'.
-                                                (allowed('user_read_limited')?'<td class="small">'.($tmpUser['is_covoiturage']?'<img src="img/voiture.png" title="Covoiturage" width="16px">':'').'</td>':'')
+                                                <td class="small">'.(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? $tmpUser['tel_user'] : '').'</td>
+                                                <td class="small">'.(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? $tmpUser['tel2_user'] : '').'</td>
+                                                <td class="small">'.(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? '<a href="mailto:'.$tmpUser['email_user'].'">'.$tmpUser['email_user'].'</a>' : '').'</td>'.
+                                                (allowed('user_read_limited') ? '<td class="small">'.($tmpUser['is_covoiturage'] ? '<img src="img/voiture.png" title="Covoiturage" width="16px">' : '').'</td>' : '')
                                                 .'</tr>';
                                         }
                                         echo '</table>';
@@ -271,36 +285,39 @@
                 <?php if ($covoiturage['total']) { ?>
                 <div class="note mr20 bbox">
                     <ul class="nice-list">
-                        <?php foreach ($covoiturage['covoiturage']['sortie'] as $id_sortie => $personnes) { $current = false; ?>
+                        <?php foreach ($covoiturage['covoiturage']['sortie'] as $id_sortie => $personnes) {
+                                            $current = false; ?>
                             <?php foreach ($destination['sorties'] as $sortie) { ?>
-                                <?php if ($sortie['id_evt'] == $id_sortie) $current = $sortie; ?>
+                                <?php if ($sortie['id_evt'] == $id_sortie) {
+                                                $current = $sortie;
+                                            } ?>
                             <?php } ?>
-                            <?php $tmpUsers = array(); ?>
+                            <?php $tmpUsers = []; ?>
                             <li class="wide">
-                                <span class="bleucaf"><?php echo html_utf8($current['titre_evt']); ?></span> <?php echo ($current['groupe']?' <small>('.$current['groupe']['nom'].')</small>':''); ?>
+                                <span class="bleucaf"><?php echo html_utf8($current['titre_evt']); ?></span> <?php echo $current['groupe'] ? ' <small>('.$current['groupe']['nom'].')</small>' : ''; ?>
                                 <?php
                                     echo '<table class="big-lines-table" style="">';
-                                    foreach($personnes as $id_user) {
-                                        $tmpUser = get_user($id_user, false);
-                                        $tmpUser['sortie'] = user_sortie_in_dest($id_user, $destination['id']);
-                                        $tmpUsers[$tmpUser['lastname_user'].$tmpUser['firstname_user'].$tmpUser['id_user']] = $tmpUser;
-                                    }
-                                    ksort($tmpUsers);
-                                    foreach ($tmpUsers as $tmpUser) {
-                                        echo '<tr><td>'
-                                            .(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? '<p class="mini">'.strtoupper(html_utf8($tmpUser['lastname_user'])).', '.ucfirst(strtolower(html_utf8($tmpUser['firstname_user']))).'</p>' :'' )
+                                            foreach ($personnes as $id_user) {
+                                                $tmpUser = get_user($id_user, false);
+                                                $tmpUser['sortie'] = user_sortie_in_dest($id_user, $destination['id']);
+                                                $tmpUsers[$tmpUser['lastname_user'].$tmpUser['firstname_user'].$tmpUser['id_user']] = $tmpUser;
+                                            }
+                                            ksort($tmpUsers);
+                                            foreach ($tmpUsers as $tmpUser) {
+                                                echo '<tr><td>'
+                                            .(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? '<p class="mini">'.strtoupper(html_utf8($tmpUser['lastname_user'])).', '.ucfirst(strtolower(html_utf8($tmpUser['firstname_user']))).'</p>' : '')
                                             .userlink($tmpUser['id_user'], $tmpUser['nickname_user'])
                                             .'</td>
-                                                    <td class="small">'.( allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? $tmpUser['tel_user'] :'' ).'</td>
-                                                    <td class="small">'.( allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? $tmpUser['tel2_user'] :'' ).'</td>
-                                                    <td class="small">'.( allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? '<a href="mailto:'.$tmpUser['email_user'].'">'.$tmpUser['email_user'].'</a>' :'' ).'</td>'.
-                                            (allowed('user_read_limited')?'<td class="small">'.($tmpUser['is_covoiturage']?'<img src="img/voiture.png" title="Covoiturage" width="16px">':'').'</td>':'')
+                                                    <td class="small">'.(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? $tmpUser['tel_user'] : '').'</td>
+                                                    <td class="small">'.(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? $tmpUser['tel2_user'] : '').'</td>
+                                                    <td class="small">'.(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? '<a href="mailto:'.$tmpUser['email_user'].'">'.$tmpUser['email_user'].'</a>' : '').'</td>'.
+                                            (allowed('user_read_limited') ? '<td class="small">'.($tmpUser['is_covoiturage'] ? '<img src="img/voiture.png" title="Covoiturage" width="16px">' : '').'</td>' : '')
                                             .'</tr>';
-                                    }
-                                    echo '</table>';
-                                ?>
+                                            }
+                                            echo '</table>'; ?>
                             </li>
-                        <?php } ?>
+                        <?php
+                                        } ?>
                     </ul>
                 </div>
                 <?php } ?>

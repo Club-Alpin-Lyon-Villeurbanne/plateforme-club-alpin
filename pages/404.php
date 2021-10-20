@@ -1,3 +1,3 @@
 <?php
-inclure('404'); 
-?>
+
+inclure('404');

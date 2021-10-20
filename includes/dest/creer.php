@@ -1,9 +1,9 @@
 
 <div style="padding:10px 0 0 30px; line-height:18px; ">
 
-    <?php if (sizeof($errTab)) { 
-        echo '<div class="alerte"><p>Impossible de poursuivre cette opération : </p><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
-    } ?>
+    <?php if (count($errTab)) {
+    echo '<div class="alerte"><p>Impossible de poursuivre cette opération : </p><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+} ?>
 
     <?php
         $lock = '<div class="check-nice ">'.
@@ -11,14 +11,14 @@
                             class="in_front" style="">'.
                         '<input
                             type="checkbox" name="inscription_locked" id="inscription_locked" class="custom" '.
-                            ((in_array($_POST['inscription_locked'], array(1, 'on'))) ? ' checked="checked" ' : '') .
+                            ((in_array($_POST['inscription_locked'], [1, 'on'], true)) ? ' checked="checked" ' : '').
                             ' />  Bloquer les inscriptions à toutes les sorties de cette destination ?'.
                     '</label>'.
             '</div>';
 
         $new_lieu = display_new_lieu();
 
-        $new_bus =  '<div class="bus">'.
+        $new_bus = '<div class="bus">'.
             '<p class="note"><small>Si plusieurs bus font le même trajet, avec les mêmes points de ramassage, merci de ne créer que 1 bus du nombre de places totales disponibles pour ce trajet.<br><b>Exemple</b>: 2 bus font le même trajet avec les mêmes lieux de ramasse, le premier fait 20 places, le second fait 50 places. Je créé 1 seul bus de 20+50 = 70 places.</small></p><br>'.
             '<div style="width:50%;float:left">'.
             '<label for="bus_intitule">Bus :</label>'.
@@ -30,23 +30,27 @@
             '</div>'.
             '<br class="clear">'.
             '<p><small>Une fois ce bus enregistré, vous pourrez gérer ses lieux de ramasse.</small></p>'.
-            '<a href="" class="cancel_bus cancel">'."Annuler ce bus".'</a>'.
+            '<a href="" class="cancel_bus cancel">'.'Annuler ce bus'.'</a>'.
             '</div>';
 
     ?>
 
-    <?php if (!$_POST['id_user_responsable']) $_POST['id_user_responsable'] = $_SESSION['user']['id_user']; ?>
+    <?php if (!$_POST['id_user_responsable']) {
+        $_POST['id_user_responsable'] = $_SESSION['user']['id_user'];
+    } ?>
 
-    <?php if ($id_dest_to_update) include (INCLUDES.'dest'.DS.'admin_status.php'); ?>
+    <?php if ($id_dest_to_update) {
+        include INCLUDES.'dest'.DS.'admin_status.php';
+    } ?>
 
     <form action="<?php echo $versCettePage; ?>" method="post">
         <input type="hidden" name="operation"
                value="<?php echo $id_dest_to_update ? 'dest_update' : 'dest_create'; ?>"/>
-        <?php /* Création */  if (!$id_dest_to_update) { ?>
+        <?php /* Création */ if (!$id_dest_to_update) { ?>
             <input type="hidden" name="id_user_who_create" value="<?php echo $_SESSION['user']['id_user']; ?>"/>
         <?php } ?>
         <?php /* Modification */ if ($id_dest_to_update) { ?>
-            <input type="hidden" name="id_dest_to_update" value="<?php echo intval($id_dest_to_update); ?>"/>
+            <input type="hidden" name="id_dest_to_update" value="<?php echo (int) $id_dest_to_update; ?>"/>
         <?php } ?>
 
         <div id="infos-dest">
@@ -54,16 +58,16 @@
             <div class="trigger-me">
                 <div style="width:70%; float:left">
                     <label for="nom">Intitulé :</label><br>
-                    <input type="text" name="nom"  id="nom" class="type1" style="width:95%" value="<?php echo inputVal('nom', '');?>" placeholder="ex: Journée découverte et sportive en altitude">
+                    <input type="text" name="nom"  id="nom" class="type1" style="width:95%" value="<?php echo inputVal('nom', ''); ?>" placeholder="ex: Journée découverte et sportive en altitude">
                 </div>
                 <br class="clear">
                 <div style="width:50%; float:left">
                     <label for="date">Début :</label><br>
-                    <input type="text" name="date"  id="date" class="type1 dtpick" style="width:90%" value="<?php echo inputVal('date', '');?>" placeholder="aaaa-mm-dd hh:ii:ss">
+                    <input type="text" name="date"  id="date" class="type1 dtpick" style="width:90%" value="<?php echo inputVal('date', ''); ?>" placeholder="aaaa-mm-dd hh:ii:ss">
                 </div>
                 <div style="width:50%; float:left">
                     <label for="date_fin">Fin :</label><br>
-                    <input type="text" name="date_fin"  id="date_fin" class="type1 dtpick" style="width:90%" value="<?php echo inputVal('date_fin', '');?>" placeholder="aaaa-mm-dd">
+                    <input type="text" name="date_fin"  id="date_fin" class="type1 dtpick" style="width:90%" value="<?php echo inputVal('date_fin', ''); ?>" placeholder="aaaa-mm-dd">
                 </div>
             </div>
             <br class="clear">
@@ -76,17 +80,17 @@
 
             <div class="trigger-me radio-nice">
                 <?php
-                if (!sizeof($select_leaders))
+                if (!count($select_leaders)) {
                     echo '<p class="info">Aucun adhérent n\'est déclaré <b>responsable</b> pour cette destination.</p>';
-                else  {
+                } else {
                     foreach ($select_leaders as $id_user => $leader) {
-                        echo '<label for="leader-' . $id_user . '"><p>';
-                        echo '<input type="radio" ' . ($id_user == $_POST['id_user_responsable'] ? 'checked="checked"' : '') . '
+                        echo '<label for="leader-'.$id_user.'"><p>';
+                        echo '<input type="radio" '.($id_user == $_POST['id_user_responsable'] ? 'checked="checked"' : '').'
                                     name="id_user_responsable"
-                                    value="' . $id_user . '"
-                                    id="leader-' . $id_user . '" />&nbsp;';
-                        echo $leader . '
-                                <a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user=' . $id_user . '" title="Voir la fiche">
+                                    value="'.$id_user.'"
+                                    id="leader-'.$id_user.'" />&nbsp;';
+                        echo $leader.'
+                                <a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user='.$id_user.'" title="Voir la fiche">
                                     <img src="img/base/bullet_toggle_plus.png" alt="I" title="" />
                                 </a>';
                         echo '</p></label>';
@@ -100,17 +104,17 @@
 
             <div class="trigger-me radio-nice">
                 <?php
-                if (!sizeof($select_leaders))
+                if (!count($select_leaders)) {
                     echo '<p class="info">Aucun adhérent n\'est déclaré <b>co-responsable</b> pour cette destination.</p>';
-                else  {
+                } else {
                     foreach ($select_leaders as $id_user => $leader) {
-                        echo '<label for="adjoint-' . $id_user . '"><p>';
-                        echo '<input type="radio" ' . ($id_user == $_POST['id_user_adjoint'] ? 'checked="checked"' : '') . '
+                        echo '<label for="adjoint-'.$id_user.'"><p>';
+                        echo '<input type="radio" '.($id_user == $_POST['id_user_adjoint'] ? 'checked="checked"' : '').'
                                     name="id_user_adjoint"
-                                    value="' . $id_user . '"
-                                    id="adjoint-' . $id_user . '" />&nbsp;';
-                        echo $leader . '
-                                <a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user=' . $id_user . '" title="Voir la fiche">
+                                    value="'.$id_user.'"
+                                    id="adjoint-'.$id_user.'" />&nbsp;';
+                        echo $leader.'
+                                <a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user='.$id_user.'" title="Voir la fiche">
                                     <img src="img/base/bullet_toggle_plus.png" alt="I" title="" />
                                 </a>';
                         echo '</p></label>';
@@ -136,11 +140,11 @@
             <div class="trigger-me">
                 <div style="width:50%; float:left">
                     <label for="">Ouverture des inscriptions</label><br>
-                    <input type="text" name="inscription_ouverture"  id="inscription_ouverture" class="type2 dtpick" value="<?php echo inputVal('inscription_ouverture', '');?>" placeholder="aaaa-mm-dd hh:ii:ss">
+                    <input type="text" name="inscription_ouverture"  id="inscription_ouverture" class="type2 dtpick" value="<?php echo inputVal('inscription_ouverture', ''); ?>" placeholder="aaaa-mm-dd hh:ii:ss">
                 </div>
                 <div style="width:50%; float:left">
                     <label for="">Fin des inscriptions</label><br>
-                    <input type="text" name="inscription_fin" id="inscription_fin" class="type2 dtpick" value="<?php echo inputVal('inscription_fin', '');?>" placeholder="aaaa-mm-dd hh:ii:ss">
+                    <input type="text" name="inscription_fin" id="inscription_fin" class="type2 dtpick" value="<?php echo inputVal('inscription_fin', ''); ?>" placeholder="aaaa-mm-dd hh:ii:ss">
                 </div>
                 <br class="clear">
             </div>
@@ -152,9 +156,9 @@
             <div class="trigger-me">
 
                 <?php if ($id_lieu) { ?>
-                    <input type="hidden" name="id_lieu" value="<?php echo $id_lieu;?>">
+                    <input type="hidden" name="id_lieu" value="<?php echo $id_lieu; ?>">
 
-                    <div class="display_lieu" data-id_lieu="<?php echo $id_lieu;?>" style="position:relative;">
+                    <div class="display_lieu" data-id_lieu="<?php echo $id_lieu; ?>" style="position:relative;">
                         <?php echo display_edit_lieu_link($id_lieu, inputVal('ancien_lieu|nom', '')); ?>
                         <b><?php echo inputVal('ancien_lieu|nom', ''); ?></b><br>
                         <div class="map" data-lat="" data-lng=""></div>
@@ -166,7 +170,7 @@
                     <a href="" id="modify_lieu" class="add">Changer de lieu</a>
                     <div id="new_lieu"></div>
 
-                <?php } else  { ?>
+                <?php } else { ?>
 
                     <?php echo $new_lieu; ?>
 
@@ -178,26 +182,30 @@
             <h2 class="trigger-h2">Aperçu topographique du secteur :</h2>
             <div class="trigger-me">
                 <label for="ign_dest">Extrait IGN : <small>Insérez le code de partage fourni par <a href="https://www.geoportail.gouv.fr/" target="_blank">GeoPortail</a>.</small></label>
-                <textarea name="ign" id="ign_dest" style="width:95%;height:80px;" class="type2"><?php if (inputVal('ign', '')) echo display_frame_geoportail(inputVal('ign', ''), 425, 350); ?></textarea>
-                <?php if (inputVal('ign', '') != '') echo display_frame_geoportail(inputVal('ign', ''), 620, 350); ?>
+                <textarea name="ign" id="ign_dest" style="width:95%;height:80px;" class="type2"><?php if (inputVal('ign', '')) {
+                    echo display_frame_geoportail(inputVal('ign', ''), 425, 350);
+                } ?></textarea>
+                <?php if ('' != inputVal('ign', '')) {
+                    echo display_frame_geoportail(inputVal('ign', ''), 620, 350);
+                } ?>
             </div>
         </div>
 
         <h2 class="trigger-h2">Informations complémentaires :</h2>
         <div class="trigger-me">
-            <?php include (INCLUDES.'help'.DS.'tinymce.php'); ?>
-            <textarea name="description" style="width:99%"><?php echo stripslashes($_POST['description']);?></textarea>
+            <?php include INCLUDES.'help'.DS.'tinymce.php'; ?>
+            <textarea name="description" style="width:99%"><?php echo stripslashes($_POST['description']); ?></textarea>
         </div>
 
         <div id="transport">
             <h2 class="trigger-h2">Transport :</h2>
             <div class="trigger-me">
                 <label for="cout_transport">Tarif :</label><br>
-                <input type="text"  class="type2" name="cout_transport" value="<?php echo inputVal('cout_transport', '');?>">&nbsp;&euro;<br>
+                <input type="text"  class="type2" name="cout_transport" value="<?php echo inputVal('cout_transport', ''); ?>">&nbsp;&euro;<br>
                 <br>
                 <h3>Gestion des bus et des places</h3>
                 <br>
-                <?php if (count($destination['bus'])>0) { ?>
+                <?php if (count($destination['bus']) > 0) { ?>
                     <?php $b = 1; foreach ($destination['bus'] as $bus) { ?>
                         <div class="bus check-nice" id="bus-<?php echo $bus['id']; ?>">
                             <a href="includer.php?p=includes/dest/bus.php&amp;id_bus=<?php echo $bus['id']; ?>" class="edit fancyframe" style="float:right;" title="Modifier : <?php echo $bus['intitule']; ?>"></a>
@@ -209,7 +217,7 @@
                                 <p>Points de ramassage :</p>
                                 <ul>
                                 <?php foreach ($bus['ramassage'] as $point) { ?>
-                                    <li><?php echo $point['nom'];?></b>, à <?php echo display_time($point['date']); ?></li>
+                                    <li><?php echo $point['nom']; ?></b>, à <?php echo display_time($point['date']); ?></li>
                                 <?php } ?>
                                 </ul>
                                 <?php } else { ?>
@@ -248,7 +256,7 @@
 
         <br /><br />
 
-    
+
 </div>
 
 <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
@@ -278,7 +286,7 @@
 
 <script type="text/javascript">
 
-    var nbus = <?php echo count($destination['bus']) > 0 ? count($destination['bus']) + 1   : 1; ?>;
+    var nbus = <?php echo count($destination['bus']) > 0 ? count($destination['bus']) + 1 : 1; ?>;
     $('#add_bus').click(function(e){
         e.preventDefault();
         var new_bus = '<?php echo $new_bus; ?>';
@@ -411,9 +419,9 @@
         theme_advanced_statusbar_location : "bottom",
         theme_advanced_resizing : true,
 
-        document_base_url : '<?php echo $p_racine;?>',
+        document_base_url : '<?php echo $p_racine; ?>',
 
-        content_css : "<?php echo $p_racine;?>css/base.css,<?php echo $p_racine;?>css/style1.css,<?php echo $p_racine;?>fonts/stylesheet.css",
+        content_css : "<?php echo $p_racine; ?>css/base.css,<?php echo $p_racine; ?>css/style1.css,<?php echo $p_racine; ?>fonts/stylesheet.css",
         body_id : "bodytinymce_user",
         body_class : "description_evt",
         theme_advanced_styles : "<?php echo $p_tiny_theme_advanced_styles; ?>",
