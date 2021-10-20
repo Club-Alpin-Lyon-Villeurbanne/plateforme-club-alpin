@@ -13,7 +13,7 @@ usermod -u $(stat -c %u $APACHE_DOC_ROOT) www-data &> /dev/null
 groupmod -g $(stat -c %g $APACHE_DOC_ROOT) www-data &> /dev/null
 
 sed -i "s|DocumentRoot /var/www/html\$|DocumentRoot $APACHE_DOC_ROOT|" /etc/apache2/sites-available/000-default.conf
-echo "<Directory $APACHE_DOC_ROOT>" > /etc/apache2/conf-available/document-root-directory.conf
+echo "<Directory /var/www/html>" > /etc/apache2/conf-available/document-root-directory.conf
 echo "	AllowOverride All" >> /etc/apache2/conf-available/document-root-directory.conf
 echo "	Require all granted" >> /etc/apache2/conf-available/document-root-directory.conf
 echo "</Directory>" >> /etc/apache2/conf-available/document-root-directory.conf

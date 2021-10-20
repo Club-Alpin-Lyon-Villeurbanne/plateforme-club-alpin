@@ -122,7 +122,7 @@ $p_as2=array(9,8,5,7,4,3,6,2,1);
 $userAllowedTo=array();
 
 // dates butoires : tableau des heures auxquelles déclencher l'envoi du chron :
-$p_chron_dates_butoires=array(08, 13, 18);
+$p_chron_dates_butoires=array(8, 13, 18);
 // -------------------
 // LOGIN
 $use_md5_salt=false;
