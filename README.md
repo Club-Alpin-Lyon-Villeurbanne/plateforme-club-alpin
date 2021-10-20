@@ -22,6 +22,8 @@ Le code de cet environment se trouve dans `/home/kahe0589/test` et la db utilis√
 
 ## local setup
 
+ - cp public/config/db_config.php.tpl public/config/db_config.php
+ - cp public/config/params.php.tpl public/config/params.php
  - installer Docker
  - executer Docker host manager (https://github.com/iamluc/docker-hostmanager)
  - executer `make up`
