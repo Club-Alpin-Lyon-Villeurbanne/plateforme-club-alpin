@@ -12,7 +12,7 @@ setlocale(LC_ALL, 'fr_FR');
 // PARAMS AU CAS PAR CAS
 
 // chemin absolu vers la racine des fichiers
-$p_racine='https://'.$_SERVER['HTTP_HOST'].substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/')+1);
+$p_racine='http'.(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] ? 's' : '').'://'.$_SERVER['HTTP_HOST'].substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/')+1);
 
 // ADMIN
 $p_admin_login 		= 'hwc';
