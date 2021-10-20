@@ -29,24 +29,24 @@ jobs:
             case ${CIRCLE_BRANCH} in
                 "production" )
                     rm -rf .git
-                    mv robots-production.txt robots.txt
+                    mv public/robots-production.txt public/robots.txt
                     cp config/www.clubalpinlyon.fr/config.php config/config.php
-                    sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$PROD_ADMIN_PASSWORD/g" "config/www.clubalpinlyon.fr/params.php"
-                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "config/www.clubalpinlyon.fr/params.php"
-                    sed -i "s/DB_PASSWORD_TO_REPLACE/$PROD_DB_PASSWORD/g" "config/www.clubalpinlyon.fr/db_config.php"
-                    sed -i "s/DB_USER_TO_REPLACE/$PROD_DB_USER/g" "config/www.clubalpinlyon.fr/db_config.php"
-                    sed -i "s/DB_NAME_TO_REPLACE/$PROD_DB_NAME/g" "config/www.clubalpinlyon.fr/db_config.php"
-                    ncftpput -R -v -u $PROD_FTP_USERNAME -p $PROD_FTP_PASSWORD $FTP_SERVER . .
+                    sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$PROD_ADMIN_PASSWORD/g" "public/config/www.clubalpinlyon.fr/params.php"
+                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "public/config/www.clubalpinlyon.fr/params.php"
+                    sed -i "s/DB_PASSWORD_TO_REPLACE/$PROD_DB_PASSWORD/g" "public/config/www.clubalpinlyon.fr/db_config.php"
+                    sed -i "s/DB_USER_TO_REPLACE/$PROD_DB_USER/g" "public/config/www.clubalpinlyon.fr/db_config.php"
+                    sed -i "s/DB_NAME_TO_REPLACE/$PROD_DB_NAME/g" "public/config/www.clubalpinlyon.fr/db_config.php"
+                    ncftpput -R -v -u $PRODUCTION_FTP_USERNAME -p $PRODUCTION_FTP_PASSWORD $FTP_SERVER . .
                   ;;
                 "main" )
                     rm -rf .git
-                    mv robots-dev.txt robots.txt
+                    mv public/robots-dev.txt public/robots.txt
                     cp config/test.clubalpinlyon.fr/config.php config/config.php
-                    sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$DEV_ADMIN_PASSWORD/g" "config/test.clubalpinlyon.fr/params.php"
-                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "config/test.clubalpinlyon.fr/params.php"
-                    sed -i "s/DB_PASSWORD_TO_REPLACE/$DEV_DB_PASSWORD/g" "config/test.clubalpinlyon.fr/db_config.php"
-                    sed -i "s/DB_USER_TO_REPLACE/$DEV_DB_USER/g" "config/test.clubalpinlyon.fr/db_config.php"
-                    sed -i "s/DB_NAME_TO_REPLACE/$DEV_DB_NAME/g" "config/test.clubalpinlyon.fr/db_config.php"
-                    ncftpput -R -v -u $DEV_FTP_USERNAME -p $DEV_FTP_PASSWORD $FTP_SERVER . .
+                    sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$DEV_ADMIN_PASSWORD/g" "public/config/test.clubalpinlyon.fr/params.php"
+                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "public/config/test.clubalpinlyon.fr/params.php"
+                    sed -i "s/DB_PASSWORD_TO_REPLACE/$DEV_DB_PASSWORD/g" "public/config/test.clubalpinlyon.fr/db_config.php"
+                    sed -i "s/DB_USER_TO_REPLACE/$DEV_DB_USER/g" "public/config/test.clubalpinlyon.fr/db_config.php"
+                    sed -i "s/DB_NAME_TO_REPLACE/$DEV_DB_NAME/g" "public/config/test.clubalpinlyon.fr/db_config.php"
+                    ncftpput -R -v -u $STAGING_FTP_USERNAME -p $STAGING_FTP_PASSWORD $FTP_SERVER . .
                   ;;
             esac
