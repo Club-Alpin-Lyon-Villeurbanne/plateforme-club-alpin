@@ -1,0 +1,44 @@
+version: '3.5'
+
+networks:
+    default:
+        name: caf
+
+services:
+    cafsite:
+        build:
+            context: docker
+            dockerfile: Dockerfile-caf-apache
+        image: caf-apache
+        restart: unless-stopped
+        volumes:
+            - ./:/var/www/html
+        ports:
+            - "80:80"
+            - "443:443"
+        links:
+            - caf-db:db
+        networks:
+            default: ~
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - "8080:80"
+        links:
+            - caf-db:db
+        environment:
+            - MYSQL_USERNAME=root
+            - MYSQL_ROOT_PASSWORD=caf
+        networks:
+            default: ~
+
+    caf-db:
+        image: mysql:5.7
+        volumes:
+            - /data/mysql:/var/lib/mysql
+            - /data/docker-lamp-caf/docker-initdb:/docker-entrypoint-initdb.d
+        environment:
+            - MYSQL_ROOT_PASSWORD=test
+            - MYSQL_DATABASE=caf
+
