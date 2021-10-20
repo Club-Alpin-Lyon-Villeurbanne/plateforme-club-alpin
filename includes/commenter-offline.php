@@ -1,8 +1,8 @@
 <!-- formulaires ajax en lightbox -->
-<form action="<?php echo $versCettePage;?>" method="post" id="comment-form">
+<form action="<?php echo $versCettePage; ?>" method="post" id="comment-form">
 	<input type="hidden" name="operation" value="comment" />
 	<input type="hidden" name="unlock1" value="0" />
-	
+
 	<div style="float:left; width:75px; padding-top:3px;">
 		<img src="ftp/user/0/pic-profil.jpg" alt="" title="" />
 	</div>
@@ -11,7 +11,7 @@
 		<br />
 		<input type="text" class="type2" style="width:215px; margin-right:16px" name="nom_comment" placeholder="Votre nom" />
 		<input type="text" class="type2" style="width:215px" name="email_comment" placeholder="Votre e-mail">
-		
+
 		<input type="button" class="rond" value="OK" />
 	</div>
 	<br style="clear:both" />
@@ -20,7 +20,7 @@
 </form>
 
 <script type="text-javascript">
-// js pour diminuer le risque de spams autos. 
+// js pour diminuer le risque de spams autos.
 // Deverrouillage du formulaire lors de l'interaction
 $('#comment-form input.rond').bind('focus mouseenter', function(){
 	$('#comment-form input[name=unlock1]').val('1');
@@ -28,7 +28,7 @@ $('#comment-form input.rond').bind('focus mouseenter', function(){
 // submit
 $('#comment-form input.rond').bind('click', function(){
 	var form=$(this).parents('form');
-	
+
 	if(!form.is('.running')){
 		// vars
 		var datas='unlock2=1';
@@ -36,18 +36,18 @@ $('#comment-form input.rond').bind('click', function(){
 			if($(this).val() && $(this).attr('name'))
 				datas += '&'+$(this).attr('name')+'='+$(this).val();
 		});
-		
+
 		// call
 		$.ajax({
 			type: "POST",
 			dataType : "json",
 			url: "index.php?ajx=operations",
 			data: datas,
-			beforeSend: function(jsonMsg){ 
+			beforeSend: function(jsonMsg){
 				form.addClass('running');
 			},
-			complete: function(jsonMsg){ 
-				// console.log(jsonMsg); 
+			complete: function(jsonMsg){
+				// console.log(jsonMsg);
 				form.removeClass('running');
 			},
 			success: function(jsonMsg){
@@ -70,8 +70,8 @@ $('#comment-form input.rond').bind('click', function(){
 			}
 		});
 	}
-	
-	
+
+
 });
 </script>
 <br />

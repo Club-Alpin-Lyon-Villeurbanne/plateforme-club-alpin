@@ -4,7 +4,7 @@
     $new_lieu = display_new_lieu();
     $lieux_ramasse_connus = select_lieux_ramasse_connus();
     $ids_lieux_ramasse_destination = select_lieux_ramasse_connus($bus['destination']['id'], false, $bus['id']);
-    $ramasse_in_use = array();
+    $ramasse_in_use = [];
 
 ?>
 
@@ -16,9 +16,9 @@
 
     <h1><span class="bleucaf"><?php echo $bus['intitule']; ?></span> <small>pour</small> <span class="bleucaf"><?php echo $bus['destination']['nom']; ?></span> <small>, <?php echo display_dateTime($bus['destination']['date']); ?></small></h1>
 
-    <?php if($_POST['operation'] && sizeof($errTab)) { ?>
+    <?php if ($_POST['operation'] && count($errTab)) { ?>
         <div class="erreur">Erreur : <ul><li><?php echo implode('</li><li>', $errTab); ?></li></ul></div><br>
-    <?php } elseif($_POST['operation']) { ?>
+    <?php } elseif ($_POST['operation']) { ?>
         <p class="info">
             <img src="img/base/tick.png" alt="" title="" /> Mise à jour effectuée.</p><br>
     <?php } ?>
@@ -40,12 +40,12 @@
         <?php foreach ($bus['ramassage'] as $point) { ?>
         <?php $ramasse_in_use[] = $point['id_lieu']; ?>
         <div class="point_ramasse check-nice">
-            <div data-id_lieu="<?php echo $point['id_lieu'];?>" style="position:relative;">
+            <div data-id_lieu="<?php echo $point['id_lieu']; ?>" style="position:relative;">
                 <?php echo display_edit_lieu_link($point['id_lieu'], $point['nom']); ?>
-                <b><?php echo htmlspecialchars($point['nom']);?></b>, à <?php echo display_time($point['date']); ?><br>
-                <div class="mapmarker" data-lat="<?php echo $point['lat'];?>" data-lng="<?php echo $point['lng'];?>"></div>
+                <b><?php echo htmlspecialchars($point['nom']); ?></b>, à <?php echo display_time($point['date']); ?><br>
+                <div class="mapmarker" data-lat="<?php echo $point['lat']; ?>" data-lng="<?php echo $point['lng']; ?>"></div>
                 <div class="ign"><?php echo display_frame_geoportail($point['ign'], 620, 350); ?></div>
-                <div class="description"><?php echo $point['description'];?></div>
+                <div class="description"><?php echo $point['description']; ?></div>
                 <label>
                     <input type="checkbox" name="lieu_ramasse_delete[]" value="<?php echo $point['bdl_id']; ?>"> Supprimer ce lieu de ramassage
                 </label><br class="clear">
@@ -109,16 +109,16 @@
 
         function setDay() {
             // datepicker
-            
+
             <?php
 
-                $dest_date = explode(' ',$bus['destination']['date']);
+                $dest_date = explode(' ', $bus['destination']['date']);
                 $date = explode('-', $dest_date[0]);
                 $hour = explode(':', $dest_date[1]);
             ?>
-            
-            var lockDate = new Date(<?php echo $date[0]; ?>, <?php echo $date[1]-1; ?>, <?php echo $date[2]; ?>, <?php echo $hour[0]; ?>, <?php echo $hour[1]; ?>);
-            var maxLockDate = new Date(<?php echo $date[0]; ?>, <?php echo $date[1]-1; ?>, <?php echo $date[2]; ?>, 23, 59);
+
+            var lockDate = new Date(<?php echo $date[0]; ?>, <?php echo $date[1] - 1; ?>, <?php echo $date[2]; ?>, <?php echo $hour[0]; ?>, <?php echo $hour[1]; ?>);
+            var maxLockDate = new Date(<?php echo $date[0]; ?>, <?php echo $date[1] - 1; ?>, <?php echo $date[2]; ?>, 23, 59);
             $("#bus_dest_lieu_date").datepicker( "option", "minDate", lockDate ).datetimepicker( "option", "minDateTime", lockDate );
             $("#bus_dest_lieu_date").datepicker( "option", "maxDate", maxLockDate ).datetimepicker( "option", "maxDateTime", maxLockDate );
             return false;
@@ -137,9 +137,14 @@
 
         var old_lieux_ramasse = <?php if ($lieux_ramasse_connus) { ?>'<select name="use_existant" class="type2" style="width:95%;">'
             +'<option value="">- Utiliser un lieu existant <?php if ($ids_lieux_ramasse_destination) { ?>( * indique un lieu déjà utilisé par un autre bus de cette destination )<?php } ?></option>'
-            +'<?php foreach ($lieux_ramasse_connus as $lramasse) { if (!in_array($lramasse['id'], $ramasse_in_use)) {
-            ?><option value="<?php echo $lramasse['id']; ?>"><?php
-            if ($ids_lieux_ramasse_destination && in_array($lramasse['id'], $ids_lieux_ramasse_destination)) { echo ' <b>[*] </b>'; } ?><?php echo html_utf8($lramasse['nom']); ?></option><?php }} ?>'
+            +'<?php foreach ($lieux_ramasse_connus as $lramasse) {
+                if (!in_array($lramasse['id'], $ramasse_in_use, true)) {
+                    ?><option value="<?php echo $lramasse['id']; ?>"><?php
+            if ($ids_lieux_ramasse_destination && in_array($lramasse['id'], $ids_lieux_ramasse_destination, true)) {
+                echo ' <b>[*] </b>';
+            } ?><?php echo html_utf8($lramasse['nom']); ?></option><?php
+                }
+            } ?>'
             +'</select><br><br>OU<br><br>';
         <?php } else { ?> ''<?php } ?>;
 

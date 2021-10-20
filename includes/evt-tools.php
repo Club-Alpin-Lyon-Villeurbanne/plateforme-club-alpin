@@ -1,23 +1,24 @@
 <?php
-if($evt){
-	echo '<div class="evt-tools">'
 
-		// APERCU : je suis l'auteur et cet événement n'a pas encore été publié :
-		.($evt['user_evt']==$_SESSION['user']['id_user'] && $evt['status_evt']!=1 ? '<a class="nice2" href="sortie/'.html_utf8($evt['code_evt']).'-'.intval($evt['id_evt']).'.html?forceshow=true'.($current_commission ? '&amp;commission='.$current_commission : '').'" title="Aperçu de la page dédiée à la sortie ci-dessous">Aperçu</a>':'')
+if ($evt) {
+    echo '<div class="evt-tools">'
 
-		// MODIFIER : J'ai le droit de modifier les evts de cette commission :
-		.(allowed('evt_edit', 'commission:'.$evt['code_commission']) ? '<a class="nice2 orange" href="creer-une-sortie/'.html_utf8($evt['code_commission']).'/update-'.intval($evt['id_evt']).'.html" title="Modifier la sortie ci-dessous et les encadrants liés">Modifier</a>':'')
+        // APERCU : je suis l'auteur et cet événement n'a pas encore été publié :
+        .($evt['user_evt'] == $_SESSION['user']['id_user'] && 1 != $evt['status_evt'] ? '<a class="nice2" href="sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html?forceshow=true'.($current_commission ? '&amp;commission='.$current_commission : '').'" title="Aperçu de la page dédiée à la sortie ci-dessous">Aperçu</a>' : '')
 
-		// ANNULATION : PEU IMPORTE SI J'EN SUIS AUTEUR ICI : J'ai le droit d'annuler les evts de cette commission :
-		// on ne peut annuler une sortie que si elle est deja validée
-		// et pas deja passée ni en cours
-		// ni deja annulée
-		.(allowed('evt_cancel', 'commission:'.$evt['code_commission']) && $evt['status_evt']==1 && $evt['tsp_evt']>$p_time && $evt['cancelled_evt']==0 ? '<a class="nice2 red" href="annuler-une-sortie/'.html_utf8($evt['code_evt']).'-'.intval($evt['id_evt']).'.html" title="Annuler la sortie ci-dessous">Annuler</a>':'')
+        // MODIFIER : J'ai le droit de modifier les evts de cette commission :
+        .(allowed('evt_edit', 'commission:'.$evt['code_commission']) ? '<a class="nice2 orange" href="creer-une-sortie/'.html_utf8($evt['code_commission']).'/update-'.(int) ($evt['id_evt']).'.html" title="Modifier la sortie ci-dessous et les encadrants liés">Modifier</a>' : '')
 
-		// SUPPRIMER
-		// on ne peut supprimer que si elle n'est pas publiée OU annulée OU passée
-		.((allowed('evt_delete') && ($evt['cancelled_evt'] or $evt['status_evt']!=1 or $evt['tsp_end_evt']<$p_time))
-			? '<a class="nice2 red" href="supprimer-une-sortie/'.html_utf8($evt['code_evt']).'-'.intval($evt['id_evt']).'.html" title="Supprimer définitivement la sortie ci-dessous">Supprimer</a>':'')
+        // ANNULATION : PEU IMPORTE SI J'EN SUIS AUTEUR ICI : J'ai le droit d'annuler les evts de cette commission :
+        // on ne peut annuler une sortie que si elle est deja validée
+        // et pas deja passée ni en cours
+        // ni deja annulée
+        .(allowed('evt_cancel', 'commission:'.$evt['code_commission']) && 1 == $evt['status_evt'] && $evt['tsp_evt'] > $p_time && 0 == $evt['cancelled_evt'] ? '<a class="nice2 red" href="annuler-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Annuler la sortie ci-dessous">Annuler</a>' : '')
 
-	.'</div>';
+        // SUPPRIMER
+        // on ne peut supprimer que si elle n'est pas publiée OU annulée OU passée
+        .((allowed('evt_delete') && ($evt['cancelled_evt'] || 1 != $evt['status_evt'] || $evt['tsp_end_evt'] < $p_time))
+            ? '<a class="nice2 red" href="supprimer-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Supprimer définitivement la sortie ci-dessous">Supprimer</a>' : '')
+
+    .'</div>';
 }

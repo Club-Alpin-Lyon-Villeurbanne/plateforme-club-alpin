@@ -1,9 +1,9 @@
 <?php
 
-if($destination['publie']=='0'){
+if ('0' == $destination['publie']) {
     //pas validee
     echo '<div class="alerte"><b>Note : Cette destination n\'est pas publiée sur le site</b>. Si vous voyez ce message apparaître, c\'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n\'ont pas accès aux informations ci-dessous.<br /></div>';
-} elseif($destination['annule']=='1'){
+} elseif ('1' == $destination['annule']) {
     echo '<div class="erreur"><img src="'.$p_racine.'img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Destination annulée</b><br class="clear"></div>';
 }
 
@@ -52,9 +52,12 @@ presidence();
                                     <td><?php echo html_utf8(strtoupper($p['lastname_user']).', '.ucfirst(strtolower($p['firstname_user']))); ?></td>
                                     <th>TEL</th>
                                     <td><?php
-                                        if (!empty($p['tel_user'])) echo html_utf8($p['tel_user']).'<br>';
-                                        else {
-                                            if (!empty($p['tel2_user'])) echo html_utf8($p['tel2_user']);
+                                        if (!empty($p['tel_user'])) {
+                                            echo html_utf8($p['tel_user']).'<br>';
+                                        } else {
+                                            if (!empty($p['tel2_user'])) {
+                                                echo html_utf8($p['tel2_user']);
+                                            }
                                         }
                                         ?></td>
                                 </tr>
@@ -69,16 +72,19 @@ presidence();
                                     <td><?php echo html_utf8(strtoupper($vp['lastname_user']).', '.ucfirst(strtolower($vp['firstname_user']))); ?></td>
                                     <th>TEL</th>
                                     <td><?php
-                                        if (!empty($vp['tel_user'])) echo html_utf8($vp['tel_user']).'<br>';
-                                        else {
-                                            if (!empty($vp['tel2_user'])) echo html_utf8($vp['tel2_user']);
+                                        if (!empty($vp['tel_user'])) {
+                                            echo html_utf8($vp['tel_user']).'<br>';
+                                        } else {
+                                            if (!empty($vp['tel2_user'])) {
+                                                echo html_utf8($vp['tel2_user']);
+                                            }
                                         }
                                         ?></td>
                                 </tr>
                             <?php } ?>
                         <?php } ?>
 
-                    <?php if ($evt['status_legal_evt'] == 1) { ?>
+                    <?php if (1 == $evt['status_legal_evt']) { ?>
                     <?php } ?>
 
                     <tr>
@@ -88,14 +94,26 @@ presidence();
                             <tr>
                                 <td><?php echo html_utf8(strtoupper($destination['responsable']['lastname_user']).', '.ucfirst(strtolower($destination['responsable']['firstname_user']))); ?></td>
                                 <th>TEL</th>
-                                <td><?php if (!empty($destination['responsable']['tel_user'])) { echo html_utf8($destination['responsable']['tel_user']);} else {if (!empty($destination['responsable']['tel2_user'])) { echo html_utf8($destination['responsable']['tel2_user']);}} ?></td>
+                                <td><?php if (!empty($destination['responsable']['tel_user'])) {
+                                            echo html_utf8($destination['responsable']['tel_user']);
+                                        } else {
+                                            if (!empty($destination['responsable']['tel2_user'])) {
+                                                echo html_utf8($destination['responsable']['tel2_user']);
+                                            }
+                                        } ?></td>
                             </tr>
                         <?php } ?>
                         <?php if ($destination['co-responsable']) { ?>
                             <tr>
                                 <td><?php echo html_utf8(strtoupper($destination['co-responsable']['lastname_user']).', '.ucfirst(strtolower($destination['co-responsable']['firstname_user']))); ?></td>
                                 <th>TEL</th>
-                                <td><?php if (!empty($destination['co-responsable']['tel_user'])) { echo html_utf8($destination['co-responsable']['tel_user']);} else {if (!empty($destination['co-responsable']['tel2_user'])) { echo html_utf8($destination['co-responsable']['tel2_user']);}} ?></td>
+                                <td><?php if (!empty($destination['co-responsable']['tel_user'])) {
+                                            echo html_utf8($destination['co-responsable']['tel_user']);
+                                        } else {
+                                            if (!empty($destination['co-responsable']['tel2_user'])) {
+                                                echo html_utf8($destination['co-responsable']['tel2_user']);
+                                            }
+                                        } ?></td>
                             </tr>
                         <?php } ?>
                     </tbody>
@@ -108,7 +126,7 @@ presidence();
     <div style="width:900px;">
     <?php inclure('complement-contacts-specifiques-fiche', ''); ?>
     </div>
-    
+
     <table>
         <tbody>
         <tr>
@@ -124,27 +142,29 @@ presidence();
         <tbody>
         <tr>
             <?php foreach ($destination['bus'] as $bus) { ?>
-                <?php if ($p && $p%2 == 0) echo '</tr><tr>'; ?>
-                <th <?php echo count($destination['bus'])>1 ? " width='15%' ":""; ?> ><?php echo $bus['intitule']; ?></th>
-                <td <?php echo count($destination['bus'])>1 ? " width='5%' ":""; ?>  >[<?php echo ($bus['places_max']-$bus['places_disponibles']); ?>p.]</td>
-                <td <?php echo count($destination['bus'])>1 ? " width='30%' ":""; ?> >
+                <?php if ($p && 0 == $p % 2) {
+                                            echo '</tr><tr>';
+                                        } ?>
+                <th <?php echo count($destination['bus']) > 1 ? " width='15%' " : ''; ?> ><?php echo $bus['intitule']; ?></th>
+                <td <?php echo count($destination['bus']) > 1 ? " width='5%' " : ''; ?>  >[<?php echo $bus['places_max'] - $bus['places_disponibles']; ?>p.]</td>
+                <td <?php echo count($destination['bus']) > 1 ? " width='30%' " : ''; ?> >
                     <ul>
                         <?php foreach ($bus['ramassage'] as $point) { ?>
                             <?php $cpuv = count($point['utilisateurs']['valide']); ?>
                             <li>
                                 <?php echo $point['nom']; ?> à <?php echo display_time($point['date']); ?>
-                                <?php if ($cpuv>0) { ?>&nbsp;&nbsp;[<?php echo $cpuv; ?> p.]<?php } ?>
+                                <?php if ($cpuv > 0) { ?>&nbsp;&nbsp;[<?php echo $cpuv; ?> p.]<?php } ?>
                             </li>
                         <?php } ?>
                     </ul>
                 </td>
-            <?php  $p++; } ?>
+            <?php ++$p; } ?>
         </tr>
         </tbody>
     </table>
     <small>Coût du transport, par personne : <b><?php echo $destination['cout_transport']; ?> €</b></small>
 
-    <?php $depose = $reprise = array(); ?>
+    <?php $depose = $reprise = []; ?>
     <table>
         <thead>
             <tr>
@@ -155,29 +175,43 @@ presidence();
         </thead>
         <tbody>
         <?php foreach ($destination['sorties'] as $e => $evt) { ?>
-            <?php if ($evt['status_evt'] == 1) { ?>
+            <?php if (1 == $evt['status_evt']) { ?>
             <?php
-                $depose[$evt['destination']['id_lieu_depose']][$evt['destination']['date_depose']][] = 'Gp'.($e+1);
-                $reprise[$evt['destination']['id_lieu_reprise']][$evt['destination']['date_reprise']][] = 'Gp'.($e+1);
-                $groupes[$evt['id_evt']] = 'Gp'.($e+1);
+                $depose[$evt['destination']['id_lieu_depose']][$evt['destination']['date_depose']][] = 'Gp'.($e + 1);
+                $reprise[$evt['destination']['id_lieu_reprise']][$evt['destination']['date_reprise']][] = 'Gp'.($e + 1);
+                $groupes[$evt['id_evt']] = 'Gp'.($e + 1);
              ?>
-            <tr <?php  if ($evt['status_legal_evt'] == 0) { echo ' class="vis-off-light" '; }  ?> >
-                <td><b><?php echo 'Gp'.($e+1); ?></b> <?php if (count($evt['groupe'])>0) { echo ' : '.html_utf8($evt['groupe']['nom']); } ?></td>
+            <tr <?php if (0 == $evt['status_legal_evt']) {
+                 echo ' class="vis-off-light" ';
+             }  ?> >
+                <td><b><?php echo 'Gp'.($e + 1); ?></b> <?php if (count($evt['groupe']) > 0) {
+                 echo ' : '.html_utf8($evt['groupe']['nom']);
+             } ?></td>
                 <td>
                     <?php $users = get_encadrants($evt['id_evt']); ?>
                     <ul>
                     <?php foreach ($users as $tmp) {  ?>
                         <li style="border-bottom:1px dotted #ccc;overflow:hidden;margin-bottom:5px;">
-                            <?php if ($tmp['role_evt_join'] == 'encadrant') echo '<b>'; ?>
-                            <?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'],'UTF-8'))) ?>
-                            <?php if ($tmp['role_evt_join'] == 'encadrant') echo '</b>'; ?>
-                            <span class="rght"><?php if (!empty($tmp['tel_user'])) { echo html_utf8($tmp['tel_user']); } else {if (!empty($tmp['tel2_user'])) { echo html_utf8($tmp['tel2_user']); }} ?></span>
+                            <?php if ('encadrant' == $tmp['role_evt_join']) {
+                 echo '<b>';
+             } ?>
+                            <?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?>
+                            <?php if ('encadrant' == $tmp['role_evt_join']) {
+                 echo '</b>';
+             } ?>
+                            <span class="rght"><?php if (!empty($tmp['tel_user'])) {
+                 echo html_utf8($tmp['tel_user']);
+             } else {
+                 if (!empty($tmp['tel2_user'])) {
+                     echo html_utf8($tmp['tel2_user']);
+                 }
+             } ?></span>
                         </li>
                     <?php } ?>
                     </ul>
                 </td>
                 <td>
-                    <?php  if ($evt['status_legal_evt'] == 0) { ?>
+                    <?php if (0 == $evt['status_legal_evt']) { ?>
                     <b class="rght">ATTENTION : Sortie non validée par le <?php echo $p_sitename; ?></b><br>
                     <?php } ?>
                     <b><?php echo html_utf8($evt['titre_evt']); ?></b> : <?php echo html_utf8($evt['itineraire']); ?><br>
@@ -190,7 +224,7 @@ presidence();
         </tbody>
     </table>
 
-    <?php $lieux = array(); ?>
+    <?php $lieux = []; ?>
     <table>
         <tbody >
             <tr style="vertical-align:top;">
@@ -205,16 +239,18 @@ presidence();
                         <?php foreach ($hours as $hour => $sorties) { ?>
                         <tr>
                             <?php if (!isset($lieux[$id_d])) {
-                                $lieu = get_lieu($id_d);
-                                $lieux[$id_d] = $lieu;
-                            } else {
-                                $lieu = $lieux[$id_d];
-                            } ?>
+                 $lieu = get_lieu($id_d);
+                 $lieux[$id_d] = $lieu;
+             } else {
+                 $lieu = $lieux[$id_d];
+             } ?>
                             <td width="25%"><?php echo $lieu['nom']; ?></td>
                             <td width="10%">
                                 <?php echo display_time($hour); ?>
                             </td>
-                            <td width="65%"><?php foreach ($sorties as $sortie) echo $sortie.', '; ?></td>
+                            <td width="65%"><?php foreach ($sorties as $sortie) {
+                 echo $sortie.', ';
+             } ?></td>
                         </tr>
                         <?php } ?>
                     <?php } ?>
@@ -231,16 +267,18 @@ presidence();
                             <?php foreach ($hours as $hour => $sorties) { ?>
                                 <tr>
                                     <?php if (!isset($lieux[$id_d])) {
-                                        $lieu = get_lieu($id_d);
-                                        $lieux[$id_d] = $lieu;
-                                    } else {
-                                        $lieu = $lieux[$id_d];
-                                    } ?>
+                 $lieu = get_lieu($id_d);
+                 $lieux[$id_d] = $lieu;
+             } else {
+                 $lieu = $lieux[$id_d];
+             } ?>
                                     <td width="25%"><?php echo $lieu['nom']; ?></td>
                                     <td width="10%">
                                         <?php echo display_time($hour); ?>
                                     </td>
-                                    <td width="65%"><?php foreach ($sorties as $sortie) echo $sortie.', '; ?></td>
+                                    <td width="65%"><?php foreach ($sorties as $sortie) {
+                 echo $sortie.', ';
+             } ?></td>
                                 </tr>
                             <?php } ?>
                         <?php } ?>
@@ -260,9 +298,9 @@ presidence();
         <?php foreach ($destination['bus'] as $id_bus => $bus) { ?>
             <?php foreach ($bus['ramassage'] as $id_point => $point) {  ?>
                 <?php if ($point['utilisateurs']['valide']) {
-                    $nInscritDestination += count($point['utilisateurs']['valide']);
-                    $destination['bus'][$id_bus]['countUtilisateurs'] += count($point['utilisateurs']['valide']);
-                } ?>
+                 $nInscritDestination += count($point['utilisateurs']['valide']);
+                 $destination['bus'][$id_bus]['countUtilisateurs'] += count($point['utilisateurs']['valide']);
+             } ?>
             <?php } ?>
         <?php } ?>
 
@@ -280,24 +318,25 @@ presidence();
                 $arrets = null;
                 foreach ($bus['ramassage'] as $id_ramassage => $point) {
                     if (count($point['utilisateurs']) > 0) {
-                        $busses[$id_ramassage] = array('short' => '['.$b++.']', 'long'=>$point['nom'].' à '.display_time($point['date']));
+                        $busses[$id_ramassage] = ['short' => '['.$b++.']', 'long' => $point['nom'].' à '.display_time($point['date'])];
                         $arrets .= '<li><b>'.$busses[$id_ramassage]['short'].'</b> '.$busses[$id_ramassage]['long'].'</li>';
                         $displayBus = true;
                     }
-
                 }
-                if ($displayBus) $chain .= '<li class="lft mr20">'.$bus['intitule'].'<ul>'.$arrets.'</ul></li>';
-
+                if ($displayBus) {
+                    $chain .= '<li class="lft mr20">'.$bus['intitule'].'<ul>'.$arrets.'</ul></li>';
+                }
             }
             $e_chain = '</ul><br class="clear"><br class="clear"> ';
-        if (!is_null($chain))
+        if (null !== $chain) {
             echo $d_chain.$chain.$e_chain;
+        }
         ?>
 
         <?php $b = 1; foreach ($destination['bus'] as $bus) { ?>
             <?php if ($bus['ramassage']) { ?>
                         <?php foreach ($bus['ramassage'] as $point) { ?>
-                            <?php $tmpUsers = array(); ?>
+                            <?php $tmpUsers = []; ?>
                             <?php if ($point['utilisateurs']['valide']) { ?>
                                 <?php $cpuv = count($point['utilisateurs']['valide']); ?>
 
@@ -323,8 +362,8 @@ presidence();
                                             </thead>
                                             <tbody>
                                             <?php
-                                            $number=1;
-                                            foreach($point['utilisateurs']['valide'] as $id_user) {
+                                            $number = 1;
+                                            foreach ($point['utilisateurs']['valide'] as $id_user) {
                                                 $tmpUser = get_user($id_user, false);
                                                 $tmpUser['is_cb'] = user_in_cb($id_user);
                                                 $tmpUser['is_restaurant'] = user_in_destination_repas($id_user, $destination['id']);
@@ -341,13 +380,29 @@ presidence();
                                                     <td>&nbsp;<img src="img/bus.png" width="10" /></td>
                                                     <td>&nbsp;€&nbsp;</td>
                                                     <td><b><?php echo $groupes[$tmp['sortie']['id_evt']]; ?></b></td>
-                                                    <td><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'],'UTF-8'))) ?></td>
+                                                    <td><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></td>
                                                     <td><?php echo html_utf8($tmp['cafnum_user']); ?></td>
                                                     <td><?php echo getYearsSinceDate($tmp['birthday_user']); ?></td>
                                                     <td><?php echo html_utf8($tmp['tel_user']); ?></td>
                                                     <td><?php echo html_utf8($tmp['tel2_user']); ?></td>
-                                                    <td><?php if($evt['cb_evt']=='1'){ ?><?php if ($tmp['is_cb'] == '1') {echo 'OUI';} elseif ($tmp['is_cb'] == '0') {echo '-';} else {echo '<small>NSP</small>';} ?><?php } else {echo '-';} ?></td>
-                                                    <td><?php if($evt['repas_restaurant']=='1'){ ?><?php if ($tmp['is_restaurant'] == '1') {echo 'OUI';} elseif ($tmp['is_restaurant'] == '0') {echo '-';} else {echo '<small>NSP</small>';} ?><?php } else {echo '-';} ?></td>
+                                                    <td><?php if ('1' == $evt['cb_evt']) { ?><?php if ('1' == $tmp['is_cb']) {
+                                                echo 'OUI';
+                                            } elseif ('0' == $tmp['is_cb']) {
+                                                echo '-';
+                                            } else {
+                                                echo '<small>NSP</small>';
+                                            } ?><?php } else {
+                                                echo '-';
+                                            } ?></td>
+                                                    <td><?php if ('1' == $evt['repas_restaurant']) { ?><?php if ('1' == $tmp['is_restaurant']) {
+                                                echo 'OUI';
+                                            } elseif ('0' == $tmp['is_restaurant']) {
+                                                echo '-';
+                                            } else {
+                                                echo '<small>NSP</small>';
+                                            } ?><?php } else {
+                                                echo '-';
+                                            } ?></td>
                                                 </tr>
                                             <?php } ?>
                                             </tbody>
@@ -356,7 +411,7 @@ presidence();
                                     </div>
 
                             <?php } ?>
-                        <?php $b++; }  ?>
+                        <?php ++$b; }  ?>
 
             <?php }  ?>
         <?php } ?>
@@ -381,18 +436,21 @@ presidence();
                             <th>AGE</th>
                             <th>TÉL. PERSONNEL</th>
                             <th>TÉL. <abbr title="En cas d'urgence">I.C.E</abbr></th>
-                            <?php if($evt['repas_restaurant']=='1'){ ?><th><abbr title="Restaurant"><img src="img/base/resto-oui.png"/></abbr></th><?php } ?>
+                            <?php if ('1' == $evt['repas_restaurant']) { ?><th><abbr title="Restaurant"><img src="img/base/resto-oui.png"/></abbr></th><?php } ?>
                         </tr>
                         </thead>
                         <tbody><?php
-                        $number=1; ?>
-                    <?php foreach ($covoiturage['covoiturage']['sortie'] as $id_sortie => $personnes) { $current = false; ?>
+                        $number = 1; ?>
+                    <?php foreach ($covoiturage['covoiturage']['sortie'] as $id_sortie => $personnes) {
+                            $current = false; ?>
                         <?php foreach ($destination['sorties'] as $sortie) { ?>
-                            <?php if ($sortie['id_evt'] == $id_sortie) $current = $sortie; ?>
+                            <?php if ($sortie['id_evt'] == $id_sortie) {
+                                $current = $sortie;
+                            } ?>
                         <?php } ?>
-                        <?php $tmpUsers = array(); ?>
+                        <?php $tmpUsers = []; ?>
                             <?php
-                            foreach($personnes as $id_user) {
+                            foreach ($personnes as $id_user) {
                                 $tmpUser = get_user($id_user, false);
                                 $tmpUser['sortie'] = user_sortie_in_dest($id_user, $destination['id']);
                                 $tmpUsers[$tmpUser['lastname_user'].$tmpUser['firstname_user'].$tmpUser['id_user']] = $tmpUser;
@@ -403,16 +461,29 @@ presidence();
                                     <td><?php echo $number++; ?></td>
                                     <td>&nbsp;</td>
                                     <td><b><?php echo $groupes[$tmp['sortie']['id_evt']]; ?></b></td>
-                                    <td><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'],'UTF-8'))) ?></td>
+                                    <td><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></td>
                                     <td><?php echo html_utf8($tmp['cafnum_user']); ?></td>
                                     <td><?php echo getYearsSinceDate($tmp['birthday_user']); ?></td>
                                     <td><?php echo html_utf8($tmp['tel_user']); ?></td>
                                     <td><?php echo html_utf8($tmp['tel2_user']); ?></td>
-                                    <?php if($evt['cb_evt']=='1'){ ?><td><?php if ($tmp['is_cb'] == '1') {echo 'OUI';} elseif ($tmp['is_cb'] == '0') {echo '-';} else {echo '<small>NSP</small>';} ?></td><?php } ?>
-                                    <?php if($evt['repas_restaurant']=='1'){ ?><td><?php if ($tmp['is_restaurant'] == '1') {echo 'OUI';} elseif ($tmp['is_restaurant'] == '0') {echo '-';} else {echo '<small>NSP</small>';} ?></td><?php } ?>
+                                    <?php if ('1' == $evt['cb_evt']) { ?><td><?php if ('1' == $tmp['is_cb']) {
+                                echo 'OUI';
+                            } elseif ('0' == $tmp['is_cb']) {
+                                echo '-';
+                            } else {
+                                echo '<small>NSP</small>';
+                            } ?></td><?php } ?>
+                                    <?php if ('1' == $evt['repas_restaurant']) { ?><td><?php if ('1' == $tmp['is_restaurant']) {
+                                echo 'OUI';
+                            } elseif ('0' == $tmp['is_restaurant']) {
+                                echo '-';
+                            } else {
+                                echo '<small>NSP</small>';
+                            } ?></td><?php } ?>
                                 </tr>
                             <?php } ?>
-                    <?php } ?>
+                    <?php
+                        } ?>
                         </tbody>
                     </table>
                 </ul>
@@ -422,8 +493,8 @@ presidence();
 
 
 
-    <pre><?php // print_r($destination); ?></pre>
+    <pre><?php // print_r($destination);?></pre>
 
-    Imprimé le <?php echo html_utf8(date("d.m.Y à H:i"));?>
+    Imprimé le <?php echo html_utf8(date('d.m.Y à H:i')); ?>
     </body>
 </html>

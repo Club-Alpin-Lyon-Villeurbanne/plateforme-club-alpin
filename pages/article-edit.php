@@ -12,57 +12,62 @@
 		<div style="padding:10px 0 0 30px; line-height:18px; ">
 			<?php
 
-			// ID
-			$id_article = intval($p2);
-			$article=false;
+            // ID
+            $id_article = (int) $p2;
+            $article = false;
 
-			include SCRIPTS.'connect_mysqli.php';;
-			$req="SELECT * FROM ".$pbd."article WHERE id_article=$id_article LIMIT 1";
-			$result = $mysqli->query($req);
-			while($row = $result->fetch_assoc()){
-				$req="SELECT code_commission FROM ".$pbd."commission WHERE id_commission=".$row['commission_article']." LIMIT 1";
-				$result2 = $mysqli->query($req);
-				while($row2 = $result2->fetch_assoc())	$row['code_commission'] = $row2['code_commission'];
+            include SCRIPTS.'connect_mysqli.php';
+            $req = 'SELECT * FROM '.$pbd."article WHERE id_article=$id_article LIMIT 1";
+            $result = $mysqli->query($req);
+            while ($row = $result->fetch_assoc()) {
+                $req = 'SELECT code_commission FROM '.$pbd.'commission WHERE id_commission='.$row['commission_article'].' LIMIT 1';
+                $result2 = $mysqli->query($req);
+                while ($row2 = $result2->fetch_assoc()) {
+                    $row['code_commission'] = $row2['code_commission'];
+                }
 
-				$article=$row;
-			}
-			$mysqli->close;
+                $article = $row;
+            }
+            $mysqli->close;
+
+            // not found
+            if (!$article) {
+                echo '<p class="erreur">Cet article est introuvable.</p>';
+            }
+            // pas à moi, et je n'ai pas le droit de tous les modifier
+            elseif ($article['user_article'] != $_SESSION['user']['id_user'] && !allowed('article_edit_notmine')) {
+                echo '<p class="erreur">Vous n\êtes pas l\'auteur de cet article et n\'y avez pas accès.</p>';
+            }
+            // je n'ai pas le droit de modifier un article
+            elseif (!allowed('article_edit')) {
+                echo '<p class="erreur">Vous n\'avez pas l\'autorisation d\'accéder à cette page car vous ne semblez pas avoir les droits de rédaction.</p>';
+            }
+            // je n'ai pas le droit de créer un article pour cette commission (s'il y a une commission, ce qui n'est pas obligé : CLUB=0 ou COMPTE RENDU DE SORTIE=-1 )
+            elseif ($article['code_commission'] && !allowed('article_edit', 'commission:'.$article['code_commission'])) {
+                echo '<p class="erreur">Vous n\'avez pas l\'autorisation d\'accéder à cette page car vous ne semblez pas avoir les droits de rédaction pour la commission '.html_utf8($article['code_commission']).'.</p>';
+            }
+
+            // on a donné une commission pour laquelle j'ai les droits, alors go
+            else {
+                // si actuellement publié : message d'alerte validation
+                if (1 == $article['status_article']) {
+                    echo '<p class="alerte">Attention : si vous modifiez cet article, il devra à nouveau être validée par un responsable avant d\'être publié sur le site !</p>';
+                } ?>
 
 
-			// not found
-			if(!$article)
-				echo '<p class="erreur">Cet article est introuvable.</p>';
-			// pas à moi, et je n'ai pas le droit de tous les modifier
-			elseif($article['user_article'] != $_SESSION['user']['id_user'] && !allowed('article_edit_notmine'))
-				echo '<p class="erreur">Vous n\êtes pas l\'auteur de cet article et n\'y avez pas accès.</p>';
-			// je n'ai pas le droit de modifier un article
-			elseif(!allowed('article_edit'))
-				echo '<p class="erreur">Vous n\'avez pas l\'autorisation d\'accéder à cette page car vous ne semblez pas avoir les droits de rédaction.</p>';
-			// je n'ai pas le droit de créer un article pour cette commission (s'il y a une commission, ce qui n'est pas obligé : CLUB=0 ou COMPTE RENDU DE SORTIE=-1 )
-			else if($article['code_commission'] && !allowed('article_edit', 'commission:'.$article['code_commission']))
-				echo '<p class="erreur">Vous n\'avez pas l\'autorisation d\'accéder à cette page car vous ne semblez pas avoir les droits de rédaction pour la commission '.html_utf8($article['code_commission']).'.</p>';
-
-			// on a donné une commission pour laquelle j'ai les droits, alors go
-			else{
-
-
-				// si actuellement publié : message d'alerte validation
-				if($article['status_article'] == 1)
-					echo '<p class="alerte">Attention : si vous modifiez cet article, il devra à nouveau être validée par un responsable avant d\'être publié sur le site !</p>';
-
-				?>
-
-
-				<form action="<?php echo $versCettePage;?>" method="post">
+				<form action="<?php echo $versCettePage; ?>" method="post">
 					<input type="hidden" name="operation" value="article_update" />
-					<input type="hidden" name="id_article" value="<?php echo intval($id_article); ?>" />
+					<input type="hidden" name="id_article" value="<?php echo (int) $id_article; ?>" />
 
 					<?php
-					// message d'erreur
-					if($_POST['operation'] && sizeof($errTab))	echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
-					// message d'info : si c'est une modification
-					if($_POST['operation']=='article_update' && !sizeof($errTab))	echo '<p class="info"><img src="img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date("H:i:s", $p_time).'. <b>Important :</b> cet article doit à présent être validé par un responsable pour être publié sur le site.<a href="profil/articles/self.html" title="">&gt; Retourner à la liste de mes articles</a></p>';
-					?>
+                    // message d'erreur
+                    if ($_POST['operation'] && count($errTab)) {
+                        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                    }
+                // message d'info : si c'est une modification
+                if ('article_update' == $_POST['operation'] && !count($errTab)) {
+                    echo '<p class="info"><img src="img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date('H:i:s', $p_time).'. <b>Important :</b> cet article doit à présent être validé par un responsable pour être publié sur le site.<a href="profil/articles/self.html" title="">&gt; Retourner à la liste de mes articles</a></p>';
+                } ?>
 
 
 
@@ -75,17 +80,21 @@
 						<select name="commission_article" class="type1" style="width:95%">
 
 							<option value="">- Choisissez :</option>
-							<option value="0" <?php if($article['commission_article']=='0') echo 'selected="selected"'; ?>>Actualité du club : apparait dans toutes les commissions</option>
-							<option value="-1" <?php if($article['commission_article']=='-1') echo 'selected="selected"'; ?>>Compte rendu de sortie</option>
+							<option value="0" <?php if ('0' == $article['commission_article']) {
+                    echo 'selected="selected"';
+                } ?>>Actualité du club : apparait dans toutes les commissions</option>
+							<option value="-1" <?php if ('-1' == $article['commission_article']) {
+                    echo 'selected="selected"';
+                } ?>>Compte rendu de sortie</option>
 
 							<optgroup label="Article lié à une commission :">
 								<?php
-								// articles liés aux commissions
-								foreach($comTab as $code=>$data){
-									if(allowed('article_create', 'commission:'.$code))
-										echo '<option value="'.$data['id_commission'].'" '.($article['commission_article']==$data['id_commission']?'selected="selected"':'').'>Actualité &laquo; '.html_utf8($data['title_commission']).' &raquo;</option>';
-								}
-								?>
+                                // articles liés aux commissions
+                                foreach ($comTab as $code => $data) {
+                                    if (allowed('article_create', 'commission:'.$code)) {
+                                        echo '<option value="'.$data['id_commission'].'" '.($article['commission_article'] == $data['id_commission'] ? 'selected="selected"' : '').'>Actualité &laquo; '.html_utf8($data['title_commission']).' &raquo;</option>';
+                                    }
+                                } ?>
 							</optgroup>
 						</select>
 						<br />
@@ -99,33 +108,33 @@
 						<select name="evt_article" class="type1" style="width:95%">
 							<option value="0">- Non merci</option>
 							<?php
-							/* */
-							// besoin de la liste des sorties publiées
-							include SCRIPTS.'connect_mysqli.php';;
-							$req="SELECT id_evt, commission_evt, tsp_evt, tsp_end_evt, titre_evt, code_evt FROM caf_evt WHERE status_evt =1 ORDER BY tsp_evt DESC LIMIT 0 , 300";
-							$handleSql=$mysqli->query($req);
-							while($row = $handleSql->fetch_assoc()){
-								echo '<option value="'.$row['id_evt'].'" '.($article['evt_article']==$row['id_evt']?'selected="selected"':'').'>'
-										// .jour(date('N', $row['tsp_evt']))
-										.' '.date('d', $row['tsp_evt'])
-										.' '.mois(date('m', $row['tsp_evt']))
-										.' '.date('Y', $row['tsp_evt'])
-										.' | '.html_utf8($row['titre_evt'])
-									.'</option>';
-							}
-							$mysqli->close();
-							/* */
-							?>
+
+                            // besoin de la liste des sorties publiées
+                            include SCRIPTS.'connect_mysqli.php';
+                $req = 'SELECT id_evt, commission_evt, tsp_evt, tsp_end_evt, titre_evt, code_evt FROM caf_evt WHERE status_evt =1 ORDER BY tsp_evt DESC LIMIT 0 , 300';
+                $handleSql = $mysqli->query($req);
+                while ($row = $handleSql->fetch_assoc()) {
+                    echo '<option value="'.$row['id_evt'].'" '.($article['evt_article'] == $row['id_evt'] ? 'selected="selected"' : '').'>'
+                                        // .jour(date('N', $row['tsp_evt']))
+                                        .' '.date('d', $row['tsp_evt'])
+                                        .' '.mois(date('m', $row['tsp_evt']))
+                                        .' '.date('Y', $row['tsp_evt'])
+                                        .' | '.html_utf8($row['titre_evt'])
+                                    .'</option>';
+                }
+                $mysqli->close(); ?>
 						</select>
 						<br />
 						<br />
 
 						Titre :<br />
-						<input style="width:94%;" type="text" name="titre_article" class="type1" value="<?php echo html_utf8($article['titre_article']);?>" placeholder="ex : Escalade du Grand Som, une sortie bien gaillarde !" />
+						<input style="width:94%;" type="text" name="titre_article" class="type1" value="<?php echo html_utf8($article['titre_article']); ?>" placeholder="ex : Escalade du Grand Som, une sortie bien gaillarde !" />
 						<br />
 						<br />
 
-						<input type="checkbox" class="custom" name="une_article" <?php if($article['une_article']) echo 'checked="checked"';?> />
+						<input type="checkbox" class="custom" name="une_article" <?php if ($article['une_article']) {
+                    echo 'checked="checked"';
+                } ?> />
 						Placer cet article à la Une ?
 						<p class="mini" style="padding-right:20px;">
 							<b>À utiliser avec parcimonie.</b>  Ceci place l'article au sommet de la page d'accueil, dans les actualités défilantes.
@@ -143,20 +152,19 @@
 						</p>
 						<br />
 						<?php
-						// Définition du dossier ou chercher les images
-						$found=false;
+                        // Définition du dossier ou chercher les images
+                        $found = false;
 
-						// dans le cas d'une modification
-						$dir='ftp/articles/'.$id_article.'/';
+                // dans le cas d'une modification
+                $dir = 'ftp/articles/'.$id_article.'/';
 
-						if( file_exists($dir.'min-figure.jpg') &&
-							file_exists($dir.'wide-figure.jpg') &&
-							// file_exists($dir.'pic-figure.jpg') &&
-							file_exists($dir.'figure.jpg')
-							){
-							$found=true;
-						}
-						?>
+                if (file_exists($dir.'min-figure.jpg') &&
+                            file_exists($dir.'wide-figure.jpg') &&
+                            // file_exists($dir.'pic-figure.jpg') &&
+                            file_exists($dir.'figure.jpg')
+                            ) {
+                    $found = true;
+                } ?>
 						<!-- valums file upload -->
 						<link href="tools/valums-file-upload/css/fileuploader-user.css" rel="stylesheet" type="text/css">
 						<div id="file-uploader-ftp"><noscript>L'envoi de fichier nécessite javascript</noscript></div>
@@ -167,7 +175,9 @@
 									sizeLimit: 5 * 1024 * 1024, // 5 Megz
 									element: document.getElementById('file-uploader-ftp'),
 									// on passe
-									action: 'tools/valums-file-upload/server/images-nouvelarticle.php<?php if($id_article) echo '?mode=edit&id_article='.$id_article; ?>',
+									action: 'tools/valums-file-upload/server/images-nouvelarticle.php<?php if ($id_article) {
+                    echo '?mode=edit&id_article='.$id_article;
+                } ?>',
 									// pour chaque image envoyée
 									onComplete: function(id, fileName, responseJSON){
 										// si succes
@@ -175,7 +185,7 @@
 											// Effacement du loader
 											$("li.qq-upload-success:not(.lpedited)").addClass('lpedited').hide();
 											// affichage d'une nouvelle ligne
-											var dir='<?php echo $dir;?>';
+											var dir='<?php echo $dir; ?>';
 											var file='wide-'+responseJSON.filename;
 											var id=responseJSON.id;
 											var ac=new Date(); // anticache
@@ -191,12 +201,13 @@
 
 						<!-- IMAGES EXISTANTES ET CHUTIER DES UPLOADS -->
 						<?php
-						echo '<br /><div id="chutier1" style="width:230px; height:126px; text-align:center;  padding:3px; margin:0 20px 10px 0; background:white; float:left; box-shadow:0 0 10px -5px black; ">';
-						if($found) echo '<img src="'.$dir.'wide-figure.jpg?ac='.$p_time.'" alt="" title="" style="width:100%; height:100%; " />';
-						echo '</div>';
+                        echo '<br /><div id="chutier1" style="width:230px; height:126px; text-align:center;  padding:3px; margin:0 20px 10px 0; background:white; float:left; box-shadow:0 0 10px -5px black; ">';
+                if ($found) {
+                    echo '<img src="'.$dir.'wide-figure.jpg?ac='.$p_time.'" alt="" title="" style="width:100%; height:100%; " />';
+                }
+                echo '</div>';
 
-						inclure('nouvel-article-info-photo', 'vide');
-						?>
+                inclure('nouvel-article-info-photo', 'vide'); ?>
 
 						<br style="clear:both" />
 					</div>
@@ -220,7 +231,7 @@
 						</p><br />
 
 						<div style="position:relative; right:0px; ">
-							<textarea name="cont_article" style="width:625px; "><?php echo stripslashes($article['cont_article']);?></textarea>
+							<textarea name="cont_article" style="width:625px; "><?php echo stripslashes($article['cont_article']); ?></textarea>
 						</div>
 
 						<br />
@@ -231,11 +242,9 @@
 					<h2 class="trigger-h2">Co-rédacteurs :</h2>
 					<div class="trigger-me" style="width:95%">
 						<?php
-						inclure('info-coredacteurs', 'vide');
+                        inclure('info-coredacteurs', 'vide');
 
-						// liste des personnes autorisées à
-
-						?>
+                // liste des personnes autorisées à?>
 						[TODO]
 					</div>
 					COREDACTEURS -->
@@ -247,7 +256,9 @@
 						<?php inclure('info-topubly-checkbox', 'vide'); ?>
 						<div class="check-nice">
 							<label for="topubly_article" style="float:none; width:100%">
-								<input type="checkbox" name="topubly_article" id="topubly_article" <?php if($article['topubly_article']==1) echo 'checked="checked"'; ?>>
+								<input type="checkbox" name="topubly_article" id="topubly_article" <?php if (1 == $article['topubly_article']) {
+                    echo 'checked="checked"';
+                } ?>>
 								Demander la publication de cet article dès que possible ?
 							</label>
 							<p class="mini">
@@ -300,9 +311,9 @@
 						theme_advanced_statusbar_location : "bottom",
 						theme_advanced_resizing : true,
 
-						document_base_url : '<?php echo $p_racine;?>',
+						document_base_url : '<?php echo $p_racine; ?>',
 
-						content_css : "<?php echo $p_racine;?>css/base.css,<?php echo $p_racine;?>css/style1.css,<?php echo $p_racine;?>fonts/stylesheet.css",
+						content_css : "<?php echo $p_racine; ?>css/base.css,<?php echo $p_racine; ?>css/style1.css,<?php echo $p_racine; ?>fonts/stylesheet.css",
 						body_id : "bodytinymce_user",
 						body_class : "cont_article",
 						theme_advanced_styles : "<?php echo $p_tiny_theme_advanced_styles; ?>",
@@ -340,15 +351,15 @@
 				<!-- /tinyMCE -->
 
 				<?php
-			}
-			?>
+            }
+            ?>
 		</div>
 	</div>
 
 	<!-- partie droite -->
 	<?php
-	include INCLUDES.'right-type-agenda.php';
-	?>
+    include INCLUDES.'right-type-agenda.php';
+    ?>
 
 	<br style="clear:both" />
 </div>

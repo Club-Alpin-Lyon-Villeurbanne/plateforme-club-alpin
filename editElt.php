@@ -1,66 +1,71 @@
 <?php
 
 //_________________________________________________ DEFINITION DES DOSSIERS
-define ('DS', DIRECTORY_SEPARATOR );
-define ('ROOT', dirname(__FILE__).DS);				// Racine
-include (ROOT.'app'.DS.'includes.php');
+define('DS', \DIRECTORY_SEPARATOR);
+define('ROOT', __DIR__.DS);				// Racine
+include ROOT.'app'.DS.'includes.php';
 
 //_________________________________________________
 //_____________________________ PAGE
 //_________________________________________________
 
-if(admin()){
-	// affichage normal : pas de donnees recues
-	if((!isset($_POST['etape'])) or ($_POST['etape'] != 'enregistrement')){
-		// récupération du contenu
-		include SCRIPTS.'connect_mysqli.php';;
-		$code_content_html=$mysqli->real_escape_string($_GET['p']);
-		$id_content_html=intval($_GET['id_content_html']);
+if (admin()) {
+    // affichage normal : pas de donnees recues
+    if ((!isset($_POST['etape'])) || ('enregistrement' != $_POST['etape'])) {
+        // récupération du contenu
+        include SCRIPTS.'connect_mysqli.php';
+        $code_content_html = $mysqli->real_escape_string($_GET['p']);
+        $id_content_html = (int) ($_GET['id_content_html']);
 
-		if(!$lang){ 	echo 'Erreur : langue courante introuvable.'; exit(); 	}
-		if(!$code_content_html){ 	echo 'Erreur : code_content_html introuvable.'; exit(); 	}
+        if (!$lang) {
+            echo 'Erreur : langue courante introuvable.';
+            exit();
+        }
+        if (!$code_content_html) {
+            echo 'Erreur : code_content_html introuvable.';
+            exit();
+        }
 
-		// récupération des dernieres versions dans cette langue
-		$req="SELECT * FROM  `".$pbd."content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND `lang_content_html` LIKE '$lang' ORDER BY  `date_content_html` DESC LIMIT 0 , 10";
-		$contentVersionsTab=array();
-		$handleSql=$mysqli->query($req);
-		while($handle=$handleSql->fetch_array(MYSQLI_ASSOC)){
-
-			// nettoyage des fonctions JS mailto : conversion en donnée brute
-			$regex='#<script type="text/javascript" class="mailthis">mailThis\(\'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\'\);</script>#i';
-			$handle['contenu_content_html']=preg_replace_callback(
-				$regex,
-				create_function(
-					'$matches',
-					'
+        // récupération des dernieres versions dans cette langue
+        $req = 'SELECT * FROM  `'.$pbd."content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND `lang_content_html` LIKE '$lang' ORDER BY  `date_content_html` DESC LIMIT 0 , 10";
+        $contentVersionsTab = [];
+        $handleSql = $mysqli->query($req);
+        while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+            // nettoyage des fonctions JS mailto : conversion en donnée brute
+            $regex = '#<script type="text/javascript" class="mailthis">mailThis\(\'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\'\);</script>#i';
+            $handle['contenu_content_html'] = preg_replace_callback(
+                $regex,
+                create_function(
+                    '$matches',
+                    '
 					if(!$matches[5]) $matches[5]=$matches[1].\'@\'.$matches[2].\'.\'.$matches[3];
 					$result=\'<a href="mailto:\'.$matches[1].\'@\'.$matches[2].\'.\'.$matches[3].\'" \'.$matches[4].\'>\'.$matches[5].\'</a>\';
 					return $result;
 					'
-				),
-				$handle['contenu_content_html']
-				);
+                ),
+                $handle['contenu_content_html']
+                );
 
-			array_push($contentVersionsTab, $handle);
-		}
+            $contentVersionsTab[] = $handle;
+        }
 
-		// version courante
-		$runningVersion=array(); // def : empty array
-		if(!$id_content_html){
-			if($contentVersionsTab[0])
-				$runningVersion=$contentVersionsTab[0];
-		}
-		// id d'historique précisé
-		else{
-			foreach($contentVersionsTab as $handle)
-				if($handle['id_content_html']==$id_content_html)
-					$runningVersion=$handle;
-		}
+        // version courante
+        $runningVersion = []; // def : empty array
+        if (!$id_content_html) {
+            if ($contentVersionsTab[0]) {
+                $runningVersion = $contentVersionsTab[0];
+            }
+        }
+        // id d'historique précisé
+        else {
+            foreach ($contentVersionsTab as $handle) {
+                if ($handle['id_content_html'] == $id_content_html) {
+                    $runningVersion = $handle;
+                }
+            }
+        }
 
-		$mysqli->close();
-
-
-			?>
+        $mysqli->close(); ?>
 			<html lang="fr">
 				<head>
 					<meta charset="utf-8">
@@ -105,7 +110,7 @@ if(admin()){
 
 							content_css : "css/base.css,css/style1.css,fonts/stylesheet.css",
 							body_id : "bodytinymce",
-							body_class : "<?php echo $_GET['class'];?>",
+							body_class : "<?php echo $_GET['class']; ?>",
 							theme_advanced_styles : "<?php echo $p_tiny_theme_advanced_styles; ?>",
 
 							relative_urls : true,
@@ -141,7 +146,7 @@ if(admin()){
 
 						function loadVersion(){
 							var id_content_html= $("select[name=versions]").val();
-							var url= 'editElt.php?p=<?php echo htmlentities($_GET['p']);?>&class=<?php echo htmlentities($_GET['class']);?>&retour=<?php echo htmlentities($_GET['retour']);?>&parent=<?php echo htmlentities($_GET['parent']);?>&id_content_html='+id_content_html;
+							var url= 'editElt.php?p=<?php echo htmlentities($_GET['p']); ?>&class=<?php echo htmlentities($_GET['class']); ?>&retour=<?php echo htmlentities($_GET['retour']); ?>&parent=<?php echo htmlentities($_GET['parent']); ?>&id_content_html='+id_content_html;
 
 							if(!id_content_html) alert('erreur id manquant');
 							else{
@@ -184,29 +189,29 @@ if(admin()){
 
 							<!-- TINYMCE + OPTIONS -->
 							<div class="onglets-admin-item">
-								<form action="editElt.php?retour=<?php echo $_GET['retour'];?>&amp;parent=<?php echo $_GET['parent'];?>" method="POST">
+								<form action="editElt.php?retour=<?php echo $_GET['retour']; ?>&amp;parent=<?php echo $_GET['parent']; ?>" method="POST">
 									<input type="hidden" name="etape" value="enregistrement" />
-									<input type="hidden" name="code_content_html" value="<?php echo htmlentities($_GET['p']);?>" />
-									<input type="hidden" name="linkedtopage_content_html" value="<?php echo htmlentities($_GET['parent']);?>" />
-									<input type="hidden" name="vis_content_html" value="<?php echo $runningVersion?intval($runningVersion['vis_content_html']):1;?>" />
+									<input type="hidden" name="code_content_html" value="<?php echo htmlentities($_GET['p']); ?>" />
+									<input type="hidden" name="linkedtopage_content_html" value="<?php echo htmlentities($_GET['parent']); ?>" />
+									<input type="hidden" name="vis_content_html" value="<?php echo $runningVersion ? (int) ($runningVersion['vis_content_html']) : 1; ?>" />
 
 									<p class="miniNote" style="margin-bottom:5px; ">
-										<?php if(!$runningVersion['vis_content_html']){ ?>
+										<?php if (!$runningVersion['vis_content_html']) { ?>
 											<span style="color:#974e00">[<img src="img/base/bullet_key.png" alt="MASQUÉ" title="Cet éléments est actuellement masqué aux visiteurs du site" style="vertical-align:middle; position:relative; bottom:2px " />]</span>&nbsp;
 										<?php } ?>
-										Vous modifiez l'élément <strong style="font-size:13px;"><?php echo $_GET['p'];?></strong>
-										- en langue <b><img src="img/base/flag-<?php echo strtolower($_SESSION['lang']);?>-up.gif" alt="" title="" style="height:10px;" /> <?php echo strtoupper($_SESSION['lang']);?></b>
-										- classe <b><?php echo $_GET['class'];?></b>
+										Vous modifiez l'élément <strong style="font-size:13px;"><?php echo $_GET['p']; ?></strong>
+										- en langue <b><img src="img/base/flag-<?php echo strtolower($_SESSION['lang']); ?>-up.gif" alt="" title="" style="height:10px;" /> <?php echo strtoupper($_SESSION['lang']); ?></b>
+										- classe <b><?php echo $_GET['class']; ?></b>
 									</p>
 
 									<!-- choix versions -->
 									<div style="float:right">
-										Charger une version précédente (<?php echo $p_nmaxversions;?> max.) :
+										Charger une version précédente (<?php echo $p_nmaxversions; ?> max.) :
 										<select name="versions" style="font-size:11px; ">
 											<?php
-											foreach($contentVersionsTab as $version)
-												echo '<option value="'.$version['id_content_html'].'" '.($version['id_content_html']==$id_content_html?'selected="selected"':'').'>'.jour(date("N", $version['date_content_html'])).' '.date("d/m/y à H:i:s", $version['date_content_html']).'</option>';
-											?>
+                                            foreach ($contentVersionsTab as $version) {
+                                                echo '<option value="'.$version['id_content_html'].'" '.($version['id_content_html'] == $id_content_html ? 'selected="selected"' : '').'>'.jour(date('N', $version['date_content_html'])).' '.date('d/m/y à H:i:s', $version['date_content_html']).'</option>';
+                                            } ?>
 										</select>
 										<input type="button" name="loadVersion" value="Charger" class="boutonfancy" />
 									</div>
@@ -220,13 +225,13 @@ if(admin()){
 
 									<br /><br />
 									<?php
-									if($id_content_html) echo '<p class="info">Le contenu ci-dessous a été chargé depuis une version antérieure, mais n\'a pas encore été sauvegardé.</p>';
-									?>
+                                    if ($id_content_html) {
+                                        echo '<p class="info">Le contenu ci-dessous a été chargé depuis une version antérieure, mais n\'a pas encore été sauvegardé.</p>';
+                                    } ?>
 									<div style="background:#c0c0c0; ">
-										<textarea id="edition1" class="<?php echo $_GET['class'];?>" name="contenu_content_html" style="width:100%; "><?php
-											// affichage contenu courant
-											echo $runningVersion['contenu_content_html'];
-											?>
+										<textarea id="edition1" class="<?php echo $_GET['class']; ?>" name="contenu_content_html" style="width:100%; "><?php
+                                            // affichage contenu courant
+                                            echo $runningVersion['contenu_content_html']; ?>
 										</textarea>
 									</div>
 								</form>
@@ -260,35 +265,38 @@ if(admin()){
 				</body>
 			</html>
 			<?php
-	}
-	/// OPERATIONS
-	else{
-		$vis_content_html=intval($_POST['vis_content_html']);
-		$code_content_html=$_POST['code_content_html'];
-		$linkedtopage_content_html=$_POST['linkedtopage_content_html'];
-		$contenu_content_html=stripslashes($_POST['contenu_content_html']);
-		// eviter un bloc vide si les liens d'édition sont positionnés en absolute
-		if($p_abseditlink)
-			if($contenu_content_html == '') $contenu_content_html='&nbsp;';
+    }
+    /// OPERATIONS
+    else {
+        $vis_content_html = (int) ($_POST['vis_content_html']);
+        $code_content_html = $_POST['code_content_html'];
+        $linkedtopage_content_html = $_POST['linkedtopage_content_html'];
+        $contenu_content_html = stripslashes($_POST['contenu_content_html']);
+        // eviter un bloc vide si les liens d'édition sont positionnés en absolute
+        if ($p_abseditlink) {
+            if ('' == $contenu_content_html) {
+                $contenu_content_html = '&nbsp;';
+            }
+        }
 
-		// sécurisation des adresses e-mail :
-		$regexMail='((?:[a-z0-9!\#$%&\'*+/=?^_`{|}~-]+\.?)*[a-z0-9!\#$%&\'*+/=?^_`{|}~-]+)@((?:[a-z0-9-_]+\.?)*[a-z0-9-_]+)\.([a-z]{2,})';
-		$regex='#<a ((?:.)*)href="mailto:'.$regexMail.'"((?:.)*)>(.*)</a>#i';
-		// remplacement de lien mailto par une fonction .js
-		$contenu_content_html=preg_replace_callback(
-			$regex,
-			create_function(
-				'$matches',
-				// $1 = attributs en rab
-				// $2 = avant @
-				// $3 = apres @
-				// $4 = domaine
-				// $5 = attributs en rab
-				// $6 = ancre (peut être email en clair)
+        // sécurisation des adresses e-mail :
+        $regexMail = '((?:[a-z0-9!\#$%&\'*+/=?^_`{|}~-]+\.?)*[a-z0-9!\#$%&\'*+/=?^_`{|}~-]+)@((?:[a-z0-9-_]+\.?)*[a-z0-9-_]+)\.([a-z]{2,})';
+        $regex = '#<a ((?:.)*)href="mailto:'.$regexMail.'"((?:.)*)>(.*)</a>#i';
+        // remplacement de lien mailto par une fonction .js
+        $contenu_content_html = preg_replace_callback(
+            $regex,
+            create_function(
+                '$matches',
+                // $1 = attributs en rab
+                // $2 = avant @
+                // $3 = apres @
+                // $4 = domaine
+                // $5 = attributs en rab
+                // $6 = ancre (peut être email en clair)
 
-				// fonctions JS :
-				// avant @, apres @, ext, attributs (fac dev=vide), ancre (face def=idem)
-				'
+                // fonctions JS :
+                // avant @, apres @, ext, attributs (fac dev=vide), ancre (face def=idem)
+                '
 				// ancre = e-mail ?
 				$ancre=trim($matches[6]);
 				if($ancre==$matches[2].\'@\'.$matches[3].\'.\'.$matches[4]) $ancre=false;
@@ -296,73 +304,61 @@ if(admin()){
 				$result=\'<a class="mailthisanchor"></a><script type="text/javascript" class="mailthis">mailThis(\\\'\'.htmlentities($matches[2],ENT_QUOTES,\'UTF-8\').\'\\\', \\\'\'.htmlentities($matches[3],ENT_QUOTES,\'UTF-8\').\'\\\', \\\'\'.htmlentities($matches[4],ENT_QUOTES,\'UTF-8\').\'\\\', \\\'\'.htmlentities($matches[1].$matches[5],ENT_QUOTES,\'UTF-8\').\'\\\', \\\'\'.htmlentities($ancre,ENT_QUOTES,\'UTF-8\').\'\\\');</script>\';
 				return $result;
 				'
-			),
-			$contenu_content_html
-		);
+            ),
+            $contenu_content_html
+        );
 
-		// echo html_utf8($contenu_content_html);
+        // echo html_utf8($contenu_content_html);
 
-		// BD
-		include SCRIPTS.'connect_mysqli.php';;
-		// Nettoyage
-		$contenu_content_html=$mysqli->real_escape_string($contenu_content_html);
-		$lang=$mysqli->real_escape_string($lang);
-		$code_content_html=$mysqli->real_escape_string($code_content_html);
+        // BD
+        include SCRIPTS.'connect_mysqli.php';
+        // Nettoyage
+        $contenu_content_html = $mysqli->real_escape_string($contenu_content_html);
+        $lang = $mysqli->real_escape_string($lang);
+        $code_content_html = $mysqli->real_escape_string($code_content_html);
 
-		/* */
-		// compte des nombre d'entrées à supprimer
-		$req="SELECT COUNT(`id_content_html`) FROM  `".$pbd."content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  '$lang'";
-		$sqlCount=$mysqli->query($req);
-		$nVersions=getArrayFirstValue($sqlCount->fetch_array(MYSQLI_NUM));
-		$nDelete=$nVersions-$p_nmaxversions;
-		if($nDelete>0){
-			// s'il y en a à supprimer
-			$req="DELETE FROM `".$pbd."content_html` WHERE `code_content_html` LIKE '$code_content_html' AND  `lang_content_html` LIKE  '$lang' ORDER BY  `date_content_html` ASC LIMIT $nDelete"; // ASC pour commencer par la fin de ceux a supprimer
-			if(!$mysqli->query($req)){
-				echo '<br />Erreur SQL clean !';
-				exit();
-			}
-		}
+        // compte des nombre d'entrées à supprimer
+        $req = 'SELECT COUNT(`id_content_html`) FROM  `'.$pbd."content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  '$lang'";
+        $sqlCount = $mysqli->query($req);
+        $nVersions = getArrayFirstValue($sqlCount->fetch_array(\MYSQLI_NUM));
+        $nDelete = $nVersions - $p_nmaxversions;
+        if ($nDelete > 0) {
+            // s'il y en a à supprimer
+            $req = 'DELETE FROM `'.$pbd."content_html` WHERE `code_content_html` LIKE '$code_content_html' AND  `lang_content_html` LIKE  '$lang' ORDER BY  `date_content_html` ASC LIMIT $nDelete"; // ASC pour commencer par la fin de ceux a supprimer
+            if (!$mysqli->query($req)) {
+                echo '<br />Erreur SQL clean !';
+                exit();
+            }
+        }
 
-		// Mise à jour des CURRENT
-		$req="UPDATE `".$pbd."content_html` SET `current_content_html` = '0' WHERE `".$pbd."content_html`.`code_content_html` = '$code_content_html' ";
-		if(!$mysqli->query($req)){
-			echo 'Erreur SQL <br />'.html_utf8($req);
-			exit();
-		}
+        // Mise à jour des CURRENT
+        $req = 'UPDATE `'.$pbd."content_html` SET `current_content_html` = '0' WHERE `".$pbd."content_html`.`code_content_html` = '$code_content_html' ";
+        if (!$mysqli->query($req)) {
+            echo 'Erreur SQL <br />'.html_utf8($req);
+            exit();
+        }
 
-		// Enregistrement
-		$req="INSERT INTO  `".$pbd."content_html` (`id_content_html` ,`code_content_html` ,`lang_content_html` ,`contenu_content_html` ,`date_content_html` ,`linkedtopage_content_html`, `current_content_html`, `vis_content_html`)
+        // Enregistrement
+        $req = 'INSERT INTO  `'.$pbd."content_html` (`id_content_html` ,`code_content_html` ,`lang_content_html` ,`contenu_content_html` ,`date_content_html` ,`linkedtopage_content_html`, `current_content_html`, `vis_content_html`)
 															VALUES (NULL ,  '$code_content_html',  '$lang',  '$contenu_content_html',  '$p_time',  '$linkedtopage_content_html', 1, $vis_content_html);";
-		if(!$mysqli->query($req)){
-			echo 'Erreur SQL <br />'.html_utf8($req);
-			exit();
-		}
+        if (!$mysqli->query($req)) {
+            echo 'Erreur SQL <br />'.html_utf8($req);
+            exit();
+        }
 
-		// log
-		mylog('edit-html', 'Modif élément : <i>'.$code_content_html.'</i>', false);
+        // log
+        mylog('edit-html', 'Modif élément : <i>'.$code_content_html.'</i>', false);
 
-		$mysqli->close();
-
-
-
-		?>
+        $mysqli->close(); ?>
 		<script language="JavaScript">
 			parent.$.fancybox.close();
-			parent.window.document.contUpdate('<?php echo $code_content_html;?>');
+			parent.window.document.contUpdate('<?php echo $code_content_html; ?>');
 		</script>
 		<?php
-		/* */
-	}
-}
 
-
-
-
-
-
-else{
-	echo 'Acess denied<br />Votre session administrateur semble avoir expiré.';
+    }
+} else {
+    echo 'Acess denied<br />Votre session administrateur semble avoir expiré.';
 }
 ?>
 

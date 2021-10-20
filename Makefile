@@ -20,6 +20,32 @@ override project := $(shell echo $(project) | tr -d -c '[a-z0-9]' | cut -c 1-55)
 
 COMPOSE=docker-compose --project-directory . --project-name $(project) $(COMPOSE_FILES)
 COMPOSE_FILES = -f docker-compose.yml
+ON_PHP=$(COMPOSE) run --rm --no-deps cafsite
+
+##
+## Phive
+##
+
+bin/tools/phpstan bin/tools/php-cs-fixer phive:
+	@$(ON_PHP) php -d memory_limit=1G /usr/local/bin/phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E
+
+phive-update:
+	@$(ON_PHP) php -d memory_limit=1G /usr/local/bin/phive update
+
+php-cs: bin/tools/php-cs-fixer ## Just analyze PHP code with php-cs-fixer
+	$(eval args ?= )
+	@$(ON_PHP) php -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run $(args)
+.PHONY: php-cs
+
+php-cs-fix: bin/tools/php-cs-fixer ## Analyze and fix PHP code with php-cs-fixer
+	$(eval args ?= )
+	@$(ON_PHP) php -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php $(args)
+.PHONY: php-cs-fix
+
+phpstan: ## Analyze PHP code with phpstan
+phpstan: bin/tools/phpstan $(AUTOLOAD_FILES) vendor/bin/.phpunit/phpunit-9-0/vendor/autoload.php ../languages/php/probe/modules/blackfire.so
+	@$(ON_PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse $(PHP_SRC) -c phpstan.neon -l 1
+.PHONY: phpstan
 
 ##
 #### Docker

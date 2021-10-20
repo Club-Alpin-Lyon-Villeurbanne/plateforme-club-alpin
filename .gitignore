@@ -1,3 +1,6 @@
+.idea
+.php-cs-fixer.cache
+bin
 ftp/*
 *.old
 config/www.clubalpinlyon.fr/ffcam/
