@@ -1,7 +1,5 @@
 <?php
 
-ini_set('display_errors','off');
-
 	//_________________________________________________ BASE DE DONNEES
 	include APP.'db_config.php';
 

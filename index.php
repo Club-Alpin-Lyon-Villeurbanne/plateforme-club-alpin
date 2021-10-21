@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors','off');
 
     //_________________________________________________ DEFINITION DES DOSSIERS
     define ('DS', DIRECTORY_SEPARATOR );
