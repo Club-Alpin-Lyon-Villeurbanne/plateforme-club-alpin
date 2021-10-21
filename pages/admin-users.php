@@ -1,9 +1,8 @@
 <?php
-if(!admin()){
-	echo 'Votre session administrateur a expiré';
-}
-else{
-	?>
+if (!admin()) {
+    echo 'Votre session administrateur a expiré';
+} else {
+    ?>
 	<h1>Administration des utilisateurs & adhérents</h1>
 	<p>
 		<img src="img/base/magnifier.png" style="vertical-align:middle" />
@@ -16,14 +15,30 @@ else{
 
 
 	<p><strong>Voir les comptes adhérents :</strong>
-		<a href="admin-users.html" <?php if($show=='valid') echo 'style="background:#d3d6ff"';?> class="boutonFancy"> activé / licence valide </a>&nbsp;
-		<a href="admin-users.html?show=valid-expired" <?php if($show=='valid-expired') echo 'style="background:#d3d6ff"';?> class="boutonFancy"> activé / licence expirée </a>&nbsp;
-		<a href="admin-users.html?show=notvalid" <?php if($show=='notvalid') echo 'style="background:#d3d6ff"';?> class="boutonFancy"> non activé / licence valide </a>&nbsp;
-		<a href="admin-users.html?show=expired" <?php if($show=='expired') echo 'style="background:#d3d6ff"';?> class="boutonFancy"> non activé / licence expirée </a>&nbsp;
-		<a href="admin-users.html?show=dels" <?php if($show=='dels') echo 'style="background:#d3d6ff"';?> class="boutonFancy"> désactivés manuellement </a>&nbsp;
-		<a href="admin-users.html?show=manual" <?php if($show=='manual') echo 'style="background:#d3d6ff"';?> class="boutonFancy"> créés manuellement </a>&nbsp;
-		<a href="admin-users.html?show=nomade" <?php if($show=='nomade') echo 'style="background:#d3d6ff"';?> class="boutonFancy"> nomades </a>&nbsp;
-		<a href="admin-users.html?show=all" <?php if($show=='all') echo 'style="background:#d3d6ff"';?> class="boutonFancy"> tous (+long) </a>
+		<a href="admin-users.html" <?php if ('valid' == $show) {
+        echo 'style="background:#d3d6ff"';
+    } ?> class="boutonFancy"> activé / licence valide </a>&nbsp;
+		<a href="admin-users.html?show=valid-expired" <?php if ('valid-expired' == $show) {
+        echo 'style="background:#d3d6ff"';
+    } ?> class="boutonFancy"> activé / licence expirée </a>&nbsp;
+		<a href="admin-users.html?show=notvalid" <?php if ('notvalid' == $show) {
+        echo 'style="background:#d3d6ff"';
+    } ?> class="boutonFancy"> non activé / licence valide </a>&nbsp;
+		<a href="admin-users.html?show=expired" <?php if ('expired' == $show) {
+        echo 'style="background:#d3d6ff"';
+    } ?> class="boutonFancy"> non activé / licence expirée </a>&nbsp;
+		<a href="admin-users.html?show=dels" <?php if ('dels' == $show) {
+        echo 'style="background:#d3d6ff"';
+    } ?> class="boutonFancy"> désactivés manuellement </a>&nbsp;
+		<a href="admin-users.html?show=manual" <?php if ('manual' == $show) {
+        echo 'style="background:#d3d6ff"';
+    } ?> class="boutonFancy"> créés manuellement </a>&nbsp;
+		<a href="admin-users.html?show=nomade" <?php if ('nomade' == $show) {
+        echo 'style="background:#d3d6ff"';
+    } ?> class="boutonFancy"> nomades </a>&nbsp;
+		<a href="admin-users.html?show=all" <?php if ('all' == $show) {
+        echo 'style="background:#d3d6ff"';
+    } ?> class="boutonFancy"> tous (+long) </a>
 	</p>
 
 
@@ -84,66 +99,68 @@ else{
 		</thead>
 		<tbody>
 			<?php
-			$total=0;
+            $total = 0;
 
-			for($i=0; $i<sizeof($userTab); $i++){
-				$elt=$userTab[$i];
+    for ($i = 0; $i < count($userTab); ++$i) {
+        $elt = $userTab[$i];
 
-				echo '<tr id="tr-'.$elt['id_user'].'" class="'.($elt['valid_user']?'vis-on':'vis-off').'">'
-					.'<td style="white-space:nowrap;">'
+        echo '<tr id="tr-'.$elt['id_user'].'" class="'.($elt['valid_user'] ? 'vis-on' : 'vis-off').'">'
+                    .'<td style="white-space:nowrap;">'
 
-						// view user
-						.'<a href="includer.php?p=pages/adherents-consulter.php&amp;id_user='.intval($elt['id_user']).'" class="fancyframe" title="Consulter cet adhérent"><img src="img/base/report.png" alt="MODIFIER" title=""></a> '
+                        // view user
+                        .'<a href="includer.php?p=pages/adherents-consulter.php&amp;id_user='.(int) ($elt['id_user']).'" class="fancyframe" title="Consulter cet adhérent"><img src="img/base/report.png" alt="MODIFIER" title=""></a> '
 
-						// gestion des droits
-						.'<a href="includer.php?admin=true&amp;p=pages/admin-users-droits.php&amp;id_user='.intval($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Voir / Attribuer des statuts à cet utilisateur"><img src="img/base/user_star.png" alt="RIGHTS" title=""></a> ';
+                        // gestion des droits
+                        .'<a href="includer.php?admin=true&amp;p=pages/admin-users-droits.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Voir / Attribuer des statuts à cet utilisateur"><img src="img/base/user_star.png" alt="RIGHTS" title=""></a> ';
 
-						// désactiver
-						if(allowed('user_desactivate_any') && $elt['valid_user']=='1')
-							echo '<a href="includer.php?p=pages/adherents-desactiver.php&amp;id_user='.intval($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Désactiver le compte de cet utilisateur"><img src="img/base/user_unvalidate.png" alt="DESACTIVER" title=""></a> ';
+        // désactiver
+        if (allowed('user_desactivate_any') && '1' == $elt['valid_user']) {
+            echo '<a href="includer.php?p=pages/adherents-desactiver.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Désactiver le compte de cet utilisateur"><img src="img/base/user_unvalidate.png" alt="DESACTIVER" title=""></a> ';
+        }
 
-						// réactiver
-						if(allowed('user_reactivate') && $elt['valid_user']=='2')
-							echo '<a href="includer.php?p=pages/adherents-reactiver.php&amp;id_user='.intval($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Réactiver le compte de cet utilisateur"><img src="img/base/user_revalidate.png" alt="REACTIVER" title=""></a> ';
+        // réactiver
+        if (allowed('user_reactivate') && '2' == $elt['valid_user']) {
+            echo '<a href="includer.php?p=pages/adherents-reactiver.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Réactiver le compte de cet utilisateur"><img src="img/base/user_revalidate.png" alt="REACTIVER" title=""></a> ';
+        }
 
-						// reset user
-						if(allowed('user_reset'))
-							echo '<a href="includer.php?p=pages/adherents-reset.php&amp;id_user='.intval($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Remettre à zéro, réinitialiser le compte de cet utilisateur"><img src="img/base/user_reset.png" alt="RESET" title=""></a> ';
+        // reset user
+        if (allowed('user_reset')) {
+            echo '<a href="includer.php?p=pages/adherents-reset.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Remettre à zéro, réinitialiser le compte de cet utilisateur"><img src="img/base/user_reset.png" alt="RESET" title=""></a> ';
+        }
 
-						// edit user
-						if(allowed('user_edit_notme'))
-							echo '<a href="includer.php?p=pages/adherents-modifier.php&amp;id_user='.intval($elt['id_user']).'" class="fancyframe" title="Modifier cet adhérent"><img src="img/base/user_edit.png" alt="MODIFIER" title=""></a> ';
+        // edit user
+        if (allowed('user_edit_notme')) {
+            echo '<a href="includer.php?p=pages/adherents-modifier.php&amp;id_user='.(int) ($elt['id_user']).'" class="fancyframe" title="Modifier cet adhérent"><img src="img/base/user_edit.png" alt="MODIFIER" title=""></a> ';
+        }
 
-						// infiltrer
-						echo (($elt['valid_user']==1&&$elt['email_user'])?' <a href="profil.html?operation=steal_session&amp;email_user='.urlencode($elt['email_user']).'" title="Infiltrer sa session"><img src="img/base/user_go.png" alt="GO USER" title=""></a> ':' ');
+        // infiltrer
+        echo (1 == $elt['valid_user'] && $elt['email_user']) ? ' <a href="profil.html?operation=steal_session&amp;email_user='.urlencode($elt['email_user']).'" title="Infiltrer sa session"><img src="img/base/user_go.png" alt="GO USER" title=""></a> ' : ' ';
 
-					echo '</td>'
-					.'<td>'
-						.html_utf8($elt['cafnum_user']).'<br />'
-						.($elt['manuel_user']?'<img src="img/base/user_manuel.png" alt="MANUEL" title="Utilisateur créé manuellement" /> ':'')
-						.($elt['nomade_user']?'<img src="img/base/nomade_user.png" alt="NOMADE" title="Utilisateur nomade" /> ':'')
-						.($elt['valid_user']=='2'?'<img src="img/base/user_desactive.png" alt="DESACTIVE" title="Utilisateur désactivé manuellement" /> ':'')
-						.intval($elt['id_user']).' '
-					.'</td>'
-					.'<td>'.intval($elt['valid_user']).'</td>'
-					.'<td>'.html_utf8($elt['civ_user']).'</td>'
-					.'<td>'.html_utf8($elt['lastname_user']).'</td>'
-					.'<td>'.html_utf8($elt['firstname_user']).'</td>'
-					.'<td>'.($elt['date_adhesion_user']?date("Y-m-d", $elt['date_adhesion_user']):'-').'</td>'
-					.'<td>'.userlink($elt['id_user'], $elt['nickname_user']).'</td>'
-					.'<td><span style="display:none">'.$elt['birthday_user'].'</span>'.($elt['birthday_user']?intval($elt['birthday_user']).' ans':'...').'</td>'
-					.'<td>'.html_utf8($elt['tel_user']).'<br />'.html_utf8($elt['tel2_user']).'</td>'
-					.'<td><a href="mailto:'.html_utf8($elt['email_user']).'" title="Contact direct">'.html_utf8($elt['email_user']).'</a></td>'
-					//.'<td>'.nl2br(html_utf8($elt['adresse_user'])).'</td>'
-					.'<td>'.html_utf8($elt['cp_user']).'</td>'
-					.'<td>'.html_utf8($elt['ville_user']).'</td>'
-					//.'<td>'.html_utf8($elt['pays_user']).'</td>'
-					.'<td>'.($elt['doit_renouveler_user']?'expirée':'valide').' '.(!$elt['doit_renouveler_user'] && $elt['alerte_renouveler_user']?'<span style="color:red">* Doit renouveler</span>':'').'</td>'
-					// .'<td></td>'
-				. '</tr>';
-			}
-
-			?>
+        echo '</td>'
+                    .'<td>'
+                        .html_utf8($elt['cafnum_user']).'<br />'
+                        .($elt['manuel_user'] ? '<img src="img/base/user_manuel.png" alt="MANUEL" title="Utilisateur créé manuellement" /> ' : '')
+                        .($elt['nomade_user'] ? '<img src="img/base/nomade_user.png" alt="NOMADE" title="Utilisateur nomade" /> ' : '')
+                        .('2' == $elt['valid_user'] ? '<img src="img/base/user_desactive.png" alt="DESACTIVE" title="Utilisateur désactivé manuellement" /> ' : '')
+                        .(int) ($elt['id_user']).' '
+                    .'</td>'
+                    .'<td>'.(int) ($elt['valid_user']).'</td>'
+                    .'<td>'.html_utf8($elt['civ_user']).'</td>'
+                    .'<td>'.html_utf8($elt['lastname_user']).'</td>'
+                    .'<td>'.html_utf8($elt['firstname_user']).'</td>'
+                    .'<td>'.($elt['date_adhesion_user'] ? date('Y-m-d', $elt['date_adhesion_user']) : '-').'</td>'
+                    .'<td>'.userlink($elt['id_user'], $elt['nickname_user']).'</td>'
+                    .'<td><span style="display:none">'.$elt['birthday_user'].'</span>'.($elt['birthday_user'] ? (int) ($elt['birthday_user']).' ans' : '...').'</td>'
+                    .'<td>'.html_utf8($elt['tel_user']).'<br />'.html_utf8($elt['tel2_user']).'</td>'
+                    .'<td><a href="mailto:'.html_utf8($elt['email_user']).'" title="Contact direct">'.html_utf8($elt['email_user']).'</a></td>'
+                    //.'<td>'.nl2br(html_utf8($elt['adresse_user'])).'</td>'
+                    .'<td>'.html_utf8($elt['cp_user']).'</td>'
+                    .'<td>'.html_utf8($elt['ville_user']).'</td>'
+                    //.'<td>'.html_utf8($elt['pays_user']).'</td>'
+                    .'<td>'.($elt['doit_renouveler_user'] ? 'expirée' : 'valide').' '.(!$elt['doit_renouveler_user'] && $elt['alerte_renouveler_user'] ? '<span style="color:red">* Doit renouveler</span>' : '').'</td>'
+                    // .'<td></td>'
+                .'</tr>';
+    } ?>
 		</tbody>
 	</table>
 

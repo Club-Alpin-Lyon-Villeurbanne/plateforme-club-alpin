@@ -1,75 +1,85 @@
 <?php
 
 //_________________________________________________ DEFINITION DES DOSSIERS
-define ('DS', DIRECTORY_SEPARATOR );
-define ('ROOT', dirname(dirname(__FILE__)).DS);				// Racine
-include (ROOT.'app'.DS.'includes.php');
+define('DS', \DIRECTORY_SEPARATOR);
+define('ROOT', dirname(__DIR__).DS);				// Racine
+include ROOT.'app'.DS.'includes.php';
 
-if(!admin()){
-	echo 'Votre session administrateur a expiré';
-	exit();
+if (!admin()) {
+    echo 'Votre session administrateur a expiré';
+    exit();
 }
-else{
-	$errTab=array();
-	$target=$_GET['target'];
-	$filename=strtolower(substr(strrchr($target, '/'), 1));
-	$compte=0;
-	
-	// vérification, 
-	// la cible doit commencer par ../ftp/
-	if(substr($target, 0, 7)!='../ftp/') $errTab[]="Le chemin d'accès au dossier est incorrect";
-	// ne doit pas contenir ../ à part au début
-	if(mb_substr_count($target, '../')!=1) $errTab[]="Le chemin d'accès au dossier est incorrect : récurrence de chemin retour";
-	// doit être un dossier
-	if(!is_dir($target)) $errTab[]="L'élément donné ne semble pas être un dossier";
-	
-	// vérification de la protection du dossier, et de chaque élément dans le dossier. target=dossier à lire
-	function checkMe($target){
-		global $errTab;
-		global $p_ftp_proteges;
-		global $compte;
-		$compte++;
-		
-		// cet élément est-il protégé ?
-		if(in_array(substr($target, 7), $p_ftp_proteges)) 
-			$errTab[]="L'élément ".($compte>1?"contenu dans ce dossier":'')." : <b>".strtolower(substr(strrchr($target, '/'), 1))."</b> est protégé contre la suppression";
-		
-		// si c'est un dossier, on l'ouvre et on verfiie ses contenus
-		if(is_dir($target)){
-			$opendir=opendir($target);
-			while($file=readdir($opendir)){
-				if($file!='.' && $file!='..' && $file!='index.php' && $file!='.htaccess')
-					checkMe($target.'/'.$file);
-			}
-		}
-	}
-	checkMe($target);
-	
-	
-	if(sizeof($errTab)) echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
-	else{
-		
-		// VERIFS DEJA FAITES, OPERATION OK SUR DEMANDE
-		if($_GET['operation']=='delete'){
-			if($_GET['lock']!='unlocked') $errTab[]="Erreur : fichier verrouillé.";
-			else{
-				if(!clearDir($target))  $errTab[]="Erreur : suppression de $target echouée.";
-			}
-			// fermeture de la box/ actualissation du ftp
-			if(!sizeof($errTab)){
-				?>
+
+    $errTab = [];
+    $target = $_GET['target'];
+    $filename = strtolower(substr(strrchr($target, '/'), 1));
+    $compte = 0;
+
+    // vérification,
+    // la cible doit commencer par ../ftp/
+    if ('../ftp/' != substr($target, 0, 7)) {
+        $errTab[] = "Le chemin d'accès au dossier est incorrect";
+    }
+    // ne doit pas contenir ../ à part au début
+    if (1 != mb_substr_count($target, '../')) {
+        $errTab[] = "Le chemin d'accès au dossier est incorrect : récurrence de chemin retour";
+    }
+    // doit être un dossier
+    if (!is_dir($target)) {
+        $errTab[] = "L'élément donné ne semble pas être un dossier";
+    }
+
+    // vérification de la protection du dossier, et de chaque élément dans le dossier. target=dossier à lire
+    function checkMe($target)
+    {
+        global $errTab;
+        global $p_ftp_proteges;
+        global $compte;
+        ++$compte;
+
+        // cet élément est-il protégé ?
+        if (in_array(substr($target, 7), $p_ftp_proteges, true)) {
+            $errTab[] = "L'élément ".($compte > 1 ? 'contenu dans ce dossier' : '').' : <b>'.strtolower(substr(strrchr($target, '/'), 1)).'</b> est protégé contre la suppression';
+        }
+
+        // si c'est un dossier, on l'ouvre et on verfiie ses contenus
+        if (is_dir($target)) {
+            $opendir = opendir($target);
+            while ($file = readdir($opendir)) {
+                if ('.' != $file && '..' != $file && 'index.php' != $file && '.htaccess' != $file) {
+                    checkMe($target.'/'.$file);
+                }
+            }
+        }
+    }
+    checkMe($target);
+
+    if (count($errTab)) {
+        echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+    } else {
+        // VERIFS DEJA FAITES, OPERATION OK SUR DEMANDE
+        if ('delete' == $_GET['operation']) {
+            if ('unlocked' != $_GET['lock']) {
+                $errTab[] = 'Erreur : fichier verrouillé.';
+            } else {
+                if (!clearDir($target)) {
+                    $errTab[] = "Erreur : suppression de $target echouée.";
+                }
+            }
+            // fermeture de la box/ actualissation du ftp
+            if (!count($errTab)) {
+                ?>
 				<script type="text/javascript">
 					parent.document.location.href='ftp.php?dossier='+parent.currentDir;
 				</script>
 				<?php
-				exit();
-			}
-		}
-		
-		// OPERATION PAS LANCEE OU ERREUR
-		if(!$_POST['operation'] || $_POST['operation']=='delete' && sizeof($errTab)){
-			
-			?><!doctype html>
+                exit();
+            }
+        }
+
+        // OPERATION PAS LANCEE OU ERREUR
+        if (!$_POST['operation'] || 'delete' == $_POST['operation'] && count($errTab)) {
+            ?><!doctype html>
 			<html lang="fr">
 				<head>
 					<meta charset="utf-8">
@@ -79,25 +89,26 @@ else{
 					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="../css/base.css">
 					<!-- jquery -->
 					<script type="text/javascript" src="../js/jquery-1.5.2.min.js"></script>
-					
+
 				</head>
 				<body class="ftp-frame">
 					<?php
-					// msg d'erreur ?
-					if(sizeof($errTab)) echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
-					?>
-					
+                    // msg d'erreur ?
+                    if (count($errTab)) {
+                        echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                    } ?>
+
 					<h3>Suppression du dossier</h3>
-					
+
 					<p>
 						Voulez-vous vraiment supprimer le dossier ci-dessous ? Cette opération est <u>définitive</u>. Si des liens existent vers des fichiers
 						présents dans ce dossier, ils deviendront des liens morts, renvoyant une erreur 404.
 					</p>
 					<p>
-						Ce dossier contient actuellement <b><?php echo $compte-1; ?></b> éléments.
+						Ce dossier contient actuellement <b><?php echo $compte - 1; ?></b> éléments.
 					</p>
 					<p><b><?php echo html_utf8(substr($target, 7)); ?></b></p>
-					
+
 					<form action="ftp-deletedir.php" method="GET">
 						<input type="hidden" name="operation" value="delete" />
 						<input type="hidden" name="target" value="<?php echo html_utf8($target); ?>" />
@@ -109,7 +120,7 @@ else{
 				</body>
 			</html>
 			<?php
-		}
-	}
-}
+        }
+    }
+
 ?>

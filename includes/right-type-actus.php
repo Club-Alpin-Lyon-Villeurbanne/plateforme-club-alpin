@@ -3,26 +3,26 @@
         &nbsp; <!-- important -->
         <?php
         // PRESENTATION DE LA COMMISSINO
-        inclure('presentation-'.($current_commission?$current_commission:'general'),'right-light-in');
-        
+        inclure('presentation-'.($current_commission ?: 'general'), 'right-light-in');
+
         // SLIDER PARTENAIRES
-        include(INCLUDES.'droite-partenaires.php');
-        
+        include INCLUDES.'droite-partenaires.php';
+
         // RECHERCHE
-        include(INCLUDES.'recherche.php');
+        include INCLUDES.'recherche.php';
         ?>
     </div>
-    
-    
+
+
     <div class="right-green">
         <div class="right-green-in">
-        
+
             <?php
             // actus sur fond vert
             include INCLUDES.'droite-actus.php';
             ?>
-            
+
         </div>
     </div>
-    
+
 </div>

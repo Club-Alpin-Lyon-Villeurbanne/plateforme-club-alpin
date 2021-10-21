@@ -1,21 +1,17 @@
 <?php
-if(($currentPage['admin_page'] and !admin()) or ($currentPage['superadmin_page'] and !superadmin())){
-	echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
-}
-else{
+if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page'] && !superadmin())) {
+    echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
+} else {
+    // REQ SQL
+    include SCRIPTS.'connect_mysqli.php';
 
-	// REQ SQL
-	include SCRIPTS.'connect_mysqli.php';;
-
-	$req="SELECT * FROM  `".$pbd."log_admin` ORDER BY date_log_admin DESC LIMIT 0 , 500";
-	$handleTab=array();
-	$handleSql=$mysqli->query($req);
-	while($handle=$handleSql->fetch_array(MYSQLI_ASSOC)){
-		$handleTab[]=$handle;
-	}
-	$mysqli->close();
-
-	?>
+    $req = 'SELECT * FROM  `'.$pbd.'log_admin` ORDER BY date_log_admin DESC LIMIT 0 , 500';
+    $handleTab = [];
+    $handleSql = $mysqli->query($req);
+    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+        $handleTab[] = $handle;
+    }
+    $mysqli->close(); ?>
 	<h2>Log admin</h2>
 
 	<table class="dataTable">
@@ -28,27 +24,34 @@ else{
 		</thead>
 		<tbody>
 			<?php
-			foreach($handleTab as $item){
+            foreach ($handleTab as $item) {
+                if (preg_match('#^login-superadmin#', $item['code_log_admin'])) {
+                    $img = 'user_suit.png';
+                } elseif (preg_match('#^login-success-#', $item['code_log_admin'])) {
+                    $img = 'user.png';
+                } elseif (preg_match('#^page-delete#', $item['code_log_admin'])) {
+                    $img = 'page_delete.png';
+                } elseif (preg_match('#^page-create#', $item['code_log_admin'])) {
+                    $img = 'page_add.png';
+                }
+                // elseif(preg_match("#^edit-html#", $item['code_log_admin'])) $img='layout_edit.png';
+                elseif (preg_match('#^edit-html#', $item['code_log_admin'])) {
+                    $img = 'page_white_edit.png';
+                } elseif (preg_match('#^user_attr_add#', $item['code_log_admin'])) {
+                    $img = 'user_star.png';
+                } elseif (preg_match('#^user_attr_del#', $item['code_log_admin'])) {
+                    $img = 'user_star.png';
+                } else {
+                    $img = 'report.png';
+                }
 
-				if(preg_match("#^login-superadmin#", $item['code_log_admin'])) $img='user_suit.png';
-				elseif(preg_match("#^login-success-#", $item['code_log_admin'])) $img='user.png';
-				elseif(preg_match("#^page-delete#", $item['code_log_admin'])) $img='page_delete.png';
-				elseif(preg_match("#^page-create#", $item['code_log_admin'])) $img='page_add.png';
-				// elseif(preg_match("#^edit-html#", $item['code_log_admin'])) $img='layout_edit.png';
-				elseif(preg_match("#^edit-html#", $item['code_log_admin'])) $img='page_white_edit.png';
-				elseif(preg_match("#^user_attr_add#", $item['code_log_admin'])) $img='user_star.png';
-				elseif(preg_match("#^user_attr_del#", $item['code_log_admin'])) $img='user_star.png';
-
-				else $img='report.png';
-
-				echo '
+                echo '
 				<tr>
 					<td><img src="img/base/'.$img.'" alt="" title="" style="vertical-align:middle" /> '.html_utf8($item['code_log_admin']).'</td>
 					<td>'.$item['desc_log_admin'].'</td>
 					<td><span style="display:none">'.$item['date_log_admin'].'</span>'.date('d/m/y H:i', $item['date_log_admin']).'</td>
 				</tr>';
-			}
-			?>
+            } ?>
 		</tbody>
 	</table>
 

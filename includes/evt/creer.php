@@ -1,20 +1,25 @@
-<form action="<?php echo $versCettePage;?>" method="post" style="overflow:hidden">
-    <input type="hidden" name="operation" value="<?php echo $id_evt_to_update?'evt_update':'evt_create'; ?>" />
-    <input type="hidden" name="id_evt_to_update" value="<?php echo intval($id_evt_to_update); ?>" />
+<form action="<?php echo $versCettePage; ?>" method="post" style="overflow:hidden">
+    <input type="hidden" name="operation" value="<?php echo $id_evt_to_update ? 'evt_update' : 'evt_create'; ?>" />
+    <input type="hidden" name="id_evt_to_update" value="<?php echo (int) $id_evt_to_update; ?>" />
 
     <?php
     // masque certaines option si cet evt est une suite de cycle
-    if($_POST['cycle_parent_evt'] && $_POST['cycle']=='child') $suiteDeCycle=true;
-
+    if ($_POST['cycle_parent_evt'] && 'child' == $_POST['cycle']) {
+        $suiteDeCycle = true;
+    }
 
     // message d'erreur
-    if($_POST['operation'] && sizeof($errTab)){
+    if ($_POST['operation'] && count($errTab)) {
         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul>';
-        if (!$destination) echo '<b>Attention :</b> Le marqueur rouge sur la carte a peut-être été déplacé !';
+        if (!$destination) {
+            echo '<b>Attention :</b> Le marqueur rouge sur la carte a peut-être été déplacé !';
+        }
         echo '</div>';
     }
     // message d'info : si c'est une modification de sortie
-    if($_POST['operation']=='evt_update' && !sizeof($errTab))	echo '<p class="info"><img src="img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date("H:i:s", $p_time).'. <b>Important :</b> cette sortie doit à présent être validée par un responsable pour être publiée sur le site.<a href="profil/sorties/self.html" title="">&gt; Retourner à la liste de mes sorties</a></p>';
+    if ('evt_update' == $_POST['operation'] && !count($errTab)) {
+        echo '<p class="info"><img src="img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date('H:i:s', $p_time).'. <b>Important :</b> cette sortie doit à présent être validée par un responsable pour être publiée sur le site.<a href="profil/sorties/self.html" title="">&gt; Retourner à la liste de mes sorties</a></p>';
+    }
     ?>
 
 
@@ -22,40 +27,41 @@
     <?php
     // liens dans le cas de la creation d'une sortie
     if ($destination) {
-        echo '<input type="hidden" name="id_destination" value="'.intval($destination['id']).'" />';
-        echo '<h2 class="trigger-h2 '.($id_evt_to_update?'off':'').'"  title="Cliquer pour ouvrir ou fermer">DESTINATION : <span class="bleucaf">'.html_utf8($destination['nom']).'</span><span class="date"> / '.display_jour($destination['date']).'</span></h2>';
-        //echo '<div id="destination-info" class="trigger-me">';
+        echo '<input type="hidden" name="id_destination" value="'.(int) ($destination['id']).'" />';
+        echo '<h2 class="trigger-h2 '.($id_evt_to_update ? 'off' : '').'"  title="Cliquer pour ouvrir ou fermer">DESTINATION : <span class="bleucaf">'.html_utf8($destination['nom']).'</span><span class="date"> / '.display_jour($destination['date']).'</span></h2>';
+    //echo '<div id="destination-info" class="trigger-me">';
     } else {
         echo '<h2 class="trigger-h2" title="Cliquer pour ouvrir ou fermer">DESTINATION : </h2>';
         //echo '<div id="destination-info" class="trigger-me">';
     }
 
-    if(!$id_evt_to_update){
-        $destinations = get_future_destinations(false, true);
-        ?>
+    if (!$id_evt_to_update) {
+        $destinations = get_future_destinations(false, true); ?>
         <?php
-        if (!$destination) { echo '<p>Si vous avez besoin d\'un bus, vous pouvez lier cette sortie à une destination :</p>'; }
-        else { echo '<p>Vous pouvez choisir une autre destination :</p>'; }
-        ?>
+        if (!$destination) {
+            echo '<p>Si vous avez besoin d\'un bus, vous pouvez lier cette sortie à une destination :</p>';
+        } else {
+            echo '<p>Vous pouvez choisir une autre destination :</p>';
+        } ?>
         <div class="faux-select-wrapper" id="choix-destination">
             <div class="faux-select">
-                <a href="<?php echo 'creer-une-sortie/'.html_utf8($p2).'.html'; ?>" <?php if (!$destination) echo ' class="up" '; ?>><i>Pas de destination</i></a>
+                <a href="<?php echo 'creer-une-sortie/'.html_utf8($p2).'.html'; ?>" <?php if (!$destination) {
+            echo ' class="up" ';
+        } ?>><i>Pas de destination</i></a>
                 <?php
-                foreach($destinations as $dest){
-                    echo '<a href="creer-une-sortie/'.html_utf8($p2).'/destination-'.$dest['id'].'.html" title="" class="'.($destination['id']==$dest['id']?'up':'').'" style="text-align:right;padding-right:50px;">
+                foreach ($destinations as $dest) {
+                    echo '<a href="creer-une-sortie/'.html_utf8($p2).'/destination-'.$dest['id'].'.html" title="" class="'.($destination['id'] == $dest['id'] ? 'up' : '').'" style="text-align:right;padding-right:50px;">
                         <b>'.html_utf8($dest['nom']).'</b>
                         <span class="date"> / '.display_jour($dest['date']).'</span>
                     </a> ';
-                }
-                ?>
+                } ?>
             </div>
         </div><br class="clear">
     <?php
-
     }
     echo '<div id="destination-info" class="trigger-me">';
     if ($destination) {
-        include(INCLUDES.'dest'.DS.'display.php');
+        include INCLUDES.'dest'.DS.'display.php';
     }
     echo '</div>';
 
@@ -68,31 +74,31 @@
         Sortie liée à la commission :<br />
         <?php
         // liens dans le cas de la creation d'une sortie
-        if(!$id_evt_to_update){
+        if (!$id_evt_to_update) {
             ?>
             <div class="faux-select-wrapper" id="choix-commission">
                 <div class="faux-select">
                     <?php
-                    foreach($comTab as $code=>$data){
-                        if(allowed('evt_create', 'commission:'.$code))
-                            echo '<a href="creer-une-sortie/'.html_utf8($code).($destination?'/'.$destination['code']:'').'.html" title="" class="'.($code==$current_commission?'up':'').'">'.html_utf8($data['title_commission']).'</a> ';
-                    }
-                    ?>
+                    foreach ($comTab as $code => $data) {
+                        if (allowed('evt_create', 'commission:'.$code)) {
+                            echo '<a href="creer-une-sortie/'.html_utf8($code).($destination ? '/'.$destination['code'] : '').'.html" title="" class="'.($code == $current_commission ? 'up' : '').'">'.html_utf8($data['title_commission']).'</a> ';
+                        }
+                    } ?>
                 </div>
             </div>
             <?php
-            echo '<input type="hidden" name="commission_evt" value="'.intval($comTab[$current_commission]['id_commission']).'" />';
+            echo '<input type="hidden" name="commission_evt" value="'.(int) ($comTab[$current_commission]['id_commission']).'" />';
         }
         // juste l'info  et la variable dans le cas d'une modification de sortie existante
-        else{
-            echo '<b>'.$comTab[$current_commission]['title_commission'].'</b><input type="hidden" name="commission_evt" value="'.intval($_POST['commission_evt']).'" />';
+        else {
+            echo '<b>'.$comTab[$current_commission]['title_commission'].'</b><input type="hidden" name="commission_evt" value="'.(int) ($_POST['commission_evt']).'" />';
         }
         ?>
     </div>
 
     <div style="float:right;margin-right:20px;" >
         Titre :<br />
-        <input style="width:320px;" type="text" name="titre_evt" class="type1" value="<?php echo inputVal('titre_evt', '');?>" placeholder="ex : Escalade du Grand Som" />
+        <input style="width:320px;" type="text" name="titre_evt" class="type1" value="<?php echo inputVal('titre_evt', ''); ?>" placeholder="ex : Escalade du Grand Som" />
     </div>
 
     <?php $groupes = get_groupes($comTab[$current_commission]['id_commission'], true); ?>
@@ -102,8 +108,8 @@
             <option value="">- Précisez le groupe concerné par cette sortie (facultatif) :</option>
             <?php
             // articles liés aux commissions
-            foreach($groupes as $code=>$groupe) {
-                echo '<option value="'.$groupe['id'].'" '.($_POST['id_groupe']==$groupe['id']?'selected="selected"':'').'>Groupe : '.html_utf8($groupe['nom']).' &raquo;</option>';
+            foreach ($groupes as $code => $groupe) {
+                echo '<option value="'.$groupe['id'].'" '.($_POST['id_groupe'] == $groupe['id'] ? 'selected="selected"' : '').'>Groupe : '.html_utf8($groupe['nom']).' &raquo;</option>';
             }
             ?>
         </select>
@@ -117,17 +123,19 @@
         <h2 class="trigger-h2">Encadrant(s) :</h2>
         <div class="trigger-me check-nice">
             <?php
-            $encadrants=is_array($_POST['encadrants'])?$_POST['encadrants']:array();
-            if(!sizeof($encadrantsTab))
+            $encadrants = is_array($_POST['encadrants']) ? $_POST['encadrants'] : [];
+            if (!count($encadrantsTab)) {
                 // echo '<p class="erreur">Erreur : aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission. Vous ne pourrez pas créer de sortie...</p>';
                 echo '<p class="info">Aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission.</p>';
-            foreach($encadrantsTab as $encadrant)
+            }
+            foreach ($encadrantsTab as $encadrant) {
                 echo '<label for="encadrant-'.$encadrant['id_user'].'">
-									<input type="checkbox" '.(in_array($encadrant['id_user'], $encadrants)?'checked="checked"':'').' name="encadrants[]" value="'.$encadrant['id_user'].'" id="encadrant-'.$encadrant['id_user'].'" />
+									<input type="checkbox" '.(in_array($encadrant['id_user'], $encadrants, true) ? 'checked="checked"' : '').' name="encadrants[]" value="'.$encadrant['id_user'].'" id="encadrant-'.$encadrant['id_user'].'" />
 									'.$encadrant['firstname_user'].'
 									'.$encadrant['lastname_user'].'
 									<a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user='.$encadrant['id_user'].'" title="Voir la fiche"><img src="img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
 								</label>';
+            }
             ?>
             <br style="clear:both" />
         </div>
@@ -135,33 +143,37 @@
         <h2 class="trigger-h2">Co-Encadrant(s) :</h2>
         <div class="trigger-me check-nice">
             <?php
-            $coencadrants=is_array($_POST['coencadrants'])?$_POST['coencadrants']:array();
-            if(!sizeof($coencadrantsTab))
+            $coencadrants = is_array($_POST['coencadrants']) ? $_POST['coencadrants'] : [];
+            if (!count($coencadrantsTab)) {
                 // echo '<p class="info">Aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission.</p>';echo '<p class="erreur">Erreur : aucun adhérent n\'est déclaré <b>coencadrant</b> pour cette commission. Vous ne pourrez pas créer de sortie...</p>';
                 echo '<p class="info">Aucun adhérent n\'est déclaré <b>co-encadrant</b> pour cette commission.</p>';
-            foreach($coencadrantsTab as $coencadrant)
+            }
+            foreach ($coencadrantsTab as $coencadrant) {
                 echo '<label for="coencadrant-'.$coencadrant['id_user'].'">
-									<input type="checkbox" '.(in_array($coencadrant['id_user'], $coencadrants)?'checked="checked"':'').' name="coencadrants[]" value="'.$coencadrant['id_user'].'" id="coencadrant-'.$coencadrant['id_user'].'" />
+									<input type="checkbox" '.(in_array($coencadrant['id_user'], $coencadrants, true) ? 'checked="checked"' : '').' name="coencadrants[]" value="'.$coencadrant['id_user'].'" id="coencadrant-'.$coencadrant['id_user'].'" />
 									'.$coencadrant['firstname_user'].'
 									'.$coencadrant['lastname_user'].'
 									<a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user='.$coencadrant['id_user'].'" title="Voir la fiche"><img src="img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
 								</label>';
+            }
             ?>
             <br style="clear:both" />
         </div>
 
-        <h2 class="trigger-h2">Bénévoles <?php if ($id_evt_to_update) echo '(modifiable dans la gestion des inscrits) '; ?>:</h2>
+        <h2 class="trigger-h2">Bénévoles <?php if ($id_evt_to_update) {
+                echo '(modifiable dans la gestion des inscrits) ';
+            } ?>:</h2>
         <div class="trigger-me check-nice">
             <?php
             // modification possible seulement en cas de creation d'une nouvelle sortie
-            if(!$id_evt_to_update){
-                $benevoles=is_array($_POST['benevoles'])?$_POST['benevoles']:array();
-                if(!sizeof($benevolesTab)) {
+            if (!$id_evt_to_update) {
+                $benevoles = is_array($_POST['benevoles']) ? $_POST['benevoles'] : [];
+                if (!count($benevolesTab)) {
                     echo '<p class="info">Aucun adhérent n\'est déclaré <b>bénévole</b> pour cette commission ou cette sortie.</p>';
                 }
-                foreach($benevolesTab as $benevole) {
+                foreach ($benevolesTab as $benevole) {
                     echo '<label for="benevole-'.$benevole['id_user'].'">
-									<input '.($id_evt_to_update?'disabled':'').' type="checkbox" '.(in_array($benevole['id_user'], $benevoles)?'checked="checked"':'').' name="benevoles[]" value="'.$benevole['id_user'].'" id="benevole-'.$benevole['id_user'].'" />
+									<input '.($id_evt_to_update ? 'disabled' : '').' type="checkbox" '.(in_array($benevole['id_user'], $benevoles, true) ? 'checked="checked"' : '').' name="benevoles[]" value="'.$benevole['id_user'].'" id="benevole-'.$benevole['id_user'].'" />
 									'.$benevole['firstname_user'].'
 									'.$benevole['lastname_user'].'
 									<a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user='.$benevole['id_user'].'" title="Voir la fiche"><img src="img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
@@ -172,7 +184,9 @@
             ?>
 
             <label for="need_benevoles_evt" style="margin-top:15px; display:block; float:none; width:93%; background-color:white; background-position:8px 5px; padding-left:10px; padding-top:5px; box-shadow:0 0 15px -8px black;">
-                <input type="checkbox" class="custom" name="need_benevoles_evt" id="need_benevoles_evt" <?php if($_POST['need_benevoles_evt']==1 OR $_POST['need_benevoles_evt']=='on') echo 'checked="checked"';?> /> Afficher un encart &laquo;Nous aurions besoin de bénévoles&raquo; sur la page de la sortie ?
+                <input type="checkbox" class="custom" name="need_benevoles_evt" id="need_benevoles_evt" <?php if (1 == $_POST['need_benevoles_evt'] || 'on' == $_POST['need_benevoles_evt']) {
+                echo 'checked="checked"';
+            }?> /> Afficher un encart &laquo;Nous aurions besoin de bénévoles&raquo; sur la page de la sortie ?
             </label>
 
             <br style="clear:both" />
@@ -185,7 +199,7 @@
         <?php if (!$destination) { ?>
             <div>
                 Massif :<br />
-                <input style="width:95%;" type="text" name="massif_evt" class="type2" value="<?php echo inputVal('massif_evt', '');?>" placeholder="ex : Chartreuse" />
+                <input style="width:95%;" type="text" name="massif_evt" class="type2" value="<?php echo inputVal('massif_evt', ''); ?>" placeholder="ex : Chartreuse" />
             </div>
         <?php } ?>
 
@@ -196,44 +210,51 @@
 
             <?php if (!$_POST['cycle_master_evt']) {
                 // cette sortie n'est pas un debut de cycle
-                // et si c'est une sortie de cycle, il n'y a pas de sortie associee pour le moment
-                ?>
+                // et si c'est une sortie de cycle, il n'y a pas de sortie associee pour le moment?>
 
                 <label class="biglabel" for="cycle_none">
-                    <input type="radio" name="cycle" id="cycle_none" value="none" <?php if($_POST['cycle']=='none' or !$_POST['cycle']) echo 'checked="checked"'; ?> /> Non, c'est une sortie unique
+                    <input type="radio" name="cycle" id="cycle_none" value="none" <?php if ('none' == $_POST['cycle'] || !$_POST['cycle']) {
+                    echo 'checked="checked"';
+                } ?> /> Non, c'est une sortie unique
                 </label>
-            <?php } ?>
+            <?php
+            } ?>
 
-            <?php if(!$_POST['cycle']) { ?>
+            <?php if (!$_POST['cycle']) { ?>
                 <label class="biglabel" for="cycle_parent">
-                    <input type="radio" name="cycle" id="cycle_parent" value="parent" <?php if($_POST['cycle_master_evt']) echo 'checked="checked"';?> /> Oui, cette sortie est la première d'un cycle,
+                    <input type="radio" name="cycle" id="cycle_parent" value="parent" <?php if ($_POST['cycle_master_evt']) {
+                echo 'checked="checked"';
+            }?> /> Oui, cette sortie est la première d'un cycle,
                     <?php
-                    if($_POST['cycle_master_evt']){
+                    if ($_POST['cycle_master_evt']) {
                         echo '<b>des sorties sont dejà associées</b>';
-                    } else{
+                    } else {
                         echo 'd\'autres sorties vont suivre';
                     }
                     ?>
                 </label>
             <?php } ?>
 
-            <?php if(!($_POST['parent'] || $_POST['cycle_master_evt'])){ ?>
+            <?php if (!($_POST['parent'] || $_POST['cycle_master_evt'])) { ?>
                 <label class="biglabel" for="cycle_child">
-                    <input type="radio" name="cycle" id="cycle_child" value="child" <?php if($_POST['cycle']=='child') echo 'checked="checked"'; ?> /> Oui, cette sortie est la suite d'une sortie précédente
+                    <input type="radio" name="cycle" id="cycle_child" value="child" <?php if ('child' == $_POST['cycle']) {
+                        echo 'checked="checked"';
+                    } ?> /> Oui, cette sortie est la suite d'une sortie précédente
                 </label>
 
-                <div id="cycle_parent_select" style="display:<?php /**/ //echo ($_POST['cycle']=='child'?'block':'none'); /**/ ?>; ">
+                <div id="cycle_parent_select" style="display:<?php  //echo ($_POST['cycle']=='child'?'block':'none'); /**/?>; ">
                     <?php
                     // LISTE DES SORTIES MASTER DE CYCLES
-                    if(!sizeof($parentEvents)) echo '<p class="alerte">Vous n\'avez pas encore créé de première sortie pour un cycle. Vous devez commencer par entrer la première sortie du cycle pour pouvoir y joindre d\'autres sorties ensuite.</p>';
-                    else{
+                    if (!count($parentEvents)) {
+                        echo '<p class="alerte">Vous n\'avez pas encore créé de première sortie pour un cycle. Vous devez commencer par entrer la première sortie du cycle pour pouvoir y joindre d\'autres sorties ensuite.</p>';
+                    } else {
                         ?>
                         Merci de sélectionner la sortie parente (la première sortie du cycle) :<br />
                         <select name="cycle_parent_evt">
                             <?php
-                            foreach($parentEvents as $tmpEvt)
-                                echo '<option value="'.$tmpEvt['id_evt'].'" '.($_POST['cycle_parent_evt']==$tmpEvt['id_evt']?'selected="selected"':'').'>'.html_utf8($tmpEvt['titre_evt']).' - Le '.date('d/m/Y', $tmpEvt['tsp_evt']).' - '.$tmpEvt['nchildren'].' sorties liées</option>';
-                            ?>
+                            foreach ($parentEvents as $tmpEvt) {
+                                echo '<option value="'.$tmpEvt['id_evt'].'" '.($_POST['cycle_parent_evt'] == $tmpEvt['id_evt'] ? 'selected="selected"' : '').'>'.html_utf8($tmpEvt['titre_evt']).' - Le '.date('d/m/Y', $tmpEvt['tsp_evt']).' - '.$tmpEvt['nchildren'].' sorties liées</option>';
+                            } ?>
                         </select>
                     <?php
                     }
@@ -262,14 +283,14 @@
                 <?php } ?>
 
                 <label for="date_depose">Horaire :</label>
-                <input type="text" class="type2" name="lieu[depose][date_depose]" id="date_depose" value="<?php echo inputVal('lieu|depose|date_depose', '');?>" placeholder="aaaa-mm-jj hh:ii:ss"><br>
+                <input type="text" class="type2" name="lieu[depose][date_depose]" id="date_depose" value="<?php echo inputVal('lieu|depose|date_depose', ''); ?>" placeholder="aaaa-mm-jj hh:ii:ss"><br>
                 <p><small>Cet horaire est important : il permet aux adhérents qui se rendent à la sortie par leurs propres moyens de vous y retrouver.</small></p>
 
                 <?php if ($_POST['lieu']['depose']['id']) {  ?>
 
-                    <br><input type="hidden" name="lieu[id_lieu_depose]" value="<?php echo $_POST['lieu']['depose']['id'];?>">
+                    <br><input type="hidden" name="lieu[id_lieu_depose]" value="<?php echo $_POST['lieu']['depose']['id']; ?>">
 
-                    <div class="display_lieu" data-id_lieu="<?php echo $_POST['lieu']['depose']['id'];?>" style="position:relative;">
+                    <div class="display_lieu" data-id_lieu="<?php echo $_POST['lieu']['depose']['id']; ?>" style="position:relative;">
                         <?php echo display_edit_lieu_link($_POST['lieu']['depose']['id'], inputVal('lieu|depose|nom', '')); ?>
                         <b><?php echo inputVal('lieu|depose|nom', ''); ?></b><br>
                         <div class="map" data-lat="" data-lng=""></div>
@@ -304,14 +325,14 @@
                 <?php } ?>
 
                 <label for="date_reprise">Horaire :</label>
-                <input type="text" class="type2" name="lieu[reprise][date_reprise]" id="date_reprise" value="<?php echo inputVal('lieu|reprise|date_reprise', '');?>" placeholder="aaaa-mm-jj hh:ii:ss"><br>
+                <input type="text" class="type2" name="lieu[reprise][date_reprise]" id="date_reprise" value="<?php echo inputVal('lieu|reprise|date_reprise', ''); ?>" placeholder="aaaa-mm-jj hh:ii:ss"><br>
 
                 <p><small>Cet horaire est important : il permet d'éviter les retards au retour.</small></p>
                 <?php if ($_POST['lieu']['reprise']['id']) { ?>
 
-                    <br><input type="hidden" name="lieu[id_lieu_reprise]" value="<?php echo $_POST['lieu']['reprise']['id'];?>">
+                    <br><input type="hidden" name="lieu[id_lieu_reprise]" value="<?php echo $_POST['lieu']['reprise']['id']; ?>">
 
-                    <div class="display_lieu" data-id_lieu="<?php echo $_POST['lieu']['reprise']['id'];?>" style="position:relative;">
+                    <div class="display_lieu" data-id_lieu="<?php echo $_POST['lieu']['reprise']['id']; ?>" style="position:relative;">
                         <?php echo display_edit_lieu_link($_POST['lieu']['reprise']['id'], inputVal('lieu|reprise|nom', '')); ?>
                         <b><?php echo inputVal('lieu|reprise|nom', ''); ?></b><br>
                         <div class="map" data-lat="" data-lng=""></div>
@@ -331,19 +352,21 @@
                 <?php } else { ?>
                     <div class="check-nice">
                 <label class="in_front">
-                    <input type="checkbox" id="same_as_depose" name="lieu[reprise][same_as_depose]" <?php  if ($_POST['lieu']['reprise']['same_as_depose'] == 'on') echo ' checked="checked" ';  ?> > Utiliser même lieu que dépose
+                    <input type="checkbox" id="same_as_depose" name="lieu[reprise][same_as_depose]" <?php if ('on' == $_POST['lieu']['reprise']['same_as_depose']) {
+                        echo ' checked="checked" ';
+                    }  ?> > Utiliser même lieu que dépose
                 </label><br>
                     </div>
                     <span class="lft"> OU&nbsp;</span>&nbsp;<a href="" id="modify_lieu_reprise" class="add lft">Autre lieu</a>
 
-                <?php    //echo display_new_lieu_complexe('reprise');
+                <?php //echo display_new_lieu_complexe('reprise');
                 } ?>
                 <div id="new_lieu_reprise"></div>
 
             </div>
             <br class="clear"><br>
 
-            <?php if( $_POST['lieu']['depose']['id'] && $_POST['lieu']['reprise']['id'] ) { ?>
+            <?php if ($_POST['lieu']['depose']['id'] && $_POST['lieu']['reprise']['id']) { ?>
                 <div id="map_dr"></div>
             <?php } ?>
 
@@ -356,7 +379,7 @@
             <?php
             inclure('infos-lieu-de-rdv', 'mini');
             ?>
-            <input type="text" name="rdv_evt" class="type2" style="width:95%" value="<?php echo inputVal('rdv_evt', '');?>" placeholder="ex : Pralognan la Vanoise, les fontanettes" />
+            <input type="text" name="rdv_evt" class="type2" style="width:95%" value="<?php echo inputVal('rdv_evt', ''); ?>" placeholder="ex : Pralognan la Vanoise, les fontanettes" />
         </div>
 
         <div style="float:left; width:45%; padding:0 20px 0 0;">
@@ -365,8 +388,8 @@
             inclure('infos-carte', 'mini');
             ?>
             <input type="button" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le point sur la carte" />
-            <input type="hidden" name="lat_evt" value="<?php echo inputVal('lat_evt', '');?>" />
-            <input type="hidden" name="long_evt" value="<?php echo inputVal('long_evt', '');?>" />
+            <input type="hidden" name="lat_evt" value="<?php echo inputVal('lat_evt', ''); ?>" />
+            <input type="hidden" name="long_evt" value="<?php echo inputVal('long_evt', ''); ?>" />
 
             <!--
             <input type="hidden" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le point sur la carte" />
@@ -382,15 +405,15 @@
         <br />
         <div style="width:45%; padding-right:3%; float:left">
             Date et heure de RDV / covoiturage :<br />
-            <input type="text" name="tsp_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_evt_day', '');?>" placeholder="jj/mm/aaaa" />
-            <input type="text" name="tsp_evt_hour" class="type2" style="width:45%" value="<?php echo inputVal('tsp_evt_hour', '');?>" placeholder="hh:ii" />
+            <input type="text" name="tsp_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_evt_day', ''); ?>" placeholder="jj/mm/aaaa" />
+            <input type="text" name="tsp_evt_hour" class="type2" style="width:45%" value="<?php echo inputVal('tsp_evt_hour', ''); ?>" placeholder="hh:ii" />
         </div>
 
         <div style="width:50%; float:left">
             Date de fin de la sortie :<br />
-            <input type="text" name="tsp_end_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_end_evt_day', '');?>" placeholder="jj/mm/aaaa" />
+            <input type="text" name="tsp_end_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_end_evt_day', ''); ?>" placeholder="jj/mm/aaaa" />
             <!--
-							<input type="text" name="tsp_end_evt_hour" class="type2" style="width:45%;" value="<?php echo inputVal('tsp_end_evt_hour', '');?>" placeholder="hh:ii" />
+							<input type="text" name="tsp_end_evt_hour" class="type2" style="width:45%;" value="<?php echo inputVal('tsp_end_evt_hour', ''); ?>" placeholder="hh:ii" />
 							-->
             <input type="button" value="même jour ?" class="nice" onclick="$('input[name=tsp_end_evt_day]').val($('input[name=tsp_evt_day]').val())" style="margin-top:7px" />
         </div>
@@ -407,12 +430,14 @@
 
         <div style="float:left; padding:0 20px 5px 0;">
             Tarif :<br />
-            <input type="text" name="tarif_evt" class="type2" value="<?php echo inputVal('tarif_evt', '');?>" placeholder="ex : 35.50 " />€
+            <input type="text" name="tarif_evt" class="type2" value="<?php echo inputVal('tarif_evt', ''); ?>" placeholder="ex : 35.50 " />€
         </div>
         <br style="clear:both" />
 
         <div style="float:left; padding:0 20px 5px 0;">
-            <input type="checkbox" name="cb_evt" <?php if($_POST['cb_evt']==1 OR $_POST['cb_evt']=='on') echo 'checked="checked"'; ?>/> paiement en ligne possible
+            <input type="checkbox" name="cb_evt" <?php if (1 == $_POST['cb_evt'] || 'on' == $_POST['cb_evt']) {
+                echo 'checked="checked"';
+            } ?>/> paiement en ligne possible
         </div>
         <br style="clear:both" />
 
@@ -420,16 +445,18 @@
         inclure('infos-tarifs', 'mini');
         ?>
         Détails des frais :
-        <textarea name="tarif_detail" class="type2" style="width:95%; min-height:80px" placeholder="Ex : Remontées mécaniques 12€, Péage 11.50€, Car 7€, Vin chaud 5€ = somme 35.50"><?php echo inputVal('tarif_detail', '');?></textarea>
+        <textarea name="tarif_detail" class="type2" style="width:95%; min-height:80px" placeholder="Ex : Remontées mécaniques 12€, Péage 11.50€, Car 7€, Vin chaud 5€ = somme 35.50"><?php echo inputVal('tarif_detail', ''); ?></textarea>
         <br>
 
         <?php
         inclure('infos-resto', 'mini');
         ?>
-        <label><input type="checkbox" name="repas_restaurant" id="repas_restaurant" <?php if($_POST['repas_restaurant']==1 OR $_POST['repas_restaurant']=='on') echo 'checked="checked"'; ?> >&nbsp;Repas au restaurant possible</label>
+        <label><input type="checkbox" name="repas_restaurant" id="repas_restaurant" <?php if (1 == $_POST['repas_restaurant'] || 'on' == $_POST['repas_restaurant']) {
+            echo 'checked="checked"';
+        } ?> >&nbsp;Repas au restaurant possible</label>
         <div id="tarif_restaurant">
             Tarif du repas :<br />
-            <input type="text" name="tarif_restaurant" class="type2" value="<?php echo inputVal('tarif_restaurant', '');?>" placeholder="ex : 55.90 " />€
+            <input type="text" name="tarif_restaurant" class="type2" value="<?php echo inputVal('tarif_restaurant', ''); ?>" placeholder="ex : 55.90 " />€
         </div>
 
         <br />
@@ -439,12 +466,12 @@
     <div class="trigger-me" style="padding-right:20px">
 
         <!-- si on rensigne une suite de cycle, cette section est blqoquée  -->
-        <div id="inscriptions-on" style="display:<?php echo $suiteDeCycle?'none':'block';?>">
+        <div id="inscriptions-on" style="display:<?php echo $suiteDeCycle ? 'none' : 'block'; ?>">
 
 
             Nombre maximum de personnes sur cette sortie (encadrement compris) :<br />
             <p class="mini">
-                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="ngens_max_evt" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('ngens_max_evt', '');?>" placeholder=" ex : 8" />
+                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="ngens_max_evt" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('ngens_max_evt', ''); ?>" placeholder=" ex : 8" />
                 personnes affichées. Ceci n'influence <u>pas</u> le nombre d'inscriptions possibles en ligne.
             </p>
             <br style="clear:both" />
@@ -452,7 +479,7 @@
             <?php if (!$destination) { ?>
             <div style="width:45%; padding-right:3%; float:left">
                 Les inscriptions démarrent :<br />
-                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_start_evt_days" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_start_evt_days', '');?>" placeholder=" > 2" />
+                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_start_evt_days" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_start_evt_days', ''); ?>" placeholder=" > 2" />
 								<span class="mini">
 									jours avant la sortie.
 								</span>
@@ -461,7 +488,7 @@
 
             <div style="width:50%; float:left">
                 Inscriptions maximum via le formulaire internet :<br />
-                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_max_evt" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_max_evt', '');?>" placeholder="ex : 5" />
+                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_max_evt" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_max_evt', ''); ?>" placeholder="ex : 5" />
                 <span class="mini">
                     inscriptions en ligne max.
                 </span>
@@ -471,8 +498,8 @@
                 <div style="width:100%;clear:both;">
                 <br><p><b>Dates</b> :</p>
                     <ul class="nice-list">
-                        <li class="wide">Ouverture : <?php echo display_jour($destination['inscription_ouverture']).' à '. display_time($destination['inscription_ouverture']); ?></li>
-                        <li class="wide">Fermeture : <?php echo display_jour($destination['inscription_fin']).' à '. display_time($destination['inscription_fin']); ?></li>
+                        <li class="wide">Ouverture : <?php echo display_jour($destination['inscription_ouverture']).' à '.display_time($destination['inscription_ouverture']); ?></li>
+                        <li class="wide">Fermeture : <?php echo display_jour($destination['inscription_fin']).' à '.display_time($destination['inscription_fin']); ?></li>
                     </ul>
                 </div>
             <?php } ?>
@@ -480,7 +507,7 @@
         </div>
 
         <!-- message d'info -->
-        <div id="inscriptions-off" style="display:<?php echo $suiteDeCycle?'block':'none';?>">
+        <div id="inscriptions-off" style="display:<?php echo $suiteDeCycle ? 'block' : 'none'; ?>">
             <p class="alerte">Les inscriptions à cette sortie sont gérées sur la première sortie du cycle dont elle fait partie.</p>
         </div>
 
@@ -492,15 +519,15 @@
     <div class="trigger-me">
 
         Difficulté, niveau : 50 caractères max.<br />
-        <input type="text" name="difficulte_evt" class="type2" value="<?php echo inputVal('difficulte_evt', '');?>" placeholder="ex : PD, 5d+, exposé..." />
+        <input type="text" name="difficulte_evt" class="type2" value="<?php echo inputVal('difficulte_evt', ''); ?>" placeholder="ex : PD, 5d+, exposé..." />
 
         <br />
         Dénivelé positif :<br />
-        <input type="text" name="denivele_evt" class="type2" value="<?php echo inputVal('denivele_evt', '');?>" placeholder="ex : 1200 (m)" />m.
+        <input type="text" name="denivele_evt" class="type2" value="<?php echo inputVal('denivele_evt', ''); ?>" placeholder="ex : 1200 (m)" />m.
 
         <br />
         Distance :<br />
-        <input type="text" name="distance_evt" class="type2" value="<?php echo inputVal('distance_evt', '');?>" placeholder="ex : 13.50 (km)" />km.
+        <input type="text" name="distance_evt" class="type2" value="<?php echo inputVal('distance_evt', ''); ?>" placeholder="ex : 13.50 (km)" />km.
 
         <br />
         <div style="float:right; padding-right:20px;">
@@ -541,7 +568,7 @@
 
         </div>
         Matériel nécessaire :
-        <textarea name="matos_evt" class="type2" style="width:95%; min-height:80px" placeholder="ex : 10 Dégaines, 1 Baudrier, 1 Maillot de bain..."><?php echo inputVal('matos_evt', '');?></textarea>
+        <textarea name="matos_evt" class="type2" style="width:95%; min-height:80px" placeholder="ex : 10 Dégaines, 1 Baudrier, 1 Maillot de bain..."><?php echo inputVal('matos_evt', ''); ?></textarea>
         <?php
         inclure('infos-matos', 'mini');
         ?>
@@ -550,7 +577,7 @@
 
     <h2 class="trigger-h2">Itinéraire :</h2>
     <div class="trigger-me">
-        <textarea name="itineraire" class="type2" style="width:95%; min-height:80px"><?php echo stripslashes($_POST['itineraire']);?></textarea>
+        <textarea name="itineraire" class="type2" style="width:95%; min-height:80px"><?php echo stripslashes($_POST['itineraire']); ?></textarea>
     </div>
 
 
@@ -560,8 +587,8 @@
             Entrez ci-dessous toutes les informations qui ne figurent pas dans le formulaire.
             N'hésitez pas à mettre un maximum de détails, cet élément formera le corps de la page dédiée à cette sortie.
         </p>
-        <?php include (INCLUDES.'help'.DS.'tinymce.php'); ?>
-        <textarea name="description_evt" style="width:99%"><?php echo stripslashes($_POST['description_evt']);?></textarea>
+        <?php include INCLUDES.'help'.DS.'tinymce.php'; ?>
+        <textarea name="description_evt" style="width:99%"><?php echo stripslashes($_POST['description_evt']); ?></textarea>
     </div>
 
     <br />
@@ -607,9 +634,9 @@
         theme_advanced_statusbar_location : "bottom",
         theme_advanced_resizing : true,
 
-        document_base_url : '<?php echo $p_racine;?>',
+        document_base_url : '<?php echo $p_racine; ?>',
 
-        content_css : "<?php echo $p_racine;?>css/base.css,<?php echo $p_racine;?>css/style1.css,<?php echo $p_racine;?>fonts/stylesheet.css",
+        content_css : "<?php echo $p_racine; ?>css/base.css,<?php echo $p_racine; ?>css/style1.css,<?php echo $p_racine; ?>fonts/stylesheet.css",
         body_id : "bodytinymce_user",
         body_class : "description_evt",
         theme_advanced_styles : "<?php echo $p_tiny_theme_advanced_styles; ?>",
@@ -770,7 +797,7 @@
             // Mis en place : test sur l'heure de destination / sortie
             // => todo : le premier horaire (dépose), devrait être plus tardif que le dernier horaire de ramassage en bus
         ?>
-        setDay( $('#date_depose'), '<?php $expDate = explode(' ',$destination['date'] ); echo $expDate[0]; ?>', '<?php echo $expDate[1]; ?>');
+        setDay( $('#date_depose'), '<?php $expDate = explode(' ', $destination['date']); echo $expDate[0]; ?>', '<?php echo $expDate[1]; ?>');
         <?php if ($expDate[0] == $destination['date_fin']) { ?>
             setDay( $('#date_reprise'), '<?php echo $expDate[0]; ?>', '<?php echo $expDate[1]; ?>');
         <?php } else { ?>

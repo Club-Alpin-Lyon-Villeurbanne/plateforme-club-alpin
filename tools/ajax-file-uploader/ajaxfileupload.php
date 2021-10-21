@@ -42,11 +42,11 @@
 				}
 			}
 		)
-		
+
 		return false;
 
 	}
-	</script>	
+	</script>
 	</head>
 
 	<body>
@@ -61,7 +61,7 @@
 					<li>Website Design</li>
 					<li>Survey System Creation</li>
 					<li>E-commerce Site Development</li>
-				</ul>    	
+				</ul>
 		<img id="loading" src="loading.gif" style="display:none;">
 		<form name="form" action="" method="POST" enctype="multipart/form-data">
 		<table cellpadding="0" cellspacing="0" class="tableForm">
@@ -71,7 +71,7 @@
 				<th>Please select a file and click Upload button</th>
 			</tr>
 		</thead>
-		<tbody>	
+		<tbody>
 			<tr>
 				<td><input id="fileToUpload" type="file" size="45" name="fileToUpload" class="input"></td>			</tr>
 
@@ -81,11 +81,11 @@
 					<td><button class="button" id="buttonUpload" onclick="return ajaxFileUpload();">Upload</button></td>
 				</tr>
 			</tfoot>
-	
+
 	</table>
-		</form>    	
+		</form>
     </div>
-    
+
 
 	</body>
 </html>
