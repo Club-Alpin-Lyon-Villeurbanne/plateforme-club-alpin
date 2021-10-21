@@ -1,19 +1,21 @@
 <?php
-	$id_article=intval($_POST['id_article']);
 
-	include SCRIPTS.'connect_mysqli.php';;
+    $id_article = (int) ($_POST['id_article']);
 
-	$req="UPDATE caf_article SET topubly_article=0, status_article=0, tsp_validate_article=0 WHERE id_article=$id_article";
-	if (!allowed('article_edit_notmine')) {
-		$req.=" AND user_article=".intval($_SESSION['user']['id_user']);
-	}
+    include SCRIPTS.'connect_mysqli.php';
 
-	if(!$mysqli->query($req)) $errTab[]="Erreur SQL:".$mysqli->error;
-	elseif($mysqli->affected_rows < 1) $errTab[]="Aucun enregistrement affecté";
+    $req = "UPDATE caf_article SET topubly_article=0, status_article=0, tsp_validate_article=0 WHERE id_article=$id_article";
+    if (!allowed('article_edit_notmine')) {
+        $req .= ' AND user_article='.(int) ($_SESSION['user']['id_user']);
+    }
 
-	$mysqli->close;
+    if (!$mysqli->query($req)) {
+        $errTab[] = 'Erreur SQL:'.$mysqli->error;
+    } elseif ($mysqli->affected_rows < 1) {
+        $errTab[] = 'Aucun enregistrement affecté';
+    }
 
-	header('Location: /gestion-des-articles.html');
-	exit();
+    $mysqli->close;
 
-?>
+    header('Location: /gestion-des-articles.html');
+    exit();

@@ -1,39 +1,40 @@
 <?php
-echo '<a class="agenda-evt-debut" target="_top" href="sortie/'.html_utf8($evt['code_evt']).'-'.intval($evt['id_evt']).'.html?commission='.$evt['code_commission'];
-if(allowed('evt_validate') && $evt['status_evt']!=1) {
-	echo '&forceshow=true';
+echo '<a class="agenda-evt-debut" target="_top" href="sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html?commission='.$evt['code_commission'];
+if (allowed('evt_validate') && 1 != $evt['status_evt']) {
+    echo '&forceshow=true';
 }
 echo '" title="">';
 ?>
 
 	<!-- picto -->
 	<div class="picto">
-		<img src="<?php echo comPicto($evt['commission_evt'], 'light');?>" alt="" title="" class="picto-light" />
-		<img src="<?php echo comPicto($evt['commission_evt'], 'dark');?>" alt="" title="" class="picto-dark" />
+		<img src="<?php echo comPicto($evt['commission_evt'], 'light'); ?>" alt="" title="" class="picto-light" />
+		<img src="<?php echo comPicto($evt['commission_evt'], 'dark'); ?>" alt="" title="" class="picto-dark" />
 	</div>
 
 	<div class="droite">
 
 		<!-- temoin de validité des places libres. Ajouter class ok / full -->
-		<span class="temoin-places-dispos <?php echo $evt['temoin']; ?>" title="<?php echo $evt['temoin-title']?$evt['temoin-title']:''; ?>"></span>
+		<span class="temoin-places-dispos <?php echo $evt['temoin']; ?>" title="<?php echo $evt['temoin-title'] ? $evt['temoin-title'] : ''; ?>"></span>
 
 		<!-- titre -->
 		<h2>
 			<?php
-			if($evt['cancelled_evt']) echo ' <span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>';
-			echo html_utf8($evt['titre_evt'].($evt['jourN']?' [jour '.$evt['jourN'].']':''));
+            if ($evt['cancelled_evt']) {
+                echo ' <span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>';
+            }
+            echo html_utf8($evt['titre_evt'].($evt['jourN'] ? ' [jour '.$evt['jourN'].']' : ''));
             if (is_array($evt['groupe'])) {
                 echo ' <small>('.html_utf8($evt['groupe']['nom']).')</small>';
             }
-			if($evt['cycle_master_evt'] > 0){
-				// SORTIE DE DEBUT DE CYCLE
-				echo ' <img src="img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie de début de cycle" />';
-
-			}elseif($evt['cycle_parent_evt'] > 0){
-				// SORTIE FAISANT PARTIE D'UN CYCLE
-				echo ' <img src="img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie faisant partie d\'un cycle" />';
-			}
-			?>
+            if ($evt['cycle_master_evt'] > 0) {
+                // SORTIE DE DEBUT DE CYCLE
+                echo ' <img src="img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie de début de cycle" />';
+            } elseif ($evt['cycle_parent_evt'] > 0) {
+                // SORTIE FAISANT PARTIE D'UN CYCLE
+                echo ' <img src="img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie faisant partie d\'un cycle" />';
+            }
+            ?>
             <?php if ($evt['destination']) { ?>
                 <small class="rght " ><?php echo $evt['destination']['nom']; ?></small>
             <?php } ?>
@@ -42,17 +43,17 @@ echo '" title="">';
 		<!-- infos -->
 		<p>
 			<?php
-			echo ''
-				// commission
-				.'<b>'.html_utf8($evt['title_commission']).'</b>'
-				// difficulté, ou pas
-				.($evt['difficulte_evt']?' - <b>'.html_utf8($evt['difficulte_evt']).'</b>':'')
-				// massif, ou pas
-				.($evt['massif_evt']?' - <b>'.html_utf8($evt['massif_evt']).'</b>':'')
-				// rôle de l'user dans cette sortie
-				.($evt['role_evt_join']?' - Votre rôle : <b>'.html_utf8($evt['role_evt_join']).'</b>':'')
-			;
-			?>
+            echo ''
+                // commission
+                .'<b>'.html_utf8($evt['title_commission']).'</b>'
+                // difficulté, ou pas
+                .($evt['difficulte_evt'] ? ' - <b>'.html_utf8($evt['difficulte_evt']).'</b>' : '')
+                // massif, ou pas
+                .($evt['massif_evt'] ? ' - <b>'.html_utf8($evt['massif_evt']).'</b>' : '')
+                // rôle de l'user dans cette sortie
+                .($evt['role_evt_join'] ? ' - Votre rôle : <b>'.html_utf8($evt['role_evt_join']).'</b>' : '')
+            ;
+            ?>
 		</p>
 	</div>
 	<br style="clear:both" />

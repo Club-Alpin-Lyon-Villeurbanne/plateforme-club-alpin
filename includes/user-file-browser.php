@@ -1,31 +1,46 @@
 <?php
 //_________________________________________________ DEFINITION DES DOSSIERS
-define ('DS', DIRECTORY_SEPARATOR );
-define ('ROOT', dirname(dirname(__FILE__)).DS);				// Racine
-include (ROOT.'app'.DS.'includes.php');
+define('DS', \DIRECTORY_SEPARATOR);
+define('ROOT', dirname(__DIR__).DS);				// Racine
+include ROOT.'app'.DS.'includes.php';
 
-if(user()){
+if (user()) {
+    // bien connecté ?
+    $id_user = (int) ($_SESSION['user']['id_user']);
+    if (!$id_user) {
+        echo 'ERREUR : id invalide';
+        exit();
+    }
 
-	// bien connecté ?
-	$id_user=intval($_SESSION['user']['id_user']);
-	if(!$id_user){ echo 'ERREUR : id invalide'; exit();	}
+    // première visite : dossier inexistant
+    if (!file_exists('../ftp/user/'.$id_user)) {
+        mkdir('../ftp/user/'.$id_user);
+    }
+    if (!file_exists('../ftp/user/'.$id_user.'/images/')) {
+        mkdir('../ftp/user/'.$id_user.'/images/');
+    }
+    if (!file_exists('../ftp/user/'.$id_user.'/files/')) {
+        mkdir('../ftp/user/'.$id_user.'/files/');
+    }
 
-	// première visite : dossier inexistant
-	if(!file_exists('../ftp/user/'.$id_user)) mkdir('../ftp/user/'.$id_user);
-	if(!file_exists('../ftp/user/'.$id_user.'/images/')) mkdir('../ftp/user/'.$id_user.'/images/');
-	if(!file_exists('../ftp/user/'.$id_user.'/files/')) mkdir('../ftp/user/'.$id_user.'/files/');
-
-	// recuperation du dossier
-	$type=$_GET['type'];
-	if($type=='image')		$dossier='../ftp/user/'.$id_user.'/images/';
-	elseif($type=='file')	$dossier='../ftp/user/'.$id_user.'/files/';
-	else{					echo "ERREUR : type invalide ($type / $dossier)"; exit();	}
-
-	?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    // recuperation du dossier
+    $type = $_GET['type'];
+    if ('image' == $type) {
+        $dossier = '../ftp/user/'.$id_user.'/images/';
+    } elseif ('file' == $type) {
+        $dossier = '../ftp/user/'.$id_user.'/files/';
+    } else {
+        echo "ERREUR : type invalide ($type / $dossier)";
+        exit();
+    } ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="https://www.w3.org/1999/xhtml" xml:lang="fr">
 		<head>
-		<title><?php if($type=='image') echo 'Vos images en ligne'; else echo 'Vos fichiers en ligne'; ?></title>
+		<title><?php if ('image' == $type) {
+        echo 'Vos images en ligne';
+    } else {
+        echo 'Vos fichiers en ligne';
+    } ?></title>
 
 		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="../css/style1.css">
 		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="../css/base.css">
@@ -118,15 +133,18 @@ if(user()){
 			<!-- TEXTE EXPLICATIF -->
 			<p>
 				<?php
-				if($type=='image') echo "
+                if ('image' == $type) {
+                    echo '
 					Déposez ici les images que vous souhaitez insérer dans vos articles. Elles seront redimensionnées automatiquement
 					pour correspondre au format du site. Seules les images .jpg et .png sont autorisées, poids maximum : 5Mo.
-					";
-				if($type=='file') echo "
+					';
+                }
+    if ('file' == $type) {
+        echo "
 					Déposez ici les fichiers que vous souhaitez proposer en téléchargement. Poid maximum : 5Mo.<br />
-					Ext. autorisées : <span style='font-size:9px'>".implode(', ', $p_ftpallowed)."</span>
-					";
-				?>
+					Ext. autorisées : <span style='font-size:9px'>".implode(', ', $p_ftpallowed).'</span>
+					';
+    } ?>
 			</p>
 
 			<!-- valums file upload -->
@@ -138,7 +156,7 @@ if(user()){
 
 						sizeLimit: 5 * 1024 * 1024, // 5 Megz
 						element: document.getElementById('file-uploader-ftp'),
-						action: '../tools/valums-file-upload/server/user-<?php echo $type;?>.php',
+						action: '../tools/valums-file-upload/server/user-<?php echo $type; ?>.php',
 						// pour chaque image envoyée
 						onComplete: function(id, fileName, responseJSON){
 							if(responseJSON.success){
@@ -168,16 +186,20 @@ if(user()){
 
 			<!-- OPERATIONS -->
 			<?php
-			if($_GET['operation']=="delete"){
-				$file=$_GET['file'];
-				if(!file_exists($dossier.$file)) echo '<p class="erreur"> Erreur : fichier non trouvé</p>';
-				else if(strpos(' '.$file, '../')) echo '<p class="erreur"> Erreur tentative de piratage</p>';
-				else {
-					if(unlink($dossier.$file)) echo '<p class="info">Fichier '.$file.' supprimé</p>';
-					else echo '<p class="erreur"> Erreur technique lors de la suppression.</p>';
-				}
-			}
-			?>
+            if ('delete' == $_GET['operation']) {
+                $file = $_GET['file'];
+                if (!file_exists($dossier.$file)) {
+                    echo '<p class="erreur"> Erreur : fichier non trouvé</p>';
+                } elseif (strpos(' '.$file, '../')) {
+                    echo '<p class="erreur"> Erreur tentative de piratage</p>';
+                } else {
+                    if (unlink($dossier.$file)) {
+                        echo '<p class="info">Fichier '.$file.' supprimé</p>';
+                    } else {
+                        echo '<p class="erreur"> Erreur technique lors de la suppression.</p>';
+                    }
+                }
+            } ?>
 
 			<table>
 				<thead>
@@ -190,35 +212,35 @@ if(user()){
 				</thead>
 				<?php
                 // tableau des fichiers
-                $tabFichiers = array();
-                $extTab = $p_ftpallowed;
+                $tabFichiers = [];
+    $extTab = $p_ftpallowed;
 
-                // restrion au type image
-                if ($type === 'image') {
-                    $extTab = array('jpg', 'jpeg', 'png');
-                }
+    // restrion au type image
+    if ('image' === $type) {
+        $extTab = ['jpg', 'jpeg', 'png'];
+    }
 
-                // ouverture du dossier demande
-                $handle = opendir($dossier);
+    // ouverture du dossier demande
+    $handle = opendir($dossier);
 
-                while($fichier = readdir($handle)){
-                    $filepath = $dossier.$fichier;
-                    $extension = strtolower(pathinfo($fichier, PATHINFO_EXTENSION));
+    while ($fichier = readdir($handle)) {
+        $filepath = $dossier.$fichier;
+        $extension = strtolower(pathinfo($fichier, \PATHINFO_EXTENSION));
 
-                    // on ne liste pas les dossiers
-                    if (is_dir($filepath)) {
-                        continue;
-                    }
+        // on ne liste pas les dossiers
+        if (is_dir($filepath)) {
+            continue;
+        }
 
-                    // on ne liste pas ce qui ne matche pas les extensions
-                    if (!in_array($extension, $extTab, true)) {
-                        continue;
-                    }
+        // on ne liste pas ce qui ne matche pas les extensions
+        if (!in_array($extension, $extTab, true)) {
+            continue;
+        }
 
-                    if($type === 'image'){
-                        $icon = $filepath;
-                    } else{
-                        switch ($extension) {
+        if ('image' === $type) {
+            $icon = $filepath;
+        } else {
+            switch ($extension) {
                             case 'jpg':
                             case 'png':
                             case 'gif':
@@ -238,9 +260,9 @@ if(user()){
                                 $icon = '../img/base/fichier.png';
                                 break;
                         }
-                    }
+        }
 
-                    $tabFichiers[] = [
+        $tabFichiers[] = [
                         'file' => $fichier,
                         'filepath' => $filepath,
                         'url' => substr($filepath, 3),
@@ -249,34 +271,34 @@ if(user()){
                         'ctime' => filectime($filepath),
                         'icon' => $icon,
                     ];
-                }
+    }
 
-                closedir($dossier);
+    closedir($dossier);
 
-                // tri par mtime descendant
-                usort($tabFichiers, function ($fileA, $fileB) {
-                    if ($fileA === $fileB) {
-                        return 0;
-                    }
+    // tri par mtime descendant
+    usort($tabFichiers, function ($fileA, $fileB) {
+        if ($fileA === $fileB) {
+            return 0;
+        }
 
-                    return $fileA['mtime'] > $fileB['mtime'] ? -1 : 1;
-                });
+        return $fileA['mtime'] > $fileB['mtime'] ? -1 : 1;
+    });
 
-                foreach($tabFichiers as $fichier){
-                    echo '
+    foreach ($tabFichiers as $fichier) {
+        echo '
 					<tr>
 						<td style="width:30px; text-align:center">
 							<img src="../img/base/add.png" alt="Insérer" title="Insérer ce fichier" style="cursor:pointer" onclick="inserer(\''.$fichier['url'].'\')" />
 						</td>
 						<td>
-							'.($type=='image'?
+							'.('image' == $type ?
                             '<a class="fancybox" href="'.$fichier['icon'].'" title="'.html_utf8($fichier['file']).'"><img src="'.$fichier['icon'].'" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
                             :
                             '<a target="_blank" href="'.$fichier['filepath'].'" title="Ouvrir '.html_utf8($fichier['file']).' dans une nouvelle fenêtre"><img src="'.$fichier['icon'].'" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
                         ).'
 						</td>
 						<td>
-							'.($type=='image'?
+							'.('image' == $type ?
                             '<a class="fancybox" href="'.$fichier['icon'].'" title="'.html_utf8($fichier['file']).'">'.substr($fichier['file'], 0, 70).'</a>'
                             :
                             '<a target="_blank" href="'.$fichier['filepath'].'" title="Ouvrir '.html_utf8($fichier['file']).' dans une nouvelle fenêtre">'.substr($fichier['file'], 0, 70).'</a>'
@@ -293,8 +315,7 @@ if(user()){
                         .date('d/m/y H:i', $fichier['mtime']).'
 						</td>
 					</tr>';
-                }
-                ?>
+    } ?>
             </table>
 		</div>
 	</body>

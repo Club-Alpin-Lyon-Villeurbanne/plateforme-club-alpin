@@ -10,14 +10,13 @@
 //Import PHPMailer classes into the global namespace
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
 
 require 'Exception.php';
 require 'PHPMailer.php';
 require 'SMTP.php';
 
 /**
- * Use PHPMailer as a base class and extend it
+ * Use PHPMailer as a base class and extend it.
  */
 class CAFPHPMailer extends PHPMailer
 {
@@ -25,22 +24,22 @@ class CAFPHPMailer extends PHPMailer
      * myPHPMailer constructor.
      *
      * @param bool|null $exceptions
-     * @param string    $body A default HTML message body
+     * @param string    $body       A default HTML message body
      */
     public function __construct($exceptions = false, $useBCC = false)
     {
         //Don't forget to do this or other things may not be set correctly!
         parent::__construct($exceptions);
 
-        $this->content_full=implode("\n", file(APP.'templates/email1.html'));
-        $this->content_full=str_replace('templateimgs/', $p_racine.'app/templates/templateimgs/', $this->content_full);
-        $this->content_full=str_replace('[RACINE]', $p_racine, $this->content_full);
-        $this->content_full=str_replace('[SITENAME]', $p_sitename, $this->content_full);
+        $this->content_full = implode("\n", file(APP.'templates/email1.html'));
+        $this->content_full = str_replace('templateimgs/', $p_racine.'app/templates/templateimgs/', $this->content_full);
+        $this->content_full = str_replace('[RACINE]', $p_racine, $this->content_full);
+        $this->content_full = str_replace('[SITENAME]', $p_sitename, $this->content_full);
 
-        GLOBAL $p_smtp_use;
-        GLOBAL $p_smtp;
-        GLOBAL $p_noreply;
-        GLOBAL $p_sitename;
+        global $p_smtp_use;
+        global $p_smtp;
+        global $p_noreply;
+        global $p_sitename;
 
         // Paramétrer le Mailer pour utiliser SMTP
         if ($p_smtp_use) {
@@ -63,11 +62,13 @@ class CAFPHPMailer extends PHPMailer
 
         $this->SetFrom($p_noreply, $p_sitename);
         $this->CharSet = 'UTF-8';
-        $this->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
+        $this->AltBody = 'Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)'; // optional, comment out and test
         $this->IsHTML(true);
         $this->XMailer = 'CAF-Mailer';
 
-        if ($useBCC) $this->AddBCC($p_noreply);
+        if ($useBCC) {
+            $this->AddBCC($p_noreply);
+        }
 
         //This should be the same as the domain of your From address
         //$mail->DKIM_domain = 'clubalpinlyon.fr';
@@ -85,39 +86,43 @@ class CAFPHPMailer extends PHPMailer
         //$mail->DKIM_copyHeaderFields = false;
         //Optionally you can add extra headers for signing to meet special requirements
         //$mail->DKIM_extraHeaders = ['List-Unsubscribe', 'List-Help'];
-
     }
 
-    public function AddBCC($address, $name = '') {
+    public function AddBCC($address, $name = '')
+    {
         $this->recipients[$address] = $name;
     }
 
-    public function setMailHeader ($content_header) {
+    public function setMailHeader($content_header)
+    {
         $this->headerSet = true;
-        $this->content_full=str_replace('[HEADER]', $content_header, $this->content_full);
+        $this->content_full = str_replace('[HEADER]', $content_header, $this->content_full);
     }
 
-    public function setMailFooter ($content_footer) {
+    public function setMailFooter($content_footer)
+    {
         $this->footerSet = true;
-        $this->content_full=str_replace('[FOOTER]', $content_footer, $this->content_full);
+        $this->content_full = str_replace('[FOOTER]', $content_footer, $this->content_full);
     }
 
-    public function setMailBody ($content_main) {
+    public function setMailBody($content_main)
+    {
         $this->bodySet = true;
-        $this->content_full=str_replace('[MAIN]', $content_main, $this->content_full);
+        $this->content_full = str_replace('[MAIN]', $content_main, $this->content_full);
     }
 
-    public function setAltMailBody ($content_alt) {
+    public function setAltMailBody($content_alt)
+    {
         $this->AltBody = $content_alt;
     }
 
     //Extend the send function
     public function send()
     {
-        if ($this->headerSet == false) {
+        if (false == $this->headerSet) {
             $this->setMailHeader('');
         }
-        if ($this->footerSet == false) {
+        if (false == $this->footerSet) {
             $this->setMailFooter('');
         }
 
@@ -125,44 +130,40 @@ class CAFPHPMailer extends PHPMailer
 
         $this->Subject = $this->Subject;
 
-        $nb_recipients=0;
+        $nb_recipients = 0;
         $log_coupure_mail = false;
-        # Retiré par CRI le 06/12/2015
-        # Inutile de logger le nombre de destinataires si < 50. Surtout si tout est Ok.
-        # error_log ("PHPMAILER : nb_recipients=".count($this->recipients));
+        // Retiré par CRI le 06/12/2015
+        // Inutile de logger le nombre de destinataires si < 50. Surtout si tout est Ok.
+        // error_log ("PHPMAILER : nb_recipients=".count($this->recipients));
 
         if (is_array($this->recipients)) {
-            foreach ($this->recipients as $address=>$name){
-
+            foreach ($this->recipients as $address => $name) {
                 /*
                 * CRI 16/01/2016 - enregistrement dans les logs que si $address ou $name vide
                 * Inutile de le faire pour les couples $address / $name valides
                 */
-                if ( empty($address) || empty($name) ){
-                    error_log ("PHPMAILER : TO=".$address);
+                if (empty($address) || empty($name)) {
+                    error_log('PHPMAILER : TO='.$address);
                 } else {
                     parent::AddBCC($address, $name);
-                    $nb_recipients++;
+                    ++$nb_recipients;
                 }
 
-                if($nb_recipients > 50){
-                    # trop de destinataires on coupe le mail
+                if ($nb_recipients > 50) {
+                    // trop de destinataires on coupe le mail
                     parent::Send();
-                    # RAZ destinataires
+                    // RAZ destinataires
                     parent::ClearAddresses();
-                    $nb_recipients=0;
-                    # CRI 16/01/2016 - On signal de l'on a coupé le mail
-                    if (!$log_coupure_mail){
-                        error_log ("PHPMAILER : Destinataires > 50 - nb_recipients=".count($this->recipients));
+                    $nb_recipients = 0;
+                    // CRI 16/01/2016 - On signal de l'on a coupé le mail
+                    if (!$log_coupure_mail) {
+                        error_log('PHPMAILER : Destinataires > 50 - nb_recipients='.count($this->recipients));
                         $log_coupure_mail = true;
                     }
                 }
             }
         }
-        return parent::Send();
 
+        return parent::Send();
     }
 }
-
-
-?>

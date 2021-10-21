@@ -5,19 +5,19 @@
     // Appelé depuis .htaccess */
     // RewriteRule ^img/(adresse-website\.png|logo\.png)$  /index.php?cstImg=$1 [QSA,L]
 
-    $mimes = array (
+    $mimes = [
         'jpg' => 'image/jpg',
         'jpeg' => 'image/jpg',
         'gif' => 'image/gif',
-        'png' => 'image/png'
-    );
+        'png' => 'image/png',
+    ];
 
     $image = CONFIG.$_SERVER['HTTP_HOST'].DS.'img'.DS.$_GET['cstImg'];
     $exp = explode('.', $_GET['cstImg']);
     $ext = strtolower(end($exp));
-    
+
     if (file_exists($image)) {
-        header('content-type: '. $mimes[$ext]);
+        header('content-type: '.$mimes[$ext]);
         header('content-disposition: inline; filename="'.$_GET['cstImg'].'";');
         readfile($image);
     } else {
@@ -25,7 +25,7 @@
         $exp = explode('.', $_GET['cstImg']);
         $ext = strtolower(end($exp));
         if (file_exists($imageGenerique)) {
-            header('content-type: '. $mimes[$ext]);
+            header('content-type: '.$mimes[$ext]);
             header('content-disposition: inline; filename="'.$_GET['cstImg'].'";');
             readfile($imageGenerique);
         }

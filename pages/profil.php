@@ -16,60 +16,63 @@
 	<div id="left1">
 
 		<?php
-		// **************** **************************************
-		// **************** Non connecté
-		// **************** **************************************
-		if(!user()){
-			?>
+        // **************** **************************************
+        // **************** Non connecté
+        // **************** **************************************
+        if (!user()) {
+            ?>
 			<div style="padding:20px;">
 				<h1>Activer votre compte</h1>
 				<?php
-				// ************************
-				// FORMULAIRE D'INSCRIPTION
+                // ************************
+                // FORMULAIRE D'INSCRIPTION
 
-				// texte explicatif
-				inclure('activer-profil','vide');
+                // texte explicatif
+                inclure('activer-profil', 'vide');
 
-				// error
-				if($_POST['operation'] == 'user_subscribe' && sizeof($errTab))	echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
-				// success
-				if($_POST['operation'] == 'user_subscribe' && !sizeof($errTab))
-					echo "
+            // error
+            if ('user_subscribe' == $_POST['operation'] && count($errTab)) {
+                echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+            }
+            // success
+            if ('user_subscribe' == $_POST['operation'] && !count($errTab)) {
+                echo "
 					<h3>Compte créé avec succès</h3>
 					<p class='info'>
 						Votre compte a été créé, <b>mais vous devez le valider</b> en cliquant sur le lien
-						contenu dans l'e-mail que nous venons d'envoyer à ".html_utf8(stripslashes($email_user))."
-					</p>";
+						contenu dans l'e-mail que nous venons d'envoyer à ".html_utf8(stripslashes($email_user)).'
+					</p>';
+            }
 
-				// affichage
-				if($_POST['operation']!='user_subscribe' || ($_POST['operation']=='user_subscribe' && sizeof($errTab))){
-					?>
+            // affichage
+            if ('user_subscribe' != $_POST['operation'] || ('user_subscribe' == $_POST['operation'] && count($errTab))) {
+                ?>
 					<br />
-					<form action="<?php echo $versCettePage;?>" method="post">
+					<form action="<?php echo $versCettePage; ?>" method="post">
 						<input type="hidden" name="operation" value="user_subscribe" />
 
 						<div style="float:left; width:45%; padding:5px 20px 5px 0;">
 							<b>Votre nom de famille</b><br />
 							<p class="mini">Le même que donné lors de votre inscription</p>
-							<input type="text" name="lastname_user" class="type1" value="<?php echo inputVal('lastname_user', '');?>" placeholder="" /><br />
+							<input type="text" name="lastname_user" class="type1" value="<?php echo inputVal('lastname_user', ''); ?>" placeholder="" /><br />
 						</div>
 
 						<div style="float:left; width:45%; padding:5px 20px 5px 0;">
 							<b>Votre numéro d'adhérent au CAF</b>
 							<p class="mini">Inscrit sur votre carte CAF, sans espace</p>
-							<input type="text" name="cafnum_user" class="type1" value="<?php echo inputVal('cafnum_user', '');?>" placeholder="" maxlength="<?php echo $limite_longeur_numero_adherent; ?>" /><br />
+							<input type="text" name="cafnum_user" class="type1" value="<?php echo inputVal('cafnum_user', ''); ?>" placeholder="" maxlength="<?php echo $limite_longeur_numero_adherent; ?>" /><br />
 						</div>
 
 						<div style="float:left; width:45%; padding:5px 20px 5px 0;">
 							<b>Votre e-mail</b>
 							<p class="mini">Utilisé comme identifiant pour vous connecter</p>
-							<input type="text" name="email_user" class="type1" value="<?php echo inputVal('email_user', '');?>" placeholder="" /><br />
+							<input type="text" name="email_user" class="type1" value="<?php echo inputVal('email_user', ''); ?>" placeholder="" /><br />
 						</div>
 
 						<div style="float:left; width:45%; padding:5px 20px 5px 0;">
 							<b>Choisissez un mot de passe</b>
 							<p class="mini">6 à 12 caractères sans espace</p>
-							<input type="password" name="mdp_user" class="type1" value="<?php echo inputVal('mdp_user', '');?>" placeholder="" /><br />
+							<input type="password" name="mdp_user" class="type1" value="<?php echo inputVal('mdp_user', ''); ?>" placeholder="" /><br />
 						</div>
 
 						<br style="clear:both" />
@@ -82,24 +85,22 @@
 						</div>
 					</form>
 					<?php
-				}
-				?>
+            } ?>
 			</div>
 			<?php
-		}
+        }
 
-
-
-		// **************** **************************************
-		// **************** CONNECTÉ
-		// **************** **************************************
-		else{
-			if(file_exists(PAGES.'profil-'.$p2.'.php')) include PAGES.'profil-'.$p2.'.php';
-			else echo '<p class="erreur">Erreur : fichier introuvable</p>';
-
-
-		}
-		?>
+        // **************** **************************************
+        // **************** CONNECTÉ
+        // **************** **************************************
+        else {
+            if (file_exists(PAGES.'profil-'.$p2.'.php')) {
+                include PAGES.'profil-'.$p2.'.php';
+            } else {
+                echo '<p class="erreur">Erreur : fichier introuvable</p>';
+            }
+        }
+        ?>
 		<br style="clear:both" />
 	</div>
 
@@ -109,11 +110,13 @@
 		<div class="right-light">
 			&nbsp; <!-- important -->
 			<?php
-			// PRESENTATION DE LA COMMISSINO
-			if(user())	inclure('presentation-'.($current_commission?$current_commission:'general'),'right-light-in');
-			// hors connexion : login
-			else{
-				?>
+            // PRESENTATION DE LA COMMISSINO
+            if (user()) {
+                inclure('presentation-'.($current_commission ?: 'general'), 'right-light-in');
+            }
+            // hors connexion : login
+            else {
+                ?>
 				<br />
 				<br />
 				<form class="ajaxform" autocomplete="off" action="<?php echo $versCettePage; ?>" method="post" style="padding:0 10px 0 20px;">
@@ -123,11 +126,11 @@
 
 					<br />
 					Votre e-mail<br />
-					<input type="text" name="email_user" class="type1" value="<?php echo html_utf8(stripslashes($_POST['email_user']));?>" placeholder="" autocomplete="off">
+					<input type="text" name="email_user" class="type1" value="<?php echo html_utf8(stripslashes($_POST['email_user'])); ?>" placeholder="" autocomplete="off">
 					<br />
 
 					Votre mot de passe<br />
-					<input type="password" name="mdp_user" class="type1" value="<?php echo html_utf8(stripslashes($_POST['email_user']));?>" placeholder="" autocomplete="off">
+					<input type="password" name="mdp_user" class="type1" value="<?php echo html_utf8(stripslashes($_POST['email_user'])); ?>" placeholder="" autocomplete="off">
 					<br />
 					<p class="mini"><a href="includer.php?p=pages/mot-de-passe-perdu.php" class="fancyframe" title="" >Mot de passe oublié ?</a></p>
 
@@ -140,11 +143,11 @@
 				</form>
 
 				<?php
-			}
+            }
 
-			// RECHERCHE
-			include(INCLUDES.'recherche.php');
-			?>
+            // RECHERCHE
+            include INCLUDES.'recherche.php';
+            ?>
 		</div>
 
 
@@ -152,9 +155,9 @@
 			<div class="right-green-in">
 
 				<?php
-				// AGENDA sur fond vert
-				include INCLUDES.'droite-agenda.php';
-				?>
+                // AGENDA sur fond vert
+                include INCLUDES.'droite-agenda.php';
+                ?>
 
 			</div>
 		</div>

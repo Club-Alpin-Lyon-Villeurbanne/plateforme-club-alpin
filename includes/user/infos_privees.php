@@ -1,5 +1,6 @@
 <?php
-if(allowed('user_read_private')){
+
+if (allowed('user_read_private')) {
     echo '<hr  />'
         .'<p><b>Infos privées : </b></p>'
         .'<ul class="nice-list">'
