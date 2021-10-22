@@ -1,5 +1,7 @@
 <?php
 
+ini_set('display_errors', 'on');
+
 date_default_timezone_set('Europe/Paris');
 setlocale(\LC_ALL, 'fr_FR');
 
