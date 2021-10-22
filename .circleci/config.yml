@@ -30,7 +30,7 @@ jobs:
                 "production" )
                     rm -rf .git
                     mv public/robots-production.txt public/robots.txt
-                    cp config/www.clubalpinlyon.fr/config.php config/config.php
+                    cp public/config/www.clubalpinlyon.fr/config.php public/config/config.php
                     sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$PROD_ADMIN_PASSWORD/g" "public/config/www.clubalpinlyon.fr/params.php"
                     sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "public/config/www.clubalpinlyon.fr/params.php"
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$PROD_DB_PASSWORD/g" "public/config/www.clubalpinlyon.fr/db_config.php"
@@ -41,7 +41,7 @@ jobs:
                 "main" )
                     rm -rf .git
                     mv public/robots-dev.txt public/robots.txt
-                    cp config/test.clubalpinlyon.fr/config.php config/config.php
+                    cp public/config/test.clubalpinlyon.fr/config.php public/config/config.php
                     sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$DEV_ADMIN_PASSWORD/g" "public/config/test.clubalpinlyon.fr/params.php"
                     sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "public/config/test.clubalpinlyon.fr/params.php"
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$DEV_DB_PASSWORD/g" "public/config/test.clubalpinlyon.fr/db_config.php"
