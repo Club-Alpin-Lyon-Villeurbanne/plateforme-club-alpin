@@ -1,7 +1,7 @@
 <?php
 
-	//_________________________________________________ BASE DE DONNEES
-	include APP.'db_config.php';
+    //_________________________________________________ BASE DE DONNEES
+    include APP.'db_config.php';
 
     $serveur_bd = $p_serveur_bd;
     $login_bd = $p_login_bd;

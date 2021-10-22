@@ -110,9 +110,9 @@ if ('1' != $evt['cancelled_evt']) {
         }
 
         // TABLEAU alertes
-                if ('user_join_update_status' == $_POST['operation'] && count($addAlert)) {
-                    echo '<div class="alerte">Attention : <ul><li>'.implode('</li><li>', $addAlert).'</li></ul></div><br />';
-                } ?>
+        if ('user_join_update_status' == $_POST['operation'] && count($addAlert)) {
+            echo '<div class="alerte">Attention : <ul><li>'.implode('</li><li>', $addAlert).'</li></ul></div><br />';
+        } ?>
 
                 <table class="datatable">
                     <thead>
@@ -156,7 +156,7 @@ if ('1' != $evt['cancelled_evt']) {
                             LIMIT 300";
         $result = $mysqli->query($req);
         while ($row = $result->fetch_assoc()) {
-                            // STATS
+            // STATS
             ++$nDemandes;
             if (1 == $row['status_evt_join']) {
                 ++$nAcceptees;
@@ -223,7 +223,7 @@ if ('1' != $evt['cancelled_evt']) {
                 echo '<div class="empietements">
                                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Attention au timing :</b> ';
                 foreach ($row['empietements'] as $tmpJoin) {
-                                                // préinscrit
+                    // préinscrit
                     if (0 == $tmpJoin['status_evt_join']) {
                         echo '<br />- Adhérent pré-inscrit sur <br /><a href="sortie/'.$tmpJoin['code_evt'].'-'.$tmpJoin['id_evt'].'.html" title="">'.html_utf8($tmpJoin['titre_evt']).'</a> ';
                     }

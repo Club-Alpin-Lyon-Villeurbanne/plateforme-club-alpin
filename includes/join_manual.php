@@ -115,7 +115,7 @@ if (user()) {
 							LIMIT 8000';
             $result = $mysqli->query($req);
             while ($elt = $result->fetch_assoc()) {
-                            // si dans destination :
+                // si dans destination :
                 if ($id_dest) {
                     // SELECTION : on n'affiche que les adhérents qui ne sont pas inscrit à cette sortie
                     $sorties_ids = get_sorties_for_destination($id_dest, true);

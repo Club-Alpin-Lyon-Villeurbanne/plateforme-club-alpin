@@ -137,19 +137,19 @@ if (preg_match('#^sorties#', $_GET['mode'])) {
         $entry['title'] = $handle['titre_evt'];
         $entry['link'] = $p_racine.'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html';
         $entry['description'] = '';
-         if ($current_commission) {
+        if ($current_commission) {
             $entry['description'] .= ($entry['description'] ? ' | ' : '').'Commission '.$current_commission;
         }
-         if ($handle['massif_evt']) {
+        if ($handle['massif_evt']) {
             $entry['description'] .= ($entry['description'] ? ' | ' : '').'massif : '.$handle['massif_evt'];
         }
-         if ($handle['tarif_evt']) {
+        if ($handle['tarif_evt']) {
             $entry['description'] .= ($entry['description'] ? ' | ' : '').'tarif : '.$handle['tarif_evt'];
         }
-         if ($handle['difficulte_evt']) {
+        if ($handle['difficulte_evt']) {
             $entry['description'] .= ($entry['description'] ? ' | ' : '').'difficulté : '.$handle['difficulte_evt'];
         }
-         if ($handle['need_benevoles_evt']) {
+        if ($handle['need_benevoles_evt']) {
             $entry['description'] .= ($entry['description'] ? ' | ' : '').'bénévoles appréciés';
         }
         $entry['timestamp'] = $handle['tsp_evt'];

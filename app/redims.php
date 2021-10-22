@@ -40,28 +40,28 @@ function fctredimimage($W_max, $H_max, $rep_Dst, $img_Dst, $rep_Src, $img_Src)
     // ------------------------------------------------------------------
     $condition = 0;
     // Si certains parametres ont pour valeur '' :
-   if ('' == $rep_Dst) {
-       $rep_Dst = $rep_Src;
-   } // (meme repertoire)
-   if ('' == $img_Dst) {
-       $img_Dst = $img_Src;
-   } // (meme nom)
- // ------------------------------------------------------------------
- // si le fichier existe dans le répertoire, on continue...
- if (file_exists($rep_Src.$img_Src) && (0 != $W_max || 0 != $H_max)) {
-     // ----------------------------------------------------------------
+    if ('' == $rep_Dst) {
+        $rep_Dst = $rep_Src;
+    } // (meme repertoire)
+    if ('' == $img_Dst) {
+        $img_Dst = $img_Src;
+    } // (meme nom)
+    // ------------------------------------------------------------------
+    // si le fichier existe dans le répertoire, on continue...
+    if (file_exists($rep_Src.$img_Src) && (0 != $W_max || 0 != $H_max)) {
+        // ----------------------------------------------------------------
    // extensions acceptees :
    $ExtfichierOK = '" jpg jpeg png"'; // (l espace avant jpg est important)
    // extension fichier Source
    $tabimage = explode('.', $img_Src);
-     $extension = strtolower($tabimage[count($tabimage) - 1]); // dernier element et on met en minuscule
-     // ----------------------------------------------------------------
-     // extension OK ? on continue ...
-     if ('' != strpos($ExtfichierOK, $extension)) {
-         // -------------------------------------------------------------
-         // recuperation des dimensions de l image Src
-         $img_size = getimagesize($rep_Src.$img_Src);
-         $W_Src = $img_size[0]; // largeur
+        $extension = strtolower($tabimage[count($tabimage) - 1]); // dernier element et on met en minuscule
+        // ----------------------------------------------------------------
+        // extension OK ? on continue ...
+        if ('' != strpos($ExtfichierOK, $extension)) {
+            // -------------------------------------------------------------
+            // recuperation des dimensions de l image Src
+            $img_size = getimagesize($rep_Src.$img_Src);
+            $W_Src = $img_size[0]; // largeur
       $H_Src = $img_size[1]; // hauteur
       // -------------------------------------------------------------
       // condition de redimensionnement et dimensions de l image finale
@@ -81,25 +81,25 @@ function fctredimimage($W_max, $H_max, $rep_Dst, $img_Dst, $rep_Src, $img_Src)
           $W = $H * ($W_Src / $H_Src);
           $condition = $H_Src > $H_max; // 1 si vrai (true)
       }
-         // -------------------------------------------------------------
-         // C- LARGEUR maxi fixe
-         if (0 != $W_max && 0 == $H_max) {
-             $W = $W_max;
-             $H = $W * ($H_Src / $W_Src);
-             $condition = $W_Src > $W_max; // 1 si vrai (true)
-         }
-         // -------------------------------------------------------------
-         // on REDIMENSIONNE si la condition est vraie
-         // -------------------------------------------------------------
-         // Par defaut :
-         // Si l'image Source est plus petite que les dimensions indiquees :
-         // PAS de redimensionnement.
-         // Mais on peut "forcer" le redimensionnement en ajoutant ici :
-         $condition = 1;
-         if (1 == $condition) {
-             // ----------------------------------------------------------
-             // creation de la ressource-image "Src" en fonction de l extension
-             switch ($extension) {
+            // -------------------------------------------------------------
+            // C- LARGEUR maxi fixe
+            if (0 != $W_max && 0 == $H_max) {
+                $W = $W_max;
+                $H = $W * ($H_Src / $W_Src);
+                $condition = $W_Src > $W_max; // 1 si vrai (true)
+            }
+            // -------------------------------------------------------------
+            // on REDIMENSIONNE si la condition est vraie
+            // -------------------------------------------------------------
+            // Par defaut :
+            // Si l'image Source est plus petite que les dimensions indiquees :
+            // PAS de redimensionnement.
+            // Mais on peut "forcer" le redimensionnement en ajoutant ici :
+            $condition = 1;
+            if (1 == $condition) {
+                // ----------------------------------------------------------
+                // creation de la ressource-image "Src" en fonction de l extension
+                switch ($extension) {
          case 'jpg':
          case 'jpeg':
            $Ress_Src = imagecreatefromjpeg($rep_Src.$img_Src);
@@ -108,10 +108,10 @@ function fctredimimage($W_max, $H_max, $rep_Dst, $img_Dst, $rep_Src, $img_Src)
            $Ress_Src = imagecreatefrompng($rep_Src.$img_Src);
            break;
          }
-             // ----------------------------------------------------------
-             // creation d une ressource-image "Dst" aux dimensions finales
-             // fond noir (par defaut)
-             switch ($extension) {
+                // ----------------------------------------------------------
+                // creation d une ressource-image "Dst" aux dimensions finales
+                // fond noir (par defaut)
+                switch ($extension) {
          case 'jpg':
          case 'jpeg':
            $Ress_Dst = imagecreatetruecolor($W, $H);
@@ -124,12 +124,12 @@ function fctredimimage($W_max, $H_max, $rep_Dst, $img_Dst, $rep_Src, $img_Src)
            imagefill($Ress_Dst, 0, 0, $trans_color);
            break;
          }
-             // ----------------------------------------------------------
-             // REDIMENSIONNEMENT (copie, redimensionne, re-echantillonne)
-             imagecopyresampled($Ress_Dst, $Ress_Src, 0, 0, 0, 0, $W, $H, $W_Src, $H_Src);
-             // ----------------------------------------------------------
-             // ENREGISTREMENT dans le repertoire (avec la fonction appropriee)
-             switch ($extension) {
+                // ----------------------------------------------------------
+                // REDIMENSIONNEMENT (copie, redimensionne, re-echantillonne)
+                imagecopyresampled($Ress_Dst, $Ress_Src, 0, 0, 0, 0, $W, $H, $W_Src, $H_Src);
+                // ----------------------------------------------------------
+                // ENREGISTREMENT dans le repertoire (avec la fonction appropriee)
+                switch ($extension) {
          case 'jpg':
          case 'jpeg':
            imagejpeg($Ress_Dst, $rep_Dst.$img_Dst, 95);
@@ -138,14 +138,14 @@ function fctredimimage($W_max, $H_max, $rep_Dst, $img_Dst, $rep_Src, $img_Src)
            imagepng($Ress_Dst, $rep_Dst.$img_Dst);
            break;
          }
-             // ----------------------------------------------------------
-             // liberation des ressources-image
-             imagedestroy($Ress_Src);
-             imagedestroy($Ress_Dst);
-         }
-         // -------------------------------------------------------------
-     }
- }
+                // ----------------------------------------------------------
+                // liberation des ressources-image
+                imagedestroy($Ress_Src);
+                imagedestroy($Ress_Dst);
+            }
+            // -------------------------------------------------------------
+        }
+    }
     // -----------------------------------------------------------------------------------------------------
     // si le fichier a bien ete cree
     if (1 == $condition && file_exists($rep_Dst.$img_Dst)) {
@@ -196,21 +196,21 @@ function fctcropimage($W_fin, $H_fin, $rep_Dst, $img_Dst, $rep_Src, $img_Src)
     // ----------------------------------------------------
     $condition = 0;
     // Si certains parametres ont pour valeur '' :
-   if ('' == $rep_Dst) {
-       $rep_Dst = $rep_Src;
-   } // (meme repertoire)
-   if ('' == $img_Dst) {
-       $img_Dst = $img_Src;
-   } // (meme nom)
- // ----------------------------------------------------
- // si le fichier existe dans le répertoire, on continue...
- if (file_exists($rep_Src.$img_Src)) {
-     // --------------------------------------------------
+    if ('' == $rep_Dst) {
+        $rep_Dst = $rep_Src;
+    } // (meme repertoire)
+    if ('' == $img_Dst) {
+        $img_Dst = $img_Src;
+    } // (meme nom)
+    // ----------------------------------------------------
+    // si le fichier existe dans le répertoire, on continue...
+    if (file_exists($rep_Src.$img_Src)) {
+        // --------------------------------------------------
    // extensions acceptees :
    $ExtfichierOK = '" jpg jpeg png"'; // (l espace avant jpg est important)
    // extension fichier Source
    $tabimage = explode('.', $img_Src);
-     $extension = $tabimage[count($tabimage) - 1]; // dernier element
+        $extension = $tabimage[count($tabimage) - 1]; // dernier element
    $extension = strtolower($extension); // on met en minuscule
    // --------------------------------------------------
    // extension OK ? on continue ...
@@ -353,7 +353,7 @@ function fctcropimage($W_fin, $H_fin, $rep_Dst, $img_Dst, $rep_Src, $img_Src)
        // --------------------------------------------
        $condition = 1;
    }
- }
+    }
     // ---------------------------------------------------------------------------------------
     // si le fichier a bien ete cree
     if (1 == $condition && file_exists($rep_Dst.$img_Dst)) {
