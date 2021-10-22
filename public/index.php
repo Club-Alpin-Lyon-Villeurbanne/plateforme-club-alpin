@@ -1,35 +1,27 @@
 <?php
 
-require __DIR__.'/../vendor/autoload.php';
-
-$config = require __DIR__.'/config/config.php';
-
-if (isset($config['sentry_dsn'])) {
-    Sentry\init(['dsn' => $config['sentry_dsn']]);
-}
-
 //_________________________________________________ DEFINITION DES DOSSIERS
-    define('DS', \DIRECTORY_SEPARATOR);
-    define('ROOT', __DIR__.DS);              // Racine
-    include ROOT.'app'.DS.'includes.php';
+define('DS', \DIRECTORY_SEPARATOR);
+define('ROOT', __DIR__.DS);              // Racine
+include ROOT.'app'.DS.'includes.php';
 
 // ________________________________________________ TRAITEMENT AJAX
-    if (isset($_GET['ajx'])) {
-        $ajaxFile = APP.'ajax'.DS.$_GET['ajx'].'.php';
-        include $ajaxFile;
-        exit;
-    }
+if (isset($_GET['ajx'])) {
+    $ajaxFile = APP.'ajax'.DS.$_GET['ajx'].'.php';
+    include $ajaxFile;
+    exit;
+}
 
-    // Géré par .htaccess
-    if (isset($_GET['cstImg'])) {
-        include APP.'custom_image.php';
-        exit;
-    }
+// Géré par .htaccess
+if (isset($_GET['cstImg'])) {
+    include APP.'custom_image.php';
+    exit;
+}
 
-    // lien vers cette page (pour formulaires, ou ancres)
-    $versCettePage = ($p_multilangue ? $lang.'/' : '').$p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : '').'.html';			// multilangue / une langue
+// lien vers cette page (pour formulaires, ou ancres)
+$versCettePage = ($p_multilangue ? $lang.'/' : '').$p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : '').'.html';			// multilangue / une langue
 
-    header('Content-Type: text/html; charset=utf-8');
+header('Content-Type: text/html; charset=utf-8');
 
 ?><!doctype html>
 <html lang="<?php echo $lang; ?>">
