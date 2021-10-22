@@ -54,7 +54,7 @@ RUN a2enmod rewrite
 ENV PHP_TIMEZONE Europe/Paris
 
 # Configure Apache Document Root
-ENV APACHE_DOC_ROOT /var/www/html
+ENV APACHE_DOC_ROOT /var/www/html/public
 
 # Additional configuration files
 COPY ./utils/docker-999-php.ini /usr/local/etc/php/conf.d/999-php.ini
