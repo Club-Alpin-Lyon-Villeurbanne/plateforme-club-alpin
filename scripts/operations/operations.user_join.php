@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     // Destination : ai-je choisi mon moyen de transport ?
     $is_destination = false;
     if ($_POST['id_destination']) {
@@ -285,10 +287,6 @@
                 // echo 'adding '.$row['firstname_user'];
             }
 
-            // SEND
-            // phpmailer
-            require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
-
             // echo '<pre>DEV : '; print_r($destinataires); echo '</pre>';
 
             foreach ($inscrits as $cetinscrit) {
@@ -368,10 +366,6 @@
             // var cetinscrit déja définie
             // $destinataire = $cetinscrit;
             $destinataire = $_SESSION['user'];
-
-            // SEND
-            // phpmailer
-            // require_once(APP.'mailer'.DS.'class.phpmailer.caf.php');
 
             $toMail = $destinataire['email_user'];
             $toName = $destinataire['firstname_user']; //$destinataire['civ_user'].' '.$destinataire['lastname_user'];

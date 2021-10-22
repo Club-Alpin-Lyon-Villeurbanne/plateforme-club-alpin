@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     include SCRIPTS.'connect_mysqli.php';
     $errTabMail = [];
 
@@ -185,9 +187,6 @@
                 }
 
                 if (!count($errTabMail)) {
-                    // phpmailer
-                    require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
-
                     // contenu
                     $subject = 'Vous avez été inscrit à une sortie du CAF';
                     $content_main = "<h2>$subject</h2>

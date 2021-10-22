@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     if (!user()) {
         $errTab[] = 'Seuls les adhérents connectés peuvent commenter pour le moment';
     }
@@ -66,7 +68,6 @@
         if (strlen($comment_article[2]) > 0) {
             $content_main = "<h1>Bonjour !<h1><p>Votre article <a href=\"$p_racine".'article/'.$comment_article[4].'-'.$comment_article[0].'.html#comments" title="">'.$comment_article[3].'</a> a été commenté avec le texte suivant :</p><p><i>'.$cont_comment.'</i></p><br /><br /><p>PS : ceci est un mail automatique.</p>';
 
-            require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
             $mail = new CAFPHPMailer(); // defaults to using php "mail()"
             //$mail->CharSet = 'UTF-8';
             //$mail->IsHTML(true);

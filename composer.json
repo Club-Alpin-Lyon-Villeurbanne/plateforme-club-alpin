@@ -2,6 +2,7 @@
     "name": "caflyon/clubalpinlyon.fr",
     "type": "project",
     "require": {
+        "phpmailer/phpmailer": "6.1.2",
         "sentry/sdk": "^3.1"
     },
     "config": {

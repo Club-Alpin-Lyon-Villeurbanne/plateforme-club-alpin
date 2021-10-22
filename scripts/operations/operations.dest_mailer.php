@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
 if (!$_POST['transporteur']) {
     $errTab[] = 'Merci de sélectionner un transporteur.';
 } else {
@@ -32,9 +34,6 @@ if ($destination['mail']) {
 
 if (!count($errTab)) {
     // ENVOI DU MAIL
-
-    require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
-
     if ($mail_to_transporteur) {
         $toMail = $p_transporteurs[$mail_to_transporteur]['email'];
         $toName = $p_transporteurs[$mail_to_transporteur]['nom'];

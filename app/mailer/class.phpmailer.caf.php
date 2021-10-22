@@ -1,19 +1,8 @@
 <?php
-/**
- * This example shows how to extend PHPMailer to simplify your coding.
- * If PHPMailer doesn't do something the way you want it to, or your code
- * contains too much boilerplate, don't edit the library files,
- * create a subclass instead and customise that.
- * That way all your changes will be retained when PHPMailer is updated.
- */
 
 //Import PHPMailer classes into the global namespace
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
-
-require 'Exception.php';
-require 'PHPMailer.php';
-require 'SMTP.php';
 
 /**
  * Use PHPMailer as a base class and extend it.

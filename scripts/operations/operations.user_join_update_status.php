@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     include SCRIPTS.'connect_mysqli.php';
 
     // vars
@@ -200,9 +202,6 @@
                                         // if(!isMail($toMail)) $errTab[]="Aucun e-mail n'a été envoyé à $toName.";
 
                                         if (!count($errTab)) {
-                                            // phpmailer
-                                            require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
-
                                             // vars
                                             $evtName = html_utf8($_POST['titre_evt']);
                                             $evtUrl = html_utf8($p_racine.'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html');

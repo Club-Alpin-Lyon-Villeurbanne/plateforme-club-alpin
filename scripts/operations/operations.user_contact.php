@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     $id_user = (int) ($_POST['id_user']);
     $nom = trim(strip_tags(stripslashes($_POST['nom'])));
     $email = trim(strip_tags(stripslashes($_POST['email'])));
@@ -97,8 +99,6 @@
 
         $content_footer = '';
 
-        // PHPMAILER
-        require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
         $mail->AddReplyTo($email ?: $p_noreply);

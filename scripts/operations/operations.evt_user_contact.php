@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     $id_evt = (int) ($_POST['id_evt']);
     $user_evt = (int) ($_SESSION['user']['id_user']);
     $objet = trim(stripslashes($_POST['objet']));
@@ -76,8 +78,6 @@
 
         $content_footer = '';
 
-        // PHPMAILER
-        require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
         $mail->AddReplyTo($_SESSION['user']['email_user'] ?: $p_noreply);

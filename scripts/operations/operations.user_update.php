@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     // check user online
     if (!user()) {
         $errTab[] = "Vous avez été déconnecté. L'opération n'a pas été effectuée.";
@@ -193,8 +195,6 @@
 				';
             $content_footer = '';
 
-            // PHPMAILER
-            require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
             $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
             $mail->SetFrom($p_noreply, $p_sitename);

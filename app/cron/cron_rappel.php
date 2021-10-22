@@ -1,6 +1,8 @@
 <?php
 
-/**
+require_once __DIR__.'/../../vendor/autoload.php';
+
+/*
  * Cette page a pour fonction d'envoyer les emails de rappels :
  * - RAPPEL D'eVeNEMENTS UTILISATEURS 1 : à X (=4) jours avant evt
  * - RAPPEL D'eVeNEMENTS UTILISATEURS 2 : à X (=2) jours avant evt
@@ -78,8 +80,6 @@ function cron_email($datas)
         } else {
             error_log('- Operation lancee : '.html_utf8($datas['code']).'');
 
-            // PHPMAILER
-            require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
             $mail = new CAFPHPMailer(); // defaults to using php "mail()"
             $mail->SetFrom($p_noreply, $p_sitename);
             $mail->AddAddress($datas['email'], $datas['name']);

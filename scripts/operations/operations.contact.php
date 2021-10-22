@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     $nom = strip_tags(stripslashes($_POST['nom']));
     $email = strip_tags(stripslashes($_POST['email']));
     $objet = strip_tags(stripslashes($_POST['objet']));
@@ -45,8 +47,6 @@
 
         $content_footer = '';
 
-        // PHPMAILER
-        require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"
         //$mail->CharSet = 'UTF-8';
         //$mail->IsHTML(true);

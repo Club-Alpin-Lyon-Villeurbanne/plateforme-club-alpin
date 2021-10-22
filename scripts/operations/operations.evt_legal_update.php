@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     $id_evt = (int) ($_POST['id_evt']);
     $status_legal_evt = (int) ($_POST['status_legal_evt']);
 
@@ -58,8 +60,6 @@
         $content_header = '';
         $content_footer = '';
 
-        // PHPMAILER
-        require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
         // $mail->AddReplyTo();
@@ -130,8 +130,6 @@
                 $content_footer = '';
             }
 
-            // PHPMAILER
-            require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
             $mail = new CAFPHPMailer(); // defaults to using php "mail()"
             //$mail->CharSet = 'UTF-8';
             //$mail->IsHTML(true);

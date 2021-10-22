@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     $email_user = trim(stripslashes($_POST['email_user']));
     $mdp_user = trim(stripslashes($_POST['mdp_user']));
     // **********
@@ -64,8 +66,6 @@
 			';
         $content_footer = '';
 
-        // PHPMAILER
-        require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
         $mail->SetFrom($p_noreply, $p_sitename);

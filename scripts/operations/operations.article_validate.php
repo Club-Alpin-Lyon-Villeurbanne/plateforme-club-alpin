@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     $id_article = (int) ($_POST['id_article']);
     $status_article = (int) ($_POST['status_article']);
 
@@ -70,9 +72,6 @@
         }
         $content_header = '';
         $content_footer = '';
-
-        // PHPMAILER
-        require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
 
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"
         //$mail->CharSet = 'UTF-8';

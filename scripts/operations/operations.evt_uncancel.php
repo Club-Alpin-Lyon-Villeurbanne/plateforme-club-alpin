@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     $id_evt = (int) (substr(strrchr($p2, '-'), 1));
 
     // checks
@@ -57,8 +59,6 @@
                     $content_header = '';
                     $content_footer = '';
 
-                    // PHPMAILER
-                    require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
                     $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
                     // $mail->AddReplyTo();

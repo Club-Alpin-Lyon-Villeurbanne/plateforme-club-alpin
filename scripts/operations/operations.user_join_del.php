@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     $id_evt = (int) ($_POST['id_evt']);
     $id_user = (int) ($_SESSION['user']['id_user']);
 
@@ -70,9 +72,6 @@
                     $errTab[] = 'Erreur SQL : '.$mysqli->error;
                     error_log($mysqli->error);
                 }
-
-                // phpmailer
-                require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
 
                 // vars
                 $tmpUserName = ($_SESSION['user']['firstname_user'].' '.$_SESSION['user']['lastname_user']);

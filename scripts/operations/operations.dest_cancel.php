@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     $id_destination = (int) (substr(strrchr($p3, '-'), 1));
     $msg = trim(stripslashes($_POST['msg']));
     $nomadMsg = []; // message spécial par raport aux nomades
@@ -47,9 +49,6 @@ include SCRIPTS.'connect_mysqli.php';
 
         // message aux participants si la sortie est annulée alors qu'elle est publiée
         if (!count($errTab) && 1 == $destination['publie']) {
-            // phpmailer
-            require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
-
             // contenu commun à chaque envoi
             $subject = 'Sorties du '.display_date($destination['date']).' annulées !';
             $content_main = "<h2>$subject</h2>

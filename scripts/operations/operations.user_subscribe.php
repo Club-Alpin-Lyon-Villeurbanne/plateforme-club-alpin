@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     $lastname_user = trim(stripslashes($_POST['lastname_user']));
     // $nickname_user=trim(stripslashes($_POST['nickname_user']));
     $cafnum_user = preg_replace('/\s+/', '', stripslashes($_POST['cafnum_user']));
@@ -179,8 +181,6 @@
 					sur le site du '.$p_sitename.'. Pour confirmer votre adresse e-mail et pouvoir vous connecter, copier le
 					sur le lien ci-dessous dans votre navigateur internet : '.$url;
 
-            // PHPMAILER
-            require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
             $mail = new CAFPHPMailer(false, true); // defaults to using php "mail()"
 
             $mail->SetFrom($p_noreply, $p_sitename);

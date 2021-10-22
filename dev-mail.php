@@ -1,11 +1,11 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     //_________________________________________________ DEFINITION DES DOSSIERS
     define('DS', \DIRECTORY_SEPARATOR);
     define('ROOT', __DIR__.DS);				// Racine
     define('APP', ROOT.'app'.DS);						// Applicatif
-
-    require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
 
     $mail = new CAFPHPMailer(); // defaults to using php "mail()"
     $mail->Subject = 'ceci est un test';

@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/../../vendor/autoload.php';
+
     $id_evt = (int) (substr(strrchr($p2, '-'), 1));
     $msg = trim(stripslashes($_POST['msg']));
     $nomadMsg = []; // message spécial par raport aux nomades
@@ -45,9 +47,6 @@
 
         // message aux participants si la sortie est annulée alors qu'elle est publiée
         if (!count($errTab) && 1 == $handle['status_evt']) {
-            // phpmailer
-            require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
-
             // contenu commun à chaque envoi
             $subject = 'Sortie du '.date('d/m/Y', $handle['tsp_evt']).' annulée !';
             $content_main = "<h2>$subject</h2>
