@@ -15,7 +15,7 @@ echo "<Directory /var/www/html>" > /etc/apache2/conf-available/document-root-dir
 echo "	AllowOverride All" >> /etc/apache2/conf-available/document-root-directory.conf
 echo "	Require all granted" >> /etc/apache2/conf-available/document-root-directory.conf
 echo "</Directory>" >> /etc/apache2/conf-available/document-root-directory.conf
-a2enconf "document-root-directory.conf"
+a2enconf "document-root-directory.conf" 2>&1 > /dev/null
 
 # Let's go
 if [ "${1:-}" == 'apache2-foreground' ]; then

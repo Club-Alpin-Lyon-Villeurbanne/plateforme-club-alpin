@@ -3,17 +3,36 @@
 bin
 public/ftp/*
 *.old
-public/config/www.clubalpinlyon.fr/ffcam/
-public/config/test.clubalpinlyon.fr/ffcam/
-public/config/config.php
-public/config/db_config.php
-public/config/params.php
+legacy/config/www.clubalpinlyon.fr/ffcam/
+legacy/config/test.clubalpinlyon.fr/ffcam/
+legacy/config/config.php
+legacy/config/db_config.php
+legacy/config/params.php
 backup/*
 forum*
 .DS_Store
 public/robots.txt
 public/dev.txt
 public/robots.txt
-public/dev.txt
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
 /vendor/
-var
+###< symfony/framework-bundle ###
+
+###> symfony/webpack-encore-bundle ###
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log
+###< symfony/webpack-encore-bundle ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###

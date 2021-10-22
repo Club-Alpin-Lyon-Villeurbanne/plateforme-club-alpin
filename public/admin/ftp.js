@@ -39,13 +39,13 @@ function updateRight(dossier, fade){
 						dir=jsonMsg.dirTab[i]
 						chutier.append(
 							'<tr class="line-dir" rel="'+dir+'">'
-								+'<td><img src="../img/base/folder.png" alt="" title="" /></td>'
+								+'<td><img src="/img/base/folder.png" alt="" title="" /></td>'
 								+'<td class="filename"><span style="display:none">dossier</span><a href="'+dossier+dir+'">'+dir+'</a></td>'
 								+'<td><span style="display:none">-1</span></td>'
 								+'<td><span style="display:none">-1</span></td>'
 								+'<td><span style="display:none">aaa</span></td>'
 								+'<td> </td>'
-								+'<td><img src="../img/base/bullet_delete.png" alt="DEL" title="Supprimer" class="ftp-dir-delete" /></td>'
+								+'<td><img src="/img/base/bullet_delete.png" alt="DEL" title="Supprimer" class="ftp-dir-delete" /></td>'
 							+'</tr>'
 						);
 					}
@@ -65,11 +65,11 @@ function updateRight(dossier, fade){
 						case 'jpeg':
 						case 'gif':
 						case 'png':
-						case 'bmp': ico='../img/base/image.png'; 	break;
-						case 'pdf': ico='../img/base/pdf.png'; 		break;
+						case 'bmp': ico='/img/base/image.png'; 	break;
+						case 'pdf': ico='/img/base/pdf.png'; 		break;
 						case 'docx':
-						case 'doc': ico='../img/base/ms-word.png'; 		break;
-						default:	ico='../img/base/fichier.png';
+						case 'doc': ico='/img/base/ms-word.png'; 		break;
+						default:	ico='/img/base/fichier.png';
 					}
 					
 					// si c'est une image
@@ -87,11 +87,11 @@ function updateRight(dossier, fade){
 						}
 						else if(file.filesize < 307200){ // 300 Ko
 							classList[classList.length]='ftp-imgsize-big';
-							weightInfo='<acronym title="Cette image est volumineuse et peut ralentir l\'affichage des pages où elle est affichée."><img src="../img/base/bullet_error.png" alt="!" title="" /></acronym>';
+							weightInfo='<acronym title="Cette image est volumineuse et peut ralentir l\'affichage des pages où elle est affichée."><img src="/img/base/bullet_error.png" alt="!" title="" /></acronym>';
 						}
 						else{ // > 300 Ko
 							classList[classList.length]='ftp-imgsize-toobig';
-							weightInfo='<acronym title="Cette image est très volumineuse ne devrait pas être intégrée dans une page web, mais uniquement en téléchargement ou dans une galerie photo."><img src="../img/base/bullet_error.png" alt="!" title="" /></acronym>';
+							weightInfo='<acronym title="Cette image est très volumineuse ne devrait pas être intégrée dans une page web, mais uniquement en téléchargement ou dans une galerie photo."><img src="/img/base/bullet_error.png" alt="!" title="" /></acronym>';
 						}
 					}
 					
@@ -108,11 +108,11 @@ function updateRight(dossier, fade){
 							// tools :
 							+'<td class="ftp-tools">'
 								// edit image
-								+(ext=='jpg'||ext=='jpeg'||ext=='png'?'<img src="../img/base/image_edit.png" alt="EDIT" title="Modifier / redimensionner cette image" class="ftp-img-edit" />':'')
+								+(ext=='jpg'||ext=='jpeg'||ext=='png'?'<img src="/img/base/image_edit.png" alt="EDIT" title="Modifier / redimensionner cette image" class="ftp-img-edit" />':'')
 								// lien
-								+'<img src="../img/base/link.png" alt="LINK" title="Partager / URL du fichier" class="ftp-url-share" />'
+								+'<img src="/img/base/link.png" alt="LINK" title="Partager / URL du fichier" class="ftp-url-share" />'
 								// del
-								+'<img src="../img/base/bullet_delete.png" alt="DEL" title="Supprimer" class="ftp-file-delete" />'
+								+'<img src="/img/base/bullet_delete.png" alt="DEL" title="Supprimer" class="ftp-file-delete" />'
 							+'</td>'
 						+'</tr>'
 					);
