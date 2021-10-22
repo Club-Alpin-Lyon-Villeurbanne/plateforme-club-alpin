@@ -1,6 +1,14 @@
 <?php
 
-    //_________________________________________________ DEFINITION DES DOSSIERS
+require __DIR__.'/vendor/autoload.php';
+
+$config = require __DIR__.'/config/config.php';
+
+if (isset($config['sentry_dsn'])) {
+    Sentry\init(['dsn' => $config['sentry_dsn']]);
+}
+
+//_________________________________________________ DEFINITION DES DOSSIERS
     define('DS', \DIRECTORY_SEPARATOR);
     define('ROOT', __DIR__.DS);              // Racine
     include ROOT.'app'.DS.'includes.php';
