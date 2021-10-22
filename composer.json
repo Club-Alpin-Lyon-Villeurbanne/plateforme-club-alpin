@@ -1,0 +1,17 @@
+{
+    "name": "caflyon/clubalpinlyon.fr",
+    "type": "project",
+    "require": {
+        "sentry/sdk": "^3.1"
+    },
+    "config": {
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true,
+        "platform-check": false,
+        "platform": {
+            "php": "7.2"
+        }
+    }
+}
