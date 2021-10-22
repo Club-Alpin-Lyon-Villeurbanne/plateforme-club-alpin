@@ -273,7 +273,7 @@ if (user()) {
                     ];
     }
 
-    closedir($dossier);
+    closedir($handle);
 
     // tri par mtime descendant
     usort($tabFichiers, function ($fileA, $fileB) {
