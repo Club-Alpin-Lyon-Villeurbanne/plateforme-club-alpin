@@ -355,7 +355,6 @@ if (admin()) {
 			parent.window.document.contUpdate('<?php echo $code_content_html; ?>');
 		</script>
 		<?php
-
     }
 } else {
     echo 'Acess denied<br />Votre session administrateur semble avoir expiré.';

@@ -64,7 +64,7 @@
     }
 
     if (!count($errTab)) {
-//				print_r($_POST);
+        //				print_r($_POST);
 
         foreach ($_POST['id_evt_join'] as $id_evt_join) {
             $send_mail = false;
@@ -126,7 +126,6 @@
                 if ((strlen($status_evt_join_new) > 0 && ($status_evt_join_new != $status_evt_join)) || (strlen($role_evt_join_new) > 0 && (0 != strcmp($role_evt_join_new, $role_evt_join)))) {
                     // check technique
                     if (0 == $user_evt_join || 0 == $evt_evt_join) {
-                        next;
                     }// $errTab[]="Erreur de données ($user_evt_join / $evt_evt_join). Mise à jour interrompue.";
 
                     if (!count($errTab)) {

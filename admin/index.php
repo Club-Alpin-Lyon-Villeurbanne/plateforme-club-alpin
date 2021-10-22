@@ -132,9 +132,7 @@ if ($_POST['login']) {
 			</form>
 			<br />
 			<?php
-        }
-
-        ?>
+        } ?>
 		<form action="index.php" method="post" style="" class="bloc">
 			<input type="text"      style="width:240px;height:17px;background:#34383c;border:1px solid #34383c;padding:3px;margin:0px 0px 3px 0px; color:#a7a7a7; font-size:11px	" name="login" placeholder="Votre identifiant ..." /><br />
 			<input type="password"  style="width:207px;height:17px;background:#34383c;border:1px solid #34383c;padding:3px;margin:0px 0px 3px 0px; color:#a7a7a7; font-size:11px; 	" name="password" placeholder="Votre mot de passe" />

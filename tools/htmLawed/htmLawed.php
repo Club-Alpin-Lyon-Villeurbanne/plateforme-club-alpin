@@ -311,12 +311,12 @@ $eF = $eB + $eI;
             if (isset($cE[$e]) || !in_array($e, $q, true)) {
                 continue;
             } // Empty/unopen
-  if ($p == $e) {
-      array_pop($q);
-      echo '</', $e, '>';
-      unset($e);
-      continue;
-  } // Last open
+            if ($p == $e) {
+                array_pop($q);
+                echo '</', $e, '>';
+                unset($e);
+                continue;
+            } // Last open
   $add = ''; // Nesting - close open tags that need to be
   for ($j = -1, $cj = count($q); ++$j < $cj;) {
       if (($d = array_pop($q)) == $e) {
@@ -698,10 +698,10 @@ if ($C['lc_std_val']) {
     }
 
     // attr name-vals
-if (false !== strpos($a, "\x01")) {
-    $a = preg_replace('`\x01[^\x01]*\x01`', '', $a);
-} // No comment/CDATA sec
-$mode = 0;
+    if (false !== strpos($a, "\x01")) {
+        $a = preg_replace('`\x01[^\x01]*\x01`', '', $a);
+    } // No comment/CDATA sec
+    $mode = 0;
     $a = trim($a, ' /');
     $aA = [];
     while (strlen($a)) {
