@@ -17,7 +17,7 @@ jobs:
             - composer-v1-{{ checksum "composer.lock" }}
             # fallback to using the latest cache if no exact match is found (See https://circleci.com/docs/2.0/caching/)
             - composer-v1-
-      - run: composer install -n --prefer-dist
+      - run: composer install --no-dev --optimize-autoloader --no-interaction --apcu-autoloader --prefer-dist
       - save_cache: # special step to save the dependency cache with the `composer.lock` cache key template
           key: composer-v1-{{ checksum "composer.lock" }}
           paths:
