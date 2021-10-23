@@ -486,8 +486,8 @@ elseif ('agenda' == $p1) {
     $nDays = date('t', strtotime("$year-$month-10"));
 
     // timestamp minimal et maximal
-    $start_tsp = mktime(0, 0, 0, $month, 1, $year, -1); // premiere seconde du premier jour du mois
-    $end_tsp = mktime(23, 59, 59, $month, $nDays, $year, -1); // derniere seconde du dernier jour
+    $start_tsp = mktime(0, 0, 0, $month, 1, $year); // premiere seconde du premier jour du mois
+    $end_tsp = mktime(23, 59, 59, $month, $nDays, $year); // derniere seconde du dernier jour
 
     // echo 'start_tsp='.$start_tsp.'<hr />end_tsp='.$end_tsp.'<hr /><hr />';
 
@@ -522,7 +522,7 @@ elseif ('agenda' == $p1) {
     $handleSql = $mysqli->query($req);
 
     // pour chaque event
-    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+    while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $use = false;
         if ($id_dest = is_sortie_in_destination($handle['id_evt'])) {
             $destination = get_destination($id_dest, false);

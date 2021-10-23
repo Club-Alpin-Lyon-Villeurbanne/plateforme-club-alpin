@@ -9,7 +9,8 @@ define('ROOT', __DIR__.DS);				// Racine
 include ROOT.'app'.DS.'includes.php';
 
 //_________________________________________________ RSS
-include 'includes/FeedWriter.php';
+include_once 'includes/FeedWriter.php';
+include_once 'includes/FeedItem.php';
 
 // LISTE DES COMMISSIONS PUBLIQUES
 include SCRIPTS.'connect_mysqli.php';
