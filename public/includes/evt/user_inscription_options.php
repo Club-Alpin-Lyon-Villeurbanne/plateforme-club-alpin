@@ -13,7 +13,7 @@
 }
 
         $title = iconv('UTF-8', 'ASCII//TRANSLIT', str_replace(')', '', str_replace('(', '', str_replace('!', '', $evt['titre_evt']))));
-        $compl = ' du '.date('d-m-Y', $evt[tsp_evt]).' '.$_SESSION['user']['firstname_user'].' '.$_SESSION['user']['lastname_user'];
+        $compl = ' du '.date('d-m-Y', $evt['tsp_evt']).' '.$_SESSION['user']['firstname_user'].' '.$_SESSION['user']['lastname_user'];
         $size_title = strlen($title);
         $size_compl = strlen($compl);
         $new_title = substr($title, 0, 64 - $size_compl).$compl;
@@ -46,7 +46,7 @@
 ?lck_vads_order_id=<?php echo rawurlencode(html_utf8($new_title)); ?>
 &lck_vads_ext_info_Encadrant=<?php echo rawurlencode(html_utf8($encadrant_name)); ?>
 &lck_vads_ext_info_E-mail%20encadrant=<?php echo rawurlencode(html_utf8($encadrant_email)); ?>
-&lck_vads_ext_info_Sortie=<?php echo rawurlencode(html_utf8($title.' - '.$evt['id_evt'].' du '.date('d-m-Y', $evt[tsp_evt]))); ?>
+&lck_vads_ext_info_Sortie=<?php echo rawurlencode(html_utf8($title.' - '.$evt['id_evt'].' du '.date('d-m-Y', $evt['tsp_evt']))); ?>
 &lck_vads_cust_first_name=<?php echo rawurlencode(html_utf8($_SESSION['user']['firstname_user'])); ?>
 &lck_vads_cust_last_name=<?php echo rawurlencode(html_utf8($_SESSION['user']['lastname_user'])); ?>
 &lck_vads_cust_id=<?php echo rawurlencode(html_utf8($_SESSION['user']['cafnum_user'])); ?>
@@ -103,7 +103,7 @@
     <br />
     <?php foreach ($filiations as $enfant) {
         $title = iconv('UTF-8', 'ASCII//TRANSLIT', str_replace(')', '', str_replace('(', '', str_replace('!', '', $evt['titre_evt']))));
-        $compl = ' du '.date('d-m-Y', $evt[tsp_evt]).' '.$enfant['firstname_user'].' '.$enfant['lastname_user'];
+        $compl = ' du '.date('d-m-Y', $evt['tsp_evt']).' '.$enfant['firstname_user'].' '.$enfant['lastname_user'];
         $size_title = strlen($title);
         $size_compl = strlen($compl);
         $new_title = substr($title, 0, 64 - $size_compl).$compl;
@@ -140,7 +140,7 @@
 ?lck_vads_order_id=<?php echo rawurlencode(html_utf8($new_title)); ?>
 &lck_vads_ext_info_Encadrant=<?php echo rawurlencode(html_utf8($encadrant_name)); ?>
 &lck_vads_ext_info_E-mail%20encadrant=<?php echo rawurlencode(html_utf8($encadrant_email)); ?>
-&lck_vads_ext_info_Sortie=<?php echo rawurlencode(html_utf8($title.' - '.$evt['id_evt'].' du '.date('d-m-Y', $evt[tsp_evt]))); ?>
+&lck_vads_ext_info_Sortie=<?php echo rawurlencode(html_utf8($title.' - '.$evt['id_evt'].' du '.date('d-m-Y', $evt['tsp_evt']))); ?>
 &lck_vads_cust_first_name=<?php echo rawurlencode(html_utf8($enfant['firstname_user'])); ?>
 &lck_vads_cust_last_name=<?php echo rawurlencode(html_utf8($enfant['lastname_user'])); ?>
 &lck_vads_cust_id=<?php echo rawurlencode(html_utf8($enfant['cafnum_user'])); ?>
