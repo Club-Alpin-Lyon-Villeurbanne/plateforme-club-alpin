@@ -2,9 +2,6 @@
 
 set -e
 
-# Configure PHP date.timezone
-echo "date.timezone = $PHP_TIMEZONE" > /usr/local/etc/php/conf.d/timezone.ini
-
 # Configure Apache Document Root
 mkdir -p $APACHE_DOC_ROOT
 
