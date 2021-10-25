@@ -10,8 +10,8 @@ jobs:
 
       - run: sudo apt-get -yq update
       - run: sudo apt-get install ncftp openssh-client dnsutils
-#      - run: dig rorotest.clubalpinlyon.fr
-#      - run: ssh kahe0589@clubalpinlyon.fr ls
+      - run: ssh ubuntu@141.94.251.125 ls -al
+      - run: ssh kahe0589@109.234.162.184 -J ubuntu@141.94.251.125 ls
 
       - run: sudo composer self-update
       - restore_cache: # special step to restore the dependency cache if `composer.lock` does not change
