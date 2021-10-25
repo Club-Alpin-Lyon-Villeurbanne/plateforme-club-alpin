@@ -8,6 +8,11 @@ if (isset($config['sentry_dsn'])) {
     Sentry\init(['dsn' => $config['sentry_dsn']]);
 }
 
+if ($config['https'] && !$_SERVER['https']) {
+    header('Location: '.$p_racine = 'https://'.$_SERVER['HTTP_HOST'].substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/') + 1));
+    exit;
+}
+
 define('ADMIN', ROOT.'admin'.DS);					// Admin
 define('APP', ROOT.'app'.DS);						// Applicatif
 define('SCRIPTS', ROOT.'scripts'.DS); 				// MySQL Queries
