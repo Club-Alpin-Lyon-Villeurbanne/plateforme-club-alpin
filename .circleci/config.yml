@@ -11,6 +11,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "00:79:dd:88:fa:70:25:06:8c:86:7e:6f:75:34:66:ee"
+            - "ab:f6:7b:86:ee:e6:9a:4f:15:dc:5a:2d:a2:ee:49:a6"
 
       - run: sudo apt-get -yq update
       - run: sudo apt-get install ncftp openssh-client dnsutils
