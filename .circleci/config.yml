@@ -8,8 +8,9 @@ jobs:
     steps:
       - checkout
 
-      - run: sudo apt-get -yq update
+      - run: sudo apt-get -yq update openssh-client
       - run: sudo apt-get install ncftp
+      - run: ssh kahe0589@clubalpinlyon.fr ls
 
       - run: sudo composer self-update
       - restore_cache: # special step to restore the dependency cache if `composer.lock` does not change
