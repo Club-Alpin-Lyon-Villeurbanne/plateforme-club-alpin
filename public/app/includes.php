@@ -9,7 +9,7 @@ if (isset($config['sentry_dsn'])) {
 }
 
 if ($config['https'] && !$_SERVER['https']) {
-    header('Location: '.$p_racine = 'https://'.$_SERVER['HTTP_HOST'].substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/') + 1));
+    header('Location: '.$p_racine = 'https://'.$_SERVER['HTTP_HOST'], true, 301);
     exit;
 }
 
