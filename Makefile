@@ -8,7 +8,7 @@ SHELL=/bin/bash
 ##
 
 env ?= dev
-project ?= caf-site
+project ?= cafsite
 services ?=
 
 # Project name must be compatible with docker-compose
@@ -47,6 +47,23 @@ phpstan: bin/tools/phpstan $(AUTOLOAD_FILES) vendor/bin/.phpunit/phpunit-9-0/ven
 	@$(ON_PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse $(PHP_SRC) -c phpstan.neon -l 1
 .PHONY: phpstan
 
+package: ## Creates software package
+#	@cp .env .env.backup
+#	@sed -i 's/APP_ENV=.*/APP_ENV=prod/g' .env
+	@$(ON_PHP) bash -c "ls -al"
+	@$(ON_PHP) bash -c "APP_ENV=prod composer install --no-dev --optimize-autoloader --no-interaction --apcu-autoloader --prefer-dist"
+#	@$(ON_PHP) bash -c "APP_ENV=prod composer dump-env prod"
+	@rm -rf package.zip
+	@zip -q -r package.zip \
+		backup \
+		bin/console \
+		public \
+		vendor \
+		.env.local.php \
+		composer.lock
+#	@mv .env.backup .env
+.PHONY: package
+
 ##
 #### Docker
 ##
@@ -60,7 +77,7 @@ down: ## Stop and remove containers, networks, images, and volumes
 .PHONY: down
 
 exec: ## Execute a command in a container (container="caf", cmd="bash", user="www-data")
-	$(eval container ?= caf)
+	$(eval container ?= cafsite)
 	$(eval cmd ?= bash)
 	$(eval user ?= www-data)
 	@$(COMPOSE) exec --user=$(user) $(container) $(cmd)

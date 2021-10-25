@@ -8,8 +8,6 @@ services:
     cafsite:
         build:
             context: docker
-            dockerfile: Dockerfile-caf-apache
-        image: caf-apache
         restart: unless-stopped
         volumes:
             - ./:/var/www/html
