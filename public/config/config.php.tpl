@@ -1,5 +1,6 @@
 <?php
 
 return [
-	'sentry_dsn' => null,
+    'sentry_dsn' => null,
+    'https' => false,
 ];
