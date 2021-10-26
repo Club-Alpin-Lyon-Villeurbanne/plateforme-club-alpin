@@ -166,5 +166,5 @@ header('Content-Type: text/html; charset=utf-8');
             </script>
         </div> <!--! end of #siteHeight -->
     </div> <!--! end of #container -->
-</body>
+</body> <!--! end of body -->
 </html>
