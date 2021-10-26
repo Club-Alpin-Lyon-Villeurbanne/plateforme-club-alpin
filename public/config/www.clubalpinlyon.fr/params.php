@@ -10,7 +10,7 @@ setlocale(\LC_ALL, 'fr_FR');
 if ($_SERVER && array_key_exists('HTTP_HOST', $_SERVER)) {
     $p_racine = 'https://'.$_SERVER['HTTP_HOST'].substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/') + 1);
 } else {
-    $p_racine = '/home/kahe0589/public_html';
+    $p_racine = '/home/kahe0589/clubalpinlyon.fr/public';
 }
 
 // PARTENAIRES
