@@ -124,7 +124,7 @@
 		SELECT COUNT('.$sIndexColumn.")
 		FROM   $sTable
 	";
-    if (!$rResultTotal = $mysqli->query($sQuery, $gaSql['link'])){
+    if (!$rResultTotal = $mysqli->query($sQuery, $gaSql['link'])) {
         exit($mysqli->error);
     }
     $aResultTotal = $rResultTotal->fetch_array(\MYSQLI_ASSOC);
