@@ -205,7 +205,7 @@
                 <br>
                 <h3>Gestion des bus et des places</h3>
                 <br>
-                <?php if (count($destination['bus']) > 0) { ?>
+                <?php if (null !== $destination['bus'] && count($destination['bus']) > 0) { ?>
                     <?php $b = 1; foreach ($destination['bus'] as $bus) { ?>
                         <div class="bus check-nice" id="bus-<?php echo $bus['id']; ?>">
                             <a href="includer.php?p=includes/dest/bus.php&amp;id_bus=<?php echo $bus['id']; ?>" class="edit fancyframe" style="float:right;" title="Modifier : <?php echo $bus['intitule']; ?>"></a>
@@ -286,7 +286,7 @@
 
 <script type="text/javascript">
 
-    var nbus = <?php echo count($destination['bus']) > 0 ? count($destination['bus']) + 1 : 1; ?>;
+    var nbus = <?php echo (null !== $destination['bus'] && count($destination['bus']) > 0) ? count($destination['bus']) + 1 : 1; ?>;
     $('#add_bus').click(function(e){
         e.preventDefault();
         var new_bus = '<?php echo $new_bus; ?>';
