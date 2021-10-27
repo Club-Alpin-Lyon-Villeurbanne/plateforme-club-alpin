@@ -58,7 +58,9 @@ foreach ($fileTab as $file) {
         echo "tous les droits de traitement\n";
         chmod($file, 0777);
         echo "tous les droits de traitement attribués\n";
-        $handle = @fopen($file, 'r') || exit("ouverture du fichier '$file' impossible : $!");
+        if (!$handle = @fopen($file, 'r')) {
+            exit("ouverture du fichier '$file' impossible : $!");
+        }
         echo "tous les droits de traitement\n";
         if ($handle) {
             echo "handle\n";
@@ -175,7 +177,7 @@ foreach ($fileTab as $file) {
                     }
                     //echo $i."\nligne ".__LINE__."\n";
                     // FILIATION : MISE À JOUR DE LA VALEUR
-                    if ($line[5] - 0 > 0) {
+                    if ((int) $line[5] > 0) {
                         // filiation existante
                         $cafnum_parent_user = $mysqli->real_escape_string($line[1].$line[5]); // concaténation ligne 1 (club) pour obtenir un numéro d'adhérent complet
                     } else {

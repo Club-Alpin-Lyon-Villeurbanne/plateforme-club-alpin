@@ -105,13 +105,17 @@
 		$sOrder
 		$sLimit
 	";
-    $rResult = $mysqli->query($sQuery, $gaSql['link']) || exit($mysqli->error);
+    if (!$rResult = $mysqli->query($sQuery, $gaSql['link'])) {
+        exit($mysqli->error);
+    }
 
     /* Data set length after filtering */
     $sQuery = '
 		SELECT FOUND_ROWS()
 	';
-    $rResultFilterTotal = $mysqli->query($sQuery, $gaSql['link']) || exit($mysqli->error);
+    if (!$rResultFilterTotal = $mysqli->query($sQuery, $gaSql['link'])) {
+        exit($mysqli->error);
+    }
     $aResultFilterTotal = $rResultFilterTotal->fetch_array(\MYSQLI_ASSOC);
     $iFilteredTotal = $aResultFilterTotal[0];
 
@@ -120,7 +124,9 @@
 		SELECT COUNT('.$sIndexColumn.")
 		FROM   $sTable
 	";
-    $rResultTotal = $mysqli->query($sQuery, $gaSql['link']) || exit($mysqli->error);
+    if (!$rResultTotal = $mysqli->query($sQuery, $gaSql['link'])){
+        exit($mysqli->error);
+    }
     $aResultTotal = $rResultTotal->fetch_array(\MYSQLI_ASSOC);
     $iTotal = $aResultTotal[0];
 
