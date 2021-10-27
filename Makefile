@@ -8,7 +8,7 @@ SHELL=/bin/bash
 ##
 
 env ?= dev
-project ?= caf-site
+project ?= cafsite
 services ?=
 
 # Project name must be compatible with docker-compose
@@ -47,6 +47,18 @@ phpstan: bin/tools/phpstan $(AUTOLOAD_FILES) vendor/bin/.phpunit/phpunit-9-0/ven
 	@$(ON_PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse $(PHP_SRC) -c phpstan.neon -l 1
 .PHONY: phpstan
 
+setup-db:
+	@echo "Checking if the database is up..."
+	@$(ON_PHP) timeout --foreground 120s bash -c 'while ! timeout --foreground 3s echo > /dev/tcp/caf-db/3306 2 > /dev/null ; do sleep 1; done' \
+	    || (echo "Unable to connect to the database. Exiting..." && exit 1)
+	@echo "Database is up!"
+	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./public/config/bdd_caf.sql
+	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./public/config/bdd_caf.1.1.sql
+	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./public/config/bdd_caf.1.x.sql
+	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./public/config/bdd_caf.1.1.1.sql
+	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./public/config/bdd_caf.partenaires.sql
+.PHONY: setup-db
+
 ##
 #### Docker
 ##
@@ -59,8 +71,8 @@ down: ## Stop and remove containers, networks, images, and volumes
 	@$(COMPOSE) down
 .PHONY: down
 
-exec: ## Execute a command in a container (container="caf", cmd="bash", user="www-data")
-	$(eval container ?= caf)
+exec: ## Execute a command in a container (container="cafsite", cmd="bash", user="www-data")
+	$(eval container ?= cafsite)
 	$(eval cmd ?= bash)
 	$(eval user ?= www-data)
 	@$(COMPOSE) exec --user=$(user) $(container) $(cmd)
