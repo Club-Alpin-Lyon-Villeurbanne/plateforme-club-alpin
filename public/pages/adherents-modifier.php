@@ -8,7 +8,7 @@ if (!admin() && !allowed('user_edit_notme')) {
         exit();
     }
 
-    if (0 == count($userTab)) {
+    if (null !== $userTab && 0 === count($userTab)) {
         include SCRIPTS.'connect_mysqli.php';
         $req = 'SELECT * FROM  `'.$pbd."user` WHERE id_user='".$mysqli->real_escape_string($id_user)."' LIMIT 1";
         $userTab = [];
