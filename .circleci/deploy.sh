@@ -22,7 +22,7 @@ ln -s "$BASE_TARGET/forum" "$TARGET_DIR/public"
 
 if [ $TARGET == "clubalpinlyon.fr" ]; then
   ln -s "$BASE_TARGET/CAFLV-TV" "$TARGET_DIR/public"
-  ln -s "$BASE_TARGET/ffcam-ftp-folder" "$TARGET_DIR/config/www.clubalpinlyon.fr/ffcam"
+  ln -s "$BASE_TARGET/ffcam-ftp-folder" "$TARGET_DIR/public/config/www.clubalpinlyon.fr/ffcam"
 fi;
 
 unlink $CURRENT_DIR
