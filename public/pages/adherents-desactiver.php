@@ -24,10 +24,10 @@ if (!allowed('user_desactivate_any')) {
 
 			<?php
             // TABLEAU
-            if ('user_desactiver' == $_POST['operation'] && count($errTab)) {
+            if ('user_desactiver' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                 echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
             }
-    if ('user_desactiver' == $_POST['operation'] && !count($errTab)) {
+    if ('user_desactiver' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info">Utilisateur désactivé (Vous devrez <a href="adherents.html" title="" target="_top">actualiser la page</a> pour voir le changement)</p>';
     } else {
         ?>

@@ -16,7 +16,7 @@ if (user()) {
     }
 
     // définition du dossier
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // si c'est une image de base de donnée
         if ($id_img) {
             // récupération de l'id de la galerie
@@ -34,15 +34,15 @@ if (user()) {
 
         // checks
         if (!$dossier) {
-            $errTab = 'Dossier indéfini';
+            $errTab[] = 'Dossier indéfini';
         }
         if (!file_exists($dossier)) {
-            $errTab = "Dossier inexistant ($dossier)";
+            $errTab[] = "Dossier inexistant ($dossier)";
         }
     }
 
     // suppression dans la BD
-    if (!count($errTab) && $id_img) {
+    if ((!isset($errTab) || 0 === count($errTab)) && $id_img) {
         include SCRIPTS.'connect_mysqli.php';
         $req = 'DELETE FROM `'.$pbd.'img` WHERE `'.$pbd."img`.`id_img` = $id_img AND user_img=".$id_user.' LIMIT 1;';
         if (!$mysqli->query($req)) {
@@ -52,7 +52,7 @@ if (user()) {
     }
 
     // suppression du fichier
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // originale
         if (is_file($dossier.'/'.$fichier_img)) {
             unlink($dossier.'/'.$fichier_img);
@@ -71,7 +71,7 @@ if (user()) {
 }
 
 // envoi du résultat :
-if (count($errTab)) {
+if (isset($errTab) && count($errTab) > 0) {
     $result['success'] = 0;
     $result['error'] = implode(', ', $errTab);
 } else {

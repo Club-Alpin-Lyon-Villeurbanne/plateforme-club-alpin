@@ -43,7 +43,7 @@ if (!$id_comment) {
         }
 
         // MESSAGES A LA SOUMISSION
-        if ('comment_hide' == $_POST['operation'] && count($errTab)) {
+        if ('comment_hide' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
         } ?>
 			<br />

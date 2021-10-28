@@ -211,6 +211,6 @@
         // if (!$mysqli->query($query)) { $errTab[] = 'Une erreur est apparue lors de la mise à jour de la base de données.'; }
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // ecrire le numéro de version
     }

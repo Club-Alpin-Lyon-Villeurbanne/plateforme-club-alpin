@@ -21,7 +21,7 @@ $log .= "\n accès à ".date('H:i:s');
 
     include SCRIPTS.'operations.php';
 
-    if (count($errTab)) {
+    if (isset($errTab) && count($errTab) > 0) {
         $result['error'] = $errTab;
     } else {
         $result['success'] = 1;

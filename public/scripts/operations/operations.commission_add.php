@@ -6,7 +6,7 @@
     $title_commission = stripslashes($_POST['title_commission']);
 
     // CHECKIN VARS
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         if ('on' != $_POST['disable-bigfond'] && $_FILES['bigfond']['size'] < 5) {
             $errTab[] = 'Grande image non trouvée';
         }
@@ -28,7 +28,7 @@
     }
 
     // VIDAGE DU DOSSIER TRANSIT (evite les erreurs)
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $uploads_dir = 'ftp/transit/nouvellecommission';
 
         if (file_exists($uploads_dir.'/bigfond.jpg')) {
@@ -46,7 +46,7 @@
     }
 
     // GRANDE IMAGE
-    if (!count($errTab) && 'on' != $_POST['disable-bigfond']) {
+    if ((!isset($errTab) || 0 === count($errTab)) && 'on' != $_POST['disable-bigfond']) {
         $tmp_name = $_FILES['bigfond']['tmp_name'];
         $name = $_FILES['bigfond']['name'];
         $type = $_FILES['bigfond']['type'];
@@ -59,7 +59,7 @@
         }
 
         // mes erreurs
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $ext = strtolower(substr(strrchr($name, '.'), 1));
             if ('jpg' != $ext) {
                 $errTab[] = 'La grande image doit être au format .jpg';
@@ -69,7 +69,7 @@
             }
         }
 
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             if (!move_uploaded_file($tmp_name, "$uploads_dir/bigfond.jpg")) {
                 $errTab[] = 'Erreur à la copie de la grande image';
             }
@@ -77,7 +77,7 @@
     }
 
     // PICTO 1
-    if (!count($errTab) && 'on' != $_POST['disable-pictos']) {
+    if ((!isset($errTab) || 0 === count($errTab)) && 'on' != $_POST['disable-pictos']) {
         $tmp_name = $_FILES['picto']['tmp_name'];
         $name = $_FILES['picto']['name'];
         $type = $_FILES['picto']['type'];
@@ -90,7 +90,7 @@
         }
 
         // mes erreurs
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $ext = strtolower(substr(strrchr($name, '.'), 1));
             if ('png' != $ext) {
                 $errTab[] = 'Le picto bleu doit être au format .png';
@@ -100,7 +100,7 @@
             }
         }
 
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             if (!move_uploaded_file($tmp_name, "$uploads_dir/picto.png")) {
                 $errTab[] = 'Erreur à la copie du picto bleu';
             }
@@ -108,7 +108,7 @@
     }
 
     // PICTO 2
-    if (!count($errTab) && 'on' != $_POST['disable-pictos']) {
+    if ((!isset($errTab) || 0 === count($errTab)) && 'on' != $_POST['disable-pictos']) {
         $tmp_name = $_FILES['picto-light']['tmp_name'];
         $name = $_FILES['picto-light']['name'];
         $type = $_FILES['picto-light']['type'];
@@ -121,7 +121,7 @@
         }
 
         // mes erreurs
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $ext = strtolower(substr(strrchr($name, '.'), 1));
             if ('png' != $ext) {
                 $errTab[] = 'Le picto clair doit être au format .png';
@@ -131,7 +131,7 @@
             }
         }
 
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             if (!move_uploaded_file($tmp_name, "$uploads_dir/picto-light.png")) {
                 $errTab[] = 'Erreur à la copie du picto clair';
             }
@@ -139,7 +139,7 @@
     }
 
     // PICTO 3
-    if (!count($errTab) && 'on' != $_POST['disable-pictos']) {
+    if ((!isset($errTab) || 0 === count($errTab)) && 'on' != $_POST['disable-pictos']) {
         $tmp_name = $_FILES['picto-dark']['tmp_name'];
         $name = $_FILES['picto-dark']['name'];
         $type = $_FILES['picto-dark']['type'];
@@ -152,7 +152,7 @@
         }
 
         // mes erreurs
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $ext = strtolower(substr(strrchr($name, '.'), 1));
             if ('png' != $ext) {
                 $errTab[] = 'Le picto sombre doit être au format .png';
@@ -162,7 +162,7 @@
             }
         }
 
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             if (!move_uploaded_file($tmp_name, "$uploads_dir/picto-dark.png")) {
                 $errTab[] = 'Erreur à la copie du picto sombre';
             }
@@ -170,7 +170,7 @@
     }
 
     // SQL
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         include SCRIPTS.'connect_mysqli.php';
         $code_commission = formater($title_commission, 3);
         $code_commission = $mysqli->real_escape_string($code_commission);
@@ -206,7 +206,7 @@
     }
 
     // DÉPLACEMENT DES FICHIERS DANS LE DOSSIER FINAL
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $newDir = 'ftp/commission/'.$id_commission;
 
         // création du dossier
@@ -234,6 +234,6 @@
     }
 
     // REDIRECTION
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         header('Location:'.$p_racine.'gestion-des-commissions.html');
     }

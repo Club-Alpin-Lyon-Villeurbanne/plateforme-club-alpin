@@ -102,10 +102,10 @@ if ('1' != $evt['cancelled_evt']) {
 
                 <?php
                 // TABLEAU erreurs
-                if ('user_join_update_status' == $_POST['operation'] && count($errTab)) {
+                if ('user_join_update_status' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                     echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                 }
-        if ('user_join_update_status' == $_POST['operation'] && !count($errTab)) {
+        if ('user_join_update_status' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
             echo '<p class="info">Mise à jour effectuée à '.date('H:i', $p_time).'.</p><br />';
         }
 
@@ -414,10 +414,10 @@ if ('1' != $evt['cancelled_evt']) {
                         <h2>Formulaire de contact</h2>
                         <?php
                         // MESSAGES A LA SOUMISSION
-                        if ('evt_user_contact' == $_POST['operation'] && count($errTab)) {
+                        if ('evt_user_contact' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                         }
-                    if ('evt_user_contact' == $_POST['operation'] && !count($errTab)) {
+                    if ('evt_user_contact' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                         echo '<p class="info">Votre message a bien été envoyé.</p>';
                     } ?>
 

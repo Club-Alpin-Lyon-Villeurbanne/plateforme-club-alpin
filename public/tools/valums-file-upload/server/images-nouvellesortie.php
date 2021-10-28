@@ -21,7 +21,7 @@ if ('edit' == $mode && !$id_evt) {
     $errTab[] = 'ID sortie manquant';
 }
 
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     // modification de sortie
     if ('edit' == $mode) {
         $targetDir = 'ftp/sorties/'.$id_evt.'/';
@@ -58,7 +58,7 @@ if (!count($errTab)) {
     // $result['targetDir']=$targetDir;
 }
 
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     $tmpfilename = $result['filename'];
     $filename = strtolower(formater($tmpfilename, 4));
 
@@ -86,7 +86,7 @@ if (!count($errTab)) {
     }
 
     // redimensionnement des images
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $size = getimagesize($targetDirRel.$filename);
         if ($size[0] > 590 || $size[1] > 400) {
             include APP.'redims.php';
@@ -105,7 +105,7 @@ if (!count($errTab)) {
 }
 
 // enregistrement BDD si c'est une modificatino d'evt
-if (!count($errTab) && 'edit' == $mode) {
+if ((!isset($errTab) || 0 === count($errTab)) && 'edit' == $mode) {
     include SCRIPTS.'connect_mysqli.php';
 
     // save
@@ -125,7 +125,7 @@ if (!count($errTab) && 'edit' == $mode) {
 }
 
 // envoi du résultat :
-if (count($errTab)) {
+if (isset($errTab) && count($errTab) > 0) {
     $result = ['success' => 0, 'error' => implode(', ', $errTab)];
 }
 

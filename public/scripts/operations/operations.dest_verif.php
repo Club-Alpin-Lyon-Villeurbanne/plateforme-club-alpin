@@ -45,7 +45,7 @@ if (!preg_match('#[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}#', $insc
 }
 
 // vérifications des dates
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     $dDate = new DateTime($date);
     $dIo = new DateTime($inscription_ouverture);
     $dFo = new DateTime($inscription_fin);

@@ -61,10 +61,10 @@ if (!admin()) {
 
 		<?php
 
-        if ('usertype_attr_edit' == $_POST['operation'] && count($errTab)) {
+        if ('usertype_attr_edit' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
         }
-    if ('usertype_attr_edit' == $_POST['operation'] && !count($errTab)) {
+    if ('usertype_attr_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<div class="info">Mise à jour effectuée à '.date('H:i:s', $p_time).'.</div>';
     }
 

@@ -47,7 +47,7 @@ if (admin()) {
     }
 
     // envoi du résultat :
-    if (count($errTab)) {
+    if (isset($errTab) && count($errTab) > 0) {
         $result = ['success' => 0, 'error' => implode(', ', $errTab)];
     }
     // si pas d'erreur, le nom de ficier est remplacé par sa version formatée

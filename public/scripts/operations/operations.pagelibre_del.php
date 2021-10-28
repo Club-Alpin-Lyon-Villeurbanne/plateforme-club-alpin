@@ -10,7 +10,7 @@
         $errTab[] = 'Vous devez recopier le texte approprié pour confirmer la suppression.';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $req = 'DELETE FROM '.$pbd."page WHERE id_page=$id_page LIMIT 1";
         if (!$mysqli->query($req)) {
             $erreur = 'Erreur BDD<br />'.$req;
@@ -24,6 +24,6 @@
 
     $mysqli->close();
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         mylog('pagelibre-delete', "Suppression de la page libre id=$id_page");
     }

@@ -48,13 +48,13 @@
     }
 
     // formatage date anniversaire
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // tsp de début
         $tab = explode('/', $birthday_user);
         $birthday_user = mktime(0, 0, 0, $tab[1], $tab[0], $tab[2]);
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // insertion SQL
         include SCRIPTS.'connect_mysqli.php';
 

@@ -47,7 +47,7 @@
     $mysqli->close();
 
     // ENVOI DU MAIL
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // check-in vars : string à retourner lors de la confirmation= md5 de la concaténation id-email
         $url = $p_racine.'mot-de-passe-perdu/'.$token.'-'.$id_user_mdpchange.'.html';
 

@@ -44,7 +44,7 @@
     }
 
     // save page
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $req = 'INSERT INTO `'.$pbd."page` (`id_page` ,`parent_page` ,`admin_page` ,`superadmin_page` ,`vis_page` ,`ordre_page` ,`menu_page` ,`ordre_menu_page` ,`menuadmin_page` ,`ordre_menuadmin_page` ,`code_page` ,`default_name_page` ,`meta_title_page` ,`meta_description_page` ,`priority_page` ,`add_css_page` ,`add_js_page` ,`lock_page`)
 											VALUES (NULL , '$parent_page', '0', '0', '0', '0', '$menu_page', '0', '0', '0', '$code_page', '$default_name_page', '$meta_title_page', '0', '$priority_page', '$add_css_page', '$add_js_page', '0');";
         if (!$mysqli->query($req)) {
@@ -58,7 +58,7 @@
         }
     }
     // save titles
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         for ($i = 0; $i < count($p_langs); ++$i) {
             $lang_content_inline = $p_langs[$i];
             $contenu_content_inline = $mysqli->real_escape_string(stripslashes($titreTab[$i]));
@@ -70,7 +70,7 @@
         }
     }
     // save menu
-    if (!count($errTab) && $menu_page) {
+    if ((!isset($errTab) || 0 === count($errTab)) && $menu_page) {
         for ($i = 0; $i < count($p_langs); ++$i) {
             $lang_content_inline = $p_langs[$i];
             $contenu_content_inline = $mysqli->real_escape_string(stripslashes($titreTab[$i]));
@@ -84,6 +84,6 @@
 
     $mysqli->close();
     // LOG
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         mylog('page-create', "Création de la page $default_name_page ($code_page)");
     }

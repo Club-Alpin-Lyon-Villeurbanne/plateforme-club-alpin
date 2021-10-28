@@ -31,11 +31,11 @@
                 inclure('activer-profil', 'vide');
 
             // error
-            if ('user_subscribe' == $_POST['operation'] && count($errTab)) {
+            if ('user_subscribe' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                 echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
             }
             // success
-            if ('user_subscribe' == $_POST['operation'] && !count($errTab)) {
+            if ('user_subscribe' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                 echo "
 					<h3>Compte créé avec succès</h3>
 					<p class='info'>
@@ -45,7 +45,7 @@
             }
 
             // affichage
-            if ('user_subscribe' != $_POST['operation'] || ('user_subscribe' == $_POST['operation'] && count($errTab))) {
+            if ('user_subscribe' != $_POST['operation'] || ('user_subscribe' == $_POST['operation'] && isset($errTab) && count($errTab) > 0)) {
                 ?>
 					<br />
 					<form action="<?php echo $versCettePage; ?>" method="post">

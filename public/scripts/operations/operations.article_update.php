@@ -40,7 +40,7 @@
          */
 
     // enregistrement en BD
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         include SCRIPTS.'connect_mysqli.php';
         $titre_article = $mysqli->real_escape_string($titre_article);
         $code_article = $mysqli->real_escape_string($code_article);
@@ -70,6 +70,6 @@
     }
 
     // debug : reload page
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         header("Location: $p_racine"."article-edit/$id_article.html?lbxMsg=article_edit_success");
     }
