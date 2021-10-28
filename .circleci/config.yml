@@ -53,11 +53,11 @@ jobs:
                     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -J jump-user@141.94.251.125 package.zip kahe0589@109.234.162.184:/home/kahe0589/clubalpinlyon.fr
                   ;;
                 "main" )
-                    echo "Transfering package..."
+                    echo "\nTransfering package...\n\n"
                     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -J jump-user@141.94.251.125 package.zip kahe0589@109.234.162.184:/home/kahe0589/test.clubalpinlyon.fr
-                    echo "Transfering deploy script..."
+                    echo "\nTransfering deploy script...\n\n"
                     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -J jump-user@141.94.251.125 .circleci/deploy.sh kahe0589@109.234.162.184:/home/kahe0589/test.clubalpinlyon.fr
-                    echo "Running deploy..."
+                    echo "\nRunning deploy...\n\n"
                     LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kahe0589@109.234.162.184 -J jump-user@141.94.251.125 /home/kahe0589/test.clubalpinlyon.fr/deploy.sh
                   ;;
             esac
