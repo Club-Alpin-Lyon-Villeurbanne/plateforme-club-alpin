@@ -4,11 +4,7 @@ COPY --from=composer:2.1.9 /usr/bin/composer /usr/bin/composer
 
 RUN apt update && \
     apt install -y \
-        librabbitmq-dev \
-        uuid-dev \
-        libldap2-dev \
         libmagickwand-dev \
-        libpq-dev \
         libpcre3-dev \
         libonig-dev \
         libzip-dev \
@@ -38,27 +34,19 @@ RUN /usr/local/bin/docker-php-ext-install -j$(nproc) mysqli pdo_mysql && \
     /usr/local/bin/docker-php-ext-install -j$(nproc) intl && \
     /usr/local/bin/docker-php-ext-install -j$(nproc) gd
 
-RUN pecl install igbinary-3.2.6 && \
-    echo "extension=igbinary.so" > /usr/local/etc/php/conf.d/ext-igbinary.ini && \
-    pecl install apcu-5.1.20 && \
+RUN pecl install apcu-5.1.20 && \
     echo "extension=apcu.so" > /usr/local/etc/php/conf.d/ext-apcu.ini && \
     pecl install apcu_bc-1.0.5 && \
-    echo "extension=apc.so" > /usr/local/etc/php/conf.d/ext-apcu_bc.ini && \
-    pecl install uuid-1.2.0 && \
-    echo "extension=uuid.so" > /usr/local/etc/php/conf.d/ext-uuid.ini
+    echo "extension=apc.so" > /usr/local/etc/php/conf.d/ext-apcu_bc.ini
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
-
-# Define PHP_TIMEZONE env variable
-ENV PHP_TIMEZONE Europe/Paris
 
 # Configure Apache Document Root
 ENV APACHE_DOC_ROOT /var/www/html/public
 
 # Additional configuration files
 COPY ./utils/docker-999-php.ini /usr/local/etc/php/conf.d/999-php.ini
-COPY ./utils/docker-99-xdebug.ini.disabled /usr/local/etc/php/conf.d/99-xdebug.ini.disabled
 COPY ./utils/docker-phpinfo.php /var/www/html/phpinfo.php
 COPY ./utils/docker-start-apache.sh /usr/local/bin/start-apache.sh
 RUN chmod +x /usr/local/bin/start-apache.sh

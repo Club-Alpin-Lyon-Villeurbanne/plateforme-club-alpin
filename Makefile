@@ -59,6 +59,23 @@ setup-db:
 	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./public/config/bdd_caf.partenaires.sql
 .PHONY: setup-db
 
+package: ## Creates software package
+#	@cp .env .env.backup
+#	@sed -i 's/APP_ENV=.*/APP_ENV=prod/g' .env
+	@$(ON_PHP) bash -c "ls -al"
+	@$(ON_PHP) bash -c "APP_ENV=prod composer install --no-dev --optimize-autoloader --no-interaction --apcu-autoloader --prefer-dist"
+#	@$(ON_PHP) bash -c "APP_ENV=prod composer dump-env prod"
+	@rm -rf package.zip
+	@zip -q -r package.zip \
+		backup \
+		bin/console \
+		public \
+		vendor \
+		.env.local.php \
+		composer.lock
+#	@mv .env.backup .env
+.PHONY: package
+
 ##
 #### Docker
 ##

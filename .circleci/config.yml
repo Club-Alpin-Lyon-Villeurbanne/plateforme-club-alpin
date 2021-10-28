@@ -1,34 +1,29 @@
 version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/php:7.0
-      # - image: circleci/mysql:5.7-ram
+    machine:
+      image: ubuntu-2004:202107-02
 
     steps:
       - checkout
 
-      - run: sudo apt-get -yq update
-      - run: sudo apt-get install ncftp
+      - add_ssh_keys:
+          fingerprints:
+            - "ba:5a:94:59:70:b4:28:07:1f:38:ea:1e:66:69:b2:52"
 
-      - run: sudo composer self-update
+      - run: ssh-keyscan 141.94.251.125 >> ~/.ssh/known_hosts
+      - run: LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kahe0589@109.234.162.184 -J jump-user@141.94.251.125 echo "Successfully connected to prod server"
+
       - restore_cache: # special step to restore the dependency cache if `composer.lock` does not change
           keys:
             - composer-v1-{{ checksum "composer.lock" }}
             # fallback to using the latest cache if no exact match is found (See https://circleci.com/docs/2.0/caching/)
             - composer-v1-
-      - run: composer install --no-dev --optimize-autoloader --no-interaction --apcu-autoloader --prefer-dist
-      - save_cache: # special step to save the dependency cache with the `composer.lock` cache key template
-          key: composer-v1-{{ checksum "composer.lock" }}
-          paths:
-            - vendor
-
       - run:
-          name: Deploy the codebase on the server
+          name: Prepare codebase given target
           command: |
             case ${CIRCLE_BRANCH} in
                 "production" )
-                    rm -rf .git
                     mv public/robots-production.txt public/robots.txt
                     cp public/config/www.clubalpinlyon.fr/config.php public/config/config.php
                     sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$PROD_ADMIN_PASSWORD/g" "public/config/www.clubalpinlyon.fr/params.php"
@@ -36,10 +31,8 @@ jobs:
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$PROD_DB_PASSWORD/g" "public/config/www.clubalpinlyon.fr/db_config.php"
                     sed -i "s/DB_USER_TO_REPLACE/$PROD_DB_USER/g" "public/config/www.clubalpinlyon.fr/db_config.php"
                     sed -i "s/DB_NAME_TO_REPLACE/$PROD_DB_NAME/g" "public/config/www.clubalpinlyon.fr/db_config.php"
-                    ncftpput -R -v -u $PROD_FTP_USERNAME -p $PROD_FTP_PASSWORD $FTP_SERVER . .
                   ;;
                 "main" )
-                    rm -rf .git
                     mv public/robots-dev.txt public/robots.txt
                     cp public/config/test.clubalpinlyon.fr/config.php public/config/config.php
                     sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$DEV_ADMIN_PASSWORD/g" "public/config/test.clubalpinlyon.fr/params.php"
@@ -47,6 +40,25 @@ jobs:
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$DEV_DB_PASSWORD/g" "public/config/test.clubalpinlyon.fr/db_config.php"
                     sed -i "s/DB_USER_TO_REPLACE/$DEV_DB_USER/g" "public/config/test.clubalpinlyon.fr/db_config.php"
                     sed -i "s/DB_NAME_TO_REPLACE/$DEV_DB_NAME/g" "public/config/test.clubalpinlyon.fr/db_config.php"
-                    ncftpput -R -v -u $STAGING_FTP_USERNAME -p $STAGING_FTP_PASSWORD $FTP_SERVER . .
                   ;;
             esac
+      - run: make build
+      - run: make package
+#      - run: make php-cs
+      - run:
+          name: Prepare codebase given target
+          command: |
+            case ${CIRCLE_BRANCH} in
+                "production" )
+                    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -J jump-user@141.94.251.125 package.zip kahe0589@109.234.162.184:/home/kahe0589/clubalpinlyon.fr
+                  ;;
+                "main" )
+                    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -J jump-user@141.94.251.125 package.zip kahe0589@109.234.162.184:/home/kahe0589/test.clubalpinlyon.fr
+                    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -J jump-user@141.94.251.125 .circleci/deploy.sh kahe0589@109.234.162.184:/home/kahe0589/test.clubalpinlyon.fr
+                    ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -J jump-user@141.94.251.125 /home/kahe0589/test.clubalpinlyon.fr/deploy.sh
+                  ;;
+            esac
+      - save_cache: # special step to save the dependency cache with the `composer.lock` cache key template
+          key: composer-v1-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
