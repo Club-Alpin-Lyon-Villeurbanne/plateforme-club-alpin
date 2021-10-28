@@ -3,7 +3,7 @@
     include SCRIPTS.'operations'.DS.'operations.dest_verif.php';
 
     // vérifications BDD
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         include SCRIPTS.'connect_mysqli.php';
 
         // Sauvegarde d'un nouveau lieu

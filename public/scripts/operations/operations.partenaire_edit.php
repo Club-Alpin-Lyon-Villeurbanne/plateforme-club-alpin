@@ -43,7 +43,7 @@
 
 //	var_dump($errTab);
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         if (!is_dir($uploaddir)) {
             mkdir($uploaddir);
         }

@@ -7,7 +7,7 @@
     $id_commission = (int) ($_GET['id_commission']);
 
     // CHECKIN VARS
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         include SCRIPTS.'connect_mysqli.php';
         $new_groupe = $_POST['new_groupe'];
         if (isset($new_groupe) && is_array($new_groupe)) {
@@ -24,7 +24,7 @@
                     $errTab[] = 'Erreur de commission';
                 }
 
-                if (!count($errTab)) {
+                if (!isset($errTab) || 0 === count($errTab)) {
                     $req =
                     'INSERT INTO `'.$pbd."groupe` (`id`, `id_commission`, `nom`, `description`, `niveau_physique`, `niveau_technique`, `actif`)
                         VALUES (NULL, '".$id_comm."', '".$nom."', '".$description."', '".$niveau_physique."', '".$niveau_technique."', '1');";
@@ -48,7 +48,7 @@
                     $errTab[] = 'Le nom du groupe est obligatoire';
                 }
 
-                if (!count($errTab)) {
+                if (!isset($errTab) || 0 === count($errTab)) {
                     $need_comma = false;
                     $req = 'UPDATE `'.$pbd.'groupe` SET ';
                     if ($groupe['nom']) {

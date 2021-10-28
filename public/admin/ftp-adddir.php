@@ -27,7 +27,7 @@ if (!admin()) {
         $errTab[] = "L'élément donné ne semble pas être un dossier";
     }
 
-    if (count($errTab)) {
+    if (isset($errTab) && count($errTab) > 0) {
         echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
     } else {
         // VERIFS DEJA FAITES, OPERATION OK SUR DEMANDE
@@ -48,13 +48,13 @@ if (!admin()) {
             }
 
             // fermeture de la box/ actualissation du ftp
-            if (!count($errTab)) {
+            if (!isset($errTab) || 0 === count($errTab)) {
                 if (!mkdir($target.$nouveauDossier)) {
                     $errTab[] = 'Erreur PHP à la création du dossier';
                 }
             }
 
-            if (!count($errTab)) {
+            if (!isset($errTab) || 0 === count($errTab)) {
                 ?>
 				<script type="text/javascript">
 					// parent.$('#ftp-2-arbo a.selected').click(); parent.$.fancybox.close();
@@ -66,7 +66,7 @@ if (!admin()) {
         }
 
         // OPERATION PAS LANCEE OU ERREUR
-        if (!$_POST['operation'] || 'create' == $_POST['operation'] && count($errTab)) {
+        if (!$_POST['operation'] || 'create' == $_POST['operation'] && (isset($errTab) && count($errTab) > 0)) {
             ?><!doctype html>
 			<html lang="fr">
 				<head>
@@ -82,7 +82,7 @@ if (!admin()) {
 				<body class="ftp-frame" onload="$('input[type=text]').focus()">
 					<?php
                     // msg d'erreur ?
-                    if (count($errTab)) {
+                    if (isset($errTab) && count($errTab) > 0) {
                         echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                     } ?>
 

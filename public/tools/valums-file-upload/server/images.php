@@ -49,7 +49,7 @@ if (admin()) {
     $ext = strtolower(substr(strrchr($filename, '.'), 1));
 
     // redimensionnement des images
-    if (!count($errTab) && ('jpg' == $ext || 'jpeg' == $ext || 'png' == $ext)) {
+    if ((!isset($errTab) || 0 === count($errTab)) && ('jpg' == $ext || 'jpeg' == $ext || 'png' == $ext)) {
         $size = getimagesize($targetDirRel.$filename);
         if ($size[0] > $p_max_images_dimensions_before_redim || $size[1] > $p_max_images_dimensions_before_redim) {
             include APP.'redims.php';
@@ -67,7 +67,7 @@ if (admin()) {
     }
 
     // envoi du résultat :
-    if (count($errTab)) {
+    if (isset($errTab) && count($errTab) > 0) {
         $result = ['success' => 0, 'error' => implode(', ', $errTab)];
     }
 

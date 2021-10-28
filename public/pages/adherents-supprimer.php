@@ -22,10 +22,10 @@ if (!admin()) {
 
 			<?php
             // TABLEAU
-            if ('user_delete' == $_POST['operation'] && count($errTab)) {
+            if ('user_delete' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                 echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
             }
-    if ('user_delete' == $_POST['operation'] && !count($errTab)) {
+    if ('user_delete' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info">Utilisateur supprimé ! (Vous devrez <a href="javascript:top.$.fancybox.close();top.frames.location.reload(false);">Recharger la page</a> pour voir le changement)</p>';
     } else {
         ?>

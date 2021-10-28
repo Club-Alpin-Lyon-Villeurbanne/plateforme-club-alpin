@@ -20,7 +20,7 @@
         $errTab[] = 'Erreur de langue';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $lang_content_inline = $mysqli->real_escape_string($lang_content_inline);
         $code_content_inline = $mysqli->real_escape_string($code_content_inline);
         $contenu_content_inline = $mysqli->real_escape_string($contenu_content_inline);

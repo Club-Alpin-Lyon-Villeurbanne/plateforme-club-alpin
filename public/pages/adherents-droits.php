@@ -88,10 +88,10 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
 			<h2>Ajouter un attribut à cet adhérent :</h2>
 			<?php
             // message
-            if ('user_attr_add' == $_POST['operation'] && count($errTab)) {
+            if ('user_attr_add' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                 echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
             }
-    if ('user_attr_add' == $_POST['operation'] && !count($errTab)) {
+    if ('user_attr_add' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<div class="info">Mise à jour effectuée à '.date('H:i:s', $p_time).'.</div>';
     }
 

@@ -49,7 +49,7 @@
         $errTab[] = 'Vous ne disposez pas des droits nécessaires pour attribuer ce statut';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // Vérification dans la liste des types
         // + Ce type a t-il besoin de paramètres pour fonctionner ?
         $req = 'SELECT * FROM '.$pbd."usertype WHERE id_usertype =$id_usertype LIMIT 1";
@@ -66,14 +66,14 @@
     }
 
     // a t-on bien joint des paramètres ?
-    if (!count($errTab) && $needComm) {
+    if ((!isset($errTab) || 0 === count($errTab)) && $needComm) {
         if (!count($params_user_attr_tab)) {
             $errTab[] = 'Vous devez spécifier au moins une commission pour ce statut.';
         }
     }
 
     // allez, enfin on intègre
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         if (!$needComm) {
             $params_user_attr_tab = [''];
         }
@@ -106,6 +106,6 @@
     user_login($_SESSION['user']['email_user']);
 
     // log admin
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         mylog('user_attr_add', "Attribution d'un nouveau droit (id=$id_usertype) à un user (id=$id_user)");
     }

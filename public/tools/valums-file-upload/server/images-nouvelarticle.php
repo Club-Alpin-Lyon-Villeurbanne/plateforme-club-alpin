@@ -21,7 +21,7 @@ if ('edit' == $mode && !$id_article) {
     $errTab[] = 'ID sortie manquant';
 }
 
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     // creation des dossiers utiles pour l'user s'ils n'existnent pas
     $dir = '../../../ftp/user/'.(int) ($_SESSION['user']['id_user']);
     if (!file_exists($dir)) {
@@ -68,7 +68,7 @@ if (!count($errTab)) {
     // $result['targetDir']=$targetDir;
 }
 
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     $tmpfilename = $result['filename'];
     $filename = 'figure.jpg';
 
@@ -96,7 +96,7 @@ if (!count($errTab)) {
     }
 
     // redimensionnement des images
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         include APP.'redims.php';
         $size = getimagesize($targetDirRel.$filename);
 
@@ -157,7 +157,7 @@ if (!count($errTab)) {
 }
 
 // envoi du résultat :
-if (count($errTab)) {
+if (isset($errTab) && count($errTab) > 0) {
     $result = ['success' => 0, 'error' => implode(', ', $errTab)];
 }
 

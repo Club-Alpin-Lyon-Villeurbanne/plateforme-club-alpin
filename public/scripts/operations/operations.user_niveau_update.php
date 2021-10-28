@@ -8,7 +8,7 @@
     // mise à jour des informations de niveau
     // il devrait y avoir une vérification de l'autorisation à modifier le niveau utilisateur
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         include SCRIPTS.'connect_mysqli.php';
 
         if (isset($_POST['new_niveau']) && is_array($_POST['new_niveau'])) {

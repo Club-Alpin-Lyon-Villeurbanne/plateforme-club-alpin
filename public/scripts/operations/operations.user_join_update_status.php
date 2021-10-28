@@ -63,7 +63,7 @@
         $errTab[] = 'Opération interdite : Il semble que vous ne soyez pas autorisé à modifier les inscrits.';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         //				print_r($_POST);
 
         foreach ($_POST['id_evt_join'] as $id_evt_join) {
@@ -128,7 +128,7 @@
                     if (0 == $user_evt_join || 0 == $evt_evt_join) {
                     }// $errTab[]="Erreur de données ($user_evt_join / $evt_evt_join). Mise à jour interrompue.";
 
-                    if (!count($errTab)) {
+                    if (!isset($errTab) || 0 === count($errTab)) {
                         // update inscription
                         $req = "UPDATE caf_evt_join
 							SET lastchange_when_evt_join = $p_time
@@ -199,7 +199,7 @@
                                     if (!$isNomade && (strlen($toMail) > 0)) {
                                         // if(!isMail($toMail)) $errTab[]="Aucun e-mail n'a été envoyé à $toName.";
 
-                                        if (!count($errTab)) {
+                                        if (!isset($errTab) || 0 === count($errTab)) {
                                             // phpmailer
                                             require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
 

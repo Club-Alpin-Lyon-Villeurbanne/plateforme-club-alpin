@@ -32,7 +32,7 @@
     }
 
     // save page
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $req = 'INSERT INTO '.$pbd."page (id_page ,parent_page ,admin_page ,superadmin_page ,vis_page ,ordre_page ,menu_page ,ordre_menu_page ,menuadmin_page ,ordre_menuadmin_page ,code_page ,default_name_page ,meta_title_page ,meta_description_page ,priority_page ,add_css_page ,add_js_page ,lock_page ,pagelibre_page ,created_page)
 							VALUES (NULL , '$parent_page', '0', '0', '0', '', '', '', '', '', '$code_page', '$default_name_page', '0', '$meta_description_page', '$priority_page', '', '', '', '1', '$p_time');";
         if (!$mysqli->query($req)) {
@@ -46,7 +46,7 @@
         }
     }
     // save titles
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $lang_content_inline = $p_langs[0];
         $contenu_content_inline = $default_name_page;
         $req = 'INSERT INTO `'.$pbd."content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
@@ -56,7 +56,7 @@
         }
     }
     // save description // si necessaire
-    if (!count($errTab) && $default_description_page) {
+    if ((!isset($errTab) || 0 === count($errTab)) && $default_description_page) {
         $lang_content_inline = $p_langs[0];
         $contenu_content_inline = $default_description_page;
         $req = 'INSERT INTO `'.$pbd."content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
@@ -68,6 +68,6 @@
 
     $mysqli->close();
     // LOG
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         mylog('page-libre-create', "Création de la page libre $default_name_page ($code_page)");
     }

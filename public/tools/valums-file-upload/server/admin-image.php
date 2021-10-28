@@ -18,7 +18,7 @@ if (admin()) {
     $_SESSION['user']['id_user'] = 0;
 }
 
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     $targetDir = 'ftp/user/'.(int) ($_SESSION['user']['id_user']).'/images/'; // depuis la racine
     if (!is_dir($targetDir)) {
         mkdir($targetDir, 0777, true);
@@ -44,7 +44,7 @@ if (!count($errTab)) {
     }
 }
 
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     $tmpfilename = $result['filename'];
     $filename = strtolower(formater($tmpfilename, 4));
 
@@ -72,7 +72,7 @@ if (!count($errTab)) {
     }
 
     // redimensionnement des images
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $size = getimagesize($targetDirRel.$filename);
         if ($size[0] > 600 || $size[1] > 800) {
             include APP.'redims.php';
@@ -91,7 +91,7 @@ if (!count($errTab)) {
 }
 
 // envoi du résultat :
-if (count($errTab)) {
+if (isset($errTab) && count($errTab) > 0) {
     $result = ['success' => 0, 'error' => implode(', ', $errTab)];
 }
 

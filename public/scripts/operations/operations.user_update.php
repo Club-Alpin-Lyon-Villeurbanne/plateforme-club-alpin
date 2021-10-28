@@ -6,7 +6,7 @@
     }
 
     // mise à jour infos texte
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $id_user = (int) ($_SESSION['user']['id_user']);
         // $nickname_user=trim(stripslashes($_POST['nickname_user']));
         // $gender_user=trim(stripslashes($_POST['gender_user']));
@@ -29,7 +29,7 @@
         }
 
         // 04/09/2013 - gmn - desactivation car import FFCAM => E.HENKE : on doit malgré tout pouvoir enregistrer les infos personnelles de contact
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             include SCRIPTS.'connect_mysqli.php';
             $auth_contact_user = $mysqli->real_escape_string($auth_contact_user);
             $req = 'UPDATE `'.$pbd."user`
@@ -48,7 +48,7 @@
     }
 
     // mise à jour de la photo si transmise
-    if (!count($errTab) && $_FILES['photo']['size'] > 0) {
+    if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
         // CHECKS
         $allowedExts = ['jpg', 'jpeg', 'png'];
         $extension = strtolower(substr(strrchr($_FILES['photo']['name'], '.'), 1));
@@ -162,7 +162,7 @@
         }
 
         // ENTRÉE DE LA DEMANDE DANS LA BD
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $token = md5($p_time + rand(100, 999));
             $req = 'INSERT INTO `'.$pbd."user_mailchange` ( `id_user_mailchange` , `user_user_mailchange` , `token_user_mailchange` , `email_user_mailchange` )
 														VALUES ('', 			'$id_user',				'$token', 				'$email_user_mailchange');";
@@ -176,7 +176,7 @@
         $mysqli->close();
 
         // ENVOI DU MAIL
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             // check-in vars : string à retourner lors de la confirmation= md5 de la concaténation id-email
             $url = $p_racine.'email-change/'.$token.'-'.$id_user_mailchange.'.html';
 

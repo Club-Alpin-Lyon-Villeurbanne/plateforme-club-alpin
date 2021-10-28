@@ -14,10 +14,10 @@
     include SCRIPTS.'connect_mysqli.php';
 
     // save
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $req = "UPDATE caf_evt SET status_legal_evt='$status_legal_evt', status_legal_who_evt=".(int) ($_SESSION['user']['id_user'])." WHERE caf_evt.id_evt =$id_evt";
         if (!$mysqli->query($req)) {
-            $errTab = 'Erreur SQL : '.$mysqli->error;
+            $errTab[] = 'Erreur SQL : '.$mysqli->error;
             error_log($mysqli->error);
         }
 
@@ -34,7 +34,7 @@
     }
 
     // envoi de mail à l'auteur pour - lui confirmer la validation / OU / l'informer du refus
-    if (!count($errTab) && (1 == $status_legal_evt || 2 == $status_legal_evt)) {
+    if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_legal_evt || 2 == $status_legal_evt)) {
         // content vars
         if (1 == $status_legal_evt) {
             $subject = 'Votre sortie a été validée par le président';
@@ -83,7 +83,7 @@
     }
 
     // Si l'événement est validé, on avertit les sbires, joints par l'auteur, qu'ils sont inscrits d'office à l'événeemnt
-    if (!count($errTab) && $do_mail_evt_legal_update) {
+    if ((!isset($errTab) || 0 === count($errTab)) && $do_mail_evt_legal_update) {
         // liste des personnes inscrites (sauf l'auteur : un e-mail suffit)
         $handle['joins'] = [];
         $req = "SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user

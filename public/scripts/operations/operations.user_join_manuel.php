@@ -49,7 +49,7 @@
         }
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // on vérifie le statut d'inscription de la destination
         if ($_POST['id_destination']) {
             $inscriptions_status = inscriptions_status_destination($_POST['id_destination']);
@@ -127,7 +127,7 @@
             // si pas de pb, intégration
             $role_evt_join = $mysqli->real_escape_string($role_evt_join);
 
-            if (!count($errTab)) {
+            if (!isset($errTab) || 0 === count($errTab)) {
                 // attention : status_evt_join est à 1 ici par défaut
                 $status_evt_join = 0;
                 if ($suis_encadrant || $suis_auteur) {
@@ -143,7 +143,7 @@
 					        $p_time, 			".(int) ($_SESSION['user']['id_user']).",
 					        $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage );";
                 if (!$mysqli->query($req)) {
-                    $errTab = 'Erreur SQL : '.$mysqli->error;
+                    $errTab[] = 'Erreur SQL : '.$mysqli->error;
                     error_log($mysqli->error);
                 } else {
                     unset($_POST['id_user'][$i]);
@@ -158,7 +158,7 @@
                 }
             }
 
-            if (!count($errTab)) {
+            if (!isset($errTab) || 0 === count($errTab)) {
                 // ENVOI DU MAIL
 
                 // recup de son email & nom
@@ -184,7 +184,7 @@
                     $evtName = html_utf8($row['titre_evt']);
                 }
 
-                if (!count($errTabMail)) {
+                if ((!isset($errTabMail) || 0 === count($errTabMail))) {
                     // phpmailer
                     require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
 
@@ -234,7 +234,7 @@
         $errTab = array_merge($errTabMail, $errTab);
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $_POST['id_user'] = [0];
         $_POST['result'] = 'success';
     }
