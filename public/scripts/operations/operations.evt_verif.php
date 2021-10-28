@@ -121,7 +121,7 @@ if ('none' == $_POST['cycle']) { // ceci est la première sortie d'un cycle, la 
 }
 
 // vérifications des dates
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     // checks dates
     $copy_depose_to_reprise = false;
 
@@ -243,7 +243,7 @@ if (!count($errTab)) {
 }
 
 // vérifications BDD
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     include SCRIPTS.'connect_mysqli.php';
 
     // *** necessité de récupérer le code de cette commission
@@ -256,7 +256,7 @@ if (!count($errTab)) {
 
     // *** check chaque encadrant lié : Est-il bien autorisé à encadrer pour cette commission ?
     // (anti piratage : Evite de passer en force un ID d'utilisateur non autorisé)
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // encadrant :
         foreach ($encadrants as $id_user) {
             $id_user = (int) $id_user;

@@ -14,15 +14,15 @@
     include SCRIPTS.'connect_mysqli.php';
 
     // save
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $req = "UPDATE caf_article SET status_article='$status_article', status_who_article=".(int) ($_SESSION['user']['id_user'])." WHERE caf_article.id_article =$id_article";
         if (!$mysqli->query($req)) {
-            $errTab = 'Erreur SQL : '.$mysqli->error;
+            $errTab[] = 'Erreur SQL : '.$mysqli->error;
             error_log($mysqli->error);
         }
         $req = 'UPDATE caf_article SET tsp_validate_article='.$p_time." WHERE caf_article.id_article=$id_article AND tsp_validate_article=0"; // premiere validation
         if (!$mysqli->query($req)) {
-            $errTab = 'Erreur SQL : '.$mysqli->error;
+            $errTab[] = 'Erreur SQL : '.$mysqli->error;
             error_log($mysqli->error);
         }
 
@@ -40,13 +40,13 @@
         // 15/09/2013 - GMN - mise a jour des articles en une
         $req = 'CALL caf_article_maj_une();';
         if (!$mysqli->query($req)) {
-            $errTab = 'Erreur SQL : '.$mysqli->error;
+            $errTab[] = 'Erreur SQL : '.$mysqli->error;
             error_log($mysqli->error);
         }
     }
 
     // envoi de mail à l'auteur pour - lui confirmer la création / OU / l'informer du refus
-    if (!count($errTab) && (1 == $status_article || 2 == $status_article)) {
+    if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_article || 2 == $status_article)) {
         // content vars
         if (1 == $status_article) {
             $subject = 'Votre article a été publié sur le site';

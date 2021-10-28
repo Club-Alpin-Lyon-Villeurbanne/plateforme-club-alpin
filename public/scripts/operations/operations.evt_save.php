@@ -1,7 +1,7 @@
 <?php
 
 // continuons... Création de l'evt en lui meme
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     // formatage des vars : la description héritée du RTE necessite un petit nettoyage de sécurité (javascript / WINcode...)
     include_once 'tools/htmLawed/htmLawed.php';
     $description_evt = htmLawed($description_evt);
@@ -149,7 +149,7 @@ if (!count($errTab)) {
             }
         }
 
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             foreach ($encadrants as $id_user) {
                 $id_user = (int) $id_user;
                 if (!in_array($id_user, $deja_encadrants, true)) {
@@ -177,7 +177,7 @@ if (!count($errTab)) {
             }
         }
 
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             // Gestion des destinations
             if ($_POST['id_destination']) {
                 $id_destination = $_POST['id_destination'];
@@ -230,7 +230,7 @@ if (!count($errTab)) {
                     }
                 }
 
-                if (!count($errTab)) {
+                if (!isset($errTab) || 0 === count($errTab)) {
                     $date_depose = $mysqli->real_escape_string($_POST['lieu']['depose']['date_depose']);
                     $date_reprise = $mysqli->real_escape_string($_POST['lieu']['reprise']['date_reprise']);
 
@@ -251,7 +251,7 @@ if (!count($errTab)) {
 $mysqli->close;
 
 // All good
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     // S'il ne s'agit pas d'un cycle :
     if (!$cycle_master_evt && !$cycle_parent_evt) {
         // L'auteur de la sortie est redirigé vers son espace perso > ses sorties, avec un message "Attente de validation"

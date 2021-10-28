@@ -36,6 +36,6 @@
     }
 
     // DÉMARRAGE SESSION USER
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         user_login($id_user);
     }

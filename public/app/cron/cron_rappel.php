@@ -143,7 +143,7 @@ if ($lastTsp < $minTsp) {
         $id_chron_launch = 1;
     } // Developpement : fixe un parent fictif a un envoi de mail par exemple
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // *******************************
         // RAPPEL D'eVeNEMENTS UTILISATEURS 1 : a 4 jours - PAS DE RAPPEL AU CREATEUR D'EVT [p_chron_rappel_user_avant_event_1]
         if ($do_p_chron_rappel_user_avant_event_1) {
@@ -403,7 +403,7 @@ if ($lastTsp < $minTsp) {
 
 $mysqli->close();
 
-if (count($errTab)) {
+if (isset($errTab) && count($errTab) > 0) {
     if (admin()) {
         foreach ($errTab as $err) {
             error_log("$err");

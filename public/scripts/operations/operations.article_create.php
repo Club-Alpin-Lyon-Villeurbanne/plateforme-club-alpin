@@ -41,7 +41,7 @@
     }
 
     // enregistrement en BD
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         include SCRIPTS.'connect_mysqli.php';
         $titre_article = $mysqli->real_escape_string($titre_article);
         $code_article = $mysqli->real_escape_string($code_article);
@@ -58,7 +58,7 @@
     }
 
     // déplacement des fichiers
-    if (!count($errTab) && $id_article > 0) {
+    if ((!isset($errTab) || 0 === count($errTab)) && $id_article > 0) {
         // repertoire de l'image a recuperer
         $dirFrom = 'ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/';
         // créa du repertroie destination
@@ -81,6 +81,6 @@
     }
 
     // redirecion
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         header('Location: profil/articles.html?lbxMsg=article_create_success');
     }

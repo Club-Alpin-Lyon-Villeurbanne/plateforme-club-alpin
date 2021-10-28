@@ -56,7 +56,7 @@
         $userTab['birthday_user']=mktime(0, 0, 0, $tab[1], $tab[0], $tab[2]);
     }
 */
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // insertion SQL
         include SCRIPTS.'connect_mysqli.php';
 
@@ -84,7 +84,7 @@
             }
         }
 
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $req = "UPDATE `caf_user` SET email_user='".$mysqli->real_escape_string($userTab['email_user'])."',
 				auth_contact_user='".$mysqli->real_escape_string($userTab['auth_contact_user'])."',
 				cafnum_user='".$mysqli->real_escape_string($userTab['cafnum_user'])."'";

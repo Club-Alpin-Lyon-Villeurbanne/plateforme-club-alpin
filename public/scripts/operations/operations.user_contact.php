@@ -50,7 +50,7 @@
     }
 
     // récup' infos destinataire
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $destinataire = false;
         // ce user autorise t-il le contact
         $req = "SELECT civ_user, firstname_user, lastname_user, auth_contact_user, email_user
@@ -71,7 +71,7 @@
     }
 
     // contact autorisé ? antipiratage
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $auth_contact_user = false;
         if ('none' == $destinataire['auth_contact_user']) {
             $errTab[] = 'Ce destinataire a désactivé le contact par e-mail.';
@@ -82,7 +82,7 @@
     }
 
     // ENVOI DU MAIL
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // content vars
         $subject = 'Contact sur le site du Club Alpin : '.$objet;
         $content_header = '';
@@ -130,7 +130,7 @@
     $mysqli->close();
 
     // tout s'est bien passé, on vide les variables postées
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         unset($_POST);
         $_POST['operation'] = 'user_contact';
     }

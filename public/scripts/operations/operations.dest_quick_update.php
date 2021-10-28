@@ -30,7 +30,7 @@ if ('dest_annuler' == $_POST['operation']) {
     }
 }
 
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     include SCRIPTS.'connect_mysqli.php';
 
     $comma = null;

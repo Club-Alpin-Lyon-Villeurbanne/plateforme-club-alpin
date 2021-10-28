@@ -7,7 +7,7 @@
         $errTab[] = 'ID invalide';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // recuperation de la sortie demandée
         include SCRIPTS.'connect_mysqli.php';
         $req = "SELECT id_evt, code_evt, status_evt, titre_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt, tsp_evt, code_commission,
@@ -25,7 +25,7 @@
                 $errTab[] = 'Accès non autorisé';
             } else {
                 // mise à jour
-                if (!count($errTab)) {
+                if (!isset($errTab) || 0 === count($errTab)) {
                     // si cette sortie fait partie d'un cycle et si la premiere du cycle est annulee on dissocie la sortie actuelle
                     $cycle_parent_evt = $handle['cycle_parent_evt'];
                     if ($handle['cycle_parent_evt'] > 0) {
@@ -77,7 +77,7 @@
                 }
 
                 // redirection vers la page de la sortie
-                if (!count($errTab)) {
+                if (!isset($errTab) || 0 === count($errTab)) {
                     $mysqli->close();
                     header('Location:'.$p_racine.'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html');
                     exit;

@@ -67,7 +67,7 @@ if (!admin()) {
 
 	<br />
 	<!-- nouvel elt -->
-	<form class="toggleForm add" action="<?php echo $versCettePage; ?>" method="post" style="display:<?php if (('addContentInline' == $_POST['operation'] && count($errTab)) || 'forceAddContent' == $_POST['operation']) {
+	<form class="toggleForm add" action="<?php echo $versCettePage; ?>" method="post" style="display:<?php if (('addContentInline' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) || 'forceAddContent' == $_POST['operation']) {
         echo 'block';
     } ?>">
 		<input type="hidden" name="operation" value="addContentInline" />
@@ -136,10 +136,10 @@ if (!admin()) {
         } ?>">
 		<input type="hidden" name="operation" value="addContentGroup" />
 		<?php
-        if ('addContentGroup' == $_POST['operation'] && !count($errTab)) {
+        if ('addContentGroup' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
             echo '<div class="info">Nouveau groupe créé, et disponible dans la liste.</div>';
         }
-    if ('addContentGroup' == $_POST['operation'] && count($errTab)) {
+    if ('addContentGroup' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
     } ?>
 		<h4>Ajouter un groupe de contenu</h4>

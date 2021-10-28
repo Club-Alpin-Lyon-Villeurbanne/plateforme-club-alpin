@@ -24,7 +24,7 @@
         $errTab[] = 'Le mot de passe doit faire de 6 à 12 caractères';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         include SCRIPTS.'connect_mysqli.php';
         // formatage sécurité
         $lastname_user = $mysqli->real_escape_string($lastname_user);
@@ -38,7 +38,7 @@
         }
 
         // Si ce compte a été désactivé
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $req = 'SELECT COUNT(id_user)
 				FROM '.$pbd."user
 				WHERE cafnum_user = '$cafnum_user'
@@ -52,7 +52,7 @@
         }
 
         // Si ce compte est déjà existant et activé avec ce numéro de licence
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $req = 'SELECT COUNT(id_user)
 				FROM '.$pbd."user
 				WHERE cafnum_user = '$cafnum_user'
@@ -66,7 +66,7 @@
         }
 
         // Si ce compte est déjà existant et activé avec cette adresse email
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $req = 'SELECT COUNT(id_user)
 				FROM '.$pbd."user
 				WHERE email_user LIKE '$email_user'
@@ -80,7 +80,7 @@
         }
 
         // vérification du numéro CAF
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $req = 'SELECT COUNT(id_user) FROM '.$pbd."user WHERE cafnum_user = '$cafnum_user' LIMIT 1";
             $result = $mysqli->query($req);
             $row = $result->fetch_row();
@@ -90,7 +90,7 @@
         }
 
         // vérification de l'obsolescence du compte
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $req = 'SELECT COUNT(id_user) FROM '.$pbd."user WHERE cafnum_user = '$cafnum_user' AND doit_renouveler_user =1 LIMIT 1";
             $result = $mysqli->query($req);
             $row = $result->fetch_row();
@@ -100,7 +100,7 @@
         }
 
         // le nom colle ?
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $id_user = false;
             $req = 'SELECT id_user
 				FROM '.$pbd."user
@@ -119,7 +119,7 @@
         }
 
         // création du pseudonyme
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $nickname_user = false;
             // id_user défini juste avant
             $req = 'SELECT lastname_user, firstname_user
@@ -142,7 +142,7 @@
 
         // tt ok ? activation
         // intégration des valeurs données et du token nécessaire à la confirmation par email
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $cookietoken_user = md5($id_user.$p_time.rand(100, 999));
             $req = 'UPDATE '.$pbd."user SET email_user = '$email_user',
 				mdp_user = '$mdp_user',
@@ -156,7 +156,7 @@
         }
 
         // envoi de l'e-mail
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             // check-in vars : string à retourner lors de la confirmation= md5 de la concaténation id-email
             $url = $p_racine.'user-confirm/'.$cookietoken_user.'-'.$id_user.'.html';
 

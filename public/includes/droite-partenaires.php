@@ -13,7 +13,7 @@ if ($p_showPartenairesSlider) {
     $result = $mysqli->query($req);
 
     if (!$mysqli->query($req)) {
-        $errTab = 'Erreur SQL : '.$mysqli->error;
+        $errTab[] = 'Erreur SQL : '.$mysqli->error;
         error_log($mysqli->error);
     } else {
         while ($row = $result->fetch_array(\MYSQLI_ASSOC)) {

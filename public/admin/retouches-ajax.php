@@ -38,7 +38,7 @@ if (admin()) {
         $errTab[] = 'no yDest';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // preview, ou finale ?
         $preview = $preview ? true : false;
 
@@ -132,7 +132,7 @@ if (admin()) {
         }
     }
 
-    if (count($errTab)) {
+    if (isset($errTab) && count($errTab) > 0) {
         $log .= "\n\n".implode("\n", $errTab);
     }
 

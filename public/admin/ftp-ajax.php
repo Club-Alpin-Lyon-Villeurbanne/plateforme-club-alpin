@@ -16,7 +16,7 @@ if (!admin()) {
 }
 
 // vars et checks
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     $dossier = $_GET['dossier'];
     // checks :
     if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier, '../') > 1) {
@@ -28,7 +28,7 @@ if (!count($errTab)) {
 }
 
 // listage
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     $one = false; // booleen : un dossier trouve au moins
     $opendir = opendir($dossier);
     while ($file = readdir($opendir)) {
@@ -55,7 +55,7 @@ if (!count($errTab)) {
     }
 }
 
-if (count($errTab)) {
+if (isset($errTab) && count($errTab) > 0) {
     $result['error'] = $errTab;
 } else {
     $result['success'] = 1;

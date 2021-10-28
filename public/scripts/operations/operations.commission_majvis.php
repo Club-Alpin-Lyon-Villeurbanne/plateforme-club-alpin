@@ -7,7 +7,7 @@
         $errTab[] = 'Erreur à la reception des données';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         include SCRIPTS.'connect_mysqli.php';
         $id_commission = (int) ($_POST['id_commission']);
         $vis_commission = (int) ($_POST['vis_commission']);

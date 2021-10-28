@@ -40,7 +40,7 @@
     }
 
     // save page
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $req = 'UPDATE  '.$pbd."page
 			SET code_page = '$code_page',
 			default_name_page = '$default_name_page',
@@ -54,7 +54,7 @@
         }
     }
     // save titles
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $lang_content_inline = $p_langs[0];
         $contenu_content_inline = $default_name_page;
         $req = 'INSERT INTO `'.$pbd."content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
@@ -64,7 +64,7 @@
         }
     }
     // save description // si necessaire
-    if (!count($errTab) && $default_description_page) {
+    if ((!isset($errTab) || 0 === count($errTab)) && $default_description_page) {
         $lang_content_inline = $p_langs[0];
         $contenu_content_inline = $default_description_page;
         $req = 'INSERT INTO `'.$pbd."content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
@@ -76,6 +76,6 @@
 
     $mysqli->close();
     // LOG
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         mylog('page-libre-edit', "Modification des METAS de la page libre $default_name_page ($code_page)");
     }

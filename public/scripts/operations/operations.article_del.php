@@ -15,7 +15,7 @@
         $errTab[] = 'Aucun enregistrement affecté';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // suppression du dossier
         if ($id_article && is_dir('ftp/articles/'.$id_article)) {
             clearDir('ftp/articles/'.$id_article);

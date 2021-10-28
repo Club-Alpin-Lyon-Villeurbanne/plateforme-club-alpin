@@ -42,10 +42,10 @@
 			<h3>Ajouter un attribut à cet adhérent :</h3>
 			<?php
             // message
-            if ('user_attr_add' == $_POST['operation'] && count($errTab)) {
+            if ('user_attr_add' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                 echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
             }
-        if ('user_attr_add' == $_POST['operation'] && !count($errTab)) {
+        if ('user_attr_add' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
             echo '<div class="info">Mise à jour effectuée à '.date('H:i:s', $p_time).'.</div>';
         }
 

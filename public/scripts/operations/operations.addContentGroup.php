@@ -14,7 +14,7 @@
         $errTab[] = 'Erreur : ce groupe existe déjà dans la liste';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $nom_content_inline_group = $mysqli->real_escape_string($nom_content_inline_group);
 
         $req = 'INSERT INTO `'.$pbd."content_inline_group` (`id_content_inline_group` ,`ordre_content_inline_group` ,`nom_content_inline_group`)

@@ -6,7 +6,7 @@
         $errTab[] = 'Erreur id';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         if (is_file('ftp/user/'.$id_user.'/min-profil.jpg')) {
             unlink('ftp/user/'.$id_user.'/min-profil.jpg');
         }

@@ -18,7 +18,7 @@
             $errTab[] = "Il semble qu'aucune page ne soit autorisée à être supprimée ave cet id.";
         }
 
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             // del page
             $req = 'DELETE FROM `'.$pbd.'page` WHERE `'.$pbd."page`.`id_page` = $id_page LIMIT 1;";
             if (!$mysqli->query($req)) {
@@ -34,7 +34,7 @@
         echo '<hr />';
 
         // LOG
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             mylog('page-delete', "Suppression de la page $code_page", false);
         }
     }
