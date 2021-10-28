@@ -46,15 +46,18 @@ jobs:
       - run: make package
 #      - run: make php-cs
       - run:
-          name: Prepare codebase given target
+          name: Send data to server
           command: |
             case ${CIRCLE_BRANCH} in
                 "production" )
                     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -J jump-user@141.94.251.125 package.zip kahe0589@109.234.162.184:/home/kahe0589/clubalpinlyon.fr
                   ;;
                 "main" )
+                    echo "Transfering package..."
                     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -J jump-user@141.94.251.125 package.zip kahe0589@109.234.162.184:/home/kahe0589/test.clubalpinlyon.fr
+                    echo "Transfering deploy script..."
                     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -J jump-user@141.94.251.125 .circleci/deploy.sh kahe0589@109.234.162.184:/home/kahe0589/test.clubalpinlyon.fr
+                    echo "Running deploy..."
                     ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -J jump-user@141.94.251.125 /home/kahe0589/test.clubalpinlyon.fr/deploy.sh
                   ;;
             esac
