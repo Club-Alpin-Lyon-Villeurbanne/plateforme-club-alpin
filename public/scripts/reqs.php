@@ -1523,7 +1523,7 @@ elseif ('recherche' == $p1 && strlen($_GET['str'])) {
         $errTab[] = 'Votre recherche doit comporter au moins '.$p_maxlength_search.' caractères.';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // *******
         // RECH ARTICLES - permet la recherche par pseudo de l'auteur
         $articlesTab = [];

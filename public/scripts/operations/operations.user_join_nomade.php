@@ -61,7 +61,7 @@
         $errTab[] = 'Merci de renseigner le champ <i>rôle</i>';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // si pas d'ID user spécifié, on crée ce nomade
         if (!$id_user) {
             // securite
@@ -88,7 +88,7 @@
         }
 
         // plus qu'à joindre cet user à l'evt
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             // securite
 
             if ($_POST['is_cb']) {
@@ -144,7 +144,7 @@
                 $id_destination = 'NULL';
             }
 
-            if (!count($errTab)) {
+            if (!isset($errTab) || 0 === count($errTab)) {
                 $role_evt_join = $mysqli->real_escape_string($role_evt_join);
 
                 // attention : status_evt_join est à 0 ici par défaut
@@ -157,7 +157,7 @@
                                         VALUES(NULL ,	 $status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', $p_time, 		$p_time, 			".(int) ($_SESSION['user']['id_user']).",
 					        $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
                 if (!$mysqli->query($req)) {
-                    $errTab = 'Erreur SQL : '.$mysqli->error;
+                    $errTab[] = 'Erreur SQL : '.$mysqli->error;
                     error_log($mysqli->error);
                 }
             }

@@ -13,7 +13,7 @@
                 echo '<h1>Votre recherche : &laquo;&nbsp;'.$safeStr.'&nbsp;&raquo;</h1>';
 
                 // ERREURS
-                if (count($errTab)) {
+                if (isset($errTab) && count($errTab) > 0) {
                     echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                 } else {
                     // RECHERCHE - ARTICLES

@@ -5,7 +5,7 @@
 
 	<?php
     // MESSAGES A LA SOUMISSION
-    if ('comment' == $_POST['operation'] && count($errTab)) {
+    if ('comment' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
     }
     ?>

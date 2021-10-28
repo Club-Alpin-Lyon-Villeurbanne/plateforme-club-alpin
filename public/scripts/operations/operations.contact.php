@@ -24,7 +24,7 @@
         $errTab[] = 'Veuillez entrer un message valide';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // ENVOI DU MAIL
         // content vars
         $subject = $objet;
@@ -77,7 +77,7 @@
         $mysqli->close();
     }
     // tout s'est bien passé, on vide les variables postées
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         unset($_POST);
         $_POST['operation'] = 'contact';
     }

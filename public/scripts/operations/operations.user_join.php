@@ -31,7 +31,7 @@
         $errTab[] = "Merci de cocher la case &laquo; J'ai lu les conditions...&raquo;";
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // Bénévole
         if ('on' == $_POST['jeveuxetrebenevole']) {
             $role_evt_join = 'benevole';
@@ -144,7 +144,7 @@
         }
 
         // SI PAS DE PB, INTÉGRATION BDD
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             if ('on' == $_POST['jeveuxpayerenligne']) {
                 $is_cb = 1;
             } else {
@@ -229,7 +229,7 @@
         }
 
         // E-MAIL À L'ORGANISATEUR ET AUX ENCADRANTS
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $destinataires = [];
 
             // créateur de sortie (on utilise les ID comme clé pour éviter le doublon d'email créateur de sortie + encadreant de sortie)
@@ -364,7 +364,7 @@
         }
 
         // E-MAIL AU PRE-INSCRIT
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             // var cetinscrit déja définie
             // $destinataire = $cetinscrit;
             $destinataire = $_SESSION['user'];

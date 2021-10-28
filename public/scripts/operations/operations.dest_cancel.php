@@ -26,7 +26,7 @@ include SCRIPTS.'connect_mysqli.php';
         $errTab[] = 'Accès non autorisé';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $req = 'UPDATE `'.$pbd."destination` SET `annule` = '1' WHERE `id` = $id_destination;";
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL annulation destination';
@@ -34,7 +34,7 @@ include SCRIPTS.'connect_mysqli.php';
     }
 
     // Mise à jour : annulation des sorties
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $sorties = get_sorties_for_destination($id_destination);
 
         foreach ($sorties as $sortie) {
@@ -46,7 +46,7 @@ include SCRIPTS.'connect_mysqli.php';
     }
 
         // message aux participants si la sortie est annulée alors qu'elle est publiée
-        if (!count($errTab) && 1 == $destination['publie']) {
+        if ((!isset($errTab) || 0 === count($errTab)) && 1 == $destination['publie']) {
             // phpmailer
             require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
 
@@ -75,7 +75,7 @@ include SCRIPTS.'connect_mysqli.php';
             $handleSql2 = $mysqli->query($req);
 
             // desinscription des participants de la sortie
-            if (!count($errTab)) {
+            if (!isset($errTab) || 0 === count($errTab)) {
                 $req = "DELETE FROM caf_evt_join WHERE role_evt_join NOT IN ('encadrant', 'coencadrant') AND id_destination = $id_destination";
                 if (!$mysqli->query($req)) {
                     $errTab[] = 'Erreur SQL (DELETE FROM caf_evt_join)';
@@ -110,7 +110,7 @@ include SCRIPTS.'connect_mysqli.php';
         $mysqli->close();
 
         // redirection vers la page de la sortie avec le message "annulé"
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             // sans message d'avertissement nomades
             if (!count($nomadMsg)) {
                 header('Location:'.$p_racine.'destination/'.$destination['code'].'-'.$destination['id'].'.html');

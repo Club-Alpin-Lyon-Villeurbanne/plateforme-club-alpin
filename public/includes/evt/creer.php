@@ -9,7 +9,7 @@
     }
 
     // message d'erreur
-    if ($_POST['operation'] && count($errTab)) {
+    if ($_POST['operation'] && isset($errTab) && count($errTab) > 0) {
         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul>';
         if (!$destination) {
             echo '<b>Attention :</b> Le marqueur rouge sur la carte a peut-être été déplacé !';
@@ -17,7 +17,7 @@
         echo '</div>';
     }
     // message d'info : si c'est une modification de sortie
-    if ('evt_update' == $_POST['operation'] && !count($errTab)) {
+    if ('evt_update' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info"><img src="img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date('H:i:s', $p_time).'. <b>Important :</b> cette sortie doit à présent être validée par un responsable pour être publiée sur le site.<a href="profil/sorties/self.html" title="">&gt; Retourner à la liste de mes sorties</a></p>';
     }
     ?>

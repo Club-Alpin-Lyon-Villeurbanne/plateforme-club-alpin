@@ -33,7 +33,7 @@
     include SCRIPTS.'connect_mysqli.php';
 
     // checks SQL
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // article publié et commentable ?
         $req = 'SELECT a.id_article, a.user_article, u.email_user, a.titre_article, a.code_article
 				FROM '.$pbd.''.$parent_type_comment.' a, caf_user u
@@ -51,7 +51,7 @@
     }
 
     // insert SQL
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // formatage
         $cont_comment_mysql = $mysqli->real_escape_string($cont_comment);
 
@@ -90,7 +90,7 @@
         }
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $_POST['cont_comment'] = '';
     }
 

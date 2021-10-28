@@ -6,7 +6,7 @@
     $email_user = trim(stripslashes($_POST['email_user']));
     $mdp_user = trim(stripslashes($_POST['mdp_user']));
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // **********
         // verification de l'existence ou non du compte
         $email_user_check = $mysqli->real_escape_string(htmlspecialchars($email_user, \ENT_NOQUOTES, 'UTF-8'));
@@ -17,7 +17,7 @@
             $errTab[] = $fieldsErrTab['email_user'] = "Désolé, cette adresse email est inconnue ou pas encore validée !<br />Si vous êtes bien inscrit au Club Alpin, mais que ceci est votre première connexion sur ce site, vous devez d'abord créer votre compte.";
         }
     }
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // **********
         // verification du mot de passe
         if ($use_md5_salt) {

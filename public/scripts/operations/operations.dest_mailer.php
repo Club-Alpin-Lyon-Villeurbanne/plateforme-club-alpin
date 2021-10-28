@@ -30,7 +30,7 @@ if ($destination['mail']) {
     $errTab[] = 'Les emails ont déjà été envoyés.';
 }
 
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     // ENVOI DU MAIL
 
     require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
@@ -81,7 +81,7 @@ if (!count($errTab)) {
             $evtFiche = html_utf8($p_racine.'feuille-de-sortie/evt-'.$encadrant['sortie']['id_evt'].'.html');
             $destFiche = html_utf8($p_racine.'feuille-de-sortie/dest-'.$id_destination.'.html');
 
-            if (!count($errTabMail)) {
+            if ((!isset($errTabMail) || 0 === count($errTabMail))) {
                 // contenu
                 $subject = "Vous êtes responsable d'une sortie à venir du CAF";
                 $content_main = "<h2>$subject</h2>
@@ -126,7 +126,7 @@ if (!count($errTab)) {
         $errTab = array_merge($errTabMail, $errTab);
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         include SCRIPTS.'connect_mysqli.php';
         global $userAllowedTo, $pbd;
         $req = 'UPDATE `'.$pbd."destination` SET `mail` = '1' WHERE `caf_destination`.`id` = $id_destination";

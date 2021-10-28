@@ -39,7 +39,7 @@ if (!admin()) {
         $errTab[] = "Le fichier $filename est protégé contre la suppression";
     }
 
-    if (count($errTab)) {
+    if (isset($errTab) && count($errTab) > 0) {
         echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
     } else {
         // VERIFS DEJA FAITES, OPERATION OK SUR DEMANDE
@@ -52,7 +52,7 @@ if (!admin()) {
                 }
             }
             // fermeture de la box/ actualissation du ftp
-            if (!count($errTab)) {
+            if (!isset($errTab) || 0 === count($errTab)) {
                 ?>
 				<script type="text/javascript">
 					parent.$('#ftp-2-arbo a.selected').click();
@@ -64,7 +64,7 @@ if (!admin()) {
         }
 
         // OPERATION PAS LANCEE OU ERREUR
-        if (!$_POST['operation'] || 'delete' == $_POST['operation'] && count($errTab)) {
+        if (!$_POST['operation'] || 'delete' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
             ?><!doctype html>
 			<html lang="fr">
 				<head>
@@ -80,7 +80,7 @@ if (!admin()) {
 				<body class="ftp-frame" onload="$('form input[type=submit]').focus();">
 					<?php
                     // msg d'erreur ?
-                    if (count($errTab)) {
+                    if (isset($errTab) && count($errTab) > 0) {
                         echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                     } ?>
 

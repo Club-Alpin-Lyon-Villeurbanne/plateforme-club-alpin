@@ -31,7 +31,7 @@
         }
 
         // Mise à jour : annulation
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $req = "UPDATE caf_evt SET cancelled_evt='1', cancelled_who_evt='".(int) ($_SESSION['user']['id_user'])."', cancelled_when_evt='".$p_time."'  WHERE caf_evt.id_evt =$id_evt";
             // annulation de toutes les sorties du cycle
             if (true || $_POST['del_cycle_master_evt']) {
@@ -44,7 +44,7 @@
         }
 
         // message aux participants si la sortie est annulée alors qu'elle est publiée
-        if (!count($errTab) && 1 == $handle['status_evt']) {
+        if ((!isset($errTab) || 0 === count($errTab)) && 1 == $handle['status_evt']) {
             // phpmailer
             require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
 
@@ -80,7 +80,7 @@
             $handleSql2 = $mysqli->query($req);
 
             // desinscription des participants de la sortie
-            if (!count($errTab)) {
+            if (!isset($errTab) || 0 === count($errTab)) {
                 $req = "DELETE FROM caf_evt_join WHERE role_evt_join NOT IN ('encadrant', 'coencadrant') AND (caf_evt_join.evt_evt_join = $id_evt";
 
                 // desinscription de toutes les sorties du cycle si annulation du cycle complet, normalement y'en a pas...
@@ -118,7 +118,7 @@
             }
         }
         // redirection vers la page de la sortie avec le message "annulé"
-        if (!count($errTab)) {
+        if (!isset($errTab) || 0 === count($errTab)) {
             $mysqli->close();
             // sans message d'avertissement nomades
             if (!count($nomadMsg)) {

@@ -16,10 +16,10 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 
 	<?php
     // TABLEAU D'ERREURS
-    if ($_POST['operation'] && count($errTab)) {
+    if ($_POST['operation'] && isset($errTab) && count($errTab) > 0) {
         echo '<div class="erreur">Erreur : <ul><li>- '.implode('</li><li>- ', $errTab).'</li></ul></div>';
     }
-    if ($_POST['operation'] && !count($errTab)) {
+    if ($_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', $p_time).'.</p>';
     } ?>
 

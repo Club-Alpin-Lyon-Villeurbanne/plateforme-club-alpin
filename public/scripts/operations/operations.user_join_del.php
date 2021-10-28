@@ -7,7 +7,7 @@
         $errTab[] = 'Erreur de données';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         include SCRIPTS.'connect_mysqli.php';
 
         // Informations sur l'événement
@@ -63,7 +63,7 @@
                 $errTab[] = 'Les coordonnées du contact sont erronées';
             }
 
-            if (!count($errTab)) {
+            if (!isset($errTab) || 0 === count($errTab)) {
                 // si pas de pb, suppression de l'inscription
                 $req = "DELETE FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join=$id_user";
                 if (!$mysqli->query($req)) {

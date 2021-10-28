@@ -3,7 +3,7 @@
     include SCRIPTS.'operations'.DS.'operations.dest_verif.php';
 
     // vérifications BDD
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         include SCRIPTS.'connect_mysqli.php';
 
         // Vérification des (co)responsables
@@ -54,6 +54,6 @@
 
 $mysqli->close;
 
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     header('Location:'.$p_racine.'creer-une-sortie/creer-une-destination/update-'.$id_dest_to_update.'.html');
 }

@@ -54,7 +54,7 @@ if (!admin()) {
     }
     checkMe($target);
 
-    if (count($errTab)) {
+    if (isset($errTab) && count($errTab) > 0) {
         echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
     } else {
         // VERIFS DEJA FAITES, OPERATION OK SUR DEMANDE
@@ -67,7 +67,7 @@ if (!admin()) {
                 }
             }
             // fermeture de la box/ actualissation du ftp
-            if (!count($errTab)) {
+            if (!isset($errTab) || 0 === count($errTab)) {
                 ?>
 				<script type="text/javascript">
 					parent.document.location.href='ftp.php?dossier='+parent.currentDir;
@@ -78,7 +78,7 @@ if (!admin()) {
         }
 
         // OPERATION PAS LANCEE OU ERREUR
-        if (!$_POST['operation'] || 'delete' == $_POST['operation'] && count($errTab)) {
+        if (!$_POST['operation'] || 'delete' == $_POST['operation'] && (isset($errTab) && count($errTab) > 0)) {
             ?><!doctype html>
 			<html lang="fr">
 				<head>
@@ -94,7 +94,7 @@ if (!admin()) {
 				<body class="ftp-frame">
 					<?php
                     // msg d'erreur ?
-                    if (count($errTab)) {
+                    if (isset($errTab) && count($errTab) > 0) {
                         echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                     } ?>
 

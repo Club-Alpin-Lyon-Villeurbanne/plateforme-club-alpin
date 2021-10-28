@@ -29,7 +29,7 @@
 
     include SCRIPTS.'connect_mysqli.php';
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // sélection de l'événement, avec vérification que j'EN SUIS L'AUTEUR, puis des users liés en fonction des destinataires demandés
         $req = "
 		SELECT  `id_user` ,  `email_user` ,  `firstname_user` ,  `lastname_user` ,  `nickname_user` ,  `civ_user`
@@ -54,7 +54,7 @@
     }
 
     // créa, envoi du mail
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // infos evt
         $req = "SELECT * FROM caf_evt WHERE id_evt = $id_evt";
         $handleSql = $mysqli->query($req);
@@ -99,6 +99,6 @@
     $mysqli->close();
 
     // reset vals
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $_POST['objet'] = $_POST['message'] = '';
     }

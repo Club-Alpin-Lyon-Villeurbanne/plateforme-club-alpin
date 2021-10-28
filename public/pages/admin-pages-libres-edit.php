@@ -26,10 +26,10 @@ if (!admin()) {
 
 		<?php
         // TABLEAU
-        if ('pagelibre_edit' == $_POST['operation'] && count($errTab)) {
+        if ('pagelibre_edit' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
             echo '<div class="erreur">Erreur : <ul><li>- '.implode('</li><li>- ', $errTab).'</li></ul></div>';
         }
-    if ('pagelibre_edit' == $_POST['operation'] && !count($errTab)) {
+    if ('pagelibre_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', $p_time).'. Vous pouvez actualiser cette page</p>';
         echo '<script stype="text/javascript">parent.location.href="'.($p_multilangue ? $lang.'/' : '').'admin-pages-libres.html?showmsg=pagelibre_edit";</script>';
     } ?>

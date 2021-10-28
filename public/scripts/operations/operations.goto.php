@@ -10,7 +10,7 @@
         $errTab[] = 'partenaire inconnu';
     }
 
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         include $scriptsDir.'connect_mysqli.php';
         switch ($p2) {
             case 'partenaire':

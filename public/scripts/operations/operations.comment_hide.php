@@ -6,7 +6,7 @@
     }
 
     include SCRIPTS.'connect_mysqli.php';
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         // recup
         $comment = false;
         $req = "SELECT * FROM caf_comment WHERE id_comment = $id_comment";
@@ -20,14 +20,14 @@
     }
 
     // verif de droits
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         if ($comment['user_comment'] != $_SESSION['user']['id_user'] && !allowed('comment_delete_any')) {
             $errTab[] = "<p class='erreur'>Vous n'avez pas les droits pour supprimer ce commentaire.</p>";
         }
     }
 
     // desactivation
-    if (!count($errTab)) {
+    if (!isset($errTab) || 0 === count($errTab)) {
         $req = "UPDATE caf_comment SET status_comment=2 WHERE id_comment = $id_comment";
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL';

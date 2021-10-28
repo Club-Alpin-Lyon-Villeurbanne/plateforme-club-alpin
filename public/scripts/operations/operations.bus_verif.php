@@ -45,7 +45,7 @@ if (empty($_POST['use_existant'])) {
     $id_lieu = (int) ($_POST['use_existant']);
 }
 
-if (!count($errTab)) {
+if (!isset($errTab) || 0 === count($errTab)) {
     // Vérifier que l'horaire de ramassage est bien le jour de la destination
 }
 

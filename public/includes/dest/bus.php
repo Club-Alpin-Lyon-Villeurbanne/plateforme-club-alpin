@@ -16,7 +16,7 @@
 
     <h1><span class="bleucaf"><?php echo $bus['intitule']; ?></span> <small>pour</small> <span class="bleucaf"><?php echo $bus['destination']['nom']; ?></span> <small>, <?php echo display_dateTime($bus['destination']['date']); ?></small></h1>
 
-    <?php if ($_POST['operation'] && count($errTab)) { ?>
+    <?php if ($_POST['operation'] && isset($errTab) && count($errTab) > 0) { ?>
         <div class="erreur">Erreur : <ul><li><?php echo implode('</li><li>', $errTab); ?></li></ul></div><br>
     <?php } elseif ($_POST['operation']) { ?>
         <p class="info">

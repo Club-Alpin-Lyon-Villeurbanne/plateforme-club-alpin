@@ -34,10 +34,10 @@
 
 						<?php
                         // TABLEAU
-                        if ('evt_del' == $_POST['operation'] && count($errTab)) {
+                        if ('evt_del' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                         }
-                    if ('evt_del' == $_POST['operation'] && !count($errTab)) {
+                    if ('evt_del' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                         echo '<p class="info">Cette sortie a été annulée.</p>';
                     } ?>
 						<br />

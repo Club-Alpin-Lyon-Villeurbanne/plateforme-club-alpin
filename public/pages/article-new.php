@@ -50,11 +50,11 @@ if ($_GET['compterendu']) {
 
 					<?php
                     // message d'erreur
-                    if ($_POST['operation'] && count($errTab)) {
+                    if ($_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                     }
                 // message d'info : si c'est une modification
-                if ('article_update' == $_POST['operation'] && !count($errTab)) {
+                if ('article_update' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                     echo '<p class="info"><img src="img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date('H:i:s', $p_time).'. <b>Important :</b> cet article doit à présent être validé par un responsable pour être publié sur le site.<a href="profil/articles/self.html" title="">&gt; Retourner à la liste de mes articles</a></p>';
                 } ?>
 

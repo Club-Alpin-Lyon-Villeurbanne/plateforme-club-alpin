@@ -1,7 +1,7 @@
 
 <div style="padding:10px 0 0 30px; line-height:18px; ">
 
-    <?php if (count($errTab)) {
+    <?php if (isset($errTab) && count($errTab) > 0) {
     echo '<div class="alerte"><p>Impossible de poursuivre cette opération : </p><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
 } ?>
 

@@ -36,10 +36,10 @@ if (user() && allowed('evt_join')) {
 
                                 <?php
                                     // TABLEAU d'erreurs
-                                    if ('user_join' == $_POST['operation'] && count($errTab)) {
+                                    if ('user_join' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                                         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                                     }
-                                    if ('user_join' == $_POST['operation'] && !count($errTab)) {
+                                    if ('user_join' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                                         echo '<div class="info">Opération effectuée avec succès : '.count($inscrits).' personnes inscrite(s)</div>';
                                     }
                                 ?>
@@ -86,10 +86,10 @@ if (user() && allowed('evt_join')) {
 
                                 <?php
                                     // TABLEAU d'erreurs
-                                    if ('user_join' == $_POST['operation'] && count($errTab)) {
+                                    if ('user_join' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                                         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                                     }
-                            if ('user_join' == $_POST['operation'] && !count($errTab)) {
+                            if ('user_join' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                                 echo '<div class="info">Opération effectuée avec succès : '.count($inscrits).' personnes pré-inscrite(s)</div>';
                             } ?>
 
