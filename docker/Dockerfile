@@ -1,4 +1,4 @@
-FROM php:7.2-apache
+FROM php:7.3-apache
 
 COPY --from=composer:2.1.9 /usr/bin/composer /usr/bin/composer
 
@@ -21,7 +21,7 @@ RUN apt update && \
         vim \
         jq \
         cron \
-        mariadb-client-10.3 && \
+        mariadb-client-10.5 && \
     apt clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
