@@ -18,7 +18,7 @@ Les secrets (mot de passe de db, mot de passe ftp, etc...) sont stockés en tant
 ## Environments
 
 Un environment de dev est accessible sur https://test.clubalpinlyon.fr.  
-Le code de cet environment se trouve dans `/home/kahe0589/test` et la db utilisée est `kahe0589_dev`.
+Le code de cet environment se trouve dans `/home/kahe0589/test.clubalpinlyon.fr` et la db utilisée est `kahe0589_dev`.
 
 ## local setup
 
@@ -27,8 +27,8 @@ Le code de cet environment se trouve dans `/home/kahe0589/test` et la db utilis�
  - cp public/config/params.php.tpl public/config/params.php
  - installer Docker
  - executer Docker host manager (https://github.com/iamluc/docker-hostmanager)
- - executer `make up`
- - vous avez désormais accès au site sur `http://cafsite.caf/`, PHPMyAdmin sur `http://phpmyadmin.caf/`
+ - executer `make buil up setup-db`
+ - vous avez désormais accès au site sur `http://cafsite.caf/`, PHPMyAdmin sur `http://phpmyadmin.caf/`, les accès à PHPMyAdmin sont `root` - `test`
  
 Todo
  - corriger les erreurs 404: https://error404.atomseo.com/SeoCheck/Report/www.clubalpinlyon.fr/2021-09-10/free?from=
