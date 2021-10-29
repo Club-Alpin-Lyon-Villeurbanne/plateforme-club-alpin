@@ -10,12 +10,12 @@
 
         $found = false;
         $token_user_mdpchange = $mysqli->real_escape_string($token_user_mdpchange);
-        $req = 'SELECT * FROM `'.$pbd."user_mdpchange` WHERE `id_user_mdpchange` = $id_user_mdpchange AND `token_user_mdpchange` LIKE '$token_user_mdpchange' ORDER BY `time_user_mdpchange` DESC LIMIT 1";
+        $req = 'SELECT *, UNIX_TIMESTAMP(time_user_mdpchange) as `timestamp` FROM `'.$pbd."user_mdpchange` WHERE `id_user_mdpchange` = $id_user_mdpchange AND `token_user_mdpchange` LIKE '$token_user_mdpchange' ORDER BY `time_user_mdpchange` DESC LIMIT 1";
         $handleSql = $mysqli->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             $found = true;
             // req trouvé, verif : le lien doit avoir été cliqué dans l'heure...
-            if (time($handle['time_user_mdpchange']) > $p_time - (60 * 60)) {
+            if ((int) $handle['timestamp'] > time() - (60 * 60)) {
                 // maj du compte visé avec le nouveau mdp et
                 $req = 'UPDATE `'.$pbd."user` SET `mdp_user` = '".$handle['pwd_user_mdpchange']."' WHERE `id_user` =".$handle['user_user_mdpchange'].' LIMIT 1 ;';
                 if (!$mysqli->query($req)) {
