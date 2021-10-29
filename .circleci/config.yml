@@ -50,7 +50,15 @@ jobs:
           command: |
             case ${CIRCLE_BRANCH} in
                 "production" )
+                    echo "\nTransfering package...\n\n"
                     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -J jump-user@141.94.251.125 package.zip kahe0589@109.234.162.184:/home/kahe0589/clubalpinlyon.fr
+                    echo "\nTransfering deploy script...\n\n"
+                    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -J jump-user@141.94.251.125 .circleci/deploy.sh kahe0589@109.234.162.184:/home/kahe0589/clubalpinlyon.fr
+                    echo "\nRunning deploy...\n\n"
+                    LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kahe0589@109.234.162.184 -J jump-user@141.94.251.125 /home/kahe0589/clubalpinlyon.fr/deploy.sh
+                    echo "\nCleanup...\n\n"
+                    LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kahe0589@109.234.162.184 -J jump-user@141.94.251.125 rm /home/kahe0589/test.clubalpinlyon.fr/deploy.sh /home/kahe0589/clubalpinlyon.fr/package.zip
+                    echo "\nDone!\n\n"
                   ;;
                 "main" )
                     echo "\nTransfering package...\n\n"
