@@ -11,7 +11,8 @@ fi;
 
 TIMESTAMP=$(date +%s)
 BASE_TARGET="/home/kahe0589/$TARGET"
-TARGET_DIR="$BASE_TARGET/deployments/$TIMESTAMP"
+DEPLOYMENTS_DIR="$BASE_TARGET/deployments"
+TARGET_DIR="$DEPLOYMENTS_DIR/$TIMESTAMP"
 CURRENT_DIR="$BASE_TARGET/deployments/current"
 
 echo "Deploying to $TARGET_DIR"
@@ -25,5 +26,12 @@ if [ $TARGET == "clubalpinlyon.fr" ]; then
   ln -s "$BASE_TARGET/ffcam-ftp-folder" "$TARGET_DIR/public/config/www.clubalpinlyon.fr/ffcam"
 fi;
 
+echo "Linking"
+
 unlink $CURRENT_DIR
 ln -s $TARGET_DIR $CURRENT_DIR
+
+echo "Cleaning"
+
+cd DEPLOYMENTS_DIR
+rm -Rf `ls -t | awk 'NR>4'`
