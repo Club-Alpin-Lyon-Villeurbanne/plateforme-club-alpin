@@ -1132,3 +1132,26 @@ function getArrayFirstValue($array)
 {
     return $array[0];
 }
+
+/**
+ * Function to log into a file on the server
+ * The log file will be available under `XXX.clubalpinlyon.fr/deployments/current/log/`
+ *
+ * @param string | array $log_msg: the value to log
+ */
+function log_to_file($log_msg)
+{
+    $date = new DateTime();
+    $date = $date->format("Y-m-d H:i:s");
+    $env = explode('.', $_SERVER['HTTP_HOST'])[0];
+    $logfile_path = "../log";
+    if (!file_exists($logfile_path))
+    {
+        mkdir($logfile_path, 0777, true);
+    }
+    if (is_array($log_msg)) {
+        $log_msg = implode('|', $log_msg);
+    }
+    $log_file_data = $logfile_path.'/log_'.$env . '_s' . date('d-M-Y') . '.log';
+    file_put_contents($log_file_data, $date . ' >> ' . $log_msg . "\n", FILE_APPEND);
+}
