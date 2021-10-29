@@ -37,7 +37,7 @@
 
     // seconde étape: traitement dans operations.php, ici juste les erreurs
     else {
-        echo '<div class="contenutype1" style="margin:auto;"><h2 style="color:gray">Reinitialisation du mot de passe...</h2>';
+        echo '<div class="contenutype1" style="position:relative;z-index:5;margin:auto;"><h2 style="color:gray">Reinitialisation du mot de passe...</h2>';
         if (isset($errTab) && count($errTab) > 0) {
             echo '<div class="erreur"><b>ERREURS : </b>'.implode(', ', $errTab).'</div>';
         } else {
