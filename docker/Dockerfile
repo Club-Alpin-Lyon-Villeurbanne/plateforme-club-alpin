@@ -51,8 +51,8 @@ COPY ./utils/docker-phpinfo.php /var/www/html/phpinfo.php
 COPY ./utils/docker-start-apache.sh /usr/local/bin/start-apache.sh
 RUN chmod +x /usr/local/bin/start-apache.sh
 
-RUN wget -O phive.phar "https://github.com/phar-io/phive/releases/download/0.15.0/phive-0.15.0.phar" && \
-    wget -O phive.phar.asc "https://github.com/phar-io/phive/releases/download/0.15.0/phive-0.15.0.phar.asc" && \
+RUN wget -O phive.phar "https://github.com/phar-io/phive/releases/download/0.14.5/phive-0.14.5.phar" && \
+    wget -O phive.phar.asc "https://github.com/phar-io/phive/releases/download/0.14.5/phive-0.14.5.phar.asc" && \
     gpg --no-tty --keyserver hkps://keys.openpgp.org --recv-keys 0x9D8A98B29B2D5D79 && \
     gpg --no-tty --verify phive.phar.asc phive.phar && \
     rm phive.phar.asc && \
