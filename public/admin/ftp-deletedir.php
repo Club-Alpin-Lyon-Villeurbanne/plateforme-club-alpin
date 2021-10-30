@@ -6,6 +6,7 @@ define('ROOT', dirname(__DIR__).DS);				// Racine
 include ROOT.'app'.DS.'includes.php';
 
 if (!admin()) {
+    header('HTTP/1.0 401 Authorization Required');
     echo 'Votre session administrateur a expiré';
     exit();
 }

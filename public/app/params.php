@@ -8,6 +8,7 @@
             if (file_exists($configParams)) {
                 include $configParams;
             } else {
+                header('HTTP/1.0 404 Not Found');
                 exit('Aucun fichier de configuration "'.CONFIG.MON_DOMAINE.DS.basename(__FILE__)."\" n'a été trouvé");
             }
         }
