@@ -9,6 +9,7 @@ if (admin()) {
     // bien connecté ?
     $id_user = (int) ($_SESSION['user']['id_user']);
     if (!$id_user && !admin()) {
+        header('HTTP/1.0 401 Authorization Required');
         echo 'ERREUR : id invalide';
         exit();
     }
