@@ -61,14 +61,14 @@ if (!admin() && !allowed('user_edit_notme')) {
         }
 
         // FILIATION CHEF DE FAMILLE ?
-        if (strlen($userTab['cafnum_parent_user']) > 0) {
+        if ('' !== $userTab['cafnum_parent_user']) {
             $req = 'SELECT id_user, firstname_user, lastname_user, cafnum_user FROM '.$pbd."user WHERE cafnum_user = '".$mysqli->real_escape_string($userTab['cafnum_parent_user'])."' LIMIT 1";
             $result = $mysqli->query($req);
             $userTab['cafnum_parent_user'] = $result->fetch_assoc();
         }
 
         // FILIATION ENFANTS ?
-        if (strlen($userTab['cafnum_user']) > 0) {
+        if ('' !== $userTab['cafnum_user']) {
             $req = 'SELECT id_user, firstname_user, lastname_user FROM '.$pbd."user WHERE cafnum_parent_user='".$mysqli->real_escape_string($userTab['cafnum_user'])."'";
             $result = $mysqli->query($req);
             if ($result->num_rows > 0) {
@@ -117,7 +117,7 @@ if (!admin() && !allowed('user_edit_notme')) {
     printTableRow('Pseudo :', $rowValue);
 
     $rowValue = $userTab['cafnum_user'];
-    if (0 == $userTab['valid_user'] && strlen($userTab['cookietoken_user']) > 0) {
+    if (0 == $userTab['valid_user'] && '' !== $userTab['cookietoken_user']) {
         $rowValue .= '<br />URL d\'activation du compte : ';
         if (admin()) {
             $rowValue .= '<a href="'.$p_racine.'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html">';

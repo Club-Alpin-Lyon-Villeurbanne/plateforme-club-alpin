@@ -20,6 +20,12 @@ require 'SMTP.php';
  */
 class CAFPHPMailer extends PHPMailer
 {
+    public $content_full;
+    public $recipients;
+    public $headerSet;
+    public $footerSet;
+    public $bodySet;
+
     /**
      * myPHPMailer constructor.
      *

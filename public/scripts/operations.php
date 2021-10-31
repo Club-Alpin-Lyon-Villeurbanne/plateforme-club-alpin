@@ -370,14 +370,15 @@ if ('fichier_adherents_maj' == $_POST['operation']) {
         $errTab[] = 'Il semble que vous ne disposez pas des droits nécessaires';
     }
 
-    if (!isset($errTab) || 0 === count($errTab)) {
+    $length = 0;
+    if (0 === count($errTab)) {
         $length = count($_FILES['file']['name']);
         if ($length < 1) {
             $errTab[] = 'Aucunes données reçues';
         }
     }
 
-    if (!isset($errTab) || 0 === count($errTab)) {
+    if (0 === count($errTab)) {
         $oneGood = false;
         for ($i = 0; $i < $length; ++$i) {
             if ('7300.txt' == $_FILES['file']['name'][$i] || '7480.txt' == $_FILES['file']['name'][$i]) {
@@ -420,7 +421,7 @@ if ('user_attr_del_admin' == $_POST['operation'] && admin()) {
     }
 
     // log admin
-    if (!isset($errTab) || 0 === count($errTab)) {
+    if (0 === count($errTab)) {
         mylog($_POST['operation'], "Suppression d'un droit à un user (id=$id_user_attr)");
     }
 }
@@ -434,7 +435,7 @@ if ('usertype_attr_edit' == $_POST['operation'] && admin()) {
     if (!$mysqli->query('TRUNCATE '.$pbd.'usertype_attr')) {
         $errTab[] = 'Erreur à la réinitialisation de la table';
     }
-    if (!isset($errTab) || 0 === count($errTab)) {
+    if (0 === count($errTab)) {
         foreach ($_POST['usertype_attr'] as $pair) {
             $tab = explode('-', $pair);
             $type_usertype_attr = (int) ($tab[0]);
@@ -512,7 +513,7 @@ if ('majBd' == $_POST['operation'] && admin()) {
         $errTab[] = 'ID manquant';
     }
 
-    if (!isset($errTab) || 0 === count($errTab)) {
+    if (0 === count($errTab)) {
         $req = 'UPDATE `'.$pbd.$table."` SET `$champ` = '$val' WHERE `".$pbd.$table.'`.`id_'.$table."` =$id LIMIT 1 ;";
         if (!$mysqli->query($req)) {
             $erreur = 'Erreur BDD<br />'.$req;
@@ -554,7 +555,7 @@ if ('majConts' == $_POST['operation'] && admin()) {
             $erreur = 'Aucun contenu reçu';
         } else {
             // echo $contenu;
-            if ($handle = fopen('contenus/'.$langueCont.'.txt', w)) {
+            if ($handle = fopen('contenus/'.$langueCont.'.txt', 'w')) {
                 fwrite($handle, $contenu);
                 fclose($handle);
             } else {

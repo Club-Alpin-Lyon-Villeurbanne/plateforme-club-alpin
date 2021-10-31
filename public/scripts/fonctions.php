@@ -171,6 +171,7 @@ function get_niveaux($id_user, $editable = false)
         }
         $req .= ' LIMIT 500;';
         $results = $mysqli->query($req);
+        $ids_comms = [];
         while ($row = $results->fetch_assoc()) {
             $ids_comms[] = $row['id_commission'];
         }
@@ -476,6 +477,7 @@ function get_sortie($id_evt, $type = 'full')
     global $userAllowedTo, $pbd;
 
     $sortie = false;
+    $data = '';
 
     switch ($type) {
         case 'full':
@@ -570,6 +572,8 @@ function get_all_encadrants_destination($id_destination, $only_ids = true)
  */
 function nb_places_restantes_bus($bus)
 {
+    $id_bus = null;
+
     if (is_array($bus)) {
         if (isset($bus['places_disponibles'])) {
             return $bus['places_disponibles'];
@@ -640,6 +644,7 @@ function get_bus($id_bus, $params = ['dest', 'pts'])
 
     $id_bus = $mysqli->real_escape_string((int) $id_bus);
     $req = 'SELECT * FROM '.$pbd."bus WHERE id = $id_bus LIMIT 1";
+    $bus = null;
 
     $result = $mysqli->query($req);
     while ($row = $result->fetch_assoc()) {
@@ -678,6 +683,7 @@ function get_points_ramassage($id_bus, $id_destination)
     include SCRIPTS.'connect_mysqli.php';
     global $userAllowedTo, $pbd;
 
+    $points = null;
     $id_bus = $mysqli->real_escape_string((int) $id_bus);
     $id_destination = $mysqli->real_escape_string((int) $id_destination);
 
@@ -735,6 +741,7 @@ function get_destination($id_dest, $full = false)
     include SCRIPTS.'connect_mysqli.php';
     global $userAllowedTo, $pbd;
 
+    $destination = null;
     $id_dest = $mysqli->real_escape_string((int) $id_dest);
     $req = 'SELECT * FROM '.$pbd."destination WHERE id = $id_dest LIMIT 1";
 
@@ -769,7 +776,6 @@ function get_sortie_destination($id_dest, $id_evt, $lieux = true)
     $sortie = false;
 
     $id_dest = $mysqli->real_escape_string((int) $id_dest);
-    $id_sortie = $mysqli->real_escape_string((int) $id_sortie);
     $req = 'SELECT * FROM `'.$pbd.'evt_destination` WHERE ';
     if (0 != $id_dest) {
         $req .= " id_destination = $id_dest AND ";
@@ -800,6 +806,7 @@ function get_sorties_for_destination($id_dest, $ids_only = false)
     global $userAllowedTo, $pbd;
 
     $sorties = false;
+    $ids = $full = [];
 
     $id_dest = $mysqli->real_escape_string((int) $id_dest);
     $req = 'SELECT * FROM `'.$pbd."evt_destination` WHERE id_destination = $id_dest";
@@ -841,6 +848,7 @@ function get_user($id_user, $valid = true, $simple = true)
     include SCRIPTS.'connect_mysqli.php';
     global $userAllowedTo, $pbd;
 
+    $user = null;
     $id_user = $mysqli->real_escape_string((int) $id_user);
     $req = 'SELECT ';
     if ($simple) {
@@ -886,6 +894,7 @@ function get_lieu($id_lieu)
     include SCRIPTS.'connect_mysqli.php';
     global $userAllowedTo, $pbd;
 
+    $lieu = null;
     $id_lieu = $mysqli->real_escape_string((int) $id_lieu);
     $req = 'SELECT * FROM `'.$pbd.'lieu` WHERE id = '.$id_lieu.' LIMIT 1';
 
@@ -983,7 +992,7 @@ function display_previous_lieux($name = null, $id_destination)
         $chain .= '<option value=""> - Utiliser un lieu de cette destination</option>';
         foreach ($previous_lieux_destination as $previous_dest) {
             $chain .= '<option value="'.$previous_dest['id'].'"';
-            if (isset($_POST['lieu'][$name][use_existant]) && $_POST['lieu'][$name][use_existant] == $previous_dest['id']) {
+            if (isset($_POST['lieu'][$name]['use_existant']) && $_POST['lieu'][$name]['use_existant'] == $previous_dest['id']) {
                 $chain .= ' selected="selected" ';
             }
             $chain .= '>'.html_utf8($previous_dest['nom']).'</option>';
@@ -1130,8 +1139,8 @@ function inscriptions_status_destination($destination)
     if (!is_array($destination)) {
         $destination = get_destination($destination);
     }
+    $status = $msg = null;
     if (is_array($destination)) {
-        $status = false;
         $today = new DateTime(date('Y-m-d H:i:s'));
         $ouverture = new DateTime($destination['inscription_ouverture']);
         $fermeture = new DateTime($destination['inscription_fin']);

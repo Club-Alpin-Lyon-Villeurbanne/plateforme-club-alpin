@@ -16,6 +16,7 @@ if (admin()) {
 
     // recuperation du dossier
     $type = $_GET['type'];
+    $dossier = null;
     if ('image' == $type) {
         $dossier = '../ftp/images/';
     } elseif ('file' == $type) {
@@ -205,6 +206,7 @@ if (admin()) {
                 // tableau des fichiers
                 $tabFichiers = [];
 
+    $extTab = [];
     // extensions autorisées ici en fonction du type demandé
     if ('image' == $type) {
         $extTab = ['jpg', 'jpeg', 'png'];

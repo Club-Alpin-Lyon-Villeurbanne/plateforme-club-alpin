@@ -25,6 +25,8 @@ RUN apt update && \
     apt clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+RUN curl -Lo /usr/local/bin/gosu https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64 && chmod +x /usr/local/bin/gosu
+
 RUN /usr/local/bin/docker-php-ext-install -j$(nproc) mysqli pdo_mysql && \
     /usr/local/bin/docker-php-ext-install -j$(nproc) zip && \
     /usr/local/bin/docker-php-ext-install -j$(nproc) opcache && \
@@ -48,8 +50,6 @@ ENV APACHE_DOC_ROOT /var/www/html/public
 # Additional configuration files
 COPY ./utils/docker-999-php.ini /usr/local/etc/php/conf.d/999-php.ini
 COPY ./utils/docker-phpinfo.php /var/www/html/phpinfo.php
-COPY ./utils/docker-start-apache.sh /usr/local/bin/start-apache.sh
-RUN chmod +x /usr/local/bin/start-apache.sh
 
 RUN wget -O phive.phar "https://github.com/phar-io/phive/releases/download/0.14.5/phive-0.14.5.phar" && \
     wget -O phive.phar.asc "https://github.com/phar-io/phive/releases/download/0.14.5/phive-0.14.5.phar.asc" && \
@@ -63,5 +63,5 @@ RUN wget -O phive.phar "https://github.com/phar-io/phive/releases/download/0.14.
 EXPOSE 80
 EXPOSE 443
 
-# Start!
-CMD ["start-apache.sh"]
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

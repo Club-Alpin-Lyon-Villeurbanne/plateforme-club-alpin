@@ -29,14 +29,14 @@ if ($_POST['login']) {
     $login = $mysqli->real_escape_string(stripslashes(substr($_POST['login'], 0, 20)));
 
     // verification de l'existence du comtpe
-    if (!isset($errTab) || 0 === count($errTab)) {
+    if (0 === count($errTab)) {
         if (stripslashes($_POST['login']) != $login_admin) {
             $errTab[] = 'Login ou mot de passe incorrect.';
         } // bluff : c'est le login qui est faux. Ecrire le même message en cas d'erreur mdp
     }
 
     // vérification de compte bloqué ?
-    if (!isset($errTab) || 0 === count($errTab)) {
+    if (0 === count($errTab)) {
         $req = 'SELECT date_log_admin FROM `'.$pbd."log_admin` WHERE code_log_admin LIKE 'lock-admin-account-$login' AND `date_log_admin` >0 ORDER BY  `date_log_admin` DESC LIMIT 1";
         $handleSql = $mysqli->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -52,7 +52,7 @@ if ($_POST['login']) {
 
     // si faux,   +
     $ip_log_admin = $mysqli->real_escape_string($_SERVER['REMOTE_ADDR']);
-    if (!admin() && (!isset($errTab) || 0 === count($errTab))) {
+    if (!admin() && 0 === count($errTab)) {
         // message d'erreur
         $errTab[] = 'Login ou mot de passe incorrect.';
         // log tetative echouee
@@ -113,7 +113,7 @@ if ($_POST['login']) {
 </head>
 <body style="text-align:center;">
 	<?php
-    if (isset($errTab) && count($errTab) > 0) {
+    if (count($errTab) > 0) {
         echo '<div class="error"><ul><li>'.implode('</li><li>', $errTab).'</div><br />';
     }
     if (!admin()) {

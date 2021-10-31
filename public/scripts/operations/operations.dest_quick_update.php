@@ -1,6 +1,7 @@
 <?php
 
-$id = null;
+$id = $annule = null;
+
 if ($_POST['id_dest_to_update']) {
     $id = (int) ($_POST['id_dest_to_update']);
 }
