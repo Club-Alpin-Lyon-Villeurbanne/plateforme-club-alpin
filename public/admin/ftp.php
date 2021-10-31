@@ -11,35 +11,33 @@ if (!admin()) {
     exit();
 }
 
-    //Selection des fichiers a afficher ou pas
-    // NOW IN PARAMS.PHP
+//Selection des fichiers a afficher ou pas
+// NOW IN PARAMS.PHP
 
-    // mode, agit sur les liens
-    if ('relatif' == $_GET['mode']) {
-        $mode = 'relatif';
-    }
-    if ('absolu' == $_GET['mode']) {
-        $mode = 'absolu';
-    }
-    if (!$mode) {
-        $mode = 'relatif';
-    }
+$mode = 'relatif';
+// mode, agit sur les liens
+if ('relatif' == $_GET['mode']) {
+    $mode = 'relatif';
+}
+if ('absolu' == $_GET['mode']) {
+    $mode = 'absolu';
+}
 
-    // recuperation du dossier
-    $racine = '../ftp/';
-    if (!isset($_GET['dossier'])) {
-        $dossier = $racine;
-    } else {
-        $dossier = $_GET['dossier'];
-    }
+// recuperation du dossier
+$racine = '../ftp/';
+if (!isset($_GET['dossier'])) {
+    $dossier = $racine;
+} else {
+    $dossier = $_GET['dossier'];
+}
 
-    // checks :
-    if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier, '../') > 1) {
-        echo '<p class="erreur">Erreur ! Le dossier demandé n\'a pas le bon format.</p>';
-        exit();
-    }
+// checks :
+if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier, '../') > 1) {
+    echo '<p class="erreur">Erreur ! Le dossier demandé n\'a pas le bon format.</p>';
+    exit();
+}
 
-    ?><!doctype html>
+?><!doctype html>
 <html lang="fr">
 	<head>
 		<meta charset="utf-8">
@@ -79,8 +77,8 @@ if (!admin()) {
 
 				<div class="level top">
 					<a href="../ftp/" title="Racine du dossier" class="dirlink <?php if ('../ftp/' == $dossier) {
-        echo 'selected';
-    }?>">Dossier FTP</a>
+    echo 'selected';
+}?>">Dossier FTP</a>
 					<?php
                     function arbo_read($dir, $level)
                     {
@@ -88,14 +86,13 @@ if (!admin()) {
                         global $p_ftp_masquer;
                         $one = false; // booleen : un dossier trouve au moins
                         $opendir = opendir($dir);
+                        $files = [];
 
-                        // Patch CRI pour affichage des dossiers dans ordre alphabétique
-                                                // 19/09/2015
-                                                $j = 0; // compte des fichiers
-                                                while ($f = readdir($opendir)) {
-                                                    $files[$j] = $f;
-                                                    ++$j;
-                                                }
+                        $j = 0; // compte des fichiers
+                        while ($f = readdir($opendir)) {
+                            $files[$j] = $f;
+                            ++$j;
+                        }
                         sort($files);
 
                         foreach ($files as $file) {

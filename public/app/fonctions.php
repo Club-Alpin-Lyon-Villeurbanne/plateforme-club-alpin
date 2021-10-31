@@ -979,7 +979,7 @@ function formater($retourner, $type = 1)
     if (4 == $type) {
         $retourner = str_replace("'", '-', $retourner);
         $retourner = strtolower(stripslashes(wd_remove_accents($retourner)));
-        $pattern = "#[^a-zA-Z0-9\s-.]#";
+        $pattern = "#[^a-zA-Z0-9.\s-]#";
         $retourner = preg_replace($pattern, '', $retourner);
         $retourner = str_replace(' ', '-', $retourner);
         $retourner = str_replace('--', '-', $retourner);
@@ -1114,7 +1114,7 @@ function normalizeChars($s)
         'Ù' => 'U', 'Ú' => 'U', 'Û' => 'U', 'Ü' => 'Ue',
         'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ü' => 'ue',
         'Ý' => 'Y',
-        'ý' => 'y', 'ý' => 'y', 'ÿ' => 'y',
+        'ý' => 'y', 'ÿ' => 'y',
         'Ž' => 'Z', 'ž' => 'z',
     ];
 
@@ -1135,23 +1135,22 @@ function getArrayFirstValue($array)
 
 /**
  * Function to log into a file on the server
- * The log file will be available under `XXX.clubalpinlyon.fr/deployments/current/log/`
+ * The log file will be available under `XXX.clubalpinlyon.fr/deployments/current/log/`.
  *
- * @param string | array $log_msg: the value to log
+ * @param string|array $log_msg: the value to log
  */
 function log_to_file($log_msg)
 {
     $date = new DateTime();
-    $date = $date->format("Y-m-d H:i:s");
+    $date = $date->format('Y-m-d H:i:s');
     $env = explode('.', $_SERVER['HTTP_HOST'])[0];
-    $logfile_path = "../log";
-    if (!file_exists($logfile_path))
-    {
+    $logfile_path = '../log';
+    if (!file_exists($logfile_path)) {
         mkdir($logfile_path, 0777, true);
     }
     if (is_array($log_msg)) {
         $log_msg = implode('|', $log_msg);
     }
-    $log_file_data = $logfile_path.'/log_'.$env . '_s' . date('d-M-Y') . '.log';
-    file_put_contents($log_file_data, $date . ' >> ' . $log_msg . "\n", FILE_APPEND);
+    $log_file_data = $logfile_path.'/log_'.$env.'_s'.date('d-M-Y').'.log';
+    file_put_contents($log_file_data, $date.' >> '.$log_msg."\n", \FILE_APPEND);
 }

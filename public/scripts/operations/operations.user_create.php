@@ -17,7 +17,7 @@
     $auth_contact_user = trim(stripslashes($_POST['auth_contact_user']));
 
     // vérification du format des données
-    if (strlen($civ_user) < 1) {
+    if ('' === $civ_user) {
         $errTab[] = "Merci d'entrer la civilité";
     }
     if (strlen($firstname_user) < 2) {
