@@ -36,6 +36,7 @@ while ($handle = $handleSql->fetch_assoc()) {
 //_________________________________________________ PARAMS XML
 $rss_limit = 30;
 $entryTab = [];
+$current_commission = $rss_datas = null;
 
 // CONSTRUCTION DES REQUETES
 

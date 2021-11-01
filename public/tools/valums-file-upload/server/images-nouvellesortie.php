@@ -6,6 +6,7 @@ define('ROOT', dirname(__DIR__, 3).DS);				// Racine
 include ROOT.'app'.DS.'includes.php';
 
 $errTab = [];
+$result = $targetDirRel = $targetDir = $filename = null;
 
 // $errTab[]="Test";
 if (!user()) {
@@ -21,7 +22,7 @@ if ('edit' == $mode && !$id_evt) {
     $errTab[] = 'ID sortie manquant';
 }
 
-if (!isset($errTab) || 0 === count($errTab)) {
+if (0 === count($errTab)) {
     // modification de sortie
     if ('edit' == $mode) {
         $targetDir = 'ftp/sorties/'.$id_evt.'/';
@@ -33,7 +34,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     $targetDirRel = '../../../'.$targetDir; // chemin relatif
     if (!file_exists($targetDirRel)) {
-        mkdir($targetDirRel);
+        if (!mkdir($targetDirRel) && !is_dir($targetDirRel)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $targetDirRel));
+        }
     }
     $targetDir .= '/';
     $targetDirRel .= '/';
@@ -58,7 +61,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // $result['targetDir']=$targetDir;
 }
 
-if (!isset($errTab) || 0 === count($errTab)) {
+if (0 === count($errTab)) {
     $tmpfilename = $result['filename'];
     $filename = strtolower(formater($tmpfilename, 4));
 
@@ -86,7 +89,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     // redimensionnement des images
-    if (!isset($errTab) || 0 === count($errTab)) {
+    if (0 === count($errTab)) {
         $size = getimagesize($targetDirRel.$filename);
         if ($size[0] > 590 || $size[1] > 400) {
             include APP.'redims.php';
@@ -105,7 +108,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 }
 
 // enregistrement BDD si c'est une modificatino d'evt
-if ((!isset($errTab) || 0 === count($errTab)) && 'edit' == $mode) {
+if (0 === count($errTab) && 'edit' == $mode) {
     include SCRIPTS.'connect_mysqli.php';
 
     // save
@@ -125,7 +128,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && 'edit' == $mode) {
 }
 
 // envoi du résultat :
-if (isset($errTab) && count($errTab) > 0) {
+if (count($errTab) > 0) {
     $result = ['success' => 0, 'error' => implode(', ', $errTab)];
 }
 

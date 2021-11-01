@@ -9,8 +9,11 @@ services:
         build:
             context: docker
         restart: unless-stopped
+        command: apache2-foreground
         volumes:
             - ./:/var/www/html
+            - ~/.phive:/var/www/.phive
+            - ~/.composer:/var/www/.composer
         ports:
             - "80:80"
             - "443:443"
@@ -18,6 +21,9 @@ services:
             - caf-db:db
         networks:
             default: ~
+        environment:
+            APP_USER_ID: 1000
+            APP_GROUP_ID: 1000
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin

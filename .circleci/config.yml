@@ -44,6 +44,9 @@ jobs:
                   ;;
             esac
       - run: make build
+      - run:
+          name: PHPStan static analysis
+          command: make phpstan
       - run: make package
 #      - run: make php-cs
       - run:

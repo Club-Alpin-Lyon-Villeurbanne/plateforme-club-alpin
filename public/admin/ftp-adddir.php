@@ -11,106 +11,104 @@ if (!admin()) {
     exit();
 }
 
-    $errTab = [];
-    $target = stripslashes($_GET['target']);
+$errTab = [];
+$target = stripslashes($_GET['target']);
 
-    // vérification,
-    // la cible doit commencer par ../ftp/
-    if ('../ftp/' != substr($target, 0, 7)) {
-        $errTab[] = "Le chemin d'accès au fichier est incorrect";
-    }
-    // ne doit pas contenir ../ à part au début
-    if (1 != mb_substr_count($target, '../')) {
-        $errTab[] = "Le chemin d'accès au fichier est incorrect : récurrence de chemin retour";
-    }
-    // doit être un dossier
-    if (!is_dir($target)) {
-        $errTab[] = "L'élément donné ne semble pas être un dossier";
-    }
+// vérification,
+// la cible doit commencer par ../ftp/
+if ('../ftp/' != substr($target, 0, 7)) {
+    $errTab[] = "Le chemin d'accès au fichier est incorrect";
+}
+// ne doit pas contenir ../ à part au début
+if (1 != mb_substr_count($target, '../')) {
+    $errTab[] = "Le chemin d'accès au fichier est incorrect : récurrence de chemin retour";
+}
+// doit être un dossier
+if (!is_dir($target)) {
+    $errTab[] = "L'élément donné ne semble pas être un dossier";
+}
 
-    if (isset($errTab) && count($errTab) > 0) {
-        echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
-    } else {
-        // VERIFS DEJA FAITES, OPERATION OK SUR DEMANDE
-        if ('create' == $_GET['operation']) {
-            if ('unlocked' != $_GET['lock']) {
-                $errTab[] = 'Erreur : request locked.';
-            }
+if (count($errTab) > 0) {
+    echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+} else {
+    // VERIFS DEJA FAITES, OPERATION OK SUR DEMANDE
+    if ('create' == $_GET['operation']) {
+        if ('unlocked' != $_GET['lock']) {
+            $errTab[] = 'Erreur : request locked.';
+        }
 
-            // traitement du nom de dossier
-            $nouveauDossier = formater(stripslashes($_GET['nouveauDossier']), 3);
-            if (strlen($nouveauDossier) > 40) {
-                $errTab[] = 'Le nom de dossier ne peut pas dépasser 40 caractères : <b>'.html_utf8($nouveauDossier).'</b>';
-            }
-            if (strlen($nouveauDossier) < 1) {
-                $errTab[] = 'Entrez un nom de dossier valide';
-            } elseif (file_exists($target.$nouveauDossier)) {
-                $errTab[] = "Le dossier <b>$target"."$nouveauDossier</b> existe déja. Merci de trouver un autre  nom";
-            }
+        // traitement du nom de dossier
+        $nouveauDossier = formater(stripslashes($_GET['nouveauDossier']), 3);
+        if (strlen($nouveauDossier) > 40) {
+            $errTab[] = 'Le nom de dossier ne peut pas dépasser 40 caractères : <b>'.html_utf8($nouveauDossier).'</b>';
+        }
+        if ('' === $nouveauDossier) {
+            $errTab[] = 'Entrez un nom de dossier valide';
+        } elseif (file_exists($target.$nouveauDossier)) {
+            $errTab[] = "Le dossier <b>$target"."$nouveauDossier</b> existe déja. Merci de trouver un autre  nom";
+        }
 
-            // fermeture de la box/ actualissation du ftp
-            if (!isset($errTab) || 0 === count($errTab)) {
-                if (!mkdir($target.$nouveauDossier)) {
-                    $errTab[] = 'Erreur PHP à la création du dossier';
-                }
-            }
-
-            if (!isset($errTab) || 0 === count($errTab)) {
-                ?>
-				<script type="text/javascript">
-					// parent.$('#ftp-2-arbo a.selected').click(); parent.$.fancybox.close();
-					parent.document.location.href='ftp.php?dossier='+parent.currentDir;
-				</script>
-				<?php
-                exit();
+        // fermeture de la box/ actualissation du ftp
+        if (0 === count($errTab)) {
+            if (!mkdir($target.$nouveauDossier)) {
+                $errTab[] = 'Erreur PHP à la création du dossier';
             }
         }
 
-        // OPERATION PAS LANCEE OU ERREUR
-        if (!$_POST['operation'] || 'create' == $_POST['operation'] && (isset($errTab) && count($errTab) > 0)) {
-            ?><!doctype html>
-			<html lang="fr">
-				<head>
-					<meta charset="utf-8">
-					<title>DOSSIER FTP</title>
-
-					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="../css/admin.css">
-					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="../css/base.css">
-					<!-- jquery -->
-					<script type="text/javascript" src="../js/jquery-1.5.2.min.js"></script>
-
-				</head>
-				<body class="ftp-frame" onload="$('input[type=text]').focus()">
-					<?php
-                    // msg d'erreur ?
-                    if (isset($errTab) && count($errTab) > 0) {
-                        echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
-                    } ?>
-
-					<h3>Nouveau dossier</h3>
-
-					<p>
-						Le nom de votre nouveau dossier sera automatiquement formaté pour remplacer les majauscules, espaces et caractères spéciaux
-						qui pourraient générer des erreurs. Entrez le nom désiré :
-					</p>
-
-					<form action="ftp-adddir.php" method="GET">
-						<input type="hidden" name="operation" value="create" />
-						<input type="hidden" name="target" value="<?php echo html_utf8($target); ?>" />
-						<input type="hidden" name="lock" value="locked" />
-						<br />
-
-						<span style="font-size:14px; font-weight:100; color:silver;">ftp/<?php echo html_utf8(substr($target, 7)); ?></span>
-						<input type="text" class="nice" name="nouveauDossier" value=""placeholder="nom-du-dossier" />
-						<br />
-						<br />
-						<input type="submit" class="nice green" value="Ajouter !" onclick="$(this).siblings('input[name=lock]').val('unlocked')" />
-						<input type="button" class="nice orange" value="Annuler" onclick="parent.$.fancybox.close()" />
-					</form>
-				</body>
-			</html>
-			<?php
+        if (0 === count($errTab)) {
+            ?>
+            <script type="text/javascript">
+                // parent.$('#ftp-2-arbo a.selected').click(); parent.$.fancybox.close();
+                parent.document.location.href='ftp.php?dossier='+parent.currentDir;
+            </script>
+            <?php
+            exit();
         }
     }
 
-?>
+    // OPERATION PAS LANCEE OU ERREUR
+    if (!$_POST['operation'] || 'create' == $_POST['operation'] && count($errTab) > 0) {
+        ?><!doctype html>
+        <html lang="fr">
+            <head>
+                <meta charset="utf-8">
+                <title>DOSSIER FTP</title>
+
+                <link rel="stylesheet" media="screen" type="text/css" title="Design" href="../css/admin.css">
+                <link rel="stylesheet" media="screen" type="text/css" title="Design" href="../css/base.css">
+                <!-- jquery -->
+                <script type="text/javascript" src="../js/jquery-1.5.2.min.js"></script>
+
+            </head>
+            <body class="ftp-frame" onload="$('input[type=text]').focus()">
+                <?php
+                // msg d'erreur ?
+                if (count($errTab) > 0) {
+                    echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                } ?>
+
+                <h3>Nouveau dossier</h3>
+
+                <p>
+                    Le nom de votre nouveau dossier sera automatiquement formaté pour remplacer les majauscules, espaces et caractères spéciaux
+                    qui pourraient générer des erreurs. Entrez le nom désiré :
+                </p>
+
+                <form action="ftp-adddir.php" method="GET">
+                    <input type="hidden" name="operation" value="create" />
+                    <input type="hidden" name="target" value="<?php echo html_utf8($target); ?>" />
+                    <input type="hidden" name="lock" value="locked" />
+                    <br />
+
+                    <span style="font-size:14px; font-weight:100; color:silver;">ftp/<?php echo html_utf8(substr($target, 7)); ?></span>
+                    <input type="text" class="nice" name="nouveauDossier" value=""placeholder="nom-du-dossier" />
+                    <br />
+                    <br />
+                    <input type="submit" class="nice green" value="Ajouter !" onclick="$(this).siblings('input[name=lock]').val('unlocked')" />
+                    <input type="button" class="nice orange" value="Annuler" onclick="parent.$.fancybox.close()" />
+                </form>
+            </body>
+        </html>
+        <?php
+    }
+}

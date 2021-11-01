@@ -5,7 +5,7 @@ define('DS', \DIRECTORY_SEPARATOR);
 define('ROOT', dirname(__DIR__).DS);				// Racine
 include ROOT.'app'.DS.'includes.php';
 
-$log .= "\n accès à ".date('H:i:s');
+$log = (isset($log) ? $log : '')."\n accès à ".date('H:i:s');
 
 if (admin()) {
     $devmode = true;
@@ -81,10 +81,10 @@ if (admin()) {
                     case 'jpg':
                     case 'jpeg':
                         $runImage = imagecreatefromjpeg($dir.$filename);
-                    break;
+                        break;
                     case 'png':
                         $runImage = imagecreatefrompng($dir.$filename);
-                    break;
+                        break;
                 }
 
                 // 1:Redimensionnement : l'image "dure" n'est pas au bon format pour le crop
@@ -106,10 +106,10 @@ if (admin()) {
                     case 'jpg':
                     case 'jpeg':
                         imagejpeg($phpImage, $dir.($preview ? 'preview-'.$filename : $filename), 95);
-                    break;
+                        break;
                     case 'png':
                         imagepng($phpImage, $dir.($preview ? 'preview-'.$filename : $filename));
-                    break;
+                        break;
                 }
 
                 $result = [
@@ -117,7 +117,7 @@ if (admin()) {
                     'src' => $dir.($preview ? 'preview-'.$filename : $filename),
                     'width' => $wDest,
                     'height' => $hDest,
-                    ];
+                ];
 
                 // destImg : trigger de previex ou final
                 if ($destImg) {

@@ -6,6 +6,7 @@ define('ROOT', dirname(__DIR__, 3).DS);				// Racine
 include ROOT.'app'.DS.'includes.php';
 
 $errTab = [];
+$result = $targetDirRel = $targetDir = $filename = null;
 
 // $errTab[]="Test";
 if (!user()) {
@@ -21,7 +22,7 @@ if ('edit' == $mode && !$id_article) {
     $errTab[] = 'ID sortie manquant';
 }
 
-if (!isset($errTab) || 0 === count($errTab)) {
+if (0 === count($errTab)) {
     // creation des dossiers utiles pour l'user s'ils n'existnent pas
     $dir = '../../../ftp/user/'.(int) ($_SESSION['user']['id_user']);
     if (!file_exists($dir)) {
@@ -68,7 +69,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // $result['targetDir']=$targetDir;
 }
 
-if (!isset($errTab) || 0 === count($errTab)) {
+if (0 === count($errTab)) {
     $tmpfilename = $result['filename'];
     $filename = 'figure.jpg';
 
@@ -96,7 +97,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     // redimensionnement des images
-    if (!isset($errTab) || 0 === count($errTab)) {
+    if (0 === count($errTab)) {
         include APP.'redims.php';
         $size = getimagesize($targetDirRel.$filename);
 
@@ -157,7 +158,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 }
 
 // envoi du résultat :
-if (isset($errTab) && count($errTab) > 0) {
+if (count($errTab) > 0) {
     $result = ['success' => 0, 'error' => implode(', ', $errTab)];
 }
 
