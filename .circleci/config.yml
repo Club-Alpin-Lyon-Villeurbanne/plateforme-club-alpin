@@ -43,7 +43,7 @@ jobs:
                     sed -i "s/DB_NAME_TO_REPLACE/$DEV_DB_NAME/g" "public/config/test.clubalpinlyon.fr/db_config.php"
                   ;;
             esac
-      - run: make build
+      - run: make build composer-install
       - run:
           name: PHPStan static analysis
           command: make phpstan
