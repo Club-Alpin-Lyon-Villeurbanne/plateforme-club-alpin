@@ -128,7 +128,7 @@ if ('profil' == $p1 && 'infos' == $p2) {
     $handleSql = $mysqli->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // filiation : ais-je des "enfants"
-        if (strlen($handle['cafnum_user']) > 0) {
+        if ('' !== $handle['cafnum_user']) {
             $handle['enfants'] = [];
             $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM '.$pbd."user WHERE cafnum_parent_user = '".$mysqli->real_escape_string($handle['cafnum_user'])."' LIMIT 100";
             //	error_log ($req);
@@ -139,7 +139,7 @@ if ('profil' == $p1 && 'infos' == $p2) {
         }
 
         // filiation : ais-je un parent
-        if (strlen($handle['cafnum_parent_user']) > 0) {
+        if ('' !== $handle['cafnum_parent_user']) {
             $handle['parent'] = [];
             $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM '.$pbd."user WHERE cafnum_user = '".$mysqli->real_escape_string($handle['cafnum_parent_user'])."' LIMIT 100";
             //	error_log ($req);
@@ -615,6 +615,7 @@ elseif ('creer-une-sortie' == $p1) {
         // DESTINATION
         if ('creer-une-destination' == $p2) {
             $select_leaders = [];
+            $id_right = $ids_usertype = $ids_users = null;
 
             // Select ID code 'leader'
             $req = 'SELECT id_userright, code_userright FROM `'.$pbd."userright` WHERE `code_userright` LIKE 'destination_leader'";
@@ -894,6 +895,7 @@ elseif ('creer-une-sortie' == $p1) {
 // PAGE SORTIE
 elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
     $evt = $dest = false;
+    $id_evt = $id_destination = null;
     $errPage = false; // message d'erreur spécifique à la page courante si besoin
 
     if ('feuille-de-sortie' == $p1) {
@@ -1128,7 +1130,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
 
                     // si je suis chef de famille (filiations) je rajoute la liste de mes "enfants" pour les inscrire
                     $filiations = [];
-                    if (strlen($_SESSION['user']['cafnum_user']) > 0) {
+                    if ('' !== $_SESSION['user']['cafnum_user']) {
                         $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, civ_user, email_user, tel_user, cafnum_user FROM '.$pbd."user WHERE cafnum_parent_user LIKE '".$mysqli->real_escape_string($_SESSION['user']['cafnum_user'])."' LIMIT 15";
                         $handleSql2 = $mysqli->query($req);
                         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {

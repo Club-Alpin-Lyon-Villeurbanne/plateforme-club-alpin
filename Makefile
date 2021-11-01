@@ -43,9 +43,19 @@ php-cs-fix: bin/tools/php-cs-fixer ## Analyze and fix PHP code with php-cs-fixer
 .PHONY: php-cs-fix
 
 phpstan: ## Analyze PHP code with phpstan
-phpstan: bin/tools/phpstan $(AUTOLOAD_FILES) vendor/bin/.phpunit/phpunit-9-0/vendor/autoload.php ../languages/php/probe/modules/blackfire.so
-	@$(ON_PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse $(PHP_SRC) -c phpstan.neon -l 1
+phpstan: bin/tools/phpstan vendor/autoload.php vendor/bin/.phpunit/phpunit-8.5-0/vendor/autoload.php
+	@$(ON_PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse public -c phpstan.neon -l 1
 .PHONY: phpstan
+
+vendor/bin/.phpunit/phpunit-8.5-0/vendor/autoload.php: vendor/autoload.php
+	@echo "INSTALL phpunit $*"
+	@$(ON_PHP) vendor/bin/simple-phpunit --version 2>&1>/dev/null
+	@touch $@
+
+vendor/autoload.php:
+	@echo "INSTALL $(@D)"
+	@$(ON_PHP) bash -c "composer install --no-interaction --prefer-dist"
+	@touch $@
 
 setup-db:
 	@echo "Checking if the database is up..."
@@ -79,9 +89,13 @@ package: ## Creates software package
 #### Docker
 ##
 
-build: ## Build images
+build: volumes ## Build images
 	@$(COMPOSE) build $(services)
 .PHONY: build
+
+volumes:
+	@mkdir -p ~/.phive ~/.composer
+.PHONY: volumes
 
 down: ## Stop and remove containers, networks, images, and volumes
 	@$(COMPOSE) down

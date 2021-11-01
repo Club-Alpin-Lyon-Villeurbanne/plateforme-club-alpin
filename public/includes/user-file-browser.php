@@ -14,13 +14,19 @@ if (user()) {
 
     // première visite : dossier inexistant
     if (!file_exists('../ftp/user/'.$id_user)) {
-        mkdir('../ftp/user/'.$id_user);
+        if (!mkdir($concurrentDirectory = '../ftp/user/' . $id_user) && !is_dir($concurrentDirectory)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
     }
     if (!file_exists('../ftp/user/'.$id_user.'/images/')) {
-        mkdir('../ftp/user/'.$id_user.'/images/');
+        if (!mkdir($concurrentDirectory = '../ftp/user/' . $id_user . '/images/') && !is_dir($concurrentDirectory)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
     }
     if (!file_exists('../ftp/user/'.$id_user.'/files/')) {
-        mkdir('../ftp/user/'.$id_user.'/files/');
+        if (!mkdir($concurrentDirectory = '../ftp/user/' . $id_user . '/files/') && !is_dir($concurrentDirectory)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
     }
 
     // recuperation du dossier
@@ -30,7 +36,7 @@ if (user()) {
     } elseif ('file' == $type) {
         $dossier = '../ftp/user/'.$id_user.'/files/';
     } else {
-        echo "ERREUR : type invalide ($type / $dossier)";
+        echo "ERREUR : type invalide ($type)";
         exit();
     } ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

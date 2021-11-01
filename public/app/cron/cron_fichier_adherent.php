@@ -40,6 +40,8 @@ set_time_limit(0);
 // MISE A JOUR DE LA BASE DE DONNEE DES USERS DEPUIS LE FICHIER
 echo '---------------------------- update_users '.date('Y-m-d H:i:s')." ----------------------------\n";
 
+$fileTab = [];
+
 // Fichiers à lire
 foreach ($p_ffcam as $ffcam) {
     $fileTab[] = dirname(__DIR__, 2).DS.'config'.DS.MON_DOMAINE.DS.'ffcam'.DS.$ffcam.'.txt';
@@ -155,6 +157,7 @@ foreach ($fileTab as $file) {
                     $civ_user = $mysqli->real_escape_string($line[8]);
                     $doit_renouveler_user = '0';
                     // $date_adhesion_user=''; # calculé plus loin avec des tests supplémentaires
+                    $date_adhesion_user = null;
                     $alerte_renouveler_user = '0';
                     $nickname_user = str_replace([' ', '-', '\''], '', ucfirst(strtolower(normalizeChars($firstname_user))).substr(strtoupper($lastname_user), 0, 1));
 
@@ -244,7 +247,7 @@ foreach ($fileTab as $file) {
                     //print ("CSV:req:$req\n");
 
                     if (!($handleSql = $mysqli->query($req))) {
-                        echo wordwrap("!!! Erreur SQL lors de l'integration de la ligne $i : ".mysql_error()." ($req)\n");
+                        echo wordwrap("!!! Erreur SQL lors de l'integration de la ligne $i : ".$mysqli->error." ($req)\n");
                         //error_log ("Erreur SQL lors de l'integration de la ligne $i : $cafnum_user");
                         //break;
                     }

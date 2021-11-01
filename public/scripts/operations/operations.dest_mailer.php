@@ -1,5 +1,8 @@
 <?php
 
+$errTab = $errTabMail = [];
+$id_transporteur = $id_destination = $destination = $encadrants = null;
+
 if (!$_POST['transporteur']) {
     $errTab[] = 'Merci de sélectionner un transporteur.';
 } else {
@@ -30,7 +33,7 @@ if ($destination['mail']) {
     $errTab[] = 'Les emails ont déjà été envoyés.';
 }
 
-if (!isset($errTab) || 0 === count($errTab)) {
+if (0 === count($errTab)) {
     // ENVOI DU MAIL
 
     require_once APP.'mailer'.DS.'class.phpmailer.caf.php';
@@ -81,7 +84,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $evtFiche = html_utf8($p_racine.'feuille-de-sortie/evt-'.$encadrant['sortie']['id_evt'].'.html');
             $destFiche = html_utf8($p_racine.'feuille-de-sortie/dest-'.$id_destination.'.html');
 
-            if ((!isset($errTabMail) || 0 === count($errTabMail))) {
+            if (0 === count($errTabMail)) {
                 // contenu
                 $subject = "Vous êtes responsable d'une sortie à venir du CAF";
                 $content_main = "<h2>$subject</h2>
@@ -126,7 +129,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $errTab = array_merge($errTabMail, $errTab);
     }
 
-    if (!isset($errTab) || 0 === count($errTab)) {
+    if (0 === count($errTab)) {
         include SCRIPTS.'connect_mysqli.php';
         global $userAllowedTo, $pbd;
         $req = 'UPDATE `'.$pbd."destination` SET `mail` = '1' WHERE `caf_destination`.`id` = $id_destination";

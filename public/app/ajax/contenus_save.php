@@ -1,6 +1,6 @@
 <?php
 
-$log .= "\n accès à ".date('H:i:s');
+$log = (isset($log) ? $log : '')."\n accès à ".date('H:i:s');
 $log .= "\n TEST utf 8 : Смотрите эту страницу в России";
 
 if (admin()) {

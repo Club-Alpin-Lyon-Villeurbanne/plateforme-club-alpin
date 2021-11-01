@@ -6,6 +6,7 @@ define('ROOT', dirname(__DIR__, 3).DS);				// Racine
 include ROOT.'app'.DS.'includes.php';
 
 $errTab = [];
+$result = $targetDirRel = $targetDir = $filename = null;
 
 // $errTab[]="Test";
 if (!user() && !admin()) {
@@ -18,7 +19,7 @@ if (admin()) {
     $_SESSION['user']['id_user'] = 0;
 }
 
-if (!isset($errTab) || 0 === count($errTab)) {
+if (0 === count($errTab)) {
     $targetDir = 'ftp/user/'.(int) ($_SESSION['user']['id_user']).'/images/'; // depuis la racine
     if (!is_dir($targetDir)) {
         mkdir($targetDir, 0777, true);
@@ -44,7 +45,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 }
 
-if (!isset($errTab) || 0 === count($errTab)) {
+if (0 === count($errTab)) {
     $tmpfilename = $result['filename'];
     $filename = strtolower(formater($tmpfilename, 4));
 
@@ -72,7 +73,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     // redimensionnement des images
-    if (!isset($errTab) || 0 === count($errTab)) {
+    if (0 === count($errTab)) {
         $size = getimagesize($targetDirRel.$filename);
         if ($size[0] > 600 || $size[1] > 800) {
             include APP.'redims.php';
@@ -91,7 +92,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 }
 
 // envoi du résultat :
-if (isset($errTab) && count($errTab) > 0) {
+if (count($errTab) > 0) {
     $result = ['success' => 0, 'error' => implode(', ', $errTab)];
 }
 

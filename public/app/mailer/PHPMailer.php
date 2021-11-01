@@ -1389,7 +1389,7 @@ class PHPMailer
                 $domain = mb_convert_encoding($domain, 'UTF-8', $this->CharSet);
                 //Ignore IDE complaints about this line - method signature changed in PHP 5.4
                 $errorcode = 0;
-                $punycode = idn_to_ascii($domain, $errorcode, INTL_IDNA_VARIANT_UTS46);
+                $punycode = idn_to_ascii($domain, $errorcode, \INTL_IDNA_VARIANT_UTS46);
                 if (false !== $punycode) {
                     return substr($address, 0, $pos).$punycode;
                 }
@@ -3835,7 +3835,7 @@ class PHPMailer
         $result = '';
         if (!empty($this->Hostname)) {
             $result = $this->Hostname;
-        } elseif (isset($_SERVER) && \array_key_exists('SERVER_NAME', $_SERVER)) {
+        } elseif (\array_key_exists('SERVER_NAME', $_SERVER)) {
             $result = $_SERVER['SERVER_NAME'];
         } elseif (\function_exists('gethostname') && false !== gethostname()) {
             $result = gethostname();
@@ -4750,23 +4750,5 @@ class PHPMailer
         if (!empty($this->action_function) && \is_callable($this->action_function)) {
             \call_user_func($this->action_function, $isSent, $to, $cc, $bcc, $subject, $body, $from, $extra);
         }
-    }
-
-    /**
-     * Get the OAuth instance.
-     *
-     * @return OAuth
-     */
-    public function getOAuth()
-    {
-        return $this->oauth;
-    }
-
-    /**
-     * Set an OAuth instance.
-     */
-    public function setOAuth(OAuth $oauth)
-    {
-        $this->oauth = $oauth;
     }
 }

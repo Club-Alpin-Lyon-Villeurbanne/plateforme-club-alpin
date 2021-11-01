@@ -1,6 +1,7 @@
 <?php
 
-$log .= "\n accès à ".date('H:i:s');
+$log = (isset($log) ? $log : '')."\n accès à ".date('H:i:s');
+$result = null;
 
 if (admin()) {
     include SCRIPTS.'connect_mysqli.php';
