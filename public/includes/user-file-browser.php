@@ -14,17 +14,17 @@ if (user()) {
 
     // première visite : dossier inexistant
     if (!file_exists('../ftp/user/'.$id_user)) {
-        if (!mkdir($concurrentDirectory = '../ftp/user/' . $id_user) && !is_dir($concurrentDirectory)) {
+        if (!mkdir($concurrentDirectory = '../ftp/user/'.$id_user) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
     if (!file_exists('../ftp/user/'.$id_user.'/images/')) {
-        if (!mkdir($concurrentDirectory = '../ftp/user/' . $id_user . '/images/') && !is_dir($concurrentDirectory)) {
+        if (!mkdir($concurrentDirectory = '../ftp/user/'.$id_user.'/images/') && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
     if (!file_exists('../ftp/user/'.$id_user.'/files/')) {
-        if (!mkdir($concurrentDirectory = '../ftp/user/' . $id_user . '/files/') && !is_dir($concurrentDirectory)) {
+        if (!mkdir($concurrentDirectory = '../ftp/user/'.$id_user.'/files/') && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }

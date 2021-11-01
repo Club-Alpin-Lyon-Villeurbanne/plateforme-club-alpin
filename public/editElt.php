@@ -37,14 +37,13 @@ if (admin()) {
             $regex = '#<script type="text/javascript" class="mailthis">mailThis\(\'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\'\);</script>#i';
             $handle['contenu_content_html'] = preg_replace_callback(
                 $regex,
-                create_function(
-                    '$matches',
-                    '
-					if(!$matches[5]) $matches[5]=$matches[1].\'@\'.$matches[2].\'.\'.$matches[3];
-					$result=\'<a href="mailto:\'.$matches[1].\'@\'.$matches[2].\'.\'.$matches[3].\'" \'.$matches[4].\'>\'.$matches[5].\'</a>\';
-					return $result;
-					'
-                ),
+                function ($matches) {
+                    if (!$matches[5]) {
+                        $matches[5] = $matches[1].'@'.$matches[2].'.'.$matches[3];
+                    }
+
+                    return '<a href="mailto:'.$matches[1].'@'.$matches[2].'.'.$matches[3].'" '.$matches[4].'>'.$matches[5].'</a>';
+                },
                 $handle['contenu_content_html']
                 );
 
@@ -287,26 +286,20 @@ if (admin()) {
         // remplacement de lien mailto par une fonction .js
         $contenu_content_html = preg_replace_callback(
             $regex,
-            create_function(
-                '$matches',
+            function ($matches) {
                 // $1 = attributs en rab
                 // $2 = avant @
                 // $3 = apres @
                 // $4 = domaine
                 // $5 = attributs en rab
                 // $6 = ancre (peut être email en clair)
-
-                // fonctions JS :
-                // avant @, apres @, ext, attributs (fac dev=vide), ancre (face def=idem)
-                '
-				// ancre = e-mail ?
-				$ancre=trim($matches[6]);
-				if($ancre==$matches[2].\'@\'.$matches[3].\'.\'.$matches[4]) $ancre=false;
-				// intégration du script
-				$result=\'<a class="mailthisanchor"></a><script type="text/javascript" class="mailthis">mailThis(\\\'\'.htmlentities($matches[2],ENT_QUOTES,\'UTF-8\').\'\\\', \\\'\'.htmlentities($matches[3],ENT_QUOTES,\'UTF-8\').\'\\\', \\\'\'.htmlentities($matches[4],ENT_QUOTES,\'UTF-8\').\'\\\', \\\'\'.htmlentities($matches[1].$matches[5],ENT_QUOTES,\'UTF-8\').\'\\\', \\\'\'.htmlentities($ancre,ENT_QUOTES,\'UTF-8\').\'\\\');</script>\';
-				return $result;
-				'
-            ),
+                $ancre = trim($matches[6]);
+                if ($matches[2].'@'.$matches[3].'.'.$matches[4] == $ancre) {
+                    $ancre = false;
+                }
+                // intégration du script
+                return '<a class="mailthisanchor"></a><script type="text/javascript" class="mailthis">mailThis("'.htmlentities($matches[2], \ENT_QUOTES, 'UTF-8').'", "'.htmlentities($matches[3], \ENT_QUOTES, 'UTF-8').'", "'.htmlentities($matches[4], \ENT_QUOTES, 'UTF-8').'", "'.htmlentities($matches[1].$matches[5], \ENT_QUOTES, 'UTF-8').'", "'.htmlentities($ancre, \ENT_QUOTES, 'UTF-8').'");</script>';
+            },
             $contenu_content_html
         );
 
