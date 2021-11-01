@@ -43,19 +43,20 @@ php-cs-fix: bin/tools/php-cs-fixer ## Analyze and fix PHP code with php-cs-fixer
 .PHONY: php-cs-fix
 
 phpstan: ## Analyze PHP code with phpstan
-phpstan: bin/tools/phpstan vendor/autoload.php vendor/bin/.phpunit/phpunit-8.5-0/vendor/autoload.php
+phpstan: bin/tools/phpstan composer-install vendor/bin/.phpunit/phpunit-8.5-0/vendor/autoload.php
 	@$(ON_PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse public -c phpstan.neon -l 1
 .PHONY: phpstan
 
-vendor/bin/.phpunit/phpunit-8.5-0/vendor/autoload.php: vendor/autoload.php
+vendor/bin/.phpunit/phpunit-8.5-0/vendor/autoload.php: composer-install
 	@echo "INSTALL phpunit $*"
 	@$(ON_PHP) vendor/bin/simple-phpunit --version 2>&1>/dev/null
 	@touch $@
 
-vendor/autoload.php:
+composer-install:
 	@echo "INSTALL $(@D)"
 	@$(ON_PHP) bash -c "composer install --no-interaction --prefer-dist"
 	@touch $@
+.PHONY: composer-install
 
 setup-db:
 	@echo "Checking if the database is up..."
