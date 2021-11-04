@@ -12,43 +12,54 @@ jobs:
           fingerprints:
             - "ba:5a:94:59:70:b4:28:07:1f:38:ea:1e:66:69:b2:52"
 
-      - run: ssh-keyscan 141.94.251.125 >> ~/.ssh/known_hosts
-      - run: LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kahe0589@109.234.162.184 -J jump-user@141.94.251.125 echo "Successfully connected to prod server"
-
       - restore_cache: # special step to restore the dependency cache if `composer.lock` does not change
           keys:
             - composer-v1-{{ checksum "composer.lock" }}
             # fallback to using the latest cache if no exact match is found (See https://circleci.com/docs/2.0/caching/)
             - composer-v1-
       - run:
-          name: Prepare codebase given target
+          name: Build Docker image
+          command: make build composer-install
+      - run:
+          name: Code lint and style
+          command: make php-cs
+      - run:
+          name: PHPStan static analysis
+          command: make phpstan
+      - run:
+          name: Run PHP test suite
+          command: make phpunit
+      - run:
+          name: Prepare codebase for target
           command: |
             case ${CIRCLE_BRANCH} in
                 "production" )
                     mv public/robots-production.txt public/robots.txt
-                    cp public/config/www.clubalpinlyon.fr/config.php public/config/config.php
-                    sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$PROD_ADMIN_PASSWORD/g" "public/config/www.clubalpinlyon.fr/params.php"
-                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "public/config/www.clubalpinlyon.fr/params.php"
-                    sed -i "s/DB_PASSWORD_TO_REPLACE/$PROD_DB_PASSWORD/g" "public/config/www.clubalpinlyon.fr/db_config.php"
-                    sed -i "s/DB_USER_TO_REPLACE/$PROD_DB_USER/g" "public/config/www.clubalpinlyon.fr/db_config.php"
-                    sed -i "s/DB_NAME_TO_REPLACE/$PROD_DB_NAME/g" "public/config/www.clubalpinlyon.fr/db_config.php"
+                    cp legacy/config/www.clubalpinlyon.fr/config.php legacy/config/config.php
+                    sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$PROD_ADMIN_PASSWORD/g" "legacy/config/www.clubalpinlyon.fr/params.php"
+                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/www.clubalpinlyon.fr/params.php"
+                    sed -i "s/DB_PASSWORD_TO_REPLACE/$PROD_DB_PASSWORD/g" "legacy/config/www.clubalpinlyon.fr/db_config.php"
+                    sed -i "s/DB_USER_TO_REPLACE/$PROD_DB_USER/g" "legacy/config/www.clubalpinlyon.fr/db_config.php"
+                    sed -i "s/DB_NAME_TO_REPLACE/$PROD_DB_NAME/g" "legacy/config/www.clubalpinlyon.fr/db_config.php"
                   ;;
                 "main" )
                     mv public/robots-dev.txt public/robots.txt
-                    cp public/config/test.clubalpinlyon.fr/config.php public/config/config.php
-                    sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$DEV_ADMIN_PASSWORD/g" "public/config/test.clubalpinlyon.fr/params.php"
-                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "public/config/test.clubalpinlyon.fr/params.php"
-                    sed -i "s/DB_PASSWORD_TO_REPLACE/$DEV_DB_PASSWORD/g" "public/config/test.clubalpinlyon.fr/db_config.php"
-                    sed -i "s/DB_USER_TO_REPLACE/$DEV_DB_USER/g" "public/config/test.clubalpinlyon.fr/db_config.php"
-                    sed -i "s/DB_NAME_TO_REPLACE/$DEV_DB_NAME/g" "public/config/test.clubalpinlyon.fr/db_config.php"
+                    cp legacy/config/test.clubalpinlyon.fr/config.php legacy/config/config.php
+                    sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$DEV_ADMIN_PASSWORD/g" "legacy/config/test.clubalpinlyon.fr/params.php"
+                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/test.clubalpinlyon.fr/params.php"
+                    sed -i "s/DB_PASSWORD_TO_REPLACE/$DEV_DB_PASSWORD/g" "legacy/config/test.clubalpinlyon.fr/db_config.php"
+                    sed -i "s/DB_USER_TO_REPLACE/$DEV_DB_USER/g" "legacy/config/test.clubalpinlyon.fr/db_config.php"
+                    sed -i "s/DB_NAME_TO_REPLACE/$DEV_DB_NAME/g" "legacy/config/test.clubalpinlyon.fr/db_config.php"
                   ;;
             esac
-      - run: make build composer-install
       - run:
-          name: PHPStan static analysis
-          command: make phpstan
-      - run: make package
-#      - run: make php-cs
+          name: Create Package
+          command: make package
+      - run:
+          name: Check connection with deployment server
+          command: |
+            ssh-keyscan 141.94.251.125 >> ~/.ssh/known_hosts;
+            LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kahe0589@109.234.162.184 -J jump-user@141.94.251.125 echo "Successfully connected to prod server";
       - run:
           name: Send data to server
           command: |
