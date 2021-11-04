@@ -91,6 +91,7 @@ package: ## Creates software package
 		var/cache/prod \
 		vendor \
 		.env.local.php \
+		composer.json \
 		composer.lock \
 	@mv .env.backup .env
 .PHONY: package
