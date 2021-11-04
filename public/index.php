@@ -1,170 +1,60 @@
 <?php
 
-//_________________________________________________ DEFINITION DES DOSSIERS
-define('DS', \DIRECTORY_SEPARATOR);
-define('ROOT', __DIR__.DS);              // Racine
-include ROOT.'app'.DS.'includes.php';
+//use App\Kernel;
+//
+//require_once dirname(__DIR__).'/../vendor/autoload_runtime.php';
+//
+//return function (array $context) {
+//    return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
+//};
 
-// ________________________________________________ TRAITEMENT AJAX
-if (isset($_GET['ajx'])) {
-    $ajaxFile = APP.'ajax'.DS.$_GET['ajx'].'.php';
-    include $ajaxFile;
-    exit;
+use App\Kernel;
+use App\LegacyBridge;
+use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\ErrorHandler\Debug;
+use Symfony\Component\HttpFoundation\Request;
+
+require dirname(__DIR__).'/vendor/autoload.php';
+
+(new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
+
+/*
+ * The kernel will always be available globally, allowing you to
+ * access it from your existing application and through it the
+ * service container. This allows for introducing new features in
+ * the existing application.
+ */
+global $kernel;
+
+if ($_SERVER['APP_DEBUG']) {
+    umask(0000);
+
+    Debug::enable();
 }
 
-// Géré par .htaccess
-if (isset($_GET['cstImg'])) {
-    include APP.'custom_image.php';
-    exit;
+if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? $_ENV['TRUSTED_PROXIES'] ?? false) {
+    Request::setTrustedProxies(
+        explode(',', $trustedProxies),
+        Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO
+    );
 }
 
-// lien vers cette page (pour formulaires, ou ancres)
-$versCettePage = ($p_multilangue ? $lang.'/' : '').$p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : '').'.html';			// multilangue / une langue
+if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? $_ENV['TRUSTED_HOSTS'] ?? false) {
+    Request::setTrustedHosts([$trustedHosts]);
+}
 
-header('Content-Type: text/html; charset=utf-8');
+$kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
+$request = Request::createFromGlobals();
+$response = $kernel->handle($request);
 
-?><!doctype html>
-<html lang="<?php echo $lang; ?>">
-<head>
-    <meta charset="utf-8">
-    <title>
-    <?php echo html_utf8($meta_title); ?>
-    <?php if ('feuille-de-sortie' == $p1) { ?>
-        <?php if ($evt) { ?>
-        - Feuille de sortie - <?php echo html_utf8($evt['titre_evt']); ?>-<?php echo date('d.m.Y', $evt['tsp_evt']); ?>
-        <?php } else { ?>
-        - Feuille de destination - <?php echo html_utf8($destination['nom']); ?> - le <?php echo display_date($destination['date']); ?> à <?php echo display_time($destination['date']); ?>
-        <?php } ?>
-    <?php } ?>
-    </title>
-    <base href="<?php echo $p_racine; ?>" />
-    <meta name="description" content="<?php echo html_utf8($meta_description); ?>">
-    <meta name="author" content="www.herewecom.fr">
-    <meta name="viewport" content="width=1200">
-	<?php if (isset($p_google_site_verification) && !empty($p_google_site_verification)) { ?><meta name="google-site-verification" content="<?php echo $p_google_site_verification; ?>" /><?php } ?>
-    <?php
-
-        //_________________________________________________ HEADER AU CHOIX (inclut le doctype)
-        if ($p_pageadmin) {
-            include INCLUDES.'generic'.DS.'header-admin.php';
-        } else {
-            include INCLUDES.'generic'.DS.'header.php';
-        }
-        //_________________________________________________ Ajout des CSS par page
-        if (is_array($p_addCss)) {
-            foreach ($p_addCss as $handle) {
-                if ($handle) {
-                    echo '<link rel="stylesheet" href="'.$handle.'" type="text/css"  media="screen" />'."\n";
-                }
-            }
-        }
-        //_________________________________________________ Ajout des JS par page
-        if (is_array($p_addJs)) {
-            foreach ($p_addJs as $handle) {
-                if ($handle) {
-                    echo '<script type="text/javascript" charset="utf-8" src="'.$handle.'"></script>'."\n";
-                }
-            }
-        }
-
-    ?>
-    <!--[if lt IE 9]>
-        <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-</head>
-<body>
-    <div id="container">
-        <div id="siteHeight">
-            <?php
-                //_________________________________________________ MENU ADMINISTRATEUR
-                if (admin()) {
-                    include ADMIN.'menuAdmin.php';
-                }
-
-                //_________________________________________________ CONTENU IMPRESSION FEUILLE SORTIE
-                if ('feuille-de-sortie' == $p1) {
-                    echo '<div id="pageAdmin" class="'.($currentPage['superadmin_page'] ? 'superadmin' : '').'">';
-                    if (file_exists(PAGES.'/'.$p1.'.php')) {
-                        include PAGES.'/'.$p1.'.php';
-                    } else {
-                        include '404.htm';
-                    }
-                    echo '</div>';
-                }
-                //_________________________________________________ CONTENU COMMUN AUX PAGES PUBLIQUES
-                elseif (!$p_pageadmin || !admin()) {
-                    // include page
-                    include INCLUDES.'generic'.DS.'top.php';
-                    include INCLUDES.'bigfond.php';
-                    if (file_exists(PAGES.'/'.$p1.'.php')) {
-                        include PAGES.'/'.$p1.'.php';
-                    } else {
-                        echo '<p class="erreur">Erreur d\'inclusion. Merci de contacter le webmaster.</p>';
-                    }
-                    include INCLUDES.'generic'.DS.'footer.php';
-                }
-                //_________________________________________________ CONTENU PAGES ADMIN
-                else {
-                    echo '<div id="pageAdmin" class="'.($currentPage['superadmin_page'] ? 'superadmin' : '').'">';
-                    if (file_exists(PAGES.'/'.$p1.'.php') && '404' != $p1) {
-                        include PAGES.'/'.$p1.'.php';
-                    } else {
-                        include '404.htm';
-                    }
-                    echo '</div>';
-                }
-            ?>
-
-            <!-- Waiters -->
-            <div id="loading1" class="mybox-down"></div>
-            <div id="loading2" class="mybox-up">
-                <p><?php echo cont('operation-en-cours'); ?><br /><br /><img src="img/base/loading.gif" alt="" title="" /></p>
-            </div>
-
-            <!-- affichage des manques de contenus en admin -->
-            <?php
-            if (admin() && count($contLog) && !$p_pageadmin) {
-                echo '<div id="adminmissing">
-                    <img src="img/base/x.png" alt="" title="Fermer" style="float:right; cursor:pointer; padding:5px;" onclick="$(this).parent().fadeOut();" />
-                    <div style="float:left; padding:12px 10px 3px 35px">Admin : champs non remplis dans cette page</div>';
-
-                // si on est dans la langue par défaut, redirection vers la page des contenus :
-                if ($lang == $p_langs[0]) {
-                    for ($i = 0; $i < count($contLog); ++$i) {
-                        $tmp = $contLog[$i];
-                        echo '<form style="display:inline" method="post" action="'.($p_multilangue ? $lang.'/' : '').'admin-contenus/'.$lang.'.html">
-                                <input type="hidden" name="operation" value="forceAddContent" />
-                                <input type="text" readonly="readonly" name="code_content_inline" value="'.$tmp.'" onclick="$(this).parent().submit();" />
-                            </form>';
-                    }
-                }
-                // si on est sur une page dans une autre langue, redirection vers la page traductions
-                else {
-                    echo '<a href="'.$lang.'/admin-traductions/'.$lang.'.html" title="">&gt; Voir la page de traduction</a>';
-                }
-                echo '</div>';
-            }
-            ?>
-
-
-            <!-- lbxMsg : popup d'information -->
-            <?php include INCLUDES.'generic'.DS.'lbxMsg.php'; ?>
-
-
-            <script type="text/javascript">
-
-                var _gaq = _gaq || [];
-                _gaq.push(['_setAccount', '<?php echo $p_google_analytics_account; ?>']);
-                _gaq.push(['_trackPageview']);
-
-                (function() {
-                    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-                })();
-
-            </script>
-        </div> <!--! end of #siteHeight -->
-    </div> <!--! end of #container -->
-</body> <!--! end of body -->
-</html>
+/*
+ * LegacyBridge will take care of figuring out whether to boot up the
+ * existing application or to send the Symfony response back to the client.
+ */
+$scriptFile = LegacyBridge::prepareLegacyScript($request, $response, __DIR__);
+if (null !== $scriptFile) {
+    require $scriptFile;
+} else {
+    $response->send();
+}
+$kernel->terminate($request, $response);

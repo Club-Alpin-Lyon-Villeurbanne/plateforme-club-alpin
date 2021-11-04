@@ -1,0 +1,206 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}404 : Page introuvable{% endblock %}
+
+{% block body %}
+<div id="container">
+    <div id="siteHeight">
+        <!--[if lt IE 9]>
+        <div style="background:white; padding:10px; position:relative; z-index:90; ">
+            <p class="info sitewidth" style="font-size:11px; line-height:13px; color:gray;">
+		<span style="height:0px; width:10px; text-align:left;  float:right">
+			<img src="/img/base/x.png" style="padding:3px; cursor:pointer; " alt="" title="Fermer" onclick="$(this).parent().parent().parent().hide();" />
+		</span>
+                Attention, vous utilisez actuellement une ancienne version d'Internet explorer qui peut provoquer des erreurs sur ce site en <b>HTML5</b>.<br />
+                Nous vous invitons à prendre cinq minutes pour
+                <a href="https://windows.microsoft.com/en-us/internet-explorer/download-ie" title="" target="_blank">mettre à jour Internet Explorer</a>,
+                voire à opter pour un navigateur à jour comme
+                <a href="https://www.mozilla.org/fr/firefox/new/" title="Page de téléchargement de Firefox" class="blank">Firefox</a>,
+                <a href="https://www.google.com/chrome?hl=fr" title="Page de téléchargement de Google Chrome" class="blank">Google Chrome</a>,
+                ou <a href="https://www.apple.com/fr/safari/" title="Page de téléchargement de Safari" class="blank">Safari</a>.
+                Ces derniers sont davantages à jour technologiquement, plus rapides, respectent l'éthique du web et se mettent à jour tout seuls.
+            </p>
+        </div>
+        <![endif]-->
+        <header id="mainHeader">
+            <div class="sitewidth" style="min-width:980px;">
+
+
+                <!-- LOGO COMMUN TTES PAGES -->
+                <a id="logo" href="http://cafsite.caf/" title="Toutes les commissions, sorties et actus du CAF"><img src="/img/logo.png" alt="Toutes les commissions, sorties et actus du CAF" title="Toutes les commissions, sorties et actus du CAF" /></a>
+
+
+                <!-- COMMISSION -->
+                <a id="toolbar-commission" href="javascript:void(0)" title="" class="toptrigger">
+                    <div style="position:absolute;"><span id="shadowcache-commission" class="shadowcache"></span></div>
+                    <span class="picto"><img src="/img/comm-please.png" alt="" title="" class="light" /><img src="/img/comm-please-up.png" alt="" title="" class="dark" /></span> Commissions - Activités<br /><b>choisissez...</b>		</a>
+                <!-- PARTIE CACHEE -->
+                <nav id="toolbar-commission-hidden" >
+                    <div class="sitewidth">
+                        <a href="http://cafsite.caf/" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> Toutes les commissions</a>
+                        <a href="/accueil/sorties-familles.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> Sorties familles</a> <a href="/accueil/alpinisme.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> Alpinisme</a> <a href="/accueil/ski-alpin.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> Ski alpin / Snowboard</a> <a href="/accueil/ecole-d-aventure.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> École d'aventure</a> <a href="/accueil/ecole-d-escalade.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> École d'escalade</a> <a href="/accueil/ecole-de-ski.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> École de ski</a> <a href="/accueil/escalade.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> Escalade</a> <a href="/accueil/escalade-competition.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> Escalade compétition</a> <a href="/accueil/handicaf.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> Handicaf</a> <a href="/accueil/randonnee-pedestre.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> Randonnée pédestre</a> <a href="/accueil/randonnee-raquette.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> Randonnée raquette</a> <a href="/accueil/ski-de-randonnee.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> Ski de randonnée</a> <a href="/accueil/protection-de-la-montagne.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> Protection de la montagne</a> <a href="/accueil/formation.html" title=""><span class="picto" style="background-image:url(http://cafsite.caf/ftp/commission/0/picto-light.png)"><img src="http://cafsite.caf/ftp/commission/0/picto-dark.png" alt="" title="" /></span> Formation</a> 			</div>
+                </nav>
+
+
+                <!-- NAVIGATION -->
+                <a id="toolbar-navigation" href="javascript:void(0)" title="" class="toptrigger">
+                    <span class="picto"><img src="/img/boussole.png" alt="" title="" class="light" /><img src="/img/boussole-up.png" alt="" title="" class="dark" /></span>
+                    La carte du site :<br /><b>Navigation</b>
+                    <span id="shadowcache-navigation" class="shadowcache"></span>
+                </a>
+                <!-- PARTIE CACHEE -->
+                <nav id="toolbar-navigation-hidden" >
+                    <div class="sitewidth">
+                        <div id="nav-menu-1" class="nav-menu"><p class="menutitle">Le club</p>
+                            <ul>
+                                <li><a href="/pages/presentation.html">Présentation</a></li>
+                                <li><a href="/pages/presentation.html">Pourquoi et comment adhérer ?</a></li>
+                                <li><a href="/pages/presentation.html">Qui fait quoi ?</a></li>
+                                <li><a href="/pages/presentation.html">Bénévoles au CAF</a></li>
+                                <li><a href="/pages/presentation.html">Nos partenaires publics</a></li>
+                                <li><a href="/pages/presentation.html">Nos partenaires privés</a></li>
+                                <li><a href="/pages/presentation.html" target="_blank">Les responsables du club</a></li>
+                            </ul></div><div id="nav-menu-2" class="nav-menu"><p class="menutitle">ACTIVITÉS ESTIVALES</p>
+                            <ul>
+                                <li><a href="/pages/alpinisme.html">Alpinisme</a></li>
+                                <li><a href="/pages/alpinisme.html">Escalade</a></li>
+                                <li><a href="/pages/alpinisme.html">Escalade de compétition</a></li>
+                                <li><a href="/pages/alpinisme.html">Randonnée pédestre</a></li>
+                            </ul>
+                            <p> </p>
+                            <p class="menutitle">ACTIVITÉS HIVERNALES :</p>
+                            <ul>
+                                <li><a href="/pages/alpinisme.html">Alpinisme / Cascade de glace</a></li>
+                                <li><a href="/pages/alpinisme.html">Randonnée raquette</a></li>
+                                <li><a href="/pages/alpinisme.html">Ski alpin / Snowboard</a></li>
+                                <li><a href="/pages/alpinisme.html">Ski de randonnée</a></li>
+                                <li><a href="/pages/alpinisme.html">Ski de fond</a></li>
+                            </ul></div><div id="nav-menu-3" class="nav-menu">&nbsp;</div><div id="nav-menu-4" class="nav-menu">&nbsp;</div>			</div>
+                </nav>
+
+
+                <a id="toolbar-user" href="javascript:void(0)" title="" class="toptrigger">
+                    <!-- trigger -->
+                    <span class="picto"><img src="/img/toolbox.png" alt="" title="" class="light" /><img src="/img/toolbox-up.png" alt="" title="" class="dark" /></span> Espace<br /><b>Adhérents</b>
+                    <span id="shadowcache-user" class="shadowcache"></span>
+                </a>
+
+
+
+                <!-- navigation adherent -->
+                <nav id="toolbar-user-hidden">
+                    <div class="sitewidth">
+                        <img src="/img/bg-usermenu.png" alt="" title="" style="float:left; padding:30px 30px 30px 0" />
+                        <!-- creer un compte (vers page profil) -->
+                        <div style="width:515px; float:left; border-right:1px solid #c6e39f; min-height:120px; padding:0px 5px 0 0">
+                            <div id="mainmenu-creer-mon-compte" class="menucontent"><p class="menutitle">Activer mon compte</p> <p>Pour rejoindre le site, vous devez être inscrit au Club Alpin Français de Lyon-Villeurbanne ou sa section Ouest Lyonnais.<br />Munissez-vous de votre numéro d'adhérent et de votre adresse e-mail, choisissez un peudonyme et un mot de passe, et laissez-vous guider.</p></div>				<a class="nice2" href="profil.html" title="">Activer mon compte</a>
+                        </div>
+
+                        <!-- connexion ajax (reste sur la même page) -->
+                        <!-- la class AJAXFORM fonctionne sur un modèle défini dans js/onready-site.js -->
+                        <!-- les messages de reponse se trouvent dans SCRIPTS.'operations.php' -->
+                        <form class="menucontent ajaxform" autocomplete="on" action="profil.html" method="post" style="width:290px; padding-right:10px; float:right">
+                            <input type="hidden" name="operation" value="user_login">
+
+                            <div id="mainmenu-connection" class="menucontent"><p class="menutitle">Connexion</p></div>
+                            Votre e-mail<br />
+                            <input type="text" name="email_user" class="type1" value="" placeholder="" autocomplete="on">
+                            <br />
+
+                            Votre mot de passe<br />
+                            <input type="password" name="mdp_user" class="type1" value="" placeholder="" autocomplete="off">
+
+                            <!-- <a href="javascript:void(0)" title="" onclick="$(this).parents('form').submit()" class="nice2">Connexion</a> -->
+                            <input type="submit"  class="nice2" value="Connexion" onclick="$(this).parents('form').submit()" />
+                            <br />
+
+                            <a href="/includer.php?p=pages/mot-de-passe-perdu.php" class="fancyframe" title="" style="font-size:10px; position:relative; bottom:4px; font-family:Arial; color:white; font-weight:100; opacity:0.7;">Mot de passe oublié ?</a>
+
+                            <div class="error_reporting" style="display:none"></div>
+
+                        </form>
+
+
+                        <br style="clear:both" />
+                    </div>
+                </nav>
+
+            </div>
+        </header>
+        <div id="top-openers">
+            <div class="sitewidth">
+                <span class="opener" style="left:480px;"><img src="/img/opener-commission.png" alt="" title="" /></span>
+                <span class="opener" style="left:630px;"><img src="/img/opener-navigation.png" alt="" title="" /></span>
+                <span class="opener" style="left:820px;"><img src="/img/opener-user.png" alt="" title="" /></span>
+            </div>
+        </div>
+
+        <!-- balise a : permet de focaliser dessus = masquer les menu dans une navigation au clavier / voir js/onready-site.js-->
+        <a href="javascript:void(0)" id="top-hider"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!-- FOND : positionné comme un calque, en absolute, pour ajustement de l'image -->
+        <div id="bigfond" style="background-image:url(http://cafsite.caf/ftp/commission/0/bigfond.jpg)"></div>
+        <div id="404" class="vide"><p style="text-align: center;"> </p>
+            <h2 style="text-align: center;">404</h2>
+            <p style="text-align: center;">Désolé, cette page est introuvable. Vous avez peut-être suivi un lien obsolète en dehors de ce site ? <br />Sinon, si c'est un lien dans ce site qui provoque cette erreur, merci de nous contacter.</p>
+            <p style="text-align: center;">Bref, <a href="/">revenir à l'accueil</a> ?</p></div><footer id="mainfooter">
+            <!-- My footer -->
+            <div class="tiers-footer" style="margin-right:40px; width:300px; font-size:9px; line-height:14px">
+                <div id="mainfooter-1" class="tiers-footer"><h2>Les différentes commissions<br />du Club Alpin</h2></div><div style="width:47%; float:left; white-space:nowrap; overflow:hidden;"><a href="/accueil/alpinisme.html" title="">&gt; Alpinisme</a><br /><a href="/accueil/ecole-d-aventure.html" title="">&gt; &Eacute;cole d&#039;aventure</a><br /><a href="/accueil/ecole-d-escalade.html" title="">&gt; &Eacute;cole d&#039;escalade</a><br /><a href="/accueil/ecole-de-ski.html" title="">&gt; &Eacute;cole de ski</a><br /><a href="/accueil/escalade.html" title="">&gt; Escalade</a><br /><a href="/accueil/escalade-competition.html" title="">&gt; Escalade comp&eacute;tition</a><br /><a href="/accueil/formation.html" title="">&gt; Formation</a></div><div style="width:47%; float:right; white-space:nowrap; overflow:hidden;"><a href="/accueil/handicaf.html" title="">&gt; Handicaf</a><br /><a href="/accueil/protection-de-la-montagne.html" title="">&gt; Protection de la montagne</a><br /><a href="/accueil/randonnee-pedestre.html" title="">&gt; Randonn&eacute;e p&eacute;destre</a><br /><a href="/accueil/randonnee-raquette.html" title="">&gt; Randonn&eacute;e raquette</a><br /><a href="/accueil/ski-alpin.html" title="">&gt; Ski alpin / Snowboard</a><br /><a href="/accueil/ski-de-randonnee.html" title="">&gt; Ski de randonn&eacute;e</a><br /><a href="/accueil/sorties-familles.html" title="">&gt; Sorties familles</a><br /></div>
+                <!-- lien vers la page dédiée aux responsables -->
+                <div class="tiers-footer mini" style="padding-top:10px">
+                    <a style="color:gray" href="responsables.html" title="">&gt; Voir les responsables par commission</a>
+                </div>
+            </div>
+
+            <div class="tiers-footer">
+                <div id="mainfooter-2" class="tiers-footer"><h2>Pour nous contacter</h2>
+                    <p>Nos locaux sont situés :</p>
+                    <p>adresse<br />code postal ville <br />Tel : (33) 04-XX-XX-XX-XX</p>
+                    <p>Courriel : info@caf.com</p>
+                    <p><strong>PERMANENCE :</strong></p>
+                    <p>Nous vous accueillons :</p>
+                    <h3><strong>&gt; du mardi au jeudi de 16h30 à 19h</strong></h3>
+                    <h3><strong>&gt; le vendredi de 17h à 19h30</strong></h3></div>	</div>
+
+            <div class="tiers-footer" style="float:right">
+                <div id="mainfooter-3" class="tiers-footer"><h2><a href="/pages/mentions-legales.html">Mentions légales</a></h2>
+                    <p>©Les contenus de ce site, images et textes, appartiennent au Club Alpin Français et ne peuvent être réutilisés sans l'accord de leurs auteurs respectifs.<br /><a href="/pages/mentions-legales.html">[en savoir plus]</a></p>
+                    <p><a title="Création de sites internet à Chambéry, Savoie" href="http://www.herewecom.fr/" target="_blank">Site Internet réalisé par Herewecom</a></p>
+                    <hr />
+                    <p><span style="font-size: small;">Retrouvez-nous sur les réseaux sociaux<br /><a href="https://fr-fr.facebook.com/club.alpin.francais" target="_blank"><img src="/img/social/facebook.png" alt="Facebook" width="30" height="30" /></a></span> <a href="https://twitter.com/CAF" target="_blank"><img src="/img/social/twitter.png" alt="" width="30" height="30" /></a></p></div>	</div>
+
+            <br style="clear:both" />
+
+            <a style="display: none;" onClick="document.body.scrollTop = document.documentElement.scrollTop = 0;" class="scrollup">Remonter</a>
+
+        </footer>
+
+        <!-- Waiters -->
+        <div id="loading1" class="mybox-down"></div>
+        <div id="loading2" class="mybox-up">
+            <p>Opération en cours, veuillez patienter<br /><br /><img src="/img/base/loading.gif" alt="" title="" /></p>
+        </div>
+
+        <!-- affichage des manques de contenus en admin -->
+
+
+        <!-- lbxMsg : popup d'information -->
+
+    </div> <!--! end of #siteHeight -->
+</div> <!--! end of #container -->
+</body>
+{% endblock %}

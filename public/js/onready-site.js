@@ -223,7 +223,7 @@ $().ready(function() {
 			$.ajax({
 				type: "POST",
 				dataType : "json",
-				url: "index.php?ajx=operations",
+				url: "/?ajx=operations",
 				data: datas,
 				beforeSend: function(jsonMsg){ 
 					form.addClass('running');

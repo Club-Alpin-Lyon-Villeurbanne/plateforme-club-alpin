@@ -43,11 +43,15 @@ php-cs-fix: bin/tools/php-cs-fixer ## Analyze and fix PHP code with php-cs-fixer
 .PHONY: php-cs-fix
 
 phpstan: ## Analyze PHP code with phpstan
-phpstan: bin/tools/phpstan composer-install vendor/bin/.phpunit/phpunit-8.5-0/vendor/autoload.php
-	@$(ON_PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse public -c phpstan.neon -l 1
+phpstan: bin/tools/phpstan composer-install vendor/bin/.phpunit/phpunit-9.5-0/vendor/autoload.php
+	@$(ON_PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse legacy public src tests -c phpstan.neon -l 1
 .PHONY: phpstan
 
-vendor/bin/.phpunit/phpunit-8.5-0/vendor/autoload.php: composer-install
+phpunit: vendor/autoload.php vendor/bin/.phpunit/phpunit-9.5-0/vendor/autoload.php ## Run phpunit
+	@$(ON_PHP) vendor/bin/simple-phpunit -v $(args)
+.PHONY: phpunit
+
+vendor/bin/.phpunit/phpunit-9.5-0/vendor/autoload.php: composer-install
 	@echo "INSTALL phpunit $*"
 	@$(ON_PHP) vendor/bin/simple-phpunit --version 2>&1>/dev/null
 	@touch $@
@@ -63,11 +67,11 @@ setup-db:
 	@$(ON_PHP) timeout --foreground 120s bash -c 'while ! timeout --foreground 3s echo > /dev/tcp/caf-db/3306 2 > /dev/null ; do sleep 1; done' \
 	    || (echo "Unable to connect to the database. Exiting..." && exit 1)
 	@echo "Database is up!"
-	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./public/config/bdd_caf.sql
-	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./public/config/bdd_caf.1.1.sql
-	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./public/config/bdd_caf.1.x.sql
-	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./public/config/bdd_caf.1.1.1.sql
-	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./public/config/bdd_caf.partenaires.sql
+	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.sql
+	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
+	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
+	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
+	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
 .PHONY: setup-db
 
 package: ## Creates software package
