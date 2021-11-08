@@ -70,7 +70,7 @@ elseif (!allowed('user_read_public')) {
         if (allowed('user_read_limited')) {
             ?>
 			<a href="user-full/<?php echo $id_user; ?>.html" title="Quitter cette page pour voir la fiche complète de cet adhérent" class="nice2" target="_top">
-				<img src="img/base/user.png" alt="" title="" /> &nbsp; &nbsp; Profil complet
+				<img src="/img/base/user.png" alt="" title="" /> &nbsp; &nbsp; Profil complet
 			</a>
 			<?php
         } ?>
@@ -79,7 +79,7 @@ elseif (!allowed('user_read_public')) {
 		<?php
         if ($auth_contact_user) {
             echo '<a href="javascript:void(0)" title="Utiliser le formulaire de contact pour écrire un message à cet adhérent" class="nice2" onclick="$(\'#trigger-userinfo, #trigger-usercontact\').slideToggle()">
-					<img src="img/base/email.png" alt="" title="" /> &nbsp; &nbsp; Contacter
+					<img src="/img/base/email.png" alt="" title="" /> &nbsp; &nbsp; Contacter
 				</a>';
         } ?>
 

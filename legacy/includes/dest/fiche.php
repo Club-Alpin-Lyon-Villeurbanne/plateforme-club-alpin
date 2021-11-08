@@ -179,7 +179,7 @@
         ) {
             ?>
             <a href="<?php echo 'feuille-de-sortie/dest-'.(int) ($destination['id']).'.html'; ?>" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
-                <img src="img/base/print.png" alt="PRINT" title="" style="height:20px" />
+                <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
                 Imprimer la fiche de destination
             </a><br />
         <?php
@@ -195,13 +195,13 @@
             if ($destination['id_user_responsable'] == $_SESSION['user']['id_user'] || $destination['id_user_adjoint'] == $_SESSION['user']['id_user']) {
                 // avant l'evt
                 if (0 == $interval->invert) {
-                    echo '<p class="info"><img src="img/inscrit-encadrant.png" alt="" title="" style="float:left" /> <br />Vous êtes &laquo; '.
+                    echo '<p class="info"><img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" /> <br />Vous êtes &laquo; '.
                         ($destination['id_user_responsable'] == $_SESSION['user']['id_user'] ? '' : 'co-').'responsable &raquo; de l\'organisation de cette destination.<br />&nbsp;
                     </p><br />';
                 }
                 // apres l'evt
                 else {
-                    echo '<p class="info"><img src="img/inscrit-encadrant.png" alt="" title="" style="float:left" /> <br />Vous avez organisé cette destination en temps que &laquo; '.
+                    echo '<p class="info"><img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" /> <br />Vous avez organisé cette destination en temps que &laquo; '.
                         ($destination['id_user_responsable'] == $_SESSION['user']['id_user'] ? '' : 'co-').'responsable &raquo;.<br />&nbsp;
                     </p><br />';
                 }
@@ -258,7 +258,7 @@
                                                 <td class="small">'.(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? $tmpUser['tel_user'] : '').'</td>
                                                 <td class="small">'.(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? $tmpUser['tel2_user'] : '').'</td>
                                                 <td class="small">'.(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? '<a href="mailto:'.$tmpUser['email_user'].'">'.$tmpUser['email_user'].'</a>' : '').'</td>'.
-                                                (allowed('user_read_limited') ? '<td class="small">'.($tmpUser['is_covoiturage'] ? '<img src="img/voiture.png" title="Covoiturage" width="16px">' : '').'</td>' : '')
+                                                (allowed('user_read_limited') ? '<td class="small">'.($tmpUser['is_covoiturage'] ? '<img src="/img/voiture.png" title="Covoiturage" width="16px">' : '').'</td>' : '')
                                                 .'</tr>';
                                         }
                                         echo '</table>';
@@ -311,7 +311,7 @@
                                                     <td class="small">'.(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? $tmpUser['tel_user'] : '').'</td>
                                                     <td class="small">'.(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? $tmpUser['tel2_user'] : '').'</td>
                                                     <td class="small">'.(allowed('user_read_private', 'commission:'.$tmpUser['sortie']['code_commission']) ? '<a href="mailto:'.$tmpUser['email_user'].'">'.$tmpUser['email_user'].'</a>' : '').'</td>'.
-                                            (allowed('user_read_limited') ? '<td class="small">'.($tmpUser['is_covoiturage'] ? '<img src="img/voiture.png" title="Covoiturage" width="16px">' : '').'</td>' : '')
+                                            (allowed('user_read_limited') ? '<td class="small">'.($tmpUser['is_covoiturage'] ? '<img src="/img/voiture.png" title="Covoiturage" width="16px">' : '').'</td>' : '')
                                             .'</tr>';
                                             }
                                             echo '</table>'; ?>

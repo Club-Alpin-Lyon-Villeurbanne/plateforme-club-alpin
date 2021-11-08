@@ -63,7 +63,7 @@
                     }
                     fclose($handle); ?>
 					<p>
-						<img src="img/base/fichier.png" alt="" title="" style="float:left; padding:0 15px 0 0" /> Dernière modification le
+						<img src="/img/base/fichier.png" alt="" title="" style="float:left; padding:0 15px 0 0" /> Dernière modification le
 						<?php
                         echo '<b>'.jour(date('N', $tsp)).' '.date('d', $tsp).' '.mois(date('m', $tsp)).' '.date('Y', $tsp).'</b> à '.date('H:i', $tsp); ?>
 						<br />

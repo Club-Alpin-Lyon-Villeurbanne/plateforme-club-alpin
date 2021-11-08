@@ -35,13 +35,13 @@
 
 		<h1>Gestion des pages &laquo;libres&raquo; du site</h2>
 		<p>
-			<img src="img/base/info.png" style="vertical-align:middle" />
+			<img src="/img/base/info.png" style="vertical-align:middle" />
 			Ajoutez, modifiez, masquez ou supprimez les pages libres du site.
 			Une page masquée apparaît "rayée" dans le tableau ci-dessous.
 		</p>
 
 		<br />
-		<a href="includer.php?admin=true&p=pages/admin-pages-libres-add.php" title="" class="fancyframe boutonFancy"><img src="img/base/page_white_add.png" alt="" title="" /> Nouvelle page</a>
+		<a href="includer.php?admin=true&p=pages/admin-pages-libres-add.php" title="" class="fancyframe boutonFancy"><img src="/img/base/page_white_add.png" alt="" title="" /> Nouvelle page</a>
 
 
 		<!-- AFFICHAGE DU TABLEAU -->
@@ -101,10 +101,10 @@
 
             echo '<tr id="tr-'.$elt['id_page'].'" class="'.($elt['vis_page'] ? 'vis-on' : 'vis-off').'">'
                         .'<td style="width:120px">'
-                            .'<a class="delete" href="javascript:void(0)" rel="'.(int) ($elt['id_page']).'|'.$elt['code_page'].'" title="Supprimer définitivement cette page"><img src="img/base/delete.png" alt="DEL" title="Supprimer" /></a> &nbsp;'
-                            .'<a href="'.$p_racine.'pages/'.html_utf8($elt['code_page']).'.html" title="Modifier cette page"><img src="img/base/page_edit.png" alt="EDIT" title="Modifier cette page" /></a> &nbsp;'
-                            .'<a class="fancyframe" href="includer.php?admin=true&p=pages/admin-pages-libres-edit.php&amp;id_page='.(int) ($elt['id_page']).'" title="Modifier les METAS"><img src="img/base/application_form_edit.png" alt="EDIT METAS" title="Modifier les metas" /></a> &nbsp;'
-                            .'<a class="majVis" href="javascript:void(0)" rel="'.(int) ($elt['id_page']).'|'.$elt['lastedit_page'].'" title="Afficher/masquer cette page aux visiteurs du site"><img src="img/base/vis-'.($elt['vis_page'] ? 'on' : 'off').'.png" alt="VIS" title="Afficher/masquer" /></a> &nbsp;'
+                            .'<a class="delete" href="javascript:void(0)" rel="'.(int) ($elt['id_page']).'|'.$elt['code_page'].'" title="Supprimer définitivement cette page"><img src="/img/base/delete.png" alt="DEL" title="Supprimer" /></a> &nbsp;'
+                            .'<a href="'.$p_racine.'pages/'.html_utf8($elt['code_page']).'.html" title="Modifier cette page"><img src="/img/base/page_edit.png" alt="EDIT" title="Modifier cette page" /></a> &nbsp;'
+                            .'<a class="fancyframe" href="includer.php?admin=true&p=pages/admin-pages-libres-edit.php&amp;id_page='.(int) ($elt['id_page']).'" title="Modifier les METAS"><img src="/img/base/application_form_edit.png" alt="EDIT METAS" title="Modifier les metas" /></a> &nbsp;'
+                            .'<a class="majVis" href="javascript:void(0)" rel="'.(int) ($elt['id_page']).'|'.$elt['lastedit_page'].'" title="Afficher/masquer cette page aux visiteurs du site"><img src="/img/base/vis-'.($elt['vis_page'] ? 'on' : 'off').'.png" alt="VIS" title="Afficher/masquer" /></a> &nbsp;'
                         .'</td>'
                         .'<td>'.(int) ($elt['id_page']).'</td>'
                         // .'<td>'.intval($elt['vis_page']).'</td>'

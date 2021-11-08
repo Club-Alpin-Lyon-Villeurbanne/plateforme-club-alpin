@@ -4,9 +4,9 @@
         echo 'position:relative';
     } ?>">
 		<!-- specs -->
-		<a href="<?php echo $p_pageadmin ? 'accueil.html' : $versCettePage; ?>?quitadmin=true" title="" class="adminmenulink special"><img src="img/base/door_out.png" alt="" title="" /> Déconnexion</a>
-		<a href="includer.php?p=includes/admin-log.php&admin=true" title="Voir les activités administrateur" class="adminmenulink special fancyframe"><img src="img/base/report.png" alt="" title="" /> Log</a>
-		<a href="<?php echo $p_racine; ?>" title="Retour au site" class="adminmenulink special"><img src="img/base/house.png" alt="" title="" /> Retour au site</a>
+		<a href="<?php echo $p_pageadmin ? 'accueil.html' : $versCettePage; ?>?quitadmin=true" title="" class="adminmenulink special"><img src="/img/base/door_out.png" alt="" title="" /> Déconnexion</a>
+		<a href="includer.php?p=includes/admin-log.php&admin=true" title="Voir les activités administrateur" class="adminmenulink special fancyframe"><img src="/img/base/report.png" alt="" title="" /> Log</a>
+		<a href="<?php echo $p_racine; ?>" title="Retour au site" class="adminmenulink special"><img src="/img/base/house.png" alt="" title="" /> Retour au site</a>
 
 		<span style="float:left">Menu administrateur : </span>
 
@@ -23,7 +23,7 @@
                 // cas particulier : la page traductions seulement en cas de langues multiples
                 if ('admin-traductions' != $code || count($p_langs) > 1) {
                     echo '<a href="'.($p_multilangue ? $lang.'/' : '').$code.'.html" title="" class="'.($datas['superadmin_page'] ? 'superadmin ' : '').' adminmenulink '.($p1 == $code ? 'up' : '').'">
-								'.($datas['superadmin_page'] ? '<img src="img/base/bullet_star.png" alt="" title="Option super-admin" />' : '').$datas['default_name_page'].'</a>';
+								'.($datas['superadmin_page'] ? '<img src="/img/base/bullet_star.png" alt="" title="Option super-admin" />' : '').$datas['default_name_page'].'</a>';
                     ++$i;
                 }
             }
@@ -59,7 +59,7 @@
 			<!--[if IE]>
 			<p class="erreur" style="margin:40px 20px 20px 20px; font-size:12px; font-family:Arial;">
 				<span style="height:0px; width:10px; text-align:left;  float:right">
-					<img src="img/base/x.png" style="padding:3px; cursor:pointer; " alt="" title="Fermer" onclick="$(this).parents('p').fadeOut();" />
+					<img src="/img/base/x.png" style="padding:3px; cursor:pointer; " alt="" title="Fermer" onclick="$(this).parents('p').fadeOut();" />
 				</span>
 				Attention, vous utilisez actuellement <b>Internet explorer</b> pour votre session administrateur, ce qui est déconseillé. <br />
 				Pour une utlisation à la fois plus agréable et plus sécurisante de votre espace d'administration, HereWeCom vous propose

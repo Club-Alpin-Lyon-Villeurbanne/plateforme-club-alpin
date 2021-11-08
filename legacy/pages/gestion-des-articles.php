@@ -85,7 +85,7 @@
                                 .'<b>Type d\'article :</b> '.$type.'<br />'
                                 .'<span class="mini">Par '.userlink($article['id_user'], $article['nickname_user']).'</span> - '
                                 .'<span class="mini">Le '.jour(date('N', $article['tsp_article']), 'short').' '.date('d', $article['tsp_article']).' '.mois(date('m', $article['tsp_article'])).' à '.date('H:i', $article['tsp_article']).'<br />'
-                                .($article['une_article'] ? '<span class="mini"><b><img src="img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d\'accueil !</span>' : '')
+                                .($article['une_article'] ? '<span class="mini"><b><img src="/img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d\'accueil !</span>' : '')
                             .'</ul>'
 
                         .'</div>'
@@ -166,7 +166,7 @@
                                 .'<b>Type d\'article :</b> '.$type.'<br />'
                                 .'<span class="mini">Par '.userlink($article['id_user'], $article['nickname_user']).'</span> - '
                                 .'<span class="mini">Le '.jour(date('N', $article['tsp_article']), 'short').' '.date('d', $article['tsp_article']).' '.mois(date('m', $article['tsp_article'])).' à '.date('H:i', $article['tsp_article']).'<br />'
-                                .($article['une_article'] ? '<span class="mini"><b><img src="img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d\'accueil !</span>' : '')
+                                .($article['une_article'] ? '<span class="mini"><b><img src="/img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d\'accueil !</span>' : '')
                             .'</ul>'
 
                         .'</div>'

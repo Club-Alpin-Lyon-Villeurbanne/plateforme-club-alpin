@@ -130,14 +130,14 @@ if (!$article) {
     // edition
     if (allowed('article_edit_notmine') || allowed('article_edit', 'commission:'.$article['commission_article'])) {
         echo '<a href="article-edit/'.(int) ($article['id_article']).'.html" title="" class="nice2 orange">
-			<img src="img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cet article
+			<img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cet article
 		</a>';
     }
 
     if ('1' != $article['status_article'] && (allowed('article_delete_notmine') || allowed('article_delete', 'commission:'.$article['commission_article']))) {
         // Suppression
         echo '<a href="javascript:$.fancybox($(\'#supprimer-form-'.$article['id_article'].'\').html());" title="" class="nice2 red">
-				<img src="img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cet article
+				<img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cet article
 			</a>';
         echo '<div id="supprimer-form-'.(int) ($article['id_article']).'" style="display:none">
 				<form action="'.$versCettePage.'" method="post" style="width:600px; text-align:left">
@@ -152,7 +152,7 @@ if (!$article) {
         // article publié, on peut le depublier
 
         echo '<a href="javascript:$.fancybox($(\'#depublier-form-'.$article['id_article'].'\').html());" title="" class="nice2 red" id="button-depublier">
-				<img src="img/base/pencil_delete.png" alt="" title="" style="" />&nbsp;&nbsp;Dépublier
+				<img src="/img/base/pencil_delete.png" alt="" title="" style="" />&nbsp;&nbsp;Dépublier
 			</a>
 			<div id="depublier-form-'.$article['id_article'].'" style="display:none">
 				<form action="'.$versCettePage.'" method="post" style="width:600px; text-align:left">

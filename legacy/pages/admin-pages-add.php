@@ -32,7 +32,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
             }
         }
     } ?>
-	<h2><img src="img/base/page_white_add.png" /> Création d'une nouvelle page</h2>
+	<h2><img src="/img/base/page_white_add.png" /> Création d'une nouvelle page</h2>
 
 
 	<form action="<?php echo $versCettePage; ?>" method="post" class="loading">
@@ -75,7 +75,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 			<p style="width:350px; font-size:10px; line-height:9px;">META titles : ce titre apparaît dans le menu supérieur du navigateur, et dans les résultats de recherche Google</p>
 			<?php
             for ($i = 0; $i < count($p_langs); ++$i) {
-                echo '<img src="img/base/flag-'.$p_langs[$i].'.png" title="'.$p_langs[$i].'" alt="'.$p_langs[$i].'" style="height:28px; vertical-align:top" />
+                echo '<img src="/img/base/flag-'.$p_langs[$i].'.png" title="'.$p_langs[$i].'" alt="'.$p_langs[$i].'" style="height:28px; vertical-align:top" />
 					<input type="text" name="titre[]" class="type1 '.($i ? '' : 'getcodefrom').'" value="'.html_utf8(stripslashes($_POST['titre'][$i])).'" placeholder="" /><br />';
             } ?>
 			<br />
@@ -98,10 +98,10 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 		<div class="buttonset">
 			<input type="radio" id="menu_page_0" name="menu_page" value="0" <?php if ('0' == $_POST['menu_page'] || !$_POST) {
                 echo 'checked="checked"';
-            } ?> /><label for="menu_page_0"> <img src="img/base/chart_organisation_delete.png" style="border-radius:3px; background:white; padding:3px; float:left; position:relative; bottom:3px; right:3px; " alt="" title="" /> Absent du menu principal</label>
+            } ?> /><label for="menu_page_0"> <img src="/img/base/chart_organisation_delete.png" style="border-radius:3px; background:white; padding:3px; float:left; position:relative; bottom:3px; right:3px; " alt="" title="" /> Absent du menu principal</label>
 			<input type="radio" id="menu_page_1" name="menu_page" value="1" <?php if ('1' == $_POST['menu_page']) {
                 echo 'checked="checked"';
-            } ?> /><label for="menu_page_1"> <img src="img/base/chart_organisation_add.png" style="border-radius:3px; background:white; padding:3px; float:left; position:relative; bottom:3px; right:3px; " alt="" title="" /> Apparaît dans le menu principal</label>
+            } ?> /><label for="menu_page_1"> <img src="/img/base/chart_organisation_add.png" style="border-radius:3px; background:white; padding:3px; float:left; position:relative; bottom:3px; right:3px; " alt="" title="" /> Apparaît dans le menu principal</label>
 		</div>
 		<br />
 
@@ -113,11 +113,11 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 			<b>Intitulé du lien dans le menu principal :</b><br />
 			<?php
             for ($i = 0; $i < count($p_langs); ++$i) {
-                echo '<img src="img/base/flag-'.$p_langs[$i].'.png" title="'.$p_langs[$i].'" alt="'.$p_langs[$i].'" style="height:28px; vertical-align:top" />
+                echo '<img src="/img/base/flag-'.$p_langs[$i].'.png" title="'.$p_langs[$i].'" alt="'.$p_langs[$i].'" style="height:28px; vertical-align:top" />
 					<input type="text" name="menuname[]" class="type1 '.($i ? '' : 'getcodefrom').'" value="'.html_utf8(stripslashes($_POST['menuname'][$i])).'" placeholder="" /><br />';
             } ?>
 
-			<img src="img/base/info.png" style="vertical-align:middle" /> Cette nouvelle page apparaîtra à la fin du menu. Utilisez la flèche <img src="img/base/move.png" style="height:16px;vertical-align:middle;" /> pour la déplacer après enregistrement.
+			<img src="/img/base/info.png" style="vertical-align:middle" /> Cette nouvelle page apparaîtra à la fin du menu. Utilisez la flèche <img src="/img/base/move.png" style="height:16px;vertical-align:middle;" /> pour la déplacer après enregistrement.
 		</div>
 		<br />
 		<hr style="margin:10px 0; clear:both" />
@@ -146,7 +146,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 
 		<br />
 
-		<img src="img/base/info.png" style="vertical-align:middle" /> Cette page sera invisible pour l'instant : le temps d'y ajouter du contenu.
+		<img src="/img/base/info.png" style="vertical-align:middle" /> Cette page sera invisible pour l'instant : le temps d'y ajouter du contenu.
 		<br />
 		<br />
 

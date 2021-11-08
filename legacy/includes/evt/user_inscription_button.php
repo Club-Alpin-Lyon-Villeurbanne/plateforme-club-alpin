@@ -11,7 +11,7 @@ if ($evt['join_max_evt'] > 0) {
             <?php if (!$my_choices) { ?>
                 JE SOUHAITE REJOINDRE CETTE SORTIE
             <?php } else { ?>
-                JE METS A JOUR MES PREFERENCES <?php if (null !== $style) { ?><img src="img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;<?php } ?>
+                JE METS A JOUR MES PREFERENCES <?php if (null !== $style) { ?><img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;<?php } ?>
             <?php } ?>
             <?php
             // incriptions de filiation ?

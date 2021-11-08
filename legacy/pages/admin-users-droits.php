@@ -34,7 +34,7 @@ if (!admin()) {
                         '<form action="'.$versCettePage.'" method="post" onsubmit="return(confirm(\'Vraiment supprimer cet attribut ?\n Cet utilisateur ne sera plus '.addslashes(html_utf8($row['title_usertype'])).'\'))" style="display:inline;">
 							<input type="hidden" name="operation" value="user_attr_del_admin" />
 							<input type="hidden" name="id_user_attr" value="'.$row['id_user_attr'].'" />
-							<input type="image" src="img/base/x.png" alt="DEL" title="Supprimer cet attribut" class="upfade" />
+							<input type="image" src="/img/base/x.png" alt="DEL" title="Supprimer cet attribut" class="upfade" />
 						</form>'
                     : '')
                 .'</li>';

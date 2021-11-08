@@ -9,11 +9,11 @@
 
 			<h1>Gestion des adhérents</h1>
 			<p>
-				<img src="img/base/magnifier.png" style="vertical-align:middle" />
+				<img src="/img/base/magnifier.png" style="vertical-align:middle" />
 				Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
-				<img src="img/base/database_go.png" style="vertical-align:middle" />
+				<img src="/img/base/database_go.png" style="vertical-align:middle" />
 				Les boutons de droite vous permettent d'exporter le tableau courant, le plus utile étant l'exportation en .csv.<br />
-				<img src="img/base/info.png" style="vertical-align:middle" />
+				<img src="/img/base/info.png" style="vertical-align:middle" />
 				Vous pouvez trier les résultats selon différents critères en même temps, en pressant la touche <i>Maj / Shift</i> en cliquant sur les titres des colonnes.<br />
 			</p>
 
@@ -114,40 +114,40 @@
 
                 // gestion des droits
                 if (allowed('user_giveright_1') || allowed('user_giveright_2') || allowed('user_givepresidence')) {
-                    echo '<a href="includer.php?p=pages/adherents-droits.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Voir / Attribuer des statuts à cet utilisateur"><img src="img/base/user_star.png" alt="RIGHTS" title=""></a> ';
+                    echo '<a href="includer.php?p=pages/adherents-droits.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Voir / Attribuer des statuts à cet utilisateur"><img src="/img/base/user_star.png" alt="RIGHTS" title=""></a> ';
                 }
 
                 // désactiver
                 if (allowed('user_desactivate_any') && '1' == $elt['valid_user']) {
-                    echo '<a href="includer.php?p=pages/adherents-desactiver.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Désactiver le compte de cet utilisateur"><img src="img/base/user_unvalidate.png" alt="DESACTIVER" title=""></a> ';
+                    echo '<a href="includer.php?p=pages/adherents-desactiver.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Désactiver le compte de cet utilisateur"><img src="/img/base/user_unvalidate.png" alt="DESACTIVER" title=""></a> ';
                 }
                 // réactiver
                 if (allowed('user_reactivate') && '2' == $elt['valid_user']) {
-                    echo '<a href="includer.php?p=pages/adherents-reactiver.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Réactiver le compte de cet utilisateur"><img src="img/base/user_revalidate.png" alt="REACTIVER" title=""></a> ';
+                    echo '<a href="includer.php?p=pages/adherents-reactiver.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Réactiver le compte de cet utilisateur"><img src="/img/base/user_revalidate.png" alt="REACTIVER" title=""></a> ';
                 }
 
                 // reset user
                 if (allowed('user_reset')) {
-                    echo '<a href="includer.php?p=pages/adherents-reset.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Remettre à zéro, réinitialiser le compte de cet utilisateur"><img src="img/base/user_reset.png" alt="RESET" title=""></a> ';
+                    echo '<a href="includer.php?p=pages/adherents-reset.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Remettre à zéro, réinitialiser le compte de cet utilisateur"><img src="/img/base/user_reset.png" alt="RESET" title=""></a> ';
                 }
 
                 // edit user
                 if (allowed('user_edit_notme')) {
-                    echo '<a href="includer.php?p=pages/adherents-modifier.php&amp;id_user='.(int) ($elt['id_user']).'" class="fancyframe" title="Modifier cet adhérent"><img src="img/base/user_edit.png" alt="MODIFIER" title=""></a> ';
+                    echo '<a href="includer.php?p=pages/adherents-modifier.php&amp;id_user='.(int) ($elt['id_user']).'" class="fancyframe" title="Modifier cet adhérent"><img src="/img/base/user_edit.png" alt="MODIFIER" title=""></a> ';
                 }
 
                 //								}
 
                 echo '</td>';
 
-                $img_lock = '<img src="img/base/lock_gray.png" alt="caché"  title="Vous devez disposer de droits supérieurs pour afficher cette information" />';
+                $img_lock = '<img src="/img/base/lock_gray.png" alt="caché"  title="Vous devez disposer de droits supérieurs pour afficher cette information" />';
 
                 // INFOS
                 echo '<td>'
                                 .html_utf8($elt['cafnum_user']).'<br />'
-                                .($elt['manuel_user'] ? '<img src="img/base/user_manuel.png" alt="MANUEL" title="Utilisateur créé manuellement" /> ' : '')
-                                .($elt['nomade_user'] ? '<img src="img/base/nomade_user.png" alt="NOMADE" title="Utilisateur nomade" /> ' : '')
-                                .('2' == $elt['valid_user'] ? '<img src="img/base/user_desactive.png" alt="DESACTIVE" title="Utilisateur désactivé manuellement" /> ' : '')
+                                .($elt['manuel_user'] ? '<img src="/img/base/user_manuel.png" alt="MANUEL" title="Utilisateur créé manuellement" /> ' : '')
+                                .($elt['nomade_user'] ? '<img src="/img/base/nomade_user.png" alt="NOMADE" title="Utilisateur nomade" /> ' : '')
+                                .('2' == $elt['valid_user'] ? '<img src="/img/base/user_desactive.png" alt="DESACTIVE" title="Utilisateur désactivé manuellement" /> ' : '')
                                 .(int) ($elt['id_user']).' '
                             .'</td>'
                             //.'<td>'.intval($elt['valid_user']).'</td>'

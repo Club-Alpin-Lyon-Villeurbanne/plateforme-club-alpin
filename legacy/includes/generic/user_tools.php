@@ -4,7 +4,7 @@
     if (!user()) {
         ?>
 		<!-- trigger -->
-		<span class="picto"><img src="img/toolbox.png" alt="" title="" class="light" /><img src="img/toolbox-up.png" alt="" title="" class="dark" /></span> Espace<br /><b>Adhérents</b>
+		<span class="picto"><img src="/img/toolbox.png" alt="" title="" class="light" /><img src="/img/toolbox-up.png" alt="" title="" class="dark" /></span> Espace<br /><b>Adhérents</b>
 		<span id="shadowcache-user" class="shadowcache"></span>
 		<?php
     }
@@ -45,7 +45,7 @@
 <!-- navigation adherent -->
 <nav id="toolbar-user-hidden">
 	<div class="sitewidth">
-		<img src="img/bg-usermenu.png" alt="" title="" style="float:left; padding:30px 30px 30px 0" />
+		<img src="/img/bg-usermenu.png" alt="" title="" style="float:left; padding:30px 30px 30px 0" />
 		<?php
         // NON CONNECTÉ
         if (!user()) {
@@ -106,23 +106,23 @@
 					<?php
                     // - publier une sortie (notification au besoin, variable définie dans SCRIPTS.'reqs.php')
                     if (allowed('evt_validate')) {
-                        echo '<a href="gestion-des-sorties.html" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>'.($notif_validerunesortie ? '<span class="notification">'.$notif_validerunesortie.'</span>' : '').'publication des sorties</a>';
+                        echo '<a href="gestion-des-sorties.html" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>'.($notif_validerunesortie ? '<span class="notification">'.$notif_validerunesortie.'</span>' : '').'publication des sorties</a>';
                     }
             // - valider juridiquement une sortie
             if (allowed('evt_legal_accept')) {
-                echo '<a href="validation-des-sorties.html" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>'.($notif_validerunesortie_president ? '<span class="notification">'.$notif_validerunesortie_president.'</span>' : '').'validation des sorties</a>';
+                echo '<a href="validation-des-sorties.html" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>'.($notif_validerunesortie_president ? '<span class="notification">'.$notif_validerunesortie_president.'</span>' : '').'validation des sorties</a>';
             }
 
             if (allowed('destination_creer') || allowed('destination_modifier')) {
-                echo '<a href="profil/destinations.html" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>'.($notif_publier_destination ? '<span class="notification">'.$notif_publier_destination.'</span>' : '').'destinations</a><br />';
+                echo '<a href="profil/destinations.html" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>'.($notif_publier_destination ? '<span class="notification">'.$notif_publier_destination.'</span>' : '').'destinations</a><br />';
             }
             // - créer une sortie (par défaut : pour la commission courante si autorisé)
             if (allowed('evt_create')) {
-                echo '<a href="creer-une-sortie'/*.($current_commission && allowed('evt_create', 'commission:'.$current_commission)?'/'.$current_commission:'')*/.'.html" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>proposer une sortie</a>';
+                echo '<a href="creer-une-sortie'/*.($current_commission && allowed('evt_create', 'commission:'.$current_commission)?'/'.$current_commission:'')*/.'.html" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>proposer une sortie</a>';
             }
             // - les sorties que j'ai créé
             if (allowed('evt_create')) {
-                echo '<a href="profil/sorties/self.html" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>sorties que j\'organise</a><br />';
+                echo '<a href="profil/sorties/self.html" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>sorties que j\'organise</a><br />';
             } ?>
 
 					<a href="profil/sorties/next.html" title="">mes sorties à venir</a><br />
@@ -143,14 +143,14 @@
 					<?php
                     // - mes articles
                     if (allowed('article_create')) {
-                        echo '<a href="article-new.html'.($current_commission ? '?commission='.$current_commission : '').'" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>rédiger un article</a>';
+                        echo '<a href="article-new.html'.($current_commission ? '?commission='.$current_commission : '').'" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>rédiger un article</a>';
                     }
             if (allowed('article_create')) {
-                echo '<a href="profil/articles.html'.($current_commission ? '?commission='.$current_commission : '').'" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>mes articles</a>';
+                echo '<a href="profil/articles.html'.($current_commission ? '?commission='.$current_commission : '').'" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes articles</a>';
             }
             // - valider un article / modérer
             if (allowed('article_validate') || allowed('article_validate_all')) {
-                echo '<a href="gestion-des-articles.html'.($current_commission ? '?commission='.$current_commission : '').'" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>'.($notif_validerunarticle ? '<span class="notification">'.$notif_validerunarticle.'</span>' : '').'validation / gestion des articles</a>';
+                echo '<a href="gestion-des-articles.html'.($current_commission ? '?commission='.$current_commission : '').'" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>'.($notif_validerunarticle ? '<span class="notification">'.$notif_validerunarticle.'</span>' : '').'validation / gestion des articles</a>';
             } ?>
 					<a href="recherche.html" title="">rechercher un article</a><br />
 
@@ -170,17 +170,17 @@
 
                         // - mise à jour du fichier
                         if (allowed('user_updatefiles') && $p_user_updatefiles) {
-                            echo '<a href="fichier-adherents.html" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>mise à jour du fichier adhérents</a>';
+                            echo '<a href="fichier-adherents.html" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mise à jour du fichier adhérents</a>';
                         }
                     /* Supprimer également l'entrée de caf-page avec la clé fichier-adherents */
                     // - voir tous les adhérents
                     if (allowed('user_see_all')) {
-                        echo '<a href="adherents.html" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>gestion des adhérents</a>';
+                        echo '<a href="adherents.html" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>gestion des adhérents</a>';
                     }
 
                     // - Créer un compte édhérent
                     if (allowed('user_create_manually')) {
-                        echo '<a href="adherents-creer.html" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>créer un adhérent/salarié</a>';
+                        echo '<a href="adherents-creer.html" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>créer un adhérent/salarié</a>';
                     } ?>
 					</div>
 					<?php
@@ -200,12 +200,12 @@
 
                         // - gérer les commissions
                         if (allowed('comm_edit')) {
-                            echo '<a href="gestion-des-commissions.html" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>gestion des commissions</a>';
+                            echo '<a href="gestion-des-commissions.html" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>gestion des commissions</a>';
                         }
 
                     // - creer une commission
                     if (allowed('comm_create')) {
-                        echo '<a href="commission-add.html" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>créer une commission</a>';
+                        echo '<a href="commission-add.html" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>créer une commission</a>';
                     } ?>
 					</div>
 					<?php
@@ -223,17 +223,17 @@
 
                         // - gérer les commissions
                         if (allowed('stats_commissions_read')) {
-                            echo '<a href="stats/commissions.html" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>statistiques par sorties</a>';
+                            echo '<a href="stats/commissions.html" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>statistiques par sorties</a>';
                         }
 
                     // - creer une commission
                     if (allowed('stats_users_read')) {
-                        echo '<a href="stats/users.html" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>statistiques par adhérents</a>';
+                        echo '<a href="stats/users.html" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>statistiques par adhérents</a>';
                     }
 
                     // - stats sur les articles
                     if (allowed('article_create')) {
-                        echo '<a href="stats/nbvues.html" title=""><span class="star"><img src="img/base/bullet_star.png" alt="" title="" /></span>statistiques articles</a>';
+                        echo '<a href="stats/nbvues.html" title=""><span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>statistiques articles</a>';
                     } ?>
 					</div>
 					<?php

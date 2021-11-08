@@ -22,7 +22,7 @@
 } ?> >
                                     <?php $all_bus_plein = false; ?>
                                 <?php } else { ?>
-                                    <img src="img/base/cross.png">
+                                    <img src="/img/base/cross.png">
                                     <?php if (!isset($all_bus_plein)) {
     $all_bus_plein = true;
 } ?>
