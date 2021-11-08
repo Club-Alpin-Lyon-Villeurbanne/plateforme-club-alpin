@@ -36,7 +36,7 @@ if ('pages/' != substr($p, 0, 6) && 'includes/' != substr($p, 0, 9)) {
 	<!-- Waiters -->
 	<div id="loading1" class="mybox-down"></div>
 	<div id="loading2" class="mybox-up">
-		<p>Opération en cours<br /><br /><img src="img/base/loading.gif" alt="" title="" /></p>
+		<p>Opération en cours<br /><br /><img src="/img/base/loading.gif" alt="" title="" /></p>
 	</div>
 	';
 }

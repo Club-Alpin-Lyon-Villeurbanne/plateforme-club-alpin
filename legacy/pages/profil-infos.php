@@ -97,7 +97,7 @@ if (user()) {
     // image custom
     else {
         // bouton de suppression
-        echo '<span class="delete"><img src="img/base/delete.png" alt="DELETE" title="Supprimer cette image" /></span>';
+        echo '<span class="delete"><img src="/img/base/delete.png" alt="DELETE" title="Supprimer cette image" /></span>';
     }
     echo '<img class="imgprofil" src="'.$image.'?ac='.$p_time.'" alt="Photo de profil" title="Envoyez votre propre photo" />'; ?>
             </div>

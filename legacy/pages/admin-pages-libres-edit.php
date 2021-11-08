@@ -17,7 +17,7 @@ if (!admin()) {
         exit();
     } ?>
 
-	<h2><img src="img/base/page_white_add.png" /> Modifier les METAS de cette page</h2>
+	<h2><img src="/img/base/page_white_add.png" /> Modifier les METAS de cette page</h2>
 
 	<form action="<?php echo $versCettePage; ?>" method="post">
 		<input type="hidden" name="operation" value="pagelibre_edit" />
@@ -80,7 +80,7 @@ if (!admin()) {
 		<input type="hidden" name="vis_page" value="0" />
 		<p style="line-height:25px;">
 			<input type="submit" class="bigButton" value="Enregistrer" />
-			<img src="img/base/info.png" style="vertical-align:middle" /> Si vous changez <u>le code</u> de la page, elle deviendra invisible le temps d'y ajouter du contenu.
+			<img src="/img/base/info.png" style="vertical-align:middle" /> Si vous changez <u>le code</u> de la page, elle deviendra invisible le temps d'y ajouter du contenu.
 		</p>
 	</form>
 

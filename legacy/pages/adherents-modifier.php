@@ -157,7 +157,7 @@ if (!admin() && !allowed('user_edit_notme')) {
             <?php include __DIR__.'/../includes/user/whocan_contact.php'; ?>
 
 			<a href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
-				<img src="img/base/save.png" alt="Enregistrer" title="Enregistrer" style="height:35px;" />
+				<img src="/img/base/save.png" alt="Enregistrer" title="Enregistrer" style="height:35px;" />
 				Enregistrer
 			</a>
 			<?php

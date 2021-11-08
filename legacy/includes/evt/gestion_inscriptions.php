@@ -193,7 +193,7 @@ if ('1' != $evt['cancelled_evt']) {
                                         .userlink($row['id_user'], $row['nickname_user']);
             // expiré
             if ($row['doit_renouveler_user']) {
-                echo '&nbsp;&nbsp;&nbsp;<img src="img/base/delete.png" title="licence expirée" style="margin-bottom:-4px;">';
+                echo '&nbsp;&nbsp;&nbsp;<img src="/img/base/delete.png" title="licence expirée" style="margin-bottom:-4px;">';
             }
             echo '</td>';
 
@@ -294,7 +294,7 @@ if ('1' != $evt['cancelled_evt']) {
             // .html_utf8($row['role_evt_join'])
 
             if ($row['nomade_user']) {
-                echo '<br /><img src="img/base/bullet_error.png" alt="!" title="Attention. Ne reçoit pas d\'e-mail" style="vertical-align:top" /><br />';
+                echo '<br /><img src="/img/base/bullet_error.png" alt="!" title="Attention. Ne reçoit pas d\'e-mail" style="vertical-align:top" /><br />';
             } elseif ($droitDeModif && (0 == strcmp($row['role_evt_join'], 'manuel') || 0 == strcmp($row['role_evt_join'], 'inscrit') || 0 == strcmp($row['role_evt_join'], 'benevole'))) {
                 if (0 == strcmp($row['role_evt_join'], 'manuel')) {
                     //manuel
@@ -333,13 +333,13 @@ if ('1' != $evt['cancelled_evt']) {
                                         '.html_utf8($row['tel2_user']).'
                                     </td>';
             if (1 == $evt['cb_evt']) {
-                echo '<td><img src="img/base/'.('1' == $row['is_cb'] ? 'cb-oui.png' : ('0' == $row['is_cb'] ? 'cb-non.png' : 'cb-nsp.png')).'" title="'.('1' == $row['is_cb'] ? 'Oui' : ('0' == $row['is_cb'] ? 'Non' : 'NSP')).'" /></td>';
+                echo '<td><img src="/img/base/'.('1' == $row['is_cb'] ? 'cb-oui.png' : ('0' == $row['is_cb'] ? 'cb-non.png' : 'cb-nsp.png')).'" title="'.('1' == $row['is_cb'] ? 'Oui' : ('0' == $row['is_cb'] ? 'Non' : 'NSP')).'" /></td>';
             }
             if (1 == $evt['repas_restaurant']) {
-                echo '<td><img src="img/base/'.('1' == $row['is_restaurant'] ? 'resto-oui.png' : ('0' == $row['is_restaurant'] ? 'resto-non.png' : 'resto-nsp.png')).'" title="'.('1' == $row['is_restaurant'] ? 'Oui' : ('0' == $row['is_restaurant'] ? 'Non' : 'NSP')).'" /></td>';
+                echo '<td><img src="/img/base/'.('1' == $row['is_restaurant'] ? 'resto-oui.png' : ('0' == $row['is_restaurant'] ? 'resto-non.png' : 'resto-nsp.png')).'" title="'.('1' == $row['is_restaurant'] ? 'Oui' : ('0' == $row['is_restaurant'] ? 'Non' : 'NSP')).'" /></td>';
             }
             if ($destination) {
-                echo '<td>'.((null === $row['is_covoiturage'] && null === $row['id_bus_lieu_destination']) ? '<img src="img/base/error.png" title="Mettre à jour les préférences" width="16px">' : ($row['is_covoiturage'] ? '<img src="img/voiture.png" title="Covoiturage" width="16px">' : '')).'</th>';
+                echo '<td>'.((null === $row['is_covoiturage'] && null === $row['id_bus_lieu_destination']) ? '<img src="/img/base/error.png" title="Mettre à jour les préférences" width="16px">' : ($row['is_covoiturage'] ? '<img src="/img/voiture.png" title="Covoiturage" width="16px">' : '')).'</th>';
             }
             echo '</tr>';
         }
@@ -403,7 +403,7 @@ if ('1' != $evt['cancelled_evt']) {
                 if (allowed('evt_contact_all')) {
                     ?>
                     <!-- Contact par email des participants (orga uniquement) -->
-                    <a class="nice2 blue" href="javascript:void(0)" onclick="$('#contact-inscrits').slideToggle()" title=""><img src="img/base/email.png" alt="" title="" /> Envoyer un e-mail groupé aux inscrits</a><br />
+                    <a class="nice2 blue" href="javascript:void(0)" onclick="$('#contact-inscrits').slideToggle()" title=""><img src="/img/base/email.png" alt="" title="" /> Envoyer un e-mail groupé aux inscrits</a><br />
 
                     <form action="<?php echo $versCettePage; ?>#autresoptions" method="post" id="contact-inscrits" style="display: <?php if ('evt_user_contact' != $_POST['operation']) {
                         echo 'none';

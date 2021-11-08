@@ -46,7 +46,7 @@ if (user()) {
                 echo '<a href="creer-une-sortie/creer-une-destination/update-'.$destination['id'].'.html"
                         title="Vous êtes en charge de cette destination ? Cliquez ici pour la modifier."
                         class="nice2 noprint orange">
-                    <img src="img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette destination
+                    <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette destination
                 </a>';
             }
         }

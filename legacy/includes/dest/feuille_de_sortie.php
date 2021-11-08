@@ -15,9 +15,9 @@ presidence();
         <meta charset="utf-8">
         <title>Feuille de destination - <?php echo html_utf8($destination['nom']); ?> - le <?php echo display_date($destination['date']); ?> à <?php echo display_time($destination['date']); ?></title>
 
-        <link rel="stylesheet" href="css/style1.css" type="text/css" />
-        <link rel="stylesheet" href="fonts/stylesheet.css" type="text/css" />
-        <link rel="stylesheet" href="css/base.css" type="text/css"  />
+        <link rel="stylesheet" href="/css/style1.css" type="text/css" />
+        <link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" />
+        <link rel="stylesheet" href="/css/base.css" type="text/css"  />
 
     </head>
     <body id="feuille-de-sortie" <!-- onload="window.print() -->">
@@ -311,7 +311,7 @@ presidence();
         <?php
             $b = 1;
             $chain = null;
-            $d_chain = '<ul><img src="img/bus.png" title="bus" class="lft mr10" />';
+            $d_chain = '<ul><img src="/img/bus.png" title="bus" class="lft mr10" />';
             foreach ($destination['bus'] as $id_bus => $bus) {
                 $displayBus = false;
 
@@ -357,7 +357,7 @@ presidence();
                                                 <th>AGE</th>
                                                 <th>TÉL. PERSONNEL</th>
                                                 <th>TÉL. <abbr title="En cas d'urgence">I.C.E</abbr></th>
-                                                <th><abbr title="Restaurant"><img src="img/base/resto-oui.png"/></abbr></th>
+                                                <th><abbr title="Restaurant"><img src="/img/base/resto-oui.png"/></abbr></th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -377,7 +377,7 @@ presidence();
                                             foreach ($tmpUsers as $tmp) { ?>
                                                 <tr>
                                                     <td><?php echo $number++; ?></td>
-                                                    <td>&nbsp;<img src="img/bus.png" width="10" /></td>
+                                                    <td>&nbsp;<img src="/img/bus.png" width="10" /></td>
                                                     <td>&nbsp;€&nbsp;</td>
                                                     <td><b><?php echo $groupes[$tmp['sortie']['id_evt']]; ?></b></td>
                                                     <td><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></td>
@@ -436,7 +436,7 @@ presidence();
                             <th>AGE</th>
                             <th>TÉL. PERSONNEL</th>
                             <th>TÉL. <abbr title="En cas d'urgence">I.C.E</abbr></th>
-                            <?php if ('1' == $evt['repas_restaurant']) { ?><th><abbr title="Restaurant"><img src="img/base/resto-oui.png"/></abbr></th><?php } ?>
+                            <?php if ('1' == $evt['repas_restaurant']) { ?><th><abbr title="Restaurant"><img src="/img/base/resto-oui.png"/></abbr></th><?php } ?>
                         </tr>
                         </thead>
                         <tbody><?php

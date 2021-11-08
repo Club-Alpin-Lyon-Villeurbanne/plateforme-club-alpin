@@ -35,7 +35,7 @@ if (!admin()) {
             if (file_exists('./ftp/partenaires/'.$partenaireTab['part_image'])) {
                 echo "<img src='ftp/partenaires/".$partenaireTab['part_image']."' width='250px'>";
             } else {
-                echo '<img src="img/base/cross.png" width="25" height="25" alt="non trouvée" />';
+                echo '<img src="/img/base/cross.png" width="25" height="25" alt="non trouvée" />';
             } ?>
 		</p>
 

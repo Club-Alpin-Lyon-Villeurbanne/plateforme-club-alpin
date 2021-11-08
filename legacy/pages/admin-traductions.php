@@ -63,7 +63,7 @@ if (!admin()) {
 	<h2>Langues disponibles :
 		<?php
         for ($i = 1; $i < count($p_langs); ++$i) {
-            echo '<a href="'.($lang ? $lang.'/' : '').'admin-traductions/'.$p_langs[$i].'.html" title="" style="font-size:23px; margin-right:20px; padding:3px; '.($p_langs[$i] == $lang_content_inline ? 'color:black; background:white;' : 'color:gray').'"> <img src="img/base/flag-'.$p_langs[$i].'.png" alt="" title="" style="height:30px; vertical-align:middle;" /> '.strtoupper($p_langs[$i]).' </a>';
+            echo '<a href="'.($lang ? $lang.'/' : '').'admin-traductions/'.$p_langs[$i].'.html" title="" style="font-size:23px; margin-right:20px; padding:3px; '.($p_langs[$i] == $lang_content_inline ? 'color:black; background:white;' : 'color:gray').'"> <img src="/img/base/flag-'.$p_langs[$i].'.png" alt="" title="" style="height:30px; vertical-align:middle;" /> '.strtoupper($p_langs[$i]).' </a>';
         } ?>
 	</h2>
 	<br style="clear:both" />
@@ -111,7 +111,7 @@ if (!admin()) {
 
 						<input type="text" style="min-width:300px;" class="jVal" name="contenu-'.$contTab[$i]['code_content_inline'].'-'.$dejaVus.'" value="'.html_utf8(($contTab[$i]['contenu_content_inline'])).'" />
 					</td>';
-            echo '<td class="cont-save"><a href="javascript:void(0)" title="Sauvegarder cette ligne" rel="'.(int) ($contTab[$i]['id_content_inline']).'"><img src="img/base/save.png" alt="Sauvegarder cette ligne" title="Sauvegarder cette ligne" class="upimage" style="height:20px; " /></a></td>';
+            echo '<td class="cont-save"><a href="javascript:void(0)" title="Sauvegarder cette ligne" rel="'.(int) ($contTab[$i]['id_content_inline']).'"><img src="/img/base/save.png" alt="Sauvegarder cette ligne" title="Sauvegarder cette ligne" class="upimage" style="height:20px; " /></a></td>';
             echo '<td class="cont-versions">'.jour(date('N', $contTab[$i]['date_content_inline'])).' '.date('d/m/y - H:i:s', $contTab[$i]['date_content_inline']).'</td>';
             echo '</tr>';
 
@@ -121,7 +121,7 @@ if (!admin()) {
 		</table>
 
 		<a href="javascript:void(0)" title="Tout sauvegarder" style="display:block; float:right; margin-top:5px;" id="saveAll">
-			<img src="img/base/save.png" alt="Tout sauvegarder" title="Tout sauvegarder" class="upimage" style="height:80px; " /></a>
+			<img src="/img/base/save.png" alt="Tout sauvegarder" title="Tout sauvegarder" class="upimage" style="height:80px; " /></a>
 		<?php
     } ?>
 	<br />

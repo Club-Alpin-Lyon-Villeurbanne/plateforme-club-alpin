@@ -28,7 +28,7 @@ if (admin()) {
                 $result['content'] = $handle['contenu_content_html'];
             }
         } else {
-            $result['content'] = '<div class="blocdesactive"><img src="img/base/bullet_key.png" alt="" title="" /> Bloc de contenu désactivé</div>';
+            $result['content'] = '<div class="blocdesactive"><img src="/img/base/bullet_key.png" alt="" title="" /> Bloc de contenu désactivé</div>';
         }
         $log .= "\n retour : ".$result['content'];
     } else {

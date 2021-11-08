@@ -20,7 +20,7 @@
         <div class="erreur">Erreur : <ul><li><?php echo implode('</li><li>', $errTab); ?></li></ul></div><br>
     <?php } elseif ($_POST['operation']) { ?>
         <p class="info">
-            <img src="img/base/tick.png" alt="" title="" /> Mise à jour effectuée.</p><br>
+            <img src="/img/base/tick.png" alt="" title="" /> Mise à jour effectuée.</p><br>
     <?php } ?>
 
     <div class="half lft">

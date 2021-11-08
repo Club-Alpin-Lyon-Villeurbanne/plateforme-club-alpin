@@ -744,10 +744,10 @@ function inclure($elt, $style = 'vide', $options = [])
             echo '<div id="'.$elt.'" class="contenuEditable '.$style.'">
                 <div class="editHtmlTools" style="text-align:left;">
                     <a href="editElt.php?p='.$elt.'&amp;class='.$style.'" title="Modifier l\'&eacute;l&eacute;ment '.$elt.'" class="edit fancyframeadmin" style="color:white; font-weight:100; padding:2px 3px 2px 1px; font-size:11px; font-family:Arial;">
-                        <img src="img/base/page_edit.png" id="imgEdit'.$elt.'" alt="EDIT" title="Modifier l\'&eacute;l&eacute;ment '.$elt.'" />Modifier</a>
+                        <img src="/img/base/page_edit.png" id="imgEdit'.$elt.'" alt="EDIT" title="Modifier l\'&eacute;l&eacute;ment '.$elt.'" />Modifier</a>
                     '.($editVis ? '
                     <a href="javascript:void(0)" onclick="window.document.majVisBlock(this, \''.$elt.'\')" rel="'.$currentElement['vis_content_html'].'" title="Activer / Masquer ce bloc de contenu" class="edit" style="color:white; font-weight:100; padding:2px 3px 2px 1px; font-size:11px; font-family:Arial; ">
-                        <img src="img/base/page_white_key.png" alt="VIS" title="Activer / Masquer ce bloc de contenu" />Visibilité</a>
+                        <img src="/img/base/page_white_key.png" alt="VIS" title="Activer / Masquer ce bloc de contenu" />Visibilité</a>
                         ' : '').'
                 </div>';
         } else {
@@ -760,7 +760,7 @@ function inclure($elt, $style = 'vide', $options = [])
         // contenu masqué
         else {
             if (admin()) {
-                echo '<div class="blocdesactive"><img src="img/base/bullet_key.png" alt="" title="" /> Bloc de contenu désactivé</div>';
+                echo '<div class="blocdesactive"><img src="/img/base/bullet_key.png" alt="" title="" /> Bloc de contenu désactivé</div>';
             }
         }
 
