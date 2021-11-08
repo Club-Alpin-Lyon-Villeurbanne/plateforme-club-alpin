@@ -2,7 +2,7 @@
 <div style="background:white; padding:10px; position:relative; z-index:90; ">
 	<p class="info sitewidth" style="font-size:11px; line-height:13px; color:gray;">
 		<span style="height:0px; width:10px; text-align:left;  float:right">
-			<img src="img/base/x.png" style="padding:3px; cursor:pointer; " alt="" title="Fermer" onclick="$(this).parent().parent().parent().hide();" />
+			<img src="/img/base/x.png" style="padding:3px; cursor:pointer; " alt="" title="Fermer" onclick="$(this).parent().parent().parent().hide();" />
 		</span>
 		Attention, vous utilisez actuellement une ancienne version d'Internet explorer qui peut provoquer des erreurs sur ce site en <b>HTML5</b>.<br />
 		Nous vous invitons à prendre cinq minutes pour

@@ -18,7 +18,7 @@
     }
     // message d'info : si c'est une modification de sortie
     if ('evt_update' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<p class="info"><img src="img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date('H:i:s', $p_time).'. <b>Important :</b> cette sortie doit à présent être validée par un responsable pour être publiée sur le site.<a href="profil/sorties/self.html" title="">&gt; Retourner à la liste de mes sorties</a></p>';
+        echo '<p class="info"><img src="/img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date('H:i:s', $p_time).'. <b>Important :</b> cette sortie doit à présent être validée par un responsable pour être publiée sur le site.<a href="profil/sorties/self.html" title="">&gt; Retourner à la liste de mes sorties</a></p>';
     }
     ?>
 
@@ -133,7 +133,7 @@
 									<input type="checkbox" '.(in_array($encadrant['id_user'], $encadrants, true) ? 'checked="checked"' : '').' name="encadrants[]" value="'.$encadrant['id_user'].'" id="encadrant-'.$encadrant['id_user'].'" />
 									'.$encadrant['firstname_user'].'
 									'.$encadrant['lastname_user'].'
-									<a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user='.$encadrant['id_user'].'" title="Voir la fiche"><img src="img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
+									<a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user='.$encadrant['id_user'].'" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
 								</label>';
             }
             ?>
@@ -153,7 +153,7 @@
 									<input type="checkbox" '.(in_array($coencadrant['id_user'], $coencadrants, true) ? 'checked="checked"' : '').' name="coencadrants[]" value="'.$coencadrant['id_user'].'" id="coencadrant-'.$coencadrant['id_user'].'" />
 									'.$coencadrant['firstname_user'].'
 									'.$coencadrant['lastname_user'].'
-									<a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user='.$coencadrant['id_user'].'" title="Voir la fiche"><img src="img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
+									<a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user='.$coencadrant['id_user'].'" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
 								</label>';
             }
             ?>
@@ -176,7 +176,7 @@
 									<input '.($id_evt_to_update ? 'disabled' : '').' type="checkbox" '.(in_array($benevole['id_user'], $benevoles, true) ? 'checked="checked"' : '').' name="benevoles[]" value="'.$benevole['id_user'].'" id="benevole-'.$benevole['id_user'].'" />
 									'.$benevole['firstname_user'].'
 									'.$benevole['lastname_user'].'
-									<a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user='.$benevole['id_user'].'" title="Voir la fiche"><img src="img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
+									<a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user='.$benevole['id_user'].'" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
 								</label>';
                 }
                 echo '<br style="clear:both" />';

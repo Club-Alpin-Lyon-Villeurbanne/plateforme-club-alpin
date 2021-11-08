@@ -15,7 +15,7 @@ include __DIR__.'/../../includes/browser-alert.php';
         ?>
 
 		<!-- LOGO COMMUN TTES PAGES -->
-		<a id="logo" href="<?php echo $p_racine; ?>" title="<?php echo cont('logo-title'); ?>"><img src="img/logo.png" alt="<?php echo cont('logo-title'); ?>" title="<?php echo cont('logo-title'); ?>" /></a>
+		<a id="logo" href="<?php echo $p_racine; ?>" title="<?php echo cont('logo-title'); ?>"><img src="/img/logo.png" alt="<?php echo cont('logo-title'); ?>" title="<?php echo cont('logo-title'); ?>" /></a>
 
 
 		<!-- COMMISSION -->
@@ -24,7 +24,7 @@ include __DIR__.'/../../includes/browser-alert.php';
 			<?php
             // comm visible ou message par defaut :
             if (!$current_commission) {
-                echo '<span class="picto"><img src="img/comm-please.png" alt="" title="" class="light" /><img src="img/comm-please-up.png" alt="" title="" class="dark" /></span> Commissions - Activités<br /><b>choisissez...</b>';
+                echo '<span class="picto"><img src="/img/comm-please.png" alt="" title="" class="light" /><img src="/img/comm-please-up.png" alt="" title="" class="dark" /></span> Commissions - Activités<br /><b>choisissez...</b>';
             } else {
                 echo '<span class="picto"><img src="'.comPicto($comTab[$current_commission]['id_commission']).'" alt="" title="" class="light" /><img src="'.comPicto($comTab[$current_commission]['id_commission'], 'dark').'" alt="" title="" class="dark" /></span> Commission - Activité :<br /><b>'.html_utf8($comTab[$current_commission]['title_commission']).'</b>';
             }
@@ -55,7 +55,7 @@ include __DIR__.'/../../includes/browser-alert.php';
 
 		<!-- NAVIGATION -->
 		<a id="toolbar-navigation" href="javascript:void(0)" title="" class="toptrigger">
-			<span class="picto"><img src="img/boussole.png" alt="" title="" class="light" /><img src="img/boussole-up.png" alt="" title="" class="dark" /></span>
+			<span class="picto"><img src="/img/boussole.png" alt="" title="" class="light" /><img src="/img/boussole-up.png" alt="" title="" class="dark" /></span>
 			La carte du site :<br /><b>Navigation</b>
 			<span id="shadowcache-navigation" class="shadowcache"></span>
 		</a>
@@ -80,9 +80,9 @@ include __DIR__.'/../../includes/browser-alert.php';
 </header>
 <div id="top-openers">
 	<div class="sitewidth">
-		<span class="opener" style="left:480px;"><img src="img/opener-commission.png" alt="" title="" /></span>
-		<span class="opener" style="left:630px;"><img src="img/opener-navigation.png" alt="" title="" /></span>
-		<span class="opener" style="left:820px;"><img src="img/opener-user.png" alt="" title="" /></span>
+		<span class="opener" style="left:480px;"><img src="/img/opener-commission.png" alt="" title="" /></span>
+		<span class="opener" style="left:630px;"><img src="/img/opener-navigation.png" alt="" title="" /></span>
+		<span class="opener" style="left:820px;"><img src="/img/opener-user.png" alt="" title="" /></span>
 	</div>
 </div>
 

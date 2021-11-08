@@ -4,13 +4,13 @@ if (!admin()) {
     echo 'Votre session administrateur a expiré';
 } else {
     ?>
-	<h1>Gestion du slider partenaires de la page d'accueil&nbsp;&nbsp;<a href="/includer.php?p=pages/partenaire-modifier.php&amp;part_id=-1" class="fancyframe" title="ajouter un nouveau partenaire"><img src="img/base/add.png" /></a></h1>
+	<h1>Gestion du slider partenaires de la page d'accueil&nbsp;&nbsp;<a href="/includer.php?p=pages/partenaire-modifier.php&amp;part_id=-1" class="fancyframe" title="ajouter un nouveau partenaire"><img src="/img/base/add.png" /></a></h1>
 	<p>
-		<img src="img/base/magnifier.png" style="vertical-align:middle" />
+		<img src="/img/base/magnifier.png" style="vertical-align:middle" />
 		Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
-		<img src="img/base/database_go.png" style="vertical-align:middle" />
+		<img src="/img/base/database_go.png" style="vertical-align:middle" />
 		Les boutons de droite vous permettent d'exporter le tableau courant, le plus utile étant l'exportation en .csv.<br />
-		<img src="img/base/info.png" style="vertical-align:middle" />
+		<img src="/img/base/info.png" style="vertical-align:middle" />
 		Vous pouvez trier les résultats selon différents critères en même temps, en pressant la touche <i>Maj / Shift</i> en cliquant sur les titres des colonnes.<br />
 	</p>
 	<p>
@@ -91,15 +91,15 @@ if (!admin()) {
         echo '<tr id="tr-'.$elt['part_id'].'" class="'.($elt['part_enable'] ? 'vis-on' : 'vis-off').'">'
                     .'<td style="white-space:nowrap;">';
         // edit
-        echo '<a href="/includer.php?p=pages/partenaire-modifier.php&amp;part_id='.(int) ($elt['part_id']).'" class="fancyframe" title="Modifier ce partenaire"><img src="img/base/application_form_edit.png" alt="MODIFIER" title=""></a> ';
-        echo '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/partenaire-supprimer.php&amp;part_id='.(int) ($elt['part_id']).'" class="fancyframe" title="Supprimer"><img src="img/base/delete.png" alt="SUPPRIMER" title="SUPPRIMER"  style="margin-bottom:-2px;"></a> ';
+        echo '<a href="/includer.php?p=pages/partenaire-modifier.php&amp;part_id='.(int) ($elt['part_id']).'" class="fancyframe" title="Modifier ce partenaire"><img src="/img/base/application_form_edit.png" alt="MODIFIER" title=""></a> ';
+        echo '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/partenaire-supprimer.php&amp;part_id='.(int) ($elt['part_id']).'" class="fancyframe" title="Supprimer"><img src="/img/base/delete.png" alt="SUPPRIMER" title="SUPPRIMER"  style="margin-bottom:-2px;"></a> ';
 
         if (1 == $elt['part_enable']) {
             // desactiver
-//						echo '<a href="/includer.php?p=pages/partenaire-disable.php&amp;part_id='.intval($elt['part_id']).'" class="fancyframe" title="Désactiver ce partenaire"><img src="img/base/delete.png" alt="DESACTIVER" title=""></a> ';
+//						echo '<a href="/includer.php?p=pages/partenaire-disable.php&amp;part_id='.intval($elt['part_id']).'" class="fancyframe" title="Désactiver ce partenaire"><img src="/img/base/delete.png" alt="DESACTIVER" title=""></a> ';
         }
         // activer
-        //						echo '<a href="/includer.php?p=pages/partenaire-enable.php&amp;part_id='.intval($elt['part_id']).'" class="fancyframe" title="Activer ce partenaire"><img src="img/base/add.png" alt="ACTIVER" title=""></a> ';
+        //						echo '<a href="/includer.php?p=pages/partenaire-enable.php&amp;part_id='.intval($elt['part_id']).'" class="fancyframe" title="Activer ce partenaire"><img src="/img/base/add.png" alt="ACTIVER" title=""></a> ';
 
         echo '</td>'
                     .'<td>'.html_utf8($elt['part_name']).'</td>'
@@ -112,7 +112,7 @@ if (!admin()) {
         if (file_exists('./ftp/partenaires/'.$elt['part_image'])) {
             echo '<img src="/ftp/partenaires/'.$elt['part_image'].'" style="max-width:150px;max-height:60px">';
         } else {
-            echo '<img src="img/base/cross.png" width="25" height="25" alt="non trouvée" />';
+            echo '<img src="/img/base/cross.png" width="25" height="25" alt="non trouvée" />';
         }
         echo '</a></td>'
                     .'<td>'.(1 == $elt['part_type'] ? 'PRIVÉ' : 'PUBLIC').'</td>'

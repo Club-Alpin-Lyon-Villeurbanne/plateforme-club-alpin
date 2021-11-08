@@ -15,7 +15,7 @@
 			<div id="home-slider-nav">
 				<div id="home-slider-nav-wrapper">
 					<div style="width:0px">
-						<img src="img/home-slider-nav-1.png" alt="" title="" />
+						<img src="/img/home-slider-nav-1.png" alt="" title="" />
 						<?php
                         for ($i = 0; $i < count($sliderTab); ++$i) {
                             echo '<a href="javascript:void(0)" title="" class="'.($i ? '' : 'up').'"><span>'.($i + 1).'</span></a>';
@@ -27,14 +27,14 @@
 						<a href="javascript:void(0)" title=""><span>3</span></a>
 						<a href="javascript:void(0)" title=""><span>4</span></a>
 						-->
-						<img src="img/home-slider-nav-2.png" alt="" title="" />
+						<img src="/img/home-slider-nav-2.png" alt="" title="" />
 					</div>
 				</div>
 			</div>
 			<!-- nav-fleches -->
 			<div id="home-slider-nav2">
-				<a href="javascript:void(0)" title="" class="arrow-left"><img src="img/arrow-left.png" alt="&lt;" title="" /></a>
-				<a href="javascript:void(0)" title="" class="arrow-right"><img src="img/arrow-right.png" alt="&gt;" title="" /></a>
+				<a href="javascript:void(0)" title="" class="arrow-left"><img src="/img/arrow-left.png" alt="&lt;" title="" /></a>
+				<a href="javascript:void(0)" title="" class="arrow-right"><img src="/img/arrow-right.png" alt="&gt;" title="" /></a>
 			</div>
 			<!-- slides -->
 			<div id="home-slider-wrapper">
@@ -107,13 +107,13 @@
             ?>
 			<!-- liens vers les flux RSS -->
 			<a href="rss.xml?mode=articles" title="Flux RSS de toutes les actualités du club" class="nice2">
-				<img src="img/base/rss.png" alt="RSS" title="" /> &nbsp;
+				<img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
 				actualités du club
 			</a>
 			<?php
             if ($current_commission) {
                 echo '<a href="rss.xml?mode=articles-'.$current_commission.'" title="Flux RSS des actualités «'.$current_commission.'» uniquement" class="nice2">
-						<img src="img/base/rss.png" alt="RSS" title="" /> &nbsp;
+						<img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
 						actualités «'.$comTab[$current_commission]['title_commission'].'»
 					</a>';
             }

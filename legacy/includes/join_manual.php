@@ -26,7 +26,7 @@ if (user()) {
         if (!is_array($_POST['id_user'])) {
             ?>
 			<p>
-				<img src="img/base/magnifier.png" style="vertical-align:middle" />
+				<img src="/img/base/magnifier.png" style="vertical-align:middle" />
 				Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
 				Cliquez sur le bouton "<i>Inscrire les adhérents sélectionnés</i>" pour passer à l'étape suivante et sélectionner leur rôls éventuels (simple inscrit, bénévole...).
 				<br />
@@ -134,8 +134,8 @@ if (user()) {
                     echo '<tr id="tr-'.$elt['id_user'].'" class="'.($elt['valid_user'] ? 'vis-on' : 'vis-off').'">'
 
                                     .'<td>'
-                                        .'<img src="img/label-up.png" class="tick" alt="CHECKED" title="" />'
-                                        .'<img src="img/label-down.png" class="cross" alt="OFF" title="" />'
+                                        .'<img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />'
+                                        .'<img src="/img/label-down.png" class="cross" alt="OFF" title="" />'
                                         .'<input type="checkbox" name="id_user[]" value="'.(int) ($elt['id_user']).'" />'
                                         // inputs hidden disabled : activés quand le case est cliquée (jquery)
                                         .'<input type="hidden" disabled="disabled" name="civ_user[]" value="'.html_utf8($elt['civ_user']).'" />'

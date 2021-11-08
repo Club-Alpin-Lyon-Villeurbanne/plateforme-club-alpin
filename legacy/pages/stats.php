@@ -4,11 +4,11 @@
 
 		<h1>Statistiques</h1>
 		<p>
-			<img src="img/base/magnifier.png" style="vertical-align:middle" />
+			<img src="/img/base/magnifier.png" style="vertical-align:middle" />
 			Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
-			<img src="img/base/database_go.png" style="vertical-align:middle" />
+			<img src="/img/base/database_go.png" style="vertical-align:middle" />
 			Les boutons de droite vous permettent d'exporter le tableau courant, le plus utile étant l'exportation en .csv.<br />
-			<img src="img/base/info.png" style="vertical-align:middle" />
+			<img src="/img/base/info.png" style="vertical-align:middle" />
 			Vous pouvez trier les résultats selon différents critères en même temps, en pressant la touche <i>Maj / Shift</i> en cliquant sur les titres des colonnes.<br />
 		</p>
 

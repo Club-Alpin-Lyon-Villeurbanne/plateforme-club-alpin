@@ -67,7 +67,7 @@ if (
     ) {
         echo 0 == (int) ($destination['annule'])
                 ? '<a class="nice2 noprint red" href="annuler-une-sortie/destination/'.$destination['code'].'-'.(int) ($destination['id']).'.html" title="Annuler la destination ci-dessous et toutes les sorties">
-				<img src="img/base/delete.png" alt="" title="" style="">&nbsp;&nbsp;Annuler</a>'
+				<img src="/img/base/delete.png" alt="" title="" style="">&nbsp;&nbsp;Annuler</a>'
                 : ''
             ;
     }

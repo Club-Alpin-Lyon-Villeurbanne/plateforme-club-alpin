@@ -11,7 +11,7 @@ if ($comment) {
             if ($comment['user_comment'] == $_SESSION['user']['id_user'] || allowed('comment_delete_any')) {
                 ?>
 				<a href="includer.php?p=includes/comment-del.php&amp;id_comment=<?php echo (int) ($comment['id_comment']); ?>" title="Supprimer ce commentaire" style="float:right" class="fancyframe">
-					<img src="img/base/delete.png" alt="SUPPR" title="" />
+					<img src="/img/base/delete.png" alt="SUPPR" title="" />
 				</a>
 				<?php
             } ?>

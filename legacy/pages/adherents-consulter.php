@@ -112,7 +112,7 @@ if (!admin() && !allowed('user_edit_notme')) {
     $rowValue = '<a href="/user-full/'.$userTab['id_user'].'.html" title="Fiche profil" target="_top">'.$userTab['nickname_user'].'</a>';
     // possibilite de supprimer le user si pas de sortie ni articles
     if (admin() && !is_array($userTab['sorties']) && !is_array($userTab['articles'])) {
-        $rowValue .= '&nbsp;&nbsp;&nbsp;<a href="includer.php?p=pages/adherents-supprimer.php&amp;id_user='.(int) ($userTab['id_user']).'&amp;nom='.urlencode($userTab['civ_user'].' '.$elt['firstname_user'].' '.$userTab['lastname_user']).'" title="Supprimer le compte de cet utilisateur"><img src="img/base/user_delete.png" alt="SUPPRIMER" title=""></a> ';
+        $rowValue .= '&nbsp;&nbsp;&nbsp;<a href="includer.php?p=pages/adherents-supprimer.php&amp;id_user='.(int) ($userTab['id_user']).'&amp;nom='.urlencode($userTab['civ_user'].' '.$elt['firstname_user'].' '.$userTab['lastname_user']).'" title="Supprimer le compte de cet utilisateur"><img src="/img/base/user_delete.png" alt="SUPPRIMER" title=""></a> ';
     }
     printTableRow('Pseudo :', $rowValue);
 
@@ -155,10 +155,10 @@ if (!admin() && !allowed('user_edit_notme')) {
         //$rowValue = '<span class="alerte">'.$rowValue.'</span>';
         if ($userTab['doit_renouveler_user']) {
             //$rowValue .= '   (expirée)';
-            $rowValue .= '&nbsp;&nbsp;&nbsp;<img src="img/base/delete.png">';
+            $rowValue .= '&nbsp;&nbsp;&nbsp;<img src="/img/base/delete.png">';
         }
     } elseif ($userTab['date_adhesion_user']) {
-        $rowValue .= '&nbsp;&nbsp;&nbsp;<img src="img/base/tick2.png">';
+        $rowValue .= '&nbsp;&nbsp;&nbsp;<img src="/img/base/tick2.png">';
     }
 
     printTableRow('Date d\'adhésion (renouvellement) :', $rowValue);
@@ -188,10 +188,10 @@ if (!admin() && !allowed('user_edit_notme')) {
                         }
     printTableRow('Qui peut me contacter sur le site, via un formulaire de contact (adresse e-mail jamais dévoilée) ? :', $rowValue);
     if ($userTab['manuel_user']) {
-        printTableRow('Créé manuellement :', 'OUI&nbsp;&nbsp;&nbsp;<img src="img/base/user_manuel.png">');
+        printTableRow('Créé manuellement :', 'OUI&nbsp;&nbsp;&nbsp;<img src="/img/base/user_manuel.png">');
     }
     if ($userTab['nomade_user']) {
-        printTableRow('Nomade :', 'OUI&nbsp;&nbsp;&nbsp;<img src="img/base/nomade_user.png">');
+        printTableRow('Nomade :', 'OUI&nbsp;&nbsp;&nbsp;<img src="/img/base/nomade_user.png">');
     }
     printTableRow('Statut compte internet :', ((1 == $userTab['valid_user']) ? 'ACTIF' : ((2 == $userTab['valid_user']) ? 'DESACTIVE' : 'NON ACTIF')));
     if ($userTab['created_user']) {

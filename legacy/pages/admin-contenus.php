@@ -60,10 +60,10 @@ if (!admin()) {
 
 	<!-- nouveau groupe -->
 	<a href="javascript:void(0)" class="boutonFancy2" onclick="$(this).siblings('.toggleForm:not(.addgroup)').slideUp(200); $(this).siblings('.toggleForm.addgroup').slideToggle(200);">
-		<img src="img/base/add.png" alt="" title="" /> Ajouter un groupe de contenus</a>
+		<img src="/img/base/add.png" alt="" title="" /> Ajouter un groupe de contenus</a>
 	<!-- nouvel elt -->
 	<a href="javascript:void(0)" class="boutonFancy2" onclick="$(this).siblings('.toggleForm:not(.add)').slideUp(200); $(this).siblings('.toggleForm.add').slideToggle(200);">
-		<img src="img/base/add.png" alt="" title="" /> Ajouter un contenu manquant</a>
+		<img src="/img/base/add.png" alt="" title="" /> Ajouter un contenu manquant</a>
 
 	<br />
 	<!-- nouvel elt -->
@@ -197,7 +197,7 @@ if (!admin()) {
 						<input type="text" style="display:none" class="jBase" id="base-'.(int) ($contTab[$i]['id_content_inline']).'" value="'.html_utf8(($contTab[$i]['contenu_content_inline'])).'" />
 						<input type="text"   class="jVal" name="contenu-'.$contTab[$i]['code_content_inline'].'-'.$dejaVus.'" value="'.html_utf8(($contTab[$i]['contenu_content_inline'])).'" />
 					</td>';
-            echo '<td class="cont-save"><a href="javascript:void(0)" title="Sauvegarder cette ligne" rel="'.(int) ($contTab[$i]['id_content_inline']).'"><img src="img/base/save.png" alt="Sauvegarder cette ligne" title="Sauvegarder cette ligne" class="upimage" style="height:20px; " /></a></td>';
+            echo '<td class="cont-save"><a href="javascript:void(0)" title="Sauvegarder cette ligne" rel="'.(int) ($contTab[$i]['id_content_inline']).'"><img src="/img/base/save.png" alt="Sauvegarder cette ligne" title="Sauvegarder cette ligne" class="upimage" style="height:20px; " /></a></td>';
             echo '<td class="cont-versions">'.jour(date('N', $contTab[$i]['date_content_inline'])).' '.date('d/m/y - H:i:s', $contTab[$i]['date_content_inline']).'</td>';
             echo '</tr>';
 
@@ -207,7 +207,7 @@ if (!admin()) {
 		</table>
 
 		<a href="javascript:void(0)" title="Tout sauvegarder" style="display:block; float:right; margin-top:5px;" id="saveAll">
-			<img src="img/base/save.png" alt="Tout sauvegarder" title="Tout sauvegarder" class="upimage" style="height:80px; " /></a>
+			<img src="/img/base/save.png" alt="Tout sauvegarder" title="Tout sauvegarder" class="upimage" style="height:80px; " /></a>
 		<?php
     } ?>
 	<br />

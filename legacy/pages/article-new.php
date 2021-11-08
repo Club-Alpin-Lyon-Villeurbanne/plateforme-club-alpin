@@ -55,7 +55,7 @@ if ($_GET['compterendu']) {
                     }
                 // message d'info : si c'est une modification
                 if ('article_update' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                    echo '<p class="info"><img src="img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date('H:i:s', $p_time).'. <b>Important :</b> cet article doit à présent être validé par un responsable pour être publié sur le site.<a href="profil/articles/self.html" title="">&gt; Retourner à la liste de mes articles</a></p>';
+                    echo '<p class="info"><img src="/img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date('H:i:s', $p_time).'. <b>Important :</b> cet article doit à présent être validé par un responsable pour être publié sur le site.<a href="profil/articles/self.html" title="">&gt; Retourner à la liste de mes articles</a></p>';
                 } ?>
 
 
@@ -210,13 +210,13 @@ if ($_GET['compterendu']) {
 					<h2 class="trigger-h2">Contenus :</h2>
 					<div class="trigger-me" style="width:95%">
 						<p style="padding-right:20px;">
-							<b>Attention :</b><br />Si vous copiez-collez du texte depuis un site, ou un document Word, cochez le bouton <img src="img/texte-brut.png" title="Coller en tant que texte brut" alt="T" />
+							<b>Attention :</b><br />Si vous copiez-collez du texte depuis un site, ou un document Word, cochez le bouton <img src="/img/texte-brut.png" title="Coller en tant que texte brut" alt="T" />
 							avant de coller votre contenu. Sinon vous risquez de provoquer des erreurs sur la page.
 						</p>
 						<p style="padding-right:20px;">
 							<b>Des liens et des images :</b><br />
-							Utilisez le bouton <img src="img/button-link.png" title="Lien" alt="" /> puis <img src="img/button-parcourir.png" title="Parcourir" alt="" /> pour ajouter un fichier à télécharger (topo, tracé gps...).<br />
-							Utilisez le bouton <img src="img/button-img.png" title="Image" alt="" /> puis <img src="img/button-parcourir.png" title="Parcourir" alt="" /> pour ajouter une image.<br />
+							Utilisez le bouton <img src="/img/button-link.png" title="Lien" alt="" /> puis <img src="/img/button-parcourir.png" title="Parcourir" alt="" /> pour ajouter un fichier à télécharger (topo, tracé gps...).<br />
+							Utilisez le bouton <img src="/img/button-img.png" title="Image" alt="" /> puis <img src="/img/button-parcourir.png" title="Parcourir" alt="" /> pour ajouter une image.<br />
 						</p>
 						<p style="padding-right:20px;">
 							<b>Taille de l'éditeur de contenus :</b><br />

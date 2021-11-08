@@ -62,7 +62,7 @@
                                     .'<div class="item-2">';
                         // reorder
                         if ('true' === $userAllowedTo['comm_edit']) {
-                            echo '<img class="handle" style="float:right; cursor:move; height:30px" src="img/base/move.png" alt="MOVE" title="Réordonner" />';
+                            echo '<img class="handle" style="float:right; cursor:move; height:30px" src="/img/base/move.png" alt="MOVE" title="Réordonner" />';
                         }
                         // titre
                         echo '<h2>'.html_utf8($row['title_commission']).(1 == $row['vis_commission'] ? '' : ' <span style="color:red; font-size:12px">[invisible]</span>').'</h2>';

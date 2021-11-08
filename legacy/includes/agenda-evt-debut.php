@@ -29,10 +29,10 @@ echo '" title="">';
             }
             if ($evt['cycle_master_evt'] > 0) {
                 // SORTIE DE DEBUT DE CYCLE
-                echo ' <img src="img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie de début de cycle" />';
+                echo ' <img src="/img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie de début de cycle" />';
             } elseif ($evt['cycle_parent_evt'] > 0) {
                 // SORTIE FAISANT PARTIE D'UN CYCLE
-                echo ' <img src="img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie faisant partie d\'un cycle" />';
+                echo ' <img src="/img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie faisant partie d\'un cycle" />';
             }
             ?>
             <?php if ($evt['destination']) { ?>

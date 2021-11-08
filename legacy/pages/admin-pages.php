@@ -12,7 +12,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 	</p>
 	<br />
 
-	<a href="includer.php?admin=true&p=pages/admin-pages-add.php" title="" class="fancyframe boutonFancy"><img src="img/base/page_white_add.png" alt="" title="" /> Nouvelle page</a>
+	<a href="includer.php?admin=true&p=pages/admin-pages-add.php" title="" class="fancyframe boutonFancy"><img src="/img/base/page_white_add.png" alt="" title="" /> Nouvelle page</a>
 
 	<?php
     // TABLEAU D'ERREURS
@@ -40,7 +40,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $tmp = $handle2['contenu_content_inline'];
             }
-            $tmp = '<img src="img/base/flag-'.$p_langs[$i].'.png" alt="'.$p_langs[$i].'" title="'.$p_langs[$i].'" style="height:17px; opacity:0.7; vertical-align:middle" /> '.$tmp;
+            $tmp = '<img src="/img/base/flag-'.$p_langs[$i].'.png" alt="'.$p_langs[$i].'" title="'.$p_langs[$i].'" style="height:17px; opacity:0.7; vertical-align:middle" /> '.$tmp;
             $handle['nom'][] = $tmp;
         }
         // ok, save
@@ -64,20 +64,20 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 							<input type="hidden" name="id_page" value="'.$page['id_page'].'" />
 							<input type="hidden" name="default_name_page" value="'.html_utf8($page['default_name_page']).'" />
 							<input type="hidden" name="code_page" value="'.html_utf8($page['code_page']).'" />
-							<input type="image" src="img/base/x.png" class="upimage" alt="Supprimer" title="Supprimer" />
+							<input type="image" src="/img/base/x.png" class="upimage" alt="Supprimer" title="Supprimer" />
 						</form>')
                         // deplacer
-                        .'<div class="page-element-info-3"><img src="img/base/move.png" alt="" title="Déplacer" style="height:16px" class="handle" /></div>'
+                        .'<div class="page-element-info-3"><img src="/img/base/move.png" alt="" title="Déplacer" style="height:16px" class="handle" /></div>'
                         .'<div class="page-element-separator"></div>'
                         // picto d'état vis
                         .($page['vis_page']
-                            ? '<div class="page-element-info-2 on"><img src="img/base/vis-on.png" alt="MENU" title="Cette page est visible sur le site" /></div>'
-                            : '<div class="page-element-info-2 off"><img src="img/base/vis-off.png" alt="MENU" title="Cette page n\'apparaît PAS sur le site" /></div>'
+                            ? '<div class="page-element-info-2 on"><img src="/img/base/vis-on.png" alt="MENU" title="Cette page est visible sur le site" /></div>'
+                            : '<div class="page-element-info-2 off"><img src="/img/base/vis-off.png" alt="MENU" title="Cette page n\'apparaît PAS sur le site" /></div>'
                             )
                         // picto d'état menu
                         .($page['menu_page']
-                            ? '<div class="page-element-info-2 on"><img src="img/base/chart_organisation.png" alt="MENU" title="Cette page apparaît dans le menu principal" /></div>'
-                            : '<div class="page-element-info-2 off"><img src="img/base/chart_organisation_delete.png" alt="MENU" title="Cette page n\'apparaît PAS dans le menu principal" /></div>'
+                            ? '<div class="page-element-info-2 on"><img src="/img/base/chart_organisation.png" alt="MENU" title="Cette page apparaît dans le menu principal" /></div>'
+                            : '<div class="page-element-info-2 off"><img src="/img/base/chart_organisation_delete.png" alt="MENU" title="Cette page n\'apparaît PAS dans le menu principal" /></div>'
                             )
                         // picto d'état priorité
                         .($page['priority_page'] > 0
@@ -92,7 +92,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
                         ;
 
                 listPages($tab, $page['id_page'], $level + 1);
-                // echo '<img src="img/base/ghost.gif" alt="" title="" style="clear:both" />';
+                // echo '<img src="/img/base/ghost.gif" alt="" title="" style="clear:both" />';
                 echo '</div>';
             }
         }

@@ -32,7 +32,7 @@ if (!$evt) {
     if ($evt['user_evt'] == $_SESSION['user']['id_user'] && $evt['tsp_end_evt'] < $p_time) {
         ?>
 		<a href="article-new.html?compterendu=true&amp;commission_article=-1&amp;evt_article=<?php echo $evt['id_evt']; ?>&amp;titre_article=<?php echo urlencode('Compte rendu de sortie : '.$evt['titre_evt']); ?>" title="Vous êtes l'auteur de cette sortie ? Rédigez un petit compte rendu !" class="nice2 noprint">
-			<img src="img/base/pencil_add.png" alt="" title="" style="" />
+			<img src="/img/base/pencil_add.png" alt="" title="" style="" />
 			Compte rendu
 		</a>
 		<?php
@@ -52,13 +52,13 @@ if (!$evt) {
         ?>
 		<!--
 		<a href="javascript:void(0)" onclick="window.print()" title="Imprimer cette fiche" class="nice2 noprint">
-			<img src="img/base/print.png" alt="PRINT" title="" style="height:20px" />
+			<img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
 			Imprimer la fiche de sortie
 		</a>
 		-->
 
 			<a href="<?php echo 'feuille-de-sortie/evt-'.(int) ($evt['id_evt']).'.html'; ?>" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
-				<img src="img/base/print.png" alt="PRINT" title="" style="height:20px" />
+				<img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
 				Imprimer la fiche de sortie
 			</a>
 		<?php
@@ -73,7 +73,7 @@ if (!$evt) {
         )) {
         ?>
             <a href="<?php echo 'feuille-de-sortie/dest-'.(int) ($destination['id']).'.html'; ?>" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
-                <img src="img/base/print.png" alt="PRINT" title="" style="height:20px" />
+                <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
                 Imprimer la fiche de destination
             </a>
         <?php
@@ -96,7 +96,7 @@ if (!$evt) {
             // avant l'evt
             if ($evt['tsp_end_evt'] > $p_time) {
                 echo '<p class="alerte">
-						<img src="img/inscrit-standby.png" alt="" title="" style="float:left" />
+						<img src="/img/inscrit-standby.png" alt="" title="" style="float:left" />
 						<br />Vous avez demandé à participer à cette sortie, et votre demande est en attente de validation.<br />
 						<input type="button" class="nice" value="Annuler mon inscription" onclick="$(\'#inscription-annuler\').slideToggle(200)" style="margin-top:6px;" />
 					</p><br />';
@@ -104,7 +104,7 @@ if (!$evt) {
             // apres l'evt
             else {
                 echo '<p class="alerte">
-						<img src="img/inscrit-standby.png" alt="" title="" style="float:left" />
+						<img src="/img/inscrit-standby.png" alt="" title="" style="float:left" />
 						<br />Vous avez demandé à participer à cette sortie, mais votre demande est restée en attente.<br />&nbsp;
 					</p><br />';
             }
@@ -112,7 +112,7 @@ if (!$evt) {
 
         if ('refusé' == $monStatut) {
             echo '<p class="erreur">
-					<img src="img/inscrit-cross.png" alt="" title="" style="float:left" />
+					<img src="/img/inscrit-cross.png" alt="" title="" style="float:left" />
 					<br />Vous avez demandé à participer à cette sortie, mais l\'organisateur a décliné votre inscription. N\'hésitez pas à le contacter pour en savoir plus.<br />&nbsp;
 				</p><br />';
         }
@@ -121,7 +121,7 @@ if (!$evt) {
             // avant l'evt
             if ($evt['tsp_end_evt'] > $p_time) {
                 echo '<p class="info">
-						<img src="img/inscrit-encadrant.png" alt="" title="" style="float:left" />
+						<img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" />
 						<br />Vous êtes inscrit à cette sortie en tant que : &laquo; '.$monStatut.' &raquo;.<br />&nbsp;
 						<input type="button" class="nice" value="Annuler mon inscription" onclick="$(\'#inscription-annuler\').slideToggle(200)" style="margin-top:6px;" />
 					</p><br />';
@@ -129,7 +129,7 @@ if (!$evt) {
             // apres l'evt
             else {
                 echo '<p class="info">
-						<img src="img/inscrit-encadrant.png" alt="" title="" style="float:left" />
+						<img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" />
 						<br />Vous avez participé à cette sortie en tant que : &laquo; '.$monStatut.' &raquo;.<br />&nbsp;
 					</p><br />';
             }
@@ -139,7 +139,7 @@ if (!$evt) {
             // avant l'evt
             if ($evt['tsp_end_evt'] > $p_time) {
                 echo '<p class="info">
-					<img src="img/inscrit-check.png" alt="" title="" style="float:left" />
+					<img src="/img/inscrit-check.png" alt="" title="" style="float:left" />
 					<br />Vous êtes inscrit comme participant à cette sortie.<br />&nbsp;
 					<input type="button" class="nice" value="Annuler mon inscription" onclick="$(\'#inscription-annuler\').slideToggle(200)" style="margin-top:6px;" />
 				</p><br />';
@@ -147,7 +147,7 @@ if (!$evt) {
             // apres l'evt
             else {
                 echo '<p class="info">
-					<img src="img/inscrit-check.png" alt="" title="" style="float:left" />
+					<img src="/img/inscrit-check.png" alt="" title="" style="float:left" />
 					<br />Vous avez participé à cette sortie.<br />&nbsp;
 				</p><br />';
             }
@@ -346,9 +346,9 @@ if (!$evt) {
                 foreach ($evt['lieu'] as $type => $lieu) {?>
                 <div class="lft half">
                         <?php if ('depose' == $type) { ?>
-                            <img src="img/start.png"  class="lft mr10"><b>Lieu de dépose :</b><br><?php echo html_utf8($lieu['nom']); ?>, le <?php $djdd = display_jour($lieu['date_depose']); echo $djdd; ?> à <?php echo display_time($lieu['date_depose']); ?>
+                            <img src="/img/start.png"  class="lft mr10"><b>Lieu de dépose :</b><br><?php echo html_utf8($lieu['nom']); ?>, le <?php $djdd = display_jour($lieu['date_depose']); echo $djdd; ?> à <?php echo display_time($lieu['date_depose']); ?>
                         <?php } elseif ('reprise' == $type) { ?>
-                            <img src="img/finish.png"  class="lft mr10""><b>Lieu de reprise :</b><br><?php echo html_utf8($lieu['nom']); ?>, <?php $djdr = display_jour($lieu['date_reprise']); if ($djdr != $djdd) {
+                            <img src="/img/finish.png"  class="lft mr10""><b>Lieu de reprise :</b><br><?php echo html_utf8($lieu['nom']); ?>, <?php $djdr = display_jour($lieu['date_reprise']); if ($djdr != $djdd) {
                     echo 'le '.$djdr;
                 } ?> à <?php echo display_time($lieu['date_reprise']); ?>
                         <?php } ?>
@@ -525,7 +525,7 @@ if (!$evt) {
 							<td class="small">'.(allowed('user_read_private', 'commission:'.$evt['code_commission']) ? $tmpUser['tel_user'] : '').'</td>
 							<td class="small">'.(allowed('user_read_private', 'commission:'.$evt['code_commission']) ? $tmpUser['tel2_user'] : '').'</td>
 							<td class="small">'.(allowed('user_read_private', 'commission:'.$evt['code_commission']) ? '<a href="mailto:'.$tmpUser['email_user'].'">'.$tmpUser['email_user'].'</a>' : '').'</td>'.
-                        (allowed('user_read_limited') ? '<td class="small">'.($tmpUser['is_covoiturage'] ? '<img src="img/voiture.png" title="Covoiturage" width="16px">' : '').'</td>' : '')
+                        (allowed('user_read_limited') ? '<td class="small">'.($tmpUser['is_covoiturage'] ? '<img src="/img/voiture.png" title="Covoiturage" width="16px">' : '').'</td>' : '')
                         .'</tr>';
                 }
                 // inscrits manuellement
@@ -538,7 +538,7 @@ if (!$evt) {
 							<td class="small">'.(allowed('user_read_private', 'commission:'.$evt['code_commission']) ? $tmpUser['tel_user'] : '').'</td>
 							<td class="small">'.(allowed('user_read_private', 'commission:'.$evt['code_commission']) ? $tmpUser['tel2_user'] : '').'</td>
 							<td class="small">'.(allowed('user_read_private', 'commission:'.$evt['code_commission']) ? '<a href="mailto:'.$tmpUser['email_user'].'">'.$tmpUser['email_user'].'</a>' : '').'</td>'.
-                        (allowed('user_read_limited') ? '<td class="small">'.($tmpUser['is_covoiturage'] ? '<img src="img/voiture.png" title="Covoiturage" width="16px">' : '').'</td>' : '')
+                        (allowed('user_read_limited') ? '<td class="small">'.($tmpUser['is_covoiturage'] ? '<img src="/img/voiture.png" title="Covoiturage" width="16px">' : '').'</td>' : '')
                         .'</tr>';
                 }
 
