@@ -63,7 +63,7 @@
 								<td style="text-align:center; width:60px;"><img src="'.userImg($row['id_user'], 'pic').'" alt="" title="" style="max-height:40px; max-width:60px;" /></td>
 								<td>'.userlink($row['id_user'], $row['firstname_user'].' '.$row['lastname_user']);
                         if ($row['doit_renouveler_user'] > 0) {
-                            echo '&nbsp;<img src="img/base/delete.png" title="licence expirée" style="margin-bottom:-4px">';
+                            echo '&nbsp;<img src="/img/base/delete.png" title="licence expirée" style="margin-bottom:-4px">';
                         }
                         echo '</td>
 								<td><a href="mailto:'.$row['email_user'].'">'.$row['email_user'].'</a></td>

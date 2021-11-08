@@ -42,7 +42,7 @@ if ('0' == $evt['status_evt']) {
     $messageDiv = true;
     echo '<div class="alerte"><b>Note : Cette sortie a été refusée</b>. Si vous voyez ce message apparaître, c\'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n\'ont pas accès aux informations ci-dessous.<br /><br /></div>';
 } elseif ('1' == $evt['cancelled_evt']) {
-    echo '<div class="erreur"><img src="img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Sortie annulée :</b><br /> Cette sortie a été annulée le '.date('d/m/Y à H:i').', par '.userlink($evt['cancelled_who_evt']['id_user'], $evt['cancelled_who_evt']['nickname_user']).'.<br /></div>';
+    echo '<div class="erreur"><img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Sortie annulée :</b><br /> Cette sortie a été annulée le '.date('d/m/Y à H:i').', par '.userlink($evt['cancelled_who_evt']['id_user'], $evt['cancelled_who_evt']['nickname_user']).'.<br /></div>';
 }
 
 $nAccepteesCalc = count($evt['joins']['encadrant']) + count($evt['joins']['coencadrant']) + count($evt['joins']['benevole']) + count($evt['joins']['inscrit']) + count($evt['joins']['manuel']);
@@ -56,9 +56,9 @@ presidence();
     <meta charset="utf-8">
     <title>Feuille de sortie-<?php echo html_utf8($evt['titre_evt']); ?>-<?php echo date('d.m.Y', $evt['tsp_evt']); ?></title>
 
-    <link rel="stylesheet" href="css/style1.css" type="text/css" />
-    <link rel="stylesheet" href="fonts/stylesheet.css" type="text/css" />
-    <link rel="stylesheet" href="css/base.css" type="text/css"  />
+    <link rel="stylesheet" href="/css/style1.css" type="text/css" />
+    <link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" />
+    <link rel="stylesheet" href="/css/base.css" type="text/css"  />
 
 </head>
 <body id="feuille-de-sortie" <!-- onload="window.print() -->">
@@ -215,7 +215,7 @@ presidence();
 
 <?php if ($destination) {
                     $b = 1;
-                    echo '<ul><img src="img/bus.png" title="bus" class="lft mr10" />';
+                    echo '<ul><img src="/img/bus.png" title="bus" class="lft mr10" />';
                     foreach ($destination['bus'] as $id_bus => $bus) {
                         echo '<li class="lft mr20">'.$bus['intitule'].'<ul>';
                         foreach ($bus['ramassage'] as $id_ramassage => $point) {
@@ -238,9 +238,9 @@ presidence();
         <th>AGE</th>
         <th>TÉL. PERSONNEL</th>
         <th>TÉL. <abbr title="En cas d'urgence">I.C.E</abbr></th>
-        <?php if ('1' == $evt['cb_evt']) { ?><th><abbr title="Paiement en ligne"><img src="img/base/cb-oui.png"/></abbr></th><?php } ?>
-        <?php if ('1' == $evt['repas_restaurant']) { ?><th><abbr title="Restaurant"><img src="img/base/resto-oui.png"/></abbr></th><?php } ?>
-        <?php if ($destination) { ?><th><abbr title="Transport"><img src="img/bus.png" title="bus" width="14px"  />&nbsp;<img src="img/voiture.png" title="covoiturage" width="14px" /></abbr></th><?php } ?>
+        <?php if ('1' == $evt['cb_evt']) { ?><th><abbr title="Paiement en ligne"><img src="/img/base/cb-oui.png"/></abbr></th><?php } ?>
+        <?php if ('1' == $evt['repas_restaurant']) { ?><th><abbr title="Restaurant"><img src="/img/base/resto-oui.png"/></abbr></th><?php } ?>
+        <?php if ($destination) { ?><th><abbr title="Transport"><img src="/img/bus.png" title="bus" width="14px"  />&nbsp;<img src="/img/voiture.png" title="covoiturage" width="14px" /></abbr></th><?php } ?>
     </tr>
     </thead>
     <tbody>
@@ -284,11 +284,11 @@ presidence();
                 echo '<small>NSP</small>';
             } ?></td><?php } ?>
                 <?php if ($destination) { ?><td><?php if (null == $tmp['is_covoiturage']) {
-                echo '<img src="img/base/error.png" title="Non renseigné !" width="12px" />';
+                echo '<img src="/img/base/error.png" title="Non renseigné !" width="12px" />';
             } elseif ('1' == $tmp['is_covoiturage']) {
-                echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="img/voiture.png" title="covoiturage" width="12px" />';
+                echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="/img/voiture.png" title="covoiturage" width="12px" />';
             } elseif ($tmp['id_bus_lieu_destination'] > 0) {
-                echo '<img src="img/bus.png" title="bus" width="12px" /> '.$busses[$tmp['id_bus_lieu_destination']]['short'];
+                echo '<img src="/img/bus.png" title="bus" width="12px" /> '.$busses[$tmp['id_bus_lieu_destination']]['short'];
             } else {
                 echo '<small>NSP</small>';
             } ?></td><?php } ?>

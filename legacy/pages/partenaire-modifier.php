@@ -100,7 +100,7 @@ if (!admin()) {
                                             if (file_exists('./ftp/partenaires/'.$partenaireTab['part_image'])) {
                                                 echo "<img src='ftp/partenaires/".$partenaireTab['part_image']."' style='max-width:150px;max-height:60px'>";
                                             } else {
-                                                echo '<img src="img/base/cross.png" width="25" height="25" alt="non trouvée" />';
+                                                echo '<img src="/img/base/cross.png" width="25" height="25" alt="non trouvée" />';
                                             }
                                         } ?>
 
@@ -149,7 +149,7 @@ if (!admin()) {
 			<br style="clear:both" />
 
 			<a href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
-				<img src="img/base/save.png" alt="Enregistrer" title="Enregistrer" style="height:35px;" />
+				<img src="/img/base/save.png" alt="Enregistrer" title="Enregistrer" style="height:35px;" />
 				Enregistrer
 			</a>
 			<?php

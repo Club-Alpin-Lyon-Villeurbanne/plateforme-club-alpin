@@ -14,7 +14,7 @@ if (!allowed('user_desactivate_any')) {
 		<p>
 			Voulez-vous vraiment désactiver ce compte utilisateur ? Il sera toujours existant dans la base de donnée,
 			et pourra être réactivé à tout moment. Cette personne ne pourra plus se connecter au site en tant qu'utilisateur.<br />
-			<img src="img/base/user_desactive.png" alt="DESACTIVE" title="Utilisateur désactivé manuellement" /> Cette icône apparaîtra
+			<img src="/img/base/user_desactive.png" alt="DESACTIVE" title="Utilisateur désactivé manuellement" /> Cette icône apparaîtra
 			dans la ligne concernée sur la page des <a href="adherents.html?show=dels" title="" target="_top">adhérents désactivés</a>.
 		</p>
 

@@ -17,6 +17,10 @@ class LegacyBridge
 
         $path = trim($request->getPathInfo(), '/');
 
+        if (false !== strpos($path, '..')) {
+            throw new NotFoundHttpException();
+        }
+
         if ('' === $path) {
             $path = 'index.php';
         } elseif (preg_match('/^([a-zA-Z0-9-]+)\.html$/', $path, $matches)) {

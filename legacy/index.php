@@ -112,14 +112,14 @@ $versCettePage = ($p_multilangue ? $lang.'/' : '').$p1.($p2 ? '/'.$p2 : '').($p3
             <!-- Waiters -->
             <div id="loading1" class="mybox-down"></div>
             <div id="loading2" class="mybox-up">
-                <p><?php echo cont('operation-en-cours'); ?><br /><br /><img src="img/base/loading.gif" alt="" title="" /></p>
+                <p><?php echo cont('operation-en-cours'); ?><br /><br /><img src="/img/base/loading.gif" alt="" title="" /></p>
             </div>
 
             <!-- affichage des manques de contenus en admin -->
             <?php
             if (admin() && count($contLog) && !$p_pageadmin) {
                 echo '<div id="adminmissing">
-                    <img src="img/base/x.png" alt="" title="Fermer" style="float:right; cursor:pointer; padding:5px;" onclick="$(this).parent().fadeOut();" />
+                    <img src="/img/base/x.png" alt="" title="Fermer" style="float:right; cursor:pointer; padding:5px;" onclick="$(this).parent().fadeOut();" />
                     <div style="float:left; padding:12px 10px 3px 35px">Admin : champs non remplis dans cette page</div>';
 
                 // si on est dans la langue par défaut, redirection vers la page des contenus :

@@ -91,7 +91,7 @@
                                     id="leader-'.$id_user.'" />&nbsp;';
                         echo $leader.'
                                 <a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user='.$id_user.'" title="Voir la fiche">
-                                    <img src="img/base/bullet_toggle_plus.png" alt="I" title="" />
+                                    <img src="/img/base/bullet_toggle_plus.png" alt="I" title="" />
                                 </a>';
                         echo '</p></label>';
                     }
@@ -115,7 +115,7 @@
                                     id="adjoint-'.$id_user.'" />&nbsp;';
                         echo $leader.'
                                 <a class="fancyframe" href="includer.php?p=includes/fiche-profil.php&amp;id_user='.$id_user.'" title="Voir la fiche">
-                                    <img src="img/base/bullet_toggle_plus.png" alt="I" title="" />
+                                    <img src="/img/base/bullet_toggle_plus.png" alt="I" title="" />
                                 </a>';
                         echo '</p></label>';
                     }
