@@ -65,7 +65,7 @@ if (!allowed('evt_join_doall') && !allowed('evt_join_notme') && !$suis_encadrant
     $errTab[] = 'Opération interdite : Il semble que vous ne soyez pas autorisé à modifier les inscrits.';
 }
 
-if (!isset($errTab) || 0 === count($errTab)) {
+if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
     //				print_r($_POST);
 
     foreach ($_POST['id_evt_join'] as $id_evt_join) {
