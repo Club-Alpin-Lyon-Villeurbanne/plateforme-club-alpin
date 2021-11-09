@@ -15,9 +15,9 @@ if (admin()) {
     $type = $_GET['type'];
     $dossier = null;
     if ('image' == $type) {
-        $dossier = __DIR__.'/../public/ftp/images/';
+        $dossier = __DIR__.'/../../public/ftp/images/';
     } elseif ('file' == $type) {
-        $dossier = __DIR__.'/../public/ftp/telechargements/';
+        $dossier = __DIR__.'/../../public/ftp/telechargements/';
     } else {
         echo "ERREUR : type invalide ($type / $dossier)";
         exit();
