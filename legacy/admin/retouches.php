@@ -57,14 +57,14 @@ if (!admin()) {
 
                 // if(!is_file('../ftp/transit/retouches/'.$filename)){
                 // suppression des autres documents en standby
-                $opendir = opendir(__DIR__.'/../public/ftp/transit/retouches');
+                $opendir = opendir(__DIR__.'/../../public/ftp/transit/retouches');
                 while ($tmpFile = readdir($opendir)) {
                     if ('.' != $tmpFile && '..' != $tmpFile && 'index.php' != $tmpFile && '.htaccess' != $tmpFile && strlen($tmpFile)) {
-                        unlink(__DIR__.'/../public/ftp/transit/retouches/'.$tmpFile);
+                        unlink(__DIR__.'/../../public/ftp/transit/retouches/'.$tmpFile);
                     }
                 }
                 // copie du fichier
-                if (!copy('../'.$src, __DIR__.'/../public/ftp/transit/retouches/'.$filename)) {
+                if (!copy('../'.$src, __DIR__.'/../../public/ftp/transit/retouches/'.$filename)) {
                     echo '<p class="erreur">Copie échouée...</p>';
                     exit();
                 }

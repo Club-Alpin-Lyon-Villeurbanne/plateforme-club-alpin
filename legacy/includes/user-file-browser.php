@@ -11,18 +11,18 @@ if (user()) {
     }
 
     // première visite : dossier inexistant
-    if (!file_exists(__DIR__.'/../public/ftp/user/'.$id_user)) {
-        if (!mkdir($concurrentDirectory = __DIR__.'/../public/ftp/user/'.$id_user) && !is_dir($concurrentDirectory)) {
+    if (!file_exists(__DIR__.'/../../public/ftp/user/'.$id_user)) {
+        if (!mkdir($concurrentDirectory = __DIR__.'/../../public/ftp/user/'.$id_user) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
-    if (!file_exists(__DIR__.'/../public/ftp/user/'.$id_user.'/images/')) {
-        if (!mkdir($concurrentDirectory = __DIR__.'/../public/ftp/user/'.$id_user.'/images/') && !is_dir($concurrentDirectory)) {
+    if (!file_exists(__DIR__.'/../../public/ftp/user/'.$id_user.'/images/')) {
+        if (!mkdir($concurrentDirectory = __DIR__.'/../../public/ftp/user/'.$id_user.'/images/') && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
-    if (!file_exists(__DIR__.'/../public/ftp/user/'.$id_user.'/files/')) {
-        if (!mkdir($concurrentDirectory = __DIR__.'/../public/ftp/user/'.$id_user.'/files/') && !is_dir($concurrentDirectory)) {
+    if (!file_exists(__DIR__.'/../../public/ftp/user/'.$id_user.'/files/')) {
+        if (!mkdir($concurrentDirectory = __DIR__.'/../../public/ftp/user/'.$id_user.'/files/') && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
@@ -30,9 +30,9 @@ if (user()) {
     // recuperation du dossier
     $type = $_GET['type'];
     if ('image' == $type) {
-        $dossier = __DIR__.'/../public/ftp/user/'.$id_user.'/images/';
+        $dossier = __DIR__.'/../../public/ftp/user/'.$id_user.'/images/';
     } elseif ('file' == $type) {
-        $dossier = __DIR__.'/../public/ftp/user/'.$id_user.'/files/';
+        $dossier = __DIR__.'/../../public/ftp/user/'.$id_user.'/files/';
     } else {
         echo "ERREUR : type invalide ($type)";
         exit();
