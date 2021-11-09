@@ -57,14 +57,14 @@ if (!admin()) {
 
                 // if(!is_file('../ftp/transit/retouches/'.$filename)){
                 // suppression des autres documents en standby
-                $opendir = opendir('../ftp/transit/retouches');
+                $opendir = opendir(__DIR__.'/../public/ftp/transit/retouches');
                 while ($tmpFile = readdir($opendir)) {
                     if ('.' != $tmpFile && '..' != $tmpFile && 'index.php' != $tmpFile && '.htaccess' != $tmpFile && strlen($tmpFile)) {
-                        unlink('../ftp/transit/retouches/'.$tmpFile);
+                        unlink(__DIR__.'/../public/ftp/transit/retouches/'.$tmpFile);
                     }
                 }
                 // copie du fichier
-                if (!copy('../'.$src, '../ftp/transit/retouches/'.$filename)) {
+                if (!copy('../'.$src, __DIR__.'/../public/ftp/transit/retouches/'.$filename)) {
                     echo '<p class="erreur">Copie échouée...</p>';
                     exit();
                 }
@@ -135,7 +135,7 @@ if (!admin()) {
 										<input type="hidden" class="yDest" style="border:0; background:none; width:35px; text-align:right;" value="0" disabled="disabled" />
 									</span>
 								</p>
-								<img src="../ftp/transit/retouches/<?php echo $filename; ?>" class="lp-image-editor-source" alt="IMAGE" title="Image d'origine" onload="var toframe=setTimeout('window.parent.actu_iframe()', 200);" />
+								<img src="/ftp/transit/retouches/<?php echo $filename; ?>" class="lp-image-editor-source" alt="IMAGE" title="Image d'origine" onload="var toframe=setTimeout('window.parent.actu_iframe()', 200);" />
 							</div>
 						</td>
 					</tr>

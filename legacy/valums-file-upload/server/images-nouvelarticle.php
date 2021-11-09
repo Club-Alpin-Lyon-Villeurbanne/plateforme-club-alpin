@@ -21,13 +21,13 @@ if ('edit' == $mode && !$id_article) {
 
 if (0 === count($errTab)) {
     // creation des dossiers utiles pour l'user s'ils n'existnent pas
-    $dir = '../../../ftp/user/'.(int) ($_SESSION['user']['id_user']);
+    $dir = __DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']);
     if (!file_exists($dir)) {
         if (!mkdir($dir) && !is_dir($dir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
         }
     }
-    $dir = '../../../ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle';
+    $dir = __DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle';
     if (!file_exists($dir)) {
         if (!mkdir($dir) && !is_dir($dir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
