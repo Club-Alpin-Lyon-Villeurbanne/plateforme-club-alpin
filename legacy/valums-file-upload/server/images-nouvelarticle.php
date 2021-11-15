@@ -3,7 +3,7 @@
 include __DIR__.'/../../app/includes.php';
 
 $errTab = [];
-$result = $targetDirRel = $targetDir = $filename = null;
+$result = $targetDir = $filename = null;
 
 // $errTab[]="Test";
 if (!user()) {
@@ -36,21 +36,18 @@ if (0 === count($errTab)) {
 
     // modification de sortie
     if ('edit' == $mode) {
-        $targetDir = 'ftp/articles/'.$id_article;
+        $targetDir = __DIR__.'/../../../public/ftp/articles/'.$id_article.'/';
     } // depuis la racine
     // création de sortie
     else {
-        $targetDir = 'ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle';
+        $targetDir = __DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/';
     } // depuis la racine
 
-    $targetDirRel = '../../../'.$targetDir; // chemin relatif
-    if (!file_exists($targetDirRel)) {
-        if (!mkdir($targetDirRel) && !is_dir($targetDirRel)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $targetDirRel));
+    if (!file_exists($targetDir)) {
+        if (!mkdir($targetDir) && !is_dir($targetDir)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $targetDir));
         }
     }
-    $targetDir .= '/';
-    $targetDirRel .= '/';
 
     // Handle file uploads via XMLHttpRequest
     include __DIR__.'/vfu.classes.php';
@@ -81,20 +78,20 @@ if (0 === count($errTab)) {
         // debug : copie impossible si le nom de fichier est juste une variante de CASSE
         // donc dans ce cas on le RENOMME
         if ($filename == strtolower($tmpfilename)) {
-            if (!rename($targetDirRel.$tmpfilename, $targetDirRel.$filename)) {
-                $errTab[] = 'Erreur de renommage de '.$targetDirRel.$tmpfilename." \n vers ".$targetDir.$filename;
+            if (!rename($targetDir.$tmpfilename, $targetDir.$filename)) {
+                $errTab[] = 'Erreur de renommage de '.$targetDir.$tmpfilename." \n vers ".$targetDir.$filename;
             }
         } else {
             // copie du fichier avec nvx nom
-            if (copy($targetDirRel.$tmpfilename, $targetDirRel.$filename)) {
+            if (copy($targetDir.$tmpfilename, $targetDir.$filename)) {
                 // suppression de l'originale
-                if (is_file($targetDirRel.$result['filename'])) {
-                    unlink($targetDirRel.$result['filename']);
+                if (is_file($targetDir.$result['filename'])) {
+                    unlink($targetDir.$result['filename']);
                 }
                 // sauf erreur le nom de ficier est remplacé par sa version formatée
                 $result['filename'] = $filename;
             } else {
-                $errTab[] = 'Erreur de copie de '.$targetDirRel.$result['filename']." \n vers ".$targetDir.$filename;
+                $errTab[] = 'Erreur de copie de '.$targetDir.$result['filename']." \n vers ".$targetDir.$filename;
             }
         }
     }
@@ -102,7 +99,7 @@ if (0 === count($errTab)) {
     // redimensionnement des images
     if (0 === count($errTab)) {
         include __DIR__.'/../../app/redims.php';
-        $size = getimagesize($targetDirRel.$filename);
+        $size = getimagesize($targetDir.$filename);
 
         // 1 : WIDE = l'image qui prend la largeur de la page dédiée à l'article / +dans le slider de la home
         // plus large que haute, proportionnellement aux dimensions voulues ?
@@ -115,9 +112,9 @@ if (0 === count($errTab)) {
             $H_max = 0;
         } // sinon l'inverse : on crope les bords haut & bas
         // redimension
-        $rep_Dst = $targetDirRel;
+        $rep_Dst = $targetDir;
         $img_Dst = 'wide-'.$filename;
-        $rep_Src = $targetDirRel;
+        $rep_Src = $targetDir;
         $img_Src = $filename;
         if (!fctredimimage($W_max, $H_max, $rep_Dst, $img_Dst, $rep_Src, $img_Src)) {
             $errTab[] = 'Image : Erreur de redim wide';
@@ -142,9 +139,9 @@ if (0 === count($errTab)) {
             $H_max = 0;
         } // sinon l'inverse : on crope les bords haut & bas
         // redimension
-        $rep_Dst = $targetDirRel;
+        $rep_Dst = $targetDir;
         $img_Dst = 'min-'.$filename;
-        $rep_Src = $targetDirRel;
+        $rep_Src = $targetDir;
         $img_Src = $filename;
         if (!fctredimimage($W_max, $H_max, $rep_Dst, $img_Dst, $rep_Src, $img_Src)) {
             $errTab[] = 'Image : Erreur de redim wide';

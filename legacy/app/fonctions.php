@@ -137,13 +137,19 @@ function userImg($id_user, $style = '')
     global $p_racine;
 
     switch ($style) {
-        case 'pic': 	$style = $style.'-'; break;
-        case 'min': 	$style = $style.'-'; break;
-        default:		$style = '';
+        case 'pic':
+            $style = $style.'-';
+            break;
+        case 'min':
+            $style = $style.'-';
+            break;
+        default:
+            $style = '';
+            break;
     }
 
     $rel = 'ftp/user/'.(int) $id_user.'/'.$style.'profil.jpg';
-    if (!file_exists($rel)) {
+    if (!file_exists(__DIR__.'/../../public/'.$rel)) {
         $rel = 'ftp/user/0/'.$style.'profil.jpg';
     }
 
@@ -159,7 +165,7 @@ function comFd($id_commission)
     global $p_racine;
 
     $rel = 'ftp/commission/'.(int) $id_commission.'/bigfond.jpg';
-    if (!file_exists($rel)) {
+    if (!file_exists(__DIR__.'/../../public/'.$rel)) {
         $rel = 'ftp/commission/0/bigfond.jpg';
     }
 
@@ -181,7 +187,7 @@ function comPicto($id_commission, $style = '')
     }
 
     $rel = 'ftp/commission/'.(int) $id_commission.'/picto'.$style.'.png';
-    if (!file_exists($rel)) {
+    if (!file_exists(__DIR__.'/../../public/'.$rel)) {
         $rel = 'ftp/commission/0/picto'.$style.'.png';
     }
 

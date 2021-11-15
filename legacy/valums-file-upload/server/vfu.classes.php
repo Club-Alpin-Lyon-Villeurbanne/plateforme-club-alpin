@@ -125,9 +125,6 @@ class qqFileUploader
      */
     public function handleUpload($uploadDirectory, $replaceOldFile = false)
     {
-        // LP edit : uploadDirectory défini depuis racine du site
-        $uploadDirectory = '../../../'.$uploadDirectory;
-
         if (!is_writable($uploadDirectory)) {
             return ['error' => "Server error. Upload directory $uploadDirectory isn't writable."];
         }

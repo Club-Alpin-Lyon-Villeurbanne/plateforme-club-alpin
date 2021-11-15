@@ -43,7 +43,7 @@
 			<hr />
 			<?php
             //$fileTab=array('ftp/fichiers-proteges/7300.txt','ftp/fichiers-proteges/7380.txt');
-            $fileTab = ['ftp/fichiers-proteges/74800.txt'];
+            $fileTab = [__DIR__.'/../../public/ftp/fichiers-proteges/74800.txt'];
             foreach ($fileTab as $file) {
                 ?>
 				<h2>Fichier <?php echo strtolower(substr(strrchr($file, '/'), 1)); ?></h2>

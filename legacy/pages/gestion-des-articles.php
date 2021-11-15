@@ -26,10 +26,10 @@
                         $article = $articleStandby[$i];
 
                         // check image
-                        if (is_file('ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg')) {
-                            $img = 'ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg';
+                        if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg')) {
+                            $img = '/ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg';
                         } else {
-                            $img = 'ftp/articles/0/wide-figure.jpg';
+                            $img = '/ftp/articles/0/wide-figure.jpg';
                         }
 
                         // type d'article : lié à l'id de la commission en fait
@@ -106,10 +106,10 @@
                         $article = $articleStandbyRedac[$i];
 
                         // check image
-                        if (is_file('ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg')) {
-                            $img = 'ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg';
+                        if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg')) {
+                            $img = '/ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg';
                         } else {
-                            $img = 'ftp/articles/0/wide-figure.jpg';
+                            $img = '/ftp/articles/0/wide-figure.jpg';
                         }
 
                         // type d'article : lié à l'id de la commission en fait

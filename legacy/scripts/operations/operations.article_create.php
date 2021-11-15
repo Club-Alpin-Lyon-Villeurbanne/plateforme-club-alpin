@@ -34,9 +34,9 @@ if (strlen($cont_article) < 10) {
 }
 // image
 if (
-    !file_exists('ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/figure.jpg')
-    || !file_exists('ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/wide-figure.jpg')
-    || !file_exists('ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/min-figure.jpg')
+    !file_exists(__DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/figure.jpg')
+    || !file_exists(__DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/wide-figure.jpg')
+    || !file_exists(__DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/min-figure.jpg')
     ) {
     $errTab[] = 'Les images liées sont introuvables';
 }
@@ -61,9 +61,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
 // déplacement des fichiers
 if ((!isset($errTab) || 0 === count($errTab)) && $id_article > 0) {
     // repertoire de l'image a recuperer
-    $dirFrom = 'ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/';
+    $dirFrom = __DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/';
     // créa du repertroie destination
-    $dirTo = 'ftp/articles/'.$id_article;
+    $dirTo = __DIR__.'/../../../public/ftp/articles/'.$id_article;
     if (!file_exists($dirTo)) {
         if (!mkdir($dirTo) && !is_dir($dirTo)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $dirTo));

@@ -3,8 +3,7 @@
 include __DIR__.'/../../app/includes.php';
 
 if (admin()) {
-    $targetDir = $_GET['dossier'].'/'; // depuis la racine
-    $targetDirRel = '../../../'.$targetDir; // chemin relatif
+    $targetDir = __DIR__.'/../../../public/'.$_GET['dossier'].'/';
 
     // Handle file uploads via XMLHttpRequest
     include __DIR__.'/vfu.classes.php';
@@ -25,20 +24,20 @@ if (admin()) {
         // debug : copie impossible si le nom de fichier est juste une variante de CASSE
         // donc dans ce cas on le RENOMME
         if ($filename == strtolower($tmpfilename)) {
-            if (!rename($targetDirRel.$tmpfilename, $targetDirRel.$tmpfilename)) {
-                $errTab[] = 'Erreur de renommage de '.$targetDirRel.$tmpfilename." \n vers ".$targetDir.$filename;
+            if (!rename($targetDir.$tmpfilename, $targetDir.$tmpfilename)) {
+                $errTab[] = 'Erreur de renommage de '.$targetDir.$tmpfilename." \n vers ".$targetDir.$filename;
             }
         } else {
             // copie du fichier avec nvx nom
-            if (copy($targetDirRel.$tmpfilename, $targetDirRel.$filename)) {
+            if (copy($targetDir.$tmpfilename, $targetDir.$filename)) {
                 // suppression de l'originale
-                if (is_file($targetDirRel.$result['filename'])) {
-                    unlink($targetDirRel.$result['filename']);
+                if (is_file($targetDir.$result['filename'])) {
+                    unlink($targetDir.$result['filename']);
                 }
                 // sauf erreur le nom de ficier est remplacé par sa version formatée
                 $result['filename'] = $filename;
             } else {
-                $errTab[] = 'Erreur de copie de '.$targetDirRel.$result['filename']." \n vers ".$targetDirRel.$filename;
+                $errTab[] = 'Erreur de copie de '.$targetDir.$result['filename']." \n vers ".$targetDir.$filename;
             }
         }
     }

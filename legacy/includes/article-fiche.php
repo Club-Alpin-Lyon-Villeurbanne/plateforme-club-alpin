@@ -7,10 +7,10 @@ if (!$article) {
     echo '<p class="erreur">Erreur : article non trouvé ou non autorisé</p>';
 } else {
     // check image
-    if (is_file('ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg')) {
-        $img = 'ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg';
+    if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg')) {
+        $img = '/ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg';
     } else {
-        $img = 'ftp/articles/0/wide-figure.jpg';
+        $img = '/ftp/articles/0/wide-figure.jpg';
     } ?>
 	<div class="titleimage" style="background-image:url(<?php echo $img; ?>)">
 		<h1>

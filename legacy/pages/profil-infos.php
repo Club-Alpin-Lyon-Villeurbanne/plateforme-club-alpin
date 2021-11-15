@@ -89,10 +89,10 @@ if (user()) {
             <br />
             <div id="edit_profil_image">
                 <?php
-                $image = 'ftp/user/'.$tmpUser['id_user'].'/min-profil.jpg';
+                $image = '/ftp/user/'.$tmpUser['id_user'].'/min-profil.jpg';
     // pas d'image
-    if (!is_file('ftp/user/'.$tmpUser['id_user'].'/min-profil.jpg')) {
-        $image = 'ftp/user/0/min-profil.jpg';
+    if (!is_file(__DIR__.'/../../public'.$image)) {
+        $image = '/ftp/user/0/min-profil.jpg';
     }
     // image custom
     else {

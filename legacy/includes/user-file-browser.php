@@ -10,19 +10,20 @@ if (user()) {
         exit();
     }
 
+    $publicRoot = __DIR__.'/../../public';
     // première visite : dossier inexistant
-    if (!file_exists(__DIR__.'/../../public/ftp/user/'.$id_user)) {
-        if (!mkdir($concurrentDirectory = __DIR__.'/../../public/ftp/user/'.$id_user) && !is_dir($concurrentDirectory)) {
+    if (!file_exists($publicRoot.'/ftp/user/'.$id_user)) {
+        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
-    if (!file_exists(__DIR__.'/../../public/ftp/user/'.$id_user.'/images/')) {
-        if (!mkdir($concurrentDirectory = __DIR__.'/../../public/ftp/user/'.$id_user.'/images/') && !is_dir($concurrentDirectory)) {
+    if (!file_exists($publicRoot.'/ftp/user/'.$id_user.'/images/')) {
+        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user.'/images/') && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
-    if (!file_exists(__DIR__.'/../../public/ftp/user/'.$id_user.'/files/')) {
-        if (!mkdir($concurrentDirectory = __DIR__.'/../../public/ftp/user/'.$id_user.'/files/') && !is_dir($concurrentDirectory)) {
+    if (!file_exists($publicRoot.'/ftp/user/'.$id_user.'/files/')) {
+        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user.'/files/') && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
@@ -30,9 +31,9 @@ if (user()) {
     // recuperation du dossier
     $type = $_GET['type'];
     if ('image' == $type) {
-        $dossier = __DIR__.'/../../public/ftp/user/'.$id_user.'/images/';
+        $dossier = $publicRoot.'/ftp/user/'.$id_user.'/images/';
     } elseif ('file' == $type) {
-        $dossier = __DIR__.'/../../public/ftp/user/'.$id_user.'/files/';
+        $dossier = $publicRoot.'/ftp/user/'.$id_user.'/files/';
     } else {
         echo "ERREUR : type invalide ($type)";
         exit();
@@ -240,8 +241,10 @@ if (user()) {
             continue;
         }
 
+        $url = substr($filepath, strlen($publicRoot));
+
         if ('image' === $type) {
-            $icon = $filepath;
+            $icon = $url;
         } else {
             switch ($extension) {
                             case 'jpg':
@@ -266,14 +269,14 @@ if (user()) {
         }
 
         $tabFichiers[] = [
-                        'file' => $fichier,
-                        'filepath' => $filepath,
-                        'url' => substr($filepath, 3),
-                        'size' => filesize($filepath),
-                        'mtime' => filemtime($filepath),
-                        'ctime' => filectime($filepath),
-                        'icon' => $icon,
-                    ];
+            'file' => $fichier,
+            'filepath' => $filepath,
+            'url' => $url,
+            'size' => filesize($filepath),
+            'mtime' => filemtime($filepath),
+            'ctime' => filectime($filepath),
+            'icon' => $icon,
+        ];
     }
 
     closedir($handle);
