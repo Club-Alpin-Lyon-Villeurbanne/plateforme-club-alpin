@@ -63,7 +63,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
             $errTab[] = "Erreur dans l'image : ".$_FILES['photo']['error'];
         } else {
             // déplacement du fichier dans le dossier transit
-            $uploaddir = 'ftp/transit/profil/';
+            $uploaddir = __DIR__.'/../../../public/ftp/transit/profil/';
             $i = 1;
             while (file_exists($uploaddir.$i.'-profil.jpg')) {
                 ++$i;
@@ -74,7 +74,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
                 include __DIR__.'/../../app/redims.php';
                 $size = getimagesize($uploaddir.$filename);
 
-                $rep_Dst = 'ftp/user/'.$id_user.'/';
+                $rep_Dst = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
                 $img_Dst = 'profil.jpg';
                 $rep_Src = $uploaddir;
                 $img_Src = $filename;
@@ -101,9 +101,9 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
                 $W_fin = 150;
                 $H_fin = 150;
 
-                $rep_Dst = 'ftp/user/'.$id_user.'/';
+                $rep_Dst = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
                 $img_Dst = 'min-profil.jpg';
-                $rep_Src = 'ftp/user/'.$id_user.'/';
+                $rep_Src = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
                 $img_Src = 'profil.jpg';
 
                 // redim

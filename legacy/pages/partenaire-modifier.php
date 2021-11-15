@@ -97,8 +97,8 @@ if (!admin()) {
 								<td valign='top'>
 									<?php
                                         if ('edit' == $operation) {
-                                            if (file_exists('./ftp/partenaires/'.$partenaireTab['part_image'])) {
-                                                echo "<img src='ftp/partenaires/".$partenaireTab['part_image']."' style='max-width:150px;max-height:60px'>";
+                                            if (file_exists(__DIR__.'/../../public/ftp/partenaires/'.$partenaireTab['part_image'])) {
+                                                echo "<img src='/ftp/partenaires/".$partenaireTab['part_image']."' style='max-width:150px;max-height:60px'>";
                                             } else {
                                                 echo '<img src="/img/base/cross.png" width="25" height="25" alt="non trouvée" />';
                                             }

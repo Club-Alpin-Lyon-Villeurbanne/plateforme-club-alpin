@@ -17,7 +17,7 @@ if ($p_showPartenairesSlider) {
         error_log($mysqli->error);
     } else {
         while ($row = $result->fetch_array(\MYSQLI_ASSOC)) {
-            if (file_exists('ftp/partenaires/'.$row['part_image'])) {
+            if (file_exists(__DIR__.'/../../public/ftp/partenaires/'.$row['part_image'])) {
                 $partenairesTab[] = $row;
             } else {
                 error_log("l'image partenaire n'existe pas : ".'ftp/partenaires/'.$row['part_image']);

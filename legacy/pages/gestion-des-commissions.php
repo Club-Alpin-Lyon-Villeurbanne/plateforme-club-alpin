@@ -41,10 +41,10 @@
 
                     if ($action) {
                         // chemin vers grand eimage
-                        if (file_exists('ftp/commission/'.$row['id_commission'].'/bigfond.jpg')) {
-                            $bigImgUrl = 'ftp/commission/'.$row['id_commission'].'/bigfond.jpg';
+                        if (file_exists(__DIR__.'/../../public/ftp/commission/'.$row['id_commission'].'/bigfond.jpg')) {
+                            $bigImgUrl = '/ftp/commission/'.$row['id_commission'].'/bigfond.jpg';
                         } else {
-                            $bigImgUrl = 'ftp/commission/0/bigfond.jpg';
+                            $bigImgUrl = '/ftp/commission/0/bigfond.jpg';
                         }
 
                         echo '<div class="item '.(1 == $row['vis_commission'] ? 'on' : 'off').'">'

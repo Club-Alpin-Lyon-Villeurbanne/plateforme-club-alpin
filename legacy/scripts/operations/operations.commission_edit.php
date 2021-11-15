@@ -5,7 +5,7 @@ if (!allowed('comm_edit')) {
 }
 $title_commission = stripslashes($_POST['title_commission']);
 $id_commission = (int) ($_GET['id_commission']);
-$uploads_dir = 'ftp/commission/'.$id_commission;
+$uploads_dir = __DIR__.'/../../../public/ftp/commission/'.$id_commission;
 
 // CHECKIN VARS
 if (!isset($errTab) || 0 === count($errTab)) {

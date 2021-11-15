@@ -4,7 +4,7 @@
 	<input type="hidden" name="unlock1" value="0" />
 
 	<div style="float:left; width:75px; padding-top:3px;">
-		<img src="ftp/user/0/pic-profil.jpg" alt="" title="" />
+		<img src="/ftp/user/0/pic-profil.jpg" alt="" title="" />
 	</div>
 	<div style="float:left; width:530px;">
 		<textarea name="cont_comment" class="type2" style="width:460px; height:90px;" placeholder="Laisser un commentaire" ></textarea>
