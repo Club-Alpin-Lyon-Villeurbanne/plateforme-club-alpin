@@ -17,10 +17,10 @@ if (1 != $article['status_article']) {
 }
 
 // check image
-if (is_file('ftp/articles/'.(int) ($article['id_article']).'/min-figure.jpg')) {
-    $img = 'ftp/articles/'.(int) ($article['id_article']).'/min-figure.jpg';
+if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) ($article['id_article']).'/min-figure.jpg')) {
+    $img = '/ftp/articles/'.(int) ($article['id_article']).'/min-figure.jpg';
 } else {
-    $img = 'ftp/articles/0/min-figure.jpg';
+    $img = '/ftp/articles/0/min-figure.jpg';
 }
 
 ?>

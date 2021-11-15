@@ -383,7 +383,7 @@ if ('fichier_adherents_maj' == $_POST['operation']) {
         for ($i = 0; $i < $length; ++$i) {
             if ('7300.txt' == $_FILES['file']['name'][$i] || '7480.txt' == $_FILES['file']['name'][$i]) {
                 $oneGood = true;
-                if (!move_uploaded_file($_FILES['file']['tmp_name'][$i], './ftp/fichiers-proteges/'.$_FILES['file']['name'][$i])) {
+                if (!move_uploaded_file($_FILES['file']['tmp_name'][$i], __DIR__.'/../../public/ftp/fichiers-proteges/'.$_FILES['file']['name'][$i])) {
                     $errTab[] = 'Erreur de déplacement du fichier '.$_FILES['file']['name'][$i];
                 }
                 // $errTab[]="Erreur de déplacement du fichier ".$_FILES['file']['name'][$i]." vers ".'ftp/fichiers-proteges/'.$_FILES['file']['name'][$i];

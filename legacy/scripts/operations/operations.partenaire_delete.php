@@ -4,7 +4,7 @@ if (!admin()) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
     exit;
 }
-$uploaddir = 'ftp/partenaires/';
+$uploaddir = __DIR__.'/../../../public/ftp/partenaires/';
 $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
 $part_id = (int) ($_POST['part_id']);

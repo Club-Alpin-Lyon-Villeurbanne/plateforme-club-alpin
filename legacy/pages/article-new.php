@@ -152,10 +152,10 @@ if ($_GET['compterendu']) {
                 if ($id_evt_to_update) {
                     $dir = 'ftp/articles/'.$id_evt_to_update.'/';
                 }
-                if (file_exists($dir.'min-figure.jpg') &&
-                            file_exists($dir.'wide-figure.jpg') &&
+                if (file_exists(__DIR__.'/../../public/'.$dir.'min-figure.jpg') &&
+                            file_exists(__DIR__.'/../../public/'.$dir.'wide-figure.jpg') &&
                             // file_exists($dir.'pic-figure.jpg') &&
-                            file_exists($dir.'figure.jpg')
+                            file_exists(__DIR__.'/../../public/'.$dir.'figure.jpg')
                             ) {
                     $found = true;
                 } ?>
@@ -196,7 +196,7 @@ if ($_GET['compterendu']) {
 						<?php
                         echo '<br /><div id="chutier1" style="width:230px; height:126px; text-align:center;  padding:3px; margin:0 20px 10px 0; background:white; float:left; box-shadow:0 0 10px -5px black; ">';
                 if ($found) {
-                    echo '<img src="'.$dir.'wide-figure.jpg?ac='.$p_time.'" alt="" title="" style="width:100%; height:100%; " />';
+                    echo '<img src="/'.$dir.'wide-figure.jpg?ac='.$p_time.'" alt="" title="" style="width:100%; height:100%; " />';
                 }
                 echo '</div>';
 

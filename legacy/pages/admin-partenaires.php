@@ -109,7 +109,7 @@ if (!admin()) {
                     .'<td>'.html_utf8($elt['part_desc']).'</td>'
                     .'<td align="center">';
         echo '<a target="_blank" href="/goto/partenaire/'.$elt['part_id'].'/'.formater($elt['part_name'], 3).'.html">';
-        if (file_exists('./ftp/partenaires/'.$elt['part_image'])) {
+        if (file_exists(__DIR__.'/../../public/ftp/partenaires/'.$elt['part_image'])) {
             echo '<img src="/ftp/partenaires/'.$elt['part_image'].'" style="max-width:150px;max-height:60px">';
         } else {
             echo '<img src="/img/base/cross.png" width="25" height="25" alt="non trouvée" />';

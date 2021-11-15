@@ -17,8 +17,8 @@ if (!$mysqli->query($req)) {
 
 if (!isset($errTab) || 0 === count($errTab)) {
     // suppression du dossier
-    if ($id_article && is_dir('ftp/articles/'.$id_article)) {
-        clearDir('ftp/articles/'.$id_article);
+    if ($id_article && is_dir(__DIR__.'/../../../public/ftp/articles/'.$id_article)) {
+        clearDir(__DIR__.'/../../../public/ftp/articles/'.$id_article);
     }
 }
 

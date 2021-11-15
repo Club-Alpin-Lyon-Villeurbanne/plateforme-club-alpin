@@ -44,10 +44,10 @@
                     $article = $sliderTab[$i];
 
                     // check image
-                    if (is_file('ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg')) {
-                        $img = 'ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg';
+                    if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg')) {
+                        $img = '/ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg';
                     } else {
-                        $img = 'ftp/articles/0/wide-figure.jpg';
+                        $img = '/ftp/articles/0/wide-figure.jpg';
                     }
 
                     echo '<a href="article/'.html_utf8($article['code_article'].'-'.$article['id_article']).'.html" class="slide" style="background-image:url('.$img.')" title="CLIQUEZ POUR VOIR L\'ARTICLE">

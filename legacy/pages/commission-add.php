@@ -45,7 +45,7 @@
 						<br />
 						<table style="line-height:20px;">
 							<tr>
-								<td rowspan="2"><img style="vertical-align: middle;" src="ftp/commission/0/picto.png" alt="" width="35" height="35" /></td>
+								<td rowspan="2"><img style="vertical-align: middle;" src="/ftp/commission/0/picto.png" alt="" width="35" height="35" /></td>
 								<td> Pictogramme bleu CAF : <strong>#50b5e1</strong></td>
 							</tr>
 							<tr>
@@ -54,7 +54,7 @@
 							<tr><td>&nbsp;</td></tr>
 
 							<tr>
-								<td rowspan="2"><img style="vertical-align: middle;" src="ftp/commission/0/picto-light.png" alt="" width="35" height="35" /></td>
+								<td rowspan="2"><img style="vertical-align: middle;" src="/ftp/commission/0/picto-light.png" alt="" width="35" height="35" /></td>
 								<td> Pictogramme blanc : <strong>#ffffff</strong></td>
 							</tr>
 							<tr>
@@ -63,7 +63,7 @@
 							<tr><td>&nbsp;</td></tr>
 
 							<tr>
-								<td rowspan="2"><img style="vertical-align: middle;" src="ftp/commission/0/picto-dark.png" alt="" width="35" height="35" /></td>
+								<td rowspan="2"><img style="vertical-align: middle;" src="/ftp/commission/0/picto-dark.png" alt="" width="35" height="35" /></td>
 								<td> Pictogramme sombre : <strong>#044e68</strong></td>
 							</tr>
 							<tr>
