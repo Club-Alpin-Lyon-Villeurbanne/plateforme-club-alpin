@@ -4,7 +4,7 @@ if (!allowed('comm_create')) {
     $errTab[] = 'Vous n\'avez pas les droits nécessaires pour cette operation';
 }
 $title_commission = stripslashes($_POST['title_commission']);
-$uploads_dir = 'ftp/transit/nouvellecommission';
+$uploads_dir = __DIR__.'/../../../public/ftp/transit/nouvellecommission';
 
 // CHECKIN VARS
 if (!isset($errTab) || 0 === count($errTab)) {
@@ -208,7 +208,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
 // DÉPLACEMENT DES FICHIERS DANS LE DOSSIER FINAL
 if (!isset($errTab) || 0 === count($errTab)) {
-    $newDir = 'ftp/commission/'.$id_commission;
+    $newDir = __DIR__.'/../../../public/ftp/commission/'.$id_commission;
 
     // création du dossier
     if (!file_exists($newDir)) {

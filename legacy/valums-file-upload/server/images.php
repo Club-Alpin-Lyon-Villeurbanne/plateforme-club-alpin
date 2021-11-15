@@ -3,8 +3,7 @@
 include __DIR__.'/../../app/includes.php';
 
 if (admin()) {
-    $targetDir = $_GET['dossier'].'/'; // depuis la racine
-    $targetDirRel = '../../../'.$targetDir; // chemin relatif
+    $targetDir = __DIR__.'/../../../public/'.$_GET['dossier'].'/';
 
     // Handle file uploads via XMLHttpRequest
     include __DIR__.'/vfu.classes.php';
@@ -26,20 +25,20 @@ if (admin()) {
         // debug : copie impossible si le nom de fichier est juste une variante de CASSE
         // donc dans ce cas on le RENOMME
         if ($filename == strtolower($tmpfilename)) {
-            if (!rename($targetDirRel.$tmpfilename, $targetDirRel.$tmpfilename)) {
-                $errTab[] = 'Erreur de renommage de '.$targetDirRel.$tmpfilename." \n vers ".$targetDir.$filename;
+            if (!rename($targetDir.$tmpfilename, $targetDir.$tmpfilename)) {
+                $errTab[] = 'Erreur de renommage de '.$targetDir.$tmpfilename." \n vers ".$targetDir.$filename;
             }
         } else {
             // copie du fichier avec nvx nom
-            if (copy($targetDirRel.$tmpfilename, $targetDirRel.$filename)) {
+            if (copy($targetDir.$tmpfilename, $targetDir.$filename)) {
                 // suppression de l'originale
-                if (is_file($targetDirRel.$result['filename'])) {
-                    unlink($targetDirRel.$result['filename']);
+                if (is_file($targetDir.$result['filename'])) {
+                    unlink($targetDir.$result['filename']);
                 }
                 // sauf erreur le nom de ficier est remplacé par sa version formatée
                 $result['filename'] = $filename;
             } else {
-                $errTab[] = 'Erreur de copie de '.$targetDirRel.$result['filename']." \n vers ".$targetDir.$filename;
+                $errTab[] = 'Erreur de copie de '.$targetDir.$result['filename']." \n vers ".$targetDir.$filename;
             }
         }
     }
@@ -47,14 +46,14 @@ if (admin()) {
 
     // redimensionnement des images
     if ((!isset($errTab) || 0 === count($errTab)) && ('jpg' == $ext || 'jpeg' == $ext || 'png' == $ext)) {
-        $size = getimagesize($targetDirRel.$filename);
+        $size = getimagesize($targetDir.$filename);
         if ($size[0] > $p_max_images_dimensions_before_redim || $size[1] > $p_max_images_dimensions_before_redim) {
             include __DIR__.'/../../app/redims.php';
             $W_max = $p_max_images_dimensions_before_redim;
             $H_max = $p_max_images_dimensions_before_redim;
-            $rep_Dst = $targetDirRel;
+            $rep_Dst = $targetDir;
             $img_Dst = $filename;
-            $rep_Src = $targetDirRel;
+            $rep_Src = $targetDir;
             $img_Src = $filename;
             // redim 1
             if (!fctredimimage($W_max, $H_max, $rep_Dst, $img_Dst, $rep_Src, $img_Src)) {

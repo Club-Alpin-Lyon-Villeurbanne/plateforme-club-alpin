@@ -3,7 +3,7 @@
 include __DIR__.'/../../app/includes.php';
 
 $errTab = [];
-$result = $targetDirRel = $targetDir = $filename = null;
+$result = $targetDir = $filename = null;
 
 // $errTab[]="Test";
 if (!user()) {
@@ -22,21 +22,18 @@ if ('edit' == $mode && !$id_evt) {
 if (0 === count($errTab)) {
     // modification de sortie
     if ('edit' == $mode) {
-        $targetDir = 'ftp/sorties/'.$id_evt.'/';
+        $targetDir = __DIR__.'/../../../public/ftp/sorties/'.$id_evt.'/';
     } // depuis la racine
     // création de sortie
     else {
-        $targetDir = 'ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvellesortie';
+        $targetDir = __DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvellesortie/';
     } // depuis la racine
 
-    $targetDirRel = '../../../'.$targetDir; // chemin relatif
-    if (!file_exists($targetDirRel)) {
-        if (!mkdir($targetDirRel) && !is_dir($targetDirRel)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $targetDirRel));
+    if (!file_exists($targetDir)) {
+        if (!mkdir($targetDir) && !is_dir($targetDir)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $targetDir));
         }
     }
-    $targetDir .= '/';
-    $targetDirRel .= '/';
 
     // Handle file uploads via XMLHttpRequest
     include __DIR__.'/vfu.classes.php';
@@ -67,34 +64,34 @@ if (0 === count($errTab)) {
         // debug : copie impossible si le nom de fichier est juste une variante de CASSE
         // donc dans ce cas on le RENOMME
         if ($filename == strtolower($tmpfilename)) {
-            if (!rename($targetDirRel.$tmpfilename, $targetDirRel.$filename)) {
-                $errTab[] = 'Erreur de renommage de '.$targetDirRel.$tmpfilename." \n vers ".$targetDir.$filename;
+            if (!rename($targetDir.$tmpfilename, $targetDir.$filename)) {
+                $errTab[] = 'Erreur de renommage de '.$targetDir.$tmpfilename." \n vers ".$targetDir.$filename;
             }
         } else {
             // copie du fichier avec nvx nom
-            if (copy($targetDirRel.$tmpfilename, $targetDirRel.$filename)) {
+            if (copy($targetDir.$tmpfilename, $targetDir.$filename)) {
                 // suppression de l'originale
-                if (is_file($targetDirRel.$result['filename'])) {
-                    unlink($targetDirRel.$result['filename']);
+                if (is_file($targetDir.$result['filename'])) {
+                    unlink($targetDir.$result['filename']);
                 }
                 // sauf erreur le nom de ficier est remplacé par sa version formatée
                 $result['filename'] = $filename;
             } else {
-                $errTab[] = 'Erreur de copie de '.$targetDirRel.$result['filename']." \n vers ".$targetDir.$filename;
+                $errTab[] = 'Erreur de copie de '.$targetDir.$result['filename']." \n vers ".$targetDir.$filename;
             }
         }
     }
 
     // redimensionnement des images
     if (0 === count($errTab)) {
-        $size = getimagesize($targetDirRel.$filename);
+        $size = getimagesize($targetDir.$filename);
         if ($size[0] > 590 || $size[1] > 400) {
             include __DIR__.'/../../app/redims.php';
             $W_max = 590;
             $H_max = 400;
-            $rep_Dst = $targetDirRel;
+            $rep_Dst = $targetDir;
             $img_Dst = $filename;
-            $rep_Src = $targetDirRel;
+            $rep_Src = $targetDir;
             $img_Src = $filename;
             // redim 1
             if (!fctredimimage($W_max, $H_max, $rep_Dst, $img_Dst, $rep_Src, $img_Src)) {

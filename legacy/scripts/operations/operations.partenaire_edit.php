@@ -4,7 +4,7 @@ $filename = null;
 
 // PARAMS
 $allowedExts = ['png']; // we need transparency
-$uploaddir = 'ftp/partenaires/';
+$uploaddir = __DIR__.'/../../../public/ftp/partenaires/';
 
 $partenaireTab = [];
 $partenaireTab['part_id'] = (int) (trim(stripslashes($_POST['part_id'])));

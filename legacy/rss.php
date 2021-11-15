@@ -83,7 +83,7 @@ if (!array_key_exists('mode', $_GET) || preg_match('#^articles#', $_GET['mode'])
         $entry['timestamp'] = $handle['tsp_article'];
 
         // check image
-        if (is_file('ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg')) {
+        if (is_file(__DIR__.'/../public/ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg')) {
             $entry['img'] = $p_racine.'ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg';
         }
 
