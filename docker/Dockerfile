@@ -34,10 +34,13 @@ RUN /usr/local/bin/docker-php-ext-install -j$(nproc) mysqli pdo_mysql && \
     /usr/local/bin/docker-php-ext-install -j$(nproc) pcntl && \
     /usr/local/bin/docker-php-ext-install -j$(nproc) sockets && \
     /usr/local/bin/docker-php-ext-install -j$(nproc) intl && \
+    /usr/local/bin/docker-php-ext-configure gd --with-jpeg && \
     /usr/local/bin/docker-php-ext-install -j$(nproc) gd
 
 RUN pecl install apcu-5.1.20 && \
     echo "extension=apcu.so" > /usr/local/etc/php/conf.d/ext-apcu.ini && \
+    pecl install imagick-3.5.1 && \
+    echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini && \
     pecl install apcu_bc-1.0.5 && \
     echo "extension=apc.so" > /usr/local/etc/php/conf.d/ext-apcu_bc.ini
 
