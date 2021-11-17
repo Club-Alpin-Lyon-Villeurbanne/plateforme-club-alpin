@@ -124,7 +124,7 @@ if (admin()) {
                 if ('image' == $type) {
                     echo '
 					Déposez ici les images que vous souhaitez insérer dans vos articles.
-					Seules les images .jpg et .png sont autorisées, poids maximum : 5Mo.
+					Seules les images .jpg et .png sont autorisées, poids maximum : 20Mo.
 					';
                 }
     if ('file' == $type) {
@@ -142,7 +142,7 @@ if (admin()) {
 				function createUploader(){
 					var uploader = new qq.FileUploader({
 
-						sizeLimit: 20 * 1024 * 1024, // 5 Megz
+						sizeLimit: 20 * 1024 * 1024,
 						element: document.getElementById('file-uploader-ftp'),
 						action: '/valums-file-upload/server/admin-<?php echo $type; ?>.php?dossier=<?php echo substr($dossier, 1); ?>',
 						// pour chaque image envoyée
