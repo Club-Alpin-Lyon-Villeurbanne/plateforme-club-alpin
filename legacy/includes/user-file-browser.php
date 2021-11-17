@@ -158,7 +158,7 @@ if (user()) {
 				function createUploader(){
 					var uploader = new qq.FileUploader({
 
-						sizeLimit: 5 * 1024 * 1024, // 5 Megz
+						sizeLimit: 20 * 1024 * 1024, // 5 Megz
 						element: document.getElementById('file-uploader-ftp'),
 						action: '/valums-file-upload/server/user-<?php echo $type; ?>.php',
 						// pour chaque image envoyée
