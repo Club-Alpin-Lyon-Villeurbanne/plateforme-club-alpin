@@ -75,7 +75,7 @@ class qqFileUploader
     private $sizeLimit = 10485760;
     private $file;
 
-    public function __construct(array $allowedExtensions = [], $sizeLimit = 10485760)
+    public function __construct(array $allowedExtensions = ['jpeg', 'jpg', 'gif', 'png', 'bmp', 'webp'], $sizeLimit = 20 * 1024 * 1024)
     {
         $allowedExtensions = array_map('strtolower', $allowedExtensions);
 
