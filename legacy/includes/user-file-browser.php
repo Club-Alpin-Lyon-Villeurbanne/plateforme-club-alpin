@@ -142,7 +142,7 @@ if (user()) {
                 if ('image' == $type) {
                     echo '
 					Déposez ici les images que vous souhaitez insérer dans vos articles. Elles seront redimensionnées automatiquement
-					pour correspondre au format du site. Seules les images .jpg et .png sont autorisées, poids maximum : 20Mo.
+					pour correspondre au format du site. La plupart des formats d\'images sont supportés, poids maximum : 20Mo.
 					';
                 }
     if ('file' == $type) {
