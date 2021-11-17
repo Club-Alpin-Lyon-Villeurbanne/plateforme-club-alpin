@@ -1,6 +1,7 @@
 <?php
 
 use App\Legacy\ImageManipulator;
+use App\Legacy\LegacyContainer;
 
 require __DIR__.'/../../app/includes.php';
 
@@ -20,34 +21,16 @@ if ('edit' == $mode && !$id_article) {
 }
 
 if (0 === count($errTab)) {
-    // creation des dossiers utiles pour l'user s'ils n'existnent pas
-    $dir = __DIR__.'/../../../public/ftp/user/'.getUser()->getId();
-    if (!file_exists($dir)) {
-        if (!mkdir($dir) && !is_dir($dir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
-        }
-    }
     $dir = __DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle';
-    if (!file_exists($dir)) {
-        if (!mkdir($dir) && !is_dir($dir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
-        }
-    }
+    LegacyContainer::get('legacy_fs')->mkdir($dir);
 
-    // modification de sortie
     if ('edit' == $mode) {
         $targetDir = __DIR__.'/../../../public/ftp/articles/'.$id_article.'/';
-    } // depuis la racine
-    // création de sortie
-    else {
+    } else {
         $targetDir = __DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/';
-    } // depuis la racine
-
-    if (!file_exists($targetDir)) {
-        if (!mkdir($targetDir) && !is_dir($targetDir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $targetDir));
-        }
     }
+
+    LegacyContainer::get('legacy_fs')->mkdir($targetDir);
 
     // Handle file uploads via XMLHttpRequest
     require __DIR__.'/vfu.classes.php';
@@ -64,26 +47,13 @@ if (0 === count($errTab)) {
     $tmpfilename = $result['filename'];
     $filename = 'figure.jpg';
 
-    // si le nom formaté diffère de l'original
-    if ($filename != $tmpfilename) {
-        // debug : copie impossible si le nom de fichier est juste une variante de CASSE
-        // donc dans ce cas on le RENOMME
+    if ($filename !== $tmpfilename && is_file($tmpfilename)) {
         if ($filename === strtolower($tmpfilename)) {
-            if (!rename($targetDir.$tmpfilename, $targetDir.$filename)) {
-                $errTab[] = 'Erreur de renommage de '.$targetDir.$tmpfilename." \n vers ".$targetDir.$filename;
-            }
+            LegacyContainer::get('legacy_fs')->rename($targetDir.$tmpfilename, $targetDir.$filename);
         } else {
-            // copie du fichier avec nvx nom
-            if (copy($targetDir.$tmpfilename, $targetDir.$filename)) {
-                // suppression de l'originale
-                if (is_file($targetDir.$result['filename'])) {
-                    unlink($targetDir.$result['filename']);
-                }
-                // sauf erreur le nom de ficier est remplacé par sa version formatée
-                $result['filename'] = $filename;
-            } else {
-                $errTab[] = 'Erreur de copie de '.$targetDir.$result['filename']." \n vers ".$targetDir.$filename;
-            }
+            LegacyContainer::get('legacy_fs')->copy($targetDir.$tmpfilename, $targetDir.$filename);
+            LegacyContainer::get('legacy_fs')->remove($targetDir.$result['filename']);
+            $result['filename'] = $filename;
         }
     }
 

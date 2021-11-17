@@ -34,11 +34,11 @@ if (-1 == $commission_article && !$evt_article) {
 if (strlen($cont_article) < 10) {
     $errTab[] = 'Merci de rentrer un contenu valide';
 }
-// image
+
 if (
-    !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/figure.jpg')
-    || !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/wide-figure.jpg')
-    || !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/min-figure.jpg')
+    !LegacyContainer::get('legacy_fs')->exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/figure.jpg')
+    || !LegacyContainer::get('legacy_fs')->exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/wide-figure.jpg')
+    || !LegacyContainer::get('legacy_fs')->exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/min-figure.jpg')
     ) {
     $errTab[] = 'Les images liées sont introuvables';
 }
@@ -60,30 +60,20 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
 // déplacement des fichiers
 if ((!isset($errTab) || 0 === count($errTab)) && $id_article > 0) {
-    // repertoire de l'image a recuperer
     $dirFrom = __DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/';
-    // créa du repertroie destination
-    $dirTo = __DIR__.'/../../../public/ftp/articles/'.$id_article;
-    if (!file_exists($dirTo)) {
-        if (!mkdir($dirTo) && !is_dir($dirTo)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dirTo));
-        }
-    }
-    $dirTo .= '/';
+    $dirTo = __DIR__.'/../../../public/ftp/articles/'.$id_article.'/';
 
-    // copie & suppression
-    if (copy($dirFrom.'figure.jpg', $dirTo.'figure.jpg')) {
-        unlink($dirFrom.'figure.jpg');
-    }
-    if (copy($dirFrom.'min-figure.jpg', $dirTo.'min-figure.jpg')) {
-        unlink($dirFrom.'min-figure.jpg');
-    }
-    if (copy($dirFrom.'wide-figure.jpg', $dirTo.'wide-figure.jpg')) {
-        unlink($dirFrom.'wide-figure.jpg');
-    }
+    LegacyContainer::get('legacy_fs')->mkdir($dirTo);
+    LegacyContainer::get('legacy_fs')->copy($dirFrom.'figure.jpg', $dirTo.'figure.jpg');
+    LegacyContainer::get('legacy_fs')->copy($dirFrom.'min-figure.jpg', $dirTo.'min-figure.jpg');
+    LegacyContainer::get('legacy_fs')->copy($dirFrom.'wide-figure.jpg', $dirTo.'wide-figure.jpg');
+    LegacyContainer::get('legacy_fs')->remove([
+        $dirFrom.'figure.jpg',
+        $dirFrom.'min-figure.jpg',
+        $dirFrom.'wide-figure.jpg',
+    ]);
 }
 
-// redirecion
 if (!isset($errTab) || 0 === count($errTab)) {
     header('Location: profil/articles.html?lbxMsg=article_create_success');
 }

@@ -43,11 +43,7 @@ if (strlen($partenaireTab['part_desc']) < 2) {
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
-    if (!is_dir($uploaddir)) {
-        if (!mkdir($uploaddir) && !is_dir($uploaddir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $uploaddir));
-        }
-    }
+    LegacyContainer::get('legacy_fs')->mkdir($uploaddir);
 
     $partenaireTab['part_name'] = strtoupper(substr($partenaireTab['part_name'], 0, 50));
     $partenaireTab['part_url'] = substr($partenaireTab['part_url'], 0, 256);
@@ -69,7 +65,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // change name and file
             if (is_file($uploaddir.$partenaireTab['part_image'])) {
                 error_log('rename partenaire image from '.$uploaddir.$partenaireTab['part_image'].' to '.$uploaddir.$new_part_image);
-                rename($uploaddir.$partenaireTab['part_image'], $uploaddir.$new_part_image);
+                LegacyContainer::get('legacy_fs')->rename($uploaddir.$partenaireTab['part_image'], $uploaddir.$new_part_image);
             }
             $partenaireTab['part_image'] = $new_part_image;
         }

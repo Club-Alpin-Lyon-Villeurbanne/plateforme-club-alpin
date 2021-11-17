@@ -26,36 +26,25 @@ while ($article = $result->fetch_assoc()) {
     foreach ($matches[0] as $k => $v) {
         $v = str_replace('src="', '', $v);
 
-        if (!is_dir(__DIR__.'/../../../public/ftp/articles/'.$article['id_article'])) {
-            if (!mkdir($concurrentDirectory = __DIR__.'/../../../public/ftp/articles/'.$article['id_article']) && !is_dir($concurrentDirectory)) {
-                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-            }
-        }
+        LegacyContainer::get('legacy_fs')->mkdir(__DIR__.'/../../../public/ftp/articles/'.$article['id_article']);
 
         $dest = preg_replace('@ftp/user/(\d+)/images/@', 'ftp/articles/'.$article['id_article'].'/$1_', $v);
-        //echo $dest."<hr />";
-        // controle si fichier source present
+
         $source = __DIR__.'/../../../public/'.$v;
         $destination = __DIR__.'/../../../public/'.$dest;
-        if (file_exists($source)) {
-            // controle si fichier destination deja present
-            if (!file_exists($destination)) {
-                // le fichier destination n'a pas deja ete copie, on le copie
-                if (copy($source, $destination)) {
-                    // copie fichier OK
-                    //echo "copie du fichier de '".$v."' vers '".$dest."'<br />\n";
-                    ++$nb_copies;
-                }
+        if (LegacyContainer::get('legacy_fs')->exists($source)) {
+            if (!LegacyContainer::get('legacy_fs')->exists($destination)) {
+                LegacyContainer::get('legacy_fs')->copy($source, $destination);
+                ++$nb_copies;
             }
 
-            // controle si fichier destination est present et la taille equivalente
-            if (file_exists($destination)) {
-                if (filesize($source) == filesize($destination)) {
+            if (is_file($destination)) {
+                if (filesize($source) === filesize($destination)) {
                     //  on remplace le chemin de l'image dans le texte de l'article
                     //echo "remplacement du chemin de l'image '".$dest."'<br />\n";
                     $dest_cont_article = str_replace($v, $dest, $dest_cont_article);
                 } else {
-                    unlink($destination);
+                    LegacyContainer::get('legacy_fs')->remove($destination);
                 }
             }
         } else {

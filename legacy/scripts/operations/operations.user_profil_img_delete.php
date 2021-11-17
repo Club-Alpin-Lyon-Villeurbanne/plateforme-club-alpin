@@ -1,18 +1,14 @@
 <?php
 
+use App\Legacy\LegacyContainer;
+
 $id_user = getUser()->getId();
 
 if (!isset($errTab) || 0 === count($errTab)) {
-    if (is_file(__DIR__.'/../../../public/ftp/user/'.$id_user.'/min-profil.jpg')) {
-        unlink(__DIR__.'/../../../public/ftp/user/'.$id_user.'/min-profil.jpg');
-    }
-    if (is_file(__DIR__.'/../../../public/ftp/user/'.$id_user.'/min-profil.png')) {
-        unlink(__DIR__.'/../../../public/ftp/user/'.$id_user.'/min-profil.png');
-    }
-    if (is_file(__DIR__.'/../../../public/ftp/user/'.$id_user.'/profil.jpg')) {
-        unlink(__DIR__.'/../../../public/ftp/user/'.$id_user.'/profil.jpg');
-    }
-    if (is_file(__DIR__.'/../../../public/ftp/user/'.$id_user.'/profil.png')) {
-        unlink(__DIR__.'/../../../public/ftp/user/'.$id_user.'/profil.png');
-    }
+    LegacyContainer::get('legacy_fs')->remove([
+        __DIR__.'/../../../public/ftp/user/'.$id_user.'/min-profil.jpg',
+        __DIR__.'/../../../public/ftp/user/'.$id_user.'/min-profil.png',
+        __DIR__.'/../../../public/ftp/user/'.$id_user.'/profil.jpg',
+        __DIR__.'/../../../public/ftp/user/'.$id_user.'/profil.png',
+    ]);
 }

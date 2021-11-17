@@ -64,11 +64,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
             $profilePic = $rep_Dst.'profil.jpg';
             $uploadedFile = $uploaddir.$filename;
 
-            if (!file_exists($rep_Dst)) {
-                if (!mkdir($rep_Dst) && !is_dir($rep_Dst)) {
-                    throw new \RuntimeException(sprintf('Directory "%s" was not created', $rep_Dst));
-                }
-            }
+            LegacyContainer::get('legacy_fs')->mkdir($rep_Dst);
 
             if (!ImageManipulator::resizeImage(1000, 1000, $uploadedFile, $profilePic)) {
                 $errTab[] = 'Impossible de redimensionner la grande image';

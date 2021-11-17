@@ -20,28 +20,18 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if (!$id_commission) {
         $errTab[] = 'ID invalide';
     }
-    // if(!file_exists($uploads_dir)) 												$errTab[]='Dossier introuvable';
-    if (!file_exists($uploads_dir)) {
-        if (!mkdir($uploads_dir) && !is_dir($uploads_dir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $uploads_dir));
-        }
-    }
+
+    LegacyContainer::get('legacy_fs')->mkdir($uploads_dir);
 }
 
 // VIDAGE DU DOSSIER TRANSIT (evite les erreurs)
 if (!isset($errTab) || 0 === count($errTab)) {
-    if (file_exists($uploads_dir.'/bigfond.jpg')) {
-        unlink($uploads_dir.'/bigfond.jpg');
-    }
-    if (file_exists($uploads_dir.'/picto.png')) {
-        unlink($uploads_dir.'/picto.png');
-    }
-    if (file_exists($uploads_dir.'/picto-dark.png')) {
-        unlink($uploads_dir.'/picto-dark.png');
-    }
-    if (file_exists($uploads_dir.'/picto-light.png')) {
-        unlink($uploads_dir.'/picto-light.png');
-    }
+    LegacyContainer::get('legacy_fs')->remove([
+        $uploads_dir.'/bigfond.jpg',
+        $uploads_dir.'/picto.png',
+        $uploads_dir.'/picto-dark.png',
+        $uploads_dir.'/picto-light.png',
+    ]);
 }
 
 // GRANDE IMAGE

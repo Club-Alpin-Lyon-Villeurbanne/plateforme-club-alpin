@@ -1,6 +1,7 @@
 <?php
 
 use App\Ftp\FtpFile;
+use App\Legacy\LegacyContainer;
 
 require __DIR__.'/../app/includes.php';
 
@@ -13,22 +14,11 @@ if (user()) {
     }
 
     $publicRoot = __DIR__.'/../../public';
-    // première visite : dossier inexistant
-    if (!file_exists($publicRoot.'/ftp/user/'.$id_user)) {
-        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user) && !is_dir($concurrentDirectory)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-        }
-    }
-    if (!file_exists($publicRoot.'/ftp/user/'.$id_user.'/images/')) {
-        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user.'/images/') && !is_dir($concurrentDirectory)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-        }
-    }
-    if (!file_exists($publicRoot.'/ftp/user/'.$id_user.'/files/')) {
-        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user.'/files/') && !is_dir($concurrentDirectory)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-        }
-    }
+
+    LegacyContainer::get('legacy_fs')->mkdir([
+        $publicRoot.'/ftp/user/'.$id_user.'/images/',
+        $publicRoot.'/ftp/user/'.$id_user.'/files/',
+    ]);
 
     // recuperation du dossier
     $type = $_GET['type'];

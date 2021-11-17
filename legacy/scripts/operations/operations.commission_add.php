@@ -32,17 +32,17 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
 // VIDAGE DU DOSSIER TRANSIT (evite les erreurs)
 if (!isset($errTab) || 0 === count($errTab)) {
-    if (file_exists($uploads_dir.'/bigfond.jpg')) {
-        unlink($uploads_dir.'/bigfond.jpg');
+    if (LegacyContainer::get('legacy_fs')->exists($uploads_dir.'/bigfond.jpg')) {
+        LegacyContainer::get('legacy_fs')->remove($uploads_dir.'/bigfond.jpg');
     }
-    if (file_exists($uploads_dir.'/picto.png')) {
-        unlink($uploads_dir.'/picto.png');
+    if (LegacyContainer::get('legacy_fs')->exists($uploads_dir.'/picto.png')) {
+        LegacyContainer::get('legacy_fs')->remove($uploads_dir.'/picto.png');
     }
-    if (file_exists($uploads_dir.'/picto-dark.png')) {
-        unlink($uploads_dir.'/picto-dark.png');
+    if (LegacyContainer::get('legacy_fs')->exists($uploads_dir.'/picto-dark.png')) {
+        LegacyContainer::get('legacy_fs')->remove($uploads_dir.'/picto-dark.png');
     }
-    if (file_exists($uploads_dir.'/picto-light.png')) {
-        unlink($uploads_dir.'/picto-light.png');
+    if (LegacyContainer::get('legacy_fs')->exists($uploads_dir.'/picto-light.png')) {
+        LegacyContainer::get('legacy_fs')->remove($uploads_dir.'/picto-light.png');
     }
 }
 
@@ -210,29 +210,23 @@ if (!isset($errTab) || 0 === count($errTab)) {
 if (!isset($errTab) || 0 === count($errTab)) {
     $newDir = __DIR__.'/../../../public/ftp/commission/'.$id_commission;
 
-    // création du dossier
-    if (!file_exists($newDir)) {
-        if (!mkdir($newDir) && !is_dir($newDir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $newDir));
-        }
-    }
+    LegacyContainer::get('legacy_fs')->mkdir($newDir);
 
-    // déplacement de chaque fichier bien envoyé
-    if (file_exists("$uploads_dir/bigfond.jpg")) {
-        copy("$uploads_dir/bigfond.jpg", "$newDir/bigfond.jpg");
-        unlink("$uploads_dir/bigfond.jpg");
+    if (LegacyContainer::get('legacy_fs')->exists("$uploads_dir/bigfond.jpg")) {
+        LegacyContainer::get('legacy_fs')->copy("$uploads_dir/bigfond.jpg", "$newDir/bigfond.jpg");
+        LegacyContainer::get('legacy_fs')->remove("$uploads_dir/bigfond.jpg");
     }
-    if (file_exists("$uploads_dir/picto.png")) {
-        copy("$uploads_dir/picto.png", "$newDir/picto.png");
-        unlink("$uploads_dir/picto.png");
+    if (LegacyContainer::get('legacy_fs')->exists("$uploads_dir/picto.png")) {
+        LegacyContainer::get('legacy_fs')->copy("$uploads_dir/picto.png", "$newDir/picto.png");
+        LegacyContainer::get('legacy_fs')->remove("$uploads_dir/picto.png");
     }
-    if (file_exists("$uploads_dir/picto-dark.png")) {
-        copy("$uploads_dir/picto-dark.png", "$newDir/picto-dark.png");
-        unlink("$uploads_dir/picto-dark.png");
+    if (LegacyContainer::get('legacy_fs')->exists("$uploads_dir/picto-dark.png")) {
+        LegacyContainer::get('legacy_fs')->copy("$uploads_dir/picto-dark.png", "$newDir/picto-dark.png");
+        LegacyContainer::get('legacy_fs')->remove("$uploads_dir/picto-dark.png");
     }
-    if (file_exists("$uploads_dir/picto-light.png")) {
-        copy("$uploads_dir/picto-light.png", "$newDir/picto-light.png");
-        unlink("$uploads_dir/picto-light.png");
+    if (LegacyContainer::get('legacy_fs')->exists("$uploads_dir/picto-light.png")) {
+        LegacyContainer::get('legacy_fs')->copy("$uploads_dir/picto-light.png", "$newDir/picto-light.png");
+        LegacyContainer::get('legacy_fs')->remove("$uploads_dir/picto-light.png");
     }
 }
 

@@ -239,7 +239,7 @@ foreach ($fileTab as $file) {
             fclose($handle);
         }
         if ($nb_insert > 0 || $nb_update > 0) {
-            rename($file, $file.'.'.date('Y-m-d'));
+            LegacyContainer::get('legacy_fs')->rename($file, $file.'.'.date('Y-m-d'));
             echo "after rename\n";
             exec('gzip '.$file.'.'.date('Y-m-d'));
         }

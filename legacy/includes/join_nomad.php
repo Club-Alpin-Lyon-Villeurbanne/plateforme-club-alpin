@@ -37,7 +37,6 @@ if (user()) {
             if (isset($_POST['operation']) && 'user_join_nomade' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                 echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
             }
-        // redirection en cas de réussite
         if (isset($_POST['operation']) && 'user_join_nomade' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
             ?>
 				<p class="info">Envoi effectué. Actualisez cette page pour afficher les modifications.</p>

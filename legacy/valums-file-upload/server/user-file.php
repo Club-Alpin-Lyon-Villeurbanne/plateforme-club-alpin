@@ -1,6 +1,7 @@
 <?php
 
 use App\Ftp\FtpFile;
+use App\Legacy\LegacyContainer;
 
 require __DIR__.'/../../app/includes.php';
 
@@ -30,26 +31,13 @@ if (0 === count($errTab)) {
     $tmpfilename = $result['filename'];
     $filename = strtolower(formater($tmpfilename, 4));
 
-    // si le nom formaté diffère de l'original
-    if ($filename != $tmpfilename) {
-        // debug : copie impossible si le nom de fichier est juste une variante de CASSE
-        // donc dans ce cas on le RENOMME
+    if ($filename !== $tmpfilename && is_file($tmpfilename)) {
         if ($filename === strtolower($tmpfilename)) {
-            if (!rename($targetDir.$tmpfilename, $targetDir.$filename)) {
-                $errTab[] = 'Erreur de renommage de '.$targetDir.$tmpfilename." \n vers ".$targetDir.$filename;
-            }
+            LegacyContainer::get('legacy_fs')->rename($targetDir.$tmpfilename, $targetDir.$filename);
         } else {
-            // copie du fichier avec nvx nom
-            if (copy($targetDir.$tmpfilename, $targetDir.$filename)) {
-                // suppression de l'originale
-                if (is_file($targetDir.$result['filename'])) {
-                    unlink($targetDir.$result['filename']);
-                }
-                // sauf erreur le nom de ficier est remplacé par sa version formatée
-                $result['filename'] = $filename;
-            } else {
-                $errTab[] = 'Erreur de copie de '.$targetDir.$result['filename']." \n vers ".$targetDir.$filename;
-            }
+            LegacyContainer::get('legacy_fs')->copy($targetDir.$tmpfilename, $targetDir.$filename);
+            LegacyContainer::get('legacy_fs')->remove($targetDir.$result['filename']);
+            $result['filename'] = $filename;
         }
     }
 }

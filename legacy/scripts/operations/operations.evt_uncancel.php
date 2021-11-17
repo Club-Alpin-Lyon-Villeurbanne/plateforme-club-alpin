@@ -77,7 +77,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 }
             }
 
-            // redirection vers la page de la sortie
             if (!isset($errTab) || 0 === count($errTab)) {
                 header('Location: /sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html');
                 exit;

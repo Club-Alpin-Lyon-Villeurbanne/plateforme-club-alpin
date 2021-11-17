@@ -30,11 +30,7 @@ if (0 === count($errTab)) {
         $targetDir = __DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvellesortie/';
     } // depuis la racine
 
-    if (!file_exists($targetDir)) {
-        if (!mkdir($targetDir) && !is_dir($targetDir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $targetDir));
-        }
-    }
+    LegacyContainer::get('legacy_fs')->mkdir($targetDir);
 
     // Handle file uploads via XMLHttpRequest
     require __DIR__.'/vfu.classes.php';
@@ -51,30 +47,16 @@ if (0 === count($errTab)) {
     $tmpfilename = $result['filename'];
     $filename = strtolower(formater($tmpfilename, 4));
 
-    // si le nom formaté diffère de l'original
-    if ($filename != $tmpfilename) {
-        // debug : copie impossible si le nom de fichier est juste une variante de CASSE
-        // donc dans ce cas on le RENOMME
+    if ($filename !== $tmpfilename && is_file($tmpfilename)) {
         if ($filename === strtolower($tmpfilename)) {
-            if (!rename($targetDir.$tmpfilename, $targetDir.$filename)) {
-                $errTab[] = 'Erreur de renommage de '.$targetDir.$tmpfilename." \n vers ".$targetDir.$filename;
-            }
+            LegacyContainer::get('legacy_fs')->rename($targetDir.$tmpfilename, $targetDir.$filename);
         } else {
-            // copie du fichier avec nvx nom
-            if (copy($targetDir.$tmpfilename, $targetDir.$filename)) {
-                // suppression de l'originale
-                if (is_file($targetDir.$result['filename'])) {
-                    unlink($targetDir.$result['filename']);
-                }
-                // sauf erreur le nom de ficier est remplacé par sa version formatée
-                $result['filename'] = $filename;
-            } else {
-                $errTab[] = 'Erreur de copie de '.$targetDir.$result['filename']." \n vers ".$targetDir.$filename;
-            }
+            LegacyContainer::get('legacy_fs')->copy($targetDir.$tmpfilename, $targetDir.$filename);
+            LegacyContainer::get('legacy_fs')->remove($targetDir.$result['filename']);
+            $result['filename'] = $filename;
         }
     }
 
-    // redimensionnement des images
     if (0 === count($errTab)) {
         if (!ImageManipulator::resizeImage(590, 400, $targetDir.$filename, $targetDir.$filename, true)) {
             $errTab[] = 'Image : Erreur de redim';

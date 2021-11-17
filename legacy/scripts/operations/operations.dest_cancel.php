@@ -106,12 +106,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
         }
     }
 
-    // redirection vers la page de la sortie avec le message "annulé"
     if (!isset($errTab) || 0 === count($errTab)) {
         // sans message d'avertissement nomades
         if (!count($nomadMsg)) {
             header('Location: /destination/'.$destination['code'].'-'.$destination['id'].'.html');
-        // echo 'nop';
         } else {
             header('Location: /destination/'.$destination['code_evt'].'-'.$destination['id'].'.html?lbxMsg=nomadMsg&nomadMsg='.(implode('****', $nomadMsg)));
         }

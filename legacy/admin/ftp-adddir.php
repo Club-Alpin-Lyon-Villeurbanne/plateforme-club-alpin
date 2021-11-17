@@ -1,5 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
+
 require __DIR__.'/../app/includes.php';
 
 if (!admin()) {
@@ -47,9 +49,7 @@ if (count($errTab) > 0) {
 
         // fermeture de la box/ actualissation du ftp
         if (0 === count($errTab)) {
-            if (!mkdir($concurrentDirectory = $target.$nouveauDossier) && !is_dir($concurrentDirectory)) {
-                $errTab[] = 'Erreur PHP à la création du dossier';
-            }
+            LegacyContainer::get('legacy_fs')->mkdir($target.$nouveauDossier);
         }
 
         if (0 === count($errTab)) {

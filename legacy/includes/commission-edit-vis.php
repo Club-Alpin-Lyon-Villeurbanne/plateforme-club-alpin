@@ -24,7 +24,6 @@ if (user()) {
         if (!$commission) {
             echo '<p class="erreur">Commission introuvable</p>';
         } else {
-            // redirection si OK
             if (('commission_majvis' == ($_POST['operation'] ?? null) || 'commission_majvis' == ($_POST['operation'] ?? null)) && (!isset($errTab) || 0 === count($errTab))) {
                 ?>
 				<p class="info">Mise à jour effectuée</p>

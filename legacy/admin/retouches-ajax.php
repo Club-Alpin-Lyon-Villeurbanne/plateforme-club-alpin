@@ -2,6 +2,7 @@
 
 use App\Ftp\FtpFile;
 use App\Legacy\ImageManipulator;
+use App\Legacy\LegacyContainer;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 require __DIR__.'/../app/includes.php';
@@ -110,9 +111,7 @@ if (admin()) {
                 // destImg : trigger de previex ou final
                 if ($destImg) {
                     // pas preview dans version finale
-                    if (!copy($dir.$filename, $destImg)) {
-                        $errTab[] = "Erreur de copie de $dir $filename à $destImg";
-                    }
+                    LegacyContainer::get('legacy_fs')->copy($dir.$filename, $destImg);
                 }
 
                 echo htmlspecialchars(json_encode($result), \ENT_NOQUOTES);

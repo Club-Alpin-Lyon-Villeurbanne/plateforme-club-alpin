@@ -1,5 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
+
 require __DIR__.'/../app/includes.php';
 
 if (!admin()) {
@@ -63,13 +65,9 @@ if (!admin()) {
                         unlink(__DIR__.'/../../public/ftp/transit/retouches/'.$tmpFile);
                     }
                 }
-                // copie du fichier
-                if (!copy('../'.$src, __DIR__.'/../../public/ftp/transit/retouches/'.$filename)) {
-                    echo '<p class="erreur">Copie échouée...</p>';
-                    exit();
-                }
-                // }
-                // $ext=strtolower(array_pop(explode('.', $filename)));
+
+                LegacyContainer::get('legacy_fs')->copy('../'.$src, __DIR__.'/../../public/ftp/transit/retouches/'.$filename);
+
                 $ext = substr(strrchr($filename, '.'), 1);
 
                 // en cas de remplacement de nom, vérifier qu'on écrase pas un fichier précédemment créé
