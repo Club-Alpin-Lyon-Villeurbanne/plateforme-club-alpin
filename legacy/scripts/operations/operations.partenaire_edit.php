@@ -39,9 +39,6 @@ if (strlen($partenaireTab['part_url']) < 5) {
 if (strlen($partenaireTab['part_desc']) < 2) {
     $errTab[] = "Merci d'entrer une description valide";
 }
-//	if(strlen($partenaireTab['part_image'])<4) 		$errTab[]="Merci d'entrer un nom d'image valide";
-
-//	var_dump($errTab);
 
 if (!isset($errTab) || 0 === count($errTab)) {
     if (!is_dir($uploaddir)) {
@@ -88,8 +85,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $req .= '	WHERE part_id='.$mysqli->real_escape_string($partenaireTab['part_id']);
     }
 
-    //		error_log ($req);
-
     if (!$mysqli->query($req)) {
         $errTab[] = 'Erreur SQL : '.$mysqli->error;
     } else {
@@ -101,13 +96,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         mylog('operations.partenaire_edit', "ajout partenaire '".$mysqli->real_escape_string($partenaireTab['part_name'])."'");
     }
-    /*
-            error_log("type:".$_FILES['part_image']['type']);
-            error_log("size:".$_FILES['part_image']['size']);
-            error_log("name:".$_FILES['part_image']['name']);
-            error_log("tmp_name:".$_FILES['part_image']['tmp_name']);
-            error_log("error:".$_FILES['part_image']['error']);
-    */
+
     if ($_FILES['part_image']['size'] > 0) {
         // CHECKS
         $extension = strtolower(substr(strrchr($_FILES['part_image']['name'], '.'), 1));

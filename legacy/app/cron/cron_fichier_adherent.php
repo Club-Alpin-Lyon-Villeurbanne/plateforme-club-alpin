@@ -105,7 +105,6 @@ foreach ($fileTab as $file) {
                 if (count($tmpErrTab) > 0) {
                     echo "!!! Erreurs ligne $i :\n !!! - ".implode('\n -- ', $tmpErrTab)."\n";
                     print_r($line);
-                //error_log (implode(',', $tmpErrTab));
                 }
 
                 // lecture des données
@@ -241,32 +240,23 @@ foreach ($fileTab as $file) {
                         $tmpErrTab[] = "Erreur INSERT/UPDATE adherent $cafnum_user";
                     }
 
-                    //print ("CSV:req:$req\n");
-
                     if (!($handleSql = $mysqli->query($req))) {
                         echo wordwrap("!!! Erreur SQL lors de l'integration de la ligne $i : ".$mysqli->error." ($req)\n");
-                        //error_log ("Erreur SQL lors de l'integration de la ligne $i : $cafnum_user");
-                        //break;
                     }
-
-                    //echo "> OK : $firstname_user $lastname_user \n";
                 }
 
                 if (count($tmpErrTab) > 0) {
                     echo "!!! Erreurs ligne $i :\n !!! - ".implode('\n -- ', $tmpErrTab)."\n";
                     print_r($line);
-                    //error_log (implode(',', $tmpErrTab));
                 }
             }
             fclose($handle);
         }
-        //echo  "after handle\n";
         if ($nb_insert > 0 || $nb_update > 0) {
             rename($file, $file.'.'.date('Y-m-d'));
             echo "after rename\n";
             exec('gzip '.$file.'.'.date('Y-m-d'));
         }
-        //echo  "after archive exec gz \n";
 
         echo "INSERT: $nb_insert, UPDATE:$nb_update\n";
 
@@ -278,7 +268,6 @@ foreach ($fileTab as $file) {
         }
     } else {
         echo "!!! Erreur : le fichier n'existe pas : $file\n";
-        //error_log ("Erreur : Tentative infructueuse d'acces au fichier $file");
 
         $req = 'INSERT INTO  `'.$pbd."log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`ip_log_admin`,`date_log_admin`)
 			VALUES (NULL , 'import-ffcam',  'fichier inexistant : $file', '127.0.0.1', '".time()."');";
@@ -309,5 +298,3 @@ if (!$mysqli->query($req)) {
 }
 
 mysqli_close($mysqli);
-
-?>
