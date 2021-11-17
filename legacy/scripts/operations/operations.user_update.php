@@ -46,104 +46,94 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
 // mise à jour de la photo si transmise
 if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
-    // CHECKS
-    $allowedExts = ['jpg', 'jpeg', 'png'];
-    $extension = strtolower(substr(strrchr($_FILES['photo']['name'], '.'), 1));
-    if ((('image/jpeg' == $_FILES['photo']['type'])
-        // || ($_FILES["photo"]["type"] == "image/png")
-        || ('image/pjpeg' == $_FILES['photo']['type']))
-        && ($_FILES['photo']['size'] < 41943040) // < 5Mo
-        && in_array($extension, $allowedExts, true)) {
-        if ($_FILES['photo']['error'] > 0) {
-            $errTab[] = "Erreur dans l'image : ".$_FILES['photo']['error'];
-        } else {
-            // déplacement du fichier dans le dossier transit
-            $uploaddir = __DIR__.'/../../../public/ftp/transit/profil/';
-            $i = 1;
-            while (file_exists($uploaddir.$i.'-profil.jpg')) {
-                ++$i;
-            }
-            $filename = $i.'-profil.jpg';
-            if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploaddir.$filename)) {
-                // REDIMS
-                require __DIR__.'/../../app/redims.php';
-                $size = getimagesize($uploaddir.$filename);
-
-                $rep_Dst = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
-                $img_Dst = 'profil.jpg';
-                $rep_Src = $uploaddir;
-                $img_Src = $filename;
-
-                // créa du dossier s'il n'esxiste pas
-                if (!file_exists($rep_Dst) && $id_user) {
-                    if (!mkdir($rep_Dst) && !is_dir($rep_Dst)) {
-                        throw new \RuntimeException(sprintf('Directory "%s" was not created', $rep_Dst));
-                    }
-                }
-
-                // **** GRANDE
-                $W_fin = 1000;
-                $H_fin = 1000;
-                if (!fctredimimage($W_fin, $H_fin, $rep_Dst, $img_Dst, $rep_Src, $img_Src)) {
-                    $errTab[] = 'Impossible de redimensionner la grande image';
-                }
-
-                // **** MINI
-                $img_Src = $rep_Dst.$filename;
-                $img_Dst = 'min-profil.jpg';
-
-                // REDIM ONLY
-                $W_fin = 150;
-                $H_fin = 150;
-
-                $rep_Dst = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
-                $img_Dst = 'min-profil.jpg';
-                $rep_Src = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
-                $img_Src = 'profil.jpg';
-
-                // redim
-                if (!fctredimimage($W_fin, $H_fin, $rep_Dst, $img_Dst, $rep_Src, $img_Src)) {
-                    $errTab[] = 'Impossible de redimensionner la miniature';
-                }
-
-                // **** PICTO
-                $img_Src = 'min-profil.jpg';
-                $img_Dst = 'pic-profil.jpg';
-
-                // VERSION REDIM + CROP
-                // vars pour le redim/crop de la une
-                // <= crop
-                // >= redim
-                if ($size[0] / $size[1] <= 55 / 55) {
-                    $W_fin = 55;
-                    $H_fin = 0;
-                } else {
-                    $W_fin = 0;
-                    $H_fin = 55;
-                }
-                // redim
-                if (!fctredimimage($W_fin, $H_fin, $rep_Dst, $img_Dst, $rep_Src, $img_Src)) {
-                    $errTab[] = 'Impossible de redimensionner l\'image (picto)';
-                }
-                // crop
-                $img_Src = $img_Dst;
-                $W_fin = 55;
-                $H_fin = 55;
-                if (!fctcropimage($W_fin, $H_fin, $rep_Dst, $img_Dst, $rep_Src, $img_Src)) {
-                    $errTab[] = 'Impossible de croper l\'image (picto)';
-                }
-
-                /////////////
-                // suppression du fichier en standby
-                if (file_exists($uploaddir.$filename)) {
-                    unlink(($uploaddir.$filename));
-                }
-            } else {
-                $errTab[] = 'Erreur lors du déplacement du fichier';
-            }
-        }
+    if ($_FILES['photo']['error'] > 0) {
+        $errTab[] = "Erreur dans l'image : ".$_FILES['photo']['error'];
     } else {
-        $errTab[] = 'La photo doit être au format .jpg et peser moins de 5Mo !';
+        // déplacement du fichier dans le dossier transit
+        $uploaddir = __DIR__.'/../../../public/ftp/transit/profil/';
+        LegacyContainer::get('legacy_fs')->mkdir($uploaddir);
+        $i = 1;
+        while (file_exists($uploaddir.$i.'-profil.jpg')) {
+            ++$i;
+        }
+        $filename = $i.'-profil.jpg';
+        if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploaddir.$filename)) {
+            // REDIMS
+            require __DIR__.'/../../app/redims.php';
+            $size = getimagesize($uploaddir.$filename);
+
+            $rep_Dst = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
+            $img_Dst = 'profil.jpg';
+            $rep_Src = $uploaddir;
+            $img_Src = $filename;
+
+            // créa du dossier s'il n'esxiste pas
+            if (!file_exists($rep_Dst) && $id_user) {
+                if (!mkdir($rep_Dst) && !is_dir($rep_Dst)) {
+                    throw new \RuntimeException(sprintf('Directory "%s" was not created', $rep_Dst));
+                }
+            }
+
+            // **** GRANDE
+            $W_fin = 1000;
+            $H_fin = 1000;
+            if (!resizeImage($W_fin, $H_fin, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
+                $errTab[] = 'Impossible de redimensionner la grande image';
+            }
+
+            // **** MINI
+            $img_Src = $rep_Dst.$filename;
+            $img_Dst = 'min-profil.jpg';
+
+            // REDIM ONLY
+            $W_fin = 150;
+            $H_fin = 150;
+
+            $rep_Dst = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
+            $img_Dst = 'min-profil.jpg';
+            $rep_Src = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
+            $img_Src = 'profil.jpg';
+
+            // redim
+            if (!resizeImage($W_fin, $H_fin, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
+                $errTab[] = 'Impossible de redimensionner la miniature';
+            }
+
+            // **** PICTO
+            $img_Src = 'min-profil.jpg';
+            $img_Dst = 'pic-profil.jpg';
+
+            // VERSION REDIM + CROP
+            // vars pour le redim/crop de la une
+            // <= crop
+            // >= redim
+            if ($size[0] / $size[1] <= 55 / 55) {
+                $W_fin = 55;
+                $H_fin = 0;
+            } else {
+                $W_fin = 0;
+                $H_fin = 55;
+            }
+            // redim
+            if (!resizeImage($W_fin, $H_fin, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
+                $errTab[] = 'Impossible de redimensionner l\'image (picto)';
+            }
+            // crop
+            $img_Src = $img_Dst;
+            $W_fin = 55;
+            $H_fin = 55;
+            if (!fctcropimage($W_fin, $H_fin, $rep_Dst, $img_Dst, $rep_Src, $img_Src)) {
+                $errTab[] = 'Impossible de croper l\'image (picto)';
+            }
+
+            /////////////
+            // suppression du fichier en standby
+            if (file_exists($uploaddir.$filename)) {
+                unlink(($uploaddir.$filename));
+            }
+        } else {
+            $errTab[] = 'Erreur lors du déplacement du fichier';
+        }
     }
 }
 
