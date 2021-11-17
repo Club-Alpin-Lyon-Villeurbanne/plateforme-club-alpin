@@ -131,7 +131,6 @@ if ('profil' == $p1 && 'infos' == $p2) {
         if ('' !== $handle['cafnum_user']) {
             $handle['enfants'] = [];
             $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM '.$pbd."user WHERE cafnum_parent_user = '".$mysqli->real_escape_string($handle['cafnum_user'])."' LIMIT 100";
-            //	error_log ($req);
             $handleSql2 = $mysqli->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['enfants'][] = $handle2;
@@ -142,7 +141,6 @@ if ('profil' == $p1 && 'infos' == $p2) {
         if ('' !== $handle['cafnum_parent_user']) {
             $handle['parent'] = [];
             $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM '.$pbd."user WHERE cafnum_user = '".$mysqli->real_escape_string($handle['cafnum_parent_user'])."' LIMIT 100";
-            //	error_log ($req);
             $handleSql2 = $mysqli->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['parent'] = $handle2;
@@ -414,7 +412,6 @@ elseif ('accueil' == $p1) {
     // commission donnée : filtre (mais on inclut les actus club, commission=0)
     $req .= ' ORDER BY  tsp_validate_article DESC
 		LIMIT '.($limite * ($pagenum - 1)).", $limite";
-    //		error_log ($req);
     // ajout des liaisons articles - commission
     if ($current_commission) {
         /* 08/08/2013 - GAEL MONDON - je vois pas à quoi ca sert...par contre ca supprime le calcul du nombres d'articles
@@ -430,15 +427,12 @@ elseif ('accueil' == $p1) {
                     )";
         */
     }
-    // echo $req;
     $handleSql = $mysqli->query($req);
-    //	error_log ($req);
 
     // calcul du total grâce à SQL_CALC_FOUND_ROWS
     $totalSql = $mysqli->query('SELECT FOUND_ROWS()');
     $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
     $nbrPages = ceil($total / $limite);
-    //	error_log ("pagenum=".$pagenum);	error_log ("total=".$total);	error_log ("nbrPages=".$nbrPages);
 
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // info de la commission liée
