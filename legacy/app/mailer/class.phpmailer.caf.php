@@ -138,9 +138,6 @@ class CAFPHPMailer extends PHPMailer
 
         $nb_recipients = 0;
         $log_coupure_mail = false;
-        // Retiré par CRI le 06/12/2015
-        // Inutile de logger le nombre de destinataires si < 50. Surtout si tout est Ok.
-        // error_log ("PHPMAILER : nb_recipients=".count($this->recipients));
 
         if (is_array($this->recipients)) {
             foreach ($this->recipients as $address => $name) {

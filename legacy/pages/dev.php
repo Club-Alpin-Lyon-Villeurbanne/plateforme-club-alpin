@@ -157,7 +157,6 @@
 		';
         $handleSql = $mysqli->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-            // var_dump($handle); echo '<hr />';
             $typeTab[] = $handle;
         }
 
@@ -169,7 +168,6 @@
 		';
         $handleSql = $mysqli->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-            // var_dump($handle); echo '<hr />';
             $rightTab[] = $handle;
         }
 
@@ -180,7 +178,6 @@
 		';
         $handleSql = $mysqli->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-            // var_dump($handle); echo '<hr />';
             $attrTab[] = $handle['type_usertype_attr'].'-'.$handle['right_usertype_attr'];
         }
         $mysqli->close(); ?>

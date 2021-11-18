@@ -682,8 +682,7 @@ function cont($code = false, $html = false)
         // debug
         $CONTENUS_INLINE['dev'] = 'dev';
     }
-    // var_dump($CONTENUS);
-    // retour contenu
+
     if (isset($CONTENUS_INLINE[$code])) {
         if (!$html) {
             return strip_tags($CONTENUS_INLINE[$code]);
