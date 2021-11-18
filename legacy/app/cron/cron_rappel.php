@@ -29,8 +29,6 @@ $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 $chron_sendmails = true;
 $chron_savedatas = true;
 
-//error_log("Cron - Rappels");
-
 // la fonction permettant l'envoi d'e-mails et l'enregistrement en BDD
 function cron_email($datas)
 {
@@ -117,14 +115,12 @@ foreach ($p_chron_dates_butoires as $tmpH) {
         $minTsp = mktime($tmpH, 0, 0, date('m'), date('d'), date('Y'));
     }
 }
-//error_log( 'Le dernier tour de CHRON aurait du etre au plus tot le '.date("d/m/Y a H:i:s", $minTsp)."");
 
 // ****** FAUT IL REQUETER ? ********
 // dernier envoi en BD date de... :
 $req = 'SELECT `tsp_chron_launch` FROM `'.$pbd.'chron_launch` ORDER BY  `tsp_chron_launch` DESC LIMIT 0 , 1';
 $handleSql = $mysqli->query($req);
 $lastTsp = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
-//error_log( "Dernier envoi: ".date("d/m/Y H:i:s", $lastTsp)."");
 
 // envoi necessaire ? Alors go !
 if ($lastTsp < $minTsp) {
@@ -394,8 +390,6 @@ if ($lastTsp < $minTsp) {
         }
     }
 }
-
-    //error_log( "Mise a jour non necessaire");
 
 $mysqli->close();
 
