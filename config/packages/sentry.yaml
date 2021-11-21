@@ -1,0 +1,10 @@
+sentry:
+    # Avoid having duplicate events in Sentry
+    register_error_listener: false
+    dsn: '%env(SENTRY_DSN)%'
+    tracing: false
+
+    options:
+#        server_name: "%env(NODE)%"
+#        release: "%env(COMMIT)%"
+        error_types: E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED
