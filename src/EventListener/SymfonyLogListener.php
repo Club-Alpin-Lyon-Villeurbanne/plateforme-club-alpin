@@ -2,9 +2,9 @@
 
 namespace App\EventListener;
 
+use App\Bridge\Monolog\Handler\SentryHandler;
 use Monolog\Handler\FingersCrossedHandler;
 use Monolog\Logger;
-use Profiler\Bridge\Monolog\Handler\SentryHandler;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\ConsoleEvents;
