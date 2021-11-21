@@ -15,13 +15,10 @@ final class Version20211121115308 extends AbstractMigration
         $this->addSql('ALTER TABLE caf_user CHANGE email_user email_user VARCHAR(200) DEFAULT NULL');
         $this->addSql('UPDATE caf_user SET email_user = NULL WHERE email_user = \'\'');
         $this->addSql('ALTER TABLE caf_user CHANGE mdp_user mdp_user VARCHAR(1024) NOT NULL');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_DEBE826812A5F6CC ON caf_user (email_user)');
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('DROP INDEX UNIQ_DEBE826812A5F6CC ON caf_user');
-        $this->addSql('DROP INDEX UNIQ_DEBE82686A22D67B ON caf_user');
         $this->addSql('ALTER TABLE caf_user CHANGE mdp_user mdp_user VARCHAR(32) CHARACTER SET utf8 NOT NULL COLLATE `utf8_unicode_ci`');
         $this->addSql('ALTER TABLE caf_user CHANGE email_user email_user VARCHAR(200) CHARACTER SET utf8 NOT NULL COLLATE `utf8_unicode_ci`');
     }
