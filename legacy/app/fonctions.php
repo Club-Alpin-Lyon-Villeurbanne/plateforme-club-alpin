@@ -533,7 +533,7 @@ function user_login($identifiant, $connectme = true)
         }
 
         // CRÉATION DU COOKIE POUR RESTER CONNECTÉ
-        $cookietoken = md5(rand(100, 999));
+        $cookietoken = bin2hex(random_bytes(16));
         $id_user = (int) ($handle['id_user']);
         setcookie('cafuser', $id_user.'-'.$cookietoken, $p_time + (86400 * 7), '/', '.clubalpinlyon.fr', (isset($_SERVER['HTTPS']) ? true : false), true); // duree : une semaine
         // sauvegarde du token en BD
