@@ -1,12 +1,42 @@
 monolog:
     handlers:
+        # Finger cross + buffer to output in File + Sentry
         main:
+            # Fingers crossed will hold logs until the "action_level" is reached.
+            # When this action level occurs, logs are forwarded to file + test handlers
             type: fingers_crossed
-            action_level: error
-            handler: nested
-            excluded_http_codes: [404, 405]
+            handler: nested # Inner handler
+            action_level: error # Level at which the inner handler will receive the logs held.
+            stop_buffering: false # Re-buffer after the action level was reached.
+            passthru_level: error # When flushing, discard logs below this level.
+            buffer_size:  50 # How many messages should be saved? Prevent memory leaks
+            activation_strategy: App\Bridge\Monolog\ActivationStrategy\HttpKernelExceptionActivationStrategy
             channels: ["!event"]
+
         nested:
+            type: group
+            members: [ file, test ]
+
+        # For development
+        file:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
+            channels: ["!event", "!doctrine"]
+            bubble: false # Do not stop propagation of the record for next handler.
+
+        # Handler used to make assertions on logs. You can access the service `Monolog\Handler\TestHandler` in your
+        # tests.
+        test:
+            type: service
+            id: Monolog\Handler\TestHandler
+
+        # Disabled handlers
+        console:
+            type: "null"
+
+services:
+    Monolog\Handler\TestHandler:
+        class: Monolog\Handler\TestHandler
+        calls:
+            - [ 'setSkipReset', [true]]
