@@ -19,7 +19,7 @@ final class Version20211121140127 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE caf_user CHANGE email_user email_user VARCHAR(200) NOT NULL, CHANGE mdp_user mdp_user VARCHAR(1024) DEFAULT NULL, CHANGE cafnum_user cafnum_user VARCHAR(20) DEFAULT NULL COMMENT \'Numéro de licence\'');
+        $this->addSql('ALTER TABLE caf_user CHANGE email_user email_user VARCHAR(200) DEFAULT NULL, CHANGE mdp_user mdp_user VARCHAR(1024) DEFAULT NULL, CHANGE cafnum_user cafnum_user VARCHAR(20) DEFAULT NULL COMMENT \'Numéro de licence\'');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_DEBE826812A5F6CC ON caf_user (email_user)');
     }
 
