@@ -24,21 +24,21 @@ class CafUser
     /**
      * @var string
      *
-     * @ORM\Column(name="email_user", type="string", length=200, nullable=false)
+     * @ORM\Column(name="email_user", type="string", length=200, nullable=false, unique=true)
      */
     private $emailUser;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="mdp_user", type="string", length=32, nullable=false)
+     * @ORM\Column(name="mdp_user", type="string", length=1024, nullable=false)
      */
     private $mdpUser;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="cafnum_user", type="string", length=20, nullable=false, options={"comment": "Numéro de licence"})
+     * @ORM\Column(name="cafnum_user", type="string", length=20, nullable=false, options={"comment": "Numéro de licence"}, unique=true)
      */
     private $cafnumUser;
 

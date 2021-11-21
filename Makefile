@@ -23,8 +23,13 @@ COMPOSE_FILES = -f docker-compose.yml
 ON_PHP=$(COMPOSE) run --rm --no-deps cafsite
 
 migrate: ## Migrate (env="dev")
-	@$(ON_PHP) php bin/console doctrine:migration:migrate --env $(env)
+	@$(ON_PHP) php bin/console doctrine:migration:sync-metadata-storage --env $(env)
+	@$(ON_PHP) php bin/console doctrine:migration:migrate --env $(env) --no-interaction
 .PHONY: migrate
+
+migration-diff: ## Migrate (env="dev")
+	@$(ON_PHP) php bin/console doctrine:migration:diff --env $(env)
+.PHONY: migration-diff
 
 ##
 ## Phive
