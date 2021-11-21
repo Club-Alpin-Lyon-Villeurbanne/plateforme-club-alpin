@@ -24,7 +24,7 @@ class CafUser
     /**
      * @var string
      *
-     * @ORM\Column(name="email_user", type="string", length=200, nullable=false)
+     * @ORM\Column(name="email_user", type="string", length=200, nullable=false, unique=true)
      */
     private $emailUser;
 
