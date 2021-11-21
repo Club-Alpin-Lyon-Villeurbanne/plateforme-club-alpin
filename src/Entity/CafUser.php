@@ -24,14 +24,14 @@ class CafUser
     /**
      * @var string
      *
-     * @ORM\Column(name="email_user", type="string", length=200, nullable=true, unique=true)
+     * @ORM\Column(name="email_user", type="string", length=200, nullable=false)
      */
     private $emailUser;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="mdp_user", type="string", length=1024, nullable=false)
+     * @ORM\Column(name="mdp_user", type="string", length=1024, nullable=true)
      */
     private $mdpUser;
 
