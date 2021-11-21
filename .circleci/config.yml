@@ -17,21 +17,19 @@ jobs:
             - composer-v1-{{ checksum "composer.lock" }}
             # fallback to using the latest cache if no exact match is found (See https://circleci.com/docs/2.0/caching/)
             - composer-v1-
+#      - run:
+#          name: Check connection with deployment server
+#          command: |
+#            ssh-keyscan 141.94.251.125 >> ~/.ssh/known_hosts;
+#            LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kahe0589@109.234.162.184 -J jump-user@141.94.251.125 echo "Successfully connected to prod server";
       - run:
-          name: Build Docker image
-          command: make build composer-install
-      - run:
-          name: Code lint and style
-          command: make php-cs
-      - run:
-          name: PHPStan static analysis
-          command: make phpstan
-      - run:
-          name: Run PHP test suite
-          command: make phpunit
-      - run:
-          name: Prepare codebase for target
+          name: Build Docker image, run tests and prepare package
           command: |
+            make build composer-install
+            make php-cs
+            make phpstan
+            make phpunit
+
             case ${CIRCLE_BRANCH} in
                 "production" )
                     cp infrastructure/confs/production/robots.txt public/robots.txt
@@ -60,17 +58,9 @@ jobs:
                     sed -i "s/DB_NAME_TO_REPLACE/$DEV_DB_NAME/g" "legacy/config/test.clubalpinlyon.fr/db_config.php"
                   ;;
             esac
-      - run:
-          name: Create Package
-          command: make package
-      - run:
-          name: Check connection with deployment server
-          command: |
-            ssh-keyscan 141.94.251.125 >> ~/.ssh/known_hosts;
-            LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kahe0589@109.234.162.184 -J jump-user@141.94.251.125 echo "Successfully connected to prod server";
-      - run:
-          name: Send data to server
-          command: |
+
+            make package
+
             case ${CIRCLE_BRANCH} in
                 "production" )
                     echo "\nTransfering package...\n\n"
