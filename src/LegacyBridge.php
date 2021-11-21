@@ -4,7 +4,6 @@ namespace App;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LegacyBridge
 {
@@ -15,10 +14,11 @@ class LegacyBridge
             return null;
         }
 
+        $legacyDir = __DIR__.'/../legacy/';
         $path = trim($request->getPathInfo(), '/');
 
         if (false !== strpos($path, '..')) {
-            throw new NotFoundHttpException();
+            return $legacyDir.'pages/404.php';
         }
 
         if ('' === $path) {
@@ -58,10 +58,8 @@ class LegacyBridge
             0 === strpos('scripts/', $path) ||
             preg_match('/app\/[a-z]+\.php]/', $path) > 0
         ) {
-            throw new NotFoundHttpException();
+            return $legacyDir.'pages/404.php';
         }
-
-        $legacyDir = __DIR__.'/../legacy/';
 
         if (is_dir($legacyDir.$path) && is_file($legacyDir.$path.'/index.php')) {
             $path .= '/index.php';
@@ -70,7 +68,7 @@ class LegacyBridge
         $legacyScriptFilename = $legacyDir.$path;
 
         if (!file_exists($legacyScriptFilename)) {
-            throw new NotFoundHttpException(sprintf('Path "%s" (%s) not found.', $path, $request->getPathInfo()));
+            return $legacyDir.'pages/404.php';
         }
 
         return $legacyScriptFilename;
