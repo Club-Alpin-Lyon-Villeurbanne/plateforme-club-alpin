@@ -22,6 +22,10 @@ COMPOSE=docker-compose --project-directory . --project-name $(project) $(COMPOSE
 COMPOSE_FILES = -f docker-compose.yml
 ON_PHP=$(COMPOSE) run --rm --no-deps cafsite
 
+migrate: ## Migrate (env="dev")
+	@$(ON_PHP) php bin/console doctrine:migration:migrate --env $(env)
+.PHONY: migrate
+
 ##
 ## Phive
 ##
