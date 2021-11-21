@@ -146,7 +146,7 @@ if ($_GET['compterendu']) {
 
                 // dans le cas d'une création
                 if (!$id_article_to_update) {
-                    $dir = 'ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/';
+                    $dir = 'ftp/user/'.getUser()->getIdUser().'/transit-nouvelarticle/';
                 }
                 // dans le cas d'une modification
                 if ($id_evt_to_update) {

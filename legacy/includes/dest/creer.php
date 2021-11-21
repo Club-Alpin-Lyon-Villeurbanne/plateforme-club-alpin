@@ -36,7 +36,7 @@
     ?>
 
     <?php if (!$_POST['id_user_responsable']) {
-        $_POST['id_user_responsable'] = $_SESSION['user']['id_user'];
+        $_POST['id_user_responsable'] = (string) getUser()->getIdUser();
     } ?>
 
     <?php if ($id_dest_to_update) {
@@ -47,7 +47,7 @@
         <input type="hidden" name="operation"
                value="<?php echo $id_dest_to_update ? 'dest_update' : 'dest_create'; ?>"/>
         <?php /* Création */ if (!$id_dest_to_update) { ?>
-            <input type="hidden" name="id_user_who_create" value="<?php echo $_SESSION['user']['id_user']; ?>"/>
+            <input type="hidden" name="id_user_who_create" value="<?php echo (string) getUser()->getIdUser(); ?>"/>
         <?php } ?>
         <?php /* Modification */ if ($id_dest_to_update) { ?>
             <input type="hidden" name="id_dest_to_update" value="<?php echo (int) $id_dest_to_update; ?>"/>

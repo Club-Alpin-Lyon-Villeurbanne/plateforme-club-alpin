@@ -11,6 +11,13 @@ env ?= dev
 project ?= cafsite
 services ?=
 
+ifeq ($(env),dev)
+	dbname = caf
+else
+	dbname = caf_test
+endif
+
+
 # Project name must be compatible with docker-compose
 override project := $(shell echo $(project) | tr -d -c '[a-z0-9]' | cut -c 1-55)
 
@@ -71,16 +78,17 @@ composer-install:
 	@touch $@
 .PHONY: composer-install
 
-setup-db:
+setup-db: ## Migrate (env="dev")
 	@echo "Checking if the database is up..."
 	@$(ON_PHP) timeout --foreground 120s bash -c 'while ! timeout --foreground 3s echo > /dev/tcp/caf-db/3306 2 > /dev/null ; do sleep 1; done' \
 	    || (echo "Unable to connect to the database. Exiting..." && exit 1)
 	@echo "Database is up!"
-	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.sql
-	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
-	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
-	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
-	@$(COMPOSE) exec -T caf-db mysql -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
+	@$(ON_PHP) bin/console doctrine:database:create --env $(env) --if-not-exists
+	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.sql
+	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
+	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
+	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
+	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
 .PHONY: setup-db
 
 package: ## Creates software package

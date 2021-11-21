@@ -6,7 +6,7 @@ $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
 $req = "UPDATE caf_article SET topubly_article=0, status_article=0, tsp_validate_article=0 WHERE id_article=$id_article";
 if (!allowed('article_edit_notmine')) {
-    $req .= ' AND user_article='.(int) ($_SESSION['user']['id_user']);
+    $req .= ' AND user_article='.getUser()->getIdUser();
 }
 
 if (!$mysqli->query($req)) {

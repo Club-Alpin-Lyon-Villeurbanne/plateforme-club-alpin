@@ -1,0 +1,40 @@
+<footer id="mainfooter">
+    <!-- My footer -->
+    <div class="tiers-footer" style="margin-right:40px; width:300px; font-size:9px; line-height:14px">
+        {{ easy_include('mainfooter-1', 'tiers-footer') }}
+
+        <div style="width:47%; float:left; white-space:nowrap; overflow:hidden;">
+            {% set commissions = list_commissions() %}
+            {% set break = ((commissions | length / 2) | round(0, 'ceil')) - 1 %}
+            {% for commission in commissions %}
+                <a href="/accueil/{{ commission.codeCommission }}.html" title="">> {{ commission.titleCommission }}</a>
+
+                {% if loop.index0 == break %}
+                    </div><div style="width:47%; float:right; white-space:nowrap; overflow:hidden;">
+                {% else %}
+                    <br />
+                {% endif %}
+            {% endfor %}
+        </div>
+
+    <!-- lien vers la page dédiée aux responsables -->
+    <div class="tiers-footer mini" style="padding-top:10px">
+        <a style="color:gray" href="responsables.html" title="">&gt; Voir les responsables par commission</a>
+    </div>
+    </div>
+
+    <div class="tiers-footer">
+        {{ easy_include('mainfooter-2', 'tiers-footer') }}
+    </div>
+
+    <div class="tiers-footer" style="float:right">
+        {{ easy_include('mainfooter-3', 'tiers-footer') }}
+    </div>
+
+    <br style="clear:both" />
+
+    <a style="display: none;" onClick="document.body.scrollTop = document.documentElement.scrollTop = 0;" class="scrollup">Remonter</a>
+
+</footer>
+
+{% include 'flash-messages.html.twig' %}

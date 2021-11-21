@@ -21,7 +21,6 @@ while ($handle = $handleSql->fetch_assoc()) {
 
     // définition de la variable de page 'current_commission' si elle est précisée dans l'URL
     if ($p2 == $handle['code_commission']) {
-        // $_SESSION['current_commission=$p2;
         $current_commission = $p2;
     }
     // variable de commission si elle est passée "en force" dans les vars GET

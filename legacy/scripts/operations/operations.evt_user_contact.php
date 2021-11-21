@@ -1,7 +1,7 @@
 <?php
 
 $id_evt = (int) ($_POST['id_evt']);
-$user_evt = (int) ($_SESSION['user']['id_user']);
+$user_evt = getUser()->getIdUser();
 $objet = trim(stripslashes($_POST['objet']));
 $message = trim(stripslashes($_POST['message']));
 
@@ -70,7 +70,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $subject = $objet;
     $content_header = '';
     $content_main = '<h2>Bonjour !</h2>
-        <p>Vous avez reçu un message de '.html_utf8($_SESSION['user']['firstname_user']).' '.html_utf8($_SESSION['user']['lastname_user']).' au sujet de la sortie
+        <p>Vous avez reçu un message de '.html_utf8(getUser()->getFirstnameUser()).' '.html_utf8(getUser()->getLastnameUser()).' au sujet de la sortie
             <a href="'.$p_racine.'sortie/'.$code_evt.'-'.$id_evt.'.html">'.html_utf8($titre_evt).'</a></p>'
         .'<p><b>Objet :</b><br />'.html_utf8($subject).'<br />&nbsp;</p>'
         .'<p><b>Message :</b><br />'.nl2br(getUrlFriendlyString(html_utf8($message))).'<br />&nbsp;</p>'
@@ -82,7 +82,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
     $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
-    $mail->AddReplyTo($_SESSION['user']['email_user'] ?: $p_noreply);
+    $mail->AddReplyTo(getUser()->getEmailUser() ?: $p_noreply);
     $mail->SetFrom($p_noreply, $p_sitename);
     $mail->Subject = $subject;
     //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test

@@ -4,23 +4,23 @@
 if ('1' != $evt['cancelled_evt']) {
     if (
         // j'en suis l'auteur
-        (user() && $_SESSION['user']['id_user'] == $evt['user_evt'])
+        (user() && (string) getUser()->getIdUser() == $evt['user_evt'])
         // ou j'ai un droit spécial
         || allowed('evt_join_doall')
         // ou je participe à cette sortie en tant qu'encadrant / coencadrant
         || 'encadrant' == $monStatut
         || 'coencadrant' == $monStatut
-        || ($_SESSION['user']['status'] && in_array('Salarié', $_SESSION['user']['status'], true))
-        || ((allowed('evt_join_notme') || allowed('evt_unjoin_notme') || allowed('evt_joining_accept') || allowed('evt_joining_refuse')) && ($_SESSION['user']['status'] && in_array('Resp. de commission, '.$evt['code_commission'], $_SESSION['user']['status'], true)))
+        || getUser()->hasAttribute('Salarié')
+        || ((allowed('evt_join_notme') || allowed('evt_unjoin_notme') || allowed('evt_joining_accept') || allowed('evt_joining_refuse')) && (getUser()->hasAttribute('Resp. de commission', $evt['code_commission'])))
         ) {
         // droit de modification en fonction des conditions ci-dessus :
         $droitDeModif = false;
         // je suis salarie
-        if ($_SESSION['user']['status'] && in_array('Salarié', $_SESSION['user']['status'], true)) {
+        if (getUser()->hasAttribute('Salarié')) {
             $droitDeModif = true;
         }
         // j'en suis l'auteur ou droits
-        if ($_SESSION['user']['id_user'] == $evt['user_evt']) {
+        if ((string) getUser()->getIdUser() == $evt['user_evt']) {
             $droitDeModif = true;
         }
         // ou j'ai un super droit
@@ -32,7 +32,7 @@ if ('1' != $evt['cancelled_evt']) {
             $droitDeModif = true;
         }
         // ou je suis resp de comm pour la sortie
-        if ((allowed('evt_join_notme') || allowed('evt_unjoin_notme') || allowed('evt_joining_accept') || allowed('evt_joining_refuse')) && ($_SESSION['user']['status'] && in_array('Resp. de commission, '.$evt['code_commission'], $_SESSION['user']['status'], true))) {
+        if ((allowed('evt_join_notme') || allowed('evt_unjoin_notme') || allowed('evt_joining_accept') || allowed('evt_joining_refuse')) && (getUser()->hasAttribute('Resp. de commission', $evt['code_commission']))) {
             $droitDeModif = true;
         } ?>
         <!-- Datatables -->

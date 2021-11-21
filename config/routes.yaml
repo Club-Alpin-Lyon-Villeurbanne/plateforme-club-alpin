@@ -4,3 +4,9 @@
 app_legacy:
     resource: .
     type: legacy
+
+app_logout:
+    path: "/logout"
+
+session_email_check:
+    path: "/session/check/email"

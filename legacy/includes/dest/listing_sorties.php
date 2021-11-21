@@ -16,9 +16,9 @@
             $list .= $list_elt;
         } else {
             if (
-                $destination['id_user_who_create'] == $_SESSION['user']['id_user']
-                || $destination['id_user_who_create'] == $_SESSION['user']['id_user']
-                || $destination['id_user_who_create'] == $_SESSION['user']['id_user']) {
+                $destination['id_user_who_create'] == (string) getUser()->getIdUser()
+                || $destination['id_user_who_create'] == (string) getUser()->getIdUser()
+                || $destination['id_user_who_create'] == (string) getUser()->getIdUser()) {
                 $list .= $list_elt;
             }
         }

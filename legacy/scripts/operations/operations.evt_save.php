@@ -296,8 +296,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
         }
 
         if ($_POST['operation'] = 'evt_update') {
-            session_id() || session_start();
-            $_SESSION['POST_DATA_FROM_UPDATE'] = $_POST;
             header('Location:'.$p_racine.'creer-une-sortie/'.html_utf8($code_commission).'.html?lbxMsg='.$lbxMsg);
         }
     }

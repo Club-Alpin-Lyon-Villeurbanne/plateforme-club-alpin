@@ -20,17 +20,16 @@ if (user()) {
         <hr />
 
         <!-- Infos : statuts -->
-        <?php if (count($_SESSION['user']['status'])) { ?>
+        <?php if (getUser()->hasAttribute()) { ?>
             <h2><span class="bleucaf">&gt;</span> Vos statuts :</h2>
             <?php inclure('infos-profil-statuts', 'vide'); ?>
             <ul class="nice-list">
                 <?php
-                foreach ($_SESSION['user']['status'] as $status) {
-                    if (strstr($status, 'Resp. de commission')) {
-                        // responsable de commission
-                        echo '<li><a href="commission-consulter.html?code_commission='.str_replace('Resp. de commission, ', '', $status).'" title="Fiche commission">'.$status.'</a></li>';
+                foreach (getUser()->getAttributes() as $attr) {
+                    if ('Resp. de commission' === $attr['attribute']) {
+                        echo '<li><a href="commission-consulter.html?code_commission='.$attr['commission'].'" title="Fiche commission">'.$attr['attribute'].', '.$attr['commission'].'</a></li>';
                     } else {
-                        echo '<li>'.$status.'</li>';
+                        echo '<li>'.$attr['attribute'].'</li>';
                     }
                 }
                 ?>
@@ -107,10 +106,7 @@ if (user()) {
             <!--
             <input type="text" name="nickname_user" class="type1" value="<?php echo html_utf8($tmpUser['nickname_user']); ?>" placeholder="" />
             -->
-            <h2><a href="/includer.php?p=includes/fiche-profil.php&id_user=<?php echo (int) ($_SESSION['user']['id_user']); ?>" class="fancyframe" title="Aperçu de votre fiche"><?php echo html_utf8($tmpUser['nickname_user']); ?></a></h2>
-            <?php
-            // echo userlink($_SESSION['user']['id_user'], $_SESSION['user']['nickname_user']);
-            ?>
+            <h2><a href="/includer.php?p=includes/fiche-profil.php&id_user=<?php echo getUser()->getIdUser(); ?>" class="fancyframe" title="Aperçu de votre fiche"><?php echo html_utf8($tmpUser['nickname_user']); ?></a></h2>
 
             <br />
             <b>Modifier votre photo :</b> <span class="mini">Format .jpg, 5Mo maximum !</span><br />
@@ -120,21 +116,37 @@ if (user()) {
             <!--
             <div>
                 <label for="gender_male"><input type="radio" name="civ_user" value="M." id="gender_m" <?php if ('M.' == $tmpUser['civ_user']) {
-                echo 'checked="checked"';
-            } ?> />M.</label>
+        echo 'checked="checked"';
+    } ?> />M.</label>
                 <label for="gender_mm"><input type="radio" name="civ_user" value="Mme." id="gender_mm" <?php if ('Mme.' == $tmpUser['civ_user']) {
-                echo 'checked="checked"';
-            } ?> />Mme.</label>
+        echo 'checked="checked"';
+    } ?> />Mme.</label>
                 <label for="gender_mlle"><input type="radio" name="civ_user" value="Mlle." id="gender_mlle" <?php if ('Mlle.' == $tmpUser['civ_user']) {
-                echo 'checked="checked"';
-            } ?> />Mlle.</label>
+        echo 'checked="checked"';
+    } ?> />Mlle.</label>
                 <label for="gender_unknown"><input type="radio" name="civ_user" value="..." id="gender_unknown" <?php if ('...' == $tmpUser['civ_user']) {
-                echo 'checked="checked"';
-            } ?> />...</label>
+        echo 'checked="checked"';
+    } ?> />...</label>
             </div>
             -->
             <br style="clear:both" />
-            <hr />
+
+            <hr style="margin: 20px 0" />
+            <h2 id="edit-email"><span class="bleucaf">&gt;</span>Modifier mon e-mail</h2>
+            <p>
+                Laissez ce champ vide si vous ne voulez pas modifier votre adresse e-mail.
+                Cette modification ne prendra effet qu'après avoir cliqué sur le lien qui vous sera envoyé à la nouvelle adresse e-mail.
+            </p>
+            <input type="text" name="email_user_mailchange" class="type1" style="width:300px" value="<?php echo inputVal('email_user_mailchange'); ?>" placeholder="<?php echo html_utf8($tmpUser['email_user']); ?>" />
+
+            <hr style="margin: 20px 0" />
+            <h2 id="edit-password"><span class="bleucaf">&gt;</span>Modifier mon mot de passe</h2>
+            <p>
+                Vous pouvez modifier votre mot de passe <a href="<?php echo generateRoute('account_set_password'); ?>">sur cette page</a>.
+            </p>
+
+
+            <hr style="margin: 20px 0" />
             <h2 id="private"><span class="bleucaf">&gt;</span>Infos privées</h2>
 
             <div>
@@ -208,7 +220,7 @@ if (user()) {
             <input type="text" style="width:150px" name="pays_user" class="type1" value="<?php echo html_utf8($tmpUser['pays_user']);?>" placeholder="Pays" /><br />
             */ ?>
 
-            <hr />
+            <hr style="margin: 20px 0" />
 
             <h2 id="niveaux"><span class="bleucaf">&gt;</span>Infos sur mon niveau</h2>
             <div>
@@ -229,14 +241,6 @@ if (user()) {
             <?php $whocan_selected = $tmpUser['auth_contact_user']; ?>
             <?php $whocan_table = true; ?>
             <?php include __DIR__.'/../includes/user/whocan_contact.php'; ?>
-
-            <hr />
-            <h2 id="edit-email"><span class="bleucaf">&gt;</span>Modifier votre e-mail</h2>
-            <p>
-                Laissez ce champ vide si vous ne voulez pas modifier votre adresse e-mail.
-                Cette modification ne prendra effet qu'après avoir cliqué sur le lien qui vous sera envoyé à la nouvelle adresse e-mail.
-            </p>
-            <input type="text" name="email_user_mailchange" class="type1" style="width:300px" value="<?php echo inputVal('email_user_mailchange'); ?>" placeholder="<?php echo html_utf8($tmpUser['email_user']); ?>" />
 
             <hr />
             <br />

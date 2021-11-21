@@ -8,8 +8,6 @@ $result = $targetDir = $filename = null;
 // $errTab[]="Test";
 if (!user()) {
     $errTab[] = 'User non connecté';
-} elseif (!$_SESSION['user']['id_user']) {
-    $errTab[] = 'ID manquant';
 }
 
 $mode = $_GET['mode'];
@@ -26,7 +24,7 @@ if (0 === count($errTab)) {
     } // depuis la racine
     // création de sortie
     else {
-        $targetDir = __DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvellesortie/';
+        $targetDir = __DIR__.'/../../../public/ftp/user/'.getUser()->getIdUser().'/transit-nouvellesortie/';
     } // depuis la racine
 
     if (!file_exists($targetDir)) {
@@ -108,7 +106,7 @@ if (0 === count($errTab) && 'edit' == $mode) {
     // save
     $filename = $mysqli->real_escape_string($filename);
     $req = 'INSERT INTO '.$pbd."img(evt_img, ordre_img, user_img, fichier_img)
-						VALUES($id_evt,    100,    ".(int) ($_SESSION['user']['id_user']).", '$filename')";
+						VALUES($id_evt,    100,    ".getUser()->getIdUser().", '$filename')";
     $mysqli->query($req);
 
     // maj ordre
