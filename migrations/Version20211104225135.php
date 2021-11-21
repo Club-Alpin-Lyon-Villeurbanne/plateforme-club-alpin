@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+namespace DoctrineMigrations;
+
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
+
+final class Version20211104225135 extends AbstractMigration
+{
+    public function up(Schema $schema): void
+    {
+        $this->addSql('ALTER TABLE caf_article CHANGE status_article status_article INT NOT NULL COMMENT \'0=pas vu, 1=valide, 2=refusé\', CHANGE une_article une_article TINYINT(1) NOT NULL COMMENT \'A la une ?\', CHANGE nb_vues_article nb_vues_article INT NOT NULL');
+        $this->addSql('ALTER TABLE caf_content_html CHANGE current_content_html current_content_html TINYINT(1) NOT NULL COMMENT \'Définit le dernier élément en date, pour simplifier les requêtes de recherche\'');
+        $this->addSql('ALTER TABLE caf_destination CHANGE publie publie TINYINT(1) NOT NULL, CHANGE annule annule TINYINT(1) NOT NULL, CHANGE mail mail TINYINT(1) NOT NULL COMMENT \'les emails de cloture ont ils dÃ©jÃ  Ã©tÃ© envoyÃ©s ?\', CHANGE cout_transport cout_transport DOUBLE PRECISION DEFAULT NULL, CHANGE inscription_locked inscription_locked TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE caf_evt CHANGE status_legal_who_evt status_legal_who_evt INT NOT NULL COMMENT \'ID du validateur légal\', CHANGE cancelled_evt cancelled_evt TINYINT(1) NOT NULL, CHANGE repas_restaurant repas_restaurant TINYINT(1) NOT NULL, CHANGE tarif_restaurant tarif_restaurant DOUBLE PRECISION DEFAULT NULL, CHANGE distance_evt distance_evt DOUBLE PRECISION DEFAULT NULL, CHANGE need_benevoles_evt need_benevoles_evt TINYINT(1) NOT NULL, CHANGE child_version_from_evt child_version_from_evt INT NOT NULL COMMENT \'Versionning : chaque modification d-evt crée une entrée "enfant" de l-originale. Ce champ prend l-ID de l-original\', CHANGE child_version_tosubmit child_version_tosubmit TINYINT(1) NOT NULL, CHANGE cb_evt cb_evt TINYINT(1) DEFAULT NULL');
+        $this->addSql('ALTER TABLE caf_evt_join CHANGE status_evt_join status_evt_join SMALLINT NOT NULL COMMENT \'0=non confirmé - 1=validé - 2=refusé\', CHANGE is_covoiturage is_covoiturage TINYINT(1) DEFAULT NULL, CHANGE is_restaurant is_restaurant TINYINT(1) DEFAULT NULL, CHANGE is_cb is_cb TINYINT(1) DEFAULT NULL');
+        $this->addSql('ALTER TABLE caf_groupe CHANGE actif actif TINYINT(1) DEFAULT \'1\' NOT NULL');
+        $this->addSql('ALTER TABLE caf_page CHANGE superadmin_page superadmin_page TINYINT(1) NOT NULL COMMENT \'Page réservée au super-administrateur. "Contenu" dans le niveau administrateur dans la hiérarchie des filtres sur le site : admin_page doit donc aussi etre activé\', CHANGE meta_title_page meta_title_page TINYINT(1) NOT NULL COMMENT \'Booléen : utiliser un titre sur mesure ou pas\', CHANGE meta_description_page meta_description_page TINYINT(1) NOT NULL COMMENT \'Booléen : utiliser une description sur mesure ou pas\', CHANGE pagelibre_page pagelibre_page TINYINT(1) NOT NULL COMMENT \'Pour le module de créatino de pages libres. Pour les pages standarts, comme des articles Wordpress\'');
+        $this->addSql('ALTER TABLE caf_partenaires CHANGE part_click part_click INT NOT NULL COMMENT \'nb de cliques\'');
+        $this->addSql('ALTER TABLE caf_token CHANGE id_token id_token VARCHAR(32) NOT NULL');
+        $this->addSql('ALTER TABLE caf_user CHANGE valid_user valid_user TINYINT(1) NOT NULL COMMENT \'0=l\'\'user n\'\'a pas activé son compte   1=activé    2=bloqué\', CHANGE manuel_user manuel_user TINYINT(1) NOT NULL COMMENT \'User créé à la mano sur le site ?\', CHANGE nomade_user nomade_user TINYINT(1) NOT NULL, CHANGE doit_renouveler_user doit_renouveler_user TINYINT(1) NOT NULL, CHANGE alerte_renouveler_user alerte_renouveler_user TINYINT(1) NOT NULL COMMENT \'Si sur 1 : une alerte s\'\'affiche pour annoncer que l\'\'adhérent doit renouveler sa licence\'');
+    }
+
+    public function down(Schema $schema): void
+    {
+        $this->addSql('ALTER TABLE caf_article CHANGE status_article status_article INT DEFAULT 0 NOT NULL COMMENT \'0=pas vu, 1=valide, 2=refusé\', CHANGE une_article une_article TINYINT(1) DEFAULT \'0\' NOT NULL COMMENT \'A la une ?\', CHANGE nb_vues_article nb_vues_article INT DEFAULT 0 NOT NULL');
+        $this->addSql('ALTER TABLE caf_content_html CHANGE current_content_html current_content_html TINYINT(1) DEFAULT \'0\' NOT NULL COMMENT \'Définit le dernier élément en date, pour simplifier les requêtes de recherche\'');
+        $this->addSql('ALTER TABLE caf_destination CHANGE publie publie TINYINT(1) DEFAULT \'0\' NOT NULL, CHANGE annule annule TINYINT(1) DEFAULT \'0\' NOT NULL, CHANGE mail mail TINYINT(1) DEFAULT \'0\' NOT NULL COMMENT \'les emails de cloture ont ils dÃ©jÃ  Ã©tÃ© envoyÃ©s ?\', CHANGE cout_transport cout_transport DOUBLE PRECISION UNSIGNED DEFAULT NULL, CHANGE inscription_locked inscription_locked TINYINT(1) DEFAULT \'0\' NOT NULL');
+        $this->addSql('ALTER TABLE caf_evt CHANGE status_legal_who_evt status_legal_who_evt INT DEFAULT 0 NOT NULL COMMENT \'ID du validateur légal\', CHANGE cancelled_evt cancelled_evt TINYINT(1) DEFAULT \'0\' NOT NULL, CHANGE repas_restaurant repas_restaurant TINYINT(1) DEFAULT \'0\' NOT NULL, CHANGE tarif_restaurant tarif_restaurant DOUBLE PRECISION UNSIGNED DEFAULT NULL, CHANGE distance_evt distance_evt DOUBLE PRECISION UNSIGNED DEFAULT NULL, CHANGE need_benevoles_evt need_benevoles_evt TINYINT(1) DEFAULT \'0\' NOT NULL, CHANGE child_version_from_evt child_version_from_evt INT DEFAULT 0 NOT NULL COMMENT \'Versionning : chaque modification d-evt crée une entrée "enfant" de l-originale. Ce champ prend l-ID de l-original\', CHANGE child_version_tosubmit child_version_tosubmit TINYINT(1) DEFAULT \'0\' NOT NULL, CHANGE cb_evt cb_evt TINYINT(1) DEFAULT NULL');
+        $this->addSql('ALTER TABLE caf_evt_join CHANGE status_evt_join status_evt_join SMALLINT DEFAULT 0 NOT NULL COMMENT \'0=non confirmé - 1=validé - 2=refusé\', CHANGE is_covoiturage is_covoiturage TINYINT(1) DEFAULT NULL, CHANGE is_restaurant is_restaurant TINYINT(1) DEFAULT NULL, CHANGE is_cb is_cb TINYINT(1) DEFAULT NULL');
+        $this->addSql('ALTER TABLE caf_groupe CHANGE actif actif TINYINT(1) DEFAULT \'1\' NOT NULL');
+        $this->addSql('ALTER TABLE caf_page CHANGE superadmin_page superadmin_page TINYINT(1) DEFAULT \'0\' NOT NULL COMMENT \'Page réservée au super-administrateur. "Contenu" dans le niveau administrateur dans la hiérarchie des filtres sur le site : admin_page doit donc aussi etre activé\', CHANGE meta_title_page meta_title_page TINYINT(1) DEFAULT \'0\' NOT NULL COMMENT \'Booléen : utiliser un titre sur mesure ou pas\', CHANGE meta_description_page meta_description_page TINYINT(1) DEFAULT \'0\' NOT NULL COMMENT \'Booléen : utiliser une description sur mesure ou pas\', CHANGE pagelibre_page pagelibre_page TINYINT(1) DEFAULT \'0\' NOT NULL COMMENT \'Pour le module de créatino de pages libres. Pour les pages standarts, comme des articles Wordpress\'');
+        $this->addSql('ALTER TABLE caf_partenaires CHANGE part_click part_click INT DEFAULT 0 NOT NULL COMMENT \'nb de cliques\'');
+        $this->addSql('ALTER TABLE caf_token CHANGE id_token id_token VARCHAR(32) CHARACTER SET utf8 NOT NULL COLLATE `utf8_unicode_ci`');
+        $this->addSql('ALTER TABLE caf_user CHANGE valid_user valid_user TINYINT(1) DEFAULT \'0\' NOT NULL COMMENT \'0=l\'\'user n\'\'a pas activé son compte   1=activé    2=bloqué\', CHANGE manuel_user manuel_user TINYINT(1) DEFAULT \'0\' NOT NULL COMMENT \'User créé à la mano sur le site ?\', CHANGE nomade_user nomade_user TINYINT(1) DEFAULT \'0\' NOT NULL, CHANGE doit_renouveler_user doit_renouveler_user TINYINT(1) DEFAULT \'0\' NOT NULL, CHANGE alerte_renouveler_user alerte_renouveler_user TINYINT(1) DEFAULT \'0\' NOT NULL COMMENT \'Si sur 1 : une alerte s\'\'affiche pour annoncer que l\'\'adhérent doit renouveler sa licence\'');
+    }
+}
