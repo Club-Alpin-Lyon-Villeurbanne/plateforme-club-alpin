@@ -24,7 +24,7 @@ class CafUser
     /**
      * @var string
      *
-     * @ORM\Column(name="email_user", type="string", length=200, nullable=false, unique=true)
+     * @ORM\Column(name="email_user", type="string", length=200, nullable=true, unique=true)
      */
     private $emailUser;
 
@@ -38,7 +38,7 @@ class CafUser
     /**
      * @var string
      *
-     * @ORM\Column(name="cafnum_user", type="string", length=20, nullable=false, options={"comment": "Numéro de licence"}, unique=true)
+     * @ORM\Column(name="cafnum_user", type="string", length=20, nullable=true, options={"comment": "Numéro de licence"})
      */
     private $cafnumUser;
 
