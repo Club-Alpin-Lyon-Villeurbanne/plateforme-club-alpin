@@ -89,6 +89,7 @@ package: ## Creates software package
 		bin/console \
 		config \
 		legacy \
+		migrations \
 		public \
 		src \
 		templates \
