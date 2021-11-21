@@ -38,8 +38,8 @@ services:
             default: ~
 
     caf-db:
-        image: mysql:5.7
+        image: mariadb:10.3.32
         environment:
-            MYSQL_ROOT_PASSWORD: test
-            MYSQL_DATABASE: caf
+            MARIADB_ROOT_PASSWORD: test
+            MARIADB_DATABASE: caf
 
