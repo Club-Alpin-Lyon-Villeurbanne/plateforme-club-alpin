@@ -168,7 +168,7 @@ if ('' !== $email_user_mailchange) {
 
     // ENTRÉE DE LA DEMANDE DANS LA BD
     if (!isset($errTab) || 0 === count($errTab)) {
-        $token = md5($p_time + rand(100, 999));
+        $token = bin2hex(random_bytes(16));
         $req = 'INSERT INTO `'.$pbd."user_mailchange` ( `id_user_mailchange` , `user_user_mailchange` , `token_user_mailchange` , `email_user_mailchange` )
                                                     VALUES ('', 			'$id_user',				'$token', 				'$email_user_mailchange');";
         if (!$mysqli->query($req)) {

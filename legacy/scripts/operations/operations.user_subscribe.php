@@ -20,8 +20,8 @@ if (strlen($cafnum_user) != $limite_longeur_numero_adherent) {
 if (!isMail($email_user)) {
     $errTab[] = 'Merci de renseigner une adresse e-mail valide';
 }
-if (strlen($mdp_user) < 6 || strlen($mdp_user) > 12) {
-    $errTab[] = 'Le mot de passe doit faire de 6 à 12 caractères';
+if (strlen($mdp_user) < 8 || strlen($mdp_user) > 40) {
+    $errTab[] = 'Le mot de passe doit faire de 8 à 40 caractères';
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
@@ -145,7 +145,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // tt ok ? activation
     // intégration des valeurs données et du token nécessaire à la confirmation par email
     if (!isset($errTab) || 0 === count($errTab)) {
-        $cookietoken_user = md5($id_user.$p_time.rand(100, 999));
+        $cookietoken_user = bin2hex(random_bytes(16));
         $req = 'UPDATE '.$pbd."user SET email_user = '$email_user',
             mdp_user = '$mdp_user',
             nickname_user = '$nickname_user',
