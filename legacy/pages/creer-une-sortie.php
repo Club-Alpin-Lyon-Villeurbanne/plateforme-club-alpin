@@ -1,17 +1,3 @@
-<?php
-/*
-if (!empty($_COOKIE[session_name()])) {
-    // we only start session if there is a session running
-    session_id() || session_start();
-}
-*/
-if (empty($_POST) && !empty($_SESSION['POST_DATA_FROM_UPDATE'])) {
-    $_POST = $_SESSION['POST_DATA_FROM_UPDATE'];
-    unset($_SESSION['POST_DATA_FROM_UPDATE']);
-}
-
-?>
-
 <script type="text/javascript" src="/js/faux-select.js"></script>
 
 <!-- MAIN -->
@@ -56,9 +42,9 @@ if (empty($_POST) && !empty($_SESSION['POST_DATA_FROM_UPDATE'])) {
                 if ($p3) { ?>
 					<?php if (
                         allowed('destination_modifier') ||
-                        $destination['id_user_who_create'] == $_SESSION['user']['id_user'] ||
-                        $destination['id_user_responsable'] == $_SESSION['user']['id_user'] ||
-                        $destination['id_user_adjoint'] == $_SESSION['user']['id_user']
+                        $destination['id_user_who_create'] == (string) getUser()->getIdUser() ||
+                        $destination['id_user_responsable'] == (string) getUser()->getIdUser() ||
+                        $destination['id_user_adjoint'] == (string) getUser()->getIdUser()
                     ) { ?>
                         <h1 class="page-h1">Modifier une <b>destination</b></h1>
                         <?php include __DIR__.'/../includes/dest/creer.php'; ?>
@@ -112,7 +98,7 @@ if (empty($_POST) && !empty($_SESSION['POST_DATA_FROM_UPDATE'])) {
                 // je n'ai pas le droit de créer une sortie pour cette commission
                 elseif (!allowed('evt_create', 'commission:'.$p2)) {
                     echo '<p class="erreur">Vous n\'avez pas l\'autorisation d\'accéder à cette page car vous ne semblez pas avoir les droits de création de sortie pour la commission '.html_utf8($p2).'.</p>';
-                } elseif (0 != $_SESSION['user']['doit_renouveler_user']) {
+                } elseif (getUser()->getDoitRenouvelerUser()) {
                     inclure('info-encadrant-licence-obsolete', 'vide');
                 }
 

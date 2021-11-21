@@ -44,13 +44,6 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     ];
 }
 $mysqli->close();
-// SPECIAL
-if ('deconnexion-admin' == $p1) {
-    if (admin_stop()) {
-        header('Location: '.$p_racine);
-    }
-    exit;
-}
 
 // DEFINITION DES VARS UTILISEES SUR LA PAGE
 if ($p_pages[$p2]) {

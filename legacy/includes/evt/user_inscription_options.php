@@ -13,7 +13,7 @@
 }
 
         $title = iconv('UTF-8', 'ASCII//TRANSLIT', str_replace(')', '', str_replace('(', '', str_replace('!', '', $evt['titre_evt']))));
-        $compl = ' du '.date('d-m-Y', $evt['tsp_evt']).' '.$_SESSION['user']['firstname_user'].' '.$_SESSION['user']['lastname_user'];
+        $compl = ' du '.date('d-m-Y', $evt['tsp_evt']).' '.getUser()->getFirstnameUser().' '.getUser()->getLastnameUser();
         $size_title = strlen($title);
         $size_compl = strlen($compl);
         $new_title = substr($title, 0, 64 - $size_compl).$compl;
@@ -47,11 +47,11 @@
 &lck_vads_ext_info_Encadrant=<?php echo rawurlencode(html_utf8($encadrant_name)); ?>
 &lck_vads_ext_info_E-mail%20encadrant=<?php echo rawurlencode(html_utf8($encadrant_email)); ?>
 &lck_vads_ext_info_Sortie=<?php echo rawurlencode(html_utf8($title.' - '.$evt['id_evt'].' du '.date('d-m-Y', $evt['tsp_evt']))); ?>
-&lck_vads_cust_first_name=<?php echo rawurlencode(html_utf8($_SESSION['user']['firstname_user'])); ?>
-&lck_vads_cust_last_name=<?php echo rawurlencode(html_utf8($_SESSION['user']['lastname_user'])); ?>
-&lck_vads_cust_id=<?php echo rawurlencode(html_utf8($_SESSION['user']['cafnum_user'])); ?>
-&lck_vads_cust_email=<?php echo rawurlencode(html_utf8($_SESSION['user']['email_user'])); ?>
-&lck_vads_cust_cell_phone=<?php echo rawurlencode(html_utf8($_SESSION['user']['tel_user'])); ?>
+&lck_vads_cust_first_name=<?php echo rawurlencode(html_utf8(getUser()->getFirstnameUser())); ?>
+&lck_vads_cust_last_name=<?php echo rawurlencode(html_utf8(getUser()->getLastnameUser())); ?>
+&lck_vads_cust_id=<?php echo rawurlencode(html_utf8(getUser()->getCafnumUser())); ?>
+&lck_vads_cust_email=<?php echo rawurlencode(html_utf8(getUser()->getEmailUser())); ?>
+&lck_vads_cust_cell_phone=<?php echo rawurlencode(html_utf8(getUser()->getTelUser())); ?>
 &lck_vads_amount=<?php echo rawurlencode(html_utf8($evt['tarif_evt'])); ?>"
                  target="_blank" alt="paiement en ligne">Cliquez ici  pour payer en ligne (avant de valider la demande d'inscription)</a>.
             <br />
@@ -82,7 +82,7 @@
 
 <?php /* EXISTANCE DE FILIATIONS, seulement lors de la création, pas de l'update */ if (count($filiations)) { ?>
     <?php if (!is_array($_POST['id_user_filiation'])) {
-        $_POST['id_user_filiation'] = [$_SESSION['user']['id_user']];
+        $_POST['id_user_filiation'] = [(string) getUser()->getIdUser()];
     } ?>
 
     <hr class="clear" />
@@ -90,14 +90,14 @@
 
     <input type="hidden" name="filiations" value="on" />
     <br />
-    <label for="filiation_id_user_<?php echo (int) ($_SESSION['user']['id_user']); ?>" style="width:100%;clear:both;overflow:hidden;">
+    <label for="filiation_id_user_<?php echo getUser()->getIdUser(); ?>" style="width:100%;clear:both;overflow:hidden;">
         <input type="checkbox"
-            <?php echo in_array($_SESSION['user']['id_user'], $_POST['id_user_filiation'], true) ? 'checked="checked" ' : ''; ?>
+            <?php echo in_array((string) getUser()->getIdUser(), $_POST['id_user_filiation'], true) ? 'checked="checked" ' : ''; ?>
             class="custom"
             name="id_user_filiation[]"
-            value="<?php echo (int) ($_SESSION['user']['id_user']); ?>"
-            id="filiation_id_user_<?php echo (int) ($_SESSION['user']['id_user']); ?>" />
-                Moi-même (<?php echo userlink($_SESSION['user']['id_user'], $_SESSION['user']['nickname_user']); ?>)
+            value="<?php echo getUser()->getIdUser(); ?>"
+            id="filiation_id_user_<?php echo getUser()->getIdUser(); ?>" />
+                Moi-même (<?php echo userlink((string) getUser()->getIdUser(), getUser()->getNicknameUser()); ?>)
 
     </label>
     <br />

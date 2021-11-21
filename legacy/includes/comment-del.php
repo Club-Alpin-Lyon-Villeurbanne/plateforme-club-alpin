@@ -19,7 +19,7 @@ if (!$id_comment) {
     }
 
     // verif de droits
-    elseif ($comment['user_comment'] != $_SESSION['user']['id_user'] && !allowed('comment_delete_any')) {
+    elseif ($comment['user_comment'] != (string) getUser()->getIdUser() && !allowed('comment_delete_any')) {
         echo "<p class='erreur'>Vous n'avez pas les droits pour supprimer ce commentaire.</p>";
     }
 
@@ -34,7 +34,7 @@ if (!$id_comment) {
 
 			<?php
             // mon commentaire
-            if ($comment['user_comment'] == $_SESSION['user']['id_user']) {
+            if ($comment['user_comment'] == (string) getUser()->getIdUser()) {
                 inclure('infos-supprimer-mon-commentaire');
             }
         // ce commentaire (droit special)

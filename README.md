@@ -22,13 +22,15 @@ Le code de cet environment se trouve dans `/home/kahe0589/test.clubalpinlyon.fr`
 
 ## local setup
 
- - cp public/config/config.php.tpl public/config/config.php
- - cp public/config/db_config.php.tpl public/config/db_config.php
- - cp public/config/params.php.tpl public/config/params.php
+ - cp legacy/config/config.php.tpl legacy/config/config.php
+ - cp legacy/config/db_config.php.tpl legacy/config/db_config.php
+ - cp legacy/config/params.php.tpl legacy/config/params.php
  - installer Docker
  - executer Docker host manager (https://github.com/iamluc/docker-hostmanager)
- - executer `make buil up setup-db`
+ - executer `make build up setup-db migrate`
  - vous avez désormais accès au site sur `http://cafsite.caf/`, PHPMyAdmin sur `http://phpmyadmin.caf/`, les accès à PHPMyAdmin sont `root` - `test`
+ - L'accès à l'UI se fait avec "contact@herewecom.com" et mot de passe "test"
+ - Les tests se lancent apres avoir setup l'env de test `make setup-db migrate env=test` puis `make phpunit`
  
 Todo
  - corriger les erreurs 404: https://error404.atomseo.com/SeoCheck/Report/www.clubalpinlyon.fr/2021-09-10/free?from=

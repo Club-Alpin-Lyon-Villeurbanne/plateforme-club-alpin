@@ -150,12 +150,12 @@ function get_niveaux($id_user, $editable = false)
     }
 
     // A t'on les droits de lecture ou les informations nous concernent-elles personnellement ?
-    if (false == $editable && ($userAllowedTo['user_note_comm_read'] || $id_user == $_SESSION['user']['id_user'])) {
+    if (false == $editable && ($userAllowedTo['user_note_comm_read'] || $id_user == (string) getUser()->getIdUser())) {
         $note_comm_read = $userAllowedTo['user_note_comm_read'];
 
         // ON r�cup�re les identifiants commission en lecture
         $req = 'SELECT `id_commission` FROM `'.$pbd.'commission` ';
-        if ('true' === $note_comm_read || $id_user == $_SESSION['user']['id_user']) {
+        if ('true' === $note_comm_read || $id_user == (string) getUser()->getIdUser()) {
         } else {
             $tab = explode('|', $note_comm_read);
             $comms = [];
@@ -727,7 +727,7 @@ function mon_inscription($id_evt)
     global $userAllowedTo, $pbd;
     $my_choices = false;
 
-    $req = 'SELECT * FROM `'.$pbd."evt_join` WHERE `evt_evt_join` = $id_evt AND `user_evt_join` = ".$_SESSION['user']['id_user'].' LIMIT 1;';
+    $req = 'SELECT * FROM `'.$pbd."evt_join` WHERE `evt_evt_join` = $id_evt AND `user_evt_join` = ".getUser()->getIdUser().' LIMIT 1;';
     $result = $mysqli->query($req);
     while ($row = $result->fetch_assoc()) {
         $my_choices = $row;
@@ -916,7 +916,7 @@ function get_future_destinations($can_modify = false, $for_event_creation = fals
 
     $destinations = [];
 
-    $mon_id = $mysqli->real_escape_string($_SESSION['user']['id_user']);
+    $mon_id = $mysqli->real_escape_string(getUser()->getIdUser());
     $req = 'SELECT * FROM `'.$pbd."destination`
 	        WHERE `date` > '".date('Y-m-d H:i:s')."' ";
     if ($for_event_creation) {

@@ -229,6 +229,7 @@ class CafUser implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->attrs = new ArrayCollection();
+        $this->createdUser = time();
     }
 
     public function getAttributes()
@@ -617,7 +618,7 @@ class CafUser implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see PasswordAuthenticatedUserInterface
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->getMdpUser();
     }

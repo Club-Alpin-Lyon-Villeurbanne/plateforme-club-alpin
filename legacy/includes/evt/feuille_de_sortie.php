@@ -5,23 +5,19 @@ if (admin() ||
     (
         user() &&
         (
-            $evt['user_evt'] == $_SESSION['user']['id_user'] ||
+            $evt['user_evt'] == (string) getUser()->getIdUser() ||
             allowed('evt_validate_all') ||
             allowed('evt_join_doall') ||
             'encadrant' == $monStatut || 'coencadrant' == $monStatut ||
             allowed('evt_validate', 'commission:'.$evt['code_commission'])
-        ) ||
-        (
-            $_SESSION['user']['status'] &&
-            in_array('Salarié', $_SESSION['user']['status'], true)
-        ) ||
+        )
+        || getUser()->hasAttribute('Salarié') ||
         (
             (
                 allowed('evt_join_notme') || allowed('evt_unjoin_notme') ||
                 allowed('evt_joining_accept') || allowed('evt_joining_refuse')
             ) && (
-                $_SESSION['user']['status'] &&
-                in_array('Resp. de commission, '.$evt['code_commission'], $_SESSION['user']['status'], true)
+                getUser()->hasAttribute('Resp. de commission', $evt['code_commission'])
             )
         )
     )

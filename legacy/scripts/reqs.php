@@ -33,7 +33,6 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
     // définition de la variable de page 'current_commission' si elle est précisée dans l'URL
     if ($p2 == $handle['code_commission']) {
-        // $_SESSION['current_commission=$p2;
         $current_commission = $p2;
     }
     // variable de commission si elle est passée "en force" dans les vars GET
@@ -120,9 +119,9 @@ if (user()) {
 }
 
 // PROFIL : infos generales, d'avantage d'info que dans la session seule
-if ('profil' == $p1 && 'infos' == $p2) {
+if ('profil' == $p1 && 'infos' == $p2 && getUser()) {
     $tmpUser = false;
-    $req = 'SELECT * FROM '.$pbd.'user WHERE id_user='.(int) ($_SESSION['user']['id_user']).' LIMIT 1';
+    $req = 'SELECT * FROM '.$pbd.'user WHERE id_user='.getUser()->getIdUser().' LIMIT 1';
     $handleSql = $mysqli->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // filiation : ais-je des "enfants"
@@ -160,7 +159,7 @@ elseif ('profil' == $p1 && 'articles' == $p2) {
 
     $articleTab = [];
     $req = 'SELECT SQL_CALC_FOUND_ROWS * FROM '.$pbd.'article
-			WHERE user_article = '.(int) ($_SESSION['user']['id_user']).'
+			WHERE user_article = '.getUser()->getIdUser().'
 			ORDER BY tsp_crea_article DESC LIMIT '.($limite * ($pagenum - 1)).", $limite";
     $handleSql = $mysqli->query($req);
 
@@ -213,7 +212,7 @@ elseif ('article' == $p1) {
         // on a le droit de voir cet article ?
         if (1 == $handle['status_article'] // publié
             || ((allowed('article_validate_all') || allowed('article_validate')) && $_GET['forceshow']) // ou mode validateur
-            || $handle['user_article'] == $_SESSION['user']['id_user'] // ou j'en suis l'auteur
+            || $handle['user_article'] == (string) getUser()->getIdUser() // ou j'en suis l'auteur
             ) {
             // auteur :
             $req = 'SELECT id_user, nickname_user
@@ -745,7 +744,7 @@ elseif ('creer-une-sortie' == $p1) {
             $req = 'SELECT  id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
 						, title_commission, code_commission
 				FROM '.$pbd.'evt, '.$pbd.'commission
-				WHERE user_evt = '.(int) ($_SESSION['user']['id_user'])."
+				WHERE user_evt = '.getUser()->getIdUser()."
 				AND cycle_master_evt=1
 				AND id_commission = commission_evt
 				AND code_commission = '".$mysqli->real_escape_string($p2)."'
@@ -859,7 +858,7 @@ elseif ('creer-une-sortie' == $p1) {
                         $req = 'SELECT id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
 				FROM '.$pbd.'evt, '.$pbd.'commission
 				WHERE id_evt='.$handle['cycle_parent_evt'].'
-				AND user_evt != '.(int) ($_SESSION['user']['id_user']).'
+				AND user_evt != '.getUser()->getIdUser().'
 				AND cycle_master_evt=1
 				ORDER BY tsp_evt DESC
 				LIMIT 1';
@@ -942,9 +941,9 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     $handle['cancelled_evt'] = 1;
                 }
                 // ou je suis responsable de la destination
-                if ($destination['id_user_who_create'] == $_SESSION['user']['id_user']
-                        || $destination['id_user_responsable'] == $_SESSION['user']['id_user']
-                        || $destination['id_user_adjoint'] == $_SESSION['user']['id_user']
+                if ($destination['id_user_who_create'] == (string) getUser()->getIdUser()
+                        || $destination['id_user_responsable'] == (string) getUser()->getIdUser()
+                        || $destination['id_user_adjoint'] == (string) getUser()->getIdUser()
                 ) {
                     $on_peut_voir = true;
                 }
@@ -955,7 +954,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                 ($on_peut_voir && (1 == $handle['status_evt'])) // publiée
                 || (allowed('evt_validate') && $_GET['forceshow']) // ou mode validateur
                 || (allowed('evt_validate_all') && $_GET['forceshow']) // ou mode validateur
-                || $handle['user_evt'] == $_SESSION['user']['id_user'] // ou j'en suis l'auteur ? QUID de l'encadrant ?
+                || $handle['user_evt'] == (string) getUser()->getIdUser() // ou j'en suis l'auteur ? QUID de l'encadrant ?
             ) {
                 $current_commission = $handle['code_commission'];
 
@@ -1069,7 +1068,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
 
                 $req = 'SELECT * FROM '.$pbd."evt_join
                     WHERE evt_evt_join=$id_evt
-                    AND user_evt_join=".(int) ($_SESSION['user']['id_user']).'
+                    AND user_evt_join=".getUser()->getIdUser().'
                     ORDER BY tsp_evt_join DESC
                     LIMIT 1';
                 $handleSql2 = $mysqli->query($req);
@@ -1122,8 +1121,8 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
 
                     // si je suis chef de famille (filiations) je rajoute la liste de mes "enfants" pour les inscrire
                     $filiations = [];
-                    if ('' !== $_SESSION['user']['cafnum_user']) {
-                        $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, civ_user, email_user, tel_user, cafnum_user FROM '.$pbd."user WHERE cafnum_parent_user LIKE '".$mysqli->real_escape_string($_SESSION['user']['cafnum_user'])."' LIMIT 15";
+                    if (getUser()->getCafnumUser()) {
+                        $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, civ_user, email_user, tel_user, cafnum_user FROM '.$pbd."user WHERE cafnum_parent_user LIKE '".$mysqli->real_escape_string(getUser()->getCafnumUser())."' LIMIT 15";
                         $handleSql2 = $mysqli->query($req);
                         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                             $filiations[] = $handle2;
@@ -1156,14 +1155,14 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
             ('destination' == $p1 || 'feuille-de-sortie' == $p1) && '1' === $dest['publie'] // Correctif CRI le 23/08/15
             || (
                 user() &&
-                ($dest['id_user_who_create'] == $_SESSION['user']['id_user'] // ou j'en suis l'auteur
-                    || $dest['id_user_responsable'] == $_SESSION['user']['id_user'] // ou j'en le resp.
-                    || $dest['id_user_adjoint'] == $_SESSION['user']['id_user'] // ou j'en suis le coresp.
+                ($dest['id_user_who_create'] == (string) getUser()->getIdUser() // ou j'en suis l'auteur
+                    || $dest['id_user_responsable'] == (string) getUser()->getIdUser() // ou j'en le resp.
+                    || $dest['id_user_adjoint'] == (string) getUser()->getIdUser() // ou j'en suis le coresp.
                     || (allowed('destination_activer_desactiver') && $_GET['forceshow']) // ou mode validateur
                     || (allowed('destination_supprimer') && $_GET['forceshow']) // ou mode validateur
                     || (allowed('destination_modifier') && $_GET['forceshow']) // ou mode validateur
                     || (admin() || superadmin()) // ou mode validateur
-                    || in_array($_SESSION['user']['id_user'], get_all_encadrants_destination($id_destination), true) // je suis l'un des co/encadrant de l'une des sorties
+                    || in_array((string) getUser()->getIdUser(), get_all_encadrants_destination($id_destination), true) // je suis l'un des co/encadrant de l'une des sorties
                 )
             )
         ) {
@@ -1183,8 +1182,8 @@ elseif ('annuler-une-sortie' == $p1) {
         $id_destination = (int) (substr(strrchr($p3, '-'), 1));
         $destination = get_destination($id_destination);
         if (allowed('destination_supprimer')
-            || $destination['id_user_responsable'] == $_SESSION['user']['id_user']
-            || $destination['id_user_adjoint'] == $_SESSION['user']['id_user']
+            || $destination['id_user_responsable'] == (string) getUser()->getIdUser()
+            || $destination['id_user_adjoint'] == (string) getUser()->getIdUser()
         ) {
             $destination['joins'] = [];
             $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user

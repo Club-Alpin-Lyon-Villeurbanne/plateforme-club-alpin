@@ -70,7 +70,6 @@ if (user()) {
 						AND nomade_user=1
 						ORDER BY created_user DESC
 						LIMIT 1000';
-        //AND nomade_parent_user=".intval($_SESSION['user']['id_user'])."
         $result = $mysqli->query($req);
         while ($row = $result->fetch_assoc()) {
             echo '<option value="'.(int) ($row['id_user']).'">'.html_utf8($row['cafnum_user'].' - '.$row['firstname_user'].' '.$row['lastname_user']).' - le '.date('d/m/y', $row['created_user']).'</option>';

@@ -65,9 +65,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
 $mysqli->close();
 
-// et si on modifie ses propres données, rechargeons donc notre session
-user_login($_SESSION['user']['email_user']);
-
 // log admin
 if (!isset($errTab) || 0 === count($errTab)) {
     mylog('user_attr_add', "Attribution d'un nouveau droit (id=$id_usertype) à un user (id=$id_user)");

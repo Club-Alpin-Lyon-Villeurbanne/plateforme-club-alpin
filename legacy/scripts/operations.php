@@ -1,27 +1,11 @@
 <?php
 
-// quitter la session admin
-if ($_GET['quitadmin']) {
-    admin_stop();
-}
-// quitter la session user
-if ($_GET['user_logout']) {
-    user_logout();
-    header('Location: accueil.html');
-}
-
-// if($_POST['operation'])	$errTab=array();
 $errTab = [];
 $operationsDir = __DIR__.'/operations/';
 
 /* -------------------------- **/
 /* OPERATIONS SPECIFIQUES CAF **/
 /* -------------------------- **/
-
-// SPECIAL : REINIT MDP : seconde étape (confirmation depuis le lien dans l'email
-if ('mot-de-passe-perdu' == $p1 && $p2) {
-    include $operationsDir.'operations.mot-de-passe-perdu.php';
-}
 
 // SPECIAL : REINIT EMAIL : seconde étape (confirmation depuis le lien dans l'email
 if ('email-change' == $p1 && $p2) {
@@ -223,11 +207,6 @@ if ('user_subscribe' == $_POST['operation']) {
     include $operationsDir.'operations.user_subscribe.php';
 }
 
-// USER : LOGIN
-if ('user_login' == $_POST['operation']) {
-    include $operationsDir.'operations.user_login.php';
-}
-
 // USER : ajout de l'attribut à l'user (type salarié, encadrant etc...)
 if ('user_attr_add' == $_POST['operation']) {
     include $operationsDir.'operations.user_attr_add.php';
@@ -386,7 +365,6 @@ if ('fichier_adherents_maj' == $_POST['operation']) {
                 if (!move_uploaded_file($_FILES['file']['tmp_name'][$i], __DIR__.'/../../public/ftp/fichiers-proteges/'.$_FILES['file']['name'][$i])) {
                     $errTab[] = 'Erreur de déplacement du fichier '.$_FILES['file']['name'][$i];
                 }
-                // $errTab[]="Erreur de déplacement du fichier ".$_FILES['file']['name'][$i]." vers ".'ftp/fichiers-proteges/'.$_FILES['file']['name'][$i];
             }
         }
 
@@ -394,11 +372,6 @@ if ('fichier_adherents_maj' == $_POST['operation']) {
             $errTab[] = 'Aucun fichier reçu ne correspond, opération ignorée';
         }
     }
-}
-
-// USER : RESET MDP
-if ('user_mdp_reinit' == $_POST['operation']) {
-    include $operationsDir.'operations.user_mdp_reinit.php';
 }
 
 // ADMIN : ajout de l'attribut à l'user (type admin, rédacteur etc...)
@@ -464,13 +437,6 @@ if ('pagelibre_del' == $_POST['operation'] && admin()) {
     include $operationsDir.'operations.pagelibre_del.php';
 }
 
-// ADMIN : VOL DE SESSION (variables GET pour ce coup là)
-if ('steal_session' == $_GET['operation'] && admin()) {
-    $email_user = $_GET['email_user'];
-    mylog('steal_session', "infiltration d'un user ($email_user)");
-    user_login($email_user);
-}
-
 /* -------------------------- **/
 /* OPERATIONS BASE      **/
 /* -------------------------- **/
@@ -508,7 +474,6 @@ if ('majBd' == $_POST['operation'] && admin()) {
     if (!$champ) {
         $errTab[] = 'Champ manquant';
     }
-    // if(!$val) $errTab[]="Val manquante";
     if (!$id) {
         $errTab[] = 'ID manquant';
     }
