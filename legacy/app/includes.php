@@ -1,11 +1,25 @@
 <?php
 
+use Sentry\Event;
+use Sentry\EventHint;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
 require_once __DIR__.'/../../vendor/autoload.php';
 
 $config = require __DIR__.'/../config/config.php';
 
 if (isset($config['sentry_dsn'])) {
-    Sentry\init(['dsn' => $config['sentry_dsn']]);
+    Sentry\init([
+        'dsn' => $config['sentry_dsn'],
+        'before_send' => function (Event $event, ?EventHint $hint): ?Event {
+            // Ignore the event if the original exception is an instance of NotFoundHttpException
+            if (null !== $hint && $hint->exception instanceof NotFoundHttpException) {
+                return null;
+            }
+
+            return $event;
+        },
+    ]);
 }
 
 if (\PHP_SAPI !== 'cli' && isset($_SERVER['HTTP_HOST']) && $config['https'] && !isset($_SERVER['HTTPS'])) {
