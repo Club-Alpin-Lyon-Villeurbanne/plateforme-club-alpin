@@ -1,5 +1,8 @@
 <?php
 
+global $dossier;
+global $p_ftp_masquer;
+
 include __DIR__.'/../app/includes.php';
 
 if (!admin()) {

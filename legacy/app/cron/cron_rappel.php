@@ -1,5 +1,12 @@
 <?php
 
+global $chron_savedatas;
+global $chron_sendmails;
+global $p_sitename;
+global $p_noreply;
+global $pbd;
+global $mysqli;
+
 /**
  * Cette page a pour fonction d'envoyer les emails de rappels :
  * - RAPPEL D'eVeNEMENTS UTILISATEURS 1 : à X (=4) jours avant evt

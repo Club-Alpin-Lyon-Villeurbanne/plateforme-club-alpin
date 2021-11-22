@@ -1,5 +1,9 @@
 <?php
 
+global $errTab;
+global $p_ftp_proteges;
+global $compte;
+
 include __DIR__.'/../app/includes.php';
 
 if (!admin()) {
