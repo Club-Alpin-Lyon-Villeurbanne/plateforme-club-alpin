@@ -1,4 +1,7 @@
 <?php
+
+global $versCettePage;
+
 if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page'] && !superadmin())) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {

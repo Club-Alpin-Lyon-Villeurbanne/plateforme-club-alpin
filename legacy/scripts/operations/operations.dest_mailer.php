@@ -1,5 +1,7 @@
 <?php
 
+global $userAllowedTo, $pbd;
+
 $errTab = $errTabMail = [];
 $id_transporteur = $id_destination = $destination = $encadrants = null;
 

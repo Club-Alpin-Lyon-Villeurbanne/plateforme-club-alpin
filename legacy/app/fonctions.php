@@ -1,5 +1,22 @@
 <?php
 
+global $_POST;
+global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
+global $CONTENUS_INLINE;
+global $contLog;
+global $lang;
+global $p_abseditlink;
+global $p_devmode;
+global $p_inclurelist;
+global $p_racine;
+global $p_time;
+global $p_utf8;
+global $pbd;
+global $president;
+global $userAllowedTo; // liste des opérations auxquelles l'user est autorisé. tableau associatif : la clé est le code de l'opératin, sa valeur les parametres
+global $versCettePage;
+global $vicepresident;
+
 // gestion des contenus
 $contLog = [];
 $CONTENUS_HTML = [];
