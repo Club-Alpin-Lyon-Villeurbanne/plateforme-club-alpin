@@ -6,6 +6,10 @@
  * create a subclass instead and customise that.
  * That way all your changes will be retained when PHPMailer is updated.
  */
+global $p_smtp_use;
+global $p_smtp;
+global $p_noreply;
+global $p_sitename;
 
 //Import PHPMailer classes into the global namespace
 use PHPMailer\PHPMailer\PHPMailer;

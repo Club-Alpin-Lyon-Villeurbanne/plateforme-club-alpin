@@ -1,5 +1,8 @@
 <?php
 
+global $_POST;
+global $userAllowedTo, $pbd;
+
 /*
     Récupération des sorties d'un utilisateur
     ET affichage
