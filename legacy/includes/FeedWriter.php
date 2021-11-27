@@ -29,7 +29,7 @@ define('ATOM', 'ATOM');
      /**
       * Constructor.
       *
-      * @param    constant    the version constant (RSS1/RSS2/ATOM)
+      * @param constant    the version constant (RSS1/RSS2/ATOM)
       */
      public function __construct($version = RSS2)
      {
@@ -48,8 +48,8 @@ define('ATOM', 'ATOM');
      /**
       * Set a channel element.
       *
-      * @param    srting  name of the channel tag
-      * @param    string  content of the channel tag
+      * @param string  name of the channel tag
+      * @param string  content of the channel tag
       *
       * @return   void
       */
@@ -62,7 +62,7 @@ define('ATOM', 'ATOM');
       * Set multiple channel elements from an array. Array elements
       * should be 'channelName' => 'channelContent' format.
       *
-      * @param    array   array of channels
+      * @param array   array of channels
       *
       * @return   void
       */
@@ -104,7 +104,7 @@ define('ATOM', 'ATOM');
      /**
       * Add a FeedItem to the main class.
       *
-      * @param    object  instance of FeedItem class
+      * @param object  instance of FeedItem class
       *
       * @return   void
       */
@@ -118,7 +118,7 @@ define('ATOM', 'ATOM');
      /**
       * Set the 'title' channel element.
       *
-      * @param    srting  value of 'title' channel tag
+      * @param string  value of 'title' channel tag
       *
       * @return   void
       */
@@ -130,7 +130,7 @@ define('ATOM', 'ATOM');
      /**
       * Set the 'description' channel element.
       *
-      * @param    srting  value of 'description' channel tag
+      * @param string  value of 'description' channel tag
       *
       * @return   void
       */
@@ -142,7 +142,7 @@ define('ATOM', 'ATOM');
      /**
       * Set the 'link' channel element.
       *
-      * @param    srting  value of 'link' channel tag
+      * @param string  value of 'link' channel tag
       *
       * @return   void
       */
@@ -154,9 +154,9 @@ define('ATOM', 'ATOM');
      /**
       * Set the 'image' channel element.
       *
-      * @param    srting  title of image
-      * @param    srting  link url of the imahe
-      * @param    srting  path url of the image
+      * @param string  title of image
+      * @param string  link url of the imahe
+      * @param string  path url of the image
       *
       * @return   void
       */
@@ -168,7 +168,7 @@ define('ATOM', 'ATOM');
      /**
       * Set the 'about' channel element. Only for RSS 1.0.
       *
-      * @param    srting  value of 'about' channel tag
+      * @param string  value of 'about' channel tag
       *
       * @return   void
       */
@@ -180,11 +180,11 @@ define('ATOM', 'ATOM');
      /**
       * Genarates an UUID.
       *
-      * @author     Anis uddin Ahmad <admin@ajaxray.com>
-      *
-      * @param      string  an optional prefix
+      * @param string  an optional prefix
       *
       * @return     string  the formated uuid
+      *
+      * @author     Anis uddin Ahmad <admin@ajaxray.com>
       */
      public function uuid($key = null, $prefix = '')
      {
@@ -248,9 +248,9 @@ define('ATOM', 'ATOM');
      /**
       * Creates a single node as xml format.
       *
-      * @param    srting  name of the tag
-      * @param    mixed   tag value as string or array of nested tags in 'tagName' => 'tagValue' format
-      * @param    array   Attributes(if any) in 'attrName' => 'attrValue' format
+      * @param string  name of the tag
+      * @param mixed   tag value as string or array of nested tags in 'tagName' => 'tagValue' format
+      * @param array   Attributes(if any) in 'attrName' => 'attrValue' format
       *
       * @return   string  formatted xml tag
       */
@@ -296,13 +296,13 @@ define('ATOM', 'ATOM');
      {
          //Start channel tag
          switch ($this->version) {
-           case RSS2:
-                echo '<channel>'.\PHP_EOL;
-                break;
-           case RSS1:
-                echo (isset($this->data['ChannelAbout'])) ? "<channel rdf:about=\"{$this->data['ChannelAbout']}\">" : "<channel rdf:about=\"{$this->channels['link']}\">";
-                break;
-        }
+             case RSS2:
+                 echo '<channel>'.\PHP_EOL;
+                 break;
+             case RSS1:
+                 echo (isset($this->data['ChannelAbout'])) ? "<channel rdf:about=\"{$this->data['ChannelAbout']}\">" : "<channel rdf:about=\"{$this->channels['link']}\">";
+                 break;
+         }
 
          //Print Items of channel
          foreach ($this->channels as $key => $value) {
@@ -350,7 +350,7 @@ define('ATOM', 'ATOM');
      /**
       * Make the starting tag of channels.
       *
-      * @param    srting  The vale of about tag which is used for only RSS 1.0
+      * @param string  The vale of about tag which is used for only RSS 1.0
       *
       * @return   void
       */
@@ -382,12 +382,4 @@ define('ATOM', 'ATOM');
              echo '</entry>'.\PHP_EOL;
          }
      }
-
-     // End # private functions ----------------------------------------------
- } // end of class FeedWriter
-
-// autoload classes
-function __autoload($class_name)
-{
-    require_once $class_name.'.php';
-}
+ }
