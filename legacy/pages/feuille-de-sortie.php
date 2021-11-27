@@ -1,7 +1,7 @@
 <?php
 
 if (!$evt && !$destination) {
-    include __DIR__.'/404.php';
+    include __DIR__.'/../pages/404.php';
     exit;
 }
 
