@@ -37,9 +37,9 @@ $p_smtp_use = false; // si false phpmailer mail(), si true phpmailer smtp
 $p_smtp = [
     'host' => 'smtp.eu.mailgun.org',
     'port' => '465',
+    'ssl' => true,
     'user' => 'postmaster@mg.clubalpinlyon.fr',
     'pass' => 'MAILCHIMP_PASSWORD_TO_REPLACE',
-    //'debug' => true
 ];
 
 // Transporteur :
