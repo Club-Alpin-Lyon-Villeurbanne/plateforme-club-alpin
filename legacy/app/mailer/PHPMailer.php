@@ -102,7 +102,7 @@ class PHPMailer
      *
      * @var string
      */
-    public $From = 'root@localhost.dev';
+    public $From = 'root@localhost';
 
     /**
      * The From name of the message.
