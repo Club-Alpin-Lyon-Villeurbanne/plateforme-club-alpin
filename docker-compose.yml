@@ -43,3 +43,5 @@ services:
             MARIADB_ROOT_PASSWORD: test
             MARIADB_DATABASE: caf
 
+    mailcatcher:
+        image: jderusse/mailcatcher

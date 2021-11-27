@@ -15,6 +15,12 @@ global $p_sitename;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
+global $p_racine;
+global $p_smtp_use;
+global $p_smtp;
+global $p_noreply;
+global $p_sitename;
+
 require __DIR__.'/Exception.php';
 require __DIR__.'/PHPMailer.php';
 require __DIR__.'/SMTP.php';
@@ -38,6 +44,12 @@ class CAFPHPMailer extends PHPMailer
      */
     public function __construct($exceptions = false, $useBCC = false)
     {
+        global $p_racine;
+        global $p_smtp_use;
+        global $p_smtp;
+        global $p_noreply;
+        global $p_sitename;
+
         //Don't forget to do this or other things may not be set correctly!
         parent::__construct($exceptions);
 
@@ -45,11 +57,6 @@ class CAFPHPMailer extends PHPMailer
         $this->content_full = str_replace('templateimgs/', $p_racine.'app/templates/templateimgs/', $this->content_full);
         $this->content_full = str_replace('[RACINE]', $p_racine, $this->content_full);
         $this->content_full = str_replace('[SITENAME]', $p_sitename, $this->content_full);
-
-        global $p_smtp_use;
-        global $p_smtp;
-        global $p_noreply;
-        global $p_sitename;
 
         // Paramétrer le Mailer pour utiliser SMTP
         if ($p_smtp_use) {
@@ -59,13 +66,17 @@ class CAFPHPMailer extends PHPMailer
             $this->Host = $p_smtp['host'];
             $this->Port = $p_smtp['port'];
             // Accepter SSL
-            $this->SMTPSecure = 'ssl';
+            if ($p_smtp['secure']) {
+                $this->SMTPSecure = 'ssl';
+            }
             // Activer authentication SMTP
-            $this->SMTPAuth = true;
-            // Votre adresse email d'envoi
-            $this->Username = $p_smtp['user'];
-            // Le mot de passe de cette adresse email
-            $this->Password = $p_smtp['pass'];
+            if ($p_smtp['user'] && $p_smtp['pass']) {
+                $this->SMTPAuth = true;
+                // Votre adresse email d'envoi
+                $this->Username = $p_smtp['user'];
+                // Le mot de passe de cette adresse email
+                $this->Password = $p_smtp['pass'];
+            }
 
             //$this->SMTPDebug = 4;
         }
