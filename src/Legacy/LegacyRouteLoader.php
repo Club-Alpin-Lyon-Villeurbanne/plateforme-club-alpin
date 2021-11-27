@@ -49,7 +49,7 @@ class LegacyRouteLoader extends Loader
             $collection->add($routeName, new Route($legacyScriptFile->getRelativePathname(), [
                 '_controller' => 'App\Controller\LegacyController::loadLegacyScript',
                 'requestPath' => '/'.$legacyScriptFile->getRelativePathname(),
-                'legacyScript' => $legacyScriptFile->getPathname(),
+                'legacyScript' => '/legacy/'.$legacyScriptFile->getRelativePathname(),
             ]));
         }
 
