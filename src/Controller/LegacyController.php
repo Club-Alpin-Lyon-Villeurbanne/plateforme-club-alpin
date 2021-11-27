@@ -43,7 +43,7 @@ class LegacyController
 
     /**
      * @Route(
-     *     name="legacy_rss",
+     *     name="legacy_img_adresse",
      *     path="/img/adresse-website.png",
      *     methods={"GET"}
      * )
@@ -61,7 +61,7 @@ class LegacyController
 
     /**
      * @Route(
-     *     name="legacy_logo",
+     *     name="legacy_img_logo",
      *     path="/img/logo.png",
      *     methods={"GET"}
      * )
