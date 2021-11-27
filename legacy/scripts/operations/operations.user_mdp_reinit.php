@@ -31,8 +31,9 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     } else {
         $mdp_user = md5($mdp_user);
     }
-    $req = 'INSERT INTO `'.$pbd."user_mdpchange` ( `id_user_mdpchange` , `user_user_mdpchange` , `token_user_mdpchange` , `pwd_user_mdpchange` )
-                                                VALUES ('', '".$handle['id_user']."', '$token', '$mdp_user');";
+    $req = 'INSERT INTO `'.$pbd."user_mdpchange`
+                (`user_user_mdpchange` , `token_user_mdpchange` , `pwd_user_mdpchange` )
+                VALUES ('".$handle['id_user']."', '$token', '$mdp_user');";
     if (!$mysqli->query($req)) {
         $errTab[] = 'Erreur SQL : '.$mysqli->error;
         error_log($mysqli->error);
