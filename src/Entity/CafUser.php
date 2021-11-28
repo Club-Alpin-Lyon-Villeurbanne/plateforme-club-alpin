@@ -33,7 +33,7 @@ class CafUser implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="email_user", type="string", length=200, nullable=false, unique=true)
+     * @ORM\Column(name="email_user", type="string", length=200, nullable=true, unique=true)
      */
     private $emailUser;
 

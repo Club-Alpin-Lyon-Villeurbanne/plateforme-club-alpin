@@ -28,7 +28,7 @@ class CafUserAttr
     private $user;
 
     /**
-     * @ORM\OneToOne(targetEntity="CafUsertype")
+     * @ORM\ManyToOne(targetEntity="CafUsertype")
      * @ORM\JoinColumn(name="usertype_user_attr", referencedColumnName="id_usertype")
      */
     private $userType;
