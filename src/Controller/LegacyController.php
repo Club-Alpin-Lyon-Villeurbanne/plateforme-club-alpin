@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -22,6 +23,18 @@ class LegacyController
 
             require $legacyDir.$path;
         });
+    }
+
+    /**
+     * @Route(
+     *     name="legacy_admin_root",
+     *     path="/admin/",
+     *     methods={"GET"}
+     * )
+     */
+    public function legacyAdminAction()
+    {
+        return new RedirectResponse('/admin/index.php');
     }
 
     /**
