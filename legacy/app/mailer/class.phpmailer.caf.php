@@ -6,20 +6,10 @@
  * create a subclass instead and customise that.
  * That way all your changes will be retained when PHPMailer is updated.
  */
-global $p_smtp_use;
-global $p_smtp;
-global $p_noreply;
-global $p_sitename;
 
 //Import PHPMailer classes into the global namespace
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
-
-global $p_racine;
-global $p_smtp_use;
-global $p_smtp;
-global $p_noreply;
-global $p_sitename;
 
 require __DIR__.'/Exception.php';
 require __DIR__.'/PHPMailer.php';
@@ -44,51 +34,47 @@ class CAFPHPMailer extends PHPMailer
      */
     public function __construct($exceptions = false, $useBCC = false)
     {
-        global $p_racine;
-        global $p_smtp_use;
-        global $p_smtp;
-        global $p_noreply;
-        global $p_sitename;
+        $config = require __DIR__.'/../../config/config.php';
 
         //Don't forget to do this or other things may not be set correctly!
         parent::__construct($exceptions);
 
         $this->content_full = implode("\n", file(__DIR__.'/../../app/templates/email1.html'));
-        $this->content_full = str_replace('templateimgs/', $p_racine.'app/templates/templateimgs/', $this->content_full);
-        $this->content_full = str_replace('[RACINE]', $p_racine, $this->content_full);
-        $this->content_full = str_replace('[SITENAME]', $p_sitename, $this->content_full);
+        $this->content_full = str_replace('templateimgs/', $config['url'].'/app/templates/templateimgs/', $this->content_full);
+        $this->content_full = str_replace('[RACINE]', $config['url'], $this->content_full);
+        $this->content_full = str_replace('[SITENAME]', 'CAF Lyon Villeurbanne', $this->content_full);
 
         // Paramétrer le Mailer pour utiliser SMTP
-        if ($p_smtp_use) {
+        if ($config['use_smtp']) {
             $this->isSMTP();
 
             // Spécifier le serveur SMTP
-            $this->Host = $p_smtp['host'];
-            $this->Port = $p_smtp['port'];
+            $this->Host = $config['smtp_conf']['host'];
+            $this->Port = $config['smtp_conf']['port'];
             // Accepter SSL
-            if ($p_smtp['secure']) {
+            if ($config['smtp_conf']['secure']) {
                 $this->SMTPSecure = 'ssl';
             }
             // Activer authentication SMTP
-            if ($p_smtp['user'] && $p_smtp['pass']) {
+            if ($config['smtp_conf']['user'] && $config['smtp_conf']['pass']) {
                 $this->SMTPAuth = true;
                 // Votre adresse email d'envoi
-                $this->Username = $p_smtp['user'];
+                $this->Username = $config['smtp_conf']['user'];
                 // Le mot de passe de cette adresse email
-                $this->Password = $p_smtp['pass'];
+                $this->Password = $config['smtp_conf']['pass'];
             }
 
             //$this->SMTPDebug = 4;
         }
 
-        $this->SetFrom($p_noreply, $p_sitename);
+        $this->SetFrom('ne-pas-repondre@clubalpinlyon.fr', 'CAF Lyon Villeurbanne');
         $this->CharSet = 'UTF-8';
         $this->AltBody = 'Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)'; // optional, comment out and test
         $this->IsHTML(true);
         $this->XMailer = 'CAF-Mailer';
 
         if ($useBCC) {
-            $this->AddBCC($p_noreply);
+            $this->AddBCC('ne-pas-repondre@clubalpinlyon.fr');
         }
 
         //This should be the same as the domain of your From address
