@@ -20,16 +20,6 @@ $p_sitename='Club Alpin Français - XXX';
 $p_contactdusite='webmaster@xxx.fr';
 $p_noreply='noreply@xxx.fr';
 
-$p_smtp_use = true; // si false phpmailer mail(), si true phpmailer smtp
-// Attention, compte gmail : @noreply  doit etre le meme que @SMTP
-$p_smtp = array(
-	'host' => 'mailcatcher.caf',
-	'port' => 25,
-	'ssl' => false,
-	'user' => '',
-	'pass' => '',
-);
-
 // GOOGLE
 $p_google_analytics_account = 'UA-42585248-1';
 

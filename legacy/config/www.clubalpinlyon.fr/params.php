@@ -32,16 +32,6 @@ $p_url_paiement = 'https://jepaieenligne.systempay.fr/CLUB_ALPIN_FRANCOIS_LYON';
 $p_url_validation_paiement = 'https://paiement.systempay.fr/vads-merchant/';
 $p_email_paiement = 'secretariat@clubalpinlyon.fr';
 
-$p_smtp_use = false; // si false phpmailer mail(), si true phpmailer smtp
-// Attention, compte gmail : @noreply  doit etre le meme que @SMTP
-$p_smtp = [
-    'host' => 'smtp.eu.mailgun.org',
-    'port' => '465',
-    'ssl' => true,
-    'user' => 'postmaster@mg.clubalpinlyon.fr',
-    'pass' => 'MAILCHIMP_PASSWORD_TO_REPLACE',
-];
-
 // Transporteur :
 $p_transporteurs = [
     //'hwc' => array(
