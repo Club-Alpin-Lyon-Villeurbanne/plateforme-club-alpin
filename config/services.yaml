@@ -42,6 +42,10 @@ services:
         arguments:
             $logFilters: !tagged_iterator sentry_handler.log_filter
 
+    App\Mailer\Mailer:
+        arguments:
+            $replyTo: 'no-reply@clubalpinlyon.fr'
+
     Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
         public: true
         arguments:
