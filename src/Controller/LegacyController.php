@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Repository\CafArticleRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-class LegacyController
+class LegacyController extends AbstractController
 {
     /**
      * @Route(
@@ -21,7 +23,9 @@ class LegacyController
             $legacyDir = __DIR__.'/../../legacy/';
             $path = 'index.php';
 
+            ob_start();
             require $legacyDir.$path;
+            ob_end_flush();
         });
     }
 
@@ -50,7 +54,9 @@ class LegacyController
             $legacyDir = __DIR__.'/../../legacy/';
             $path = 'rss.php';
 
+            ob_start();
             require $legacyDir.$path;
+            ob_end_flush();
         });
     }
 
@@ -68,7 +74,9 @@ class LegacyController
             $path = 'index.php';
             $_GET['cstImg'] = 'adresse-website.png';
 
+            ob_start();
             require $legacyDir.$path;
+            ob_end_flush();
         });
     }
 
@@ -86,7 +94,9 @@ class LegacyController
             $path = 'index.php';
             $_GET['cstImg'] = 'logo.png';
 
+            ob_start();
             require $legacyDir.$path;
+            ob_end_flush();
         });
     }
 
@@ -107,7 +117,9 @@ class LegacyController
             $path = 'index.php';
             $_GET['p1'] = $p1;
 
+            ob_start();
             require $legacyDir.$path;
+            ob_end_flush();
         });
     }
 
@@ -122,15 +134,26 @@ class LegacyController
      *     methods={"GET", "POST"}
      * )
      */
-    public function p2Action($p1, $p2)
+    public function p2Action($p1, $p2, CafArticleRepository $articleRepository)
     {
-        return new StreamedResponse(function () use ($p1, $p2) {
+        return new StreamedResponse(function () use ($p1, $p2, $articleRepository) {
             $legacyDir = __DIR__.'/../../legacy/';
             $path = 'index.php';
             $_GET['p1'] = $p1;
-            $_GET['p2'] = $p2;
+            $_GET['p2'] = $current_commission = $p2;
 
+            if ('article' === $p1) {
+                $current_commission = null;
+                $id_article = \array_slice(explode('-', $p2), -1)[0];
+                $article = $articleRepository->find($id_article);
+                if ($article && $article->getCommission()) {
+                    $current_commission = $article->getCommission()->getCodeCommission();
+                }
+            }
+
+            ob_start();
             require $legacyDir.$path;
+            ob_end_flush();
         });
     }
 
@@ -152,10 +175,12 @@ class LegacyController
             $legacyDir = __DIR__.'/../../legacy/';
             $path = 'index.php';
             $_GET['p1'] = $p1;
-            $_GET['p2'] = $p2;
+            $_GET['p2'] = $current_commission = $p2;
             $_GET['p3'] = $p3;
 
+            ob_start();
             require $legacyDir.$path;
+            ob_end_flush();
         });
     }
 
@@ -178,11 +203,13 @@ class LegacyController
             $legacyDir = __DIR__.'/../../legacy/';
             $path = 'index.php';
             $_GET['p1'] = $p1;
-            $_GET['p2'] = $p2;
+            $_GET['p2'] = $current_commission = $p2;
             $_GET['p3'] = $p3;
             $_GET['p4'] = $p4;
 
+            ob_start();
             require $legacyDir.$path;
+            ob_end_flush();
         });
     }
 
@@ -197,7 +224,9 @@ class LegacyController
 
                 chdir(\dirname($legacyScript));
 
+                ob_start();
                 require $legacyScript;
+                ob_end_flush();
             }
         );
     }
