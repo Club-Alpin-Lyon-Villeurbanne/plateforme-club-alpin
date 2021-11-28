@@ -15,7 +15,6 @@ final class Version20211127134619 extends AbstractMigration
         $this->addSql('UPDATE caf_article SET commission_article = NULL WHERE commission_article NOT IN (SELECT id_commission FROM caf_commission)');
         $this->addSql('ALTER TABLE caf_article ADD CONSTRAINT FK_A0BDE6C7ABEFE8B6 FOREIGN KEY (commission_article) REFERENCES caf_commission (id_commission)');
         $this->addSql('CREATE INDEX IDX_A0BDE6C7ABEFE8B6 ON caf_article (commission_article)');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_F3DC19BF1E33E745 ON caf_content_html (code_content_html)');
         $this->addSql('ALTER TABLE caf_evt CHANGE user_evt user_evt BIGINT NOT NULL');
         $this->addSql('ALTER TABLE caf_evt ADD CONSTRAINT FK_197AA7E7446DA07 FOREIGN KEY (user_evt) REFERENCES caf_user (id_user)');
         $this->addSql('ALTER TABLE caf_evt ADD CONSTRAINT FK_197AA7ED1CB2CA1 FOREIGN KEY (commission_evt) REFERENCES caf_commission (id_commission)');
@@ -35,7 +34,6 @@ final class Version20211127134619 extends AbstractMigration
         $this->addSql('ALTER TABLE caf_article DROP FOREIGN KEY FK_A0BDE6C7ABEFE8B6');
         $this->addSql('DROP INDEX IDX_A0BDE6C7ABEFE8B6 ON caf_article');
         $this->addSql('ALTER TABLE caf_article CHANGE commission_article commission_article INT NOT NULL COMMENT \'ID Commission liée (facultativ)\', CHANGE status_who_article status_who_article INT NOT NULL COMMENT \'ID du membre qui change le statut\', CHANGE tsp_validate_article tsp_validate_article INT NOT NULL, CHANGE nb_vues_article nb_vues_article INT NOT NULL');
-        $this->addSql('DROP INDEX UNIQ_F3DC19BF1E33E745 ON caf_content_html');
         $this->addSql('ALTER TABLE caf_evt DROP FOREIGN KEY FK_197AA7E7446DA07');
         $this->addSql('ALTER TABLE caf_evt DROP FOREIGN KEY FK_197AA7ED1CB2CA1');
         $this->addSql('DROP INDEX IDX_197AA7E7446DA07 ON caf_evt');

@@ -7,7 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * CafContentHtml.
  *
- * @ORM\Table(name="caf_content_html", indexes={@ORM\Index(name="contenu_content_html", columns={"contenu_content_html"})})
+ * @ORM\Table(
+ *     name="caf_content_html",
+ *     indexes={@ORM\Index(name="contenu_content_html", columns={"contenu_content_html"})},
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="unique_content", columns={"code_content_html", "current_content_html"})}
+ * )
  * @ORM\Entity
  */
 class CafContentHtml
@@ -24,7 +28,7 @@ class CafContentHtml
     /**
      * @var string
      *
-     * @ORM\Column(name="code_content_html", type="string", length=100, nullable=false, unique=true)
+     * @ORM\Column(name="code_content_html", type="string", length=100, nullable=false)
      */
     private $codeContentHtml;
 

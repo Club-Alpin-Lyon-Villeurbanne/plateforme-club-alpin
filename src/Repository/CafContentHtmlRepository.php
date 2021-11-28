@@ -23,6 +23,7 @@ class CafContentHtmlRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('c')
             ->where('c.codeContentHtml = :code')
+            ->andWhere('c.currentContentHtml = 1')
             ->setParameter('code', $codeContent)
             ->getQuery()
             ->getOneOrNullResult()
