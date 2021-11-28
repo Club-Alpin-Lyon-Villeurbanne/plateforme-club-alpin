@@ -21,7 +21,6 @@ class LegacyRouteLoader extends Loader
         $finder
             ->files()
             ->name('*.php')
-            ->notPath('index.php')
             ->notPath('app/cron')
             ->notPath('app/mailer')
             ->notPath('app/templates')
@@ -43,6 +42,10 @@ class LegacyRouteLoader extends Loader
 
         /** @var SplFileInfo $legacyScriptFile */
         foreach ($finder->in(__DIR__.'/../../legacy') as $legacyScriptFile) {
+            if ('index.php' === $legacyScriptFile->getRelativePathname()) {
+                continue;
+            }
+
             $filename = $legacyScriptFile->getRelativePathname();
             $routeName = sprintf('legacy_%s', str_replace('/', '__', $filename));
 
