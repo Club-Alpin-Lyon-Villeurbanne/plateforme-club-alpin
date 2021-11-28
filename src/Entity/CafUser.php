@@ -2,15 +2,19 @@
 
 namespace App\Entity;
 
+use App\Repository\CafUserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * CafUser.
  *
  * @ORM\Table(name="caf_user")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=CafUserRepository::class)
  */
-class CafUser
+class CafUser implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @var int
@@ -20,6 +24,11 @@ class CafUser
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $idUser;
+
+    /**
+     * @ORM\OneToMany(targetEntity="CafUserAttr", mappedBy="user", cascade={"persist"})
+     */
+    private $attrs;
 
     /**
      * @var string
@@ -217,9 +226,51 @@ class CafUser
      */
     private $tsUpdateUser;
 
-    public function getIdUser(): ?string
+    public function __construct()
     {
-        return $this->idUser;
+        $this->attrs = new ArrayCollection();
+    }
+
+    public function getAttributes()
+    {
+        $attributes = $this
+            ->attrs
+            ->map(function (CafUserAttr $cafUserAttr) {
+                return [
+                    'attribute' => $cafUserAttr->getUserType()->getTitleUsertype(),
+                    'priority' => $cafUserAttr->getUserType()->getHierarchieUsertype(),
+                    'commission' => \array_slice(explode(':', $cafUserAttr->getParamsUserAttr()), -1)[0],
+                ];
+            })
+            ->toArray();
+        usort($attributes, fn ($array1, $array2) => $array1['priority'] <=> $array2['priority']);
+
+        return $attributes;
+    }
+
+    public function hasAttribute($attribute = null, $commission = null): bool
+    {
+        if (null === $attribute) {
+            return \count($this->attrs) > 0;
+        }
+
+        foreach ($this->attrs as $cafUserAttr) {
+            if (\in_array($cafUserAttr->getUserType()->getTitleUsertype(), (array) $attribute, true)) {
+                if (null === $commission) {
+                    return true;
+                }
+                if ($commission === \array_slice(explode(':', $cafUserAttr->getParamsUserAttr()), -1)[0]) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public function getIdUser(): ?int
+    {
+        return null !== $this->idUser ? (int) $this->idUser : null;
     }
 
     public function getEmailUser(): ?string
@@ -556,5 +607,60 @@ class CafUser
         $this->tsUpdateUser = $tsUpdateUser;
 
         return $this;
+    }
+
+    public function getRoles()
+    {
+        return ['ROLE_USER'];
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
+    {
+        return $this->getMdpUser();
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->setMdpUser($password);
+
+        return $this;
+    }
+
+    /**
+     * Returning a salt is only needed, if you are not using a modern
+     * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
+     *
+     * @see UserInterface
+     */
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->getEmailUser();
+    }
+
+    public function getUsername()
+    {
+        return (string) $this->getEmailUser();
     }
 }

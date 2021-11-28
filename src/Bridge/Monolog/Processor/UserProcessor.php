@@ -34,9 +34,6 @@ class UserProcessor implements ProcessorInterface
         if (method_exists($user, 'getUuid')) {
             $record['uuid'] = $user->getUuid();
         }
-        if (method_exists($user, 'getEmail')) {
-            $record['email'] = $user->getEmail();
-        }
 
         if (method_exists($user, 'getProviderUsername')) {
             $record['username'] = $user->getProviderUsername();

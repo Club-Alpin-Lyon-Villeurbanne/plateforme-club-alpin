@@ -195,7 +195,7 @@ class CafDestination
 
     public function getPublie(): ?bool
     {
-        return $this->publie;
+        return (bool) $this->publie;
     }
 
     public function setPublie(bool $publie): self

@@ -24,7 +24,7 @@ class CafContentHtml
     /**
      * @var string
      *
-     * @ORM\Column(name="code_content_html", type="string", length=100, nullable=false)
+     * @ORM\Column(name="code_content_html", type="string", length=100, nullable=false, unique=true)
      */
     private $codeContentHtml;
 
