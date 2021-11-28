@@ -1,0 +1,18 @@
+{% extends 'email/mail.html.twig' %}
+
+{% block html %}
+    <tr>
+        <td height="25" valign="middle" style="font-size: 25px; line-height: 25px"></td>
+    </tr>
+    <tr>
+        <td valign="top" style="border: 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                    <td bgcolor="#ffffff" style="background: #ffffff; border-radius: 2px; padding: 15px 20px;">
+                        {% block inner_html '' %}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+{% endblock %}
