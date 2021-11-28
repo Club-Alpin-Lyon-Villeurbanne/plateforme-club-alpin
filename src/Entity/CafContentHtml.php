@@ -9,8 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(
  *     name="caf_content_html",
- *     indexes={@ORM\Index(name="contenu_content_html", columns={"contenu_content_html"})},
- *     uniqueConstraints={@ORM\UniqueConstraint(name="unique_content", columns={"code_content_html", "current_content_html"})}
+ *     indexes={@ORM\Index(name="contenu_content_html", columns={"contenu_content_html"})}
  * )
  * @ORM\Entity
  */
