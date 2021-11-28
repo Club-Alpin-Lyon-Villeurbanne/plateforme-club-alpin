@@ -10,6 +10,11 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $kernelProjectDir: '%kernel.project_dir%'
+            $kernelCacheDir: '%kernel.cache_dir%'
+            $kernelEnvironment: '%kernel.environment%'
+            $recaptchaSecret: '%env(RECAPTCHA_SECRET)%'
 
     _instanceof:
 
@@ -36,3 +41,8 @@ services:
     App\Bridge\Monolog\Handler\SentryHandler:
         arguments:
             $logFilters: !tagged_iterator sentry_handler.log_filter
+
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
+        public: true
+        arguments:
+            - '%env(DATABASE_URL)%'
