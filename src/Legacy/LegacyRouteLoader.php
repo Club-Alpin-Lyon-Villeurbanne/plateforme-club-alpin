@@ -38,6 +38,7 @@ class LegacyRouteLoader extends Loader
             ->notPath('app/usercookies')
             ->notPath('app/langs')
             ->notPath('app/pages')
+            ->notPath('dev.php')
         ;
 
         /** @var SplFileInfo $legacyScriptFile */
