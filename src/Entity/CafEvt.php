@@ -71,18 +71,16 @@ class CafEvt
     private $cancelledWhenEvt;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="user_evt", type="integer", nullable=false, options={"comment": "id user createur"})
+     * @ORM\ManyToOne(targetEntity="CafUser")
+     * @ORM\JoinColumn(name="user_evt", referencedColumnName="id_user", nullable=false)
      */
-    private $userEvt;
+    private $user;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="commission_evt", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="CafCommission")
+     * @ORM\JoinColumn(name="commission_evt", referencedColumnName="id_commission", nullable=false)
      */
-    private $commissionEvt;
+    private $commission;
 
     /**
      * @var int|null
@@ -390,28 +388,14 @@ class CafEvt
         return $this;
     }
 
-    public function getUserEvt(): ?int
+    public function getUser(): ?CafUser
     {
-        return $this->userEvt;
+        return $this->user;
     }
 
-    public function setUserEvt(int $userEvt): self
+    public function getCommission(): CafCommission
     {
-        $this->userEvt = $userEvt;
-
-        return $this;
-    }
-
-    public function getCommissionEvt(): ?int
-    {
-        return $this->commissionEvt;
-    }
-
-    public function setCommissionEvt(int $commissionEvt): self
-    {
-        $this->commissionEvt = $commissionEvt;
-
-        return $this;
+        return $this->commission;
     }
 
     public function getIdGroupe(): ?int
