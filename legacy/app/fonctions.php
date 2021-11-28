@@ -53,42 +53,6 @@ function presidence()
 }
 
 /*
-La fonction "isMobile" permet de detecter les mobiles
-*/
-
-function isMobile()
-{
-    // Check the server headers to see if they're mobile friendly
-    if (isset($_SERVER['HTTP_X_WAP_PROFILE'])) {
-        return true;
-    }
-
-    // If the http_accept header supports wap then it's a mobile too
-    if (preg_match("/wap\.|\.wap/i", $_SERVER['HTTP_ACCEPT'])) {
-        return true;
-    }
-
-    // Still no luck? Let's have a look at the user agent on the browser. If it contains
-    // any of the following, it's probably a mobile device. Kappow!
-    if (isset($_SERVER['HTTP_USER_AGENT'])) {
-        $user_agents = ['midp', 'j2me', 'avantg', 'docomo', 'novarra', 'palmos', 'palmsource', '240x320', 'opwv', 'chtml', 'pda', "windows\ ce", "mmp\/", 'blackberry', "mib\/", 'symbian', 'wireless', 'nokia', 'hand', 'mobi', 'phone', 'cdm', "up\.b", 'audio', "SIE\-", "SEC\-", 'samsung', 'HTC', "mot\-", 'mitsu', 'sagem', 'sony', 'alcatel', 'lg', 'erics', 'vx', 'NEC', 'philips', 'mmm', 'xx', 'panasonic', 'sharp', 'wap', 'sch', 'rover', 'pocket', 'benq', 'java', 'pt', 'pg', 'vox', 'amoi', 'bird', 'compal', 'kg', 'voda', 'sany', 'kdd', 'dbt', 'sendo', 'sgh', 'gradi', 'jb', "\d\d\di", 'moto'];
-        foreach ($user_agents as $user_string) {
-            if (preg_match('/'.$user_string.'/i', $_SERVER['HTTP_USER_AGENT'])) {
-                return true;
-            }
-        }
-    }
-
-    // Let's NOT return "mobile" if it's an iPhone, because the iPhone can render normal pages quite well.
-    if (preg_match('/iphone/i', $_SERVER['HTTP_USER_AGENT'])) {
-        return false;
-    }
-
-    // None of the above? Then it's probably not a mobile device.
-    return false;
-}
-
-/*
 Find URLs in Text, Make Links
 */
 function getUrlFriendlyString($text)
@@ -645,19 +609,6 @@ function linker($link)
     return $link;
 }
 
-// vider les champs vides d'un tableau
-function array_noempty($tab)
-{
-    $tempTab = [];
-    foreach ($tab as $temp) {
-        if ($temp && '' != $temp) {
-            $tempTab[] = $temp;
-        }
-    }
-
-    return $tempTab;
-}
-
 // ma fonction d'insertion élément inline
 function cont($code = false, $html = false)
 {
@@ -796,84 +747,6 @@ function inclure($elt, $style = 'vide', $options = [])
         $p_inclurelist[] = $elt;
     } else {
         echo '<p class="erreur" style="clear:both; ">Erreur de développement : les codes d\'éléments HTML ne peuvent être en doublon dans une même page</p>';
-    }
-}
-// anti brute force
-function antiBruteForce($etape = 'test', $logDir, $login, $maxTry = 3)
-{
-    /*
-    logdir=dossier des fichiers temporaires
-    login=login utilisé
-    maxtry=tentatives max avant blocage
-    etape=juste vérifier l'accès et retourner true or false (0), ou ajouter une fausse réponse et renvoyer false (1)
-    */
-    // le dossier n'existe pas
-    if (!file_exists($logDir)) {
-        if (!mkdir($logDir) && !is_dir($logDir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $logDir));
-        }
-    }
-    // Le fichier n'existe pas encore
-    if (!file_exists($logDir.'/log-'.$login.'.tmp')) {
-        $creation_fichier = fopen($logDir.'/log-'.$login.'.tmp', 'a+'); // On crée le fichier puis on l'ouvre
-        fwrite($creation_fichier, date('d/m/Y').';0'); // On écrit à l'intérieur la date du jour et on met le nombre de tentatives à 1
-        fclose($creation_fichier); // On referme
-        $tentatives = 0;
-    }
-    // Le fichier existe :
-    else {
-        // On ouvre le fichier
-        $fichier_tentatives = fopen($logDir.'/log-'.$login.'.tmp', 'r+');
-        $contenu_tentatives = fgets($fichier_tentatives);
-        $infos_tentatives = explode(';', $contenu_tentatives);
-        // Si la date du fichier est celle d'aujourd'hui, on récupère le nombre de tentatives
-        if ($infos_tentatives[0] == date('d/m/Y')) {
-            $tentatives = $infos_tentatives[1];
-        }
-        // Si la date du fichier est dépassée, on met le nombre de tentatives à 0
-        else {
-            $tentatives = 0; // On met la variable $tentatives à 0
-        }
-        fclose($fichier_tentatives);
-    }
-
-    // vérification simple
-    if ('test' == $etape) {
-        if ($tentatives >= $maxTry) {
-            return false;
-        }
-
-        return true;
-    }
-
-    // incrementation des tentatives
-    if ('plus' == $etape) {
-        ++$tentatives;
-        // on incremente les tentatives
-        $fichier_tentatives = fopen($logDir.'/log-'.$login.'.tmp', 'w');
-        fwrite($fichier_tentatives, date('d/m/Y').';'.($tentatives)); // On écrit à l'intérieur la date du jour et on met le nombre de tentatives à 1
-        fclose($fichier_tentatives); // On referme
-    }
-    // remise à zero
-    if ('raz' == $etape) {
-        $tentatives = 0;
-        $fichier_tentatives = fopen($logDir.'/log-'.$login.'.tmp', 'w');
-        fwrite($fichier_tentatives, date('d/m/Y').';'.($tentatives)); // On écrit à l'intérieur la date du jour et on met le nombre de tentatives à 1
-        fclose($fichier_tentatives); // On referme
-    }
-}
-
-// FONCTIONS UTILES AU FORMULAIRES
-// Checke ou pas une checkbox (tableau ou valeur simple)
-function checkboxVal($inputName, $inputVal = false)
-{
-    // cas d'un checkbox seul
-    if (!is_array($_POST[$inputName])) {
-        echo 'on' == $_POST[$inputName] ? 'checked="checked"' : '';
-    }
-    // tableau
-    elseif (in_array($inputVal, $_POST[$inputName], true)) {
-        echo 'checked="checked"';
     }
 }
 // Affiche (ECHO !!) dans un input hidden ou text le contenu de la variable postée échappée quand elle existe, ou une valeur par défaut
@@ -1047,19 +920,6 @@ function superadmin_start($connectMe = true)
     return true;
 }
 
-// est-ce que c'est un telephone qui visite mon site ?
-function utiliseMobile()
-{
-    $agents = ['Android', 'BlackBerry', 'iPhone', 'Palm'];
-    foreach ($agents as $a) {
-        if (false !== stripos($_SERVER['HTTP_USER_AGENT'], $a)) {
-            return true;
-        }
-    }
-    //return true; // dev test
-    return false;
-}
-
 // check mail
 function isMail($mail)
 {
@@ -1150,28 +1010,4 @@ function normalizeChars($s)
 function getArrayFirstValue($array)
 {
     return $array[0];
-}
-
-/**
- * Function to log into a file on the server
- * The log file will be available under `XXX.clubalpinlyon.fr/deployments/current/log/`.
- *
- * @param string|array $log_msg: the value to log
- */
-function log_to_file($log_msg)
-{
-    $date = new DateTime();
-    $date = $date->format('Y-m-d H:i:s');
-    $env = explode('.', $_SERVER['HTTP_HOST'])[0];
-    $logfile_path = '../log';
-    if (!file_exists($logfile_path)) {
-        if (!mkdir($logfile_path, 0777, true) && !is_dir($logfile_path)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $logfile_path));
-        }
-    }
-    if (is_array($log_msg)) {
-        $log_msg = implode('|', $log_msg);
-    }
-    $log_file_data = $logfile_path.'/log_'.$env.'_s'.date('d-M-Y').'.log';
-    file_put_contents($log_file_data, $date.' >> '.$log_msg."\n", \FILE_APPEND);
 }
