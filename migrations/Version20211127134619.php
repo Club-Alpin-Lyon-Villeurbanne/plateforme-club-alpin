@@ -21,12 +21,11 @@ final class Version20211127134619 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_197AA7E7446DA07 ON caf_evt (user_evt)');
         $this->addSql('CREATE INDEX IDX_197AA7ED1CB2CA1 ON caf_evt (commission_evt)');
         $this->addSql('ALTER TABLE caf_token CHANGE id_token id_token VARCHAR(32) NOT NULL');
-        $this->addSql('ALTER TABLE caf_user CHANGE email_user email_user VARCHAR(200) NOT NULL');
         $this->addSql('ALTER TABLE caf_user_attr CHANGE user_user_attr user_user_attr BIGINT NOT NULL, CHANGE usertype_user_attr usertype_user_attr INT DEFAULT NULL');
+        $this->addSql('DELETE FROM caf_user_attr WHERE user_user_attr NOT IN (SELECT id_user FROM caf_user)');
         $this->addSql('ALTER TABLE caf_user_attr ADD CONSTRAINT FK_67322AB87E1FE239 FOREIGN KEY (user_user_attr) REFERENCES caf_user (id_user) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE caf_user_attr ADD CONSTRAINT FK_67322AB88BE7C3B3 FOREIGN KEY (usertype_user_attr) REFERENCES caf_usertype (id_usertype)');
         $this->addSql('CREATE INDEX IDX_67322AB87E1FE239 ON caf_user_attr (user_user_attr)');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_67322AB88BE7C3B3 ON caf_user_attr (usertype_user_attr)');
     }
 
     public function down(Schema $schema): void
@@ -40,11 +39,9 @@ final class Version20211127134619 extends AbstractMigration
         $this->addSql('DROP INDEX IDX_197AA7ED1CB2CA1 ON caf_evt');
         $this->addSql('ALTER TABLE caf_evt CHANGE user_evt user_evt INT NOT NULL COMMENT \'id user createur\'');
         $this->addSql('ALTER TABLE caf_token CHANGE id_token id_token VARCHAR(32) CHARACTER SET utf8 NOT NULL COLLATE `utf8_unicode_ci`');
-        $this->addSql('ALTER TABLE caf_user CHANGE email_user email_user VARCHAR(200) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`');
         $this->addSql('ALTER TABLE caf_user_attr DROP FOREIGN KEY FK_67322AB87E1FE239');
         $this->addSql('ALTER TABLE caf_user_attr DROP FOREIGN KEY FK_67322AB88BE7C3B3');
         $this->addSql('DROP INDEX IDX_67322AB87E1FE239 ON caf_user_attr');
-        $this->addSql('DROP INDEX UNIQ_67322AB88BE7C3B3 ON caf_user_attr');
         $this->addSql('ALTER TABLE caf_user_attr CHANGE user_user_attr user_user_attr INT NOT NULL COMMENT \'ID user possédant le type \', CHANGE usertype_user_attr usertype_user_attr INT NOT NULL COMMENT \'ID du type (admin, modero etc...)\'');
     }
 }
