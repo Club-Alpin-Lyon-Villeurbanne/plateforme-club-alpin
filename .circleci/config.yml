@@ -40,6 +40,7 @@ jobs:
                     cp legacy/config/www.clubalpinlyon.fr/config.php legacy/config/config.php
                     sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$PROD_ADMIN_PASSWORD/g" "legacy/config/www.clubalpinlyon.fr/params.php"
                     sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/www.clubalpinlyon.fr/params.php"
+                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/config.php"
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$PROD_DB_PASSWORD/g" "legacy/config/www.clubalpinlyon.fr/db_config.php"
                     sed -i "s/DB_USER_TO_REPLACE/$PROD_DB_USER/g" "legacy/config/www.clubalpinlyon.fr/db_config.php"
                     sed -i "s/DB_NAME_TO_REPLACE/$PROD_DB_NAME/g" "legacy/config/www.clubalpinlyon.fr/db_config.php"
@@ -53,6 +54,7 @@ jobs:
                     cp legacy/config/test.clubalpinlyon.fr/config.php legacy/config/config.php
                     sed -i "s/ADMIN_PASSWORD_TO_REPLACE/$DEV_ADMIN_PASSWORD/g" "legacy/config/test.clubalpinlyon.fr/params.php"
                     sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/test.clubalpinlyon.fr/params.php"
+                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/config.php"
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$DEV_DB_PASSWORD/g" "legacy/config/test.clubalpinlyon.fr/db_config.php"
                     sed -i "s/DB_USER_TO_REPLACE/$DEV_DB_USER/g" "legacy/config/test.clubalpinlyon.fr/db_config.php"
                     sed -i "s/DB_NAME_TO_REPLACE/$DEV_DB_NAME/g" "legacy/config/test.clubalpinlyon.fr/db_config.php"
