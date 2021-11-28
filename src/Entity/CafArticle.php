@@ -31,7 +31,7 @@ class CafArticle
     /**
      * @var int
      *
-     * @ORM\Column(name="status_who_article", type="integer", nullable=false, options={"comment": "ID du membre qui change le statut"})
+     * @ORM\Column(name="status_who_article", type="integer", nullable=true, options={"comment": "ID du membre qui change le statut"})
      */
     private $statusWhoArticle;
 
@@ -52,7 +52,7 @@ class CafArticle
     /**
      * @var int
      *
-     * @ORM\Column(name="tsp_validate_article", type="integer", nullable=false)
+     * @ORM\Column(name="tsp_validate_article", type="integer", nullable=true)
      */
     private $tspValidateArticle;
 
@@ -92,11 +92,10 @@ class CafArticle
     private $codeArticle;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="commission_article", type="integer", nullable=false, options={"comment": "ID Commission liée (facultativ)"})
+     * @ORM\ManyToOne(targetEntity="CafCommission")
+     * @ORM\JoinColumn(name="commission_article", referencedColumnName="id_commission", nullable=true)
      */
-    private $commissionArticle;
+    private $commission;
 
     /**
      * @var int
@@ -122,7 +121,7 @@ class CafArticle
     /**
      * @var int
      *
-     * @ORM\Column(name="nb_vues_article", type="integer", nullable=false)
+     * @ORM\Column(name="nb_vues_article", type="integer", nullable=false, options={"default": 0})
      */
     private $nbVuesArticle = '0';
 
@@ -251,16 +250,9 @@ class CafArticle
         return $this;
     }
 
-    public function getCommissionArticle(): ?int
+    public function getCommission(): ?CafCommission
     {
-        return $this->commissionArticle;
-    }
-
-    public function setCommissionArticle(int $commissionArticle): self
-    {
-        $this->commissionArticle = $commissionArticle;
-
-        return $this;
+        return $this->commission;
     }
 
     public function getEvtArticle(): ?int

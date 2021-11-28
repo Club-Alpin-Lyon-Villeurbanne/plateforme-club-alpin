@@ -22,18 +22,16 @@ class CafUserAttr
     private $idUserAttr;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="user_user_attr", type="integer", nullable=false, options={"comment": "ID user possédant le type "})
+     * @ORM\ManyToOne(targetEntity="CafUser", inversedBy="attrs", fetch="EAGER")
+     * @ORM\JoinColumn(name="user_user_attr", referencedColumnName="id_user", nullable=false, onDelete="CASCADE")
      */
-    private $userUserAttr;
+    private $user;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="usertype_user_attr", type="integer", nullable=false, options={"comment": "ID du type (admin, modero etc...)"})
+     * @ORM\OneToOne(targetEntity="CafUsertype")
+     * @ORM\JoinColumn(name="usertype_user_attr", referencedColumnName="id_usertype")
      */
-    private $usertypeUserAttr;
+    private $userType;
 
     /**
      * @var string
@@ -54,28 +52,14 @@ class CafUserAttr
         return $this->idUserAttr;
     }
 
-    public function getUserUserAttr(): ?int
+    public function getUserId(): ?int
     {
-        return $this->userUserAttr;
+        return $this->user->getIdUser();
     }
 
-    public function setUserUserAttr(int $userUserAttr): self
+    public function getUserType(): ?CafUsertype
     {
-        $this->userUserAttr = $userUserAttr;
-
-        return $this;
-    }
-
-    public function getUsertypeUserAttr(): ?int
-    {
-        return $this->usertypeUserAttr;
-    }
-
-    public function setUsertypeUserAttr(int $usertypeUserAttr): self
-    {
-        $this->usertypeUserAttr = $usertypeUserAttr;
-
-        return $this;
+        return $this->userType;
     }
 
     public function getParamsUserAttr(): ?string
