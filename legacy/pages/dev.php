@@ -6,7 +6,7 @@
     if (true) {
         ?>
 		<br /><br /><br /><br /><hr /><br /><br /><br /><br />
-		<h3>Attribution des statuts à l'utilisateur : <?php echo html_utf8($_SESSION['user']['nickname_user']); ?></h3>
+		<h3>Attribution des statuts à l'utilisateur : <?php echo $_SESSION['user']['nickname_user']; ?></h3>
 		<?php
         // req sql : trouver les attributs liés à cet user
         $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
