@@ -22,7 +22,7 @@ if (0 === count($errTab)) {
     $allowedExtensions = ['jpeg', 'jpg', 'png',
                                'JPEG', 'JPG', 'PNG', ];
     // max file size in bytes
-    $sizeLimit = 5 * 1024 * 1024;
+    $sizeLimit = 20 * 1024 * 1024;
 
     $uploader = new qqFileUploader($allowedExtensions, $sizeLimit);
     $result = $uploader->handleUpload($targetDir);
