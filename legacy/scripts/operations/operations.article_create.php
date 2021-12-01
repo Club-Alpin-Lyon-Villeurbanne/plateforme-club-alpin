@@ -49,7 +49,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $cont_article = $mysqli->real_escape_string($cont_article);
 
     $req = "INSERT INTO caf_article(`id_article` ,`status_article` ,`topubly_article` ,`tsp_crea_article` ,`tsp_article` ,`user_article` ,`titre_article` ,`code_article` ,`commission_article` ,`evt_article` ,`une_article` ,`cont_article`)
-                        VALUES (NULL ,  '$status_article',  '$topubly_article',  '$tsp_crea_article',  '$tsp_article',  '$user_article',  '$titre_article',  '$code_article',  '$commission_article',  '$evt_article',  '$une_article',  '$cont_article');";
+//                        VALUES (NULL ,  '$status_article',  '$topubly_article',  '$tsp_crea_article',  '$tsp_article',  '$user_article',  '$titre_article',  '$code_article', ".($commission_article > 0 ? "'$commission_article'" : 'null').",  '$evt_article',  '$une_article',  '$cont_article');";
     if (!$mysqli->query($req)) {
         $errTab[] = 'Erreur SQL';
     } else {
