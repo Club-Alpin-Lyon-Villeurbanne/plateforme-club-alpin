@@ -20,12 +20,6 @@
             $req = 'SELECT * FROM '.$pbd."article WHERE id_article=$id_article LIMIT 1";
             $result = $mysqli->query($req);
             while ($row = $result->fetch_assoc()) {
-                $req = 'SELECT code_commission FROM '.$pbd.'commission WHERE id_commission='.$row['commission_article'].' LIMIT 1';
-                $result2 = $mysqli->query($req);
-                while ($row2 = $result2->fetch_assoc()) {
-                    $row['code_commission'] = $row2['code_commission'];
-                }
-
                 $article = $row;
             }
             $mysqli->close;
