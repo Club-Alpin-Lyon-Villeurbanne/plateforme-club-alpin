@@ -45,7 +45,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     SET status_article = $status_article
     , topubly_article = $topubly_article
     , titre_article = '$titre_article'
-    , commission_article = $commission_article
+    , commission_article = ".($commission_article > 0 ? "'$commission_article'" : 'null')."
     , evt_article = $evt_article
     , une_article = $une_article
     , cont_article = '$cont_article'
