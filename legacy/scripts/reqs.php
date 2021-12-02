@@ -14,7 +14,7 @@ $current_commission = false;
 
 // liste des extensions autorisees dans le FTP
 if (admin()) {
-    $req = 'SELECT * FROM  '.$pbd.'ftp_allowedext ORDER BY ext_ftp_allowedext';
+    $req = 'SELECT * FROM  caf_ftp_allowedext ORDER BY ext_ftp_allowedext';
     $handleSql = $mysqli->query($req);
     $extTab = [];
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -23,7 +23,7 @@ if (admin()) {
 }
 
 // LISTE DES COMMISSIONS PUBLIQUES
-$req = 'SELECT * FROM '.$pbd.'commission WHERE vis_commission=1 ORDER BY ordre_commission ASC';
+$req = 'SELECT * FROM caf_commission WHERE vis_commission=1 ORDER BY ordre_commission ASC';
 $handleSql = $mysqli->query($req);
 $comTab = [];
 $comCodeTab = [];
@@ -45,7 +45,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 if (allowed('evt_validate_all')) { // pouvoir de valider toutes les sorties de ttes commission confondues
     // compte des sorties à valider
     $req = 'SELECT COUNT(id_evt)
-	FROM '.$pbd.'evt, '.$pbd.'user
+	FROM caf_evt, caf_user
 	WHERE status_evt=0
 	AND id_user=user_evt '
     .'ORDER BY tsp_crea_evt ASC ';
@@ -59,7 +59,7 @@ if (allowed('evt_validate_all')) { // pouvoir de valider toutes les sorties de t
     } //  $tab contient les CODES des commissions autorisées a valider
 
     // compte des sorties à valider, selon la (les) commission dont nous sommes responsables
-    $req = 'SELECT COUNT(id_evt) FROM '.$pbd.'evt, '.$pbd.'user, '.$pbd."commission
+    $req = "SELECT COUNT(id_evt) FROM caf_evt, caf_user, caf_commission
 		WHERE status_evt=0
 		AND id_user=user_evt
 		AND commission_evt=id_commission
@@ -72,7 +72,7 @@ if (allowed('evt_validate_all')) { // pouvoir de valider toutes les sorties de t
 if (allowed('evt_legal_accept')) { // pouvoir de valider "legalement" une sortie comme sortie du caf
     // Pour chaque sortie non validee dans le timing demandé, et publiée
     $req = 'SELECT COUNT(id_evt)
-			FROM '.$pbd.'evt, '.$pbd.'commission
+			FROM caf_evt, caf_commission
 			WHERE status_legal_evt = 0
 			AND status_evt = 1
 			AND commission_evt = id_commission
@@ -85,7 +85,7 @@ if (allowed('evt_legal_accept')) { // pouvoir de valider "legalement" une sortie
 
 // NOTIFICATIONS ARTICLES
 if (allowed('article_validate_all')) { // pouvoir de valider les articles
-    $req = 'SELECT COUNT(id_article) FROM '.$pbd.'article WHERE status_article=0 AND topubly_article=1';
+    $req = 'SELECT COUNT(id_article) FROM caf_article WHERE status_article=0 AND topubly_article=1';
     $handleSql = $mysqli->query($req);
     $notif_validerunarticle = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
 } elseif (allowed('article_validate')) { // pouvoir de valider les articles
@@ -95,8 +95,8 @@ if (allowed('article_validate_all')) { // pouvoir de valider les articles
         $tab[$i] = substr(strrchr($tab[$i], ':'), 1);
     } //  $tab contient les CODES des commissions autorisées a valider
 
-    $req = 'SELECT COUNT(id_article)
-	FROM '.$pbd.'article, '.$pbd."commission
+    $req = "SELECT COUNT(id_article)
+	FROM caf_article, caf_commission
 	WHERE status_article=0
 	AND topubly_article=1
 	AND commission_article=id_commission
@@ -121,13 +121,13 @@ if (user()) {
 // PROFIL : infos generales, d'avantage d'info que dans la session seule
 if ('profil' == $p1 && 'infos' == $p2 && getUser()) {
     $tmpUser = false;
-    $req = 'SELECT * FROM '.$pbd.'user WHERE id_user='.getUser()->getIdUser().' LIMIT 1';
+    $req = 'SELECT * FROM caf_user WHERE id_user='.getUser()->getIdUser().' LIMIT 1';
     $handleSql = $mysqli->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // filiation : ais-je des "enfants"
         if ('' !== $handle['cafnum_user']) {
             $handle['enfants'] = [];
-            $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM '.$pbd."user WHERE cafnum_parent_user = '".$mysqli->real_escape_string($handle['cafnum_user'])."' LIMIT 100";
+            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_parent_user = '".$mysqli->real_escape_string($handle['cafnum_user'])."' LIMIT 100";
             $handleSql2 = $mysqli->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['enfants'][] = $handle2;
@@ -137,7 +137,7 @@ if ('profil' == $p1 && 'infos' == $p2 && getUser()) {
         // filiation : ais-je un parent
         if ('' !== $handle['cafnum_parent_user']) {
             $handle['parent'] = [];
-            $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM '.$pbd."user WHERE cafnum_user = '".$mysqli->real_escape_string($handle['cafnum_parent_user'])."' LIMIT 100";
+            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_user = '".$mysqli->real_escape_string($handle['cafnum_parent_user'])."' LIMIT 100";
             $handleSql2 = $mysqli->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['parent'] = $handle2;
@@ -158,7 +158,7 @@ elseif ('profil' == $p1 && 'articles' == $p2) {
     } // les pages commencent à 1
 
     $articleTab = [];
-    $req = 'SELECT SQL_CALC_FOUND_ROWS * FROM '.$pbd.'article
+    $req = 'SELECT SQL_CALC_FOUND_ROWS * FROM caf_article
 			WHERE user_article = '.getUser()->getIdUser().'
 			ORDER BY tsp_crea_article DESC LIMIT '.($limite * ($pagenum - 1)).", $limite";
     $handleSql = $mysqli->query($req);
@@ -172,7 +172,7 @@ elseif ('profil' == $p1 && 'articles' == $p2) {
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // info de la commission liée
         if ($handle['commission_article'] > 0) {
-            $req = 'SELECT * FROM '.$pbd.'commission
+            $req = 'SELECT * FROM caf_commission
 				WHERE id_commission = '.(int) ($handle['commission_article']).'
 				LIMIT 1';
             $handleSql2 = $mysqli->query($req);
@@ -183,7 +183,7 @@ elseif ('profil' == $p1 && 'articles' == $p2) {
 
         // info de la sortie liée
         if ($handle['evt_article'] > 0) {
-            $req = 'SELECT code_evt, id_evt, titre_evt FROM '.$pbd.'evt
+            $req = 'SELECT code_evt, id_evt, titre_evt FROM caf_evt
 				WHERE id_evt = '.(int) ($handle['evt_article']).'
 				LIMIT 1';
             $handleSql2 = $mysqli->query($req);
@@ -202,8 +202,8 @@ elseif ('article' == $p1) {
     $id_article = (int) (substr(strrchr($p2, '-'), 1));
 
     // sélection complète, non conditionnelle par rapport au status
-    $req = 'SELECT *
-		FROM '.$pbd."article
+    $req = "SELECT *
+		FROM caf_article
 		WHERE id_article=$id_article
 		LIMIT 1";
     $handleSql = $mysqli->query($req);
@@ -216,7 +216,7 @@ elseif ('article' == $p1) {
             ) {
             // auteur :
             $req = 'SELECT id_user, nickname_user
-				FROM '.$pbd.'user
+				FROM caf_user
 				WHERE id_user='.(int) ($handle['user_article']).'
 				LIMIT 1';
             $handleSql2 = $mysqli->query($req);
@@ -226,7 +226,7 @@ elseif ('article' == $p1) {
 
             // info de la sortie liée
             if ($handle['evt_article'] > 0) {
-                $req = 'SELECT code_evt, id_evt, titre_evt FROM '.$pbd.'evt
+                $req = 'SELECT code_evt, id_evt, titre_evt FROM caf_evt
 					WHERE id_evt = '.(int) ($handle['evt_article']).'
 					LIMIT 1';
                 $handleSql2 = $mysqli->query($req);
@@ -237,8 +237,8 @@ elseif ('article' == $p1) {
 
             // commentaires
             $commentsTab = [];
-            $req = 'SELECT SQL_CALC_FOUND_ROWS *
-				FROM '.$pbd."comment
+            $req = "SELECT SQL_CALC_FOUND_ROWS *
+				FROM caf_comment
 				WHERE parent_type_comment='article'
 				AND   parent_comment=$id_article
 				AND   status_comment=1
@@ -252,7 +252,7 @@ elseif ('article' == $p1) {
 
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 // infos user
-                $req = 'SELECT nickname_user FROM '.$pbd.'user WHERE id_user='.(int) ($handle2['user_comment']).' LIMIT 1';
+                $req = 'SELECT nickname_user FROM caf_user WHERE id_user='.(int) ($handle2['user_comment']).' LIMIT 1';
                 $handleSql3 = $mysqli->query($req);
                 while ($handle3 = $handleSql3->fetch_array(\MYSQLI_ASSOC)) {
                     $handle2['nickname_user'] = $handle3['nickname_user'];
@@ -277,7 +277,7 @@ elseif ('article' == $p1) {
 
             // maj nb vues
             if (!admin()) {
-                $req = 'UPDATE '.$pbd."article SET nb_vues_article=nb_vues_article+1 WHERE id_article=$id_article AND status_article=1 LIMIT 1";
+                $req = "UPDATE caf_article SET nb_vues_article=nb_vues_article+1 WHERE id_article=$id_article AND status_article=1 LIMIT 1";
                 $mysqli->query($req);
             }
 
@@ -295,7 +295,7 @@ elseif ('gestion-des-articles' == $p1 && (allowed('article_validate_all') || all
 
     if (allowed('article_validate_all')) {
         // compte nb total articles
-        $req = 'SELECT COUNT(id_article) FROM '.$pbd.'article WHERE status_article=0';
+        $req = 'SELECT COUNT(id_article) FROM caf_article WHERE status_article=0';
         $handleSql = $mysqli->query($req);
         $compte = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM)); // nombre total d'evts à valider, défini plus haut
 
@@ -309,9 +309,9 @@ elseif ('gestion-des-articles' == $p1 && (allowed('article_validate_all') || all
         // articles à valider, selon la (les) commission dont nous sommes responsables
         $req = 'SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
 					, id_user, nickname_user, lastname_user, firstname_user, code_commission, title_commission
-		FROM '.$pbd.'article
-		LEFT JOIN '.$pbd.'commission ON ('.$pbd.'commission.id_commission = '.$pbd.'article.commission_article)
-		LEFT JOIN '.$pbd.'user ON ('.$pbd.'user.id_user = '.$pbd.'article.user_article)
+		FROM caf_article
+		LEFT JOIN caf_commission ON (caf_commission.id_commission = caf_article.commission_article)
+		LEFT JOIN caf_user ON (caf_user.id_user = caf_article.user_article)
 		WHERE status_article=0
 		AND id_user = user_article
 		ORDER BY topubly_article desc,  tsp_validate_article ASC
@@ -324,8 +324,8 @@ elseif ('gestion-des-articles' == $p1 && (allowed('article_validate_all') || all
         } //  $tab contient les CODES des commissions autorisées a valider
 
         // compte nb total articles
-        $req = 'SELECT COUNT(id_article)
-		FROM '.$pbd.'article, '.$pbd."commission
+        $req = "SELECT COUNT(id_article)
+		FROM caf_article, caf_commission
 		WHERE status_article=0
 		AND commission_article=id_commission
 		AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."') "; // condition OR pour toutes les commissions autorisées
@@ -343,11 +343,11 @@ elseif ('gestion-des-articles' == $p1 && (allowed('article_validate_all') || all
         $nbrPages = ceil($compte / $limite);
 
         // articles à valider, selon la (les) commission dont nous sommes responsables
-        $req = 'SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
+        $req = "SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
 					, id_user, nickname_user, lastname_user, firstname_user, code_commission, title_commission
-		FROM '.$pbd.'article
-		LEFT JOIN '.$pbd.'commission ON ('.$pbd.'commission.id_commission = '.$pbd.'article.commission_article)
-		LEFT JOIN '.$pbd.'user ON ('.$pbd.'user.id_user = '.$pbd."article.user_article)
+		FROM caf_article
+		LEFT JOIN caf_commission ON (caf_commission.id_commission = caf_article.commission_article)
+		LEFT JOIN caf_user ON (caf_user.id_user = caf_article.user_article)
 		WHERE status_article=0
 		AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."') " // condition OR pour toutes les commissions autorisées
         .'AND id_user = user_article
@@ -374,7 +374,7 @@ elseif ('accueil' == $p1) {
     // *******************
     // articles dans le slider
     $req = 'SELECT `id_article` , `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article`
-		FROM  `'.$pbd.'article`
+		FROM  `caf_article`
 		WHERE  `status_article` =1
 		AND  `une_article` =1
 		ORDER BY  `tsp_validate_article` DESC
@@ -394,10 +394,10 @@ elseif ('accueil' == $p1) {
 
     // premiere requete : défaut, ne considère pas les articles liés à une sortie, liée à la commission courante
     $select = 'id_article , status_article ,  status_who_article ,  tsp_article ,  user_article ,  titre_article ,  code_article ,  commission_article ,  evt_article ,  une_article ,  cont_article ';
-    $req = "SELECT SQL_CALC_FOUND_ROWS $select
-		FROM  ".$pbd.'article
+    $req = 'SELECT SQL_CALC_FOUND_ROWS '.$select.'
+		FROM  caf_article
 		WHERE  status_article =1
-		'; //AND  une_article =0
+		';
 
     if ($current_commission) {
         //.($current_commission?" AND (commission_article = ".intval($comTab[$current_commission]['id_commission'])." OR commission_article = 0) ":'')
@@ -409,21 +409,6 @@ elseif ('accueil' == $p1) {
     // commission donnée : filtre (mais on inclut les actus club, commission=0)
     $req .= ' ORDER BY  tsp_validate_article DESC
 		LIMIT '.($limite * ($pagenum - 1)).", $limite";
-    // ajout des liaisons articles - commission
-    if ($current_commission) {
-        /* 08/08/2013 - GAEL MONDON - je vois pas à quoi ca sert...par contre ca supprime le calcul du nombres d'articles
-                $req = "( $req ) UNION ALL (
-                        SELECT $select
-                        FROM  ".$pbd."article, ".$pbd."evt
-                        WHERE  status_article =1
-                        AND  une_article =0
-                        AND  evt_article =id_evt
-                        AND commission_evt = ".intval($comTab[$current_commission]['id_commission'])."
-                        ORDER BY  tsp_validate_article DESC
-                        LIMIT ".($limite*($pagenum-1)).", $limite
-                    )";
-        */
-    }
     $handleSql = $mysqli->query($req);
 
     // calcul du total grâce à SQL_CALC_FOUND_ROWS
@@ -434,7 +419,7 @@ elseif ('accueil' == $p1) {
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // info de la commission liée
         if ($handle['commission_article'] > 0) {
-            $req = 'SELECT * FROM '.$pbd.'commission
+            $req = 'SELECT * FROM caf_commission
 				WHERE id_commission = '.(int) ($handle['commission_article']).'
 				LIMIT 1';
             $handleSql2 = $mysqli->query($req);
@@ -448,7 +433,7 @@ elseif ('accueil' == $p1) {
             $req = 'SELECT
 					code_evt, id_evt, titre_evt
 					, code_commission
-				FROM '.$pbd.'evt, '.$pbd.'commission
+				FROM caf_evt, caf_commission
 				WHERE id_evt = '.(int) ($handle['evt_article']).'
 				AND id_commission = commission_evt
 				LIMIT 1';
@@ -494,7 +479,7 @@ elseif ('agenda' == $p1) {
     $req = 'SELECT  id_evt, cancelled_evt, code_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, commission_evt, titre_evt, massif_evt, difficulte_evt, cycle_master_evt, cycle_parent_evt
 				, cycle_parent_evt, child_version_from_evt, join_max_evt, join_start_evt, id_groupe
 				, title_commission, code_commission
-		FROM '.$pbd.'evt, '.$pbd.'commission
+		FROM caf_evt, caf_commission
 		WHERE id_commission = commission_evt
 		AND status_evt = 1 '
         //  " AND cancelled_evt != 1 " // les sorties annulées y figurent ausssi
@@ -609,14 +594,14 @@ elseif ('creer-une-sortie' == $p1) {
             $id_right = $ids_usertype = $ids_users = null;
 
             // Select ID code 'leader'
-            $req = 'SELECT id_userright, code_userright FROM `'.$pbd."userright` WHERE `code_userright` LIKE 'destination_leader'";
+            $req = "SELECT id_userright, code_userright FROM `caf_userright` WHERE `code_userright` LIKE 'destination_leader'";
             $handleSql = $mysqli->query($req);
             while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 $id_right = $handle['id_userright'];
             }
 
             // Selection des roles ayant le droit concerné (leader)
-            $req = 'SELECT type_usertype_attr FROM `'.$pbd.'usertype_attr` WHERE `right_usertype_attr` = '.$id_right;
+            $req = 'SELECT type_usertype_attr FROM `caf_usertype_attr` WHERE `right_usertype_attr` = '.$id_right;
             $handleSql = $mysqli->query($req);
             if ($handleSql) {
                 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -625,7 +610,7 @@ elseif ('creer-une-sortie' == $p1) {
             }
             // Sélection des utilisateurs et de leurs roles
             if ($ids_usertype) {
-                $req = 'SELECT *  FROM `'.$pbd.'user_attr`, '.$pbd.'usertype, `'.$pbd.'user`
+                $req = 'SELECT *  FROM `caf_user_attr`, caf_usertype, `caf_user`
 					WHERE `usertype_user_attr` IN ('.implode(',', $ids_usertype).')
 					AND id_usertype = usertype_user_attr
 					AND id_user = user_user_attr
@@ -687,8 +672,8 @@ elseif ('creer-une-sortie' == $p1) {
             // encadrants
             $encadrantsTab = [];
             $com = $mysqli->real_escape_string($p2);
-            $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
-				FROM '.$pbd.'user, '.$pbd.'user_attr, '.$pbd."usertype
+            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
+				FROM caf_user, caf_user_attr, caf_usertype
 				WHERE doit_renouveler_user=0
 				AND id_user =user_user_attr
 				AND usertype_user_attr=id_usertype
@@ -706,8 +691,8 @@ elseif ('creer-une-sortie' == $p1) {
             // coencadrants
             $coencadrantsTab = [];
             $com = $mysqli->real_escape_string($p2);
-            $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
-				FROM '.$pbd.'user, '.$pbd.'user_attr, '.$pbd."usertype
+            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
+				FROM caf_user, caf_user_attr, caf_usertype
 				WHERE doit_renouveler_user=0
 				AND id_user =user_user_attr
 				AND usertype_user_attr=id_usertype
@@ -725,8 +710,8 @@ elseif ('creer-une-sortie' == $p1) {
             // benevoles
             $benevolesTab = [];
             $com = $mysqli->real_escape_string($p2);
-            $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
-				FROM '.$pbd.'user, '.$pbd.'user_attr, '.$pbd."usertype
+            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
+				FROM caf_user, caf_user_attr, caf_usertype
 				WHERE doit_renouveler_user=0
 				AND id_user =user_user_attr
 				AND usertype_user_attr=id_usertype
@@ -743,7 +728,7 @@ elseif ('creer-une-sortie' == $p1) {
             $parentEvents = [];
             $req = 'SELECT  id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
 						, title_commission, code_commission
-				FROM '.$pbd.'evt, '.$pbd.'commission
+				FROM caf_evt, caf_commission
 				WHERE user_evt = '.getUser()->getIdUser()."
 				AND cycle_master_evt=1
 				AND id_commission = commission_evt
@@ -753,7 +738,7 @@ elseif ('creer-une-sortie' == $p1) {
             $handleSql = $mysqli->query($req);
             while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 // compte de sorties enfant
-                $req = 'SELECT COUNT(id_evt) FROM '.$pbd.'evt WHERE cycle_parent_evt='.$handle['id_evt'];
+                $req = 'SELECT COUNT(id_evt) FROM caf_evt WHERE cycle_parent_evt='.$handle['id_evt'];
                 $handleSql2 = $mysqli->query($req);
                 $handle['nchildren'] = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
 
@@ -765,13 +750,13 @@ elseif ('creer-une-sortie' == $p1) {
                 // un ID de sortie est vise, il s'agit d'une modif et non d'une creation
                 $id_evt = (int) (substr(strrchr($p3, '-'), 1));
 
-                $req = 'SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cb_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
+                $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cb_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
 						, denivele_evt, distance_evt, matos_evt, difficulte_evt, description_evt, lat_evt, long_evt
 						, ngens_max_evt
 						, join_start_evt, join_max_evt, id_groupe, repas_restaurant, tarif_detail, tarif_restaurant, need_benevoles_evt, itineraire
 						, nickname_user
 						, title_commission, code_commission
-				FROM '.$pbd.'evt, '.$pbd.'user, '.$pbd."commission as commission
+				FROM caf_evt, caf_user, caf_commission as commission
 				WHERE id_evt=$id_evt
 				AND id_user = user_evt
 				AND commission_evt=commission.id_commission
@@ -789,7 +774,7 @@ elseif ('creer-une-sortie' == $p1) {
                     $encadrants = [];
                     $coencadrants = [];
                     $benevoles = [];
-                    $req = 'SELECT * FROM '.$pbd."evt_join WHERE evt_evt_join=$id_evt LIMIT 300";
+                    $req = "SELECT * FROM caf_evt_join WHERE evt_evt_join=$id_evt LIMIT 300";
                     $handleSql2 = $mysqli->query($req);
                     while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                         if ('encadrant' == $handle2['role_evt_join']) {
@@ -807,7 +792,7 @@ elseif ('creer-une-sortie' == $p1) {
                     $benevolesTab = [];
                     if (count($benevoles) > 0) {
                         $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
-				FROM '.$pbd.'user
+				FROM caf_user
 				WHERE id_user IN ('.implode(',', $benevoles).')
 				ORDER BY  lastname_user ASC
 				LIMIT 0 , 50';
@@ -856,7 +841,7 @@ elseif ('creer-une-sortie' == $p1) {
                         $_POST['cycle'] = 'child';
 
                         $req = 'SELECT id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
-				FROM '.$pbd.'evt, '.$pbd.'commission
+				FROM caf_evt, caf_commission
 				WHERE id_evt='.$handle['cycle_parent_evt'].'
 				AND user_evt != '.getUser()->getIdUser().'
 				AND cycle_master_evt=1
@@ -909,7 +894,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
 
     if ($id_evt) {
         // selection complete, non conditionnelle par rapport au statut
-        $req = 'SELECT
+        $req = "SELECT
                 id_evt, code_evt, status_evt, status_legal_evt, status_who_evt, status_legal_who_evt,
                     user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt,
                     rdv_evt,titre_evt, massif_evt, tarif_evt, cb_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt,
@@ -918,7 +903,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     id_groupe, repas_restaurant, tarif_detail, tarif_restaurant, distance_evt, itineraire,
                 nickname_user, civ_user, firstname_user, lastname_user, tel_user,
                 title_commission, code_commission
-            FROM '.$pbd.'evt as evt, '.$pbd.'user as user, '.$pbd."commission as commission
+            FROM caf_evt as evt, caf_user as user, caf_commission as commission
             WHERE id_evt=$id_evt
                 AND id_user = user_evt
                 AND commission_evt=commission.id_commission
@@ -961,7 +946,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                 // Groupe de niveau
                 $handle['groupe'] = [];
                 if (null != $handle['id_groupe']) {
-                    $req = 'SELECT * FROM `'.$pbd.'groupe` WHERE `id` = '.$handle['id_groupe'];
+                    $req = 'SELECT * FROM `caf_groupe` WHERE `id` = '.$handle['id_groupe'];
                     $handleGroupe = $mysqli->query($req);
                     while ($groupe = $handleGroupe->fetch_array(\MYSQLI_ASSOC)) {
                         $handle['groupe'] = $groupe;
@@ -977,9 +962,9 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                         SELECT id_evt, code_evt, status_evt, status_legal_evt, cancelled_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt, join_max_evt, join_start_evt
                             , nickname_user, civ_user
                             , title_commission, code_commission
-                        FROM '.$pbd.'evt
-                            , '.$pbd.'user
-                            , '.$pbd.'commission
+                        FROM caf_evt
+                            , caf_user
+                            , caf_commission
                         WHERE id_user = user_evt
                         AND id_evt='.(int) ($handle['cycle_parent_evt']).'
                         AND id_commission = commission_evt
@@ -994,8 +979,8 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     // cette sortie est la premiere d'un cycle, on recupere les infos des sorties suivantes
                     $req = '
                         SELECT id_evt, code_evt, status_evt, status_legal_evt, cancelled_evt, user_evt, commission_evt, title_commission, code_commission, tsp_evt, titre_evt, cycle_parent_evt
-                        FROM '.$pbd.'evt
-                            , '.$pbd.'commission
+                        FROM caf_evt
+                            , caf_commission
                         WHERE cycle_parent_evt='.(int) $id_evt.'
                         AND id_commission = commission_evt
                         ORDER BY `tsp_crea_evt` ASC
@@ -1007,9 +992,9 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                 }
 
                 // participants "speciaux" avec droits :
-                $req = 'SELECT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
+                $req = "SELECT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                             , role_evt_join, is_cb, is_restaurant, is_covoiturage, id_destination, id_bus_lieu_destination
-                    FROM '.$pbd.'evt_join, '.$pbd."user
+                    FROM caf_evt_join, caf_user
                     WHERE evt_evt_join = $id_evt
                     AND user_evt_join = id_user
                     AND status_evt_join = 1
@@ -1024,7 +1009,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                 // participants "enattente" :
                 $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                             , role_evt_join, is_cb, is_restaurant , is_covoiturage, id_destination, id_bus_lieu_destination
-                    FROM '.$pbd.'evt_join, '.$pbd.'user
+                    FROM caf_evt_join, caf_user
                     WHERE evt_evt_join  = '.(int) (($handle['cycle_parent_evt'] ?: $id_evt)).'
                     AND user_evt_join = id_user
                     AND status_evt_join = 0
@@ -1038,7 +1023,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                 // participants "normaux" : inscrit en ligne : leur role est à "inscrit"
                 $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                             , role_evt_join, is_cb, is_restaurant , is_covoiturage, id_destination, id_bus_lieu_destination
-                    FROM '.$pbd.'evt_join, '.$pbd.'user
+                    FROM caf_evt_join, caf_user
                     WHERE evt_evt_join  = '.(int) (($handle['cycle_parent_evt'] ?: $id_evt))."
                     AND user_evt_join = id_user
                     AND role_evt_join LIKE 'inscrit'
@@ -1052,7 +1037,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                 // participants "manuel" : inscrit par l'orga : leur role est à "manuel"
                 $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                             , role_evt_join, is_cb, is_restaurant , is_covoiturage, id_destination, id_bus_lieu_destination
-                    FROM '.$pbd.'evt_join, '.$pbd.'user
+                    FROM caf_evt_join, caf_user
                     WHERE evt_evt_join  = '.(int) (($handle['cycle_parent_evt'] ?: $id_evt))."
                     AND user_evt_join = id_user
                     AND role_evt_join LIKE 'manuel'
@@ -1067,7 +1052,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                 $monStatut = 'neutre';
 
                 if (user()) {
-                    $req = 'SELECT * FROM '.$pbd."evt_join
+                    $req = "SELECT * FROM caf_evt_join
                         WHERE evt_evt_join=$id_evt
                         AND user_evt_join=".getUser()->getIdUser().'
                         ORDER BY tsp_evt_join DESC
@@ -1095,7 +1080,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     // si la sortie est annulée, on recupère les details de "WHO" : qui l'a annulée
                     if ('1' == $handle['cancelled_evt']) {
                         $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, nomade_user, civ_user
-                            FROM '.$pbd.'user
+                            FROM caf_user
                             WHERE id_user='.(int) ($handle['cancelled_who_evt']).'
                             LIMIT 300';
                         $handleSql2 = $mysqli->query($req);
@@ -1106,8 +1091,8 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
 
                     // si un compte rendu existe ?
                     $handle['cr'] = false;
-                    $req = 'SELECT id_article, titre_article, code_article
-                        FROM '.$pbd."article
+                    $req = "SELECT id_article, titre_article, code_article
+                        FROM caf_article
                         WHERE evt_article = $id_evt
                         AND status_article = 1
                         ORDER BY tsp_validate_article DESC
@@ -1124,7 +1109,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     // si je suis chef de famille (filiations) je rajoute la liste de mes "enfants" pour les inscrire
                     $filiations = [];
                     if (user() && getUser()->getCafnumUser()) {
-                        $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, civ_user, email_user, tel_user, cafnum_user FROM '.$pbd."user WHERE cafnum_parent_user LIKE '".$mysqli->real_escape_string(getUser()->getCafnumUser())."' LIMIT 15";
+                        $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, civ_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_parent_user LIKE '".$mysqli->real_escape_string(getUser()->getCafnumUser())."' LIMIT 15";
                         $handleSql2 = $mysqli->query($req);
                         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                             $filiations[] = $handle2;
@@ -1188,9 +1173,9 @@ elseif ('annuler-une-sortie' == $p1) {
             || (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
         ) {
             $destination['joins'] = [];
-            $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
+            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
                         , role_evt_join
-                    FROM '.$pbd.'evt_join, '.$pbd."user
+                    FROM caf_evt_join, caf_user
                     WHERE id_destination = $id_destination
                     AND user_evt_join = id_user
                     LIMIT 500";
@@ -1205,7 +1190,7 @@ elseif ('annuler-une-sortie' == $p1) {
         $id_evt = (int) (substr(strrchr($p2, '-'), 1));
 
         // sélection complète, non conditionnelle par rapport au status
-        $req = 'SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt,
+        $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt,
                   tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
                     , cancelled_evt, cancelled_who_evt, cancelled_when_evt, description_evt, denivele_evt, difficulte_evt, matos_evt, need_benevoles_evt
                     , lat_evt, long_evt
@@ -1213,7 +1198,7 @@ elseif ('annuler-une-sortie' == $p1) {
                     , ngens_max_evt, join_max_evt
                     , nickname_user
                     , title_commission, code_commission
-            FROM '.$pbd.'evt, '.$pbd.'user, '.$pbd."commission
+            FROM caf_evt, caf_user, caf_commission
             WHERE id_evt=$id_evt
             AND id_user = user_evt
             AND commission_evt=id_commission
@@ -1232,9 +1217,9 @@ elseif ('annuler-une-sortie' == $p1) {
                 }
 
                 $handle['joins'] = [];
-                $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
+                $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
                         , role_evt_join
-                    FROM '.$pbd.'evt_join, '.$pbd."user
+                    FROM caf_evt_join, caf_user
                     WHERE evt_evt_join = $id_evt_forjoins
                     AND user_evt_join = id_user
                     LIMIT 300";
@@ -1246,7 +1231,7 @@ elseif ('annuler-une-sortie' == $p1) {
                 // si la sortie est annulée, on recupère les details de "WHO" : qui l'a annulée
                 if ('1' == $handle['cancelled_evt']) {
                     $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user
-                        FROM '.$pbd.'user
+                        FROM caf_user
                         WHERE id_user='.(int) ($handle['cancelled_who_evt']).'
                         LIMIT 300';
                     $handleSql2 = $mysqli->query($req);
@@ -1269,14 +1254,14 @@ elseif ('supprimer-une-sortie' == $p1) {
     $id_evt = (int) (substr(strrchr($p2, '-'), 1));
 
     // sélection complète, non conditionnelle par rapport au status
-    $req = 'SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
+    $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
 				, cancelled_evt, cancelled_who_evt, cancelled_when_evt, description_evt, denivele_evt, difficulte_evt, matos_evt, need_benevoles_evt
 				, lat_evt, long_evt
 				, join_start_evt
 				, ngens_max_evt, join_max_evt
 				, nickname_user
 				, title_commission, code_commission
-		FROM '.$pbd.'evt, '.$pbd.'user, '.$pbd."commission
+		FROM caf_evt, caf_user, caf_commission
 		WHERE id_evt=$id_evt
 		AND id_user = user_evt
 		AND commission_evt=id_commission
@@ -1290,7 +1275,7 @@ elseif ('supprimer-une-sortie' == $p1) {
             $handle['joins'] = [];
             $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
 					, role_evt_join
-				FROM '.$pbd.'evt_join, '.$pbd.'user
+				FROM caf_evt_join, caf_user
 				WHERE evt_evt_join ='.(int) ($handle['id_evt']).'
 				AND user_evt_join = id_user
 				LIMIT 300';
@@ -1302,7 +1287,7 @@ elseif ('supprimer-une-sortie' == $p1) {
             // si la sortie est annulée, on recupère les details de "WHO" : qui l'a annulée
             if ('1' == $handle['cancelled_evt']) {
                 $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user
-					FROM '.$pbd.'user
+					FROM caf_user
 					WHERE id_user='.(int) ($handle['cancelled_who_evt']).'
 					LIMIT 300';
                 $handleSql2 = $mysqli->query($req);
@@ -1336,7 +1321,7 @@ elseif ('gestion-des-sorties' == $p1 && (allowed('evt_validate_all') || allowed(
 					, join_start_evt, cycle_master_evt, cycle_parent_evt
 					, nickname_user
 					, title_commission, code_commission
-		FROM '.$pbd.'evt, '.$pbd.'user, '.$pbd.'commission
+		FROM caf_evt, caf_user, caf_commission
 		WHERE status_evt=0
 		AND id_user = user_evt
 		AND commission_evt=id_commission '
@@ -1353,11 +1338,11 @@ elseif ('gestion-des-sorties' == $p1 && (allowed('evt_validate_all') || allowed(
         } //  $tab contient les CODES des commissions autorisées a valider
 
         // sorties à valider, selon la (les) commission dont nous sommes responsables
-        $req = 'SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
+        $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
 					, join_start_evt, cycle_master_evt, cycle_parent_evt
 					, nickname_user
 					, title_commission, code_commission
-		FROM '.$pbd.'evt, '.$pbd.'user, '.$pbd."commission
+		FROM caf_evt, caf_user, caf_commission
 		WHERE status_evt=0
 		AND id_user=user_evt
 		AND commission_evt=id_commission
@@ -1394,7 +1379,7 @@ elseif ('validation-des-sorties' == $p1 && allowed('evt_legal_accept')) {
 				, join_start_evt, cycle_master_evt, cycle_parent_evt
 				, nickname_user
 				, title_commission, code_commission
-	FROM '.$pbd.'evt, '.$pbd.'user, '.$pbd.'commission
+	FROM caf_evt, caf_user, caf_commission
 	WHERE status_evt=1
 	AND status_legal_evt=0
 	AND tsp_evt > '.time().'
@@ -1426,7 +1411,7 @@ elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1
     $show = $mysqli->real_escape_string($show);
 
     $req = 'SELECT id_user , email_user , cafnum_user , firstname_user , lastname_user , nickname_user , created_user , birthday_user , tel_user , tel2_user , adresse_user, cp_user ,  ville_user ,  civ_user , valid_user , manuel_user, nomade_user, date_adhesion_user, doit_renouveler_user
-		FROM  `'.$pbd.'user` '
+		FROM  `caf_user` '
         .('dels' == $show ? ' WHERE valid_user=2 ' : '')
         .('manual' == $show ? ' WHERE manuel_user=1 ' : '')
         .('nomade' == $show ? ' WHERE nomade_user=1 ' : '')
@@ -1483,7 +1468,7 @@ elseif ('user-full' == $p1) {
     $id_user = (int) $p2;
     $tmpUser = false;
 
-    $req = 'SELECT * FROM '.$pbd."user WHERE id_user = $id_user LIMIT 1";
+    $req = "SELECT * FROM caf_user WHERE id_user = $id_user LIMIT 1";
     //AND valid_user = 1
     $handleSql = $mysqli->query($req);
     while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -1491,7 +1476,7 @@ elseif ('user-full' == $p1) {
         $row['statuts'] = [];
 
         $req = 'SELECT title_usertype, params_user_attr
-			FROM '.$pbd.'user_attr, '.$pbd.'usertype
+			FROM caf_user_attr, caf_usertype
 			WHERE user_user_attr='.$id_user.'
 			AND id_usertype=usertype_user_attr
 			ORDER BY hierarchie_usertype DESC
@@ -1524,7 +1509,7 @@ elseif ('recherche' == $p1 && strlen($_GET['str'])) {
 				SQL_CALC_FOUND_ROWS
 				`id_article` ,  `tsp_article` ,  `user_article` ,  `status_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `une_article` ,  `cont_article`
 				, nickname_user, id_user
-			FROM '.$pbd.'article, '.$pbd.'user
+			FROM caf_article, caf_user
 			WHERE  `status_article` =1
 			AND user_article = id_user
 			AND status_article = 1
@@ -1549,7 +1534,7 @@ elseif ('recherche' == $p1 && strlen($_GET['str'])) {
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             // info de la commission liée
             if ($handle['commission_article'] > 0) {
-                $req = 'SELECT * FROM '.$pbd.'commission
+                $req = 'SELECT * FROM caf_commission
 					WHERE id_commission = '.(int) ($handle['commission_article']).'
 					LIMIT 1';
                 $handleSql2 = $mysqli->query($req);
@@ -1568,7 +1553,7 @@ elseif ('recherche' == $p1 && strlen($_GET['str'])) {
 				SQL_CALC_FOUND_ROWS
 				id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
 				, title_commission, code_commission
-			FROM '.$pbd.'evt, '.$pbd.'commission, '.$pbd.'user
+			FROM caf_evt, caf_commission, caf_user
 			WHERE id_commission = commission_evt
 			AND id_user = user_evt
 			AND status_evt = 1

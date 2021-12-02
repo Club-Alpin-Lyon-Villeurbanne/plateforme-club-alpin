@@ -4,7 +4,7 @@ if (!admin()) {
 } else {
     $id_page = (int) ($_GET['id_page']);
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    $req = 'SELECT * FROM '.$pbd."page WHERE id_page=$id_page LIMIT 1";
+    $req = "SELECT * FROM caf_page WHERE id_page=$id_page LIMIT 1";
     $page = false;
     $handleSql = $mysqli->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {

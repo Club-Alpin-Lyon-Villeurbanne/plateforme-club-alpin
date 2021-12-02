@@ -10,7 +10,7 @@ if (admin()) {
         $log .= "\n GET id_page = $id_page";
         $id_page = (int) $id_page;
         if ($id_page) {
-            $req = 'UPDATE `'.$pbd."pdt` SET  `ordre_pdt` =  '".$ordre_pdt."' WHERE  `".$pbd.'pdt`.`id_pdt` ='.$id_pdt.' LIMIT 1 ;';
+            $req = "UPDATE `caf_pdt` SET  `ordre_pdt` =  '".$ordre_pdt."' WHERE  `caf_pdt`.`id_pdt` =".$id_pdt.' LIMIT 1';
             $log .= "\n REQ : $req";
             $mysqli->query($req);
             --$ordre_pdt;

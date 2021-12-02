@@ -17,7 +17,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $lieu_lat = $mysqli->real_escape_string($lieu_lat);
     $lieu_lng = $mysqli->real_escape_string($lieu_lng);
 
-    $sql = 'INSERT INTO `'.$pbd."lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
+    $sql = "INSERT INTO `caf_lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
         VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
     if (!$mysqli->query($sql)) {
         $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
@@ -48,7 +48,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $inscription_fin = $mysqli->real_escape_string($inscription_fin);
         $inscription_locked = $mysqli->real_escape_string($inscription_locked);
 
-        $sql = 'INSERT INTO `'.$pbd.'destination` '.
+        $sql = 'INSERT INTO `caf_destination` '.
             '(`id`, `id_lieu`, `id_user_who_create`, `id_user_responsable`, `id_user_adjoint`, `nom`, `code`, `description`, `ign`, `date`, `date_fin`, `cout_transport`, `inscription_ouverture`, `inscription_fin`, `inscription_locked`) '.
             "VALUES (NULL, '$id_lieu', '$id_user_who_create', '$id_user_responsable','$id_user_adjoint', '$nom', '$code', '$description', '$ign', '$date', '$date_fin', '$cout_transport', '$inscription_ouverture', '$inscription_fin', '$inscription_locked');";
 

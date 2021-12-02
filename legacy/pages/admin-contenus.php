@@ -13,8 +13,8 @@ if (!admin()) {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
 
     // contenus
-    $req = 'SELECT *
-					FROM '.$pbd.'content_inline, '.$pbd."content_inline_group
+    $req = "SELECT *
+					FROM caf_content_inline, caf_content_inline_group
 					WHERE lang_content_inline LIKE '$lang_content_inline'
 					AND groupe_content_inline = id_content_inline_group
 					ORDER BY ordre_content_inline_group ASC, code_content_inline ASC, date_content_inline DESC
@@ -26,7 +26,7 @@ if (!admin()) {
     }
 
     // groupes
-    $req = 'SELECT * FROM '.$pbd.'content_inline_group ORDER BY ordre_content_inline_group ASC';
+    $req = 'SELECT * FROM caf_content_inline_group ORDER BY ordre_content_inline_group ASC';
     $contGroupTab = [];
     $handleSql = $mysqli->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {

@@ -5,7 +5,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
     // REQ SQL
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
 
-    $req = 'SELECT * FROM  `'.$pbd.'log_admin` ORDER BY date_log_admin DESC LIMIT 0 , 500';
+    $req = 'SELECT * FROM  `caf_log_admin` ORDER BY date_log_admin DESC LIMIT 0 , 500';
     $handleTab = [];
     $handleSql = $mysqli->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {

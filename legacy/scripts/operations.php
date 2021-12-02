@@ -222,7 +222,7 @@ if ('user_attr_del' == ($_POST['operation'] ?? null)) {
         $errTab[] = 'No id';
     } else {
         $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-        $req = 'DELETE FROM '.$pbd."user_attr WHERE id_user_attr = $id_user_attr LIMIT 1;";
+        $req = "DELETE FROM caf_user_attr WHERE id_user_attr = $id_user_attr LIMIT 1;";
         if (!$mysqli->query($req)) {
             $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
                 'error' => $mysqli->error,
@@ -427,7 +427,7 @@ if ('user_attr_del_admin' == ($_POST['operation'] ?? null) && admin()) {
         $errTab[] = 'No id';
     } else {
         $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-        $req = 'DELETE FROM '.$pbd."user_attr WHERE id_user_attr = $id_user_attr LIMIT 1;";
+        $req = "DELETE FROM caf_user_attr WHERE id_user_attr = $id_user_attr LIMIT 1;";
         if (!$mysqli->query($req)) {
             $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
                 'error' => $mysqli->error,
@@ -451,7 +451,7 @@ if ('usertype_attr_edit' == ($_POST['operation'] ?? null) && admin()) {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
 
     // supression des valeurs existantes
-    if (!$mysqli->query('TRUNCATE '.$pbd.'usertype_attr')) {
+    if (!$mysqli->query('TRUNCATE caf_usertype_attr')) {
         $errTab[] = 'Erreur à la réinitialisation de la table';
     }
     if (0 === count($errTab)) {
@@ -459,7 +459,7 @@ if ('usertype_attr_edit' == ($_POST['operation'] ?? null) && admin()) {
             $tab = explode('-', $pair);
             $type_usertype_attr = (int) ($tab[0]);
             $right_usertype_attr = (int) ($tab[1]);
-            if (!$mysqli->query('INSERT INTO '.$pbd."usertype_attr (id_usertype_attr, type_usertype_attr, right_usertype_attr, details_usertype_attr)
+            if (!$mysqli->query("INSERT INTO caf_usertype_attr (id_usertype_attr, type_usertype_attr, right_usertype_attr, details_usertype_attr)
 															VALUES (NULL , '$type_usertype_attr', '$right_usertype_attr', '".time()."');")) {
                 $errTab[] = "Erreur de setting ($type_usertype_attr - $right_usertype_attr)";
             }
@@ -524,7 +524,7 @@ if ('majBd' == ($_POST['operation'] ?? null) && admin()) {
     }
 
     if (0 === count($errTab)) {
-        $req = 'UPDATE `'.$pbd.$table."` SET `$champ` = '$val' WHERE `".$pbd.$table.'`.`id_'.$table."` =$id LIMIT 1 ;";
+        $req = 'UPDATE `caf_'.$table."` SET `$champ` = '$val' WHERE `caf_".$table.'`.`id_'.$table."` =$id LIMIT 1 ;";
         if (!$mysqli->query($req)) {
             $erreur = 'Erreur BDD<br />'.$req;
         }
@@ -537,7 +537,7 @@ if ('supBd' == ($_POST['operation'] ?? null) && admin()) {
     $table = $mysqli->real_escape_string($_POST['table']);
     $id = (int) ($_POST['id']);
 
-    $req = 'DELETE FROM `'.$pbd.$table.'` WHERE `'.$pbd.$table.'`.`id_'.$table."` = $id LIMIT 1;";
+    $req = 'DELETE FROM `caf_'.$table.'` WHERE `caf_'.$table.'`.`id_'.$table."` = $id LIMIT 1;";
     if (!$mysqli->query($req)) {
         $erreur = 'Erreur BDD<br />'.$req;
     }

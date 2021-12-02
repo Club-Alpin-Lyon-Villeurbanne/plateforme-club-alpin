@@ -55,7 +55,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // vérification que c'est bien mon affilié
             // sauf moi-meme
             if ($id_user_tmp != getUser()->getIdUser()) {
-                $req = 'SELECT COUNT(id_user) FROM '.$pbd."user WHERE cafnum_parent_user LIKE '".$mysqli->real_escape_string(getUser()->getCafnumUser())."' AND id_user=".(int) $id_user_tmp;
+                $req = "SELECT COUNT(id_user) FROM caf_user WHERE cafnum_parent_user LIKE '".$mysqli->real_escape_string(getUser()->getCafnumUser())."' AND id_user=".(int) $id_user_tmp;
                 $result = $mysqli->query($req);
                 $row = $result->fetch_row();
                 if (!$row[0]) {
@@ -67,7 +67,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // verification de la validité de la destination
     if ($is_destination) {
-        $req = 'SELECT COUNT(id) FROM '.$pbd."destination WHERE ( id=$id_destination AND annule != 0 ) OR ( id=$id_destination AND  publie != 1 ) LIMIT 1";
+        $req = "SELECT COUNT(id) FROM caf_destination WHERE ( id=$id_destination AND annule != 0 ) OR ( id=$id_destination AND  publie != 1 ) LIMIT 1";
         $result = $mysqli->query($req);
         $row = $result->fetch_row();
         if ($row[0]) {
@@ -196,7 +196,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
                           VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
             } elseif (in_array($id_user, $update, true)) {
-                $req = 'UPDATE `'.$pbd."evt_join`
+                $req = "UPDATE `caf_evt_join`
                             SET
                                 `id_bus_lieu_destination` = $id_bus_lieu_destination, `id_destination` = $id_destination, `is_covoiturage` = $is_covoiturage, `is_cb` = $is_cb, `is_restaurant` = $is_restaurant
                             WHERE
@@ -223,7 +223,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, affiliant_user_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
                               VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user_tmp',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
                 } elseif (in_array($id_user_tmp, $update, true)) {
-                    $req = 'UPDATE `'.$pbd."evt_join`
+                    $req = "UPDATE `caf_evt_join`
                             SET
                                 `id_bus_lieu_destination` = $id_bus_lieu_destination, `id_destination` = $id_destination, `is_covoiturage` = $is_covoiturage, `is_cb` = $is_cb, `is_restaurant` = $is_restaurant
                             WHERE

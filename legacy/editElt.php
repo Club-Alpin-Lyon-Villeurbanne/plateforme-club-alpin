@@ -29,7 +29,7 @@ if (admin()) {
         }
 
         // récupération des dernieres versions dans cette langue
-        $req = 'SELECT * FROM  `'.$pbd."content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND `lang_content_html` LIKE '$lang' ORDER BY  `date_content_html` DESC LIMIT 0 , 10";
+        $req = "SELECT * FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND `lang_content_html` LIKE '$lang' ORDER BY  `date_content_html` DESC LIMIT 0 , 10";
         $contentVersionsTab = [];
         $handleSql = $mysqli->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -311,13 +311,13 @@ if (admin()) {
         $code_content_html = $mysqli->real_escape_string($code_content_html);
 
         // compte des nombre d'entrées à supprimer
-        $req = 'SELECT COUNT(`id_content_html`) FROM  `'.$pbd."content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  '$lang'";
+        $req = "SELECT COUNT(`id_content_html`) FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  '$lang'";
         $sqlCount = $mysqli->query($req);
         $nVersions = getArrayFirstValue($sqlCount->fetch_array(\MYSQLI_NUM));
         $nDelete = $nVersions - $p_nmaxversions;
         if ($nDelete > 0) {
             // s'il y en a à supprimer
-            $req = 'DELETE FROM `'.$pbd."content_html` WHERE `code_content_html` LIKE '$code_content_html' AND  `lang_content_html` LIKE  '$lang' ORDER BY  `date_content_html` ASC LIMIT $nDelete"; // ASC pour commencer par la fin de ceux a supprimer
+            $req = "DELETE FROM `caf_content_html` WHERE `code_content_html` LIKE '$code_content_html' AND  `lang_content_html` LIKE  '$lang' ORDER BY  `date_content_html` ASC LIMIT $nDelete"; // ASC pour commencer par la fin de ceux a supprimer
             if (!$mysqli->query($req)) {
                 $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
                     'error' => $mysqli->error,
@@ -332,7 +332,7 @@ if (admin()) {
         }
 
         // Mise à jour des CURRENT
-        $req = 'UPDATE `'.$pbd."content_html` SET `current_content_html` = '0' WHERE `".$pbd."content_html`.`code_content_html` = '$code_content_html' ";
+        $req = "UPDATE `caf_content_html` SET `current_content_html` = '0' WHERE `caf_content_html`.`code_content_html` = '$code_content_html' ";
         if (!$mysqli->query($req)) {
             $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
                 'error' => $mysqli->error,
@@ -346,7 +346,7 @@ if (admin()) {
         }
 
         // Enregistrement
-        $req = 'INSERT INTO  `'.$pbd."content_html` (`id_content_html` ,`code_content_html` ,`lang_content_html` ,`contenu_content_html` ,`date_content_html` ,`linkedtopage_content_html`, `current_content_html`, `vis_content_html`)
+        $req = "INSERT INTO  `caf_content_html` (`id_content_html` ,`code_content_html` ,`lang_content_html` ,`contenu_content_html` ,`date_content_html` ,`linkedtopage_content_html`, `current_content_html`, `vis_content_html`)
 															VALUES (NULL ,  '$code_content_html',  '$lang',  '$contenu_content_html',  '".time()."',  '$linkedtopage_content_html', 1, $vis_content_html);";
         if (!$mysqli->query($req)) {
             $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [

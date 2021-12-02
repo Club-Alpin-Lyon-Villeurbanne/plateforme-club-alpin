@@ -54,7 +54,7 @@ if (7 == $id_usertype && !allowed('user_givepresidence')) {
 if (!isset($errTab) || 0 === count($errTab)) {
     // Vérification dans la liste des types
     // + Ce type a t-il besoin de paramètres pour fonctionner ?
-    $req = 'SELECT * FROM '.$pbd."usertype WHERE id_usertype =$id_usertype LIMIT 1";
+    $req = "SELECT * FROM caf_usertype WHERE id_usertype =$id_usertype LIMIT 1";
     $result = $mysqli->query($req);
 
     // trouvé
@@ -84,8 +84,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $params_user_attr = $mysqli->real_escape_string($params_user_attr);
 
         // Cet attribut avec ces paramètres n'existe t-il pas déjà pour cet user ?
-        $req = 'SELECT COUNT(id_user_attr)
-            FROM '.$pbd."user_attr
+        $req = "SELECT COUNT(id_user_attr)
+            FROM caf_user_attr
             WHERE user_user_attr=$id_user
             AND usertype_user_attr=$id_usertype
             AND params_user_attr LIKE '$params_user_attr' LIMIT 1";
@@ -93,7 +93,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $row = $result->fetch_row();
         if (!$row[0]) {
             // ajout
-            $req = 'INSERT INTO '.$pbd."user_attr(id_user_attr ,user_user_attr ,usertype_user_attr ,params_user_attr ,details_user_attr)
+            $req = "INSERT INTO caf_user_attr(id_user_attr ,user_user_attr ,usertype_user_attr ,params_user_attr ,details_user_attr)
                                         VALUES (NULL , '$id_user', '$id_usertype', '$params_user_attr', '".time()."');";
             if (!$mysqli->query($req)) {
                 $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [

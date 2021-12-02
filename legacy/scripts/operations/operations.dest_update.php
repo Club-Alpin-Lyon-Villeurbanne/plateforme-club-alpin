@@ -17,7 +17,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $lieu_lat = $mysqli->real_escape_string($lieu_lat);
         $lieu_lng = $mysqli->real_escape_string($lieu_lng);
 
-        $sql = 'INSERT INTO `'.$pbd."lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
+        $sql = "INSERT INTO `caf_lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
             VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
         if (!$mysqli->query($sql)) {
             $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
@@ -55,7 +55,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $inscription_fin = $mysqli->real_escape_string($inscription_fin);
     $inscription_locked = $mysqli->real_escape_string($inscription_locked);
 
-    $sql = 'UPDATE `'.$pbd.'destination` SET '.
+    $sql = 'UPDATE `caf_destination` SET '.
         "`id_lieu` = '$id_lieu', `id_user_responsable` = '$id_user_responsable', `id_user_adjoint` = '$id_user_adjoint', ".
         "`nom` = '$nom', `code` = '$code', `description` = '$description', `ign` = '$ign', `date` = '$date', `date_fin` = '$date_fin', `cout_transport` = '$cout_transport', `inscription_ouverture` = '$inscription_ouverture', ".
         "`inscription_fin` = '$inscription_fin', `inscription_locked` = '$inscription_locked'".
@@ -78,7 +78,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $intitule = $mysqli->real_escape_string($bus['intitule']);
             $places_max = $mysqli->real_escape_string($bus['places_max']);
             $places_disponibles = $mysqli->real_escape_string($bus['places_disponibles']);
-            $sql = 'INSERT INTO `'.$pbd.'bus` (`id`, `id_destination`, `intitule`, `places_max`, `places_disponibles`) '.
+            $sql = 'INSERT INTO `caf_bus` (`id`, `id_destination`, `intitule`, `places_max`, `places_disponibles`) '.
                 "VALUES (NULL, '$id_dest_to_update', '$intitule', '$places_max', '$places_disponibles');";
             if (!$mysqli->query($sql)) {
                 $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
@@ -103,7 +103,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
         }
 
-        $sql = 'DELETE FROM `'.$pbd."bus` WHERE `id` IN ($del_ids) AND `id_destination` = $id_dest_to_update;";
+        $sql = "DELETE FROM `caf_bus` WHERE `id` IN ($del_ids) AND `id_destination` = $id_dest_to_update;";
         if (!$mysqli->query($sql)) {
             $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
                 'error' => $mysqli->error,
@@ -114,7 +114,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $errTab[] = 'Erreur SQL suppression de bus';
         }
 
-        $sql = 'DELETE FROM `'.$pbd."bus_lieu_destination` WHERE `id_bus` IN ($del_ids) AND `id_destination` = $id_dest_to_update;";
+        $sql = "DELETE FROM `caf_bus_lieu_destination` WHERE `id_bus` IN ($del_ids) AND `id_destination` = $id_dest_to_update;";
         if (!$mysqli->query($sql)) {
             $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
                 'error' => $mysqli->error,

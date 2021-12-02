@@ -40,7 +40,7 @@ $comment_article = null;
 if (!isset($errTab) || 0 === count($errTab)) {
     // article publié et commentable ?
     $req = 'SELECT a.id_article, a.user_article, u.email_user, a.titre_article, a.code_article
-            FROM '.$pbd.''.$parent_type_comment.' a, caf_user u
+            FROM caf_'.$parent_type_comment.' a, caf_user u
             WHERE u.id_user=a.user_article
             AND a.id_'.$parent_type_comment." = $parent_comment
             AND a.status_".$parent_type_comment.' = 1

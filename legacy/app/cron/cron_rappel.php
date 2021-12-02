@@ -4,7 +4,6 @@ global $chron_savedatas;
 global $chron_sendmails;
 global $p_sitename;
 global $p_noreply;
-global $pbd;
 global $mysqli;
 
 /**
@@ -29,7 +28,6 @@ function cron_email($datas)
     global $chron_sendmails;
     global $p_sitename;
     global $p_noreply;
-    global $pbd;
     global $mysqli;
 
     $tmpErr = '';
@@ -58,7 +56,7 @@ function cron_email($datas)
     if (!$tmpErr) {
         // Verification que ce code n'existe pas deja :
         // Chaque operation ne doit être effectuee qu'une fois (un seul e-mail envoye)
-        $req = 'SELECT COUNT(id_chron_operation) FROM '.$pbd."chron_operation WHERE code_chron_operation LIKE '".$mysqli->real_escape_string($datas['code'])."'";
+        $req = "SELECT COUNT(id_chron_operation) FROM caf_chron_operation WHERE code_chron_operation LIKE '".$mysqli->real_escape_string($datas['code'])."'";
         $handleSql = $mysqli->query($req);
         if (getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM))) {
             error_log('Envoi de mail ignore car deja envoye : '.html_utf8($datas['code']).'');
@@ -81,7 +79,7 @@ function cron_email($datas)
                 error_log('ENVOI DE MAIL A <i>'.$datas['name'].' ['.$datas['email'].']</i> INTERROMPU.<hr />');
             }
             if ($chron_savedatas) {
-                $req = 'INSERT INTO '.$pbd."chron_operation(id_chron_operation, tsp_chron_operation, code_chron_operation, parent_chron_operation)
+                $req = "INSERT INTO caf_chron_operation(id_chron_operation, tsp_chron_operation, code_chron_operation, parent_chron_operation)
 											VALUES ('',  '".time()."',  '".$datas['code']."',  '".$datas['parent']."');";
                 if (!$mysqli->query($req)) {
                     error_log('Erreur sauvegarde SQL ');
@@ -111,7 +109,7 @@ foreach ($p_chron_dates_butoires as $tmpH) {
 
 // ****** FAUT IL REQUETER ? ********
 // dernier envoi en BD date de... :
-$req = 'SELECT `tsp_chron_launch` FROM `'.$pbd.'chron_launch` ORDER BY  `tsp_chron_launch` DESC LIMIT 0 , 1';
+$req = 'SELECT `tsp_chron_launch` FROM `caf_chron_launch` ORDER BY  `tsp_chron_launch` DESC LIMIT 0 , 1';
 $handleSql = $mysqli->query($req);
 $lastTsp = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
 
@@ -120,7 +118,7 @@ if ($lastTsp < $minTsp) {
     // sauvegarde de ce launch
     error_log('Envoi necessaire ! Enregistrement de la nouvelle date en BDD');
     if ($chron_savedatas) {
-        if (!$mysqli->query('INSERT INTO '.$pbd."chron_launch(id_chron_launch, tsp_chron_launch) VALUES('', '".time()."');")) {
+        if (!$mysqli->query("INSERT INTO caf_chron_launch(id_chron_launch, tsp_chron_launch) VALUES('', '".time()."');")) {
             $errTab[] = "Erreur d'enregistrement du launch";
         }
         $id_chron_launch = $mysqli->insert_id;
