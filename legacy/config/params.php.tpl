@@ -112,10 +112,6 @@ $userAllowedTo = [];
 
 // dates butoires : tableau des heures auxquelles déclencher l'envoi du chron :
 $p_chron_dates_butoires = [8, 13, 18];
-// -------------------
-// LOGIN
-$use_md5_salt = false;
-$md5_salt = 'T~3|,#oBr"J8="n=\aX!@0Y>"Zf)+20rS_Ig7CkSpEG8(2z)KL';
 
 // -------------------
 // PARAMS STATIQUES
