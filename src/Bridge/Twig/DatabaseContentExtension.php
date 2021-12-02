@@ -140,7 +140,7 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
 
         $rel = '/ftp/user/'.$user->getIdUser().'/'.$style.'profil.jpg';
 
-        if (!file_exists(__DIR__.'/../../public'.$rel)) {
+        if (!file_exists(__DIR__.'/../../../public'.$rel)) {
             $rel = '/ftp/user/0/'.$style.'profil.jpg';
         }
 
