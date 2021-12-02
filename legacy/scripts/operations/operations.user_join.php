@@ -23,7 +23,7 @@ if ('on' == $_POST['filiations']) {
 
 // Evenement défini et utilisateur aussi
 $id_evt = (int) ($_POST['id_evt']);
-$id_user = (int) ($_SESSION['user']['id_user']);
+$id_user = getUser()->getIdUser();
 if (!$id_user || !$id_evt) {
     $errTab[] = 'Erreur de données';
 }
@@ -52,8 +52,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
         foreach ($_POST['id_user_filiation'] as $id_user_tmp) {
             // vérification que c'est bien mon affilié
             // sauf moi-meme
-            if ($id_user_tmp != $_SESSION['user']['id_user']) {
-                $req = 'SELECT COUNT(id_user) FROM '.$pbd."user WHERE cafnum_parent_user LIKE '".$mysqli->real_escape_string($_SESSION['user']['cafnum_user'])."' AND id_user=".(int) $id_user_tmp;
+            if ($id_user_tmp != getUser()->getIdUser()) {
+                $req = 'SELECT COUNT(id_user) FROM '.$pbd."user WHERE cafnum_parent_user LIKE '".$mysqli->real_escape_string(getUser()->getCafnumUser())."' AND id_user=".(int) $id_user_tmp;
                 $result = $mysqli->query($req);
                 $row = $result->fetch_row();
                 if (!$row[0]) {
@@ -291,12 +291,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
         // phpmailer
         require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
 
-        // echo '<pre>DEV : '; print_r($destinataires); echo '</pre>';
-
         foreach ($inscrits as $cetinscrit) {
             foreach ($destinataires as $id_destinataire => $destinataire) {
                 $toMail = $destinataire['email_user'];
-                $toName = $destinataire['firstname_user']; //$destinataire['civ_user'].' '.$destinataire['lastname_user'];
+                $toName = $destinataire['firstname_user'];
 
                 // contenu
                 if ($is_destination) {
@@ -367,16 +365,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // E-MAIL AU PRE-INSCRIT
     if (!isset($errTab) || 0 === count($errTab)) {
-        // var cetinscrit déja définie
-        // $destinataire = $cetinscrit;
-        $destinataire = $_SESSION['user'];
-
-        // SEND
-        // phpmailer
-        // require_once(APP.'mailer/class.phpmailer.caf.php');
-
-        $toMail = $destinataire['email_user'];
-        $toName = $destinataire['firstname_user']; //$destinataire['civ_user'].' '.$destinataire['lastname_user'];
+        $toMail = getUser()->getEmailUser();
+        $toName = getUser()->getFirstnameUser();
 
         // contenu
 
@@ -421,7 +411,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             ";
         } else {
             // je n'inscrit que moi
-            if (1 == count($inscrits) && $inscrits[0]['id_user'] == $_SESSION['user']['id_user']) {
+            if (1 == count($inscrits) && $inscrits[0]['id_user'] == getUser()->getIdUser()) {
                 $content_main = "<h2>$subject</h2>
                     <p>
                         Bonjour $toName,<br />

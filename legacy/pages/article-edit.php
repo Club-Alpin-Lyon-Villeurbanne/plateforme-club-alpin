@@ -29,7 +29,7 @@
                 echo '<p class="erreur">Cet article est introuvable.</p>';
             }
             // pas à moi, et je n'ai pas le droit de tous les modifier
-            elseif ($article['user_article'] != $_SESSION['user']['id_user'] && !allowed('article_edit_notmine')) {
+            elseif ($article['user_article'] != (string) getUser()->getIdUser() && !allowed('article_edit_notmine')) {
                 echo '<p class="erreur">Vous n\êtes pas l\'auteur de cet article et n\'y avez pas accès.</p>';
             }
             // je n'ai pas le droit de modifier un article

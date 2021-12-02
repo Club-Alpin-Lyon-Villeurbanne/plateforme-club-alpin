@@ -46,9 +46,9 @@
 
         <?php /* envoyer les emails de cloture */
         if (allowed('destination_mailer')
-            || $destination['id_user_who_create'] == $_SESSION['user']['id_user']
-            || $destination['id_user_responsable'] == $_SESSION['user']['id_user']
-            || $destination['id_user_adjoint'] == $_SESSION['user']['id_user'] // je suis l'un des co/encadrant de l'une des sorties
+            || $destination['id_user_who_create'] == (string) getUser()->getIdUser()
+            || $destination['id_user_responsable'] == (string) getUser()->getIdUser()
+            || $destination['id_user_adjoint'] == (string) getUser()->getIdUser() // je suis l'un des co/encadrant de l'une des sorties
         ) {
             ?>
 
@@ -172,10 +172,10 @@
 
         <?php /* imprimer la fiche de destination */
         if (allowed('destination_print')
-            || $destination['id_user_who_create'] == $_SESSION['user']['id_user']
-            || $destination['id_user_responsable'] == $_SESSION['user']['id_user']
-            || $destination['id_user_adjoint'] == $_SESSION['user']['id_user']
-            || in_array($_SESSION['user']['id_user'], get_all_encadrants_destination($destination['id']), true) // je suis l'un des co/encadrant de l'une des sorties
+            || $destination['id_user_who_create'] == (string) getUser()->getIdUser()
+            || $destination['id_user_responsable'] == (string) getUser()->getIdUser()
+            || $destination['id_user_adjoint'] == (string) getUser()->getIdUser()
+            || in_array((string) getUser()->getIdUser(), get_all_encadrants_destination($destination['id']), true) // je suis l'un des co/encadrant de l'une des sorties
         ) {
             ?>
             <a href="<?php echo 'feuille-de-sortie/dest-'.(int) ($destination['id']).'.html'; ?>" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
@@ -192,17 +192,17 @@
             $destTime = new DateTime($expDate[0]);
             $interval = $nowTime->diff($destTime);
 
-            if ($destination['id_user_responsable'] == $_SESSION['user']['id_user'] || $destination['id_user_adjoint'] == $_SESSION['user']['id_user']) {
+            if ($destination['id_user_responsable'] == (string) getUser()->getIdUser() || $destination['id_user_adjoint'] == (string) getUser()->getIdUser()) {
                 // avant l'evt
                 if (0 == $interval->invert) {
                     echo '<p class="info"><img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" /> <br />Vous êtes &laquo; '.
-                        ($destination['id_user_responsable'] == $_SESSION['user']['id_user'] ? '' : 'co-').'responsable &raquo; de l\'organisation de cette destination.<br />&nbsp;
+                        ($destination['id_user_responsable'] == (string) getUser()->getIdUser() ? '' : 'co-').'responsable &raquo; de l\'organisation de cette destination.<br />&nbsp;
                     </p><br />';
                 }
                 // apres l'evt
                 else {
                     echo '<p class="info"><img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" /> <br />Vous avez organisé cette destination en temps que &laquo; '.
-                        ($destination['id_user_responsable'] == $_SESSION['user']['id_user'] ? '' : 'co-').'responsable &raquo;.<br />&nbsp;
+                        ($destination['id_user_responsable'] == (string) getUser()->getIdUser() ? '' : 'co-').'responsable &raquo;.<br />&nbsp;
                     </p><br />';
                 }
             }
@@ -210,10 +210,10 @@
 
         <?php include __DIR__.'/../../includes/dest/display.php'; ?>
 
-        <?php if (user_in_destination($_SESSION['user']['id_user'], $destination['id'])
-            || $destination[id_user_who_create] == $_SESSION['id_user']
-            || $destination[id_user_responsable] == $_SESSION['id_user']
-            || $destination[id_user_adjoint] == $_SESSION['id_user']) { ?>
+        <?php if (user_in_destination((string) getUser()->getIdUser(), $destination['id'])
+            || $destination['id_user_who_create'] === (string) getUser()->getIdUser()
+            || $destination['id_user_responsable'] === (string) getUser()->getIdUser()
+            || $destination['id_user_adjoint'] === (string) getUser()->getIdUser()) { ?>
 
             <div id="organisation_covoiturage">
 

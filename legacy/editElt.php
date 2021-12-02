@@ -199,7 +199,7 @@ if (admin()) {
 											<span style="color:#974e00">[<img src="/img/base/bullet_key.png" alt="MASQUÉ" title="Cet éléments est actuellement masqué aux visiteurs du site" style="vertical-align:middle; position:relative; bottom:2px " />]</span>&nbsp;
 										<?php } ?>
 										Vous modifiez l'élément <strong style="font-size:13px;"><?php echo $_GET['p']; ?></strong>
-										- en langue <b><img src="/img/base/flag-<?php echo strtolower($_SESSION['lang']); ?>-up.gif" alt="" title="" style="height:10px;" /> <?php echo strtoupper($_SESSION['lang']); ?></b>
+										- en langue <b><img src="/img/base/flag-fr-up.gif" alt="" title="" style="height:10px;" /> FR</b>
 										- classe <b><?php echo $_GET['class']; ?></b>
 									</p>
 

@@ -37,7 +37,7 @@ if (user()) {
 				SELECT SQL_CALC_FOUND_ROWS $select
 				FROM $from
 				WHERE id_user = user_evt
-				AND user_evt=".(int) ($_SESSION['user']['id_user']).'
+				AND user_evt=".getUser()->getIdUser().'
 				AND id_commission = commission_evt
 				ORDER BY  tsp_evt DESC
 				LIMIT '.($limite * ($pagenum - 1)).", $limite";
@@ -81,7 +81,7 @@ if (user()) {
 				AND tsp_end_evt < ".time().' '
                 // jointure avec la table participation
                 .'AND evt_evt_join = id_evt
-				AND user_evt_join = '.(int) ($_SESSION['user']['id_user']).'
+				AND user_evt_join = '.getUser()->getIdUser().'
 				AND user_evt_join = id_user '
                 // de la plus récente a la plus ancienne
                 .'ORDER BY  tsp_evt DESC
@@ -127,7 +127,7 @@ if (user()) {
 					AND tsp_end_evt < '.time().' '
                     // jointure avec la table participation
                     .'AND evt_evt_join = id_evt
-					AND user_evt_join = '.(int) ($_SESSION['user']['id_user']).'
+					AND user_evt_join = '.getUser()->getIdUser().'
 					AND user_evt_join = id_user '
                     // de la plus récente a la plus ancienne
                     .'ORDER BY  `tsp_evt` DESC
@@ -158,7 +158,7 @@ if (user()) {
 				    AND tsp_end_evt >= ".time().' '
                 // jointure avec la table participation
                     .' AND evt_evt_join = id_evt
-				    AND user_evt_join = '.(int) ($_SESSION['user']['id_user']).'
+				    AND user_evt_join = '.getUser()->getIdUser().'
 				    AND user_evt_join = id_user '
                 // de la plus prochaine a la plus lointaine
                     .' ORDER BY  tsp_evt ASC
@@ -202,7 +202,7 @@ if (user()) {
 					AND tsp_end_evt >= '.time().' '
                     // jointure avec la table participation
                     .'AND evt_evt_join = id_evt
-					AND user_evt_join = '.(int) ($_SESSION['user']['id_user']).'
+					AND user_evt_join = '.getUser()->getIdUser().'
 					AND user_evt_join = id_user '
                     // de la plus prochaine a la plus lointaine
                     .'ORDER BY  `tsp_evt` ASC
@@ -243,11 +243,11 @@ if (user()) {
                 for ($i = 0; $i < count($evtList); ++$i) {
                     $evt = $evtList[$i];
 
-                    $empiete = empietement_sortie($_SESSION['user']['id_user'], $evt);
+                    $empiete = empietement_sortie((string) getUser()->getIdUser(), $evt);
 
-                    $status_evt = (0 == $evt['status_evt'] && $evt['user_evt'] == $_SESSION['user']['id_user'] ? '<p class="alerte">Sortie en attente de publication</p>' : '')
-                        .(1 == $evt['status_evt'] && $evt['user_evt'] == $_SESSION['user']['id_user'] ? '<p class="info">Sortie publiée sur le site</p>' : '')
-                        .(2 == $evt['status_evt'] && $evt['user_evt'] == $_SESSION['user']['id_user'] ? '<p class="erreur">Sortie refusée et non publiée</p>' : '');
+                    $status_evt = (0 == $evt['status_evt'] && $evt['user_evt'] == (string) getUser()->getIdUser() ? '<p class="alerte">Sortie en attente de publication</p>' : '')
+                        .(1 == $evt['status_evt'] && $evt['user_evt'] == (string) getUser()->getIdUser() ? '<p class="info">Sortie publiée sur le site</p>' : '')
+                        .(2 == $evt['status_evt'] && $evt['user_evt'] == (string) getUser()->getIdUser() ? '<p class="erreur">Sortie refusée et non publiée</p>' : '');
 
                     echo '<tr>'
                             .'<td class="agenda-gauche">'

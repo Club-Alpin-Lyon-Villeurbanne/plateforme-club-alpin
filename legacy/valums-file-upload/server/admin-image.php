@@ -5,19 +5,12 @@ include __DIR__.'/../../app/includes.php';
 $errTab = [];
 $result = $targetDir = $filename = null;
 
-// $errTab[]="Test";
 if (!user() && !admin()) {
     $errTab[] = 'User non connecté';
-} elseif (!$_SESSION['user']['id_user'] && !admin()) {
-    $errTab[] = 'ID manquant';
-}
-
-if (admin()) {
-    $_SESSION['user']['id_user'] = 0;
 }
 
 if (0 === count($errTab)) {
-    $targetDir = __DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/images/';
+    $targetDir = __DIR__.'/../../../public/ftp/user/0/images/';
     if (!is_dir($targetDir)) {
         if (!mkdir($targetDir, 0777, true) && !is_dir($targetDir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $targetDir));

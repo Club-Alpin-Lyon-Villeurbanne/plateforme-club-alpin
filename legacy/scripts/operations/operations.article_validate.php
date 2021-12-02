@@ -17,7 +17,7 @@ $authorDatas = null;
 
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
-    $req = "UPDATE caf_article SET status_article='$status_article', status_who_article=".(int) ($_SESSION['user']['id_user'])." WHERE caf_article.id_article =$id_article";
+    $req = "UPDATE caf_article SET status_article='$status_article', status_who_article=".getUser()->getIdUser()." WHERE caf_article.id_article =$id_article";
     if (!$mysqli->query($req)) {
         $errTab[] = 'Erreur SQL : '.$mysqli->error;
         error_log($mysqli->error);

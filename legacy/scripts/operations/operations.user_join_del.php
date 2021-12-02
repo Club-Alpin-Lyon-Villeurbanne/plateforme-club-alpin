@@ -1,7 +1,7 @@
 <?php
 
 $id_evt = (int) ($_POST['id_evt']);
-$id_user = (int) ($_SESSION['user']['id_user']);
+$id_user = getUser()->getIdUser();
 
 $evtDate = $evtTarif = $encEmail = $encName = null;
 
@@ -77,7 +77,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
 
             // vars
-            $tmpUserName = ($_SESSION['user']['firstname_user'].' '.$_SESSION['user']['lastname_user']);
+            $tmpUserName = (getUser()->getFirstnameUser().' '.getUser()->getLastnameUser());
             $evtName = html_utf8($_POST['titre_evt']);
             $evtUrl = html_utf8($p_racine.'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html');
 
@@ -92,10 +92,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     Plus d'infos :
                 </p>
                 <ul>
-                    <li><b>Pseudo : </b> ".html_utf8($_SESSION['user']['nickname_user'])."</li>
-                    <li><b>Email : </b> <a href='mailto:".html_utf8($_SESSION['user']['email_user'])."'>".html_utf8($_SESSION['user']['email_user']).'</a></li>
-                    <li><b>Tel : </b> '.html_utf8($_SESSION['user']['tel_user']).'</li>
-                    <li><b>Tel2 : </b> '.html_utf8($_SESSION['user']['tel2_user']).'</li>
+                    <li><b>Pseudo : </b> ".html_utf8(getUser()->getNicknameUser())."</li>
+                    <li><b>Email : </b> <a href='mailto:".html_utf8(getUser()->getEmailUser())."'>".html_utf8(getUser()->getEmailUser()).'</a></li>
+                    <li><b>Tel : </b> '.html_utf8(getUser()->getTelUser()).'</li>
+                    <li><b>Tel2 : </b> '.html_utf8(getUser()->getTel2User()).'</li>
                 </ul>
                 ';
             $content_header = '';
@@ -103,7 +103,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
             $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
-            $mail->AddReplyTo($_SESSION['user']['email_user']);
+            $mail->AddReplyTo(getUser()->getEmailUser());
             $mail->SetFrom($p_noreply, $p_sitename);
             $mail->Subject = $subject;
             //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
@@ -122,8 +122,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
             if (1 == $is_cb) {
                 $toMail = $p_email_paiement;
                 $toName = 'Trésorier';
-                $toNameFull = $_SESSION['user']['firstname_user'].' '.$_SESSION['user']['lastname_user'];
-                $toCafNum = $_SESSION['user']['cafnum_user'];
+                $toNameFull = getUser()->getFirstnameUser().' '.getUser()->getLastnameUser();
+                $toCafNum = getUser()->getCafnumUser();
 
                 $subject = 'Désinscription avec paiement en ligne';
                 $content_main = "<h2>$subject</h2>

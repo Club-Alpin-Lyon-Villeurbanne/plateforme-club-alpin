@@ -1,10 +1,12 @@
-<?php if (admin()) {
+<?php
+
+if (admin()) {
     ?>
 	<div id="menuAdmin" style="<?php if ($p_pageadmin) {
         echo 'position:relative';
     } ?>">
 		<!-- specs -->
-		<a href="<?php echo $p_pageadmin ? 'accueil.html' : $versCettePage; ?>?quitadmin=true" title="" class="adminmenulink special"><img src="/img/base/door_out.png" alt="" title="" /> Déconnexion</a>
+		<a href="<?php echo generateRoute('admin_logout'); ?>" title="" class="adminmenulink special"><img src="/img/base/door_out.png" alt="" title="" /> Déconnexion</a>
 		<a href="includer.php?p=includes/admin-log.php&admin=true" title="Voir les activités administrateur" class="adminmenulink special fancyframe"><img src="/img/base/report.png" alt="" title="" /> Log</a>
 		<a href="<?php echo $p_racine; ?>" title="Retour au site" class="adminmenulink special"><img src="/img/base/house.png" alt="" title="" /> Retour au site</a>
 

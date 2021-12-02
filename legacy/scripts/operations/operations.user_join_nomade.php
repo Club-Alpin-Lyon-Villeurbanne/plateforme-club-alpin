@@ -18,7 +18,7 @@ $suis_encadrant = false;
 $req = "SELECT COUNT(id_evt_join)
 FROM caf_evt_join
 WHERE evt_evt_join=$id_evt
-AND user_evt_join = ".(int) ($_SESSION['user']['id_user'])."
+AND user_evt_join = ".getUser()->getIdUser()."
 AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant')
 LIMIT 1";
 $result = $mysqli->query($req);
@@ -29,7 +29,7 @@ if ($row[0] > 0) {
 
 // suis-je l'auteur de cette sortie ?
 $suis_auteur = false;
-$req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND user_evt = ".(int) ($_SESSION['user']['id_user']).' LIMIT 1';
+$req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND user_evt = ".getUser()->getIdUser().' LIMIT 1';
 $result = $mysqli->query($req);
 $row = $result->fetch_row();
 if ($row[0] > 0) {
@@ -74,7 +74,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $tel2_user = $mysqli->real_escape_string($tel2_user);
 
         $req = "INSERT INTO caf_user(id_user, email_user, mdp_user, cafnum_user, firstname_user, lastname_user, nickname_user, created_user, birthday_user, tel_user, tel2_user, adresse_user, cp_user, ville_user, pays_user, civ_user, moreinfo_user, auth_contact_user, valid_user ,cookietoken_user, manuel_user, nomade_user, nomade_parent_user)
-                        VALUES (NULL ,  '',  '',  'N_$cafnum_user',  '$firstname_user',  '$lastname_user',  '$nickname_user',  ".time().",  NULL,  '$tel_user',  '$tel2_user',  '',  '',  '',  '',  '$civ_user',  '',  'none',  '1',  '',  '0',  '1',  '".(int) ($_SESSION['user']['id_user'])."' )";
+                        VALUES (NULL ,  '',  '',  'N_$cafnum_user',  '$firstname_user',  '$lastname_user',  '$nickname_user',  '".time()."',  NULL,  '$tel_user',  '$tel2_user',  '',  '',  '',  '',  '$civ_user',  '',  'none',  '1',  '',  '0',  '1',  '".getUser()->getIdUser()."' )";
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL :'.$mysqli->error;
         } else {
@@ -154,7 +154,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
 
             $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
-                                    VALUES(NULL ,	 $status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().', 		'.time().', 			'.(int) ($_SESSION['user']['id_user']).",
+                                    VALUES(NULL ,	 $status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().', 		'.time().', 			'.getUser()->getIdUser().",
                         $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
             if (!$mysqli->query($req)) {
                 $errTab[] = 'Erreur SQL : '.$mysqli->error;

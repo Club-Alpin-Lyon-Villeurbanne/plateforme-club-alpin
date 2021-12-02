@@ -66,7 +66,7 @@
     }
 
     // j'en suis l'auteur ? Elle est pas validée ? modification possible !
-    if (($evt['user_evt'] == $_SESSION['user']['id_user']) || allowed('evt_validate_all') || allowed('evt_validate', 'commission:'.$evt['code_commission'])) {
+    if (($evt['user_evt'] == (string) getUser()->getIdUser()) || allowed('evt_validate_all') || allowed('evt_validate', 'commission:'.$evt['code_commission'])) {
         if (1 != $evt['cancelled_evt']) {
             echo '<a href="creer-une-sortie/'.$evt['code_commission'].'/update-'.$evt['id_evt'].'.html" title="Vous êtes l\'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange"><img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie</a>';
         }

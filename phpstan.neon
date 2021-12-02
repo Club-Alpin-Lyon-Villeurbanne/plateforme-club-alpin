@@ -16,7 +16,6 @@ parameters:
     - '#Variable \$use_md5_salt might not be defined#'
     - '#Variable \$md5_salt might not be defined#'
     - '#Variable \$lang might not be defined#'
-    - '#Variable \$versCettePage might not be defined#'
     - '#Instantiated class FeedWriter not found#'
 
   autoload_files:

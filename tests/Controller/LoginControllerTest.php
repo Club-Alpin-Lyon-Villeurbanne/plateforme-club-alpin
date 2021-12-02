@@ -1,0 +1,125 @@
+<?php
+
+namespace App\Tests\Controller;
+
+use App\Tests\WebTestCase;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
+
+class LoginControllerTest extends WebTestCase
+{
+    public function testLogin()
+    {
+        $this->client = static::createClient();
+
+        $hasherFactory = self::getContainer()->get(PasswordHasherFactoryInterface::class);
+
+        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+        $user->setPassword($hasherFactory->getPasswordHasher('login_form')->hash('youpla'));
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $em->flush();
+
+        $this->client->request('GET', '/login');
+        $this->assertResponseStatusCodeSame(200);
+
+        $this->client->submitForm('connect-button', [
+            '_username' => $user->getEmailUser(),
+            '_password' => 'youpla',
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects('http://localhost/');
+    }
+
+    public function testLoginInvalidPassword()
+    {
+        $this->client = static::createClient();
+
+        $hasherFactory = self::getContainer()->get(PasswordHasherFactoryInterface::class);
+
+        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+        $user->setPassword($hasherFactory->getPasswordHasher('login_form')->hash('youpla'));
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $em->flush();
+
+        $this->client->request('GET', '/login');
+        $this->assertResponseStatusCodeSame(200);
+
+        $this->client->submitForm('connect-button', [
+            '_username' => $user->getEmailUser(),
+            '_password' => 'invalid',
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects('http://localhost/login');
+    }
+
+    public function testLoginWhenConnected()
+    {
+        $this->client = static::createClient();
+        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+        $this->signin($user);
+
+        $this->client->request('GET', '/login');
+        $this->assertResponseStatusCodeSame(302);
+    }
+
+    public function testPasswordLostWhenConnected()
+    {
+        $this->client = static::createClient();
+        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+        $this->signin($user);
+
+        $this->client->request('GET', '/password-lost');
+        $this->assertResponseStatusCodeSame(302);
+    }
+
+    public function testPasswordLost()
+    {
+        $this->client = static::createClient();
+        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+
+        $this->client->request('GET', '/password-lost');
+        $this->assertResponseStatusCodeSame(200);
+
+        $crawler = $this->client->submitForm('reset_password[submit]', [
+            'reset_password[email]' => $user->getEmailUser(),
+        ]);
+
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertSame('Ré-initialisation du mot de passe en cours', $crawler->filter('h1')->first()->text());
+
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+
+        $this->assertEmailHeaderSame($emails[0], 'To', $user->getEmailUser());
+        $this->assertEmailTextBodyContains($emails[0], 'Votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
+        $this->assertEmailHtmlBodyContains($emails[0], 'Votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
+    }
+
+    public function testSetPassword()
+    {
+        $this->client = static::createClient();
+        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+
+        $this->client->request('GET', '/password');
+        $this->assertResponseStatusCodeSame(302);
+
+        $this->signin($user);
+
+        $this->client->request('GET', '/password');
+        $this->assertResponseStatusCodeSame(200);
+
+        $this->client->submitForm('set_password[submit]', [
+            'set_password[password][first]' => '!NewPassw0rd',
+            'set_password[password][second]' => '!NewPassw0rd',
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects('/');
+
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+
+        $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNicknameUser(), $user->getEmailUser()));
+        $this->assertEmailTextBodyContains($emails[0], 'Modification de votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
+        $this->assertEmailHtmlBodyContains($emails[0], 'Modification de votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
+    }
+}

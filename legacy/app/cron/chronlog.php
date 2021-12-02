@@ -2,8 +2,6 @@
 
 include __DIR__.'/../../app/includes.php';
 
-//_________________________________________________ GESTION ET SECURISATIONS DES SESSIONS
-include __DIR__.'/../../app/sessions.php';
 //_________________________________________________ FONCTIONS MAISON
 include __DIR__.'/../../app/fonctions.php';
 //_________________________________________________ VARIABLES "GLOBALES" DU SITE

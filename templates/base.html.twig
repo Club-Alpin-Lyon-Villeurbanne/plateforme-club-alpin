@@ -92,7 +92,11 @@
                         </p>
                     </div>
                 <![endif]-->
+                {% include 'header.html.twig' %}
+                <div id="main" role="main">
                 {% block body %}{% endblock %}
+                </div>
+                {% include 'footer.html.twig' %}
             </div>
         </div>
         {% block javascripts %}

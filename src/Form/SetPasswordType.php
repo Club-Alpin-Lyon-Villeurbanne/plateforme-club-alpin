@@ -21,13 +21,13 @@ class SetPasswordType extends AbstractType
                 'options' => ['attr' => ['class' => 'password-field']],
                 'required' => true,
                 'first_options' => [
-                    'label' => 'Password',
+                    'label' => ' ',
                     'constraints' => new CompliantPassword(),
-                    'attr' => ['autocomplete' => 'new-password'],
+                    'attr' => ['autocomplete' => 'new-password', 'class' => 'type1', 'placeholder' => 'Mot de passe'],
                 ],
                 'second_options' => [
-                    'label' => 'Password confirmation',
-                    'attr' => ['autocomplete' => 'new-password'],
+                    'label' => ' ',
+                    'attr' => ['autocomplete' => 'new-password', 'class' => 'type1', 'placeholder' => 'Confirmation du mot de passe'],
                 ],
             ])
             ->add('recaptcha', HiddenType::class, [

@@ -22,11 +22,13 @@ class CafContentHtmlRepository extends ServiceEntityRepository
     public function findByCodeContent($codeContent): ?CafContentHtml
     {
         return $this->createQueryBuilder('c')
+            ->select('c')
             ->where('c.codeContentHtml = :code')
             ->setParameter('code', $codeContent)
             ->orderBy('c.dateContentHtml', 'DESC')
+            ->setMaxResults(1)
             ->getQuery()
-            ->getFirstResult()
+            ->getOneOrNullResult()
         ;
     }
 }

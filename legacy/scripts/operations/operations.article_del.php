@@ -7,7 +7,7 @@ $req = "DELETE FROM caf_article WHERE id_article=$id_article AND status_article!
 if (allowed('article_delete_notmine')) {
     $req .= ' ';
 } else {
-    $req .= ' AND user_article='.(int) ($_SESSION['user']['id_user']);
+    $req .= ' AND user_article='.getUser()->getIdUser();
 }
 if (!$mysqli->query($req)) {
     $errTab[] = 'Erreur SQL';

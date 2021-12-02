@@ -36,7 +36,7 @@ else {
     // ce user autorise t-il le contact
     $req = 'SELECT id_user, civ_user, firstname_user, lastname_user, email_user, nickname_user
         FROM caf_user
-        WHERE id_user = '.(int) ($_SESSION['user']['id_user']);
+        WHERE id_user = '.getUser()->getIdUser();
 
     $handleSql = $mysqli->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {

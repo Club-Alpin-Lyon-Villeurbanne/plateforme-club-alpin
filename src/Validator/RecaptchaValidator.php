@@ -26,7 +26,7 @@ class RecaptchaValidator extends ConstraintValidator
         }
 
         if (!$this->client->isValid($value ?? '', $this->requestStack->getCurrentRequest()->getClientIp(), $constraint->action)) {
-            $this->context->buildViolation('Le token recaptcha est invalide..')
+            $this->context->buildViolation('Le token recaptcha est invalide.')
                 ->addViolation();
         }
     }

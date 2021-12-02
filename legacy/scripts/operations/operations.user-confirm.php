@@ -36,8 +36,3 @@ if ($p2) {
 } else {
     $errTab[] = 'Erreur de données (datas)';
 }
-
-// DÉMARRAGE SESSION USER
-if (!isset($errTab) || 0 === count($errTab)) {
-    user_login($id_user);
-}

@@ -1,9 +1,13 @@
 <?php
 
+use App\Entity\CafUser;
+use Symfony\Bridge\Twig\AppVariable;
+
 global $_POST;
 global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
 global $CONTENUS_INLINE;
 global $contLog;
+global $kernel;
 global $lang;
 global $p_abseditlink;
 global $p_devmode;
@@ -128,7 +132,7 @@ function userImg($id_user, $style = '')
             break;
     }
 
-    $rel = 'ftp/user/'.(int) $id_user.'/'.$style.'profil.jpg';
+    $rel = 'ftp/user/'.$id_user.'/'.$style.'profil.jpg';
     if (!file_exists(__DIR__.'/../../public/'.$rel)) {
         $rel = 'ftp/user/0/'.$style.'profil.jpg';
     }
@@ -194,11 +198,15 @@ function allowed($code_userright, $param = '')
     global $userAllowedTo; // liste des opérations auxquelles l'user est autorisé. tableau associatif : la clé est le code de l'opératin, sa valeur les parametres
     global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
 
+    if (!getUser()) {
+        return false;
+    }
+
     $usertypes = ['1']; // id du niveau visiteur, le plus bas, commun à tous
     $allowedError = false;
     $return = false;
 
-    $id_user = (int) ($_SESSION['user']['id_user']);
+    $id_user = getUser()->getIdUser();
 
     // le tableau des droits est-il déja défini ? Non ? alors on le définit ici
     if (!$userAllowedTo || !is_array($userAllowedTo)) {
@@ -215,7 +223,7 @@ function allowed($code_userright, $param = '')
 
         if ($mysqli->ping()) { // si on est bien connecté à la BD
             // Si un adhérent est connecté et licence valide, récupération des droits attribués à cet adhérent
-            if ($id_user && 0 == $_SESSION['user']['doit_renouveler_user']) {
+            if ($id_user && !getUser()->getDoitRenouvelerUser()) {
                 // la requête remonte la chaine alimentaire, de l'ID de l'user jusqu'à l'ensemble de ses droit, avec les paramètres liés
                 $req = ''
                 .'SELECT DISTINCT code_userright, params_user_attr, limited_to_comm_usertype ' // on veut le code, et les paramètres de chaque droit, et savoir si ce droit est limité à une commission ou non
@@ -258,7 +266,7 @@ function allowed($code_userright, $param = '')
                     }
                 }
 
-                if (!in_array('Salarié', $_SESSION['user']['status'], true)) {
+                if (getUser()->hasAttribute('Salarié')) {
                     // **********
                     // DEBUG : SI CONNECTÉ, ON A FORCÉMENT LE STATUT ADHÉRENT MAIS PAS LIE DANS LA BASE, SAUF SALARIE
                     $req = ''
@@ -464,86 +472,53 @@ function formatSize($bytes, $format = '%.2f', $lang = 'fr')
 
     return sprintf($format.' %s', $b, $translatedUnits[$e]);
 }
-
-// login d'un user par son ID ou son e-mail
-function user_login($identifiant, $connectme = true)
+function user(): bool
 {
-    global $pbd;
+    global $kernel;
 
-    $_SESSION['user'] = false;
-
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-
-    $identifiant = $mysqli->real_escape_string($identifiant);
-
-    if (isMail($identifiant)) {
-        $req = 'SELECT
-          id_user, email_user, cafnum_user, firstname_user, lastname_user, nickname_user, civ_user, doit_renouveler_user, alerte_renouveler_user, tel_user, tel2_user
-        FROM  '.$pbd."user WHERE email_user = '$identifiant' AND valid_user =1 ORDER BY  created_user DESC LIMIT 1";
-    } elseif (is_int($identifiant)) {
-        $req = 'SELECT
-          id_user, email_user, cafnum_user, firstname_user, lastname_user, nickname_user, civ_user, doit_renouveler_user, alerte_renouveler_user, tel_user, tel2_user
-        FROM  '.$pbd."user WHERE id_user =$identifiant AND valid_user =1 ORDER BY  created_user DESC LIMIT 1";
-    } else {
-        return false;
-    }
-
-    $handleSql = $mysqli->query($req);
-    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-        $_SESSION['user'] = $handle;
-        $_SESSION['user']['logged'] = 'logged';
-        $_SESSION['user']['status'] = []; // définition des statuts
-
-        // chargement des droits si licence valide
-        if (0 == $handle['doit_renouveler_user']) {
-            $req = 'SELECT title_usertype, params_user_attr
-                FROM caf_user_attr, caf_usertype
-                WHERE user_user_attr='.(int) ($handle['id_user']).'
-                AND id_usertype=usertype_user_attr
-                ORDER BY hierarchie_usertype DESC
-                LIMIT 50';
-            $handleSql2 = $mysqli->query($req);
-            while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                $commission = substr(strrchr($handle2['params_user_attr'], ':'), 1);
-                $_SESSION['user']['status'][] = $handle2['title_usertype'].($commission ? ', '.$commission : '');
-            }
+    if ($token = $kernel->getContainer()->get('security.token_storage')->getToken()) {
+        if ($token->getUser() instanceof CafUser) {
+            return true;
         }
-
-        // CRÉATION DU COOKIE POUR RESTER CONNECTÉ
-        $cookietoken = bin2hex(random_bytes(16));
-        $id_user = (int) ($handle['id_user']);
-        setcookie('cafuser', $id_user.'-'.$cookietoken, time() + (86400 * 7), '/', '.clubalpinlyon.fr', (isset($_SERVER['HTTPS']) ? true : false), true); // duree : une semaine
-        // sauvegarde du token en BD
-        $mysqli->query('UPDATE  `'.$pbd."user` SET  `cookietoken_user` =  '$cookietoken' WHERE  `id_user` =$id_user LIMIT 1 ;");
-
-        // FIN
-        return true;
-    }
-
-    $mysqli->close();
-
-    return false;
-}
-// logout user
-function user_logout()
-{
-    setcookie('cafuser', '', time() - 3600, '/', '.clubalpinlyon.fr', false, true); // suppression cookie
-    setcookie('cafuser', '', time() - 3600, '/', '.clubalpinlyon.fr', true, true); // suppression cookie
-    setcookie('cafuser', '', time() - 3600, '/', 'www.clubalpinlyon.fr', true, true); // suppression cookie
-    setcookie('cafuser', '', time() - 3600, '/', 'www.clubalpinlyon.fr', false, true); // suppression cookie
-    setcookie('cafuser', '', time() - 3600, '/', '', true, true); // suppression cookie
-    setcookie('cafuser', '', time() - 3600, '/', '', false, true); // suppression cookie
-    setcookie('cafuser', '', time() - 3600, '/', 'clubalpinlyon.fr', true, true); // suppression cookie
-    setcookie('cafuser', '', time() - 3600, '/', 'clubalpinlyon.fr', false, true); // suppression cookie
-    unset($_SESSION['user']);
-}
-function user()
-{
-    if ('logged' == $_SESSION['user']['logged']) {
-        return true;
     }
 
     return false;
+}
+function getUser(): ?Cafuser
+{
+    global $kernel;
+
+    if ($token = $kernel->getContainer()->get('security.token_storage')->getToken()) {
+        if ($token->getUser() instanceof CafUser) {
+            return $token->getUser();
+        }
+    }
+
+    return null;
+}
+function csrfToken(string $intention): ?string
+{
+    global $kernel;
+
+    return $kernel->getContainer()->get('legacy_csrf_token_manager')->getToken($intention);
+}
+function generateRoute(string $path): ?string
+{
+    global $kernel;
+
+    return $kernel->getContainer()->get('legacy_router')->generate($path);
+}
+function twigRender(string $path, array $params = []): ?string
+{
+    global $kernel;
+
+    $params['app'] = new AppVariable();
+    $params['app']->setEnvironment($kernel->getContainer()->getParameter('kernel.environment'));
+    $params['app']->setDebug($kernel->getContainer()->getParameter('kernel.debug'));
+    $params['app']->setTokenStorage($kernel->getContainer()->get('legacy_token_storage'));
+    $params['app']->setRequestStack($kernel->getContainer()->get('legacy_request_stack'));
+
+    return $kernel->getContainer()->get('legacy_twig')->render($path, $params);
 }
 
 // enregistrement de l'activité sur le site
@@ -875,44 +850,21 @@ function formater($retourner, $type = 1)
     return $retourner;
 }
 
-// connexions admin et superadmin
 function admin()
 {
-    if (true == $_SESSION['admin']['on']) {
-        return true;
+    global $kernel;
+
+    $request = $kernel->getContainer()->get('legacy_request_stack')->getMainRequest();
+
+    if (!$request->hasSession()) {
+        return false;
     }
 
-    return false;
-}
-function admin_start($connectMe = true)
-{
-    $_SESSION['admin']['on'] = true;
-    $_SESSION['admin']['mode'] = 'admin';
-    mylog('login-admin', "Connection d'un admin", $connectMe);
-
-    return true;
-}
-function admin_stop()
-{
-    unset($_SESSION['admin']);
-
-    return true;
+    return $request->getSession()->get('admin_caf', false);
 }
 function superadmin()
 {
-    if (true == $_SESSION['admin']['on'] && 'superadmin' == $_SESSION['admin']['mode']) {
-        return true;
-    }
-
-    return false;
-}
-function superadmin_start($connectMe = true)
-{
-    $_SESSION['admin']['on'] = true;
-    $_SESSION['admin']['mode'] = 'superadmin';
-    mylog('login-superadmin', "Connection d'un super-admin", $connectMe);
-
-    return true;
+    return admin();
 }
 
 // check mail

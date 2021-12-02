@@ -1,0 +1,322 @@
+{% set current_commission = current_commission | default('') %}
+{% set p1 = p1 | default('') %}
+
+<header id="mainHeader">
+    <div class="sitewidth" style="min-width:980px;">
+
+        {# LOGO COMMUN TTES PAGES #}
+        <a id="logo" href="/" title="{{ db_content('logo-title') }}">
+            <img src="/img/logo.png" alt="{{ db_content('logo-title') }}" title="{{ db_content('logo-title') }}" />
+        </a>
+
+        {# COMMISSION #}
+        <a id="toolbar-commission" href="javascript:void(0)" title="{{ commission_title(current_commission) }}" class="toptrigger">
+            <div style="position:absolute;"><span id="shadowcache-commission" class="shadowcache"></span></div>
+            {% if current_commission %}
+                <span class="picto">
+                    <img src="{{ commission_picto(current_commission) }}" alt="" title="" class="light" />
+                    <img src="{{ commission_picto(current_commission, 'dark') }}" alt="" title="" class="dark" />
+                </span> Commission - Activité :<br /><b>{{ commission_title(current_commission) }}</b>
+            {% else %}
+                <span class="picto">
+                    <img src="/img/comm-please.png" alt="" title="" class="light" />
+                    <img src="/img/comm-please-up.png" alt="" title="" class="dark" />
+                </span> Commissions - Activités<br /><b>choisissez...</b>
+            {% endif %}
+        </a>
+
+        {# PARTIE CACHEE #}
+        <nav id="toolbar-commission-hidden">
+            <div class="sitewidth">
+                <a href="/" title="">
+                    <span class="picto" style="background-image:url({{ commission_picto(null, 'light') }})">
+                        <img src="{{ commission_picto(null, 'dark') }}" alt="" title="" />
+                    </span> Toutes les commissions
+                </a>
+                {% for commission in list_commissions() %}
+                    {% set target = 'accueil' %}
+                    {% if p1 == 'agenda' or p1 == 'article-new' %}{% set target = p1 %}{% endif %}
+                    <a href="/{{ target }}/{{ commission.codeCommission }}.html" title="">
+                        <span class="picto" style="background-image:url({{ commission_picto(commission.codeCommission, 'light') }})">
+                            <img src="{{ commission_picto(commission.codeCommission, 'dark') }}" alt="" title="" />
+                        </span> {{ commission.titleCommission }}
+                    </a>
+                {% endfor %}
+            </div>
+        </nav>
+
+        {# NAVIGATION #}
+        <a id="toolbar-navigation" href="javascript:void(0)" title="" class="toptrigger">
+            <span class="picto"><img src="/img/boussole.png" alt="" title="" class="light" />
+                <img src="/img/boussole-up.png" alt="" title="" class="dark" />
+            </span>
+            La carte du site :<br /><b>Navigation</b>
+            <span id="shadowcache-navigation" class="shadowcache"></span>
+        </a>
+
+        {# PARTIE CACHEE #}
+        <nav id="toolbar-navigation-hidden">
+            <div class="sitewidth">
+                {{ easy_include('nav-menu-1', 'nav-menu') }}
+                {{ easy_include('nav-menu-2', 'nav-menu') }}
+                {{ easy_include('nav-menu-3', 'nav-menu') }}
+                {{ easy_include('nav-menu-4', 'nav-menu') }}
+            </div>
+        </nav>
+
+        <a id="toolbar-user" href="javascript:void(0)" title="" class="toptrigger">
+            {% if not app.user %}
+                <span class="picto"><img src="/img/toolbox.png" alt="" title="" class="light" /><img src="/img/toolbox-up.png" alt="" title="" class="dark" /></span> Espace<br /><b>Adhérents</b>
+                <span id="shadowcache-user" class="shadowcache"></span>
+            {% else %}
+                <div class="connected-name">
+
+                    {% if app.user.getDoitRenouvelerUser or app.user.getAlerteRenouvelerUser %}{
+                        <div class="notification-user-alerte"><span>!</span></div>
+                    {% endif %}
+
+                    {% set notifications = notifications_counter() %}
+
+                    {% if notifications > 0 %}
+                        <div class="notification-user"><span>{{ notifications }}</span></div>
+                    {% endif %}
+                    <img src="{{ user_picto(app.user, 'pic') }}" alt="" title="" />
+                    <p>
+                        Bonjour <br />
+                        <b>{{ app.user.getFirstnameUser() }},</b>
+                        <span id="shadowcache-user" class="shadowcache" style="top:8px;"></span>
+                    </p>
+                </div>
+            {% endif %}
+        </a>
+
+        {# navigation adherent #}
+        <nav id="toolbar-user-hidden">
+            <div class="sitewidth">
+                <img src="/img/bg-usermenu.png" alt="" title="" style="float:left; padding:30px 30px 30px 0" />
+
+                {% if not app.user %}
+                    {# creer un compte (vers page profil) #}
+                    <div style="width:515px; float:left; border-right:1px solid #c6e39f; min-height:120px; padding:0px 5px 0 0">
+                        {{ easy_include('mainmenu-creer-mon-compte', 'menucontent')}}
+                        <a class="nice2" href="/profil.html" title="">Activer mon compte</a>
+                    </div>
+
+                    <div style="width:290px; padding-right:10px; float:right">
+                        {% include 'login_form.html.twig' with { class: 'menucontent' } %}
+                    </div>
+
+                {% else %}
+                    {% if app.user.getDoitRenouvelerUser %}
+                        {# MESSAGE D'ALERTE SI CET USER EST VERROUILLE POUR LICENCE EXPIREE #}
+                        <div style="padding:5px 0 30px 100px">
+                            {{ easy_include('alerte-licence-obsolete', 'alerte')}}
+                        </div>
+                    {% elseif app.user.getAlerteRenouvelerUser %}
+                        {# MESSAGE D'ALERTE SI CET USER DOIT RENOUVELER SA LICENCE AVANT BIENTOT #}
+                        <div style="padding:5px 0 30px 100px">
+                            {{ easy_include('alerte-licence-renouveler', 'alerte')}}
+                        </div>
+                    {% endif %}
+
+                    <div style="width:515px; min-height:160px; float:left; border-right:1px solid #c6e39f; min-height:130px; padding:0px 5px 0 0">
+                        <div class="nav-user">
+                            <p class="menutitle">Mes sorties</p>
+                            
+                                {% if allowed('evt_validate') %}
+                                    {# publier une sortie (notification au besoin, variable définie dans SCRIPTS.'reqs.php') #}
+                                    <a href="gestion-des-sorties.html" title="">
+                                        <span class="star">
+                                            <img src="/img/base/bullet_star.png" alt="" title="" />
+                                        </span>
+
+                                        {% set notif_sorties = notifications_counter_sorties() %}
+                                        {% if notif_sorties > 0 %}<span class="notification">{{ notif_sorties }}</span>{% endif %}
+                                        publication des sorties
+                                    </a>
+                                {% endif %}
+
+                                {% if allowed('evt_legal_accept') %}
+                                    {# valider juridiquement une sortie#}
+                                    <a href="validation-des-sorties.html" title="">
+                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
+
+                                        {% set notif_president = notifications_counter_sorties_president() %}
+                                        {% if notif_president > 0 %}<span class="notification">{{ notif_president }}</span>{% endif %}
+                                        validation des sorties
+                                    </a>
+                                {% endif %}
+
+                                {% if allowed('destination_creer') or allowed('destination_modifier') %}
+                                    <a href="/profil/destinations.html" title="">
+                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
+
+                                        {% set notif_destination = notifications_counter_destinations() %}
+                                        {% if notif_destination > 0 %}<span class="notification">{{ notif_destination }}</span>{% endif %}
+                                        destinations
+                                    </a>
+                                {% endif %}
+
+                                {% if allowed('evt_create') %}
+                                    {# créer une sortie (par défaut : pour la commission courante si autorisé)#}
+                                    <a href="creer-une-sortie.html" title="">
+                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
+                                        proposer une sortie
+                                    </a>
+
+                                    {# les sorties que j'ai créé#}
+                                    <a href="/profil/sorties/self.html" title="">
+                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
+                                        sorties que j'organise
+                                    </a><br />
+                                {% endif %}
+
+                                <a href="/profil/sorties/next.html" title="">mes sorties à venir</a><br />
+                                <a href="/profil/sorties/prev.html" title="">mes sorties passées</a><br />
+                            </div>
+
+                            <div class="nav-user">
+                                <p class="menutitle">Mon profil</p>
+
+                                <a href="/profil/infos.html" title="">mes infos publiques</a><br />
+                                <a href="/profil/infos.html#private" title="">mes infos privées</a><br />
+                                {#<a href="/profil/filiations.html" title="">filiations</a>#}
+                            </div>
+
+                            <div class="nav-user">
+                                <p class="menutitle">Articles</p>
+
+                                {% if allowed('article_create') %}
+                                    <a href="article-new.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>rédiger un article
+                                    </a>
+                                    <a href="/profil/articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes articles
+                                    </a>
+                                {% endif %}
+
+                                {% if allowed('article_validate') or allowed('article_validate_all') %}
+                                    <a href="gestion-des-articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
+
+                                        {% set notif_article = notifications_counter_articles() %}
+                                        {% if notif_article > 0 %}<span class="notification">{{ notif_article }}</span>{% endif %}
+                                        validation / gestion des articles
+                                    </a>
+                                {% endif %}
+
+                                <a href="recherche.html" title="">rechercher un article</a><br />
+
+                            </div>
+
+                            <br  style="clear:both" />
+
+                            {% if allowed('user_see_all') or allowed('user_create_manually') or allowed('user_updatefiles') %}
+
+                                <div class="nav-user">
+                                    <p class="menutitle" style="padding-top:13px;">Adhérents</p>
+
+                                    {% if allowed('user_see_all') %}
+                                        <a href="adherents.html" title="">
+                                            <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>gestion des adhérents
+                                        </a>
+                                    {% endif %}
+
+                                    {% if allowed('user_create_manually') %}
+                                        <a href="adherents-creer.html" title="">
+                                            <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>créer un adhérent/salarié
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                        {% if allowed('comm_create') or allowed('comm_edit') or allowed('comm_desactivate') or allowed('comm_delete') %}
+                            <div class="nav-user">
+                                <p class="menutitle" style="padding-top:13px;">Commissions</p>
+                                {% if allowed('comm_edit') %}
+                                    <a href="gestion-des-commissions.html" title="">
+                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>gestion des commissions
+                                    </a>
+                                {% endif %}
+
+                                {% if allowed('comm_create') %}
+                                    <a href="commission-add.html" title="">
+                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>créer une commission
+                                    </a>
+                                {% endif %}
+                            </div>
+                        
+                        {% endif %}
+
+                        {% if allowed('stats_commissions_read') or allowed('stats_users_read') %}
+                            <div class="nav-user">
+                                <p class="menutitle" style="padding-top:13px;">Statistiques</p>
+                                {% if allowed('stats_commissions_read') %}
+                                    <a href="/stats/commissions.html" title="">
+                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>statistiques par sorties
+                                    </a>
+                                {% endif %}
+
+                                {% if allowed('stats_users_read') %}
+                                    <a href="/stats/users.html" title="">
+                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>statistiques par adhérents
+                                    </a>
+                                {% endif %}
+
+                                {% if allowed('article_create') %}
+                                    <a href="/stats/nbvues.html" title="">
+                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>statistiques articles
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        </div>
+
+                        <div style="width:340px; float:right; padding:0px 10px 0 0; ">
+
+                            <img src="{{ user_picto(app.user, 'min') }}" alt="" title="" style="float:left; padding:0 10px 0 0;" />
+
+                            <p style="color:#fff; font-family:DIN; font-size:18px; line-height:20px; white-space:nowrap; padding-top:10px;">
+                                Mon pseudonyme : <br />
+                                <span style="font-family:DINBold; font-size:21px;">{{ app.user.getNicknameUser() }}</span>
+                            </p>
+                            
+                            {# deconn #}
+                            <a href="{{ path('app_logout') }}" title="" class="nice2">
+                                Me déconnecter
+                            </a>
+                            <br />
+                            {# compte #}
+                            <a href="/profil.html" title="" class="nice2">
+                                Mon compte
+                            </a>
+
+                            {% if app.user.hasAttribute() %}
+                                <p class="status">
+                                    Vous êtes <span style="font-family:DINBold">{{ app.user.getAttributes()[0]['attribute'] }}</span>
+                                    {% if app.user.getAttributes() | length > 1 %}
+                                        <a href="/profil.html" title="Entre autres choses..." style="color:white; font-weight:100; font-family:Arial">[+]</a>
+                                    {% endif %}
+                                </p>
+                            {% else %}
+                                <p class="status">Vous êtes connecté en tant qu'<span style="font-family:DINBold">adhérent</span></p>
+                            {% endif %}
+                        </div>
+
+                {% endif %}
+                <br style="clear:both" />
+            </div>
+        </nav>
+    </div>
+</header>
+<div id="top-openers">
+    <div class="sitewidth">
+        <span class="opener" style="left:480px;"><img src="/img/opener-commission.png" alt="" title="" /></span>
+        <span class="opener" style="left:630px;"><img src="/img/opener-navigation.png" alt="" title="" /></span>
+        <span class="opener" style="left:820px;"><img src="/img/opener-user.png" alt="" title="" /></span>
+    </div>
+</div>
+
+{# balise a : permet de focaliser dessus = masquer les menu dans une navigation au clavier / voir js/onready-site.js #}
+<a href="javascript:void(0)" id="top-hider"></a>

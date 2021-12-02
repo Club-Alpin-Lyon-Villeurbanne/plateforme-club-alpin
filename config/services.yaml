@@ -46,7 +46,33 @@ services:
         arguments:
             $replyTo: 'no-reply@clubalpinlyon.fr'
 
-#    Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
-#        public: true
-#        arguments:
-#            - '%env(DATABASE_URL)%'
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
+        public: true
+        arguments:
+            - '%env(DATABASE_URL)%'
+
+    App\Controller\AdminController:
+      arguments:
+        $adminPassord: '%env(PASSWORD_ADMIN)%'
+
+    # services used in legacy
+    legacy_router:
+        public: true
+        alias: 'router'
+
+    # services used in legacy
+    legacy_token_storage:
+        public: true
+        alias: 'security.token_storage'
+
+    legacy_csrf_token_manager:
+        public: true
+        alias: Symfony\Component\Security\Csrf\CsrfTokenManagerInterface
+
+    legacy_twig:
+        public: true
+        alias: Twig\Environment
+
+    legacy_request_stack:
+        public: true
+        alias: Symfony\Component\HttpFoundation\RequestStack

@@ -8,12 +8,10 @@ $result = $targetDir = null;
 // $errTab[]="Test";
 if (!user()) {
     $errTab[] = 'User non connecté';
-} elseif (!$_SESSION['user']['id_user']) {
-    $errTab[] = 'ID manquant';
 }
 
 if (0 === count($errTab)) {
-    $targetDir = __DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/files/';
+    $targetDir = __DIR__.'/../../../public/ftp/user/'.getUser()->getIdUser().'/files/';
 
     // Handle file uploads via XMLHttpRequest
     include __DIR__.'/vfu.classes.php';

@@ -18,9 +18,9 @@ $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
 // on a le droit d'annuler ?
 if (allowed('destination_supprimer')
-    || $destination['id_user_who_create'] == $_SESSION['user']['id_user']
-    || $destination['id_user_responsable'] == $_SESSION['user']['id_user']
-    || $destination['id_user_adjoint'] == $_SESSION['user']['id_user']
+    || $destination['id_user_who_create'] == (string) getUser()->getIdUser()
+    || $destination['id_user_responsable'] == (string) getUser()->getIdUser()
+    || $destination['id_user_adjoint'] == (string) getUser()->getIdUser()
 ) {
 } else {
     $errTab[] = 'Accès non autorisé';
@@ -38,7 +38,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $sorties = get_sorties_for_destination($id_destination);
 
     foreach ($sorties as $sortie) {
-        $req = 'UPDATE '.$pbd."evt SET cancelled_evt='1', cancelled_who_evt='".(int) ($_SESSION['user']['id_user'])."', cancelled_when_evt='".time()."'  WHERE id_evt = ".$sortie['id_evt'];
+        $req = 'UPDATE '.$pbd."evt SET cancelled_evt='1', cancelled_who_evt='".getUser()->getIdUser()."', cancelled_when_evt='".time()."'  WHERE id_evt = ".$sortie['id_evt'];
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
@@ -56,7 +56,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             <p>
                 Les sorties du ".display_date($destination['date']).', destination
                 &laquo;<i> '.html_utf8($destination['nom'])." </i>&raquo;
-                viennent d'être annulées par <a href=\"".$p_racine.'voir-profil/'.(int) ($_SESSION['user']['id_user']).'.html">'.$_SESSION['user']['nickname_user'].'</a>.
+                viennent d'être annulées par <a href=\"".$p_racine.'voir-profil/'.getUser()->getIdUser().'.html">'.getUser()->getNicknameUser().'</a>.
                 Voici le message joint :
             </p>
             <p>&laquo;<i> '.nl2br(html_utf8($msg))." </i>&raquo;</p>
