@@ -30,10 +30,3 @@ if (count($errTab) > 0) {
 
 // to pass data through iframe you will need to encode all html tags
 echo htmlspecialchars(json_encode($result), \ENT_NOQUOTES);
-
-if ($p_devmode) {
-    $log .= " \n \n FIN";
-    $fp = fopen('dev.txt', 'w');
-    fwrite($fp, $log);
-    fclose($fp);
-}

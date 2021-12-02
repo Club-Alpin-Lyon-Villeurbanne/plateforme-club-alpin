@@ -62,9 +62,6 @@ $p_chron_rappel_user_avant_event_2 = 60 * 60 * 24 * 2; // à j-2
 // timestamp maximum d'un evt pour demander validation président
 $p_tsp_max_pour_valid_legal_avant_evt = strtotime('midnight +8 days'); // timestamp de maintenant +8 jours à minuit = couvre tous les événements commencant dans les SEPT jours à venir
 
-// timestamp maximum d'un evt pour autoriser les inscriptions (j+1)
-$p_tsp_max_pour_join = strtotime('midnight +2 days');
-
 // timestamp butoire de fin d'un evt pour rappeler à son auteur de rédiger un compte rendu
 $p_tsp_max_pour_rappel_redac_cr = strtotime('midnight'); // cette nuit à minuit (donc l'evt a fini hier)
 
@@ -80,14 +77,10 @@ $p_modules = [];
 $p_langs = ['fr']; // la langue par défaut en premier
 // positionnement des liens "editer ce bloc" en absolu (true), ou static (false)
 $p_abseditlink = true;
-// active / désactive les options dev (p.ex. logs des scripts ajax ou les anticaches)
-$p_devmode = true;
 // active / désactive le bouton modifier sur le rapport des contenus statiques manquant
 $p_editmissingstatics = true;
 // REGEX sélectionnant les caractères autorisés dans les USER IPUTS
 $p_authchars = "/([^A-Za-z0-9 'âàéêèëîïôœûùüçßøOÐØÞþÅÂÀÉÊÈËÎÏÔŒÛÙÜÇßØOÐØÞÞÅ])/";
-// change les paramètres de certaines fonctions pour les sites codés en UTF8
-$p_utf8 = true;
 // Extensions autorisées dans le FTP
 $p_ftpallowed = ['gpx', 'kml', 'kmz', 'jpg', 'gif', 'jpeg', 'png', 'doc', 'docx', 'odt', 'pdf', 'avi', 'mov', 'mp3', 'rar', 'zip', 'txt', 'xls', 'csv', 'ppt', 'pptx', 'ai', 'psd', 'fla', 'swf', 'eps'];
 // tinymce vars

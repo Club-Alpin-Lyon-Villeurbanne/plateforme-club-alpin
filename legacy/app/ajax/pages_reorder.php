@@ -17,11 +17,4 @@ if (admin()) {
         }
     }
     $mysqli->close();
-
-    if ($p_devmode) {
-        $log .= " \n \n FIN";
-        $fp = fopen('dev.txt', 'w');
-        fwrite($fp, $log);
-        fclose($fp);
-    }
 }

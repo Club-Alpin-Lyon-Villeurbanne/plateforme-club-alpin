@@ -182,7 +182,7 @@
 											var dir='<?php echo $dir; ?>';
 											var file='wide-'+responseJSON.filename;
 											var id=responseJSON.id;
-											var ac=new Date(); // anticache
+											var ac=new Date();
 											var html='<img src="'+dir+file+'?ac='+ac+'" alt="" title="" style="width:100%; height:100%; " />';
 											$('#chutier1').html(html);
 										};
