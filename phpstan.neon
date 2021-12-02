@@ -13,8 +13,6 @@ parameters:
     - '#Variable \$do_p_chron[a-z0-9_]+ might not be defined#'
     - '#Variable \$p_chron[a-z0-9_]+ might not be defined#'
     - '#Variable \$userAllowedTo might not be defined#'
-    - '#Variable \$use_md5_salt might not be defined#'
-    - '#Variable \$md5_salt might not be defined#'
     - '#Variable \$lang might not be defined#'
     - '#Instantiated class FeedWriter not found#'
 

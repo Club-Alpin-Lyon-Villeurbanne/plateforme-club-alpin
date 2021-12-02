@@ -76,3 +76,7 @@ services:
     legacy_request_stack:
         public: true
         alias: Symfony\Component\HttpFoundation\RequestStack
+
+    legacy_hasher_factory:
+        public: true
+        alias: Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface
