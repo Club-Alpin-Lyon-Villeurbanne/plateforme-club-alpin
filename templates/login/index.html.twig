@@ -4,6 +4,14 @@
 
 {% block body %}
     <div style="margin:0 auto; padding:100px 10px;min-height:100%; max-width: 400px;">
+        {% if error %}
+            <section style="margin:0px 0 30px;">
+                <div class="erreur">
+                    {{ error.messageKey | trans(error.messageData, 'security') }}<br />
+                    Essayez à nouveau ou réinitialisez votre mot de passe en cliquant sur "Mot de passe oublié".
+                </div>
+            </section>
+        {% endif %}
         <section class="">
             <h1>Identifiez vous</h1>
             {% include 'login_form.html.twig' %}
