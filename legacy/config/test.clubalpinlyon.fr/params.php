@@ -12,10 +12,6 @@ $newConfig = require __DIR__.'/config.php';
 
 $p_racine = $newConfig['url'].'/';
 
-// ADMIN
-$p_admin_login = 'caflyon';
-$p_admin_password = md5('ADMIN_PASSWORD_TO_REPLACE');
-
 // NOM DU SITE ( apparaît notamment dans les e-mailings )
 $p_sitename = 'CAF Lyon Villeurbanne';
 
@@ -128,8 +124,6 @@ $p_chron_dates_butoires = [8, 13, 18];
 
 // -------------------
 // PARAMS STATIQUES
-
-$p_multilangue = count($p_langs) < 2 ? false : true;
 
 error_reporting(\E_ALL ^ \E_NOTICE);
 

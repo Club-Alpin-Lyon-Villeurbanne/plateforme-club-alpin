@@ -37,7 +37,7 @@ $fileTab = [];
 
 // Fichiers à lire
 foreach ($p_ffcam as $ffcam) {
-    $fileTab[] = __DIR__.'/../../config/'.MON_DOMAINE.'/ffcam/'.$ffcam.'.txt';
+    $fileTab[] = __DIR__.'/../../config/ffcam-ftp-folder/'.$ffcam.'.txt';
 }
 
 // pour chaque fichier...
