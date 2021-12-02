@@ -69,7 +69,7 @@ if (user() && allowed('evt_join')) {
             // Sortie simple sans destination
             else {
                 // sortie dans plus de deux jours
-                if ($evt['tsp_evt'] > $p_tsp_max_pour_join) {
+                if ($evt['tsp_evt'] > strtotime('midnight +2 days')) {
                     // inscriptions démarrées
                     if ($evt['join_start_evt'] < time()) {
                         // Je ne suis pas déja inscrit (ou bien je dispose de filiations à inscrire)

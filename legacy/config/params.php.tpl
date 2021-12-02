@@ -62,9 +62,6 @@ $p_chron_rappel_user_avant_event_2 = 60 * 60 * 24 * 2; // à j-2
 // timestamp maximum d'un evt pour demander validation président
 $p_tsp_max_pour_valid_legal_avant_evt = strtotime('midnight +8 days'); // timestamp de maintenant +8 jours à minuit = couvre tous les événements commencant dans les SEPT jours à venir
 
-// timestamp maximum d'un evt pour autoriser les inscriptions (j+1)
-$p_tsp_max_pour_join = strtotime('midnight +2 days');
-
 // timestamp butoire de fin d'un evt pour rappeler à son auteur de rédiger un compte rendu
 $p_tsp_max_pour_rappel_redac_cr = strtotime('midnight'); // cette nuit à minuit (donc l'evt a fini hier)
 
