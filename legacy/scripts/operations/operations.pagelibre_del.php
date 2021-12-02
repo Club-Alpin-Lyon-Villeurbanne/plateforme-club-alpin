@@ -22,8 +22,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 }
 
-$mysqli->close();
-
 if (!isset($errTab) || 0 === count($errTab)) {
     mylog('pagelibre-delete', "Suppression de la page libre id=$id_page");
 }

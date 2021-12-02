@@ -14,7 +14,6 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $pageTab[] = $handle;
     }
-    $mysqli->close();
 
     // fonction d'affichage par parent
     function listPages($tab, $parent, $level)

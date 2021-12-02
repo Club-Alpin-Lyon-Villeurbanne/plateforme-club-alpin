@@ -222,8 +222,6 @@ if (user()) {
     // PAGES ?
     $nbrPages = ceil($total / $limite);
 
-    $mysqli->close();
-
     // ************
     // ** AFFICHAGE, on recupere le design de l'agenda
 

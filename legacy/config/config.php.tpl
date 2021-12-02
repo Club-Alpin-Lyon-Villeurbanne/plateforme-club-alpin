@@ -12,4 +12,11 @@ return [
         'user' => null,
         'pass' => null,
     ],
+    'db' => [
+        'host' => 'caf-db.caf',
+        'port' => 3306,
+        'user' => 'root',
+        'password' => 'test',
+        'dbname' => 'caf',
+    ],
 ];

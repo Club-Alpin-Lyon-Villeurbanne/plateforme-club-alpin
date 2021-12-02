@@ -78,12 +78,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
             // redirection vers la page de la sortie
             if (!isset($errTab) || 0 === count($errTab)) {
-                $mysqli->close();
                 header('Location:'.$p_racine.'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html');
                 exit;
             }
         }
     }
-
-    $mysqli->close();
 }

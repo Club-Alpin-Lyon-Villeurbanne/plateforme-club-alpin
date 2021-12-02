@@ -138,6 +138,5 @@ if (0 === count($errTab)) {
         if (!$mysqli->query($req)) {
             $errTab[] = "Les emails ont bien été envoyé, mais cette information n'a pas été enregistrée";
         }
-        $mysqli->close();
     }
 }

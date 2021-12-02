@@ -17,7 +17,6 @@
                 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     $commissionTmp = $handle;
                 }
-                $mysqli->close();
 
                 if (!$commissionTmp) {
                     echo '<p class="erreur"> ID invalide</p>';

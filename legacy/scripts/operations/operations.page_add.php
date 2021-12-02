@@ -84,8 +84,6 @@ if ((!isset($errTab) || 0 === count($errTab)) && $menu_page) {
     }
 }
 
-$mysqli->close();
-// LOG
 if (!isset($errTab) || 0 === count($errTab)) {
     mylog('page-create', "Création de la page $default_name_page ($code_page)");
 }

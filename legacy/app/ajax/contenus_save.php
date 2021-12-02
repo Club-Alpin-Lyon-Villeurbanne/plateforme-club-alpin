@@ -29,8 +29,6 @@ if (admin()) {
         $result['error'] = 'id_content_inline missing or val not set';
     }
 
-    $mysqli->close();
-
     // to pass data through iframe you will need to encode all html tags
     echo htmlspecialchars(json_encode($result), \ENT_NOQUOTES);
 }
