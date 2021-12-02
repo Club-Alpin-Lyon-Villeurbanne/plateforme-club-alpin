@@ -149,7 +149,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $req = 'UPDATE '.$pbd."user SET email_user = '$email_user',
             mdp_user = '$mdp_user',
             nickname_user = '$nickname_user',
-            created_user = '$p_time',
+            created_user = ".time().",
             cookietoken_user = '$cookietoken_user'
             WHERE id_user =$id_user LIMIT 1 ;";
         if (!$mysqli->query($req)) {

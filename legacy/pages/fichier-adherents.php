@@ -30,7 +30,7 @@
                     echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                 }
             if ('fichier_adherents_maj' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', $p_time).'.</p>';
+                echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'.</p>';
             } ?>
 
 				<input type="file" name="file[]" multiple />

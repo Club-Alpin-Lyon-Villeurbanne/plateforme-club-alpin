@@ -134,7 +134,7 @@ if ($lastTsp < $minTsp) {
     // sauvegarde de ce launch
     error_log('Envoi necessaire ! Enregistrement de la nouvelle date en BDD');
     if ($chron_savedatas) {
-        if (!$mysqli->query('INSERT INTO '.$pbd."chron_launch(id_chron_launch, tsp_chron_launch) VALUES('', '$p_time');")) {
+        if (!$mysqli->query('INSERT INTO '.$pbd."chron_launch(id_chron_launch, tsp_chron_launch) VALUES('', '".time()."');")) {
             $errTab[] = "Erreur d'enregistrement du launch";
         }
         $id_chron_launch = $mysqli->insert_id;
@@ -233,7 +233,6 @@ if ($lastTsp < $minTsp) {
 				FROM caf_evt, caf_commission
 				WHERE status_evt = 0
 				AND commission_evt = id_commission '
-                // AND tsp_end_evt >$p_time
                 .'ORDER BY tsp_crea_evt ASC ';
         $handleSql = $mysqli->query($req);
         while ($evt = $handleSql->fetch_array(\MYSQLI_ASSOC)) {

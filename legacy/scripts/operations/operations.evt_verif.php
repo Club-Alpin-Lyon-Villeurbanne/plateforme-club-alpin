@@ -2,7 +2,7 @@
 
 if ('evt_create' == $_POST['operation']) {
     $user_evt = (int) ($_SESSION['user']['id_user']);
-    $tsp_crea_evt = $p_time;
+    $tsp_crea_evt = time();
     $benevoles = is_array($_POST['benevoles']) ? $_POST['benevoles'] : [];
 }
 if ('evt_update' == $_POST['operation']) {
@@ -139,10 +139,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $tab = explode('/', $tsp_end_evt_day);
         $tab2 = explode(':', $tsp_end_evt_hour);
         $tsp_end_evt = mktime($tab2[0], $tab2[1], 0, $tab[1], $tab[0], $tab[2]);
-        //
-        // CRI - Modification le 25/01/2016 pour permettre la création de sorties à postériori
-        //if ($tsp_evt < $p_time) $errTab[] = "Vérifiez la date de début, elle ne doit pas être déja passée.";
-        //
+
         if ($join_start_evt_days <= 1 || $join_start_evt > $tsp_evt) {
             $errTab[] = "Vérifiez les dates d'inscription : vous devez entrer un nombre de jours supérieur ou égal à 2 pour les délais d'inscriptions.";
         }

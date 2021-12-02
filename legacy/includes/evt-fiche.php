@@ -29,7 +29,7 @@ if (!$evt) {
 		</h1>';
 
     // j'en suis l'auteur mais elle est passée ? Rédiger un compte rendu
-    if ($evt['user_evt'] == $_SESSION['user']['id_user'] && $evt['tsp_end_evt'] < $p_time) {
+    if ($evt['user_evt'] == $_SESSION['user']['id_user'] && $evt['tsp_end_evt'] < time()) {
         ?>
 		<a href="article-new.html?compterendu=true&amp;commission_article=-1&amp;evt_article=<?php echo $evt['id_evt']; ?>&amp;titre_article=<?php echo urlencode('Compte rendu de sortie : '.$evt['titre_evt']); ?>" title="Vous êtes l'auteur de cette sortie ? Rédigez un petit compte rendu !" class="nice2 noprint">
 			<img src="/img/base/pencil_add.png" alt="" title="" style="" />
@@ -94,7 +94,7 @@ if (!$evt) {
         // MESSAGE : LE VISITEUR PARTICIPE À CET EVENT ? (VAR DÉFINIE DANS SCRIPTS/REQS.PHP)
         if ('en attente' == $monStatut) {
             // avant l'evt
-            if ($evt['tsp_end_evt'] > $p_time) {
+            if ($evt['tsp_end_evt'] > time()) {
                 echo '<p class="alerte">
 						<img src="/img/inscrit-standby.png" alt="" title="" style="float:left" />
 						<br />Vous avez demandé à participer à cette sortie, et votre demande est en attente de validation.<br />
@@ -119,7 +119,7 @@ if (!$evt) {
 
         if ('encadrant' == $monStatut || 'coencadrant' == $monStatut || 'benevole' == $monStatut) {
             // avant l'evt
-            if ($evt['tsp_end_evt'] > $p_time) {
+            if ($evt['tsp_end_evt'] > time()) {
                 echo '<p class="info">
 						<img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" />
 						<br />Vous êtes inscrit à cette sortie en tant que : &laquo; '.$monStatut.' &raquo;.<br />&nbsp;
@@ -137,7 +137,7 @@ if (!$evt) {
 
         if ('inscrit' == $monStatut || 'manuel' == $monStatut) {
             // avant l'evt
-            if ($evt['tsp_end_evt'] > $p_time) {
+            if ($evt['tsp_end_evt'] > time()) {
                 echo '<p class="info">
 					<img src="/img/inscrit-check.png" alt="" title="" style="float:left" />
 					<br />Vous êtes inscrit comme participant à cette sortie.<br />&nbsp;

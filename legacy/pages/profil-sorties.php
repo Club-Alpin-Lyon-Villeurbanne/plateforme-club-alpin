@@ -78,7 +78,7 @@ if (user()) {
 				AND status_evt_join=1
 
 				AND id_commission = commission_evt
-				AND tsp_end_evt < $p_time "
+				AND tsp_end_evt < ".time().' '
                 // jointure avec la table participation
                 .'AND evt_evt_join = id_evt
 				AND user_evt_join = '.(int) ($_SESSION['user']['id_user']).'
@@ -118,13 +118,13 @@ if (user()) {
 						, caf_evt_join
 					WHERE
 
-					cycle_parent_evt = ".$handle['id_evt']."
+					cycle_parent_evt = ".$handle['id_evt'].'
 
 					AND status_evt=1
 					AND status_evt_join=1
 
 					AND id_commission = commission_evt
-					AND tsp_end_evt < $p_time "
+					AND tsp_end_evt < '.time().' '
                     // jointure avec la table participation
                     .'AND evt_evt_join = id_evt
 					AND user_evt_join = '.(int) ($_SESSION['user']['id_user']).'
@@ -155,7 +155,7 @@ if (user()) {
 				    status_evt=1
 				    AND status_evt_join=1
 				    AND id_commission = commission_evt
-				    AND tsp_end_evt >= $p_time "
+				    AND tsp_end_evt >= ".time().' '
                 // jointure avec la table participation
                     .' AND evt_evt_join = id_evt
 				    AND user_evt_join = '.(int) ($_SESSION['user']['id_user']).'
@@ -194,12 +194,12 @@ if (user()) {
 						, caf_evt_join
 					WHERE
 
-					cycle_parent_evt = ".$handle['id_evt']."
+					cycle_parent_evt = ".$handle['id_evt'].'
 
 					AND status_evt=1
 					AND status_evt_join=1
 					AND id_commission = commission_evt
-					AND tsp_end_evt >= $p_time "
+					AND tsp_end_evt >= '.time().' '
                     // jointure avec la table participation
                     .'AND evt_evt_join = id_evt
 					AND user_evt_join = '.(int) ($_SESSION['user']['id_user']).'

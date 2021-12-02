@@ -139,8 +139,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
                         lastchange_when_evt_join, lastchange_who_evt_join,
                         is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
                     VALUES (
-                        NULL ,		$status_evt_join, '$id_evt',    '$id_user',  '$role_evt_join', $p_time,
-                        $p_time, 			".(int) ($_SESSION['user']['id_user']).",
+                        NULL ,		$status_evt_join, '$id_evt',    '$id_user',  '$role_evt_join', ".time().',
+                        '.time().', 			'.(int) ($_SESSION['user']['id_user']).",
                         $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage );";
             if (!$mysqli->query($req)) {
                 $errTab[] = 'Erreur SQL : '.$mysqli->error;

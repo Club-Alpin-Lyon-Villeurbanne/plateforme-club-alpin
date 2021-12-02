@@ -55,7 +55,7 @@ if ($_GET['compterendu']) {
                     }
                 // message d'info : si c'est une modification
                 if ('article_update' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                    echo '<p class="info"><img src="/img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date('H:i:s', $p_time).'. <b>Important :</b> cet article doit à présent être validé par un responsable pour être publié sur le site.<a href="profil/articles/self.html" title="">&gt; Retourner à la liste de mes articles</a></p>';
+                    echo '<p class="info"><img src="/img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date('H:i:s', time()).'. <b>Important :</b> cet article doit à présent être validé par un responsable pour être publié sur le site.<a href="profil/articles/self.html" title="">&gt; Retourner à la liste de mes articles</a></p>';
                 } ?>
 
 
@@ -196,7 +196,7 @@ if ($_GET['compterendu']) {
 						<?php
                         echo '<br /><div id="chutier1" style="width:230px; height:126px; text-align:center;  padding:3px; margin:0 20px 10px 0; background:white; float:left; box-shadow:0 0 10px -5px black; ">';
                 if ($found) {
-                    echo '<img src="/'.$dir.'wide-figure.jpg?ac='.$p_time.'" alt="" title="" style="width:100%; height:100%; " />';
+                    echo '<img src="/'.$dir.'wide-figure.jpg?ac='.time().'" alt="" title="" style="width:100%; height:100%; " />';
                 }
                 echo '</div>';
 

@@ -25,7 +25,7 @@ $id_user_mdpchange = $token = $nickname_user = null;
 // si le compte existe, entrée de la demande dans la BD
 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     $found = true;
-    $token = md5($p_time + rand(100, 999));
+    $token = md5(time() + rand(100, 999));
     if ($use_md5_salt) {
         $mdp_user = md5($mdp_user.$md5_salt);
     } else {

@@ -29,11 +29,11 @@ if (admin()) {
         // entrée à créer
         if (!$id_content_inline) {
             $req = 'INSERT INTO  `'.$pbd."content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
-														VALUES (NULL ,  '$groupe_content_inline',  '$code_content_inline',  '$lang_content_inline',  '$contenu_content_inline',  '$p_time',  '$linkedtopage_content_inline');";
+														VALUES (NULL ,  '$groupe_content_inline',  '$code_content_inline',  '$lang_content_inline',  '$contenu_content_inline',  '".time()."',  '$linkedtopage_content_inline');";
         }
         // entrée existante
         else {
-            $req = 'UPDATE  `'.$pbd."content_inline` SET  `contenu_content_inline` =  '$contenu_content_inline', `date_content_inline` =  '$p_time'  WHERE  `".$pbd."content_inline`.`id_content_inline` =$id_content_inline LIMIT 1 ;";
+            $req = 'UPDATE  `'.$pbd."content_inline` SET  `contenu_content_inline` =  '$contenu_content_inline', `date_content_inline` =  '".time()."'  WHERE  `".$pbd."content_inline`.`id_content_inline` =$id_content_inline LIMIT 1 ;";
         }
 
         $log .= "\n SQL : ";

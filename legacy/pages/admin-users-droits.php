@@ -55,7 +55,7 @@ if (!admin()) {
             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
         }
     if ('user_attr_add_admin' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<div class="info">Mise à jour effectuée à '.date('H:i:s', $p_time).'.</div>';
+        echo '<div class="info">Mise à jour effectuée à '.date('H:i:s', time()).'.</div>';
     }
 
     // liste des types :
