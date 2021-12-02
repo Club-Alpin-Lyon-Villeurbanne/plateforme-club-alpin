@@ -59,7 +59,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // article publié et commentable ?
     $req = "INSERT INTO caf_comment(id_comment, status_comment, tsp_comment, user_comment, name_comment, email_comment, cont_comment, parent_type_comment, parent_comment)
-                            VALUES (NULL ,  '1', 			 '$p_time',  '".(int) ($_SESSION['user']['id_user'])."',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
+                            VALUES (NULL ,  '1', 			 '".time()."',  '".(int) ($_SESSION['user']['id_user'])."',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
     if (!$mysqli->query($req)) {
         $errTab[] = 'Erreur SQL';
     }

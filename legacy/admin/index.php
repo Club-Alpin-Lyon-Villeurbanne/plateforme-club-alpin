@@ -54,18 +54,18 @@ if ($_POST['login']) {
         $errTab[] = 'Login ou mot de passe incorrect.';
         // log tetative echouee
         $req = 'INSERT INTO  `'.$pbd."log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`)
-						VALUES (NULL ,  'login-attempt-failure-$login',  'Tentative de connexion échouée au compte $login',  $p_time, '$ip_log_admin');";
+						VALUES (NULL ,  'login-attempt-failure-$login',  'Tentative de connexion échouée au compte $login',  ".time().", '$ip_log_admin');";
         $mysqli->query($req);
         // si trop nombreuses dans le délai imparti, bloquage du compte et message d'erreur
-        $dateVerif = $p_time - $tps_tentatives * 60 * 60;
+        $dateVerif = time() - $tps_tentatives * 60 * 60;
         $req = 'SELECT COUNT(id_log_admin) FROM  `'.$pbd."log_admin` WHERE  `code_log_admin` LIKE  'login-attempt-failure-$login' AND  `date_log_admin` >$dateVerif";
         $handleSql = $mysqli->query($req);
         $nAttempts = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
         // bloquage necessaire
         if ($nAttempts > $max_tentatives) {
-            $dateButoire = $p_time + $tps_tentatives * 60 * 60;
+            $dateButoire = time() + $tps_tentatives * 60 * 60;
             $errTab[] = "Désolé, ce compte a été verrouillé jusqu'au ".date('d/m/Y à H:i', $dateButoire).' suite à de trop nombreuses tentatives de connexion.';
-            $req = 'INSERT INTO  `'.$pbd."log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`date_log_admin`)	VALUES (NULL ,  'lock-admin-account-$login',  'Bloquage du compte administrateur $login suite à de trop nombreuses tentatives de connexion',  $p_time);";
+            $req = 'INSERT INTO  `'.$pbd."log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`date_log_admin`)	VALUES (NULL ,  'lock-admin-account-$login',  'Bloquage du compte administrateur $login suite à de trop nombreuses tentatives de connexion',  time());";
             if (!$mysqli->query($req)) {
                 $errTab[] = '';
             }
@@ -79,7 +79,7 @@ if ($_POST['login']) {
     else {
         if (admin()) {
             $req = 'INSERT INTO  `'.$pbd."log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`)
-										VALUES (NULL ,  'login-success-$login',  'Login de $login',  '$p_time', '$ip_log_admin');";
+										VALUES (NULL ,  'login-success-$login',  'Login de $login',  time(), '$ip_log_admin');";
             if (!$mysqli->query($req)) {
                 $errTab[] = 'Erreur SQL lors du log';
             }

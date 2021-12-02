@@ -15,7 +15,6 @@ $evtTab2 = [];
     // si une comm est sélectionnée, filtre
     .($current_commission ? " AND code_commission LIKE '".mysqli_real_escape_string($mysqli, $current_commission)."' " : '')
     // seulement les sorties à venir
-    // ." AND tsp_end_evt > $p_time "
     .' AND tsp_evt > '.mktime(00, 00, 00, date('n'), date('j'), date('Y'))
     .' ORDER BY tsp_evt ASC
 	LIMIT '.($limit + 10);
@@ -50,7 +49,6 @@ if ($current_commission) { // 2 minimum //11/04/2014&& sizeof($evtTab) < $limit-
 		AND status_evt = 1
 		AND code_commission != '".mysqli_real_escape_string($mysqli, $current_commission)."' "
         // seulement les sorties à venir
-        // ." AND tsp_end_evt > $p_time "
         .' AND tsp_evt > '.mktime(00, 00, 00, date('n'), date('j'), date('Y'))
         .' ORDER BY tsp_evt ASC
 		LIMIT '.($limit + 10);

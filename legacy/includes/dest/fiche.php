@@ -186,7 +186,7 @@
         } ?>
 
         <?php
-            $p_date = date('Y-m-d', $p_time);
+            $p_date = date('Y-m-d', time());
             $nowTime = new DateTime($p_date);
             $expDate = explode(' ', $destination['date']);
             $destTime = new DateTime($expDate[0]);

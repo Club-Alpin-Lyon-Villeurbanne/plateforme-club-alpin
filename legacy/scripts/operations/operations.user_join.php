@@ -82,7 +82,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     // verification du timing de la sortie
-    $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND tsp_evt < $p_time LIMIT 1";
+    $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND tsp_evt < ".time().' LIMIT 1';
     $result = $mysqli->query($req);
     $row = $result->fetch_row();
     if ($row[0]) {
@@ -106,7 +106,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         }
     } else {
         // verification du timing de la sortie : inscriptions
-        $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND join_start_evt > $p_time LIMIT 1";
+        $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND join_start_evt > ".time().' LIMIT 1';
         $result = $mysqli->query($req);
         $row = $result->fetch_row();
         if ($row[0]) {
@@ -192,7 +192,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
             if (!$update) {
                 $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
-                          VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', $p_time, $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
+                          VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
             } elseif (in_array($id_user, $update, true)) {
                 $req = 'UPDATE `'.$pbd."evt_join`
                             SET
@@ -214,7 +214,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 } else { */
                 if (!$update || !in_array($id_user_tmp, $update, true)) {
                     $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, affiliant_user_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
-                              VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user_tmp',  '$id_user',  	'$role_evt_join', $p_time, $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
+                              VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user_tmp',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
                 } elseif (in_array($id_user_tmp, $update, true)) {
                     $req = 'UPDATE `'.$pbd."evt_join`
                             SET

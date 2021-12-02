@@ -81,7 +81,7 @@ if (user()) {
                 echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
             }
     if ('user_update' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', $p_time).'.</p>';
+        echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'.</p>';
     } ?>
             &nbsp;
 
@@ -99,7 +99,7 @@ if (user()) {
         // bouton de suppression
         echo '<span class="delete"><img src="/img/base/delete.png" alt="DELETE" title="Supprimer cette image" /></span>';
     }
-    echo '<img class="imgprofil" src="'.$image.'?ac='.$p_time.'" alt="Photo de profil" title="Envoyez votre propre photo" />'; ?>
+    echo '<img class="imgprofil" src="'.$image.'?ac='.time().'" alt="Photo de profil" title="Envoyez votre propre photo" />'; ?>
             </div>
 
             <b>Votre pseudonyme :</b>

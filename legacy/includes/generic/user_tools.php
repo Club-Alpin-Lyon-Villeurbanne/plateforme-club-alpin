@@ -27,7 +27,7 @@
             if ($totalNotif > 0) {
                 echo '<div class="notification-user"><span>'.$totalNotif.'</span></div>';
             } ?>
-			<img src="<?php echo userImg($_SESSION['user']['id_user'], 'pic').'?ac='.$p_time; ?>" alt="" title="" />
+			<img src="<?php echo userImg($_SESSION['user']['id_user'], 'pic').'?ac='.time(); ?>" alt="" title="" />
 			<p>
 				<?php /* Bonjour <br /><b><?php echo html_utf8($_SESSION['user']['civ_user']).'&nbsp;'.html_utf8($_SESSION['user']['lastname_user']);?></b> */ ?>
 				Bonjour <?//php echo html_utf8($_SESSION['user']['civ_user']);?><br />
@@ -243,7 +243,7 @@
 
 			<div style="width:340px; float:right; padding:0px 10px 0 0; ">
 
-				<img src="<?php echo userImg($_SESSION['user']['id_user'], 'min').'?ac='.$p_time; ?>" alt="" title="" style="float:left; padding:0 10px 0 0;" />
+				<img src="<?php echo userImg($_SESSION['user']['id_user'], 'min').'?ac='.time(); ?>" alt="" title="" style="float:left; padding:0 10px 0 0;" />
 
 				<p style="color:#fff; font-family:DIN; font-size:18px; line-height:20px; white-space:nowrap; padding-top:10px;">
 					Mon pseudonyme : <br />

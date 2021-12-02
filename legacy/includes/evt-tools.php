@@ -13,11 +13,11 @@ if ($evt) {
         // on ne peut annuler une sortie que si elle est deja validée
         // et pas deja passée ni en cours
         // ni deja annulée
-        .(allowed('evt_cancel', 'commission:'.$evt['code_commission']) && 1 == $evt['status_evt'] && $evt['tsp_evt'] > $p_time && 0 == $evt['cancelled_evt'] ? '<a class="nice2 red" href="annuler-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Annuler la sortie ci-dessous">Annuler</a>' : '')
+        .(allowed('evt_cancel', 'commission:'.$evt['code_commission']) && 1 == $evt['status_evt'] && $evt['tsp_evt'] > time() && 0 == $evt['cancelled_evt'] ? '<a class="nice2 red" href="annuler-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Annuler la sortie ci-dessous">Annuler</a>' : '')
 
         // SUPPRIMER
         // on ne peut supprimer que si elle n'est pas publiée OU annulée OU passée
-        .((allowed('evt_delete') && ($evt['cancelled_evt'] || 1 != $evt['status_evt'] || $evt['tsp_end_evt'] < $p_time))
+        .((allowed('evt_delete') && ($evt['cancelled_evt'] || 1 != $evt['status_evt'] || $evt['tsp_end_evt'] < time()))
             ? '<a class="nice2 red" href="supprimer-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Supprimer définitivement la sortie ci-dessous">Supprimer</a>' : '')
 
     .'</div>';

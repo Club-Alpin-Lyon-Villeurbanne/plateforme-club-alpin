@@ -92,7 +92,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if (!$row[0]) {
             // ajout
             $req = 'INSERT INTO '.$pbd."user_attr(id_user_attr ,user_user_attr ,usertype_user_attr ,params_user_attr ,details_user_attr)
-                                        VALUES (NULL , '$id_user', '$id_usertype', '$params_user_attr', '$p_time');";
+                                        VALUES (NULL , '$id_user', '$id_usertype', '$params_user_attr', '".time()."');";
             if (!$mysqli->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }

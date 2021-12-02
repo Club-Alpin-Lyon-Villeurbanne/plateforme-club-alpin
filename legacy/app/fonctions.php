@@ -9,7 +9,6 @@ global $p_abseditlink;
 global $p_devmode;
 global $p_inclurelist;
 global $p_racine;
-global $p_time;
 global $p_utf8;
 global $pbd;
 global $president;
@@ -373,21 +372,19 @@ Modifiée pour prendre directement un timestamp en variable
 */
 function getYearsSinceDate($then)
 {
-    global $p_time;
-
     // return $then;
     // $then = intval($then);
     $then = bigintval($then);
 
     // get difference between years
-    $years = date('Y', $p_time) - date('Y', $then);
+    $years = date('Y', time()) - date('Y', $then);
 
     // get months of dates
     $mthen = date('n', $then);
-    $mnow = date('n', $p_time);
+    $mnow = date('n', time());
     // get days of dates
     $dthen = date('j', $then);
-    $dnow = date('j', $p_time);
+    $dnow = date('j', time());
 
     // if date not reached yet this year, we need to remove one year.
     if ($mnow < $mthen || ($mnow == $mthen && $dnow < $dthen)) {
@@ -472,7 +469,6 @@ function formatSize($bytes, $format = '%.2f', $lang = 'fr')
 function user_login($identifiant, $connectme = true)
 {
     global $pbd;
-    global $p_time;
 
     $_SESSION['user'] = false;
 
@@ -516,7 +512,7 @@ function user_login($identifiant, $connectme = true)
         // CRÉATION DU COOKIE POUR RESTER CONNECTÉ
         $cookietoken = bin2hex(random_bytes(16));
         $id_user = (int) ($handle['id_user']);
-        setcookie('cafuser', $id_user.'-'.$cookietoken, $p_time + (86400 * 7), '/', '.clubalpinlyon.fr', (isset($_SERVER['HTTPS']) ? true : false), true); // duree : une semaine
+        setcookie('cafuser', $id_user.'-'.$cookietoken, time() + (86400 * 7), '/', '.clubalpinlyon.fr', (isset($_SERVER['HTTPS']) ? true : false), true); // duree : une semaine
         // sauvegarde du token en BD
         $mysqli->query('UPDATE  `'.$pbd."user` SET  `cookietoken_user` =  '$cookietoken' WHERE  `id_user` =$id_user LIMIT 1 ;");
 
@@ -577,22 +573,21 @@ function html_utf8($str)
 // anti-cache à placer à la fine des extensions de fichiers appelés / utilise des vars du fichier params.php
 function antiCache($mode)
 {
-    global $p_time;
     global $p_devmode;
     switch ($mode) {
         // si dev en local
         case 'localonly':
             if ('http://127.0.0.1' == $_SERVER['HTTP_HOST']) {
-                echo '?ac='.$p_time;
+                echo '?ac='.time();
             } break;
         // si var p_devmode
         case 'devonly':
             if ($p_devmode) {
-                echo '?ac='.$p_time;
+                echo '?ac='.time();
             }	break;
         // si dev en local
         default:
-            echo '?ac='.$p_time;
+            echo '?ac='.time();
     }
 
     return false;

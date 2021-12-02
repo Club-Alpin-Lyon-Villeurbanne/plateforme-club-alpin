@@ -38,7 +38,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $sorties = get_sorties_for_destination($id_destination);
 
     foreach ($sorties as $sortie) {
-        $req = 'UPDATE '.$pbd."evt SET cancelled_evt='1', cancelled_who_evt='".(int) ($_SESSION['user']['id_user'])."', cancelled_when_evt='".$p_time."'  WHERE id_evt = ".$sortie['id_evt'];
+        $req = 'UPDATE '.$pbd."evt SET cancelled_evt='1', cancelled_who_evt='".(int) ($_SESSION['user']['id_user'])."', cancelled_when_evt='".time()."'  WHERE id_evt = ".$sortie['id_evt'];
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
