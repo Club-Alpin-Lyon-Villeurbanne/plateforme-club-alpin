@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $lastname_user = trim(stripslashes($_POST['lastname_user']));
 // $nickname_user=trim(stripslashes($_POST['nickname_user']));
 $cafnum_user = preg_replace('/\s+/', '', stripslashes($_POST['cafnum_user']));
@@ -28,14 +30,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
     // formatage sécurité
     $lastname_user = $mysqli->real_escape_string($lastname_user);
-    // $nickname_user=$mysqli->real_escape_string($nickname_user);
     $cafnum_user = $mysqli->real_escape_string($cafnum_user);
     $email_user = $mysqli->real_escape_string($email_user);
-    if ($use_md5_salt) {
-        $mdp_user = md5($mdp_user.$md5_salt);
-    } else {
-        $mdp_user = md5($mdp_user);
-    }
+    $mdp_user = $kernel->getContainer()->get('legacy_hasher_factory')->getPasswordHasher('login_form')->hash($mdp_user);
 
     // Si ce compte a été désactivé
     if (!isset($errTab) || 0 === count($errTab)) {
