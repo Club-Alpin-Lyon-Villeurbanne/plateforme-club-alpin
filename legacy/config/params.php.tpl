@@ -86,8 +86,6 @@ $p_devmode = true;
 $p_editmissingstatics = true;
 // REGEX sélectionnant les caractères autorisés dans les USER IPUTS
 $p_authchars = "/([^A-Za-z0-9 'âàéêèëîïôœûùüçßøOÐØÞþÅÂÀÉÊÈËÎÏÔŒÛÙÜÇßØOÐØÞÞÅ])/";
-// change les paramètres de certaines fonctions pour les sites codés en UTF8
-$p_utf8 = true;
 // Extensions autorisées dans le FTP
 $p_ftpallowed = ['gpx', 'kml', 'kmz', 'jpg', 'gif', 'jpeg', 'png', 'doc', 'docx', 'odt', 'pdf', 'avi', 'mov', 'mp3', 'rar', 'zip', 'txt', 'xls', 'csv', 'ppt', 'pptx', 'ai', 'psd', 'fla', 'swf', 'eps'];
 // tinymce vars
