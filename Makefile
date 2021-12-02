@@ -78,7 +78,7 @@ composer-install:
 	@touch $@
 .PHONY: composer-install
 
-setup-db: ## Migrate (env="dev")
+setup-db: composer-install ## Migrate (env="dev")
 	@echo "Checking if the database is up..."
 	@$(ON_PHP) timeout --foreground 120s bash -c 'while ! timeout --foreground 3s echo > /dev/tcp/caf-db/3306 2 > /dev/null ; do sleep 1; done' \
 	    || (echo "Unable to connect to the database. Exiting..." && exit 1)
