@@ -74,7 +74,6 @@ if (0 === count($errTab)) {
     $success_message = count($errTab) ? 0 : 1;
     $mysqli->query('INSERT INTO `'.$pbd."message` (`id_message` ,`date_message` ,`to_message` ,`from_message` ,`headers_message` ,`code_message` ,`cont_message` ,`success_message`)
             VALUES (NULL , '".time()."', '$to_message', '$from_message', '$headers_message', '$code_message', '$cont_message', '$success_message');");
-    $mysqli->close();
 }
 // tout s'est bien passé, on vide les variables postées
 if (0 === count($errTab)) {

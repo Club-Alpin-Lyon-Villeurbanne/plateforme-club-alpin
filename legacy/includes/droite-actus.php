@@ -111,7 +111,6 @@
 				<?php
             }
 
-            $mysqli->close();
             ?>
 		</div>
 

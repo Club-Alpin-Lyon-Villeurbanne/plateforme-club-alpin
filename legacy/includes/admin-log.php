@@ -10,8 +10,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
     $handleSql = $mysqli->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $handleTab[] = $handle;
-    }
-    $mysqli->close(); ?>
+    } ?>
 	<h2>Log admin</h2>
 
 	<table class="dataTable">

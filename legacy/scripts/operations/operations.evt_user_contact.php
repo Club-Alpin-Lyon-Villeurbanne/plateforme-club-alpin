@@ -98,7 +98,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $errTab[] = "Échec à l'envoi du mail à ".$destinataire['email_user'].". Plus d'infos : ".($mail->ErrorInfo);
     }
 }
-$mysqli->close();
 
 // reset vals
 if (!isset($errTab) || 0 === count($errTab)) {

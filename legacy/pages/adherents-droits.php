@@ -152,12 +152,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
             echo '<label for="commissions-pick-'.$row['id_commission'].'"><input type="checkbox" name="commission[]" value="commission:'.html_utf8($row['code_commission']).'" id="commissions-pick-'.$row['id_commission'].'" /> '.$row['title_commission'].' </label> ';
         }
     }
-    echo '</div>';
-
-    $mysqli->close();
-
-    // script d'ergonomie
-            ?>
+    echo '</div>'; ?>
 			<br />
 			<br />
 			<input type="submit" value="Appliquer cet attribut" class="nice" />

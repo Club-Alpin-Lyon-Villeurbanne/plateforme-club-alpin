@@ -40,8 +40,6 @@ if (!admin()) {
         }
         echo '</ul>';
     }
-
-    $mysqli->close();
 }
 
 ?>

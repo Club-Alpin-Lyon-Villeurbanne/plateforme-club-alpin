@@ -33,7 +33,6 @@ if ($id_user_mailchange) {
     if (!$found) {
         $errTab[] = 'Cette requête est introuvable';
     }
-    $mysqli->close();
 } else {
     $errTab[] = 'Erreur de données (id)';
 }

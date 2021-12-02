@@ -158,8 +158,6 @@ if (preg_match('#^sorties#', $_GET['mode'])) {
     }
 }
 
-$mysqli->close();
-
 //Creating an instance of FeedWriter class.
 //The constant RSS2 is passed to mention the version
 $CafFeed = new FeedWriter(RSS2);

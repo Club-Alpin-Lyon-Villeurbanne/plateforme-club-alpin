@@ -1595,6 +1595,3 @@ elseif ('recherche' == $p1 && strlen($_GET['str'])) {
         }
     }
 }
-
-// fin
-$mysqli->close();

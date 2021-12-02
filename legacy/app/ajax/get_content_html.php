@@ -27,8 +27,6 @@ if (admin()) {
         $result['error'] = 'code_content_html missing';
     }
 
-    $mysqli->close();
-
     // to pass data through iframe you will need to encode all html tags
     echo htmlspecialchars(json_encode($result), \ENT_NOQUOTES);
 }

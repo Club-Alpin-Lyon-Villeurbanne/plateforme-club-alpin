@@ -224,7 +224,6 @@ if ('user_attr_del' == $_POST['operation']) {
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
-        $mysqli->close();
     }
 }
 // USER : CREATE (manuel)
@@ -271,8 +270,6 @@ if ('user_delete' == $_POST['operation']) {
         }
 
         mylog('user_delete', "Suppression definitive user $id_user", false);
-
-        $mysqli->close();
     }
 }
 
@@ -291,8 +288,6 @@ if ('user_desactiver' == $_POST['operation']) {
         }
 
         mylog('user_desactiver', "desactivation user $id_user", false);
-
-        $mysqli->close();
     }
 }
 // USER : REACTIVER
@@ -310,8 +305,6 @@ if ('user_reactiver' == $_POST['operation']) {
         }
 
         mylog('user_reactiver', "reactivation user $id_user", false);
-
-        $mysqli->close();
     }
 }
 // USER : RESET
@@ -333,8 +326,6 @@ if ('user_reset' == $_POST['operation']) {
         }
 
         mylog('user_reset', "reset user $id_user", false);
-
-        $mysqli->close();
     }
 }
 
@@ -390,7 +381,6 @@ if ('user_attr_del_admin' == $_POST['operation'] && admin()) {
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
-        $mysqli->close();
     }
 
     // log admin
@@ -419,7 +409,6 @@ if ('usertype_attr_edit' == $_POST['operation'] && admin()) {
             }
         }
     }
-    $mysqli->close();
 }
 
 // ADMIN: modification de page libre // NOTE : PAS DE MULTILANGUE POUR LE MOMENT
@@ -484,7 +473,6 @@ if ('majBd' == $_POST['operation'] && admin()) {
             $erreur = 'Erreur BDD<br />'.$req;
         }
     }
-    $mysqli->close();
 }
 
 // GENERIQUE: sup
@@ -497,7 +485,6 @@ if ('supBd' == $_POST['operation'] && admin()) {
     if (!$mysqli->query($req)) {
         $erreur = 'Erreur BDD<br />'.$req;
     }
-    $mysqli->close();
 }
 
 // ADMIN : MISE A JOUR DES CONTENUS
