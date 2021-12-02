@@ -19,7 +19,7 @@ if (!admin()) {
     if (0 == count($partenaireTab)) {
         $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         if ('edit' == $operation) {
-            $req = 'SELECT * FROM  `'.$pbd."partenaires` WHERE part_id='".$mysqli->real_escape_string($part_id)."' LIMIT 1";
+            $req = "SELECT * FROM  `caf_partenaires` WHERE part_id='".$mysqli->real_escape_string($part_id)."' LIMIT 1";
             $partenaireTab = [];
             $result = $mysqli->query($req);
             $partenaireTab = $result->fetch_assoc();

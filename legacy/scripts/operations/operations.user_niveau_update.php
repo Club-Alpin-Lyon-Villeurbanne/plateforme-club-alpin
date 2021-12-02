@@ -25,7 +25,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
 
             if ((!isset($errTab) || 0 === count($errTab)) && (null !== $commentaire || $niveau_technique > 0 || $niveau_physique > 0)) {
-                $req = 'INSERT INTO `'.$pbd."user_niveau` (`id`, `id_user`, `id_commission`, `niveau_technique`, `niveau_physique`, `commentaire`) VALUES (NULL, '".$id_user."', '".$id_commission."', '".$niveau_technique."', '".$niveau_physique."', ";
+                $req = "INSERT INTO `caf_user_niveau` (`id`, `id_user`, `id_commission`, `niveau_technique`, `niveau_physique`, `commentaire`) VALUES (NULL, '".$id_user."', '".$id_commission."', '".$niveau_technique."', '".$niveau_physique."', ";
                 if (null === $commentaire) {
                     $req .= 'NULL';
                 } else {
@@ -60,13 +60,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
 
             if (!isset($errTab) || 0 === count($errTab)) {
-                $req = 'UPDATE `'.$pbd."user_niveau` SET `niveau_technique` = '".$niveau_technique."', `niveau_physique` = '".$niveau_physique."', `commentaire` = ";
+                $req = "UPDATE `caf_user_niveau` SET `niveau_technique` = '".$niveau_technique."', `niveau_physique` = '".$niveau_physique."', `commentaire` = ";
                 if (null === $commentaire) {
                     $req .= 'NULL';
                 } else {
                     $req .= "'".$commentaire."' ";
                 }
-                $req .= ' WHERE `'.$pbd.'user_niveau`.`id` = '.$id.';';
+                $req .= ' WHERE `caf_user_niveau`.`id` = '.$id.';';
                 if (!$mysqli->query($req)) {
                     $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
                         'error' => $mysqli->error,

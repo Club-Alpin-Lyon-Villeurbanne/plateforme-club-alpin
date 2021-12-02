@@ -8,7 +8,7 @@ $nom_content_inline_group = $mysqli->real_escape_string(trim(stripslashes($_POST
 if (!strlen($nom_content_inline_group)) {
     $errTab[] = 'Entrez un nom';
 }
-$req = 'SELECT COUNT(*) FROM '.$pbd."content_inline_group WHERE nom_content_inline_group LIKE '$nom_content_inline_group' ";
+$req = "SELECT COUNT(*) FROM caf_content_inline_group WHERE nom_content_inline_group LIKE '$nom_content_inline_group' ";
 $handleCount = $mysqli->query($req);
 if (getArrayFirstValue($handleCount->fetch_array(\MYSQLI_NUM))) {
     $errTab[] = 'Erreur : ce groupe existe déjà dans la liste';
@@ -17,13 +17,13 @@ if (getArrayFirstValue($handleCount->fetch_array(\MYSQLI_NUM))) {
 if (!isset($errTab) || 0 === count($errTab)) {
     $nom_content_inline_group = $mysqli->real_escape_string($nom_content_inline_group);
 
-    $req = 'INSERT INTO `'.$pbd."content_inline_group` (`id_content_inline_group` ,`ordre_content_inline_group` ,`nom_content_inline_group`)
+    $req = "INSERT INTO `caf_content_inline_group` (`id_content_inline_group` ,`ordre_content_inline_group` ,`nom_content_inline_group`)
                                                     VALUES (NULL , '', '$nom_content_inline_group');";
     if (!$mysqli->query($req)) {
         $erreur = 'Erreur BDD<br />'.$req;
     }
     $id_content_inline_group = $mysqli->insert_id;
-    $req = 'UPDATE `'.$pbd."content_inline_group` SET `ordre_content_inline_group` = '$id_content_inline_group' WHERE `".$pbd."content_inline_group`.`id_content_inline_group` =$id_content_inline_group LIMIT 1 ;";
+    $req = "UPDATE `caf_content_inline_group` SET `ordre_content_inline_group` = '$id_content_inline_group' WHERE `caf_content_inline_group`.`id_content_inline_group` =$id_content_inline_group LIMIT 1 ;";
     if (!$mysqli->query($req)) {
         $erreur = 'Erreur BDD<br />'.$req;
     }

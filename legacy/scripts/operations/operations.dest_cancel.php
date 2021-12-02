@@ -29,7 +29,7 @@ if (allowed('destination_supprimer')
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
-    $req = 'UPDATE `'.$pbd."destination` SET `annule` = '1' WHERE `id` = $id_destination;";
+    $req = "UPDATE `caf_destination` SET `annule` = '1' WHERE `id` = $id_destination;";
     if (!$mysqli->query($req)) {
         $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
             'error' => $mysqli->error,
@@ -46,7 +46,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $sorties = get_sorties_for_destination($id_destination);
 
     foreach ($sorties as $sortie) {
-        $req = 'UPDATE '.$pbd."evt SET cancelled_evt='1', cancelled_who_evt='".getUser()->getIdUser()."', cancelled_when_evt='".time()."'  WHERE id_evt = ".$sortie['id_evt'];
+        $req = "UPDATE caf_evt SET cancelled_evt='1', cancelled_who_evt='".getUser()->getIdUser()."', cancelled_when_evt='".time()."'  WHERE id_evt = ".$sortie['id_evt'];
         if (!$mysqli->query($req)) {
             $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
                 'error' => $mysqli->error,
@@ -80,9 +80,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $content_footer = '';
 
         $destination['joins'] = [];
-        $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
+        $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
                     , role_evt_join
-                FROM '.$pbd.'evt_join, '.$pbd."user
+                FROM caf_evt_join, caf_user
                 WHERE id_destination = $id_destination
                 AND user_evt_join = id_user
                 LIMIT 500";

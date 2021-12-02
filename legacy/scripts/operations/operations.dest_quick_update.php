@@ -39,7 +39,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
     $comma = null;
-    $sql = 'UPDATE `'.$pbd.'destination` SET ';
+    $sql = 'UPDATE `caf_destination` SET ';
     if (isset($publie)) {
         $publie = $mysqli->real_escape_string($publie);
         $sql .= "`publie` = '$publie'".$comma;

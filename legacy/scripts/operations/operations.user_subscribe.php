@@ -36,8 +36,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // Si ce compte a été désactivé
     if (!isset($errTab) || 0 === count($errTab)) {
-        $req = 'SELECT COUNT(id_user)
-            FROM '.$pbd."user
+        $req = "SELECT COUNT(id_user)
+            FROM caf_user
             WHERE cafnum_user = '$cafnum_user'
             AND valid_user=2
             LIMIT 1";
@@ -50,8 +50,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // Si ce compte est déjà existant et activé avec ce numéro de licence
     if (!isset($errTab) || 0 === count($errTab)) {
-        $req = 'SELECT COUNT(id_user)
-            FROM '.$pbd."user
+        $req = "SELECT COUNT(id_user)
+            FROM caf_user
             WHERE cafnum_user = '$cafnum_user'
             AND valid_user=1
             LIMIT 1";
@@ -64,8 +64,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // Si ce compte est déjà existant et activé avec cette adresse email
     if (!isset($errTab) || 0 === count($errTab)) {
-        $req = 'SELECT COUNT(id_user)
-            FROM '.$pbd."user
+        $req = "SELECT COUNT(id_user)
+            FROM caf_user
             WHERE email_user LIKE '$email_user'
             AND valid_user=1
             LIMIT 1";
@@ -78,7 +78,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // vérification du numéro CAF
     if (!isset($errTab) || 0 === count($errTab)) {
-        $req = 'SELECT COUNT(id_user) FROM '.$pbd."user WHERE cafnum_user = '$cafnum_user' LIMIT 1";
+        $req = "SELECT COUNT(id_user) FROM caf_user WHERE cafnum_user = '$cafnum_user' LIMIT 1";
         $result = $mysqli->query($req);
         $row = $result->fetch_row();
         if (!$row[0]) {
@@ -88,7 +88,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // vérification de l'obsolescence du compte
     if (!isset($errTab) || 0 === count($errTab)) {
-        $req = 'SELECT COUNT(id_user) FROM '.$pbd."user WHERE cafnum_user = '$cafnum_user' AND doit_renouveler_user =1 LIMIT 1";
+        $req = "SELECT COUNT(id_user) FROM caf_user WHERE cafnum_user = '$cafnum_user' AND doit_renouveler_user =1 LIMIT 1";
         $result = $mysqli->query($req);
         $row = $result->fetch_row();
         if ($row[0]) {
@@ -101,8 +101,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // le nom colle ?
     if (!isset($errTab) || 0 === count($errTab)) {
         $id_user = false;
-        $req = 'SELECT id_user
-            FROM '.$pbd."user
+        $req = "SELECT id_user
+            FROM caf_user
             WHERE cafnum_user = '$cafnum_user'
             AND upper(lastname_user) LIKE '".strtoupper($lastname_user)."'
             ORDER BY id_user DESC
@@ -121,8 +121,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if (!isset($errTab) || 0 === count($errTab)) {
         $nickname_user = false;
         // id_user défini juste avant
-        $req = 'SELECT lastname_user, firstname_user
-            FROM '.$pbd."user
+        $req = "SELECT lastname_user, firstname_user
+            FROM caf_user
             WHERE id_user = $id_user
             LIMIT 1";
         $result = $mysqli->query($req);
@@ -143,7 +143,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // intégration des valeurs données et du token nécessaire à la confirmation par email
     if (!isset($errTab) || 0 === count($errTab)) {
         $cookietoken_user = bin2hex(random_bytes(16));
-        $req = 'UPDATE '.$pbd."user SET email_user = '$email_user',
+        $req = "UPDATE caf_user SET email_user = '$email_user',
             mdp_user = '$mdp_user',
             nickname_user = '$nickname_user',
             created_user = ".time().",

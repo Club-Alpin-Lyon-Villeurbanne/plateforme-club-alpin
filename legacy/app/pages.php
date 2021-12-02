@@ -19,7 +19,7 @@ $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
 $p_pages = [];
 
 // On ne recquiert que les pages necessaires en fonction du mode admin et superadmin
-$req = 'SELECT * FROM  `'.$pbd.'page` '
+$req = 'SELECT * FROM  `caf_page` '
         .'WHERE vis_page=1 '
         .(admin() ? ' OR vis_page=0 ' : '') // les admins ont le droit de voir les pages cachées
         .(admin() ? ' OR admin_page=1 ' : ' AND admin_page=0 ') // seuls les admin peuvent voir les pages admin

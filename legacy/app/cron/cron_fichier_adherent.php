@@ -256,7 +256,7 @@ foreach ($fileTab as $file) {
 
         echo "INSERT: $nb_insert, UPDATE:$nb_update\n";
 
-        $req = 'INSERT INTO  `'.$pbd."log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`ip_log_admin`,`date_log_admin`)
+        $req = "INSERT INTO  `caf_log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`ip_log_admin`,`date_log_admin`)
 			VALUES (NULL , 'import-ffcam',  'INSERT: $nb_insert, UPDATE:$nb_update, fichier ".basename($file)."', '127.0.0.1', '".time()."');";
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL lors du log';
@@ -264,7 +264,7 @@ foreach ($fileTab as $file) {
     } else {
         echo "!!! Erreur : le fichier n'existe pas : $file\n";
 
-        $req = 'INSERT INTO  `'.$pbd."log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`ip_log_admin`,`date_log_admin`)
+        $req = "INSERT INTO  `caf_log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`ip_log_admin`,`date_log_admin`)
 			VALUES (NULL , 'import-ffcam',  'fichier inexistant : $file', '127.0.0.1', '".time()."');";
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL lors du log';

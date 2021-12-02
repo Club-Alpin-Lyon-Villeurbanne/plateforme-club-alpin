@@ -13,8 +13,8 @@ if (!admin()) {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
 
     // Pour chaque contenu original existant :
-    $req = 'SELECT *
-					FROM '.$pbd.'content_inline, '.$pbd."content_inline_group
+    $req = "SELECT *
+					FROM caf_content_inline, caf_content_inline_group
 					WHERE lang_content_inline LIKE '".$p_langs[0]."'
 					AND groupe_content_inline = id_content_inline_group
 					ORDER BY ordre_content_inline_group ASC, code_content_inline ASC, date_content_inline DESC
@@ -28,8 +28,8 @@ if (!admin()) {
         $handle['contenu_content_inline'] = '';
         $handle['id_content_inline'] = 0; // very important : val par defaut
         // recuperation de la version en lagnue etrangere
-        $req2 = 'SELECT contenu_content_inline , id_content_inline
-					FROM '.$pbd."content_inline
+        $req2 = "SELECT contenu_content_inline , id_content_inline
+					FROM caf_content_inline
 					WHERE code_content_inline LIKE '".$handle['code_content_inline']."'
 					AND lang_content_inline LIKE '".$lang_content_inline."'
 					ORDER BY date_content_inline DESC LIMIT 1
@@ -45,7 +45,7 @@ if (!admin()) {
     }
 
     // groupes
-    $req = 'SELECT * FROM '.$pbd.'content_inline_group ORDER BY ordre_content_inline_group ASC';
+    $req = 'SELECT * FROM caf_content_inline_group ORDER BY ordre_content_inline_group ASC';
     $contGroupTab = [];
     $handleSql = $mysqli->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
