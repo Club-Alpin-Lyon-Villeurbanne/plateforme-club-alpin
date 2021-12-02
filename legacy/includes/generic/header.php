@@ -40,13 +40,13 @@
 	<!-- <script type="text/javascript" src="/tools/fancybox/jquery.mousewheel-3.0.4.pack.js"></script> -->
 
 	<!-- script persos -->
-    <script src="/js/fonctions.js<?php antiCache('localonly'); ?>" type="text/javascript"></script>
+    <script src="/js/fonctions.js" type="text/javascript"></script>
 	<!-- script scroll up -->
     <script src="/js/scrollup.js" type="text/javascript"></script>
 
 	<?php if (admin()) { ?>
 		<!-- script admin -->
-		<script src="/js/fonctionsAdmin.js<?php antiCache('localonly'); ?>" type="text/javascript"></script>
+		<script src="/js/fonctionsAdmin.js" type="text/javascript"></script>
 	<?php } ?>
 
 	<!-- cufon
@@ -58,7 +58,7 @@
 	-->
 
     <script src="/js/onready.js" type="text/javascript"></script>
-    <script src="/js/onready-site.js<?php antiCache('localonly'); ?>" type="text/javascript"></script>
+    <script src="/js/onready-site.js" type="text/javascript"></script>
 
 
 	<!-- OPENGRAPHS -->
