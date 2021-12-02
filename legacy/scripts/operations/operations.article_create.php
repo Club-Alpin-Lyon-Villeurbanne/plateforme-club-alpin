@@ -4,7 +4,7 @@ $status_article = 0;
 $topubly_article = ('on' == $_POST['topubly_article'] ? 1 : 0);
 $tsp_crea_article = time();
 $tsp_article = time();
-$user_article = (int) ($_SESSION['user']['id_user']);
+$user_article = getUser()->getIdUser();
 $titre_article = stripslashes($_POST['titre_article']);
 $code_article = substr(formater($titre_article, 3), 0, 30);
 $commission_article = (int) ($_POST['commission_article']);
@@ -34,9 +34,9 @@ if (strlen($cont_article) < 10) {
 }
 // image
 if (
-    !file_exists(__DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/figure.jpg')
-    || !file_exists(__DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/wide-figure.jpg')
-    || !file_exists(__DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/min-figure.jpg')
+    !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getIdUser().'/transit-nouvelarticle/figure.jpg')
+    || !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getIdUser().'/transit-nouvelarticle/wide-figure.jpg')
+    || !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getIdUser().'/transit-nouvelarticle/min-figure.jpg')
     ) {
     $errTab[] = 'Les images liées sont introuvables';
 }
@@ -61,7 +61,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 // déplacement des fichiers
 if ((!isset($errTab) || 0 === count($errTab)) && $id_article > 0) {
     // repertoire de l'image a recuperer
-    $dirFrom = __DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/';
+    $dirFrom = __DIR__.'/../../../public/ftp/user/'.getUser()->getIdUser().'/transit-nouvelarticle/';
     // créa du repertroie destination
     $dirTo = __DIR__.'/../../../public/ftp/articles/'.$id_article;
     if (!file_exists($dirTo)) {

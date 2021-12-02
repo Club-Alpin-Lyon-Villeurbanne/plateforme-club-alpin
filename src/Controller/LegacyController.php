@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Repository\CafArticleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -27,18 +26,6 @@ class LegacyController extends AbstractController
             require $legacyDir.$path;
             ob_end_flush();
         });
-    }
-
-    /**
-     * @Route(
-     *     name="legacy_admin_root",
-     *     path="/admin/",
-     *     methods={"GET"}
-     * )
-     */
-    public function legacyAdminAction()
-    {
-        return new RedirectResponse('/admin/index.php');
     }
 
     /**

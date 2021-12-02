@@ -1,0 +1,30 @@
+{# connexion ajax (reste sur la même page) #}
+{# la class AJAXFORM fonctionne sur un modèle défini dans js/onready-site.js #}
+{# les messages de reponse se trouvent dans SCRIPTS.'operations.php' #}
+<form name="login" class="{{ class | default('') }}" autocomplete="on" action="{{ path('login') }}" method="post" style="">
+    {{ easy_include('mainmenu-connection', 'menucontent')}}
+
+    <div>
+        <label>
+            Votre e-mail<br />
+            <input type="text" id="username" name="_username" class="type1" value=""  placeholder=""/>
+        </label>
+    </div>
+
+    <div>
+        <label>
+            Votre mot de passe passe<br />
+            <input type="password" name="_password" class="type1" value="" placeholder="">
+        </label>
+    </div>
+
+    <div>
+        <input type="submit" name="connect-button"  class="nice2" value="Connexion" onclick="$(this).parents('form').submit()" />
+    </div>
+
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+    <div style="margin-top: 10px;">
+        <a href="{{ path('session_password_lost') }}" class="" title="" style="color: #555; font-size:10px; position:relative; bottom:4px; font-weight: normal;">Mot de passe oublié ?</a>
+    </div>
+</form>

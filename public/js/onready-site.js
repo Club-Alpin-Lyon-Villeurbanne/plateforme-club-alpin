@@ -215,10 +215,11 @@ $().ready(function() {
 			// vars
 			var datas='';
 			form.find('input, select, textarea').each(function(){
-				if($(this).val() && $(this).attr('name'))
+				if($(this).val() && $(this).attr('name')) {
 					datas += (datas?'&':'')+$(this).attr('name')+'='+$(this).val();
+				}
 			});
-			
+
 			// call
 			$.ajax({
 				type: "POST",

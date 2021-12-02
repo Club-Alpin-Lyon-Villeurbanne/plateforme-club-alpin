@@ -59,7 +59,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // article publié et commentable ?
     $req = "INSERT INTO caf_comment(id_comment, status_comment, tsp_comment, user_comment, name_comment, email_comment, cont_comment, parent_type_comment, parent_comment)
-                            VALUES (NULL ,  '1', 			 '".time()."',  '".(int) ($_SESSION['user']['id_user'])."',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
+                            VALUES (NULL ,  '1', 			 '".time()."',  '".getUser()->getIdUser()."',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
     if (!$mysqli->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
@@ -72,7 +72,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"
         //$mail->CharSet = 'UTF-8';
         //$mail->IsHTML(true);
-        $mail->AddReplyTo($_SESSION['user']['email_user'] ?: $p_noreply);
+        $mail->AddReplyTo(getUser()->getEmailUser() ?: $p_noreply);
         $mail->SetFrom($p_noreply, $p_sitename);
         $mail->AddAddress($comment_article[2]);
         $mail->Subject = $p_sitename." - J'ai ajouté un commentaire à votre article !";

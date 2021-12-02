@@ -6,7 +6,7 @@
     if (true) {
         ?>
 		<br /><br /><br /><br /><hr /><br /><br /><br /><br />
-		<h3>Attribution des statuts à l'utilisateur : <?php echo $_SESSION['user']['nickname_user']; ?></h3>
+		<h3>Attribution des statuts à l'utilisateur : <?php echo html_utf8(getUser()->getNicknameUser()); ?></h3>
 		<?php
         // req sql : trouver les attributs liés à cet user
         $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
@@ -14,7 +14,7 @@
         $req = 'SELECT title_usertype, code_usertype, params_user_attr, id_user_attr
 		FROM caf_usertype, caf_user_attr
 		WHERE usertype_user_attr = id_usertype
-		AND user_user_attr = '.$_SESSION['user']['id_user'].'
+		AND user_user_attr = '.getUser()->getIdUser().'
 		ORDER BY id_usertype DESC';
 
         $result = $mysqli->query($req);
@@ -37,7 +37,7 @@
         ?>
 		<form action="<?php echo $versCettePage; ?>" method="post">
 			<input type="hidden" name="operation" value="user_attr_add" />
-			<input type="hidden" name="id_user" value="<?php echo $_SESSION['user']['id_user']; ?>" />
+			<input type="hidden" name="id_user" value="<?php echo getUser()->getIdUser(); ?>" />
 
 			<h3>Ajouter un attribut à cet adhérent :</h3>
 			<?php

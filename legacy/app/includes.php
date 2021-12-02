@@ -35,8 +35,6 @@ if ($_SERVER && array_key_exists('HTTP_HOST', $_SERVER)) {
     define('MON_DOMAINE', $mon_domaine);
 }
 
-//_________________________________________________ GESTION ET SECURISATIONS DES SESSIONS
-include __DIR__.'/../app/sessions.php';
 //_________________________________________________ FONCTIONS MAISON
 include __DIR__.'/../app/fonctions.php';
 //_________________________________________________ VARIABLES "GLOBALES" DU SITE
@@ -47,8 +45,6 @@ include __DIR__.'/../app/langs.php';
 include __DIR__.'/../scripts/fonctions.php';
 //_________________________________________________ OPERATIONS ADMIN & CLIENT
 include __DIR__.'/../scripts/operations.php';
-//_________________________________________________ GESTION DES COOKIES UTILISATEUR
-include __DIR__.'/../app/usercookies.php';
 //_________________________________________________ PARAMS PAGE EN COURS (META/TITRES/EXIST.)
 include __DIR__.'/../app/pages.php';
 //_________________________________________________ REQUETES INHERENTES A LA PAGE

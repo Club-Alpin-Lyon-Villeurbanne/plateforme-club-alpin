@@ -26,8 +26,6 @@ if ($id_user_mailchange) {
             if (!$mysqli->query($req)) {
                 $errTab[] = 'Erreur SQL : deleting request';
             }
-            // relogging
-            user_login($handle['id_user_mailchange'], false);
         } else {
             $errTab[] = "Ce lien est obsolète : vous avez une heure pour cliquer sur le lien. Merci de redemander l'envoi d'un e-mail.";
         }

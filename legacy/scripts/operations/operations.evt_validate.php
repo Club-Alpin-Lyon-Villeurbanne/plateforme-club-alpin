@@ -17,7 +17,7 @@ $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
-    $req = "UPDATE caf_evt SET status_evt='$status_evt', status_who_evt=".(int) ($_SESSION['user']['id_user'])." WHERE caf_evt.id_evt =$id_evt";
+    $req = "UPDATE caf_evt SET status_evt='$status_evt', status_who_evt=".getUser()->getIdUser()." WHERE caf_evt.id_evt =$id_evt";
     if (!$mysqli->query($req)) {
         $errTab[] = 'Erreur SQL : '.$mysqli->error;
         error_log($mysqli->error);

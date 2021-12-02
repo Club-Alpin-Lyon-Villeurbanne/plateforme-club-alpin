@@ -7,6 +7,7 @@
 // 				à l'historique des sorties
 // 				aux filiations
 // 				...
+
 ?>
 
 <!-- MAIN -->
@@ -71,7 +72,7 @@
 
 						<div style="float:left; width:45%; padding:5px 20px 5px 0;">
 							<b>Choisissez un mot de passe</b>
-							<p class="mini">6 à 12 caractères sans espace</p>
+							<p class="mini">8 à 40 caractères sans espace</p>
 							<input type="password" name="mdp_user" class="type1" value="<?php echo inputVal('mdp_user', ''); ?>" placeholder="" /><br />
 						</div>
 
@@ -119,29 +120,11 @@
                 ?>
 				<br />
 				<br />
-				<form class="ajaxform" autocomplete="off" action="<?php echo $versCettePage; ?>" method="post" style="padding:0 10px 0 20px;">
-					<input type="hidden" name="operation" value="user_login">
+                <div style="padding:0 10px 0 20px;">
+                    <h1>Vous avez déja un compte ?</h1>
 
-					<h1>Vous avez déja un compte ?</h1>
-
-					<br />
-					Votre e-mail<br />
-					<input type="text" name="email_user" class="type1" value="<?php echo html_utf8(stripslashes($_POST['email_user'])); ?>" placeholder="" autocomplete="off">
-					<br />
-
-					Votre mot de passe<br />
-					<input type="password" name="mdp_user" class="type1" value="<?php echo html_utf8(stripslashes($_POST['email_user'])); ?>" placeholder="" autocomplete="off">
-					<br />
-					<p class="mini"><a href="includer.php?p=pages/mot-de-passe-perdu.php" class="fancyframe" title="" >Mot de passe oublié ?</a></p>
-
-					<a href="javascript:void(0)" title="" onclick="$(this).parents('form').submit()" class="nice2">Connexion</a>
-					<br />
-
-
-					<div class="error_reporting" style="display:none"></div>
-
-				</form>
-
+                    <?php echo twigRender('login_form.html.twig'); ?>
+                </div>
 				<?php
             }
 

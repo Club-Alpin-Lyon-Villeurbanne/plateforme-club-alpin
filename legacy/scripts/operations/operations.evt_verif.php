@@ -1,7 +1,7 @@
 <?php
 
 if ('evt_create' == $_POST['operation']) {
-    $user_evt = (int) ($_SESSION['user']['id_user']);
+    $user_evt = getUser()->getIdUser();
     $tsp_crea_evt = time();
     $benevoles = is_array($_POST['benevoles']) ? $_POST['benevoles'] : [];
 }

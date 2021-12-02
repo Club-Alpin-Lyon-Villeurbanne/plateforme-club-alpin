@@ -8,8 +8,6 @@ $result = $targetDir = $filename = null;
 // $errTab[]="Test";
 if (!user()) {
     $errTab[] = 'User non connecté';
-} elseif (!$_SESSION['user']['id_user']) {
-    $errTab[] = 'ID manquant';
 }
 
 $mode = $_GET['mode'];
@@ -21,13 +19,13 @@ if ('edit' == $mode && !$id_article) {
 
 if (0 === count($errTab)) {
     // creation des dossiers utiles pour l'user s'ils n'existnent pas
-    $dir = __DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']);
+    $dir = __DIR__.'/../../../public/ftp/user/'.getUser()->getIdUser();
     if (!file_exists($dir)) {
         if (!mkdir($dir) && !is_dir($dir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
         }
     }
-    $dir = __DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle';
+    $dir = __DIR__.'/../../../public/ftp/user/'.getUser()->getIdUser().'/transit-nouvelarticle';
     if (!file_exists($dir)) {
         if (!mkdir($dir) && !is_dir($dir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
@@ -40,7 +38,7 @@ if (0 === count($errTab)) {
     } // depuis la racine
     // création de sortie
     else {
-        $targetDir = __DIR__.'/../../../public/ftp/user/'.(int) ($_SESSION['user']['id_user']).'/transit-nouvelarticle/';
+        $targetDir = __DIR__.'/../../../public/ftp/user/'.getUser()->getIdUser().'/transit-nouvelarticle/';
     } // depuis la racine
 
     if (!file_exists($targetDir)) {

@@ -154,6 +154,9 @@
     "ralouphie/getallheaders": {
         "version": "3.0.3"
     },
+    "rollerworks/password-strength-bundle": {
+        "version": "v2.2.2"
+    },
     "rollerworks/password-strength-validator": {
         "version": "v1.7.1"
     },
@@ -225,6 +228,9 @@
         "files": [
             "bin/console"
         ]
+    },
+    "symfony/css-selector": {
+        "version": "v5.3.4"
     },
     "symfony/debug-bundle": {
         "version": "5.3",

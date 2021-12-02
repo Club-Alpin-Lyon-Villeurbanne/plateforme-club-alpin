@@ -4,7 +4,7 @@ include __DIR__.'/../app/includes.php';
 
 if (user()) {
     // bien connecté ?
-    $id_user = (int) ($_SESSION['user']['id_user']);
+    $id_user = getUser()->getIdUser();
     if (!$id_user) {
         echo 'ERREUR : id invalide';
         exit();

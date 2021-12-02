@@ -9,7 +9,7 @@ if (!user()) {
 
 // mise à jour infos texte
 if (!isset($errTab) || 0 === count($errTab)) {
-    $id_user = (int) ($_SESSION['user']['id_user']);
+    $id_user = getUser()->getIdUser();
     // $nickname_user=trim(stripslashes($_POST['nickname_user']));
     // $gender_user=trim(stripslashes($_POST['gender_user']));
     // $civ_user=trim(stripslashes($_POST['civ_user']));
@@ -41,8 +41,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL';
-        } else {
-            user_login($_SESSION['user']['email_user'], false);
         }
 
         $mysqli->close();
@@ -169,8 +167,8 @@ if ('' !== $email_user_mailchange) {
     // ENTRÉE DE LA DEMANDE DANS LA BD
     if (!isset($errTab) || 0 === count($errTab)) {
         $token = bin2hex(random_bytes(16));
-        $req = 'INSERT INTO `'.$pbd."user_mailchange` ( `id_user_mailchange` , `user_user_mailchange` , `token_user_mailchange` , `email_user_mailchange` )
-                                                    VALUES ('', 			'$id_user',				'$token', 				'$email_user_mailchange');";
+        $req = 'INSERT INTO `'.$pbd."user_mailchange` (`user_user_mailchange` , `token_user_mailchange` , `email_user_mailchange` )
+                                                    VALUES ('$id_user',				'$token', 				'$email_user_mailchange');";
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL';
         } else {
@@ -203,7 +201,7 @@ if ('' !== $email_user_mailchange) {
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
         $mail->SetFrom($p_noreply, $p_sitename);
-        $mail->AddAddress($email_user_mailchange, $_SESSION['user']['nickname_user']);
+        $mail->AddAddress($email_user_mailchange, getUser()->getNicknameUser());
         $mail->Subject = $subject;
         //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
         $mail->setMailBody($content_main);
