@@ -219,7 +219,7 @@ foreach ($fileTab as $file) {
 
                         // insertion
                         $req = "INSERT INTO caf_user(id_user, cafnum_user , firstname_user , lastname_user , created_user , birthday_user , tel_user , tel2_user , adresse_user , cp_user , ville_user , civ_user , cafnum_parent_user, valid_user, doit_renouveler_user, alerte_renouveler_user, ts_insert_user, nickname_user)
-						VALUES (NULL, '$cafnum_user', '$firstname_user', '$lastname_user',  '$p_time', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$civ_user', '$cafnum_parent_user', 0, $doit_renouveler_user, $alerte_renouveler_user, ".time()." , '$nickname_user');";
+						VALUES (NULL, '$cafnum_user', '$firstname_user', '$lastname_user',  '".time()."', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$civ_user', '$cafnum_parent_user', 0, $doit_renouveler_user, $alerte_renouveler_user, ".time()." , '$nickname_user');";
                         ++$nb_insert;
                     } elseif ($idUser = mysqli_result($handleSql, 0)) {
                         // adherent existant : mise a jour

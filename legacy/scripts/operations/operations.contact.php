@@ -73,7 +73,7 @@ if (0 === count($errTab)) {
     $cont_message = $mysqli->real_escape_string($content_header."\n\n\n".$content_main."\n\n\n".$content_footer);
     $success_message = count($errTab) ? 0 : 1;
     $mysqli->query('INSERT INTO `'.$pbd."message` (`id_message` ,`date_message` ,`to_message` ,`from_message` ,`headers_message` ,`code_message` ,`cont_message` ,`success_message`)
-            VALUES (NULL , '$p_time', '$to_message', '$from_message', '$headers_message', '$code_message', '$cont_message', '$success_message');");
+            VALUES (NULL , '".time()."', '$to_message', '$from_message', '$headers_message', '$code_message', '$cont_message', '$success_message');");
     $mysqli->close();
 }
 // tout s'est bien passé, on vide les variables postées

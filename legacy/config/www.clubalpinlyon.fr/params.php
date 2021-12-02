@@ -161,7 +161,5 @@ $p4 = formater($_GET['p4'], 3);
 if ('scripts/' == substr($p_racine, -8)) {
     $p_racine = substr($p_racine, 0, strlen($p_racine) - 8);
 }
-// time, une bonne fois pour toute au chargement de la pge
-$p_time = time();
 // par défaut, la page courante n'est pas admin (modifié en aval dans pages.php)
 $p_pageadmin = false;

@@ -65,7 +65,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $lang_content_inline = $p_langs[$i];
         $contenu_content_inline = $mysqli->real_escape_string(stripslashes($titreTab[$i]));
         $req = 'INSERT INTO `'.$pbd."content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
-                                            VALUES (NULL , '2', 'meta-title-$code_page', '$lang_content_inline', '$contenu_content_inline', '$p_time', '');";
+                                            VALUES (NULL , '2', 'meta-title-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur BDD titles';
         }
@@ -77,7 +77,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $menu_page) {
         $lang_content_inline = $p_langs[$i];
         $contenu_content_inline = $mysqli->real_escape_string(stripslashes($titreTab[$i]));
         $req = 'INSERT INTO `'.$pbd."content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
-                                            VALUES (NULL , '4', 'mainmenu-$code_page', '$lang_content_inline', '$contenu_content_inline', '$p_time', '');";
+                                            VALUES (NULL , '4', 'mainmenu-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur BDD titles';
         }

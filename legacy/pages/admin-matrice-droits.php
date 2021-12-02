@@ -62,7 +62,7 @@ if (!admin()) {
             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
         }
     if ('usertype_attr_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<div class="info">Mise à jour effectuée à '.date('H:i:s', $p_time).'.</div>';
+        echo '<div class="info">Mise à jour effectuée à '.date('H:i:s', time()).'.</div>';
     }
 
     // on fait courir le tableau

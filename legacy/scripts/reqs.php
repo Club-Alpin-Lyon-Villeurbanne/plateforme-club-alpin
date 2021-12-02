@@ -49,7 +49,6 @@ if (allowed('evt_validate_all')) { // pouvoir de valider toutes les sorties de t
 	FROM '.$pbd.'evt, '.$pbd.'user
 	WHERE status_evt=0
 	AND id_user=user_evt '
-    // AND tsp_end_evt >$p_time
     .'ORDER BY tsp_crea_evt ASC ';
     $handleSql = $mysqli->query($req);
     $notif_validerunesortie = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
@@ -66,7 +65,6 @@ if (allowed('evt_validate_all')) { // pouvoir de valider toutes les sorties de t
 		AND id_user=user_evt
 		AND commission_evt=id_commission
 		AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."') " // condition OR pour toutes les commissions autorisées
-        // ." AND tsp_end_evt < $p_time " // seulement si pas encore finites
         .'ORDER BY tsp_crea_evt ASC ';
     $handleSql = $mysqli->query($req);
     $notif_validerunesortie = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
@@ -1341,7 +1339,6 @@ elseif ('gestion-des-sorties' == $p1 && (allowed('evt_validate_all') || allowed(
 		WHERE status_evt=0
 		AND id_user = user_evt
 		AND commission_evt=id_commission '
-        // ." AND tsp_end_evt > $p_time " // seulement si pas encore finites
         .'ORDER BY tsp_evt ASC
 		LIMIT '.($limite * ($pagenum - 1)).", $limite";
     }
@@ -1364,7 +1361,6 @@ elseif ('gestion-des-sorties' == $p1 && (allowed('evt_validate_all') || allowed(
 		AND id_user=user_evt
 		AND commission_evt=id_commission
 		AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."') " // condition OR pour toutes les commissions autorisées
-        // ." AND tsp_end_evt > $p_time " // seulement si pas encore finites
         .'ORDER BY tsp_crea_evt ASC
 		LIMIT '.($limite * ($pagenum - 1)).", $limite";
     }

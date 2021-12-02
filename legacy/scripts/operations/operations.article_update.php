@@ -49,7 +49,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     , evt_article = $evt_article
     , une_article = $une_article
     , cont_article = '$cont_article'
-    , tsp_article=".$p_time."
+    , tsp_article=".time()."
     WHERE id_article = $id_article
     "
     // on verifie si on est l'auteur que si on a pas le droit de modifier TOUS les articles

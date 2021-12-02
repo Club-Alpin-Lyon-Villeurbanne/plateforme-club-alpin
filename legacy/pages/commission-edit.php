@@ -38,13 +38,13 @@
                             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                         }
                         if ('commission_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                            echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', $p_time).'.</p>';
+                            echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'.</p>';
                         } ?>
 
 						<hr />
 						<div style="float:left; background:white; padding:7px;">
 							<a href="<?php echo comFd((int) ($commissionTmp['id_commission'])); ?>" class="fancybox" title="Image actuelle">
-								<img src="<?php echo comFd((int) ($commissionTmp['id_commission'])).'?ac='.$p_time; ?>" alt="" title="Image actuelle" style="width:150px" />
+								<img src="<?php echo comFd((int) ($commissionTmp['id_commission'])).'?ac='.time(); ?>" alt="" title="Image actuelle" style="width:150px" />
 							</a>
 						</div>
 						<div style="float:right; width:440px">
@@ -73,7 +73,7 @@
 								<tr>
 									<td rowspan="2">
 										<div style="float:left; background:white; padding:5px; margin-right:10px">
-											<img src="<?php echo comPicto((int) ($commissionTmp['id_commission'])).'?ac='.$p_time; ?>" alt="" title="Image actuelle" />
+											<img src="<?php echo comPicto((int) ($commissionTmp['id_commission'])).'?ac='.time(); ?>" alt="" title="Image actuelle" />
 										</div>
 									</td>
 									<td> Pictogramme bleu CAF : <strong>#50b5e1</strong></td>
@@ -86,7 +86,7 @@
 								<tr>
 									<td rowspan="2">
 										<div style="float:left; background:#eaeaea; padding:5px; margin-right:10px">
-											<img src="<?php echo comPicto((int) ($commissionTmp['id_commission']), 'light').'?ac='.$p_time; ?>" alt="" title="Image actuelle" />
+											<img src="<?php echo comPicto((int) ($commissionTmp['id_commission']), 'light').'?ac='.time(); ?>" alt="" title="Image actuelle" />
 										</div>
 									</td>
 									<td> Pictogramme blanc : <strong>#ffffff</strong></td>
@@ -99,7 +99,7 @@
 								<tr>
 									<td rowspan="2">
 										<div style="float:left; background:white; padding:5px; margin-right:10px">
-											<img src="<?php echo comPicto((int) ($commissionTmp['id_commission']), 'dark').'?ac='.$p_time; ?>" alt="" title="Image actuelle" />
+											<img src="<?php echo comPicto((int) ($commissionTmp['id_commission']), 'dark').'?ac='.time(); ?>" alt="" title="Image actuelle" />
 										</div>
 									</td>
 									<td> Pictogramme sombre : <strong>#044e68</strong></td>

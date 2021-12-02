@@ -22,7 +22,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $errTab[] = 'Erreur SQL : '.$mysqli->error;
         error_log($mysqli->error);
     }
-    $req = 'UPDATE caf_article SET tsp_validate_article='.$p_time." WHERE caf_article.id_article=$id_article AND tsp_validate_article=0"; // premiere validation
+    $req = 'UPDATE caf_article SET tsp_validate_article='.time()." WHERE caf_article.id_article=$id_article AND tsp_validate_article=0"; // premiere validation
     if (!$mysqli->query($req)) {
         $errTab[] = 'Erreur SQL : '.$mysqli->error;
         error_log($mysqli->error);

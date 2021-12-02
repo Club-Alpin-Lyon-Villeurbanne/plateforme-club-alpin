@@ -441,7 +441,7 @@ if ('usertype_attr_edit' == $_POST['operation'] && admin()) {
             $type_usertype_attr = (int) ($tab[0]);
             $right_usertype_attr = (int) ($tab[1]);
             if (!$mysqli->query('INSERT INTO '.$pbd."usertype_attr (id_usertype_attr, type_usertype_attr, right_usertype_attr, details_usertype_attr)
-															VALUES (NULL , '$type_usertype_attr', '$right_usertype_attr', '$p_time');")) {
+															VALUES (NULL , '$type_usertype_attr', '$right_usertype_attr', '".time()."');")) {
                 $errTab[] = "Erreur de setting ($type_usertype_attr - $right_usertype_attr)";
             }
         }
