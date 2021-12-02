@@ -13,7 +13,6 @@ global $p_abseditlink;
 global $p_devmode;
 global $p_inclurelist;
 global $p_racine;
-global $p_utf8;
 global $pbd;
 global $president;
 global $userAllowedTo; // liste des opérations auxquelles l'user est autorisé. tableau associatif : la clé est le code de l'opératin, sa valeur les parametres
@@ -723,28 +722,27 @@ function inclure($elt, $style = 'vide', $options = [])
 function inputVal($inputName, $defaultVal = '')
 {
     global $_POST;
-    global $p_utf8;
     $input = explode('|', $inputName);
     if (!$input[1]) {
         if ($_POST[$inputName]) {
-            return $p_utf8 ? html_utf8(stripslashes($_POST[$inputName])) : htmlentities(stripslashes($_POST[$inputName]));
+            return html_utf8(stripslashes($_POST[$inputName]));
         }
 
-        return $p_utf8 ? html_utf8($defaultVal) : htmlentities($defaultVal);
+        return html_utf8($defaultVal);
     }
     if (2 == count($input)) {
         if ($_POST[$input[0]][$input[1]]) {
-            return $p_utf8 ? html_utf8(stripslashes($_POST[$input[0]][$input[1]])) : htmlentities(stripslashes($_POST[$input[0]][$input[1]]));
+            return html_utf8(stripslashes($_POST[$input[0]][$input[1]]));
         }
 
-        return $p_utf8 ? html_utf8($defaultVal) : htmlentities($defaultVal);
+        return html_utf8($defaultVal);
     }
     if (3 == count($input)) {
         if ($_POST[$input[0]][$input[1]][$input[2]]) {
-            return $p_utf8 ? html_utf8(stripslashes($_POST[$input[0]][$input[1]][$input[2]])) : htmlentities(stripslashes($_POST[$input[0]][$input[1]][$input[2]]));
+            return html_utf8(stripslashes($_POST[$input[0]][$input[1]][$input[2]]));
         }
 
-        return $p_utf8 ? html_utf8($defaultVal) : htmlentities($defaultVal);
+        return html_utf8($defaultVal);
     }
 }
 
