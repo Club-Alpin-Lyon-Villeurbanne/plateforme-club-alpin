@@ -80,8 +80,6 @@ $p_modules = [];
 $p_langs = ['fr']; // la langue par défaut en premier
 // positionnement des liens "editer ce bloc" en absolu (true), ou static (false)
 $p_abseditlink = true;
-// active / désactive les options dev (p.ex. logs des scripts ajax ou les anticaches)
-$p_devmode = true;
 // active / désactive le bouton modifier sur le rapport des contenus statiques manquant
 $p_editmissingstatics = true;
 // REGEX sélectionnant les caractères autorisés dans les USER IPUTS
