@@ -67,7 +67,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $req = 'UPDATE '.$pbd."evt SET `status_evt`=0,
 				`tsp_evt`='$tsp_evt',
 				`tsp_end_evt` =  '$tsp_end_evt',
-				`tsp_edit_evt` =  '$p_time',
+				`tsp_edit_evt` =  '".time()."',
 				`titre_evt` =  '$titre_evt',
 				`code_evt` =  '$code_evt',
 				`massif_evt` =  '$massif_evt',
@@ -153,14 +153,14 @@ if (!isset($errTab) || 0 === count($errTab)) {
             foreach ($encadrants as $id_user) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
                     $req = 'INSERT INTO '.$pbd."evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
-                                                        VALUES(NULL , 1,               '$id_evt',  '$id_user',  'encadrant', $p_time);";
+                                                        VALUES(NULL , 1,               '$id_evt',  '$id_user',  'encadrant', ".time().');';
                     $mysqli->query($req);
                 }
             }
             foreach ($coencadrants as $id_user) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
                     $req = 'INSERT INTO '.$pbd."evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
-                                                        VALUES(NULL , 1, '$id_evt',  '$id_user',  'coencadrant', $p_time);";
+                                                        VALUES(NULL , 1, '$id_evt',  '$id_user',  'coencadrant', ".time().');';
                     $mysqli->query($req);
                 }
             }
@@ -169,7 +169,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 foreach ($benevoles as $id_user) {
                     $id_user = (int) $id_user;
                     $req = 'INSERT INTO '.$pbd."evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
-                                                        VALUES(NULL , 1, '$id_evt',  '$id_user',  'benevole', $p_time);";
+                                                        VALUES(NULL , 1, '$id_evt',  '$id_user',  'benevole', ".time().');';
                     $mysqli->query($req);
                 }
             }

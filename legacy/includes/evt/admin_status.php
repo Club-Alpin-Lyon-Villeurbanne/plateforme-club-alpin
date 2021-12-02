@@ -72,7 +72,7 @@
         }
 
         // sortie à venir
-        if ($evt['tsp_end_evt'] > $p_time) {
+        if ($evt['tsp_end_evt'] > time()) {
             if (allowed('evt_delete', 'commission:'.$evt['code_commission']) && (1 != $evt['status_evt'] || (1 == $evt['status_evt'] && 1 == $evt['cancelled_evt']))) {
                 // supprimer
                 echo '<a class="nice2 noprint red" href="supprimer-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Supprimer définitivement la sortie ci-dessous"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie</a>';

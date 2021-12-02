@@ -335,7 +335,7 @@ if (admin()) {
 
         // Enregistrement
         $req = 'INSERT INTO  `'.$pbd."content_html` (`id_content_html` ,`code_content_html` ,`lang_content_html` ,`contenu_content_html` ,`date_content_html` ,`linkedtopage_content_html`, `current_content_html`, `vis_content_html`)
-															VALUES (NULL ,  '$code_content_html',  '$lang',  '$contenu_content_html',  '$p_time',  '$linkedtopage_content_html', 1, $vis_content_html);";
+															VALUES (NULL ,  '$code_content_html',  '$lang',  '$contenu_content_html',  '".time()."',  '$linkedtopage_content_html', 1, $vis_content_html);";
         if (!$mysqli->query($req)) {
             header('HTTP/1.0 400 Bad request');
             echo 'Erreur SQL <br />'.html_utf8($req);

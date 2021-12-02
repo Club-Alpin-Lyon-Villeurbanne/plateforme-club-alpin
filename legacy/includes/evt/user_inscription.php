@@ -7,7 +7,7 @@ if (user() && allowed('evt_join')) {
     // user non bridé (licence à jour)
     if (0 == $_SESSION['user']['doit_renouveler_user']) {
         // sortie pas passée
-        if ($evt['tsp_evt'] > $p_time) {
+        if ($evt['tsp_evt'] > time()) {
             if ($destination) {
                 $inscriptions_status = inscriptions_status_destination($destination);
                 echo '<hr /><h2>Inscriptions :</h2><p>'.$inscriptions_status['message'].'</p>';
@@ -71,7 +71,7 @@ if (user() && allowed('evt_join')) {
                 // sortie dans plus de deux jours
                 if ($evt['tsp_evt'] > $p_tsp_max_pour_join) {
                     // inscriptions démarrées
-                    if ($evt['join_start_evt'] < $p_time) {
+                    if ($evt['join_start_evt'] < time()) {
                         // Je ne suis pas déja inscrit (ou bien je dispose de filiations à inscrire)
                         if ('neutre' == $monStatut || count($filiations) || $evt['repas_restaurant']) {
                             include __DIR__.'/../../includes/evt/user_inscription_button.php'; ?>

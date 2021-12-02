@@ -116,18 +116,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if (!$mail->Send()) {
         $errTab[] = "Échec à l'envoi du mail. Merci de nous contacter par téléphone pour nous faire part de cette erreur... Plus d'infos : ".($mail->ErrorInfo);
     }
-
-    // sauvegarde en BD
-    /* // 03/05/2014 - indiscret
-    $to_message=$mysqli->real_escape_string($destinataire['email_user']);
-    $from_message=$mysqli->real_escape_string($email);
-    $headers_message=''; // obsolete
-    $code_message='contact';
-    $cont_message=$mysqli->real_escape_string($content_header."\n\n\n".$content_main."\n\n\n".$content_footer);
-    $success_message=sizeof($errTab)?0:1;
-    $mysqli->query("INSERT INTO `".$pbd."message` (`id_message` ,`date_message` ,`to_message` ,`from_message` ,`headers_message` ,`code_message` ,`cont_message` ,`success_message`)
-            VALUES (NULL , '$p_time', '$to_message', '$from_message', '$headers_message', '$code_message', '$cont_message', '$success_message');");
-    */
 }
 $mysqli->close();
 

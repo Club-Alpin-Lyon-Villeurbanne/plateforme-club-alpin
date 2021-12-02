@@ -15,7 +15,7 @@
             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
         }
         if ('user_mdp_reinit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-            echo '<p class="info">OK, votre e-mail vient d\'être envoyé à '.date('H:i:s', $p_time).', sur '.html_utf8($email_user).'. <br />Courez vérifier votre boite e-mail.</p>';
+            echo '<p class="info">OK, votre e-mail vient d\'être envoyé à '.date('H:i:s', time()).', sur '.html_utf8($email_user).'. <br />Courez vérifier votre boite e-mail.</p>';
         }
 
         // en cas de succès, pas de suite au form

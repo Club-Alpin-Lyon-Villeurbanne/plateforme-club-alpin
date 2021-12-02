@@ -30,13 +30,13 @@
     }
 
     // trop tard ?
-    elseif ($p_time > $handle['tsp_evt'] - (24 * 60 * 60)) { // date max d'inscri. 24 h
+    elseif (time() > $handle['tsp_evt'] - (24 * 60 * 60)) { // date max d'inscri. 24 h
         $handle['temoin'] = 'off';
         $handle['temoin-title'] = 'Les inscriptions sont terminées';
     }
 
     // inscriptions pas encore commencées
-    elseif ($p_time < $handle['join_start_evt']) {
+    elseif (time() < $handle['join_start_evt']) {
         $handle['temoin'] = '';
         $handle['temoin-title'] = 'Les inscriptions pour cette sortie commenceront le '.date('d/m/y', $handle['join_start_evt']);
     } else {

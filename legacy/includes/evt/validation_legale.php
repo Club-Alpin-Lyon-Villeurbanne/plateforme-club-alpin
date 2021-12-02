@@ -2,7 +2,7 @@
 
     // STATUT LÉGAL : À PARTIR DE J-2 (timestamp défini dans params.php)
     // echo 'dev : '.date("d-m-y H:i", $p_tsp_max_pour_valid_legal_avant_evt);
-    if ($evt['tsp_evt'] < $p_tsp_max_pour_valid_legal_avant_evt && $evt['tsp_evt'] > $p_time) {
+    if ($evt['tsp_evt'] < $p_tsp_max_pour_valid_legal_avant_evt && $evt['tsp_evt'] > time()) {
         inclure('status-legal-'.(int) ($evt['status_legal_evt']), 'status-legal');
         echo '<br />';
 

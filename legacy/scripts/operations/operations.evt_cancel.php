@@ -32,7 +32,7 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
     // Mise à jour : annulation
     if (!isset($errTab) || 0 === count($errTab)) {
-        $req = "UPDATE caf_evt SET cancelled_evt='1', cancelled_who_evt='".(int) ($_SESSION['user']['id_user'])."', cancelled_when_evt='".$p_time."'  WHERE caf_evt.id_evt =$id_evt";
+        $req = "UPDATE caf_evt SET cancelled_evt='1', cancelled_who_evt='".(int) ($_SESSION['user']['id_user'])."', cancelled_when_evt='".time()."'  WHERE caf_evt.id_evt =$id_evt";
         // annulation de toutes les sorties du cycle
         if (true || $_POST['del_cycle_master_evt']) {
             $req .= " OR caf_evt.cycle_parent_evt=$id_evt";

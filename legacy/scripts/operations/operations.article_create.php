@@ -2,8 +2,8 @@
 
 $status_article = 0;
 $topubly_article = ('on' == $_POST['topubly_article'] ? 1 : 0);
-$tsp_crea_article = $p_time;
-$tsp_article = $p_time;
+$tsp_crea_article = time();
+$tsp_article = time();
 $user_article = (int) ($_SESSION['user']['id_user']);
 $titre_article = stripslashes($_POST['titre_article']);
 $code_article = substr(formater($titre_article, 3), 0, 30);

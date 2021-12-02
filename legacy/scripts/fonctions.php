@@ -23,7 +23,6 @@ function display_sorties($id_user, $limit = 10, $title = '')
         WHERE status_evt=1
         AND id_user = user_evt
         AND id_commission = commission_evt '
-        //	AND tsp_end_evt <= $p_time
         // jointure avec la table participation
         .'AND evt_evt_join = id_evt
         AND status_evt_join = 1

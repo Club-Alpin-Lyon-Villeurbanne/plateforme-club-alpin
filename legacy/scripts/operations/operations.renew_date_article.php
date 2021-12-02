@@ -4,7 +4,7 @@ $id_article = (int) ($_POST['id_article']);
 
 $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
-$req = 'UPDATE caf_article SET tsp_validate_article='.$p_time." WHERE caf_article.id_article=$id_article"; // premiere validation
+$req = 'UPDATE caf_article SET tsp_validate_article='.time()." WHERE caf_article.id_article=$id_article"; // premiere validation
 
 if (!allowed('article_validate_all')) {
     $req .= ' AND user_article='.(int) ($_SESSION['user']['id_user']);

@@ -87,7 +87,7 @@
             $errTab[] = 'Un compte validé existe déjà avec cette adresse e-mail. Avez-vous <a href="includer.php?p=pages/mot-de-passe-perdu.php" class="fancyframe" title="">oublié le mot de passe ?</a>';
         } else {
             $req = "INSERT INTO `caf_user` (`id_user`, `email_user`, `mdp_user`, `cafnum_user`, `firstname_user`, `lastname_user`, `nickname_user`, `created_user`, `birthday_user`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `civ_user`, `moreinfo_user`, `auth_contact_user`, `valid_user`, `cookietoken_user`, `manuel_user`)
-								VALUES (NULL, '$email_user', '$mdp_user', '$cafnum_user', '$firstname_user', '$lastname_user', '$nickname_user', '$p_time', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$pays_user', '$civ_user', '', '$auth_contact_user', '1', '', '1');";
+								VALUES (NULL, '$email_user', '$mdp_user', '$cafnum_user', '$firstname_user', '$lastname_user', '$nickname_user', '".time()."', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$pays_user', '$civ_user', '', '$auth_contact_user', '1', '', '1');";
             if (!$mysqli->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }

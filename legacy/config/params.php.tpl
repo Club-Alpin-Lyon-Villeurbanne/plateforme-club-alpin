@@ -132,8 +132,6 @@ $p3=formater($_GET['p3'], 3);
 $p4=formater($_GET['p4'], 3);
 // debug pour calls ajax
 if(substr($p_racine, -8)=='scripts/') $p_racine=substr($p_racine, 0, strlen($p_racine)-8);
-// time, une bonne fois pour toute au chargement de la pge
-$p_time=time();
 // par défaut, la page courante n'est pas admin (modifié en aval dans pages.php)
 $p_pageadmin=false;
 

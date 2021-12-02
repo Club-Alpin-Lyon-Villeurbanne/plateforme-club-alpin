@@ -132,9 +132,9 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
 
                 if (!isset($errTab) || 0 === count($errTab)) {
                     // update inscription
-                    $req = "UPDATE caf_evt_join
-                        SET lastchange_when_evt_join = $p_time
-                        , lastchange_who_evt_join = ".(int) ($_SESSION['user']['id_user']);
+                    $req = 'UPDATE caf_evt_join
+                        SET lastchange_when_evt_join = '.time().'
+                        , lastchange_who_evt_join = '.(int) ($_SESSION['user']['id_user']);
 
                     // s'il y a modification : update et envoi de mail
                     if ('' !== $status_evt_join_new && ($status_evt_join_new != $status_evt_join)) {

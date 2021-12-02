@@ -30,7 +30,7 @@
                     echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                 }
             if ('user_create' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                echo '<p class="info">Nouvel adhérent bien créé à '.date('H:i:s', $p_time).'.<br />
+                echo '<p class="info">Nouvel adhérent bien créé à '.date('H:i:s', time()).'.<br />
 					Rendez-vous sur la <a href="adherents.html" title="" target="_top">page adhérents</a> pour lui attribuer les
 					status désirés (exemple : <i>salarié</i>) en cliquant sur le bouton <img src="/img/base/user_star.png" alt="" title="" />.</p>';
             } else {

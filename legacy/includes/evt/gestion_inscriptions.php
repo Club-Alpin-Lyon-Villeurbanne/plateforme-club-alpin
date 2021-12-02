@@ -83,7 +83,7 @@ if ('1' != $evt['cancelled_evt']) {
         <div id="inscription-gestion">
             <?php
             // message à afficher pour l'organsiateur, quand aux inscriptions, légèrement différent si la sortie est passée
-            if ($evt['tsp_end_evt'] > $p_time) {
+            if ($evt['tsp_end_evt'] > time()) {
                 inclure('formalites-gestion-des-inscrits', 'vide');
             } else {
                 inclure('formalites-gestion-des-inscrits-evt-passe', 'vide');
@@ -96,7 +96,7 @@ if ('1' != $evt['cancelled_evt']) {
                 <input type="hidden" name="titre_evt" value="<?php echo html_utf8($evt['titre_evt']); ?>" />
                 <input type="hidden" name="code_evt" value="<?php echo html_utf8($evt['code_evt']); ?>" />
                 <!-- si l'evt est passé on interdit l'envoi d'e-mails -->
-                <?php if ($evt['tsp_end_evt'] < $p_time) { ?>
+                <?php if ($evt['tsp_end_evt'] < time()) { ?>
                     <input type="hidden" name="dontsendmail" value="true" />
                 <?php } ?>
 
@@ -106,7 +106,7 @@ if ('1' != $evt['cancelled_evt']) {
                     echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                 }
         if ('user_join_update_status' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-            echo '<p class="info">Mise à jour effectuée à '.date('H:i', $p_time).'.</p><br />';
+            echo '<p class="info">Mise à jour effectuée à '.date('H:i', time()).'.</p><br />';
         }
 
         // TABLEAU alertes
@@ -253,28 +253,28 @@ if ('1' != $evt['cancelled_evt']) {
                                                     </label>';
                     }
 
-                    if (($p_time >= $evt['tsp_end_evt'] && 1 == $row['status_evt_join']) || $p_time < $evt['tsp_end_evt']) {
+                    if ((time() >= $evt['tsp_end_evt'] && 1 == $row['status_evt_join']) || time() < $evt['tsp_end_evt']) {
                         echo '<label for="join_'.(int) ($row['id_evt_join']).'_1">
                                                 <input '.(1 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable1 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) ($row['id_evt_join']).'" id="join_'.(int) ($row['id_evt_join']).'_1" value="1" />
                                                 Accepté
                                                 </label>';
                     }
 
-                    if ($p_time >= $evt['tsp_end_evt'] && 2 != $row['status_evt_join']) {
+                    if (time() >= $evt['tsp_end_evt'] && 2 != $row['status_evt_join']) {
                         echo '<label for="join_'.(int) ($row['id_evt_join']).'_3">
                                                         <input '.(3 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable3 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) ($row['id_evt_join']).'" id="join_'.(int) ($row['id_evt_join']).'_3" value="3" />
                                                         Absent
                                                     </label>';
                     }
 
-                    if (($p_time >= $evt['tsp_end_evt'] && 2 == $row['status_evt_join']) || $p_time < $evt['tsp_end_evt']) {
+                    if ((time() >= $evt['tsp_end_evt'] && 2 == $row['status_evt_join']) || time() < $evt['tsp_end_evt']) {
                         echo '<label for="join_'.(int) ($row['id_evt_join']).'_2">
                                                 <input '.(2 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable2 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) ($row['id_evt_join']).'" id="join_'.(int) ($row['id_evt_join']).'_2" value="2" />
                                                 Refusé
                                                 </label>';
                     }
 
-                    if ($p_time < $evt['tsp_end_evt']) {
+                    if (time() < $evt['tsp_end_evt']) {
                         echo '<label for="join_'.(int) ($row['id_evt_join']).'_-1">
                                                 <input name="status_evt_join_'.(int) ($row['id_evt_join']).'" '.($disable_1 ? 'disabled="disabled"' : '').' type="radio" id="join_'.(int) ($row['id_evt_join']).'_-1" value="-1" />
                                                 Désinscrire
