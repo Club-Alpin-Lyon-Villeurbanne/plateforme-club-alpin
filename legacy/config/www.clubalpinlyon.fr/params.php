@@ -18,10 +18,6 @@ if ($_SERVER && array_key_exists('HTTP_HOST', $_SERVER)) {
 // PARTENAIRES
 $p_showPartenairesSlider = true;
 
-// ADMIN
-$p_admin_login = 'caflyon';
-$p_admin_password = md5('ADMIN_PASSWORD_TO_REPLACE');
-
 // NOM DU SITE ( apparaît notamment dans les e-mailings )
 $p_sitename = 'CAF Lyon Villeurbanne';
 
@@ -134,8 +130,6 @@ $p_chron_dates_butoires = [8, 13, 18];
 
 // -------------------
 // PARAMS STATIQUES
-
-$p_multilangue = count($p_langs) < 2 ? false : true;
 
 error_reporting(\E_ALL ^ \E_NOTICE);
 
