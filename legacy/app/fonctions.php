@@ -544,29 +544,6 @@ function html_utf8($str)
     return htmlentities($str, \ENT_QUOTES, 'UTF-8');
 }
 
-// anti-cache à placer à la fine des extensions de fichiers appelés / utilise des vars du fichier params.php
-function antiCache($mode)
-{
-    global $p_devmode;
-    switch ($mode) {
-        // si dev en local
-        case 'localonly':
-            if ('http://127.0.0.1' == $_SERVER['HTTP_HOST']) {
-                echo '?ac='.time();
-            } break;
-        // si var p_devmode
-        case 'devonly':
-            if ($p_devmode) {
-                echo '?ac='.time();
-            }	break;
-        // si dev en local
-        default:
-            echo '?ac='.time();
-    }
-
-    return false;
-}
-
 // assurer un lien http
 function linker($link)
 {
