@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $civ_user = trim(stripslashes($_POST['civ_user']));
 $firstname_user = trim(stripslashes($_POST['firstname_user']));
 $lastname_user = trim(stripslashes($_POST['lastname_user']));
@@ -36,8 +38,8 @@ if (strlen($nickname_user) < 5 || strlen($nickname_user) > 20) {
 if (!isMail($email_user)) {
     $errTab[] = 'Adresse e-mail invalide';
 }
-if (strlen($mdp_user) < 6 || strlen($mdp_user) > 12) {
-    $errTab[] = 'Le mot de passe doit faire de 6 à 12 caractères';
+if (strlen($mdp_user) < 8 || strlen($mdp_user) > 40) {
+    $errTab[] = 'Le mot de passe doit faire de 8 à 40 caractères';
 }
 if ($mdp_user != $_POST['mdp_user_confirm']) {
     $errTab[] = 'Veuillez entrer deux fois le même mot de passe, sans espace';
@@ -65,11 +67,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $nickname_user = $mysqli->real_escape_string($nickname_user);
     $cafnum_user = $mysqli->real_escape_string($cafnum_user);
     $email_user = $mysqli->real_escape_string($email_user);
-    if ($use_md5_salt) {
-        $mdp_user = md5($mdp_user.$md5_salt);
-    } else {
-        $mdp_user = md5($mdp_user);
-    }
+    $mdp_user = $kernel->getContainer()->get('legacy_hasher_factory')->getPasswordHasher('login_form')->hash($mdp_user);
     $birthday_user = $mysqli->real_escape_string($birthday_user);
     $tel_user = $mysqli->real_escape_string($tel_user);
     $tel2_user = $mysqli->real_escape_string($tel2_user);

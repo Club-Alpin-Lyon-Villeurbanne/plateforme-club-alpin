@@ -89,16 +89,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
             auth_contact_user='".$mysqli->real_escape_string($userTab['auth_contact_user'])."',
             cafnum_user='".$mysqli->real_escape_string($userTab['cafnum_user'])."'";
 
-        if ('' !== $userTab['mdp_user']) {
-            if ($use_md5_salt) {
-                $userTab['mdp_user'] = md5($userTab['mdp_user'].$md5_salt);
-            } else {
-                $userTab['mdp_user'] = md5($userTab['mdp_user']);
-            }
-            $req .= ", mdp_user='".$userTab['mdp_user']."'";
-            $okTab[] = 'Modification du mot de passe';
-        }
-
         $req .= "	WHERE id_user='".$mysqli->real_escape_string($userTab['id_user'])."'";
 
         if (!$mysqli->query($req)) {
