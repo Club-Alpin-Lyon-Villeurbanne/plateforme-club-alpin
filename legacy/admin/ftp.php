@@ -24,11 +24,11 @@ if ('absolu' == $_GET['mode']) {
 }
 
 // recuperation du dossier
-$racine = '../ftp/';
+$racine = __DIR__.'/../../public/ftp/';
 if (!isset($_GET['dossier'])) {
     $dossier = $racine;
 } else {
-    $dossier = $_GET['dossier'];
+    $dossier = __DIR__.'/../../public/ftp/'.$_GET['dossier'];
 }
 
 // checks :
