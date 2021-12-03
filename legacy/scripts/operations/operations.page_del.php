@@ -38,5 +38,3 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         mylog('page-delete', "Suppression de la page $code_page", false);
     }
 }
-
-$mysqli->close();

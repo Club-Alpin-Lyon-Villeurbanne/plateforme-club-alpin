@@ -16,5 +16,4 @@ if (admin()) {
             --$ordre_pdt;
         }
     }
-    $mysqli->close();
 }

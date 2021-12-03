@@ -110,8 +110,7 @@ if ($_GET['compterendu']) {
                                         .' '.date('Y', $row['tsp_evt'])
                                         .' | '.html_utf8($row['titre_evt'])
                                     .'</option>';
-                }
-                $mysqli->close(); ?>
+                } ?>
 						</select>
 						<br />
 						<br />

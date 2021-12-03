@@ -107,8 +107,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
         }
     }
 
-    $mysqli->close();
-
     // redirection vers la page de la sortie avec le message "annulé"
     if (!isset($errTab) || 0 === count($errTab)) {
         // sans message d'avertissement nomades

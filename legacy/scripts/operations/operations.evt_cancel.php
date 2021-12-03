@@ -119,7 +119,6 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     }
     // redirection vers la page de la sortie avec le message "annulé"
     if (!isset($errTab) || 0 === count($errTab)) {
-        $mysqli->close();
         // sans message d'avertissement nomades
         if (!count($nomadMsg)) {
             header('Location:'.$p_racine.'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html');
@@ -129,5 +128,3 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         }
     }
 }
-
-$mysqli->close();

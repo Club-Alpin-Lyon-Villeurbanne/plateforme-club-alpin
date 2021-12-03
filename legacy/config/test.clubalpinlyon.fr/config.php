@@ -12,4 +12,11 @@ return [
         'user' => 'postmaster@mg.clubalpinlyon.fr',
         'pass' => 'MAILCHIMP_PASSWORD_TO_REPLACE',
     ],
+    'db' => [
+        'host' => 'localhost',
+        'port' => 3306,
+        'user' => 'DB_USER_TO_REPLACE',
+        'password' => 'DB_PASSWORD_TO_REPLACE',
+        'dbname' => 'DB_NAME_TO_REPLACE',
+    ],
 ];

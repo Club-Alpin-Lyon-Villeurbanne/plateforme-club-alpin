@@ -68,8 +68,6 @@
         }
         echo '</div>';
 
-        $mysqli->close();
-
         // script d'ergonomie
             ?>
 			<br />
@@ -179,8 +177,7 @@
         $handleSql = $mysqli->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             $attrTab[] = $handle['type_usertype_attr'].'-'.$handle['right_usertype_attr'];
-        }
-        $mysqli->close(); ?>
+        } ?>
 
 		<form action="<?php echo $versCettePage; ?>" method="post" onsubmit="return(confirm('Ces valeurs vont remplacer les valeurs existantes, OK ?'))">
 			<input type="hidden" name="operation" value="usertype_attr_edit" />

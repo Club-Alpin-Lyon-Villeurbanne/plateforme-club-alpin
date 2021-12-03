@@ -49,7 +49,6 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
         // ok, save
         $pageTab[] = $handle;
     }
-    $mysqli->close();
 
     // fonction d'affichage par parent
     function listPages($tab, $parent, $level)

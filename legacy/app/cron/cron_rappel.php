@@ -397,8 +397,6 @@ if ($lastTsp < $minTsp) {
     }
 }
 
-$mysqli->close();
-
 if (isset($errTab) && count($errTab) > 0) {
     if (admin()) {
         foreach ($errTab as $err) {

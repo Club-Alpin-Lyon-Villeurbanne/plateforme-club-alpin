@@ -23,7 +23,6 @@ Le code de cet environment se trouve dans `/home/kahe0589/test.clubalpinlyon.fr`
 ## local setup
 
  - cp legacy/config/config.php.tpl legacy/config/config.php
- - cp legacy/config/db_config.php.tpl legacy/config/db_config.php
  - cp legacy/config/params.php.tpl legacy/config/params.php
  - installer Docker
  - executer Docker host manager (https://github.com/iamluc/docker-hostmanager)

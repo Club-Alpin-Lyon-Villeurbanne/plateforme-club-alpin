@@ -63,8 +63,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 }
 
-$mysqli->close();
-
 // log admin
 if (!isset($errTab) || 0 === count($errTab)) {
     mylog('user_attr_add', "Attribution d'un nouveau droit (id=$id_usertype) à un user (id=$id_user)");

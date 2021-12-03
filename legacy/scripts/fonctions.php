@@ -48,7 +48,6 @@ function display_sorties($id_user, $limit = 10, $title = '')
         }
         echo '</div><hr />';
     }
-    $mysqli->close();
 }
 /*
     Récupération des articles publiés d'un utilisateur
@@ -83,7 +82,6 @@ function display_articles($id_user, $limit = 10, $title = '')
         }
         echo '</div>';
     }
-    $mysqli->close();
 }
 
 /*
@@ -187,7 +185,6 @@ function get_niveaux($id_user, $editable = false)
     }
 
     return $notes;
-    $mysqli->close();
 }
 
 /*
@@ -312,8 +309,6 @@ function get_evt($id_evt)
         $evt = $row;
     }
 
-    $mysqli->close();
-
     return $evt;
 }
 
@@ -351,8 +346,6 @@ function empietement_sortie($id_user, $evt)
         $sorties[] = $tmpJoin;
     }
 
-    $mysqli->close();
-
     return $sorties;
 }
 
@@ -375,7 +368,6 @@ function user_in_destination($id_user, $id_destination, $valid = true)
             $is_in = $row['evt_evt_join'];
         }
     }
-    $mysqli->close();
 
     return $is_in;
 }
@@ -398,7 +390,6 @@ function user_in_cb($id_user, $valid = true)
             $is_cb = $row['is_cb'];
         }
     }
-    $mysqli->close();
 
     return $is_cb;
 }
@@ -422,7 +413,6 @@ function user_in_destination_repas($id_user, $id_destination, $valid = true)
             $is_repas = $row['is_restaurant'];
         }
     }
-    $mysqli->close();
 
     return $is_repas;
 }
@@ -446,7 +436,6 @@ function user_sortie_in_dest($id_user, $id_destination, $valid = true)
             $sortie = get_sortie($row['evt_evt_join'], 'commission');
         }
     }
-    $mysqli->close();
 
     return $sortie;
 }
@@ -467,8 +456,6 @@ function covoiturage_sorties_destination($id_destination)
             ++$count;
         }
     }
-
-    $mysqli->close();
 
     return ['total' => $count, 'covoiturage' => $personnes];
 }
@@ -509,7 +496,6 @@ function get_sortie($id_evt, $type = 'full')
             $sortie = $row;
         }
     }
-    $mysqli->close();
 
     return $sortie;
 }
@@ -540,7 +526,6 @@ function get_encadrants($id_evt, $only_ids = false)
             }
         }
     }
-    $mysqli->close();
 
     return $users;
 }
@@ -609,8 +594,6 @@ function get_info_bus_lieu_destination($id_bus_lieu_destination)
         $infos['date'] = $row['date'];
     }
 
-    $mysqli->close();
-
     return $infos;
 }
 
@@ -627,7 +610,6 @@ function ramassage_appartient_quel_bus($id_bus_lieu_destination)
     while ($row = $result->fetch_assoc()) {
         $bus_id = $row['id_bus'];
     }
-    $mysqli->close();
 
     return $bus_id;
 }
@@ -675,7 +657,6 @@ function get_bus($id_bus, $params = ['dest', 'pts'])
 
         $bus = $row;
     }
-    $mysqli->close();
 
     return $bus;
 }
@@ -716,7 +697,6 @@ function get_points_ramassage($id_bus, $id_destination)
 
         $points[$row['bdl_id']] = $row;
     }
-    $mysqli->close();
 
     return $points;
 }
@@ -732,8 +712,6 @@ function mon_inscription($id_evt)
     while ($row = $result->fetch_assoc()) {
         $my_choices = $row;
     }
-
-    $mysqli->close();
 
     return $my_choices;
 }
@@ -765,7 +743,6 @@ function get_destination($id_dest, $full = false)
             $destination['sorties'] = get_sorties_for_destination($id_dest);
         }
     }
-    $mysqli->close();
 
     return $destination;
 }
@@ -868,7 +845,6 @@ function get_user($id_user, $valid = true, $simple = true)
     while ($row = $result->fetch_assoc()) {
         $user = $row;
     }
-    $mysqli->close();
 
     return $user;
 }
@@ -886,8 +862,6 @@ function get_bus_destination($id_destination)
         $busses[$handle['id']] = get_bus($handle['id'], ['pts']);
     }
 
-    $mysqli->close();
-
     return $busses;
 }
 
@@ -904,7 +878,6 @@ function get_lieu($id_lieu)
     while ($row = $result->fetch_assoc()) {
         $lieu = $row;
     }
-    $mysqli->close();
 
     return $lieu;
 }
@@ -935,7 +908,6 @@ function get_future_destinations($can_modify = false, $for_event_creation = fals
         $handle['sorties'] = get_sorties_for_destination($handle['id']);
         $destinations[] = $handle;
     }
-    $mysqli->close();
 
     return $destinations;
 }
@@ -1203,7 +1175,6 @@ function is_sortie_in_destination($id_evt)
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $destination = $handle['id_destination'];
     }
-    $mysqli->close();
 
     return $destination;
 }
@@ -1242,8 +1213,6 @@ function select_lieux_ramasse_connus($id_current_dest = false, $full = true, $ex
 
         return $lieux;
     }
-
-    $mysqli->close();
 
     return $ids;
 }

@@ -15,6 +15,7 @@ if (!$p1) {
 // options des pages
 cont(false); // initialisation des contenus
 $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
+
 $p_pages = [];
 
 // On ne recquiert que les pages necessaires en fonction du mode admin et superadmin
@@ -43,7 +44,6 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         'add_css_page' => $handle['add_css_page'],
     ];
 }
-$mysqli->close();
 
 // DEFINITION DES VARS UTILISEES SUR LA PAGE
 if ($p_pages[$p2]) {
