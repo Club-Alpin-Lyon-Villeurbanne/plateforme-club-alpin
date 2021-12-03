@@ -2,7 +2,9 @@
 
 namespace App\Bridge\Monolog\Processor;
 
-class SAPIProcessor
+use Monolog\Processor\ProcessorInterface;
+
+class SAPIProcessor implements ProcessorInterface
 {
     public function __invoke(array $record)
     {
