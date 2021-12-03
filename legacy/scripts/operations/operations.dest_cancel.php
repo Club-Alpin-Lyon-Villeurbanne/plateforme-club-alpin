@@ -20,9 +20,9 @@ $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
 // on a le droit d'annuler ?
 if (allowed('destination_supprimer')
-    || $destination['id_user_who_create'] == (string) getUser()->getIdUser()
-    || $destination['id_user_responsable'] == (string) getUser()->getIdUser()
-    || $destination['id_user_adjoint'] == (string) getUser()->getIdUser()
+    || (user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser())
+    || (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser())
+    || (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
 ) {
 } else {
     $errTab[] = 'Accès non autorisé';

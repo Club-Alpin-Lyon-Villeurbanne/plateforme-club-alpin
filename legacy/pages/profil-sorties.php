@@ -243,9 +243,9 @@ if (user()) {
 
                     $empiete = empietement_sortie((string) getUser()->getIdUser(), $evt);
 
-                    $status_evt = (0 == $evt['status_evt'] && $evt['user_evt'] == (string) getUser()->getIdUser() ? '<p class="alerte">Sortie en attente de publication</p>' : '')
-                        .(1 == $evt['status_evt'] && $evt['user_evt'] == (string) getUser()->getIdUser() ? '<p class="info">Sortie publiée sur le site</p>' : '')
-                        .(2 == $evt['status_evt'] && $evt['user_evt'] == (string) getUser()->getIdUser() ? '<p class="erreur">Sortie refusée et non publiée</p>' : '');
+                    $status_evt = (0 == $evt['status_evt'] && user() && $evt['user_evt'] == (string) getUser()->getIdUser() ? '<p class="alerte">Sortie en attente de publication</p>' : '')
+                        .(1 == $evt['status_evt'] && user() && $evt['user_evt'] == (string) getUser()->getIdUser() ? '<p class="info">Sortie publiée sur le site</p>' : '')
+                        .(2 == $evt['status_evt'] && user() && $evt['user_evt'] == (string) getUser()->getIdUser() ? '<p class="erreur">Sortie refusée et non publiée</p>' : '');
 
                     echo '<tr>'
                             .'<td class="agenda-gauche">'
