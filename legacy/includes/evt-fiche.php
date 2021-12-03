@@ -46,7 +46,7 @@ if (!$evt) {
     if (
         (
             allowed('evt_print', 'commission:'.$current_commission)
-            || (is_array($ids_encadrants) && in_array((string) getUser()->getIdUser(), $ids_encadrants, true))
+            || (user() && is_array($ids_encadrants) && in_array((string) getUser()->getIdUser(), $ids_encadrants, true))
         ) && '1' != $evt['cancelled_evt']
     ) {
         ?>
@@ -66,10 +66,10 @@ if (!$evt) {
 
     /* imprimer la fiche de destination */
     if (isset($destination) && (allowed('destination_print')
-            || $destination['id_user_who_create'] == getUser()->getIdUser()
-            || $destination['id_user_responsable'] == getUser()->getIdUser()
-            || $destination['id_user_adjoint'] == getUser()->getIdUser()
-            || in_array((string) getUser()->getIdUser(), get_all_encadrants_destination($destination['id']), true) // je suis l'un des co/encadrant de l'une des sorties
+            || (user() && $destination['id_user_who_create'] == getUser()->getIdUser())
+            || (user() && $destination['id_user_responsable'] == getUser()->getIdUser())
+            || (user() && $destination['id_user_adjoint'] == getUser()->getIdUser())
+            || (user() && in_array((string) getUser()->getIdUser(), get_all_encadrants_destination($destination['id']), true)) // je suis l'un des co/encadrant de l'une des sorties
         )) {
         ?>
             <a href="<?php echo 'feuille-de-sortie/dest-'.(int) ($destination['id']).'.html'; ?>" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
@@ -566,7 +566,7 @@ if (!$evt) {
 
             if (
                 $nPlacesRestantesOnline > 0
-                    || in_array((string) getUser()->getIdUser(), $acces_au_module, true)
+                    || (user() && in_array((string) getUser()->getIdUser(), $acces_au_module, true))
             ) {
                 include __DIR__.'/../includes/evt/user_inscription.php';
             } else {
