@@ -97,6 +97,4 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $okTab[] = 'Mise à jour du compte';
         }
     }
-
-    $mysqli->close();
 }

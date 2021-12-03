@@ -75,8 +75,6 @@
 
                     echo '<h1>LISTE DES E-MAILS</h1>';
                     echo '<textarea id="emailsaddresses" rows="10" cols="70">'.implode(',', $benvoles_emails).'</textarea>';
-
-                    $mysqli->close();
                 }
             }
             ?>

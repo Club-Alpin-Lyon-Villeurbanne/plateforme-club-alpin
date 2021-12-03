@@ -10,7 +10,6 @@ if (!admin()) {
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $page = $handle;
     }
-    $mysqli->close();
 
     if (!$page) {
         echo '<div class="erreur">ID invalide</div>';

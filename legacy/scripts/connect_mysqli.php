@@ -1,28 +1,30 @@
 <?php
 
-//_________________________________________________ BASE DE DONNEES
-include __DIR__.'/../app/db_config.php';
+if (!function_exists('getMysqli')) {
+    function getMysqli()
+    {
+        static $mysqli;
 
-$serveur_bd = $p_serveur_bd;
-$login_bd = $p_login_bd;
-$pass_bd = $p_pass_bd;
-$nom_bd = $p_nom_bd;
-$port_bd = $p_port_bd;
+        if ($mysqli) {
+            try {
+                $mysqli->host_info;
 
-// CRI - 17/01/2016 : ajout du port MySQL pour compatibilité avec serveurs MySQL utilisant un port différent
-// du port par défaut (3306)
-// mysqli -> Modification
-if ('' != $port_bd && is_numeric($port_bd)) {
-    $mysqli = new mysqli($serveur_bd, $login_bd, $pass_bd, $nom_bd, $port_bd);
-} else {
-    $mysqli = new mysqli($serveur_bd, $login_bd, $pass_bd, $nom_bd);
+                return $mysqli;
+            } catch (\Throwable $e) {
+            }
+        }
+
+        $conf = include __DIR__.'/../app/db_config.php';
+        $mysqli = new mysqli($conf['host'], $conf['user'], $conf['password'], $conf['dbname'], $conf['port']);
+
+        if ($mysqli->connect_errno) {
+            exit("Impossible de se connecter à la base de données. Merci d'avertir l'administrateur.");
+        }
+
+        $mysqli->set_charset('UTF8');
+
+        return $mysqli;
+    }
 }
 
-// CRI- 23/01/2016 : Message d'erreur si impossible de se connecter à la base
-// Evite les erreurs PHP
-if ($mysqli->connect_errno) {
-    exit("Impossibe de se connecter à la base de données. Merci d'avertir l'administrateur.");
-}
-$mysqli->set_charset('UTF8');
-
-return $mysqli;
+return $mysqli = getMysqli();

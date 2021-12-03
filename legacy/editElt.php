@@ -62,9 +62,7 @@ if (admin()) {
                     $runningVersion = $handle;
                 }
             }
-        }
-
-        $mysqli->close(); ?>
+        } ?>
 			<html lang="fr">
 				<head>
 					<meta charset="utf-8">
@@ -343,9 +341,7 @@ if (admin()) {
         }
 
         // log
-        mylog('edit-html', 'Modif élément : <i>'.$code_content_html.'</i>', false);
-
-        $mysqli->close(); ?>
+        mylog('edit-html', 'Modif élément : <i>'.$code_content_html.'</i>', false); ?>
 		<script language="JavaScript">
 			parent.$.fancybox.close();
 			parent.window.document.contUpdate('<?php echo $code_content_html; ?>');

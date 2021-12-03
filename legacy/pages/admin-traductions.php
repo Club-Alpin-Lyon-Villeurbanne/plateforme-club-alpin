@@ -50,9 +50,7 @@ if (!admin()) {
     $handleSql = $mysqli->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $contGroupTab[] = $handle;
-    }
-
-    $mysqli->close(); ?>
+    } ?>
 
 	<h2 style="padding-left:0px">Traduction des contenus</h2>
 	<p>

@@ -117,7 +117,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $errTab[] = "Échec à l'envoi du mail. Merci de nous contacter par téléphone pour nous faire part de cette erreur... Plus d'infos : ".($mail->ErrorInfo);
     }
 }
-$mysqli->close();
 
 // tout s'est bien passé, on vide les variables postées
 if (!isset($errTab) || 0 === count($errTab)) {

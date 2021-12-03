@@ -212,11 +212,7 @@ function allowed($code_userright, $param = '')
         // raz/créa tableau global
         $userAllowedTo = ['default' => '1']; // minimum une valeur
 
-        // connexion à la bdd si nécessaire
-        $connSet = is_object($mysqli);
-        if (!$connSet) {
-            $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-        }
+        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
 
         $id_user = $mysqli->real_escape_string($id_user);
 
@@ -339,11 +335,6 @@ function allowed($code_userright, $param = '')
         } else {
             $allowedError = 'Erreur à la connexion à la BDD';
             echo '<p class="erreur">'.$allowedError.'</p>';
-        }
-
-        // déconnexion si besoin
-        if (!$connSet) {
-            $mysqli->close();
         }
     }
 
@@ -535,7 +526,6 @@ function mylog($code, $desc, $connectme = true)
         VALUES (NULL , '$code_log_admin',  '$desc_log_admin',  '$date_log_admin', '$ip_log_admin')";
     if (!$mysqli->query($req));
     $errTab[] = 'Erreur SQL lors du log';
-    $mysqli->close();
 }
 
 // htmlentities avec utf8
@@ -592,7 +582,6 @@ function cont($code = false, $html = false)
                 $CONTENUS_INLINE[$handle['code_content_inline']] = $handle['contenu_content_inline'];
             }
         }
-        $mysqli->close();
         // debug
         $CONTENUS_INLINE['dev'] = 'dev';
     }

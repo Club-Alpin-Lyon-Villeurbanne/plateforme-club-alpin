@@ -31,5 +31,3 @@
             $erreur = 'Erreur BDD<br />'.$req;
         }
     }
-
-    $mysqli->close();

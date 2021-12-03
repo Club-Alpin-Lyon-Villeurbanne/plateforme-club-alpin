@@ -2,7 +2,6 @@ parameters:
   tmpDir: var/cache/phpstan
 
   ignoreErrors:
-    - '#Undefined variable: \$mysqli#'
     - '#Constant (ATOM|RSS1|RSS2|MON_DOMAINE) not found\.#'
     - '#Variable \$p_[a-z_]+ might not be defined#'
     - '#Variable \$pbd might not be defined#'

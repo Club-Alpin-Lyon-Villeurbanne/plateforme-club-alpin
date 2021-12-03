@@ -42,8 +42,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
-
-        $mysqli->close();
     }
 }
 
@@ -175,8 +173,6 @@ if ('' !== $email_user_mailchange) {
             $id_user_mailchange = $mysqli->insert_id;
         }
     }
-
-    $mysqli->close();
 
     // ENVOI DU MAIL
     if (!isset($errTab) || 0 === count($errTab)) {

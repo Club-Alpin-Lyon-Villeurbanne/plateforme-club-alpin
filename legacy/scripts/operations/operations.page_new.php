@@ -46,5 +46,4 @@ if (!$erreur) {
     $req = 'INSERT INTO `'.$pbd."page` (`id_page` ,`ordre_page` ,`parent_page` ,`code_page` ,`nom_page` ,`niveau_page` ,`titre_page` ,`description_page` ,`vis_page`)
                                 VALUES (NULL , '$ordre_page', '$parent_page', '$code_page', '$nom_page', '$niveau_page', '$titre_page', '$description_page', '$vis_page');";
     $mysqli->query($req);
-    $mysqli->close();
 }

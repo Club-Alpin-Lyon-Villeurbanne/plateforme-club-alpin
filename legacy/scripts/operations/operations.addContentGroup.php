@@ -28,5 +28,3 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $erreur = 'Erreur BDD<br />'.$req;
     }
 }
-
-$mysqli->close();

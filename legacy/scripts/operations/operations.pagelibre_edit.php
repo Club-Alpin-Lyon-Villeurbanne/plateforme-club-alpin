@@ -74,8 +74,6 @@ if ((!isset($errTab) || 0 === count($errTab)) && $default_description_page) {
     }
 }
 
-$mysqli->close();
-// LOG
 if (!isset($errTab) || 0 === count($errTab)) {
     mylog('page-libre-edit', "Modification des METAS de la page libre $default_name_page ($code_page)");
 }

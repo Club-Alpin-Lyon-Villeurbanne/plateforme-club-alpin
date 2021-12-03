@@ -42,13 +42,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
             //if(!$mysqli->query($req)) $errTab[]="Erreur SQL (UPDATE caf_evt)";
         }
 
-        $mysqli->close();
-
         // redirection vers la page de la sortie avec le message "supprimée"
         if (!isset($errTab) || 0 === count($errTab)) {
             header('Location:'.$p_racine.'profil/sorties/self.html?lbxMsg=evt_deleted');
             exit;
         }
     }
-    $mysqli->close();
 }

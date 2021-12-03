@@ -46,8 +46,7 @@ if (!admin()) {
     $handleSql = $mysqli->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $attrTab[] = $handle['type_usertype_attr'].'-'.$handle['right_usertype_attr'];
-    }
-    $mysqli->close(); ?>
+    } ?>
 	<h1>Matrice des droits</h1>
 	<p>
 		Définit quel type d'adhérent est autorisé à quelles actions. Cliquer sur les intitulés à gauche pour afficher le code correspondant.
