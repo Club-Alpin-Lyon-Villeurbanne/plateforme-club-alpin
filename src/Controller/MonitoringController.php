@@ -3,11 +3,12 @@
 namespace App\Controller;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-class MonitoringController
+class MonitoringController extends AbstractController
 {
     /**
      * @Route(
@@ -19,7 +20,7 @@ class MonitoringController
      *     methods={"GET"}
      * )
      */
-    public function httpAction($code)
+    public function httpAction(int $code)
     {
         if (200 == $code) {
             return new Response(200, 200);
@@ -39,6 +40,6 @@ class MonitoringController
     {
         $logger->error('Test message');
 
-        return new Response(200, 200);
+        return new Response('log!', 200);
     }
 }
