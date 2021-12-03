@@ -1,5 +1,7 @@
 <?php
 
+global $p_multilangue;
+
 include __DIR__.'/app/includes.php';
 
 // ________________________________________________ TRAITEMENT AJAX

@@ -30,7 +30,7 @@
                         <?php
                         inclure($p1, 'vide');
                         inclure($p1.'-'.$p2, 'vide');
-                        if ('dest_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                        if (isset($_POST['operation']) && 'dest_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div><br /><br />';
                             echo '<a href="'.$p_racine.'destination/'.$destination['code'].'-'.$destination['id'].'.html">Retourner vers la fiche de destination</a>';
                         } else {
@@ -42,10 +42,10 @@
 
                                     <?php
                                     // TABLEAU
-                                    if ('dest_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                                    if (isset($_POST['operation']) && 'dest_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                                         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                                     }
-                                if ('dest_cancel' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+                                if (isset($_POST['operation']) && 'dest_cancel' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                                     echo '<p class="info">Cette destination a été annulée.</p>';
                                 } ?>
                                     <br />
@@ -95,7 +95,7 @@
 
                         <?php
                         inclure($p1, 'vide');
-                        if ('evt_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                        if (isset($_POST['operation']) && 'evt_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div><br /><br />';
                             echo '<a href="'.$p_racine.'sortie/'.$evt['code_evt'].'-'.$evt['id_evt'].'.html">Retourner vers la fiche de sortie</a>';
                         } else {
@@ -107,10 +107,10 @@
 
                                     <?php
                                     // TABLEAU
-                                    if ('evt_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                                    if (isset($_POST['operation']) && 'evt_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                                         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                                     }
-                                if ('evt_cancel' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+                                if (isset($_POST['operation']) && 'evt_cancel' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                                     echo '<p class="info">Cette sortie a été annulée.</p>';
                                 } ?>
                                     <br />
