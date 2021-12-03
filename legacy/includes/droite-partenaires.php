@@ -78,8 +78,6 @@ if ($p_showPartenairesSlider) {
 <?php
         }
     }
-
-    $mysqli->close;
 }
 ?>
 

@@ -245,4 +245,3 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $_POST['id_user'] = [0];
     $_POST['result'] = 'success';
 }
-$mysqli->close;

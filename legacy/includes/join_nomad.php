@@ -93,8 +93,7 @@ if (user()) {
 								"tel2_user": "'.addslashes(($row['tel2_user'])).'"
 							};
 						</script>';
-        }
-        $mysqli->close; ?>
+        } ?>
 				</select>
 			</div>
 			<hr />

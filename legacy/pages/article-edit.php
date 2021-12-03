@@ -22,7 +22,6 @@
             while ($row = $result->fetch_assoc()) {
                 $article = $row;
             }
-            $mysqli->close;
 
             // not found
             if (!$article) {

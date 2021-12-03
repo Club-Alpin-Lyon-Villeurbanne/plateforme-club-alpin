@@ -23,7 +23,5 @@ if (!$mysqli->query($req)) {
     $errTab[] = 'Aucun enregistrement affecté';
 }
 
-$mysqli->close;
-
 header('Location: /gestion-des-articles.html');
 exit();

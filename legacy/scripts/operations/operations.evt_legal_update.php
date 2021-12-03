@@ -162,5 +162,3 @@ if ((!isset($errTab) || 0 === count($errTab)) && $do_mail_evt_legal_update) {
         }
     }
 }
-
-$mysqli->close;

@@ -95,5 +95,3 @@ if (!isset($errTab) || 0 === count($errTab)) {
         // + suppression de tous les lieux associés au BUS / DESTINATION
     }
 }
-
-$mysqli->close;

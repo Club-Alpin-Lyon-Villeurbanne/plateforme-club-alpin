@@ -23,5 +23,3 @@ if (!$mysqli->query($req)) {
 } elseif ($mysqli->affected_rows < 1) {
     $errTab[] = 'Aucun enregistrement affecté';
 }
-
-$mysqli->close;

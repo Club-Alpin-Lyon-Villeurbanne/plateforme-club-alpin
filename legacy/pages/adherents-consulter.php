@@ -77,10 +77,6 @@ if (!admin() && !allowed('user_edit_notme')) {
                 }
             }
         }
-
-        //		print_r ($userTab['articles']);exit;
-
-        $mysqli->close;
     }
 
     function printTableRow($header, $value)

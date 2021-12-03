@@ -140,5 +140,3 @@ if ((!isset($errTab) || 0 === count($errTab)) && 1 == $status_evt) {
         }
     }
 }
-
-$mysqli->close;
