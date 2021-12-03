@@ -707,10 +707,12 @@ function mon_inscription($id_evt)
     global $userAllowedTo, $pbd;
     $my_choices = false;
 
-    $req = 'SELECT * FROM `'.$pbd."evt_join` WHERE `evt_evt_join` = $id_evt AND `user_evt_join` = ".getUser()->getIdUser().' LIMIT 1;';
-    $result = $mysqli->query($req);
-    while ($row = $result->fetch_assoc()) {
-        $my_choices = $row;
+    if (user()) {
+        $req = 'SELECT * FROM `'.$pbd."evt_join` WHERE `evt_evt_join` = $id_evt AND `user_evt_join` = ".getUser()->getIdUser().' LIMIT 1;';
+        $result = $mysqli->query($req);
+        while ($row = $result->fetch_assoc()) {
+            $my_choices = $row;
+        }
     }
 
     return $my_choices;
