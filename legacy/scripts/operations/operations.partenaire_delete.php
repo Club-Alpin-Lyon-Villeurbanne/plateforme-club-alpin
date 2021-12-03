@@ -32,6 +32,4 @@ if (!$mysqli->query($req)) {
     }
 }
 
-$mysqli->close;
-
 exit();

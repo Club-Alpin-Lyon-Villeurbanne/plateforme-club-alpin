@@ -207,7 +207,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $errTab[] = 'Erreur SQL';
     }
     $id_commission = $mysqli->insert_id;
-    $mysqli->close;
 
     if (!$id_commission) {
         $errTab[] = 'Erreur SQL : id irrécupérable';

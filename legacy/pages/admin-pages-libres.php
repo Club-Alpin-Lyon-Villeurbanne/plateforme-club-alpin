@@ -30,8 +30,7 @@
             }
 
             $tab[] = $row;
-        }
-        $mysqli->close; ?>
+        } ?>
 
 		<h1>Gestion des pages &laquo;libres&raquo; du site</h2>
 		<p>

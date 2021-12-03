@@ -14,7 +14,6 @@ if (!admin() && !allowed('user_edit_notme')) {
         $userTab = [];
         $result = $mysqli->query($req);
         $userTab = $result->fetch_assoc();
-        $mysqli->close;
 
         foreach ($userTab as $key => $val) {
             $userTab[$key] = inputVal($key, $userTab[$key]);

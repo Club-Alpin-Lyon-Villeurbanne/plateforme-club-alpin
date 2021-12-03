@@ -68,8 +68,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
     } elseif ($mysqli->affected_rows < 1) {
         $errTab[] = "Aucun enregistrement affecté : ID introuvable, ou vous n'êtes pas le créateur de cette article, ou bien aucune modification n'a été apportée.";
     }
-
-    $mysqli->close;
 }
 
 // debug : reload page

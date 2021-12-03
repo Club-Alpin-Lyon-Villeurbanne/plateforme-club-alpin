@@ -18,7 +18,6 @@ if (user()) {
         while ($row = $result->fetch_assoc()) {
             $commission = $row;
         }
-        $mysqli->close;
 
         if (!$commission) {
             echo '<p class="erreur">Commission introuvable</p>';

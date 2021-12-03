@@ -114,8 +114,6 @@ if (0 === count($errTab) && 'edit' == $mode) {
     $req = 'UPDATE  '.$pbd."img SET ordre_img` =  '$id_img' WHERE ".$pbd."img.id_img =$id_img ";
     $mysqli->query($req);
 
-    $mysqli->close;
-
     $result['id'] = $id_img;
 }
 

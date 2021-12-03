@@ -23,7 +23,6 @@ if (!admin()) {
             $partenaireTab = [];
             $result = $mysqli->query($req);
             $partenaireTab = $result->fetch_assoc();
-            $mysqli->close;
 
             foreach ($partenaireTab as $key => $val) {
                 $partenaireTab[$key] = inputVal($key, $partenaireTab[$key]);

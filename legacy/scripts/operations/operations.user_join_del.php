@@ -182,6 +182,4 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // fin paiement en ligne
         }
     }
-
-    $mysqli->close;
 }

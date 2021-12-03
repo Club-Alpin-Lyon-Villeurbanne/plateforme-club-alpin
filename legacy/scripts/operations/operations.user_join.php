@@ -511,6 +511,4 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $errTab[] = "Échec à l'envoi du mail à ".html_utf8($toMail).". Plus d'infos : ".($mail->ErrorInfo);
         }
     }
-
-    $mysqli->close;
 }
