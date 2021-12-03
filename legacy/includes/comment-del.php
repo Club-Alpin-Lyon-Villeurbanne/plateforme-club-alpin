@@ -33,7 +33,7 @@ if (!$id_comment) {
 
 			<?php
             // mon commentaire
-            if ($comment['user_comment'] == (string) getUser()->getIdUser()) {
+            if (user() && $comment['user_comment'] == (string) getUser()->getIdUser()) {
                 inclure('infos-supprimer-mon-commentaire');
             }
         // ce commentaire (droit special)
