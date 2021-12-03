@@ -35,7 +35,7 @@ class MonitoringController
      *     methods={"GET"}
      * )
      */
-    public function logAction($code, LoggerInterface $logger)
+    public function logAction(LoggerInterface $logger)
     {
         $logger->error('Test message');
 
