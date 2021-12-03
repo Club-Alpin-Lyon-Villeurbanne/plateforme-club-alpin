@@ -64,7 +64,7 @@ if (admin()) {
 					<img src="/img/base/x.png" style="padding:3px; cursor:pointer; " alt="" title="Fermer" onclick="$(this).parents('p').fadeOut();" />
 				</span>
 				Attention, vous utilisez actuellement <b>Internet explorer</b> pour votre session administrateur, ce qui est déconseillé. <br />
-				Pour une utlisation à la fois plus agréable et plus sécurisante de votre espace d'administration, HereWeCom vous propose
+				Pour une utlisation à la fois plus agréable et plus sécurisante de votre espace d'administration, nous vous proposons
 				d'utiliser <a href="https://www.mozilla.org/fr/firefox/new/" title="Page de téléchargement de Firefox" class="blank">Mozilla Firefox</a>,
 				<a href="https://www.google.com/chrome?hl=fr" title="Page de téléchargement de Google Chrome" class="blank">Google Chrome</a>,
 				ou <a href="https://www.apple.com/fr/safari/" title="Page de téléchargement de Safari" class="blank">Safari</a>.<br />
