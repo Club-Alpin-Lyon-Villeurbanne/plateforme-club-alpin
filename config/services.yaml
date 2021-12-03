@@ -59,6 +59,9 @@ services:
       arguments:
         $adminPassord: '%env(PASSWORD_ADMIN)%'
 
+    App\Bridge\Monolog\Processor\UserProcessor:
+        $tokenStorage: '@security.untracked_token_storage'
+
     # services used in legacy
     legacy_router:
         public: true
