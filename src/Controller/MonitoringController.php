@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,5 +23,19 @@ class MonitoringController
         }
 
         throw new HttpException($code, sprintf('HTTP Exception (%d) thrown by monitoring system for test purpose.', $code));
+    }
+
+    /**
+     * @Route(
+     *     name="monitoring_log",
+     *     path="/monitoring/log",
+     *     methods={"GET"}
+     * )
+     */
+    public function logAction($code, LoggerInterface $logger)
+    {
+        $logger->error('Test message');
+
+        return new Response(200, 200);
     }
 }
