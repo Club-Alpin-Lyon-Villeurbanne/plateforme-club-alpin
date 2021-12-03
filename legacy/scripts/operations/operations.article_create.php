@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $status_article = 0;
 $topubly_article = ('on' == $_POST['topubly_article'] ? 1 : 0);
 $tsp_crea_article = time();
@@ -51,6 +53,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $req = "INSERT INTO caf_article(`status_article` ,`topubly_article` ,`tsp_crea_article` ,`tsp_article` ,`user_article` ,`titre_article` ,`code_article` ,`commission_article` ,`evt_article` ,`une_article` ,`cont_article`)
                         VALUES ('$status_article',  '$topubly_article',  '$tsp_crea_article',  '$tsp_article',  '$user_article',  '$titre_article',  '$code_article', ".($commission_article > 0 ? "'$commission_article'" : 'null').",  '$evt_article',  '$une_article',  '$cont_article');";
     if (!$mysqli->query($req)) {
+        $kernel->getContainer()->get('legacy_logger')->erreur('SQL error', [
+            'error' => $mysqli->error,
+        ]);
         $errTab[] = 'Erreur SQL';
     } else {
         $id_article = $mysqli->insert_id;
