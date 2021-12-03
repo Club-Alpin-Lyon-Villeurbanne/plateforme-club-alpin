@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 // continuons... Création de l'evt en lui meme
 if (!isset($errTab) || 0 === count($errTab)) {
     // formatage des vars : la description héritée du RTE necessite un petit nettoyage de sécurité (javascript / WINcode...)
@@ -112,7 +114,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // on enregistre la sortie
     if (!$mysqli->query($req)) {
-        $errTab[] = 'Erreur SQL creation/update : '.$req;
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
+        $errTab[] = 'Erreur SQL creation/update : ';
     } else {
         // jointures de l'ev avec les users spécifiés (encadrant, coenc' benev')
 
@@ -143,6 +151,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 else {
                     $req = 'DELETE FROM '.$pbd."evt_join WHERE evt_evt_join = $id_evt AND user_evt_join = $id_encadrant;";
                     if (!$mysqli->query($req)) {
+                        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                            'error' => $mysqli->error,
+                            'file' => __FILE__,
+                            'line' => __LINE__,
+                            'sql' => $req,
+                        ]);
                         $errTab[] = 'Erreur SQL au nettoyage des jointures';
                     }
                 }
@@ -182,7 +196,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
                 $req = 'DELETE FROM '.$pbd."evt_destination WHERE id_evt = $id_evt AND id_destination = $id_destination";
                 if (!$mysqli->query($req)) {
-                    $errTab[] = 'Erreur SQL de suppression de la jointure evt/destination '.$req;
+                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                        'error' => $mysqli->error,
+                        'file' => __FILE__,
+                        'line' => __LINE__,
+                        'sql' => $req,
+                    ]);
+                    $errTab[] = 'Erreur SQL de suppression de la jointure evt/destination ';
                 }
 
                 /// Sauvegarde des lieux :
@@ -199,6 +219,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
                             VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
 
                     if (!$mysqli->query($sql)) {
+                        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                            'error' => $mysqli->error,
+                            'file' => __FILE__,
+                            'line' => __LINE__,
+                            'sql' => $sql,
+                        ]);
                         $errTab[] = 'Erreur SQL lors de la création du lieu de depose';
                     } else {
                         $id_lieu_depose = $_POST['lieu']['depose']['id'] = $mysqli->insert_id;
@@ -221,6 +247,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
                                 VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
 
                         if (!$mysqli->query($sql)) {
+                            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                                'error' => $mysqli->error,
+                                'file' => __FILE__,
+                                'line' => __LINE__,
+                                'sql' => $sql,
+                            ]);
                             $errTab[] = 'Erreur SQL lors de la création du lieu de reprise';
                         } else {
                             $id_lieu_reprise = $_POST['lieu']['reprise']['id'] = $mysqli->insert_id;
@@ -238,7 +270,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
                                 (NULL, $id_evt, $id_destination, $id_lieu_depose, '$date_depose', $id_lieu_reprise, '$date_reprise');";
 
                     if (!$mysqli->query($req)) {
-                        $errTab[] = 'Erreur SQL de jointure evt/destination '.$req;
+                        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                            'error' => $mysqli->error,
+                            'file' => __FILE__,
+                            'line' => __LINE__,
+                            'sql' => $req,
+                        ]);
+                        $errTab[] = 'Erreur SQL de jointure evt/destination ';
                     }
                 }
             }

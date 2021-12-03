@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 // Utilisateur connecté ?
 if (!user()) {
     $errTab[] = "Vous avez été déconnecté. L'opération n'a pas été effectuée.";
@@ -31,6 +33,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 }
                 $req .= ');';
                 if (!$mysqli->query($req)) {
+                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                        'error' => $mysqli->error,
+                        'file' => __FILE__,
+                        'line' => __LINE__,
+                        'sql' => $req,
+                    ]);
                     $errTab[] = 'Erreur SQL lors Insertion note pour commission '.$id_commission.' et utilisateur '.$id_user;
                 }
             }
@@ -60,6 +68,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 }
                 $req .= ' WHERE `'.$pbd.'user_niveau`.`id` = '.$id.';';
                 if (!$mysqli->query($req)) {
+                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                        'error' => $mysqli->error,
+                        'file' => __FILE__,
+                        'line' => __LINE__,
+                        'sql' => $req,
+                    ]);
                     $errTab[] = 'Erreur SQL';
                 }
             }

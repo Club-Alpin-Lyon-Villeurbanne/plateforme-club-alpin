@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $tab = explode('-', $p2);
 $token_user_mailchange = $tab[0];
 $id_user_mailchange = (int) ($tab[1]);
@@ -19,11 +21,23 @@ if ($id_user_mailchange) {
             // maj du compte visé avec le nouveau email
             $req = 'UPDATE `'.$pbd."user` SET `email_user` = '".$handle['email_user_mailchange']."' WHERE `id_user` =".$handle['user_user_mailchange'].' LIMIT 1 ;';
             if (!$mysqli->query($req)) {
+                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                    'error' => $mysqli->error,
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'sql' => $req,
+                ]);
                 $errTab[] = 'Erreur SQL : updating user';
             }
             // suppression de la req
             $req = 'DELETE FROM `'.$pbd.'user_mailchange` WHERE `id_user_mailchange` = '.$handle['id_user_mailchange'].' LIMIT 1;';
             if (!$mysqli->query($req)) {
+                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                    'error' => $mysqli->error,
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'sql' => $req,
+                ]);
                 $errTab[] = 'Erreur SQL : deleting request';
             }
         } else {

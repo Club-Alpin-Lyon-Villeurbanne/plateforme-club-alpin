@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 if (!allowed('comm_groupe_edit')) {
     $errTab[] = 'Vous n\'avez pas les droits nécessaires pour cette operation de gestion de groupe';
 }
@@ -29,6 +31,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'INSERT INTO `'.$pbd."groupe` (`id`, `id_commission`, `nom`, `description`, `niveau_physique`, `niveau_technique`, `actif`)
                     VALUES (NULL, '".$id_comm."', '".$nom."', '".$description."', '".$niveau_physique."', '".$niveau_technique."', '1');";
                 if (!$mysqli->query($req)) {
+                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                        'error' => $mysqli->error,
+                        'file' => __FILE__,
+                        'line' => __LINE__,
+                        'sql' => $req,
+                    ]);
                     $errTab[] = 'Erreur SQL insertion groupe';
                 }
             }
@@ -82,7 +90,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 }
 
                 if (!$mysqli->query($req)) {
-                    $errTab[] = 'Erreur SQL update / delete groupe : '.$req;
+                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                        'error' => $mysqli->error,
+                        'file' => __FILE__,
+                        'line' => __LINE__,
+                        'sql' => $req,
+                    ]);
+                    $errTab[] = 'Erreur SQL update / delete groupe';
                 }
             }
         }

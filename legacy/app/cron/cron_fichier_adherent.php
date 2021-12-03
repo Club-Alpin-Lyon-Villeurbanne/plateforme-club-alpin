@@ -264,7 +264,6 @@ foreach ($fileTab as $file) {
 			VALUES (NULL , 'import-ffcam',  'INSERT: $nb_insert, UPDATE:$nb_update, fichier ".basename($file)."', '127.0.0.1', '".time()."');";
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL lors du log';
-            error_log($mysqli->error);
         }
     } else {
         echo "!!! Erreur : le fichier n'existe pas : $file\n";
@@ -273,7 +272,6 @@ foreach ($fileTab as $file) {
 			VALUES (NULL , 'import-ffcam',  'fichier inexistant : $file', '127.0.0.1', '".time()."');";
         if (!$mysqli->query($req)) {
             $errTab[] = 'Erreur SQL lors du log';
-            error_log($mysqli->error);
         }
     }
 }

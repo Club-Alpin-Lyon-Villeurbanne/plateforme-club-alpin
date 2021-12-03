@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $id_evt = (int) (substr(strrchr($p2, '-'), 1));
 $msg = trim(stripslashes($_POST['msg']));
 $nomadMsg = []; // message spécial par raport aux nomades
@@ -39,6 +41,12 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         }
 
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = 'Erreur SQL';
         }
     }
@@ -89,7 +97,13 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             }
             $req .= ')';
             if (!$mysqli->query($req)) {
-                $errTab[] = 'Erreur SQL (DELETE FROM caf_evt_join)';
+                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                    'error' => $mysqli->error,
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'sql' => $req,
+                ]);
+                $errTab[] = 'Erreur SQL';
             }
         }
 
