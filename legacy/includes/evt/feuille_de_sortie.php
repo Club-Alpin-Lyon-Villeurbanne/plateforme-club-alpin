@@ -5,7 +5,7 @@ if (admin() ||
     (
         user() &&
         (
-            $evt['user_evt'] == (string) getUser()->getIdUser() ||
+            (user() && $evt['user_evt'] == (string) getUser()->getIdUser()) ||
             allowed('evt_validate_all') ||
             allowed('evt_join_doall') ||
             'encadrant' == $monStatut || 'coencadrant' == $monStatut ||

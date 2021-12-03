@@ -212,7 +212,7 @@ elseif ('article' == $p1) {
         // on a le droit de voir cet article ?
         if (1 == $handle['status_article'] // publié
             || ((allowed('article_validate_all') || allowed('article_validate')) && $_GET['forceshow']) // ou mode validateur
-            || $handle['user_article'] == (string) getUser()->getIdUser() // ou j'en suis l'auteur
+            || (user() && $handle['user_article'] == (string) getUser()->getIdUser()) // ou j'en suis l'auteur
             ) {
             // auteur :
             $req = 'SELECT id_user, nickname_user
@@ -941,9 +941,9 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     $handle['cancelled_evt'] = 1;
                 }
                 // ou je suis responsable de la destination
-                if ($destination['id_user_who_create'] == (string) getUser()->getIdUser()
-                        || $destination['id_user_responsable'] == (string) getUser()->getIdUser()
-                        || $destination['id_user_adjoint'] == (string) getUser()->getIdUser()
+                if ((user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser())
+                        || (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser())
+                        || (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
                 ) {
                     $on_peut_voir = true;
                 }
@@ -954,7 +954,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                 ($on_peut_voir && (1 == $handle['status_evt'])) // publiée
                 || (allowed('evt_validate') && $_GET['forceshow']) // ou mode validateur
                 || (allowed('evt_validate_all') && $_GET['forceshow']) // ou mode validateur
-                || $handle['user_evt'] == (string) getUser()->getIdUser() // ou j'en suis l'auteur ? QUID de l'encadrant ?
+                || (user() && $handle['user_evt'] == (string) getUser()->getIdUser()) // ou j'en suis l'auteur ? QUID de l'encadrant ?
             ) {
                 $current_commission = $handle['code_commission'];
 
@@ -1155,9 +1155,9 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
             ('destination' == $p1 || 'feuille-de-sortie' == $p1) && '1' === $dest['publie'] // Correctif CRI le 23/08/15
             || (
                 user() &&
-                ($dest['id_user_who_create'] == (string) getUser()->getIdUser() // ou j'en suis l'auteur
-                    || $dest['id_user_responsable'] == (string) getUser()->getIdUser() // ou j'en le resp.
-                    || $dest['id_user_adjoint'] == (string) getUser()->getIdUser() // ou j'en suis le coresp.
+                ((user() && $dest['id_user_who_create'] == (string) getUser()->getIdUser()) // ou j'en suis l'auteur
+                    || (user() && $dest['id_user_responsable'] == (string) getUser()->getIdUser()) // ou j'en le resp.
+                    || (user() && $dest['id_user_adjoint'] == (string) getUser()->getIdUser()) // ou j'en suis le coresp.
                     || (allowed('destination_activer_desactiver') && $_GET['forceshow']) // ou mode validateur
                     || (allowed('destination_supprimer') && $_GET['forceshow']) // ou mode validateur
                     || (allowed('destination_modifier') && $_GET['forceshow']) // ou mode validateur
@@ -1182,8 +1182,8 @@ elseif ('annuler-une-sortie' == $p1) {
         $id_destination = (int) (substr(strrchr($p3, '-'), 1));
         $destination = get_destination($id_destination);
         if (allowed('destination_supprimer')
-            || $destination['id_user_responsable'] == (string) getUser()->getIdUser()
-            || $destination['id_user_adjoint'] == (string) getUser()->getIdUser()
+            || (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser())
+            || (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
         ) {
             $destination['joins'] = [];
             $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
