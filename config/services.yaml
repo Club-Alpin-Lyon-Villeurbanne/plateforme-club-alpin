@@ -80,3 +80,7 @@ services:
     legacy_hasher_factory:
         public: true
         alias: Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface
+
+    legacy_logger:
+        public: true
+        alias: 'logger'
