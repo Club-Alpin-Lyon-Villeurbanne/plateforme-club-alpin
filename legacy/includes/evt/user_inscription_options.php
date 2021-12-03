@@ -81,7 +81,7 @@
 <?php } ?>
 
 <?php /* EXISTANCE DE FILIATIONS, seulement lors de la création, pas de l'update */ if (count($filiations)) { ?>
-    <?php if (!is_array($_POST['id_user_filiation'])) {
+    <?php if (!is_array($_POST['id_user_filiation']) && user()) {
         $_POST['id_user_filiation'] = [(string) getUser()->getIdUser()];
     } ?>
 
@@ -90,14 +90,14 @@
 
     <input type="hidden" name="filiations" value="on" />
     <br />
-    <label for="filiation_id_user_<?php echo getUser()->getIdUser(); ?>" style="width:100%;clear:both;overflow:hidden;">
+    <label for="filiation_id_user_<?php echo user() ? getUser()->getIdUser() : ''; ?>" style="width:100%;clear:both;overflow:hidden;">
         <input type="checkbox"
-            <?php echo in_array((string) getUser()->getIdUser(), $_POST['id_user_filiation'], true) ? 'checked="checked" ' : ''; ?>
+            <?php echo user() && in_array((string) getUser()->getIdUser(), $_POST['id_user_filiation'], true) ? 'checked="checked" ' : ''; ?>
             class="custom"
             name="id_user_filiation[]"
-            value="<?php echo getUser()->getIdUser(); ?>"
-            id="filiation_id_user_<?php echo getUser()->getIdUser(); ?>" />
-                Moi-même (<?php echo userlink((string) getUser()->getIdUser(), getUser()->getNicknameUser()); ?>)
+            value="<?php echo user() ? getUser()->getIdUser() : ''; ?>"
+            id="filiation_id_user_<?php echo user() ? getUser()->getIdUser() : ''; ?>" />
+                Moi-même (<?php echo user() ? userlink(getUser()->getIdUser(), getUser()->getNicknameUser()) : ''; ?>)
 
     </label>
     <br />
