@@ -30,7 +30,5 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 }
 
-$mysqli->close;
-
 header('Location: /gestion-des-articles.html');
 exit();

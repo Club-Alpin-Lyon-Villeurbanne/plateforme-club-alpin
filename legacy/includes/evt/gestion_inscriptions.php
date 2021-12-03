@@ -342,8 +342,7 @@ if ('1' != $evt['cancelled_evt']) {
                 echo '<td>'.((null === $row['is_covoiturage'] && null === $row['id_bus_lieu_destination']) ? '<img src="/img/base/error.png" title="Mettre à jour les préférences" width="16px">' : ($row['is_covoiturage'] ? '<img src="/img/voiture.png" title="Covoiturage" width="16px">' : '')).'</th>';
             }
             echo '</tr>';
-        }
-        $mysqli->close; ?>
+        } ?>
                     </tbody>
                 </table>
 

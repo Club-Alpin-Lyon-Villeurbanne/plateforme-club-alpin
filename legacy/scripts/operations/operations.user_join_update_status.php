@@ -374,5 +374,4 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
         }
     }
 }
-$mysqli->close;
 $errTab = array_merge(isset($errTab) ? $errTab : [], $errTabMail);

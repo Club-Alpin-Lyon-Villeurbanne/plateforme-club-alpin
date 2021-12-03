@@ -66,8 +66,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 }
 
-$mysqli->close;
-
 if (!isset($errTab) || 0 === count($errTab)) {
     header('Location:'.$p_racine.'creer-une-sortie/creer-une-destination/update-'.$id_dest_to_update.'.html');
 }

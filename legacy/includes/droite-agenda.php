@@ -75,9 +75,6 @@ if ($current_commission) { // 2 minimum //11/04/2014&& sizeof($evtTab) < $limit-
     }
 }
 
-$mysqli->close;
-
-// TITRE
 if ($current_commission) {
     echo '<h1 class="agenda-h1"><a href="agenda/'.$current_commission.'.html" title="Afficher l\'agenda complet pour cette commission">Agenda</a></h1>';
 } else {

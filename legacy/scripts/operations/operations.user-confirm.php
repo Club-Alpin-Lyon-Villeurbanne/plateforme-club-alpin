@@ -19,17 +19,12 @@ if ($p2) {
             if (!$mysqli->affected_rows) {
                 $errTab[] = 'Activation impossible : ce compte est introuvable, ou a déjà été validé.';
             } else {
-                // 10/09/2013 - GMN - activation OK, mise a jour de l'email des enfants si filiation
                 $req = "UPDATE caf_user c1
                     JOIN caf_user c2 ON c1.cafnum_parent_user = c2.cafnum_user
                     SET	c1.email_user=c2.email_user, c1.valid_user=1
                     WHERE c2.id_user=$id_user AND c1.valid_user=0 AND (c1.email_user IS NULL OR c1.email_user='')";
-
-                //$result=$mysqli->query($req);
             }
         }
-
-        $mysqli->close;
     } else {
         $errTab[] = 'Erreur de données (id)';
     }

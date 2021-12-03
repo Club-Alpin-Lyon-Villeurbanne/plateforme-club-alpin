@@ -112,8 +112,6 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_article || 2 == $
     }
 }
 
-$mysqli->close;
-
 if (2 == $status_article) {
     header('Location: /gestion-des-articles.html');
     exit();
