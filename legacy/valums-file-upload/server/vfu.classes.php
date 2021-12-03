@@ -30,7 +30,7 @@ class qqUploadedFileXhr
 
     public function getName()
     {
-        return $_GET['qqfile'];
+        return $_GET['qqfile'] ?? null;
     }
 
     public function getSize()

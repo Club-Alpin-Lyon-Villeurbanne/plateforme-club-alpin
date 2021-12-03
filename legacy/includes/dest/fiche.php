@@ -4,7 +4,7 @@
     // affichage complete d'une destination.
     // var necessaire : $destination
 
-    if (isset($errTab) && count($errTab) > 0 && (in_array($_POST['operation'], ['dest_validate', 'dest_lock', 'dest_annuler', 'dest_mailer'], true))) {
+    if (isset($errTab) && count($errTab) > 0 && (in_array(($_POST['operation'] ?? null), ['dest_validate', 'dest_lock', 'dest_annuler', 'dest_mailer'], true))) {
         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
     }
 

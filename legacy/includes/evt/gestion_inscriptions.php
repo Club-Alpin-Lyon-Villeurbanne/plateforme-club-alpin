@@ -102,15 +102,15 @@ if ('1' != $evt['cancelled_evt']) {
 
                 <?php
                 // TABLEAU erreurs
-                if ('user_join_update_status' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                if (isset($_POST['operation']) && 'user_join_update_status' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                     echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                 }
-        if ('user_join_update_status' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+        if (isset($_POST['operation']) && 'user_join_update_status' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
             echo '<p class="info">Mise à jour effectuée à '.date('H:i', time()).'.</p><br />';
         }
 
         // TABLEAU alertes
-        if ('user_join_update_status' == $_POST['operation'] && $addAlert && count($addAlert) > 0) {
+        if (isset($_POST['operation']) && 'user_join_update_status' == $_POST['operation'] && $addAlert && count($addAlert) > 0) {
             echo '<div class="alerte">Attention : <ul><li>'.implode('</li><li>', $addAlert).'</li></ul></div><br />';
         } ?>
 
@@ -404,7 +404,7 @@ if ('1' != $evt['cancelled_evt']) {
                     <!-- Contact par email des participants (orga uniquement) -->
                     <a class="nice2 blue" href="javascript:void(0)" onclick="$('#contact-inscrits').slideToggle()" title=""><img src="/img/base/email.png" alt="" title="" /> Envoyer un e-mail groupé aux inscrits</a><br />
 
-                    <form action="<?php echo $versCettePage; ?>#autresoptions" method="post" id="contact-inscrits" style="display: <?php if ('evt_user_contact' != $_POST['operation']) {
+                    <form action="<?php echo $versCettePage; ?>#autresoptions" method="post" id="contact-inscrits" style="display: <?php if (isset($_POST['operation']) && 'evt_user_contact' != ($_POST['operation'] ?? null)) {
                         echo 'none';
                     } ?>; border : 1px solid #eaeaea; box-shadow:0 0 20px -10px gray;; padding:10px; margin:10px 0 20px 0;; border-radius:10px">
                         <input type="hidden" name="operation" value="evt_user_contact" />
@@ -413,14 +413,14 @@ if ('1' != $evt['cancelled_evt']) {
                         <h2>Formulaire de contact</h2>
                         <?php
                         // MESSAGES A LA SOUMISSION
-                        if ('evt_user_contact' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                        if (isset($_POST['operation']) && 'evt_user_contact' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                         }
-                    if ('evt_user_contact' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+                    if (isset($_POST['operation']) && 'evt_user_contact' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                         echo '<p class="info">Votre message a bien été envoyé.</p>';
                     } ?>
 
-                        <input type="radio" name="status_sendmail" id="status_sendmail_1" value="1" <?php if ('evt_user_contact' != $_POST['operation'] || '1' == $_POST['status_sendmail']) {
+                        <input type="radio" name="status_sendmail" id="status_sendmail_1" value="1" <?php if ('evt_user_contact' != ($_POST['operation'] ?? null) || '1' == $_POST['status_sendmail']) {
                         echo 'checked="checked"';
                     } ?> /><label for="status_sendmail_1"> Envoyer uniquement aux adhérents confirmés pour la sortie</label><br />
                         <input type="radio" name="status_sendmail" id="status_sendmail_2" value="2" <?php if ('2' == $_POST['status_sendmail']) {

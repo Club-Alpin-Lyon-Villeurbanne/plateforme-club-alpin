@@ -3,7 +3,7 @@
 // var necessaire : $evt
 
 echo '<div id="fiche-sortie">';
-if (isset($errTab) && count($errTab) > 0 && (!in_array($_POST['operation'], ['user_join_del', 'user_join_update_status', 'evt_user_contact', 'user_join'], true))) {
+if (isset($errTab) && count($errTab) > 0 && (!in_array(($_POST['operation'] ?? null), ['user_join_del', 'user_join_update_status', 'evt_user_contact', 'user_join'], true))) {
     echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
 }
 if (!$evt) {
@@ -86,7 +86,7 @@ if (!$evt) {
     // les messages et options liées aux inscriptions ne s'appliquent pas sur les suites de cycles
     if (!$evt['cycle_parent_evt']) {
         // message d'erreur d'inscription, à priori rare sauf tentative de piratage
-        if ('user_join' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+        if (isset($_POST['operation']) && 'user_join' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
             echo '<div class="erreur">Erreur lors de l\'inscription : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
         }
 
@@ -173,7 +173,7 @@ if (!$evt) {
             <?php
             if (allowed('evt_unjoin')) {
                 ?>
-			<div id="inscription-annuler" style="display:<?php if ('user_join_del' == $_POST['operation']) {
+			<div id="inscription-annuler" style="display:<?php if (isset($_POST['operation']) && 'user_join_del' == $_POST['operation']) {
                     echo 'block';
                 } else {
                     echo 'none';
@@ -183,7 +183,7 @@ if (!$evt) {
                 inclure('formalites-inscription-suppression', 'formalites');
 
                 // TABLEAU d'erreurs
-                if ('user_join_del' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                if (isset($_POST['operation']) && 'user_join_del' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                     echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                 } ?>
 
@@ -206,7 +206,7 @@ if (!$evt) {
 			<?php
             }}
         // message en cas de succès de désinscription
-        if ('user_join_del' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+        if (isset($_POST['operation']) && 'user_join_del' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
             echo '<div class="info">Vous n\'êtes plus inscrit à cette sortie.</div>';
         }
 

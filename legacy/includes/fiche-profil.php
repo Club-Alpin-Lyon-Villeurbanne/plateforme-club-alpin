@@ -109,7 +109,7 @@ elseif (!allowed('user_read_public')) {
             include __DIR__.'/../includes/user/contact_form.php';
         } ?>
 
-		<div id="trigger-userinfo" style="display:<?php if ('user_contact' == $_POST['operation']) {
+		<div id="trigger-userinfo" style="display:<?php if (isset($_POST['operation']) && 'user_contact' == $_POST['operation']) {
             echo 'none';
         } ?>">
 

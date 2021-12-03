@@ -647,7 +647,7 @@ function inclure($elt, $style = 'vide', $options = [])
         $handleTab = [];
         $handleSql = $mysqli->query($req);
         $found = false;
-        $currentElement = ['vis_content_html' => 1]; // default values
+        $currentElement = ['vis_content_html' => 1, 'contenu_content_html' => null]; // default values
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             $found = true;
             $currentElement = $handle;

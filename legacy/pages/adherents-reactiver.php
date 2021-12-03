@@ -21,10 +21,10 @@ if (!allowed('user_reactivate')) {
 
 			<?php
             // TABLEAU
-            if ('user_reactiver' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+            if (isset($_POST['operation']) && 'user_reactiver' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                 echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
             }
-    if ('user_reactiver' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+    if (isset($_POST['operation']) && 'user_reactiver' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info">Utilisateur réactivé (Vous devrez <a href="adherents.html" title="" target="_top">actualiser la page</a> pour voir le changement)</p>';
     } else {
         ?>
