@@ -5,15 +5,15 @@
 if (
     allowed('destination_activer_desactiver') ||
     allowed('destination_supprimer') ||
-    $destination['id_user_who_create'] == (string) getUser()->getIdUser() ||
-    $destination['id_user_responsable'] == (string) getUser()->getIdUser() ||
-    $destination['id_user_adjoint'] == (string) getUser()->getIdUser()
+    (user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser()) ||
+    (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser()) ||
+    (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
 ) {
     if (
         allowed('destination_activer_desactiver') ||
-        $destination['id_user_who_create'] == (string) getUser()->getIdUser() ||
-        $destination['id_user_responsable'] == (string) getUser()->getIdUser() ||
-        $destination['id_user_adjoint'] == (string) getUser()->getIdUser()
+        (user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser()) ||
+        (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser()) ||
+        (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
     ) {
         echo 0 == (int) ($destination['publie']) ?
             '<form action="'.$versCettePage.'" method="post" style="display:inline" class="loading">
@@ -32,9 +32,9 @@ if (
 
     if (
         allowed('destination_activer_desactiver') ||
-        $destination['id_user_who_create'] == (string) getUser()->getIdUser() ||
-        $destination['id_user_responsable'] == (string) getUser()->getIdUser() ||
-        $destination['id_user_adjoint'] == (string) getUser()->getIdUser()
+        (user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser()) ||
+        (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser()) ||
+        (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
     ) {
         echo 0 == (int) ($destination['annule'])
             ? (date('Y-m-d H:i:s') > $destination['inscription_fin'] ? '' : (0 == (int) ($destination['inscription_locked'])
@@ -61,9 +61,9 @@ if (
     }
     if (
         allowed('destination_supprimer') ||
-        $destination['id_user_who_create'] == (string) getUser()->getIdUser() ||
-        $destination['id_user_responsable'] == (string) getUser()->getIdUser() ||
-        $destination['id_user_adjoint'] == (string) getUser()->getIdUser()
+        (user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser()) ||
+        (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser()) ||
+        (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
     ) {
         echo 0 == (int) ($destination['annule'])
                 ? '<a class="nice2 noprint red" href="annuler-une-sortie/destination/'.$destination['code'].'-'.(int) ($destination['id']).'.html" title="Annuler la destination ci-dessous et toutes les sorties">

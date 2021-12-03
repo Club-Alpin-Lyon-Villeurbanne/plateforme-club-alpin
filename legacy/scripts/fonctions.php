@@ -148,12 +148,12 @@ function get_niveaux($id_user, $editable = false)
     }
 
     // A t'on les droits de lecture ou les informations nous concernent-elles personnellement ?
-    if (false == $editable && ($userAllowedTo['user_note_comm_read'] || $id_user == (string) getUser()->getIdUser())) {
+    if (false == $editable && ($userAllowedTo['user_note_comm_read'] || (user() && $id_user == (string) getUser()->getIdUser()))) {
         $note_comm_read = $userAllowedTo['user_note_comm_read'];
 
         // ON r�cup�re les identifiants commission en lecture
         $req = 'SELECT `id_commission` FROM `'.$pbd.'commission` ';
-        if ('true' === $note_comm_read || $id_user == (string) getUser()->getIdUser()) {
+        if ('true' === $note_comm_read || (user() && $id_user == (string) getUser()->getIdUser())) {
         } else {
             $tab = explode('|', $note_comm_read);
             $comms = [];
