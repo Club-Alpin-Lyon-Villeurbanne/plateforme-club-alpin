@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $id_evt = (int) ($_POST['id_evt']);
 $id_user = getUser()->getIdUser();
 
@@ -69,8 +71,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // si pas de pb, suppression de l'inscription
             $req = "DELETE FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join=$id_user";
             if (!$mysqli->query($req)) {
-                $errTab[] = 'Erreur SQL : '.$mysqli->error;
-                error_log($mysqli->error);
+                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                    'error' => $mysqli->error,
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'sql' => $req,
+                ]);
+                $errTab[] = 'Erreur SQL';
             }
 
             // phpmailer

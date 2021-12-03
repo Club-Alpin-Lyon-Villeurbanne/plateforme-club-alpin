@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $id_comment = (int) ($_POST['id_comment']);
 if (!$id_comment) {
     $errTab[] = 'ID commentaire introuvable.';
@@ -32,6 +34,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "UPDATE caf_comment SET status_comment=2 WHERE id_comment = $id_comment";
     if (!$mysqli->query($req)) {
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
         $errTab[] = 'Erreur SQL';
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 if (!allowed('comm_edit')) {
     $errTab[] = 'Vous n\'avez pas les droits nécessaires pour cette operation';
 }
@@ -174,6 +176,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // enregistrement
     $req = "UPDATE caf_commission SET title_commission = '$title_commission' WHERE id_commission =$id_commission";
     if (!$mysqli->query($req)) {
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
         $errTab[] = 'Erreur SQL';
     }
     $mysqli->close;

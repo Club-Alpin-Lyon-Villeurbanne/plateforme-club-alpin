@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $id_destination = $is_cb = $is_covoiturage = $evtUrl = $cetinscrit = $evtName = $is_restaurant = $inscrits = $id_bus_lieu_destination = null;
 
 // Destination : ai-je choisi mon moyen de transport ?
@@ -201,9 +203,14 @@ if (!isset($errTab) || 0 === count($errTab)) {
                                 `user_evt_join` = $id_user AND evt_evt_join = $id_evt;";
             }
             if (!$mysqli->query($req)) {
-                $errTab[] = 'Erreur SQL '.$req;
+                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                    'error' => $mysqli->error,
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'sql' => $req,
+                ]);
+                $errTab[] = 'Erreur SQL';
             }
-            // }
         }
         // filiations
         else {
@@ -223,9 +230,14 @@ if (!isset($errTab) || 0 === count($errTab)) {
                                 `user_evt_join` = $id_user_tmp AND evt_evt_join = $id_evt;";
                 }
                 if (!$mysqli->query($req)) {
-                    $errTab[] = 'Erreur SQL '.$req;
+                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                        'error' => $mysqli->error,
+                        'file' => __FILE__,
+                        'line' => __LINE__,
+                        'sql' => $req,
+                    ]);
+                    $errTab[] = 'Erreur SQL';
                 }
-                // }
             }
         }
     }

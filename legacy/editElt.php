@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 include __DIR__.'/app/includes.php';
 $mysqli = include __DIR__.'/scripts/connect_mysqli.php';
 
@@ -317,6 +319,12 @@ if (admin()) {
             // s'il y en a à supprimer
             $req = 'DELETE FROM `'.$pbd."content_html` WHERE `code_content_html` LIKE '$code_content_html' AND  `lang_content_html` LIKE  '$lang' ORDER BY  `date_content_html` ASC LIMIT $nDelete"; // ASC pour commencer par la fin de ceux a supprimer
             if (!$mysqli->query($req)) {
+                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                    'error' => $mysqli->error,
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'sql' => $req,
+                ]);
                 header('HTTP/1.0 400 Bad Request');
                 echo '<br />Erreur SQL clean !';
                 exit();
@@ -326,8 +334,14 @@ if (admin()) {
         // Mise à jour des CURRENT
         $req = 'UPDATE `'.$pbd."content_html` SET `current_content_html` = '0' WHERE `".$pbd."content_html`.`code_content_html` = '$code_content_html' ";
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             header('HTTP/1.0 400 Bad Request');
-            echo 'Erreur SQL <br />'.html_utf8($req);
+            echo 'Erreur SQL';
             exit();
         }
 
@@ -335,8 +349,14 @@ if (admin()) {
         $req = 'INSERT INTO  `'.$pbd."content_html` (`id_content_html` ,`code_content_html` ,`lang_content_html` ,`contenu_content_html` ,`date_content_html` ,`linkedtopage_content_html`, `current_content_html`, `vis_content_html`)
 															VALUES (NULL ,  '$code_content_html',  '$lang',  '$contenu_content_html',  '".time()."',  '$linkedtopage_content_html', 1, $vis_content_html);";
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             header('HTTP/1.0 400 Bad request');
-            echo 'Erreur SQL <br />'.html_utf8($req);
+            echo 'Erreur SQL';
             exit();
         }
 

@@ -1,4 +1,7 @@
 <?php
+
+global $kernel;
+
 /*
     AFFICHE LE SLIDER "PARTENAIRES" SUR LA PAGE PRINCIPALE
 
@@ -13,8 +16,13 @@ if ($p_showPartenairesSlider) {
     $result = $mysqli->query($req);
 
     if (!$mysqli->query($req)) {
-        $errTab[] = 'Erreur SQL : '.$mysqli->error;
-        error_log($mysqli->error);
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
+        $errTab[] = 'Erreur SQL';
     } else {
         while ($row = $result->fetch_array(\MYSQLI_ASSOC)) {
             if (file_exists(__DIR__.'/../../public/ftp/partenaires/'.$row['part_image'])) {

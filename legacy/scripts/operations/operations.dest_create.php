@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 include __DIR__.'/operations.dest_verif.php';
 
 // vérifications BDD
@@ -18,6 +20,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $sql = 'INSERT INTO `'.$pbd."lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
         VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
     if (!$mysqli->query($sql)) {
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $sql,
+        ]);
         $errTab[] = 'Erreur SQL lors de la création du lieu';
     } else {
         $id_lieu = $_POST['lieu']['id'] = $mysqli->insert_id;
@@ -45,6 +53,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
             "VALUES (NULL, '$id_lieu', '$id_user_who_create', '$id_user_responsable','$id_user_adjoint', '$nom', '$code', '$description', '$ign', '$date', '$date_fin', '$cout_transport', '$inscription_ouverture', '$inscription_fin', '$inscription_locked');";
 
         if (!$mysqli->query($sql)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $sql,
+            ]);
             $errTab[] = 'Erreur SQL lors de la création de la destination : ';
         } else {
             $id_dest_to_update = $mysqli->insert_id;

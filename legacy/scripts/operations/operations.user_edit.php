@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $userTab = [];
 $userTab['cafnum_user'] = trim(stripslashes($_POST['cafnum_user']));
 $userTab['cafnum_user_new'] = trim(stripslashes($_POST['cafnum_user_new']));
@@ -92,7 +94,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $req .= "	WHERE id_user='".$mysqli->real_escape_string($userTab['id_user'])."'";
 
         if (!$mysqli->query($req)) {
-            $errTab[] = 'Erreur SQL : '.$mysqli->error;
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
+            $errTab[] = 'Erreur SQL';
         } else {
             $okTab[] = 'Mise à jour du compte';
         }

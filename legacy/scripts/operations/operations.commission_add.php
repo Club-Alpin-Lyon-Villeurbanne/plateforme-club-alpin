@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 if (!allowed('comm_create')) {
     $errTab[] = 'Vous n\'avez pas les droits nécessaires pour cette operation';
 }
@@ -196,6 +198,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $req = "INSERT INTO caf_commission(id_commission, ordre_commission, vis_commission, code_commission, title_commission)
                                                 VALUES (NULL ,  '',  '0',  '$code_commission',  '$title_commission');";
     if (!$mysqli->query($req)) {
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
         $errTab[] = 'Erreur SQL';
     }
     $id_commission = $mysqli->insert_id;

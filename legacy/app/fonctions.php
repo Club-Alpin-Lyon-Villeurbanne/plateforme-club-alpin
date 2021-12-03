@@ -515,6 +515,7 @@ function twigRender(string $path, array $params = []): ?string
 function mylog($code, $desc, $connectme = true)
 {
     global $pbd;
+    global $kernel;
 
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
     $code_log_admin = $mysqli->real_escape_string(trim($code));
@@ -524,8 +525,15 @@ function mylog($code, $desc, $connectme = true)
 
     $req = 'INSERT INTO `'.$pbd."log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`)
         VALUES (NULL , '$code_log_admin',  '$desc_log_admin',  '$date_log_admin', '$ip_log_admin')";
-    if (!$mysqli->query($req));
-    $errTab[] = 'Erreur SQL lors du log';
+    if (!$mysqli->query($req)) {
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
+        $errTab[] = 'Erreur SQL lors du log';
+    }
 }
 
 // htmlentities avec utf8

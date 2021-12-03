@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 include __DIR__.'/operations.bus_verif.php';
 
 // vérifications BDD
@@ -16,6 +18,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $sql = 'INSERT INTO `'.$pbd."lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
             VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
         if (!$mysqli->query($sql)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $sql,
+            ]);
             $errTab[] = 'Erreur SQL lors de la création du lieu';
         } else {
             $id_lieu = $_POST['lieu']['id'] = $mysqli->insert_id;
@@ -35,6 +43,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $req = 'INSERT INTO `'.$pbd.'bus_lieu_destination` (`id`, `id_bus`, `id_destination`, `id_lieu`, `type_lieu`, `date`) VALUES '.
             "(NULL, '$bdl_id_bus', '$bdl_id_destination', '$id_lieu', '$bdl_type_lieu', '$bdl_date');";
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = "Erreur SQL lors de la sauvegarde de l'association bus / lieu / destination";
         } else {
             unset($_POST['lieu']);
@@ -46,6 +60,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $places_max = $mysqli->real_escape_string($places_max);
     $sql = 'UPDATE `'.$pbd."bus` SET `intitule` = '$intitule', `places_max` = '$places_max' WHERE `id` = $bus_id;";
     if (!$mysqli->query($sql)) {
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $sql,
+        ]);
         $errTab[] = 'Erreur SQL lors de la modification du bus ';
     }
 
@@ -63,6 +83,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         $sql = 'DELETE FROM `'.$pbd."bus_lieu_destination` WHERE `id` IN ($del_ids) AND `id_destination` = $id_destination AND `id_bus` = $bus_id;";
         if (!$mysqli->query($sql)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $sql,
+            ]);
             $errTab[] = 'Erreur SQL suppression de point de ramassage';
         }
 

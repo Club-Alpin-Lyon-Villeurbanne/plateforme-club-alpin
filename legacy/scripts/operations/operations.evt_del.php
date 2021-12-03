@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $id_evt = (int) (substr(strrchr($p2, '-'), 1));
 
 // checks
@@ -28,18 +30,26 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // suppression inscrits
             $req = "DELETE FROM caf_evt_join WHERE caf_evt_join.evt_evt_join=$id_evt OR caf_evt_join.evt_evt_join IN (SELECT DISTINCT id_evt FROM caf_evt WHERE cycle_parent_evt = $id_evt)";
             if (!$mysqli->query($req)) {
-                $errTab[] = 'Erreur SQL (DELETE FROM caf_evt_join)';
+                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                    'error' => $mysqli->error,
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'sql' => $req,
+                ]);
+                $errTab[] = 'Erreur SQL';
             }
 
             // suppression sortie principale et sortie associee
             $req = "DELETE FROM caf_evt WHERE caf_evt.id_evt=$id_evt OR caf_evt.cycle_parent_evt=$id_evt";
             if (!$mysqli->query($req)) {
-                $errTab[] = 'Erreur SQL (DELETE FROM caf_evt)';
+                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                    'error' => $mysqli->error,
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'sql' => $req,
+                ]);
+                $errTab[] = 'Erreur SQL';
             }
-
-            // gestion des sorties associées (cycle)
-            //$req="UPDATE caf_evt SET caf_evt.cycle_parent_evt=NULL WHERE caf_evt.cycle_parent_evt=$id_evt";
-            //if(!$mysqli->query($req)) $errTab[]="Erreur SQL (UPDATE caf_evt)";
         }
 
         // redirection vers la page de la sortie avec le message "supprimée"
