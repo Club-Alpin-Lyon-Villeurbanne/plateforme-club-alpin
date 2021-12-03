@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $id_article = (int) $p2;
 $status_article = 0;
 $topubly_article = ('on' == $_POST['topubly_article'] ? 1 : 0);
@@ -56,6 +58,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
     .(allowed('article_edit_notmine') ? '' : ' AND user_article = '.getUser()->getIdUser())
     ;
     if (!$mysqli->query($req)) {
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
         $errTab[] = 'Erreur SQL';
     } elseif ($mysqli->affected_rows < 1) {
         $errTab[] = "Aucun enregistrement affecté : ID introuvable, ou vous n'êtes pas le créateur de cette article, ou bien aucune modification n'a été apportée.";

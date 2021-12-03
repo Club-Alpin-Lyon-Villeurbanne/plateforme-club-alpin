@@ -55,6 +55,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if (!$mysqli->query($req)) {
         $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
             'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
             'sql' => $req,
         ]);
         $errTab[] = 'Erreur SQL';

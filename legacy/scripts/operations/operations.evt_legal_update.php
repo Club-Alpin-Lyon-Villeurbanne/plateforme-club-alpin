@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $id_evt = (int) ($_POST['id_evt']);
 $status_legal_evt = (int) ($_POST['status_legal_evt']);
 
@@ -18,8 +20,13 @@ $authorDatas = $subject = $content_main = null;
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "UPDATE caf_evt SET status_legal_evt='$status_legal_evt', status_legal_who_evt=".getUser()->getIdUser()." WHERE caf_evt.id_evt =$id_evt";
     if (!$mysqli->query($req)) {
-        $errTab[] = 'Erreur SQL : '.$mysqli->error;
-        error_log($mysqli->error);
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
+        $errTab[] = 'Erreur SQL';
     }
 
     // récupération des infos user et evt

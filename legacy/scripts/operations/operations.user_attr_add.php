@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 $needComm = false; // besoin, ou pas de spécifier la commission liée à ce type
 
@@ -94,6 +96,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $req = 'INSERT INTO '.$pbd."user_attr(id_user_attr ,user_user_attr ,usertype_user_attr ,params_user_attr ,details_user_attr)
                                         VALUES (NULL , '$id_user', '$id_usertype', '$params_user_attr', '".time()."');";
             if (!$mysqli->query($req)) {
+                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                    'error' => $mysqli->error,
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'sql' => $req,
+                ]);
                 $errTab[] = 'Erreur SQL';
             }
         }

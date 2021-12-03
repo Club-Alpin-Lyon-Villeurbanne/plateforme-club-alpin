@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $destination = ['partenaire'];
 $partenaire = null;
 
@@ -21,16 +23,26 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $req = "UPDATE caf_partenaires SET part_click=part_click+1 WHERE part_id = '$part_id' LIMIT 1";
 
                 if (!$mysqli->query($req)) {
+                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                        'error' => $mysqli->error,
+                        'file' => __FILE__,
+                        'line' => __LINE__,
+                        'sql' => $req,
+                    ]);
                     $errTab[] = 'Erreur SQL';
-                    error_log('Erreur SQL:'.$mysqli->error);
                 }
             //}
             $req = "SELECT part_url FROM caf_partenaires WHERE part_id = '$part_id' LIMIT 1";
             $result = $mysqli->query($req);
 
             if (!$mysqli->query($req)) {
+                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                    'error' => $mysqli->error,
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'sql' => $req,
+                ]);
                 $errTab[] = 'Erreur SQL';
-                error_log('Erreur SQL:'.$mysqli->error);
             }
 
             while ($handle = $result->fetch_array(\MYSQLI_ASSOC)) {

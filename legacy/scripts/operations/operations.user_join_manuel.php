@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 $errTabMail = [];
 
@@ -143,8 +145,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
                         '.time().', 			'.getUser()->getIdUser().",
                         $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage );";
             if (!$mysqli->query($req)) {
-                $errTab[] = 'Erreur SQL : '.$mysqli->error;
-                error_log($mysqli->error);
+                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                    'error' => $mysqli->error,
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'sql' => $req,
+                ]);
+                $errTab[] = 'Erreur SQL';
             } else {
                 unset($_POST['id_user'][$i]);
                 unset($_POST['civ_user'][$i]);

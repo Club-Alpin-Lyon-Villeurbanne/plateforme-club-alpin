@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $id_article = (int) ($_POST['id_article']);
 $status_article = (int) ($_POST['status_article']);
 
@@ -19,13 +21,23 @@ $authorDatas = null;
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "UPDATE caf_article SET status_article='$status_article', status_who_article=".getUser()->getIdUser()." WHERE caf_article.id_article =$id_article";
     if (!$mysqli->query($req)) {
-        $errTab[] = 'Erreur SQL : '.$mysqli->error;
-        error_log($mysqli->error);
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
+        $errTab[] = 'Erreur SQL';
     }
     $req = 'UPDATE caf_article SET tsp_validate_article='.time()." WHERE caf_article.id_article=$id_article AND tsp_validate_article=0"; // premiere validation
     if (!$mysqli->query($req)) {
-        $errTab[] = 'Erreur SQL : '.$mysqli->error;
-        error_log($mysqli->error);
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
+        $errTab[] = 'Erreur SQL';
     }
 
     // récupération des infos user et article
@@ -41,8 +53,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // 15/09/2013 - GMN - mise a jour des articles en une
     $req = 'CALL caf_article_maj_une();';
     if (!$mysqli->query($req)) {
-        $errTab[] = 'Erreur SQL : '.$mysqli->error;
-        error_log($mysqli->error);
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
+        $errTab[] = 'Erreur SQL';
     }
 }
 

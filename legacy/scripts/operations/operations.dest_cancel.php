@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $id_destination = (int) (substr(strrchr($p3, '-'), 1));
 $msg = trim(stripslashes($_POST['msg']));
 $nomadMsg = []; // message spécial par raport aux nomades
@@ -29,6 +31,12 @@ if (allowed('destination_supprimer')
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = 'UPDATE `'.$pbd."destination` SET `annule` = '1' WHERE `id` = $id_destination;";
     if (!$mysqli->query($req)) {
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
         $errTab[] = 'Erreur SQL annulation destination';
     }
 }
@@ -40,6 +48,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
     foreach ($sorties as $sortie) {
         $req = 'UPDATE '.$pbd."evt SET cancelled_evt='1', cancelled_who_evt='".getUser()->getIdUser()."', cancelled_when_evt='".time()."'  WHERE id_evt = ".$sortie['id_evt'];
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = 'Erreur SQL';
         }
     }
@@ -78,7 +92,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if (!isset($errTab) || 0 === count($errTab)) {
             $req = "DELETE FROM caf_evt_join WHERE role_evt_join NOT IN ('encadrant', 'coencadrant') AND id_destination = $id_destination";
             if (!$mysqli->query($req)) {
-                $errTab[] = 'Erreur SQL (DELETE FROM caf_evt_join)';
+                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                    'error' => $mysqli->error,
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'sql' => $req,
+                ]);
+                $errTab[] = 'Erreur SQL';
             }
         }
 
