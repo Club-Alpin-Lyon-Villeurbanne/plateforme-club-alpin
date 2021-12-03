@@ -1123,7 +1123,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
 
                     // si je suis chef de famille (filiations) je rajoute la liste de mes "enfants" pour les inscrire
                     $filiations = [];
-                    if (getUser()->getCafnumUser()) {
+                    if (user() && getUser()->getCafnumUser()) {
                         $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, civ_user, email_user, tel_user, cafnum_user FROM '.$pbd."user WHERE cafnum_parent_user LIKE '".$mysqli->real_escape_string(getUser()->getCafnumUser())."' LIMIT 15";
                         $handleSql2 = $mysqli->query($req);
                         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {

@@ -197,7 +197,7 @@ function allowed($code_userright, $param = '')
     global $userAllowedTo; // liste des opérations auxquelles l'user est autorisé. tableau associatif : la clé est le code de l'opératin, sa valeur les parametres
     global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
 
-    if (!getUser()) {
+    if (!user()) {
         return false;
     }
 

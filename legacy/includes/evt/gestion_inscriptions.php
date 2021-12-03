@@ -20,7 +20,7 @@ if ('1' != $evt['cancelled_evt']) {
             $droitDeModif = true;
         }
         // j'en suis l'auteur ou droits
-        if ((string) getUser()->getIdUser() == $evt['user_evt']) {
+        if (user() && (string) getUser()->getIdUser() == $evt['user_evt']) {
             $droitDeModif = true;
         }
         // ou j'ai un super droit
