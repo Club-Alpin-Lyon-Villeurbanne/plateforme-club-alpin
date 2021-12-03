@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $filename = null;
 
 // PARAMS
@@ -86,7 +88,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     if (!$mysqli->query($req)) {
-        $errTab[] = 'Erreur SQL : '.$mysqli->error;
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
+        $errTab[] = 'Erreur SQL';
     } else {
         if ($partenaireTab['part_id'] > 0) {
             $okTab[] = 'Mise à jour du partenaire OK';

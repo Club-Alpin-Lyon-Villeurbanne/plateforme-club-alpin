@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
 $role_evt_join = $toNameFull = $toTel = $affiliant_user_join = $subject = $content_main = $evtDate = $evtTarif = $toCafNum = $encEmail = $encName = null;
@@ -95,8 +97,13 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
 
                 $result = $mysqli->query($req);
                 if (!$mysqli->query($req)) {
-                    $errTab[] = "Erreur SQL DELETE ($req)";
-                    error_log($mysqli->error);
+                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                        'error' => $mysqli->error,
+                        'file' => __FILE__,
+                        'line' => __LINE__,
+                        'sql' => $req,
+                    ]);
+                    $errTab[] = 'Erreur SQL';
                 }
                 continue;
             }
@@ -146,10 +153,14 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
 
                     $req .= " WHERE caf_evt_join.id_evt_join =$id_evt_join";
 
-                    //						print "$req<br />";continue;
                     if (!$mysqli->query($req)) {
-                        $errTab[] = "Erreur SQL update $id_evt_join (de $status_evt_join à $status_evt_join_new)";
-                        error_log($mysqli->error);
+                        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                            'error' => $mysqli->error,
+                            'file' => __FILE__,
+                            'line' => __LINE__,
+                            'sql' => $req,
+                        ]);
+                        $errTab[] = 'Erreur SQL';
                     }
 
                     // si la mise à jour s'est bien passée

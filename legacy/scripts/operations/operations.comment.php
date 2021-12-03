@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 if (!user()) {
     $errTab[] = 'Seuls les adhérents connectés peuvent commenter pour le moment';
 }
@@ -61,6 +63,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $req = "INSERT INTO caf_comment(id_comment, status_comment, tsp_comment, user_comment, name_comment, email_comment, cont_comment, parent_type_comment, parent_comment)
                             VALUES (NULL ,  '1', 			 '".time()."',  '".getUser()->getIdUser()."',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
     if (!$mysqli->query($req)) {
+        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+            'error' => $mysqli->error,
+            'file' => __FILE__,
+            'line' => __LINE__,
+            'sql' => $req,
+        ]);
         $errTab[] = 'Erreur SQL';
     }
 

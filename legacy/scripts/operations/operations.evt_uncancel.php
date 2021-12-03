@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $id_evt = (int) (substr(strrchr($p2, '-'), 1));
 
 // checks
@@ -31,6 +33,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 if ($handle['cycle_parent_evt'] > 0) {
                     $req = "SELECT id_evt FROM caf_evt WHERE id_evt=$id_evt AND cancelled_evt='0'";
                     if (!$handleSql2 = $mysqli->query($req)) {
+                        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                            'error' => $mysqli->error,
+                            'file' => __FILE__,
+                            'line' => __LINE__,
+                            'sql' => $req,
+                        ]);
                         $errTab[] = 'Erreur SQL SELECT COUNT';
                     } elseif ($handleSql2->num_rows() > 0) {
                         $cycle_parent_evt = 0;
@@ -39,7 +47,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
                 $req = "UPDATE caf_evt SET cancelled_evt='0', cancelled_who_evt='0', cancelled_when_evt='0', status_evt='0',cycle_parent_evt=$cycle_parent_evt WHERE caf_evt.id_evt =$id_evt";
                 if (!$mysqli->query($req)) {
-                    $errTab[] = "Erreur SQL $req";
+                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                        'error' => $mysqli->error,
+                        'file' => __FILE__,
+                        'line' => __LINE__,
+                        'sql' => $req,
+                    ]);
+                    $errTab[] = 'Erreur SQL';
                 }
 
                 // envoi mail encadrant

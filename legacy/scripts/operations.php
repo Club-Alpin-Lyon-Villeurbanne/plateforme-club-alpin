@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $errTab = [];
 $operationsDir = __DIR__.'/operations/';
 
@@ -222,6 +224,12 @@ if ('user_attr_del' == $_POST['operation']) {
         $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         $req = 'DELETE FROM '.$pbd."user_attr WHERE id_user_attr = $id_user_attr LIMIT 1;";
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = 'Erreur SQL';
         }
     }
@@ -248,24 +256,48 @@ if ('user_delete' == $_POST['operation']) {
         // suppression participations aux sorties
         $req = "DELETE FROM caf_evt_join WHERE caf_evt_join.user_evt_join=$id_user";
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = 'Erreur SQL';
         }
 
         // modification des articles de ce user (articles orphelins...)
         $req = "UPDATE caf_article SET user_article=0 WHERE caf_article.user_article=$id_user";
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = 'Erreur SQL';
         }
 
         // suppression des droits
         $req = "DELETE FROM caf_user_attr WHERE caf_user_attr.user_user_attr=$id_user";
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = 'Erreur SQL';
         }
 
         // suppression du user
         $req = "DELETE FROM `caf_user` WHERE  `caf_user`.`id_user`=$id_user";
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = 'Erreur SQL';
         }
 
@@ -284,6 +316,12 @@ if ('user_desactiver' == $_POST['operation']) {
         $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         $req = "UPDATE `caf_user` SET  `valid_user` =  '2' WHERE  `caf_user`.`id_user` =$id_user";
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = 'Erreur SQL';
         }
 
@@ -301,6 +339,12 @@ if ('user_reactiver' == $_POST['operation']) {
         $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         $req = "UPDATE `caf_user` SET  `valid_user` =  '1' WHERE  `caf_user`.`id_user` =$id_user";
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = 'Erreur SQL';
         }
 
@@ -322,6 +366,12 @@ if ('user_reset' == $_POST['operation']) {
 				mdp_user =  ''
 				WHERE caf_user.id_user =$id_user";
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = 'Erreur SQL';
         }
 
@@ -379,6 +429,12 @@ if ('user_attr_del_admin' == $_POST['operation'] && admin()) {
         $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         $req = 'DELETE FROM '.$pbd."user_attr WHERE id_user_attr = $id_user_attr LIMIT 1;";
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = 'Erreur SQL';
         }
     }

@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $id_user = $email_user_mailchange = null;
 
 // check user online
@@ -40,6 +42,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
             WHERE `id_user` =$id_user LIMIT 1 ;";
 
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = 'Erreur SQL';
         }
     }
@@ -168,6 +176,12 @@ if ('' !== $email_user_mailchange) {
         $req = 'INSERT INTO `'.$pbd."user_mailchange` (`user_user_mailchange` , `token_user_mailchange` , `email_user_mailchange` )
                                                     VALUES ('$id_user',				'$token', 				'$email_user_mailchange');";
         if (!$mysqli->query($req)) {
+            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
+                'error' => $mysqli->error,
+                'file' => __FILE__,
+                'line' => __LINE__,
+                'sql' => $req,
+            ]);
             $errTab[] = 'Erreur SQL';
         } else {
             $id_user_mailchange = $mysqli->insert_id;
