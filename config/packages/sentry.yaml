@@ -8,3 +8,4 @@ sentry:
 #        server_name: "%env(NODE)%"
 #        release: "%env(COMMIT)%"
         error_types: E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED
+        send_default_pii: true

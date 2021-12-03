@@ -6,7 +6,7 @@ use Monolog\Processor\ProcessorInterface;
 
 class ServerLoadProcessor implements ProcessorInterface
 {
-    private $enabled;
+    private bool $enabled;
 
     public function __construct()
     {
