@@ -15,7 +15,6 @@ if (!admin()) {
         $partenaireTab = [];
         $result = $mysqli->query($req);
         $partenaireTab = $result->fetch_assoc();
-        $mysqli->close;
 
         if (count($partenaireTab) > 0) {
             foreach ($partenaireTab as $key => $val) {

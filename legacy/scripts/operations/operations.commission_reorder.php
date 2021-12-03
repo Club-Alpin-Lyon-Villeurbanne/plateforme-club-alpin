@@ -24,5 +24,4 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $errTab[] = "Erreur SQL $i";
         }
     }
-    $mysqli->close;
 }

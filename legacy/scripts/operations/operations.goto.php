@@ -49,7 +49,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $partenaire = $handle;
             }
 
-            $mysqli->close;
             if ('' !== $partenaire['part_url']) {
                 header('Location:'.$partenaire['part_url']);
                 exit;

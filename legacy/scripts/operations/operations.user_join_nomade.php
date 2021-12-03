@@ -176,4 +176,3 @@ if (!isset($errTab) || 0 === count($errTab)) {
         }
     }
 }
-$mysqli->close;

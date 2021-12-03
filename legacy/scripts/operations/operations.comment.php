@@ -103,5 +103,3 @@ if (!isset($errTab) || 0 === count($errTab)) {
 if (!isset($errTab) || 0 === count($errTab)) {
     $_POST['cont_comment'] = '';
 }
-
-$mysqli->close;

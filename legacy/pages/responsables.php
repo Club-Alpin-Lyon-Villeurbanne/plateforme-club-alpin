@@ -58,7 +58,6 @@
                 }
                 echo '</tbody></table><hr /><br />';
             }
-            $mysqli->close;
             ?>
 		</div>
 	</div>

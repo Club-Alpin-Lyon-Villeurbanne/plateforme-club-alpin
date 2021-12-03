@@ -96,8 +96,7 @@
                                     .'<br style="clear:both" />'
                                 .'</div>';
                     }
-                }
-                $mysqli->close; ?>
+                } ?>
 					<br />
 					<br />
 					<br />

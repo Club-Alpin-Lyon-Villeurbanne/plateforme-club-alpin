@@ -12,7 +12,6 @@ if (!$id_comment) {
     while ($handle = $result->fetch_array(\MYSQLI_ASSOC)) {
         $comment = $handle;
     }
-    $mysqli->close;
 
     if (!$comment) {
         echo "<p class='erreur'>Commentaire introuvable.</p>";

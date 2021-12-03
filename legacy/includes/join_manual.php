@@ -154,8 +154,7 @@ if (user()) {
 
                                 .'</tr>';
                 }
-            }
-            $mysqli->close; ?>
+            } ?>
 					</tbody>
 				</table>
 				<br style="clear:both" />

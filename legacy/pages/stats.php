@@ -533,7 +533,6 @@
             echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour accéder à cette page</p>';
         }
 
-        $mysqli->close;
         ?>
 
 		<br style="clear:both" />

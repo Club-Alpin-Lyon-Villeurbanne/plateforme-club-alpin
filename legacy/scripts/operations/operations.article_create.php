@@ -63,7 +63,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
     } else {
         $id_article = $mysqli->insert_id;
     }
-    $mysqli->close;
 }
 
 // déplacement des fichiers

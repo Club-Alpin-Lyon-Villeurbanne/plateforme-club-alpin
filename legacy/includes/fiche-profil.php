@@ -38,8 +38,6 @@ while ($row = $result->fetch_assoc()) {
     $tmpUser = $row;
 }
 
-$mysqli->close;
-
 // err technique
 if (!$id_user) {
     echo '<p class="erreur">ID non spécifié</p>';
