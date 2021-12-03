@@ -30,11 +30,11 @@ echo '" title="">';
         // Nombre de sorties :
         // Liste des sorties
         // rôle de l'user dans cette sortie
-            if ($destination['id_user_responsable'] == (string) getUser()->getIdUser()) {
+            if (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser()) {
                 echo ' - Votre rôle : <b> Encadrant </b>';
-            } elseif ($destination['id_user_adjoint'] == (string) getUser()->getIdUser()) {
+            } elseif (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser()) {
                 echo ' - Votre rôle : <b> Co-encadrant </b>';
-            } elseif ($destination['id_user_who_create'] == (string) getUser()->getIdUser()) {
+            } elseif (user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser()) {
                 echo ' - Votre rôle : <b> Créateur </b>';
             } else {
                 echo ' - Votre rôle : <b> Editeur </b>';

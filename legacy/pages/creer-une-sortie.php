@@ -42,9 +42,9 @@
                 if ($p3) { ?>
 					<?php if (
                         allowed('destination_modifier') ||
-                        $destination['id_user_who_create'] == (string) getUser()->getIdUser() ||
-                        $destination['id_user_responsable'] == (string) getUser()->getIdUser() ||
-                        $destination['id_user_adjoint'] == (string) getUser()->getIdUser()
+                        (user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser()) ||
+                        (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser()) ||
+                        (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
                     ) { ?>
                         <h1 class="page-h1">Modifier une <b>destination</b></h1>
                         <?php include __DIR__.'/../includes/dest/creer.php'; ?>
