@@ -1066,24 +1066,26 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                 // mon rapport à cette sortie
                 $monStatut = 'neutre';
 
-                $req = 'SELECT * FROM '.$pbd."evt_join
-                    WHERE evt_evt_join=$id_evt
-                    AND user_evt_join=".getUser()->getIdUser().'
-                    ORDER BY tsp_evt_join DESC
-                    LIMIT 1';
-                $handleSql2 = $mysqli->query($req);
-                while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                    // si je suis pas encore validé
-                    if (0 == $handle2['status_evt_join']) {
-                        $monStatut = 'en attente';
-                    }
-                    // si je suis inscrit, "monStatut" prend la valeur de mon role
-                    if (1 == $handle2['status_evt_join']) {
-                        $monStatut = $handle2['role_evt_join'];
-                    }
-                    // si je suis refusé
-                    if (2 == $handle2['status_evt_join']) {
-                        $monStatut = 'refusé';
+                if (user()) {
+                    $req = 'SELECT * FROM '.$pbd."evt_join
+                        WHERE evt_evt_join=$id_evt
+                        AND user_evt_join=".getUser()->getIdUser().'
+                        ORDER BY tsp_evt_join DESC
+                        LIMIT 1';
+                    $handleSql2 = $mysqli->query($req);
+                    while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
+                        // si je suis pas encore validé
+                        if (0 == $handle2['status_evt_join']) {
+                            $monStatut = 'en attente';
+                        }
+                        // si je suis inscrit, "monStatut" prend la valeur de mon role
+                        if (1 == $handle2['status_evt_join']) {
+                            $monStatut = $handle2['role_evt_join'];
+                        }
+                        // si je suis refusé
+                        if (2 == $handle2['status_evt_join']) {
+                            $monStatut = 'refusé';
+                        }
                     }
                 }
 
