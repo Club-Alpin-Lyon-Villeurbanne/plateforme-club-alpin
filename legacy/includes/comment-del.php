@@ -18,7 +18,7 @@ if (!$id_comment) {
     }
 
     // verif de droits
-    elseif ($comment['user_comment'] != (string) getUser()->getIdUser() && !allowed('comment_delete_any')) {
+    elseif ((!user() || $comment['user_comment'] != (string) getUser()->getIdUser()) && !allowed('comment_delete_any')) {
         echo "<p class='erreur'>Vous n'avez pas les droits pour supprimer ce commentaire.</p>";
     }
 
