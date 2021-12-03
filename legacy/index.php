@@ -33,7 +33,7 @@ $versCettePage = ($p_multilangue ? $lang.'/' : '').$p1.($p2 ? '/'.$p2 : '').($p3
     </title>
     <base href="<?php echo $p_racine; ?>" />
     <meta name="description" content="<?php echo html_utf8($meta_description); ?>">
-    <meta name="author" content="www.herewecom.fr">
+    <meta name="author" content="Club Alpin Français de Lyon-Villeurbanne">
     <meta name="viewport" content="width=1200">
 	<?php if (isset($p_google_site_verification) && !empty($p_google_site_verification)) { ?><meta name="google-site-verification" content="<?php echo $p_google_site_verification; ?>" /><?php } ?>
     <?php
