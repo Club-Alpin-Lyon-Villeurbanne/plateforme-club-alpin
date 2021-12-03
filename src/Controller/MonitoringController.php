@@ -13,6 +13,9 @@ class MonitoringController
      * @Route(
      *     name="monitoring_http",
      *     path="/monitoring/{code}",
+     *     requirements={
+     *         "code": "\d+"
+     *     },
      *     methods={"GET"}
      * )
      */
