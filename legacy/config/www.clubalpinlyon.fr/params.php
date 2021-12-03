@@ -34,10 +34,6 @@ $p_email_paiement = 'secretariat@clubalpinlyon.fr';
 
 // Transporteur :
 $p_transporteurs = [
-    //'hwc' => array(
-    //    'email'=>'e.henke@herewecom.fr',
-    //    'nom'=>'HWC WebTransfers'
-    //),
     'caf' => [
         'email' => 'sitemestre@clubalpinlyon.fr',
         'nom' => 'sitemestre @ CAF',
