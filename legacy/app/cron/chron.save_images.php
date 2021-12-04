@@ -18,13 +18,8 @@ while ($article = $result->fetch_assoc()) {
     $nb_copies = 0;
 
     echo "nombre d'images : ".$nb_matches."<br />\n";
-    // print_r($matches);
     echo "<br />\n";
 
-    /*
-            echo "<hr />";
-            next;
-    */
     $dest_cont_article = $article['cont_article'];
 
     /*
