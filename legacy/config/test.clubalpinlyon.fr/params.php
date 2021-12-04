@@ -35,10 +35,6 @@ $p_transporteurs = [
 // ffcam
 $p_ffcam = ['6900'];
 
-// GOOGLE
-$p_google_analytics_account = 'UA-26520066-1';
-$p_google_site_verification = 'vwDUjeSjHWSROqJcUgfJ5TwEkhUHZCbKWPGDn9erdpw';
-
 // nombre de colonnes dans le fichier adherent xxxx.csv
 $p_csv_adherent_nb_colonnes = 33;
 

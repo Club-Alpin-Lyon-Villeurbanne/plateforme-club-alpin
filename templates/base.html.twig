@@ -12,6 +12,9 @@
         <meta property="og:type" content="website" />
         <meta property="og:url" content="404.html" />
         <meta property="og:site_name" content="Club Alpin Fran&ccedil;ais - XXX" />
+        {% if google_site_verification != "" %}
+        <meta name="google-site-verification" content="{{ google_site_verification }}" />
+        {% endif %}
 
         <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ url_site }}/rss.xml?mode=articles" />
 
@@ -104,10 +107,11 @@
             {#{{ encore_entry_script_tags('app') }}#}
         {% endblock %}
         {% block trackers %}
+            {% if analytics_account != "" %}
             <script type="text/javascript">
 
                 var _gaq = _gaq || [];
-                _gaq.push(['_setAccount', 'UA-42585248-1']);
+                _gaq.push(['_setAccount', '{{ analytics_account | e('js') }}']);
                 _gaq.push(['_trackPageview']);
 
                 (function() {
@@ -117,6 +121,7 @@
                 })();
 
             </script>
+            {% endif %}
         {% endblock %}
     </body>
 </html>
