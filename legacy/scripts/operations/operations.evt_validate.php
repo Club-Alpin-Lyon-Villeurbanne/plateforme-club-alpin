@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 $subject = $content_main = $authorDatas = null;
@@ -48,9 +50,9 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_evt || 2 == $stat
     if (1 == $status_evt) {
         $subject = 'Votre sortie a été publiée sur le site';
         $content_main = "<h2>$subject</h2>
-            <p>Félicitations, votre sortie &laquo;<i>".html_utf8($authorDatas['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $authorDatas['tsp_evt']).' a été publiée sur le site du '.$p_sitename." par les responsables. Pour y accéder, cliquez sur le lien ci-dessous :</p>
+            <p>Félicitations, votre sortie &laquo;<i>".html_utf8($authorDatas['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $authorDatas['tsp_evt']).' a été publiée sur le site du '.$p_sitename.' par les responsables. Pour y accéder, cliquez sur le lien ci-dessous :</p>
             <p>
-                <a href=\"$p_racine".'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].".html\" title=\"\">$p_racine".'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html</a>
+                <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html" title="">'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html</a>
             </p>';
     }
     if (2 == $status_evt) {
@@ -58,10 +60,10 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_evt || 2 == $stat
         $content_main = "<h2>$subject</h2>
             <p>Désolé, il semble que votre événement créé sur le site du ".$p_sitename.' ne soit pas validé par les responsables. Voici ci-dessous le message joint :</p>
             <p>&laquo;<i>'.html_utf8(stripslashes($_POST['msg'] ?: '...')).'</i>&raquo;</p>
-            <p>Sortie concernée : &laquo;<i>'.html_utf8($authorDatas['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $authorDatas['tsp_evt'])."</p>
+            <p>Sortie concernée : &laquo;<i>'.html_utf8($authorDatas['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $authorDatas['tsp_evt']).'</p>
             <p>
                 Pour administrer vos sorties, rendez-vous sur votre profil :
-                <a href=\"$p_racine"."profil/sorties.html\" title=\"\">$p_racine".'profil/sorties.html</a>
+                <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/sorties.html" title="">'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/sorties.html</a>
             </p>
             ';
     }
@@ -109,12 +111,12 @@ if ((!isset($errTab) || 0 === count($errTab)) && 1 == $status_evt) {
             <p>Bonjour ".$row['firstname_user'].",</p>
             <p>
                 Une nouvelle sortie vient d'être publiée sur le site.
-                <a href=\"".$p_racine.'voir-profil/'.(int) ($authorDatas['id_user']).'.html">'.$authorDatas['nickname_user'].'</a>
-                vous a pré-inscrit pour cette sortie en tant que <b>'.$row['role_evt_join']."</b>.
+                <a href=\"".$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.(int) ($authorDatas['id_user']).'.html">'.$authorDatas['nickname_user'].'</a>
+                vous a pré-inscrit pour cette sortie en tant que <b>'.$row['role_evt_join'].'</b>.
             </p>
             <p>
                 Pour voir la fiche de cette sortie, cliquez ci-dessous :<br />
-                <a href=\"$p_racine".'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].".html\" title=\"\">$p_racine".'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html</a>
+                <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html" title="">'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html</a>
             </p>
             ';
         $content_header = '';

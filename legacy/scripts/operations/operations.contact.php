@@ -1,5 +1,9 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
 $nom = strip_tags(stripslashes($_POST['nom']));
 $email = strip_tags(stripslashes($_POST['email']));
 $objet = strip_tags(stripslashes($_POST['objet']));
@@ -29,7 +33,7 @@ if (0 === count($errTab)) {
     // content vars
     $subject = $objet;
     $content_header = '';
-    $content_main = '<h2>Ce message vous a été envoyé depuis votre site <i>'.$p_racine.'</i></h2>'
+    $content_main = '<h2>Ce message vous a été envoyé depuis votre site <i>'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'</i></h2>'
         .'<b>Infos :</b><table>'
         .($prenom ? '<tr><td><b>Prénom : </b></td><td>'.html_utf8($prenom)." </td></tr>\n" : '')
         .($nom ? '<tr><td><b>Nom : </b></td><td>'.html_utf8($nom)." </td></tr>\n" : '')

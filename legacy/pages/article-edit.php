@@ -1,3 +1,10 @@
+<?php
+
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
+?>
 <script type="text/javascript" src="/js/faux-select.js"></script>
 
 <!-- MAIN -->
@@ -303,9 +310,9 @@
 						theme_advanced_statusbar_location : "bottom",
 						theme_advanced_resizing : true,
 
-						document_base_url : '<?php echo $p_racine; ?>',
+						document_base_url : '<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>',
 
-						content_css : "<?php echo $p_racine; ?>css/base.css,<?php echo $p_racine; ?>css/style1.css,<?php echo $p_racine; ?>fonts/stylesheet.css",
+						content_css : "<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/base.css,<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/style1.css,<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>fonts/stylesheet.css",
 						body_id : "bodytinymce_user",
 						body_class : "cont_article",
 						theme_advanced_styles : "<?php echo $p_tiny_theme_advanced_styles; ?>",

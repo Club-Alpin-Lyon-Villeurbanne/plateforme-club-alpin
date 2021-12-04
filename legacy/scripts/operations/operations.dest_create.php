@@ -67,5 +67,5 @@ if (!isset($errTab) || 0 === count($errTab)) {
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
-    header('Location:'.$p_racine.'creer-une-sortie/creer-une-destination/update-'.$id_dest_to_update.'.html');
+    header('Location: /creer-une-sortie/creer-une-destination/update-'.$id_dest_to_update.'.html');
 }

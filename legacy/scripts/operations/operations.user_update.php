@@ -188,7 +188,7 @@ if ('' !== $email_user_mailchange) {
     // ENVOI DU MAIL
     if (!isset($errTab) || 0 === count($errTab)) {
         // check-in vars : string à retourner lors de la confirmation= md5 de la concaténation id-email
-        $url = $p_racine.'email-change/'.$token.'-'.$id_user_mailchange.'.html';
+        $url = $kernel->getContainer()->get('legacy_router')->generateUrl('legacy_root').'email-change/'.$token.'-'.$id_user_mailchange.'.html';
 
         // content vars
         $subject = 'Modification de votre e-mail !';

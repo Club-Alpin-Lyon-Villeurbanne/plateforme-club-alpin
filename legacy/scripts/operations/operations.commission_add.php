@@ -245,5 +245,5 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
 // REDIRECTION
 if (!isset($errTab) || 0 === count($errTab)) {
-    header('Location:'.$p_racine.'gestion-des-commissions.html');
+    header('Location: /gestion-des-commissions.html');
 }

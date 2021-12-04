@@ -1,5 +1,9 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
 header('Cache-Control: max-age=10');
 header('Content-Type: text/xml');
 
@@ -77,13 +81,13 @@ if (!array_key_exists('mode', $_GET) || preg_match('#^articles#', $_GET['mode'])
         }
 
         $entry['title'] = $handle['titre_article'];
-        $entry['link'] = $p_racine.'article/'.$handle['code_article'].'-'.$handle['id_article'].'.html';
+        $entry['link'] = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$handle['code_article'].'-'.$handle['id_article'].'.html';
         $entry['description'] = $handle['cont_article'];
         $entry['timestamp'] = $handle['tsp_article'];
 
         // check image
         if (is_file(__DIR__.'/../public/ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg')) {
-            $entry['img'] = $p_racine.'ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg';
+            $entry['img'] = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg';
         }
 
         $entryTab[] = $entry;
@@ -133,7 +137,7 @@ if (preg_match('#^sorties#', $_GET['mode'])) {
         }
 
         $entry['title'] = $handle['titre_evt'];
-        $entry['link'] = $p_racine.'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html';
+        $entry['link'] = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html';
         $entry['description'] = '';
         if ($current_commission) {
             $entry['description'] .= ($entry['description'] ? ' | ' : '').'Commission '.$current_commission;
@@ -165,7 +169,7 @@ $CafFeed = new FeedWriter(RSS2);
 //Setting the channel elements
 //Use wrapper functions for common channel elements
 $CafFeed->setTitle($rss_datas['title']);
-$CafFeed->setLink($p_racine);
+$CafFeed->setLink($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL));
 $CafFeed->setDescription($rss_datas['description']);
 
 //Image title and link must match with the 'title' and 'link' channel elements for RSS 2.0
@@ -178,9 +182,9 @@ $CafFeed->setChannelElement('pubDate', date(\DATE_RSS, time()));
 //Adding a feed. Genarally this portion will be in a loop and add all feeds.
 
 foreach ($entryTab as $entry) {
-    $entry['description'] = str_replace('href="/', 'href="'.$p_racine, $entry['description']);
-    $entry['description'] = str_replace('"ftp/', '"'.$p_racine.'ftp/', $entry['description']);
-    $entry['description'] = str_replace('"IMG/', '"'.$p_racine.'IMG/', $entry['description']);
+    $entry['description'] = str_replace('href="/', 'href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL), $entry['description']);
+    $entry['description'] = str_replace('"ftp/', '"'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/', $entry['description']);
+    $entry['description'] = str_replace('"IMG/', '"'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'IMG/', $entry['description']);
 
     //Create an empty FeedItem
     $newItem = $CafFeed->createNewItem();

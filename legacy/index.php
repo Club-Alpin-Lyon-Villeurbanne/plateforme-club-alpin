@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 include __DIR__.'/app/includes.php';
@@ -33,7 +35,7 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
         <?php } ?>
     <?php } ?>
     </title>
-    <base href="<?php echo $p_racine; ?>" />
+    <base href="<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>" />
     <meta name="description" content="<?php echo html_utf8($meta_description); ?>">
     <meta name="author" content="Club Alpin Français de Lyon-Villeurbanne">
     <meta name="viewport" content="width=1200">

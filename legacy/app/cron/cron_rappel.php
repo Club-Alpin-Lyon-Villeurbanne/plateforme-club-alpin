@@ -1,5 +1,8 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
 global $chron_savedatas;
 global $chron_sendmails;
 global $p_sitename;
@@ -147,7 +150,7 @@ if ($lastTsp < $minTsp) {
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 error_log('- Envoi necessaire : '.html_utf8($handle2['nickname_user']).' participe a '.$handle2['code_evt'].'-'.$handle2['id_evt'].'');
                 // lien vers l'evenement
-                $url = $p_racine.'sortie/'.$handle2['code_evt'].'-'.$handle2['id_evt'].'.html';
+                $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle2['code_evt'].'-'.$handle2['id_evt'].'.html';
                 // vars d'envoi
                 $datas = [];
                 $datas['parent'] = $id_chron_launch;
@@ -185,7 +188,7 @@ if ($lastTsp < $minTsp) {
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 error_log('- Envoi nécessaire : '.html_utf8($handle2['nickname_user']).' participe à '.$handle2['code_evt'].'-'.$handle2['id_evt'].'');
                 // lien vers l'evenement
-                $url = $p_racine.'sortie/'.$handle2['code_evt'].'-'.$handle2['id_evt'].'.html';
+                $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle2['code_evt'].'-'.$handle2['id_evt'].'.html';
                 // vars d'envoi
                 $datas = [];
                 $datas['parent'] = $id_chron_launch;
@@ -264,9 +267,8 @@ if ($lastTsp < $minTsp) {
             // liste des evts
             $evtList = [];
             foreach ($evtdatas as $tmp) {
-                $evtList[] = '<a href="'.$p_racine.'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html">'.date('d/m/Y', $tmp['tsp_evt']).' - '.html_utf8($tmp['titre_evt']).'</a>';
+                $evtList[] = '<a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html">'.date('d/m/Y', $tmp['tsp_evt']).' - '.html_utf8($tmp['titre_evt']).'</a>';
             }
-            //			foreach($evtdatas as $tmp) $evtList[] = '<a href="'.$p_racine.'gestion-des-sorties.html">'.date('d/m/Y', $tmp['tsp_evt']).' - '.html_utf8($tmp['titre_evt']).'</a>';
 
             // vars d'envoi
             $datas = [];
@@ -279,7 +281,7 @@ if ($lastTsp < $minTsp) {
 				<h1>Bonjour '.html_utf8($evtdatas[0]['firstname_user']).',</h1>
 				<p>
 				Vous êtes responsable de commission, et il y a '.count($evtdatas).' sortie(s) en attente de publication sur le site du '.$p_sitename.'.
-				Prenez soin de vous rendre sur <a href="'.$p_racine.'gestion-des-sorties.html">votre page de gestion</a>,
+				Prenez soin de vous rendre sur <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'gestion-des-sorties.html">votre page de gestion</a>,
 				et de vérifier attentivement toutes les informations liées à chaque sortie en attente de publication.
 				Vous disposez d\'un accès réservé à chaque fiche évènement avant la publication.
 				</p>
@@ -355,7 +357,7 @@ if ($lastTsp < $minTsp) {
             // liste des evts
             $evtList = [];
             foreach ($evtdatas as $tmp) {
-                $evtList[] = '<a href="'.$p_racine.'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html">'.date('d/m/Y', $tmp['tsp_evt']).' - '.html_utf8($tmp['titre_evt']).'</a>';
+                $evtList[] = '<a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html">'.date('d/m/Y', $tmp['tsp_evt']).' - '.html_utf8($tmp['titre_evt']).'</a>';
             }
 
             // vars d'envoi
