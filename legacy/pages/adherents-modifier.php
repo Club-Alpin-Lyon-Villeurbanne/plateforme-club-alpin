@@ -43,35 +43,7 @@ if (!admin() && !allowed('user_edit_notme')) {
         echo '<div class="info"><b>Adhérent modifié avec succès :</b> <ul><li>'.implode('</li><li>', $okTab).'</li></ul></div>';
     } else {
         ?>
-<!--
-
-			Civilité* :<br />
-			<select name="civ_user">
-				<option value="M" <?php if ('M' == $_POST['civ_user']) {
-            echo 'selected="selected"';
-        } ?>>M.</option>
-				<option value="MME" <?php if ('MME' == $_POST['civ_user']) {
-            echo 'selected="selected"';
-        } ?>>Mme.</option>
-				<option value="MLLE" <?php if ('MLLE' == $_POST['civ_user']) {
-            echo 'selected="selected"';
-        } ?>>Mlle.</option>
-			</select>
-			<br />
-
-			Prénom* :<br />
-			<input type="text" name="firstname_user" class="type1" value="<?php echo $userTab['firstname_user']; ?>" placeholder="" />
-			<br />
-
-			Nom* :<br />
-			<input type="text" name="lastname_user" class="type1" value="<?php echo $userTab['lastname_user']; ?>" placeholder="" />
-			<br />
-
-			Pseudonyme* :<br />
-			<input type="text" name="nickname_user" class="type1" value="<?php echo $userTab['nickname_user']; ?>" placeholder="" />
-			<br />
- -->
-			<br />
+        <br />
 
 			<table>
 				<tr>
