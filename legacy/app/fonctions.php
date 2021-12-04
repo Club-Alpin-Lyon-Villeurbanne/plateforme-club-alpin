@@ -265,7 +265,7 @@ function allowed($code_userright, $param = '')
                     // **********
                     // DEBUG : SI CONNECTÉ, ON A FORCÉMENT LE STATUT ADHÉRENT MAIS PAS LIE DANS LA BASE, SAUF SALARIE
                     $req = ''
-                    .'SELECT DISTINCT code_userright, params_user_attr, limited_to_comm_usertype '
+                    .'SELECT DISTINCT code_userright, limited_to_comm_usertype '
                     .'FROM caf_userright, caf_usertype_attr, caf_usertype '
                     ."WHERE code_usertype LIKE 'adherent' " // usertype adherent
                     .'AND id_usertype=type_usertype_attr '
