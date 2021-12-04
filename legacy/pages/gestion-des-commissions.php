@@ -1,3 +1,8 @@
+<?php
+
+global $kernel;
+
+?>
 <!-- MAIN -->
 <div id="main" role="main" class="bigoo" style="">
 
@@ -9,13 +14,7 @@
             if (!allowed('comm_edit')) {
                 echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour afficher cette page</p>';
             } else {
-                if ('true' !== $userAllowedTo['comm_edit']) {
-                    $comm_edit = explode('|', $userAllowedTo['comm_edit']);
-                    foreach ($comm_edit as $c => $cedit) {
-                        $tabCedit = explode(':', $cedit);
-                        $comm_edit[$c] = $tabCedit[1];
-                    }
-                } ?>
+                ?>
 				<h1>Gestion des commissions</h1>
 				<?php inclure($p1, 'vide'); ?>
 
@@ -28,16 +27,7 @@
                 $result = $mysqli->query($req);
 
                 while ($row = $result->fetch_assoc()) {
-                    $action = false;
-                    if ('true' === $userAllowedTo['comm_edit']) {
-                        $action = true;
-                    } else {
-                        if (in_array($row['code_commission'], $comm_edit, true)) {
-                            $action = true;
-                        } else {
-                            $action = false;
-                        }
-                    }
+                    $action = $kernel->getContainer()->get('legacy_user_rights')->allowed('comm_edit', $row['code_commission']);
 
                     if ($action) {
                         // chemin vers grand eimage
@@ -61,7 +51,7 @@
                                     .'</div>'
                                     .'<div class="item-2">';
                         // reorder
-                        if ('true' === $userAllowedTo['comm_edit']) {
+                        if ($kernel->getContainer()->get('legacy_user_rights')->allowed('comm_edit')) {
                             echo '<img class="handle" style="float:right; cursor:move; height:30px" src="/img/base/move.png" alt="MOVE" title="Réordonner" />';
                         }
                         // titre

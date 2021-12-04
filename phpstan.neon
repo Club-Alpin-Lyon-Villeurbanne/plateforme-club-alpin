@@ -8,7 +8,6 @@ parameters:
     - '#Variable \$limite_[a-z_]+ might not be defined#'
     - '#Variable \$do_p_chron[a-z0-9_]+ might not be defined#'
     - '#Variable \$p_chron[a-z0-9_]+ might not be defined#'
-    - '#Variable \$userAllowedTo might not be defined#'
     - '#Variable \$lang might not be defined#'
     - '#Instantiated class FeedWriter not found#'
 

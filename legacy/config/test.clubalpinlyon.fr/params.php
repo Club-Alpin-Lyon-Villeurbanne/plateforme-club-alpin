@@ -85,9 +85,6 @@ $p_ftp_masquer = ['index.php', '.', '..', '.htaccess', 'Thumbs.db', 'transit', '
 // dossiers et fichiers a ne pas supprimer (racine: ftp/)
 $p_ftp_proteges = ['images', 'telechargements', 'transit', 'fichiers-proteges'];
 
-// droits de l'user
-$userAllowedTo = [];
-
 // dates butoires : tableau des heures auxquelles déclencher l'envoi du chron :
 $p_chron_dates_butoires = [8, 13, 18];
 

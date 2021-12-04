@@ -40,19 +40,36 @@ class UserRights
             return false;
         }
 
-        if ('true' === $userAllowedTo[$code_userright]) {
+        if ('true' === ($userAllowedTo[$code_userright] ?? null)) {
             return true;
         }
         if (!$param) {
             return true;
         }
         foreach (explode('|', $userAllowedTo[$code_userright]) as $tmpParam) {
-            if ($param == $tmpParam) {
+            if ($param === $tmpParam) {
+                return true;
+            }
+            if (\array_slice(explode(':', $tmpParam), -1)[0] === $param) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    public function getAllCommissionIds()
+    {
+        $sql = 'SELECT id_commission FROM caf_commission';
+
+        $result = $this->connection->prepare($sql)->executeQuery()->fetchAllAssociative();
+        $ret = [];
+
+        foreach ($result as $row) {
+            $ret[] = $row['id_commission'];
+        }
+
+        return $ret;
     }
 
     public function getCommissionListForRight($right)
@@ -61,6 +78,10 @@ class UserRights
 
         if (!$allowed) {
             return [];
+        }
+
+        if ('true' === $allowed) {
+            return $this->getAllCommissionIds();
         }
 
         $commissions = [];
