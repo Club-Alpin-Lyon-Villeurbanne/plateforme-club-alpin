@@ -261,11 +261,11 @@ function allowed($code_userright, $param = '')
                     }
                 }
 
-                if (getUser()->hasAttribute('Salarié')) {
+                if (!getUser()->hasAttribute('Salarié')) {
                     // **********
                     // DEBUG : SI CONNECTÉ, ON A FORCÉMENT LE STATUT ADHÉRENT MAIS PAS LIE DANS LA BASE, SAUF SALARIE
                     $req = ''
-                    .'SELECT DISTINCT code_userright, limited_to_comm_usertype '
+                    .'SELECT DISTINCT code_userright, params_user_attr, limited_to_comm_usertype '
                     .'FROM caf_userright, caf_usertype_attr, caf_usertype '
                     ."WHERE code_usertype LIKE 'adherent' " // usertype adherent
                     .'AND id_usertype=type_usertype_attr '
@@ -281,19 +281,10 @@ function allowed($code_userright, $param = '')
                     // Il est possible que le même droit prenne plusieurs paramètres (ex : vous avez le droit d'écrire un article dans
                     // deux commissions auquel cas, ils sont concaténés via le caractère |
                     while ($row = $result->fetch_assoc()) {
-                        // valeur : true ou param
-                        if ($row['params_user_attr'] && $row['limited_to_comm_usertype']) {
-                            $val = $row['params_user_attr'];
-                        } else {
-                            $val = 'true';
-                        }
+                        $userAllowedTo[$row['code_userright']] = $val;
 
-                        // si la valeur est true, pas besoin d'ajouter des parametres par la suite car true = "ok pour tout sans params"
-                        if ('true' == $val) {
-                            $userAllowedTo[$row['code_userright']] = $val;
-                        }
                         // écriture, ou concaténation des paramètres existant
-                        elseif ('true' != $userAllowedTo[$row['code_userright']]) {
+                        if ('true' != $userAllowedTo[$row['code_userright']]) {
                             $userAllowedTo[$row['code_userright']] = ($userAllowedTo[$row['code_userright']] ? $userAllowedTo[$row['code_userright']].'|' : '').$val;
                         }
 

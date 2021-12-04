@@ -182,19 +182,10 @@ class UserRights
             // Il est possible que le même droit prenne plusieurs paramètres (ex : vous avez le droit d'écrire un article dans
             // deux commissions auquel cas, ils sont concaténés via le caractère
             foreach ($result as $row) {
-                // valeur : true ou param
-                if ($row['params_user_attr'] && $row['limited_to_comm_usertype']) {
-                    $val = $row['params_user_attr'];
-                } else {
-                    $val = 'true';
-                }
+                $userAllowedTo[$row['code_userright']] = 'true';
 
-                // si la valeur est true, pas besoin d'ajouter des parametres par la suite car true = "ok pour tout sans params"
-                if ('true' == $val) {
-                    $userAllowedTo[$row['code_userright']] = $val;
-                }
                 // écriture, ou concaténation des paramètres existant
-                elseif ('true' != $userAllowedTo[$row['code_userright']]) {
+                if ('true' != $userAllowedTo[$row['code_userright']]) {
                     $userAllowedTo[$row['code_userright']] = ($userAllowedTo[$row['code_userright']] ? $userAllowedTo[$row['code_userright']].'|' : '').$val;
                 }
 
