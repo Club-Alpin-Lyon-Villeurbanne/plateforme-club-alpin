@@ -10,7 +10,7 @@ $newConfig = require __DIR__.'/config.php';
 
 // chemin absolu vers la racine des fichiers
 if ($_SERVER && array_key_exists('HTTP_HOST', $_SERVER)) {
-    $p_racine = $newConfig['url'];
+    $p_racine = $newConfig['url'].'/';
 } else {
     $p_racine = __DIR__.'/../../../public';
 }
