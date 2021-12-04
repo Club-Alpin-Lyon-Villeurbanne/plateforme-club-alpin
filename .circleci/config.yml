@@ -44,6 +44,7 @@ jobs:
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$PROD_DB_PASSWORD/g" "legacy/config/config.php"
                     sed -i "s/DB_USER_TO_REPLACE/$PROD_DB_USER/g" "legacy/config/config.php"
                     sed -i "s/DB_NAME_TO_REPLACE/$PROD_DB_NAME/g" "legacy/config/config.php"
+                    cp legacy/config/www.clubalpinlyon.fr/params.php legacy/config/params.php
                   ;;
                 "main" )
                     cp infrastructure/confs/staging/robots.txt public/robots.txt
@@ -58,6 +59,7 @@ jobs:
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$DEV_DB_PASSWORD/g" "legacy/config/config.php"
                     sed -i "s/DB_USER_TO_REPLACE/$DEV_DB_USER/g" "legacy/config/config.php"
                     sed -i "s/DB_NAME_TO_REPLACE/$DEV_DB_NAME/g" "legacy/config/config.php"
+                    cp legacy/config/www.clubalpinlyon.fr/params.php legacy/config/params.php
                   ;;
             esac
 

@@ -5,7 +5,7 @@ include __DIR__.'/../../app/includes.php';
 //_________________________________________________ FONCTIONS MAISON
 include __DIR__.'/../../app/fonctions.php';
 //_________________________________________________ VARIABLES "GLOBALES" DU SITE
-include __DIR__.'/../../app/params.php';
+include __DIR__.'/../../config/params.php';
 //_________________________________________________ MYSQLi
 $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
