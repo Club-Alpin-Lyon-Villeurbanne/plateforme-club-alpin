@@ -166,6 +166,7 @@ class UserRights
             }
         }
 
+        // Tous les utilisateurs connectés non salariés ont le statut "adhérent"
         if (!$user->hasAttribute('Salarié')) {
             $sql = 'SELECT DISTINCT code_userright, limited_to_comm_usertype '
                 .'FROM caf_userright, caf_usertype_attr, caf_usertype '
