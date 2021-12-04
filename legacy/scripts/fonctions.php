@@ -891,7 +891,6 @@ function get_future_destinations($can_modify = false, $for_event_creation = fals
 
     $destinations = [];
 
-    $mon_id = $mysqli->real_escape_string(getUser()->getIdUser());
     $req = 'SELECT * FROM `'.$pbd."destination`
 	        WHERE `date` > '".date('Y-m-d H:i:s')."' ";
     if ($for_event_creation) {
@@ -901,6 +900,7 @@ function get_future_destinations($can_modify = false, $for_event_creation = fals
         if (allowed('destination_supprimer') || allowed('destination_modifier') || allowed('destination_activer_desactiver')) {
             $req .= '';
         } else {
+            $mon_id = $mysqli->real_escape_string(getUser()->getIdUser());
             $req .= ' AND (id_user_who_create = '.$mon_id.'  OR id_user_responsable = '.$mon_id.' OR id_user_adjoint = '.$mon_id.')';
         }
     }
