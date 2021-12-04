@@ -2,6 +2,8 @@
 
 use App\Legacy\LegacyContainer;
 
+$MAX_VERSIONS = LegacyContainer::getParameter('legacy_env_CONTENT_MAX_VERSIONS');
+
 require __DIR__.'/app/includes.php';
 
 //_________________________________________________
@@ -103,7 +105,7 @@ if (admin()) {
 							content_css : "css/base.css,css/style1.css,fonts/stylesheet.css",
 							body_id : "bodytinymce",
 							body_class : "<?php echo $_GET['class']; ?>",
-							theme_advanced_styles : "<?php echo $p_tiny_theme_advanced_styles; ?>",
+							theme_advanced_styles : "Entete Article=ArticleEntete;Titre de menu=menutitle;Bleu clair du CAF=bleucaf;Image flottante gauche=imgFloatLeft;Image flottante droite=imgFloatRight;Lien fancybox=fancybox;Mini=mini;Bloc alerte=erreur;Bloc info=info",
 
 							relative_urls : true,
 							convert_urls : false,
@@ -198,7 +200,7 @@ if (admin()) {
 
 									<!-- choix versions -->
 									<div style="float:right">
-										Charger une version précédente (<?php echo $p_nmaxversions; ?> max.) :
+										Charger une version précédente (<?php echo $MAX_VERSIONS; ?> max.) :
 										<select name="versions" style="font-size:11px; ">
 											<?php
                                             foreach ($contentVersionsTab as $version) {
@@ -302,7 +304,7 @@ if (admin()) {
         $req = "SELECT COUNT(`id_content_html`) FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  'fr'";
         $sqlCount = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $nVersions = getArrayFirstValue($sqlCount->fetch_array(\MYSQLI_NUM));
-        $nDelete = $nVersions - $p_nmaxversions;
+        $nDelete = $nVersions - $MAX_VERSIONS;
         if ($nDelete > 0) {
             // s'il y en a à supprimer
             $req = "DELETE FROM `caf_content_html` WHERE `code_content_html` LIKE '$code_content_html' AND  `lang_content_html` LIKE  'fr' ORDER BY  `date_content_html` ASC LIMIT $nDelete"; // ASC pour commencer par la fin de ceux a supprimer

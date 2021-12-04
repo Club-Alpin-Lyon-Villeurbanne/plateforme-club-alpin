@@ -1,5 +1,7 @@
 <?php
 
+use App\Ftp\FtpFile;
+
 require __DIR__.'/../app/includes.php';
 
 if (admin()) {
@@ -130,7 +132,7 @@ if (admin()) {
     if ('file' == $type) {
         echo "
 					Déposez ici les fichiers que vous souhaitez proposer en téléchargement.<br />
-					Ext. autorisées : <span style='font-size:9px'>".implode(', ', $p_ftpallowed).'</span>
+					Ext. autorisées : <span style='font-size:9px'>".implode(', ', FtpFile::getAllowedExtensions()).'</span>
 					';
     } ?>
 			</p>
@@ -206,9 +208,8 @@ if (admin()) {
     // extensions autorisées ici en fonction du type demandé
     if ('image' == $type) {
         $extTab = ['jpg', 'jpeg', 'png'];
-    }
-    if ('file' == $type) {
-        $extTab = $p_ftpallowed;
+    } elseif ('file' == $type) {
+        $extTab = FtpFile::getAllowedExtensions();
     }
 
     // ouverture du dossier demande

@@ -17,15 +17,7 @@ if (!$_POST['id_destination'] || empty($_POST['id_destination'])) {
     $id_destination = (int) ($_POST['id_destination']);
     $destination = get_destination($id_destination);
 }
-$mail_to_transporteur = false;
 $mail_to_responsables = false;
-
-if ('-1' != $id_transporteur) {
-    $mail_to_transporteur = $id_transporteur;
-    if (!$_POST['content_mail'] || empty($_POST['content_mail'])) {
-        $errTab[] = 'Le contenu du mail ne peut être vide.';
-    }
-}
 
 if ($_POST['transporteur'] || 'on' == $_POST['transporteur']) {
     $mail_to_responsables = true;
@@ -40,33 +32,6 @@ if (0 === count($errTab)) {
     // ENVOI DU MAIL
 
     require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-
-    if ($mail_to_transporteur) {
-        $toMail = $p_transporteurs[$mail_to_transporteur]['email'];
-        $toName = $p_transporteurs[$mail_to_transporteur]['nom'];
-
-        // contenu
-        $subject = 'Nouvelle sortie du '.$p_sitename;
-        $content_main = "<h2>$subject</h2>";
-        $content_main .= nl2br('<p>'.$_POST['content_mail'].'</p>');
-
-        $content_header = '';
-        $content_footer = '';
-
-        $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-
-        $mail->Subject = $subject;
-        //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-        $mail->setMailBody($content_main);
-        $mail->setMailHeader($content_header);
-        $mail->setMailFooter($content_footer);
-        $mail->AddAddress($toMail, $toName);
-        // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-
-        if (!$mail->Send()) {
-            $errTabMail[] = "Échec à l'envoi du mail à ".html_utf8($toName).". Plus d'infos : ".($mail->ErrorInfo);
-        }
-    }
 
     if (!$errTabMail && $mail_to_responsables) {
         foreach ($encadrants as $encadrant) {
