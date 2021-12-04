@@ -103,9 +103,6 @@ if (user()) {
 
             <b>Votre pseudonyme :</b>
             <br />
-            <!--
-            <input type="text" name="nickname_user" class="type1" value="<?php echo html_utf8($tmpUser['nickname_user']); ?>" placeholder="" />
-            -->
             <h2><a href="/includer.php?p=includes/fiche-profil.php&id_user=<?php echo getUser()->getIdUser(); ?>" class="fancyframe" title="Aperçu de votre fiche"><?php echo html_utf8($tmpUser['nickname_user']); ?></a></h2>
 
             <br />

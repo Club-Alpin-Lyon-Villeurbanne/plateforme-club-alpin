@@ -1,11 +1,13 @@
 <?php
 
+use App\Utils\NicknameGenerator;
+
 global $kernel;
 
 $civ_user = trim(stripslashes($_POST['civ_user']));
 $firstname_user = trim(stripslashes($_POST['firstname_user']));
 $lastname_user = trim(stripslashes($_POST['lastname_user']));
-$nickname_user = trim(stripslashes($_POST['nickname_user']));
+$nickname_user = NicknameGenerator::generateNickname($firstname_user, $lastname_user);
 $cafnum_user = trim(stripslashes($_POST['cafnum_user']));
 $email_user = trim(stripslashes($_POST['email_user']));
 $mdp_user = trim(stripslashes($_POST['mdp_user']));
@@ -28,13 +30,6 @@ if (strlen($firstname_user) < 2) {
 if (strlen($lastname_user) < 2) {
     $errTab[] = "Merci d'entrer un nom de famille valide";
 }
-if (strlen($nickname_user) < 5 || strlen($nickname_user) > 20) {
-    $errTab[] = "Merci d'entrer un pseudonyme de 5 à 20 caractères";
-}
-    $tmp = preg_match($p_authchars, $nickname_user);
-    if (!empty($tmp)) {
-        $errTab[] = $fieldsErrTab['nickname_user'] = 'Le surnom ne peut contenir que des chiffres, lettres, espaces et apostrophes';
-    }
 if (!isMail($email_user)) {
     $errTab[] = 'Adresse e-mail invalide';
 }
