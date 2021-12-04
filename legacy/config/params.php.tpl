@@ -65,19 +65,8 @@ $p_tsp_max_pour_rappel_redac_cr = strtotime('midnight'); // cette nuit à minuit
 // nombre de versions des contenus à garder dans l'historique (entier positif)
 $p_nmaxversions = 5;
 
-// PARTENAIRES
-$p_showPartenairesSlider = '';
-
-// modules activés
-$p_modules = [];
 // langues
 $p_langs = ['fr']; // la langue par défaut en premier
-// positionnement des liens "editer ce bloc" en absolu (true), ou static (false)
-$p_abseditlink = true;
-// active / désactive le bouton modifier sur le rapport des contenus statiques manquant
-$p_editmissingstatics = true;
-// REGEX sélectionnant les caractères autorisés dans les USER IPUTS
-$p_authchars = "/([^A-Za-z0-9 'âàéêèëîïôœûùüçßøOÐØÞþÅÂÀÉÊÈËÎÏÔŒÛÙÜÇßØOÐØÞÞÅ])/";
 // Extensions autorisées dans le FTP
 $p_ftpallowed = ['gpx', 'kml', 'kmz', 'jpg', 'gif', 'jpeg', 'png', 'doc', 'docx', 'odt', 'pdf', 'avi', 'mov', 'mp3', 'rar', 'zip', 'txt', 'xls', 'csv', 'ppt', 'pptx', 'ai', 'psd', 'fla', 'swf', 'eps'];
 // tinymce vars
