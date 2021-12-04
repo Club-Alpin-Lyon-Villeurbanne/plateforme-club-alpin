@@ -922,5 +922,5 @@ function normalizeChars($s)
  */
 function getArrayFirstValue($array)
 {
-    return $array[0];
+    return $array[0] ?? null;
 }

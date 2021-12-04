@@ -21,6 +21,9 @@ $p_sitename = 'Club Alpin Français - XXX';
 $p_contactdusite = 'webmaster@xxx.fr';
 $p_noreply = 'noreply@xxx.fr';
 
+// ffcam
+$p_ffcam = ['6900'];
+
 // GOOGLE
 $p_google_analytics_account = 'UA-42585248-1';
 
