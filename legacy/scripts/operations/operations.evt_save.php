@@ -62,8 +62,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $code_evt = substr(formater($titre_evt, 3), 0, 30);
 
     if ('evt_create' == $_POST['operation']) {
-        $req = 'INSERT INTO '.$pbd."evt(id_evt ,status_evt ,status_legal_evt ,user_evt ,commission_evt ,tsp_evt ,tsp_end_evt ,tsp_crea_evt ,place_evt ,titre_evt ,code_evt ,massif_evt ,rdv_evt ,tarif_evt, cb_evt, tarif_detail, repas_restaurant, tarif_restaurant, denivele_evt ,distance_evt ,lat_evt ,long_evt ,matos_evt ,itineraire, difficulte_evt ,description_evt , need_benevoles_evt , join_start_evt, join_max_evt, ngens_max_evt, cycle_master_evt ,cycle_parent_evt ,child_version_from_evt ,child_version_tosubmit, id_groupe)
-					VALUES (NULL , '0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '$place_evt', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$cb_evt', '$tarif_detail', '$repas_restaurant', $tarif_restaurant, $denivele_evt, $distance_evt, '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', '$cycle_master_evt', '$cycle_parent_evt', '0', '0', $id_groupe);";
+        $req = 'INSERT INTO '.$pbd."evt(status_evt ,status_legal_evt ,user_evt ,commission_evt ,tsp_evt ,tsp_end_evt ,tsp_crea_evt ,place_evt ,titre_evt ,code_evt ,massif_evt ,rdv_evt ,tarif_evt, cb_evt, tarif_detail, repas_restaurant, tarif_restaurant, denivele_evt ,distance_evt ,lat_evt ,long_evt ,matos_evt ,itineraire, difficulte_evt ,description_evt , need_benevoles_evt , join_start_evt, join_max_evt, ngens_max_evt, cycle_master_evt ,cycle_parent_evt ,child_version_from_evt ,child_version_tosubmit, id_groupe, cancelled_evt)
+					VALUES ('0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '$place_evt', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$cb_evt', '$tarif_detail', '$repas_restaurant', $tarif_restaurant, $denivele_evt, $distance_evt, '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', '$cycle_master_evt', '$cycle_parent_evt', '0', '0', $id_groupe, '0');";
     } elseif ('evt_update' == $_POST['operation']) {
         // MISE A JOUR de l'éléments existant // IMPORTANT : le status repasse à 0
         $req = 'UPDATE '.$pbd."evt SET `status_evt`=0,
@@ -120,7 +120,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             'line' => __LINE__,
             'sql' => $req,
         ]);
-        $errTab[] = 'Erreur SQL creation/update : ';
+        $errTab[] = 'Erreur SQL creation/update : '.$mysqli->error;
     } else {
         // jointures de l'ev avec les users spécifiés (encadrant, coenc' benev')
 
