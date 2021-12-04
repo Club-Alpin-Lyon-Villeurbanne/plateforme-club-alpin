@@ -28,7 +28,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
             if (!isset($errTab) || 0 === count($errTab)) {
                 $req =
-                'INSERT INTO `'.$pbd."groupe` (`id`, `id_commission`, `nom`, `description`, `niveau_physique`, `niveau_technique`, `actif`)
+                "INSERT INTO `caf_groupe` (`id`, `id_commission`, `nom`, `description`, `niveau_physique`, `niveau_technique`, `actif`)
                     VALUES (NULL, '".$id_comm."', '".$nom."', '".$description."', '".$niveau_physique."', '".$niveau_technique."', '1');";
                 if (!$mysqli->query($req)) {
                     $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
@@ -58,7 +58,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
             if (!isset($errTab) || 0 === count($errTab)) {
                 $need_comma = false;
-                $req = 'UPDATE `'.$pbd.'groupe` SET ';
+                $req = 'UPDATE `caf_groupe` SET ';
                 if ($groupe['nom']) {
                     $req .= "`nom` = '".$nom."' ";
                     $need_comma = true;
@@ -86,7 +86,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $req .= 'WHERE `id` = '.$id_groupe;
 
                 if (isset($groupe['delete']) && 'on' == $groupe['delete']) {
-                    $req = 'DELETE FROM `'.$pbd.'groupe` WHERE `id` = '.$id_groupe;
+                    $req = 'DELETE FROM `caf_groupe` WHERE `id` = '.$id_groupe;
                 }
 
                 if (!$mysqli->query($req)) {

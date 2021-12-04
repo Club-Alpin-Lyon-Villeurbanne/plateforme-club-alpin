@@ -16,7 +16,7 @@ if (admin()) {
 
     if ($code_content_html) {
         $contenu_content_inline = $mysqli->real_escape_string($contenu_content_inline);
-        $req = 'SELECT `contenu_content_html` FROM  `'.$pbd."content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  '$lang' ORDER BY  `date_content_html` DESC  LIMIT 1";
+        $req = "SELECT `contenu_content_html` FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  '$lang' ORDER BY  `date_content_html` DESC  LIMIT 1";
         $handleSql = $mysqli->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             $result['success'] = true;

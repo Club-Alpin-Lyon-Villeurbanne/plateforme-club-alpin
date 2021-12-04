@@ -13,7 +13,6 @@ global $p_abseditlink;
 global $p_devmode;
 global $p_inclurelist;
 global $p_racine;
-global $pbd;
 global $president;
 global $userAllowedTo; // liste des opérations auxquelles l'user est autorisé. tableau associatif : la clé est le code de l'opératin, sa valeur les parametres
 global $versCettePage;
@@ -514,7 +513,6 @@ function twigRender(string $path, array $params = []): ?string
 // enregistrement de l'activité sur le site
 function mylog($code, $desc, $connectme = true)
 {
-    global $pbd;
     global $kernel;
 
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
@@ -523,7 +521,7 @@ function mylog($code, $desc, $connectme = true)
     $date_log_admin = time();
     $ip_log_admin = $mysqli->real_escape_string($_SERVER['REMOTE_ADDR']);
 
-    $req = 'INSERT INTO `'.$pbd."log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`)
+    $req = "INSERT INTO `caf_log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`)
         VALUES (NULL , '$code_log_admin',  '$desc_log_admin',  '$date_log_admin', '$ip_log_admin')";
     if (!$mysqli->query($req)) {
         $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
@@ -557,7 +555,6 @@ function linker($link)
 function cont($code = false, $html = false)
 {
     $defLang = 'fr';
-    global $pbd;
     global $CONTENUS_INLINE;
     global $lang;
     $tmplang = $lang;
@@ -572,8 +569,8 @@ function cont($code = false, $html = false)
         // v2 : BDD
         $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         // sélection de chaque élément par ordre DESC
-        $req = 'SELECT `code_content_inline`, `contenu_content_inline`
-            FROM  `'.$pbd."content_inline`
+        $req = "SELECT `code_content_inline`, `contenu_content_inline`
+            FROM  `caf_content_inline`
             WHERE  `lang_content_inline` LIKE  '$tmplang'
             ORDER BY  `date_content_inline` DESC
             ";
@@ -616,7 +613,6 @@ function inclure($elt, $style = 'vide', $options = [])
     global $p_abseditlink;
     global $versCettePage;
     global $p_inclurelist;
-    global $pbd;
 
     // assurer un seul id d'élément par page
     if (!in_array($elt, $p_inclurelist, true)) {
@@ -637,7 +633,7 @@ function inclure($elt, $style = 'vide', $options = [])
         $code_content_html = $mysqli->real_escape_string($elt);
 
         // Contenu
-        $req = 'SELECT `vis_content_html`,`contenu_content_html` FROM `'.$pbd."content_html` WHERE `code_content_html` LIKE '$code_content_html' AND lang_content_html LIKE '".$lang."' ORDER BY `date_content_html` DESC LIMIT 1";
+        $req = "SELECT `vis_content_html`,`contenu_content_html` FROM `caf_content_html` WHERE `code_content_html` LIKE '$code_content_html' AND lang_content_html LIKE '".$lang."' ORDER BY `date_content_html` DESC LIMIT 1";
         $handleTab = [];
         $handleSql = $mysqli->query($req);
         $found = false;
@@ -772,7 +768,6 @@ function wd_remove_accents($str, $charset = 'UTF-8')
 }
 function formater($retourner, $type = 1)
 {
-    global $pbd;
     // Type 1 : sans espace ni tirets, en minuscule
     if (1 == $type) {
         $retourner = str_replace("'", '-', $retourner);

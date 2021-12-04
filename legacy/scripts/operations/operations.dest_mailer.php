@@ -1,6 +1,6 @@
 <?php
 
-global $userAllowedTo, $pbd;
+global $userAllowedTo;
 
 $errTab = $errTabMail = [];
 $id_transporteur = $id_destination = $destination = $encadrants = null;
@@ -133,8 +133,8 @@ if (0 === count($errTab)) {
 
     if (0 === count($errTab)) {
         $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-        global $userAllowedTo, $pbd;
-        $req = 'UPDATE `'.$pbd."destination` SET `mail` = '1' WHERE `caf_destination`.`id` = $id_destination";
+        global $userAllowedTo;
+        $req = "UPDATE `caf_destination` SET `mail` = '1' WHERE `caf_destination`.`id` = $id_destination";
         if (!$mysqli->query($req)) {
             $errTab[] = "Les emails ont bien été envoyé, mais cette information n'a pas été enregistrée";
         }

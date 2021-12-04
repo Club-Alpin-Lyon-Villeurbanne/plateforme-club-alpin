@@ -36,7 +36,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if (!isset($errTab) || 0 === count($errTab)) {
         $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
         $auth_contact_user = $mysqli->real_escape_string($auth_contact_user);
-        $req = 'UPDATE `'.$pbd."user`
+        $req = "UPDATE `caf_user`
             SET
             `auth_contact_user` = '$auth_contact_user'
             WHERE `id_user` =$id_user LIMIT 1 ;";
@@ -173,7 +173,7 @@ if ('' !== $email_user_mailchange) {
     // ENTRÉE DE LA DEMANDE DANS LA BD
     if (!isset($errTab) || 0 === count($errTab)) {
         $token = bin2hex(random_bytes(16));
-        $req = 'INSERT INTO `'.$pbd."user_mailchange` (`user_user_mailchange` , `token_user_mailchange` , `email_user_mailchange` )
+        $req = "INSERT INTO `caf_user_mailchange` (`user_user_mailchange` , `token_user_mailchange` , `email_user_mailchange` )
                                                     VALUES ('$id_user',				'$token', 				'$email_user_mailchange');";
         if (!$mysqli->query($req)) {
             $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [

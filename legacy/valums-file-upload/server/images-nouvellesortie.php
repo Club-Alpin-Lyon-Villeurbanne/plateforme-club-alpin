@@ -105,13 +105,13 @@ if (0 === count($errTab) && 'edit' == $mode) {
 
     // save
     $filename = $mysqli->real_escape_string($filename);
-    $req = 'INSERT INTO '.$pbd."img(evt_img, ordre_img, user_img, fichier_img)
+    $req = "INSERT INTO caf_img(evt_img, ordre_img, user_img, fichier_img)
 						VALUES($id_evt,    100,    ".getUser()->getIdUser().", '$filename')";
     $mysqli->query($req);
 
     // maj ordre
     $id_img = $mysqli->insert_id;
-    $req = 'UPDATE  '.$pbd."img SET ordre_img` =  '$id_img' WHERE ".$pbd."img.id_img =$id_img ";
+    $req = "UPDATE caf_img SET ordre_img` =  '$id_img' WHERE caf_img.id_img =$id_img ";
     $mysqli->query($req);
 
     $result['id'] = $id_img;

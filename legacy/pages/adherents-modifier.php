@@ -10,7 +10,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 
     if (null === $userTab || 0 === count($userTab)) {
         $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-        $req = 'SELECT * FROM  `'.$pbd."user` WHERE id_user='".$mysqli->real_escape_string($id_user)."' LIMIT 1";
+        $req = "SELECT * FROM  `caf_user` WHERE id_user='".$mysqli->real_escape_string($id_user)."' LIMIT 1";
         $userTab = [];
         $result = $mysqli->query($req);
         $userTab = $result->fetch_assoc();

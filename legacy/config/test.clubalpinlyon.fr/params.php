@@ -39,9 +39,6 @@ $p_ffcam = ['6900'];
 $p_google_analytics_account = 'UA-26520066-1';
 $p_google_site_verification = 'vwDUjeSjHWSROqJcUgfJ5TwEkhUHZCbKWPGDn9erdpw';
 
-// préfixe de la base de donnée !! ne pas changer !! todo
-$pbd = 'caf_';
-
 // Mise à jour manuelle des adhérents
 $p_user_updatefiles = false;
 // nombre de colonnes dans le fichier adherent xxxx.csv

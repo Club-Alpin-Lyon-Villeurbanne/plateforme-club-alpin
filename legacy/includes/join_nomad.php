@@ -9,7 +9,7 @@ if (user()) {
         $busses = get_bus_destination($id_dest);
     }
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    $req = 'SELECT * FROM `'.$pbd.'evt` WHERE `id_evt` = '.$id_evt;
+    $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$id_evt;
     $result = $mysqli->query($req);
     while ($sorties = $result->fetch_assoc()) {
         $sortie = $sorties;

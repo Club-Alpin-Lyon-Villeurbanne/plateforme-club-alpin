@@ -183,7 +183,7 @@ if (user()) {
             } else {
                 // On récupère des informations complémentaires sur la sortie : besoin de bénévoles ? possibilité de restaurant ?
                 $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-                $req = 'SELECT * FROM `'.$pbd.'evt` WHERE `id_evt` = '.$id_evt;
+                $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$id_evt;
                 $result = $mysqli->query($req);
                 while ($sorties = $result->fetch_assoc()) {
                     $sortie = $sorties;

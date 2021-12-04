@@ -17,7 +17,7 @@ if (admin()) {
 
     if ($id_content_inline && isset($_POST['val'])) {
         $contenu_content_inline = $mysqli->real_escape_string($contenu_content_inline);
-        $req = 'UPDATE  `'.$pbd."content_inline` SET  `contenu_content_inline` =  '$contenu_content_inline' WHERE  `".$pbd."content_inline`.`id_content_inline` =$id_content_inline LIMIT 1 ;";
+        $req = "UPDATE  `caf_content_inline` SET  `contenu_content_inline` =  '$contenu_content_inline' WHERE  `caf_content_inline`.`id_content_inline` =$id_content_inline LIMIT 1 ;";
         if (!$mysqli->query($req)) {
             $result['error'] = "SQL error : $req";
         } else {

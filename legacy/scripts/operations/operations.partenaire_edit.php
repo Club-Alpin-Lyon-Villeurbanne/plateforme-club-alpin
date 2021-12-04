@@ -58,7 +58,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     if (-1 == $partenaireTab['part_id']) {
         $partenaireTab['part_image'] = $new_part_image;
-        $req = 'INSERT INTO `'.$pbd."partenaires` (part_name, part_order, part_image, part_desc, part_enable, part_url, part_type) VALUES (
+        $req = "INSERT INTO `caf_partenaires` (part_name, part_order, part_image, part_desc, part_enable, part_url, part_type) VALUES (
             '".$mysqli->real_escape_string($partenaireTab['part_name'])."',
             '".$mysqli->real_escape_string($partenaireTab['part_order'])."',
             '".$mysqli->real_escape_string($partenaireTab['part_image'])."',
@@ -75,7 +75,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
             $partenaireTab['part_image'] = $new_part_image;
         }
-        $req = 'UPDATE `'.$pbd."partenaires` SET
+        $req = "UPDATE `caf_partenaires` SET
             part_name='".$mysqli->real_escape_string($partenaireTab['part_name'])."',
             part_order='".$mysqli->real_escape_string($partenaireTab['part_order'])."',
             part_image='".$mysqli->real_escape_string($partenaireTab['part_image'])."',
