@@ -4,6 +4,8 @@ twig:
         url_site: '%env(ROUTER_CONTEXT_SCHEME)%://%env(ROUTER_CONTEXT_HOST)%'
         recaptcha:
             site_key: "%env(RECAPTCHA_KEY)%"
+        analytics_account: "%env(ANALYTICS_ACCOUNT)%"
+        google_site_verification: "%env(GOOGLE_SITE_VERIFICATION)%"
 
 when@test:
     twig:
