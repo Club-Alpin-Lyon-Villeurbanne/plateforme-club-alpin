@@ -24,7 +24,7 @@ while ($handle = $handleSql->fetch_assoc()) {
         $current_commission = $p2;
     }
     // variable de commission si elle est passée "en force" dans les vars GET
-    elseif ($_GET['commission'] == $handle['code_commission']) {
+    elseif (($_GET['commission'] ?? null) == $handle['code_commission']) {
         $current_commission = $_GET['commission'];
     }
 }

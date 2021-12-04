@@ -111,10 +111,10 @@ $p_chron_dates_butoires = [8, 13, 18];
 
 $p_multilangue = count($p_langs) < 2 ? false : true;
 // vars de navigation, depuis l'URL via URL REWRITING // vars get toujours dispo grace au htaccess
-$p1 = formater($_GET['p1'], 3);
-$p2 = formater($_GET['p2'], 3);
-$p3 = formater($_GET['p3'], 3);
-$p4 = formater($_GET['p4'], 3);
+$p1 = formater($_GET['p1'] ?? null, 3);
+$p2 = formater($_GET['p2'] ?? null, 3);
+$p3 = formater($_GET['p3'] ?? null, 3);
+$p4 = formater($_GET['p4'] ?? null, 3);
 // debug pour calls ajax
 if ('scripts/' == substr($p_racine, -8)) {
     $p_racine = substr($p_racine, 0, strlen($p_racine) - 8);

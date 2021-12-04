@@ -11,17 +11,17 @@ if (user()) {
         // AFFICHAGE,
 
         // MESSAGES d'arreurs
-        if ('article_depublier' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+        if (isset($_POST['operation']) && 'article_depublier' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
         }
-    if ('article_depublier' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+    if (isset($_POST['operation']) && 'article_depublier' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info">Article dépublié à '.date('H:i:s', time()).'.</p>';
     }
 
-    if ('article_del' == $_POST['operation'] && count($errTab)) {
+    if (isset($_POST['operation']) && 'article_del' == $_POST['operation'] && count($errTab)) {
         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
     }
-    if ('article_del' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+    if (isset($_POST['operation']) && 'article_del' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info">Article supprimé à '.date('H:i:s', time()).'.</p>';
     }
 

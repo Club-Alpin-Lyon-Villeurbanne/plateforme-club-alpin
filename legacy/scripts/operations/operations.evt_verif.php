@@ -1,11 +1,11 @@
 <?php
 
-if ('evt_create' == $_POST['operation']) {
+if ('evt_create' == ($_POST['operation'] ?? null)) {
     $user_evt = getUser()->getIdUser();
     $tsp_crea_evt = time();
     $benevoles = is_array($_POST['benevoles']) ? $_POST['benevoles'] : [];
 }
-if ('evt_update' == $_POST['operation']) {
+if ('evt_update' == ($_POST['operation'] ?? null)) {
     $id_evt = (int) ($_POST['id_evt_to_update']);
 }
 $commission_evt = (int) ($_POST['commission_evt']);
@@ -50,12 +50,12 @@ $ngens_max_evt = (int) ($_POST['ngens_max_evt']);
 $encadrants = is_array($_POST['encadrants']) ? $_POST['encadrants'] : [];
 $coencadrants = is_array($_POST['coencadrants']) ? $_POST['coencadrants'] : [];
 
-if ('evt_create' == $_POST['operation']) {
+if ('evt_create' == ($_POST['operation'] ?? null)) {
     if (!$user_evt) {
         $errTab[] = 'ID user invalide';
     }
 }
-if ('evt_update' == $_POST['operation']) {
+if ('evt_update' == ($_POST['operation'] ?? null)) {
     if (!$id_evt) {
         $errTab[] = 'ID événement invalide';
     }
@@ -289,7 +289,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
         }
         // benevole :
-        if ('evt_create' == $_POST['operation']) {
+        if ('evt_create' == ($_POST['operation'] ?? null)) {
             foreach ($benevoles as $id_user) {
                 $id_user = (int) $id_user;
                 $req = ''
