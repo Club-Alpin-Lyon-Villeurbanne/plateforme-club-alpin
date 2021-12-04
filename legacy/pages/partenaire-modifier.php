@@ -55,10 +55,10 @@ if (!admin()) {
         if (isset($errTab) && count($errTab) > 0) {
             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
         }
-    if ('partenaire_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+    if (isset($_POST['operation']) && 'partenaire_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<div class="info"><b>Partenaire modifié avec succès :</b> <ul><li>'.implode('</li><li>', $okTab).'</li></ul></div>';
     }
-    if ('partenaire_add' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+    if (isset($_POST['operation']) && 'partenaire_add' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<div class="info"><b>Partenaire ajouté avec succès :</b> <ul><li>'.implode('</li><li>', $okTab).'</li></ul></div>';
     } else {
         ?>

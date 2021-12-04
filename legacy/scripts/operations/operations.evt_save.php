@@ -331,8 +331,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $_POST['tsp_end_evt_hour'] = '';
         }
 
-        if ($_POST['operation'] = 'evt_update') {
-            header('Location:'.$p_racine.'creer-une-sortie/'.html_utf8($code_commission).'.html?lbxMsg='.$lbxMsg);
-        }
+        header('Location:'.$p_racine.'creer-une-sortie/'.html_utf8($code_commission).'.html?lbxMsg='.$lbxMsg);
     }
 }

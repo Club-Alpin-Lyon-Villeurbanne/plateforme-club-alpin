@@ -65,14 +65,13 @@ if (!admin()) {
 
 	<br />
 	<!-- nouvel elt -->
-	<form class="toggleForm add" action="<?php echo $versCettePage; ?>" method="post" style="display:<?php if (('addContentInline' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) || 'forceAddContent' == $_POST['operation']) {
+	<form class="toggleForm add" action="<?php echo $versCettePage; ?>" method="post" style="display:<?php if ((isset($_POST['operation']) && 'addContentInline' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) || 'forceAddContent' == $_POST['operation']) {
         echo 'block';
     } ?>">
 		<input type="hidden" name="operation" value="addContentInline" />
 		<input type="hidden" name="lang_content_inline" value="<?php echo $lang_content_inline; ?>" />
 		<?php
-        // if($_POST['operation'] == 'addContentInline' && !sizeof($errTab)) echo '<div class="info">Mise à jour enregistrée le '.date("d/m/Y à H:i:s").'</div>';
-        if ('addContentInline' == $_POST['operation'] && count($errTab)) {
+        if (isset($_POST['operation']) && 'addContentInline' == $_POST['operation'] && count($errTab)) {
             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
         } ?>
 		<h4>Ajouter un contenu</h4>
@@ -129,15 +128,15 @@ if (!admin()) {
 
 
 	<!-- nouveau groupe -->
-	<form class="toggleForm addgroup" action="<?php echo $versCettePage; ?>" method="post" style="display:<?php if ('addContentGroup' == $_POST['operation']) {
+	<form class="toggleForm addgroup" action="<?php echo $versCettePage; ?>" method="post" style="display:<?php if (isset($_POST['operation']) && 'addContentGroup' == $_POST['operation']) {
             echo 'block';
         } ?>">
 		<input type="hidden" name="operation" value="addContentGroup" />
 		<?php
-        if ('addContentGroup' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+        if (isset($_POST['operation']) && 'addContentGroup' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
             echo '<div class="info">Nouveau groupe créé, et disponible dans la liste.</div>';
         }
-    if ('addContentGroup' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+    if (isset($_POST['operation']) && 'addContentGroup' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
     } ?>
 		<h4>Ajouter un groupe de contenu</h4>
@@ -330,7 +329,7 @@ if (!admin()) {
 
 		// si on arrive sur la page depuis un bouton "manque de contenus", on focus sur le champ ciblé
 		<?php
-        if ('forceAddContent' == $_POST['operation']) {
+        if (isset($_POST['operation']) && 'forceAddContent' == $_POST['operation']) {
             ?>
 			$("input[name=contenu_content_inline]:first").focus();
 			<?php

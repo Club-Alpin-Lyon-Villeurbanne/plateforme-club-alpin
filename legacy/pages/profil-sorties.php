@@ -26,7 +26,7 @@ if (user()) {
     // pagniation
         $limite = 10; // n elts par page
         $total = 0; // n elts en tout dans la base
-        $pagenum = (int) ($_GET['pagenum']);
+        $pagenum = (int) ($_GET['pagenum'] ?? 0);
     if ($pagenum < 1) {
         $pagenum = 1;
     } // les pages commencent à 1

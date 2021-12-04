@@ -1,3 +1,6 @@
+<?php
+global $ogImage;
+?>
 	<!-- vars php passées au js -->
     <script type="text/javascript">
 	var lang='<?php echo $lang; ?>';

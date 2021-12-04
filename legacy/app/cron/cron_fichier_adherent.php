@@ -5,10 +5,6 @@ include __DIR__.'/../../app/includes.php';
 //_________________________________________________ MYSQLi
 $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
-?>
-
-<?php
-
 function mysqli_result($res, $row = 0, $col = 0)
 {
     if ($row >= 0 && mysqli_num_rows($res) > $row) {
@@ -294,5 +290,3 @@ $req = "UPDATE caf_user SET cafnum_parent_user = '' WHERE
 if (!$mysqli->query($req)) {
     echo 'Erreur SQL lors du log:'.$mysqli->error;
 }
-
-mysqli_close($mysqli);
