@@ -8,13 +8,6 @@ setlocale(\LC_ALL, 'fr_FR');
 
 $newConfig = require __DIR__.'/config.php';
 
-// chemin absolu vers la racine des fichiers
-if ($_SERVER && array_key_exists('HTTP_HOST', $_SERVER)) {
-    $p_racine = $newConfig['url'].'/';
-} else {
-    $p_racine = __DIR__.'/../../../public';
-}
-
 // NOM DU SITE ( apparaît notamment dans les e-mailings )
 $p_sitename = 'CAF Lyon Villeurbanne';
 
@@ -111,9 +104,6 @@ $p1 = formater($_GET['p1'] ?? null, 3);
 $p2 = formater($_GET['p2'] ?? null, 3);
 $p3 = formater($_GET['p3'] ?? null, 3);
 $p4 = formater($_GET['p4'] ?? null, 3);
-// debug pour calls ajax
-if ('scripts/' == substr($p_racine, -8)) {
-    $p_racine = substr($p_racine, 0, strlen($p_racine) - 8);
-}
+
 // par défaut, la page courante n'est pas admin (modifié en aval dans pages.php)
 $p_pageadmin = false;

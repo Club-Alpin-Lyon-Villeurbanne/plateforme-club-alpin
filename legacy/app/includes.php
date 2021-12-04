@@ -10,11 +10,6 @@ if (isset($config['sentry_dsn'])) {
     ]);
 }
 
-if (\PHP_SAPI !== 'cli' && isset($_SERVER['HTTP_HOST']) && $config['https'] && !isset($_SERVER['HTTPS'])) {
-    header('Location: '.$p_racine = 'https://'.$_SERVER['HTTP_HOST'], true, 301);
-    exit;
-}
-
 $scriptsDir = __DIR__.'/../scripts/';
 
 //_________________________________________________ FONCTIONS MAISON

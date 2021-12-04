@@ -1,5 +1,8 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
 global $userAllowedTo;
 
 $errTab = $errTabMail = [];
@@ -80,11 +83,11 @@ if (0 === count($errTab)) {
             // recup infos evt
             $evtUrl = '';
             $evtName = '';
-            $evtUrl = html_utf8($p_racine.'sortie/'.$encadrant['sortie']['code_evt'].'-'.$encadrant['sortie']['id_evt'].'.html');
+            $evtUrl = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$encadrant['sortie']['code_evt'].'-'.$encadrant['sortie']['id_evt'].'.html');
             $evtName = html_utf8($encadrant['sortie']['titre_evt']);
 
-            $evtFiche = html_utf8($p_racine.'feuille-de-sortie/evt-'.$encadrant['sortie']['id_evt'].'.html');
-            $destFiche = html_utf8($p_racine.'feuille-de-sortie/dest-'.$id_destination.'.html');
+            $evtFiche = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'feuille-de-sortie/evt-'.$encadrant['sortie']['id_evt'].'.html');
+            $destFiche = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'feuille-de-sortie/dest-'.$id_destination.'.html');
 
             if (0 === count($errTabMail)) {
                 // contenu

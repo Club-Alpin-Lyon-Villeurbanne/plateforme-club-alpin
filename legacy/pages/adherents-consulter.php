@@ -1,4 +1,9 @@
 <?php
+
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
 if (!admin() && !allowed('user_edit_notme')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
@@ -116,9 +121,9 @@ if (!admin() && !allowed('user_edit_notme')) {
     if (0 == $userTab['valid_user'] && '' !== $userTab['cookietoken_user']) {
         $rowValue .= '<br />URL d\'activation du compte : ';
         if (admin()) {
-            $rowValue .= '<a href="'.$p_racine.'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html">';
+            $rowValue .= '<a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html">';
         }
-        $rowValue .= $p_racine.'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html';
+        $rowValue .= $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html';
         if (admin()) {
             $rowValue .= '</a>';
         }

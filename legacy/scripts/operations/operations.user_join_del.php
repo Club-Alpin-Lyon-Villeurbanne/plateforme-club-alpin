@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 $id_evt = (int) ($_POST['id_evt']);
@@ -24,7 +26,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $evtName = html_utf8($row[1]);
         $evtDate = html_utf8(date('d-m-Y', $row[2]));
         $evtTarif = html_utf8($row[3]);
-        $evtUrl = html_utf8($p_racine.'sortie/'.stripslashes($evtCode).'-'.$evtId.'.html');
+        $evtUrl = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($evtCode).'-'.$evtId.'.html');
     }
 
     // Informations sur l'encadrant
@@ -86,7 +88,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // vars
             $tmpUserName = (getUser()->getFirstnameUser().' '.getUser()->getLastnameUser());
             $evtName = html_utf8($_POST['titre_evt']);
-            $evtUrl = html_utf8($p_racine.'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html');
+            $evtUrl = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html');
 
             // contenu
             $subject = 'Désinscription de '.$tmpUserName;

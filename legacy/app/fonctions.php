@@ -11,7 +11,6 @@ global $kernel;
 global $lang;
 global $p_devmode;
 global $p_inclurelist;
-global $p_racine;
 global $president;
 global $userAllowedTo; // liste des opérations auxquelles l'user est autorisé. tableau associatif : la clé est le code de l'opératin, sa valeur les parametres
 global $versCettePage;
@@ -93,7 +92,6 @@ La fonction "userlink" affiche un lien vers le profil d'un utilisateur en foncti
 */
 function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user = false, $lastname_user = false, $style = 'public')
 {
-    global $p_racine;
     $return = '';
 
     switch ($style) {
@@ -103,10 +101,7 @@ function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user =
         default:		return;
     }
 
-    // habillage du lien (CSS:userlink)
-    $return = '<a href="'.$p_racine.'includer.php?p=includes/fiche-profil.php&amp;id_user='.(int) $id_user.'" class="fancyframe userlink" title="'.cont('userlink-title').'">'.$return.'</a>';
-
-    return $return;
+    return '<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user='.(int) $id_user.'" class="fancyframe userlink" title="'.cont('userlink-title').'">'.$return.'</a>';
 }
 
 /*
@@ -115,8 +110,6 @@ user désirée ou bien le picto par défaut si celle-ci n'existe pas.
 */
 function userImg($id_user, $style = '')
 {
-    global $p_racine;
-
     switch ($style) {
         case 'pic':
             $style = $style.'-';
@@ -129,12 +122,12 @@ function userImg($id_user, $style = '')
             break;
     }
 
-    $rel = 'ftp/user/'.$id_user.'/'.$style.'profil.jpg';
-    if (!file_exists(__DIR__.'/../../public/'.$rel)) {
-        $rel = 'ftp/user/0/'.$style.'profil.jpg';
+    $rel = '/ftp/user/'.$id_user.'/'.$style.'profil.jpg';
+    if (!file_exists(__DIR__.'/../../public'.$rel)) {
+        $rel = '/ftp/user/0/'.$style.'profil.jpg';
     }
 
-    return $p_racine.$rel;
+    return $rel;
 }
 
 /*
@@ -143,14 +136,12 @@ liée à cette commission, ou bien de celle par défaut
 */
 function comFd($id_commission)
 {
-    global $p_racine;
-
-    $rel = 'ftp/commission/'.(int) $id_commission.'/bigfond.jpg';
-    if (!file_exists(__DIR__.'/../../public/'.$rel)) {
-        $rel = 'ftp/commission/0/bigfond.jpg';
+    $rel = '/ftp/commission/'.(int) $id_commission.'/bigfond.jpg';
+    if (!file_exists(__DIR__.'/../../public'.$rel)) {
+        $rel = '/ftp/commission/0/bigfond.jpg';
     }
 
-    return $p_racine.$rel;
+    return $rel;
 }
 
 /*
@@ -159,20 +150,18 @@ de la commission désirée ou bien le picto par défaut si celui-ci n'existe pas
 */
 function comPicto($id_commission, $style = '')
 {
-    global $p_racine;
-
     switch ($style) {
         case 'light': 	$style = '-'.$style; break;
         case 'dark': 	$style = '-'.$style; break;
         default:		$style = '';
     }
 
-    $rel = 'ftp/commission/'.(int) $id_commission.'/picto'.$style.'.png';
-    if (!file_exists(__DIR__.'/../../public/'.$rel)) {
-        $rel = 'ftp/commission/0/picto'.$style.'.png';
+    $rel = '/ftp/commission/'.(int) $id_commission.'/picto'.$style.'.png';
+    if (!file_exists(__DIR__.'/../../public'.$rel)) {
+        $rel = '/ftp/commission/0/picto'.$style.'.png';
     }
 
-    return $p_racine.$rel;
+    return $rel;
 }
 
 /*
