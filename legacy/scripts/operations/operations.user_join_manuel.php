@@ -136,7 +136,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $status_evt_join = 1;
             }
 
-            $req = 'INSERT INTO '.$pbd."evt_join(
+            $req = "INSERT INTO caf_evt_join(
                         id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join,
                         lastchange_when_evt_join, lastchange_who_evt_join,
                         is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)

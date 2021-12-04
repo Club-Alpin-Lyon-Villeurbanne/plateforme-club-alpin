@@ -8,7 +8,7 @@
     } else {
         $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         $tab = [];
-        $req = 'SELECT * FROM `'.$pbd.'page` WHERE `pagelibre_page` =1 ORDER BY `ordre_page` DESC LIMIT 1000';
+        $req = 'SELECT * FROM `caf_page` WHERE `pagelibre_page` =1 ORDER BY `ordre_page` DESC LIMIT 1000';
         $result = $mysqli->query($req);
         while ($row = $result->fetch_assoc()) {
             // récupération de la date de dernière modification de l'élément contenu si existant

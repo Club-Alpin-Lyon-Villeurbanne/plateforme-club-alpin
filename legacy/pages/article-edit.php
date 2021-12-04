@@ -17,7 +17,7 @@
             $article = false;
 
             $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-            $req = 'SELECT * FROM '.$pbd."article WHERE id_article=$id_article LIMIT 1";
+            $req = "SELECT * FROM caf_article WHERE id_article=$id_article LIMIT 1";
             $result = $mysqli->query($req);
             while ($row = $result->fetch_assoc()) {
                 $article = $row;

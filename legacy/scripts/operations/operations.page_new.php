@@ -24,7 +24,7 @@ if (!$erreur) {
     $doublon = true;
     for ($i = 1; $doublon; ++$i) {
         // Recherche sql
-        $countSql = $mysqli->query('SELECT COUNT(*) FROM `'.$pbd."page` WHERE `code_page` LIKE '$code_page' LIMIT 1");
+        $countSql = $mysqli->query("SELECT COUNT(*) FROM `caf_page` WHERE `code_page` LIKE '$code_page' LIMIT 1");
         if (!getArrayFirstValue($countSql->fetch_array(\MYSQLI_NUM))) {
             $doublon = false;
         }
@@ -33,7 +33,7 @@ if (!$erreur) {
 
     // définition du niveau
     if ($parent_page) {
-        $countSql = $mysqli->query('SELECT `niveau_page` FROM `'.$pbd."page` WHERE `id_page` =$parent_page LIMIT 1");
+        $countSql = $mysqli->query("SELECT `niveau_page` FROM `caf_page` WHERE `id_page` =$parent_page LIMIT 1");
         $niveau_page = getArrayFirstValue($countSql->fetch_array(\MYSQLI_NUM)) + 1;
     }
 
@@ -43,7 +43,7 @@ if (!$erreur) {
     $description_page = $mysqli->real_escape_string($description_page);
 
     // save
-    $req = 'INSERT INTO `'.$pbd."page` (`id_page` ,`ordre_page` ,`parent_page` ,`code_page` ,`nom_page` ,`niveau_page` ,`titre_page` ,`description_page` ,`vis_page`)
+    $req = "INSERT INTO `caf_page` (`id_page` ,`ordre_page` ,`parent_page` ,`code_page` ,`nom_page` ,`niveau_page` ,`titre_page` ,`description_page` ,`vis_page`)
                                 VALUES (NULL , '$ordre_page', '$parent_page', '$code_page', '$nom_page', '$niveau_page', '$titre_page', '$description_page', '$vis_page');";
     $mysqli->query($req);
 }

@@ -62,11 +62,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $code_evt = substr(formater($titre_evt, 3), 0, 30);
 
     if ('evt_create' == $_POST['operation']) {
-        $req = 'INSERT INTO '.$pbd."evt(status_evt ,status_legal_evt ,user_evt ,commission_evt ,tsp_evt ,tsp_end_evt ,tsp_crea_evt ,place_evt ,titre_evt ,code_evt ,massif_evt ,rdv_evt ,tarif_evt, cb_evt, tarif_detail, repas_restaurant, tarif_restaurant, denivele_evt ,distance_evt ,lat_evt ,long_evt ,matos_evt ,itineraire, difficulte_evt ,description_evt , need_benevoles_evt , join_start_evt, join_max_evt, ngens_max_evt, cycle_master_evt ,cycle_parent_evt ,child_version_from_evt ,child_version_tosubmit, id_groupe, cancelled_evt)
+        $req = "INSERT INTO caf_evt(status_evt ,status_legal_evt ,user_evt ,commission_evt ,tsp_evt ,tsp_end_evt ,tsp_crea_evt ,place_evt ,titre_evt ,code_evt ,massif_evt ,rdv_evt ,tarif_evt, cb_evt, tarif_detail, repas_restaurant, tarif_restaurant, denivele_evt ,distance_evt ,lat_evt ,long_evt ,matos_evt ,itineraire, difficulte_evt ,description_evt , need_benevoles_evt , join_start_evt, join_max_evt, ngens_max_evt, cycle_master_evt ,cycle_parent_evt ,child_version_from_evt ,child_version_tosubmit, id_groupe, cancelled_evt)
 					VALUES ('0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '$place_evt', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$cb_evt', '$tarif_detail', '$repas_restaurant', $tarif_restaurant, $denivele_evt, $distance_evt, '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', '$cycle_master_evt', '$cycle_parent_evt', '0', '0', $id_groupe, '0');";
     } elseif ('evt_update' == $_POST['operation']) {
         // MISE A JOUR de l'éléments existant // IMPORTANT : le status repasse à 0
-        $req = 'UPDATE '.$pbd."evt SET `status_evt`=0,
+        $req = "UPDATE caf_evt SET `status_evt`=0,
 				`tsp_evt`='$tsp_evt',
 				`tsp_end_evt` =  '$tsp_end_evt',
 				`tsp_edit_evt` =  '".time()."',
@@ -105,7 +105,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $req .= ', cycle_parent_evt = 0 ';
         } else {
             $req .= ", cycle_parent_evt = '$cycle_parent_evt' ";
-            $req2 = 'UPDATE '.$pbd."evt SET cycle_master_evt = 1 WHERE id_evt=$cycle_parent_evt";
+            $req2 = "UPDATE caf_evt SET cycle_master_evt = 1 WHERE id_evt=$cycle_parent_evt";
             $mysqli->query($req2);
         }
 
@@ -134,7 +134,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // suppression des inscrits si ils ont un role encadrant/coencadrant dans cette sortie
             // suppression des inscriptions précédentes encadrant/coencadrant/benevole
 
-            $req = 'SELECT * FROM '.$pbd."evt_join WHERE evt_evt_join = $id_evt AND role_evt_join IN ('encadrant', 'coencadrant')";
+            $req = "SELECT * FROM caf_evt_join WHERE evt_evt_join = $id_evt AND role_evt_join IN ('encadrant', 'coencadrant')";
             $results = $mysqli->query($req);
             if ($results) {
                 while ($row = $results->fetch_assoc()) {
@@ -149,7 +149,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 }
                 // L'utilisateur n'a plus de statut co-encadrant, on le supprime
                 else {
-                    $req = 'DELETE FROM '.$pbd."evt_join WHERE evt_evt_join = $id_evt AND user_evt_join = $id_encadrant;";
+                    $req = "DELETE FROM caf_evt_join WHERE evt_evt_join = $id_evt AND user_evt_join = $id_encadrant;";
                     if (!$mysqli->query($req)) {
                         $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
                             'error' => $mysqli->error,
@@ -166,14 +166,14 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if (!isset($errTab) || 0 === count($errTab)) {
             foreach ($encadrants as $id_user) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
-                    $req = 'INSERT INTO '.$pbd."evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
+                    $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
                                                         VALUES(NULL , 1,               '$id_evt',  '$id_user',  'encadrant', ".time().');';
                     $mysqli->query($req);
                 }
             }
             foreach ($coencadrants as $id_user) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
-                    $req = 'INSERT INTO '.$pbd."evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
+                    $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
                                                         VALUES(NULL , 1, '$id_evt',  '$id_user',  'coencadrant', ".time().');';
                     $mysqli->query($req);
                 }
@@ -182,7 +182,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             if ('evt_create' == $_POST['operation']) {
                 foreach ($benevoles as $id_user) {
                     $id_user = (int) $id_user;
-                    $req = 'INSERT INTO '.$pbd."evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
+                    $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
                                                         VALUES(NULL , 1, '$id_evt',  '$id_user',  'benevole', ".time().');';
                     $mysqli->query($req);
                 }
@@ -194,7 +194,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             if ($_POST['id_destination']) {
                 $id_destination = $_POST['id_destination'];
 
-                $req = 'DELETE FROM '.$pbd."evt_destination WHERE id_evt = $id_evt AND id_destination = $id_destination";
+                $req = "DELETE FROM caf_evt_destination WHERE id_evt = $id_evt AND id_destination = $id_destination";
                 if (!$mysqli->query($req)) {
                     $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
                         'error' => $mysqli->error,
@@ -215,7 +215,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     $lieu_lat = $mysqli->real_escape_string($depose['lat']);
                     $lieu_lng = $mysqli->real_escape_string($depose['lng']);
 
-                    $sql = 'INSERT INTO `'.$pbd."lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
+                    $sql = "INSERT INTO `caf_lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
                             VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
 
                     if (!$mysqli->query($sql)) {
@@ -243,7 +243,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                         $lieu_lat = $mysqli->real_escape_string($reprise['lat']);
                         $lieu_lng = $mysqli->real_escape_string($reprise['lng']);
 
-                        $sql = 'INSERT INTO `'.$pbd."lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
+                        $sql = "INSERT INTO `caf_lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
                                 VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
 
                         if (!$mysqli->query($sql)) {
@@ -264,7 +264,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     $date_depose = $mysqli->real_escape_string($_POST['lieu']['depose']['date_depose']);
                     $date_reprise = $mysqli->real_escape_string($_POST['lieu']['reprise']['date_reprise']);
 
-                    $req = 'INSERT INTO `'.$pbd."evt_destination`
+                    $req = "INSERT INTO `caf_evt_destination`
                                 (`id`, `id_evt`, `id_destination`, `id_lieu_depose`, `date_depose`, `id_lieu_reprise`, `date_reprise`)
                            VALUES
                                 (NULL, $id_evt, $id_destination, $id_lieu_depose, '$date_depose', $id_lieu_reprise, '$date_reprise');";

@@ -23,9 +23,6 @@ $p_ffcam = ['6900'];
 // GOOGLE
 $p_google_analytics_account = 'UA-42585248-1';
 
-// préfixe de la base de donnée
-$pbd = 'caf_';
-
 // Mise à jour manuelle des adhérents
 $p_user_updatefiles = false;
 // nombre de colonnes dans le fichier adherent xxxx.csv

@@ -15,7 +15,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $lieu_lat = $mysqli->real_escape_string($lieu_lat);
         $lieu_lng = $mysqli->real_escape_string($lieu_lng);
 
-        $sql = 'INSERT INTO `'.$pbd."lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
+        $sql = "INSERT INTO `caf_lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
             VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
         if (!$mysqli->query($sql)) {
             $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
@@ -40,7 +40,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $bdl_type_lieu = $mysqli->real_escape_string($bdl_type_lieu);
         $bdl_date = $mysqli->real_escape_string($bdl_date);
 
-        $req = 'INSERT INTO `'.$pbd.'bus_lieu_destination` (`id`, `id_bus`, `id_destination`, `id_lieu`, `type_lieu`, `date`) VALUES '.
+        $req = 'INSERT INTO `caf_bus_lieu_destination` (`id`, `id_bus`, `id_destination`, `id_lieu`, `type_lieu`, `date`) VALUES '.
             "(NULL, '$bdl_id_bus', '$bdl_id_destination', '$id_lieu', '$bdl_type_lieu', '$bdl_date');";
         if (!$mysqli->query($req)) {
             $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
@@ -58,7 +58,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $bus_id = $mysqli->real_escape_string($bus_id);
     $intitule = $mysqli->real_escape_string($intitule);
     $places_max = $mysqli->real_escape_string($places_max);
-    $sql = 'UPDATE `'.$pbd."bus` SET `intitule` = '$intitule', `places_max` = '$places_max' WHERE `id` = $bus_id;";
+    $sql = "UPDATE `caf_bus` SET `intitule` = '$intitule', `places_max` = '$places_max' WHERE `id` = $bus_id;";
     if (!$mysqli->query($sql)) {
         $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
             'error' => $mysqli->error,
@@ -81,7 +81,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         $id_destination = $mysqli->real_escape_string($id_destination);
 
-        $sql = 'DELETE FROM `'.$pbd."bus_lieu_destination` WHERE `id` IN ($del_ids) AND `id_destination` = $id_destination AND `id_bus` = $bus_id;";
+        $sql = "DELETE FROM `caf_bus_lieu_destination` WHERE `id` IN ($del_ids) AND `id_destination` = $id_destination AND `id_bus` = $bus_id;";
         if (!$mysqli->query($sql)) {
             $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
                 'error' => $mysqli->error,

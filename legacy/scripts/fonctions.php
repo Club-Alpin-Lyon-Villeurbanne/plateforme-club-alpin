@@ -1,7 +1,7 @@
 <?php
 
 global $_POST;
-global $userAllowedTo, $pbd;
+global $userAllowedTo;
 
 /*
     Récupération des sorties d'un utilisateur
@@ -90,7 +90,7 @@ function display_articles($id_user, $limit = 10, $title = '')
 function get_niveaux($id_user, $editable = false)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
+    global $userAllowedTo;
 
     $notes = false;
 
@@ -100,7 +100,7 @@ function get_niveaux($id_user, $editable = false)
         $ids_comms = $title_comms = [];
 
         // ON r�cup�re les identifiants et titres commission en �criture
-        $req = 'SELECT `id_commission`, `title_commission` FROM `'.$pbd.'commission` ';
+        $req = 'SELECT `id_commission`, `title_commission` FROM `caf_commission` ';
         if ('true' === $note_comm_edit) {
         } else {
             $tab = explode('|', $note_comm_edit);
@@ -127,7 +127,7 @@ function get_niveaux($id_user, $editable = false)
         }
 
         // On r�cup�re les notes saisies
-        $req = 'SELECT N.id as niveau_id, N.id_commission, C.title_commission, niveau_technique, niveau_physique, commentaire FROM `'.$pbd.'user_niveau` AS N, `'.$pbd.'commission` AS C WHERE id_user = '.$id_user.' AND N.id_commission IN ('.implode(',', $ids_comms).') AND N.id_commission = C.id_commission;';
+        $req = 'SELECT N.id as niveau_id, N.id_commission, C.title_commission, niveau_technique, niveau_physique, commentaire FROM `caf_user_niveau` AS N, `caf_commission` AS C WHERE id_user = '.$id_user.' AND N.id_commission IN ('.implode(',', $ids_comms).') AND N.id_commission = C.id_commission;';
         $results = $mysqli->query($req);
         while ($note = $results->fetch_assoc()) {
             $notes['n_'.$note['niveau_id']] = $note;
@@ -152,7 +152,7 @@ function get_niveaux($id_user, $editable = false)
         $note_comm_read = $userAllowedTo['user_note_comm_read'];
 
         // ON r�cup�re les identifiants commission en lecture
-        $req = 'SELECT `id_commission` FROM `'.$pbd.'commission` ';
+        $req = 'SELECT `id_commission` FROM `caf_commission` ';
         if ('true' === $note_comm_read || (user() && $id_user == (string) getUser()->getIdUser())) {
         } else {
             $tab = explode('|', $note_comm_read);
@@ -176,7 +176,7 @@ function get_niveaux($id_user, $editable = false)
             $ids_comms[] = $row['id_commission'];
         }
 
-        $req = 'SELECT N.id as niveau_id, N.id_commission, C.title_commission, niveau_technique, niveau_physique, commentaire FROM `'.$pbd.'user_niveau` AS N, `'.$pbd.'commission` AS C WHERE id_user = '.$id_user.' AND N.id_commission IN ('.implode(',', $ids_comms).') AND N.id_commission = C.id_commission;';
+        $req = 'SELECT N.id as niveau_id, N.id_commission, C.title_commission, niveau_technique, niveau_physique, commentaire FROM `caf_user_niveau` AS N, `caf_commission` AS C WHERE id_user = '.$id_user.' AND N.id_commission IN ('.implode(',', $ids_comms).') AND N.id_commission = C.id_commission;';
 
         $results = $mysqli->query($req);
         while ($note = $results->fetch_assoc()) {
@@ -261,11 +261,10 @@ function display_niveaux($niveaux, $type = 'lecture', $deja_displayed = false)
 function get_groupes($id_commission, $force_valid = false)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $groupes = [];
 
-    $req = 'SELECT * FROM `'.$pbd.'groupe` WHERE `id_commission` = '.$id_commission;
+    $req = 'SELECT * FROM `caf_groupe` WHERE `id_commission` = '.$id_commission;
     if ($force_valid) {
         $req .= ' AND actif = 1 ';
     }
@@ -281,11 +280,10 @@ function get_groupes($id_commission, $force_valid = false)
 function get_groupe($id_groupe)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $groupe = false;
 
-    $req = 'SELECT * FROM `'.$pbd.'groupe` WHERE `id` = '.$id_groupe;
+    $req = 'SELECT * FROM `caf_groupe` WHERE `id` = '.$id_groupe;
     $results = $mysqli->query($req);
     if ($results) {
         while ($row = $results->fetch_assoc()) {
@@ -299,11 +297,10 @@ function get_groupe($id_groupe)
 function get_evt($id_evt)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $evt = false;
 
-    $req = 'SELECT * FROM `'.$pbd.'evt` WHERE `id_evt` = '.$id_evt;
+    $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$id_evt;
     $results = $mysqli->query($req);
     while ($row = $results->fetch_assoc()) {
         $evt = $row;
@@ -315,7 +312,6 @@ function get_evt($id_evt)
 function empietement_sortie($id_user, $evt)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $sorties = [];
     if (!is_array($evt)) {
@@ -352,11 +348,10 @@ function empietement_sortie($id_user, $evt)
 function user_in_destination($id_user, $id_destination, $valid = true)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $is_in = false;
 
-    $req = 'SELECT * FROM `'.$pbd."evt_join`
+    $req = "SELECT * FROM `caf_evt_join`
             WHERE `user_evt_join` = $id_user
                 AND `id_destination` = $id_destination "
         .(true === $valid ? ' AND `status_evt_join` = 1 ' : '')
@@ -375,11 +370,10 @@ function user_in_destination($id_user, $id_destination, $valid = true)
 function user_in_cb($id_user, $valid = true)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $is_cb = false;
 
-    $req = 'SELECT * FROM `'.$pbd."evt_join`
+    $req = "SELECT * FROM `caf_evt_join`
             WHERE `user_evt_join` = $id_user "
         .(true === $valid ? ' AND `status_evt_join` = 1 ' : '')
         .' ';
@@ -397,11 +391,10 @@ function user_in_cb($id_user, $valid = true)
 function user_in_destination_repas($id_user, $id_destination, $valid = true)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $is_repas = false;
 
-    $req = 'SELECT * FROM `'.$pbd."evt_join`
+    $req = "SELECT * FROM `caf_evt_join`
             WHERE `user_evt_join` = $id_user
                 AND `id_destination` = $id_destination "
         .(true === $valid ? ' AND `status_evt_join` = 1 ' : '')
@@ -420,11 +413,10 @@ function user_in_destination_repas($id_user, $id_destination, $valid = true)
 function user_sortie_in_dest($id_user, $id_destination, $valid = true)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $sortie = false;
 
-    $req = 'SELECT evt_evt_join FROM `'.$pbd."evt_join`
+    $req = "SELECT evt_evt_join FROM `caf_evt_join`
             WHERE `user_evt_join` = $id_user
                 AND `id_destination` = $id_destination "
         .(true === $valid ? ' AND `status_evt_join` = 1 ' : '')
@@ -443,7 +435,6 @@ function user_sortie_in_dest($id_user, $id_destination, $valid = true)
 function covoiturage_sorties_destination($id_destination)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $personnes = false;
     $count = 0;
@@ -463,7 +454,6 @@ function covoiturage_sorties_destination($id_destination)
 function get_sortie($id_evt, $type = 'full')
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $sortie = false;
     $data = '';
@@ -483,8 +473,8 @@ function get_sortie($id_evt, $type = 'full')
             break;
     }
 
-    $req = "SELECT  $data
-		FROM ".$pbd.'evt, '.$pbd.'user, '.$pbd."commission
+    $req = "SELECT $data
+		FROM caf_evt, caf_user, caf_commission
 		WHERE id_evt=$id_evt
             AND id_user = user_evt
             AND commission_evt=id_commission
@@ -503,12 +493,11 @@ function get_sortie($id_evt, $type = 'full')
 function get_encadrants($id_evt, $only_ids = false)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $users = false;
-    $req = 'SELECT id_user, civ_user,  cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user
+    $req = "SELECT id_user, civ_user,  cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user
                             , role_evt_join, is_cb, is_restaurant, is_covoiturage, id_destination, id_bus_lieu_destination
-                    FROM '.$pbd.'evt_join, '.$pbd."user
+                    FROM caf_evt_join, caf_user
                     WHERE evt_evt_join = $id_evt
                     AND user_evt_join = id_user
                     AND status_evt_join = 1
@@ -579,14 +568,13 @@ function nb_places_restantes_bus($bus)
 function get_info_bus_lieu_destination($id_bus_lieu_destination)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $infos = [];
-    $req = 'SELECT id_lieu, date FROM `'.$pbd."bus_lieu_destination` WHERE `id` = $id_bus_lieu_destination LIMIT 1";
+    $req = "SELECT id_lieu, date FROM `caf_bus_lieu_destination` WHERE `id` = $id_bus_lieu_destination LIMIT 1";
     $result = $mysqli->query($req);
     while ($row = $result->fetch_assoc()) {
         $id_lieu = $row['id_lieu'];
-        $req_lieu = 'SELECT * FROM `'.$pbd.'lieu` WHERE `id` = '.$id_lieu;
+        $req_lieu = 'SELECT * FROM `caf_lieu` WHERE `id` = '.$id_lieu;
         $lieu = $mysqli->query($req_lieu);
         while ($rowLieu = $lieu->fetch_assoc()) {
             $infos['lieu'] = $rowLieu;
@@ -600,11 +588,10 @@ function get_info_bus_lieu_destination($id_bus_lieu_destination)
 function ramassage_appartient_quel_bus($id_bus_lieu_destination)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $bus_id = false;
 
-    $req = 'SELECT id_bus FROM `'.$pbd."bus_lieu_destination` WHERE `id` = $id_bus_lieu_destination LIMIT 1";
+    $req = "SELECT id_bus FROM `caf_bus_lieu_destination` WHERE `id` = $id_bus_lieu_destination LIMIT 1";
 
     $result = $mysqli->query($req);
     while ($row = $result->fetch_assoc()) {
@@ -624,10 +611,9 @@ function nb_places_restante_bus_ramassage($id_bus_lieu_destination)
 function get_bus($id_bus, $params = ['dest', 'pts'])
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $id_bus = $mysqli->real_escape_string((int) $id_bus);
-    $req = 'SELECT * FROM '.$pbd."bus WHERE id = $id_bus LIMIT 1";
+    $req = "SELECT * FROM caf_bus WHERE id = $id_bus LIMIT 1";
     $bus = null;
 
     $result = $mysqli->query($req);
@@ -664,17 +650,16 @@ function get_bus($id_bus, $params = ['dest', 'pts'])
 function get_points_ramassage($id_bus, $id_destination)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $points = null;
     $id_bus = $mysqli->real_escape_string((int) $id_bus);
     $id_destination = $mysqli->real_escape_string((int) $id_destination);
 
-    $req = 'SELECT
+    $req = "SELECT
               BLD.id as bdl_id, id_bus, id_destination, id_lieu, type_lieu, date,
               L.id as l_id, nom, description, ign, lat, lng
-            FROM    `'.$pbd.'bus_lieu_destination` AS BLD,
-                    `'.$pbd."lieu` AS L
+            FROM    `caf_bus_lieu_destination` AS BLD,
+                    `caf_lieu` AS L
             WHERE   `id_bus` = $id_bus
                     AND `id_destination` = $id_destination
                     AND L.`id` = BLD.`id_lieu`
@@ -683,7 +668,7 @@ function get_points_ramassage($id_bus, $id_destination)
     $result = $mysqli->query($req);
     while ($row = $result->fetch_assoc()) {
         $users = [];
-        $req2 = 'SELECT * FROM `'.$pbd.'evt_join` WHERE `id_bus_lieu_destination` = '.$row['bdl_id']." AND `id_destination` = $id_destination AND status_evt_join = 1";
+        $req2 = 'SELECT * FROM `caf_evt_join` WHERE `id_bus_lieu_destination` = '.$row['bdl_id']." AND `id_destination` = $id_destination AND status_evt_join = 1";
         $result2 = $mysqli->query($req2);
         while ($row2 = $result2->fetch_assoc()) {
             if (1 == $row2['status_evt_join']) {
@@ -704,11 +689,10 @@ function get_points_ramassage($id_bus, $id_destination)
 function mon_inscription($id_evt)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
     $my_choices = false;
 
     if (user()) {
-        $req = 'SELECT * FROM `'.$pbd."evt_join` WHERE `evt_evt_join` = $id_evt AND `user_evt_join` = ".getUser()->getIdUser().' LIMIT 1;';
+        $req = "SELECT * FROM `caf_evt_join` WHERE `evt_evt_join` = $id_evt AND `user_evt_join` = ".getUser()->getIdUser().' LIMIT 1;';
         $result = $mysqli->query($req);
         while ($row = $result->fetch_assoc()) {
             $my_choices = $row;
@@ -721,11 +705,10 @@ function mon_inscription($id_evt)
 function get_destination($id_dest, $full = false)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $destination = null;
     $id_dest = $mysqli->real_escape_string((int) $id_dest);
-    $req = 'SELECT * FROM '.$pbd."destination WHERE id = $id_dest LIMIT 1";
+    $req = "SELECT * FROM caf_destination WHERE id = $id_dest LIMIT 1";
 
     $result = $mysqli->query($req);
     while ($row = $result->fetch_assoc()) {
@@ -753,11 +736,10 @@ function get_destination($id_dest, $full = false)
 function get_sortie_destination($id_dest, $id_evt, $lieux = true)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
     $sortie = false;
 
     $id_dest = $mysqli->real_escape_string((int) $id_dest);
-    $req = 'SELECT * FROM `'.$pbd.'evt_destination` WHERE ';
+    $req = 'SELECT * FROM `caf_evt_destination` WHERE ';
     if (0 != $id_dest) {
         $req .= " id_destination = $id_dest AND ";
     }
@@ -784,13 +766,12 @@ function get_sortie_destination($id_dest, $id_evt, $lieux = true)
 function get_sorties_for_destination($id_dest, $ids_only = false)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $sorties = false;
     $ids = $full = [];
 
     $id_dest = $mysqli->real_escape_string((int) $id_dest);
-    $req = 'SELECT * FROM `'.$pbd."evt_destination` WHERE id_destination = $id_dest";
+    $req = "SELECT * FROM `caf_evt_destination` WHERE id_destination = $id_dest";
     $result = $mysqli->query($req);
     while ($row = $result->fetch_assoc()) {
         $ids[$row['id_evt']] = $row['id_evt'];
@@ -798,7 +779,7 @@ function get_sorties_for_destination($id_dest, $ids_only = false)
     }
 
     if ($ids && !$ids_only) {
-        $req = 'SELECT * from `'.$pbd.'evt`, `'.$pbd.'commission` AS commission ';
+        $req = 'SELECT * FROM `caf_evt`, `caf_commission` AS commission ';
         $req .= ' WHERE ';
         $req .= ' commission_evt=commission.id_commission AND ';
         $req .= ' id_evt IN (\'';
@@ -827,7 +808,6 @@ function get_sorties_for_destination($id_dest, $ids_only = false)
 function get_user($id_user, $valid = true, $simple = true)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $user = null;
     $id_user = $mysqli->real_escape_string((int) $id_user);
@@ -837,7 +817,7 @@ function get_user($id_user, $valid = true, $simple = true)
     } else {
         $req .= ' * ';
     }
-    $req .= ' FROM '.$pbd."user WHERE id_user = $id_user";
+    $req .= " FROM caf_user WHERE id_user = $id_user";
     if ($valid) {
         $req .= ' AND valid_user = 1 ';
     }
@@ -854,11 +834,10 @@ function get_user($id_user, $valid = true, $simple = true)
 function get_bus_destination($id_destination)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $busses = [];
     // Bus
-    $req = 'SELECT * FROM `'.$pbd.'bus` WHERE `id_destination` = '.$id_destination;
+    $req = 'SELECT * FROM `caf_bus` WHERE `id_destination` = '.$id_destination;
     $handleSql = $mysqli->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $busses[$handle['id']] = get_bus($handle['id'], ['pts']);
@@ -870,11 +849,10 @@ function get_bus_destination($id_destination)
 function get_lieu($id_lieu)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $lieu = null;
     $id_lieu = $mysqli->real_escape_string((int) $id_lieu);
-    $req = 'SELECT * FROM `'.$pbd.'lieu` WHERE id = '.$id_lieu.' LIMIT 1';
+    $req = 'SELECT * FROM `caf_lieu` WHERE id = '.$id_lieu.' LIMIT 1';
 
     $result = $mysqli->query($req);
     while ($row = $result->fetch_assoc()) {
@@ -887,11 +865,10 @@ function get_lieu($id_lieu)
 function get_future_destinations($can_modify = false, $for_event_creation = false)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $destinations = [];
 
-    $req = 'SELECT * FROM `'.$pbd."destination`
+    $req = "SELECT * FROM `caf_destination`
 	        WHERE `date` > '".date('Y-m-d H:i:s')."' ";
     if ($for_event_creation) {
         $req .= ' AND publie = 0 AND annule != 1';
@@ -984,12 +961,11 @@ function display_previous_lieux($name = null, $id_destination)
 function get_lieux_depose_reprise_destination($id_destination)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $ids = $lieux = false;
 
     $id_destination = $mysqli->real_escape_string((int) $id_destination);
-    $req = 'SELECT id_lieu_depose, id_lieu_reprise FROM `'.$pbd."evt_destination` WHERE `id_destination` = $id_destination";
+    $req = "SELECT id_lieu_depose, id_lieu_reprise FROM `caf_evt_destination` WHERE `id_destination` = $id_destination";
     $result = $mysqli->query($req);
     if ($result) {
         while ($row = $result->fetch_assoc()) {
@@ -1010,12 +986,11 @@ function get_lieux_depose_reprise_destination($id_destination)
 function get_lieux_destination($id_destination, $type = null)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $ids = $lieux = false;
 
     $id_destination = $mysqli->real_escape_string((int) $id_destination);
-    $req = "SELECT id_lieu_$type, date_$type FROM `".$pbd."evt_destination` WHERE `id_destination` = $id_destination ORDER BY date_$type ASC";
+    $req = "SELECT id_lieu_$type, date_$type FROM `caf_evt_destination` WHERE `id_destination` = $id_destination ORDER BY date_$type ASC";
     $result = $mysqli->query($req);
     if ($result) {
         while ($row = $result->fetch_assoc()) {
@@ -1168,11 +1143,10 @@ function is_destination_status($destination, $param = false)
 function is_sortie_in_destination($id_evt)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $destination = false;
 
-    $req = 'SELECT * FROM `'.$pbd.'evt_destination` WHERE `id_evt` = '.$id_evt;
+    $req = 'SELECT * FROM `caf_evt_destination` WHERE `id_evt` = '.$id_evt;
     $handleSql = $mysqli->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $destination = $handle['id_destination'];
@@ -1184,12 +1158,11 @@ function is_sortie_in_destination($id_evt)
 function select_lieux_ramasse_connus($id_current_dest = false, $full = true, $exlude = false)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo, $pbd;
 
     $ids = false;
     $lieux = false;
 
-    $req = 'SELECT id_lieu FROM `'.$pbd."bus_lieu_destination` WHERE `type_lieu` LIKE 'ramasse' ";
+    $req = "SELECT id_lieu FROM `caf_bus_lieu_destination` WHERE `type_lieu` LIKE 'ramasse' ";
     if ($id_current_dest) {
         $req .= " AND id_destination = $id_current_dest ";
     }
@@ -1205,7 +1178,7 @@ function select_lieux_ramasse_connus($id_current_dest = false, $full = true, $ex
     }
 
     if ($ids && $full) {
-        $req = 'SELECT * FROM `'.$pbd.'lieu` WHERE `id` IN ('.implode(',', $ids).')';
+        $req = 'SELECT * FROM `caf_lieu` WHERE `id` IN ('.implode(',', $ids).')';
         $result = $mysqli->query($req);
         if ($result) {
             while ($row = $result->fetch_assoc()) {

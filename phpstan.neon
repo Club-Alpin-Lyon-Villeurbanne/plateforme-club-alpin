@@ -4,7 +4,6 @@ parameters:
   ignoreErrors:
     - '#Constant (ATOM|RSS1|RSS2) not found\.#'
     - '#Variable \$p_[a-z_]+ might not be defined#'
-    - '#Variable \$pbd might not be defined#'
     - '#Variable \$p\d might not be defined#'
     - '#Variable \$limite_[a-z_]+ might not be defined#'
     - '#Variable \$do_mail_[a-z_]+ might not be defined#'
