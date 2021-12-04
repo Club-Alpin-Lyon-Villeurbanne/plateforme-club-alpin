@@ -18,20 +18,6 @@ include __DIR__.'/../../app/includes.php';
 //_________________________________________________ MYSQLi
 $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
-?><!DOCTYPE html>
-<html lang="fr" dir="ltr">
-	<head>
-		<title>CRON - Rappels</title>
-	</head>
-	<body onload="reloadTimeout()" style="font-family:Lucida Console; font-size:12px">
-	<?php
-    // JS POUR RECHARGER LA PAGE TOUTES LES DEMI-HEURES APRES CHARGEMENT COMPLET
-    ?>	<script type="text/javascript">
-		function reloadTimeout(){
-			setTimeout('document.location.reload()', 30*1000*60);
-		}
-		</script>
-<?php
 // TRIGGER CAPITAL ! ACTIVE ET DESACTIVE L'EFFICACITE DU CHRON - ENVOI DE MAIL - INSERTION BDD
 $chron_sendmails = true;
 $chron_savedatas = true;
@@ -398,15 +384,8 @@ if ($lastTsp < $minTsp) {
 }
 
 if (isset($errTab) && count($errTab) > 0) {
-    if (admin()) {
-        foreach ($errTab as $err) {
-            error_log("$err");
-        }
+    foreach ($errTab as $err) {
+        echo "$err\n";
+        error_log("$err");
     }
 }
-
-// echo nl2br($log);
-
-?>
-	</body>
-</html>

@@ -36,7 +36,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $current_commission = $p2;
     }
     // variable de commission si elle est passée "en force" dans les vars GET
-    elseif ($_GET['commission'] == $handle['code_commission']) {
+    elseif (($_GET['commission'] ?? null) == $handle['code_commission']) {
         $current_commission = $_GET['commission'];
     }
 }
@@ -152,7 +152,7 @@ if ('profil' == $p1 && 'infos' == $p2 && getUser()) {
 elseif ('profil' == $p1 && 'articles' == $p2) {
     // pagination
     $limite = $limite_articles_adherent; // nombre d'elements affiches
-    $pagenum = (int) ($_GET['pagenum']);
+    $pagenum = (int) ($_GET['pagenum'] ?? 0);
     if ($pagenum < 1) {
         $pagenum = 1;
     } // les pages commencent à 1
@@ -387,7 +387,7 @@ elseif ('accueil' == $p1) {
     // *******************
     // articles dans la page
     $limite = $limite_articles_accueil; // nombre d'elements affiches
-    $pagenum = (int) ($_GET['pagenum']);
+    $pagenum = (int) ($_GET['pagenum'] ?? 0);
     if ($pagenum < 1) {
         $pagenum = 1;
     } // les pages commencent à 1
