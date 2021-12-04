@@ -17,7 +17,7 @@ if (isset($_GET['cstImg'])) {
 }
 
 // lien vers cette page (pour formulaires, ou ancres)
-$versCettePage = ($p_multilangue ? $lang.'/' : '').$p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : '').'.html';			// multilangue / une langue
+$versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : '').'.html';			// multilangue / une langue
 
 ?><!doctype html>
 <html lang="<?php echo $lang; ?>">
@@ -128,7 +128,7 @@ $versCettePage = ($p_multilangue ? $lang.'/' : '').$p1.($p2 ? '/'.$p2 : '').($p3
                 if ($lang == $p_langs[0]) {
                     for ($i = 0; $i < count($contLog); ++$i) {
                         $tmp = $contLog[$i];
-                        echo '<form style="display:inline" method="post" action="'.($p_multilangue ? $lang.'/' : '').'admin-contenus/'.$lang.'.html">
+                        echo '<form style="display:inline" method="post" action="admin-contenus/'.$lang.'.html">
                                 <input type="hidden" name="operation" value="forceAddContent" />
                                 <input type="text" readonly="readonly" name="code_content_inline" value="'.$tmp.'" onclick="$(this).parent().submit();" />
                             </form>';

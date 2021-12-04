@@ -85,7 +85,7 @@
                 if ($nbrPages > 1) {
                     echo '<nav class="pageSelect"><hr />';
                     for ($i = 1; $i <= $nbrPages; ++$i) {
-                        echo '<a href="'.($p_multilangue ? $lang.'/' : '').$p1.'/'.$i.'.html" title="" class="'.($pagenum == $i ? 'up' : '').'">P'.$i.'</a> '.($i < $nbrPages ? '  ' : '');
+                        echo '<a href="'.$p1.'/'.$i.'.html" title="" class="'.($pagenum == $i ? 'up' : '').'">P'.$i.'</a> '.($i < $nbrPages ? '  ' : '');
                     }
                     echo '</nav>';
                 }
