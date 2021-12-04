@@ -31,7 +31,7 @@
 						<input type="file" name="bigfond" /><br />
 					</div>
 					<p>
-						<input type="checkbox" name="disable-bigfond" id="disable-bigfond" <?php if ('on' == $_POST['disable-bigfond']) {
+						<input type="checkbox" name="disable-bigfond" id="disable-bigfond" <?php if (isset($_POST['disable-bigfond']) && 'on' == $_POST['disable-bigfond']) {
                     echo 'checked="checked"';
                 } ?>/>
 						<label for="disable-bigfond" class='mini'>Laisser tomber, utiliser l'image par défaut (déconseillé)</label>

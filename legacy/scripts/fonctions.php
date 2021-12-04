@@ -1,7 +1,6 @@
 <?php
 
 global $_POST;
-global $userAllowedTo;
 
 /*
     Récupération des sorties d'un utilisateur
@@ -90,33 +89,23 @@ function display_articles($id_user, $limit = 10, $title = '')
 function get_niveaux($id_user, $editable = false)
 {
     $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    global $userAllowedTo;
+
+    global $kernel;
 
     $notes = false;
 
     // A t'on les droits d'ecriture ?
-    if (true == $editable && $userAllowedTo['user_note_comm_edit']) {
-        $note_comm_edit = $userAllowedTo['user_note_comm_edit'];
+    if (true == $editable && $kernel->getContainer()->get('legacy_user_rights')->allowed('user_note_comm_edit')) {
         $ids_comms = $title_comms = [];
 
-        // ON r�cup�re les identifiants et titres commission en �criture
         $req = 'SELECT `id_commission`, `title_commission` FROM `caf_commission` ';
-        if ('true' === $note_comm_edit) {
-        } else {
-            $tab = explode('|', $note_comm_edit);
-            $comms = [];
-            foreach ($tab as $elt) {
-                $comm = explode(':', $elt);
-                if ('commission' == $comm[0]) {
-                    $comms[] = $comm[1];
-                }
-            }
-            if ($comms) {
-                $req .= 'WHERE code_commission IN (\'';
-                $req .= implode("', '", $comms);
-                $req .= '\') ';
-            }
-        }
+
+        $comms = $kernel->getContainer()->get('legacy_user_rights')->getCommissionListForRight('user_note_comm_edit');
+
+        $req .= 'WHERE code_commission IN (\'';
+        $req .= implode("', '", $comms);
+        $req .= '\') ';
+
         $req .= ' LIMIT 500;';
         $results = $mysqli->query($req);
 
@@ -148,27 +137,16 @@ function get_niveaux($id_user, $editable = false)
     }
 
     // A t'on les droits de lecture ou les informations nous concernent-elles personnellement ?
-    if (false == $editable && ($userAllowedTo['user_note_comm_read'] || (user() && $id_user == (string) getUser()->getIdUser()))) {
-        $note_comm_read = $userAllowedTo['user_note_comm_read'];
-
-        // ON r�cup�re les identifiants commission en lecture
+    if (false == $editable && ($kernel->getContainer()->get('legacy_user_rights')->allowed('user_note_comm_read') || (user() && $id_user == (string) getUser()->getIdUser()))) {
         $req = 'SELECT `id_commission` FROM `caf_commission` ';
-        if ('true' === $note_comm_read || (user() && $id_user == (string) getUser()->getIdUser())) {
-        } else {
-            $tab = explode('|', $note_comm_read);
-            $comms = [];
-            foreach ($tab as $elt) {
-                $comm = explode(':', $elt);
-                if ('commission' == $comm[0]) {
-                    $comms[] = $comm[1];
-                }
-            }
-            if ($comms) {
-                $req .= 'WHERE code_commission IN (\'';
-                $req .= implode("', '", $comms);
-                $req .= '\') ';
-            }
+        $comms = $kernel->getContainer()->get('legacy_user_rights')->getCommissionListForRight('user_note_comm_read');
+
+        if ($comms) {
+            $req .= 'WHERE code_commission IN (\'';
+            $req .= implode("', '", $comms);
+            $req .= '\') ';
         }
+
         $req .= ' LIMIT 500;';
         $results = $mysqli->query($req);
         $ids_comms = [];
