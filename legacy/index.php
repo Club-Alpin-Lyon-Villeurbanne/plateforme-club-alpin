@@ -21,7 +21,7 @@ if (isset($_GET['cstImg'])) {
 $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : '').'.html';			// multilangue / une langue
 
 ?><!doctype html>
-<html lang="<?php echo $lang; ?>">
+<html lang="fr">
 <head>
     <meta charset="utf-8">
     <title>
@@ -132,19 +132,14 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
                     <div style="float:left; padding:12px 10px 3px 35px">Admin : champs non remplis dans cette page</div>';
 
                 // si on est dans la langue par défaut, redirection vers la page des contenus :
-                if ($lang == $p_langs[0]) {
-                    for ($i = 0; $i < count($contLog); ++$i) {
-                        $tmp = $contLog[$i];
-                        echo '<form style="display:inline" method="post" action="admin-contenus/'.$lang.'.html">
-                                <input type="hidden" name="operation" value="forceAddContent" />
-                                <input type="text" readonly="readonly" name="code_content_inline" value="'.$tmp.'" onclick="$(this).parent().submit();" />
-                            </form>';
-                    }
+                for ($i = 0; $i < count($contLog); ++$i) {
+                    $tmp = $contLog[$i];
+                    echo '<form style="display:inline" method="post" action="admin-contenus/fr.html">
+                            <input type="hidden" name="operation" value="forceAddContent" />
+                            <input type="text" readonly="readonly" name="code_content_inline" value="'.$tmp.'" onclick="$(this).parent().submit();" />
+                        </form>';
                 }
-                // si on est sur une page dans une autre langue, redirection vers la page traductions
-                else {
-                    echo '<a href="'.$lang.'/admin-traductions/'.$lang.'.html" title="">&gt; Voir la page de traduction</a>';
-                }
+
                 echo '</div>';
             }
             ?>

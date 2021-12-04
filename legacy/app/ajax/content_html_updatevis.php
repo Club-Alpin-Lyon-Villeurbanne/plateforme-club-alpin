@@ -10,19 +10,18 @@ if (admin()) {
     $vis_content_html = (int) ($_POST['vis_content_html']);
 
     $code_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($code_content_html);
-    $lang = LegacyContainer::get('legacy_mysqli_handler')->escapeString($lang); // défini dans les includes
     $log .= "\n code_content_html :  ".$code_content_html;
 
     if ($code_content_html) {
         // update VIS
-        $req = "UPDATE `caf_content_html` SET  `vis_content_html` =  '$vis_content_html' WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  '$lang' ORDER BY  `date_content_html` DESC  LIMIT 1";
+        $req = "UPDATE `caf_content_html` SET  `vis_content_html` =  '$vis_content_html' WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  'fr' ORDER BY  `date_content_html` DESC  LIMIT 1";
         if (LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $result['success'] = true;
         }
         $log .= "\n req :  ".$req;
         // retour contenu si visible
         if ($vis_content_html) {
-            $req = "SELECT `contenu_content_html` FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  '$lang' ORDER BY  `date_content_html` DESC  LIMIT 1";
+            $req = "SELECT `contenu_content_html` FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  'fr' ORDER BY  `date_content_html` DESC  LIMIT 1";
             $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 $result['content'] = $handle['contenu_content_html'];
