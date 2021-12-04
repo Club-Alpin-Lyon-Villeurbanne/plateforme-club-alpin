@@ -13,8 +13,7 @@ if ($current_commission) {
 <br />
 <div id="actus-list">
     <?php
-    // *******************
-    // articles dans la page
+
     $req = 'SELECT *
         FROM  `caf_article`
         WHERE  `status_article` =1
@@ -22,7 +21,7 @@ if ($current_commission) {
         // commission donnée : filtre (mais on inclut les actus club, commission=0)
         .($current_commission ? ' AND (commission_article = '.(int) ($comTab[$current_commission]['id_commission']).' OR commission_article = 0) ' : '')
         .'ORDER BY  `tsp_article` DESC
-        LIMIT '.$limite_articles_accueil;
+        LIMIT 16';
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {

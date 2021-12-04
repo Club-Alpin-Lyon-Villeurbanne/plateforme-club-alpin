@@ -275,7 +275,7 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
                                         // paiement en ligne
                                         // envoi d'un email pour indiquer la validation par l'encadrant d'un participant avec paiement en ligne
                                         if (1 == $is_cb) {
-                                            $toMail = $p_email_paiement;
+                                            $toMail = 'comptabilite@clubalpinlyon.fr';
 
                                             // contenu
                                             if (1 == $status_evt_join_new) {
@@ -286,7 +286,7 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
                                                         Un participant ayant payé en ligne vient d'être <span color='green'>validé</span> à la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;.
                                                     </p>
                                                     <p>
-                                                        Merci d'aller valider le paiement sur $p_url_validation_paiement.
+                                                        Merci d'aller valider le paiement sur https://paiement.systempay.fr/vads-merchant/.
                                                     </p>
                                                     <p>
                                                         Informations supplémentaires :<br />
@@ -311,7 +311,7 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
                                                         Un participant ayant payé en ligne vient d'être <span color='red'>refusé</span> à la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;.
                                                     </p>
                                                     <p>
-                                                        Merci d'aller annuler le paiement sur $p_url_validation_paiement.
+                                                        Merci d'aller annuler le paiement sur https://paiement.systempay.fr/vads-merchant/.
                                                     </p>
                                                     <p>
                                                         Informations supplémentaires :<br />

@@ -11,8 +11,8 @@ $mdp_user = trim(stripslashes($_POST['mdp_user']));
 if (strlen($lastname_user) < 2) {
     $errTab[] = 'Merci de renseigner un nom de famille valide';
 }
-if (strlen($cafnum_user) != $limite_longeur_numero_adherent) {
-    $errTab[] = "Merci de renseigner un numéro d'adhérent CAF valide ($limite_longeur_numero_adherent chiffres)";
+if (12 != strlen($cafnum_user)) {
+    $errTab[] = "Merci de renseigner un numéro d'adhérent CAF valide (12 chiffres)";
 }
 if (!isMail($email_user)) {
     $errTab[] = 'Merci de renseigner une adresse e-mail valide';
