@@ -10,8 +10,7 @@ setlocale(\LC_ALL, 'fr_FR');
 
 $newConfig = require __DIR__.'/config.php';
 
-// chemin absolu vers la racine des fichiers
-$p_racine = $newConfig['url'];
+$p_racine = $newConfig['url'].'/';
 
 // ADMIN
 $p_admin_login = 'caflyon';
