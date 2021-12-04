@@ -1,4 +1,9 @@
 <?php
+
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
 if (!admin() && !allowed('user_edit_notme')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
@@ -76,7 +81,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 			<?php
                 if (1 != $userTab['valid_user']) {
                     // compte non active pour le moment
-                    echo '<br />URL d\'activation du compte : '.$p_racine.'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html<br />';
+                    echo '<br />URL d\'activation du compte : '.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html<br />';
                 } ?>
 
 			<br />

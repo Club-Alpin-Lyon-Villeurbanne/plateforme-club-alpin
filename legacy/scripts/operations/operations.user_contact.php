@@ -1,5 +1,9 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
 $destinataire = $expediteur = null;
 
 $id_user = (int) ($_POST['id_user']);
@@ -88,9 +92,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // content vars
     $subject = 'Contact sur le site du Club Alpin : '.$objet;
     $content_header = '';
-    $content_main = '<h2>Bonjour '.html_utf8($destinataire['firstname_user']).' !<br /><br />Un visiteur du site vous a contacté sur <i>'.$p_racine.'</i></h2>'
+    $content_main = '<h2>Bonjour '.html_utf8($destinataire['firstname_user']).' !<br /><br />Un visiteur du site vous a contacté sur <i>'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'</i></h2>'
         .'<b>Infos :</b><table>'
-        .($nom ? '<tr><td><b>Nom : </b></td><td><a href="'.$p_racine.'/user-full/'.$expediteur['id_user'].'.html">'.html_utf8($nom)."</a></td></tr>\n" : '')
+        .($nom ? '<tr><td><b>Nom : </b></td><td><a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'/user-full/'.$expediteur['id_user'].'.html">'.html_utf8($nom)."</a></td></tr>\n" : '')
         .($email ? '<tr><td><b>Email : </b></td><td><a href="mailto:'.html_utf8($email).'" title="">'.html_utf8($email).'</a> </td></tr>' : '')
         .($objet ? '<tr><td><b>Objet : </b></td><td>'.html_utf8($objet)." </td></tr>\n" : '')
         .'</table><br /><br />'

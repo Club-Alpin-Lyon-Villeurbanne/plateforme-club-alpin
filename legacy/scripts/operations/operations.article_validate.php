@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 $id_article = (int) ($_POST['id_article']);
@@ -71,9 +73,9 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_article || 2 == $
     if (1 == $status_article) {
         $subject = 'Votre article a été publié sur le site';
         $content_main = "<h2>$subject</h2>
-            <p>Félicitations, votre article &laquo;<i>".html_utf8($authorDatas['titre_article']).'</i>&raquo;, créé le '.date('d/m/Y', $authorDatas['tsp_crea_article']).' a été publié sur le site du '.$p_sitename." par les responsables. Pour y accéder, cliquez sur le lien ci-dessous :</p>
+            <p>Félicitations, votre article &laquo;<i>".html_utf8($authorDatas['titre_article']).'</i>&raquo;, créé le '.date('d/m/Y', $authorDatas['tsp_crea_article']).' a été publié sur le site du '.$p_sitename.' par les responsables. Pour y accéder, cliquez sur le lien ci-dessous :</p>
             <p>
-                <a href=\"$p_racine".'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].".html\" title=\"\">$p_racine".'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].'.html</a>
+                <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].".html\" title=\"\">$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL)".'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].'.html</a>
             </p>';
     }
     if (2 == $status_article) {
@@ -81,10 +83,10 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_article || 2 == $
         $content_main = "<h2>$subject</h2>
             <p>Désolé, il semble que votre article créé sur le site du CAF ne soit pas validé par les responsables. Voici ci-dessous le message joint :</p>
             <p>&laquo;<i>".html_utf8(stripslashes($_POST['msg'] ?: '...')).'</i>&raquo;</p>
-            <p>Article concernée : &laquo;<i>'.html_utf8($authorDatas['titre_article']).'</i>&raquo;, créé le '.date('d/m/Y', $authorDatas['tsp_crea_article'])."</p>
+            <p>Article concernée : &laquo;<i>'.html_utf8($authorDatas['titre_article']).'</i>&raquo;, créé le '.date('d/m/Y', $authorDatas['tsp_crea_article']).'</p>
             <p>
                 Pour gérer vos articles, rendez-vous sur votre profil :
-                <a href=\"$p_racine"."profil/articles.html\" title=\"\">$p_racine".'profil/articles.html</a>
+                <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/articles.html" title="">'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/articles.html</a>
             </p>
             ';
     }

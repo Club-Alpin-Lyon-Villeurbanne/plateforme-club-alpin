@@ -1,6 +1,8 @@
 <?php
-// affichage complete d'une sortie.
-// var necessaire : $evt
+
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
 
 echo '<div id="fiche-sortie">';
 if (isset($errTab) && count($errTab) > 0 && (!in_array(($_POST['operation'] ?? null), ['user_join_del', 'user_join_update_status', 'evt_user_contact', 'user_join'], true))) {
@@ -13,7 +15,7 @@ if (!$evt) {
 
     // compte rendu ?
     if ($evt['cr']) {
-        echo '<a style="float:right; font-family:DIN, Arial; font-weight:normal; display:block; padding:5px 20px 0 0;" href="'.$p_racine.'article/'.$evt['cr']['code_article'].'-'.$evt['cr']['id_article'].'.html" title="'.html_utf8($evt['cr']['titre_article']).'">
+        echo '<a style="float:right; font-family:DIN, Arial; font-weight:normal; display:block; padding:5px 20px 0 0;" href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$evt['cr']['code_article'].'-'.$evt['cr']['id_article'].'.html" title="'.html_utf8($evt['cr']['titre_article']).'">
 			<span class="bleucaf">&gt;</span> Voir le compte rendu de sortie
 		</a>';
     }

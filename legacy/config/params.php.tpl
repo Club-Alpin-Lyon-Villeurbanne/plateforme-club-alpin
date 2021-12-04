@@ -3,13 +3,6 @@
 date_default_timezone_set('Europe/Paris');
 setlocale(\LC_ALL, 'fr_FR');
 
-// ---------------------
-// PARAMS AU CAS PAR CAS
-
-$newConfig = require __DIR__.'/config.php';
-
-$p_racine = $newConfig['url'].'/';
-
 // NOM DU SITE ( apparaît notamment dans les e-mailings )
 $p_sitename = 'Club Alpin Français - XXX';
 
@@ -88,9 +81,6 @@ $p1 = formater($_GET['p1'] ?? null, 3);
 $p2 = formater($_GET['p2'] ?? null, 3);
 $p3 = formater($_GET['p3'] ?? null, 3);
 $p4 = formater($_GET['p4'] ?? null, 3);
-// debug pour calls ajax
-if ('scripts/' == substr($p_racine, -8)) {
-    $p_racine = substr($p_racine, 0, strlen($p_racine) - 8);
-}
+
 // par défaut, la page courante n'est pas admin (modifié en aval dans pages.php)
 $p_pageadmin = false;

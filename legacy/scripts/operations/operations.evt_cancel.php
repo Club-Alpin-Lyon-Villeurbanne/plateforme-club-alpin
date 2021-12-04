@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 $id_evt = (int) (substr(strrchr($p2, '-'), 1));
@@ -62,11 +64,11 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             <p>
                 La sortie ".$handle['title_commission'].' du '.date('d/m/Y', $handle['tsp_evt']).',
                 &laquo;<i> '.html_utf8($handle['titre_evt'])." </i>&raquo;
-                vient d'être annulée par <a href=\"".$p_racine.'voir-profil/'.getUser()->getIdUser().'.html">'.getUser()->getNicknameUser().'</a>.
+                vient d'être annulée par <a href=\"".$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.getUser()->getIdUser().'.html">'.getUser()->getNicknameUser().'</a>.
                 Voici le message joint :
             </p>
             <p>&laquo;<i> '.nl2br(html_utf8($msg))." </i>&raquo;</p>
-            <p><a href='".$p_racine.'sortie/'.html_utf8($handle['code_evt']).'-'.(int) ($handle['id_evt']).".html' title=''>&lt; Voir la page dédiée</a></p>
+            <p><a href='".$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.html_utf8($handle['code_evt']).'-'.(int) ($handle['id_evt']).".html' title=''>&lt; Voir la page dédiée</a></p>
             ";
         $content_header = '';
         $content_footer = '';
@@ -135,10 +137,10 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     if (!isset($errTab) || 0 === count($errTab)) {
         // sans message d'avertissement nomades
         if (!count($nomadMsg)) {
-            header('Location:'.$p_racine.'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html');
+            header('Location: /sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html');
         // echo 'nop';
         } else {
-            header('Location:'.$p_racine.'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html?lbxMsg=nomadMsg&nomadMsg='.(implode('****', $nomadMsg)));
+            header('Location: /sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html?lbxMsg=nomadMsg&nomadMsg='.(implode('****', $nomadMsg)));
         }
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 $id_destination = $is_cb = $is_covoiturage = $evtUrl = $cetinscrit = $evtName = $is_restaurant = $inscrits = $id_bus_lieu_destination = null;
@@ -280,7 +282,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $evt = $row;
         }
 
-        $evtUrl = html_utf8($p_racine.'sortie/'.$evt['code_evt'].'-'.$evt['id_evt'].'.html');
+        $evtUrl = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$evt['code_evt'].'-'.$evt['id_evt'].'.html');
         $evtName = $evt['titre_evt'];
 
         // infos sur ce nouvel inscrit

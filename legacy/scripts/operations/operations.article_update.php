@@ -72,5 +72,5 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
 // debug : reload page
 if (!isset($errTab) || 0 === count($errTab)) {
-    header("Location: $p_racine"."article-edit/$id_article.html?lbxMsg=article_edit_success");
+    header("Location: /article-edit/$id_article.html?lbxMsg=article_edit_success");
 }

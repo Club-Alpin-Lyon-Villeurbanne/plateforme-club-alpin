@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
@@ -187,7 +189,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $req = "SELECT id_evt, code_evt, titre_evt FROM caf_evt WHERE id_evt=$id_evt LIMIT 1";
             $result = $mysqli->query($req);
             while ($row = $result->fetch_assoc()) {
-                $evtUrl = html_utf8($p_racine.'sortie/'.$row['code_evt'].'-'.$row['id_evt'].'.html');
+                $evtUrl = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$row['code_evt'].'-'.$row['id_evt'].'.html');
                 $evtName = html_utf8($row['titre_evt']);
             }
 

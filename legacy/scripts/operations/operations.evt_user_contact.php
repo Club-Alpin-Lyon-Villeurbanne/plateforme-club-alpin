@@ -1,5 +1,9 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
 $id_evt = (int) ($_POST['id_evt']);
 $user_evt = getUser()->getIdUser();
 $objet = trim(stripslashes($_POST['objet']));
@@ -71,7 +75,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $content_header = '';
     $content_main = '<h2>Bonjour !</h2>
         <p>Vous avez reçu un message de '.html_utf8(getUser()->getFirstnameUser()).' '.html_utf8(getUser()->getLastnameUser()).' au sujet de la sortie
-            <a href="'.$p_racine.'sortie/'.$code_evt.'-'.$id_evt.'.html">'.html_utf8($titre_evt).'</a></p>'
+            <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$code_evt.'-'.$id_evt.'.html">'.html_utf8($titre_evt).'</a></p>'
         .'<p><b>Objet :</b><br />'.html_utf8($subject).'<br />&nbsp;</p>'
         .'<p><b>Message :</b><br />'.nl2br(getUrlFriendlyString(html_utf8($message))).'<br />&nbsp;</p>'
         ;
