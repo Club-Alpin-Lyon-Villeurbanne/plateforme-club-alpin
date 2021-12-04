@@ -13,7 +13,7 @@ if ('0' == $destination['publie']) {
 presidence();
 
 ?><!doctype html>
-<html lang="<?php echo $lang; ?>">
+<html lang="fr">
     <head>
         <meta charset="utf-8">
         <title>Feuille de destination - <?php echo html_utf8($destination['nom']); ?> - le <?php echo display_date($destination['date']); ?> à <?php echo display_time($destination['date']); ?></title>

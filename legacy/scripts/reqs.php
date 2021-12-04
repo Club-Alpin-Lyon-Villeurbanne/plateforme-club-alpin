@@ -1490,8 +1490,8 @@ elseif ('recherche' == $p1 && strlen($_GET['str'])) {
     $safeStr = substr(html_utf8(stripslashes($_GET['str'])), 0, 80);
     $safeStrSql = LegacyContainer::get('legacy_mysqli_handler')->escapeString(substr(stripslashes($_GET['str']), 0, 80));
 
-    if (strlen($safeStr) < $p_maxlength_search) {
-        $errTab[] = 'Votre recherche doit comporter au moins '.$p_maxlength_search.' caractères.';
+    if (strlen($safeStr) < 3) {
+        $errTab[] = 'Votre recherche doit comporter au moins 3 caractères.';
     }
 
     if (!isset($errTab) || 0 === count($errTab)) {

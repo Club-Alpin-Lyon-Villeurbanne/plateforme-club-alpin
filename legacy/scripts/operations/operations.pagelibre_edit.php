@@ -55,7 +55,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 }
 // save titles
 if (!isset($errTab) || 0 === count($errTab)) {
-    $lang_content_inline = $p_langs[0];
+    $lang_content_inline = 'fr';
     $contenu_content_inline = $default_name_page;
     $req = "INSERT INTO `caf_content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
                                         VALUES (NULL , '2', 'meta-title-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
@@ -65,7 +65,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 }
 // save description // si necessaire
 if ((!isset($errTab) || 0 === count($errTab)) && $default_description_page) {
-    $lang_content_inline = $p_langs[0];
+    $lang_content_inline = 'fr';
     $contenu_content_inline = $default_description_page;
     $req = "INSERT INTO `caf_content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
                                         VALUES (NULL , '2', 'meta-description-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";

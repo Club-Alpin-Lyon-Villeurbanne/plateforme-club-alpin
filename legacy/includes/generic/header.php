@@ -7,7 +7,7 @@ global $ogImage;
 ?>
 	<!-- vars php passées au js -->
     <script type="text/javascript">
-	var lang='<?php echo $lang; ?>';
+	var lang='fr';
 	var p1='<?php echo $p1; ?>';
 	var p2='<?php echo $p2; ?>';
 	var p3='<?php echo $p3; ?>';
