@@ -24,7 +24,7 @@ if (admin()) {
             if (!$datas['superadmin_page'] || superadmin()) {
                 // cas particulier : la page traductions seulement en cas de langues multiples
                 if ('admin-traductions' != $code || count($p_langs) > 1) {
-                    echo '<a href="'.($p_multilangue ? $lang.'/' : '').$code.'.html" title="" class="'.($datas['superadmin_page'] ? 'superadmin ' : '').' adminmenulink '.($p1 == $code ? 'up' : '').'">
+                    echo '<a href="'.$code.'.html" title="" class="'.($datas['superadmin_page'] ? 'superadmin ' : '').' adminmenulink '.($p1 == $code ? 'up' : '').'">
 								'.($datas['superadmin_page'] ? '<img src="/img/base/bullet_star.png" alt="" title="Option super-admin" />' : '').$datas['default_name_page'].'</a>';
                     ++$i;
                 }
@@ -33,25 +33,25 @@ if (admin()) {
     } ?>
 
 			<!--
-			<a href="<?php echo $p_multilangue ? $lang.'/' : ''; ?>admin-contenus.html" title="" class="adminmenulink <?php if ('admin-contenus' == $p1) {
+			<a href="admin-contenus.html" title="" class="adminmenulink <?php if ('admin-contenus' == $p1) {
         echo 'up';
     } ?>">Contenus statiques</a>
 			<?php if (count($p_langs) > 1) { ?>
-				<a href="<?php echo $p_multilangue ? $lang.'/' : ''; ?>admin-traductions.html" title="" class="adminmenulink <?php if ('admin-traductions' == $p1) {
+				<a href="admin-traductions.html" title="" class="adminmenulink <?php if ('admin-traductions' == $p1) {
         echo 'up';
     }?>">Traductions</a>
 			<?php } ?>
 
-			<a href="<?php echo $p_multilangue ? $lang.'/' : ''; ?>admin-actus.html" title="" class="adminmenulink <?php if ('admin-actus' == $p1) {
+			<a href="admin-actus.html" title="" class="adminmenulink <?php if ('admin-actus' == $p1) {
         echo 'up';
     } ?>">Actualités</a>
-			<a href="<?php echo $p_multilangue ? $lang.'/' : ''; ?>admin-reas.html" title="Organisez vos réalisations" class="adminmenulink <?php if ('admin-reas' == $p1) {
+			<a href="admin-reas.html" title="Organisez vos réalisations" class="adminmenulink <?php if ('admin-reas' == $p1) {
         echo 'up';
     } ?>">Réalisations</a>
-			<a href="<?php echo $p_multilangue ? $lang.'/' : ''; ?>admin-partenaires.html" title="Organisez l'onglet valeurs en pied de page" class="adminmenulink <?php if ('admin-partenaires' == $p1) {
+			<a href="admin-partenaires.html" title="Organisez l'onglet valeurs en pied de page" class="adminmenulink <?php if ('admin-partenaires' == $p1) {
         echo 'up';
     } ?>">Onglet "Partenaires"</a>
-			<a href="<?php echo $p_multilangue ? $lang.'/' : ''; ?>admin-newsletter.html" title="Inscrits à la newsletter" class="adminmenulink <?php if ('admin-newsletter' == $p1) {
+			<a href="admin-newsletter.html" title="Inscrits à la newsletter" class="adminmenulink <?php if ('admin-newsletter' == $p1) {
         echo 'up';
     } ?>">Newsletter</a>
 			-->

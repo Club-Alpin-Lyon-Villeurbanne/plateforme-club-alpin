@@ -17,17 +17,6 @@ if (\PHP_SAPI !== 'cli' && isset($_SERVER['HTTP_HOST']) && $config['https'] && !
 
 $scriptsDir = __DIR__.'/../scripts/';
 
-/*
-    Ce script ne fonctionnera plus le jour où plusieurs sites seront hébergés dans le même ROOT, car il existera plusieurs dossiers de configuration dans CONFIG.
-    Il faudra alors définir un paramètre pour les tâches CRON !
-*/
-if ($_SERVER && array_key_exists('HTTP_HOST', $_SERVER)) {
-    define('MON_DOMAINE', $_SERVER['HTTP_HOST']);
-} else {
-    $config = require __DIR__.'/../config/config.php';
-    define('MON_DOMAINE', parse_url($config['url'], \PHP_URL_HOST));
-}
-
 //_________________________________________________ FONCTIONS MAISON
 include __DIR__.'/../app/fonctions.php';
 //_________________________________________________ VARIABLES "GLOBALES" DU SITE

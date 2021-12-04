@@ -10,10 +10,6 @@ $newConfig = require __DIR__.'/config.php';
 
 $p_racine = $newConfig['url'].'/';
 
-// ADMIN
-$p_admin_login = 'hwc';
-$p_admin_password = md5('hwc');
-
 // NOM DU SITE ( apparaît notamment dans les e-mailings )
 $p_sitename = 'Club Alpin Français - XXX';
 
@@ -113,10 +109,6 @@ $p_chron_dates_butoires = [8, 13, 18];
 // -------------------
 // PARAMS STATIQUES
 
-$p_multilangue = count($p_langs) < 2 ? false : true;
-// Report simple running errors
-// error_reporting(E_ERROR | E_WARNING | E_PARSE);
-error_reporting(\E_ALL ^ \E_NOTICE);
 // vars de navigation, depuis l'URL via URL REWRITING // vars get toujours dispo grace au htaccess
 $p1 = formater($_GET['p1'] ?? null, 3);
 $p2 = formater($_GET['p2'] ?? null, 3);
