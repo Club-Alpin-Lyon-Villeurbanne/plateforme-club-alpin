@@ -583,6 +583,11 @@ elseif ('agenda' == $p1) {
 
 // CREER UNE SORTIE : VARS UTILES
 elseif ('creer-une-sortie' == $p1) {
+    if (!user()) {
+        header('Location: /login');
+        exit;
+    }
+
     $destinations = $destinations_modifier = [];
     $destinations = get_future_destinations();
     $destinations_modifier = get_future_destinations(false, true);
