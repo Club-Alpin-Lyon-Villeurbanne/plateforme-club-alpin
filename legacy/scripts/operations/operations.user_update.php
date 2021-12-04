@@ -12,9 +12,6 @@ if (!user()) {
 // mise à jour infos texte
 if (!isset($errTab) || 0 === count($errTab)) {
     $id_user = getUser()->getIdUser();
-    // $nickname_user=trim(stripslashes($_POST['nickname_user']));
-    // $gender_user=trim(stripslashes($_POST['gender_user']));
-    // $civ_user=trim(stripslashes($_POST['civ_user']));
     $tel_user = trim(stripslashes($_POST['tel_user']));
     $tel2_user = trim(stripslashes($_POST['tel2_user']));
     $birthday_user = trim(stripslashes($_POST['birthday_user']));

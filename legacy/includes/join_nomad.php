@@ -73,15 +73,7 @@ if (user()) {
         $result = $mysqli->query($req);
         while ($row = $result->fetch_assoc()) {
             echo '<option value="'.(int) ($row['id_user']).'">'.html_utf8($row['cafnum_user'].' - '.$row['firstname_user'].' '.$row['lastname_user']).' - le '.date('d/m/y', $row['created_user']).'</option>';
-            /*
-            echo '<input type="hidden" id="prefilled-1-'.intval($row['id_user']).'" value="'.html_utf8($row['civ_user']).'" />'
-                .'<input type="hidden" id="prefilled-2-'.intval($row['id_user']).'" value="'.html_utf8($row['firstname_user']).'" />'
-                .'<input type="hidden" id="prefilled-3-'.intval($row['id_user']).'" value="'.html_utf8($row['lastname_user']).'" />'
-                .'<input type="hidden" id="prefilled-4-'.intval($row['id_user']).'" value="'.html_utf8($row['nickname_user']).'" />'
-                .'<input type="hidden" id="prefilled-5-'.intval($row['id_user']).'" value="'.html_utf8($row['tel_user']).'" />'
-                .'<input type="hidden" id="prefilled-6-'.intval($row['id_user']).'" value="'.html_utf8($row['tel2_user']).'" />'
-                ;
-                */
+
             echo '
 						<script type="text/javascript">
 							prefilled[prefilled.length] = {

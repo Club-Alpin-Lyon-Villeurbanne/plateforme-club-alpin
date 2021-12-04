@@ -272,10 +272,8 @@ if (admin()) {
         $linkedtopage_content_html = $_POST['linkedtopage_content_html'];
         $contenu_content_html = stripslashes($_POST['contenu_content_html']);
         // eviter un bloc vide si les liens d'édition sont positionnés en absolute
-        if ($p_abseditlink) {
-            if ('' == $contenu_content_html) {
-                $contenu_content_html = '&nbsp;';
-            }
+        if ('' == $contenu_content_html) {
+            $contenu_content_html = '&nbsp;';
         }
 
         // sécurisation des adresses e-mail :

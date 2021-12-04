@@ -1,6 +1,8 @@
 #!/usr/local/bin/php
 <?php
 
+use App\Utils\NicknameGenerator;
+
 include __DIR__.'/../../app/includes.php';
 //_________________________________________________ MYSQLi
 $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
@@ -151,12 +153,7 @@ foreach ($fileTab as $file) {
                     // $date_adhesion_user=''; # calculé plus loin avec des tests supplémentaires
                     $date_adhesion_user = null;
                     $alerte_renouveler_user = '0';
-                    $nickname_user = str_replace([' ', '-', '\''], '', ucfirst(strtolower(normalizeChars($firstname_user))).substr(strtoupper($lastname_user), 0, 1));
-
-                    // Nous rendons le pseudo unique (vu le "peu" d'utilisateurs (<10000), nous ne devrions pas rencontrer de conflit.
-                    $md5 = md5($firstname_user.$lastname_user);
-                    $uniq = substr($md5, 1, 2).substr($md5, 14, 1);
-                    $nickname_user .= '-'.$uniq;
+                    $nickname_user = NicknameGenerator::generateNickname($firstname_user, $lastname_user);
 
                     //echo $i."\nligne ".__LINE__."\n";
                     // formatage du nom et prénom & civilité : en minuscule, avec majuscule au début

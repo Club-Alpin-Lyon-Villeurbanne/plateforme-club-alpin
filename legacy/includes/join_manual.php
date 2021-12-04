@@ -141,7 +141,6 @@ if (user()) {
                                         .'<input type="hidden" disabled="disabled" name="civ_user[]" value="'.html_utf8($elt['civ_user']).'" />'
                                         .'<input type="hidden" disabled="disabled" name="lastname_user[]" value="'.html_utf8($elt['lastname_user']).'" />'
                                         .'<input type="hidden" disabled="disabled" name="firstname_user[]" value="'.html_utf8($elt['firstname_user']).'" />'
-                                        .'<input type="hidden" disabled="disabled" name="nickname_user[]" value="'.html_utf8($elt['nickname_user']).'" />'
                                     .'</td>'
                                     .'<td>'
                                         .html_utf8($elt['cafnum_user']).'<br />'
@@ -237,7 +236,6 @@ if (user()) {
                                         .'<input type="hidden" name="civ_user[]" value="'.html_utf8(stripslashes($_POST['civ_user'][$i])).'" />'
                                         .'<input type="hidden" name="lastname_user[]" value="'.html_utf8(stripslashes($_POST['lastname_user'][$i])).'" />'
                                         .'<input type="hidden" name="firstname_user[]" value="'.html_utf8(stripslashes($_POST['firstname_user'][$i])).'" />'
-                                        .'<input type="hidden" name="nickname_user[]" value="'.html_utf8(stripslashes($_POST['nickname_user'][$i])).'" />'
                                         // afficher
                                         .html_utf8(stripslashes($_POST['civ_user'][$i])).' '
                                         .html_utf8(stripslashes($_POST['firstname_user'][$i])).' '

@@ -3,15 +3,9 @@
 global $kernel;
 
 $lastname_user = trim(stripslashes($_POST['lastname_user']));
-// $nickname_user=trim(stripslashes($_POST['nickname_user']));
 $cafnum_user = preg_replace('/\s+/', '', stripslashes($_POST['cafnum_user']));
 $email_user = strtolower(trim(stripslashes($_POST['email_user'])));
 $mdp_user = trim(stripslashes($_POST['mdp_user']));
-
-// d'abord, vérification du format des données
-// if(strlen($nickname_user)<5 || strlen($nickname_user)>20) 			$errTab[]="Merci d'entrer un pseudonyme de 5 à 20 caractères";
-// $tmp=preg_match($p_authchars,$nickname_user);
-// if(!empty($tmp)) $errTab[]=$fieldsErrTab['nickname_user']="Le surnom ne peut contenir que des chiffres, lettres, espaces et apostrophes";
 
 if (strlen($lastname_user) < 2) {
     $errTab[] = 'Merci de renseigner un nom de famille valide';
@@ -129,9 +123,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         while ($row = $result->fetch_assoc()) {
             $firstname_user = ucfirst(mb_strtolower($row['firstname_user'], 'UTF-8'));
             $nickname_user = str_replace([' ', '-', '\''], '', $firstname_user.substr(strtoupper($row['lastname_user']), 0, 1));
-            //				$nickname_user = str_replace(array(' ', '-', '\''), '', $row['firstname_user']) . substr($row['lastname_user'], 0, 1);
         }
-        // secure SQL
         $nickname_user = $mysqli->real_escape_string($nickname_user);
 
         if (!$nickname_user) {

@@ -58,10 +58,6 @@
 					<input type="text" name="lastname_user" class="type1" value="<?php echo inputVal('lastname_user', ''); ?>" placeholder="" />
 					<br />
 
-					Pseudonyme* :<br />
-					<input type="text" name="nickname_user" class="type1" value="<?php echo inputVal('nickname_user', ''); ?>" placeholder="" />
-					<br />
-
 					E-mail* :<br />
 					<input type="text" name="email_user" class="type1" value="<?php echo inputVal('email_user', ''); ?>" placeholder="" />
 					<br />
