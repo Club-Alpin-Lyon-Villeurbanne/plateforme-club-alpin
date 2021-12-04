@@ -565,12 +565,6 @@ function cont($code = false, $html = false)
         $tmplang = $defLang;
     }
 
-    // recup langue en cours
-    // lecture des contenus
-    // mode local ?
-    if ('127.0.0.1' == $_SERVER['HTTP_HOST']) {
-        $local = true;
-    }
     // log des erreurs
     global $contLog;
     // premier appel à la fonction
@@ -828,7 +822,7 @@ function admin()
 
     $request = $kernel->getContainer()->get('legacy_request_stack')->getMainRequest();
 
-    if (!$request->hasSession()) {
+    if (!$request || !$request->hasSession()) {
         return false;
     }
 
@@ -928,5 +922,5 @@ function normalizeChars($s)
  */
 function getArrayFirstValue($array)
 {
-    return $array[0];
+    return $array[0] ?? null;
 }

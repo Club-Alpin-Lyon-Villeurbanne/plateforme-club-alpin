@@ -6,7 +6,6 @@ parameters:
     - '#Variable \$p_[a-z_]+ might not be defined#'
     - '#Variable \$pbd might not be defined#'
     - '#Variable \$p\d might not be defined#'
-    - '#Variable \$mon_domaine might not be defined#'
     - '#Variable \$limite_[a-z_]+ might not be defined#'
     - '#Variable \$do_mail_[a-z_]+ might not be defined#'
     - '#Variable \$do_p_chron[a-z0-9_]+ might not be defined#'

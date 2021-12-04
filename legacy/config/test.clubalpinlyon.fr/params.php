@@ -8,8 +8,10 @@ setlocale(\LC_ALL, 'fr_FR');
 // ---------------------
 // PARAMS AU CAS PAR CAS
 
+$newConfig = require __DIR__.'/config.php';
+
 // chemin absolu vers la racine des fichiers
-$p_racine = 'https://'.$_SERVER['HTTP_HOST'].substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/') + 1);
+$p_racine = $newConfig['url'];
 
 // ADMIN
 $p_admin_login = 'caflyon';
@@ -129,6 +131,8 @@ $p_chron_dates_butoires = [8, 13, 18];
 // PARAMS STATIQUES
 
 $p_multilangue = count($p_langs) < 2 ? false : true;
+
+error_reporting(\E_ALL ^ \E_NOTICE);
 
 // vars de navigation, depuis l'URL via URL REWRITING // vars get toujours dispo grace au htaccess
 $p1 = formater($_GET['p1'] ?? null, 3);

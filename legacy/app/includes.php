@@ -24,15 +24,8 @@ $scriptsDir = __DIR__.'/../scripts/';
 if ($_SERVER && array_key_exists('HTTP_HOST', $_SERVER)) {
     define('MON_DOMAINE', $_SERVER['HTTP_HOST']);
 } else {
-    if ($dossier = opendir(__DIR__.'/../config/')) {
-        $mon_domaine = null;
-        while ($Entry = @readdir($dossier)) {
-            if (is_dir(__DIR__.'/../config/'.$Entry) && !in_array($Entry, ['.', '..', 'cafdemo.dev'], true)) {
-                $mon_domaine = $Entry;
-            }
-        }
-    }
-    define('MON_DOMAINE', $mon_domaine);
+    $config = require __DIR__.'/../config/config.php';
+    define('MON_DOMAINE', $config['url']);
 }
 
 //_________________________________________________ FONCTIONS MAISON
