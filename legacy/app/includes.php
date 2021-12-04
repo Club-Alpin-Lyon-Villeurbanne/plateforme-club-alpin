@@ -31,7 +31,7 @@ if ($_SERVER && array_key_exists('HTTP_HOST', $_SERVER)) {
 //_________________________________________________ FONCTIONS MAISON
 include __DIR__.'/../app/fonctions.php';
 //_________________________________________________ VARIABLES "GLOBALES" DU SITE
-include __DIR__.'/../app/params.php';
+include __DIR__.'/../config/params.php';
 //_________________________________________________ LANGUES
 include __DIR__.'/../app/langs.php';
 //_________________________________________________ FONCTIONS PARTAGEES
