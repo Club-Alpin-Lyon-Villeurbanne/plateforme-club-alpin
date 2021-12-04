@@ -5,7 +5,7 @@ if (user() && allowed('evt_join')) {
     $my_choices = mon_inscription($id_evt);
 
     // user non bridé (licence à jour)
-    if (getUser()->getDoitRenouvelerUser()) {
+    if (!getUser()->getDoitRenouvelerUser()) {
         // sortie pas passée
         if ($evt['tsp_evt'] > time()) {
             if ($destination) {
