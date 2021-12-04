@@ -1,7 +1,10 @@
 <?php
+
+global $lbxMsg;
+
 // $lbxMsg peut venir par GET ou par variable brute
 if (!$lbxMsg) {
-    $lbxMsg = $_GET['lbxMsg'];
+    $lbxMsg = $_GET['lbxMsg'] ?? null;
 }
 
 if ($lbxMsg) {

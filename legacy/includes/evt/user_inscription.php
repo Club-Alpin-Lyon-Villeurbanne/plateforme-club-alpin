@@ -14,7 +14,7 @@ if (user() && allowed('evt_join')) {
                 if (true == $inscriptions_status['status']) {
                     include __DIR__.'/../../includes/evt/user_inscription_button.php'; ?>
 
-                        <div id="inscription" style="display:<?php if ('user_join' == $_POST['operation']) {
+                        <div id="inscription" style="display:<?php if (isset($_POST['operation']) && 'user_join' == $_POST['operation']) {
                         echo 'block';
                     } else {
                         echo 'none';
@@ -36,10 +36,10 @@ if (user() && allowed('evt_join')) {
 
                                 <?php
                                     // TABLEAU d'erreurs
-                                    if ('user_join' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                                    if (isset($_POST['operation']) && 'user_join' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                                         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                                     }
-                                    if ('user_join' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+                                    if (isset($_POST['operation']) && 'user_join' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                                         echo '<div class="info">Opération effectuée avec succès : '.count($inscrits).' personnes inscrite(s)</div>';
                                     }
                                 ?>
@@ -76,7 +76,7 @@ if (user() && allowed('evt_join')) {
                         if ('neutre' == $monStatut || count($filiations) || $evt['repas_restaurant']) {
                             include __DIR__.'/../../includes/evt/user_inscription_button.php'; ?>
 
-                            <div id="inscription" style="display:<?php if ('user_join' == $_POST['operation']) {
+                            <div id="inscription" style="display:<?php if (isset($_POST['operation']) && 'user_join' == $_POST['operation']) {
                                 echo 'block';
                             } else {
                                 echo 'none';
@@ -86,10 +86,10 @@ if (user() && allowed('evt_join')) {
 
                                 <?php
                                     // TABLEAU d'erreurs
-                                    if ('user_join' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                                    if (isset($_POST['operation']) && 'user_join' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                                         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                                     }
-                            if ('user_join' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+                            if (isset($_POST['operation']) && 'user_join' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                                 echo '<div class="info">Opération effectuée avec succès : '.count($inscrits).' personnes pré-inscrite(s)</div>';
                             } ?>
 

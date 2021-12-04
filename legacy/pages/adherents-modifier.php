@@ -36,10 +36,10 @@ if (!admin() && !allowed('user_edit_notme')) {
 
 		<?php
         // TABLEAU
-        if ('user_edit' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+        if (isset($_POST['operation']) && 'user_edit' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
         }
-    if ('user_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+    if (isset($_POST['operation']) && 'user_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<div class="info"><b>Adhérent modifié avec succès :</b> <ul><li>'.implode('</li><li>', $okTab).'</li></ul></div>';
     } else {
         ?>

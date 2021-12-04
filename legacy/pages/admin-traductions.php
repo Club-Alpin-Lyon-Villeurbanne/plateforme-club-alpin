@@ -256,7 +256,7 @@ if (!admin()) {
 
 		// si on arrive sur la page depuis un bouton "manque de contenus", on focus sur le champ ciblé
 		<?php
-        if ('forceAddContent' == $_POST['operation']) {
+        if (isset($_POST['operation']) && 'forceAddContent' == $_POST['operation']) {
             ?>
 			$("input[name=contenu_content_inline]:first").focus();
 			<?php

@@ -45,8 +45,10 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     ];
 }
 
+$codePrioritaire = null;
+
 // DEFINITION DES VARS UTILISEES SUR LA PAGE
-if ($p_pages[$p2]) {
+if ($p_pages[$p2] ?? null) {
     $codePrioritaire = $p2;
 } elseif ($p_pages[$p1]) {
     $codePrioritaire = $p1;
@@ -61,7 +63,7 @@ if ('creer-une-sortie' == $p1) {
 }
 
 // PAGE TROUVEE
-if ($p_pages[$codePrioritaire]) {
+if ($p_pages[$codePrioritaire] ?? null) {
     // page trouvée, mais si pas de sous-page précisée alors qu'une existe, on redirige vers la première sous-page
     // Dépends de la navigation sur le siten retirer le bloc ci-dessous si necessaire
     if (!$p2) {
@@ -73,9 +75,9 @@ if ($p_pages[$codePrioritaire]) {
         }
     }
     // sinon, récup infos
-    $currentPage1 = $p_pages[$p1]; // totues les infos de la page courante
-    $currentPage2 = $p_pages[$p2]; // totues les infos de la page courante
-    $currentPage3 = $p_pages[$p3]; // totues les infos de la page courante
+    $currentPage1 = $p_pages[$p1] ?? null; // totues les infos de la page courante
+    $currentPage2 = $p_pages[$p2] ?? null; // totues les infos de la page courante
+    $currentPage3 = $p_pages[$p3] ?? null; // totues les infos de la page courante
     $meta_title = $p_pages[$codePrioritaire]['meta_title_page'] ?: cont('site-meta-title');
     $meta_description = $p_pages[$codePrioritaire]['meta_description_page'] ?: cont('site-meta-description');
     $p_pageadmin = $p_pages[$codePrioritaire]['admin_page'] ? true : false; // gère le style de la page

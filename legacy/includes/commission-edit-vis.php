@@ -23,7 +23,7 @@ if (user()) {
             echo '<p class="erreur">Commission introuvable</p>';
         } else {
             // redirection si OK
-            if (('commission_majvis' == $_POST['operation'] || 'commission_majvis' == $_POST['operation']) && (!isset($errTab) || 0 === count($errTab))) {
+            if (('commission_majvis' == ($_POST['operation'] ?? null) || 'commission_majvis' == ($_POST['operation'] ?? null)) && (!isset($errTab) || 0 === count($errTab))) {
                 ?>
 				<p class="info">Mise à jour effectuée</p>
 				<script type="text/javascript">
@@ -46,7 +46,7 @@ if (user()) {
 
 					<?php
                     // MESSAGES A LA SOUMISSION
-                    if ('commission_majvis' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                    if ('commission_majvis' == ($_POST['operation'] ?? null) && isset($errTab) && count($errTab) > 0) {
                         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                     } ?>
 					<br />
@@ -72,7 +72,7 @@ if (user()) {
 
 					<?php
                     // MESSAGES A LA SOUMISSION
-                    if ('commission_majvis' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                    if ('commission_majvis' == ($_POST['operation'] ?? null) && isset($errTab) && count($errTab) > 0) {
                         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
                     } ?>
 					<br />

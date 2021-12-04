@@ -64,7 +64,7 @@ if (count($errTab) > 0) {
     }
 
     // OPERATION PAS LANCEE OU ERREUR
-    if (!$_POST['operation'] || 'create' == $_POST['operation'] && count($errTab) > 0) {
+    if (!isset($_POST['operation']) || 'create' == $_POST['operation'] && count($errTab) > 0) {
         ?><!doctype html>
         <html lang="fr">
             <head>
