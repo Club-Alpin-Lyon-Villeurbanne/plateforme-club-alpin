@@ -25,7 +25,7 @@ if ($_SERVER && array_key_exists('HTTP_HOST', $_SERVER)) {
     define('MON_DOMAINE', $_SERVER['HTTP_HOST']);
 } else {
     $config = require __DIR__.'/../config/config.php';
-    define('MON_DOMAINE', $config['url']);
+    define('MON_DOMAINE', parse_url($config['url'], \PHP_URL_HOST));
 }
 
 //_________________________________________________ FONCTIONS MAISON
