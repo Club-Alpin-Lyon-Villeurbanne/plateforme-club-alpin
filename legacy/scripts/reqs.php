@@ -1164,7 +1164,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     || (allowed('destination_supprimer') && $_GET['forceshow']) // ou mode validateur
                     || (allowed('destination_modifier') && $_GET['forceshow']) // ou mode validateur
                     || (admin() || superadmin()) // ou mode validateur
-                    || in_array((string) getUser()->getIdUser(), get_all_encadrants_destination($id_destination), true) // je suis l'un des co/encadrant de l'une des sorties
+                    || (user() && in_array((string) getUser()->getIdUser(), get_all_encadrants_destination($id_destination), true)) // je suis l'un des co/encadrant de l'une des sorties
                 )
             )
         ) {
