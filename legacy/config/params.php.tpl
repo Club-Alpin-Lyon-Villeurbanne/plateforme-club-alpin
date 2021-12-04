@@ -8,7 +8,7 @@ setlocale(\LC_ALL, 'fr_FR');
 
 $newConfig = require __DIR__.'/config.php';
 
-$p_racine = $newConfig['url'];
+$p_racine = $newConfig['url'].'/';
 
 // ADMIN
 $p_admin_login = 'hwc';
