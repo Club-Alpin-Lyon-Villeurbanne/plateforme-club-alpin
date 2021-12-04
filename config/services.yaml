@@ -86,3 +86,7 @@ services:
     legacy_logger:
         public: true
         alias: 'logger'
+
+    legacy_user_rights:
+        public: true
+        class: App\UserRights

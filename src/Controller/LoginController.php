@@ -111,7 +111,7 @@ class LoginController extends AbstractController
      * @Security("is_granted('IS_AUTHENTICATED_FULLY') and is_granted('ROLE_USER')")
      * @Template
      */
-    public function setPasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer, RecaptchaValidator $recaptchaValidator)
+    public function setPasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer)
     {
         /** @var CafUser $user */
         $user = $this->getUser();

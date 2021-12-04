@@ -57,10 +57,7 @@ if (allowed('evt_validate_all')) { // pouvoir de valider toutes les sorties de t
     $notif_validerunesortie = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
 } elseif (allowed('evt_validate')) { // pouvoir de valider les sorties d'un nombre N de commissions dont nous sommes ersponsable
     // recuperation des commissions sous notre joug
-    $tab = explode('|', $userAllowedTo['evt_validate']);
-    for ($i = 0; $i < count($tab); ++$i) {
-        $tab[$i] = substr(strrchr($tab[$i], ':'), 1);
-    } //  $tab contient les CODES des commissions autorisées a valider
+    $tab = $kernel->getContainer()->get('legacy_user_rights')->getCommissionListForRight('evt_validate');
 
     // compte des sorties à valider, selon la (les) commission dont nous sommes responsables
     $req = "SELECT COUNT(id_evt) FROM caf_evt, caf_user, caf_commission
@@ -94,10 +91,7 @@ if (allowed('article_validate_all')) { // pouvoir de valider les articles
     $notif_validerunarticle = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
 } elseif (allowed('article_validate')) { // pouvoir de valider les articles
     // recuperation des commissions sous notre joug
-    $tab = explode('|', $userAllowedTo['article_validate']);
-    for ($i = 0; $i < count($tab); ++$i) {
-        $tab[$i] = substr(strrchr($tab[$i], ':'), 1);
-    } //  $tab contient les CODES des commissions autorisées a valider
+    $tab = $kernel->getContainer()->get('legacy_user_rights')->getCommissionListForRight('article_validate');
 
     $req = "SELECT COUNT(id_article)
 	FROM caf_article, caf_commission
@@ -322,10 +316,7 @@ elseif ('gestion-des-articles' == $p1 && (allowed('article_validate_all') || all
 		LIMIT '.($limite * ($pagenum - 1)).", $limite";
     } elseif (allowed('article_validate')) { // commission non précisée ici = autorisation passée
         // recuperation des commissions sous notre joug
-        $tab = explode('|', $userAllowedTo['article_validate']);
-        for ($i = 0; $i < count($tab); ++$i) {
-            $tab[$i] = substr(strrchr($tab[$i], ':'), 1);
-        } //  $tab contient les CODES des commissions autorisées a valider
+        $tab = $kernel->getContainer()->get('legacy_user_rights')->getCommissionListForRight('article_validate');
 
         // compte nb total articles
         $req = "SELECT COUNT(id_article)
@@ -1341,10 +1332,7 @@ elseif ('gestion-des-sorties' == $p1 && (allowed('evt_validate_all') || allowed(
     // requetes pour SEULEMENT les sorties DES COMMISSION que nous sommes autorisées à administrer
     elseif (allowed('evt_validate')) { // commission non précisée ici = autorisation passée
         // recuperation des commissions sous notre joug
-        $tab = explode('|', $userAllowedTo['evt_validate']);
-        for ($i = 0; $i < count($tab); ++$i) {
-            $tab[$i] = substr(strrchr($tab[$i], ':'), 1);
-        } //  $tab contient les CODES des commissions autorisées a valider
+        $tab = $kernel->getContainer()->get('legacy_user_rights')->getCommissionListForRight('evt_validate');
 
         // sorties à valider, selon la (les) commission dont nous sommes responsables
         $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
