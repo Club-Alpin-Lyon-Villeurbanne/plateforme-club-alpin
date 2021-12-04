@@ -21,7 +21,7 @@ if (!function_exists('getMysqli')) {
             exit("Impossible de se connecter à la base de données. Merci d'avertir l'administrateur.");
         }
 
-        $mysqli->set_charset('UTF8');
+        $mysqli->set_charset('utf8mb4');
 
         return $mysqli;
     }
