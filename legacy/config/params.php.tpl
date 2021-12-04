@@ -23,8 +23,6 @@ $p_ffcam = ['6900'];
 // GOOGLE
 $p_google_analytics_account = 'UA-42585248-1';
 
-// Mise à jour manuelle des adhérents
-$p_user_updatefiles = false;
 // nombre de colonnes dans le fichier adherent xxxx.csv
 $p_csv_adherent_nb_colonnes = 33;
 
@@ -46,9 +44,6 @@ $limite_sorties_validation = 10;
 // -------------------
 // PARAMS CAF
 $limite_longeur_numero_adherent = 12;
-
-// mail de rappel lors de la validation juridique d'une sortie
-$do_mail_evt_legal_update = false;
 
 // temps en secondes avant un événement pour le rappeler à l'utilisateur (créateur exclu)
 $do_p_chron_rappel_user_avant_event_1 = false;
