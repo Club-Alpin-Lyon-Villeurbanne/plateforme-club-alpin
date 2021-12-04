@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 $lastname_user = trim(stripslashes($_POST['lastname_user']));
@@ -149,7 +151,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // envoi de l'e-mail
     if (!isset($errTab) || 0 === count($errTab)) {
         // check-in vars : string à retourner lors de la confirmation= md5 de la concaténation id-email
-        $url = $p_racine.'user-confirm/'.$cookietoken_user.'-'.$id_user.'.html';
+        $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$cookietoken_user.'-'.$id_user.'.html';
 
         // content vars
         $subject = 'Validez votre compte adhérent du '.$p_sitename;

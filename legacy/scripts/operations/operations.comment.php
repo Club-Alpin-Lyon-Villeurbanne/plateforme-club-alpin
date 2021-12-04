@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 if (!user()) {
@@ -74,7 +76,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // PHPMAILER - envoi mail vers auteur
     if ('' !== $comment_article[2]) {
-        $content_main = "<h1>Bonjour !<h1><p>Votre article <a href=\"$p_racine".'article/'.$comment_article[4].'-'.$comment_article[0].'.html#comments" title="">'.$comment_article[3].'</a> a été commenté avec le texte suivant :</p><p><i>'.$cont_comment.'</i></p><br /><br /><p>PS : ceci est un mail automatique.</p>';
+        $content_main = '<h1>Bonjour !<h1><p>Votre article <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$comment_article[4].'-'.$comment_article[0].'.html#comments" title="">'.$comment_article[3].'</a> a été commenté avec le texte suivant :</p><p><i>'.$cont_comment.'</i></p><br /><br /><p>PS : ceci est un mail automatique.</p>';
 
         require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"

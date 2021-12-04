@@ -1,5 +1,9 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
 // vars de notification
 $notif_validerunarticle = 0;
 $notif_validerunesortie = 0;
@@ -272,7 +276,7 @@ elseif ('article' == $p1) {
             $meta_description = limiterTexte(strip_tags($handle['cont_article']), 200).'...';
             // opengraphe : image pour les partages
             if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg')) {
-                $ogImage = $p_racine.'ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg';
+                $ogImage = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg';
             }
 
             // maj nb vues

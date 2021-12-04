@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
@@ -218,7 +220,7 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
 
                                         // vars
                                         $evtName = html_utf8($_POST['titre_evt']);
-                                        $evtUrl = html_utf8($p_racine.'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html');
+                                        $evtUrl = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html');
 
                                         switch ($role_evt_join) {
                                             case 'encadrant':

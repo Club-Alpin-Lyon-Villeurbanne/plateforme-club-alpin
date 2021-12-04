@@ -1,5 +1,9 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
 include __DIR__.'/../app/includes.php';
 
 if (!admin()) {
@@ -9,7 +13,7 @@ if (!admin()) {
 }
 
     $targetRel = $_GET['target'];
-    $targetAbs = substr($p_racine, 0, strlen($p_racine) - 6).$_GET['target']; // substr = supprimer admin/
+    $targetAbs = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).$_GET['target']; // substr = supprimer admin/
 
     ?><!doctype html>
 	<html lang="fr">

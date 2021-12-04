@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 $id_evt = (int) ($_POST['id_evt']);
@@ -46,19 +48,19 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_legal_evt || 2 ==
     if (1 == $status_legal_evt) {
         $subject = 'Votre sortie a été validée par le président';
         $content_main = "<h2>$subject</h2>
-            <p>Félicitations, votre sortie &laquo;<i>".html_utf8($authorDatas['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $authorDatas['tsp_evt'])." a été validée. Pour y accéder, cliquez sur le lien ci-dessous :</p>
+            <p>Félicitations, votre sortie &laquo;<i>".html_utf8($authorDatas['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $authorDatas['tsp_evt']).' a été validée. Pour y accéder, cliquez sur le lien ci-dessous :</p>
             <p>
-                <a href=\"$p_racine".'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].".html\" title=\"\">$p_racine".'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html</a>
+                <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html" title="">'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html</a>
             </p>';
     }
     if (2 == $status_legal_evt) {
         $subject = 'Votre sortie a été refusée à la validation';
         $content_main = "<h2>$subject</h2>
             <p>Désolé, il semble que votre sortie créée sur le site du ".$p_sitename.' ne soit pas validée par le CAF</p>
-            <p>Sortie concernée : &laquo;<i>'.html_utf8($authorDatas['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $authorDatas['tsp_evt'])."</p>
+            <p>Sortie concernée : &laquo;<i>'.html_utf8($authorDatas['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $authorDatas['tsp_evt']).'</p>
             <p>
                 Voir la page :<br />
-                <a href=\"$p_racine".'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].".html\" title=\"\">$p_racine".'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html</a>
+                <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html" title="">'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html</a>
             </p>
             ';
     }
