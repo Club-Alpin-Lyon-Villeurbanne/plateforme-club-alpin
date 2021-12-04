@@ -183,15 +183,6 @@ class UserRights
             // deux commissions auquel cas, ils sont concaténés via le caractère
             foreach ($result as $row) {
                 $userAllowedTo[$row['code_userright']] = 'true';
-
-                // écriture, ou concaténation des paramètres existant
-                if ('true' != $userAllowedTo[$row['code_userright']]) {
-                    $userAllowedTo[$row['code_userright']] = ($userAllowedTo[$row['code_userright']] ? $userAllowedTo[$row['code_userright']].'|' : '').$val;
-                }
-
-                if ($this->isAdmin()) {
-                    $userAllowedTo[$row['code_userright']] = 'true';
-                }
             }
         }
 

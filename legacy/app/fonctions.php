@@ -281,16 +281,7 @@ function allowed($code_userright, $param = '')
                     // Il est possible que le même droit prenne plusieurs paramètres (ex : vous avez le droit d'écrire un article dans
                     // deux commissions auquel cas, ils sont concaténés via le caractère |
                     while ($row = $result->fetch_assoc()) {
-                        $userAllowedTo[$row['code_userright']] = $val;
-
-                        // écriture, ou concaténation des paramètres existant
-                        if ('true' != $userAllowedTo[$row['code_userright']]) {
-                            $userAllowedTo[$row['code_userright']] = ($userAllowedTo[$row['code_userright']] ? $userAllowedTo[$row['code_userright']].'|' : '').$val;
-                        }
-
-                        if (admin() || superadmin()) {
-                            $userAllowedTo[$row['code_userright']] = 'true';
-                        }
+                        $userAllowedTo[$row['code_userright']] = 'true';
                     }
                     // FIN DEBUG
                     // **********
