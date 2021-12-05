@@ -2,6 +2,8 @@
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+global $kernel;
+
 //___________________ CONFIGURATION DES PAGES
 //___________________ Cette version déclare une variable contenant toutes les specs de toutes
 //___________________ les pages, ce qui est lourd pour le serveur mais pratique pour la gestion des menus
@@ -14,7 +16,6 @@ if (!$p1) {
 
 // options des pages
 cont(false); // initialisation des contenus
-$mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
 
 $p_pages = [];
 
@@ -26,7 +27,7 @@ $req = 'SELECT * FROM  `caf_page` '
         .(superadmin() ? ' OR superadmin_page=1 ' : ' AND superadmin_page=0 ') // seuls les superadmin peuvent voir les pages superadmin
         .'ORDER BY ordre_menu_page ASC, ordre_menuadmin_page ASC' // on sort tout de suite dans l'ordre des menus
         ;
-$handleSql = $mysqli->query($req);
+$handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     $p_pages[$handle['code_page']] = [
         // 'meta_title_page'=>$handle['meta_title_page']?cont('meta-title-'.$handle['code_page']):cont('meta-title-site'),

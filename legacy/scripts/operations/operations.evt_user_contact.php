@@ -33,8 +33,6 @@ if (strlen($message) < 10) {
     $errTab[] = 'Veuillez entrer un message valide';
 }
 
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
 if (!isset($errTab) || 0 === count($errTab)) {
     // sélection de l'événement, avec vérification que j'EN SUIS L'AUTEUR, puis des users liés en fonction des destinataires demandés
     $req = "
@@ -48,7 +46,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     //		print ($req);exit;
     $destTab = [];
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $destTab[] = $handle;
@@ -63,7 +61,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 if (!isset($errTab) || 0 === count($errTab)) {
     // infos evt
     $req = "SELECT * FROM caf_evt WHERE id_evt = $id_evt";
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $titre_evt = $handle['titre_evt'];
         $code_evt = $handle['code_evt'];

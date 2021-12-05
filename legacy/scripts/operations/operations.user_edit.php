@@ -27,34 +27,25 @@ if (0 != strlen($userTab['cafnum_user_new']) && ((!is_numeric($userTab['cafnum_u
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
-    // insertion SQL
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
     if ($userTab['cafnum_user_new'] > 0) {
         // echange du numero d'adherent,
-        $req = "UPDATE `caf_user` SET cafnum_user='".$mysqli->real_escape_string($userTab['cafnum_user'])."' WHERE cafnum_user='".$mysqli->real_escape_string($userTab['cafnum_user_new'])."' AND lastname_user='".$mysqli->real_escape_string($userTab['lastname_user'])."'";
+        $req = "UPDATE `caf_user` SET cafnum_user='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($userTab['cafnum_user'])."' WHERE cafnum_user='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($userTab['cafnum_user_new'])."' AND lastname_user='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($userTab['lastname_user'])."'";
         $okTab[] = "Changement du numéro d'adhérent (".$userTab['cafnum_user'].' -> '.$userTab['cafnum_user_new']."), la mise à jour de la date d'adhésion sera effective sous 24h.";
-        if (!$mysqli->query($req)) {
-            $errTab[] = "Echange du numéro d'adhérent en erreur : ".$mysqli->error;
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+            $errTab[] = "Echange du numéro d'adhérent en erreur : ".$kernel->getContainer()->get('legacy_mysqli_handler')->lastError();
         } else {
             $userTab['cafnum_user'] = $userTab['cafnum_user_new'];
         }
     }
 
     if (!isset($errTab) || 0 === count($errTab)) {
-        $req = "UPDATE `caf_user` SET email_user='".$mysqli->real_escape_string($userTab['email_user'])."',
-            auth_contact_user='".$mysqli->real_escape_string($userTab['auth_contact_user'])."',
-            cafnum_user='".$mysqli->real_escape_string($userTab['cafnum_user'])."'";
+        $req = "UPDATE `caf_user` SET email_user='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($userTab['email_user'])."',
+            auth_contact_user='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($userTab['auth_contact_user'])."',
+            cafnum_user='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($userTab['cafnum_user'])."'";
 
-        $req .= "	WHERE id_user='".$mysqli->real_escape_string($userTab['id_user'])."'";
+        $req .= "	WHERE id_user='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($userTab['id_user'])."'";
 
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         } else {
             $okTab[] = 'Mise à jour du compte';

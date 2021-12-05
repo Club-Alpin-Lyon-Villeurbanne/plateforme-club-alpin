@@ -1,4 +1,7 @@
 <?php
+
+global $kernel;
+
 // GESTION DES INSCRIPTIONS
 
 if ('1' != $evt['cancelled_evt']) {
@@ -144,8 +147,6 @@ if ('1' != $evt['cancelled_evt']) {
                         // vars pour les stats sous le tableau
                         $nDemandes = $nAcceptees = $nRefusees = $nAbsents = $nCb = $nCb_nsp = $nRestaurant = $nRestaurant_nsp = 0;
 
-        // requete SQL in page
-        $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
         // participants non filtrés
         $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user
                                     , id_evt_join , role_evt_join, tsp_evt_join, status_evt_join, doit_renouveler_user, is_cb, is_restaurant, is_covoiturage, id_destination, id_bus_lieu_destination
@@ -154,7 +155,7 @@ if ('1' != $evt['cancelled_evt']) {
                             AND user_evt_join = id_user
                             ORDER BY tsp_evt_join
                             LIMIT 300";
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             // STATS
             ++$nDemandes;

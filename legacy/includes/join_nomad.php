@@ -1,4 +1,7 @@
 <?php
+
+global $kernel;
+
 // Cette page sert à joindre manuellement un user à une sortie
 
 if (user()) {
@@ -8,9 +11,8 @@ if (user()) {
     if ($id_dest) {
         $busses = get_bus_destination($id_dest);
     }
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
     $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$id_evt;
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($sorties = $result->fetch_assoc()) {
         $sortie = $sorties;
     }
@@ -62,7 +64,6 @@ if (user()) {
         } ?>>- Non merci, créer un nouvel adhérent nomade</option>
 					<?php
                     // liste des adhérents (table user) créés par moi
-                    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         $req = 'SELECT  id_user, cafnum_user, firstname_user, lastname_user, civ_user
 								, created_user, tel_user, tel2_user
 						FROM  caf_user
@@ -70,7 +71,7 @@ if (user()) {
 						AND nomade_user=1
 						ORDER BY created_user DESC
 						LIMIT 1000';
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             echo '<option value="'.(int) ($row['id_user']).'">'.html_utf8($row['cafnum_user'].' - '.$row['firstname_user'].' '.$row['lastname_user']).' - le '.date('d/m/y', $row['created_user']).'</option>';
 

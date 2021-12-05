@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 include __DIR__.'/../../app/includes.php';
 
 $errTab = [];
@@ -101,18 +103,16 @@ if (0 === count($errTab)) {
 
 // enregistrement BDD si c'est une modificatino d'evt
 if (0 === count($errTab) && 'edit' == $mode) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
     // save
-    $filename = $mysqli->real_escape_string($filename);
+    $filename = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($filename);
     $req = "INSERT INTO caf_img(evt_img, ordre_img, user_img, fichier_img)
 						VALUES($id_evt,    100,    ".getUser()->getIdUser().", '$filename')";
-    $mysqli->query($req);
+    $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
     // maj ordre
-    $id_img = $mysqli->insert_id;
+    $id_img = $kernel->getContainer()->get('legacy_mysqli_handler')->insertId();
     $req = "UPDATE caf_img SET ordre_img` =  '$id_img' WHERE caf_img.id_img =$id_img ";
-    $mysqli->query($req);
+    $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
     $result['id'] = $id_img;
 }

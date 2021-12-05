@@ -1,16 +1,15 @@
 <?php
 
+global $kernel;
 global $p_sublevels;
-global $_POST;
 
 if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page'] && !superadmin())) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     // reqs toutes pages de l'arbo
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
     $req = 'SELECT * FROM  `caf_page` WHERE  `admin_page` =0 ORDER BY  `parent_page` ASC, `ordre_menu_page` ASC LIMIT 0 , 300';
     $pageTab = [];
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $pageTab[] = $handle;
     }

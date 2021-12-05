@@ -90,3 +90,7 @@ services:
     legacy_user_rights:
         public: true
         class: App\UserRights
+
+    legacy_mysqli_handler:
+        public: true
+        class: App\Utils\MysqliHandler

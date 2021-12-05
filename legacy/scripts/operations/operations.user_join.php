@@ -45,8 +45,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $role_evt_join = 'inscrit';
     }
 
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
     // si filiations : création du tableau des joints et vérifications
     if ($filiations) {
         if (!count($_POST['id_user_filiation'])) {
@@ -57,8 +55,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // vérification que c'est bien mon affilié
             // sauf moi-meme
             if ($id_user_tmp != getUser()->getIdUser()) {
-                $req = "SELECT COUNT(id_user) FROM caf_user WHERE cafnum_parent_user LIKE '".$mysqli->real_escape_string(getUser()->getCafnumUser())."' AND id_user=".(int) $id_user_tmp;
-                $result = $mysqli->query($req);
+                $req = "SELECT COUNT(id_user) FROM caf_user WHERE cafnum_parent_user LIKE '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(getUser()->getCafnumUser())."' AND id_user=".(int) $id_user_tmp;
+                $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 $row = $result->fetch_row();
                 if (!$row[0]) {
                     $errTab[] = "ID '".(int) $id_user_tmp."' invalide pour l'inscription d'un adhérent affilié";
@@ -70,7 +68,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // verification de la validité de la destination
     if ($is_destination) {
         $req = "SELECT COUNT(id) FROM caf_destination WHERE ( id=$id_destination AND annule != 0 ) OR ( id=$id_destination AND  publie != 1 ) LIMIT 1";
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         $row = $result->fetch_row();
         if ($row[0]) {
             $errTab[] = 'Cette destination ne semble pas publiée ou est annulée, les inscriptions sont impossible';
@@ -79,7 +77,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // verification de la validité de la sortie
     $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND status_evt != 1 LIMIT 1";
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if ($row[0]) {
         $errTab[] = 'Cette sortie ne semble pas publiée, les inscriptions sont impossible';
@@ -87,7 +85,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // verification du timing de la sortie
     $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND tsp_evt < ".time().' LIMIT 1';
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if ($row[0]) {
         $errTab[] = 'Cette sortie a deja demarrée';
@@ -111,7 +109,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     } else {
         // verification du timing de la sortie : inscriptions
         $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND join_start_evt > ".time().' LIMIT 1';
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         $row = $result->fetch_row();
         if ($row[0]) {
             $errTab[] = 'Les inscriptions ne sont pas encore ouvertes';
@@ -124,7 +122,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // verification de l'existence de cette demande
     if (!$filiations) {
         $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join=$id_user LIMIT 1";
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         $row = $result->fetch_row();
         if ($row[0]) {
             // $errTab[]="Vous semblez déjà être pré-inscrit à cette sortie.";
@@ -141,7 +139,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             AND user_evt_join=id_user
             AND id_user=$id_user_tmp
             LIMIT 1";
-            $result = $mysqli->query($req);
+            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($row = $result->fetch_assoc()) {
                 // $errTab[]=$row['firstname_user']." ".$row['lastname_user']." semble déjà être pré-inscrit(e) à cette sortie.";
                 $update[] = $id_user_tmp;
@@ -204,13 +202,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                             WHERE
                                 `user_evt_join` = $id_user AND evt_evt_join = $id_evt;";
             }
-            if (!$mysqli->query($req)) {
-                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                    'error' => $mysqli->error,
-                    'file' => __FILE__,
-                    'line' => __LINE__,
-                    'sql' => $req,
-                ]);
+            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }
         }
@@ -231,13 +223,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                             WHERE
                                 `user_evt_join` = $id_user_tmp AND evt_evt_join = $id_evt;";
                 }
-                if (!$mysqli->query($req)) {
-                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                        'error' => $mysqli->error,
-                        'file' => __FILE__,
-                        'line' => __LINE__,
-                        'sql' => $req,
-                    ]);
+                if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL';
                 }
             }
@@ -254,7 +240,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         .'WHERE id_user = user_evt '
         ."AND id_evt = $id_evt "
         .'LIMIT 1; ';
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $destinataires[''.$row['id_user']] = $row;
         }
@@ -266,7 +252,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         ."AND evt_evt_join = $id_evt "
         .'AND status_evt_join = 1 '
         ."AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant') ";
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $destinataires[''.$row['id_user']] = $row;
         }
@@ -277,7 +263,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         .'FROM caf_evt '
         ."WHERE id_evt = $id_evt "
         .'LIMIT 1 ';
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $evt = $row;
         }
@@ -295,7 +281,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             "WHERE id_user = $id_user "
         )
         .'LIMIT 100 ';
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $inscrits[] = $row;
             // echo 'adding '.$row['firstname_user'];

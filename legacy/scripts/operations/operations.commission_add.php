@@ -174,17 +174,16 @@ $id_commission = null;
 
 // SQL
 if (!isset($errTab) || 0 === count($errTab)) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
     $code_commission = formater($title_commission, 3);
-    $code_commission = $mysqli->real_escape_string($code_commission);
-    $title_commission = $mysqli->real_escape_string($title_commission);
+    $code_commission = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($code_commission);
+    $title_commission = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($title_commission);
 
     // Le code doit être unique dans la base
     $passed = false;
     $suffixe = '';
     while (!$passed) {
         $req = "SELECT COUNT(id_commission) FROM caf_commission WHERE code_commission LIKE '$code_commission"."$suffixe'";
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         $row = $result->fetch_row();
         if (0 == $row[0]) {
             $passed = true;
@@ -197,16 +196,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // enregistrement
     $req = "INSERT INTO caf_commission(id_commission, ordre_commission, vis_commission, code_commission, title_commission)
                                                 VALUES (NULL ,  '',  '0',  '$code_commission',  '$title_commission');";
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
-    $id_commission = $mysqli->insert_id;
+    $id_commission = $kernel->getContainer()->get('legacy_mysqli_handler')->insertId();
 
     if (!$id_commission) {
         $errTab[] = 'Erreur SQL : id irrécupérable';

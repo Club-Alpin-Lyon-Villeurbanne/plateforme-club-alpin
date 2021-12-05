@@ -4,7 +4,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 global $kernel;
 
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 $errTabMail = [];
 
 // vars
@@ -18,7 +17,7 @@ WHERE evt_evt_join=$id_evt
 AND user_evt_join = ".getUser()->getIdUser()."
 AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant')
 LIMIT 1";
-$result = $mysqli->query($req);
+$result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 $row = $result->fetch_row();
 if ($row[0] > 0) {
     $suis_encadrant = true;
@@ -27,7 +26,7 @@ if ($row[0] > 0) {
 // suis-je l'auteur de cette sortie ?
 $suis_auteur = false;
 $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND user_evt = ".getUser()->getIdUser().' LIMIT 1';
-$result = $mysqli->query($req);
+$result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 $row = $result->fetch_row();
 if ($row[0] > 0) {
     $suis_auteur = true;
@@ -64,7 +63,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // verification de la validité de la sortie
     $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND status_evt != 1 LIMIT 1";
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if ($row[0]) {
         $errTab[] = 'Cette sortie ne semble pas publiée, les inscriptions sont impossible';
@@ -129,7 +128,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         }
 
         // si pas de pb, intégration
-        $role_evt_join = $mysqli->real_escape_string($role_evt_join);
+        $role_evt_join = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($role_evt_join);
 
         if (!isset($errTab) || 0 === count($errTab)) {
             // attention : status_evt_join est à 1 ici par défaut
@@ -146,13 +145,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                         NULL ,		$status_evt_join, '$id_evt',    '$id_user',  '$role_evt_join', ".time().',
                         '.time().', 			'.getUser()->getIdUser().",
                         $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage );";
-            if (!$mysqli->query($req)) {
-                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                    'error' => $mysqli->error,
-                    'file' => __FILE__,
-                    'line' => __LINE__,
-                    'sql' => $req,
-                ]);
+            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             } else {
                 unset($_POST['id_user'][$i]);
@@ -174,7 +167,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $toMail = '';
             $toName = '';
             $req = "SELECT email_user, firstname_user, lastname_user, civ_user FROM caf_user WHERE id_user=$id_user LIMIT 1";
-            $result = $mysqli->query($req);
+            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($row = $result->fetch_assoc()) {
                 $toMail = $row['email_user'];
                 $toName = $row['firstname_user'];
@@ -187,7 +180,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $evtUrl = '';
             $evtName = '';
             $req = "SELECT id_evt, code_evt, titre_evt FROM caf_evt WHERE id_evt=$id_evt LIMIT 1";
-            $result = $mysqli->query($req);
+            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($row = $result->fetch_assoc()) {
                 $evtUrl = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$row['code_evt'].'-'.$row['id_evt'].'.html');
                 $evtName = html_utf8($row['titre_evt']);

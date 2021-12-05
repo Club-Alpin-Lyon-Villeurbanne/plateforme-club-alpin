@@ -1,11 +1,11 @@
 <?php
 
+global $kernel;
+
 $log = (isset($log) ? $log : '')."\n accès à ".date('H:i:s');
 $result = null;
 
 if (admin()) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
     $id_content_inline = (int) ($_POST['id']);
     $log .= "\n id_content_inline :  ".$id_content_inline;
     $code_content_inline = $_POST['code_content_inline'];
@@ -21,10 +21,10 @@ if (admin()) {
     $log .= "\n linkedtopage_content_inline :  \n".$linkedtopage_content_inline;
 
     if (isset($_POST['id_content_inline']) && isset($_POST['lang_content_inline']) && isset($_POST['contenu_content_inline'])) {
-        $code_content_inline = $mysqli->real_escape_string($code_content_inline);
-        $contenu_content_inline = $mysqli->real_escape_string($contenu_content_inline);
-        $lang_content_inline = $mysqli->real_escape_string($lang_content_inline);
-        $linkedtopage_content_inline = $mysqli->real_escape_string($linkedtopage_content_inline);
+        $code_content_inline = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($code_content_inline);
+        $contenu_content_inline = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($contenu_content_inline);
+        $lang_content_inline = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($lang_content_inline);
+        $linkedtopage_content_inline = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($linkedtopage_content_inline);
 
         // entrée à créer
         if (!$id_content_inline) {
@@ -37,7 +37,7 @@ if (admin()) {
         }
 
         $log .= "\n SQL : ";
-        if (!$mysqli->query($req)) {
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $log .= "ERREUR : $req";
         } else {
             $log .= "\n OK ";
