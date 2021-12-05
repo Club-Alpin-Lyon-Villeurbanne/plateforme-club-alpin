@@ -44,6 +44,7 @@ class MysqliHandler
             $this->logger->error(sprintf('SQL error: %s', $this->mysqli->error), [
                 'error' => $this->mysqli->error,
                 'sql' => $sql,
+                'exception' => new \RuntimeException(sprintf('SQL error: %s', $this->mysqli->error)),
             ]);
         }
 
