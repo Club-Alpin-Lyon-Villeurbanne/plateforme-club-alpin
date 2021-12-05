@@ -3,16 +3,19 @@
 namespace App\Utils;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class MysqliHandler
 {
     private LoggerInterface $logger;
     private ?\mysqli $mysqli;
+    private RequestStack $requestStack;
     private string $kernelEnvironment;
 
-    public function __construct(LoggerInterface $logger, string $kernelEnvironment)
+    public function __construct(LoggerInterface $logger, RequestStack $requestStack, string $kernelEnvironment)
     {
         $this->logger = $logger;
+        $this->requestStack = $requestStack;
         $this->kernelEnvironment = $kernelEnvironment;
         $this->initializeConnection();
     }
@@ -41,10 +44,18 @@ class MysqliHandler
         $result = $this->mysqli->query($sql);
 
         if (!$result) {
+            $request = $this->requestStack->getMainRequest();
+            $url = null;
+
+            if ($request) {
+                $url = $request->getUri();
+            }
+
             $this->logger->error(sprintf('SQL error: %s', $this->mysqli->error), [
                 'error' => $this->mysqli->error,
                 'sql' => $sql,
                 'exception' => new \RuntimeException(sprintf('SQL error: %s', $this->mysqli->error)),
+                'url' => $url,
             ]);
         }
 
