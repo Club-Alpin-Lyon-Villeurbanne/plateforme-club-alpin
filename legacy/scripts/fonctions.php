@@ -335,6 +335,10 @@ function user_in_destination($id_user, $id_destination, $valid = true)
 {
     global $kernel;
 
+    if ('' === trim($id_destination)) {
+        return false;
+    }
+
     $is_in = false;
 
     $req = "SELECT * FROM `caf_evt_join`
@@ -377,6 +381,10 @@ function user_in_cb($id_user, $valid = true)
 function user_in_destination_repas($id_user, $id_destination, $valid = true)
 {
     global $kernel;
+
+    if ('' === trim($id_destination)) {
+        return false;
+    }
 
     $is_repas = false;
 
