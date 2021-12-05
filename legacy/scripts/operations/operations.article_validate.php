@@ -23,7 +23,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
-    $req = 'UPDATE caf_article SET tsp_validate_article='.time()." WHERE caf_article.id_article=$id_article AND tsp_validate_article=0"; // premiere validation
+    $req = 'UPDATE caf_article SET tsp_validate_article='.time()." WHERE caf_article.id_article=$id_article AND (tsp_validate_article=0 OR tsp_validate_article IS NULL)"; // premiere validation
     if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
