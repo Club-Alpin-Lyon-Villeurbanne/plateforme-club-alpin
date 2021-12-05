@@ -267,6 +267,10 @@ function get_groupe($id_groupe)
 {
     global $kernel;
 
+    if ('' === trim($id_groupe)) {
+        return false;
+    }
+
     $groupe = false;
 
     $req = 'SELECT * FROM `caf_groupe` WHERE `id` = '.$id_groupe;
