@@ -1,8 +1,11 @@
 <?php
 
+global $kernel;
+
 if (!function_exists('getMysqli')) {
     function getMysqli()
     {
+        global $kernel;
         static $mysqli;
 
         if ($mysqli) {
@@ -15,7 +18,14 @@ if (!function_exists('getMysqli')) {
         }
 
         $conf = include __DIR__.'/../app/db_config.php';
-        $mysqli = new mysqli($conf['host'], $conf['user'], $conf['password'], $conf['dbname'], $conf['port']);
+
+        $dbname = $conf['dbname'];
+
+        if ('test' === $kernel->getContainer()->getParameter('kernel.environment')) {
+            $dbname .= '_test';
+        }
+
+        $mysqli = new mysqli($conf['host'], $conf['user'], $conf['password'], $dbname, $conf['port']);
 
         if ($mysqli->connect_errno) {
             exit("Impossible de se connecter à la base de données. Merci d'avertir l'administrateur.");
