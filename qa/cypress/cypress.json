@@ -1,0 +1,16 @@
+{
+  "integrationFolder": "./integration",
+  "fixturesFolder": "./fixtures",
+  "supportFile": "./support/index.js",
+  "pluginsFile": "./plugins/index.js",
+  "videosFolder": "./videos",
+  "screenshotsFolder": "./videos",
+  "chromeWebSecurity": false,
+  "env": {
+    "baseUrl": "https://www.clubalpinlyon.fr",
+    "user": "emailaddress",
+    "password": "password"
+  },
+  "defaultCommandTimeout": 30000,
+  "requestTimeout": 30000
+}

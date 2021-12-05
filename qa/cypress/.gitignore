@@ -1,0 +1,6 @@
+/.cache/cypress/*
+!/.cache/cypress/.gitkeep
+/cypress.env.json
+/mochawesome-report/*
+/node_modules/*
+/videos/*

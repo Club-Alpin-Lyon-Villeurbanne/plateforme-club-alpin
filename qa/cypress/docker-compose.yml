@@ -1,0 +1,10 @@
+version: '3.5'
+
+services:
+  node:
+    build: docker
+    working_dir: '/app'
+    ipc: host
+    volumes:
+      - '.:/app'
+      - './.cache/cypress:/home/node/.cache/Cypress'
