@@ -103,7 +103,9 @@
                     </div>
 
                     <div style="width:290px; padding-right:10px; float:right">
-                        {% include 'login_form.html.twig' with { class: 'menucontent' } %}
+                        {% if not app.request or app.request.attributes.get('_route') != "login" %}
+                            {% include 'login_form.html.twig' with { class: 'menucontent' } %}
+                        {% endif %}
                     </div>
 
                 {% else %}
