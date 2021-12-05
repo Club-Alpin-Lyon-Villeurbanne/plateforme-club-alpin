@@ -115,24 +115,30 @@ function get_niveaux($id_user, $editable = false)
             $title_comms[$row['id_commission']] = $row['title_commission'];
         }
 
-        // On r�cup�re les notes saisies
-        $req = 'SELECT N.id as niveau_id, N.id_commission, C.title_commission, niveau_technique, niveau_physique, commentaire FROM `caf_user_niveau` AS N, `caf_commission` AS C WHERE id_user = '.$id_user.' AND N.id_commission IN ('.implode(',', $ids_comms).') AND N.id_commission = C.id_commission;';
-        $results = $mysqli->query($req);
-        while ($note = $results->fetch_assoc()) {
-            $notes['n_'.$note['niveau_id']] = $note;
-            // On vide le tableau des commissions � traiter si on avait une note
-            if (($key = array_search($note['id_commission'], $ids_comms, true)) !== false) {
-                unset($ids_comms[$key]);
-            }
-        }
+        if (!empty($ids_comms)) {
+            // On r�cup�re les notes saisies
+            $req = 'SELECT N.id as niveau_id, N.id_commission, C.title_commission, niveau_technique, niveau_physique, commentaire
+            FROM `caf_user_niveau` AS N, `caf_commission` AS C
+            WHERE id_user = '.$id_user.' AND N.id_commission IN ('.implode(',', $ids_comms).') AND N.id_commission = C.id_commission;';
 
-        // Pour toutes les commissions non not�es, on initialise un tableau de notation
-        foreach ($ids_comms as $id_comm) {
-            $notes[] = [
-                'id_commission' => $id_comm,
-                'id_user' => $id_user,
-                'title_commission' => $title_comms[$id_comm],
-            ];
+            $results = $mysqli->query($req);
+
+            while ($note = $results->fetch_assoc()) {
+                $notes['n_'.$note['niveau_id']] = $note;
+                // On vide le tableau des commissions � traiter si on avait une note
+                if (($key = array_search($note['id_commission'], $ids_comms, true)) !== false) {
+                    unset($ids_comms[$key]);
+                }
+            }
+
+            // Pour toutes les commissions non not�es, on initialise un tableau de notation
+            foreach ($ids_comms as $id_comm) {
+                $notes[] = [
+                    'id_commission' => $id_comm,
+                    'id_user' => $id_user,
+                    'title_commission' => $title_comms[$id_comm],
+                ];
+            }
         }
     }
 
@@ -154,11 +160,13 @@ function get_niveaux($id_user, $editable = false)
             $ids_comms[] = $row['id_commission'];
         }
 
-        $req = 'SELECT N.id as niveau_id, N.id_commission, C.title_commission, niveau_technique, niveau_physique, commentaire FROM `caf_user_niveau` AS N, `caf_commission` AS C WHERE id_user = '.$id_user.' AND N.id_commission IN ('.implode(',', $ids_comms).') AND N.id_commission = C.id_commission;';
+        if (!empty($ids_comms)) {
+            $req = 'SELECT N.id as niveau_id, N.id_commission, C.title_commission, niveau_technique, niveau_physique, commentaire FROM `caf_user_niveau` AS N, `caf_commission` AS C WHERE id_user = '.$id_user.' AND N.id_commission IN ('.implode(',', $ids_comms).') AND N.id_commission = C.id_commission;';
 
-        $results = $mysqli->query($req);
-        while ($note = $results->fetch_assoc()) {
-            $notes['n_'.$note['niveau_id']] = $note;
+            $results = $mysqli->query($req);
+            while ($note = $results->fetch_assoc()) {
+                $notes['n_'.$note['niveau_id']] = $note;
+            }
         }
     }
 

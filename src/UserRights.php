@@ -58,15 +58,15 @@ class UserRights
         return false;
     }
 
-    public function getAllCommissionIds()
+    public function getAllCommissionCodes()
     {
-        $sql = 'SELECT id_commission FROM caf_commission';
+        $sql = 'SELECT code_commission FROM caf_commission';
 
         $result = $this->connection->prepare($sql)->executeQuery()->fetchAllAssociative();
         $ret = [];
 
         foreach ($result as $row) {
-            $ret[] = $row['id_commission'];
+            $ret[] = $row['code_commission'];
         }
 
         return $ret;
@@ -81,7 +81,7 @@ class UserRights
         }
 
         if ('true' === $allowed) {
-            return $this->getAllCommissionIds();
+            return $this->getAllCommissionCodes();
         }
 
         $commissions = [];
