@@ -28,7 +28,12 @@ jobs:
             make build up composer-install setup-db migrate env=test
             make php-cs
             make phpstan
+
+            cp legacy/config/config.php.tpl legacy/config/config.php
+            cp legacy/config/params.php.tpl legacy/config/params.php
             make phpunit
+            rm legacy/config/config.php
+            rm legacy/config/params.php
 
             case ${CIRCLE_BRANCH} in
                 "production" )
