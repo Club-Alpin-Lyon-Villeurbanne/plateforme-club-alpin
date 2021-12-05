@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 global $kernel;
@@ -14,10 +16,9 @@ if (!admin() && !allowed('user_edit_notme')) {
     }
 
     if (null === $userTab || 0 === count($userTab)) {
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-        $req = "SELECT * FROM  `caf_user` WHERE id_user='".$mysqli->real_escape_string($id_user)."' LIMIT 1";
+        $req = "SELECT * FROM  `caf_user` WHERE id_user='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($id_user)."' LIMIT 1";
         $userTab = [];
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         $userTab = $result->fetch_assoc();
 
         foreach ($userTab as $key => $val) {

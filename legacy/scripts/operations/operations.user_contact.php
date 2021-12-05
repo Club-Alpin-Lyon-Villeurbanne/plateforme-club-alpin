@@ -12,12 +12,6 @@ $email = trim(strip_tags(stripslashes($_POST['email'])));
 $objet = trim(strip_tags(stripslashes($_POST['objet'])));
 $message = trim(nl2br(strip_tags(stripslashes($_POST['message'])))); // on ne garde que les sauts de ligne en HTML
 
-// sql
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
-// check antispam
-// if($_POST['lock']!='unlocked') $errTab[]="L'antispam n'a pas permis l'envoi du message. Merci d'envoyer le message en cliquant sur le bouton.";
-
 if (strlen($objet) < 4) {
     $errTab[] = 'Veuillez entrer un objet de plus de 4 caractères';
 }
@@ -42,7 +36,7 @@ else {
         FROM caf_user
         WHERE id_user = '.getUser()->getIdUser();
 
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $expediteur = $handle;
     }
@@ -64,7 +58,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         WHERE id_user = $id_user
         ";
 
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $destinataire = $handle;
     }

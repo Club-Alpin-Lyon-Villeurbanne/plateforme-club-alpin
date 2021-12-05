@@ -15,25 +15,18 @@ if (!allowed('evt_legal_accept')) {
     $errTab[] = 'Vous ne semblez pas autorisé à effectuer cette opération';
 }
 
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 $authorDatas = $subject = $content_main = null;
 
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "UPDATE caf_evt SET status_legal_evt='$status_legal_evt', status_legal_who_evt=".getUser()->getIdUser()." WHERE caf_evt.id_evt =$id_evt";
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
 
     // récupération des infos user et evt
     $req = "SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_evt, titre_evt, code_evt, tsp_evt FROM caf_user, caf_evt WHERE id_user=user_evt AND id_evt=$id_evt LIMIT 1";
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($row = $result->fetch_assoc()) {
         $authorDatas = $row;
     }

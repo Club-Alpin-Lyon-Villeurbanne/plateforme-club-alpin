@@ -7,21 +7,20 @@ global $kernel;
 if (!admin()) {
     echo 'Votre session administrateur a expiré';
 } else {
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
     $tab = [];
     $req = 'SELECT * FROM `caf_page` WHERE `pagelibre_page` =1 ORDER BY `ordre_page` DESC LIMIT 1000';
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($row = $result->fetch_assoc()) {
         // récupération de la date de dernière modification de l'élément contenu si existant
         $id_page = $row['id_page'];
-        $lang_content_html = $mysqli->real_escape_string($p_langs[0]); // dans la langue par défaut
+        $lang_content_html = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($p_langs[0]); // dans la langue par défaut
         $req = "SELECT `date_content_html`
             FROM `caf_content_html`
             WHERE `code_content_html` LIKE 'main-pagelibre-$id_page'
             AND `lang_content_html` LIKE '$lang_content_html'
             ORDER BY `date_content_html` ASC
             LIMIT 1";
-        $result2 = $mysqli->query($req);
+        $result2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         if (!$result2->num_rows) {
             $row['lastedit_page'] = 0;
         } else {

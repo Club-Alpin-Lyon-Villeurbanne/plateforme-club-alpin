@@ -1,4 +1,7 @@
 <?php
+
+global $kernel;
+
 if (!admin()) {
     echo 'Votre session administrateur a expiré';
 } else {
@@ -10,8 +13,6 @@ if (!admin()) {
         $lang_content_inline = $p_langs[1];
     }
 
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-
     // Pour chaque contenu original existant :
     $req = "SELECT *
 					FROM caf_content_inline, caf_content_inline_group
@@ -20,7 +21,7 @@ if (!admin()) {
 					ORDER BY ordre_content_inline_group ASC, code_content_inline ASC, date_content_inline DESC
 					";
     $contTab = [];
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // save original
         $handle['original'] = $handle['contenu_content_inline'];
@@ -34,7 +35,7 @@ if (!admin()) {
 					AND lang_content_inline LIKE '".$lang_content_inline."'
 					ORDER BY date_content_inline DESC LIMIT 1
 					";
-        $handleSql2 = $mysqli->query($req2);
+        $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req2);
         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
             $handle['contenu_content_inline'] = $handle2['contenu_content_inline'];
             $handle['id_content_inline'] = $handle2['id_content_inline'];
@@ -47,7 +48,7 @@ if (!admin()) {
     // groupes
     $req = 'SELECT * FROM caf_content_inline_group ORDER BY ordre_content_inline_group ASC';
     $contGroupTab = [];
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $contGroupTab[] = $handle;
     } ?>

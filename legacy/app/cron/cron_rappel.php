@@ -7,7 +7,6 @@ global $chron_savedatas;
 global $chron_sendmails;
 global $p_sitename;
 global $p_noreply;
-global $mysqli;
 
 /**
  * Cette page a pour fonction d'envoyer les emails de rappels :
@@ -17,8 +16,6 @@ global $mysqli;
  * - CONTACT DES PRESIDENTS - VICE-PRES POUR VALIDER LEGALEMENT LES SORTIES EN ATTENTE.
  */
 include __DIR__.'/../../app/includes.php';
-//_________________________________________________ MYSQLi
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
 // TRIGGER CAPITAL ! ACTIVE ET DESACTIVE L'EFFICACITE DU CHRON - ENVOI DE MAIL - INSERTION BDD
 $chron_sendmails = true;
@@ -27,11 +24,12 @@ $chron_savedatas = true;
 // la fonction permettant l'envoi d'e-mails et l'enregistrement en BDD
 function cron_email($datas)
 {
+    global $kernel;
+
     global $chron_savedatas;
     global $chron_sendmails;
     global $p_sitename;
     global $p_noreply;
-    global $mysqli;
 
     $tmpErr = '';
     if (!$datas['parent']) {
@@ -59,8 +57,8 @@ function cron_email($datas)
     if (!$tmpErr) {
         // Verification que ce code n'existe pas deja :
         // Chaque operation ne doit être effectuee qu'une fois (un seul e-mail envoye)
-        $req = "SELECT COUNT(id_chron_operation) FROM caf_chron_operation WHERE code_chron_operation LIKE '".$mysqli->real_escape_string($datas['code'])."'";
-        $handleSql = $mysqli->query($req);
+        $req = "SELECT COUNT(id_chron_operation) FROM caf_chron_operation WHERE code_chron_operation LIKE '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($datas['code'])."'";
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         if (getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM))) {
             error_log('Envoi de mail ignore car deja envoye : '.html_utf8($datas['code']).'');
         } else {
@@ -84,7 +82,7 @@ function cron_email($datas)
             if ($chron_savedatas) {
                 $req = "INSERT INTO caf_chron_operation(id_chron_operation, tsp_chron_operation, code_chron_operation, parent_chron_operation)
 											VALUES ('',  '".time()."',  '".$datas['code']."',  '".$datas['parent']."');";
-                if (!$mysqli->query($req)) {
+                if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                     error_log('Erreur sauvegarde SQL ');
                 }
             }
@@ -113,7 +111,7 @@ foreach ($p_chron_dates_butoires as $tmpH) {
 // ****** FAUT IL REQUETER ? ********
 // dernier envoi en BD date de... :
 $req = 'SELECT `tsp_chron_launch` FROM `caf_chron_launch` ORDER BY  `tsp_chron_launch` DESC LIMIT 0 , 1';
-$handleSql = $mysqli->query($req);
+$handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 $lastTsp = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
 
 // envoi necessaire ? Alors go !
@@ -121,10 +119,10 @@ if ($lastTsp < $minTsp) {
     // sauvegarde de ce launch
     error_log('Envoi necessaire ! Enregistrement de la nouvelle date en BDD');
     if ($chron_savedatas) {
-        if (!$mysqli->query("INSERT INTO caf_chron_launch(id_chron_launch, tsp_chron_launch) VALUES('', '".time()."');")) {
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query("INSERT INTO caf_chron_launch(id_chron_launch, tsp_chron_launch) VALUES('', '".time()."');")) {
             $errTab[] = "Erreur d'enregistrement du launch";
         }
-        $id_chron_launch = $mysqli->insert_id;
+        $id_chron_launch = $kernel->getContainer()->get('legacy_mysqli_handler')->insertId();
     } else {
         $id_chron_launch = 1;
     } // Developpement : fixe un parent fictif a un envoi de mail par exemple
@@ -146,7 +144,7 @@ if ($lastTsp < $minTsp) {
 					AND tsp_evt > '.time().'
 					AND tsp_evt < '.(time() + $p_chron_rappel_user_avant_event_1).'
 					LIMIT 2000';
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 error_log('- Envoi necessaire : '.html_utf8($handle2['nickname_user']).' participe a '.$handle2['code_evt'].'-'.$handle2['id_evt'].'');
                 // lien vers l'evenement
@@ -184,7 +182,7 @@ if ($lastTsp < $minTsp) {
 					AND tsp_evt > '.time().'
 					AND tsp_evt < '.(time() + $p_chron_rappel_user_avant_event_2).'
 					LIMIT 2000';
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 error_log('- Envoi nécessaire : '.html_utf8($handle2['nickname_user']).' participe à '.$handle2['code_evt'].'-'.$handle2['id_evt'].'');
                 // lien vers l'evenement
@@ -221,7 +219,7 @@ if ($lastTsp < $minTsp) {
 				WHERE status_evt = 0
 				AND commission_evt = id_commission '
                 .'ORDER BY tsp_crea_evt ASC ';
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($evt = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             ++$nEltsToValidate;
 
@@ -241,7 +239,7 @@ if ($lastTsp < $minTsp) {
 
             // et on ajoute leur e-mail en cle au tableau, et l'evt a ce tableau
             $found = false;
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($user = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $found = true;
                 $datasTab[$user['email_user']][] = array_merge($evt, $user);
@@ -311,7 +309,7 @@ if ($lastTsp < $minTsp) {
 				AND tsp_evt < '.($p_tsp_max_pour_valid_legal_avant_evt).'
 				AND status_evt = 1
 				ORDER BY tsp_evt ASC ';
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($evt = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             ++$nEltsToValidate;
 
@@ -331,7 +329,7 @@ if ($lastTsp < $minTsp) {
 
             // et on ajoute leur e-mail en cle au tableau, et l'evt a ce tableau
             $found = false;
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($user = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $found = true;
                 $datasTab[$user['email_user']][] = array_merge($evt, $user);

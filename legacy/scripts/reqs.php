@@ -10,16 +10,13 @@ $notif_validerunesortie = 0;
 $notif_validerunesortie_president = 0;
 $notif_publier_destination = 0;
 
-// requêtes SQL par page :
-$mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-
 // commission courante sur cette page
 $current_commission = false;
 
 // liste des extensions autorisees dans le FTP
 if (admin()) {
     $req = 'SELECT * FROM  caf_ftp_allowedext ORDER BY ext_ftp_allowedext';
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $extTab = [];
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $extTab[] = $handle['ext_ftp_allowedext'];
@@ -28,7 +25,7 @@ if (admin()) {
 
 // LISTE DES COMMISSIONS PUBLIQUES
 $req = 'SELECT * FROM caf_commission WHERE vis_commission=1 ORDER BY ordre_commission ASC';
-$handleSql = $mysqli->query($req);
+$handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 $comTab = [];
 $comCodeTab = [];
 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -53,7 +50,7 @@ if (allowed('evt_validate_all')) { // pouvoir de valider toutes les sorties de t
 	WHERE status_evt=0
 	AND id_user=user_evt '
     .'ORDER BY tsp_crea_evt ASC ';
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $notif_validerunesortie = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
 } elseif (allowed('evt_validate')) { // pouvoir de valider les sorties d'un nombre N de commissions dont nous sommes ersponsable
     // recuperation des commissions sous notre joug
@@ -66,7 +63,7 @@ if (allowed('evt_validate_all')) { // pouvoir de valider toutes les sorties de t
 		AND commission_evt=id_commission
 		AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."') " // condition OR pour toutes les commissions autorisées
         .'ORDER BY tsp_crea_evt ASC ';
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $notif_validerunesortie = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
 }
 
@@ -80,14 +77,14 @@ if (allowed('evt_legal_accept')) { // pouvoir de valider "legalement" une sortie
 			AND tsp_evt > '.time().'
 			AND tsp_evt < '.($p_tsp_max_pour_valid_legal_avant_evt).'
 			ORDER BY tsp_evt ASC ';
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $notif_validerunesortie_president = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
 }
 
 // NOTIFICATIONS ARTICLES
 if (allowed('article_validate_all')) { // pouvoir de valider les articles
     $req = 'SELECT COUNT(id_article) FROM caf_article WHERE status_article=0 AND topubly_article=1';
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $notif_validerunarticle = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
 } elseif (allowed('article_validate')) { // pouvoir de valider les articles
     // recuperation des commissions sous notre joug
@@ -100,7 +97,7 @@ if (allowed('article_validate_all')) { // pouvoir de valider les articles
 	AND commission_article=id_commission
 	AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."')"; // condition OR pour toutes les commissions autorisées
 
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $notif_validerunarticle = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
 }
 
@@ -120,13 +117,13 @@ if (user()) {
 if ('profil' == $p1 && 'infos' == $p2 && getUser()) {
     $tmpUser = false;
     $req = 'SELECT * FROM caf_user WHERE id_user='.getUser()->getIdUser().' LIMIT 1';
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // filiation : ais-je des "enfants"
         if ('' !== $handle['cafnum_user']) {
             $handle['enfants'] = [];
-            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_parent_user = '".$mysqli->real_escape_string($handle['cafnum_user'])."' LIMIT 100";
-            $handleSql2 = $mysqli->query($req);
+            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_parent_user = '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($handle['cafnum_user'])."' LIMIT 100";
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['enfants'][] = $handle2;
             }
@@ -135,8 +132,8 @@ if ('profil' == $p1 && 'infos' == $p2 && getUser()) {
         // filiation : ais-je un parent
         if ('' !== $handle['cafnum_parent_user']) {
             $handle['parent'] = [];
-            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_user = '".$mysqli->real_escape_string($handle['cafnum_parent_user'])."' LIMIT 100";
-            $handleSql2 = $mysqli->query($req);
+            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_user = '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($handle['cafnum_parent_user'])."' LIMIT 100";
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['parent'] = $handle2;
             }
@@ -159,10 +156,10 @@ elseif ('profil' == $p1 && 'articles' == $p2) {
     $req = 'SELECT SQL_CALC_FOUND_ROWS * FROM caf_article
 			WHERE user_article = '.getUser()->getIdUser().'
 			ORDER BY tsp_crea_article DESC LIMIT '.($limite * ($pagenum - 1)).", $limite";
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
     // calcul du total grâce à SQL_CALC_FOUND_ROWS
-    $totalSql = $mysqli->query('SELECT FOUND_ROWS()');
+    $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
     $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
     $nbrPages = ceil($total / $limite);
 
@@ -173,7 +170,7 @@ elseif ('profil' == $p1 && 'articles' == $p2) {
             $req = 'SELECT * FROM caf_commission
 				WHERE id_commission = '.(int) ($handle['commission_article']).'
 				LIMIT 1';
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['commission'] = $handle2;
             }
@@ -184,7 +181,7 @@ elseif ('profil' == $p1 && 'articles' == $p2) {
             $req = 'SELECT code_evt, id_evt, titre_evt FROM caf_evt
 				WHERE id_evt = '.(int) ($handle['evt_article']).'
 				LIMIT 1';
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['evt'] = $handle2;
             }
@@ -204,7 +201,7 @@ elseif ('article' == $p1) {
 		FROM caf_article
 		WHERE id_article=$id_article
 		LIMIT 1";
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // on a le droit de voir cet article ?
@@ -217,7 +214,7 @@ elseif ('article' == $p1) {
 				FROM caf_user
 				WHERE id_user='.(int) ($handle['user_article']).'
 				LIMIT 1';
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['auteur'] = $handle2;
             }
@@ -227,7 +224,7 @@ elseif ('article' == $p1) {
                 $req = 'SELECT code_evt, id_evt, titre_evt FROM caf_evt
 					WHERE id_evt = '.(int) ($handle['evt_article']).'
 					LIMIT 1';
-                $handleSql2 = $mysqli->query($req);
+                $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                     $handle['evt'] = $handle2;
                 }
@@ -242,16 +239,16 @@ elseif ('article' == $p1) {
 				AND   status_comment=1
 				ORDER BY tsp_comment DESC
 				LIMIT 50";
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
             // calcul du total grâce à SQL_CALC_FOUND_ROWS
-            $totalSql = $mysqli->query('SELECT FOUND_ROWS()');
+            $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
             $totalComments = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 // infos user
                 $req = 'SELECT nickname_user FROM caf_user WHERE id_user='.(int) ($handle2['user_comment']).' LIMIT 1';
-                $handleSql3 = $mysqli->query($req);
+                $handleSql3 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($handle3 = $handleSql3->fetch_array(\MYSQLI_ASSOC)) {
                     $handle2['nickname_user'] = $handle3['nickname_user'];
                 }
@@ -276,7 +273,7 @@ elseif ('article' == $p1) {
             // maj nb vues
             if (!admin()) {
                 $req = "UPDATE caf_article SET nb_vues_article=nb_vues_article+1 WHERE id_article=$id_article AND status_article=1 LIMIT 1";
-                $mysqli->query($req);
+                $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             }
 
             // go
@@ -294,7 +291,7 @@ elseif ('gestion-des-articles' == $p1 && (allowed('article_validate_all') || all
     if (allowed('article_validate_all')) {
         // compte nb total articles
         $req = 'SELECT COUNT(id_article) FROM caf_article WHERE status_article=0';
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         $compte = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM)); // nombre total d'evts à valider, défini plus haut
 
         // page ?
@@ -325,7 +322,7 @@ elseif ('gestion-des-articles' == $p1 && (allowed('article_validate_all') || all
 		AND commission_article=id_commission
 		AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."') "; // condition OR pour toutes les commissions autorisées
 
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         $compte = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM)); // nombre total d'evts à valider, défini plus haut
 
         // articles à valider (pagination)
@@ -350,7 +347,7 @@ elseif ('gestion-des-articles' == $p1 && (allowed('article_validate_all') || all
 		LIMIT '.($limite * ($pagenum - 1)).", $limite";
     }
     $articleStandby = [];
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // ajout au tableau
@@ -374,7 +371,7 @@ elseif ('accueil' == $p1) {
 		AND  `une_article` =1
 		ORDER BY  `tsp_validate_article` DESC
 		LIMIT 0 , 5';
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $sliderTab[] = $handle;
     }
@@ -404,10 +401,10 @@ elseif ('accueil' == $p1) {
     // commission donnée : filtre (mais on inclut les actus club, commission=0)
     $req .= ' ORDER BY  tsp_validate_article DESC
 		LIMIT '.($limite * ($pagenum - 1)).", $limite";
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
     // calcul du total grâce à SQL_CALC_FOUND_ROWS
-    $totalSql = $mysqli->query('SELECT FOUND_ROWS()');
+    $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
     $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
     $nbrPages = ceil($total / $limite);
 
@@ -417,7 +414,7 @@ elseif ('accueil' == $p1) {
             $req = 'SELECT * FROM caf_commission
 				WHERE id_commission = '.(int) ($handle['commission_article']).'
 				LIMIT 1';
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['commission'] = $handle2;
             }
@@ -432,7 +429,7 @@ elseif ('accueil' == $p1) {
 				WHERE id_evt = '.(int) ($handle['evt_article']).'
 				AND id_commission = commission_evt
 				LIMIT 1';
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['evt'] = $handle2;
             }
@@ -478,7 +475,7 @@ elseif ('agenda' == $p1) {
 		WHERE id_commission = commission_evt
 		AND status_evt = 1 '
         //  " AND cancelled_evt != 1 " // les sorties annulées y figurent ausssi
-        .($p2 ? " AND code_commission = '".$mysqli->real_escape_string($p2)."' " : '')
+        .($p2 ? " AND code_commission = '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($p2)."' " : '')
         // truc des dates :
         .' AND ( '
             // la fin de l'événement est comprise dans ce mois
@@ -490,7 +487,7 @@ elseif ('agenda' == $p1) {
         .' ) '
         .' ORDER BY cancelled_evt ASC , tsp_evt ASC';
 
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
     // pour chaque event
     while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -595,14 +592,14 @@ elseif ('creer-une-sortie' == $p1) {
 
             // Select ID code 'leader'
             $req = "SELECT id_userright, code_userright FROM `caf_userright` WHERE `code_userright` LIKE 'destination_leader'";
-            $handleSql = $mysqli->query($req);
+            $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 $id_right = $handle['id_userright'];
             }
 
             // Selection des roles ayant le droit concerné (leader)
             $req = 'SELECT type_usertype_attr FROM `caf_usertype_attr` WHERE `right_usertype_attr` = '.$id_right;
-            $handleSql = $mysqli->query($req);
+            $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             if ($handleSql) {
                 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     $ids_usertype[] = $handle['type_usertype_attr'];
@@ -617,7 +614,7 @@ elseif ('creer-une-sortie' == $p1) {
 					ORDER BY hierarchie_usertype DESC
 					'; // GROUP BY user_user_attr
 
-                $handleSql = $mysqli->query($req);
+                $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     $ids_users[$handle['id_user']][$handle['lastname_user'].', '.$handle['firstname_user']][$handle['title_usertype']][] = $handle;
                 }
@@ -671,7 +668,7 @@ elseif ('creer-une-sortie' == $p1) {
             // LSITE DES ENCADRANTS AUTORISÉS À ASSOCIER À LA COMMISSION COURANTE
             // encadrants
             $encadrantsTab = [];
-            $com = $mysqli->real_escape_string($p2);
+            $com = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($p2);
             $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
 				FROM caf_user, caf_user_attr, caf_usertype
 				WHERE doit_renouveler_user=0
@@ -683,14 +680,14 @@ elseif ('creer-une-sortie' == $p1) {
             // CRI - 29/08/2015
             // Correctif car la commission du jeudi compte plus de 50 encadrants
             // LIMIT 0 , 50";
-            $handleSql = $mysqli->query($req);
+            $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 $encadrantsTab[] = $handle;
             }
 
             // coencadrants
             $coencadrantsTab = [];
-            $com = $mysqli->real_escape_string($p2);
+            $com = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($p2);
             $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
 				FROM caf_user, caf_user_attr, caf_usertype
 				WHERE doit_renouveler_user=0
@@ -702,14 +699,14 @@ elseif ('creer-une-sortie' == $p1) {
             // CRI - 29/08/2015
             // Correctif car la commission du jeudi compte plus de 50 encadrants
             // LIMIT 0 , 50";
-            $handleSql = $mysqli->query($req);
+            $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 $coencadrantsTab[] = $handle;
             }
 
             // benevoles
             $benevolesTab = [];
-            $com = $mysqli->real_escape_string($p2);
+            $com = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($p2);
             $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
 				FROM caf_user, caf_user_attr, caf_usertype
 				WHERE doit_renouveler_user=0
@@ -719,7 +716,7 @@ elseif ('creer-une-sortie' == $p1) {
 				AND params_user_attr='commission:$com'
 				ORDER BY  lastname_user ASC
 				LIMIT 0 , 50";
-            $handleSql = $mysqli->query($req);
+            $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 $benevolesTab[] = $handle;
             }
@@ -732,14 +729,14 @@ elseif ('creer-une-sortie' == $p1) {
 				WHERE user_evt = '.getUser()->getIdUser()."
 				AND cycle_master_evt=1
 				AND id_commission = commission_evt
-				AND code_commission = '".$mysqli->real_escape_string($p2)."'
+				AND code_commission = '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($p2)."'
 				ORDER BY tsp_evt DESC
 				LIMIT 200";
-            $handleSql = $mysqli->query($req);
+            $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 // compte de sorties enfant
                 $req = 'SELECT COUNT(id_evt) FROM caf_evt WHERE cycle_parent_evt='.$handle['id_evt'];
-                $handleSql2 = $mysqli->query($req);
+                $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 $handle['nchildren'] = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
 
                 $parentEvents[] = $handle;
@@ -763,7 +760,7 @@ elseif ('creer-une-sortie' == $p1) {
 				LIMIT 1";
 
                 $handleTab = [];
-                $handleSql = $mysqli->query($req);
+                $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
                 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     // variable pour annoncer au formulaire qu'il s'agit d'un update et non d'une creation
@@ -775,7 +772,7 @@ elseif ('creer-une-sortie' == $p1) {
                     $coencadrants = [];
                     $benevoles = [];
                     $req = "SELECT * FROM caf_evt_join WHERE evt_evt_join=$id_evt LIMIT 300";
-                    $handleSql2 = $mysqli->query($req);
+                    $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                     while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                         if ('encadrant' == $handle2['role_evt_join']) {
                             $encadrants[] = $handle2['user_evt_join'];
@@ -796,7 +793,7 @@ elseif ('creer-une-sortie' == $p1) {
 				WHERE id_user IN ('.implode(',', $benevoles).')
 				ORDER BY  lastname_user ASC
 				LIMIT 0 , 50';
-                        $handleSql2 = $mysqli->query($req);
+                        $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                             $benevolesTab[] = $handle2;
                         }
@@ -847,7 +844,7 @@ elseif ('creer-une-sortie' == $p1) {
 				AND cycle_master_evt=1
 				ORDER BY tsp_evt DESC
 				LIMIT 1';
-                        $handleSql = $mysqli->query($req);
+                        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                         $parentEvents[] = $handleSql->fetch_array(\MYSQLI_ASSOC);
                     }
                 }
@@ -909,7 +906,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                 AND commission_evt=commission.id_commission
                 LIMIT 1";
 
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             $on_peut_voir = true;
@@ -947,7 +944,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                 $handle['groupe'] = [];
                 if (null != $handle['id_groupe']) {
                     $req = 'SELECT * FROM `caf_groupe` WHERE `id` = '.$handle['id_groupe'];
-                    $handleGroupe = $mysqli->query($req);
+                    $handleGroupe = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                     while ($groupe = $handleGroupe->fetch_array(\MYSQLI_ASSOC)) {
                         $handle['groupe'] = $groupe;
                     }
@@ -971,7 +968,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                         ORDER BY  `tsp_crea_evt` DESC
                         LIMIT 1';
 
-                    $handleSql2 = $mysqli->query($req);
+                    $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                     while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                         $handle['cycleparent'] = $handle2;
                     }
@@ -985,7 +982,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                         AND id_commission = commission_evt
                         ORDER BY `tsp_crea_evt` ASC
                         LIMIT 30';
-                    $handleSql2 = $mysqli->query($req);
+                    $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                     while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                         $handle['cyclechildren'][] = $handle2;
                     }
@@ -1001,7 +998,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     AND
                         (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant' OR role_evt_join LIKE 'benevole')
                     LIMIT 300";
-                $handleSql2 = $mysqli->query($req);
+                $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                     $handle['joins'][$handle2['role_evt_join']][] = $handle2;
                 }
@@ -1015,7 +1012,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     AND status_evt_join = 0
                     LIMIT 300';
 
-                $handleSql2 = $mysqli->query($req);
+                $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                     $handle['joins']['enattente'][] = $handle2;
                 }
@@ -1029,7 +1026,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     AND role_evt_join LIKE 'inscrit'
                     AND status_evt_join = 1
                     LIMIT 300";
-                $handleSql2 = $mysqli->query($req);
+                $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                     $handle['joins']['inscrit'][] = $handle2;
                 }
@@ -1043,7 +1040,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     AND role_evt_join LIKE 'manuel'
                     AND status_evt_join = 1
                     LIMIT 300";
-                $handleSql2 = $mysqli->query($req);
+                $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                     $handle['joins']['manuel'][] = $handle2;
                 }
@@ -1057,7 +1054,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                         AND user_evt_join=".getUser()->getIdUser().'
                         ORDER BY tsp_evt_join DESC
                         LIMIT 1';
-                    $handleSql2 = $mysqli->query($req);
+                    $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                     while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                         // si je suis pas encore validé
                         if (0 == $handle2['status_evt_join']) {
@@ -1083,7 +1080,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                             FROM caf_user
                             WHERE id_user='.(int) ($handle['cancelled_who_evt']).'
                             LIMIT 300';
-                        $handleSql2 = $mysqli->query($req);
+                        $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                             $handle['cancelled_who_evt'] = $handle2;
                         }
@@ -1097,7 +1094,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                         AND status_article = 1
                         ORDER BY tsp_validate_article DESC
                         LIMIT 1";
-                    $handleSql2 = $mysqli->query($req);
+                    $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                     while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                         $handle['cr'] = $handle2;
                     }
@@ -1109,8 +1106,8 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     // si je suis chef de famille (filiations) je rajoute la liste de mes "enfants" pour les inscrire
                     $filiations = [];
                     if (user() && getUser()->getCafnumUser()) {
-                        $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, civ_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_parent_user LIKE '".$mysqli->real_escape_string(getUser()->getCafnumUser())."' LIMIT 15";
-                        $handleSql2 = $mysqli->query($req);
+                        $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, civ_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_parent_user LIKE '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(getUser()->getCafnumUser())."' LIMIT 15";
+                        $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                             $filiations[] = $handle2;
                         }
@@ -1179,7 +1176,7 @@ elseif ('annuler-une-sortie' == $p1) {
                     WHERE id_destination = $id_destination
                     AND user_evt_join = id_user
                     LIMIT 500";
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $destination['joins'][] = $handle2;
             }
@@ -1203,7 +1200,7 @@ elseif ('annuler-une-sortie' == $p1) {
             AND id_user = user_evt
             AND commission_evt=id_commission
             LIMIT 1";
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             // on a le droit de supprimer cette page ?
@@ -1223,7 +1220,7 @@ elseif ('annuler-une-sortie' == $p1) {
                     WHERE evt_evt_join = $id_evt_forjoins
                     AND user_evt_join = id_user
                     LIMIT 300";
-                $handleSql2 = $mysqli->query($req);
+                $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                     $handle['joins'][] = $handle2;
                 }
@@ -1234,7 +1231,7 @@ elseif ('annuler-une-sortie' == $p1) {
                         FROM caf_user
                         WHERE id_user='.(int) ($handle['cancelled_who_evt']).'
                         LIMIT 300';
-                    $handleSql2 = $mysqli->query($req);
+                    $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                     while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                         $handle['cancelled_who_evt'] = $handle2;
                     }
@@ -1266,7 +1263,7 @@ elseif ('supprimer-une-sortie' == $p1) {
 		AND id_user = user_evt
 		AND commission_evt=id_commission
 		LIMIT 1";
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // on a le droit de supprimer cette page ?
@@ -1279,7 +1276,7 @@ elseif ('supprimer-une-sortie' == $p1) {
 				WHERE evt_evt_join ='.(int) ($handle['id_evt']).'
 				AND user_evt_join = id_user
 				LIMIT 300';
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['joins'][] = $handle2;
             }
@@ -1290,7 +1287,7 @@ elseif ('supprimer-une-sortie' == $p1) {
 					FROM caf_user
 					WHERE id_user='.(int) ($handle['cancelled_who_evt']).'
 					LIMIT 300';
-                $handleSql2 = $mysqli->query($req);
+                $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                     $handle['cancelled_who_evt'] = $handle2;
                 }
@@ -1349,7 +1346,7 @@ elseif ('gestion-des-sorties' == $p1 && (allowed('evt_validate_all') || allowed(
     }
 
     $evtStandby = [];
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
         include __DIR__.'/../includes/evt-temoin-reqs.php';
@@ -1388,7 +1385,7 @@ elseif ('validation-des-sorties' == $p1 && allowed('evt_legal_accept')) {
 	LIMIT '.($limite * ($pagenum - 1)).", $limite";
 
     $evtStandby = [];
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
         include __DIR__.'/../includes/evt-temoin-reqs.php';
@@ -1405,7 +1402,7 @@ elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1
     if (in_array($_GET['show'], ['all', 'manual', 'notvalid', 'nomade', 'dels', 'expired', 'valid-expired'], true)) {
         $show = $_GET['show'];
     }
-    $show = $mysqli->real_escape_string($show);
+    $show = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($show);
 
     $req = 'SELECT id_user , email_user , cafnum_user , firstname_user , lastname_user , nickname_user , created_user , birthday_user , tel_user , tel2_user , adresse_user, cp_user ,  ville_user ,  civ_user , valid_user , manuel_user, nomade_user, date_adhesion_user, doit_renouveler_user
 		FROM  `caf_user` '
@@ -1419,7 +1416,7 @@ elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1
         .' ORDER BY lastname_user ASC, lastname_user ASC
 		LIMIT 8000';			//, pays_user
 
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($row = $handleSql->fetch_assoc()) {
         if ('0' == $row['birthday_user'] || '1' == $row['birthday_user'] || '' == $row['birthday_user']) {
             // dans ces cas, bug très probable
@@ -1440,7 +1437,7 @@ elseif ('admin-partenaires' == $p1 && admin()) {
     if (in_array($_GET['show'], ['all', 'public', 'private', 'enabled', 'disabled'], true)) {
         $show = $_GET['show'];
     }
-    $show = $mysqli->real_escape_string($show);
+    $show = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($show);
 
     $req = 'SELECT part_id, part_name, part_url, part_desc, part_image, part_type, part_enable, part_order, part_click
 		FROM caf_partenaires '
@@ -1451,7 +1448,7 @@ elseif ('admin-partenaires' == $p1 && admin()) {
         .' ORDER BY part_order, part_type, part_name ASC
 		LIMIT 1000';
 
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($row = $handleSql->fetch_assoc()) {
         $partenairesTab[] = $row;
     }
@@ -1467,7 +1464,7 @@ elseif ('user-full' == $p1) {
 
     $req = "SELECT * FROM caf_user WHERE id_user = $id_user LIMIT 1";
     //AND valid_user = 1
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // liste des statuts
         $row['statuts'] = [];
@@ -1478,7 +1475,7 @@ elseif ('user-full' == $p1) {
 			AND id_usertype=usertype_user_attr
 			ORDER BY hierarchie_usertype DESC
 			LIMIT 50';
-        $handleSql2 = $mysqli->query($req);
+        $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($row2 = $handleSql2->fetch_assoc()) {
             $commission = substr(strrchr($row2['params_user_attr'], ':'), 1);
             $row['statuts'][] = $row2['title_usertype'].($commission ? ', '.$commission : '');
@@ -1492,7 +1489,7 @@ elseif ('user-full' == $p1) {
 elseif ('recherche' == $p1 && strlen($_GET['str'])) {
     // vérification des caractères
     $safeStr = substr(html_utf8(stripslashes($_GET['str'])), 0, 80);
-    $safeStrSql = $mysqli->real_escape_string(substr(stripslashes($_GET['str']), 0, 80));
+    $safeStrSql = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(substr(stripslashes($_GET['str']), 0, 80));
 
     if (strlen($safeStr) < $p_maxlength_search) {
         $errTab[] = 'Votre recherche doit comporter au moins '.$p_maxlength_search.' caractères.';
@@ -1522,10 +1519,10 @@ elseif ('recherche' == $p1 && strlen($_GET['str'])) {
 
             .' ORDER BY  `tsp_validate_article` DESC
 			LIMIT 10';
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
         // calcul du total grâce à SQL_CALC_FOUND_ROWS
-        $totalSql = $mysqli->query('SELECT FOUND_ROWS()');
+        $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
         $totalArticles = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -1534,7 +1531,7 @@ elseif ('recherche' == $p1 && strlen($_GET['str'])) {
                 $req = 'SELECT * FROM caf_commission
 					WHERE id_commission = '.(int) ($handle['commission_article']).'
 					LIMIT 1';
-                $handleSql2 = $mysqli->query($req);
+                $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                     $handle['commission'] = $handle2;
                 }
@@ -1556,7 +1553,7 @@ elseif ('recherche' == $p1 && strlen($_GET['str'])) {
 			AND status_evt = 1
 			'
             // si une comm est sélectionnée, filtre
-            .($current_commission ? " AND code_commission LIKE '".$mysqli->real_escape_string($current_commission)."' " : '')
+            .($current_commission ? " AND code_commission LIKE '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($current_commission)."' " : '')
             // RECHERCHE
             ." AND (
 						titre_evt LIKE '%$safeStrSql%'
@@ -1568,10 +1565,10 @@ elseif ('recherche' == $p1 && strlen($_GET['str'])) {
             .' ORDER BY tsp_evt DESC
 			LIMIT 10';
 
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
         // calcul du total grâce à SQL_CALC_FOUND_ROWS
-        $totalSql = $mysqli->query('SELECT FOUND_ROWS()');
+        $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
         $totalEvt = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {

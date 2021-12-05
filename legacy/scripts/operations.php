@@ -221,15 +221,8 @@ if ('user_attr_del' == ($_POST['operation'] ?? null)) {
     if (!$id_user_attr) {
         $errTab[] = 'No id';
     } else {
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         $req = "DELETE FROM caf_user_attr WHERE id_user_attr = $id_user_attr LIMIT 1;";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
     }
@@ -252,52 +245,27 @@ if ('user_delete' == ($_POST['operation'] ?? null)) {
     } elseif (!admin() || !allowed('user_delete')) {
         $errTab[] = "Vous n'avez pas les droits necessaires";
     } else {
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         // suppression participations aux sorties
         $req = "DELETE FROM caf_evt_join WHERE caf_evt_join.user_evt_join=$id_user";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
         // modification des articles de ce user (articles orphelins...)
         $req = "UPDATE caf_article SET user_article=0 WHERE caf_article.user_article=$id_user";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
         // suppression des droits
         $req = "DELETE FROM caf_user_attr WHERE caf_user_attr.user_user_attr=$id_user";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
         // suppression du user
         $req = "DELETE FROM `caf_user` WHERE  `caf_user`.`id_user`=$id_user";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
@@ -313,15 +281,8 @@ if ('user_desactiver' == ($_POST['operation'] ?? null)) {
     } elseif (!allowed('user_desactivate_any')) {
         $errTab[] = "Vous n'avez pas les droits necessaires";
     } else {
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         $req = "UPDATE `caf_user` SET  `valid_user` =  '2' WHERE  `caf_user`.`id_user` =$id_user";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
@@ -336,15 +297,8 @@ if ('user_reactiver' == ($_POST['operation'] ?? null)) {
     } elseif (!allowed('user_reactivate')) {
         $errTab[] = "Vous n'avez pas les droits necessaires";
     } else {
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         $req = "UPDATE `caf_user` SET  `valid_user` =  '1' WHERE  `caf_user`.`id_user` =$id_user";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
@@ -359,19 +313,12 @@ if ('user_reset' == ($_POST['operation'] ?? null)) {
     } elseif (!allowed('user_reset')) {
         $errTab[] = "Vous n'avez pas les droits necessaires";
     } else {
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         $req = "UPDATE caf_user
 				SET valid_user =  '0',
 				email_user =  '',
 				mdp_user =  ''
 				WHERE caf_user.id_user =$id_user";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
@@ -426,15 +373,8 @@ if ('user_attr_del_admin' == ($_POST['operation'] ?? null) && admin()) {
     if (!$id_user_attr) {
         $errTab[] = 'No id';
     } else {
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         $req = "DELETE FROM caf_user_attr WHERE id_user_attr = $id_user_attr LIMIT 1;";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
     }
@@ -448,10 +388,9 @@ if ('user_attr_del_admin' == ($_POST['operation'] ?? null) && admin()) {
 // ADMIN : écrasement et renouvellement de la matrice des droits
 if ('usertype_attr_edit' == ($_POST['operation'] ?? null) && admin()) {
     /* ◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊[ BACKUP EXISTANT A FAIRE - ou pas ]◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊ */
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
 
     // supression des valeurs existantes
-    if (!$mysqli->query('TRUNCATE caf_usertype_attr')) {
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query('TRUNCATE caf_usertype_attr')) {
         $errTab[] = 'Erreur à la réinitialisation de la table';
     }
     if (0 === count($errTab)) {
@@ -459,7 +398,7 @@ if ('usertype_attr_edit' == ($_POST['operation'] ?? null) && admin()) {
             $tab = explode('-', $pair);
             $type_usertype_attr = (int) ($tab[0]);
             $right_usertype_attr = (int) ($tab[1]);
-            if (!$mysqli->query("INSERT INTO caf_usertype_attr (id_usertype_attr, type_usertype_attr, right_usertype_attr, details_usertype_attr)
+            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query("INSERT INTO caf_usertype_attr (id_usertype_attr, type_usertype_attr, right_usertype_attr, details_usertype_attr)
 															VALUES (NULL , '$type_usertype_attr', '$right_usertype_attr', '".time()."');")) {
                 $errTab[] = "Erreur de setting ($type_usertype_attr - $right_usertype_attr)";
             }
@@ -507,10 +446,9 @@ if ('addContentInline' == ($_POST['operation'] ?? null) && admin()) {
 
 // GENERIQUE: maj
 if ('majBd' == ($_POST['operation'] ?? null) && admin()) {
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    $table = $mysqli->real_escape_string($_POST['table']);
-    $champ = $mysqli->real_escape_string($_POST['champ']);
-    $val = $mysqli->real_escape_string(stripslashes($_POST['val']));
+    $table = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($_POST['table']);
+    $champ = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($_POST['champ']);
+    $val = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['val']));
     $id = (int) ($_POST['id']);
 
     if (!$table) {
@@ -525,7 +463,7 @@ if ('majBd' == ($_POST['operation'] ?? null) && admin()) {
 
     if (0 === count($errTab)) {
         $req = 'UPDATE `caf_'.$table."` SET `$champ` = '$val' WHERE `caf_".$table.'`.`id_'.$table."` =$id LIMIT 1 ;";
-        if (!$mysqli->query($req)) {
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $erreur = 'Erreur BDD<br />'.$req;
         }
     }
@@ -533,12 +471,11 @@ if ('majBd' == ($_POST['operation'] ?? null) && admin()) {
 
 // GENERIQUE: sup
 if ('supBd' == ($_POST['operation'] ?? null) && admin()) {
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    $table = $mysqli->real_escape_string($_POST['table']);
+    $table = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($_POST['table']);
     $id = (int) ($_POST['id']);
 
     $req = 'DELETE FROM `caf_'.$table.'` WHERE `caf_'.$table.'`.`id_'.$table."` = $id LIMIT 1;";
-    if (!$mysqli->query($req)) {
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $erreur = 'Erreur BDD<br />'.$req;
     }
 }

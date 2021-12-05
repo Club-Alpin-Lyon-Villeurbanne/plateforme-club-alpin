@@ -69,14 +69,13 @@ if (0 === count($errTab)) {
     }
 
     // sauvegarde en BD
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-    $to_message = $mysqli->real_escape_string($p_contactdusite);
-    $from_message = $mysqli->real_escape_string($email);
+    $to_message = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($p_contactdusite);
+    $from_message = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($email);
     $headers_message = ''; // obsolete
     $code_message = 'contact';
-    $cont_message = $mysqli->real_escape_string($content_header."\n\n\n".$content_main."\n\n\n".$content_footer);
+    $cont_message = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($content_header."\n\n\n".$content_main."\n\n\n".$content_footer);
     $success_message = count($errTab) ? 0 : 1;
-    $mysqli->query("INSERT INTO `caf_message` (`id_message` ,`date_message` ,`to_message` ,`from_message` ,`headers_message` ,`code_message` ,`cont_message` ,`success_message`)
+    $kernel->getContainer()->get('legacy_mysqli_handler')->query("INSERT INTO `caf_message` (`id_message` ,`date_message` ,`to_message` ,`from_message` ,`headers_message` ,`code_message` ,`cont_message` ,`success_message`)
             VALUES (NULL , '".time()."', '$to_message', '$from_message', '$headers_message', '$code_message', '$cont_message', '$success_message');");
 }
 // tout s'est bien passé, on vide les variables postées

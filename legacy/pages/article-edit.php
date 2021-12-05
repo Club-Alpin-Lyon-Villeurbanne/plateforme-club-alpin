@@ -23,9 +23,8 @@ global $kernel;
             $id_article = (int) $p2;
             $article = false;
 
-            $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
             $req = "SELECT * FROM caf_article WHERE id_article=$id_article LIMIT 1";
-            $result = $mysqli->query($req);
+            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($row = $result->fetch_assoc()) {
                 $article = $row;
             }
@@ -110,9 +109,8 @@ global $kernel;
 							<?php
 
                             // besoin de la liste des sorties publiées
-                            $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
                 $req = 'SELECT id_evt, commission_evt, tsp_evt, tsp_end_evt, titre_evt, code_evt FROM caf_evt WHERE status_evt =1 ORDER BY tsp_evt DESC LIMIT 0 , 300';
-                $handleSql = $mysqli->query($req);
+                $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($row = $handleSql->fetch_assoc()) {
                     echo '<option value="'.$row['id_evt'].'" '.($article['evt_article'] == $row['id_evt'] ? 'selected="selected"' : '').'>'
                                         // .jour(date('N', $row['tsp_evt']))

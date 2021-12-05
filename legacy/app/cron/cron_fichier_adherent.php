@@ -3,9 +3,9 @@
 
 use App\Utils\NicknameGenerator;
 
+global $kernel;
+
 include __DIR__.'/../../app/includes.php';
-//_________________________________________________ MYSQLi
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
 function mysqli_result($res, $row = 0, $col = 0)
 {
@@ -138,17 +138,17 @@ foreach ($fileTab as $file) {
                     $line[26] = preg_replace('/[^\d]+/', '', $line[26]); // suppression des espaces dans les tel
                     $line[27] = preg_replace('/[^\d]+/', '', $line[27]); // suppression des espaces dans les tel
 //echo $i."\nligne ".__LINE__."\n";
-                    $cafnum_user = $mysqli->real_escape_string($line[0]);
-                    $firstname_user = $mysqli->real_escape_string($line[10]);
-                    $lastname_user = $mysqli->real_escape_string($line[9]);
+                    $cafnum_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($line[0]);
+                    $firstname_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($line[10]);
+                    $lastname_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($line[9]);
                     $tab = explode('-', $line[6]);
                     $birthday_user = mktime(1, 0, 0, $tab[1], $tab[2], $tab[0]);
-                    $tel_user = $mysqli->real_escape_string($line[27]);
-                    $tel2_user = $mysqli->real_escape_string($line[26]);
-                    $adresse_user = $mysqli->real_escape_string(trim($line[11]." \n".$line[12]." \n".$line[13]." \n".$line[14]));
-                    $cp_user = $mysqli->real_escape_string($line[15]);
-                    $ville_user = $mysqli->real_escape_string($line[16]);
-                    $civ_user = $mysqli->real_escape_string($line[8]);
+                    $tel_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($line[27]);
+                    $tel2_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($line[26]);
+                    $adresse_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($line[11]." \n".$line[12]." \n".$line[13]." \n".$line[14]));
+                    $cp_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($line[15]);
+                    $ville_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($line[16]);
+                    $civ_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($line[8]);
                     $doit_renouveler_user = '0';
                     // $date_adhesion_user=''; # calculé plus loin avec des tests supplémentaires
                     $date_adhesion_user = null;
@@ -171,7 +171,7 @@ foreach ($fileTab as $file) {
                     // FILIATION : MISE À JOUR DE LA VALEUR
                     if ((int) $line[5] > 0) {
                         // filiation existante
-                        $cafnum_parent_user = $mysqli->real_escape_string($line[1].$line[5]); // concaténation ligne 1 (club) pour obtenir un numéro d'adhérent complet
+                        $cafnum_parent_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($line[1].$line[5]); // concaténation ligne 1 (club) pour obtenir un numéro d'adhérent complet
                     } else {
                         // filiation inexistante
                         $cafnum_parent_user = '';
@@ -200,7 +200,7 @@ foreach ($fileTab as $file) {
                     //echo $i."\nligne ".__LINE__."\n";
                     // on vérifie que ce numéro d'adhérent n'existe pas déjà dans la base de donnée USER
                     $req = "SELECT id_user FROM caf_user WHERE cafnum_user LIKE '$cafnum_user'";
-                    $handleSql = $mysqli->query($req);
+                    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
                     //echo  $req."\n";
 
@@ -233,8 +233,8 @@ foreach ($fileTab as $file) {
                         $tmpErrTab[] = "Erreur INSERT/UPDATE adherent $cafnum_user";
                     }
 
-                    if (!($handleSql = $mysqli->query($req))) {
-                        echo wordwrap("!!! Erreur SQL lors de l'integration de la ligne $i : ".$mysqli->error." ($req)\n");
+                    if (!($handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req))) {
+                        echo wordwrap("!!! Erreur SQL lors de l'integration de la ligne $i : ".$kernel->getContainer()->get('legacy_mysqli_handler')->lastError()." ($req)\n");
                     }
                 }
 
@@ -255,7 +255,7 @@ foreach ($fileTab as $file) {
 
         $req = "INSERT INTO  `caf_log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`ip_log_admin`,`date_log_admin`)
 			VALUES (NULL , 'import-ffcam',  'INSERT: $nb_insert, UPDATE:$nb_update, fichier ".basename($file)."', '127.0.0.1', '".time()."');";
-        if (!$mysqli->query($req)) {
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL lors du log';
         }
     } else {
@@ -263,7 +263,7 @@ foreach ($fileTab as $file) {
 
         $req = "INSERT INTO  `caf_log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`ip_log_admin`,`date_log_admin`)
 			VALUES (NULL , 'import-ffcam',  'fichier inexistant : $file', '127.0.0.1', '".time()."');";
-        if (!$mysqli->query($req)) {
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL lors du log';
         }
     }
@@ -275,8 +275,8 @@ $req = 'UPDATE caf_user SET doit_renouveler_user=1 WHERE id_user!=1 AND nomade_u
     OR ts_update_user < (UNIX_TIMESTAMP( ) - ( 86400 *10 ))
 )';
 
-if (!$mysqli->query($req)) {
-    echo 'Erreur SQL lors du log:'.$mysqli->error;
+if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    echo 'Erreur SQL lors du log:'.$kernel->getContainer()->get('legacy_mysqli_handler')->lastError();
 }
 
 // suppression des filiations sur comptes non mis ŕ jour depuis + de 200j
@@ -284,6 +284,6 @@ $req = "UPDATE caf_user SET cafnum_parent_user = '' WHERE
     ts_update_user < (UNIX_TIMESTAMP( ) - ( 86400 * 200 ))
 ";
 
-if (!$mysqli->query($req)) {
-    echo 'Erreur SQL lors du log:'.$mysqli->error;
+if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    echo 'Erreur SQL lors du log:'.$kernel->getContainer()->get('legacy_mysqli_handler')->lastError();
 }

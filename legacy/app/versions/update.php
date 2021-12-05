@@ -201,11 +201,12 @@ if ($app_version < '1.1.1') {
 
 // print_r($queries);
 
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 foreach ($queries as $query) {
     echo $query."\n";
     // Exécuter les requetes
-    // if (!$mysqli->query($query)) { $errTab[] = 'Une erreur est apparue lors de la mise à jour de la base de données.'; }
+    // if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($query)) {
+    // $errTab[] = 'Une erreur est apparue lors de la mise à jour de la base de données.';
+    // }
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {

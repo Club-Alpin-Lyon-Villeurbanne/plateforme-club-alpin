@@ -1,4 +1,7 @@
 <?php
+
+global $kernel;
+
 if (!admin()) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
@@ -17,11 +20,10 @@ if (!admin()) {
     }
 
     if (0 == count($partenaireTab)) {
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         if ('edit' == $operation) {
-            $req = "SELECT * FROM  `caf_partenaires` WHERE part_id='".$mysqli->real_escape_string($part_id)."' LIMIT 1";
+            $req = "SELECT * FROM  `caf_partenaires` WHERE part_id='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($part_id)."' LIMIT 1";
             $partenaireTab = [];
-            $result = $mysqli->query($req);
+            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             $partenaireTab = $result->fetch_assoc();
 
             foreach ($partenaireTab as $key => $val) {

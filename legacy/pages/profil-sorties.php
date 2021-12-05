@@ -1,4 +1,7 @@
 <?php
+
+global $kernel;
+
 // cette même page sert à afficher une liste de sortie pour plusieurs cas de figure définis dans la variable GET $p3
 
 if (user()) {
@@ -12,8 +15,6 @@ if (user()) {
 		<?php
         // les requetes sont effectuées en fonction de la var $p3
         $evtList = [];
-
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
 
     // éléments constants sur chaque requête :
     $select = 'id_evt, code_evt, status_evt, status_legal_evt, cancelled_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt, join_max_evt, join_start_evt
@@ -42,10 +43,10 @@ if (user()) {
 				ORDER BY  tsp_evt DESC
 				LIMIT '.($limite * ($pagenum - 1)).", $limite";
 
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
         // calcul tu total grâce à SQL_CALC_FOUND_ROWS
-        $totalSql = $mysqli->query('SELECT FOUND_ROWS()');
+        $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
         $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -87,10 +88,10 @@ if (user()) {
                 .'ORDER BY  tsp_evt DESC
 				LIMIT '.($limite * ($pagenum - 1)).", $limite";
 
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
         // calcul tu total grâce à SQL_CALC_FOUND_ROWS
-        $totalSql = $mysqli->query('SELECT FOUND_ROWS()');
+        $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
         $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -132,9 +133,9 @@ if (user()) {
                     // de la plus récente a la plus ancienne
                     .'ORDER BY  `tsp_evt` DESC
 					LIMIT '.($limite * ($pagenum - 1)).", $limite";
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             // calcul tu total grâce à SQL_CALC_FOUND_ROWS
-            $totalSql = $mysqli->query('SELECT FOUND_ROWS()');
+            $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
             $total += getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
             while ($handle = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
@@ -164,10 +165,10 @@ if (user()) {
                     .' ORDER BY  tsp_evt ASC
 				    LIMIT '.($limite * ($pagenum - 1)).", $limite";
 
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
         // calcul tu total grâce à SQL_CALC_FOUND_ROWS
-        $totalSql = $mysqli->query('SELECT FOUND_ROWS()');
+        $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
         $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -207,9 +208,9 @@ if (user()) {
                     // de la plus prochaine a la plus lointaine
                     .'ORDER BY  `tsp_evt` ASC
 					LIMIT '.($limite * ($pagenum - 1)).", $limite";
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             // calcul tu total grâce à SQL_CALC_FOUND_ROWS
-            $totalSql = $mysqli->query('SELECT FOUND_ROWS()');
+            $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
             $total += getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
             while ($handle = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']

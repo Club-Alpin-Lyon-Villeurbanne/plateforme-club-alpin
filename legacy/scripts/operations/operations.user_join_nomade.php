@@ -2,8 +2,6 @@
 
 global $kernel;
 
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
 // vars
 $id_evt = (int) ($_GET['id_evt']); // spécial : donné dans l'URL
 $id_user = (int) ($_POST['id_user']);
@@ -23,7 +21,7 @@ WHERE evt_evt_join=$id_evt
 AND user_evt_join = ".getUser()->getIdUser()."
 AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant')
 LIMIT 1";
-$result = $mysqli->query($req);
+$result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 $row = $result->fetch_row();
 if ($row[0] > 0) {
     $suis_encadrant = true;
@@ -32,7 +30,7 @@ if ($row[0] > 0) {
 // suis-je l'auteur de cette sortie ?
 $suis_auteur = false;
 $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND user_evt = ".getUser()->getIdUser().' LIMIT 1';
-$result = $mysqli->query($req);
+$result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 $row = $result->fetch_row();
 if ($row[0] > 0) {
     $suis_auteur = true;
@@ -67,26 +65,20 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // si pas d'ID user spécifié, on crée ce nomade
     if (!$id_user) {
         // securite
-        $civ_user = $mysqli->real_escape_string($civ_user);
-        $cafnum_user = $mysqli->real_escape_string($cafnum_user);
-        $firstname_user = $mysqli->real_escape_string($firstname_user);
-        $lastname_user = $mysqli->real_escape_string($lastname_user);
+        $civ_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($civ_user);
+        $cafnum_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($cafnum_user);
+        $firstname_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($firstname_user);
+        $lastname_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($lastname_user);
         $nickname_user = str_replace([' ', '-', '\''], '', ucfirst(mb_strtolower($firstname_user, 'UTF-8')).substr(strtoupper($lastname_user), 0, 1));
-        $tel_user = $mysqli->real_escape_string($tel_user);
-        $tel2_user = $mysqli->real_escape_string($tel2_user);
+        $tel_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($tel_user);
+        $tel2_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($tel2_user);
 
         $req = "INSERT INTO caf_user(id_user, email_user, mdp_user, cafnum_user, firstname_user, lastname_user, nickname_user, created_user, birthday_user, tel_user, tel2_user, adresse_user, cp_user, ville_user, pays_user, civ_user, moreinfo_user, auth_contact_user, valid_user ,cookietoken_user, manuel_user, nomade_user, nomade_parent_user)
                         VALUES (NULL ,  '',  '',  'N_$cafnum_user',  '$firstname_user',  '$lastname_user',  '$nickname_user',  '".time()."',  NULL,  '$tel_user',  '$tel2_user',  '',  '',  '',  '',  '$civ_user',  '',  'none',  '1',  '',  '0',  '1',  '".getUser()->getIdUser()."' )";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         } else {
-            $id_user = $mysqli->insert_id;
+            $id_user = $kernel->getContainer()->get('legacy_mysqli_handler')->insertId();
         }
     }
 
@@ -153,7 +145,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         }
 
         if (!isset($errTab) || 0 === count($errTab)) {
-            $role_evt_join = $mysqli->real_escape_string($role_evt_join);
+            $role_evt_join = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($role_evt_join);
 
             // attention : status_evt_join est à 0 ici par défaut
             $status_evt_join = 0;
@@ -164,13 +156,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
                                     VALUES(NULL ,	 $status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().', 		'.time().', 			'.getUser()->getIdUser().",
                         $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
-            if (!$mysqli->query($req)) {
-                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                    'error' => $mysqli->error,
-                    'file' => __FILE__,
-                    'line' => __LINE__,
-                    'sql' => $req,
-                ]);
+            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }
         }
