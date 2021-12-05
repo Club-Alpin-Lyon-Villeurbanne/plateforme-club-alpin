@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 $id_evt = (int) (substr(strrchr($p2, '-'), 1));
@@ -15,7 +17,6 @@ if (!$id_evt) {
 }
 
 // recuperation de la sortie demandée
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
             , nickname_user
             , title_commission, code_commission
@@ -24,7 +25,7 @@ $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commis
     AND id_user = user_evt
     AND commission_evt=id_commission
     LIMIT 1";
-$handleSql = $mysqli->query($req);
+$handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
 if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // on a le droit d'annuler ?
@@ -40,13 +41,7 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             $req .= " OR caf_evt.cycle_parent_evt=$id_evt";
         }
 
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
     }
@@ -62,11 +57,11 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             <p>
                 La sortie ".$handle['title_commission'].' du '.date('d/m/Y', $handle['tsp_evt']).',
                 &laquo;<i> '.html_utf8($handle['titre_evt'])." </i>&raquo;
-                vient d'être annulée par <a href=\"".$p_racine.'voir-profil/'.getUser()->getIdUser().'.html">'.getUser()->getNicknameUser().'</a>.
+                vient d'être annulée par <a href=\"".$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.getUser()->getIdUser().'.html">'.getUser()->getNicknameUser().'</a>.
                 Voici le message joint :
             </p>
             <p>&laquo;<i> '.nl2br(html_utf8($msg))." </i>&raquo;</p>
-            <p><a href='".$p_racine.'sortie/'.html_utf8($handle['code_evt']).'-'.(int) ($handle['id_evt']).".html' title=''>&lt; Voir la page dédiée</a></p>
+            <p><a href='".$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.html_utf8($handle['code_evt']).'-'.(int) ($handle['id_evt']).".html' title=''>&lt; Voir la page dédiée</a></p>
             ";
         $content_header = '';
         $content_footer = '';
@@ -85,7 +80,7 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             WHERE evt_evt_join = $id_evt_forjoins
             AND user_evt_join = id_user
             LIMIT 300";
-        $handleSql2 = $mysqli->query($req);
+        $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
         // desinscription des participants de la sortie
         if (!isset($errTab) || 0 === count($errTab)) {
@@ -96,13 +91,7 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 $req .= " OR caf_evt_join.evt_evt_join IN (SELECT DISTINCT id_evt FROM caf_evt WHERE cycle_parent_evt = $id_evt)";
             }
             $req .= ')';
-            if (!$mysqli->query($req)) {
-                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                    'error' => $mysqli->error,
-                    'file' => __FILE__,
-                    'line' => __LINE__,
-                    'sql' => $req,
-                ]);
+            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }
         }
@@ -135,10 +124,10 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     if (!isset($errTab) || 0 === count($errTab)) {
         // sans message d'avertissement nomades
         if (!count($nomadMsg)) {
-            header('Location:'.$p_racine.'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html');
+            header('Location: /sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html');
         // echo 'nop';
         } else {
-            header('Location:'.$p_racine.'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html?lbxMsg=nomadMsg&nomadMsg='.(implode('****', $nomadMsg)));
+            header('Location: /sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html?lbxMsg=nomadMsg&nomadMsg='.(implode('****', $nomadMsg)));
         }
     }
 }

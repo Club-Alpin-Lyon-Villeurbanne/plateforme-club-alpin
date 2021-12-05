@@ -1,4 +1,7 @@
 <?php
+
+global $kernel;
+
 // Cette page sert à joindre manuellement un user à une sortie
 
 if (user()) {
@@ -12,9 +15,8 @@ if (user()) {
     } else {
         // recup comm
         $commission = false;
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         $req = "SELECT * FROM caf_commission WHERE id_commission = $id_commission";
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $commission = $row;
         }

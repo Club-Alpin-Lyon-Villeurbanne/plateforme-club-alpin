@@ -1,18 +1,18 @@
 <?php
 
+global $kernel;
+
 $log = (isset($log) ? $log : '')."\n accès à ".date('H:i:s');
 
 if (admin()) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
     $i = 1;
     foreach ($_GET['id'] as $id_page) {
         $log .= "\n GET id_page = $id_page";
         $id_page = (int) $id_page;
         if ($id_page) {
-            $req = 'UPDATE `'.$pbd."pdt` SET  `ordre_pdt` =  '".$ordre_pdt."' WHERE  `".$pbd.'pdt`.`id_pdt` ='.$id_pdt.' LIMIT 1 ;';
+            $req = "UPDATE `caf_pdt` SET  `ordre_pdt` =  '".$ordre_pdt."' WHERE  `caf_pdt`.`id_pdt` =".$id_pdt.' LIMIT 1';
             $log .= "\n REQ : $req";
-            $mysqli->query($req);
+            $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             --$ordre_pdt;
         }
     }

@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 if ('evt_create' == ($_POST['operation'] ?? null)) {
     $user_evt = getUser()->getIdUser();
     $tsp_crea_evt = time();
@@ -241,12 +243,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
 // vérifications BDD
 if (!isset($errTab) || 0 === count($errTab)) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
     // *** necessité de récupérer le code de cette commission
     $code_commission = 'ERR';
-    $req = 'SELECT code_commission FROM '.$pbd."commission WHERE id_commission=$commission_evt LIMIT 0 , 1";
-    $result = $mysqli->query($req);
+    $req = "SELECT code_commission FROM caf_commission WHERE id_commission=$commission_evt LIMIT 0 , 1";
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($row = $result->fetch_assoc()) {
         $code_commission = $row['code_commission'];
     }
@@ -259,13 +259,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $id_user = (int) $id_user;
             $req = ''
                 .'SELECT COUNT(id_user_attr) ' // le résultat est >1 si l'user a les droits
-                .'FROM '.$pbd.'usertype, '.$pbd.'user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
+                .'FROM caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
                 ."WHERE user_user_attr=$id_user " // de user à user_attr
                 ."AND code_usertype LIKE 'encadrant' " // droit
                 ."AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
                 .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
             ;
-            $result = $mysqli->query($req);
+            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
             if (!$row[0]) {
                 $errTab[] = "Erreur, il semble que vous ayez lié un encadrant non autorisé. ID_encadrant=$id_user et commission:$code_commission.";
@@ -276,13 +276,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $id_user = (int) $id_user;
             $req = ''
                 .'SELECT COUNT(id_user_attr) ' // le résultat est >1 si l'user a les droits
-                .'FROM '.$pbd.'usertype, '.$pbd.'user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
+                .'FROM caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
                 ."WHERE user_user_attr=$id_user " // de user à user_attr
                 ."AND code_usertype LIKE 'coencadrant' " // droit
                 ."AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
                 .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
             ;
-            $result = $mysqli->query($req);
+            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
             if (!$row[0]) {
                 $errTab[] = "Erreur, il semble que vous ayez lié un co-encadrant non autorisé. Id=$id_user et commission:$code_commission.";
@@ -294,13 +294,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $id_user = (int) $id_user;
                 $req = ''
                     .'SELECT COUNT(id_user_attr) ' // le résultat est >1 si l'user a les droits
-                    .'FROM '.$pbd.'usertype, '.$pbd.'user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
+                    .'FROM caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
                     ."WHERE user_user_attr=$id_user " // de user à user_attr
                     ."AND code_usertype LIKE 'benevole' " // droit
                     ."AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
                     .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
                 ;
-                $result = $mysqli->query($req);
+                $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 $row = $result->fetch_row();
                 if (!$row[0]) {
                     $errTab[] = "Erreur, il semble que vous ayez lié un benevole non autorisé. Id=$id_user et commission:$code_commission.";

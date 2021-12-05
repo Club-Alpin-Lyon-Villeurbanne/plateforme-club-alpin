@@ -25,7 +25,7 @@ class UserRights
     {
         $request = $this->requestStack->getMainRequest();
 
-        if (!$request->hasSession()) {
+        if (!$request || !$request->hasSession()) {
             return false;
         }
 

@@ -1,16 +1,15 @@
 <?php
 
+global $kernel;
 global $p_sublevels;
-global $_POST;
 
 if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page'] && !superadmin())) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     // reqs toutes pages de l'arbo
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    $req = 'SELECT * FROM  `'.$pbd.'page` WHERE  `admin_page` =0 ORDER BY  `parent_page` ASC, `ordre_menu_page` ASC LIMIT 0 , 300';
+    $req = 'SELECT * FROM  `caf_page` WHERE  `admin_page` =0 ORDER BY  `parent_page` ASC, `ordre_menu_page` ASC LIMIT 0 , 300';
     $pageTab = [];
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $pageTab[] = $handle;
     }
@@ -48,7 +47,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
         }
     if (isset($_POST['operation']) && 'page_add' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'. Vous pouvez actualiser cette page</p>';
-        echo '<script stype="text/javascript">parent.location.href="'.($p_multilangue ? $lang.'/' : '').'admin-pages.html?showmsg=page_add";</script>';
+        echo '<script stype="text/javascript">parent.location.href="admin-pages.html?showmsg=page_add";</script>';
     } ?>
 
 		<b>Page parente :</b><br />

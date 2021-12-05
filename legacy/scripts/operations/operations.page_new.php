@@ -1,5 +1,7 @@
 <?php
 
+global $kernel;
+
 $erreur = $code_ftp_user = $niveau_page = $ordre_page = null;
 
 $nom_page = stripslashes($_POST['nom_page']);			// nom dans le menu
@@ -17,14 +19,12 @@ if (!$nom_page) {
 }
 
 if (!$erreur) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
     // creation code unique
     $suffixe = '';
     $doublon = true;
     for ($i = 1; $doublon; ++$i) {
         // Recherche sql
-        $countSql = $mysqli->query('SELECT COUNT(*) FROM `'.$pbd."page` WHERE `code_page` LIKE '$code_page' LIMIT 1");
+        $countSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query("SELECT COUNT(*) FROM `caf_page` WHERE `code_page` LIKE '$code_page' LIMIT 1");
         if (!getArrayFirstValue($countSql->fetch_array(\MYSQLI_NUM))) {
             $doublon = false;
         }
@@ -33,17 +33,17 @@ if (!$erreur) {
 
     // définition du niveau
     if ($parent_page) {
-        $countSql = $mysqli->query('SELECT `niveau_page` FROM `'.$pbd."page` WHERE `id_page` =$parent_page LIMIT 1");
+        $countSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query("SELECT `niveau_page` FROM `caf_page` WHERE `id_page` =$parent_page LIMIT 1");
         $niveau_page = getArrayFirstValue($countSql->fetch_array(\MYSQLI_NUM)) + 1;
     }
 
     // adaptation
-    $nom_page = $mysqli->real_escape_string($nom_page);
-    $titre_page = $mysqli->real_escape_string($titre_page);
-    $description_page = $mysqli->real_escape_string($description_page);
+    $nom_page = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($nom_page);
+    $titre_page = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($titre_page);
+    $description_page = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($description_page);
 
     // save
-    $req = 'INSERT INTO `'.$pbd."page` (`id_page` ,`ordre_page` ,`parent_page` ,`code_page` ,`nom_page` ,`niveau_page` ,`titre_page` ,`description_page` ,`vis_page`)
+    $req = "INSERT INTO `caf_page` (`id_page` ,`ordre_page` ,`parent_page` ,`code_page` ,`nom_page` ,`niveau_page` ,`titre_page` ,`description_page` ,`vis_page`)
                                 VALUES (NULL , '$ordre_page', '$parent_page', '$code_page', '$nom_page', '$niveau_page', '$titre_page', '$description_page', '$vis_page');";
-    $mysqli->query($req);
+    $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 }

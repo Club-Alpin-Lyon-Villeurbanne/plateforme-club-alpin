@@ -1,14 +1,15 @@
 <?php
 
+global $kernel;
+
 $id_comment = (int) ($_GET['id_comment']);
 if (!$id_comment) {
     echo "<p class='erreur'>ID commentaire introuvable.</p>";
 } else {
     // recup
     $comment = false;
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
     $req = "SELECT * FROM caf_comment WHERE id_comment = $id_comment";
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $result->fetch_array(\MYSQLI_ASSOC)) {
         $comment = $handle;
     }

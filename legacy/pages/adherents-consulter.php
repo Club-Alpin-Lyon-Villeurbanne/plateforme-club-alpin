@@ -1,4 +1,9 @@
 <?php
+
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
 if (!admin() && !allowed('user_edit_notme')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
@@ -9,12 +14,10 @@ if (!admin() && !allowed('user_edit_notme')) {
     }
 
     if (0 == count($userTab)) {
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-
-        $id_user = $mysqli->real_escape_string($id_user);
-        $req = 'SELECT * FROM '.$pbd."user WHERE id_user='".$id_user."' LIMIT 1";
+        $id_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($id_user);
+        $req = "SELECT * FROM caf_user WHERE id_user='".$id_user."' LIMIT 1";
         $userTab = [];
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         $userTab = $result->fetch_assoc();
         if ($userTab) {
             foreach ($userTab as $key => $val) {
@@ -44,7 +47,7 @@ if (!admin() && !allowed('user_edit_notme')) {
                     // de la plus récente a la plus ancienne
                     .'ORDER BY  `tsp_evt` DESC
 					LIMIT 200';
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         if ($result->num_rows > 0) {
             while ($tmpArray = $result->fetch_assoc()) {
                 $userTab['sorties'][] = $tmpArray;
@@ -52,8 +55,8 @@ if (!admin() && !allowed('user_edit_notme')) {
         }
 
         // NOMBRE ARTICLES
-        $req = 'SELECT id_article, code_article, titre_article, tsp_validate_article FROM '.$pbd."article WHERE user_article='".$id_user."' AND status_article=1 ORDER BY id_article DESC";
-        $result = $mysqli->query($req);
+        $req = "SELECT id_article, code_article, titre_article, tsp_validate_article FROM caf_article WHERE user_article='".$id_user."' AND status_article=1 ORDER BY id_article DESC";
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         if ($result->num_rows > 0) {
             while ($tmpArray = $result->fetch_assoc()) {
                 $userTab['articles'][] = $tmpArray;
@@ -62,15 +65,15 @@ if (!admin() && !allowed('user_edit_notme')) {
 
         // FILIATION CHEF DE FAMILLE ?
         if ('' !== $userTab['cafnum_parent_user']) {
-            $req = 'SELECT id_user, firstname_user, lastname_user, cafnum_user FROM '.$pbd."user WHERE cafnum_user = '".$mysqli->real_escape_string($userTab['cafnum_parent_user'])."' LIMIT 1";
-            $result = $mysqli->query($req);
+            $req = "SELECT id_user, firstname_user, lastname_user, cafnum_user FROM caf_user WHERE cafnum_user = '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($userTab['cafnum_parent_user'])."' LIMIT 1";
+            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             $userTab['cafnum_parent_user'] = $result->fetch_assoc();
         }
 
         // FILIATION ENFANTS ?
         if ('' !== $userTab['cafnum_user']) {
-            $req = 'SELECT id_user, firstname_user, lastname_user FROM '.$pbd."user WHERE cafnum_parent_user='".$mysqli->real_escape_string($userTab['cafnum_user'])."'";
-            $result = $mysqli->query($req);
+            $req = "SELECT id_user, firstname_user, lastname_user FROM caf_user WHERE cafnum_parent_user='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($userTab['cafnum_user'])."'";
+            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             if ($result->num_rows > 0) {
                 while ($tmpArray = $result->fetch_assoc()) {
                     $userTab['enfants'][] = $tmpArray;
@@ -116,9 +119,9 @@ if (!admin() && !allowed('user_edit_notme')) {
     if (0 == $userTab['valid_user'] && '' !== $userTab['cookietoken_user']) {
         $rowValue .= '<br />URL d\'activation du compte : ';
         if (admin()) {
-            $rowValue .= '<a href="'.$p_racine.'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html">';
+            $rowValue .= '<a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html">';
         }
-        $rowValue .= $p_racine.'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html';
+        $rowValue .= $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html';
         if (admin()) {
             $rowValue .= '</a>';
         }

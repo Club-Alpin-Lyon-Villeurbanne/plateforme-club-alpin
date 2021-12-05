@@ -1,3 +1,8 @@
+<?php
+
+global $kernel;
+
+?>
 <!-- MAIN -->
 <div id="main" role="main" class="bigoo" style="">
 
@@ -10,10 +15,9 @@
             } else {
                 // vérification de l'ID de commission
                 $id_commission = (int) ($_GET['id_commission']);
-                $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
                 $commissionTmp = false;
                 $req = "SELECT * FROM caf_commission WHERE id_commission = $id_commission";
-                $handleSql = $mysqli->query($req);
+                $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     $commissionTmp = $handle;
                 }
@@ -53,15 +57,6 @@
 								<input type="file" name="bigfond" /><br />
 							</div>
 						</div>
-						<!--
-						<p>
-							<input type="checkbox" name="disable-bigfond" id="disable-bigfond" <?php if ('on' == $_POST['disable-bigfond']) {
-                            echo 'checked="checked"';
-                        } ?>/>
-							<label for="disable-bigfond" class='mini'>Laisser tomber, utiliser l'image par défaut (déconseillé)</label>
-						</p>
-						-->
-
 
 						<hr style="clear:both; " />
 						<h2>Les trois pictos</h2>

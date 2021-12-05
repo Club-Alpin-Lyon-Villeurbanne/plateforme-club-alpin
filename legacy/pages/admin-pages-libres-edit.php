@@ -1,12 +1,14 @@
 <?php
+
+global $kernel;
+
 if (!admin()) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     $id_page = (int) ($_GET['id_page']);
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    $req = 'SELECT * FROM '.$pbd."page WHERE id_page=$id_page LIMIT 1";
+    $req = "SELECT * FROM caf_page WHERE id_page=$id_page LIMIT 1";
     $page = false;
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $page = $handle;
     }
@@ -30,7 +32,7 @@ if (!admin()) {
         }
     if (isset($_POST['operation']) && 'pagelibre_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'. Vous pouvez actualiser cette page</p>';
-        echo '<script stype="text/javascript">parent.location.href="'.($p_multilangue ? $lang.'/' : '').'admin-pages-libres.html?showmsg=pagelibre_edit";</script>';
+        echo '<script stype="text/javascript">parent.location.href="admin-pages-libres.html?showmsg=pagelibre_edit";</script>';
     } ?>
 
 		<div style="float:left; width:430px; padding-right:20px;">

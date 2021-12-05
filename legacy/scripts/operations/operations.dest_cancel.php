@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 $id_destination = (int) (substr(strrchr($p3, '-'), 1));
@@ -16,7 +18,6 @@ if (!$id_destination) {
 
 // recuperation de la sortie demandée
 $destination = get_destination($id_destination);
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
 // on a le droit d'annuler ?
 if (allowed('destination_supprimer')
@@ -29,14 +30,8 @@ if (allowed('destination_supprimer')
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
-    $req = 'UPDATE `'.$pbd."destination` SET `annule` = '1' WHERE `id` = $id_destination;";
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    $req = "UPDATE `caf_destination` SET `annule` = '1' WHERE `id` = $id_destination;";
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL annulation destination';
     }
 }
@@ -46,14 +41,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $sorties = get_sorties_for_destination($id_destination);
 
     foreach ($sorties as $sortie) {
-        $req = 'UPDATE '.$pbd."evt SET cancelled_evt='1', cancelled_who_evt='".getUser()->getIdUser()."', cancelled_when_evt='".time()."'  WHERE id_evt = ".$sortie['id_evt'];
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        $req = "UPDATE caf_evt SET cancelled_evt='1', cancelled_who_evt='".getUser()->getIdUser()."', cancelled_when_evt='".time()."'  WHERE id_evt = ".$sortie['id_evt'];
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
     }
@@ -70,34 +59,28 @@ if (!isset($errTab) || 0 === count($errTab)) {
             <p>
                 Les sorties du ".display_date($destination['date']).', destination
                 &laquo;<i> '.html_utf8($destination['nom'])." </i>&raquo;
-                viennent d'être annulées par <a href=\"".$p_racine.'voir-profil/'.getUser()->getIdUser().'.html">'.getUser()->getNicknameUser().'</a>.
+                viennent d'être annulées par <a href=\"".$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.getUser()->getIdUser().'.html">'.getUser()->getNicknameUser().'</a>.
                 Voici le message joint :
             </p>
             <p>&laquo;<i> '.nl2br(html_utf8($msg))." </i>&raquo;</p>
-            <p><a href='".$p_racine.'destination/'.html_utf8($destination['code']).'-'.(int) ($destination['id']).".html' title=''>&lt; Voir la page dédiée</a></p>
+            <p><a href='".$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'destination/'.html_utf8($destination['code']).'-'.(int) ($destination['id']).".html' title=''>&lt; Voir la page dédiée</a></p>
             ";
         $content_header = '';
         $content_footer = '';
 
         $destination['joins'] = [];
-        $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
+        $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
                     , role_evt_join
-                FROM '.$pbd.'evt_join, '.$pbd."user
+                FROM caf_evt_join, caf_user
                 WHERE id_destination = $id_destination
                 AND user_evt_join = id_user
                 LIMIT 500";
-        $handleSql2 = $mysqli->query($req);
+        $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
         // desinscription des participants de la sortie
         if (!isset($errTab) || 0 === count($errTab)) {
             $req = "DELETE FROM caf_evt_join WHERE role_evt_join NOT IN ('encadrant', 'coencadrant') AND id_destination = $id_destination";
-            if (!$mysqli->query($req)) {
-                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                    'error' => $mysqli->error,
-                    'file' => __FILE__,
-                    'line' => __LINE__,
-                    'sql' => $req,
-                ]);
+            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }
         }
@@ -131,9 +114,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if (!isset($errTab) || 0 === count($errTab)) {
         // sans message d'avertissement nomades
         if (!count($nomadMsg)) {
-            header('Location:'.$p_racine.'destination/'.$destination['code'].'-'.$destination['id'].'.html');
+            header('Location: /destination/'.$destination['code'].'-'.$destination['id'].'.html');
         // echo 'nop';
         } else {
-            header('Location:'.$p_racine.'destination/'.$destination['code_evt'].'-'.$destination['id'].'.html?lbxMsg=nomadMsg&nomadMsg='.(implode('****', $nomadMsg)));
+            header('Location: /destination/'.$destination['code_evt'].'-'.$destination['id'].'.html?lbxMsg=nomadMsg&nomadMsg='.(implode('****', $nomadMsg)));
         }
     }

@@ -1,6 +1,8 @@
 <?php
 
-global $p_multilangue;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
 
 include __DIR__.'/app/includes.php';
 
@@ -17,7 +19,7 @@ if (isset($_GET['cstImg'])) {
 }
 
 // lien vers cette page (pour formulaires, ou ancres)
-$versCettePage = ($p_multilangue ? $lang.'/' : '').$p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : '').'.html';			// multilangue / une langue
+$versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : '').'.html';			// multilangue / une langue
 
 ?><!doctype html>
 <html lang="<?php echo $lang; ?>">
@@ -33,11 +35,17 @@ $versCettePage = ($p_multilangue ? $lang.'/' : '').$p1.($p2 ? '/'.$p2 : '').($p3
         <?php } ?>
     <?php } ?>
     </title>
-    <base href="<?php echo $p_racine; ?>" />
+    <base href="<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>" />
     <meta name="description" content="<?php echo html_utf8($meta_description); ?>">
     <meta name="author" content="Club Alpin Français de Lyon-Villeurbanne">
     <meta name="viewport" content="width=1200">
-	<?php if (isset($p_google_site_verification) && !empty($p_google_site_verification)) { ?><meta name="google-site-verification" content="<?php echo $p_google_site_verification; ?>" /><?php } ?>
+    <?php
+    if ($kernel->getContainer()->getParameter('legacy_env_GOOGLE_SITE_VERIFICATION')) {
+        ?>
+        <meta name="google-site-verification" content="<?php echo $kernel->getContainer()->getParameter('legacy_env_GOOGLE_SITE_VERIFICATION'); ?>" />
+        <?php
+    }
+    ?>
     <?php
 
         //_________________________________________________ HEADER AU CHOIX (inclut le doctype)
@@ -128,7 +136,7 @@ $versCettePage = ($p_multilangue ? $lang.'/' : '').$p1.($p2 ? '/'.$p2 : '').($p3
                 if ($lang == $p_langs[0]) {
                     for ($i = 0; $i < count($contLog); ++$i) {
                         $tmp = $contLog[$i];
-                        echo '<form style="display:inline" method="post" action="'.($p_multilangue ? $lang.'/' : '').'admin-contenus/'.$lang.'.html">
+                        echo '<form style="display:inline" method="post" action="admin-contenus/'.$lang.'.html">
                                 <input type="hidden" name="operation" value="forceAddContent" />
                                 <input type="text" readonly="readonly" name="code_content_inline" value="'.$tmp.'" onclick="$(this).parent().submit();" />
                             </form>';
@@ -146,11 +154,10 @@ $versCettePage = ($p_multilangue ? $lang.'/' : '').$p1.($p2 ? '/'.$p2 : '').($p3
             <!-- lbxMsg : popup d'information -->
             <?php include __DIR__.'/includes/generic/lbxMsg.php'; ?>
 
-
+            <?php if ($kernel->getContainer()->getParameter('legacy_env_ANALYTICS_ACCOUNT')) { ?>
             <script type="text/javascript">
-
                 var _gaq = _gaq || [];
-                _gaq.push(['_setAccount', '<?php echo $p_google_analytics_account; ?>']);
+                _gaq.push(['_setAccount', '<?php echo $kernel->getContainer()->getParameter('legacy_env_ANALYTICS_ACCOUNT'); ?>']);
                 _gaq.push(['_trackPageview']);
 
                 (function() {
@@ -158,8 +165,8 @@ $versCettePage = ($p_multilangue ? $lang.'/' : '').$p1.($p2 ? '/'.$p2 : '').($p3
                     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
                     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
                 })();
-
             </script>
+            <?php } ?>
         </div> <!--! end of #siteHeight -->
     </div> <!--! end of #container -->
 </body>

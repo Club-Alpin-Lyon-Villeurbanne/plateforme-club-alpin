@@ -29,16 +29,15 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 	<div class="sortablepagelist niv0">
 		<?php
         // requete de toutes les pages
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    $req = 'SELECT * FROM  `'.$pbd.'page` WHERE  `admin_page` =0  AND  `pagelibre_page` =0 ORDER BY  `parent_page` ASC, `ordre_menu_page` ASC LIMIT 0 , 300';
+    $req = 'SELECT * FROM  `caf_page` WHERE  `admin_page` =0  AND  `pagelibre_page` =0 ORDER BY  `parent_page` ASC, `ordre_menu_page` ASC LIMIT 0 , 300';
     $pageTab = [];
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // Nom de la page dans chaque langue
         $handle['nom'] = [];
         for ($i = 0; $i < count($p_langs); ++$i) {
-            $req = 'SELECT contenu_content_inline FROM  `'.$pbd."content_inline` WHERE  `code_content_inline` LIKE 'meta-title-".$handle['code_page']."' AND lang_content_inline LIKE '".$p_langs[$i]."' ORDER BY  `date_content_inline` DESC LIMIT 1";
-            $handleSql2 = $mysqli->query($req);
+            $req = "SELECT contenu_content_inline FROM  `caf_content_inline` WHERE  `code_content_inline` LIKE 'meta-title-".$handle['code_page']."' AND lang_content_inline LIKE '".$p_langs[$i]."' ORDER BY  `date_content_inline` DESC LIMIT 1";
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             $tmp = '<i style="font-size:9px; color:red;">non défini</i>'; // default value
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $tmp = $handle2['contenu_content_inline'];

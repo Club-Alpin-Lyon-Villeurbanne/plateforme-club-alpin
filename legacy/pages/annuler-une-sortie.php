@@ -1,3 +1,10 @@
+<?php
+
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
+?>
 <!-- MAIN -->
 <div id="main" role="main" class="bigoo" style="">
 
@@ -32,7 +39,7 @@
                         inclure($p1.'-'.$p2, 'vide');
                         if (isset($_POST['operation']) && 'dest_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div><br /><br />';
-                            echo '<a href="'.$p_racine.'destination/'.$destination['code'].'-'.$destination['id'].'.html">Retourner vers la fiche de destination</a>';
+                            echo '<a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'destination/'.$destination['code'].'-'.$destination['id'].'.html">Retourner vers la fiche de destination</a>';
                         } else {
                             if ('1' != $destination['annule']) {
                                 ?>
@@ -97,7 +104,7 @@
                         inclure($p1, 'vide');
                         if (isset($_POST['operation']) && 'evt_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                             echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div><br /><br />';
-                            echo '<a href="'.$p_racine.'sortie/'.$evt['code_evt'].'-'.$evt['id_evt'].'.html">Retourner vers la fiche de sortie</a>';
+                            echo '<a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$evt['code_evt'].'-'.$evt['id_evt'].'.html">Retourner vers la fiche de sortie</a>';
                         } else {
                             if ('1' != $evt['cancelled_evt']) {
                                 ?>

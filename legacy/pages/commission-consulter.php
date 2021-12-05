@@ -1,3 +1,8 @@
+<?php
+
+global $kernel;
+
+?>
 <!-- MAIN -->
 <div id="main" role="main" class="bigoo" style="">
 
@@ -6,10 +11,8 @@
 		<div class="main-type">
 			<?php
             // vérification de l'ID de commission
-            $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-
             $id_commission = (int) ($_GET['id_commission']);
-            $code_commission = $mysqli->real_escape_string($_GET['code_commission']);
+            $code_commission = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($_GET['code_commission']);
 
             if (!(admin() || allowed('comm_edit') || (user() && getUser()->hasAttribute('Resp. de commission', $code_commission)))) {
                 echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour afficher cette page</p>';
@@ -23,7 +26,7 @@
                 }
                 $req .= ' LIMIT 1';
 
-                $handleSql = $mysqli->query($req);
+                $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     $commissionTmp = $handle;
                 }
@@ -54,7 +57,7 @@
 						AND params_user_attr LIKE 'commission:".$commissionTmp['code_commission']."'
 						ORDER BY code_usertype DESC, lastname_user, firstname_user
 						";
-                    $result = $mysqli->query($req);
+                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                     $benvoles_emails = [];
                     echo '<h1>BENEVOLES</h1>';
                     echo '<table class="big-lines-table"><tbody>';

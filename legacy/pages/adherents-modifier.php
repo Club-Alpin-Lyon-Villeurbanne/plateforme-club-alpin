@@ -1,4 +1,11 @@
 <?php
+
+global $kernel;
+
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
 if (!admin() && !allowed('user_edit_notme')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
@@ -9,10 +16,9 @@ if (!admin() && !allowed('user_edit_notme')) {
     }
 
     if (null === $userTab || 0 === count($userTab)) {
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-        $req = 'SELECT * FROM  `'.$pbd."user` WHERE id_user='".$mysqli->real_escape_string($id_user)."' LIMIT 1";
+        $req = "SELECT * FROM  `caf_user` WHERE id_user='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($id_user)."' LIMIT 1";
         $userTab = [];
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         $userTab = $result->fetch_assoc();
 
         foreach ($userTab as $key => $val) {
@@ -43,35 +49,7 @@ if (!admin() && !allowed('user_edit_notme')) {
         echo '<div class="info"><b>Adhérent modifié avec succès :</b> <ul><li>'.implode('</li><li>', $okTab).'</li></ul></div>';
     } else {
         ?>
-<!--
-
-			Civilité* :<br />
-			<select name="civ_user">
-				<option value="M" <?php if ('M' == $_POST['civ_user']) {
-            echo 'selected="selected"';
-        } ?>>M.</option>
-				<option value="MME" <?php if ('MME' == $_POST['civ_user']) {
-            echo 'selected="selected"';
-        } ?>>Mme.</option>
-				<option value="MLLE" <?php if ('MLLE' == $_POST['civ_user']) {
-            echo 'selected="selected"';
-        } ?>>Mlle.</option>
-			</select>
-			<br />
-
-			Prénom* :<br />
-			<input type="text" name="firstname_user" class="type1" value="<?php echo $userTab['firstname_user']; ?>" placeholder="" />
-			<br />
-
-			Nom* :<br />
-			<input type="text" name="lastname_user" class="type1" value="<?php echo $userTab['lastname_user']; ?>" placeholder="" />
-			<br />
-
-			Pseudonyme* :<br />
-			<input type="text" name="nickname_user" class="type1" value="<?php echo $userTab['nickname_user']; ?>" placeholder="" />
-			<br />
- -->
-			<br />
+        <br />
 
 			<table>
 				<tr>
@@ -104,7 +82,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 			<?php
                 if (1 != $userTab['valid_user']) {
                     // compte non active pour le moment
-                    echo '<br />URL d\'activation du compte : '.$p_racine.'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html<br />';
+                    echo '<br />URL d\'activation du compte : '.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html<br />';
                 } ?>
 
 			<br />

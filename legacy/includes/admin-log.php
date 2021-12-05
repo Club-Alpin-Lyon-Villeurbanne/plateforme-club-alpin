@@ -1,13 +1,13 @@
 <?php
+
+global $kernel;
+
 if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page'] && !superadmin())) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
-    // REQ SQL
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-
-    $req = 'SELECT * FROM  `'.$pbd.'log_admin` ORDER BY date_log_admin DESC LIMIT 0 , 5000';
+    $req = 'SELECT * FROM  `caf_log_admin` ORDER BY date_log_admin DESC LIMIT 0 , 5000';
     $handleTab = [];
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $handleTab[] = $handle;
     } ?>
