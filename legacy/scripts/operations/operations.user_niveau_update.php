@@ -11,15 +11,13 @@ if (!user()) {
 // il devrait y avoir une vérification de l'autorisation à modifier le niveau utilisateur
 
 if (!isset($errTab) || 0 === count($errTab)) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
     if (isset($_POST['new_niveau']) && is_array($_POST['new_niveau'])) {
         foreach ($_POST['new_niveau'] as $niveau) {
             $id_user = (int) ($niveau['id_user']);
             $id_commission = (int) ($niveau['id_commission']);
             $niveau_technique = (int) ($niveau['niveau_technique']);
             $niveau_physique = (int) ($niveau['niveau_physique']);
-            $commentaire = $mysqli->real_escape_string(trim(stripslashes($niveau['commentaire'])));
+            $commentaire = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim(stripslashes($niveau['commentaire'])));
             if (empty($commentaire)) {
                 $commentaire = null;
             }
@@ -32,13 +30,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     $req .= "'".$commentaire."' ";
                 }
                 $req .= ');';
-                if (!$mysqli->query($req)) {
-                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                        'error' => $mysqli->error,
-                        'file' => __FILE__,
-                        'line' => __LINE__,
-                        'sql' => $req,
-                    ]);
+                if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL lors Insertion note pour commission '.$id_commission.' et utilisateur '.$id_user;
                 }
             }
@@ -54,7 +46,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
             $niveau_technique = (int) ($niveau['niveau_technique']);
             $niveau_physique = (int) ($niveau['niveau_physique']);
-            $commentaire = $mysqli->real_escape_string(trim(stripslashes($niveau['commentaire'])));
+            $commentaire = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim(stripslashes($niveau['commentaire'])));
             if (empty($commentaire)) {
                 $commentaire = null;
             }
@@ -67,13 +59,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     $req .= "'".$commentaire."' ";
                 }
                 $req .= ' WHERE `caf_user_niveau`.`id` = '.$id.';';
-                if (!$mysqli->query($req)) {
-                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                        'error' => $mysqli->error,
-                        'file' => __FILE__,
-                        'line' => __LINE__,
-                        'sql' => $req,
-                    ]);
+                if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL';
                 }
             }

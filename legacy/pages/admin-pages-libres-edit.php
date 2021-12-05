@@ -1,12 +1,14 @@
 <?php
+
+global $kernel;
+
 if (!admin()) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     $id_page = (int) ($_GET['id_page']);
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
     $req = "SELECT * FROM caf_page WHERE id_page=$id_page LIMIT 1";
     $page = false;
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $page = $handle;
     }

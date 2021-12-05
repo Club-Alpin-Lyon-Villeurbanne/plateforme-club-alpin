@@ -39,9 +39,8 @@ if(
 
 // enregistrement en BD
 if (!isset($errTab) || 0 === count($errTab)) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-    $titre_article = $mysqli->real_escape_string($titre_article);
-    $cont_article = $mysqli->real_escape_string($cont_article);
+    $titre_article = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($titre_article);
+    $cont_article = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($cont_article);
 
     $req = "UPDATE caf_article
     SET status_article = $status_article
@@ -57,15 +56,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // on verifie si on est l'auteur que si on a pas le droit de modifier TOUS les articles
     .(allowed('article_edit_notmine') ? '' : ' AND user_article = '.getUser()->getIdUser())
     ;
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
-    } elseif ($mysqli->affected_rows < 1) {
+    } elseif ($kernel->getContainer()->get('legacy_mysqli_handler')->affectedRows() < 1) {
         $errTab[] = "Aucun enregistrement affecté : ID introuvable, ou vous n'êtes pas le créateur de cette article, ou bien aucune modification n'a été apportée.";
     }
 }

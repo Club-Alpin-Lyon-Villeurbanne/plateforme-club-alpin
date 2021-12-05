@@ -33,9 +33,6 @@ if (!$parent_comment) {
     $errTab[] = 'Parent non défini.';
 }
 
-// conn
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
 $comment_article = null;
 
 // checks SQL
@@ -47,7 +44,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             AND a.id_'.$parent_type_comment." = $parent_comment
             AND a.status_".$parent_type_comment.' = 1
             LIMIT 1';
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if (!$row[0]) {
         $errTab[] = "L'élément visé ne semble pas publié.";
@@ -59,18 +56,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
 // insert SQL
 if (!isset($errTab) || 0 === count($errTab)) {
     // formatage
-    $cont_comment_mysql = $mysqli->real_escape_string($cont_comment);
+    $cont_comment_mysql = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($cont_comment);
 
     // article publié et commentable ?
     $req = "INSERT INTO caf_comment(id_comment, status_comment, tsp_comment, user_comment, name_comment, email_comment, cont_comment, parent_type_comment, parent_comment)
                             VALUES (NULL ,  '1', 			 '".time()."',  '".getUser()->getIdUser()."',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
 

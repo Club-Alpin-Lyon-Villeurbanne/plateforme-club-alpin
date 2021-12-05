@@ -1,4 +1,7 @@
 <?php
+
+global $kernel;
+
 if (!admin()) {
     echo 'Session expirée';
 } else {
@@ -14,15 +17,13 @@ if (!admin()) {
     $attrTab = [];
     $tmp = '';
 
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-
     // tous les types
     $req = '
 	SELECT id_usertype, code_usertype, title_usertype
 	FROM caf_usertype
 	ORDER BY hierarchie_usertype
 	';
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $typeTab[] = $handle;
     }
@@ -33,7 +34,7 @@ if (!admin()) {
 	FROM caf_userright
 	ORDER BY parent_userright, ordre_userright
 	';
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $rightTab[] = $handle;
     }
@@ -43,7 +44,7 @@ if (!admin()) {
 	SELECT type_usertype_attr, right_usertype_attr
 	FROM caf_usertype_attr
 	';
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $attrTab[] = $handle['type_usertype_attr'].'-'.$handle['right_usertype_attr'];
     } ?>

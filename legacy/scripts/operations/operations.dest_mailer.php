@@ -134,9 +134,8 @@ if (0 === count($errTab)) {
     }
 
     if (0 === count($errTab)) {
-        $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
         $req = "UPDATE `caf_destination` SET `mail` = '1' WHERE `caf_destination`.`id` = $id_destination";
-        if (!$mysqli->query($req)) {
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = "Les emails ont bien été envoyé, mais cette information n'a pas été enregistrée";
         }
     }

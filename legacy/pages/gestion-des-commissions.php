@@ -22,9 +22,8 @@ global $kernel;
 				<div id="commissions-gestion">
 					<?php
                     // LISTE DES COMMISSIONS
-                    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
                 $req = 'SELECT * FROM caf_commission ORDER BY ordre_commission ASC, id_commission DESC';
-                $result = $mysqli->query($req);
+                $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
                 while ($row = $result->fetch_assoc()) {
                     $action = $kernel->getContainer()->get('legacy_user_rights')->allowed('comm_edit', $row['code_commission']);

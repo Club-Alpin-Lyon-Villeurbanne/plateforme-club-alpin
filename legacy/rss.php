@@ -14,9 +14,8 @@ include_once __DIR__.'/includes/FeedWriter.php';
 include_once __DIR__.'/includes/FeedItem.php';
 
 // LISTE DES COMMISSIONS PUBLIQUES
-$mysqli = include __DIR__.'/scripts/connect_mysqli.php';
 $req = 'SELECT * FROM caf_commission WHERE vis_commission=1 ORDER BY ordre_commission ASC';
-$handleSql = $mysqli->query($req);
+$handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 $comTab = [];
 $comCodeTab = [];
 while ($handle = $handleSql->fetch_assoc()) {
@@ -67,14 +66,14 @@ if (!array_key_exists('mode', $_GET) || preg_match('#^articles#', $_GET['mode'])
         ."ORDER BY  `tsp_validate_article` DESC
 		LIMIT $rss_limit";
 
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_assoc()) {
         // info de la commission liée
         if ($handle['commission_article'] > 0) {
             $req = 'SELECT * FROM caf_commission
 				WHERE id_commission = '.(int) ($handle['commission_article']).'
 				LIMIT 1';
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_assoc()) {
                 $handle['commission'] = $handle2;
             }
@@ -123,14 +122,14 @@ if (preg_match('#^sorties#', $_GET['mode'])) {
         ."ORDER BY  `tsp_evt` ASC
 		LIMIT $rss_limit";
 
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_assoc()) {
         // info de la commission liée
         if ($handle['commission_evt'] > 0) {
             $req = 'SELECT * FROM caf_commission
 				WHERE id_commission = '.(int) ($handle['commission_evt']).'
 				LIMIT 1';
-            $handleSql2 = $mysqli->query($req);
+            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_assoc()) {
                 $handle['commission'] = $handle2;
             }

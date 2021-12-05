@@ -18,7 +18,6 @@ if (!$id_destination) {
 
 // recuperation de la sortie demandée
 $destination = get_destination($id_destination);
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
 
 // on a le droit d'annuler ?
 if (allowed('destination_supprimer')
@@ -32,13 +31,7 @@ if (allowed('destination_supprimer')
 
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "UPDATE `caf_destination` SET `annule` = '1' WHERE `id` = $id_destination;";
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL annulation destination';
     }
 }
@@ -49,13 +42,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     foreach ($sorties as $sortie) {
         $req = "UPDATE caf_evt SET cancelled_evt='1', cancelled_who_evt='".getUser()->getIdUser()."', cancelled_when_evt='".time()."'  WHERE id_evt = ".$sortie['id_evt'];
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
     }
@@ -88,18 +75,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 WHERE id_destination = $id_destination
                 AND user_evt_join = id_user
                 LIMIT 500";
-        $handleSql2 = $mysqli->query($req);
+        $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
         // desinscription des participants de la sortie
         if (!isset($errTab) || 0 === count($errTab)) {
             $req = "DELETE FROM caf_evt_join WHERE role_evt_join NOT IN ('encadrant', 'coencadrant') AND id_destination = $id_destination";
-            if (!$mysqli->query($req)) {
-                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                    'error' => $mysqli->error,
-                    'file' => __FILE__,
-                    'line' => __LINE__,
-                    'sql' => $req,
-                ]);
+            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }
         }

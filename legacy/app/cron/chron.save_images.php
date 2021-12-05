@@ -1,13 +1,11 @@
 <?php
 
-header('Cache-Control: max-age=1'); // don't cache ourself
+global $kernel;
 
 include __DIR__.'/../../app/includes.php';
 
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
 $req = 'SELECT id_article, cont_article FROM caf_article WHERE status_article=1 AND tsp_lastedit < TIMESTAMPADD(DAY , -2, NOW()) AND cont_article REGEXP \'src="ftp/user/[[:digit:]]+/images/\' LIMIT 10';
-$result = $mysqli->query($req);
+$result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 $images = [];
 
 while ($article = $result->fetch_assoc()) {
@@ -67,9 +65,9 @@ while ($article = $result->fetch_assoc()) {
     }
 
     if ($nb_matches > 0) {
-        $req = "UPDATE caf_article SET cont_article='".$mysqli->real_escape_string($dest_cont_article)."' WHERE id_article='".$article['id_article']."'";
-        if (!$mysqli->query($req)) {
-            error_log('Erreur SQL:'.$mysqli->error);
+        $req = "UPDATE caf_article SET cont_article='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($dest_cont_article)."' WHERE id_article='".$article['id_article']."'";
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+            error_log('Erreur SQL:'.$kernel->getContainer()->get('legacy_mysqli_handler')->lastError());
         }
         // efface les fichiers sources dans le rep user qui ont ete copies dans le repoertoire de l'article
     }
