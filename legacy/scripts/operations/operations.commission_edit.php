@@ -170,18 +170,11 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['picto-dark']['size'] >
 
 // SQL
 if (!isset($errTab) || 0 === count($errTab)) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-    $title_commission = $mysqli->real_escape_string($title_commission);
+    $title_commission = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($title_commission);
 
     // enregistrement
     $req = "UPDATE caf_commission SET title_commission = '$title_commission' WHERE id_commission =$id_commission";
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
 

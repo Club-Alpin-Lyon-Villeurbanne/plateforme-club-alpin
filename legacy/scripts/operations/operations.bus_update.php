@@ -6,66 +6,46 @@ include __DIR__.'/operations.bus_verif.php';
 
 // vérifications BDD
 if (!isset($errTab) || 0 === count($errTab)) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
     if ($lieu) {
-        $lieu_nom = $mysqli->real_escape_string($lieu_nom);
-        $lieu_description = $mysqli->real_escape_string($lieu_description);
-        $lieu_ign = $mysqli->real_escape_string($lieu_ign);
-        $lieu_lat = $mysqli->real_escape_string($lieu_lat);
-        $lieu_lng = $mysqli->real_escape_string($lieu_lng);
+        $lieu_nom = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($lieu_nom);
+        $lieu_description = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($lieu_description);
+        $lieu_ign = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($lieu_ign);
+        $lieu_lat = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($lieu_lat);
+        $lieu_lng = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($lieu_lng);
 
         $sql = "INSERT INTO `caf_lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
             VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
-        if (!$mysqli->query($sql)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $sql,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($sql)) {
             $errTab[] = 'Erreur SQL lors de la création du lieu';
         } else {
-            $id_lieu = $_POST['lieu']['id'] = $mysqli->insert_id;
+            $id_lieu = $_POST['lieu']['id'] = $kernel->getContainer()->get('legacy_mysqli_handler')->insertId();
         }
     } elseif ($id_lieu) {
-        $id_lieu = $mysqli->real_escape_string($id_lieu);
+        $id_lieu = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($id_lieu);
     }
 
     if ($id_lieu) {
         // enregistre bus dest lieu
-        $bdl_id_bus = $mysqli->real_escape_string($bdl_id_bus);
-        $bdl_id_destination = $mysqli->real_escape_string($bdl_id_destination);
-        $id_lieu = $mysqli->real_escape_string($id_lieu);
-        $bdl_type_lieu = $mysqli->real_escape_string($bdl_type_lieu);
-        $bdl_date = $mysqli->real_escape_string($bdl_date);
+        $bdl_id_bus = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($bdl_id_bus);
+        $bdl_id_destination = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($bdl_id_destination);
+        $id_lieu = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($id_lieu);
+        $bdl_type_lieu = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($bdl_type_lieu);
+        $bdl_date = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($bdl_date);
 
         $req = 'INSERT INTO `caf_bus_lieu_destination` (`id`, `id_bus`, `id_destination`, `id_lieu`, `type_lieu`, `date`) VALUES '.
             "(NULL, '$bdl_id_bus', '$bdl_id_destination', '$id_lieu', '$bdl_type_lieu', '$bdl_date');";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = "Erreur SQL lors de la sauvegarde de l'association bus / lieu / destination";
         } else {
             unset($_POST['lieu']);
         }
     }
 
-    $bus_id = $mysqli->real_escape_string($bus_id);
-    $intitule = $mysqli->real_escape_string($intitule);
-    $places_max = $mysqli->real_escape_string($places_max);
+    $bus_id = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($bus_id);
+    $intitule = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($intitule);
+    $places_max = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($places_max);
     $sql = "UPDATE `caf_bus` SET `intitule` = '$intitule', `places_max` = '$places_max' WHERE `id` = $bus_id;";
-    if (!$mysqli->query($sql)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $sql,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($sql)) {
         $errTab[] = 'Erreur SQL lors de la modification du bus ';
     }
 
@@ -79,16 +59,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
         }
 
-        $id_destination = $mysqli->real_escape_string($id_destination);
+        $id_destination = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($id_destination);
 
         $sql = "DELETE FROM `caf_bus_lieu_destination` WHERE `id` IN ($del_ids) AND `id_destination` = $id_destination AND `id_bus` = $bus_id;";
-        if (!$mysqli->query($sql)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $sql,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($sql)) {
             $errTab[] = 'Erreur SQL suppression de point de ramassage';
         }
 

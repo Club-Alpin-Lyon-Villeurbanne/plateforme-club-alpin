@@ -2,20 +2,12 @@
 
 global $kernel;
 
-$mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-
 $partenairesTab = [];
 $partenairesNb = 0;
 $req = 'SELECT UPPER(part_name) as part_name, part_image, part_url, part_id FROM caf_partenaires WHERE part_enable=1 AND part_name IS NOT NULL AND part_image IS NOT NULL ORDER BY part_order';
-$result = $mysqli->query($req);
+$result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
-if (!$mysqli->query($req)) {
-    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-        'error' => $mysqli->error,
-        'file' => __FILE__,
-        'line' => __LINE__,
-        'sql' => $req,
-    ]);
+if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
     $errTab[] = 'Erreur SQL';
 } else {
     while ($row = $result->fetch_array(\MYSQLI_ASSOC)) {

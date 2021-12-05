@@ -15,36 +15,22 @@ if (!allowed('article_validate')) {
     $errTab[] = 'Vous ne semblez pas autorisé à effectuer cette opération';
 }
 
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
 $authorDatas = null;
 
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "UPDATE caf_article SET status_article='$status_article', status_who_article=".getUser()->getIdUser()." WHERE caf_article.id_article =$id_article";
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
     $req = 'UPDATE caf_article SET tsp_validate_article='.time()." WHERE caf_article.id_article=$id_article AND tsp_validate_article=0"; // premiere validation
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
 
     // récupération des infos user et article
     $req = "SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_article, titre_article, code_article, tsp_crea_article, tsp_article FROM caf_user, caf_article WHERE id_user=user_article AND id_article=$id_article LIMIT 1";
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($row = $result->fetch_assoc()) {
         $authorDatas = $row;
     }
@@ -54,13 +40,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // 15/09/2013 - GMN - mise a jour des articles en une
     $req = 'CALL caf_article_maj_une();';
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
 }

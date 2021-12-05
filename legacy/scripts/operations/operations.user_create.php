@@ -52,42 +52,32 @@ if (!isset($errTab) || 0 === count($errTab)) {
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
-    // insertion SQL
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
-    // securisation des vars
-    $civ_user = $mysqli->real_escape_string($civ_user);
-    $firstname_user = $mysqli->real_escape_string($firstname_user);
-    $lastname_user = $mysqli->real_escape_string($lastname_user);
-    $nickname_user = $mysqli->real_escape_string($nickname_user);
-    $cafnum_user = $mysqli->real_escape_string($cafnum_user);
-    $email_user = $mysqli->real_escape_string($email_user);
+    $civ_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($civ_user);
+    $firstname_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($firstname_user);
+    $lastname_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($lastname_user);
+    $nickname_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($nickname_user);
+    $cafnum_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($cafnum_user);
+    $email_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($email_user);
     $mdp_user = $kernel->getContainer()->get('legacy_hasher_factory')->getPasswordHasher('login_form')->hash($mdp_user);
-    $birthday_user = $mysqli->real_escape_string($birthday_user);
-    $tel_user = $mysqli->real_escape_string($tel_user);
-    $tel2_user = $mysqli->real_escape_string($tel2_user);
-    $adresse_user = $mysqli->real_escape_string($adresse_user);
-    $cp_user = $mysqli->real_escape_string($cp_user);
-    $ville_user = $mysqli->real_escape_string($ville_user);
-    $pays_user = $mysqli->real_escape_string($pays_user);
-    $auth_contact_user = $mysqli->real_escape_string($auth_contact_user);
+    $birthday_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($birthday_user);
+    $tel_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($tel_user);
+    $tel2_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($tel2_user);
+    $adresse_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($adresse_user);
+    $cp_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($cp_user);
+    $ville_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($ville_user);
+    $pays_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($pays_user);
+    $auth_contact_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($auth_contact_user);
 
     // vérification anti doublon (seulement sur comptes confirmés)
     $req = "SELECT COUNT(id_user) FROM caf_user WHERE email_user LIKE '$email_user' AND valid_user=1";
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if ($row[0]) {
         $errTab[] = 'Un compte validé existe déjà avec cette adresse e-mail. Avez-vous <a href="'.generateRoute('session_password_lost').'" class="fancyframe" title="">oublié le mot de passe ?</a>';
     } else {
         $req = "INSERT INTO `caf_user` (`id_user`, `email_user`, `mdp_user`, `cafnum_user`, `firstname_user`, `lastname_user`, `nickname_user`, `created_user`, `birthday_user`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `civ_user`, `moreinfo_user`, `auth_contact_user`, `valid_user`, `cookietoken_user`, `manuel_user`)
                             VALUES (NULL, '$email_user', '$mdp_user', '$cafnum_user', '$firstname_user', '$lastname_user', '$nickname_user', '".time()."', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$pays_user', '$civ_user', '', '$auth_contact_user', '1', '', '1');";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
     }

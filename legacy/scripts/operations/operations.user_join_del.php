@@ -14,11 +14,9 @@ if (!$id_user || !$id_evt) {
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
     // Informations sur l'événement
     $req = "SELECT id_evt, titre_evt, tsp_evt, tarif_evt, code_evt FROM caf_evt WHERE id_evt=$id_evt LIMIT 1";
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if ($row) {
         $evtId = html_utf8($row[0]);
@@ -37,7 +35,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             WHERE A.evt_evt_join=$id_evt
             AND (A.role_evt_join LIKE 'encadrant')
             LIMIT 1";
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if ($row) {
         $encName = html_utf8($row[0].' '.$row[1]);
@@ -46,7 +44,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // récupération du statut de l'inscription : si elle est valide, l'orga recoit un e-mail
     $req = "SELECT status_evt_join, is_cb FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join=$id_user ORDER BY tsp_evt_join DESC LIMIT 1 ";
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $status_evt_join = 0;
     $is_cb = 0;
     while ($row = $result->fetch_assoc()) {
@@ -60,7 +58,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $toMail = '';
         $toName = '';
         $req = "SELECT email_user, firstname_user, lastname_user FROM caf_user, caf_evt WHERE id_evt=$id_evt AND user_evt=id_user LIMIT 1";
-        $result = $mysqli->query($req);
+        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $toMail = $row['email_user'];
             $toName = $row['firstname_user'].' '.$row['lastname_user'];
@@ -72,13 +70,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if (!isset($errTab) || 0 === count($errTab)) {
             // si pas de pb, suppression de l'inscription
             $req = "DELETE FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join=$id_user";
-            if (!$mysqli->query($req)) {
-                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                    'error' => $mysqli->error,
-                    'file' => __FILE__,
-                    'line' => __LINE__,
-                    'sql' => $req,
-                ]);
+            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }
 

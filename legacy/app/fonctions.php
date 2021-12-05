@@ -26,14 +26,13 @@ $CONTENUS_INLINE = [];
 
 function presidence()
 {
+    global $kernel;
     global $president;
     global $vicepresident;
 
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-
     $president = $vicepresident = [];
     $president_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 6 WHERE U.id_user = A.user_user_attr';
-    $president_result = $mysqli->query($president_sql);
+    $president_result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($president_sql);
     while ($row_president = $president_result->fetch_assoc()) {
         if ('1' !== $row_president['id_user']) {
             $president[] = $row_president;
@@ -42,7 +41,7 @@ function presidence()
 
     $vicepresident = [];
     $vicepresident_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 7 WHERE U.id_user = A.user_user_attr';
-    $vicepresident_result = $mysqli->query($vicepresident_sql);
+    $vicepresident_result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($vicepresident_sql);
     while ($row_vicepresident = $vicepresident_result->fetch_assoc()) {
         if ('1' !== $row_vicepresident['id_user']) {
             $vicepresident[] = $row_vicepresident;
@@ -338,21 +337,14 @@ function mylog($code, $desc, $connectme = true)
 {
     global $kernel;
 
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    $code_log_admin = $mysqli->real_escape_string(trim($code));
-    $desc_log_admin = $mysqli->real_escape_string(trim($desc));
+    $code_log_admin = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($code));
+    $desc_log_admin = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($desc));
     $date_log_admin = time();
-    $ip_log_admin = $mysqli->real_escape_string($_SERVER['REMOTE_ADDR']);
+    $ip_log_admin = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($_SERVER['REMOTE_ADDR']);
 
     $req = "INSERT INTO `caf_log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`)
         VALUES (NULL , '$code_log_admin',  '$desc_log_admin',  '$date_log_admin', '$ip_log_admin')";
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL lors du log';
     }
 }
@@ -377,6 +369,8 @@ function linker($link)
 // ma fonction d'insertion élément inline
 function cont($code = false, $html = false)
 {
+    global $kernel;
+
     $defLang = 'fr';
     global $CONTENUS_INLINE;
     global $lang;
@@ -390,14 +384,13 @@ function cont($code = false, $html = false)
     // premier appel à la fonction
     if (!count($CONTENUS_INLINE)) {
         // v2 : BDD
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         // sélection de chaque élément par ordre DESC
         $req = "SELECT `code_content_inline`, `contenu_content_inline`
             FROM  `caf_content_inline`
             WHERE  `lang_content_inline` LIKE  '$tmplang'
             ORDER BY  `date_content_inline` DESC
             ";
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             // uniquement si pas déja renseigné
             if (!isset($CONTENUS_INLINE[$handle['code_content_inline']])) {
@@ -428,6 +421,8 @@ $p_inclurelist = [];
 // ma fonction d'insertion /modification élément HTML en front office
 function inclure($elt, $style = 'vide', $options = [])
 {
+    global $kernel;
+
     $defLang = 'fr';
     global $lang;
     if (!$lang) {
@@ -451,13 +446,12 @@ function inclure($elt, $style = 'vide', $options = [])
             }
         }
 
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-        $code_content_html = $mysqli->real_escape_string($elt);
+        $code_content_html = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($elt);
 
         // Contenu
         $req = "SELECT `vis_content_html`,`contenu_content_html` FROM `caf_content_html` WHERE `code_content_html` LIKE '$code_content_html' AND lang_content_html LIKE '".$lang."' ORDER BY `date_content_html` DESC LIMIT 1";
         $handleTab = [];
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         $found = false;
         $currentElement = ['vis_content_html' => 1, 'contenu_content_html' => null]; // default values
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {

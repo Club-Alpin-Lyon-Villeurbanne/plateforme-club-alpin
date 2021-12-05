@@ -1,4 +1,7 @@
 <?php
+
+global $kernel;
+
 if (!admin()) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
@@ -10,7 +13,6 @@ if (!admin()) {
 	<h2>Attribution des statuts à l'utilisateur : <?php echo html_utf8($_GET['nom']); ?></h2>
 	<?php
     // req sql : trouver les attributs liés à cet user
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
 
     $req = 'SELECT title_usertype, code_usertype, params_user_attr, id_user_attr
 	FROM caf_usertype, caf_user_attr
@@ -19,7 +21,7 @@ if (!admin()) {
 	ORDER BY hierarchie_usertype DESC';
 
     $statsTab = [];
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($row = $result->fetch_assoc()) {
         $statsTab[] = $row;
     }
@@ -60,7 +62,7 @@ if (!admin()) {
 
     // liste des types :
     $req = "SELECT * FROM caf_usertype WHERE code_usertype NOT LIKE 'visiteur' AND code_usertype NOT LIKE 'adherent' ORDER BY hierarchie_usertype";
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     echo '<select name="id_usertype"><option></option>';
     while ($row = $result->fetch_assoc()) {
         echo '<option value="'.(int) ($row['id_usertype']).'" class="precise-comm-'.(int) ($row['limited_to_comm_usertype']).'">'.html_utf8($row['title_usertype']).'</option>';
@@ -69,7 +71,7 @@ if (!admin()) {
 
     // liste des commissions
     $req = 'SELECT * FROM caf_commission ORDER BY ordre_commission ASC ';
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
     echo '<div id="commissions-pick" class="nice-checkboxes">';
     while ($row = $result->fetch_assoc()) {

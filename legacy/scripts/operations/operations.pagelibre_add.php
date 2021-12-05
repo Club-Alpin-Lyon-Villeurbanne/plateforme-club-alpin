@@ -1,11 +1,11 @@
 <?php
 
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
+global $kernel;
 
 $parent_page = 54; /* ◊◊◊◊◊ IMPORTANT : doit être l'ID de l'entrée 'pages' dans la BDD ◊◊◊◊◊ */
-$default_name_page = $mysqli->real_escape_string(stripslashes($_POST['default_name_page']));
-$default_description_page = $mysqli->real_escape_string(stripslashes($_POST['default_description_page']));
-$code_page = strtolower(trim($mysqli->real_escape_string(stripslashes($_POST['code_page']))));
+$default_name_page = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['default_name_page']));
+$default_description_page = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['default_description_page']));
+$code_page = strtolower(trim($kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['code_page']))));
 $priority_page = (int) ($_POST['priority_page']) / 10;
 
 // meta description par defaut, ou sur-mesure ?
@@ -26,7 +26,7 @@ if (!preg_match($pattern, $code_page)) {
 }
 
 $req = "SELECT COUNT(id_page) FROM `caf_page` WHERE `code_page` LIKE '$code_page' LIMIT 1";
-$handleSql = $mysqli->query($req);
+$handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 if (getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM))) {
     $errTab[] = 'Ce code est déjà utilisé par une autre page, veuillez le modifier pour le rendre unique.';
 }
@@ -35,12 +35,12 @@ if (getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM))) {
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "INSERT INTO caf_page (id_page ,parent_page ,admin_page ,superadmin_page ,vis_page ,ordre_page ,menu_page ,ordre_menu_page ,menuadmin_page ,ordre_menuadmin_page ,code_page ,default_name_page ,meta_title_page ,meta_description_page ,priority_page ,add_css_page ,add_js_page ,lock_page ,pagelibre_page ,created_page)
                         VALUES (NULL , '$parent_page', '0', '0', '0', '', '', '', '', '', '$code_page', '$default_name_page', '0', '$meta_description_page', '$priority_page', '', '', '', '1', '".time()."');";
-    if (!$mysqli->query($req)) {
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur BDD 1';
     } else {
-        $id_page = $mysqli->insert_id;
+        $id_page = $kernel->getContainer()->get('legacy_mysqli_handler')->insertId();
         $req = "UPDATE `caf_page` SET `ordre_page`= '$id_page', `ordre_menu_page`= '$id_page' WHERE `caf_page`.`id_page` =$id_page LIMIT 1 ;";
-        if (!$mysqli->query($req)) {
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur BDD 2';
         }
     }
@@ -51,7 +51,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $contenu_content_inline = $default_name_page;
     $req = "INSERT INTO `caf_content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
                                         VALUES (NULL , '2', 'meta-title-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
-    if (!$mysqli->query($req)) {
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur BDD title';
     }
 }
@@ -61,7 +61,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $default_description_page) {
     $contenu_content_inline = $default_description_page;
     $req = "INSERT INTO `caf_content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
                                         VALUES (NULL , '2', 'meta-description-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
-    if (!$mysqli->query($req)) {
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur BDD title';
     }
 }
