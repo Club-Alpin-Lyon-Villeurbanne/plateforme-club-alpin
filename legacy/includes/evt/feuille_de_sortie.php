@@ -11,13 +11,13 @@ if (admin() ||
             'encadrant' == $monStatut || 'coencadrant' == $monStatut ||
             allowed('evt_validate', 'commission:'.$evt['code_commission'])
         )
-        || getUser()->hasAttribute('Salarié') ||
+        || (user() && getUser()->hasAttribute('Salarié')) ||
         (
             (
                 allowed('evt_join_notme') || allowed('evt_unjoin_notme') ||
                 allowed('evt_joining_accept') || allowed('evt_joining_refuse')
             ) && (
-                getUser()->hasAttribute('Resp. de commission', $evt['code_commission'])
+                user() && getUser()->hasAttribute('Resp. de commission', $evt['code_commission'])
             )
         )
     )
