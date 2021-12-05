@@ -38,10 +38,14 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $errTab[] = 'User or article not found';
     }
 
-    // 15/09/2013 - GMN - mise a jour des articles en une
-    $req = 'CALL caf_article_maj_une();';
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
-        $errTab[] = 'Erreur SQL';
+    $sql = 'SELECT (COUNT(id_article) - 5) as total FROM caf_article WHERE status_article > 0 AND une_article > 0';
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($sql);
+
+    if ($result && $row = $result->fetch_assoc()) {
+        $limit = $row['total'];
+
+        $sql = 'UPDATE caf_article SET une_article = 0 WHERE status_article = 1 AND une_article = 1 ORDER BY tsp_article ASC LIMIT '.$limit;
+        $kernel->getContainer()->get('legacy_mysqli_handler')->query($sql);
     }
 }
 
