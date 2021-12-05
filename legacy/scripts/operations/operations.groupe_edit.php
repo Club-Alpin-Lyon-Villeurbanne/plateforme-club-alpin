@@ -10,15 +10,14 @@ $id_commission = (int) ($_GET['id_commission']);
 
 // CHECKIN VARS
 if (!isset($errTab) || 0 === count($errTab)) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
     $new_groupe = $_POST['new_groupe'];
     if (isset($new_groupe) && is_array($new_groupe)) {
         foreach ($new_groupe as $groupe) {
             $id_comm = (int) ($groupe['id_commission']);
             $niveau_technique = (int) ($groupe['niveau_technique']);
             $niveau_physique = (int) ($groupe['niveau_physique']);
-            $nom = $mysqli->real_escape_string(trim($groupe['nom']));
-            $description = $mysqli->real_escape_string(trim($groupe['description']));
+            $nom = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($groupe['nom']));
+            $description = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($groupe['description']));
             if (empty($nom)) {
                 $errTab[] = 'Le nom du groupe est obligatoire';
             }
@@ -28,15 +27,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
             if (!isset($errTab) || 0 === count($errTab)) {
                 $req =
-                'INSERT INTO `'.$pbd."groupe` (`id`, `id_commission`, `nom`, `description`, `niveau_physique`, `niveau_technique`, `actif`)
+                "INSERT INTO `caf_groupe` (`id`, `id_commission`, `nom`, `description`, `niveau_physique`, `niveau_technique`, `actif`)
                     VALUES (NULL, '".$id_comm."', '".$nom."', '".$description."', '".$niveau_physique."', '".$niveau_technique."', '1');";
-                if (!$mysqli->query($req)) {
-                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                        'error' => $mysqli->error,
-                        'file' => __FILE__,
-                        'line' => __LINE__,
-                        'sql' => $req,
-                    ]);
+                if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL insertion groupe';
                 }
             }
@@ -50,15 +43,15 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $niveau_technique = (int) ($groupe['niveau_technique']);
             $niveau_physique = (int) ($groupe['niveau_physique']);
             $actif = (int) ($groupe['actif']);
-            $nom = $mysqli->real_escape_string(trim($groupe['nom']));
-            $description = $mysqli->real_escape_string(trim($groupe['description']));
+            $nom = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($groupe['nom']));
+            $description = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($groupe['description']));
             if (empty($groupe['nom'])) {
                 $errTab[] = 'Le nom du groupe est obligatoire';
             }
 
             if (!isset($errTab) || 0 === count($errTab)) {
                 $need_comma = false;
-                $req = 'UPDATE `'.$pbd.'groupe` SET ';
+                $req = 'UPDATE `caf_groupe` SET ';
                 if ($groupe['nom']) {
                     $req .= "`nom` = '".$nom."' ";
                     $need_comma = true;
@@ -86,16 +79,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $req .= 'WHERE `id` = '.$id_groupe;
 
                 if (isset($groupe['delete']) && 'on' == $groupe['delete']) {
-                    $req = 'DELETE FROM `'.$pbd.'groupe` WHERE `id` = '.$id_groupe;
+                    $req = 'DELETE FROM `caf_groupe` WHERE `id` = '.$id_groupe;
                 }
 
-                if (!$mysqli->query($req)) {
-                    $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                        'error' => $mysqli->error,
-                        'file' => __FILE__,
-                        'line' => __LINE__,
-                        'sql' => $req,
-                    ]);
+                if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL update / delete groupe';
                 }
             }

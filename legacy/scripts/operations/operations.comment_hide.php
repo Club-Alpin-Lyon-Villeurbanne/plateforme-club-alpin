@@ -7,14 +7,12 @@ if (!$id_comment) {
     $errTab[] = 'ID commentaire introuvable.';
 }
 
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
 $comment = null;
 
 if (!isset($errTab) || 0 === count($errTab)) {
     // recup
     $req = "SELECT * FROM caf_comment WHERE id_comment = $id_comment";
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $result->fetch_array(\MYSQLI_ASSOC)) {
         $comment = $handle;
     }
@@ -33,13 +31,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 // desactivation
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "UPDATE caf_comment SET status_comment=2 WHERE id_comment = $id_comment";
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
 }

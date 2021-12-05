@@ -31,7 +31,7 @@ class CafEvt
     /**
      * @var int
      *
-     * @ORM\Column(name="status_who_evt", type="integer", nullable=false, options={"comment": "ID de l'user qui a changé le statut en dernier"})
+     * @ORM\Column(name="status_who_evt", type="integer", nullable=true, options={"comment": "ID de l'user qui a changé le statut en dernier"})
      */
     private $statusWhoEvt;
 
@@ -45,28 +45,28 @@ class CafEvt
     /**
      * @var int
      *
-     * @ORM\Column(name="status_legal_who_evt", type="integer", nullable=false, options={"comment": "ID du validateur légal"})
+     * @ORM\Column(name="status_legal_who_evt", type="integer", nullable=true, options={"comment": "ID du validateur légal"})
      */
     private $statusLegalWhoEvt = '0';
 
     /**
      * @var bool
      *
-     * @ORM\Column(name="cancelled_evt", type="boolean", nullable=false)
+     * @ORM\Column(name="cancelled_evt", type="boolean", nullable=false, options={"default": false})
      */
     private $cancelledEvt = '0';
 
     /**
      * @var int
      *
-     * @ORM\Column(name="cancelled_who_evt", type="integer", nullable=false, options={"comment": "ID user qui a  annulé l'evt"})
+     * @ORM\Column(name="cancelled_who_evt", type="integer", nullable=true, options={"comment": "ID user qui a  annulé l'evt"})
      */
     private $cancelledWhoEvt;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="cancelled_when_evt", type="bigint", nullable=false, options={"comment": "Timestamp annulation"})
+     * @ORM\Column(name="cancelled_when_evt", type="bigint", nullable=true, options={"comment": "Timestamp annulation"})
      */
     private $cancelledWhenEvt;
 
@@ -113,7 +113,7 @@ class CafEvt
     /**
      * @var int
      *
-     * @ORM\Column(name="tsp_edit_evt", type="bigint", nullable=false)
+     * @ORM\Column(name="tsp_edit_evt", type="bigint", nullable=true)
      */
     private $tspEditEvt;
 

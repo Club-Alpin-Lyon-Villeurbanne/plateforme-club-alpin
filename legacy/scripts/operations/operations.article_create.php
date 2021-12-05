@@ -45,23 +45,16 @@ if (
 
 // enregistrement en BD
 if (!isset($errTab) || 0 === count($errTab)) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-    $titre_article = $mysqli->real_escape_string($titre_article);
-    $code_article = $mysqli->real_escape_string($code_article);
-    $cont_article = $mysqli->real_escape_string($cont_article);
+    $titre_article = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($titre_article);
+    $code_article = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($code_article);
+    $cont_article = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($cont_article);
 
     $req = "INSERT INTO caf_article(`status_article` ,`topubly_article` ,`tsp_crea_article` ,`tsp_article` ,`user_article` ,`titre_article` ,`code_article` ,`commission_article` ,`evt_article` ,`une_article` ,`cont_article`)
                         VALUES ('$status_article',  '$topubly_article',  '$tsp_crea_article',  '$tsp_article',  '$user_article',  '$titre_article',  '$code_article', ".($commission_article > 0 ? "'$commission_article'" : 'null').",  '$evt_article',  '$une_article',  '$cont_article');";
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     } else {
-        $id_article = $mysqli->insert_id;
+        $id_article = $kernel->getContainer()->get('legacy_mysqli_handler')->insertId();
     }
 }
 

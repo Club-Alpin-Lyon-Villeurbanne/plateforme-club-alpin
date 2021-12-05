@@ -12,9 +12,6 @@ if (!user()) {
 // mise à jour infos texte
 if (!isset($errTab) || 0 === count($errTab)) {
     $id_user = getUser()->getIdUser();
-    // $nickname_user=trim(stripslashes($_POST['nickname_user']));
-    // $gender_user=trim(stripslashes($_POST['gender_user']));
-    // $civ_user=trim(stripslashes($_POST['civ_user']));
     $tel_user = trim(stripslashes($_POST['tel_user']));
     $tel2_user = trim(stripslashes($_POST['tel2_user']));
     $birthday_user = trim(stripslashes($_POST['birthday_user']));
@@ -34,20 +31,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // 04/09/2013 - gmn - desactivation car import FFCAM => E.HENKE : on doit malgré tout pouvoir enregistrer les infos personnelles de contact
     if (!isset($errTab) || 0 === count($errTab)) {
-        $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-        $auth_contact_user = $mysqli->real_escape_string($auth_contact_user);
-        $req = 'UPDATE `'.$pbd."user`
+        $auth_contact_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($auth_contact_user);
+        $req = "UPDATE `caf_user`
             SET
             `auth_contact_user` = '$auth_contact_user'
             WHERE `id_user` =$id_user LIMIT 1 ;";
 
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
     }
@@ -158,14 +148,13 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
 
 // si mise à jour e-mail user
 if ('' !== $email_user_mailchange) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-    $email_user_mailchange = $mysqli->real_escape_string($email_user_mailchange);
+    $email_user_mailchange = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($email_user_mailchange);
     $token = $id_user_mailchange = null;
 
     // VERIFICATIONS
     // compte des entrées existantes avec cet e-mail
     $req = "SELECT COUNT(id_user) FROM caf_user WHERE email_user LIKE '$email_user_mailchange' AND id_user != $id_user ";
-    $handleSql = $mysqli->query($req);
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     if (getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM)) > 0) {
         $errTab[] = "Votre demande de modification d'e-mail est refusée : Un compte existe déjà avec cette adresse e-mail.";
     }
@@ -173,25 +162,19 @@ if ('' !== $email_user_mailchange) {
     // ENTRÉE DE LA DEMANDE DANS LA BD
     if (!isset($errTab) || 0 === count($errTab)) {
         $token = bin2hex(random_bytes(16));
-        $req = 'INSERT INTO `'.$pbd."user_mailchange` (`user_user_mailchange` , `token_user_mailchange` , `email_user_mailchange` )
+        $req = "INSERT INTO `caf_user_mailchange` (`user_user_mailchange` , `token_user_mailchange` , `email_user_mailchange` )
                                                     VALUES ('$id_user',				'$token', 				'$email_user_mailchange');";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         } else {
-            $id_user_mailchange = $mysqli->insert_id;
+            $id_user_mailchange = $kernel->getContainer()->get('legacy_mysqli_handler')->insertId();
         }
     }
 
     // ENVOI DU MAIL
     if (!isset($errTab) || 0 === count($errTab)) {
         // check-in vars : string à retourner lors de la confirmation= md5 de la concaténation id-email
-        $url = $p_racine.'email-change/'.$token.'-'.$id_user_mailchange.'.html';
+        $url = $kernel->getContainer()->get('legacy_router')->generateUrl('legacy_root').'email-change/'.$token.'-'.$id_user_mailchange.'.html';
 
         // content vars
         $subject = 'Modification de votre e-mail !';

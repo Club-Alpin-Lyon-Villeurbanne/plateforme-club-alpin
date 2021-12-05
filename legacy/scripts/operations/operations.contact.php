@@ -1,5 +1,9 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
 $nom = strip_tags(stripslashes($_POST['nom']));
 $email = strip_tags(stripslashes($_POST['email']));
 $objet = strip_tags(stripslashes($_POST['objet']));
@@ -29,7 +33,7 @@ if (0 === count($errTab)) {
     // content vars
     $subject = $objet;
     $content_header = '';
-    $content_main = '<h2>Ce message vous a été envoyé depuis votre site <i>'.$p_racine.'</i></h2>'
+    $content_main = '<h2>Ce message vous a été envoyé depuis votre site <i>'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'</i></h2>'
         .'<b>Infos :</b><table>'
         .($prenom ? '<tr><td><b>Prénom : </b></td><td>'.html_utf8($prenom)." </td></tr>\n" : '')
         .($nom ? '<tr><td><b>Nom : </b></td><td>'.html_utf8($nom)." </td></tr>\n" : '')
@@ -65,14 +69,13 @@ if (0 === count($errTab)) {
     }
 
     // sauvegarde en BD
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-    $to_message = $mysqli->real_escape_string($p_contactdusite);
-    $from_message = $mysqli->real_escape_string($email);
+    $to_message = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($p_contactdusite);
+    $from_message = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($email);
     $headers_message = ''; // obsolete
     $code_message = 'contact';
-    $cont_message = $mysqli->real_escape_string($content_header."\n\n\n".$content_main."\n\n\n".$content_footer);
+    $cont_message = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($content_header."\n\n\n".$content_main."\n\n\n".$content_footer);
     $success_message = count($errTab) ? 0 : 1;
-    $mysqli->query('INSERT INTO `'.$pbd."message` (`id_message` ,`date_message` ,`to_message` ,`from_message` ,`headers_message` ,`code_message` ,`cont_message` ,`success_message`)
+    $kernel->getContainer()->get('legacy_mysqli_handler')->query("INSERT INTO `caf_message` (`id_message` ,`date_message` ,`to_message` ,`from_message` ,`headers_message` ,`code_message` ,`cont_message` ,`success_message`)
             VALUES (NULL , '".time()."', '$to_message', '$from_message', '$headers_message', '$code_message', '$cont_message', '$success_message');");
 }
 // tout s'est bien passé, on vide les variables postées

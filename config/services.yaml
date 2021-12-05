@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    legacy_env_ANALYTICS_ACCOUNT: "%env(string:ANALYTICS_ACCOUNT)%"
+    legacy_env_GOOGLE_SITE_VERIFICATION: "%env(string:GOOGLE_SITE_VERIFICATION)%"
 
 services:
     # default configuration for services in *this* file
@@ -84,3 +86,11 @@ services:
     legacy_logger:
         public: true
         alias: 'logger'
+
+    legacy_user_rights:
+        public: true
+        class: App\UserRights
+
+    legacy_mysqli_handler:
+        public: true
+        class: App\Utils\MysqliHandler

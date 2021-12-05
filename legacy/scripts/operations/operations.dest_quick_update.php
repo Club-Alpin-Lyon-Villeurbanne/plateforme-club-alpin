@@ -2,8 +2,6 @@
 
 global $kernel;
 
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
 $id = $annule = null;
 
 if ($_POST['id_dest_to_update']) {
@@ -36,33 +34,25 @@ if ('dest_annuler' == $_POST['operation']) {
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
     $comma = null;
-    $sql = 'UPDATE `'.$pbd.'destination` SET ';
+    $sql = 'UPDATE `caf_destination` SET ';
     if (isset($publie)) {
-        $publie = $mysqli->real_escape_string($publie);
+        $publie = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($publie);
         $sql .= "`publie` = '$publie'".$comma;
         $comma = ', ';
     }
     if (isset($inscription_locked)) {
-        $inscription_locked = $mysqli->real_escape_string($inscription_locked);
+        $inscription_locked = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($inscription_locked);
         $sql .= "`inscription_locked` = '$inscription_locked'".$comma;
         $comma = ', ';
     }
     if (isset($annule)) {
-        $annule = $mysqli->real_escape_string($annule);
+        $annule = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($annule);
         $sql .= "`annule` = '$annule'";
     }
     $sql .= " WHERE `id` = $id";
 
-    if (!$mysqli->query($sql)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $sql,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($sql)) {
         $errTab[] = 'Erreur SQL lors de la modification de la destination';
     } else {
         // Envoi de tous les emails

@@ -1,4 +1,7 @@
 <?php
+
+global $kernel;
+
 // Cette page sert à joindre manuellement un user à une sortie
 
 if (user()) {
@@ -104,7 +107,6 @@ if (user()) {
 						<?php
                         $total = 0;
             // REQ des users validés
-            $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
             $userTab = [];
             $req = 'SELECT  id_user, email_user, cafnum_user, firstname_user, lastname_user, nickname_user
 									, created_user, birthday_user, tel_user, tel2_user, civ_user
@@ -113,7 +115,7 @@ if (user()) {
                             .($showAll ? '' : ' AND valid_user=1 ')
                             .' ORDER BY lastname_user ASC
 							LIMIT 8000';
-            $result = $mysqli->query($req);
+            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
             while ($elt = $result->fetch_assoc()) {
                 // si dans destination :
                 if ($id_dest) {
@@ -127,7 +129,7 @@ if (user()) {
                     $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join = ".(int) ($elt['id_user']).' LIMIT 1';
                 }
 
-                $result2 = $mysqli->query($req);
+                $result2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 $row = $result2->fetch_row();
                 // inscription inexistante
                 if (!$row[0]) {
@@ -141,7 +143,6 @@ if (user()) {
                                         .'<input type="hidden" disabled="disabled" name="civ_user[]" value="'.html_utf8($elt['civ_user']).'" />'
                                         .'<input type="hidden" disabled="disabled" name="lastname_user[]" value="'.html_utf8($elt['lastname_user']).'" />'
                                         .'<input type="hidden" disabled="disabled" name="firstname_user[]" value="'.html_utf8($elt['firstname_user']).'" />'
-                                        .'<input type="hidden" disabled="disabled" name="nickname_user[]" value="'.html_utf8($elt['nickname_user']).'" />'
                                     .'</td>'
                                     .'<td>'
                                         .html_utf8($elt['cafnum_user']).'<br />'
@@ -182,9 +183,8 @@ if (user()) {
                 }
             } else {
                 // On récupère des informations complémentaires sur la sortie : besoin de bénévoles ? possibilité de restaurant ?
-                $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-                $req = 'SELECT * FROM `'.$pbd.'evt` WHERE `id_evt` = '.$id_evt;
-                $result = $mysqli->query($req);
+                $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$id_evt;
+                $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($sorties = $result->fetch_assoc()) {
                     $sortie = $sorties;
                 } ?>
@@ -237,7 +237,6 @@ if (user()) {
                                         .'<input type="hidden" name="civ_user[]" value="'.html_utf8(stripslashes($_POST['civ_user'][$i])).'" />'
                                         .'<input type="hidden" name="lastname_user[]" value="'.html_utf8(stripslashes($_POST['lastname_user'][$i])).'" />'
                                         .'<input type="hidden" name="firstname_user[]" value="'.html_utf8(stripslashes($_POST['firstname_user'][$i])).'" />'
-                                        .'<input type="hidden" name="nickname_user[]" value="'.html_utf8(stripslashes($_POST['nickname_user'][$i])).'" />'
                                         // afficher
                                         .html_utf8(stripslashes($_POST['civ_user'][$i])).' '
                                         .html_utf8(stripslashes($_POST['firstname_user'][$i])).' '

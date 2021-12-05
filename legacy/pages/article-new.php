@@ -1,5 +1,9 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
 // spécial : si la variable compterendu est passée à true en GT, alors les vars POST prennent quelques valeurs par défaut
 // ceci sert au bouton "Rédiger un compte rendu" présent sur la fiche de sortie ET au rappels depuis le Chron
 if ($_GET['compterendu']) {
@@ -99,9 +103,8 @@ if ($_GET['compterendu']) {
 							<?php
 
                             // besoin de la liste des sorties publiées
-                            $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
                 $req = 'SELECT id_evt, commission_evt, tsp_evt, tsp_end_evt, titre_evt, code_evt FROM caf_evt WHERE status_evt =1 ORDER BY tsp_evt DESC LIMIT 0 , 300';
-                $handleSql = $mysqli->query($req);
+                $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
                 while ($row = $handleSql->fetch_assoc()) {
                     echo '<option value="'.$row['id_evt'].'" '.($_POST['evt_article'] == $row['id_evt'] ? 'selected="selected"' : '').'>'
                                         // .jour(date('N', $row['tsp_evt']))
@@ -303,9 +306,9 @@ if ($_GET['compterendu']) {
 						theme_advanced_statusbar_location : "bottom",
 						theme_advanced_resizing : true,
 
-						document_base_url : '<?php echo $p_racine; ?>',
+						document_base_url : '<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>',
 
-						content_css : "<?php echo $p_racine; ?>css/base.css,<?php echo $p_racine; ?>css/style1.css,<?php echo $p_racine; ?>fonts/stylesheet.css",
+						content_css : "<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/base.css,<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/style1.css,<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>fonts/stylesheet.css",
 						body_id : "bodytinymce_user",
 						body_class : "cont_article",
 						theme_advanced_styles : "<?php echo $p_tiny_theme_advanced_styles; ?>",

@@ -3,7 +3,6 @@
 global $kernel;
 
 include __DIR__.'/app/includes.php';
-$mysqli = include __DIR__.'/scripts/connect_mysqli.php';
 
 //_________________________________________________
 //_____________________________ PAGE
@@ -13,8 +12,7 @@ if (admin()) {
     // affichage normal : pas de donnees recues
     if ((!isset($_POST['etape'])) || ('enregistrement' != $_POST['etape'])) {
         // récupération du contenu
-        include __DIR__.'/scripts/connect_mysqli.php';
-        $code_content_html = $mysqli->real_escape_string($_GET['p']);
+        $code_content_html = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($_GET['p']);
         $id_content_html = (int) ($_GET['id_content_html']);
 
         if (!$lang) {
@@ -29,9 +27,9 @@ if (admin()) {
         }
 
         // récupération des dernieres versions dans cette langue
-        $req = 'SELECT * FROM  `'.$pbd."content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND `lang_content_html` LIKE '$lang' ORDER BY  `date_content_html` DESC LIMIT 0 , 10";
+        $req = "SELECT * FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND `lang_content_html` LIKE '$lang' ORDER BY  `date_content_html` DESC LIMIT 0 , 10";
         $contentVersionsTab = [];
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             // nettoyage des fonctions JS mailto : conversion en donnée brute
             $regex = '#<script type="text/javascript" class="mailthis">mailThis\(\'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\'\);</script>#i';
@@ -272,10 +270,8 @@ if (admin()) {
         $linkedtopage_content_html = $_POST['linkedtopage_content_html'];
         $contenu_content_html = stripslashes($_POST['contenu_content_html']);
         // eviter un bloc vide si les liens d'édition sont positionnés en absolute
-        if ($p_abseditlink) {
-            if ('' == $contenu_content_html) {
-                $contenu_content_html = '&nbsp;';
-            }
+        if ('' == $contenu_content_html) {
+            $contenu_content_html = '&nbsp;';
         }
 
         // sécurisation des adresses e-mail :
@@ -303,28 +299,20 @@ if (admin()) {
 
         // echo html_utf8($contenu_content_html);
 
-        // BD
-        include __DIR__.'/scripts/connect_mysqli.php';
         // Nettoyage
-        $contenu_content_html = $mysqli->real_escape_string($contenu_content_html);
-        $lang = $mysqli->real_escape_string($lang);
-        $code_content_html = $mysqli->real_escape_string($code_content_html);
+        $contenu_content_html = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($contenu_content_html);
+        $lang = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($lang);
+        $code_content_html = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($code_content_html);
 
         // compte des nombre d'entrées à supprimer
-        $req = 'SELECT COUNT(`id_content_html`) FROM  `'.$pbd."content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  '$lang'";
-        $sqlCount = $mysqli->query($req);
+        $req = "SELECT COUNT(`id_content_html`) FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  '$lang'";
+        $sqlCount = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         $nVersions = getArrayFirstValue($sqlCount->fetch_array(\MYSQLI_NUM));
         $nDelete = $nVersions - $p_nmaxversions;
         if ($nDelete > 0) {
             // s'il y en a à supprimer
-            $req = 'DELETE FROM `'.$pbd."content_html` WHERE `code_content_html` LIKE '$code_content_html' AND  `lang_content_html` LIKE  '$lang' ORDER BY  `date_content_html` ASC LIMIT $nDelete"; // ASC pour commencer par la fin de ceux a supprimer
-            if (!$mysqli->query($req)) {
-                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                    'error' => $mysqli->error,
-                    'file' => __FILE__,
-                    'line' => __LINE__,
-                    'sql' => $req,
-                ]);
+            $req = "DELETE FROM `caf_content_html` WHERE `code_content_html` LIKE '$code_content_html' AND  `lang_content_html` LIKE  '$lang' ORDER BY  `date_content_html` ASC LIMIT $nDelete"; // ASC pour commencer par la fin de ceux a supprimer
+            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                 header('HTTP/1.0 400 Bad Request');
                 echo '<br />Erreur SQL clean !';
                 exit();
@@ -332,29 +320,17 @@ if (admin()) {
         }
 
         // Mise à jour des CURRENT
-        $req = 'UPDATE `'.$pbd."content_html` SET `current_content_html` = '0' WHERE `".$pbd."content_html`.`code_content_html` = '$code_content_html' ";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        $req = "UPDATE `caf_content_html` SET `current_content_html` = '0' WHERE `caf_content_html`.`code_content_html` = '$code_content_html' ";
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             header('HTTP/1.0 400 Bad Request');
             echo 'Erreur SQL';
             exit();
         }
 
         // Enregistrement
-        $req = 'INSERT INTO  `'.$pbd."content_html` (`id_content_html` ,`code_content_html` ,`lang_content_html` ,`contenu_content_html` ,`date_content_html` ,`linkedtopage_content_html`, `current_content_html`, `vis_content_html`)
+        $req = "INSERT INTO  `caf_content_html` (`id_content_html` ,`code_content_html` ,`lang_content_html` ,`contenu_content_html` ,`date_content_html` ,`linkedtopage_content_html`, `current_content_html`, `vis_content_html`)
 															VALUES (NULL ,  '$code_content_html',  '$lang',  '$contenu_content_html',  '".time()."',  '$linkedtopage_content_html', 1, $vis_content_html);";
-        if (!$mysqli->query($req)) {
-            $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                'error' => $mysqli->error,
-                'file' => __FILE__,
-                'line' => __LINE__,
-                'sql' => $req,
-            ]);
+        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
             header('HTTP/1.0 400 Bad request');
             echo 'Erreur SQL';
             exit();

@@ -1,3 +1,10 @@
+<?php
+
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+global $kernel;
+
+?>
 <form action="<?php echo $versCettePage; ?>" method="post" style="overflow:hidden">
     <input type="hidden" name="operation" value="<?php echo $id_evt_to_update ? 'evt_update' : 'evt_create'; ?>" />
     <input type="hidden" name="id_evt_to_update" value="<?php echo (int) $id_evt_to_update; ?>" />
@@ -634,9 +641,9 @@
         theme_advanced_statusbar_location : "bottom",
         theme_advanced_resizing : true,
 
-        document_base_url : '<?php echo $p_racine; ?>',
+        document_base_url : '<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>',
 
-        content_css : "<?php echo $p_racine; ?>css/base.css,<?php echo $p_racine; ?>css/style1.css,<?php echo $p_racine; ?>fonts/stylesheet.css",
+        content_css : "<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/base.css,<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/style1.css,<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>fonts/stylesheet.css",
         body_id : "bodytinymce_user",
         body_class : "description_evt",
         theme_advanced_styles : "<?php echo $p_tiny_theme_advanced_styles; ?>",

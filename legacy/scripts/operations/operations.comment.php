@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 if (!user()) {
@@ -31,21 +33,18 @@ if (!$parent_comment) {
     $errTab[] = 'Parent non défini.';
 }
 
-// conn
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
 $comment_article = null;
 
 // checks SQL
 if (!isset($errTab) || 0 === count($errTab)) {
     // article publié et commentable ?
     $req = 'SELECT a.id_article, a.user_article, u.email_user, a.titre_article, a.code_article
-            FROM '.$pbd.''.$parent_type_comment.' a, caf_user u
+            FROM caf_'.$parent_type_comment.' a, caf_user u
             WHERE u.id_user=a.user_article
             AND a.id_'.$parent_type_comment." = $parent_comment
             AND a.status_".$parent_type_comment.' = 1
             LIMIT 1';
-    $result = $mysqli->query($req);
+    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if (!$row[0]) {
         $errTab[] = "L'élément visé ne semble pas publié.";
@@ -57,24 +56,18 @@ if (!isset($errTab) || 0 === count($errTab)) {
 // insert SQL
 if (!isset($errTab) || 0 === count($errTab)) {
     // formatage
-    $cont_comment_mysql = $mysqli->real_escape_string($cont_comment);
+    $cont_comment_mysql = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($cont_comment);
 
     // article publié et commentable ?
     $req = "INSERT INTO caf_comment(id_comment, status_comment, tsp_comment, user_comment, name_comment, email_comment, cont_comment, parent_type_comment, parent_comment)
                             VALUES (NULL ,  '1', 			 '".time()."',  '".getUser()->getIdUser()."',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
 
     // PHPMAILER - envoi mail vers auteur
     if ('' !== $comment_article[2]) {
-        $content_main = "<h1>Bonjour !<h1><p>Votre article <a href=\"$p_racine".'article/'.$comment_article[4].'-'.$comment_article[0].'.html#comments" title="">'.$comment_article[3].'</a> a été commenté avec le texte suivant :</p><p><i>'.$cont_comment.'</i></p><br /><br /><p>PS : ceci est un mail automatique.</p>';
+        $content_main = '<h1>Bonjour !<h1><p>Votre article <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$comment_article[4].'-'.$comment_article[0].'.html#comments" title="">'.$comment_article[3].'</a> a été commenté avec le texte suivant :</p><p><i>'.$cont_comment.'</i></p><br /><br /><p>PS : ceci est un mail automatique.</p>';
 
         require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"

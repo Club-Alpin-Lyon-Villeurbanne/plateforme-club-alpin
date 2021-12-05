@@ -9,13 +9,9 @@ global $CONTENUS_INLINE;
 global $contLog;
 global $kernel;
 global $lang;
-global $p_abseditlink;
 global $p_devmode;
 global $p_inclurelist;
-global $p_racine;
-global $pbd;
 global $president;
-global $userAllowedTo; // liste des opérations auxquelles l'user est autorisé. tableau associatif : la clé est le code de l'opératin, sa valeur les parametres
 global $versCettePage;
 global $vicepresident;
 
@@ -30,14 +26,13 @@ $CONTENUS_INLINE = [];
 
 function presidence()
 {
+    global $kernel;
     global $president;
     global $vicepresident;
 
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-
     $president = $vicepresident = [];
     $president_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 6 WHERE U.id_user = A.user_user_attr';
-    $president_result = $mysqli->query($president_sql);
+    $president_result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($president_sql);
     while ($row_president = $president_result->fetch_assoc()) {
         if ('1' !== $row_president['id_user']) {
             $president[] = $row_president;
@@ -46,7 +41,7 @@ function presidence()
 
     $vicepresident = [];
     $vicepresident_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 7 WHERE U.id_user = A.user_user_attr';
-    $vicepresident_result = $mysqli->query($vicepresident_sql);
+    $vicepresident_result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($vicepresident_sql);
     while ($row_vicepresident = $vicepresident_result->fetch_assoc()) {
         if ('1' !== $row_vicepresident['id_user']) {
             $vicepresident[] = $row_vicepresident;
@@ -95,7 +90,6 @@ La fonction "userlink" affiche un lien vers le profil d'un utilisateur en foncti
 */
 function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user = false, $lastname_user = false, $style = 'public')
 {
-    global $p_racine;
     $return = '';
 
     switch ($style) {
@@ -105,10 +99,7 @@ function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user =
         default:		return;
     }
 
-    // habillage du lien (CSS:userlink)
-    $return = '<a href="'.$p_racine.'includer.php?p=includes/fiche-profil.php&amp;id_user='.(int) $id_user.'" class="fancyframe userlink" title="'.cont('userlink-title').'">'.$return.'</a>';
-
-    return $return;
+    return '<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user='.(int) $id_user.'" class="fancyframe userlink" title="'.cont('userlink-title').'">'.$return.'</a>';
 }
 
 /*
@@ -117,8 +108,6 @@ user désirée ou bien le picto par défaut si celle-ci n'existe pas.
 */
 function userImg($id_user, $style = '')
 {
-    global $p_racine;
-
     switch ($style) {
         case 'pic':
             $style = $style.'-';
@@ -131,12 +120,12 @@ function userImg($id_user, $style = '')
             break;
     }
 
-    $rel = 'ftp/user/'.$id_user.'/'.$style.'profil.jpg';
-    if (!file_exists(__DIR__.'/../../public/'.$rel)) {
-        $rel = 'ftp/user/0/'.$style.'profil.jpg';
+    $rel = '/ftp/user/'.$id_user.'/'.$style.'profil.jpg';
+    if (!file_exists(__DIR__.'/../../public'.$rel)) {
+        $rel = '/ftp/user/0/'.$style.'profil.jpg';
     }
 
-    return $p_racine.$rel;
+    return $rel;
 }
 
 /*
@@ -145,14 +134,12 @@ liée à cette commission, ou bien de celle par défaut
 */
 function comFd($id_commission)
 {
-    global $p_racine;
-
-    $rel = 'ftp/commission/'.(int) $id_commission.'/bigfond.jpg';
-    if (!file_exists(__DIR__.'/../../public/'.$rel)) {
-        $rel = 'ftp/commission/0/bigfond.jpg';
+    $rel = '/ftp/commission/'.(int) $id_commission.'/bigfond.jpg';
+    if (!file_exists(__DIR__.'/../../public'.$rel)) {
+        $rel = '/ftp/commission/0/bigfond.jpg';
     }
 
-    return $p_racine.$rel;
+    return $rel;
 }
 
 /*
@@ -161,20 +148,18 @@ de la commission désirée ou bien le picto par défaut si celui-ci n'existe pas
 */
 function comPicto($id_commission, $style = '')
 {
-    global $p_racine;
-
     switch ($style) {
         case 'light': 	$style = '-'.$style; break;
         case 'dark': 	$style = '-'.$style; break;
         default:		$style = '';
     }
 
-    $rel = 'ftp/commission/'.(int) $id_commission.'/picto'.$style.'.png';
-    if (!file_exists(__DIR__.'/../../public/'.$rel)) {
-        $rel = 'ftp/commission/0/picto'.$style.'.png';
+    $rel = '/ftp/commission/'.(int) $id_commission.'/picto'.$style.'.png';
+    if (!file_exists(__DIR__.'/../../public'.$rel)) {
+        $rel = '/ftp/commission/0/picto'.$style.'.png';
     }
 
-    return $p_racine.$rel;
+    return $rel;
 }
 
 /*
@@ -194,155 +179,9 @@ $userAllowedTo=
 */
 function allowed($code_userright, $param = '')
 {
-    global $userAllowedTo; // liste des opérations auxquelles l'user est autorisé. tableau associatif : la clé est le code de l'opératin, sa valeur les parametres
-    global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
+    global $kernel;
 
-    if (!user()) {
-        return false;
-    }
-
-    $usertypes = ['1']; // id du niveau visiteur, le plus bas, commun à tous
-    $allowedError = false;
-    $return = false;
-
-    $id_user = getUser()->getIdUser();
-
-    // le tableau des droits est-il déja défini ? Non ? alors on le définit ici
-    if (!$userAllowedTo || !is_array($userAllowedTo)) {
-        // raz/créa tableau global
-        $userAllowedTo = ['default' => '1']; // minimum une valeur
-
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-
-        $id_user = $mysqli->real_escape_string($id_user);
-
-        if ($mysqli->ping()) { // si on est bien connecté à la BD
-            // Si un adhérent est connecté et licence valide, récupération des droits attribués à cet adhérent
-            if ($id_user && !getUser()->getDoitRenouvelerUser()) {
-                // la requête remonte la chaine alimentaire, de l'ID de l'user jusqu'à l'ensemble de ses droit, avec les paramètres liés
-                $req = ''
-                .'SELECT DISTINCT code_userright, params_user_attr, limited_to_comm_usertype ' // on veut le code, et les paramètres de chaque droit, et savoir si ce droit est limité à une commission ou non
-                .'FROM caf_userright, caf_usertype_attr, caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
-                ."WHERE user_user_attr=$id_user " // de user à user_attr
-                .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
-                .'AND id_usertype=type_usertype_attr ' // de usertype à usertype_attr
-                .'AND right_usertype_attr=id_userright ' // de usertype_attr à userright
-                .'ORDER BY  params_user_attr ASC, code_userright ASC, limited_to_comm_usertype ASC LIMIT 0 , 500 ' // order by params permet d'optimiser la taille de la var globale. Si, si promis (14 lignes plus loin) !
-                ;
-
-                // lecture du resultat
-                $result = $mysqli->query($req);
-
-                // ajout du droit, avec ses paramètres, au tableau global des droits de cet user
-                // sans paramètre, la valeur est une string 'true'
-                // Il est possible que le même droit prenne plusieurs paramètres (ex : vous avez le droit d'écrire un article dans
-                // deux commissions auquel cas, ils sont concaténés via le caractère |
-                while ($row = $result->fetch_assoc()) {
-                    // echo $row['code_userright'].'--limite_a_comm='.$row['limited_to_comm_usertype'].'='.$row['params_user_attr'].'<hr />';
-
-                    // valeur : true ou param
-                    if ($row['params_user_attr'] && $row['limited_to_comm_usertype']) {
-                        $val = $row['params_user_attr'];
-                    } else {
-                        $val = 'true';
-                    }
-
-                    // si la valeur est true, pas besoin d'ajouter des parametres par la suite car true = "ok pour tout sans params"
-                    if ('true' == $val) {
-                        $userAllowedTo[$row['code_userright']] = $val;
-                    }
-                    // écriture, ou concaténation des paramètres existant
-                    elseif ('true' != $userAllowedTo[$row['code_userright']]) {
-                        $userAllowedTo[$row['code_userright']] = ($userAllowedTo[$row['code_userright']] ? $userAllowedTo[$row['code_userright']].'|' : '').$val;
-                    }
-
-                    if (admin() || superadmin()) {
-                        $userAllowedTo[$row['code_userright']] = 'true';
-                    }
-                }
-
-                if (!getUser()->hasAttribute('Salarié')) {
-                    // **********
-                    // DEBUG : SI CONNECTÉ, ON A FORCÉMENT LE STATUT ADHÉRENT MAIS PAS LIE DANS LA BASE, SAUF SALARIE
-                    $req = ''
-                    .'SELECT DISTINCT code_userright, limited_to_comm_usertype '
-                    .'FROM caf_userright, caf_usertype_attr, caf_usertype '
-                    ."WHERE code_usertype LIKE 'adherent' " // usertype adherent
-                    .'AND id_usertype=type_usertype_attr '
-                    .'AND right_usertype_attr=id_userright '
-                    .'ORDER BY  code_userright ASC, limited_to_comm_usertype ASC LIMIT 0 , 500 '
-                    ;
-
-                    // lecture du resultat
-                    $result = $mysqli->query($req);
-
-                    // ajout du droit, avec ses paramètres, au tableau global des droits de cet user
-                    // sans paramètre, la valeur est une string 'true'
-                    // Il est possible que le même droit prenne plusieurs paramètres (ex : vous avez le droit d'écrire un article dans
-                    // deux commissions auquel cas, ils sont concaténés via le caractère |
-                    while ($row = $result->fetch_assoc()) {
-                        $userAllowedTo[$row['code_userright']] = 'true';
-                    }
-                    // FIN DEBUG
-                    // **********
-                }
-            }
-            // sinon, le visiteur aussi a des droits
-            else {
-                // la requête récupère tous les droits liés à un compte visiteur
-                $req = ''
-                .'SELECT DISTINCT code_userright '
-                .'FROM caf_userright, caf_usertype_attr, caf_usertype ' // des droits au type
-                ."WHERE code_usertype='visiteur' " // type visiteur
-                .'AND id_usertype = type_usertype_attr ' // du type visiteur à ses attributions
-                .'AND id_userright = right_usertype_attr ' // de ses attributions a ses droits
-                .'LIMIT 500 '
-                ;
-
-                // lecture du resultat
-                $result = $mysqli->query($req);
-
-                // ajout du droit au tableau global
-                // sans paramètre, la valeur est une string 'true'
-                while ($row = $result->fetch_assoc()) {
-                    // les droits visteurs sont tous à true, et ne dependent jamais de parametres
-                    $val = 'true';
-                    $userAllowedTo[$row['code_userright']] = $val;
-
-                    if (admin() || superadmin()) {
-                        $userAllowedTo[$row['code_userright']] = 'true';
-                    }
-                }
-            }
-        } else {
-            $allowedError = 'Erreur à la connexion à la BDD';
-            echo '<p class="erreur">'.$allowedError.'</p>';
-        }
-    }
-
-    // Ici, le tableau des droits existe, cherchons ce qui nous intéresse : print_r($userAllowedTo);
-    if ($userAllowedTo[$code_userright]) {
-        // ce droit fait partie de la liste. Contient-il des paramètres ?
-        if ('true' == $userAllowedTo[$code_userright]) {
-            $return = true;
-        }
-        // sinon, si les paramètres ne sont pas précisés dans l'appel de la fonction, il ne sont pas à prendre en compte
-        elseif (!$param) {
-            $return = true;
-        }
-        // oui, il a des paramètres, faut donc les vérifier
-        else {
-            $tab = explode('|', $userAllowedTo[$code_userright]);
-            foreach ($tab as $tmpParam) {
-                if ($param == $tmpParam) {
-                    $return = true;
-                }
-            }
-        }
-    }
-
-    // par défaut, pas le droit
-    return $return;
+    return $kernel->getContainer()->get('legacy_user_rights')->allowed($code_userright, $param);
 }
 
 /*
@@ -496,24 +335,16 @@ function twigRender(string $path, array $params = []): ?string
 // enregistrement de l'activité sur le site
 function mylog($code, $desc, $connectme = true)
 {
-    global $pbd;
     global $kernel;
 
-    $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-    $code_log_admin = $mysqli->real_escape_string(trim($code));
-    $desc_log_admin = $mysqli->real_escape_string(trim($desc));
+    $code_log_admin = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($code));
+    $desc_log_admin = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($desc));
     $date_log_admin = time();
-    $ip_log_admin = $mysqli->real_escape_string($_SERVER['REMOTE_ADDR']);
+    $ip_log_admin = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($_SERVER['REMOTE_ADDR']);
 
-    $req = 'INSERT INTO `'.$pbd."log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`)
+    $req = "INSERT INTO `caf_log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`)
         VALUES (NULL , '$code_log_admin',  '$desc_log_admin',  '$date_log_admin', '$ip_log_admin')";
-    if (!$mysqli->query($req)) {
-        $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-            'error' => $mysqli->error,
-            'file' => __FILE__,
-            'line' => __LINE__,
-            'sql' => $req,
-        ]);
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL lors du log';
     }
 }
@@ -538,8 +369,9 @@ function linker($link)
 // ma fonction d'insertion élément inline
 function cont($code = false, $html = false)
 {
+    global $kernel;
+
     $defLang = 'fr';
-    global $pbd;
     global $CONTENUS_INLINE;
     global $lang;
     $tmplang = $lang;
@@ -552,14 +384,13 @@ function cont($code = false, $html = false)
     // premier appel à la fonction
     if (!count($CONTENUS_INLINE)) {
         // v2 : BDD
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
         // sélection de chaque élément par ordre DESC
-        $req = 'SELECT `code_content_inline`, `contenu_content_inline`
-            FROM  `'.$pbd."content_inline`
+        $req = "SELECT `code_content_inline`, `contenu_content_inline`
+            FROM  `caf_content_inline`
             WHERE  `lang_content_inline` LIKE  '$tmplang'
             ORDER BY  `date_content_inline` DESC
             ";
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             // uniquement si pas déja renseigné
             if (!isset($CONTENUS_INLINE[$handle['code_content_inline']])) {
@@ -590,15 +421,15 @@ $p_inclurelist = [];
 // ma fonction d'insertion /modification élément HTML en front office
 function inclure($elt, $style = 'vide', $options = [])
 {
+    global $kernel;
+
     $defLang = 'fr';
     global $lang;
     if (!$lang) {
         $lang = $defLang;
     }
-    global $p_abseditlink;
     global $versCettePage;
     global $p_inclurelist;
-    global $pbd;
 
     // assurer un seul id d'élément par page
     if (!in_array($elt, $p_inclurelist, true)) {
@@ -615,13 +446,12 @@ function inclure($elt, $style = 'vide', $options = [])
             }
         }
 
-        $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
-        $code_content_html = $mysqli->real_escape_string($elt);
+        $code_content_html = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($elt);
 
         // Contenu
-        $req = 'SELECT `vis_content_html`,`contenu_content_html` FROM `'.$pbd."content_html` WHERE `code_content_html` LIKE '$code_content_html' AND lang_content_html LIKE '".$lang."' ORDER BY `date_content_html` DESC LIMIT 1";
+        $req = "SELECT `vis_content_html`,`contenu_content_html` FROM `caf_content_html` WHERE `code_content_html` LIKE '$code_content_html' AND lang_content_html LIKE '".$lang."' ORDER BY `date_content_html` DESC LIMIT 1";
         $handleTab = [];
-        $handleSql = $mysqli->query($req);
+        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
         $found = false;
         $currentElement = ['vis_content_html' => 1, 'contenu_content_html' => null]; // default values
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -754,7 +584,6 @@ function wd_remove_accents($str, $charset = 'UTF-8')
 }
 function formater($retourner, $type = 1)
 {
-    global $pbd;
     // Type 1 : sans espace ni tirets, en minuscule
     if (1 == $type) {
         $retourner = str_replace("'", '-', $retourner);
@@ -862,46 +691,6 @@ function isMail($mail)
     }
 // }
 
-/**
- * Replace language-specific characters by ASCII-equivalents.
- *
- * @param string $s
- *
- * @return string
- */
-function normalizeChars($s)
-{
-    $replace = [
-        'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'Ae', 'Å' => 'A', 'Æ' => 'A', 'Ă' => 'A',
-        'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'ae', 'å' => 'a', 'ă' => 'a', 'æ' => 'ae',
-        'þ' => 'b', 'Þ' => 'B',
-        'Ç' => 'C', 'ç' => 'c',
-        'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E',
-        'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e',
-        'Ğ' => 'G', 'ğ' => 'g',
-        'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'İ' => 'I', 'ı' => 'i', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i',
-        'Ñ' => 'N',
-        'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'Oe', 'Ø' => 'O', 'ö' => 'oe', 'ø' => 'o',
-        'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o',
-        'Š' => 'S', 'š' => 's', 'Ş' => 'S', 'ș' => 's', 'Ș' => 'S', 'ş' => 's', 'ß' => 'ss',
-        'ț' => 't', 'Ț' => 'T',
-        'Ù' => 'U', 'Ú' => 'U', 'Û' => 'U', 'Ü' => 'Ue',
-        'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ü' => 'ue',
-        'Ý' => 'Y',
-        'ý' => 'y', 'ÿ' => 'y',
-        'Ž' => 'Z', 'ž' => 'z',
-    ];
-
-    return strtr($s, $replace);
-}
-
-/**
- * Replace language-specific characters by ASCII-equivalents.
- *
- * @param string $s
- *
- * @return string
- */
 function getArrayFirstValue($array)
 {
     return $array[0] ?? null;

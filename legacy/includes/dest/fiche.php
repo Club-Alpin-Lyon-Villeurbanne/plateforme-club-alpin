@@ -322,12 +322,6 @@
                 </div>
                 <?php } ?>
             </div>
-
-            <pre>
-                <?php /* print_r($covoiturage); ?>
-                <?php print_r($userAllowedTo); ?>
-                <?php print_r($destination); */ ?>
-            </pre>
         <?php } ?>
     <?php } ?>
 </div>

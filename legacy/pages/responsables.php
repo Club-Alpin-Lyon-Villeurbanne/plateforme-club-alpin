@@ -1,3 +1,8 @@
+<?php
+
+global $kernel;
+
+?>
 <!-- MAIN -->
 <div id="main" role="main" class="bigoo" style="">
 
@@ -11,7 +16,6 @@
             ksort($comTab);
 
             // creation des raccourcis vers les commissions
-            $mysqli = include __DIR__.'/../scripts/connect_mysqli.php';
             echo '<p>';
             foreach ($comTab as $code => $data) {
                 echo '<a class="lien-big" style="color:black;" href="responsables.html#'.$data['code_commission'].'">'.html_utf8($data['title_commission']).'</a>
@@ -43,7 +47,7 @@
 					AND params_user_attr LIKE 'commission:".$code."'
 					ORDER BY code_usertype DESC, lastname_user ASC
 					";
-                $result = $mysqli->query($req);
+                $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 
                 echo '<table class="big-lines-table"><tbody>';
                 while ($row = $result->fetch_assoc()) {

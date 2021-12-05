@@ -1,12 +1,12 @@
 <?php
 
-$mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
+global $kernel;
 
 $id_page = (int) ($_POST['id_page']);
-$default_name_page = $mysqli->real_escape_string(stripslashes($_POST['default_name_page']));
-$default_description_page = $mysqli->real_escape_string(stripslashes($_POST['default_description_page']));
-$code_page = strtolower(trim($mysqli->real_escape_string(stripslashes($_POST['code_page']))));
-$code_page_original = strtolower(trim($mysqli->real_escape_string(stripslashes($_POST['code_page_original'])))); // sert à verifier si le code a changé
+$default_name_page = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['default_name_page']));
+$default_description_page = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['default_description_page']));
+$code_page = strtolower(trim($kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['code_page']))));
+$code_page_original = strtolower(trim($kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['code_page_original'])))); // sert à verifier si le code a changé
 $priority_page = (int) ($_POST['priority_page']) / 10;
 
 // meta description par defaut, ou sur-mesure ?
@@ -33,23 +33,23 @@ if (!preg_match($pattern, $code_page)) {
     $errTab[] = 'Le code de la page ne respecte pas le format demandé : chiffres, lettres sans accents, et tirets.';
 }
 
-$req = 'SELECT COUNT(id_page) FROM `'.$pbd."page` WHERE `code_page` LIKE '$code_page' AND id_page!=$id_page LIMIT 1";
-$handleSql = $mysqli->query($req);
+$req = "SELECT COUNT(id_page) FROM `caf_page` WHERE `code_page` LIKE '$code_page' AND id_page!=$id_page LIMIT 1";
+$handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
 if (getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM))) {
     $errTab[] = 'Ce code est déjà utilisé par une autre page, veuillez le modifier pour le rendre unique.';
 }
 
 // save page
 if (!isset($errTab) || 0 === count($errTab)) {
-    $req = 'UPDATE  '.$pbd."page
+    $req = "UPDATE  caf_page
         SET code_page = '$code_page',
         default_name_page = '$default_name_page',
         meta_description_page = '$meta_description_page',
         vis_page = '$vis_page',
         priority_page = '$priority_page'
-        WHERE ".$pbd."page.id_page =$id_page
+        WHERE caf_page.id_page =$id_page
         ";
-    if (!$mysqli->query($req)) {
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur BDD 1';
     }
 }
@@ -57,9 +57,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
 if (!isset($errTab) || 0 === count($errTab)) {
     $lang_content_inline = $p_langs[0];
     $contenu_content_inline = $default_name_page;
-    $req = 'INSERT INTO `'.$pbd."content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
+    $req = "INSERT INTO `caf_content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
                                         VALUES (NULL , '2', 'meta-title-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
-    if (!$mysqli->query($req)) {
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur BDD title';
     }
 }
@@ -67,9 +67,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
 if ((!isset($errTab) || 0 === count($errTab)) && $default_description_page) {
     $lang_content_inline = $p_langs[0];
     $contenu_content_inline = $default_description_page;
-    $req = 'INSERT INTO `'.$pbd."content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
+    $req = "INSERT INTO `caf_content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
                                         VALUES (NULL , '2', 'meta-description-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
-    if (!$mysqli->query($req)) {
+    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur BDD title';
     }
 }

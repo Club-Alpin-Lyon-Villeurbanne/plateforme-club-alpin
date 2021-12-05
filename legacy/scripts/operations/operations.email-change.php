@@ -8,36 +8,22 @@ $id_user_mailchange = (int) ($tab[1]);
 
 // recup infos user par id donné
 if ($id_user_mailchange) {
-    $mysqli = include __DIR__.'/../../scripts/connect_mysqli.php';
-
     $found = false;
-    $token_user_mailchange = $mysqli->real_escape_string($token_user_mailchange);
-    $req = 'SELECT *, UNIX_TIMESTAMP(time_user_mailchange) as `timestamp` FROM `'.$pbd."user_mailchange` WHERE `id_user_mailchange` = $id_user_mailchange AND `token_user_mailchange` LIKE '$token_user_mailchange' ORDER BY `time_user_mailchange` DESC LIMIT 1";
-    $handleSql = $mysqli->query($req);
+    $token_user_mailchange = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($token_user_mailchange);
+    $req = "SELECT *, UNIX_TIMESTAMP(time_user_mailchange) as `timestamp` FROM `caf_user_mailchange` WHERE `id_user_mailchange` = $id_user_mailchange AND `token_user_mailchange` LIKE '$token_user_mailchange' ORDER BY `time_user_mailchange` DESC LIMIT 1";
+    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $found = true;
         // req trouvé, verif : le lien doit avoir été cliqué dans l'heure...
         if ((int) $handle['timestamp'] > time() - (60 * 60)) {
             // maj du compte visé avec le nouveau email
-            $req = 'UPDATE `'.$pbd."user` SET `email_user` = '".$handle['email_user_mailchange']."' WHERE `id_user` =".$handle['user_user_mailchange'].' LIMIT 1 ;';
-            if (!$mysqli->query($req)) {
-                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                    'error' => $mysqli->error,
-                    'file' => __FILE__,
-                    'line' => __LINE__,
-                    'sql' => $req,
-                ]);
+            $req = "UPDATE `caf_user` SET `email_user` = '".$handle['email_user_mailchange']."' WHERE `id_user` =".$handle['user_user_mailchange'].' LIMIT 1 ;';
+            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL : updating user';
             }
             // suppression de la req
-            $req = 'DELETE FROM `'.$pbd.'user_mailchange` WHERE `id_user_mailchange` = '.$handle['id_user_mailchange'].' LIMIT 1;';
-            if (!$mysqli->query($req)) {
-                $kernel->getContainer()->get('legacy_logger')->error(sprintf('SQL error: %s', $mysqli->error), [
-                    'error' => $mysqli->error,
-                    'file' => __FILE__,
-                    'line' => __LINE__,
-                    'sql' => $req,
-                ]);
+            $req = 'DELETE FROM `caf_user_mailchange` WHERE `id_user_mailchange` = '.$handle['id_user_mailchange'].' LIMIT 1;';
+            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL : deleting request';
             }
         } else {
