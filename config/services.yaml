@@ -57,6 +57,10 @@ services:
       arguments:
         $adminPassord: '%env(PASSWORD_ADMIN)%'
 
+    App\EventListener\ForceHttpsListener:
+      arguments:
+        $forceHttps: '%env(bool:FORCE_HTTPS)%'
+
     # services used in legacy
     legacy_router:
         public: true
