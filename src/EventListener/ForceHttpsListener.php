@@ -13,24 +13,24 @@ use Symfony\Contracts\Service\ServiceSubscriberInterface;
 class ForceHttpsListener implements EventSubscriberInterface, ServiceSubscriberInterface
 {
     private ContainerInterface $locator;
-    private bool $forceHttps;
+    private string $routerContextScheme;
 
-    public function __construct(ContainerInterface $locator, bool $forceHttps)
+    public function __construct(ContainerInterface $locator, string $routerContextScheme)
     {
         $this->locator = $locator;
-        $this->forceHttps = $forceHttps;
+        $this->routerContextScheme = $routerContextScheme;
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST => ['onRequest', 9999],
+            KernelEvents::REQUEST => 'onRequest',
         ];
     }
 
     public function onRequest(RequestEvent $event): void
     {
-        if (!$this->forceHttps) {
+        if ('https' !== $this->routerContextScheme) {
             return;
         }
 
