@@ -9,9 +9,9 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class UserRights
 {
-    private $requestStack;
-    private $tokenStorage;
-    private $connection;
+    private RequestStack $requestStack;
+    private TokenStorageInterface $tokenStorage;
+    private Connection $connection;
     private $userAllowedToCache;
 
     public function __construct(RequestStack $requestStack, TokenStorageInterface $tokenStorage, Connection $connection)
@@ -40,7 +40,7 @@ class UserRights
             return false;
         }
 
-        if ('true' === ($userAllowedTo[$code_userright] ?? null)) {
+        if ('true' === $userAllowedTo[$code_userright]) {
             return true;
         }
         if (!$param) {
@@ -155,10 +155,9 @@ class UserRights
             // si la valeur est true, pas besoin d'ajouter des parametres par la suite car true = "ok pour tout sans params"
             if ('true' == $val) {
                 $userAllowedTo[$row['code_userright']] = $val;
-            }
-            // écriture, ou concaténation des paramètres existant
-            elseif ('true' != $userAllowedTo[$row['code_userright']]) {
-                $userAllowedTo[$row['code_userright']] = ($userAllowedTo[$row['code_userright']] ? $userAllowedTo[$row['code_userright']].'|' : '').$val;
+            } elseif ('true' !== ($userAllowedTo[$row['code_userright']] ?? null)) {
+                // écriture, ou concaténation des paramètres existant
+                $userAllowedTo[$row['code_userright']] = (isset($userAllowedTo[$row['code_userright']]) ? $userAllowedTo[$row['code_userright']].'|' : '').$val;
             }
 
             if ($this->isAdmin()) {
