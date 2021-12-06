@@ -4,38 +4,21 @@ namespace App;
 
 use App\Entity\CafUser;
 use Doctrine\DBAL\Connection;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class UserRights
 {
-    private RequestStack $requestStack;
+    private AuthorizationCheckerInterface $checker;
     private TokenStorageInterface $tokenStorage;
     private Connection $connection;
     private $userAllowedToCache;
 
-    public function __construct(RequestStack $requestStack, TokenStorageInterface $tokenStorage, Connection $connection)
+    public function __construct(AuthorizationCheckerInterface $checker, TokenStorageInterface $tokenStorage, Connection $connection)
     {
-        $this->requestStack = $requestStack;
+        $this->checker = $checker;
         $this->tokenStorage = $tokenStorage;
         $this->connection = $connection;
-    }
-
-    public function isAdmin()
-    {
-        $user = $this->tokenStorage->getToken() ? $this->tokenStorage->getToken()->getUser() : null;
-
-        if (!$user) {
-            return false;
-        }
-
-        $request = $this->requestStack->getMainRequest();
-
-        if (!$request || !$request->hasSession()) {
-            return false;
-        }
-
-        return $request->getSession()->get('admin_caf', false);
     }
 
     public function allowed($code_userright, $param = '')
@@ -126,7 +109,7 @@ class UserRights
                 $val = 'true';
                 $userAllowedTo[$row['code_userright']] = $val;
 
-                if ($this->isAdmin()) {
+                if ($this->checker->isGranted('ROLE_ADMIN')) {
                     $userAllowedTo[$row['code_userright']] = 'true';
                 }
             }
@@ -166,7 +149,7 @@ class UserRights
                 $userAllowedTo[$row['code_userright']] = (isset($userAllowedTo[$row['code_userright']]) ? $userAllowedTo[$row['code_userright']].'|' : '').$val;
             }
 
-            if ($this->isAdmin()) {
+            if ($this->checker->isGranted('ROLE_ADMIN')) {
                 $userAllowedTo[$row['code_userright']] = 'true';
             }
         }
