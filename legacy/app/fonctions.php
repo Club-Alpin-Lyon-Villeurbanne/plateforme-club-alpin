@@ -631,13 +631,7 @@ function admin()
 {
     global $kernel;
 
-    $request = $kernel->getContainer()->get('legacy_request_stack')->getMainRequest();
-
-    if (!$request || !$request->hasSession()) {
-        return false;
-    }
-
-    return $request->getSession()->get('admin_caf', false);
+    return $kernel->getContainer()->get('legacy_user_rights')->isAdmin();
 }
 function superadmin()
 {
