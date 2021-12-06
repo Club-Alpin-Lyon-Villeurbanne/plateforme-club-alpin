@@ -30,6 +30,8 @@ security:
             lazy: true
             provider: app_user_provider
 
+            switch_user:
+
             form_login:
                 login_path: login
                 check_path: login

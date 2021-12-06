@@ -133,8 +133,9 @@ if (!admin()) {
             echo '<a href="includer.php?p=pages/adherents-modifier.php&amp;id_user='.(int) ($elt['id_user']).'" class="fancyframe" title="Modifier cet adhérent"><img src="/img/base/user_edit.png" alt="MODIFIER" title=""></a> ';
         }
 
-        // infiltrer
-        echo (1 == $elt['valid_user'] && $elt['email_user']) ? ' <a href="profil.html?operation=steal_session&amp;email_user='.urlencode($elt['email_user']).'" title="Infiltrer sa session"><img src="/img/base/user_go.png" alt="GO USER" title=""></a> ' : ' ';
+        if (isGranted('ROLE_ALLOWED_TO_SWITCH')) {
+            echo (1 == $elt['valid_user'] && $elt['email_user']) ? ' <a href="profil.html?_switch_user='.urlencode($elt['email_user']).'" title="Infiltrer sa session"><img src="/img/base/user_go.png" alt="GO USER" title=""></a> ' : ' ';
+        }
 
         echo '</td>'
                     .'<td>'
