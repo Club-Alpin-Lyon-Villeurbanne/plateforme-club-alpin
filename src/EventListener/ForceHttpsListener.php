@@ -38,8 +38,13 @@ class ForceHttpsListener implements EventSubscriberInterface, ServiceSubscriberI
             return;
         }
 
+        $urlGenerator = $this->locator->get(UrlGeneratorInterface::class);
+        $urlGenerator->getContext()->setScheme($this->routerContextScheme);
+
+        $url = $this->locator->get(UrlGeneratorInterface::class)->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
         $event->setResponse(
-            new RedirectResponse($this->locator->get(UrlGeneratorInterface::class)->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL), 301)
+            new RedirectResponse($url, 301)
         );
     }
 
