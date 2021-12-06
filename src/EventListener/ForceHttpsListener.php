@@ -14,11 +14,13 @@ class ForceHttpsListener implements EventSubscriberInterface, ServiceSubscriberI
 {
     private ContainerInterface $locator;
     private string $routerContextScheme;
+    private string $routerContextHost;
 
-    public function __construct(ContainerInterface $locator, string $routerContextScheme)
+    public function __construct(ContainerInterface $locator, string $routerContextScheme, string $routerContextHost)
     {
         $this->locator = $locator;
         $this->routerContextScheme = $routerContextScheme;
+        $this->routerContextHost = $routerContextHost;
     }
 
     public static function getSubscribedEvents(): array
@@ -34,12 +36,13 @@ class ForceHttpsListener implements EventSubscriberInterface, ServiceSubscriberI
             return;
         }
 
-        if ($event->getRequest()->isSecure()) {
+        if ($event->getRequest()->isSecure() && $event->getRequest()->getHttpHost() === $this->routerContextHost) {
             return;
         }
 
         $urlGenerator = $this->locator->get(UrlGeneratorInterface::class);
         $urlGenerator->getContext()->setScheme($this->routerContextScheme);
+        $urlGenerator->getContext()->setHost($this->routerContextHost);
 
         $url = $this->locator->get(UrlGeneratorInterface::class)->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
