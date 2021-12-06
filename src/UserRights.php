@@ -23,6 +23,12 @@ class UserRights
 
     public function isAdmin()
     {
+        $user = $this->tokenStorage->getToken() ? $this->tokenStorage->getToken()->getUser() : null;
+
+        if (!$user) {
+            return false;
+        }
+
         $request = $this->requestStack->getMainRequest();
 
         if (!$request || !$request->hasSession()) {
