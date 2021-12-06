@@ -60,6 +60,7 @@ services:
     App\EventListener\ForceHttpsListener:
       arguments:
         $routerContextScheme: '%env(ROUTER_CONTEXT_SCHEME)%'
+        $routerContextHost: '%env(ROUTER_CONTEXT_HOST)%'
 
     # services used in legacy
     legacy_router:
