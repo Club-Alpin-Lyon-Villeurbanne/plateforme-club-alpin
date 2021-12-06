@@ -627,11 +627,18 @@ function formater($retourner, $type = 1)
     return $retourner;
 }
 
+function isGranted($attribute, $subject = null)
+{
+    global $kernel;
+
+    return $kernel->getContainer()->get('legacy_authorization_checker')->isGranted($attribute, $subject);
+}
+
 function admin()
 {
     global $kernel;
 
-    return $kernel->getContainer()->get('legacy_user_rights')->isAdmin();
+    return $kernel->getContainer()->get('legacy_authorization_checker')->isGranted('ROLE_ADMIN');
 }
 function superadmin()
 {

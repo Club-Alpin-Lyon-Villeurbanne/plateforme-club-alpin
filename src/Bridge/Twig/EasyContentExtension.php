@@ -5,6 +5,7 @@ namespace App\Bridge\Twig;
 use App\Repository\CafContentHtmlRepository;
 use App\UserRights;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -21,6 +22,7 @@ class EasyContentExtension extends AbstractExtension implements ServiceSubscribe
     public static function getSubscribedServices()
     {
         return [
+            AuthorizationCheckerInterface::class,
             CafContentHtmlRepository::class,
             UserRights::class,
         ];
@@ -52,7 +54,7 @@ class EasyContentExtension extends AbstractExtension implements ServiceSubscribe
         $content = $this->locator->get(CafContentHtmlRepository::class)->findByCodeContent($elt);
         $ret = '';
 
-        if ($this->locator->get(UserRights::class)->isAdmin()) {
+        if ($this->locator->get(AuthorizationCheckerInterface::class)->isGranted('ROLE_ADMIN')) {
             // fancybox
             $ret .= '<div id="'.$elt.'" class="contenuEditable '.$style.'">'.
                 '<div class="editHtmlTools" style="text-align:left;">'.
@@ -74,7 +76,7 @@ class EasyContentExtension extends AbstractExtension implements ServiceSubscribe
         if ($content) {
             $ret .= $content->getContenuContentHtml();
         } else {
-            if ($this->locator->get(UserRights::class)->isAdmin()) {
+            if ($this->locator->get(AuthorizationCheckerInterface::class)->isGranted('ROLE_ADMIN')) {
                 $ret .= '<div class="blocdesactive"><img src="/img/base/bullet_key.png" alt="" title="" /> Bloc de contenu désactivé</div>';
             }
         }
