@@ -59,7 +59,7 @@ services:
 
     App\EventListener\ForceHttpsListener:
       arguments:
-        $forceHttps: '%env(bool:FORCE_HTTPS)%'
+        $routerContextScheme: '%env(ROUTER_CONTEXT_SCHEME)%'
 
     # services used in legacy
     legacy_router:
