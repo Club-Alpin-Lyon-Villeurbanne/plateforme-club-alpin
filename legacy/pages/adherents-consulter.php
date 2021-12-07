@@ -13,7 +13,7 @@ if (!admin() && !allowed('user_edit_notme')) {
         exit();
     }
 
-    if (0 == count($userTab)) {
+    if (isset($userTab) && 0 == count($userTab)) {
         $id_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($id_user);
         $req = "SELECT * FROM caf_user WHERE id_user='".$id_user."' LIMIT 1";
         $userTab = [];
