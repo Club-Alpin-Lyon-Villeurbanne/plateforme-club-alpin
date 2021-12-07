@@ -102,7 +102,7 @@ class PHPMailer
      *
      * @var string
      */
-    public $From = 'ne-pas-repondre@clubalpinlyon.fr';
+    public $From = 'ne-pas-repondre@mg.clubalpinlyon.fr';
 
     /**
      * The From name of the message.

@@ -193,7 +193,6 @@ if ('' !== $email_user_mailchange) {
         require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
-        $mail->SetFrom($p_noreply, $p_sitename);
         $mail->AddAddress($email_user_mailchange, getUser()->getNicknameUser());
         $mail->Subject = $subject;
         //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test

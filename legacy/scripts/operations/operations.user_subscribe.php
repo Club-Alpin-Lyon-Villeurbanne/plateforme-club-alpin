@@ -173,9 +173,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         // PHPMAILER
         require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-        $mail = new CAFPHPMailer(false, true); // defaults to using php "mail()"
+        $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
-        $mail->SetFrom($p_noreply, $p_sitename);
         $mail->AddAddress(stripslashes($email_user), stripslashes($nickname_user));
         $mail->Subject = $subject;
         //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)\nSinon copiez-coller le lien suivant dans votre navigateur:\n$url"; // optional, comment out and test
