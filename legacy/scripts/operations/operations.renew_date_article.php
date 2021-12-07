@@ -11,7 +11,5 @@ if (!allowed('article_validate_all')) {
 }
 
 if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
-    $errTab[] = 'Erreur SQL';
-} elseif ($kernel->getContainer()->get('legacy_mysqli_handler')->affectedRows() < 1) {
     $errTab[] = 'Aucun enregistrement affecté';
 }

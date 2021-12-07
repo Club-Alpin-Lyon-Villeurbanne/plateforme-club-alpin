@@ -627,17 +627,18 @@ function formater($retourner, $type = 1)
     return $retourner;
 }
 
+function isGranted($attribute, $subject = null)
+{
+    global $kernel;
+
+    return $kernel->getContainer()->get('legacy_authorization_checker')->isGranted($attribute, $subject);
+}
+
 function admin()
 {
     global $kernel;
 
-    $request = $kernel->getContainer()->get('legacy_request_stack')->getMainRequest();
-
-    if (!$request || !$request->hasSession()) {
-        return false;
-    }
-
-    return $request->getSession()->get('admin_caf', false);
+    return $kernel->getContainer()->get('legacy_authorization_checker')->isGranted('ROLE_ADMIN');
 }
 function superadmin()
 {
