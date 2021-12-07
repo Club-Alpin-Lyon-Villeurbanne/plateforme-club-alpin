@@ -56,10 +56,11 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_article || 2 == $
 
     if (1 == $status_article) {
         $subject = 'Votre article a été publié sur le site';
+        $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].'.html';
         $content_main = "<h2>$subject</h2>
             <p>Félicitations, votre article &laquo;<i>".html_utf8($authorDatas['titre_article']).'</i>&raquo;, créé le '.date('d/m/Y', $authorDatas['tsp_crea_article']).' a été publié sur le site du '.$p_sitename.' par les responsables. Pour y accéder, cliquez sur le lien ci-dessous :</p>
             <p>
-                <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].".html\" title=\"\">$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL)".'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].'.html</a>
+                <a href="'.$url.'" title="">'.$url.'</a>
             </p>';
     }
     if (2 == $status_article) {
