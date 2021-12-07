@@ -1,7 +1,8 @@
 {% set current_commission = current_commission | default('') %}
 {% set p1 = p1 | default('') %}
+{% set impersonification_style = is_granted('IS_IMPERSONATOR') ? "background-color:#df4949;" : "" %}
 
-<header id="mainHeader">
+<header id="mainHeader" style="{{ impersonification_style }}">
     <div class="sitewidth" style="min-width:980px;">
 
         {# LOGO COMMUN TTES PAGES #}
@@ -10,7 +11,7 @@
         </a>
 
         {# COMMISSION #}
-        <a id="toolbar-commission" href="javascript:void(0)" title="{{ commission_title(current_commission) }}" class="toptrigger">
+        <a id="toolbar-commission" href="javascript:void(0)" title="{{ commission_title(current_commission) }}" class="toptrigger" style="{{ impersonification_style }}">
             <div style="position:absolute;"><span id="shadowcache-commission" class="shadowcache"></span></div>
             {% if current_commission %}
                 <span class="picto">
@@ -46,7 +47,7 @@
         </nav>
 
         {# NAVIGATION #}
-        <a id="toolbar-navigation" href="javascript:void(0)" title="" class="toptrigger">
+        <a id="toolbar-navigation" href="javascript:void(0)" title="" class="toptrigger" style="{{ impersonification_style }}">
             <span class="picto"><img src="/img/boussole.png" alt="" title="" class="light" />
                 <img src="/img/boussole-up.png" alt="" title="" class="dark" />
             </span>
@@ -64,14 +65,14 @@
             </div>
         </nav>
 
-        <a id="toolbar-user" href="javascript:void(0)" title="" class="toptrigger">
+        <a id="toolbar-user" href="javascript:void(0)" title="" class="toptrigger" style="{{ impersonification_style }}">
             {% if not app.user %}
                 <span class="picto"><img src="/img/toolbox.png" alt="" title="" class="light" /><img src="/img/toolbox-up.png" alt="" title="" class="dark" /></span> Espace<br /><b>Adhérents</b>
                 <span id="shadowcache-user" class="shadowcache"></span>
             {% else %}
                 <div class="connected-name">
 
-                    {% if app.user.getDoitRenouvelerUser or app.user.getAlerteRenouvelerUser %}{
+                    {% if app.user.getDoitRenouvelerUser or app.user.getAlerteRenouvelerUser %}
                         <div class="notification-user-alerte"><span>!</span></div>
                     {% endif %}
 
@@ -279,6 +280,11 @@
 
                             <img src="{{ user_picto(app.user, 'min') }}" alt="" title="" style="float:left; padding:0 10px 0 0;" />
 
+                            {% if is_granted('IS_IMPERSONATOR') %}
+                                <p style="border: 2px solid red; border-radius: 5px;color:#fff; font-size:18px; padding:10px;">
+                                    En cours d'impersonification <a style="color:white;" href="/?_switch_user=_exit">Quitter</a>
+                                </p>
+                            {% endif %}
                             <p style="color:#fff; font-family:DIN; font-size:18px; line-height:20px; white-space:nowrap; padding-top:10px;">
                                 Mon pseudonyme : <br />
                                 <span style="font-family:DINBold; font-size:21px;">{{ app.user.getNicknameUser() }}</span>
