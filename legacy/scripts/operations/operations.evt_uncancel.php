@@ -47,10 +47,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
                 // envoi mail encadrant
                 $subject = 'Votre sortie a été réactivée sur le site';
+                $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html';
                 $content_main = "<h2>$subject</h2>
                     <p>Félicitations, votre sortie &laquo;<i>".html_utf8($handle['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $handle['tsp_evt']).' a été réactivée sur le site du '.$p_sitename.'.<br /><br /><b>Pensez à ajouter des (co)encadrants.</b><br /><br /> Pour y accéder, cliquez sur le lien ci-dessous :</p>
                     <p>
-                        <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html" title="">'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html</a>
+                        <a href="'.$url.'" title="">'.$url.'</a>
                     </p>';
 
                 if ($handle['cycle_master_evt']) {
