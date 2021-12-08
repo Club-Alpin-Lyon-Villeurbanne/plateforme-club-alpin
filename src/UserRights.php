@@ -109,7 +109,7 @@ class UserRights
                 $val = 'true';
                 $userAllowedTo[$row['code_userright']] = $val;
 
-                if ($this->checker->isGranted('ROLE_ADMIN')) {
+                if ($this->isAdmin()) {
                     $userAllowedTo[$row['code_userright']] = 'true';
                 }
             }
@@ -149,7 +149,7 @@ class UserRights
                 $userAllowedTo[$row['code_userright']] = (isset($userAllowedTo[$row['code_userright']]) ? $userAllowedTo[$row['code_userright']].'|' : '').$val;
             }
 
-            if ($this->checker->isGranted('ROLE_ADMIN')) {
+            if ($this->isAdmin()) {
                 $userAllowedTo[$row['code_userright']] = 'true';
             }
         }
@@ -176,5 +176,12 @@ class UserRights
         }
 
         return $this->userAllowedToCache = $userAllowedTo;
+    }
+
+    private function isAdmin()
+    {
+        // The admin flag is set using a session property
+        // it should not be taken into account while impersonating
+        return !$this->checker->isGranted('IS_IMPERSONATOR') && $this->checker->isGranted('ROLE_ADMIN');
     }
 }
