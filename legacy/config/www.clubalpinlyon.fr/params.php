@@ -13,7 +13,6 @@ $p_sitename = 'CAF Lyon Villeurbanne';
 
 // destinataire principal
 $p_contactdusite = 'sitemestre@clubalpinlyon.fr';
-$p_noreply = 'ne-pas-repondre@clubalpinlyon.fr';
 
 // paiement en ligne
 $p_url_paiement = 'https://jepaieenligne.systempay.fr/CLUB_ALPIN_FRANCOIS_LYON';

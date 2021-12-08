@@ -52,10 +52,6 @@ if (0 === count($errTab)) {
     // PHPMAILER
     require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
     $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-    //$mail->CharSet = 'UTF-8';
-    //$mail->IsHTML(true);
-    // $mail->AddReplyTo($email, $nom);
-    $mail->SetFrom($p_noreply, $p_sitename);
     $mail->AddAddress($p_contactdusite, 'Contact du site');
     $mail->Subject = $subject;
     //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test

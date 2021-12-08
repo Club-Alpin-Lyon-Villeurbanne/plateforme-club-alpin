@@ -11,6 +11,8 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
+global $kernel;
+
 require __DIR__.'/Exception.php';
 require __DIR__.'/PHPMailer.php';
 require __DIR__.'/SMTP.php';
@@ -32,16 +34,22 @@ class CAFPHPMailer extends PHPMailer
      * @param bool|null $exceptions
      * @param string    $body       A default HTML message body
      */
-    public function __construct($exceptions = false, $useBCC = false)
+    public function __construct()
     {
+        global $kernel;
+
         $config = require __DIR__.'/../../config/config.php';
 
+        $url = $kernel->getContainer()->get('legacy_router')->generateUrl('legacy_root');
+        $emitterEmail = $kernel->getContainer()->get('legacy_router')->getParameter('legacy_env_MAIL_EMITTER_EMAIL');
+        $emitterName = $kernel->getContainer()->get('legacy_router')->getParameter('legacy_env_MAIL_EMITTER_NAME');
+
         //Don't forget to do this or other things may not be set correctly!
-        parent::__construct($exceptions);
+        parent::__construct(false);
 
         $this->content_full = implode("\n", file(__DIR__.'/../../app/templates/email1.html'));
-        $this->content_full = str_replace('templateimgs/', $config['url'].'/app/templates/templateimgs/', $this->content_full);
-        $this->content_full = str_replace('[RACINE]', $config['url'], $this->content_full);
+        $this->content_full = str_replace('templateimgs/', $url.'app/templates/templateimgs/', $this->content_full);
+        $this->content_full = str_replace('[RACINE]', $url, $this->content_full);
         $this->content_full = str_replace('[SITENAME]', 'CAF Lyon Villeurbanne', $this->content_full);
 
         // Paramétrer le Mailer pour utiliser SMTP
@@ -67,15 +75,11 @@ class CAFPHPMailer extends PHPMailer
             //$this->SMTPDebug = 4;
         }
 
-        $this->SetFrom('ne-pas-repondre@clubalpinlyon.fr', 'CAF Lyon Villeurbanne');
+        $this->SetFrom($emitterEmail, $emitterName);
         $this->CharSet = 'UTF-8';
-        $this->AltBody = 'Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)'; // optional, comment out and test
+        $this->AltBody = 'Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)';
         $this->IsHTML(true);
         $this->XMailer = 'CAF-Mailer';
-
-        if ($useBCC) {
-            $this->AddBCC('ne-pas-repondre@clubalpinlyon.fr');
-        }
 
         //This should be the same as the domain of your From address
         //$mail->DKIM_domain = 'clubalpinlyon.fr';
