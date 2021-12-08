@@ -10,6 +10,7 @@
 //Import PHPMailer classes into the global namespace
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 global $kernel;
 
