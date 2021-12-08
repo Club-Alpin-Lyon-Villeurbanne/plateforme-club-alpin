@@ -1,0 +1,16 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    Test email from Mailer
+{%- endblock %}
+
+{% block inner_html %}
+    <h1>Test email from Mailer</h1>
+    <p>This is a test mail.</p>
+{% endblock %}
+
+{% block inner_txt %}
+    Test email from Mailer.
+
+    This is a test mail
+{% endblock %}
