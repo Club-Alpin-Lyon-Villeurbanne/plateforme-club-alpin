@@ -35,7 +35,7 @@ class CAFPHPMailer extends PHPMailer
      * @param bool|null $exceptions
      * @param string    $body       A default HTML message body
      */
-    public function __construct()
+    public function __construct(bool $throwExceptions = false)
     {
         global $kernel;
 
@@ -46,7 +46,7 @@ class CAFPHPMailer extends PHPMailer
         $emitterName = $kernel->getContainer()->getParameter('legacy_env_MAIL_EMITTER_NAME');
 
         //Don't forget to do this or other things may not be set correctly!
-        parent::__construct(false);
+        parent::__construct($throwExceptions);
 
         $this->content_full = implode("\n", file(__DIR__.'/../../app/templates/email1.html'));
         $this->content_full = str_replace('templateimgs/', $url.'app/templates/templateimgs/', $this->content_full);
@@ -61,7 +61,7 @@ class CAFPHPMailer extends PHPMailer
             $this->Host = $config['smtp_conf']['host'];
             $this->Port = $config['smtp_conf']['port'];
             // Accepter SSL
-            if ($config['smtp_conf']['secure']) {
+            if ($config['smtp_conf']['ssl']) {
                 $this->SMTPSecure = 'ssl';
             }
             // Activer authentication SMTP

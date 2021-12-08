@@ -7,10 +7,10 @@ return [
     'use_smtp' => false,
     'smtp_conf' => [
         'host' => 'smtp.eu.mailgun.org',
-        'port' => '465',
+        'port' => 465,
         'ssl' => true,
         'user' => 'postmaster@mg.clubalpinlyon.fr',
-        'pass' => 'MAILCHIMP_PASSWORD_TO_REPLACE',
+        'pass' => 'dc23887c4a62479ee5b0a7d32932ac0a-7005f37e-b40a7863',
     ],
     'db' => [
         'host' => 'localhost',
