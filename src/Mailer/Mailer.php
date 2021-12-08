@@ -19,12 +19,12 @@ class Mailer
         MailerInterface $mailer,
         MailerRenderer $renderer,
         string $replyTo,
-        string $mailEmitter = 'Club Alpin Français Lyon-Villeurbanne <noreply@clubalpinlyon.fr>'
+        string $nameEmitter
     ) {
         $this->mailer = $mailer;
         $this->renderer = $renderer;
         $this->replyTo = $replyTo;
-        $this->mailEmitter = $mailEmitter;
+        $this->mailEmitter = sprintf('%s <%s>', $nameEmitter, $replyTo);
     }
 
     /**

@@ -84,8 +84,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
     require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
     $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
-    $mail->AddReplyTo(getUser()->getEmailUser() ?: $p_noreply);
-    $mail->SetFrom($p_noreply, $p_sitename);
+    if (getUser()->getEmailUser()) {
+        $mail->AddReplyTo(getUser()->getEmailUser());
+    }
     $mail->Subject = $subject;
     //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
     $mail->setMailBody($content_main);

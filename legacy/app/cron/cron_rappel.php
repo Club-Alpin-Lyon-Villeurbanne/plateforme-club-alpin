@@ -6,7 +6,6 @@ global $kernel;
 global $chron_savedatas;
 global $chron_sendmails;
 global $p_sitename;
-global $p_noreply;
 
 /**
  * Cette page a pour fonction d'envoyer les emails de rappels :
@@ -28,8 +27,6 @@ function cron_email($datas)
 
     global $chron_savedatas;
     global $chron_sendmails;
-    global $p_sitename;
-    global $p_noreply;
 
     $tmpErr = '';
     if (!$datas['parent']) {
@@ -67,7 +64,6 @@ function cron_email($datas)
             // PHPMAILER
             require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
             $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-            $mail->SetFrom($p_noreply, $p_sitename);
             $mail->AddAddress($datas['email'], $datas['name']);
             $mail->Subject = $datas['subject'];
             $mail->setMailBody($datas['content']);
