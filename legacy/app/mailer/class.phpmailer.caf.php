@@ -40,7 +40,7 @@ class CAFPHPMailer extends PHPMailer
 
         $config = require __DIR__.'/../../config/config.php';
 
-        $url = $kernel->getContainer()->get('legacy_router')->generateUrl('legacy_root');
+        $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL);
         $emitterEmail = $kernel->getContainer()->get('legacy_router')->getParameter('legacy_env_MAIL_EMITTER_EMAIL');
         $emitterName = $kernel->getContainer()->get('legacy_router')->getParameter('legacy_env_MAIL_EMITTER_NAME');
 
