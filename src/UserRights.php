@@ -144,7 +144,7 @@ class UserRights
             // si la valeur est true, pas besoin d'ajouter des parametres par la suite car true = "ok pour tout sans params"
             if ('true' == $val) {
                 $userAllowedTo[$row['code_userright']] = $val;
-            } elseif ('true' !== ($userAllowedTo[$row['code_userright']] ?? null)) {
+            } elseif (!isset($userAllowedTo[$row['code_userright']]) || 'true' !== $userAllowedTo[$row['code_userright']]) {
                 // écriture, ou concaténation des paramètres existant
                 $userAllowedTo[$row['code_userright']] = (isset($userAllowedTo[$row['code_userright']]) ? $userAllowedTo[$row['code_userright']].'|' : '').$val;
             }
