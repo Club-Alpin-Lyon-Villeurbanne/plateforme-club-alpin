@@ -10,7 +10,6 @@
 //Import PHPMailer classes into the global namespace
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 global $kernel;
 
@@ -41,7 +40,6 @@ class CAFPHPMailer extends PHPMailer
 
         $config = require __DIR__.'/../../config/config.php';
 
-        $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL);
         $emitterEmail = $kernel->getContainer()->getParameter('legacy_env_MAIL_EMITTER_EMAIL');
         $emitterName = $kernel->getContainer()->getParameter('legacy_env_MAIL_EMITTER_NAME');
 
@@ -49,9 +47,6 @@ class CAFPHPMailer extends PHPMailer
         parent::__construct(false);
 
         $this->content_full = implode("\n", file(__DIR__.'/../../app/templates/email1.html'));
-        $this->content_full = str_replace('templateimgs/', $url.'app/templates/templateimgs/', $this->content_full);
-        $this->content_full = str_replace('[RACINE]', $url, $this->content_full);
-        $this->content_full = str_replace('[SITENAME]', 'CAF Lyon Villeurbanne', $this->content_full);
 
         // Paramétrer le Mailer pour utiliser SMTP
         if ($config['use_smtp']) {
