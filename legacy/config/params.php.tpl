@@ -72,6 +72,8 @@ $p_chron_dates_butoires = [8, 13, 18];
 // -------------------
 // PARAMS STATIQUES
 
+error_reporting(\E_ALL ^ \E_NOTICE);
+
 // vars de navigation, depuis l'URL via URL REWRITING // vars get toujours dispo grace au htaccess
 $p1 = formater($_GET['p1'] ?? null, 3);
 $p2 = formater($_GET['p2'] ?? null, 3);
