@@ -28,6 +28,7 @@ override project := $(shell echo $(project) | tr -d -c '[a-z0-9]' | cut -c 1-55)
 COMPOSE=docker-compose --project-directory . --project-name $(project) $(COMPOSE_FILES)
 COMPOSE_FILES = -f docker-compose.yml
 ON_PHP=$(COMPOSE) run --rm --no-deps cafsite
+ON_ASSETS=$(COMPOSE) run --rm --no-deps assets
 
 migrate: ## Migrate (env="dev")
 	@$(ON_PHP) php bin/console doctrine:migration:sync-metadata-storage --env $(env)
@@ -37,6 +38,18 @@ migrate: ## Migrate (env="dev")
 migration-diff: ## Migrate (env="dev")
 	@$(ON_PHP) php bin/console doctrine:migration:diff --env $(env)
 .PHONY: migration-diff
+
+##
+## Yarn
+##
+
+yarn-install: ## Installs node dependencies using yarn
+	$(ON_ASSETS) yarn install --pure-lockfile --frozen-lockfile --emoji
+.PHONY: yarn-install
+
+yarn-build: ## Builds assets
+	$(ON_ASSETS) yarn build
+.PHONY: yarn-build
 
 ##
 ## Phive
@@ -91,7 +104,7 @@ setup-db: composer-install ## Migrate (env="dev")
 	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
 .PHONY: setup-db
 
-package: ## Creates software package
+package: yarn-install yarn-build ## Creates software package
 	@cp .env .env.backup
 	@sed -i 's/APP_ENV=.*/APP_ENV=prod/g' .env
 	@$(ON_PHP) bash -c "APP_ENV=prod composer install --no-dev --optimize-autoloader --no-interaction --apcu-autoloader --prefer-dist"
