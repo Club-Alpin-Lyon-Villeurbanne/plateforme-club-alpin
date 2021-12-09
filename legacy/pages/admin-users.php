@@ -108,33 +108,33 @@ if (!admin()) {
                     .'<td style="white-space:nowrap;">'
 
                         // view user
-                        .'<a href="includer.php?p=pages/adherents-consulter.php&amp;id_user='.(int) ($elt['id_user']).'" class="fancyframe" title="Consulter cet adhérent"><img src="/img/base/report.png" alt="MODIFIER" title=""></a> '
+                        .'<a href="includer.php?p=pages/adherents-consulter.php&amp;id_user='.(int) ($elt['id_user']).'" class="fancyframe" title="Consulter cet adhérent"><img src="/img/base/report.png"></a> '
 
                         // gestion des droits
-                        .'<a href="includer.php?admin=true&amp;p=pages/admin-users-droits.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Voir / Attribuer des statuts à cet utilisateur"><img src="/img/base/user_star.png" alt="RIGHTS" title=""></a> ';
+                        .'<a href="includer.php?admin=true&amp;p=pages/admin-users-droits.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Voir / Attribuer des statuts à cet utilisateur"><img src="/img/base/user_star.png"></a> ';
 
         // désactiver
         if (allowed('user_desactivate_any') && '1' == $elt['valid_user']) {
-            echo '<a href="includer.php?p=pages/adherents-desactiver.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Désactiver le compte de cet utilisateur"><img src="/img/base/user_unvalidate.png" alt="DESACTIVER" title=""></a> ';
+            echo '<a href="includer.php?p=pages/adherents-desactiver.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Désactiver le compte de cet utilisateur"><img src="/img/base/user_unvalidate.png"></a> ';
         }
 
         // réactiver
         if (allowed('user_reactivate') && '2' == $elt['valid_user']) {
-            echo '<a href="includer.php?p=pages/adherents-reactiver.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Réactiver le compte de cet utilisateur"><img src="/img/base/user_revalidate.png" alt="REACTIVER" title=""></a> ';
+            echo '<a href="includer.php?p=pages/adherents-reactiver.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Réactiver le compte de cet utilisateur"><img src="/img/base/user_revalidate.png"></a> ';
         }
 
         // reset user
         if (allowed('user_reset')) {
-            echo '<a href="includer.php?p=pages/adherents-reset.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Remettre à zéro, réinitialiser le compte de cet utilisateur"><img src="/img/base/user_reset.png" alt="RESET" title=""></a> ';
+            echo '<a href="includer.php?p=pages/adherents-reset.php&amp;id_user='.(int) ($elt['id_user']).'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Remettre à zéro, réinitialiser le compte de cet utilisateur"><img src="/img/base/user_reset.png"></a> ';
         }
 
         // edit user
         if (allowed('user_edit_notme')) {
-            echo '<a href="includer.php?p=pages/adherents-modifier.php&amp;id_user='.(int) ($elt['id_user']).'" class="fancyframe" title="Modifier cet adhérent"><img src="/img/base/user_edit.png" alt="MODIFIER" title=""></a> ';
+            echo '<a href="includer.php?p=pages/adherents-modifier.php&amp;id_user='.(int) ($elt['id_user']).'" class="fancyframe" title="Modifier cet adhérent"><img src="/img/base/user_edit.png"></a> ';
         }
 
         if (isGranted('ROLE_ALLOWED_TO_SWITCH')) {
-            echo (1 == $elt['valid_user'] && $elt['email_user']) ? ' <a href="profil.html?_switch_user='.urlencode($elt['email_user']).'" title="Infiltrer sa session"><img src="/img/base/user_go.png" alt="GO USER" title=""></a> ' : ' ';
+            echo (1 == $elt['valid_user'] && $elt['email_user']) ? ' <a href="profil.html?_switch_user='.urlencode($elt['email_user']).'" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png"></a> ' : ' ';
         }
 
         echo '</td>'

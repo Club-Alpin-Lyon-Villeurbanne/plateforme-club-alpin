@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 global $kernel;
 
 $id_user = $email_user_mailchange = null;
@@ -174,7 +176,7 @@ if ('' !== $email_user_mailchange) {
     // ENVOI DU MAIL
     if (!isset($errTab) || 0 === count($errTab)) {
         // check-in vars : string à retourner lors de la confirmation= md5 de la concaténation id-email
-        $url = $kernel->getContainer()->get('legacy_router')->generateUrl('legacy_root').'email-change/'.$token.'-'.$id_user_mailchange.'.html';
+        $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'email-change/'.$token.'-'.$id_user_mailchange.'.html';
 
         // content vars
         $subject = 'Modification de votre e-mail !';
@@ -193,7 +195,6 @@ if ('' !== $email_user_mailchange) {
         require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
-        $mail->SetFrom($p_noreply, $p_sitename);
         $mail->AddAddress($email_user_mailchange, getUser()->getNicknameUser());
         $mail->Subject = $subject;
         //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
