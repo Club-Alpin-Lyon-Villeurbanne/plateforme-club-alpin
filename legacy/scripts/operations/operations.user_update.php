@@ -1,8 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 $id_user = $email_user_mailchange = null;
 
@@ -33,13 +32,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // 04/09/2013 - gmn - desactivation car import FFCAM => E.HENKE : on doit malgré tout pouvoir enregistrer les infos personnelles de contact
     if (!isset($errTab) || 0 === count($errTab)) {
-        $auth_contact_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($auth_contact_user);
+        $auth_contact_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($auth_contact_user);
         $req = "UPDATE `caf_user`
             SET
             `auth_contact_user` = '$auth_contact_user'
             WHERE `id_user` =$id_user LIMIT 1 ;";
 
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
     }
@@ -150,13 +149,13 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
 
 // si mise à jour e-mail user
 if ('' !== $email_user_mailchange) {
-    $email_user_mailchange = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($email_user_mailchange);
+    $email_user_mailchange = LegacyContainer::get('legacy_mysqli_handler')->escapeString($email_user_mailchange);
     $token = $id_user_mailchange = null;
 
     // VERIFICATIONS
     // compte des entrées existantes avec cet e-mail
     $req = "SELECT COUNT(id_user) FROM caf_user WHERE email_user LIKE '$email_user_mailchange' AND id_user != $id_user ";
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     if (getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM)) > 0) {
         $errTab[] = "Votre demande de modification d'e-mail est refusée : Un compte existe déjà avec cette adresse e-mail.";
     }
@@ -166,17 +165,17 @@ if ('' !== $email_user_mailchange) {
         $token = bin2hex(random_bytes(16));
         $req = "INSERT INTO `caf_user_mailchange` (`user_user_mailchange` , `token_user_mailchange` , `email_user_mailchange` )
                                                     VALUES ('$id_user',				'$token', 				'$email_user_mailchange');";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         } else {
-            $id_user_mailchange = $kernel->getContainer()->get('legacy_mysqli_handler')->insertId();
+            $id_user_mailchange = LegacyContainer::get('legacy_mysqli_handler')->insertId();
         }
     }
 
     // ENVOI DU MAIL
     if (!isset($errTab) || 0 === count($errTab)) {
         // check-in vars : string à retourner lors de la confirmation= md5 de la concaténation id-email
-        $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'email-change/'.$token.'-'.$id_user_mailchange.'.html';
+        $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'email-change/'.$token.'-'.$id_user_mailchange.'.html';
 
         // content vars
         $subject = 'Modification de votre e-mail !';

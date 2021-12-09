@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 // Cette page sert à joindre manuellement un user à une sortie
 
@@ -12,7 +12,7 @@ if (user()) {
         $busses = get_bus_destination($id_dest);
     }
     $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$id_evt;
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($sorties = $result->fetch_assoc()) {
         $sortie = $sorties;
     }
@@ -71,7 +71,7 @@ if (user()) {
 						AND nomade_user=1
 						ORDER BY created_user DESC
 						LIMIT 1000';
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             echo '<option value="'.(int) ($row['id_user']).'">'.html_utf8($row['cafnum_user'].' - '.$row['firstname_user'].' '.$row['lastname_user']).' - le '.date('d/m/y', $row['created_user']).'</option>';
 

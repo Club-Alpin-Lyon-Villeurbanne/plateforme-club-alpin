@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $id = $annule = null;
 
@@ -37,22 +37,22 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $comma = null;
     $sql = 'UPDATE `caf_destination` SET ';
     if (isset($publie)) {
-        $publie = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($publie);
+        $publie = LegacyContainer::get('legacy_mysqli_handler')->escapeString($publie);
         $sql .= "`publie` = '$publie'".$comma;
         $comma = ', ';
     }
     if (isset($inscription_locked)) {
-        $inscription_locked = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($inscription_locked);
+        $inscription_locked = LegacyContainer::get('legacy_mysqli_handler')->escapeString($inscription_locked);
         $sql .= "`inscription_locked` = '$inscription_locked'".$comma;
         $comma = ', ';
     }
     if (isset($annule)) {
-        $annule = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($annule);
+        $annule = LegacyContainer::get('legacy_mysqli_handler')->escapeString($annule);
         $sql .= "`annule` = '$annule'";
     }
     $sql .= " WHERE `id` = $id";
 
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($sql)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($sql)) {
         $errTab[] = 'Erreur SQL lors de la modification de la destination';
     } else {
         // Envoi de tous les emails

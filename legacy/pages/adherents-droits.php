@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('user_givepresidence')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
@@ -23,7 +23,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
 		ORDER BY hierarchie_usertype DESC';
 
     $statsTab = [];
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $result->fetch_assoc()) {
         $statsTab[] = $row;
     }
@@ -99,7 +99,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
 
     // liste des types :
     $req = "SELECT * FROM caf_usertype WHERE code_usertype NOT LIKE 'visiteur' AND code_usertype NOT LIKE 'adherent' ORDER BY hierarchie_usertype";
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     echo '<select name="id_usertype"><option></option>';
     while ($row = $result->fetch_assoc()) {
         // ALORS, MANUELLEMENT : CHAQUE STATUT NE PEUT ÊTRE ATTRIBUÉ QUE SI L'USER COURANT A DES DROITS PARTICULIERS (allowed) DONC :
@@ -145,7 +145,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
 
     // liste des commissions
     $req = 'SELECT * FROM caf_commission ORDER BY ordre_commission ASC ';
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     echo '<div id="commissions-pick" class="nice-checkboxes">';
     while ($row = $result->fetch_assoc()) {

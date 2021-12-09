@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $id_page = (int) ($_POST['id_page']);
 
@@ -13,12 +13,12 @@ if ('SUPPRIMER' != $_POST['confirm']) {
 
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "DELETE FROM caf_page WHERE id_page=$id_page LIMIT 1";
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $erreur = 'Erreur BDD<br />'.$req;
     }
 
     $req = "DELETE FROM caf_content_html WHERE code_content_html LIKE 'pagelibre-$id_page'";
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $erreur = 'Erreur BDD2<br />'.$req;
     }
 }

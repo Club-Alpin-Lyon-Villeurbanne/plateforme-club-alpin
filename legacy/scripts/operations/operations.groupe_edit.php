@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 if (!allowed('comm_groupe_edit')) {
     $errTab[] = 'Vous n\'avez pas les droits nécessaires pour cette operation de gestion de groupe';
@@ -16,8 +16,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $id_comm = (int) ($groupe['id_commission']);
             $niveau_technique = (int) ($groupe['niveau_technique']);
             $niveau_physique = (int) ($groupe['niveau_physique']);
-            $nom = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($groupe['nom']));
-            $description = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($groupe['description']));
+            $nom = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim($groupe['nom']));
+            $description = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim($groupe['description']));
             if (empty($nom)) {
                 $errTab[] = 'Le nom du groupe est obligatoire';
             }
@@ -29,7 +29,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $req =
                 "INSERT INTO `caf_groupe` (`id`, `id_commission`, `nom`, `description`, `niveau_physique`, `niveau_technique`, `actif`)
                     VALUES (NULL, '".$id_comm."', '".$nom."', '".$description."', '".$niveau_physique."', '".$niveau_technique."', '1');";
-                if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+                if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL insertion groupe';
                 }
             }
@@ -43,8 +43,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $niveau_technique = (int) ($groupe['niveau_technique']);
             $niveau_physique = (int) ($groupe['niveau_physique']);
             $actif = (int) ($groupe['actif']);
-            $nom = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($groupe['nom']));
-            $description = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($groupe['description']));
+            $nom = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim($groupe['nom']));
+            $description = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim($groupe['description']));
             if (empty($groupe['nom'])) {
                 $errTab[] = 'Le nom du groupe est obligatoire';
             }
@@ -82,7 +82,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     $req = 'DELETE FROM `caf_groupe` WHERE `id` = '.$id_groupe;
                 }
 
-                if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+                if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL update / delete groupe';
                 }
             }

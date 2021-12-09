@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $id_article = (int) ($_POST['id_article']);
 
@@ -10,6 +10,6 @@ if (!allowed('article_validate_all')) {
     $req .= ' AND user_article='.getUser()->getIdUser();
 }
 
-if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
     $errTab[] = 'Aucun enregistrement affecté';
 }

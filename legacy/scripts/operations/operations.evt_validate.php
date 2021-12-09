@@ -1,8 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 $subject = $content_main = $authorDatas = null;
 
@@ -20,13 +19,13 @@ if (!allowed('evt_validate')) {
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "UPDATE caf_evt SET status_evt='$status_evt', status_who_evt=".getUser()->getIdUser()." WHERE caf_evt.id_evt =$id_evt";
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
 
     // récupération des infos user et evt
     $req = "SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_evt, titre_evt, code_evt, tsp_evt FROM caf_user, caf_evt WHERE id_user=user_evt AND id_evt=$id_evt LIMIT 1";
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $authorDatas = false;
     while ($row = $result->fetch_assoc()) {
         $authorDatas = $row;
@@ -41,7 +40,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_evt || 2 == $stat
     // content vars
     if (1 == $status_evt) {
         $subject = 'Votre sortie a été publiée sur le site';
-        $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html';
+        $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html';
         $content_main = "<h2>$subject</h2>
             <p>Félicitations, votre sortie &laquo;<i>".html_utf8($authorDatas['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $authorDatas['tsp_evt']).' a été publiée sur le site du '.$p_sitename.' par les responsables. Pour y accéder, cliquez sur le lien ci-dessous :</p>
             <p>
@@ -56,7 +55,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_evt || 2 == $stat
             <p>Sortie concernée : &laquo;<i>'.html_utf8($authorDatas['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $authorDatas['tsp_evt']).'</p>
             <p>
                 Pour administrer vos sorties, rendez-vous sur votre profil :
-                <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/sorties.html" title="">'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/sorties.html</a>
+                <a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/sorties.html" title="">'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/sorties.html</a>
             </p>
             ';
     }
@@ -92,7 +91,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && 1 == $status_evt) {
         AND id_user != ".$authorDatas['id_user'].'
         LIMIT 300';
 
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     while ($row = $result->fetch_assoc()) {
         // construction du mail
@@ -101,12 +100,12 @@ if ((!isset($errTab) || 0 === count($errTab)) && 1 == $status_evt) {
             <p>Bonjour ".$row['firstname_user'].",</p>
             <p>
                 Une nouvelle sortie vient d'être publiée sur le site.
-                <a href=\"".$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.(int) ($authorDatas['id_user']).'.html">'.$authorDatas['nickname_user'].'</a>
+                <a href=\"".LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.(int) ($authorDatas['id_user']).'.html">'.$authorDatas['nickname_user'].'</a>
                 vous a pré-inscrit pour cette sortie en tant que <b>'.$row['role_evt_join'].'</b>.
             </p>
             <p>
                 Pour voir la fiche de cette sortie, cliquez ci-dessous :<br />
-                <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html" title="">'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html</a>
+                <a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html" title="">'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html</a>
             </p>
             ';
         $content_header = '';

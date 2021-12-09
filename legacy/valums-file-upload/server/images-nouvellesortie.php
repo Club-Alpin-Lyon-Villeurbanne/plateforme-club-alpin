@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 include __DIR__.'/../../app/includes.php';
 
@@ -104,15 +104,15 @@ if (0 === count($errTab)) {
 // enregistrement BDD si c'est une modificatino d'evt
 if (0 === count($errTab) && 'edit' == $mode) {
     // save
-    $filename = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($filename);
+    $filename = LegacyContainer::get('legacy_mysqli_handler')->escapeString($filename);
     $req = "INSERT INTO caf_img(evt_img, ordre_img, user_img, fichier_img)
 						VALUES($id_evt,    100,    ".getUser()->getIdUser().", '$filename')";
-    $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     // maj ordre
-    $id_img = $kernel->getContainer()->get('legacy_mysqli_handler')->insertId();
+    $id_img = LegacyContainer::get('legacy_mysqli_handler')->insertId();
     $req = "UPDATE caf_img SET ordre_img` =  '$id_img' WHERE caf_img.id_img =$id_img ";
-    $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     $result['id'] = $id_img;
 }

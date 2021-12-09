@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 // Cette page sert à joindre manuellement un user à une sortie
 
@@ -16,7 +16,7 @@ if (user()) {
         // recup comm
         $commission = false;
         $req = "SELECT * FROM caf_commission WHERE id_commission = $id_commission";
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $commission = $row;
         }

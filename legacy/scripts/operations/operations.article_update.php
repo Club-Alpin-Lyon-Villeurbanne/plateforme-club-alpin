@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $id_article = (int) $p2;
 $status_article = 0;
@@ -39,8 +39,8 @@ if(
 
 // enregistrement en BD
 if (!isset($errTab) || 0 === count($errTab)) {
-    $titre_article = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($titre_article);
-    $cont_article = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($cont_article);
+    $titre_article = LegacyContainer::get('legacy_mysqli_handler')->escapeString($titre_article);
+    $cont_article = LegacyContainer::get('legacy_mysqli_handler')->escapeString($cont_article);
 
     $req = "UPDATE caf_article
     SET status_article = $status_article
@@ -56,9 +56,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // on verifie si on est l'auteur que si on a pas le droit de modifier TOUS les articles
     .(allowed('article_edit_notmine') ? '' : ' AND user_article = '.getUser()->getIdUser())
     ;
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
-    } elseif ($kernel->getContainer()->get('legacy_mysqli_handler')->affectedRows() < 1) {
+    } elseif (LegacyContainer::get('legacy_mysqli_handler')->affectedRows() < 1) {
         $errTab[] = "Aucun enregistrement affecté : ID introuvable, ou vous n'êtes pas le créateur de cette article, ou bien aucune modification n'a été apportée.";
     }
 }

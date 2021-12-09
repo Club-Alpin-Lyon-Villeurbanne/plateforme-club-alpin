@@ -1,26 +1,25 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 if (!admin()) {
     echo 'Votre session administrateur a expiré';
 } else {
     $tab = [];
     $req = 'SELECT * FROM `caf_page` WHERE `pagelibre_page` =1 ORDER BY `ordre_page` DESC LIMIT 1000';
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $result->fetch_assoc()) {
         // récupération de la date de dernière modification de l'élément contenu si existant
         $id_page = $row['id_page'];
-        $lang_content_html = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($p_langs[0]); // dans la langue par défaut
+        $lang_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p_langs[0]); // dans la langue par défaut
         $req = "SELECT `date_content_html`
             FROM `caf_content_html`
             WHERE `code_content_html` LIKE 'main-pagelibre-$id_page'
             AND `lang_content_html` LIKE '$lang_content_html'
             ORDER BY `date_content_html` ASC
             LIMIT 1";
-        $result2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         if (!$result2->num_rows) {
             $row['lastedit_page'] = 0;
         } else {
@@ -101,7 +100,7 @@ if (!admin()) {
         echo '<tr id="tr-'.$elt['id_page'].'" class="'.($elt['vis_page'] ? 'vis-on' : 'vis-off').'">'
                     .'<td style="width:120px">'
                         .'<a class="delete" href="javascript:void(0)" rel="'.(int) ($elt['id_page']).'|'.$elt['code_page'].'" title="Supprimer définitivement cette page"><img src="/img/base/delete.png" alt="DEL" title="Supprimer" /></a> &nbsp;'
-                        .'<a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'pages/'.html_utf8($elt['code_page']).'.html" title="Modifier cette page"><img src="/img/base/page_edit.png" alt="EDIT" title="Modifier cette page" /></a> &nbsp;'
+                        .'<a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'pages/'.html_utf8($elt['code_page']).'.html" title="Modifier cette page"><img src="/img/base/page_edit.png" alt="EDIT" title="Modifier cette page" /></a> &nbsp;'
                         .'<a class="fancyframe" href="includer.php?admin=true&p=pages/admin-pages-libres-edit.php&amp;id_page='.(int) ($elt['id_page']).'" title="Modifier les METAS"><img src="/img/base/application_form_edit.png" alt="EDIT METAS" title="Modifier les metas" /></a> &nbsp;'
                         .'<a class="majVis" href="javascript:void(0)" rel="'.(int) ($elt['id_page']).'|'.$elt['lastedit_page'].'" title="Afficher/masquer cette page aux visiteurs du site"><img src="/img/base/vis-'.($elt['vis_page'] ? 'on' : 'off').'.png" alt="VIS" title="Afficher/masquer" /></a> &nbsp;'
                     .'</td>'
