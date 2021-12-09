@@ -109,7 +109,7 @@ class UserRights
                 $val = 'true';
                 $userAllowedTo[$row['code_userright']] = $val;
 
-                if ($this->checker->isGranted('ROLE_ADMIN')) {
+                if ($this->isAdmin()) {
                     $userAllowedTo[$row['code_userright']] = 'true';
                 }
             }
@@ -144,12 +144,12 @@ class UserRights
             // si la valeur est true, pas besoin d'ajouter des parametres par la suite car true = "ok pour tout sans params"
             if ('true' == $val) {
                 $userAllowedTo[$row['code_userright']] = $val;
-            } elseif ('true' !== ($userAllowedTo[$row['code_userright']] ?? null)) {
+            } elseif (!isset($userAllowedTo[$row['code_userright']]) || 'true' !== $userAllowedTo[$row['code_userright']]) {
                 // écriture, ou concaténation des paramètres existant
                 $userAllowedTo[$row['code_userright']] = (isset($userAllowedTo[$row['code_userright']]) ? $userAllowedTo[$row['code_userright']].'|' : '').$val;
             }
 
-            if ($this->checker->isGranted('ROLE_ADMIN')) {
+            if ($this->isAdmin()) {
                 $userAllowedTo[$row['code_userright']] = 'true';
             }
         }
@@ -176,5 +176,12 @@ class UserRights
         }
 
         return $this->userAllowedToCache = $userAllowedTo;
+    }
+
+    private function isAdmin()
+    {
+        // The admin flag is set using a session property
+        // it should not be taken into account while impersonating
+        return !$this->checker->isGranted('IS_IMPERSONATOR') && $this->checker->isGranted('ROLE_ADMIN');
     }
 }

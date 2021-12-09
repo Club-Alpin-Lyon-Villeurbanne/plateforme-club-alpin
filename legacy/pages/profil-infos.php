@@ -28,6 +28,8 @@ if (user()) {
                 foreach (getUser()->getAttributes() as $attr) {
                     if ('Resp. de commission' === $attr['attribute']) {
                         echo '<li><a href="commission-consulter.html?code_commission='.$attr['commission'].'" title="Fiche commission">'.$attr['attribute'].', '.$attr['commission'].'</a></li>';
+                    } elseif ('Encadrant' === $attr['attribute']) {
+                        echo '<li>'.$attr['attribute'].', '.$attr['commission'].'</li>';
                     } else {
                         echo '<li>'.$attr['attribute'].'</li>';
                     }

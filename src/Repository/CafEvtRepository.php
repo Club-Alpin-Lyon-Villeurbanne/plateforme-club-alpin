@@ -35,7 +35,7 @@ class CafEvtRepository extends ServiceEntityRepository
         }
 
         if (!empty($sqlPart)) {
-            $sql .= ' AND ('.implode(') OR (', $sqlPart).')';
+            $sql .= ' AND ('.implode(' OR ', $sqlPart).')';
         }
 
         return $this->_em->getConnection()->fetchOne($sql, $params);

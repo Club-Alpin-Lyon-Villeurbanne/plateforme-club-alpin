@@ -8,7 +8,6 @@ $p_sitename = 'Club Alpin Français - XXX';
 
 // destinataire principal
 $p_contactdusite = 'webmaster@xxx.fr';
-$p_noreply = 'noreply@xxx.fr';
 
 // ffcam
 $p_ffcam = ['6900'];
@@ -72,6 +71,8 @@ $p_chron_dates_butoires = [8, 13, 18];
 
 // -------------------
 // PARAMS STATIQUES
+
+error_reporting(\E_ALL ^ \E_NOTICE);
 
 // vars de navigation, depuis l'URL via URL REWRITING // vars get toujours dispo grace au htaccess
 $p1 = formater($_GET['p1'] ?? null, 3);

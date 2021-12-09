@@ -1,7 +1,7 @@
 <?php
     // Déclarer $contact_form_width avant l'inclusion du formulaire
 ?>
-<div id="trigger-userinfo" style="display:<?php if (isset($_POST['operation']) && 'user_contact' != $_POST['operation']) {
+<div id="trigger-userinfo" style="display:<?php if ('user_contact' != ($_POST['operation'] ?? null)) {
     echo 'none';
 } ?>">
     <hr  />

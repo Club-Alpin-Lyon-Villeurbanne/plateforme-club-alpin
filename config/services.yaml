@@ -6,6 +6,8 @@
 parameters:
     legacy_env_ANALYTICS_ACCOUNT: "%env(string:ANALYTICS_ACCOUNT)%"
     legacy_env_GOOGLE_SITE_VERIFICATION: "%env(string:GOOGLE_SITE_VERIFICATION)%"
+    legacy_env_MAIL_EMITTER_EMAIL: "%env(MAIL_EMITTER_EMAIL)%"
+    legacy_env_MAIL_EMITTER_NAME: "%env(MAIL_EMITTER_NAME)%"
 
 services:
     # default configuration for services in *this* file
@@ -46,7 +48,8 @@ services:
 
     App\Mailer\Mailer:
         arguments:
-            $replyTo: 'no-reply@clubalpinlyon.fr'
+            $replyTo: '%env(MAIL_EMITTER_EMAIL)%'
+            $nameEmitter: '%env(MAIL_EMITTER_NAME)%'
 
     Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
         public: true

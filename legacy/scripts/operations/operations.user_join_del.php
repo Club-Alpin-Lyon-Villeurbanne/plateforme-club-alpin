@@ -105,7 +105,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
             $mail->AddReplyTo(getUser()->getEmailUser());
-            $mail->SetFrom($p_noreply, $p_sitename);
             $mail->Subject = $subject;
             //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
             $mail->setMailBody($content_main);
@@ -157,7 +156,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
                 $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
-                $mail->SetFrom($p_noreply, $p_sitename);
                 $mail->Subject = $subject;
                 $mail->setMailBody($content_main);
                 $mail->setMailHeader($content_header);
