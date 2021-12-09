@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $errTab = [];
 $operationsDir = __DIR__.'/operations/';
@@ -222,7 +222,7 @@ if ('user_attr_del' == ($_POST['operation'] ?? null)) {
         $errTab[] = 'No id';
     } else {
         $req = "DELETE FROM caf_user_attr WHERE id_user_attr = $id_user_attr LIMIT 1;";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
     }
@@ -247,25 +247,25 @@ if ('user_delete' == ($_POST['operation'] ?? null)) {
     } else {
         // suppression participations aux sorties
         $req = "DELETE FROM caf_evt_join WHERE caf_evt_join.user_evt_join=$id_user";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
         // modification des articles de ce user (articles orphelins...)
         $req = "UPDATE caf_article SET user_article=0 WHERE caf_article.user_article=$id_user";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
         // suppression des droits
         $req = "DELETE FROM caf_user_attr WHERE caf_user_attr.user_user_attr=$id_user";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
         // suppression du user
         $req = "DELETE FROM `caf_user` WHERE  `caf_user`.`id_user`=$id_user";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
@@ -282,7 +282,7 @@ if ('user_desactiver' == ($_POST['operation'] ?? null)) {
         $errTab[] = "Vous n'avez pas les droits necessaires";
     } else {
         $req = "UPDATE `caf_user` SET  `valid_user` =  '2' WHERE  `caf_user`.`id_user` =$id_user";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
@@ -298,7 +298,7 @@ if ('user_reactiver' == ($_POST['operation'] ?? null)) {
         $errTab[] = "Vous n'avez pas les droits necessaires";
     } else {
         $req = "UPDATE `caf_user` SET  `valid_user` =  '1' WHERE  `caf_user`.`id_user` =$id_user";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
@@ -318,7 +318,7 @@ if ('user_reset' == ($_POST['operation'] ?? null)) {
 				email_user =  '',
 				mdp_user =  ''
 				WHERE caf_user.id_user =$id_user";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
 
@@ -374,7 +374,7 @@ if ('user_attr_del_admin' == ($_POST['operation'] ?? null) && admin()) {
         $errTab[] = 'No id';
     } else {
         $req = "DELETE FROM caf_user_attr WHERE id_user_attr = $id_user_attr LIMIT 1;";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }
     }
@@ -390,7 +390,7 @@ if ('usertype_attr_edit' == ($_POST['operation'] ?? null) && admin()) {
     /* ◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊[ BACKUP EXISTANT A FAIRE - ou pas ]◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊ */
 
     // supression des valeurs existantes
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query('TRUNCATE caf_usertype_attr')) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query('TRUNCATE caf_usertype_attr')) {
         $errTab[] = 'Erreur à la réinitialisation de la table';
     }
     if (0 === count($errTab)) {
@@ -398,7 +398,7 @@ if ('usertype_attr_edit' == ($_POST['operation'] ?? null) && admin()) {
             $tab = explode('-', $pair);
             $type_usertype_attr = (int) ($tab[0]);
             $right_usertype_attr = (int) ($tab[1]);
-            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query("INSERT INTO caf_usertype_attr (id_usertype_attr, type_usertype_attr, right_usertype_attr, details_usertype_attr)
+            if (!LegacyContainer::get('legacy_mysqli_handler')->query("INSERT INTO caf_usertype_attr (id_usertype_attr, type_usertype_attr, right_usertype_attr, details_usertype_attr)
 															VALUES (NULL , '$type_usertype_attr', '$right_usertype_attr', '".time()."');")) {
                 $errTab[] = "Erreur de setting ($type_usertype_attr - $right_usertype_attr)";
             }
@@ -446,9 +446,9 @@ if ('addContentInline' == ($_POST['operation'] ?? null) && admin()) {
 
 // GENERIQUE: maj
 if ('majBd' == ($_POST['operation'] ?? null) && admin()) {
-    $table = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($_POST['table']);
-    $champ = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($_POST['champ']);
-    $val = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['val']));
+    $table = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_POST['table']);
+    $champ = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_POST['champ']);
+    $val = LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['val']));
     $id = (int) ($_POST['id']);
 
     if (!$table) {
@@ -463,7 +463,7 @@ if ('majBd' == ($_POST['operation'] ?? null) && admin()) {
 
     if (0 === count($errTab)) {
         $req = 'UPDATE `caf_'.$table."` SET `$champ` = '$val' WHERE `caf_".$table.'`.`id_'.$table."` =$id LIMIT 1 ;";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $erreur = 'Erreur BDD<br />'.$req;
         }
     }
@@ -471,11 +471,11 @@ if ('majBd' == ($_POST['operation'] ?? null) && admin()) {
 
 // GENERIQUE: sup
 if ('supBd' == ($_POST['operation'] ?? null) && admin()) {
-    $table = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($_POST['table']);
+    $table = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_POST['table']);
     $id = (int) ($_POST['id']);
 
     $req = 'DELETE FROM `caf_'.$table.'` WHERE `caf_'.$table.'`.`id_'.$table."` = $id LIMIT 1;";
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $erreur = 'Erreur BDD<br />'.$req;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $log = (isset($log) ? $log : '')."\n accès à ".date('H:i:s');
 $result = null;
@@ -21,10 +21,10 @@ if (admin()) {
     $log .= "\n linkedtopage_content_inline :  \n".$linkedtopage_content_inline;
 
     if (isset($_POST['id_content_inline']) && isset($_POST['lang_content_inline']) && isset($_POST['contenu_content_inline'])) {
-        $code_content_inline = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($code_content_inline);
-        $contenu_content_inline = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($contenu_content_inline);
-        $lang_content_inline = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($lang_content_inline);
-        $linkedtopage_content_inline = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($linkedtopage_content_inline);
+        $code_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString($code_content_inline);
+        $contenu_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString($contenu_content_inline);
+        $lang_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString($lang_content_inline);
+        $linkedtopage_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString($linkedtopage_content_inline);
 
         // entrée à créer
         if (!$id_content_inline) {
@@ -37,7 +37,7 @@ if (admin()) {
         }
 
         $log .= "\n SQL : ";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $log .= "ERREUR : $req";
         } else {
             $log .= "\n OK ";

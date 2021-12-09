@@ -1,8 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 ?>
 <div style="padding:10px 0 0 30px; line-height:18px; ">
@@ -425,9 +424,9 @@ global $kernel;
         theme_advanced_statusbar_location : "bottom",
         theme_advanced_resizing : true,
 
-        document_base_url : '<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>',
+        document_base_url : '<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>',
 
-        content_css : "<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/base.css,<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/style1.css,<?php echo $p_racine; ?>fonts/stylesheet.css",
+        content_css : "<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/base.css,<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/style1.css,<?php echo $p_racine; ?>fonts/stylesheet.css",
         body_id : "bodytinymce_user",
         body_class : "description_evt",
         theme_advanced_styles : "<?php echo $p_tiny_theme_advanced_styles; ?>",

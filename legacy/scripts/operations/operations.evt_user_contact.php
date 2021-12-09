@@ -1,8 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 $id_evt = (int) ($_POST['id_evt']);
 $user_evt = getUser()->getIdUser();
@@ -46,7 +45,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     //		print ($req);exit;
     $destTab = [];
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $destTab[] = $handle;
@@ -61,7 +60,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 if (!isset($errTab) || 0 === count($errTab)) {
     // infos evt
     $req = "SELECT * FROM caf_evt WHERE id_evt = $id_evt";
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $titre_evt = $handle['titre_evt'];
         $code_evt = $handle['code_evt'];
@@ -73,7 +72,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $content_header = '';
     $content_main = '<h2>Bonjour !</h2>
         <p>Vous avez reçu un message de '.html_utf8(getUser()->getFirstnameUser()).' '.html_utf8(getUser()->getLastnameUser()).' au sujet de la sortie
-            <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$code_evt.'-'.$id_evt.'.html">'.html_utf8($titre_evt).'</a></p>'
+            <a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$code_evt.'-'.$id_evt.'.html">'.html_utf8($titre_evt).'</a></p>'
         .'<p><b>Objet :</b><br />'.html_utf8($subject).'<br />&nbsp;</p>'
         .'<p><b>Message :</b><br />'.nl2br(getUrlFriendlyString(html_utf8($message))).'<br />&nbsp;</p>'
         ;

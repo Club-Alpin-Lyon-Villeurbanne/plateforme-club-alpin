@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $needComm = false; // besoin, ou pas de spécifier la commission liée à ce type
 
@@ -16,7 +16,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // Vérification dans la liste des types
     // + Ce type a t-il besoin de paramètres pour fonctionner ?
     $req = "SELECT * FROM caf_usertype WHERE id_usertype =$id_usertype LIMIT 1";
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     // trouvé
     if (!$result->num_rows) {
@@ -42,7 +42,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
     // pour chaque commission
     foreach ($params_user_attr_tab as $params_user_attr) {
-        $params_user_attr = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($params_user_attr);
+        $params_user_attr = LegacyContainer::get('legacy_mysqli_handler')->escapeString($params_user_attr);
 
         // Cet attribut avec ces paramètres n'existe t-il pas déjà pour cet user ?
         $req = "SELECT COUNT(id_user_attr)
@@ -50,13 +50,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
             WHERE user_user_attr=$id_user
             AND usertype_user_attr=$id_usertype
             AND params_user_attr LIKE '$params_user_attr' LIMIT 1";
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $row = $result->fetch_row();
         if (!$row[0]) {
             // ajout
             $req = "INSERT INTO caf_user_attr(id_user_attr ,user_user_attr ,usertype_user_attr ,params_user_attr ,details_user_attr)
                                         VALUES (NULL , '$id_user', '$id_usertype', '$params_user_attr', '".time()."');";
-            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+            if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }
         }

@@ -1,6 +1,7 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
+
 global $p_sublevels;
 
 if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page'] && !superadmin())) {
@@ -9,7 +10,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
     // reqs toutes pages de l'arbo
     $req = 'SELECT * FROM  `caf_page` WHERE  `admin_page` =0 ORDER BY  `parent_page` ASC, `ordre_menu_page` ASC LIMIT 0 , 300';
     $pageTab = [];
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $pageTab[] = $handle;
     }

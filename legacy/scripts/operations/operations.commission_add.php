@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 if (!allowed('comm_create')) {
     $errTab[] = 'Vous n\'avez pas les droits nécessaires pour cette operation';
@@ -175,15 +175,15 @@ $id_commission = null;
 // SQL
 if (!isset($errTab) || 0 === count($errTab)) {
     $code_commission = formater($title_commission, 3);
-    $code_commission = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($code_commission);
-    $title_commission = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($title_commission);
+    $code_commission = LegacyContainer::get('legacy_mysqli_handler')->escapeString($code_commission);
+    $title_commission = LegacyContainer::get('legacy_mysqli_handler')->escapeString($title_commission);
 
     // Le code doit être unique dans la base
     $passed = false;
     $suffixe = '';
     while (!$passed) {
         $req = "SELECT COUNT(id_commission) FROM caf_commission WHERE code_commission LIKE '$code_commission"."$suffixe'";
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $row = $result->fetch_row();
         if (0 == $row[0]) {
             $passed = true;
@@ -196,10 +196,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // enregistrement
     $req = "INSERT INTO caf_commission(id_commission, ordre_commission, vis_commission, code_commission, title_commission)
                                                 VALUES (NULL ,  '',  '0',  '$code_commission',  '$title_commission');";
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
-    $id_commission = $kernel->getContainer()->get('legacy_mysqli_handler')->insertId();
+    $id_commission = LegacyContainer::get('legacy_mysqli_handler')->insertId();
 
     if (!$id_commission) {
         $errTab[] = 'Erreur SQL : id irrécupérable';

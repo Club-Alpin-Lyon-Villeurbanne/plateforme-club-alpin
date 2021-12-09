@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $filename = null;
 
@@ -57,13 +57,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if (-1 == $partenaireTab['part_id']) {
         $partenaireTab['part_image'] = $new_part_image;
         $req = "INSERT INTO `caf_partenaires` (part_name, part_order, part_image, part_desc, part_enable, part_url, part_type) VALUES (
-            '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_name'])."',
-            '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_order'])."',
-            '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_image'])."',
-            '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_desc'])."',
-            '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_enable'])."',
-            '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_url'])."',
-            '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_type'])."')";
+            '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_name'])."',
+            '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_order'])."',
+            '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_image'])."',
+            '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_desc'])."',
+            '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_enable'])."',
+            '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_url'])."',
+            '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_type'])."')";
     } else {
         if (0 !== strcmp($partenaireTab['part_image'], $new_part_image)) {
             // change name and file
@@ -74,18 +74,18 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $partenaireTab['part_image'] = $new_part_image;
         }
         $req = "UPDATE `caf_partenaires` SET
-            part_name='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_name'])."',
-            part_order='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_order'])."',
-            part_image='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_image'])."',
-            part_desc='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_desc'])."',
-            part_enable='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_enable'])."',
-            part_url='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_url'])."',
-            part_type='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_type'])."'";
+            part_name='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_name'])."',
+            part_order='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_order'])."',
+            part_image='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_image'])."',
+            part_desc='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_desc'])."',
+            part_enable='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_enable'])."',
+            part_url='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_url'])."',
+            part_type='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_type'])."'";
 
-        $req .= '	WHERE part_id='.$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_id']);
+        $req .= '	WHERE part_id='.LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_id']);
     }
 
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     } else {
         if ($partenaireTab['part_id'] > 0) {
@@ -94,7 +94,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $okTab[] = 'Création du partenaire OK';
         }
 
-        mylog('operations.partenaire_edit', "ajout partenaire '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($partenaireTab['part_name'])."'");
+        mylog('operations.partenaire_edit', "ajout partenaire '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($partenaireTab['part_name'])."'");
     }
 
     if ($_FILES['part_image']['size'] > 0) {

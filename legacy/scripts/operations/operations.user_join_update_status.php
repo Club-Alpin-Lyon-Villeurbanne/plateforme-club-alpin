@@ -1,8 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 $role_evt_join = $toNameFull = $toTel = $affiliant_user_join = $subject = $content_main = $evtDate = $evtTarif = $toCafNum = $encEmail = $encName = null;
 
@@ -22,7 +21,7 @@ WHERE evt_evt_join=$id_evt
 AND user_evt_join = ".getUser()->getIdUser()."
 AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant')
 LIMIT 1";
-$result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+$result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $row = $result->fetch_row();
 if ($row[0] > 0) {
     $suis_encadrant = true;
@@ -31,7 +30,7 @@ if ($row[0] > 0) {
 // suis-je l'auteur de cette sortie ?
 $suis_auteur = false;
 $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND user_evt = ".getUser()->getIdUser().' LIMIT 1';
-$result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+$result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $row = $result->fetch_row();
 if ($row[0] > 0) {
     $suis_auteur = true;
@@ -39,7 +38,7 @@ if ($row[0] > 0) {
 
 // Informations sur l'événement
 $req = "SELECT id_evt, titre_evt, tsp_evt, tarif_evt FROM caf_evt WHERE id_evt=$id_evt LIMIT 1";
-$result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+$result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $row = $result->fetch_row();
 if ($row) {
     $evtId = html_utf8($row[0]);
@@ -56,7 +55,7 @@ $req = "SELECT B.firstname_user, B.lastname_user, B.email_user
         WHERE A.evt_evt_join=$id_evt
         AND (A.role_evt_join LIKE 'encadrant')
         LIMIT 1";
-$result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+$result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $row = $result->fetch_row();
 if ($row) {
     $encName = html_utf8($row[0].' '.$row[1]);
@@ -80,12 +79,12 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
             // nouvelles valeurs demandées
             $status_evt_join_new = '';
             if (array_key_exists('status_evt_join_'.$id_evt_join, $_POST)) {
-                $status_evt_join_new = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString((int) ($_POST['status_evt_join_'.$id_evt_join]));
+                $status_evt_join_new = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) ($_POST['status_evt_join_'.$id_evt_join]));
                 $send_mail = true;
             }
             $role_evt_join_new = '';
             if (array_key_exists('role_evt_join_'.$id_evt_join, $_POST)) {
-                $role_evt_join_new = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($_POST['role_evt_join_'.$id_evt_join]);
+                $role_evt_join_new = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_POST['role_evt_join_'.$id_evt_join]);
             }
 
             if (0 == strlen($status_evt_join_new) && 0 == strlen($role_evt_join_new)) {
@@ -95,8 +94,8 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
             if ($status_evt_join_new < 0) {
                 $req = "DELETE FROM caf_evt_join WHERE id_evt_join=$id_evt_join";
 
-                $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
-                if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+                $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+                if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL';
                 }
                 continue;
@@ -105,7 +104,7 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
             // récupération de la valeur actuelle, savoir si on la change ou pas
             $req = "SELECT status_evt_join, user_evt_join, affiliant_user_join, role_evt_join, evt_evt_join, is_cb FROM caf_evt_join WHERE id_evt_join=$id_evt_join ORDER BY tsp_evt_join DESC LIMIT 1 ";
 
-            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
             $status_evt_join = 0;
             $user_evt_join = 0;
@@ -147,7 +146,7 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
 
                     $req .= " WHERE caf_evt_join.id_evt_join =$id_evt_join";
 
-                    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+                    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                         $errTab[] = 'Erreur SQL';
                     }
 
@@ -164,7 +163,7 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
                                 $toName = '';
                                 $isNomade = false;
                                 $req = "SELECT email_user, firstname_user, lastname_user, civ_user, nomade_user, tel_user, tel2_user, cafnum_user FROM caf_user WHERE id_user=$user_evt_join LIMIT 1";
-                                $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                                $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                                 while ($row = $result->fetch_assoc()) {
                                     $toMail = $row['email_user'];
                                     $toName = $row['firstname_user'];
@@ -188,7 +187,7 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
                                 // filiation ? Dans ce cas on change la valeurs du mail
                                 if ($isFiliation) {
                                     $req = "SELECT email_user, firstname_user, lastname_user, civ_user, nomade_user, tel_user, tel2_user FROM caf_user WHERE id_user=$affiliant_user_join LIMIT 1";
-                                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                                     while ($row = $result->fetch_assoc()) {
                                         $toMail = $row['email_user'];
                                         // $toName=$row['civ_user'].' '.$row['lastname_user'];
@@ -206,7 +205,7 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
 
                                         // vars
                                         $evtName = html_utf8($_POST['titre_evt']);
-                                        $evtUrl = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html');
+                                        $evtUrl = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html');
 
                                         switch ($role_evt_join) {
                                             case 'encadrant':

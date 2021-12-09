@@ -1,10 +1,7 @@
 <?php
 
-global $kernel;
-
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 if (!admin() && !allowed('user_edit_notme')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
@@ -16,9 +13,9 @@ if (!admin() && !allowed('user_edit_notme')) {
     }
 
     if (null === $userTab || 0 === count($userTab)) {
-        $req = "SELECT * FROM  `caf_user` WHERE id_user='".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($id_user)."' LIMIT 1";
+        $req = "SELECT * FROM  `caf_user` WHERE id_user='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($id_user)."' LIMIT 1";
         $userTab = [];
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $userTab = $result->fetch_assoc();
 
         foreach ($userTab as $key => $val) {
@@ -82,7 +79,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 			<?php
                 if (1 != $userTab['valid_user']) {
                     // compte non active pour le moment
-                    echo '<br />URL d\'activation du compte : '.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html<br />';
+                    echo '<br />URL d\'activation du compte : '.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html<br />';
                 } ?>
 
 			<br />

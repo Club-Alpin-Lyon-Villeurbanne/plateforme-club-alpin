@@ -1,8 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
-global $kernel;
 
 //___________________ CONFIGURATION DES PAGES
 //___________________ Cette version déclare une variable contenant toutes les specs de toutes
@@ -27,7 +26,7 @@ $req = 'SELECT * FROM  `caf_page` '
         .(superadmin() ? ' OR superadmin_page=1 ' : ' AND superadmin_page=0 ') // seuls les superadmin peuvent voir les pages superadmin
         .'ORDER BY ordre_menu_page ASC, ordre_menuadmin_page ASC' // on sort tout de suite dans l'ordre des menus
         ;
-$handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+$handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     $p_pages[$handle['code_page']] = [
         // 'meta_title_page'=>$handle['meta_title_page']?cont('meta-title-'.$handle['code_page']):cont('meta-title-site'),

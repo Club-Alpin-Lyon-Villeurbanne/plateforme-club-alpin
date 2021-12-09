@@ -1,8 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 $errTab = $errTabMail = [];
 $id_transporteur = $id_destination = $destination = $encadrants = null;
@@ -81,11 +80,11 @@ if (0 === count($errTab)) {
             // recup infos evt
             $evtUrl = '';
             $evtName = '';
-            $evtUrl = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$encadrant['sortie']['code_evt'].'-'.$encadrant['sortie']['id_evt'].'.html');
+            $evtUrl = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$encadrant['sortie']['code_evt'].'-'.$encadrant['sortie']['id_evt'].'.html');
             $evtName = html_utf8($encadrant['sortie']['titre_evt']);
 
-            $evtFiche = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'feuille-de-sortie/evt-'.$encadrant['sortie']['id_evt'].'.html');
-            $destFiche = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'feuille-de-sortie/dest-'.$id_destination.'.html');
+            $evtFiche = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'feuille-de-sortie/evt-'.$encadrant['sortie']['id_evt'].'.html');
+            $destFiche = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'feuille-de-sortie/dest-'.$id_destination.'.html');
 
             if (0 === count($errTabMail)) {
                 // contenu
@@ -133,7 +132,7 @@ if (0 === count($errTab)) {
 
     if (0 === count($errTab)) {
         $req = "UPDATE `caf_destination` SET `mail` = '1' WHERE `caf_destination`.`id` = $id_destination";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = "Les emails ont bien été envoyé, mais cette information n'a pas été enregistrée";
         }
     }

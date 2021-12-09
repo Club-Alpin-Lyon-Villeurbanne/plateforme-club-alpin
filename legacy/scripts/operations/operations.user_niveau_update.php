@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 // Utilisateur connecté ?
 if (!user()) {
@@ -17,7 +17,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $id_commission = (int) ($niveau['id_commission']);
             $niveau_technique = (int) ($niveau['niveau_technique']);
             $niveau_physique = (int) ($niveau['niveau_physique']);
-            $commentaire = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim(stripslashes($niveau['commentaire'])));
+            $commentaire = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim(stripslashes($niveau['commentaire'])));
             if (empty($commentaire)) {
                 $commentaire = null;
             }
@@ -30,7 +30,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     $req .= "'".$commentaire."' ";
                 }
                 $req .= ');';
-                if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+                if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL lors Insertion note pour commission '.$id_commission.' et utilisateur '.$id_user;
                 }
             }
@@ -46,7 +46,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
             $niveau_technique = (int) ($niveau['niveau_technique']);
             $niveau_physique = (int) ($niveau['niveau_physique']);
-            $commentaire = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim(stripslashes($niveau['commentaire'])));
+            $commentaire = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim(stripslashes($niveau['commentaire'])));
             if (empty($commentaire)) {
                 $commentaire = null;
             }
@@ -59,7 +59,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     $req .= "'".$commentaire."' ";
                 }
                 $req .= ' WHERE `caf_user_niveau`.`id` = '.$id.';';
-                if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+                if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL';
                 }
             }

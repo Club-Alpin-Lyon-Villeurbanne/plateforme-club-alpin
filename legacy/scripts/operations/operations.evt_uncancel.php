@@ -1,8 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 $id_evt = (int) (substr(strrchr($p2, '-'), 1));
 
@@ -20,7 +19,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         AND id_user = user_evt
         AND commission_evt=id_commission
         LIMIT 1";
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // on a le droit d'annuler ?
@@ -33,7 +32,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $cycle_parent_evt = $handle['cycle_parent_evt'];
                 if ($handle['cycle_parent_evt'] > 0) {
                     $req = "SELECT id_evt FROM caf_evt WHERE id_evt=$id_evt AND cancelled_evt='0'";
-                    if (!$handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+                    if (!$handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                         $errTab[] = 'Erreur SQL SELECT COUNT';
                     } elseif ($handleSql2->num_rows() > 0) {
                         $cycle_parent_evt = 0;
@@ -41,13 +40,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 }
 
                 $req = "UPDATE caf_evt SET cancelled_evt='0', cancelled_who_evt='0', cancelled_when_evt='0', status_evt='0',cycle_parent_evt=$cycle_parent_evt WHERE caf_evt.id_evt =$id_evt";
-                if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+                if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL';
                 }
 
                 // envoi mail encadrant
                 $subject = 'Votre sortie a été réactivée sur le site';
-                $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html';
+                $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html';
                 $content_main = "<h2>$subject</h2>
                     <p>Félicitations, votre sortie &laquo;<i>".html_utf8($handle['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $handle['tsp_evt']).' a été réactivée sur le site du '.$p_sitename.'.<br /><br /><b>Pensez à ajouter des (co)encadrants.</b><br /><br /> Pour y accéder, cliquez sur le lien ci-dessous :</p>
                     <p>

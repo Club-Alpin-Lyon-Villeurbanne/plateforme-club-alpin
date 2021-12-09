@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 ?>
 <!-- MAIN -->
@@ -47,7 +47,7 @@ global $kernel;
 					AND params_user_attr LIKE 'commission:".$code."'
 					ORDER BY code_usertype DESC, lastname_user ASC
 					";
-                $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
                 echo '<table class="big-lines-table"><tbody>';
                 while ($row = $result->fetch_assoc()) {

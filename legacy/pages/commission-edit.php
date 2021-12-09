@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 ?>
 <!-- MAIN -->
@@ -17,7 +17,7 @@ global $kernel;
                 $id_commission = (int) ($_GET['id_commission']);
                 $commissionTmp = false;
                 $req = "SELECT * FROM caf_commission WHERE id_commission = $id_commission";
-                $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     $commissionTmp = $handle;
                 }

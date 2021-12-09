@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 // GESTION DES INSCRIPTIONS
 
@@ -155,7 +155,7 @@ if ('1' != $evt['cancelled_evt']) {
                             AND user_evt_join = id_user
                             ORDER BY tsp_evt_join
                             LIMIT 300";
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             // STATS
             ++$nDemandes;
