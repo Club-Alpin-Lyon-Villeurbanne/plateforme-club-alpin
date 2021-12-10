@@ -1,13 +1,13 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $partenairesTab = [];
 $partenairesNb = 0;
 $req = 'SELECT UPPER(part_name) as part_name, part_image, part_url, part_id FROM caf_partenaires WHERE part_enable=1 AND part_name IS NOT NULL AND part_image IS NOT NULL ORDER BY part_order';
-$result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+$result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
-if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
     $errTab[] = 'Erreur SQL';
 } else {
     while ($row = $result->fetch_array(\MYSQLI_ASSOC)) {

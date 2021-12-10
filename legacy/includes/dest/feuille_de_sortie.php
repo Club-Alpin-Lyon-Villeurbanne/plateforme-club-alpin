@@ -1,14 +1,13 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 if ('0' == $destination['publie']) {
     //pas validee
     echo '<div class="alerte"><b>Note : Cette destination n\'est pas publiée sur le site</b>. Si vous voyez ce message apparaître, c\'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n\'ont pas accès aux informations ci-dessous.<br /></div>';
 } elseif ('1' == $destination['annule']) {
-    echo '<div class="erreur"><img src="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Destination annulée</b><br class="clear"></div>';
+    echo '<div class="erreur"><img src="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Destination annulée</b><br class="clear"></div>';
 }
 
 presidence();
@@ -32,7 +31,7 @@ presidence();
         <tbody>
         <tr>
             <td style="border:0">
-                <img src="<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>img/logo.png" alt="" title="" style="float:left" /><br><br><br><br><br>
+                <img src="<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>img/logo.png" alt="" title="" style="float:left" /><br><br><br><br><br>
                 <div style="padding-left:45px;">
                     <?php
                     inclure('adresse-fiche-sortie', '');

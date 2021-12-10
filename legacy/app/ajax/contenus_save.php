@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $log = (isset($log) ? $log : '')."\n accès à ".date('H:i:s');
 $log .= "\n TEST utf 8 : Смотрите эту страницу в России";
@@ -16,9 +16,9 @@ if (admin()) {
     $log .= "\n html_entity_decode :  \n".$contenu_content_inline;
 
     if ($id_content_inline && isset($_POST['val'])) {
-        $contenu_content_inline = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($contenu_content_inline);
+        $contenu_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString($contenu_content_inline);
         $req = "UPDATE  `caf_content_inline` SET  `contenu_content_inline` =  '$contenu_content_inline' WHERE  `caf_content_inline`.`id_content_inline` =$id_content_inline LIMIT 1 ;";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $result['error'] = "SQL error : $req";
         } else {
             $result['success'] = true;

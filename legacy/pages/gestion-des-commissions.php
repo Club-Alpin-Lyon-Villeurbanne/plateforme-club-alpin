@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 ?>
 <!-- MAIN -->
@@ -23,10 +23,10 @@ global $kernel;
 					<?php
                     // LISTE DES COMMISSIONS
                 $req = 'SELECT * FROM caf_commission ORDER BY ordre_commission ASC, id_commission DESC';
-                $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
                 while ($row = $result->fetch_assoc()) {
-                    $action = $kernel->getContainer()->get('legacy_user_rights')->allowed('comm_edit', $row['code_commission']);
+                    $action = LegacyContainer::get('legacy_user_rights')->allowed('comm_edit', $row['code_commission']);
 
                     if ($action) {
                         // chemin vers grand eimage
@@ -50,7 +50,7 @@ global $kernel;
                                     .'</div>'
                                     .'<div class="item-2">';
                         // reorder
-                        if ($kernel->getContainer()->get('legacy_user_rights')->allowed('comm_edit')) {
+                        if (LegacyContainer::get('legacy_user_rights')->allowed('comm_edit')) {
                             echo '<img class="handle" style="float:right; cursor:move; height:30px" src="/img/base/move.png" alt="MOVE" title="Réordonner" />';
                         }
                         // titre

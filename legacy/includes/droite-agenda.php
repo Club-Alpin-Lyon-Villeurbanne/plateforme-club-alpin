@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 // nombre d'éléments à afficher
 $limit = $limite_sorties_accueil;
@@ -15,13 +15,13 @@ $evtTab2 = [];
 	WHERE id_commission = commission_evt
 	AND status_evt = 1'
     // si une comm est sélectionnée, filtre
-    .($current_commission ? " AND code_commission LIKE '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($current_commission)."' " : '')
+    .($current_commission ? " AND code_commission LIKE '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($current_commission)."' " : '')
     // seulement les sorties à venir
     .' AND tsp_evt > '.mktime(00, 00, 00, date('n'), date('j'), date('Y'))
     .' ORDER BY tsp_evt ASC
 	LIMIT '.($limit + 10);
 
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $use = false;
         if ($id_dest = is_sortie_in_destination($handle['id_evt'])) {
@@ -49,13 +49,13 @@ if ($current_commission) { // 2 minimum //11/04/2014&& sizeof($evtTab) < $limit-
 		FROM caf_evt, caf_commission
 		WHERE id_commission = commission_evt
 		AND status_evt = 1
-		AND code_commission != '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($current_commission)."' "
+		AND code_commission != '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($current_commission)."' "
         // seulement les sorties à venir
         .' AND tsp_evt > '.mktime(00, 00, 00, date('n'), date('j'), date('Y'))
         .' ORDER BY tsp_evt ASC
 		LIMIT '.($limit + 10);
 
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $use = false;
         if ($id_dest = is_sortie_in_destination($handle['id_evt'])) {

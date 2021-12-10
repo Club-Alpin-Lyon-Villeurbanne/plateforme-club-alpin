@@ -8,10 +8,9 @@
  */
 
 //Import PHPMailer classes into the global namespace
+use App\Legacy\LegacyContainer;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
-
-global $kernel;
 
 require __DIR__.'/Exception.php';
 require __DIR__.'/PHPMailer.php';
@@ -36,12 +35,10 @@ class CAFPHPMailer extends PHPMailer
      */
     public function __construct(bool $throwExceptions = false)
     {
-        global $kernel;
-
         $config = require __DIR__.'/../../config/config.php';
 
-        $emitterEmail = $kernel->getContainer()->getParameter('legacy_env_MAIL_EMITTER_EMAIL');
-        $emitterName = $kernel->getContainer()->getParameter('legacy_env_MAIL_EMITTER_NAME');
+        $emitterEmail = LegacyContainer::getParameter('legacy_env_MAIL_EMITTER_EMAIL');
+        $emitterName = LegacyContainer::getParameter('legacy_env_MAIL_EMITTER_NAME');
 
         //Don't forget to do this or other things may not be set correctly!
         parent::__construct($throwExceptions);

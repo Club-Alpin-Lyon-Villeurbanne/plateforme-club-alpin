@@ -1,16 +1,16 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 // id du profil
-$id_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString((int) ($_GET['id_user']));
+$id_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) ($_GET['id_user']));
 $tmpUser = false;
 
 $req = "SELECT * FROM caf_user WHERE id_user = $id_user LIMIT 1";
 //AND valid_user = 1
 // echo '<!-- '.$req.' -->';
 
-$result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+$result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($row = $result->fetch_assoc()) {
     // echo '<!-- FOUND -->';
 
@@ -29,7 +29,7 @@ while ($row = $result->fetch_assoc()) {
 		ORDER BY hierarchie_usertype DESC
 		LIMIT 50';
 
-    $result2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row2 = $result2->fetch_assoc()) {
         $commission = substr(strrchr($row2['params_user_attr'], ':'), 1);
         $row['statuts'][] = $row2['title_usertype'].($commission ? ', '.$commission : '');

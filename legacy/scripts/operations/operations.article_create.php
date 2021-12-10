@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $status_article = 0;
 $topubly_article = ('on' == $_POST['topubly_article'] ? 1 : 0);
@@ -45,16 +45,16 @@ if (
 
 // enregistrement en BD
 if (!isset($errTab) || 0 === count($errTab)) {
-    $titre_article = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($titre_article);
-    $code_article = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($code_article);
-    $cont_article = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($cont_article);
+    $titre_article = LegacyContainer::get('legacy_mysqli_handler')->escapeString($titre_article);
+    $code_article = LegacyContainer::get('legacy_mysqli_handler')->escapeString($code_article);
+    $cont_article = LegacyContainer::get('legacy_mysqli_handler')->escapeString($cont_article);
 
     $req = "INSERT INTO caf_article(`status_article` ,`topubly_article` ,`tsp_crea_article` ,`tsp_article` ,`user_article` ,`titre_article` ,`code_article` ,`commission_article` ,`evt_article` ,`une_article` ,`cont_article`)
                         VALUES ('$status_article',  '$topubly_article',  '$tsp_crea_article',  '$tsp_article',  '$user_article',  '$titre_article',  '$code_article', ".($commission_article > 0 ? "'$commission_article'" : 'null').",  '$evt_article',  '$une_article',  '$cont_article');";
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     } else {
-        $id_article = $kernel->getContainer()->get('legacy_mysqli_handler')->insertId();
+        $id_article = LegacyContainer::get('legacy_mysqli_handler')->insertId();
     }
 }
 
