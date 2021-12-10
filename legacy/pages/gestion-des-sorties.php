@@ -60,7 +60,7 @@
 											'
                                         .'</div>';
 
-                            include __DIR__.'/../includes/agenda-evt-debut.php';
+                            require __DIR__.'/../includes/agenda-evt-debut.php';
                             echo '</td>'
                                 .'</tr>';
                         } ?>
@@ -97,7 +97,7 @@
 
 	<!-- partie droite -->
 	<?php
-    include __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__.'/../includes/right-type-agenda.php';
     ?>
 
 

@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use App\Utils\NicknameGenerator;
 
-include __DIR__.'/../../app/includes.php';
+require __DIR__.'/../../app/includes.php';
 
 function mysqli_result($res, $row = 0, $col = 0)
 {

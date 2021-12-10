@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-include __DIR__.'/../../app/includes.php';
+require __DIR__.'/../../app/includes.php';
 
 $req = 'SELECT id_article, cont_article FROM caf_article WHERE status_article=1 AND tsp_lastedit < TIMESTAMPADD(DAY , -2, NOW()) AND cont_article REGEXP \'src="ftp/user/[[:digit:]]+/images/\' LIMIT 10';
 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);

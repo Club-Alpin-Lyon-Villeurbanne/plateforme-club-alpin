@@ -1,4 +1,4 @@
 <?php
 
-include __DIR__.'/operations.evt_verif.php';
-include __DIR__.'/operations.evt_save.php';
+require __DIR__.'/operations.evt_verif.php';
+require __DIR__.'/operations.evt_save.php';

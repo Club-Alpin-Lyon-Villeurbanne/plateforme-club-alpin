@@ -1,12 +1,12 @@
 <?php
 
-include __DIR__.'/../../app/includes.php';
+require __DIR__.'/../../app/includes.php';
 
 if (admin()) {
     $targetDir = __DIR__.'/../../../public/'.$_GET['dossier'].'/';
 
     // Handle file uploads via XMLHttpRequest
-    include __DIR__.'/vfu.classes.php';
+    require __DIR__.'/vfu.classes.php';
 
     // list of valid extensions, ex. array("jpeg", "xml", "bmp")
     $allowedExtensions = $p_ftpallowed;

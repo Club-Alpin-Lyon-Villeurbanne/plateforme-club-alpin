@@ -12,7 +12,7 @@ if (user() && allowed('evt_join')) {
                 $inscriptions_status = inscriptions_status_destination($destination);
                 echo '<hr /><h2>Inscriptions :</h2><p>'.$inscriptions_status['message'].'</p>';
                 if (true == $inscriptions_status['status']) {
-                    include __DIR__.'/../../includes/evt/user_inscription_button.php'; ?>
+                    require __DIR__.'/../../includes/evt/user_inscription_button.php'; ?>
 
                         <div id="inscription" style="display:<?php if (isset($_POST['operation']) && 'user_join' == $_POST['operation']) {
                         echo 'block';
@@ -50,13 +50,13 @@ if (user() && allowed('evt_join')) {
                                     <input type="hidden" name="id_evt" value="<?php echo $id_evt; ?>" />
                                     <input type="hidden" name="id_destination" value="<?php echo $destination['id']; ?>" />
 
-                                    <?php include __DIR__.'/../../includes/evt/user_inscription_transport.php'; ?>
+                                    <?php require __DIR__.'/../../includes/evt/user_inscription_transport.php'; ?>
 
                                     <div class="check-nice ">
-                                        <?php include __DIR__.'/../../includes/evt/user_inscription_options.php'; ?>
+                                        <?php require __DIR__.'/../../includes/evt/user_inscription_options.php'; ?>
                                     </div>
 
-                                    <?php include __DIR__.'/../../includes/evt/user_inscription_submit.php'; ?>
+                                    <?php require __DIR__.'/../../includes/evt/user_inscription_submit.php'; ?>
 
                                 </form>
 
@@ -74,7 +74,7 @@ if (user() && allowed('evt_join')) {
                     if ($evt['join_start_evt'] < time()) {
                         // Je ne suis pas déja inscrit (ou bien je dispose de filiations à inscrire)
                         if ('neutre' == $monStatut || count($filiations) || $evt['repas_restaurant']) {
-                            include __DIR__.'/../../includes/evt/user_inscription_button.php'; ?>
+                            require __DIR__.'/../../includes/evt/user_inscription_button.php'; ?>
 
                             <div id="inscription" style="display:<?php if (isset($_POST['operation']) && 'user_join' == $_POST['operation']) {
                                 echo 'block';
@@ -100,11 +100,11 @@ if (user() && allowed('evt_join')) {
 
                                     <div class="check-nice ">
 
-                                        <?php include __DIR__.'/../../includes/evt/user_inscription_options.php'; ?>
+                                        <?php require __DIR__.'/../../includes/evt/user_inscription_options.php'; ?>
 
                                     </div>
 
-                                    <?php include __DIR__.'/../../includes/evt/user_inscription_submit.php'; ?>
+                                    <?php require __DIR__.'/../../includes/evt/user_inscription_submit.php'; ?>
 
                                 </form>
 

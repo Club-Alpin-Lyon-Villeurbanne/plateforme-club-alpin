@@ -5,7 +5,7 @@ use App\Legacy\LegacyContainer;
 // continuons... Création de l'evt en lui meme
 if (!isset($errTab) || 0 === count($errTab)) {
     // formatage des vars : la description héritée du RTE necessite un petit nettoyage de sécurité (javascript / WINcode...)
-    include_once __DIR__.'/../../htmLawed/htmLawed.php';
+    require_once __DIR__.'/../../htmLawed/htmLawed.php';
     $description_evt = htmLawed($description_evt);
 
     // sécurisation BDD
