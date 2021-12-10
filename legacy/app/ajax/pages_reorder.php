@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $log = (isset($log) ? $log : '')."\n accès à ".date('H:i:s');
 
@@ -12,7 +12,7 @@ if (admin()) {
         if ($id_page) {
             $req = "UPDATE `caf_pdt` SET  `ordre_pdt` =  '".$ordre_pdt."' WHERE  `caf_pdt`.`id_pdt` =".$id_pdt.' LIMIT 1';
             $log .= "\n REQ : $req";
-            $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            LegacyContainer::get('legacy_mysqli_handler')->query($req);
             --$ordre_pdt;
         }
     }

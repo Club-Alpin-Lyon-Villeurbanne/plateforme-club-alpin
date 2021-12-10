@@ -1,8 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 $lastname_user = trim(stripslashes($_POST['lastname_user']));
 $cafnum_user = preg_replace('/\s+/', '', stripslashes($_POST['cafnum_user']));
@@ -24,10 +23,10 @@ if (strlen($mdp_user) < 8 || strlen($mdp_user) > 40) {
 
 if (!isset($errTab) || 0 === count($errTab)) {
     // formatage sécurité
-    $lastname_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($lastname_user);
-    $cafnum_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($cafnum_user);
-    $email_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($email_user);
-    $mdp_user = $kernel->getContainer()->get('legacy_hasher_factory')->getPasswordHasher('login_form')->hash($mdp_user);
+    $lastname_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($lastname_user);
+    $cafnum_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($cafnum_user);
+    $email_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($email_user);
+    $mdp_user = LegacyContainer::get('legacy_hasher_factory')->getPasswordHasher('login_form')->hash($mdp_user);
 
     // Si ce compte a été désactivé
     if (!isset($errTab) || 0 === count($errTab)) {
@@ -36,7 +35,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             WHERE cafnum_user = '$cafnum_user'
             AND valid_user=2
             LIMIT 1";
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $row = $result->fetch_row();
         if ($row[0]) {
             $errTab[] = "Le compte lié à ce numéro d'adhérent a été désactivé manuellement par un responsable. Nous vous invitons à contacter le Président, ou vice-Président du club pour en savoir plus.";
@@ -50,7 +49,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             WHERE cafnum_user = '$cafnum_user'
             AND valid_user=1
             LIMIT 1";
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $row = $result->fetch_row();
         if ($row[0]) {
             $errTab[] = "Ce numéro d'adhérent correspond déjà à une inscription sur le site. Si vous avez perdu vos identifiants, utilisez le lien <i>Mot de passe oublié</i> ci-contre à droite.";
@@ -64,7 +63,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             WHERE email_user LIKE '$email_user'
             AND valid_user=1
             LIMIT 1";
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $row = $result->fetch_row();
         if ($row[0]) {
             $errTab[] = 'Cette adresse e-mail correspond déjà à une inscription sur le site. Si vous avez perdu vos identifiants, utilisez le lien <i>Mot de passe oublié</i> ci-contre à droite.';
@@ -74,7 +73,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // vérification du numéro CAF
     if (!isset($errTab) || 0 === count($errTab)) {
         $req = "SELECT COUNT(id_user) FROM caf_user WHERE cafnum_user = '$cafnum_user' LIMIT 1";
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $row = $result->fetch_row();
         if (!$row[0]) {
             $errTab[] = "Désolé, nous ne trouvons pas ce numéro d'adhérent dans notre base de donnée. Si vous venez de vous (ré)inscrire au CAF, nous vons invitons à réessayer ultérieurement.";
@@ -84,7 +83,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // vérification de l'obsolescence du compte
     if (!isset($errTab) || 0 === count($errTab)) {
         $req = "SELECT COUNT(id_user) FROM caf_user WHERE cafnum_user = '$cafnum_user' AND doit_renouveler_user =1 LIMIT 1";
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $row = $result->fetch_row();
         if ($row[0]) {
             $errTab[] = 'La licence pour ce compte semble être expirée. Si vous venez de renouveler votre licence nous vous invitons à réessayer ultérieurement.';
@@ -102,7 +101,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             AND upper(lastname_user) LIKE '".strtoupper($lastname_user)."'
             ORDER BY id_user DESC
             LIMIT 1";
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $id_user = $row['id_user'];
         } // ID : clé permettenat l'enregistrement ci-après
@@ -120,12 +119,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
             FROM caf_user
             WHERE id_user = $id_user
             LIMIT 1";
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $firstname_user = ucfirst(mb_strtolower($row['firstname_user'], 'UTF-8'));
             $nickname_user = str_replace([' ', '-', '\''], '', $firstname_user.substr(strtoupper($row['lastname_user']), 0, 1));
         }
-        $nickname_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($nickname_user);
+        $nickname_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($nickname_user);
 
         if (!$nickname_user) {
             $errTab[] = 'Impossible de générer le pseudo. Merci de nous contacter.';
@@ -142,7 +141,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             created_user = ".time().",
             cookietoken_user = '$cookietoken_user'
             WHERE id_user =$id_user LIMIT 1 ;";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur de sauvegarde';
         }
     }
@@ -150,7 +149,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // envoi de l'e-mail
     if (!isset($errTab) || 0 === count($errTab)) {
         // check-in vars : string à retourner lors de la confirmation= md5 de la concaténation id-email
-        $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$cookietoken_user.'-'.$id_user.'.html';
+        $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$cookietoken_user.'-'.$id_user.'.html';
 
         // content vars
         $subject = 'Validez votre compte adhérent du '.$p_sitename;

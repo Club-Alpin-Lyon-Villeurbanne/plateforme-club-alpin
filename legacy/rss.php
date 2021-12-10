@@ -1,8 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 header('Cache-Control: max-age=10');
 header('Content-Type: text/xml');
@@ -15,7 +14,7 @@ include_once __DIR__.'/includes/FeedItem.php';
 
 // LISTE DES COMMISSIONS PUBLIQUES
 $req = 'SELECT * FROM caf_commission WHERE vis_commission=1 ORDER BY ordre_commission ASC';
-$handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+$handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $comTab = [];
 $comCodeTab = [];
 while ($handle = $handleSql->fetch_assoc()) {
@@ -66,27 +65,27 @@ if (!array_key_exists('mode', $_GET) || preg_match('#^articles#', $_GET['mode'])
         ."ORDER BY  `tsp_validate_article` DESC
 		LIMIT $rss_limit";
 
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_assoc()) {
         // info de la commission liée
         if ($handle['commission_article'] > 0) {
             $req = 'SELECT * FROM caf_commission
 				WHERE id_commission = '.(int) ($handle['commission_article']).'
 				LIMIT 1';
-            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_assoc()) {
                 $handle['commission'] = $handle2;
             }
         }
 
         $entry['title'] = $handle['titre_article'];
-        $entry['link'] = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$handle['code_article'].'-'.$handle['id_article'].'.html';
+        $entry['link'] = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$handle['code_article'].'-'.$handle['id_article'].'.html';
         $entry['description'] = $handle['cont_article'];
         $entry['timestamp'] = $handle['tsp_article'];
 
         // check image
         if (is_file(__DIR__.'/../public/ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg')) {
-            $entry['img'] = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg';
+            $entry['img'] = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg';
         }
 
         $entryTab[] = $entry;
@@ -122,21 +121,21 @@ if (preg_match('#^sorties#', $_GET['mode'])) {
         ."ORDER BY  `tsp_evt` ASC
 		LIMIT $rss_limit";
 
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_assoc()) {
         // info de la commission liée
         if ($handle['commission_evt'] > 0) {
             $req = 'SELECT * FROM caf_commission
 				WHERE id_commission = '.(int) ($handle['commission_evt']).'
 				LIMIT 1';
-            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_assoc()) {
                 $handle['commission'] = $handle2;
             }
         }
 
         $entry['title'] = $handle['titre_evt'];
-        $entry['link'] = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html';
+        $entry['link'] = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html';
         $entry['description'] = '';
         if ($current_commission) {
             $entry['description'] .= ($entry['description'] ? ' | ' : '').'Commission '.$current_commission;
@@ -168,7 +167,7 @@ $CafFeed = new FeedWriter(RSS2);
 //Setting the channel elements
 //Use wrapper functions for common channel elements
 $CafFeed->setTitle($rss_datas['title']);
-$CafFeed->setLink($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL));
+$CafFeed->setLink(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL));
 $CafFeed->setDescription($rss_datas['description']);
 
 //Image title and link must match with the 'title' and 'link' channel elements for RSS 2.0
@@ -181,9 +180,9 @@ $CafFeed->setChannelElement('pubDate', date(\DATE_RSS, time()));
 //Adding a feed. Genarally this portion will be in a loop and add all feeds.
 
 foreach ($entryTab as $entry) {
-    $entry['description'] = str_replace('href="/', 'href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL), $entry['description']);
-    $entry['description'] = str_replace('"ftp/', '"'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/', $entry['description']);
-    $entry['description'] = str_replace('"IMG/', '"'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'IMG/', $entry['description']);
+    $entry['description'] = str_replace('href="/', 'href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL), $entry['description']);
+    $entry['description'] = str_replace('"ftp/', '"'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/', $entry['description']);
+    $entry['description'] = str_replace('"IMG/', '"'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'IMG/', $entry['description']);
 
     //Create an empty FeedItem
     $newItem = $CafFeed->createNewItem();

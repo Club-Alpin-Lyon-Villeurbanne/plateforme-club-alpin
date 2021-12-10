@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 ?>
 <!-- MAIN -->
@@ -97,7 +97,7 @@ global $kernel;
 					AND tsp_evt > $tspMin
 					AND tsp_evt < $tspMax
 					";
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['join_total'] = $row[0];
 
@@ -115,7 +115,7 @@ global $kernel;
                     AND id_user = user_evt_join
                     AND civ_user LIKE 'M'
                     ";
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['join_total_hommes'] = $row[0];
 
@@ -133,7 +133,7 @@ global $kernel;
                     AND id_user = user_evt_join
                     AND civ_user NOT LIKE 'M'
                     ";
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['join_total_femmes'] = $row[0];
 
@@ -151,7 +151,7 @@ global $kernel;
                     AND id_user = user_evt_join
                     AND birthday_user > (tsp_evt - ".(18 * 365 * 24 * 60 * 60).')
                     ';
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['join_total_mineurs'] = $row[0];
 
@@ -167,7 +167,7 @@ global $kernel;
 					AND tsp_evt > $tspMin
 					AND tsp_evt < $tspMax
 					";
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['join_1'] = $row[0];
 
@@ -183,7 +183,7 @@ global $kernel;
 					AND tsp_evt > $tspMin
 					AND tsp_evt < $tspMax
 					";
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['join_2'] = $row[0];
 
@@ -200,7 +200,7 @@ global $kernel;
 					AND tsp_evt < $tspMax
 					";
 
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['join_3'] = $row[0];
                 } ?>
@@ -288,7 +288,7 @@ global $kernel;
 						AND tsp_evt < $tspMax
 						";
 
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['evt_total'] = $row[0];
 
@@ -300,7 +300,7 @@ global $kernel;
 						AND tsp_evt > $tspMin
 						AND tsp_evt < $tspMax
 						";
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['evt_1'] = $row[0];
 
@@ -312,7 +312,7 @@ global $kernel;
 						AND tsp_evt > $tspMin
 						AND tsp_evt < $tspMax
 						";
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['evt_2'] = $row[0];
 
@@ -324,7 +324,7 @@ global $kernel;
 						AND tsp_evt > $tspMin
 						AND tsp_evt < $tspMax
 						";
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['evt_legal_1'] = $row[0];
 
@@ -336,7 +336,7 @@ global $kernel;
 						AND tsp_evt > $tspMin
 						AND tsp_evt < $tspMax
 						";
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['evt_legal_0'] = $row[0];
 
@@ -348,7 +348,7 @@ global $kernel;
 						AND usertype_user_attr LIKE id_usertype
 						AND code_usertype LIKE 'responsable-commission'
 						";
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['respcomm'] = $row[0];
 
@@ -360,7 +360,7 @@ global $kernel;
 						AND usertype_user_attr LIKE id_usertype
 						AND code_usertype LIKE 'encadrant'
 						";
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['encadrants'] = $row[0];
 
@@ -372,7 +372,7 @@ global $kernel;
 						AND usertype_user_attr LIKE id_usertype
 						AND code_usertype LIKE 'coencadrant'
 						";
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();
                     $comTab[$key]['stats']['coencadrants'] = $row[0];
                 } ?>
@@ -481,7 +481,7 @@ global $kernel;
 						GROUP BY parent_comment;
 						';
 
-            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $comments = [];
             while ($comment = $result->fetch_assoc()) {
                 $comments[$comment['parent_comment']] = $comment['com_count'];
@@ -493,7 +493,7 @@ global $kernel;
 						ORDER BY nb_vues_article DESC;
 						';
 
-            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req); ?>
+            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req); ?>
 
 					<br />
 					<table id="statsArticles" class="datatables ">

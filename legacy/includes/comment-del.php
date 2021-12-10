@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $id_comment = (int) ($_GET['id_comment']);
 if (!$id_comment) {
@@ -9,7 +9,7 @@ if (!$id_comment) {
     // recup
     $comment = false;
     $req = "SELECT * FROM caf_comment WHERE id_comment = $id_comment";
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $result->fetch_array(\MYSQLI_ASSOC)) {
         $comment = $handle;
     }

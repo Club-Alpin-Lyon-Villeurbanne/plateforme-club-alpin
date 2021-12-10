@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 if (!admin()) {
     echo 'Votre session administrateur a expiré';
@@ -20,7 +20,7 @@ if (!admin()) {
 					ORDER BY ordre_content_inline_group ASC, code_content_inline ASC, date_content_inline DESC
 					";
     $contTab = [];
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $contTab[] = $handle;
     }
@@ -28,7 +28,7 @@ if (!admin()) {
     // groupes
     $req = 'SELECT * FROM caf_content_inline_group ORDER BY ordre_content_inline_group ASC';
     $contGroupTab = [];
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $contGroupTab[] = $handle;
     } ?>

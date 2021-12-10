@@ -1,8 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 $id_evt = (int) ($_POST['id_evt']);
 $id_user = getUser()->getIdUser();
@@ -16,7 +15,7 @@ if (!$id_user || !$id_evt) {
 if (!isset($errTab) || 0 === count($errTab)) {
     // Informations sur l'événement
     $req = "SELECT id_evt, titre_evt, tsp_evt, tarif_evt, code_evt FROM caf_evt WHERE id_evt=$id_evt LIMIT 1";
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if ($row) {
         $evtId = html_utf8($row[0]);
@@ -24,7 +23,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $evtName = html_utf8($row[1]);
         $evtDate = html_utf8(date('d-m-Y', $row[2]));
         $evtTarif = html_utf8($row[3]);
-        $evtUrl = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($evtCode).'-'.$evtId.'.html');
+        $evtUrl = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($evtCode).'-'.$evtId.'.html');
     }
 
     // Informations sur l'encadrant
@@ -35,7 +34,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             WHERE A.evt_evt_join=$id_evt
             AND (A.role_evt_join LIKE 'encadrant')
             LIMIT 1";
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if ($row) {
         $encName = html_utf8($row[0].' '.$row[1]);
@@ -44,7 +43,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // récupération du statut de l'inscription : si elle est valide, l'orga recoit un e-mail
     $req = "SELECT status_evt_join, is_cb FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join=$id_user ORDER BY tsp_evt_join DESC LIMIT 1 ";
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $status_evt_join = 0;
     $is_cb = 0;
     while ($row = $result->fetch_assoc()) {
@@ -58,7 +57,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $toMail = '';
         $toName = '';
         $req = "SELECT email_user, firstname_user, lastname_user FROM caf_user, caf_evt WHERE id_evt=$id_evt AND user_evt=id_user LIMIT 1";
-        $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $toMail = $row['email_user'];
             $toName = $row['firstname_user'].' '.$row['lastname_user'];
@@ -70,7 +69,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if (!isset($errTab) || 0 === count($errTab)) {
             // si pas de pb, suppression de l'inscription
             $req = "DELETE FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join=$id_user";
-            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+            if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }
 
@@ -80,7 +79,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // vars
             $tmpUserName = (getUser()->getFirstnameUser().' '.getUser()->getLastnameUser());
             $evtName = html_utf8($_POST['titre_evt']);
-            $evtUrl = html_utf8($kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html');
+            $evtUrl = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html');
 
             // contenu
             $subject = 'Désinscription de '.$tmpUserName;

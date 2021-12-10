@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $erreur = $code_ftp_user = $niveau_page = $ordre_page = null;
 
@@ -24,7 +24,7 @@ if (!$erreur) {
     $doublon = true;
     for ($i = 1; $doublon; ++$i) {
         // Recherche sql
-        $countSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query("SELECT COUNT(*) FROM `caf_page` WHERE `code_page` LIKE '$code_page' LIMIT 1");
+        $countSql = LegacyContainer::get('legacy_mysqli_handler')->query("SELECT COUNT(*) FROM `caf_page` WHERE `code_page` LIKE '$code_page' LIMIT 1");
         if (!getArrayFirstValue($countSql->fetch_array(\MYSQLI_NUM))) {
             $doublon = false;
         }
@@ -33,17 +33,17 @@ if (!$erreur) {
 
     // définition du niveau
     if ($parent_page) {
-        $countSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query("SELECT `niveau_page` FROM `caf_page` WHERE `id_page` =$parent_page LIMIT 1");
+        $countSql = LegacyContainer::get('legacy_mysqli_handler')->query("SELECT `niveau_page` FROM `caf_page` WHERE `id_page` =$parent_page LIMIT 1");
         $niveau_page = getArrayFirstValue($countSql->fetch_array(\MYSQLI_NUM)) + 1;
     }
 
     // adaptation
-    $nom_page = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($nom_page);
-    $titre_page = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($titre_page);
-    $description_page = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($description_page);
+    $nom_page = LegacyContainer::get('legacy_mysqli_handler')->escapeString($nom_page);
+    $titre_page = LegacyContainer::get('legacy_mysqli_handler')->escapeString($titre_page);
+    $description_page = LegacyContainer::get('legacy_mysqli_handler')->escapeString($description_page);
 
     // save
     $req = "INSERT INTO `caf_page` (`id_page` ,`ordre_page` ,`parent_page` ,`code_page` ,`nom_page` ,`niveau_page` ,`titre_page` ,`description_page` ,`vis_page`)
                                 VALUES (NULL , '$ordre_page', '$parent_page', '$code_page', '$nom_page', '$niveau_page', '$titre_page', '$description_page', '$vis_page');";
-    $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    LegacyContainer::get('legacy_mysqli_handler')->query($req);
 }

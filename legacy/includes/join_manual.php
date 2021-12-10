@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 // Cette page sert à joindre manuellement un user à une sortie
 
@@ -115,7 +115,7 @@ if (user()) {
                             .($showAll ? '' : ' AND valid_user=1 ')
                             .' ORDER BY lastname_user ASC
 							LIMIT 8000';
-            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($elt = $result->fetch_assoc()) {
                 // si dans destination :
                 if ($id_dest) {
@@ -129,7 +129,7 @@ if (user()) {
                     $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join = ".(int) ($elt['id_user']).' LIMIT 1';
                 }
 
-                $result2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                $result2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 $row = $result2->fetch_row();
                 // inscription inexistante
                 if (!$row[0]) {
@@ -184,7 +184,7 @@ if (user()) {
             } else {
                 // On récupère des informations complémentaires sur la sortie : besoin de bénévoles ? possibilité de restaurant ?
                 $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$id_evt;
-                $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($sorties = $result->fetch_assoc()) {
                     $sortie = $sorties;
                 } ?>

@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $id_evt = (int) (substr(strrchr($p2, '-'), 1));
 
@@ -17,7 +17,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         WHERE id_evt=$id_evt
         AND commission_evt=id_commission
         LIMIT 1";
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // on a le droit d'annuler ?
@@ -28,13 +28,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if (!isset($errTab) || 0 === count($errTab)) {
             // suppression inscrits
             $req = "DELETE FROM caf_evt_join WHERE caf_evt_join.evt_evt_join=$id_evt OR caf_evt_join.evt_evt_join IN (SELECT DISTINCT id_evt FROM caf_evt WHERE cycle_parent_evt = $id_evt)";
-            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+            if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }
 
             // suppression sortie principale et sortie associee
             $req = "DELETE FROM caf_evt WHERE caf_evt.id_evt=$id_evt OR caf_evt.cycle_parent_evt=$id_evt";
-            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+            if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }
         }

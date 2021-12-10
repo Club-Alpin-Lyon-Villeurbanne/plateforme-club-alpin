@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 if (!admin()) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
@@ -8,7 +8,7 @@ if (!admin()) {
     $id_page = (int) ($_GET['id_page']);
     $req = "SELECT * FROM caf_page WHERE id_page=$id_page LIMIT 1";
     $page = false;
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $page = $handle;
     }

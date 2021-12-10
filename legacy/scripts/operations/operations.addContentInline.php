@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $lang_content_inline = trim(stripslashes($_POST['lang_content_inline']));
 $code_content_inline = trim(stripslashes($_POST['code_content_inline']));
@@ -22,13 +22,13 @@ if (2 != strlen($lang_content_inline)) {
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
-    $lang_content_inline = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($lang_content_inline);
-    $code_content_inline = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($code_content_inline);
-    $contenu_content_inline = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($contenu_content_inline);
+    $lang_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString($lang_content_inline);
+    $code_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString($code_content_inline);
+    $contenu_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString($contenu_content_inline);
 
     $req = "INSERT INTO `caf_content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
                                                         VALUES (NULL , '$groupe_content_inline', '$code_content_inline', '$lang_content_inline', '$contenu_content_inline', '".time()."', '$linkedtopage_content_inline');";
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $erreur = 'Erreur BDD<br />'.$req;
     }
 }

@@ -1,13 +1,13 @@
 <?php
 
 use App\Entity\CafUser;
+use App\Legacy\LegacyContainer;
 use Symfony\Bridge\Twig\AppVariable;
 
 global $_POST;
 global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
 global $CONTENUS_INLINE;
 global $contLog;
-global $kernel;
 global $lang;
 global $p_devmode;
 global $p_inclurelist;
@@ -26,13 +26,12 @@ $CONTENUS_INLINE = [];
 
 function presidence()
 {
-    global $kernel;
     global $president;
     global $vicepresident;
 
     $president = $vicepresident = [];
     $president_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 6 WHERE U.id_user = A.user_user_attr';
-    $president_result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($president_sql);
+    $president_result = LegacyContainer::get('legacy_mysqli_handler')->query($president_sql);
     while ($row_president = $president_result->fetch_assoc()) {
         if ('1' !== $row_president['id_user']) {
             $president[] = $row_president;
@@ -41,7 +40,7 @@ function presidence()
 
     $vicepresident = [];
     $vicepresident_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 7 WHERE U.id_user = A.user_user_attr';
-    $vicepresident_result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($vicepresident_sql);
+    $vicepresident_result = LegacyContainer::get('legacy_mysqli_handler')->query($vicepresident_sql);
     while ($row_vicepresident = $vicepresident_result->fetch_assoc()) {
         if ('1' !== $row_vicepresident['id_user']) {
             $vicepresident[] = $row_vicepresident;
@@ -179,9 +178,7 @@ $userAllowedTo=
 */
 function allowed($code_userright, $param = '')
 {
-    global $kernel;
-
-    return $kernel->getContainer()->get('legacy_user_rights')->allowed($code_userright, $param);
+    return LegacyContainer::get('legacy_user_rights')->allowed($code_userright, $param);
 }
 
 /*
@@ -285,9 +282,7 @@ function formatSize($bytes, $format = '%.2f', $lang = 'fr')
 }
 function user(): bool
 {
-    global $kernel;
-
-    if ($token = $kernel->getContainer()->get('security.token_storage')->getToken()) {
+    if ($token = LegacyContainer::get('security.token_storage')->getToken()) {
         if ($token->getUser() instanceof CafUser) {
             return true;
         }
@@ -297,9 +292,7 @@ function user(): bool
 }
 function getUser(): ?Cafuser
 {
-    global $kernel;
-
-    if ($token = $kernel->getContainer()->get('security.token_storage')->getToken()) {
+    if ($token = LegacyContainer::get('security.token_storage')->getToken()) {
         if ($token->getUser() instanceof CafUser) {
             return $token->getUser();
         }
@@ -309,42 +302,34 @@ function getUser(): ?Cafuser
 }
 function csrfToken(string $intention): ?string
 {
-    global $kernel;
-
-    return $kernel->getContainer()->get('legacy_csrf_token_manager')->getToken($intention);
+    return LegacyContainer::get('legacy_csrf_token_manager')->getToken($intention);
 }
 function generateRoute(string $path): ?string
 {
-    global $kernel;
-
-    return $kernel->getContainer()->get('legacy_router')->generate($path);
+    return LegacyContainer::get('legacy_router')->generate($path);
 }
 function twigRender(string $path, array $params = []): ?string
 {
-    global $kernel;
-
     $params['app'] = new AppVariable();
-    $params['app']->setEnvironment($kernel->getContainer()->getParameter('kernel.environment'));
-    $params['app']->setDebug($kernel->getContainer()->getParameter('kernel.debug'));
-    $params['app']->setTokenStorage($kernel->getContainer()->get('legacy_token_storage'));
-    $params['app']->setRequestStack($kernel->getContainer()->get('legacy_request_stack'));
+    $params['app']->setEnvironment(LegacyContainer::getParameter('kernel.environment'));
+    $params['app']->setDebug(LegacyContainer::getParameter('kernel.debug'));
+    $params['app']->setTokenStorage(LegacyContainer::get('legacy_token_storage'));
+    $params['app']->setRequestStack(LegacyContainer::get('legacy_request_stack'));
 
-    return $kernel->getContainer()->get('legacy_twig')->render($path, $params);
+    return LegacyContainer::get('legacy_twig')->render($path, $params);
 }
 
 // enregistrement de l'activité sur le site
 function mylog($code, $desc, $connectme = true)
 {
-    global $kernel;
-
-    $code_log_admin = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($code));
-    $desc_log_admin = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString(trim($desc));
+    $code_log_admin = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim($code));
+    $desc_log_admin = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim($desc));
     $date_log_admin = time();
-    $ip_log_admin = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($_SERVER['REMOTE_ADDR']);
+    $ip_log_admin = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_SERVER['REMOTE_ADDR']);
 
     $req = "INSERT INTO `caf_log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`)
         VALUES (NULL , '$code_log_admin',  '$desc_log_admin',  '$date_log_admin', '$ip_log_admin')";
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL lors du log';
     }
 }
@@ -369,8 +354,6 @@ function linker($link)
 // ma fonction d'insertion élément inline
 function cont($code = false, $html = false)
 {
-    global $kernel;
-
     $defLang = 'fr';
     global $CONTENUS_INLINE;
     global $lang;
@@ -390,7 +373,7 @@ function cont($code = false, $html = false)
             WHERE  `lang_content_inline` LIKE  '$tmplang'
             ORDER BY  `date_content_inline` DESC
             ";
-        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             // uniquement si pas déja renseigné
             if (!isset($CONTENUS_INLINE[$handle['code_content_inline']])) {
@@ -421,8 +404,6 @@ $p_inclurelist = [];
 // ma fonction d'insertion /modification élément HTML en front office
 function inclure($elt, $style = 'vide', $options = [])
 {
-    global $kernel;
-
     $defLang = 'fr';
     global $lang;
     if (!$lang) {
@@ -446,12 +427,12 @@ function inclure($elt, $style = 'vide', $options = [])
             }
         }
 
-        $code_content_html = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($elt);
+        $code_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($elt);
 
         // Contenu
         $req = "SELECT `vis_content_html`,`contenu_content_html` FROM `caf_content_html` WHERE `code_content_html` LIKE '$code_content_html' AND lang_content_html LIKE '".$lang."' ORDER BY `date_content_html` DESC LIMIT 1";
         $handleTab = [];
-        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $found = false;
         $currentElement = ['vis_content_html' => 1, 'contenu_content_html' => null]; // default values
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -629,16 +610,12 @@ function formater($retourner, $type = 1)
 
 function isGranted($attribute, $subject = null)
 {
-    global $kernel;
-
-    return $kernel->getContainer()->get('legacy_authorization_checker')->isGranted($attribute, $subject);
+    return LegacyContainer::get('legacy_authorization_checker')->isGranted($attribute, $subject);
 }
 
 function admin()
 {
-    global $kernel;
-
-    return $kernel->getContainer()->get('legacy_authorization_checker')->isGranted('ROLE_ADMIN');
+    return LegacyContainer::get('legacy_authorization_checker')->isGranted('ROLE_ADMIN');
 }
 function superadmin()
 {
