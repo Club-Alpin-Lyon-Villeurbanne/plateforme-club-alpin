@@ -34,7 +34,7 @@ if (user()) {
         }
 
         // Management des droits
-        include __DIR__.'/../../includes/dest/quick_update.php';
+        require __DIR__.'/../../includes/dest/quick_update.php';
 
         if (
             allowed('destination_modifier') ||

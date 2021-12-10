@@ -26,7 +26,7 @@ if (admin() ||
 }
 
 if (!$display) {
-    include __DIR__.'/../../pages/404.php';
+    require __DIR__.'/../../pages/404.php';
     exit;
 }
 

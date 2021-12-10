@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-include __DIR__.'/app/includes.php';
+require __DIR__.'/app/includes.php';
 
 //_________________________________________________
 //_____________________________ PAGE

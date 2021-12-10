@@ -67,7 +67,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
     }
     echo '<div id="destination-info" class="trigger-me">';
     if ($destination) {
-        include __DIR__.'/../../includes/dest/display.php';
+        require __DIR__.'/../../includes/dest/display.php';
     }
     echo '</div>';
 
@@ -593,7 +593,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
             Entrez ci-dessous toutes les informations qui ne figurent pas dans le formulaire.
             N'hésitez pas à mettre un maximum de détails, cet élément formera le corps de la page dédiée à cette sortie.
         </p>
-        <?php include __DIR__.'/../../includes/help/tinymce.php'; ?>
+        <?php require __DIR__.'/../../includes/help/tinymce.php'; ?>
         <textarea name="description_evt" style="width:99%"><?php echo stripslashes($_POST['description_evt']); ?></textarea>
     </div>
 

@@ -34,14 +34,14 @@
 
 					<!-- nick -->
 					<h1 style="padding:13px 0 0 0">
-						<?php include __DIR__.'/../includes/user/display_name.php'; ?>
+						<?php require __DIR__.'/../includes/user/display_name.php'; ?>
 					</h1>
 
 					<!-- formulaire de contact -->
 					<?php
                     if ($auth_contact_user) {
                         $contact_form_width = '95%';
-                        include __DIR__.'/../includes/user/contact_form.php';
+                        require __DIR__.'/../includes/user/contact_form.php';
                     } ?>
 
 					<!-- statuts -->
@@ -56,7 +56,7 @@
 					<br style="clear:left;" />
 
 					<!-- infos persos-->
-					<?php include __DIR__.'/../includes/user/infos_privees.php'; ?>
+					<?php require __DIR__.'/../includes/user/infos_privees.php'; ?>
 
 					<br />
 				</div>
@@ -98,7 +98,7 @@
 			&nbsp; <!-- important -->
 			<?php
             // RECHERCHE
-            include __DIR__.'/../includes/recherche.php';
+            require __DIR__.'/../includes/recherche.php';
             ?>
 		</div>
 
@@ -108,7 +108,7 @@
 
 				<?php
                 // AGENDA sur fond vert
-                include __DIR__.'/../includes/droite-agenda.php';
+                require __DIR__.'/../includes/droite-agenda.php';
                 ?>
 
 			</div>

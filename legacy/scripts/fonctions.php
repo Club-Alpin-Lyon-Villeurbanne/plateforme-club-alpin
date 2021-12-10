@@ -42,7 +42,7 @@ function display_sorties($id_user, $limit = 10, $title = '')
         // liste
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             $evt = $handle;
-            include __DIR__.'/../includes/agenda-evt-debut.php';
+            require __DIR__.'/../includes/agenda-evt-debut.php';
         }
         echo '</div><hr />';
     }
@@ -75,7 +75,7 @@ function display_articles($id_user, $limit = 10, $title = '')
         // liste
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             $article = $handle;
-            include __DIR__.'/../includes/article-lien-small.php';
+            require __DIR__.'/../includes/article-lien-small.php';
         }
         echo '</div>';
     }

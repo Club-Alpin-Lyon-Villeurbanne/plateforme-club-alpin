@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__.'/../../app/includes.php';
+require __DIR__.'/../../app/includes.php';
 
 $errTab = [];
 $result = $targetDir = $filename = null;
@@ -48,7 +48,7 @@ if (0 === count($errTab)) {
     }
 
     // Handle file uploads via XMLHttpRequest
-    include __DIR__.'/vfu.classes.php';
+    require __DIR__.'/vfu.classes.php';
 
     // list of valid extensions, ex. array("jpeg", "xml", "bmp")
     $allowedExtensions = ['jpeg', 'jpg', 'png',
@@ -96,7 +96,7 @@ if (0 === count($errTab)) {
 
     // redimensionnement des images
     if (0 === count($errTab)) {
-        include __DIR__.'/../../app/redims.php';
+        require __DIR__.'/../../app/redims.php';
         $size = getimagesize($targetDir.$filename);
 
         // 1 : WIDE = l'image qui prend la largeur de la page dédiée à l'article / +dans le slider de la home

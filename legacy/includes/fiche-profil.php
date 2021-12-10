@@ -86,7 +86,7 @@ elseif (!allowed('user_read_public')) {
 	<!-- nick -->
 	<div style="float:right; width:740px">
 		<h1>
-		<?php include __DIR__.'/../includes/user/display_name.php'; ?>
+		<?php require __DIR__.'/../includes/user/display_name.php'; ?>
 		</h1>
 
 		<!-- statuts -->
@@ -106,7 +106,7 @@ elseif (!allowed('user_read_public')) {
 		<?php
         if ($auth_contact_user) {
             $contact_form_width = '50%';
-            include __DIR__.'/../includes/user/contact_form.php';
+            require __DIR__.'/../includes/user/contact_form.php';
         } ?>
 
 		<div id="trigger-userinfo" style="display:<?php if (isset($_POST['operation']) && 'user_contact' == $_POST['operation']) {
@@ -117,7 +117,7 @@ elseif (!allowed('user_read_public')) {
 
 
 			<!-- infos persos-->
-			<?php include __DIR__.'/../includes/user/infos_privees.php'; ?>
+			<?php require __DIR__.'/../includes/user/infos_privees.php'; ?>
 
 			<hr  />
 			<br style="clear:both" />
