@@ -1,8 +1,8 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-global $kernel;
 global $ogImage;
 ?>
 	<!-- vars php passées au js -->
@@ -79,4 +79,4 @@ global $ogImage;
 	<meta property="og:site_name" content="<?php echo html_utf8($p_sitename); ?>" />
 
 	<!-- RSS -->
-	<link rel="alternate" type="application/rss+xml" title="RSS" href="<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>rss.xml?mode=articles" />
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>rss.xml?mode=articles" />

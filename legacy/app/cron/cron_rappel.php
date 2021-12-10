@@ -1,8 +1,8 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-global $kernel;
 global $chron_savedatas;
 global $chron_sendmails;
 global $p_sitename;
@@ -23,8 +23,6 @@ $chron_savedatas = true;
 // la fonction permettant l'envoi d'e-mails et l'enregistrement en BDD
 function cron_email($datas)
 {
-    global $kernel;
-
     global $chron_savedatas;
     global $chron_sendmails;
 
@@ -54,8 +52,8 @@ function cron_email($datas)
     if (!$tmpErr) {
         // Verification que ce code n'existe pas deja :
         // Chaque operation ne doit être effectuee qu'une fois (un seul e-mail envoye)
-        $req = "SELECT COUNT(id_chron_operation) FROM caf_chron_operation WHERE code_chron_operation LIKE '".$kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($datas['code'])."'";
-        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $req = "SELECT COUNT(id_chron_operation) FROM caf_chron_operation WHERE code_chron_operation LIKE '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($datas['code'])."'";
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         if (getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM))) {
             error_log('Envoi de mail ignore car deja envoye : '.html_utf8($datas['code']).'');
         } else {
@@ -78,7 +76,7 @@ function cron_email($datas)
             if ($chron_savedatas) {
                 $req = "INSERT INTO caf_chron_operation(id_chron_operation, tsp_chron_operation, code_chron_operation, parent_chron_operation)
 											VALUES ('',  '".time()."',  '".$datas['code']."',  '".$datas['parent']."');";
-                if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+                if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     error_log('Erreur sauvegarde SQL ');
                 }
             }
@@ -107,7 +105,7 @@ foreach ($p_chron_dates_butoires as $tmpH) {
 // ****** FAUT IL REQUETER ? ********
 // dernier envoi en BD date de... :
 $req = 'SELECT `tsp_chron_launch` FROM `caf_chron_launch` ORDER BY  `tsp_chron_launch` DESC LIMIT 0 , 1';
-$handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+$handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $lastTsp = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
 
 // envoi necessaire ? Alors go !
@@ -115,10 +113,10 @@ if ($lastTsp < $minTsp) {
     // sauvegarde de ce launch
     error_log('Envoi necessaire ! Enregistrement de la nouvelle date en BDD');
     if ($chron_savedatas) {
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query("INSERT INTO caf_chron_launch(id_chron_launch, tsp_chron_launch) VALUES('', '".time()."');")) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query("INSERT INTO caf_chron_launch(id_chron_launch, tsp_chron_launch) VALUES('', '".time()."');")) {
             $errTab[] = "Erreur d'enregistrement du launch";
         }
-        $id_chron_launch = $kernel->getContainer()->get('legacy_mysqli_handler')->insertId();
+        $id_chron_launch = LegacyContainer::get('legacy_mysqli_handler')->insertId();
     } else {
         $id_chron_launch = 1;
     } // Developpement : fixe un parent fictif a un envoi de mail par exemple
@@ -140,11 +138,11 @@ if ($lastTsp < $minTsp) {
 					AND tsp_evt > '.time().'
 					AND tsp_evt < '.(time() + $p_chron_rappel_user_avant_event_1).'
 					LIMIT 2000';
-            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 error_log('- Envoi necessaire : '.html_utf8($handle2['nickname_user']).' participe a '.$handle2['code_evt'].'-'.$handle2['id_evt'].'');
                 // lien vers l'evenement
-                $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle2['code_evt'].'-'.$handle2['id_evt'].'.html';
+                $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle2['code_evt'].'-'.$handle2['id_evt'].'.html';
                 // vars d'envoi
                 $datas = [];
                 $datas['parent'] = $id_chron_launch;
@@ -178,11 +176,11 @@ if ($lastTsp < $minTsp) {
 					AND tsp_evt > '.time().'
 					AND tsp_evt < '.(time() + $p_chron_rappel_user_avant_event_2).'
 					LIMIT 2000';
-            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 error_log('- Envoi nécessaire : '.html_utf8($handle2['nickname_user']).' participe à '.$handle2['code_evt'].'-'.$handle2['id_evt'].'');
                 // lien vers l'evenement
-                $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle2['code_evt'].'-'.$handle2['id_evt'].'.html';
+                $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle2['code_evt'].'-'.$handle2['id_evt'].'.html';
                 // vars d'envoi
                 $datas = [];
                 $datas['parent'] = $id_chron_launch;
@@ -215,7 +213,7 @@ if ($lastTsp < $minTsp) {
 				WHERE status_evt = 0
 				AND commission_evt = id_commission '
                 .'ORDER BY tsp_crea_evt ASC ';
-        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($evt = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             ++$nEltsToValidate;
 
@@ -235,7 +233,7 @@ if ($lastTsp < $minTsp) {
 
             // et on ajoute leur e-mail en cle au tableau, et l'evt a ce tableau
             $found = false;
-            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($user = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $found = true;
                 $datasTab[$user['email_user']][] = array_merge($evt, $user);
@@ -261,7 +259,7 @@ if ($lastTsp < $minTsp) {
             // liste des evts
             $evtList = [];
             foreach ($evtdatas as $tmp) {
-                $evtList[] = '<a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html">'.date('d/m/Y', $tmp['tsp_evt']).' - '.html_utf8($tmp['titre_evt']).'</a>';
+                $evtList[] = '<a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html">'.date('d/m/Y', $tmp['tsp_evt']).' - '.html_utf8($tmp['titre_evt']).'</a>';
             }
 
             // vars d'envoi
@@ -275,7 +273,7 @@ if ($lastTsp < $minTsp) {
 				<h1>Bonjour '.html_utf8($evtdatas[0]['firstname_user']).',</h1>
 				<p>
 				Vous êtes responsable de commission, et il y a '.count($evtdatas).' sortie(s) en attente de publication sur le site du '.$p_sitename.'.
-				Prenez soin de vous rendre sur <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'gestion-des-sorties.html">votre page de gestion</a>,
+				Prenez soin de vous rendre sur <a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'gestion-des-sorties.html">votre page de gestion</a>,
 				et de vérifier attentivement toutes les informations liées à chaque sortie en attente de publication.
 				Vous disposez d\'un accès réservé à chaque fiche évènement avant la publication.
 				</p>
@@ -305,7 +303,7 @@ if ($lastTsp < $minTsp) {
 				AND tsp_evt < '.($p_tsp_max_pour_valid_legal_avant_evt).'
 				AND status_evt = 1
 				ORDER BY tsp_evt ASC ';
-        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($evt = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             ++$nEltsToValidate;
 
@@ -325,7 +323,7 @@ if ($lastTsp < $minTsp) {
 
             // et on ajoute leur e-mail en cle au tableau, et l'evt a ce tableau
             $found = false;
-            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($user = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $found = true;
                 $datasTab[$user['email_user']][] = array_merge($evt, $user);
@@ -351,7 +349,7 @@ if ($lastTsp < $minTsp) {
             // liste des evts
             $evtList = [];
             foreach ($evtdatas as $tmp) {
-                $evtList[] = '<a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html">'.date('d/m/Y', $tmp['tsp_evt']).' - '.html_utf8($tmp['titre_evt']).'</a>';
+                $evtList[] = '<a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html">'.date('d/m/Y', $tmp['tsp_evt']).' - '.html_utf8($tmp['titre_evt']).'</a>';
             }
 
             // vars d'envoi

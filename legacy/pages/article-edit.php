@@ -1,8 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 ?>
 <script type="text/javascript" src="/js/faux-select.js"></script>
@@ -24,7 +23,7 @@ global $kernel;
             $article = false;
 
             $req = "SELECT * FROM caf_article WHERE id_article=$id_article LIMIT 1";
-            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($row = $result->fetch_assoc()) {
                 $article = $row;
             }
@@ -110,7 +109,7 @@ global $kernel;
 
                             // besoin de la liste des sorties publiées
                 $req = 'SELECT id_evt, commission_evt, tsp_evt, tsp_end_evt, titre_evt, code_evt FROM caf_evt WHERE status_evt =1 ORDER BY tsp_evt DESC LIMIT 0 , 300';
-                $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($row = $handleSql->fetch_assoc()) {
                     echo '<option value="'.$row['id_evt'].'" '.($article['evt_article'] == $row['id_evt'] ? 'selected="selected"' : '').'>'
                                         // .jour(date('N', $row['tsp_evt']))
@@ -308,9 +307,9 @@ global $kernel;
 						theme_advanced_statusbar_location : "bottom",
 						theme_advanced_resizing : true,
 
-						document_base_url : '<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>',
+						document_base_url : '<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>',
 
-						content_css : "<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/base.css,<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/style1.css,<?php echo $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>fonts/stylesheet.css",
+						content_css : "<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/base.css,<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/style1.css,<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>fonts/stylesheet.css",
 						body_id : "bodytinymce_user",
 						body_class : "cont_article",
 						theme_advanced_styles : "<?php echo $p_tiny_theme_advanced_styles; ?>",

@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 // cette même page sert à afficher une liste de sortie pour plusieurs cas de figure définis dans la variable GET $p3
 
@@ -43,10 +43,10 @@ if (user()) {
 				ORDER BY  tsp_evt DESC
 				LIMIT '.($limite * ($pagenum - 1)).", $limite";
 
-        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
         // calcul tu total grâce à SQL_CALC_FOUND_ROWS
-        $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
+        $totalSql = LegacyContainer::get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
         $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -88,10 +88,10 @@ if (user()) {
                 .'ORDER BY  tsp_evt DESC
 				LIMIT '.($limite * ($pagenum - 1)).", $limite";
 
-        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
         // calcul tu total grâce à SQL_CALC_FOUND_ROWS
-        $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
+        $totalSql = LegacyContainer::get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
         $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -133,9 +133,9 @@ if (user()) {
                     // de la plus récente a la plus ancienne
                     .'ORDER BY  `tsp_evt` DESC
 					LIMIT '.($limite * ($pagenum - 1)).", $limite";
-            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             // calcul tu total grâce à SQL_CALC_FOUND_ROWS
-            $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
+            $totalSql = LegacyContainer::get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
             $total += getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
             while ($handle = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
@@ -165,10 +165,10 @@ if (user()) {
                     .' ORDER BY  tsp_evt ASC
 				    LIMIT '.($limite * ($pagenum - 1)).", $limite";
 
-        $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
         // calcul tu total grâce à SQL_CALC_FOUND_ROWS
-        $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
+        $totalSql = LegacyContainer::get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
         $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -208,9 +208,9 @@ if (user()) {
                     // de la plus prochaine a la plus lointaine
                     .'ORDER BY  `tsp_evt` ASC
 					LIMIT '.($limite * ($pagenum - 1)).", $limite";
-            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             // calcul tu total grâce à SQL_CALC_FOUND_ROWS
-            $totalSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
+            $totalSql = LegacyContainer::get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
             $total += getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
             while ($handle = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']

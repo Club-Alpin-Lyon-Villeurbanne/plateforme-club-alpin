@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $id_user = null;
 
@@ -11,13 +11,13 @@ if ($p2) {
 
     // validation user
     if ($id_user) {
-        $cookietoken_user = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($cookietoken_user);
+        $cookietoken_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($cookietoken_user);
 
         $req = "UPDATE caf_user SET valid_user=1 WHERE  `id_user` = $id_user AND cookietoken_user LIKE '$cookietoken_user' LIMIT 1";
-        if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur de requete';
         } else {
-            if (!$kernel->getContainer()->get('legacy_mysqli_handler')->affectedRows()) {
+            if (!LegacyContainer::get('legacy_mysqli_handler')->affectedRows()) {
                 $errTab[] = 'Activation impossible : ce compte est introuvable, ou a déjà été validé.';
             } else {
                 $req = "UPDATE caf_user c1

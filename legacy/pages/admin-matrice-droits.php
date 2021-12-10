@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 if (!admin()) {
     echo 'Session expirée';
@@ -23,7 +23,7 @@ if (!admin()) {
 	FROM caf_usertype
 	ORDER BY hierarchie_usertype
 	';
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $typeTab[] = $handle;
     }
@@ -34,7 +34,7 @@ if (!admin()) {
 	FROM caf_userright
 	ORDER BY parent_userright, ordre_userright
 	';
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $rightTab[] = $handle;
     }
@@ -44,7 +44,7 @@ if (!admin()) {
 	SELECT type_usertype_attr, right_usertype_attr
 	FROM caf_usertype_attr
 	';
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $attrTab[] = $handle['type_usertype_attr'].'-'.$handle['right_usertype_attr'];
     } ?>

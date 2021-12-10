@@ -1,8 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-global $kernel;
 
 $id_article = (int) ($_POST['id_article']);
 $status_article = (int) ($_POST['status_article']);
@@ -20,17 +19,17 @@ $authorDatas = null;
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "UPDATE caf_article SET status_article='$status_article', status_who_article=".getUser()->getIdUser()." WHERE caf_article.id_article =$id_article";
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
     $req = 'UPDATE caf_article SET tsp_validate_article='.time()." WHERE caf_article.id_article=$id_article AND (tsp_validate_article=0 OR tsp_validate_article IS NULL)"; // premiere validation
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
 
     // récupération des infos user et article
     $req = "SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_article, titre_article, code_article, tsp_crea_article, tsp_article FROM caf_user, caf_article WHERE id_user=user_article AND id_article=$id_article LIMIT 1";
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $result->fetch_assoc()) {
         $authorDatas = $row;
     }
@@ -39,13 +38,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     $sql = 'SELECT (COUNT(id_article) - 5) as total FROM caf_article WHERE status_article > 0 AND une_article > 0';
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($sql);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($sql);
 
     if ($result && $row = $result->fetch_assoc()) {
         $limit = $row['total'];
 
         $sql = 'UPDATE caf_article SET une_article = 0 WHERE status_article = 1 AND une_article = 1 ORDER BY tsp_article ASC LIMIT '.$limit;
-        $kernel->getContainer()->get('legacy_mysqli_handler')->query($sql);
+        LegacyContainer::get('legacy_mysqli_handler')->query($sql);
     }
 }
 
@@ -56,7 +55,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_article || 2 == $
 
     if (1 == $status_article) {
         $subject = 'Votre article a été publié sur le site';
-        $url = $kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].'.html';
+        $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].'.html';
         $content_main = "<h2>$subject</h2>
             <p>Félicitations, votre article &laquo;<i>".html_utf8($authorDatas['titre_article']).'</i>&raquo;, créé le '.date('d/m/Y', $authorDatas['tsp_crea_article']).' a été publié sur le site du '.$p_sitename.' par les responsables. Pour y accéder, cliquez sur le lien ci-dessous :</p>
             <p>
@@ -71,7 +70,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_article || 2 == $
             <p>Article concernée : &laquo;<i>'.html_utf8($authorDatas['titre_article']).'</i>&raquo;, créé le '.date('d/m/Y', $authorDatas['tsp_crea_article']).'</p>
             <p>
                 Pour gérer vos articles, rendez-vous sur votre profil :
-                <a href="'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/articles.html" title="">'.$kernel->getContainer()->get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/articles.html</a>
+                <a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/articles.html" title="">'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/articles.html</a>
             </p>
             ';
     }

@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 ?>
 <!-- MAIN -->
@@ -12,7 +12,7 @@ global $kernel;
 			<?php
             // vérification de l'ID de commission
             $id_commission = (int) ($_GET['id_commission']);
-            $code_commission = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($_GET['code_commission']);
+            $code_commission = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_GET['code_commission']);
 
             if (!(admin() || allowed('comm_edit') || (user() && getUser()->hasAttribute('Resp. de commission', $code_commission)))) {
                 echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour afficher cette page</p>';
@@ -26,7 +26,7 @@ global $kernel;
                 }
                 $req .= ' LIMIT 1';
 
-                $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     $commissionTmp = $handle;
                 }
@@ -57,7 +57,7 @@ global $kernel;
 						AND params_user_attr LIKE 'commission:".$commissionTmp['code_commission']."'
 						ORDER BY code_usertype DESC, lastname_user, firstname_user
 						";
-                    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $benvoles_emails = [];
                     echo '<h1>BENEVOLES</h1>';
                     echo '<table class="big-lines-table"><tbody>';

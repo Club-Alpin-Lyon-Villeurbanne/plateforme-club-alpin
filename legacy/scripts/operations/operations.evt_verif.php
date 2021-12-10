@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 if ('evt_create' == ($_POST['operation'] ?? null)) {
     $user_evt = getUser()->getIdUser();
@@ -246,7 +246,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // *** necessité de récupérer le code de cette commission
     $code_commission = 'ERR';
     $req = "SELECT code_commission FROM caf_commission WHERE id_commission=$commission_evt LIMIT 0 , 1";
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $result->fetch_assoc()) {
         $code_commission = $row['code_commission'];
     }
@@ -265,7 +265,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 ."AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
                 .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
             ;
-            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
             if (!$row[0]) {
                 $errTab[] = "Erreur, il semble que vous ayez lié un encadrant non autorisé. ID_encadrant=$id_user et commission:$code_commission.";
@@ -282,7 +282,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 ."AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
                 .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
             ;
-            $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
             if (!$row[0]) {
                 $errTab[] = "Erreur, il semble que vous ayez lié un co-encadrant non autorisé. Id=$id_user et commission:$code_commission.";
@@ -300,7 +300,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     ."AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
                     .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
                 ;
-                $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+                $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 $row = $result->fetch_row();
                 if (!$row[0]) {
                     $errTab[] = "Erreur, il semble que vous ayez lié un benevole non autorisé. Id=$id_user et commission:$code_commission.";
