@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 if (!allowed('comm_edit')) {
     $errTab[] = 'Vous n\'avez pas les droits nécessaires pour cette operation';
@@ -170,11 +170,11 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['picto-dark']['size'] >
 
 // SQL
 if (!isset($errTab) || 0 === count($errTab)) {
-    $title_commission = $kernel->getContainer()->get('legacy_mysqli_handler')->escapeString($title_commission);
+    $title_commission = LegacyContainer::get('legacy_mysqli_handler')->escapeString($title_commission);
 
     // enregistrement
     $req = "UPDATE caf_commission SET title_commission = '$title_commission' WHERE id_commission =$id_commission";
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
 

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\CafUser;
+use App\Form\ChangePasswordType;
 use App\Form\ResetPasswordType;
 use App\Form\SetPasswordType;
 use App\Mailer\Mailer;
@@ -103,6 +104,10 @@ class LoginController extends AbstractController
     }
 
     /**
+     * Password is changed without validating the existing password (for instance the magic link).
+     * If the user is logged in using the remember me token, they dont pass the IS_AUTHENTICATED_FULLY
+     * Therefore, this should be used only after magic link authentication.
+     *
      * @Route(
      *     name="account_set_password",
      *     path="/password",
@@ -137,6 +142,45 @@ class LoginController extends AbstractController
         return [
             'form' => $form->createView(),
             'username' => $user->getEmailUser(),
+        ];
+    }
+
+    /**
+     * Password is changed with validating the existing password.
+     * It requires any user authentication.
+     *
+     * @Route(
+     *     name="account_change_password",
+     *     path="/change-password",
+     *     methods={"GET", "POST"}
+     * )
+     * @Security("is_granted('ROLE_USER')")
+     * @Template
+     */
+    public function changePasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer)
+    {
+        $url = $request->getSession()->get('user_password.target', $this->generateUrl('legacy_root'));
+        $form = $this->createForm(ChangePasswordType::class);
+        $form->add('submit', SubmitType::class, ['label' => 'Ré-initialiser', 'attr' => ['class' => 'nice2']]);
+        if ($form->handleRequest($request)->isSubmitted() && $form->isValid()) {
+            /** @var CafUser $user */
+            $user = $this->getUser();
+            $user->setMdpUser(
+                $hasherFactory->getPasswordHasher('login_form')->hash(
+                    $form->get('password')->getData()
+                )
+            );
+
+            $this->get(EntityManagerInterface::class)->flush();
+
+            $this->addFlash('success', 'Mot de passe mis à jour avec succès!');
+            $mailer->send($user, 'transactional/set_password-account-confirmation', ['user' => $user]);
+
+            return $this->redirect($url);
+        }
+
+        return [
+            'form' => $form->createView(),
         ];
     }
 

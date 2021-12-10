@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 if ($current_commission) {
     echo '<h1 class="actus-h1"><a href="accueil/'.$current_commission.'.html" title="Afficher tous les articles pour cette commission">actus</a></h1>';
@@ -23,7 +23,7 @@ if ($current_commission) {
         .($current_commission ? ' AND (commission_article = '.(int) ($comTab[$current_commission]['id_commission']).' OR commission_article = 0) ' : '')
         .'ORDER BY  `tsp_article` DESC
         LIMIT '.$limite_articles_accueil;
-    $handleSql = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // info de la commission liée
@@ -31,7 +31,7 @@ if ($current_commission) {
             $req = 'SELECT * FROM caf_commission
                 WHERE id_commission = '.(int) ($handle['commission_article']).'
                 LIMIT 1';
-            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['commission'] = $handle2;
             }
@@ -42,7 +42,7 @@ if ($current_commission) {
             $req = 'SELECT code_evt, id_evt, titre_evt FROM caf_evt
                 WHERE id_evt = '.(int) ($handle['evt_article']).'
                 LIMIT 1';
-            $handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['evt'] = $handle2;
             }

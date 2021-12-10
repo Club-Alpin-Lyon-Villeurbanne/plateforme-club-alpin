@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 $id_comment = (int) ($_POST['id_comment']);
 if (!$id_comment) {
@@ -12,7 +12,7 @@ $comment = null;
 if (!isset($errTab) || 0 === count($errTab)) {
     // recup
     $req = "SELECT * FROM caf_comment WHERE id_comment = $id_comment";
-    $result = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $result->fetch_array(\MYSQLI_ASSOC)) {
         $comment = $handle;
     }
@@ -31,7 +31,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 // desactivation
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "UPDATE caf_comment SET status_comment=2 WHERE id_comment = $id_comment";
-    if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($req)) {
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
 }

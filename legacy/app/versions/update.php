@@ -204,7 +204,7 @@ if ($app_version < '1.1.1') {
 foreach ($queries as $query) {
     echo $query."\n";
     // Exécuter les requetes
-    // if (!$kernel->getContainer()->get('legacy_mysqli_handler')->query($query)) {
+    // if (!LegacyContainer::get('legacy_mysqli_handler')->query($query)) {
     // $errTab[] = 'Une erreur est apparue lors de la mise à jour de la base de données.';
     // }
 }

@@ -1,6 +1,6 @@
 <?php
 
-global $kernel;
+use App\Legacy\LegacyContainer;
 
 // MODIFIE LA VAR HANDLE
 // NEED SQL CONNECT
@@ -16,7 +16,7 @@ $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join
             AND role_evt_join NOT LIKE 'coencadrant'
             AND evt_evt_join =".(int) ($handle['id_evt']).'
             ORDER BY caf_evt_join.id_evt_join ASC';
-$handleSql2 = $kernel->getContainer()->get('legacy_mysqli_handler')->query($req);
+$handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $count = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
 
 // suite de cycle
