@@ -17,34 +17,11 @@ if (admin()) {
 
 		<div style="margin-left:160px">
 
-			<?php
-            // menu
-            $i = 0;
-    foreach ($p_pages as $code => $datas) {
-        // pour chaque page admin seulement
-        if ($datas['menuadmin_page']) {
-            // si c'est nue page reservee au superadmin, on ne la propose pas
-            if (!$datas['superadmin_page'] || superadmin()) {
-                // cas particulier : la page traductions seulement en cas de langues multiples
-                if ('admin-traductions' != $code || count($p_langs) > 1) {
-                    echo '<a href="'.$code.'.html" title="" class="'.($datas['superadmin_page'] ? 'superadmin ' : '').' adminmenulink '.($p1 == $code ? 'up' : '').'">
-								'.($datas['superadmin_page'] ? '<img src="/img/base/bullet_star.png" alt="" title="Option super-admin" />' : '').$datas['default_name_page'].'</a>';
-                    ++$i;
-                }
-            }
-        }
-    } ?>
 
 			<!--
 			<a href="admin-contenus.html" title="" class="adminmenulink <?php if ('admin-contenus' == $p1) {
         echo 'up';
     } ?>">Contenus statiques</a>
-			<?php if (count($p_langs) > 1) { ?>
-				<a href="admin-traductions.html" title="" class="adminmenulink <?php if ('admin-traductions' == $p1) {
-        echo 'up';
-    }?>">Traductions</a>
-			<?php } ?>
-
 			<a href="admin-actus.html" title="" class="adminmenulink <?php if ('admin-actus' == $p1) {
         echo 'up';
     } ?>">Actualités</a>

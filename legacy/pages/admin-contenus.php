@@ -5,13 +5,8 @@ use App\Legacy\LegacyContainer;
 if (!admin()) {
     echo 'Votre session administrateur a expiré';
 } else {
-    // tous les enregistrements
-    // langue en cours
-    if (in_array($p2, $p_langs, true)) {
-        $lang_content_inline = $p2;
-    } else {
-        $lang_content_inline = $p_langs[0];
-    }
+    $lang_content_inline = 'fr';
+
     // contenus
     $req = "SELECT *
 					FROM caf_content_inline, caf_content_inline_group
@@ -34,9 +29,6 @@ if (!admin()) {
     } ?>
 	<h2 style="padding-left:0px">
 		Contenus
-		<?php if (count($p_lang) > 1) {
-        echo ' en langue principale ('.$p_langs[0].')';
-    } ?>
 	</h2>
 
 
@@ -45,10 +37,6 @@ if (!admin()) {
 		<b>Ne modifiez ces contenus que si vous savez ce que vous faites.</b>
 		Cliquez sur la disquette pour enregistrer vos modifications sur chaque ligne, ou toute la page.
 	</p>
-
-	<?php if (count($p_langs) > 1) {
-        echo "<p>Pour traduire les contenus dans d'autres langues, rendez-vous sur la page <b>traductions</b>.</p>";
-    } ?>
 
 	<p>
 		- Un champ rouge correspond à un contenu manquant. <br />

@@ -16,8 +16,6 @@ $scriptsDir = __DIR__.'/../scripts/';
 include __DIR__.'/../app/fonctions.php';
 //_________________________________________________ VARIABLES "GLOBALES" DU SITE
 include __DIR__.'/../config/params.php';
-//_________________________________________________ LANGUES
-include __DIR__.'/../app/langs.php';
 //_________________________________________________ FONCTIONS PARTAGEES
 include __DIR__.'/../scripts/fonctions.php';
 //_________________________________________________ OPERATIONS ADMIN & CLIENT
