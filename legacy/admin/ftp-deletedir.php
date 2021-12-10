@@ -4,7 +4,7 @@ global $errTab;
 global $p_ftp_proteges;
 global $compte;
 
-include __DIR__.'/../app/includes.php';
+require __DIR__.'/../app/includes.php';
 
 if (!admin()) {
     header('HTTP/1.0 401 Authorization Required');

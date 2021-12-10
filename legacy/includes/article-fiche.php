@@ -212,7 +212,7 @@ if (!$article) {
 			<hr />
 			<h2 class="share-h2">Pour partager cet article :</h2>
 			<?php
-            include __DIR__.'/../includes/share.php'; ?>
+            require __DIR__.'/../includes/share.php'; ?>
 
 
 			<!-- commentaires -->
@@ -223,12 +223,12 @@ if (!$article) {
             // AJOUTER UN COMM
             $parent_comment = $id_article;
         if (user()) {
-            include __DIR__.'/../includes/commenter-online.php';
+            require __DIR__.'/../includes/commenter-online.php';
         }
 
         // COMMS LIST
         foreach ($commentsTab as $comment) {
-            include __DIR__.'/../includes/comment.php';
+            require __DIR__.'/../includes/comment.php';
         } ?>
 
 

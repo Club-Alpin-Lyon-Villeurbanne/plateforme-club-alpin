@@ -205,7 +205,7 @@ use App\Legacy\LegacyContainer;
 
 	<!-- partie droite -->
 	<?php
-    include __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__.'/../includes/right-type-agenda.php';
     ?>
 
 	<br style="clear:both" />

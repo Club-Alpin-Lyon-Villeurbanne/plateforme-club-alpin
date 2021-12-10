@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__.'/app/includes.php';
+require __DIR__.'/app/includes.php';
 
 $p = $_GET['p'];
 $pageAdmin = $_GET['admin'];
@@ -21,14 +21,14 @@ if ('pages/' != substr($p, 0, 6) && 'includes/' != substr($p, 0, 9)) {
 
     //_________________________________________________ HEADER AU CHOIX (inclut le doctype)
     if ($pageAdmin) {
-        include __DIR__.'/pages/header-admin.php';
+        require __DIR__.'/pages/header-admin.php';
     } else {
-        include __DIR__.'/pages/header.php';
+        require __DIR__.'/pages/header.php';
     }
 
     echo '<div id="includer-stuff">';
     if (file_exists(__DIR__.'/'.$p)) {
-        include __DIR__.'/'.$p;
+        require __DIR__.'/'.$p;
     } else {
         echo 'Fichier introuvable : '.__DIR__.'/'.$p;
     }

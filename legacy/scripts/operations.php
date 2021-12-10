@@ -11,207 +11,207 @@ $operationsDir = __DIR__.'/operations/';
 
 // SPECIAL : REINIT EMAIL : seconde étape (confirmation depuis le lien dans l'email
 if ('email-change' == $p1 && $p2) {
-    include $operationsDir.'operations.email-change.php';
+    require $operationsDir.'operations.email-change.php';
 }
 
 // SPECIAL : VALIDATION DE COMPTE USER
 if ('user-confirm' == $p1) {
-    include $operationsDir.'operations.user-confirm.php';
+    require $operationsDir.'operations.user-confirm.php';
 }
 
 // GOTO
 if ('goto' == $p1 && $p2 && $p3) {
-    include $operationsDir.'operations.goto.php';
+    require $operationsDir.'operations.goto.php';
 }
 
 // COMMISSIONS : ACTIVER / DESACTIVER
 if ('commission_majvis' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.commission_majvis.php';
+    require $operationsDir.'operations.commission_majvis.php';
 }
 
 // COMMISSIONS : REORGANISER
 if ('commission_reorder' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.commission_reorder.php';
+    require $operationsDir.'operations.commission_reorder.php';
 }
 
 // COMMISSIONS : CREATE
 if ('commission_add' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.commission_add.php';
+    require $operationsDir.'operations.commission_add.php';
 }
 
 // COMMISSIONS : EDIT
 if ('commission_edit' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.commission_edit.php';
-    include $operationsDir.'operations.groupe_edit.php';
+    require $operationsDir.'operations.commission_edit.php';
+    require $operationsDir.'operations.groupe_edit.php';
 }
 
 // JOINS : USER / SORTIE : changement en bloc des statuts par l'organisateur
 if ('user_join_update_status' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.user_join_update_status.php';
+    require $operationsDir.'operations.user_join_update_status.php';
 }
 
 // JOINS : USER / SORTIE : annulation
 if ('user_join_del' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.user_join_del.php';
+    require $operationsDir.'operations.user_join_del.php';
 }
 
 // JOINS : USER / SORTIE : pré inscription + pré iscription affiliés
 if ('user_join' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.user_join.php';
+    require $operationsDir.'operations.user_join.php';
 }
 
 // JOINS : USER / SORTIE : inscription manuelle de la part de l'organisateur de l'événemeent
 if ('user_join_manuel' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.user_join_manuel.php';
+    require $operationsDir.'operations.user_join_manuel.php';
 }
 
 // JOINS : USER / SORTIE : inscription de nomade + création s'il n'existe pas deja
 if ('user_join_nomade' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.user_join_nomade.php';
+    require $operationsDir.'operations.user_join_nomade.php';
 }
 
 // SORTIE : suppression
 if ('evt_del' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.evt_del.php';
+    require $operationsDir.'operations.evt_del.php';
 }
 
 // SORTIE : reactivation
 if ('evt_uncancel' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.evt_uncancel.php';
+    require $operationsDir.'operations.evt_uncancel.php';
 }
 
 // SORTIE : annulation
 if ('evt_cancel' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.evt_cancel.php';
+    require $operationsDir.'operations.evt_cancel.php';
 }
 
 // SORTIE : publication OU refus
 if ('evt_validate' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.evt_validate.php';
+    require $operationsDir.'operations.evt_validate.php';
 }
 
 // SORTIE : modification : remet le status à 0
 if ('evt_update' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.evt_update.php';
+    require $operationsDir.'operations.evt_update.php';
 }
 
 // SORTIE : création
 if ('evt_create' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.evt_create.php';
+    require $operationsDir.'operations.evt_create.php';
 }
 
 // SORTIE : validation légale ou refus
 if ('evt_legal_update' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.evt_legal_update.php';
+    require $operationsDir.'operations.evt_legal_update.php';
 }
 // SORTIE : contacter les inscrits
 if ('evt_user_contact' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.evt_user_contact.php';
+    require $operationsDir.'operations.evt_user_contact.php';
 }
 
 // DESTINATION : création
 if ('dest_create' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.dest_create.php';
+    require $operationsDir.'operations.dest_create.php';
 }
 
 // DESTINATION : update
 if ('dest_update' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.dest_update.php';
+    require $operationsDir.'operations.dest_update.php';
 }
 
 // DESTINATION : validation rapide / changement d'état
 if (in_array($_POST['operation'] ?? null, ['dest_validate', 'dest_lock', 'dest_annuler'], true) && user()) {
-    include $operationsDir.'operations.dest_quick_update.php';
+    require $operationsDir.'operations.dest_quick_update.php';
 }
 
 // DESTINATION : annulation
 if ('dest_cancel' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.dest_cancel.php';
+    require $operationsDir.'operations.dest_cancel.php';
 }
 
 // DESTINATION : enoiv emails cloture
 if ('dest_mailer' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.dest_mailer.php';
+    require $operationsDir.'operations.dest_mailer.php';
 }
 
 // BUS : update
 if ('bus_update' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.bus_update.php';
+    require $operationsDir.'operations.bus_update.php';
 }
 
 // ARTICLE : publication OU refus
 if ('article_validate' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.article_validate.php';
+    require $operationsDir.'operations.article_validate.php';
 }
 
 // ARTICLE : SUPPRIMER
 if ('article_del' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.article_del.php';
+    require $operationsDir.'operations.article_del.php';
 }
 
 // ARTICLE : DÉPUBLIER
 if ('article_depublier' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.article_depublier.php';
+    require $operationsDir.'operations.article_depublier.php';
 }
 
 // ARTICLE : MODIFIER
 if ('article_update' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.article_update.php';
+    require $operationsDir.'operations.article_update.php';
 }
 
 // ARTICLE : CRÉER
 if ('article_create' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.article_create.php';
+    require $operationsDir.'operations.article_create.php';
 }
 
 // ARTICLE : REMONTER EN TETE
 if ('renew_date_article' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.renew_date_article.php';
+    require $operationsDir.'operations.renew_date_article.php';
 }
 
 // ARTICLES : COMMENTER
 if ('comment' == ($_POST['operation'] ?? null)) {
-    include $operationsDir.'operations.comment.php';
+    require $operationsDir.'operations.comment.php';
 }
 
 // ARTICLES : SUPPRIMER UN COMMENTAIRE
 if ('comment_hide' == ($_POST['operation'] ?? null)) {
-    include $operationsDir.'operations.comment_hide.php';
+    require $operationsDir.'operations.comment_hide.php';
 }
 
 // PARTENAIRE : EDIT or ADD
 if ('partenaire_edit' == ($_POST['operation'] ?? null) || 'partenaire_add' == ($_POST['operation'] ?? null)) {
-    include $operationsDir.'operations.partenaire_edit.php';
+    require $operationsDir.'operations.partenaire_edit.php';
 }
 
 // PARTENAIRE : DELETE
 if ('partenaire_delete' == ($_POST['operation'] ?? null)) {
-    include $operationsDir.'operations.partenaire_delete.php';
+    require $operationsDir.'operations.partenaire_delete.php';
 }
 
 // USER : DELETE PROFIL IMG
 if ('user_profil_img_delete' == ($_POST['operation'] ?? null) && user()) {
-    include $operationsDir.'operations.user_profil_img_delete.php';
+    require $operationsDir.'operations.user_profil_img_delete.php';
 }
 
 // USER : UPDATE PROFILE
 if ('user_update' == ($_POST['operation'] ?? null)) {
-    include $operationsDir.'operations.user_update.php';
+    require $operationsDir.'operations.user_update.php';
 }
 
 // USER : UPDATE NIVEAU SPORTIF par commission
 if ('user_update' == ($_POST['operation'] ?? null) || 'niveau_update' == ($_POST['operation'] ?? null)) {
-    include $operationsDir.'operations.user_niveau_update.php';
+    require $operationsDir.'operations.user_niveau_update.php';
 }
 
 // USER : TENTATIVE D'INSCRIPTION
 if ('user_subscribe' == ($_POST['operation'] ?? null)) {
-    include $operationsDir.'operations.user_subscribe.php';
+    require $operationsDir.'operations.user_subscribe.php';
 }
 
 // USER : ajout de l'attribut à l'user (type salarié, encadrant etc...)
 if ('user_attr_add' == ($_POST['operation'] ?? null)) {
-    include $operationsDir.'operations.user_attr_add.php';
+    require $operationsDir.'operations.user_attr_add.php';
 }
 
 // USER : supression d'attribut
@@ -229,12 +229,12 @@ if ('user_attr_del' == ($_POST['operation'] ?? null)) {
 }
 // USER : CREATE (manuel)
 if ('user_create' == ($_POST['operation'] ?? null)) {
-    include $operationsDir.'operations.user_create.php';
+    require $operationsDir.'operations.user_create.php';
 }
 
 // USER : EDIT (manuel)
 if ('user_edit' == ($_POST['operation'] ?? null)) {
-    include $operationsDir.'operations.user_edit.php';
+    require $operationsDir.'operations.user_edit.php';
 }
 
 // USER : SUPPRIMER
@@ -328,7 +328,7 @@ if ('user_reset' == ($_POST['operation'] ?? null)) {
 
 // USER (OU PAS) : CONTACT
 if ('user_contact' == ($_POST['operation'] ?? null)) {
-    include $operationsDir.'operations.user_contact.php';
+    require $operationsDir.'operations.user_contact.php';
 }
 
 // MISE À JOUR DES FICHIERS ADHÉRENTS
@@ -364,7 +364,7 @@ if ('fichier_adherents_maj' == ($_POST['operation'] ?? null)) {
 
 // ADMIN : ajout de l'attribut à l'user (type admin, rédacteur etc...)
 if ('user_attr_add_admin' == ($_POST['operation'] ?? null) && admin()) {
-    include $operationsDir.'operations.user_attr_add_admin.php';
+    require $operationsDir.'operations.user_attr_add_admin.php';
 }
 
 // ADMIN : supression d'attribut
@@ -408,17 +408,17 @@ if ('usertype_attr_edit' == ($_POST['operation'] ?? null) && admin()) {
 
 // ADMIN: modification de page libre // NOTE : PAS DE MULTILANGUE POUR LE MOMENT
 if ('pagelibre_edit' == ($_POST['operation'] ?? null) && admin()) {
-    include $operationsDir.'operations.pagelibre_edit.php';
+    require $operationsDir.'operations.pagelibre_edit.php';
 }
 
 // ADMIN: ajout de page libre // NOTE : PAS DE MULTILANGUE POUR LE MOMENT
 if ('pagelibre_add' == ($_POST['operation'] ?? null) && admin()) {
-    include $operationsDir.'operations.pagelibre_add.php';
+    require $operationsDir.'operations.pagelibre_add.php';
 }
 
 // ADMIN: suppression de page libre // NOTE : PAS DE MULTILANGUE POUR LE MOMENT
 if ('pagelibre_del' == ($_POST['operation'] ?? null) && admin()) {
-    include $operationsDir.'operations.pagelibre_del.php';
+    require $operationsDir.'operations.pagelibre_del.php';
 }
 
 /* -------------------------- **/
@@ -427,21 +427,21 @@ if ('pagelibre_del' == ($_POST['operation'] ?? null) && admin()) {
 
 // BASE: page add
 if ('page_add' == ($_POST['operation'] ?? null) && superadmin()) {
-    include $operationsDir.'operations.page_add.php';
+    require $operationsDir.'operations.page_add.php';
 }
 // BASE: page del
 if ('page_del' == ($_POST['operation'] ?? null) && superadmin()) {
-    include $operationsDir.'operations.page_del.php';
+    require $operationsDir.'operations.page_del.php';
 }
 
 // BASE: add groupe de contenu
 if ('addContentGroup' == ($_POST['operation'] ?? null) && admin()) {
-    include $operationsDir.'operations.addContentGroup.php';
+    require $operationsDir.'operations.addContentGroup.php';
 }
 
 // BASE: add contenu inline
 if ('addContentInline' == ($_POST['operation'] ?? null) && admin()) {
-    include $operationsDir.'operations.addContentInline.php';
+    require $operationsDir.'operations.addContentInline.php';
 }
 
 // GENERIQUE: maj
@@ -511,10 +511,10 @@ if ('majConts' == ($_POST['operation'] ?? null) && admin()) {
 }
 // ADMIN : NOUVELLE PAGE
 if ('page_new' == ($_POST['operation'] ?? null) && admin()) {
-    include $operationsDir.'operations.page_new.php';
+    require $operationsDir.'operations.page_new.php';
 }
 
 // CONTACT
 if ('contact' == ($_POST['operation'] ?? null)) {
-    include $operationsDir.'operations.contact.php';
+    require $operationsDir.'operations.contact.php';
 }

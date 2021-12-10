@@ -3,7 +3,7 @@
 global $dossier;
 global $p_ftp_masquer;
 
-include __DIR__.'/../app/includes.php';
+require __DIR__.'/../app/includes.php';
 
 if (!admin()) {
     header('HTTP/1.0 401 Authorization Required');

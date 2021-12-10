@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__.'/../../app/includes.php';
+require __DIR__.'/../../app/includes.php';
 
 $queries = [];
 $app_version = get_version_nb();

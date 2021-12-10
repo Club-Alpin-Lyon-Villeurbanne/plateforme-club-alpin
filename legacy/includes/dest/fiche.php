@@ -42,7 +42,7 @@
         <?php }
     } ?>
 
-        <?php include __DIR__.'/../../includes/dest/admin_status.php'; ?>
+        <?php require __DIR__.'/../../includes/dest/admin_status.php'; ?>
 
         <?php /* envoyer les emails de cloture */
         if (allowed('destination_mailer')
@@ -208,7 +208,7 @@
             }
         ?>
 
-        <?php include __DIR__.'/../../includes/dest/display.php'; ?>
+        <?php require __DIR__.'/../../includes/dest/display.php'; ?>
 
         <?php if (user_in_destination((string) getUser()->getIdUser(), $destination['id'])
             || (user() && $destination['id_user_who_create'] === (string) getUser()->getIdUser())

@@ -40,8 +40,8 @@ if (user()) {
             if ($i) {
                 echo '<br /><br />';
             }
-            include __DIR__.'/../includes/article-tools.php';
-            include __DIR__.'/../includes/article-lien.php';
+            require __DIR__.'/../includes/article-tools.php';
+            require __DIR__.'/../includes/article-lien.php';
         }
     }
 

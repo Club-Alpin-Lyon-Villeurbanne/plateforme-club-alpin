@@ -128,7 +128,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 			Qui peut le / la contacter sur le site, via un formulaire de contact (adresse e-mail jamais dévoilée) ?<br />
 			<?php $whocan_selected = $userTab['auth_contact_user']; ?>
             <?php $whocan_table = false; ?>
-            <?php include __DIR__.'/../includes/user/whocan_contact.php'; ?>
+            <?php require __DIR__.'/../includes/user/whocan_contact.php'; ?>
 
 			<a href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
 				<img src="/img/base/save.png" alt="Enregistrer" title="Enregistrer" style="height:35px;" />

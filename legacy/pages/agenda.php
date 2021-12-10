@@ -132,7 +132,7 @@ $min_year = (int) (date('Y')) - 3;
                         }
                         $first = false;
                         $evt = $agendaTab[$i]['debut'][$j];
-                        include __DIR__.'/../includes/agenda-evt-debut.php';
+                        require __DIR__.'/../includes/agenda-evt-debut.php';
                     }
 
                     // affichage des sorties courantes
@@ -142,7 +142,7 @@ $min_year = (int) (date('Y')) - 3;
                         }
                         $first = false;
                         $evt = $agendaTab[$i]['courant'][$j];
-                        include __DIR__.'/../includes/agenda-evt-courant.php';
+                        require __DIR__.'/../includes/agenda-evt-courant.php';
                     }
 
                     echo '</td>';
@@ -208,10 +208,10 @@ $min_year = (int) (date('Y')) - 3;
             inclure('presentation-'.($current_commission ?: 'general'), 'right-light-in');
 
             // SLIDER PARTENAIRES
-            include __DIR__.'/../includes/droite-partenaires.php';
+            require __DIR__.'/../includes/droite-partenaires.php';
 
             // RECHERCHE
-            include __DIR__.'/../includes/recherche.php';
+            require __DIR__.'/../includes/recherche.php';
             ?>
 		</div>
 
@@ -221,7 +221,7 @@ $min_year = (int) (date('Y')) - 3;
 
 				<?php
                 // ACTUS sur fond vert
-                include __DIR__.'/../includes/droite-actus.php';
+                require __DIR__.'/../includes/droite-actus.php';
                 ?>
 
 			</div>

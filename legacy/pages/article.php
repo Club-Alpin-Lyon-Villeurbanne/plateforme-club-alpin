@@ -16,7 +16,7 @@
         // article trouvée, pas d'erreur, affichage normal :
         if ($article && !$errPage) {
             // FICHE DE LA article
-            include __DIR__.'/../includes/article-fiche.php';
+            require __DIR__.'/../includes/article-fiche.php';
         }
         ?>
 		<br style="clear:both" />
@@ -24,7 +24,7 @@
 
 	<!-- partie droite -->
 	<?php
-    include __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__.'/../includes/right-type-agenda.php';
     ?>
 
 

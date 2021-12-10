@@ -2,12 +2,12 @@
 
 use App\Legacy\LegacyContainer;
 
-include __DIR__.'/../../app/includes.php';
+require __DIR__.'/../../app/includes.php';
 
 //_________________________________________________ FONCTIONS MAISON
-include __DIR__.'/../../app/fonctions.php';
+require __DIR__.'/../../app/fonctions.php';
 //_________________________________________________ VARIABLES "GLOBALES" DU SITE
-include __DIR__.'/../../config/params.php';
+require __DIR__.'/../../config/params.php';
 
 ?>
 <!DOCTYPE html>

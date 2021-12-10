@@ -66,7 +66,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
             $filename = $i.'-profil.jpg';
             if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploaddir.$filename)) {
                 // REDIMS
-                include __DIR__.'/../../app/redims.php';
+                require __DIR__.'/../../app/redims.php';
                 $size = getimagesize($uploaddir.$filename);
 
                 $rep_Dst = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
