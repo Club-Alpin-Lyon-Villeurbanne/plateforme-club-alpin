@@ -141,7 +141,7 @@ if (user()) {
             <hr style="margin: 20px 0" />
             <h2 id="edit-password"><span class="bleucaf">&gt;</span>Modifier mon mot de passe</h2>
             <p>
-                Vous pouvez modifier votre mot de passe <a href="<?php echo generateRoute('account_set_password'); ?>">sur cette page</a>.
+                Vous pouvez modifier votre mot de passe <a href="<?php echo generateRoute('account_change_password'); ?>">sur cette page</a>.
             </p>
 
 
