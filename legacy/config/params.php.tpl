@@ -49,8 +49,6 @@ $p_tsp_max_pour_rappel_redac_cr = strtotime('midnight'); // cette nuit à minuit
 // nombre de versions des contenus à garder dans l'historique (entier positif)
 $p_nmaxversions = 5;
 
-// langues
-$p_langs = ['fr']; // la langue par défaut en premier
 // Extensions autorisées dans le FTP
 $p_ftpallowed = ['gpx', 'kml', 'kmz', 'jpg', 'gif', 'jpeg', 'png', 'doc', 'docx', 'odt', 'pdf', 'avi', 'mov', 'mp3', 'rar', 'zip', 'txt', 'xls', 'csv', 'ppt', 'pptx', 'ai', 'psd', 'fla', 'swf', 'eps'];
 // tinymce vars

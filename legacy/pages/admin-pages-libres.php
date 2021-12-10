@@ -12,7 +12,7 @@ if (!admin()) {
     while ($row = $result->fetch_assoc()) {
         // récupération de la date de dernière modification de l'élément contenu si existant
         $id_page = $row['id_page'];
-        $lang_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p_langs[0]); // dans la langue par défaut
+        $lang_content_html = 'fr';
         $req = "SELECT `date_content_html`
             FROM `caf_content_html`
             WHERE `code_content_html` LIKE 'main-pagelibre-$id_page'

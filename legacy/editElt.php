@@ -15,11 +15,6 @@ if (admin()) {
         $code_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_GET['p']);
         $id_content_html = (int) ($_GET['id_content_html']);
 
-        if (!$lang) {
-            header('HTTP/1.0 404 Not Found');
-            echo 'Erreur : langue courante introuvable.';
-            exit();
-        }
         if (!$code_content_html) {
             header('HTTP/1.0 404 Not Found');
             echo 'Erreur : code_content_html introuvable.';
@@ -27,7 +22,7 @@ if (admin()) {
         }
 
         // récupération des dernieres versions dans cette langue
-        $req = "SELECT * FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND `lang_content_html` LIKE '$lang' ORDER BY  `date_content_html` DESC LIMIT 0 , 10";
+        $req = "SELECT * FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND `lang_content_html` LIKE 'fr' ORDER BY  `date_content_html` DESC LIMIT 0 , 10";
         $contentVersionsTab = [];
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -301,17 +296,16 @@ if (admin()) {
 
         // Nettoyage
         $contenu_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($contenu_content_html);
-        $lang = LegacyContainer::get('legacy_mysqli_handler')->escapeString($lang);
         $code_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($code_content_html);
 
         // compte des nombre d'entrées à supprimer
-        $req = "SELECT COUNT(`id_content_html`) FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  '$lang'";
+        $req = "SELECT COUNT(`id_content_html`) FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  'fr'";
         $sqlCount = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $nVersions = getArrayFirstValue($sqlCount->fetch_array(\MYSQLI_NUM));
         $nDelete = $nVersions - $p_nmaxversions;
         if ($nDelete > 0) {
             // s'il y en a à supprimer
-            $req = "DELETE FROM `caf_content_html` WHERE `code_content_html` LIKE '$code_content_html' AND  `lang_content_html` LIKE  '$lang' ORDER BY  `date_content_html` ASC LIMIT $nDelete"; // ASC pour commencer par la fin de ceux a supprimer
+            $req = "DELETE FROM `caf_content_html` WHERE `code_content_html` LIKE '$code_content_html' AND  `lang_content_html` LIKE  'fr' ORDER BY  `date_content_html` ASC LIMIT $nDelete"; // ASC pour commencer par la fin de ceux a supprimer
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 header('HTTP/1.0 400 Bad Request');
                 echo '<br />Erreur SQL clean !';
@@ -329,7 +323,7 @@ if (admin()) {
 
         // Enregistrement
         $req = "INSERT INTO  `caf_content_html` (`id_content_html` ,`code_content_html` ,`lang_content_html` ,`contenu_content_html` ,`date_content_html` ,`linkedtopage_content_html`, `current_content_html`, `vis_content_html`)
-															VALUES (NULL ,  '$code_content_html',  '$lang',  '$contenu_content_html',  '".time()."',  '$linkedtopage_content_html', 1, $vis_content_html);";
+															VALUES (NULL ,  '$code_content_html',  'fr',  '$contenu_content_html',  '".time()."',  '$linkedtopage_content_html', 1, $vis_content_html);";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             header('HTTP/1.0 400 Bad request');
             echo 'Erreur SQL';

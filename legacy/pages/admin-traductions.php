@@ -5,18 +5,12 @@ use App\Legacy\LegacyContainer;
 if (!admin()) {
     echo 'Votre session administrateur a expiré';
 } else {
-    // tous les enregistrements
-    // langue en cours
-    if (in_array($p2, $p_langs, true) && $p2 != $p_langs[0]) {
-        $lang_content_inline = $p2;
-    } else {
-        $lang_content_inline = $p_langs[1];
-    }
+    $lang_content_inline = 'fr';
 
     // Pour chaque contenu original existant :
     $req = "SELECT *
 					FROM caf_content_inline, caf_content_inline_group
-					WHERE lang_content_inline LIKE '".$p_langs[0]."'
+					WHERE lang_content_inline LIKE 'fr'
 					AND groupe_content_inline = id_content_inline_group
 					ORDER BY ordre_content_inline_group ASC, code_content_inline ASC, date_content_inline DESC
 					";
@@ -60,10 +54,8 @@ if (!admin()) {
 		- Un champ vert est complété, et sauvegardé
 	</p>
 	<h2>Langues disponibles :
-		<?php
-        for ($i = 1; $i < count($p_langs); ++$i) {
-            echo '<a href="'.($lang ? $lang.'/' : '').'admin-traductions/'.$p_langs[$i].'.html" title="" style="font-size:23px; margin-right:20px; padding:3px; '.($p_langs[$i] == $lang_content_inline ? 'color:black; background:white;' : 'color:gray').'"> <img src="/img/base/flag-'.$p_langs[$i].'.png" alt="" title="" style="height:30px; vertical-align:middle;" /> '.strtoupper($p_langs[$i]).' </a>';
-        } ?>
+    <a href="/admin-traductions/fr.html" title="" style="font-size:23px; margin-right:20px; padding:3px; color:black; background:white;">
+        <img src="/img/base/flag-fr.png" alt="" title="" style="height:30px; vertical-align:middle;" /> FR </a>
 	</h2>
 	<br style="clear:both" />
 	<br style="clear:both" />
@@ -76,7 +68,7 @@ if (!admin()) {
 		<table class="cont-table">
 			<tr class="th1">
 				<th style="text-align:right">Code</th>
-				<th style="text-align:center">Original (<?php echo $p_langs[0]; ?>)</th>
+				<th style="text-align:center">Original (FR)</th>
 				<th>Traduction (<?php echo $lang_content_inline; ?>)</th>
 				<th></th>
 				<th></th>

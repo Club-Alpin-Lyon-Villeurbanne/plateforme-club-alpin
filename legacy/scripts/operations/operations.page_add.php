@@ -8,17 +8,13 @@ $parent_page = (int) ($_POST['parent_page']);
 $menu_page = (int) ($_POST['menu_page']);
 
 $titreTab = $_POST['titre'];
-for ($i = 0; $i < count($p_langs); ++$i) {
-    if (!strlen($titreTab[$i])) {
-        $errTab[] = 'Nom de la page trop court pour cette langue : '.strtoupper($p_langs[$i]);
-    }
+if (!strlen($titreTab[0])) {
+    $errTab[] = 'Nom de la page trop court pour cette langue : FR';
 }
 $menuTab = $_POST['menuname'];
 if ($menu_page) {
-    for ($i = 0; $i < count($p_langs); ++$i) {
-        if (!strlen($menuTab[$i])) {
-            $errTab[] = 'Intitulé dans le menu trop court pour cette langue : '.strtoupper($p_langs[$i]);
-        }
+    if (!strlen($menuTab[0])) {
+        $errTab[] = 'Intitulé dans le menu trop court pour cette langue : FR';
     }
 }
 $code_page = strtolower(trim(LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['code_page']))));
@@ -61,26 +57,22 @@ if (!isset($errTab) || 0 === count($errTab)) {
 }
 // save titles
 if (!isset($errTab) || 0 === count($errTab)) {
-    for ($i = 0; $i < count($p_langs); ++$i) {
-        $lang_content_inline = $p_langs[$i];
-        $contenu_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($titreTab[$i]));
-        $req = "INSERT INTO `caf_content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
-                                            VALUES (NULL , '2', 'meta-title-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur BDD titles';
-        }
+    $lang_content_inline = 'fr';
+    $contenu_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($titreTab[0]));
+    $req = "INSERT INTO `caf_content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
+                                        VALUES (NULL , '2', 'meta-title-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+        $errTab[] = 'Erreur BDD titles';
     }
 }
 // save menu
 if ((!isset($errTab) || 0 === count($errTab)) && $menu_page) {
-    for ($i = 0; $i < count($p_langs); ++$i) {
-        $lang_content_inline = $p_langs[$i];
-        $contenu_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($titreTab[$i]));
-        $req = "INSERT INTO `caf_content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
-                                            VALUES (NULL , '4', 'mainmenu-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur BDD titles';
-        }
+    $lang_content_inline = 'fr';
+    $contenu_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($titreTab[0]));
+    $req = "INSERT INTO `caf_content_inline` (`id_content_inline` ,`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
+                                        VALUES (NULL , '4', 'mainmenu-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
+    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+        $errTab[] = 'Erreur BDD titles';
     }
 }
 
