@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__.'/../../app/includes.php';
+require __DIR__.'/../../app/includes.php';
 
 $errTab = [];
 $result = $targetDir = $filename = null;
@@ -20,7 +20,7 @@ if (0 === count($errTab)) {
     }
 
     // Handle file uploads via XMLHttpRequest
-    include __DIR__.'/vfu.classes.php';
+    require __DIR__.'/vfu.classes.php';
 
     // list of valid extensions, ex. array("jpeg", "xml", "bmp")
     $allowedExtensions = ['jpeg', 'jpg', 'png',
@@ -67,7 +67,7 @@ if (0 === count($errTab)) {
     if (0 === count($errTab)) {
         $size = getimagesize($targetDir.$filename);
         if ($size[0] > 600 || $size[1] > 800) {
-            include __DIR__.'/../../app/redims.php';
+            require __DIR__.'/../../app/redims.php';
             $W_max = 600;
             $H_max = 800;
             $rep_Dst = $targetDir;

@@ -6,11 +6,11 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 header('Cache-Control: max-age=10');
 header('Content-Type: text/xml');
 
-include __DIR__.'/app/includes.php';
+require __DIR__.'/app/includes.php';
 
 //_________________________________________________ RSS
-include_once __DIR__.'/includes/FeedWriter.php';
-include_once __DIR__.'/includes/FeedItem.php';
+require_once __DIR__.'/includes/FeedWriter.php';
+require_once __DIR__.'/includes/FeedItem.php';
 
 // LISTE DES COMMISSIONS PUBLIQUES
 $req = 'SELECT * FROM caf_commission WHERE vis_commission=1 ORDER BY ordre_commission ASC';

@@ -62,7 +62,7 @@ if (user()) {
             }
 
             // compte places totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
-            include __DIR__.'/../includes/evt-temoin-reqs.php';
+            require __DIR__.'/../includes/evt-temoin-reqs.php';
 
             $evtList[] = $handle;
         }
@@ -107,7 +107,7 @@ if (user()) {
             }
 
             // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
-            include __DIR__.'/../includes/evt-temoin-reqs.php';
+            require __DIR__.'/../includes/evt-temoin-reqs.php';
 
             $evtList[] = $handle;
 
@@ -139,7 +139,7 @@ if (user()) {
             $total += getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
             while ($handle = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
-                include __DIR__.'/../includes/evt-temoin-reqs.php';
+                require __DIR__.'/../includes/evt-temoin-reqs.php';
                 $evtList[] = $handle;
             }
         }
@@ -184,7 +184,7 @@ if (user()) {
             }
 
             // compte places totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
-            include __DIR__.'/../includes/evt-temoin-reqs.php';
+            require __DIR__.'/../includes/evt-temoin-reqs.php';
             $evtList[] = $handle;
 
             // AJOUT POST BETA 2 : affichage des suites de cycle
@@ -214,7 +214,7 @@ if (user()) {
             $total += getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
             while ($handle = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
-                include __DIR__.'/../includes/evt-temoin-reqs.php';
+                require __DIR__.'/../includes/evt-temoin-reqs.php';
                 $evtList[] = $handle;
             }
         }
@@ -257,8 +257,8 @@ if (user()) {
                                     : $status_evt)
                             .'</td>'
                             .'<td>';
-                    include __DIR__.'/../includes/evt-tools.php';
-                    include __DIR__.'/../includes/agenda-evt-debut.php';
+                    require __DIR__.'/../includes/evt-tools.php';
+                    require __DIR__.'/../includes/agenda-evt-debut.php';
 
                     if (count($empiete)) {
                         echo '<div class="empietements">

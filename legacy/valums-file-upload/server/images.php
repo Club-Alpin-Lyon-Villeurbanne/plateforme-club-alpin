@@ -1,12 +1,12 @@
 <?php
 
-include __DIR__.'/../../app/includes.php';
+require __DIR__.'/../../app/includes.php';
 
 if (admin()) {
     $targetDir = __DIR__.'/../../../public/'.$_GET['dossier'].'/';
 
     // Handle file uploads via XMLHttpRequest
-    include __DIR__.'/vfu.classes.php';
+    require __DIR__.'/vfu.classes.php';
 
     // list of valid extensions, ex. array("jpeg", "xml", "bmp")
     $allowedExtensions = ['jpeg', 'jpg', 'gif', 'png', 'bmp',
@@ -48,7 +48,7 @@ if (admin()) {
     if ((!isset($errTab) || 0 === count($errTab)) && ('jpg' == $ext || 'jpeg' == $ext || 'png' == $ext)) {
         $size = getimagesize($targetDir.$filename);
         if ($size[0] > $p_max_images_dimensions_before_redim || $size[1] > $p_max_images_dimensions_before_redim) {
-            include __DIR__.'/../../app/redims.php';
+            require __DIR__.'/../../app/redims.php';
             $W_max = $p_max_images_dimensions_before_redim;
             $H_max = $p_max_images_dimensions_before_redim;
             $rep_Dst = $targetDir;

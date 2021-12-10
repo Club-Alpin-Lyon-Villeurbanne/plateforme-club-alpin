@@ -6,10 +6,10 @@
             inclure('presentation-'.($current_commission ?: 'general'), 'right-light-in');
 
             // SLIDER PARTENAIRES
-            include __DIR__.'/../includes/droite-partenaires.php';
+            require __DIR__.'/../includes/droite-partenaires.php';
 
             // RECHERCHE
-            include __DIR__.'/../includes/recherche.php';
+            require __DIR__.'/../includes/recherche.php';
             ?>
 		</div>
 
@@ -19,7 +19,7 @@
 
 				<?php
                 // AGENDA sur fond vert
-                include __DIR__.'/../includes/droite-agenda.php';
+                require __DIR__.'/../includes/droite-agenda.php';
                 ?>
 
 			</div>

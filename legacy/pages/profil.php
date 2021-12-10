@@ -96,7 +96,7 @@
         // **************** **************************************
         else {
             if (file_exists(__DIR__.'/profil-'.$p2.'.php')) {
-                include __DIR__.'/profil-'.$p2.'.php';
+                require __DIR__.'/profil-'.$p2.'.php';
             } else {
                 echo '<p class="erreur">Erreur : fichier introuvable</p>';
             }
@@ -129,7 +129,7 @@
             }
 
             // RECHERCHE
-            include __DIR__.'/../includes/recherche.php';
+            require __DIR__.'/../includes/recherche.php';
             ?>
 		</div>
 
@@ -139,7 +139,7 @@
 
 				<?php
                 // AGENDA sur fond vert
-                include __DIR__.'/../includes/droite-agenda.php';
+                require __DIR__.'/../includes/droite-agenda.php';
                 ?>
 
 			</div>

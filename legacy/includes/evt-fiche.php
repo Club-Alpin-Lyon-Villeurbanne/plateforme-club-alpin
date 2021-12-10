@@ -10,7 +10,7 @@ if (isset($errTab) && count($errTab) > 0 && (!in_array(($_POST['operation'] ?? n
 if (!$evt) {
     echo '<p class="erreur">Erreur : événement non défini</p>';
 } else {
-    include __DIR__.'/../includes/evt/admin_status.php';
+    require __DIR__.'/../includes/evt/admin_status.php';
 
     // compte rendu ?
     if ($evt['cr']) {
@@ -212,7 +212,7 @@ if (!$evt) {
         }
 
         // GESTION DES INSCRIPTIONS
-        include __DIR__.'/../includes/evt/gestion_inscriptions.php';
+        require __DIR__.'/../includes/evt/gestion_inscriptions.php';
     }
 
     if ($destination) {
@@ -220,7 +220,7 @@ if (!$evt) {
         <h2 class="trigger-h2 " >Cette sortie fait partie de la destination <span class="bleucaf"><?php echo $destination['nom']; ?></span></h2>
         <div class="trigger-me">
             <div class="note">
-                <?php include __DIR__.'/../includes/dest/display.php'; ?>
+                <?php require __DIR__.'/../includes/dest/display.php'; ?>
             </div>
         </div>
         <br>
@@ -472,7 +472,7 @@ if (!$evt) {
     echo '
 	</ul><br style="clear:both" />';
 
-    include __DIR__.'/../includes/evt/validation_legale.php';
+    require __DIR__.'/../includes/evt/validation_legale.php';
 
     // NOMBRE DE PLACES
     // les messages et options liées aux inscriptions ne s'appliquent pas sur les suites de cycles
@@ -569,7 +569,7 @@ if (!$evt) {
                 $nPlacesRestantesOnline > 0
                     || (user() && in_array((string) getUser()->getIdUser(), $acces_au_module, true))
             ) {
-                include __DIR__.'/../includes/evt/user_inscription.php';
+                require __DIR__.'/../includes/evt/user_inscription.php';
             } else {
                 echo '<p>Le nombre de places disponibles à la réservation depuis internet est atteint.</p>';
             }
@@ -587,7 +587,7 @@ if (!$evt) {
         echo '<tr>'
                 .'<td class="agenda-gauche">'.date('d/m/Y', $evt['tsp_evt']).'</td>'
                 .'<td>';
-        include __DIR__.'/../includes/agenda-evt-debut.php';
+        require __DIR__.'/../includes/agenda-evt-debut.php';
         echo '</td>'
             .'</tr>';
         echo '</table>';
@@ -605,7 +605,7 @@ if (!$evt) {
             echo '<tr>'
                     .'<td class="agenda-gauche">'.date('d/m/Y', $evt['tsp_evt']).'</td>'
                     .'<td>';
-            include __DIR__.'/../includes/agenda-evt-debut.php';
+            require __DIR__.'/../includes/agenda-evt-debut.php';
             echo '</td>'
                 .'</tr>';
         }

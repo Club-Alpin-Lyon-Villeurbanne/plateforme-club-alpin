@@ -2,7 +2,7 @@
 
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-include __DIR__.'/../app/includes.php';
+require __DIR__.'/../app/includes.php';
 
 $log = (isset($log) ? $log : '')."\n accès à ".date('H:i:s');
 

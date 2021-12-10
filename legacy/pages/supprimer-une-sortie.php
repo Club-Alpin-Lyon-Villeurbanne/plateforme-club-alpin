@@ -86,7 +86,7 @@
 					<h2 style="text-align:center; background:white; padding:10px">APERÇU :</h2>
 					<?php
                     // RESUME DE LA SORTIE
-                    include __DIR__.'/../includes/evt-resume.php'; ?>
+                    require __DIR__.'/../includes/evt-resume.php'; ?>
 
 
 
@@ -100,7 +100,7 @@
 
 	<!-- partie droite -->
 	<?php
-    include __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__.'/../includes/right-type-agenda.php';
     ?>
 
 	<br style="clear:both" />

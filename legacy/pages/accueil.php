@@ -81,7 +81,7 @@
             }
             for ($i = 0; $i < count($articlesTab); ++$i) {
                 $article = $articlesTab[$i];
-                include __DIR__.'/../includes/article-lien.php';
+                require __DIR__.'/../includes/article-lien.php';
             }
 
             // paginatino
@@ -126,7 +126,7 @@
 
 	<!-- partie droite -->
 	<?php
-    include __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__.'/../includes/right-type-agenda.php';
     ?>
 
 

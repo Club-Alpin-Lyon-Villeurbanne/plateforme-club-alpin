@@ -47,7 +47,7 @@
                         (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
                     ) { ?>
                         <h1 class="page-h1">Modifier une <b>destination</b></h1>
-                        <?php include __DIR__.'/../includes/dest/creer.php'; ?>
+                        <?php require __DIR__.'/../includes/dest/creer.php'; ?>
 					<?php } else { ?>
                         <div style="padding:10px 0 0 30px; line-height:18px; ">
                             <p class="erreur">Vous n'avez pas l'autorisation d'accéder à cette page car vous ne semblez pas avoir les droits de modification pour cette destination.</p>
@@ -62,7 +62,7 @@
 						</div>
 					<?php } else { ?>
 						<h1 class="page-h1">Créer une <b>destination</b></h1>
-						<?php include __DIR__.'/../includes/dest/creer.php'; ?>
+						<?php require __DIR__.'/../includes/dest/creer.php'; ?>
 					<?php } ?>
 				<?php } ?>
 
@@ -108,7 +108,7 @@
                     if ($id_evt_to_update && 1 == $update_status) {
                         echo '<p class="alerte">Attention : si vous modifiez cette sortie, elle devra à nouveau être validée par un responsable avant d\'être affichée sur le site !</p>';
                     }
-                    include __DIR__.'/../includes/evt/creer.php';
+                    require __DIR__.'/../includes/evt/creer.php';
                 }
                 ?>
             </div><br>
@@ -118,7 +118,7 @@
 
 	<!-- partie droite -->
 	<?php
-    include __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__.'/../includes/right-type-agenda.php';
     ?>
 
 	<br style="clear:both" />

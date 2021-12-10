@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-include __DIR__.'/operations.bus_verif.php';
+require __DIR__.'/operations.bus_verif.php';
 
 // vérifications BDD
 if (!isset($errTab) || 0 === count($errTab)) {
