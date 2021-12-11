@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_TIMESTAMP_FOR_LEGAL_VALIDATION');
+$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION = strtotime(LegacyContainer::getParameter('legacy_env_MAX_TIMESTAMP_FOR_LEGAL_VALIDATION'));
 
 if ($evt['tsp_evt'] < $MAX_TIMESTAMP_FOR_LEGAL_VALIDATION && $evt['tsp_evt'] > time()) {
     inclure('status-legal-'.(int) ($evt['status_legal_evt']), 'status-legal');
