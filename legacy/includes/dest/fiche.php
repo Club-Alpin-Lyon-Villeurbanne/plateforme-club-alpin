@@ -59,17 +59,6 @@
                         <input type="hidden" name="operation" value="dest_mailer"/>
                         <input type="hidden" name="id_destination" value="<?php echo $destination['id']; ?>"/>
 
-                        <?php if ($p_transporteurs && count($p_transporteurs)) { ?>
-                        <label for="transporteur"><b>Tranporteur :</b></label><br>
-                        <select name="transporteur" class="type1" style="width:97%">
-                            <option value="">- Sélectionner un transporteur</option>
-                        <?php foreach ($p_transporteurs as $code => $transporteur) { ?>
-                            <option value="<?php echo $code; ?>"><?php echo $transporteur['nom']; ?> - <?php echo $transporteur['email']; ?></option>
-                        <?php } ?>
-                            <option value="-1">- Je gère moi même la réservation d'un transport, je ne sélectionne pas de transporteur.</option>
-                        </select><br><br>
-                        <?php } ?>
-
                         <label for="content_mail"><b>Contenu du mail :</b></label><br>
                         <textarea class="type1" name="content_mail" style="width:95%;height:400px;" ><?php
                             echo "Bonjour,\n\n";

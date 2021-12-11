@@ -1,5 +1,7 @@
 <?php
 
+use App\Ftp\FtpFile;
+
 require __DIR__.'/../app/includes.php';
 
 $racine = '../ftp/';
@@ -31,12 +33,12 @@ if (0 === count($errTab)) {
     $opendir = opendir($dossier);
     while ($file = readdir($opendir)) {
         // c'est un dossier, non masqué
-        if (is_dir($dossier.$file) && !in_array($file, $p_ftp_masquer, true)) {
+        if (is_dir($dossier.$file) && !FtpFile::shouldHide($file)) {
             $one = true;
             $dirTab[] = $file;
         }
         // c'est un fichier, non masqué
-        if (!is_dir($dossier.$file) && !in_array($file, $p_ftp_masquer, true)) {
+        if (!is_dir($dossier.$file) && !FtpFile::shouldHide($file)) {
             $one = true;
             $tmp = [];
             $tmp['name'] = $file;

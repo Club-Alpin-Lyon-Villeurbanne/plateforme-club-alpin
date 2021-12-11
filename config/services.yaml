@@ -6,8 +6,19 @@
 parameters:
     legacy_env_ANALYTICS_ACCOUNT: "%env(string:ANALYTICS_ACCOUNT)%"
     legacy_env_GOOGLE_SITE_VERIFICATION: "%env(string:GOOGLE_SITE_VERIFICATION)%"
-    legacy_env_MAIL_EMITTER_EMAIL: "%env(MAIL_EMITTER_EMAIL)%"
-    legacy_env_MAIL_EMITTER_NAME: "%env(MAIL_EMITTER_NAME)%"
+    legacy_env_MAIL_EMITTER_EMAIL: "%env(string:MAIL_EMITTER_EMAIL)%"
+    legacy_env_MAIL_EMITTER_NAME: "%env(string:MAIL_EMITTER_NAME)%"
+    legacy_env_CONTENT_MAX_VERSIONS: "%env(int:CONTENT_MAX_VERSIONS)%"
+    legacy_env_CRON_DATE_BUTOIRES: "%env(json:CRON_DATE_BUTOIRES)%"
+    legacy_env_MAX_TIMESTAMP_FOR_LEGAL_VALIDATION: "%env(string:MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%"
+    legacy_env_MAX_SORTIES_ACCUEIL: "%env(int:MAX_SORTIES_ACCUEIL)%"
+    legacy_env_URL_PAIEMENT: "%env(string:URL_PAIEMENT)%"
+    legacy_env_MAX_ADMINS_SUB_LEVELS: "%env(int:MAX_ADMINS_SUB_LEVELS)%"
+    legacy_env_MAX_ARTICLES_VALIDATION: "%env(int:MAX_ARTICLES_VALIDATION)%"
+    legacy_env_MAX_SORTIES_VALIDATION: "%env(int:MAX_SORTIES_VALIDATION)%"
+    legacy_env_MAX_ARTICLES_ADHERENT: "%env(int:MAX_ARTICLES_ADHERENT)%"
+    legacy_env_MAX_ARTICLES_ACCUEIL: "%env(int:MAX_ARTICLES_ACCUEIL)%"
+    legacy_env_MAX_IMAGE_SIZE: "%env(int:MAX_IMAGE_SIZE)%"
 
 services:
     # default configuration for services in *this* file

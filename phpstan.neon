@@ -5,9 +5,6 @@ parameters:
     - '#Constant (ATOM|RSS1|RSS2) not found\.#'
     - '#Variable \$p_[a-z_]+ might not be defined#'
     - '#Variable \$p\d might not be defined#'
-    - '#Variable \$limite_[a-z_]+ might not be defined#'
-    - '#Variable \$do_p_chron[a-z0-9_]+ might not be defined#'
-    - '#Variable \$p_chron[a-z0-9_]+ might not be defined#'
     - '#Instantiated class FeedWriter not found#'
 
   autoload_files:

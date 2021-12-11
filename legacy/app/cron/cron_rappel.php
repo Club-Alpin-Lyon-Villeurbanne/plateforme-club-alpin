@@ -3,6 +3,9 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_TIMESTAMP_FOR_LEGAL_VALIDATION');
+$DATE_BUTOIRES = LegacyContainer::getParameter('legacy_env_CRON_DATE_BUTOIRES');
+
 global $chron_savedatas;
 global $chron_sendmails;
 global $p_sitename;
@@ -94,9 +97,9 @@ set_time_limit(0);
 $h = date('h');
 
 // timestamp auquel le dernier envoi aurait du être envoye: Par defaut c'est la veille a la dernière heure
-$minTsp = mktime(array_pop($p_chron_dates_butoires), 0, 0, date('m', strtotime('-1 day')), date('d', strtotime('-1 day')), date('Y', strtotime('-1 day')));
+$minTsp = mktime(end($DATE_BUTOIRES), 0, 0, date('m', strtotime('-1 day')), date('d', strtotime('-1 day')), date('Y', strtotime('-1 day')));
 // Si aujourd'hui on a deja depasse une heure de lancement alors le dernier envoie aurait du être ajourd'hui a cette heure
-foreach ($p_chron_dates_butoires as $tmpH) {
+foreach ($DATE_BUTOIRES as $tmpH) {
     if (date('H') > $tmpH) {
         $minTsp = mktime($tmpH, 0, 0, date('m'), date('d'), date('Y'));
     }
@@ -122,82 +125,6 @@ if ($lastTsp < $minTsp) {
     } // Developpement : fixe un parent fictif a un envoi de mail par exemple
 
     if (!isset($errTab) || 0 === count($errTab)) {
-        // *******************************
-        // RAPPEL D'eVeNEMENTS UTILISATEURS 1 : a 4 jours - PAS DE RAPPEL AU CREATEUR D'EVT [p_chron_rappel_user_avant_event_1]
-        if ($do_p_chron_rappel_user_avant_event_1) {
-            error_log('---------------------------- p_chron_rappel_user_avant_event_1 ----------------------------');
-            $req = 'SELECT id_user, nickname_user, firstname_user, lastname_user, email_user
-						, id_evt, code_evt, tsp_evt, place_evt, titre_evt, rdv_evt
-						, tsp_evt_join
-					FROM caf_user, caf_evt, caf_evt_join
-					WHERE status_evt = 1
-					AND id_evt = evt_evt_join
-					AND id_user = user_evt_join
-					AND valid_user = 1
-					AND status_evt_join = 1
-					AND tsp_evt > '.time().'
-					AND tsp_evt < '.(time() + $p_chron_rappel_user_avant_event_1).'
-					LIMIT 2000';
-            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                error_log('- Envoi necessaire : '.html_utf8($handle2['nickname_user']).' participe a '.$handle2['code_evt'].'-'.$handle2['id_evt'].'');
-                // lien vers l'evenement
-                $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle2['code_evt'].'-'.$handle2['id_evt'].'.html';
-                // vars d'envoi
-                $datas = [];
-                $datas['parent'] = $id_chron_launch;
-                $datas['code'] = 'p_chron_rappel_user_avant_event_1;id_user='.$handle2['id_user'].';id_evt='.$handle2['id_evt']; // ce code, unique, evite de renvoyer ce mail a chaque appel du chron
-                $datas['email'] = $handle2['email_user'];
-                $datas['name'] = $handle2['nickname_user'];
-                $datas['subject'] = 'Rappel : Participation à une sortie';
-                $datas['content'] = '
-					<h1>Bonjour '.html_utf8($handle2['nickname_user']).',</h1>
-					<p>Vous êtes inscrit à un évènement sur le site du '.$p_sitename.', et ça se passe bientôt : Le '.date('d/m/Y à H:i', $handle2['tsp_evt']).' !</p>
-					<p>Vous pouvez retrouver la page de l\'évènement et votre inscription à cette adresse :</p>
-					<p><a href="'.$url.'" >'.$url.'</a></p>
-				';
-                cron_email($datas);
-            }
-        }
-
-        // *******************************
-        // RAPPEL D'eVeNEMENTS UTILISATEURS 2 : a 2 jours - PAS DE RAPPEL AU CREATEUR D'EVT [p_chron_rappel_user_avant_event_2]
-        if ($do_p_chron_rappel_user_avant_event_2) {
-            error_log('---------------------------- p_chron_rappel_user_avant_event_2 ----------------------------');
-            $req = 'SELECT id_user, nickname_user, firstname_user, lastname_user, email_user
-						, id_evt, code_evt, tsp_evt, place_evt, titre_evt, rdv_evt
-						, tsp_evt_join
-					FROM caf_user, caf_evt, caf_evt_join
-					WHERE status_evt = 1
-					AND id_evt = evt_evt_join
-					AND id_user = user_evt_join
-					AND valid_user = 1
-					AND status_evt_join = 1
-					AND tsp_evt > '.time().'
-					AND tsp_evt < '.(time() + $p_chron_rappel_user_avant_event_2).'
-					LIMIT 2000';
-            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                error_log('- Envoi nécessaire : '.html_utf8($handle2['nickname_user']).' participe à '.$handle2['code_evt'].'-'.$handle2['id_evt'].'');
-                // lien vers l'evenement
-                $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle2['code_evt'].'-'.$handle2['id_evt'].'.html';
-                // vars d'envoi
-                $datas = [];
-                $datas['parent'] = $id_chron_launch;
-                $datas['code'] = 'p_chron_rappel_user_avant_event_2;id_user='.$handle2['id_user'].';id_evt='.$handle2['id_evt']; // ce code, unique, evite de renvoyer ce mail a chaque appel du chron
-                $datas['email'] = $handle2['email_user'];
-                $datas['name'] = $handle2['nickname_user'];
-                $datas['subject'] = 'Rappel : Participation à une sortie';
-                $datas['content'] = '
-					<h1>Bonjour '.html_utf8($handle2['firstname_user']).',</h1>
-					<p>Vous êtes inscrit à un évènement sur le site du '.$p_sitename.' qui a lieu dans moins de deux jours : Le '.date('d/m/Y à H:i', $handle2['tsp_evt']).' !</p>
-					<p>Vous pouvez retrouver la page de l\'évènement et votre inscription à cette adresse :</p>
-					<p><a href="'.$url.'" >'.$url.'</a></p>
-				';
-                cron_email($datas);
-            }
-        }
-
         // *******************************
         // CONTACT DES RESPONSABLES DE COMMISSION POUR VALIDER LES SORTIES EN ATTENTE
         error_log('---------------------------- please_validate_evt ----------------------------');
@@ -300,7 +227,7 @@ if ($lastTsp < $minTsp) {
 				WHERE status_legal_evt = 0
 				AND commission_evt = id_commission
 				AND tsp_evt > '.time().'
-				AND tsp_evt < '.($p_tsp_max_pour_valid_legal_avant_evt).'
+				AND tsp_evt < '.$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION.'
 				AND status_evt = 1
 				ORDER BY tsp_evt ASC ';
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);

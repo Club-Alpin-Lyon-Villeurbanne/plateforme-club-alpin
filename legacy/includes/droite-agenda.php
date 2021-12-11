@@ -2,8 +2,10 @@
 
 use App\Legacy\LegacyContainer;
 
+$MAX_SORTIES_ACCUEIL = LegacyContainer::getParameter('legacy_env_MAX_SORTIES_ACCUEIL');
+
 // nombre d'éléments à afficher
-$limit = $limite_sorties_accueil;
+$limit = $MAX_SORTIES_ACCUEIL;
 
 // LISTE DES PROCHAINES SORTIES PUBLIQUES (avec ou sans filtre commission)
 $evtTab = [];
