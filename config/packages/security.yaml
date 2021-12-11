@@ -57,6 +57,12 @@ security:
                 httponly: true
                 always_remember_me: true
 
+        web-api:
+            pattern:   ^/web-api
+            stateless: true
+            provider: app_user_provider
+            jwt: ~
+
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
