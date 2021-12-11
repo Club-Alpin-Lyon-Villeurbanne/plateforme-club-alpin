@@ -33,7 +33,7 @@ class MysqliHandler
         $this->mysqli = new \mysqli($conf['host'], $conf['user'], $conf['password'], $dbname, $conf['port']);
 
         if ($this->mysqli->connect_errno) {
-            exit("Impossible de se connecter à la base de données. Merci d'avertir l'administrateur.");
+            throw new \RuntimeException('Error while connecting to database');
         }
 
         $this->mysqli->set_charset('utf8mb4');
@@ -43,7 +43,7 @@ class MysqliHandler
     {
         $result = $this->mysqli->query($sql);
 
-        if (!$result) {
+        if ($this->mysqli->errno > 0) {
             $request = $this->requestStack->getMainRequest();
             $url = null;
 
@@ -53,6 +53,7 @@ class MysqliHandler
 
             $this->logger->error(sprintf('SQL error: %s', $this->mysqli->error), [
                 'error' => $this->mysqli->error,
+                'error number' => $this->mysqli->errno,
                 'sql' => $sql,
                 'exception' => new \RuntimeException(sprintf('SQL error: %s', $this->mysqli->error)),
                 'url' => $url,
