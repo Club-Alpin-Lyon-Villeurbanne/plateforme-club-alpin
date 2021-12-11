@@ -1,4 +1,7 @@
 <?php
+
+use App\Entity\CafUserAttr;
+
 if (user()) {
     ?>
     <div class="main-type">
@@ -26,12 +29,12 @@ if (user()) {
             <ul class="nice-list">
                 <?php
                 foreach (getUser()->getAttributes() as $attr) {
-                    if ('Resp. de commission' === $attr['attribute']) {
-                        echo '<li><a href="commission-consulter.html?code_commission='.$attr['commission'].'" title="Fiche commission">'.$attr['attribute'].', '.$attr['commission'].'</a></li>';
-                    } elseif ('Encadrant' === $attr['attribute']) {
-                        echo '<li>'.$attr['attribute'].', '.$attr['commission'].'</li>';
+                    if (CafUserAttr::RESPONSABLE_COMMISSION === $attr->getCode()) {
+                        echo '<li><a href="commission-consulter.html?code_commission='.$attr['commission'].'" title="Fiche commission">'.$attr->getTitle().', '.$attr->getCommission().'</a></li>';
+                    } elseif (in_array($attr->getCode(), [CafUserAttr::ENCADRANT, CafUserAttr::COENCADRANT], true)) {
+                        echo '<li>'.$attr->getTitle().', '.$attr->getCommission().'</li>';
                     } else {
-                        echo '<li>'.$attr['attribute'].'</li>';
+                        echo '<li>'.$attr->getTitle().'</li>';
                     }
                 }
                 ?>

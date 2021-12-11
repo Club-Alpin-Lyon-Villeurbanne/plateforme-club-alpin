@@ -1,5 +1,6 @@
 <?php
 
+use App\Entity\CafUserAttr;
 use App\Legacy\LegacyContainer;
 
 // GESTION DES INSCRIPTIONS
@@ -13,13 +14,13 @@ if ('1' != $evt['cancelled_evt']) {
         // ou je participe à cette sortie en tant qu'encadrant / coencadrant
         || 'encadrant' == $monStatut
         || 'coencadrant' == $monStatut
-        || (user() && getUser()->hasAttribute('Salarié'))
-        || ((allowed('evt_join_notme') || allowed('evt_unjoin_notme') || allowed('evt_joining_accept') || allowed('evt_joining_refuse')) && (user() && getUser()->hasAttribute('Resp. de commission', $evt['code_commission'])))
+        || (user() && getUser()->hasAttribute(CafUserAttr::SALARIE))
+        || ((allowed('evt_join_notme') || allowed('evt_unjoin_notme') || allowed('evt_joining_accept') || allowed('evt_joining_refuse')) && (user() && getUser()->hasAttribute(CafUserAttr::RESPONSABLE_COMMISSION, $evt['code_commission'])))
         ) {
         // droit de modification en fonction des conditions ci-dessus :
         $droitDeModif = false;
         // je suis salarie
-        if (user() && getUser()->hasAttribute('Salarié')) {
+        if (user() && getUser()->hasAttribute(CafUserAttr::SALARIE)) {
             $droitDeModif = true;
         }
         // j'en suis l'auteur ou droits
@@ -35,7 +36,7 @@ if ('1' != $evt['cancelled_evt']) {
             $droitDeModif = true;
         }
         // ou je suis resp de comm pour la sortie
-        if ((allowed('evt_join_notme') || allowed('evt_unjoin_notme') || allowed('evt_joining_accept') || allowed('evt_joining_refuse')) && (user() && getUser()->hasAttribute('Resp. de commission', $evt['code_commission']))) {
+        if ((allowed('evt_join_notme') || allowed('evt_unjoin_notme') || allowed('evt_joining_accept') || allowed('evt_joining_refuse')) && (user() && getUser()->hasAttribute(CafUserAttr::RESPONSABLE_COMMISSION, $evt['code_commission']))) {
             $droitDeModif = true;
         } ?>
         <!-- Datatables -->

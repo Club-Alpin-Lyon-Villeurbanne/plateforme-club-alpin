@@ -24,7 +24,7 @@ class CafUsertype
     /**
      * @var bool
      *
-     * @ORM\Column(name="hierarchie_usertype", type="boolean", nullable=false, options={"comment": "Ordre d'apparition des types"})
+     * @ORM\Column(name="hierarchie_usertype", type="integer", nullable=false, options={"comment": "Ordre d'apparition des types"})
      */
     private $hierarchieUsertype;
 
@@ -54,12 +54,12 @@ class CafUsertype
         return $this->idUsertype;
     }
 
-    public function getHierarchieUsertype(): ?bool
+    public function getHierarchieUsertype(): ?int
     {
         return $this->hierarchieUsertype;
     }
 
-    public function setHierarchieUsertype(bool $hierarchieUsertype): self
+    public function setHierarchieUsertype(int $hierarchieUsertype): self
     {
         $this->hierarchieUsertype = $hierarchieUsertype;
 
