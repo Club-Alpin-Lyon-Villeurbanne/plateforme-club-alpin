@@ -239,7 +239,7 @@ if (user()) {
 
             <?php $whocan_selected = $tmpUser['auth_contact_user']; ?>
             <?php $whocan_table = true; ?>
-            <?php include __DIR__.'/../includes/user/whocan_contact.php'; ?>
+            <?php require __DIR__.'/../includes/user/whocan_contact.php'; ?>
 
             <hr />
             <br />

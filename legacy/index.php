@@ -3,17 +3,17 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-include __DIR__.'/app/includes.php';
+require __DIR__.'/app/includes.php';
 
 // ________________________________________________ TRAITEMENT AJAX
 if (isset($_GET['ajx'])) {
-    include __DIR__.'/app/ajax/'.$_GET['ajx'].'.php';
+    require __DIR__.'/app/ajax/'.$_GET['ajx'].'.php';
     exit;
 }
 
 // Géré par .htaccess
 if (isset($_GET['cstImg'])) {
-    include __DIR__.'/app/custom_image.php';
+    require __DIR__.'/app/custom_image.php';
     exit;
 }
 
@@ -21,7 +21,7 @@ if (isset($_GET['cstImg'])) {
 $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : '').'.html';			// multilangue / une langue
 
 ?><!doctype html>
-<html lang="<?php echo $lang; ?>">
+<html lang="fr">
 <head>
     <meta charset="utf-8">
     <title>
@@ -49,9 +49,9 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
 
         //_________________________________________________ HEADER AU CHOIX (inclut le doctype)
         if ($p_pageadmin) {
-            include __DIR__.'/includes/generic/header-admin.php';
+            require __DIR__.'/includes/generic/header-admin.php';
         } else {
-            include __DIR__.'/includes/generic/header.php';
+            require __DIR__.'/includes/generic/header.php';
         }
         //_________________________________________________ Ajout des CSS par page
         if (is_array($p_addCss)) {
@@ -81,38 +81,38 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
             <?php
                 //_________________________________________________ MENU ADMINISTRATEUR
                 if (admin()) {
-                    include __DIR__.'/admin/menuAdmin.php';
+                    require __DIR__.'/admin/menuAdmin.php';
                 }
 
                 //_________________________________________________ CONTENU IMPRESSION FEUILLE SORTIE
                 if ('feuille-de-sortie' == $p1) {
                     echo '<div id="pageAdmin" class="'.($currentPage['superadmin_page'] ? 'superadmin' : '').'">';
                     if (file_exists(__DIR__.'/pages/'.$p1.'.php')) {
-                        include __DIR__.'/pages/'.$p1.'.php';
+                        require __DIR__.'/pages/'.$p1.'.php';
                     } else {
-                        include __DIR__.'/pages/404.php';
+                        require __DIR__.'/pages/404.php';
                     }
                     echo '</div>';
                 }
                 //_________________________________________________ CONTENU COMMUN AUX PAGES PUBLIQUES
                 elseif (!$p_pageadmin || !admin()) {
                     // include page
-                    include __DIR__.'/includes/generic/top.php';
-                    include __DIR__.'/includes/bigfond.php';
+                    require __DIR__.'/includes/generic/top.php';
+                    require __DIR__.'/includes/bigfond.php';
                     if (file_exists(__DIR__.'/pages/'.$p1.'.php')) {
-                        include __DIR__.'/pages/'.$p1.'.php';
+                        require __DIR__.'/pages/'.$p1.'.php';
                     } else {
                         echo '<p class="erreur">Erreur d\'inclusion. Merci de contacter le webmaster.</p>';
                     }
-                    include __DIR__.'/includes/generic/footer.php';
+                    require __DIR__.'/includes/generic/footer.php';
                 }
                 //_________________________________________________ CONTENU PAGES ADMIN
                 else {
                     echo '<div id="pageAdmin" class="'.($currentPage['superadmin_page'] ? 'superadmin' : '').'">';
                     if (file_exists(__DIR__.'/pages/'.$p1.'.php') && '404' != $p1) {
-                        include __DIR__.'/pages/'.$p1.'.php';
+                        require __DIR__.'/pages/'.$p1.'.php';
                     } else {
-                        include __DIR__.'/pages/404.php';
+                        require __DIR__.'/pages/404.php';
                     }
                     echo '</div>';
                 }
@@ -132,26 +132,21 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
                     <div style="float:left; padding:12px 10px 3px 35px">Admin : champs non remplis dans cette page</div>';
 
                 // si on est dans la langue par défaut, redirection vers la page des contenus :
-                if ($lang == $p_langs[0]) {
-                    for ($i = 0; $i < count($contLog); ++$i) {
-                        $tmp = $contLog[$i];
-                        echo '<form style="display:inline" method="post" action="admin-contenus/'.$lang.'.html">
-                                <input type="hidden" name="operation" value="forceAddContent" />
-                                <input type="text" readonly="readonly" name="code_content_inline" value="'.$tmp.'" onclick="$(this).parent().submit();" />
-                            </form>';
-                    }
+                for ($i = 0; $i < count($contLog); ++$i) {
+                    $tmp = $contLog[$i];
+                    echo '<form style="display:inline" method="post" action="admin-contenus/fr.html">
+                            <input type="hidden" name="operation" value="forceAddContent" />
+                            <input type="text" readonly="readonly" name="code_content_inline" value="'.$tmp.'" onclick="$(this).parent().submit();" />
+                        </form>';
                 }
-                // si on est sur une page dans une autre langue, redirection vers la page traductions
-                else {
-                    echo '<a href="'.$lang.'/admin-traductions/'.$lang.'.html" title="">&gt; Voir la page de traduction</a>';
-                }
+
                 echo '</div>';
             }
             ?>
 
 
             <!-- lbxMsg : popup d'information -->
-            <?php include __DIR__.'/includes/generic/lbxMsg.php'; ?>
+            <?php require __DIR__.'/includes/generic/lbxMsg.php'; ?>
 
             <?php if (LegacyContainer::getParameter('legacy_env_ANALYTICS_ACCOUNT')) { ?>
             <script type="text/javascript">

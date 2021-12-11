@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__.'/../../app/includes.php';
+require __DIR__.'/../../app/includes.php';
 
 $errTab = [];
 $result = $targetDir = null;
@@ -14,7 +14,7 @@ if (0 === count($errTab)) {
     $targetDir = __DIR__.'/../../../public/ftp/user/'.getUser()->getIdUser().'/files/';
 
     // Handle file uploads via XMLHttpRequest
-    include __DIR__.'/vfu.classes.php';
+    require __DIR__.'/vfu.classes.php';
 
     // list of valid extensions, ex. array("jpeg", "xml", "bmp")
     $allowedExtensions = $p_ftpallowed;

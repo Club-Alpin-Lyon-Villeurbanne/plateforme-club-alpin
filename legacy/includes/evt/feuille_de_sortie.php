@@ -26,7 +26,7 @@ if (admin() ||
 }
 
 if (!$display) {
-    include __DIR__.'/../../pages/404.php';
+    require __DIR__.'/../../pages/404.php';
     exit;
 }
 
@@ -47,7 +47,7 @@ presidence();
 ?>
 
 <!doctype html>
-<html lang="<?php echo $lang; ?>">
+<html lang="fr">
 <head>
     <meta charset="utf-8">
     <title>Feuille de sortie-<?php echo html_utf8($evt['titre_evt']); ?>-<?php echo date('d.m.Y', $evt['tsp_evt']); ?></title>

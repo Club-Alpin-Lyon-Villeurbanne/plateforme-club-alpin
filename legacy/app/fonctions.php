@@ -8,7 +8,6 @@ global $_POST;
 global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
 global $CONTENUS_INLINE;
 global $contLog;
-global $lang;
 global $p_devmode;
 global $p_inclurelist;
 global $president;
@@ -243,33 +242,16 @@ function bigintval($value)
  *
  * @return string chaine de caractères formatées
  */
-function formatSize($bytes, $format = '%.2f', $lang = 'fr')
+function formatSize($bytes, $format = '%.2f')
 {
-    static $units = [
-    'fr' => [
-    'o',
-    'Ko',
-    'Mo',
-    'Go',
-    'To',
-    ],
-    'en' => [
-    'B',
-    'KB',
-    'MB',
-    'GB',
-    'TB',
-    ], ];
-    $translatedUnits = &$units[$lang];
-    if (false === isset($translatedUnits)) {
-        $translatedUnits = &$units['en'];
-    }
+    $units = ['o', 'Ko', 'Mo', 'Go', 'To'];
+
     $b = (float) $bytes;
     /*On gére le cas des tailles de fichier négatives*/
     if ($b > 0) {
         $e = (int) (log($b, 1024));
         /**Si on a pas l'unité on retourne en To*/
-        if (false === isset($translatedUnits[$e])) {
+        if (false === isset($units[$e])) {
             $e = 4;
         }
         $b = $b / 1024 ** $e;
@@ -278,7 +260,7 @@ function formatSize($bytes, $format = '%.2f', $lang = 'fr')
         $e = 0;
     }
 
-    return sprintf($format.' %s', $b, $translatedUnits[$e]);
+    return sprintf($format.' %s', $b, $units[$e]);
 }
 function user(): bool
 {
@@ -354,13 +336,7 @@ function linker($link)
 // ma fonction d'insertion élément inline
 function cont($code = false, $html = false)
 {
-    $defLang = 'fr';
     global $CONTENUS_INLINE;
-    global $lang;
-    $tmplang = $lang;
-    if (!$tmplang) {
-        $tmplang = $defLang;
-    }
 
     // log des erreurs
     global $contLog;
@@ -370,7 +346,7 @@ function cont($code = false, $html = false)
         // sélection de chaque élément par ordre DESC
         $req = "SELECT `code_content_inline`, `contenu_content_inline`
             FROM  `caf_content_inline`
-            WHERE  `lang_content_inline` LIKE  '$tmplang'
+            WHERE  `lang_content_inline` LIKE  'fr'
             ORDER BY  `date_content_inline` DESC
             ";
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -404,11 +380,6 @@ $p_inclurelist = [];
 // ma fonction d'insertion /modification élément HTML en front office
 function inclure($elt, $style = 'vide', $options = [])
 {
-    $defLang = 'fr';
-    global $lang;
-    if (!$lang) {
-        $lang = $defLang;
-    }
     global $versCettePage;
     global $p_inclurelist;
 
@@ -430,7 +401,7 @@ function inclure($elt, $style = 'vide', $options = [])
         $code_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($elt);
 
         // Contenu
-        $req = "SELECT `vis_content_html`,`contenu_content_html` FROM `caf_content_html` WHERE `code_content_html` LIKE '$code_content_html' AND lang_content_html LIKE '".$lang."' ORDER BY `date_content_html` DESC LIMIT 1";
+        $req = "SELECT `vis_content_html`,`contenu_content_html` FROM `caf_content_html` WHERE `code_content_html` LIKE '$code_content_html' AND lang_content_html LIKE 'fr' ORDER BY `date_content_html` DESC LIMIT 1";
         $handleTab = [];
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $found = false;
@@ -510,21 +481,14 @@ function inputVal($inputName, $defaultVal = '')
 // affiche date format humain
 function mois($mois)
 {
-    global $lang;
-    switch ($lang) {
-        case 'en': $tab = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; break;
-        default: $tab = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-    }
+    $tab = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
     return $tab[(int) $mois - 1];
 }
 function jour($n, $mode = 'full')
 {
-    global $lang;
-    switch ($lang) {
-        case 'en': $tab = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; break;
-        default: $tab = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']; break;
-    }
+    $tab = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+
     $return = $tab[(int) $n - 1];
     if ('short' == $mode) {
         $return = substr($return, 0, 3);

@@ -48,7 +48,7 @@ else {
 
     <b>LES SORTIES</b> :<br>
 
-    <?php include __DIR__.'/../../includes/dest/listing_sorties.php'; ?>
+    <?php require __DIR__.'/../../includes/dest/listing_sorties.php'; ?>
 
     <hr class="clear">
 

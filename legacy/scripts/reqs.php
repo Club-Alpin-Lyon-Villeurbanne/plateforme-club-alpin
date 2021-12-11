@@ -530,7 +530,7 @@ elseif ('agenda' == $p1) {
                 ++$nEvts;
 
                 // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
-                include __DIR__.'/../includes/evt-temoin-reqs.php';
+                require __DIR__.'/../includes/evt-temoin-reqs.php';
 
                 // on l'ajoute au bon jour, colonne 'debut'
                 $agendaTab[(int) $tmpStartD]['debut'][] = $handle;
@@ -1348,7 +1348,7 @@ elseif ('gestion-des-sorties' == $p1 && (allowed('evt_validate_all') || allowed(
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
-        include __DIR__.'/../includes/evt-temoin-reqs.php';
+        require __DIR__.'/../includes/evt-temoin-reqs.php';
 
         // ajout au tableau
         $evtStandby[] = $handle;
@@ -1387,7 +1387,7 @@ elseif ('validation-des-sorties' == $p1 && allowed('evt_legal_accept')) {
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
-        include __DIR__.'/../includes/evt-temoin-reqs.php';
+        require __DIR__.'/../includes/evt-temoin-reqs.php';
 
         // ajout au tableau
         $evtStandby[] = $handle;
@@ -1490,8 +1490,8 @@ elseif ('recherche' == $p1 && strlen($_GET['str'])) {
     $safeStr = substr(html_utf8(stripslashes($_GET['str'])), 0, 80);
     $safeStrSql = LegacyContainer::get('legacy_mysqli_handler')->escapeString(substr(stripslashes($_GET['str']), 0, 80));
 
-    if (strlen($safeStr) < $p_maxlength_search) {
-        $errTab[] = 'Votre recherche doit comporter au moins '.$p_maxlength_search.' caractères.';
+    if (strlen($safeStr) < 3) {
+        $errTab[] = 'Votre recherche doit comporter au moins 3 caractères.';
     }
 
     if (!isset($errTab) || 0 === count($errTab)) {

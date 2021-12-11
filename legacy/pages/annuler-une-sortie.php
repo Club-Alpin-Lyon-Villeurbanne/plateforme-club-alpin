@@ -209,10 +209,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
                 <?php
                 // RESUME DE LA SORTIE
                 if ($evt) {
-                    include __DIR__.'/../includes/evt-resume.php';
+                    require __DIR__.'/../includes/evt-resume.php';
                 }
                 if ($destination) {
-                    include __DIR__.'/../includes/dest/display.php';
+                    require __DIR__.'/../includes/dest/display.php';
                 } ?>
 
             <?php
@@ -224,7 +224,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 	<!-- partie droite -->
 	<?php
-    include __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__.'/../includes/right-type-agenda.php';
     ?>
 
 

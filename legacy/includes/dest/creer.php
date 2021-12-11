@@ -45,7 +45,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
     } ?>
 
     <?php if ($id_dest_to_update) {
-        include __DIR__.'/../../includes/dest/admin_status.php';
+        require __DIR__.'/../../includes/dest/admin_status.php';
     } ?>
 
     <form action="<?php echo $versCettePage; ?>" method="post">
@@ -198,7 +198,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
         <h2 class="trigger-h2">Informations complémentaires :</h2>
         <div class="trigger-me">
-            <?php include __DIR__.'/../../includes/help/tinymce.php'; ?>
+            <?php require __DIR__.'/../../includes/help/tinymce.php'; ?>
             <textarea name="description" style="width:99%"><?php echo stripslashes($_POST['description']); ?></textarea>
         </div>
 
