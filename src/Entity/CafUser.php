@@ -232,21 +232,14 @@ class CafUser implements UserInterface, PasswordAuthenticatedUserInterface
         $this->createdUser = time();
     }
 
+    /** @return CafUserAttr[] */
     public function getAttributes()
     {
-        $attributes = $this
-            ->attrs
-            ->map(function (CafUserAttr $cafUserAttr) {
-                return [
-                    'attribute' => $cafUserAttr->getUserType()->getTitleUsertype(),
-                    'priority' => $cafUserAttr->getUserType()->getHierarchieUsertype(),
-                    'commission' => \array_slice(explode(':', $cafUserAttr->getParamsUserAttr()), -1)[0],
-                ];
-            })
-            ->toArray();
-        usort($attributes, fn ($array1, $array2) => $array1['priority'] <=> $array2['priority']);
+        $attrs = $this->attrs->toArray();
 
-        return $attributes;
+        usort($attrs, fn ($a, $b) => $b->getPriority() <=> $a->getPriority());
+
+        return $attrs;
     }
 
     public function hasAttribute($attribute = null, $commission = null): bool
@@ -256,7 +249,8 @@ class CafUser implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         foreach ($this->attrs as $cafUserAttr) {
-            if (\in_array($cafUserAttr->getUserType()->getTitleUsertype(), (array) $attribute, true)) {
+            /** @var CafUserAttr $cafUserAttr */
+            if (\in_array($cafUserAttr->getUserType()->getCodeUsertype(), (array) $attribute, true)) {
                 if (null === $commission) {
                     return true;
                 }
