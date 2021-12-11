@@ -1,6 +1,10 @@
 <?php
 
+use App\Legacy\LegacyContainer;
+
 require __DIR__.'/../../app/includes.php';
+
+$MAX_DIMS = LegacyContainer::getParameter('legacy_env_MAX_IMAGE_SIZE');
 
 if (admin()) {
     $targetDir = __DIR__.'/../../../public/'.$_GET['dossier'].'/';
@@ -47,10 +51,10 @@ if (admin()) {
     // redimensionnement des images
     if ((!isset($errTab) || 0 === count($errTab)) && ('jpg' == $ext || 'jpeg' == $ext || 'png' == $ext)) {
         $size = getimagesize($targetDir.$filename);
-        if ($size[0] > $p_max_images_dimensions_before_redim || $size[1] > $p_max_images_dimensions_before_redim) {
+        if ($size[0] > $MAX_DIMS || $size[1] > $MAX_DIMS) {
             require __DIR__.'/../../app/redims.php';
-            $W_max = $p_max_images_dimensions_before_redim;
-            $H_max = $p_max_images_dimensions_before_redim;
+            $W_max = $MAX_DIMS;
+            $H_max = $MAX_DIMS;
             $rep_Dst = $targetDir;
             $img_Dst = $filename;
             $rep_Src = $targetDir;

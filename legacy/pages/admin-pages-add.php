@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-global $p_sublevels;
+$MAX_ADMINS_SUB_LEVELS = LegacyContainer::getParameter('legacy_env_MAX_ADMINS_SUB_LEVELS');
 
 if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page'] && !superadmin())) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
@@ -18,8 +18,6 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
     // fonction d'affichage par parent
     function listPages($tab, $parent, $level)
     {
-        global $p_sublevels;
-        global $_POST;
         for ($i = 0; $i < count($tab); ++$i) {
             $page = $tab[$i];
             if ($page['parent_page'] == $parent) {
@@ -29,7 +27,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
                 }
                 echo '→ '.$page['default_name_page'].' ['.$page['code_page'].']
 				</option>';
-                if ($p_sublevels > $level + 1) {
+                if ($MAX_ADMINS_SUB_LEVELS > $level + 1) {
                     listPages($tab, $page['id_page'], $level + 1);
                 }
             }

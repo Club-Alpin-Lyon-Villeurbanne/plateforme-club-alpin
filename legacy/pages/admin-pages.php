@@ -1,5 +1,9 @@
 <?php
 
+use App\Legacy\LegacyContainer;
+
+$MAX_ADMINS_SUB_LEVELS = LegacyContainer::getParameter('legacy_env_MAX_ADMINS_SUB_LEVELS');
+
 global $versCettePage;
 
 if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page'] && !superadmin())) {
@@ -127,7 +131,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 		}
 
 		// sortables a tous les niveaux
-		for(i=0; i<=<?php echo (int) $p_sublevels; ?>; i++){
+		for(i=0; i<=<?php echo $MAX_ADMINS_SUB_LEVELS; ?>; i++){
 			$('.sortablepagelist.niv'+i).sortable({
 				items:'.page-element.niv'+i,
 				handle:'.handle',

@@ -1,7 +1,8 @@
 <?php
 
+use App\Ftp\FtpFile;
+
 global $dossier;
-global $p_ftp_masquer;
 
 require __DIR__.'/../app/includes.php';
 
@@ -83,7 +84,6 @@ if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier,
                     function arbo_read($dir, $level)
                     {
                         global $dossier;
-                        global $p_ftp_masquer;
                         $one = false; // booleen : un dossier trouve au moins
                         $opendir = opendir($dir);
                         $files = [];
@@ -98,7 +98,7 @@ if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier,
                         foreach ($files as $file) {
                             //while($file=readdir($opendir)){
                             // c'est un dossier, non masqué
-                            if (is_dir($dir.$file) && !in_array($file, $p_ftp_masquer, true)) {
+                            if (is_dir($dir.$file) && !FtpFile::shouldHide($file)) {
                                 $one = true;
                                 echo '<div class="level level'.$level.'">'
                                     .'<a class="dirtrigger" href="'.$dir.$file.'/" title=""></a>'

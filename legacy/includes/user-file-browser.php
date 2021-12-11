@@ -1,5 +1,7 @@
 <?php
 
+use App\Ftp\FtpFile;
+
 require __DIR__.'/../app/includes.php';
 
 if (user()) {
@@ -146,7 +148,7 @@ if (user()) {
     if ('file' == $type) {
         echo "
 					Déposez ici les fichiers que vous souhaitez proposer en téléchargement. Poid maximum : 5Mo.<br />
-					Ext. autorisées : <span style='font-size:9px'>".implode(', ', $p_ftpallowed).'</span>
+					Ext. autorisées : <span style='font-size:9px'>".implode(', ', FtpFile::getAllowedExtensions()).'</span>
 					';
     } ?>
 			</p>
@@ -217,11 +219,12 @@ if (user()) {
 				<?php
                 // tableau des fichiers
                 $tabFichiers = [];
-    $extTab = $p_ftpallowed;
 
     // restrion au type image
     if ('image' === $type) {
         $extTab = ['jpg', 'jpeg', 'png'];
+    } else {
+        $extTab = FtpFile::getAllowedExtensions();
     }
 
     // ouverture du dossier demande
