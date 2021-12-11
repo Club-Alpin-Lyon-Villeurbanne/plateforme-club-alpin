@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_TIMESTAMP_FOR_LEGAL_VALIDATION');
+$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION = strtotime(LegacyContainer::getParameter('legacy_env_MAX_TIMESTAMP_FOR_LEGAL_VALIDATION'));
 $DATE_BUTOIRES = LegacyContainer::getParameter('legacy_env_CRON_DATE_BUTOIRES');
 
 global $chron_savedatas;
