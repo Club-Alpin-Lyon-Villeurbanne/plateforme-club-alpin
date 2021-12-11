@@ -34,7 +34,8 @@
         "symfony/translation": "5.3.*",
         "symfony/twig-bundle": "5.3.*",
         "symfony/validator": "5.3.*",
-        "symfony/webpack-encore-bundle": "^1.12",
+        "symfony/web-link": "5.3.*",
+        "symfony/webpack-encore-bundle": "^1.13",
         "symfony/yaml": "5.3.*"
     },
     "require-dev": {
