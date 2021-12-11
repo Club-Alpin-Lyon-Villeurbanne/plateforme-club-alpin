@@ -2,16 +2,17 @@
 <html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <meta name="description" content="Site officiel du Club Alpin : activit&eacute;s sportives &eacute;t&eacute; et hiver, alpinisme, randonn&eacute;e, ski, refuges...">
+        <title>{% block title %}Welcome!{% endblock %} - {{ sitename }}</title>
+        <meta name="description" content="Site officiel du {{ sitename }} : activités sportives été et hiver, alpinisme, randonnée, ski, refuges...">
         <meta name="viewport" content="width=1200">
         <link rel="shortcut icon" href="favicon.ico" />
 
-        <meta property="og:title" content="404 : Page introuvable" />
-        <meta property="og:description" content="Site officiel du Club Alpin : activit&eacute;s sportives &eacute;t&eacute; et hiver, alpinisme, randonn&eacute;e, ski, refuges..." />
+        <meta property="og:title" content="{{ sitename }}" />
+        <meta property="og:description" content="Site officiel du {{ sitename }} : activités sportives été et hiver, alpinisme, randonnée, ski, refuges..." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="404.html" />
-        <meta property="og:site_name" content="Club Alpin Fran&ccedil;ais - XXX" />
+        <meta property="og:url" content="{{ app.request.uri }}" />
+        <meta property="og:site_name" content="{{ sitename }}" />
+
         {% if google_site_verification != "" %}
         <meta name="google-site-verification" content="{{ google_site_verification }}" />
         {% endif %}
@@ -28,15 +29,13 @@
             <link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" />
             <!-- css PRINTS -->
             <link rel="stylesheet" href="/css/print.css" type="text/css"  media="print" />
-
-            {#{{ encore_entry_link_tags('app') }}#}
         {% endblock %}
 
         <script type="text/javascript">
-            var p1='404';
-            var p2='';
-            var p3='';
-            var p4='';
+            var p1='{{ p1 | default('') }}';
+            var p2='{{ p2 | default('') }}';
+            var p3='{{ p3 | default('') }}';
+            var p4='{{ p4 | default('') }}';
         </script>
 
 
@@ -104,7 +103,6 @@
         </div>
         {% block javascripts %}
             <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha.site_key }}"></script>
-            {#{{ encore_entry_script_tags('app') }}#}
         {% endblock %}
         {% block trackers %}
             {% if analytics_account != "" %}
