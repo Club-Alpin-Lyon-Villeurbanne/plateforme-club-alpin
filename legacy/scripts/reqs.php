@@ -3,6 +3,12 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_TIMESTAMP_FOR_LEGAL_VALIDATION');
+$MAX_ARTICLES_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_VALIDATION');
+$MAX_SORTIES_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_SORTIES_VALIDATION');
+$MAX_ARTICLES_ADHERENT = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_ADHERENT');
+$MAX_ARTICLES_ACCUEIL = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_ACCUEIL');
+
 // vars de notification
 $notif_validerunarticle = 0;
 $notif_validerunesortie = 0;
@@ -74,7 +80,7 @@ if (allowed('evt_legal_accept')) { // pouvoir de valider "legalement" une sortie
 			AND status_evt = 1
 			AND commission_evt = id_commission
 			AND tsp_evt > '.time().'
-			AND tsp_evt < '.($p_tsp_max_pour_valid_legal_avant_evt).'
+			AND tsp_evt < '.$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION.'
 			ORDER BY tsp_evt ASC ';
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $notif_validerunesortie_president = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
@@ -145,7 +151,7 @@ if ('profil' == $p1 && 'infos' == $p2 && getUser()) {
 // MES ARTICLES
 elseif ('profil' == $p1 && 'articles' == $p2) {
     // pagination
-    $limite = $limite_articles_adherent; // nombre d'elements affiches
+    $limite = $MAX_ARTICLES_ADHERENT; // nombre d'elements affiches
     $pagenum = (int) ($_GET['pagenum'] ?? 0);
     if ($pagenum < 1) {
         $pagenum = 1;
@@ -285,7 +291,7 @@ elseif ('article' == $p1) {
 // GESTION DES ARTICLES
 elseif ('gestion-des-articles' == $p1 && (allowed('article_validate_all') || allowed('article_validate'))) {
     // articles à valider (pagination)
-    $limite = $limite_articles_validation; // nombre d'elements affiches
+    $limite = $MAX_ARTICLES_VALIDATION;
 
     if (allowed('article_validate_all')) {
         // compte nb total articles
@@ -377,7 +383,7 @@ elseif ('accueil' == $p1) {
 
     // *******************
     // articles dans la page
-    $limite = $limite_articles_accueil; // nombre d'elements affiches
+    $limite = $MAX_ARTICLES_ACCUEIL; // nombre d'elements affiches
     $pagenum = (int) ($_GET['pagenum'] ?? 0);
     if ($pagenum < 1) {
         $pagenum = 1;
@@ -1302,7 +1308,7 @@ elseif ('supprimer-une-sortie' == $p1) {
 elseif ('gestion-des-sorties' == $p1 && (allowed('evt_validate_all') || allowed('evt_validate'))) {
     // sorties à valider (pagination)
     // compte
-    $limite = $limite_sorties_validation; // nombre d'elements affiches
+    $limite = $MAX_SORTIES_VALIDATION;
     $compte = $notif_validerunesortie; // nombre total d'evts à valider, défini plus haut
     // page ?
     $pagenum = (int) $p2;
@@ -1358,7 +1364,7 @@ elseif ('gestion-des-sorties' == $p1 && (allowed('evt_validate_all') || allowed(
 elseif ('validation-des-sorties' == $p1 && allowed('evt_legal_accept')) {
     // sorties à valider (pagination)
     // compte
-    $limite = $limite_sorties_validation; // nombre d'elements affiches
+    $limite = $MAX_SORTIES_VALIDATION;
     $compte = $notif_validerunesortie_president; // nombre total d'evts à valider, défini plus haut
     // page ?
     $pagenum = (int) $p2;
@@ -1376,7 +1382,7 @@ elseif ('validation-des-sorties' == $p1 && allowed('evt_legal_accept')) {
 	WHERE status_evt=1
 	AND status_legal_evt=0
 	AND tsp_evt > '.time().'
-	AND tsp_evt < '.($p_tsp_max_pour_valid_legal_avant_evt).'
+	AND tsp_evt < '.$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION.'
 
 	AND id_user = user_evt
 	AND commission_evt=id_commission

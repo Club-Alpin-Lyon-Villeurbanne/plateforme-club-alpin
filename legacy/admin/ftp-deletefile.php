@@ -1,5 +1,7 @@
 <?php
 
+use App\Ftp\FtpFile;
+
 require __DIR__.'/../app/includes.php';
 
 if (!admin()) {
@@ -32,8 +34,8 @@ if ('.htaccess' == $filename) {
 if ('index.php' == $filename) {
     $errTab[] = 'Le fichier index.php ne peut pas être supprimé';
 }
-// ne pas être protégé (params.php)
-if (in_array(substr($target, 7), $p_ftp_proteges, true)) {
+
+if (FtpFile::isProtected(substr($target, 7))) {
     $errTab[] = "Le fichier $filename est protégé contre la suppression";
 }
 

@@ -119,7 +119,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // paiement en ligne
             // envoi d'un email pour indiquer la désinscription d'un participant avec paiement en ligne
             if (1 == $is_cb) {
-                $toMail = $p_email_paiement;
+                $toMail = 'comptabilite@clubalpinlyon.fr';
                 $toName = 'Trésorier';
                 $toNameFull = getUser()->getFirstnameUser().' '.getUser()->getLastnameUser();
                 $toCafNum = getUser()->getCafnumUser();
@@ -134,7 +134,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     <p>
                         Merci de prendre contact avec l'encadrant.
                         <br />
-                        La gestion du paiement (modification/remboursement) se passe sur $p_url_validation_paiement.
+                        La gestion du paiement (modification/remboursement) se passe sur https://paiement.systempay.fr/vads-merchant/.
                     </p>
                     <p>
                         Informations supplémentaires :<br />

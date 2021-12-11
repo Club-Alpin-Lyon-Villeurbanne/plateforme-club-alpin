@@ -429,7 +429,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
         content_css : "<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/base.css,<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>css/style1.css,<?php echo $p_racine; ?>fonts/stylesheet.css",
         body_id : "bodytinymce_user",
         body_class : "description_evt",
-        theme_advanced_styles : "<?php echo $p_tiny_theme_advanced_styles; ?>",
+        theme_advanced_styles : "Entete Article=ArticleEntete;Titre de menu=menutitle;Bleu clair du CAF=bleucaf;Image flottante gauche=imgFloatLeft;Image flottante droite=imgFloatRight;Lien fancybox=fancybox;Mini=mini;Bloc alerte=erreur;Bloc info=info",
 
         relative_urls : true,
         convert_urls : false,
