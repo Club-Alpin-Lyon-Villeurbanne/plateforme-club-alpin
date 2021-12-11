@@ -1,4 +1,10 @@
-<?php /* VALIDATION / ACCEPTATION DES CGU */ ?>
+<?php
+
+use App\Legacy\LegacyContainer;
+
+$URL_PAIEMENT = LegacyContainer::getParameter('legacy_env_URL_PAIEMENT');
+
+?>
 <p>
     <label style="width:100%;clear:both;overflow:hidden;">
         <input type="checkbox" name="confirm" /> J'ai lu les conditions d'usage ci-dessus et confirme ma demande d'inscription.
@@ -42,7 +48,7 @@
         echo 'none';
     } ?>">
             <a style="border:1px solid red; background:rgba(255,153,153,.4);"
-                href="<?php echo $p_url_paiement; ?>
+                href="<?php echo $URL_PAIEMENT; ?>
 ?lck_vads_order_id=<?php echo rawurlencode(html_utf8($new_title)); ?>
 &lck_vads_ext_info_Encadrant=<?php echo rawurlencode(html_utf8($encadrant_name)); ?>
 &lck_vads_ext_info_E-mail%20encadrant=<?php echo rawurlencode(html_utf8($encadrant_email)); ?>
@@ -136,7 +142,7 @@
             echo 'none';
         } ?>">
                 <a style="border:1px solid red; background:rgba(255,153,153,.4);"
-                    href="<?php echo $p_url_paiement; ?>
+                    href="<?php echo $URL_PAIEMENT; ?>
 ?lck_vads_order_id=<?php echo rawurlencode(html_utf8($new_title)); ?>
 &lck_vads_ext_info_Encadrant=<?php echo rawurlencode(html_utf8($encadrant_name)); ?>
 &lck_vads_ext_info_E-mail%20encadrant=<?php echo rawurlencode(html_utf8($encadrant_email)); ?>

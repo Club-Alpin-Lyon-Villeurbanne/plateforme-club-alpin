@@ -33,12 +33,7 @@ set_time_limit(0);
 // MISE A JOUR DE LA BASE DE DONNEE DES USERS DEPUIS LE FICHIER
 echo '---------------------------- update_users '.date('Y-m-d H:i:s')." ----------------------------\n";
 
-$fileTab = [];
-
-// Fichiers à lire
-foreach ($p_ffcam as $ffcam) {
-    $fileTab[] = __DIR__.'/../../config/ffcam-ftp-folder/'.$ffcam.'.txt';
-}
+$fileTab = [__DIR__.'/../../config/ffcam-ftp-folder/6900.txt'];
 
 // pour chaque fichier...
 
@@ -74,8 +69,8 @@ foreach ($fileTab as $file) {
 
                 echo $i."\nligne ".__LINE__."\n";
                 // vérification du format. Si cette vérif échoue, on laisse même tomber les suivantes
-                if (count($line) < $p_csv_adherent_nb_colonnes) {
-                    $messg = "Format invalide : la ligne ne contient pas $p_csv_adherent_nb_colonnes valeurs mais ".count($line)."\n";
+                if (count($line) < 33) {
+                    $messg = 'Format invalide : la ligne ne contient pas 33 valeurs mais '.count($line)."\n";
                     echo $messg;
                     $tmpErrTab[] = $messg;
                 } else {

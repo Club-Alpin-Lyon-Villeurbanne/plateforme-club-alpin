@@ -1,7 +1,8 @@
 <?php
 
+use App\Ftp\FtpFile;
+
 global $errTab;
-global $p_ftp_proteges;
 global $compte;
 
 require __DIR__.'/../app/includes.php';
@@ -35,12 +36,10 @@ if (!is_dir($target)) {
 function checkMe($target)
 {
     global $errTab;
-    global $p_ftp_proteges;
     global $compte;
     ++$compte;
 
-    // cet élément est-il protégé ?
-    if (in_array(substr($target, 7), $p_ftp_proteges, true)) {
+    if (FtpFile::isProtected(substr($target, 7))) {
         $errTab[] = "L'élément ".($compte > 1 ? 'contenu dans ce dossier' : '').' : <b>'.strtolower(substr(strrchr($target, '/'), 1)).'</b> est protégé contre la suppression';
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+use App\Ftp\FtpFile;
+
 require __DIR__.'/../../app/includes.php';
 
 if (admin()) {
@@ -8,12 +10,10 @@ if (admin()) {
     // Handle file uploads via XMLHttpRequest
     require __DIR__.'/vfu.classes.php';
 
-    // list of valid extensions, ex. array("jpeg", "xml", "bmp")
-    $allowedExtensions = $p_ftpallowed;
     // max file size in bytes
     $sizeLimit = 100 * 1024 * 1024;
 
-    $uploader = new qqFileUploader($allowedExtensions, $sizeLimit);
+    $uploader = new qqFileUploader(FtpFile::getAllowedExtensions(), $sizeLimit);
     $result = $uploader->handleUpload($targetDir);
 
     $tmpfilename = $result['filename'];
