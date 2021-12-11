@@ -17,7 +17,7 @@
         // sortie trouvée, pas d'erreur, affichage normal :
         if ($destination && !$errPage) {
             // FICHE DE LA SORTIE
-            include __DIR__.'/../includes/dest/fiche.php';
+            require __DIR__.'/../includes/dest/fiche.php';
         }
         ?>
 		<br style="clear:both" />
@@ -25,7 +25,7 @@
 
 	<!-- partie droite -->
 	<?php
-    include __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__.'/../includes/right-type-agenda.php';
     ?>
 
 

@@ -35,16 +35,17 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // Nom de la page dans chaque langue
         $handle['nom'] = [];
-        for ($i = 0; $i < count($p_langs); ++$i) {
-            $req = "SELECT contenu_content_inline FROM  `caf_content_inline` WHERE  `code_content_inline` LIKE 'meta-title-".$handle['code_page']."' AND lang_content_inline LIKE '".$p_langs[$i]."' ORDER BY  `date_content_inline` DESC LIMIT 1";
-            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            $tmp = '<i style="font-size:9px; color:red;">non défini</i>'; // default value
-            while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                $tmp = $handle2['contenu_content_inline'];
-            }
-            $tmp = '<img src="/img/base/flag-'.$p_langs[$i].'.png" alt="'.$p_langs[$i].'" title="'.$p_langs[$i].'" style="height:17px; opacity:0.7; vertical-align:middle" /> '.$tmp;
-            $handle['nom'][] = $tmp;
+
+        $req = "SELECT contenu_content_inline FROM  `caf_content_inline` WHERE  `code_content_inline` LIKE 'meta-title-".$handle['code_page']."' AND lang_content_inline LIKE 'fr' ORDER BY  `date_content_inline` DESC LIMIT 1";
+        $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        $tmp = '<i style="font-size:9px; color:red;">non défini</i>';
+
+        while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
+            $tmp = $handle2['contenu_content_inline'];
         }
+        $tmp = '<img src="/img/base/flag-fr.png" alt="fr" title="fr" style="height:17px; opacity:0.7; vertical-align:middle" /> '.$tmp;
+        $handle['nom'][] = $tmp;
+
         // ok, save
         $pageTab[] = $handle;
     }

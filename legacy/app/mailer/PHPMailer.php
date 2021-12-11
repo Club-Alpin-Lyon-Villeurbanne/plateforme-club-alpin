@@ -2116,7 +2116,7 @@ class PHPMailer
             } else {
                 // Overwrite language-specific strings.
                 // This way we'll never have missing translation keys.
-                $foundlang = include $lang_file;
+                $foundlang = require $lang_file;
             }
         }
         $this->language = $PHPMAILER_LANG;

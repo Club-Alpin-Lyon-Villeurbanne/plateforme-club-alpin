@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__.'/../app/includes.php';
+require __DIR__.'/../app/includes.php';
 
 if (user()) {
     // bien connecté ?

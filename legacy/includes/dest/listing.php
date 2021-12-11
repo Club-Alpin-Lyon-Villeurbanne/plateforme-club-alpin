@@ -48,5 +48,5 @@ echo '" title="">';
 </a>
 
 <div class="note">
-<?php include __DIR__.'/../../includes/dest/listing_sorties.php'; ?>
+<?php require __DIR__.'/../../includes/dest/listing_sorties.php'; ?>
 </div>

@@ -29,11 +29,11 @@ if (user()) {
                                             title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication"
                                             target="_blank">Aperçu</a> ';
 
-                    include __DIR__.'/../includes/dest/quick_update.php';
+                    require __DIR__.'/../includes/dest/quick_update.php';
 
                     echo '</div>';
 
-                    include __DIR__.'/../includes/dest/listing.php';
+                    require __DIR__.'/../includes/dest/listing.php';
 
                     echo '</td>'
                         .'</tr>';

@@ -28,7 +28,7 @@
 
                     for ($i = 0; $i < count($articlesTab); ++$i) {
                         $article = $articlesTab[$i];
-                        include __DIR__.'/../includes/article-lien.php';
+                        require __DIR__.'/../includes/article-lien.php';
                     }
 
                     // RECHERCHE - SORTIES
@@ -48,7 +48,7 @@
                         echo '<tr>'
                                 .'<td class="agenda-gauche">'.date('d/m/Y', $evt['tsp_evt']).'</td>'
                                 .'<td>';
-                        include __DIR__.'/../includes/agenda-evt-debut.php';
+                        require __DIR__.'/../includes/agenda-evt-debut.php';
                         echo '</td>'
                             .'</tr>';
                     }
@@ -64,7 +64,7 @@
 
 	<!-- partie droite -->
 	<?php
-    include __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__.'/../includes/right-type-agenda.php';
     ?>
 
 	<br style="clear:both" />
