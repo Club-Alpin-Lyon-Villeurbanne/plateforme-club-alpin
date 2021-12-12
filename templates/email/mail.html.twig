@@ -9,7 +9,7 @@
         /* Based on The MailChimp Reset INLINE: Yes. */
         /* Client-specific Styles */
         #outlook a {padding:0;} /* Force Outlook to provide a "view in browser" menu link. */
-        body{background-color:#FFFFFF;width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0; padding:0;}
+        body{background-color:#90d0dc;width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0; padding:0;}
         /* Prevent Webkit and Windows Mobile platforms from changing default font sizes.*/
         .ExternalClass {width:100%;} /* Force Hotmail to display emails at full width */
         .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;}
@@ -135,7 +135,7 @@
         </style>
     <![endif]-->
 </head>
-<body style="background-color:#FFFFFF">
+<body style="background-color:#90d0dc">
     {#
     <!-- Wrapper/Container Table: Use a wrapper table to control the width and the background color consistently of your email. Use this approach instead of setting attributes on the body tag. -->
     #}
@@ -144,10 +144,10 @@
             <td valign="top">
                 <div style="padding: 1.5em">
                     <center>
-                        <table cellpadding="0" cellspacing="0" border="0" style="width: 600px; font-family: arial; font-size: 13px; color: #323232;">
+                        <table cellpadding="0" cellspacing="0" border="0" style="width: 600px; font-family: arial; font-size: 13px; color: #323232; background-color: white;">
                             {% block header '' %}
                             <tr>
-                                <td height="60" align="center" style="text-align: center; height: 60px;">
+                                <td height="120" align="center" style="text-align: center; height: 120px;">
                                     <a href="{{ url('legacy_root') }}" title="Club Alpin Lyon-Villeurbanne">
                                         <img src="{{ url('legacy_root') }}app/templates/templateimgs/logo.png" alt="logo Club Alpin Lyon-Villeurbanne" title="Club Alpin Lyon-Villeurbanne" style="border:none" border="0" />
                                     </a>
