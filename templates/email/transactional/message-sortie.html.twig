@@ -1,0 +1,33 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    {{ objet | default('Un message à propos de la sortie qui arrive') }}
+{%- endblock %}
+
+{% block inner_html %}
+    <h1>{{ objet | default('Un message à propos de la sortie qui arrive') }}</h1>
+    <p>
+        Bonjour !
+    </p>
+    <p>
+        Vous avez reçu un message de {{ message_author }} au sujet de la sortie <a href="{{ url_sortie }}">{{ name_sortie }}</a>.
+    </p>
+    <p>
+        <b>Message :</b>
+    </p>
+    <p>
+        {{ message | converturls | nl2br }}
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+{{ objet | default('Un message à propos de la sortie qui arrive') }}
+
+Bonjour !
+
+Vous avez reçu un message de {{ message_author }} au sujet de la sortie <a href="{{ url_sortie }}">{{ name_sortie }}</a>.
+
+Message :
+
+{{ message }}
+{% endblock %}

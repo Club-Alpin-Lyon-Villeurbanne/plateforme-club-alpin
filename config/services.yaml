@@ -117,3 +117,7 @@ services:
     legacy_authorization_checker:
         public: true
         alias: Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface
+
+    legacy_mailer:
+        public: true
+        alias: App\Mailer\Mailer
