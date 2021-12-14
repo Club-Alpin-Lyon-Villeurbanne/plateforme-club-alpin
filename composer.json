@@ -27,6 +27,7 @@
         "symfony/framework-bundle": "5.3.*",
         "symfony/mailer": "5.3.*",
         "symfony/mailgun-mailer": "5.3.*",
+        "symfony/messenger": "5.3.*",
         "symfony/monolog-bundle": "^3.7",
         "symfony/proxy-manager-bridge": "5.3.*",
         "symfony/runtime": "5.3.*",
