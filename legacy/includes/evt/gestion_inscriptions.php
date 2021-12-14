@@ -406,7 +406,7 @@ if ('1' != $evt['cancelled_evt']) {
                     <!-- Contact par email des participants (orga uniquement) -->
                     <a class="nice2 blue" href="javascript:void(0)" onclick="$('#contact-inscrits').slideToggle()" title=""><img src="/img/base/email.png" alt="" title="" /> Envoyer un e-mail groupé aux inscrits</a><br />
 
-                    <form action="<?php echo $versCettePage; ?>#autresoptions" method="post" id="contact-inscrits" style="display: <?php if (isset($_POST['operation']) && 'evt_user_contact' != ($_POST['operation'] ?? null)) {
+                    <form action="<?php echo $versCettePage; ?>#autresoptions" method="post" id="contact-inscrits" style="display: <?php if ('evt_user_contact' != ($_POST['operation'] ?? null)) {
                         echo 'none';
                     } ?>; border : 1px solid #eaeaea; box-shadow:0 0 20px -10px gray;; padding:10px; margin:10px 0 20px 0;; border-radius:10px">
                         <input type="hidden" name="operation" value="evt_user_contact" />
