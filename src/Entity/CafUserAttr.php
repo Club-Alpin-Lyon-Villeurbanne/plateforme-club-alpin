@@ -12,6 +12,19 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class CafUserAttr
 {
+    public const VISITEUR = 'visiteur';
+    public const DEVELOPPEUR = 'developpeur';
+    public const ADHERENT = 'adherent';
+    public const REDACTEUR = 'redacteur';
+    public const ENCADRANT = 'encadrant';
+    public const RESPONSABLE_COMMISSION = 'responsable-commission';
+    public const PRESIDENT = 'president';
+    public const VICE_PRESIDENT = 'vice-president';
+    public const ADMINISTRATEUR = 'administrateur';
+    public const SALARIE = 'salarie';
+    public const BENEVOLE = 'benevole';
+    public const COENCADRANT = 'coencadrant';
+
     /**
      * @var int
      *
@@ -84,5 +97,25 @@ class CafUserAttr
         $this->detailsUserAttr = $detailsUserAttr;
 
         return $this;
+    }
+
+    public function getCode()
+    {
+        return $this->getUserType()->getCodeUsertype();
+    }
+
+    public function getTitle()
+    {
+        return $this->getUserType()->getTitleUsertype();
+    }
+
+    public function getPriority()
+    {
+        return $this->getUserType()->getHierarchieUsertype();
+    }
+
+    public function getCommission()
+    {
+        return \array_slice(explode(':', $this->getParamsUserAttr()), -1)[0];
     }
 }

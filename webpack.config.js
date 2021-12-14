@@ -1,4 +1,7 @@
+const webpack = require('webpack');
 const Encore = require('@symfony/webpack-encore');
+const fs = require("fs");
+const domain = process.env.WEBPACK_DOMAIN;
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -6,24 +9,27 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
     Encore.configureRuntimeEnvironment(process.env.NODE_ENV || 'dev');
 }
 
+console.log(`Setting-up Encore in ${Encore.isProduction() ? '\x1b[32mproduction\x1b[0m ⚡⚡' : '\x1b[32mdevelopment\x1b[0m 🤓'} mode`);
+console.log('');
+
 Encore
     // directory where compiled assets will be stored
     .setOutputPath('public/build/')
     // public path used by the web server to access the output path
-    .setPublicPath('/build')
+    .setPublicPath(Encore.isProduction() ? '/build' : `http://${domain}:8348/static/`)
     // only needed for CDN's or sub-directory deploy
-    //.setManifestKeyPrefix('build/')
+    .setManifestKeyPrefix('build/')
 
-    /*
-     * ENTRY CONFIG
-     *
-     * Each entry will result in one JavaScript file (e.g. app.js)
-     * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
-     */
-    .addEntry('app', './assets/app.js')
+    .addEntry('dashboard-bundle', [
+        // Necessary once you want to use webpack chunks
+        // on CDN
+        './assets/app.js',
+    ])
 
-    // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
-    .enableStimulusBridge('./assets/controllers.json')
+    .addPlugin(new webpack.IgnorePlugin({
+        resourceRegExp: /^\.\/locale$/,
+        contextRegExp: /moment$/,
+    }))
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
@@ -66,10 +72,31 @@ Encore
 
     // uncomment to get integrity="..." attributes on your script & link tags
     // requires WebpackEncoreBundle 1.4 or higher
-    //.enableIntegrityHashes(Encore.isProduction())
+    .enableIntegrityHashes(Encore.isProduction())
 
     // uncomment if you're having problems with a jQuery plugin
-    //.autoProvidejQuery()
+    .autoProvidejQuery()
+
+    .configureDevServerOptions((options) => {
+        options.devMiddleware = {
+            publicPath: `http://${domain}:8348/static/`,
+        };
+        options.hot = true;
+        options.host = domain;
+        options.port = 8348;
+
+        options.allowedHosts = 'all';
+        options.client = {
+            webSocketURL: {
+                hostname: domain,
+                port: 8348,
+            },
+        };
+        options.headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': true,
+        };
+    });
 ;
 
 module.exports = Encore.getWebpackConfig();

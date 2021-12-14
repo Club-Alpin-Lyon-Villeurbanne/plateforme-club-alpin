@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Entity\CafUser;
+use App\Entity\CafUserAttr;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -155,7 +156,7 @@ class UserRights
         }
 
         // Tous les utilisateurs connectés non salariés ont le statut "adhérent"
-        if (!$user->hasAttribute('Salarié')) {
+        if (!$user->hasAttribute(CafUserAttr::SALARIE)) {
             $sql = 'SELECT DISTINCT code_userright, limited_to_comm_usertype '
                 .'FROM caf_userright, caf_usertype_attr, caf_usertype '
                 ."WHERE code_usertype LIKE 'adherent' " // usertype adherent
