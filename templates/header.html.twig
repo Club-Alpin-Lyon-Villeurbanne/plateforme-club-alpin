@@ -2,6 +2,9 @@
 {% set p1 = p1 | default('') %}
 {% set impersonification_style = is_granted('IS_IMPERSONATOR') ? "background-color:#df4949;" : "" %}
 
+{{ encore_entry_link_tags('dashboard-bundle') }}
+{{ encore_entry_script_tags('dashboard-bundle') }}
+
 <header id="mainHeader" style="{{ impersonification_style }}">
     <div class="sitewidth" style="min-width:980px;">
 
@@ -302,7 +305,7 @@
 
                             {% if app.user.hasAttribute() %}
                                 <p class="status">
-                                    Vous êtes <span style="font-family:DINBold">{{ app.user.getAttributes()[0]['attribute'] }}</span>
+                                    Vous êtes <span style="font-family:DINBold">{{ app.user.getAttributes()[0].getTitle() }}</span>
                                     {% if app.user.getAttributes() | length > 1 %}
                                         <a href="/profil.html" title="Entre autres choses..." style="color:white; font-weight:100; font-family:Arial">[+]</a>
                                     {% endif %}

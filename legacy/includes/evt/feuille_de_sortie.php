@@ -1,4 +1,7 @@
 <?php
+
+use App\Entity\CafUserAttr;
+
 // GESTION DES DROITS D'AFFICHAGE
 $display = false;
 if (admin() ||
@@ -11,13 +14,13 @@ if (admin() ||
             'encadrant' == $monStatut || 'coencadrant' == $monStatut ||
             allowed('evt_validate', 'commission:'.$evt['code_commission'])
         )
-        || (user() && getUser()->hasAttribute('Salarié')) ||
+        || (user() && getUser()->hasAttribute(CafUserAttr::SALARIE)) ||
         (
             (
                 allowed('evt_join_notme') || allowed('evt_unjoin_notme') ||
                 allowed('evt_joining_accept') || allowed('evt_joining_refuse')
             ) && (
-                user() && getUser()->hasAttribute('Resp. de commission', $evt['code_commission'])
+                user() && getUser()->hasAttribute(CafUserAttr::RESPONSABLE_COMMISSION, $evt['code_commission'])
             )
         )
     )

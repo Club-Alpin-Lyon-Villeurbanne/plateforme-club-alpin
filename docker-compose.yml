@@ -45,3 +45,14 @@ services:
 
     mailcatcher:
         image: jderusse/mailcatcher
+
+    assets:
+        build: docker/assets
+        environment:
+            WEBPACK_DOMAIN: "assets.caf"
+            WEBPACK_WATCH_USE_POLLING: "true"
+            WEBPACK_CACHE_DIRECTORY: "/tmp"
+        ports:
+            - '${WEBPACK_PORT}'
+        volumes:
+            - ./:/srv:delegated

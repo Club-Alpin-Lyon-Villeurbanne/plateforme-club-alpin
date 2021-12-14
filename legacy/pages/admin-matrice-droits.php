@@ -1,5 +1,6 @@
 <?php
 
+use App\Entity\CafUserAttr;
 use App\Legacy\LegacyContainer;
 
 if (!admin()) {
@@ -16,6 +17,7 @@ if (!admin()) {
     $rightTab = [];
     $attrTab = [];
     $tmp = '';
+    $isDev = getUser()->hasAttribute(CafUserAttr::DEVELOPPEUR);
 
     // tous les types
     $req = '
@@ -53,7 +55,16 @@ if (!admin()) {
 		Définit quel type d'adhérent est autorisé à quelles actions. Cliquer sur les intitulés à gauche pour afficher le code correspondant.
 	</p>
 	<br />
-	<form style="background:white; padding:10px; max-width:1300px;  " action="<?php echo $versCettePage; ?>" method="post" onsubmit="return(confirm('Ces valeurs vont remplacer les valeurs existantes, OK ?'))">
+    <style>
+        code {
+            background-color: #f9f2f4;
+            border-radius: 4px;
+            color: #c7254e;
+            padding: 2px 4px;
+            font-family: Menlo,Monaco,Consolas,Lucida Console,monospace;
+        }
+    </style>
+	<form style="background:white; padding:10px; max-width:1600px;  " action="<?php echo $versCettePage; ?>" method="post" onsubmit="return(confirm('Ces valeurs vont remplacer les valeurs existantes, OK ?'))">
 		<input type="hidden" name="operation" value="usertype_attr_edit" />
 
 		<?php
@@ -68,7 +79,12 @@ if (!admin()) {
     // on fait courir le tableau
     echo '<table class="user-right-edit-table"><thead><tr><th></th>';
     foreach ($typeTab as $usertype) {
-        echo '<th>'.html_utf8($usertype['title_usertype']).'</th>';
+        echo '<th>';
+        echo html_utf8($usertype['title_usertype']);
+        if ($isDev) {
+            echo '<br/><code>'.$usertype['code_usertype'].'</code>';
+        }
+        echo '</th>';
     } // types (abscisses)
     echo '</tr></thead>';
     echo '<tbody>';
@@ -77,7 +93,14 @@ if (!admin()) {
             $tmp = $userright['parent_userright'];
             echo '<tr><td colspan="'.(count($typeTab) + 1).'"><b>'.html_utf8($userright['parent_userright']).'</b></td></tr>';
         }
-        echo '<tr class="rightline"><td class="left"><span>'.html_utf8($userright['title_userright']).'</span><input type="text" value="'.html_utf8($userright['code_userright']).'" /></td>';
+        echo '<tr class="rightline">
+                <td class="left">';
+        echo '<span>'.html_utf8($userright['title_userright']).'</span>';
+        if ($isDev) {
+            echo '<br/><code>'.$userright['code_userright'].'</code>';
+        }
+        echo '<input type="text" value="'.html_utf8($userright['code_userright']).'" />';
+        echo '</td>';
         for ($i = 0; $i < count($typeTab); ++$i) {
             // right>type : autorisé ou pas ? valeur true || false
             $on = (in_array($typeTab[$i]['id_usertype'].'-'.$userright['id_userright'], $attrTab, true) ? true : false);

@@ -8,7 +8,6 @@ global $_POST;
 global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
 global $CONTENUS_INLINE;
 global $contLog;
-global $p_devmode;
 global $p_inclurelist;
 global $president;
 global $versCettePage;
