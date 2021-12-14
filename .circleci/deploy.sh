@@ -31,3 +31,4 @@ ln -s $TARGET_DIR $CURRENT_DIR
 
 $CURRENT_DIR/bin/console doctrine:migrations:sync-metadata-storage --env=prod
 $CURRENT_DIR/bin/console doctrine:migrations:migrate --env=prod --no-interaction
+$CURRENT_DIR/bin/console messenger:setup-transports --env=prod
