@@ -47,7 +47,7 @@ a.mini, .mini a{font-weight:100; color:black;}
 #includer-stuff .tiers.clear{clear:both}
 #chron-loader{position:relative; z-index:10; background:white; padding:20px; display:none; border-top:3px groove gray;}
 #chron-loader.visible{display:block}
-.temoin-places-dispos{display:block; height:6px; width:6px; background:silver; margin:10px 5px 5px 0px; float:left; border-radius:5px;}
+.temoin-places-dispos{display:block; height:10px; width:10px; background:silver; float:left; border-radius:5px;}
 .temoin-places-dispos.on{background:#8ac843;}
 .temoin-places-dispos.off{background:#ff0c20;}
 ul.nice-list{list-style-type:none;overflow:hidden;}
