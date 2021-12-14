@@ -33,6 +33,7 @@ ON_ASSETS=$(COMPOSE) run --rm --no-deps assets
 migrate: ## Migrate (env="dev")
 	@$(ON_PHP) php bin/console doctrine:migration:sync-metadata-storage --env $(env)
 	@$(ON_PHP) php bin/console doctrine:migration:migrate --env $(env) --no-interaction
+	@$(ON_PHP) php bin/console messenger:setup-transports --env $(env) --no-interaction
 .PHONY: migrate
 
 migration-diff: ## Migrate (env="dev")
