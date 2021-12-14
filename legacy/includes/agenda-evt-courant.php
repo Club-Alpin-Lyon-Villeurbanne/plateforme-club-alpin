@@ -10,7 +10,9 @@
 
 	<div class="droite">
 		<!-- temoin de validité des places libres. Ajouter class ok / full -->
-		<span class="temoin-places-dispos"></span>
+        <span style="padding: 10px 10px 5px 5px;float:left;">
+            <span class="temoin-places-dispos"></span>
+        </span>
 
 		<!-- titre -->
 		<h2><?php if ($evt['cancelled_evt']) {
