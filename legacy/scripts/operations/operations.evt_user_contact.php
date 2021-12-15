@@ -65,40 +65,22 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $titre_evt = $handle['titre_evt'];
         $code_evt = $handle['code_evt'];
         $id_evt = $handle['id_evt'];
-        $tsp_evt = $handle['tsp_evt'];
     }
 
-    $subject = $objet;
-    $content_header = '';
-    $content_main = '<h2>Bonjour !</h2>
-        <p>Vous avez reçu un message de '.html_utf8(getUser()->getFirstnameUser()).' '.html_utf8(getUser()->getLastnameUser()).' au sujet de la sortie
-            <a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$code_evt.'-'.$id_evt.'.html">'.html_utf8($titre_evt).'</a></p>'
-        .'<p><b>Objet :</b><br />'.html_utf8($subject).'<br />&nbsp;</p>'
-        .'<p><b>Message :</b><br />'.nl2br(getUrlFriendlyString(html_utf8($message))).'<br />&nbsp;</p>'
-        ;
-
-    $content_footer = '';
-
-    // PHPMAILER
-    require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-    $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-
-    if (getUser()->getEmailUser()) {
-        $mail->AddReplyTo(getUser()->getEmailUser());
-    }
-    $mail->Subject = $subject;
-    //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-    $mail->setMailBody($content_main);
-    $mail->setMailHeader($content_header);
-    $mail->setMailFooter($content_footer);
-
+    $to = [];
     foreach ($destTab as $destinataire) {
-        $mail->AddBCC($destinataire['email_user'], $destinataire['firstname_user'].' '.$destinataire['lastname_user']);
+        $to[$destinataire['email_user']] = sprintf('%s %s', $destinataire['firstname_user'], $destinataire['lastname_user']);
     }
 
-    if (!$mail->Send()) {
-        $errTab[] = "Échec à l'envoi du mail à ".$destinataire['email_user'].". Plus d'infos : ".($mail->ErrorInfo);
-    }
+    $author = getUser();
+
+    LegacyContainer::get('legacy_mailer')->send($to, 'transactional/message-sortie', [
+        'objet' => $objet,
+        'message_author' => sprintf('%s %s', $author->getFirstnameUser(), $author->getLastnameUser()),
+        'url_sortie' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$code_evt.'-'.$id_evt.'.html',
+        'name_sortie' => $titre_evt,
+        'message' => $message,
+    ], [], $author, $author->getEmailUser());
 }
 
 // reset vals
