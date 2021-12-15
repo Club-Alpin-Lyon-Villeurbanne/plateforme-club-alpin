@@ -118,6 +118,10 @@ services:
         public: true
         class: App\Utils\MysqliHandler
 
+    legacy_imagine:
+        public: true
+        class: Imagine\Imagick\Imagine
+
     legacy_authorization_checker:
         public: true
         alias: Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface

@@ -1,9 +1,9 @@
 <?php
 
+use App\Legacy\LegacyContainer;
 use Imagine\Exception\Exception as ImagineException;
 use Imagine\Image\Box;
 use Imagine\Image\Palette\RGB;
-use Imagine\Imagick\Imagine;
 
 /**
  * si $maxWidth != 0 et $maxHeight != 0 : a LARGEUR maxi ET HAUTEUR maxi fixes
@@ -14,9 +14,7 @@ use Imagine\Imagick\Imagine;
 function resizeImage($maxWidth, $maxHeight, $source, $destination)
 {
     try {
-        $imagine = new Imagine();
-
-        $image = $imagine->open($source);
+        $image = LegacyContainer::get('legacy_imagine')->open($source);
         $size = $image->getSize();
         $W = $H = null;
 
