@@ -94,6 +94,10 @@ services:
         public: true
         alias: Twig\Environment
 
+    legacy_fs:
+        public: true
+        alias: Symfony\Component\Filesystem\Filesystem
+
     legacy_request_stack:
         public: true
         alias: Symfony\Component\HttpFoundation\RequestStack

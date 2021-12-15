@@ -100,6 +100,9 @@
     "http-interop/http-factory-guzzle": {
         "version": "1.1.1"
     },
+    "imagine/imagine": {
+        "version": "1.2.4"
+    },
     "jean85/pretty-package-versions": {
         "version": "2.0.5"
     },
