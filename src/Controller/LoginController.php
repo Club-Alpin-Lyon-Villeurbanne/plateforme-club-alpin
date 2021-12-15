@@ -132,7 +132,7 @@ class LoginController extends AbstractController
 
             $this->get(EntityManagerInterface::class)->flush();
             $this->addFlash('success', 'Mot de passe mis à jour avec succès!');
-            $mailer->send($user, 'transactional/set_password-account-confirmation', ['user' => $user]);
+            $mailer->send($user, 'transactional/set_password-account-confirmation');
 
             $request->getSession()->remove('user_password.target');
 
@@ -174,7 +174,7 @@ class LoginController extends AbstractController
             $this->get(EntityManagerInterface::class)->flush();
 
             $this->addFlash('success', 'Mot de passe mis à jour avec succès!');
-            $mailer->send($user, 'transactional/set_password-account-confirmation', ['user' => $user]);
+            $mailer->send($user, 'transactional/set_password-account-confirmation');
 
             return $this->redirect($url);
         }

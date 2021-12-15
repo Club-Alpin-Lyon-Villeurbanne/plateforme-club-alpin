@@ -500,7 +500,9 @@ if (!$evt) {
             .'<br style="clear:both" /><hr />'
 
             .'<p>
-				<span class="temoin-places-dispos '.($nPlacesRestantesOnline > 0 ? 'on' : 'off').'"></span>
+                <span style="padding: 10px 10px 5px 5px;float:left;">
+                    <span class="temoin-places-dispos '.($nPlacesRestantesOnline > 0 ? 'on' : 'off').'"></span>
+                </span>
 				<span  style="font-size:14px; font-family:DINBold; color:#666666">
 					'.$nInscritsTotal.' PARTICIPANT'.($nInscritsTotal > 1 ? 'S' : '').' INSCRIT'.($nInscritsTotal > 1 ? 'S' : '').'
 					SUR  '.$evt['ngens_max_evt'].' PLACE'.($evt['ngens_max_evt'] > 1 ? 'S' : '').' AU TOTAL ('.($evt['ngens_max_evt'] > 0 ? sprintf('%2d%%', (100 * $nInscritsTotal / $evt['ngens_max_evt'])) : '0').')

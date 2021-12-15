@@ -15,7 +15,9 @@ echo '" title="">';
 	<div class="droite">
 
 		<!-- temoin de validité des places libres. Ajouter class ok / full -->
-		<span class="temoin-places-dispos <?php echo $evt['temoin']; ?>" title="<?php echo $evt['temoin-title'] ? $evt['temoin-title'] : ''; ?>"></span>
+        <span title="<?php echo $evt['temoin-title'] ?? ''; ?>" style="padding: 10px 10px 5px 5px;float:left;">
+            <span class="temoin-places-dispos <?php echo $evt['temoin']; ?>"></span>
+        </span>
 
 		<!-- titre -->
 		<h2>
