@@ -87,7 +87,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $content_header = '';
     $content_main = '<h2>Bonjour '.html_utf8($destinataire['firstname_user']).' !<br /><br />Un visiteur du site vous a contacté sur <i>'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'</i></h2>'
         .'<b>Infos :</b><table>'
-        .($nom ? '<tr><td><b>Nom : </b></td><td><a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'/user-full/'.$expediteur['id_user'].'.html">'.html_utf8($nom)."</a></td></tr>\n" : '')
+        .($nom ? '<tr><td><b>Nom : </b></td><td><a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-full/'.$expediteur['id_user'].'.html">'.html_utf8($nom)."</a></td></tr>\n" : '')
         .($email ? '<tr><td><b>Email : </b></td><td><a href="mailto:'.html_utf8($email).'" title="">'.html_utf8($email).'</a> </td></tr>' : '')
         .($objet ? '<tr><td><b>Objet : </b></td><td>'.html_utf8($objet)." </td></tr>\n" : '')
         .'</table><br /><br />'
