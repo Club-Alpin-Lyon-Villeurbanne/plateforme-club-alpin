@@ -68,8 +68,6 @@ if (admin()) {
                 $img_Dst= $preview?'preview-'.$filename:$filename;
                 $rep_Src=$dir;
                 $img_Src=$filename;
-                // redim 1
-                if(!fctredimimage($W_max, $H_max, $rep_Dst, $img_Dst, $rep_Src, $img_Src))				$errTab[]="Image : Erreur de redim";
                 // crop
                 // if(!fctcropimage($W_fin, $H_fin, $rep_Dst, $img_Dst, $rep_Src, $img_Src))				$errTab[]="Image : Erreur de crop";
                 */
