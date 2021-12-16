@@ -74,10 +74,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
                 }
             }
 
-            // **** GRANDE
-            $W_fin = 1000;
-            $H_fin = 1000;
-            if (!resizeImage($W_fin, $H_fin, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
+            if (!resizeImage(1000, 1000, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
                 $errTab[] = 'Impossible de redimensionner la grande image';
             }
 
@@ -85,17 +82,13 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
             $img_Src = $rep_Dst.$filename;
             $img_Dst = 'min-profil.jpg';
 
-            // REDIM ONLY
-            $W_fin = 150;
-            $H_fin = 150;
-
             $rep_Dst = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
             $img_Dst = 'min-profil.jpg';
             $rep_Src = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
             $img_Src = 'profil.jpg';
 
             // redim
-            if (!resizeImage($W_fin, $H_fin, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
+            if (!resizeImage(150, 150, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
                 $errTab[] = 'Impossible de redimensionner la miniature';
             }
 
@@ -118,11 +111,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
             if (!resizeImage($W_fin, $H_fin, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
                 $errTab[] = 'Impossible de redimensionner l\'image (picto)';
             }
-            // crop
-            $img_Src = $img_Dst;
-            $W_fin = 55;
-            $H_fin = 55;
-            if (!fctcropimage($W_fin, $H_fin, $rep_Dst, $img_Dst, $rep_Src, $img_Src)) {
+            if (!cropImage(55, 55, $rep_Src.$img_Dst, $rep_Dst.$img_Dst)) {
                 $errTab[] = 'Impossible de croper l\'image (picto)';
             }
 

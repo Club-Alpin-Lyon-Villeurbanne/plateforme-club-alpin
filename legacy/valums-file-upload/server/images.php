@@ -47,10 +47,7 @@ if (admin()) {
         $size = getimagesize($targetDir.$filename);
         if ($size[0] > $MAX_DIMS || $size[1] > $MAX_DIMS) {
             include __DIR__.'/../../app/redims.php';
-            $W_max = $MAX_DIMS;
-            $H_max = $MAX_DIMS;
-            // redim 1
-            if (!resizeImage($W_max, $H_max, $targetDir.$filename, $targetDir.$filename)) {
+            if (!resizeImage($MAX_DIMS, $MAX_DIMS, $targetDir.$filename, $targetDir.$filename)) {
                 $errTab[] = 'Image : Erreur de redim';
             }
         }
