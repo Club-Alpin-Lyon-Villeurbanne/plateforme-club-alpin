@@ -109,11 +109,9 @@ if (0 === count($errTab)) {
             $errTab[] = 'Image : Erreur de redim wide';
         }
         // crop
-        $W_max = 665;
-        $H_max = 365;
         $img_Dst = 'wide-'.$filename;
         $img_Src = 'wide-'.$filename;
-        if (!fctcropimage($W_max, $H_max, $rep_Dst, $img_Dst, $rep_Src, $img_Src)) {
+        if (!cropImage(665, 365, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
             $errTab[] = 'Image : Erreur de crop wide';
         }
 
@@ -140,7 +138,7 @@ if (0 === count($errTab)) {
         $H_max = 138;
         $img_Dst = 'min-'.$filename;
         $img_Src = 'min-'.$filename;
-        if (!fctcropimage($W_max, $H_max, $rep_Dst, $img_Dst, $rep_Src, $img_Src)) {
+        if (!cropImage(198, 138, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
             $errTab[] = 'Image : Erreur de crop wide';
         }
     }
