@@ -1,5 +1,7 @@
 <?php
 
+use App\Legacy\ImageManipulator;
+
 require __DIR__.'/../../app/includes.php';
 
 $errTab = [];
@@ -85,60 +87,16 @@ if (0 === count($errTab)) {
         }
     }
 
-    // redimensionnement des images
     if (0 === count($errTab)) {
-        require __DIR__.'/../../app/redims.php';
-        $size = getimagesize($targetDir.$filename);
+        $img_Dst = 'wide-'.$filename;
 
-        // 1 : WIDE = l'image qui prend la largeur de la page dédiée à l'article / +dans le slider de la home
-        // plus large que haute, proportionnellement aux dimensions voulues ?
-        if ($size[0] / 665 > $size[1] / 365) {
-            $W_max = 0;
-            $H_max = 365;
-        } // alors redimensionne en hauteur pour cropper les bords latéraux ensuite
-        else {
-            $W_max = 665;
-            $H_max = 0;
-        } // sinon l'inverse : on crope les bords haut & bas
-        // redimension
-        $rep_Dst = $targetDir;
-        $img_Dst = 'wide-'.$filename;
-        $rep_Src = $targetDir;
-        $img_Src = $filename;
-        if (!resizeImage($W_max, $H_max, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
-            $errTab[] = 'Image : Erreur de redim wide';
-        }
-        // crop
-        $img_Dst = 'wide-'.$filename;
-        $img_Src = 'wide-'.$filename;
-        if (!cropImage(665, 365, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
+        if (!ImageManipulator::cropImage(665, 365, $targetDir.$filename, $targetDir.$img_Dst)) {
             $errTab[] = 'Image : Erreur de crop wide';
         }
 
-        // 2 : MIN = affichée dans les listes d'articles
-        // plus large que haute, proportionnellement aux dimensions voulues ?
-        if ($size[0] / 198 > $size[1] / 138) {
-            $W_max = 0;
-            $H_max = 138;
-        } // alors redimensionne en hauteur pour cropper les bords latéraux ensuite
-        else {
-            $W_max = 198;
-            $H_max = 0;
-        } // sinon l'inverse : on crope les bords haut & bas
-        // redimension
-        $rep_Dst = $targetDir;
         $img_Dst = 'min-'.$filename;
-        $rep_Src = $targetDir;
-        $img_Src = $filename;
-        if (!resizeImage($W_max, $H_max, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
-            $errTab[] = 'Image : Erreur de redim wide';
-        }
-        // crop
-        $W_max = 198;
-        $H_max = 138;
-        $img_Dst = 'min-'.$filename;
-        $img_Src = 'min-'.$filename;
-        if (!cropImage(198, 138, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
+
+        if (!ImageManipulator::cropImage(198, 138, $targetDir.$filename, $targetDir.$img_Dst)) {
             $errTab[] = 'Image : Erreur de crop wide';
         }
     }

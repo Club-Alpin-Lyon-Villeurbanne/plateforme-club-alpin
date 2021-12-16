@@ -1,5 +1,6 @@
 <?php
 
+use App\Legacy\ImageManipulator;
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -58,67 +59,34 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
         }
         $filename = $i.'-profil.jpg';
         if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploaddir.$filename)) {
-            // REDIMS
-            require __DIR__.'/../../app/redims.php';
-            $size = getimagesize($uploaddir.$filename);
-
             $rep_Dst = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
-            $img_Dst = 'profil.jpg';
-            $rep_Src = $uploaddir;
-            $img_Src = $filename;
 
-            // créa du dossier s'il n'esxiste pas
-            if (!file_exists($rep_Dst) && $id_user) {
+            $profilePic = $rep_Dst.'profil.jpg';
+            $uploadedFile = $uploaddir.$filename;
+
+            if (!file_exists($rep_Dst)) {
                 if (!mkdir($rep_Dst) && !is_dir($rep_Dst)) {
                     throw new \RuntimeException(sprintf('Directory "%s" was not created', $rep_Dst));
                 }
             }
 
-            if (!resizeImage(1000, 1000, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
+            if (!ImageManipulator::resizeImage(1000, 1000, $uploadedFile, $profilePic)) {
                 $errTab[] = 'Impossible de redimensionner la grande image';
             }
 
-            // **** MINI
-            $img_Src = $rep_Dst.$filename;
-            $img_Dst = 'min-profil.jpg';
+            $profilePicMin = $rep_Dst.'min-profil.jpg';
+            $profilePicPic = $rep_Dst.'pic-profil.jpg';
 
-            $rep_Dst = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
-            $img_Dst = 'min-profil.jpg';
-            $rep_Src = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
-            $img_Src = 'profil.jpg';
-
-            // redim
-            if (!resizeImage(150, 150, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
+            if (!ImageManipulator::resizeImage(150, 150, $uploadedFile, $profilePicMin)) {
                 $errTab[] = 'Impossible de redimensionner la miniature';
             }
 
-            // **** PICTO
-            $img_Src = 'min-profil.jpg';
-            $img_Dst = 'pic-profil.jpg';
-
-            // VERSION REDIM + CROP
-            // vars pour le redim/crop de la une
-            // <= crop
-            // >= redim
-            if ($size[0] / $size[1] <= 55 / 55) {
-                $W_fin = 55;
-                $H_fin = 0;
-            } else {
-                $W_fin = 0;
-                $H_fin = 55;
-            }
-            // redim
-            if (!resizeImage($W_fin, $H_fin, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
-                $errTab[] = 'Impossible de redimensionner l\'image (picto)';
-            }
-            if (!cropImage(55, 55, $rep_Src.$img_Dst, $rep_Dst.$img_Dst)) {
+            if (!ImageManipulator::cropImage(55, 55, $uploadedFile, $profilePicPic)) {
                 $errTab[] = 'Impossible de croper l\'image (picto)';
             }
 
-            /////////////
-            // suppression du fichier en standby
             if (file_exists($uploaddir.$filename)) {
-                unlink(($uploaddir.$filename));
+                unlink($uploaddir.$filename);
             }
         } else {
             $errTab[] = 'Erreur lors du déplacement du fichier';
