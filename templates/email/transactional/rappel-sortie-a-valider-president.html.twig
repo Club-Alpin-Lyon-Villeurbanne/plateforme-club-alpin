@@ -1,0 +1,34 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} à valider légalement
+{%- endblock %}
+
+{% block inner_html %}
+    <h1>{{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} à valider légalement</h1>
+    <p>
+        Vous êtes en charge de la validation légale des sorties, et il y a {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} en attente de validation sur le site du {{ sitename }}.
+    </p>
+    <p>
+        Prenez soin de vous rendre sur chaque fiche de sortie ci-dessous et de vérifier attentivement toutes les informations liées.
+    </p>
+    <h2>Sorties en attente :</h2>
+    <ul>
+        {% for sortie in sorties %}
+            <li><a href="{{ sortie.url }}">{{ sortie.name }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block inner_txt %}
+    {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} à valider légalement.
+
+    Vous êtes en charge de la validation légale des sorties, et il y a {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} en attente de validation sur le site du {{ sitename }}.
+
+    Prenez soin de vous rendre sur chaque fiche de sortie ci-dessous et de vérifier attentivement toutes les informations liées.
+
+    Sorties en attente :
+    {% for sortie in sorties %}
+        - {{ sortie.name }}[sortie.url]
+    {% endfor %}
+{% endblock %}
