@@ -60,18 +60,6 @@ if (admin()) {
                 $log .= "\n\n dir=$dir";
                 $log .= "\n\n filename=$filename";
 
-                /*
-                // vars 1
-                $W_max=$wDestNocrop;
-                $H_max=$hDestNocrop;
-                $rep_Dst=$dir;
-                $img_Dst= $preview?'preview-'.$filename:$filename;
-                $rep_Src=$dir;
-                $img_Src=$filename;
-                // crop
-                // if(!fctcropimage($W_fin, $H_fin, $rep_Dst, $img_Dst, $rep_Src, $img_Src))				$errTab[]="Image : Erreur de crop";
-                */
-
                 // resize/crop manuel
                 $phpImage = imagecreatetruecolor($wDestNocrop, $hDestNocrop);
                 switch ($ext) {

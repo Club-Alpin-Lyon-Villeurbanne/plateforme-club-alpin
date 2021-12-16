@@ -1,7 +1,5 @@
-// débug-utf-8
-
 var oTable=false; // conteint l'instace de datatables
-var currentDir; // dossier courant, var "globale"
+var currentDir = ''; // dossier courant, var "globale"
 var showDirs=true; // montrer les dossiers dans la liste des fichiers à droite ?
 
 
