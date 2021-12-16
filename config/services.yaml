@@ -94,6 +94,10 @@ services:
         public: true
         alias: Twig\Environment
 
+    legacy_fs:
+        public: true
+        alias: Symfony\Component\Filesystem\Filesystem
+
     legacy_request_stack:
         public: true
         alias: Symfony\Component\HttpFoundation\RequestStack
@@ -114,6 +118,14 @@ services:
         public: true
         class: App\Utils\MysqliHandler
 
+    legacy_imagine:
+        public: true
+        class: Imagine\Imagick\Imagine
+
     legacy_authorization_checker:
         public: true
         alias: Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface
+
+    legacy_mailer:
+        public: true
+        alias: App\Mailer\Mailer

@@ -18,10 +18,7 @@ if (0 === count($errTab)) {
     // Handle file uploads via XMLHttpRequest
     require __DIR__.'/vfu.classes.php';
 
-    // max file size in bytes
-    $sizeLimit = 20 * 1024 * 1024;
-
-    $uploader = new qqFileUploader(FtpFile::getAllowedExtensions(), $sizeLimit);
+    $uploader = new qqFileUploader(FtpFile::getAllowedExtensions());
     $result = $uploader->handleUpload($targetDir);
 
     if ($result['error']) {
@@ -37,7 +34,7 @@ if (0 === count($errTab)) {
     if ($filename != $tmpfilename) {
         // debug : copie impossible si le nom de fichier est juste une variante de CASSE
         // donc dans ce cas on le RENOMME
-        if ($filename == strtolower($tmpfilename)) {
+        if ($filename === strtolower($tmpfilename)) {
             if (!rename($targetDir.$tmpfilename, $targetDir.$filename)) {
                 $errTab[] = 'Erreur de renommage de '.$targetDir.$tmpfilename." \n vers ".$targetDir.$filename;
             }
@@ -64,13 +61,3 @@ if (count($errTab) > 0) {
 
 // to pass data through iframe you will need to encode all html tags
 echo htmlspecialchars(json_encode($result), \ENT_NOQUOTES);
-
-/* *
-
-$log.="\n  errTab :";
-foreach($errTab as $key=>$value)
-    $log.="\n $key = $value";
-
-
-$fp = fopen('dev.txt', 'w');fwrite($fp, $log);fclose($fp);
-/* */

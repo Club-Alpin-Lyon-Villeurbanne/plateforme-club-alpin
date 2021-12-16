@@ -65,11 +65,17 @@ class Mailer
         $email = (new Email())
             ->sender($this->mailEmitter)
             ->from($sender ?? $this->mailEmitter)
-            ->to(...$toFlat)
             ->subject($subject)
             ->html($htmlBody)
             ->text($txtBody)
         ;
+
+        if (\count($toFlat) > 1) {
+            $email->bcc(...$toFlat);
+        } else {
+            $email->to(...$toFlat);
+        }
+
         if (false !== $replyTo) {
             $email->replyTo($replyTo ?? $sender ?? $this->replyTo);
         }
