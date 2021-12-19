@@ -41,7 +41,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($sql);
 
     if ($result && $row = $result->fetch_assoc()) {
-        $limit = $row['total'];
+        $limit = max(0, $row['total']);
 
         $sql = 'UPDATE caf_article SET une_article = 0 WHERE status_article = 1 AND une_article = 1 ORDER BY tsp_article ASC LIMIT '.$limit;
         LegacyContainer::get('legacy_mysqli_handler')->query($sql);
