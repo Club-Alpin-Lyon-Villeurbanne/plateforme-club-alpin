@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Minibus{% endblock %}
+
+{% block body %}
+    <div id="left1">
+        <h1 class="page-h1">Minibus</h1>
+        <div class="main-type">
+            <p>Un minibus est mis à disposition des adhérents pour les sorties du club</p>
+            <p>
+                L'utilisation du minibus requiert de la part de ses usagers :
+            </p>
+            <ul>
+                <li>l'acceptation de la charte de fonctionnement du minibus</li>
+                <li>une participation financière</li>
+            </ul>
+            <hr />
+            <p>
+                La participation est de
+            </p>
+            <ul>
+                <li>0.40 €/km pour les 400 premiers kilomètres</li>
+                <li>0.25 €/km de 401 à 800km</li>
+                <li>puis 0.10 €/km à partir de 801km</li>
+            </ul>
+            <p>
+                Avec un forfait minimum de 90 € par réservation.
+            </p>
+            <p>
+                Le simulateur ci-dessous permet de calculer
+                les frais en fonction de la distance.
+            </p>
+
+            <h1><span class="bleucaf">Simulateur</span></h1>
+            <p>
+                Ce simulateur permet de calculer le coût de location en fonction de la distance parcourue.
+            </p>
+            <p>
+                <input id="simulateur_km" type="number" class="type1" min="0" value="0" /> km
+                => <span id="simulateur_total"></span>€
+            </p>
+
+            <h1><span class="bleucaf">Réservation</span></h1>
+            <p>
+                Pour faire une demande de réservation, utiliser le formulaire
+                <a href="https://forms.gle/MshTVQY5ctXxoJoy7" target="_blank">https://forms.gle/MshTVQY5ctXxoJoy7</a>.
+            </p>
+            <p>
+                Pour tout renseignement, contactez <a href="mailto:minibus@clubalpinlyon.fr">minibus@clubalpinlyon.fr</a>.
+            </p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(function() {
+            function doUpdate() {
+                var km = $('#simulateur_km').val();
+                var total = 0;
+
+                total += Math.min(km, 400) * 0.4;
+                total += Math.min(Math.max(0, km - 400), 400) * 0.25;
+                total += Math.max(0, km - 800) * 0.1;
+
+                $('#simulateur_total').text(Math.round(Math.max(90, total)));
+            }
+
+            doUpdate();
+
+            $('#simulateur_km').on('keyup', function (val) {
+                doUpdate();
+            });
+        });
+    </script>
+{% endblock %}
