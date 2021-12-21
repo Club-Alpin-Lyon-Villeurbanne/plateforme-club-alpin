@@ -33,7 +33,7 @@ else {
     // ce user autorise t-il le contact
     $req = 'SELECT id_user, civ_user, firstname_user, lastname_user, email_user, nickname_user
         FROM caf_user
-        WHERE id_user = '.getUser()->getIdUser();
+        WHERE id_user = '.getUser()->getId();
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {

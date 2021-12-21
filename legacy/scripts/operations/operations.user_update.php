@@ -13,7 +13,7 @@ if (!user()) {
 
 // mise à jour infos texte
 if (!isset($errTab) || 0 === count($errTab)) {
-    $id_user = getUser()->getIdUser();
+    $id_user = getUser()->getId();
     $tel_user = trim(stripslashes($_POST['tel_user']));
     $tel2_user = trim(stripslashes($_POST['tel2_user']));
     $birthday_user = trim(stripslashes($_POST['birthday_user']));
@@ -141,7 +141,7 @@ if ('' !== $email_user_mailchange) {
         require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
-        $mail->AddAddress($email_user_mailchange, getUser()->getNicknameUser());
+        $mail->AddAddress($email_user_mailchange, getUser()->getNickname());
         $mail->Subject = $subject;
         //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
         $mail->setMailBody($content_main);

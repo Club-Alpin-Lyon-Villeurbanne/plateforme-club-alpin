@@ -1,6 +1,6 @@
 <?php
 
-$id_user = getUser()->getIdUser();
+$id_user = getUser()->getId();
 
 if (!isset($errTab) || 0 === count($errTab)) {
     if (is_file(__DIR__.'/../../../public/ftp/user/'.$id_user.'/min-profil.jpg')) {

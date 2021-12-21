@@ -19,7 +19,7 @@ $URL_PAIEMENT = LegacyContainer::getParameter('legacy_env_URL_PAIEMENT');
 }
 
         $title = iconv('UTF-8', 'ASCII//TRANSLIT', str_replace(')', '', str_replace('(', '', str_replace('!', '', $evt['titre_evt']))));
-        $compl = ' du '.date('d-m-Y', $evt['tsp_evt']).' '.getUser()->getFirstnameUser().' '.getUser()->getLastnameUser();
+        $compl = ' du '.date('d-m-Y', $evt['tsp_evt']).' '.getUser()->getFirstname().' '.getUser()->getLastname();
         $size_title = strlen($title);
         $size_compl = strlen($compl);
         $new_title = substr($title, 0, 64 - $size_compl).$compl;
@@ -53,11 +53,11 @@ $URL_PAIEMENT = LegacyContainer::getParameter('legacy_env_URL_PAIEMENT');
 &lck_vads_ext_info_Encadrant=<?php echo rawurlencode(html_utf8($encadrant_name)); ?>
 &lck_vads_ext_info_E-mail%20encadrant=<?php echo rawurlencode(html_utf8($encadrant_email)); ?>
 &lck_vads_ext_info_Sortie=<?php echo rawurlencode(html_utf8($title.' - '.$evt['id_evt'].' du '.date('d-m-Y', $evt['tsp_evt']))); ?>
-&lck_vads_cust_first_name=<?php echo rawurlencode(html_utf8(getUser()->getFirstnameUser())); ?>
-&lck_vads_cust_last_name=<?php echo rawurlencode(html_utf8(getUser()->getLastnameUser())); ?>
-&lck_vads_cust_id=<?php echo rawurlencode(html_utf8(getUser()->getCafnumUser())); ?>
-&lck_vads_cust_email=<?php echo rawurlencode(html_utf8(getUser()->getEmailUser())); ?>
-&lck_vads_cust_cell_phone=<?php echo rawurlencode(html_utf8(getUser()->getTelUser())); ?>
+&lck_vads_cust_first_name=<?php echo rawurlencode(html_utf8(getUser()->getFirstname())); ?>
+&lck_vads_cust_last_name=<?php echo rawurlencode(html_utf8(getUser()->getLastname())); ?>
+&lck_vads_cust_id=<?php echo rawurlencode(html_utf8(getUser()->getCafnum())); ?>
+&lck_vads_cust_email=<?php echo rawurlencode(html_utf8(getUser()->getEmail())); ?>
+&lck_vads_cust_cell_phone=<?php echo rawurlencode(html_utf8(getUser()->getTel())); ?>
 &lck_vads_amount=<?php echo rawurlencode(html_utf8($evt['tarif_evt'])); ?>"
                  target="_blank" alt="paiement en ligne">Cliquez ici  pour payer en ligne (avant de valider la demande d'inscription)</a>.
             <br />
@@ -88,7 +88,7 @@ $URL_PAIEMENT = LegacyContainer::getParameter('legacy_env_URL_PAIEMENT');
 
 <?php /* EXISTANCE DE FILIATIONS, seulement lors de la création, pas de l'update */ if (count($filiations)) { ?>
     <?php if (!is_array($_POST['id_user_filiation']) && user()) {
-        $_POST['id_user_filiation'] = [(string) getUser()->getIdUser()];
+        $_POST['id_user_filiation'] = [(string) getUser()->getId()];
     } ?>
 
     <hr class="clear" />
@@ -96,14 +96,14 @@ $URL_PAIEMENT = LegacyContainer::getParameter('legacy_env_URL_PAIEMENT');
 
     <input type="hidden" name="filiations" value="on" />
     <br />
-    <label for="filiation_id_user_<?php echo user() ? getUser()->getIdUser() : ''; ?>" style="width:100%;clear:both;overflow:hidden;">
+    <label for="filiation_id_user_<?php echo user() ? getUser()->getId() : ''; ?>" style="width:100%;clear:both;overflow:hidden;">
         <input type="checkbox"
-            <?php echo user() && in_array((string) getUser()->getIdUser(), $_POST['id_user_filiation'], true) ? 'checked="checked" ' : ''; ?>
+            <?php echo user() && in_array((string) getUser()->getId(), $_POST['id_user_filiation'], true) ? 'checked="checked" ' : ''; ?>
             class="custom"
             name="id_user_filiation[]"
-            value="<?php echo user() ? getUser()->getIdUser() : ''; ?>"
-            id="filiation_id_user_<?php echo user() ? getUser()->getIdUser() : ''; ?>" />
-                Moi-même (<?php echo user() ? userlink(getUser()->getIdUser(), getUser()->getNicknameUser()) : ''; ?>)
+            value="<?php echo user() ? getUser()->getId() : ''; ?>"
+            id="filiation_id_user_<?php echo user() ? getUser()->getId() : ''; ?>" />
+                Moi-même (<?php echo user() ? userlink(getUser()->getId(), getUser()->getNickname()) : ''; ?>)
 
     </label>
     <br />

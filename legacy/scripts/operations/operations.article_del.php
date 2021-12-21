@@ -8,7 +8,7 @@ $req = "DELETE FROM caf_article WHERE id_article=$id_article AND status_article!
 if (allowed('article_delete_notmine')) {
     $req .= ' ';
 } else {
-    $req .= ' AND user_article='.getUser()->getIdUser();
+    $req .= ' AND user_article='.getUser()->getId();
 }
 if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
     $errTab[] = 'Erreur SQL';

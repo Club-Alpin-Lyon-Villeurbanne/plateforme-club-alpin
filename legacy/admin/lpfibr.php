@@ -6,7 +6,7 @@ require __DIR__.'/../app/includes.php';
 
 if (admin()) {
     // bien connecté ?
-    $id_user = getUser()->getIdUser();
+    $id_user = getUser()->getId();
     if (!$id_user && !admin()) {
         header('HTTP/1.0 401 Authorization Required');
         echo 'ERREUR : id invalide';

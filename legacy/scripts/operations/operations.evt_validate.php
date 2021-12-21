@@ -18,7 +18,7 @@ if (!allowed('evt_validate')) {
 
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
-    $req = "UPDATE caf_evt SET status_evt='$status_evt', status_who_evt=".getUser()->getIdUser()." WHERE caf_evt.id_evt =$id_evt";
+    $req = "UPDATE caf_evt SET status_evt='$status_evt', status_who_evt=".getUser()->getId()." WHERE caf_evt.id_evt =$id_evt";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }

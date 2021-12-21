@@ -2,18 +2,18 @@
 
 namespace App;
 
-use App\Repository\CafArticleRepository;
-use App\Repository\CafDestinationRepository;
-use App\Repository\CafEvtRepository;
+use App\Repository\ArticleRepository;
+use App\Repository\DestinationRepository;
+use App\Repository\EvtRepository;
 
 class Notifications
 {
-    private CafEvtRepository $cafEvtRepository;
-    private CafArticleRepository $cafArticleRepository;
-    private CafDestinationRepository $cafDestinationRepository;
+    private EvtRepository $cafEvtRepository;
+    private ArticleRepository $cafArticleRepository;
+    private DestinationRepository $cafDestinationRepository;
     private UserRights $userRights;
 
-    public function __construct(CafDestinationRepository $cafDestinationRepository, CafEvtRepository $cafEvtRepository, CafArticleRepository $cafArticleRepository, UserRights $userRights)
+    public function __construct(DestinationRepository $cafDestinationRepository, EvtRepository $cafEvtRepository, ArticleRepository $cafArticleRepository, UserRights $userRights)
     {
         $this->cafDestinationRepository = $cafDestinationRepository;
         $this->cafEvtRepository = $cafEvtRepository;
