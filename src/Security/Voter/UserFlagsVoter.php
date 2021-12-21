@@ -2,7 +2,7 @@
 
 namespace App\Security\Voter;
 
-use App\Entity\CafUser;
+use App\Entity\User;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -25,7 +25,7 @@ class UserFlagsVoter extends Voter
     {
         $user = $token->getUser();
 
-        if (!$user instanceof CafUser) {
+        if (!$user instanceof User) {
             return false;
         }
 

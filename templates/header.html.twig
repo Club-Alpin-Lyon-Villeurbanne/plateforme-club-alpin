@@ -40,10 +40,10 @@
                 {% for commission in list_commissions() %}
                     {% set target = 'accueil' %}
                     {% if p1 == 'agenda' or p1 == 'article-new' %}{% set target = p1 %}{% endif %}
-                    <a href="/{{ target }}/{{ commission.codeCommission }}.html" title="">
-                        <span class="picto" style="background-image:url({{ commission_picto(commission.codeCommission, 'light') }})">
-                            <img src="{{ commission_picto(commission.codeCommission, 'dark') }}" alt="" title="" />
-                        </span> {{ commission.titleCommission }}
+                    <a href="/{{ target }}/{{ commission.code }}.html" title="">
+                        <span class="picto" style="background-image:url({{ commission_picto(commission.code, 'light') }})">
+                            <img src="{{ commission_picto(commission.code, 'dark') }}" alt="" title="" />
+                        </span> {{ commission.title }}
                     </a>
                 {% endfor %}
             </div>
@@ -75,7 +75,7 @@
             {% else %}
                 <div class="connected-name">
 
-                    {% if app.user.getDoitRenouvelerUser or app.user.getAlerteRenouvelerUser %}
+                    {% if app.user.getDoitRenouveler or app.user.getAlerteRenouveler %}
                         <div class="notification-user-alerte"><span>!</span></div>
                     {% endif %}
 
@@ -87,7 +87,7 @@
                     <img src="{{ user_picto(app.user, 'pic') }}" alt="" title="" />
                     <p>
                         Bonjour <br />
-                        <b>{{ app.user.getFirstnameUser() }},</b>
+                        <b>{{ app.user.getFirstname() }},</b>
                         <span id="shadowcache-user" class="shadowcache" style="top:8px;"></span>
                     </p>
                 </div>
@@ -113,12 +113,12 @@
                     </div>
 
                 {% else %}
-                    {% if app.user.getDoitRenouvelerUser %}
+                    {% if app.user.getDoitRenouveler %}
                         {# MESSAGE D'ALERTE SI CET USER EST VERROUILLE POUR LICENCE EXPIREE #}
                         <div style="padding:5px 0 30px 100px">
                             {{ easy_include('alerte-licence-obsolete', 'alerte')}}
                         </div>
-                    {% elseif app.user.getAlerteRenouvelerUser %}
+                    {% elseif app.user.getAlerteRenouveler %}
                         {# MESSAGE D'ALERTE SI CET USER DOIT RENOUVELER SA LICENCE AVANT BIENTOT #}
                         <div style="padding:5px 0 30px 100px">
                             {{ easy_include('alerte-licence-renouveler', 'alerte')}}
@@ -290,7 +290,7 @@
                             {% endif %}
                             <p style="color:#fff; font-family:DIN; font-size:18px; line-height:20px; white-space:nowrap; padding-top:10px;">
                                 Mon pseudonyme : <br />
-                                <span style="font-family:DINBold; font-size:21px;">{{ app.user.getNicknameUser() }}</span>
+                                <span style="font-family:DINBold; font-size:21px;">{{ app.user.getNickname() }}</span>
                             </p>
                             
                             {# deconn #}

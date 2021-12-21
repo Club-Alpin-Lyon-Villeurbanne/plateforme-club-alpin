@@ -2,7 +2,7 @@
 
 namespace App\Security\Authentication;
 
-use App\Entity\CafUser;
+use App\Entity\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +23,7 @@ class MagiclinkResetPasswordHandler implements AuthenticationSuccessHandlerInter
     {
         $user = $token->getUser();
 
-        if (!$user instanceof CafUser) {
+        if (!$user instanceof User) {
             return new RedirectResponse($this->urlGenerator->generate('legacy_root'));
         }
 

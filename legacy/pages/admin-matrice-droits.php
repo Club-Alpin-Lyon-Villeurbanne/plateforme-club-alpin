@@ -1,6 +1,6 @@
 <?php
 
-use App\Entity\CafUserAttr;
+use App\Entity\UserAttr;
 use App\Legacy\LegacyContainer;
 
 if (!admin()) {
@@ -17,7 +17,7 @@ if (!admin()) {
     $rightTab = [];
     $attrTab = [];
     $tmp = '';
-    $isDev = getUser()->hasAttribute(CafUserAttr::DEVELOPPEUR);
+    $isDev = getUser()->hasAttribute(UserAttr::DEVELOPPEUR);
 
     // tous les types
     $req = '

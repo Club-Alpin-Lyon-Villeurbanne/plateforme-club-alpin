@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 $id_evt = (int) ($_POST['id_evt']);
-$id_user = getUser()->getIdUser();
+$id_user = getUser()->getId();
 
 $evtDate = $evtTarif = $encEmail = $encName = null;
 
@@ -77,7 +77,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
 
             // vars
-            $tmpUserName = (getUser()->getFirstnameUser().' '.getUser()->getLastnameUser());
+            $tmpUserName = (getUser()->getFirstname().' '.getUser()->getLastname());
             $evtName = html_utf8($_POST['titre_evt']);
             $evtUrl = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html');
 
@@ -92,10 +92,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     Plus d'infos :
                 </p>
                 <ul>
-                    <li><b>Pseudo : </b> ".html_utf8(getUser()->getNicknameUser())."</li>
-                    <li><b>Email : </b> <a href='mailto:".html_utf8(getUser()->getEmailUser())."'>".html_utf8(getUser()->getEmailUser()).'</a></li>
-                    <li><b>Tel : </b> '.html_utf8(getUser()->getTelUser()).'</li>
-                    <li><b>Tel2 : </b> '.html_utf8(getUser()->getTel2User()).'</li>
+                    <li><b>Pseudo : </b> ".html_utf8(getUser()->getNickname())."</li>
+                    <li><b>Email : </b> <a href='mailto:".html_utf8(getUser()->getEmail())."'>".html_utf8(getUser()->getEmail()).'</a></li>
+                    <li><b>Tel : </b> '.html_utf8(getUser()->getTel()).'</li>
+                    <li><b>Tel2 : </b> '.html_utf8(getUser()->getTel2()).'</li>
                 </ul>
                 ';
             $content_header = '';
@@ -103,7 +103,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
             $mail = new CAFPHPMailer(); // defaults to using php "mail()"
 
-            $mail->AddReplyTo(getUser()->getEmailUser());
+            $mail->AddReplyTo(getUser()->getEmail());
             $mail->Subject = $subject;
             //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
             $mail->setMailBody($content_main);
@@ -121,8 +121,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
             if (1 == $is_cb) {
                 $toMail = 'comptabilite@clubalpinlyon.fr';
                 $toName = 'Trésorier';
-                $toNameFull = getUser()->getFirstnameUser().' '.getUser()->getLastnameUser();
-                $toCafNum = getUser()->getCafnumUser();
+                $toNameFull = getUser()->getFirstname().' '.getUser()->getLastname();
+                $toCafNum = getUser()->getCafnum();
 
                 $subject = 'Désinscription avec paiement en ligne';
                 $content_main = "<h2>$subject</h2>

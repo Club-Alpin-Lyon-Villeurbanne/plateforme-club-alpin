@@ -22,7 +22,7 @@ class LoginControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
 
         $this->client->submitForm('connect-button', [
-            '_username' => $user->getEmailUser(),
+            '_username' => $user->getEmail(),
             '_password' => 'youpla',
         ]);
         $this->assertResponseStatusCodeSame(302);
@@ -44,7 +44,7 @@ class LoginControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
 
         $this->client->submitForm('connect-button', [
-            '_username' => $user->getEmailUser(),
+            '_username' => $user->getEmail(),
             '_password' => 'invalid',
         ]);
         $this->assertResponseStatusCodeSame(302);
@@ -80,7 +80,7 @@ class LoginControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
 
         $crawler = $this->client->submitForm('reset_password[submit]', [
-            'reset_password[email]' => $user->getEmailUser(),
+            'reset_password[email]' => $user->getEmail(),
         ]);
 
         $this->assertResponseStatusCodeSame(200);
@@ -89,7 +89,7 @@ class LoginControllerTest extends WebTestCase
         $emails = $this->getMailerMessages();
         $this->assertCount(1, $emails);
 
-        $this->assertEmailHeaderSame($emails[0], 'To', $user->getEmailUser());
+        $this->assertEmailHeaderSame($emails[0], 'To', $user->getEmail());
         $this->assertEmailTextBodyContains($emails[0], 'Votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
         $this->assertEmailHtmlBodyContains($emails[0], 'Votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
     }
@@ -118,7 +118,7 @@ class LoginControllerTest extends WebTestCase
         $emails = $this->getMailerMessages();
         $this->assertCount(1, $emails);
 
-        $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNicknameUser(), $user->getEmailUser()));
+        $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNickname(), $user->getEmail()));
         $this->assertEmailTextBodyContains($emails[0], 'Modification de votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
         $this->assertEmailHtmlBodyContains($emails[0], 'Modification de votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
     }
@@ -130,7 +130,7 @@ class LoginControllerTest extends WebTestCase
         $hasherFactory = self::getContainer()->get(PasswordHasherFactoryInterface::class);
 
         $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
-        $user->setMdpUser($hasherFactory->getPasswordHasher('login_form')->hash('!currentPassw0rd'));
+        $user->setMdp($hasherFactory->getPasswordHasher('login_form')->hash('!currentPassw0rd'));
         $this->getContainer()->get('doctrine')->getManager()->flush();
 
         $this->client->request('GET', '/change-password');
@@ -153,7 +153,7 @@ class LoginControllerTest extends WebTestCase
         $emails = $this->getMailerMessages();
         $this->assertCount(1, $emails);
 
-        $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNicknameUser(), $user->getEmailUser()));
+        $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNickname(), $user->getEmail()));
         $this->assertEmailTextBodyContains($emails[0], 'Modification de votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
         $this->assertEmailHtmlBodyContains($emails[0], 'Modification de votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
     }

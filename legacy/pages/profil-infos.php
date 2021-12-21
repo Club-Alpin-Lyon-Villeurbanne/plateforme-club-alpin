@@ -1,6 +1,6 @@
 <?php
 
-use App\Entity\CafUserAttr;
+use App\Entity\UserAttr;
 
 if (user()) {
     ?>
@@ -29,9 +29,9 @@ if (user()) {
             <ul class="nice-list">
                 <?php
                 foreach (getUser()->getAttributes() as $attr) {
-                    if (CafUserAttr::RESPONSABLE_COMMISSION === $attr->getCode()) {
+                    if (UserAttr::RESPONSABLE_COMMISSION === $attr->getCode()) {
                         echo '<li><a href="commission-consulter.html?code_commission='.$attr->getCommission().'" title="Fiche commission">'.$attr->getTitle().', '.$attr->getCommission().'</a></li>';
-                    } elseif (in_array($attr->getCode(), [CafUserAttr::ENCADRANT, CafUserAttr::COENCADRANT], true)) {
+                    } elseif (in_array($attr->getCode(), [UserAttr::ENCADRANT, UserAttr::COENCADRANT], true)) {
                         echo '<li>'.$attr->getTitle().', '.$attr->getCommission().'</li>';
                     } else {
                         echo '<li>'.$attr->getTitle().'</li>';
@@ -108,7 +108,7 @@ if (user()) {
 
             <b>Votre pseudonyme :</b>
             <br />
-            <h2><a href="/includer.php?p=includes/fiche-profil.php&id_user=<?php echo getUser()->getIdUser(); ?>" class="fancyframe" title="Aperçu de votre fiche"><?php echo html_utf8($tmpUser['nickname_user']); ?></a></h2>
+            <h2><a href="/includer.php?p=includes/fiche-profil.php&id_user=<?php echo getUser()->getId(); ?>" class="fancyframe" title="Aperçu de votre fiche"><?php echo html_utf8($tmpUser['nickname_user']); ?></a></h2>
 
             <br />
             <b>Modifier votre photo :</b> <span class="mini">Format .jpg, 5Mo maximum !</span><br />

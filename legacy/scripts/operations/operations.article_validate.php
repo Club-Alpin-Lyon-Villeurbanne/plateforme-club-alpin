@@ -18,7 +18,7 @@ $authorDatas = null;
 
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
-    $req = "UPDATE caf_article SET status_article='$status_article', status_who_article=".getUser()->getIdUser()." WHERE caf_article.id_article =$id_article";
+    $req = "UPDATE caf_article SET status_article='$status_article', status_who_article=".getUser()->getId()." WHERE caf_article.id_article =$id_article";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }

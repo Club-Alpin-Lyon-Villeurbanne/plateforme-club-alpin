@@ -2,7 +2,7 @@
 
 namespace App\EventListener;
 
-use App\Entity\CafUser;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -58,12 +58,12 @@ class AuthenticationListener implements EventSubscriberInterface, ServiceSubscri
         if ($this->setCookie) {
             if ($token = $this->locator->get(TokenStorageInterface::class)->getToken()) {
                 $user = $token->getUser();
-                if ($user instanceof CafUser) {
+                if ($user instanceof User) {
                     $token = bin2hex(random_bytes(16));
-                    $user->setCookietokenUser($token);
+                    $user->setCookietoken($token);
                     $this->locator->get(EntityManagerInterface::class)->flush();
 
-                    $responseEvent->getResponse()->headers->setCookie(Cookie::create('cafuser', sprintf('%d-%s', $user->getIdUser(), $token)));
+                    $responseEvent->getResponse()->headers->setCookie(Cookie::create('cafuser', sprintf('%d-%s', $user->getId(), $token)));
                 }
             }
         }

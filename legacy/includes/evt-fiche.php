@@ -30,7 +30,7 @@ if (!$evt) {
 		</h1>';
 
     // j'en suis l'auteur mais elle est passée ? Rédiger un compte rendu
-    if (user() && $evt['user_evt'] == (string) getUser()->getIdUser() && $evt['tsp_end_evt'] < time()) {
+    if (user() && $evt['user_evt'] == (string) getUser()->getId() && $evt['tsp_end_evt'] < time()) {
         ?>
 		<a href="article-new.html?compterendu=true&amp;commission_article=-1&amp;evt_article=<?php echo $evt['id_evt']; ?>&amp;titre_article=<?php echo urlencode('Compte rendu de sortie : '.$evt['titre_evt']); ?>" title="Vous êtes l'auteur de cette sortie ? Rédigez un petit compte rendu !" class="nice2 noprint">
 			<img src="/img/base/pencil_add.png" alt="" title="" style="" />
@@ -47,7 +47,7 @@ if (!$evt) {
     if (
         (
             allowed('evt_print', 'commission:'.$current_commission)
-            || (user() && is_array($ids_encadrants) && in_array((string) getUser()->getIdUser(), $ids_encadrants, true))
+            || (user() && is_array($ids_encadrants) && in_array((string) getUser()->getId(), $ids_encadrants, true))
         ) && '1' != $evt['cancelled_evt']
     ) {
         ?>
@@ -67,10 +67,10 @@ if (!$evt) {
 
     /* imprimer la fiche de destination */
     if (isset($destination) && (allowed('destination_print')
-            || (user() && $destination['id_user_who_create'] == getUser()->getIdUser())
-            || (user() && $destination['id_user_responsable'] == getUser()->getIdUser())
-            || (user() && $destination['id_user_adjoint'] == getUser()->getIdUser())
-            || (user() && in_array((string) getUser()->getIdUser(), get_all_encadrants_destination($destination['id']), true)) // je suis l'un des co/encadrant de l'une des sorties
+            || (user() && $destination['id_user_who_create'] == getUser()->getId())
+            || (user() && $destination['id_user_responsable'] == getUser()->getId())
+            || (user() && $destination['id_user_adjoint'] == getUser()->getId())
+            || (user() && in_array((string) getUser()->getId(), get_all_encadrants_destination($destination['id']), true)) // je suis l'un des co/encadrant de l'une des sorties
         )) {
         ?>
             <a href="<?php echo 'feuille-de-sortie/dest-'.(int) ($destination['id']).'.html'; ?>" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
@@ -154,7 +154,7 @@ if (!$evt) {
             }
         } ?>
 
-        <?php if (user() && user_in_destination((string) getUser()->getIdUser(), $destination['id'])) { ?>
+        <?php if (user() && user_in_destination((string) getUser()->getId(), $destination['id'])) { ?>
             <div class="note mr10 bbox">
                 <p>Je suis inscrit à une sortie de cette destination. Je souhaite connaissance des personnes inscrites
                     et je peux organiser mon covoiturage vers les lieux de ramassage des bus et vers les lieux de départ des sorties.</p>
@@ -569,7 +569,7 @@ if (!$evt) {
 
             if (
                 $nPlacesRestantesOnline > 0
-                    || (user() && in_array((string) getUser()->getIdUser(), $acces_au_module, true))
+                    || (user() && in_array((string) getUser()->getId(), $acces_au_module, true))
             ) {
                 require __DIR__.'/../includes/evt/user_inscription.php';
             } else {

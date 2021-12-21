@@ -16,9 +16,9 @@
             $list .= $list_elt;
         } else {
             if (
-                (user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser())
-                || (user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser())
-                || (user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser())) {
+                (user() && $destination['id_user_who_create'] == (string) getUser()->getId())
+                || (user() && $destination['id_user_who_create'] == (string) getUser()->getId())
+                || (user() && $destination['id_user_who_create'] == (string) getUser()->getId())) {
                 $list .= $list_elt;
             }
         }

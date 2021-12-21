@@ -54,7 +54,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     WHERE id_article = $id_article
     "
     // on verifie si on est l'auteur que si on a pas le droit de modifier TOUS les articles
-    .(allowed('article_edit_notmine') ? '' : ' AND user_article = '.getUser()->getIdUser())
+    .(allowed('article_edit_notmine') ? '' : ' AND user_article = '.getUser()->getId())
     ;
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';

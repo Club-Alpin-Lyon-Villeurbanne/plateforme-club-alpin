@@ -18,7 +18,7 @@ $suis_encadrant = false;
 $req = "SELECT COUNT(id_evt_join)
 FROM caf_evt_join
 WHERE evt_evt_join=$id_evt
-AND user_evt_join = ".getUser()->getIdUser()."
+AND user_evt_join = ".getUser()->getId()."
 AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant')
 LIMIT 1";
 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -29,7 +29,7 @@ if ($row[0] > 0) {
 
 // suis-je l'auteur de cette sortie ?
 $suis_auteur = false;
-$req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND user_evt = ".getUser()->getIdUser().' LIMIT 1';
+$req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND user_evt = ".getUser()->getId().' LIMIT 1';
 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $row = $result->fetch_row();
 if ($row[0] > 0) {
@@ -134,7 +134,7 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
                     // update inscription
                     $req = 'UPDATE caf_evt_join
                         SET lastchange_when_evt_join = '.time().'
-                        , lastchange_who_evt_join = '.getUser()->getIdUser();
+                        , lastchange_who_evt_join = '.getUser()->getId();
 
                     // s'il y a modification : update et envoi de mail
                     if ('' !== $status_evt_join_new && ($status_evt_join_new != $status_evt_join)) {
