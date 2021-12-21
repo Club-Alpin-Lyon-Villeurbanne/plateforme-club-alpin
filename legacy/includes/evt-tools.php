@@ -4,7 +4,7 @@ if ($evt) {
     echo '<div class="evt-tools">'
 
         // APERCU : je suis l'auteur et cet événement n'a pas encore été publié :
-        .(user() && $evt['user_evt'] == (string) getUser()->getIdUser() && 1 != $evt['status_evt'] ? '<a class="nice2" href="sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html?forceshow=true'.($current_commission ? '&amp;commission='.$current_commission : '').'" title="Aperçu de la page dédiée à la sortie ci-dessous">Aperçu</a>' : '')
+        .(user() && $evt['user_evt'] == (string) getUser()->getId() && 1 != $evt['status_evt'] ? '<a class="nice2" href="sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html?forceshow=true'.($current_commission ? '&amp;commission='.$current_commission : '').'" title="Aperçu de la page dédiée à la sortie ci-dessous">Aperçu</a>' : '')
 
         // MODIFIER : J'ai le droit de modifier les evts de cette commission :
         .(allowed('evt_edit', 'commission:'.$evt['code_commission']) ? '<a class="nice2 orange" href="creer-une-sortie/'.html_utf8($evt['code_commission']).'/update-'.(int) ($evt['id_evt']).'.html" title="Modifier la sortie ci-dessous et les encadrants liés">Modifier</a>' : '')

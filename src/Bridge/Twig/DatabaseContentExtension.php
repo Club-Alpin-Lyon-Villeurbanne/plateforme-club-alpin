@@ -2,10 +2,10 @@
 
 namespace App\Bridge\Twig;
 
-use App\Entity\CafUser;
+use App\Entity\User;
 use App\Notifications;
-use App\Repository\CafCommissionRepository;
-use App\Repository\CafContentInlineRepository;
+use App\Repository\CommissionRepository;
+use App\Repository\ContentInlineRepository;
 use Psr\Container\ContainerInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use Twig\Extension\AbstractExtension;
@@ -23,8 +23,8 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
     public static function getSubscribedServices()
     {
         return [
-            CafContentInlineRepository::class,
-            CafCommissionRepository::class,
+            ContentInlineRepository::class,
+            CommissionRepository::class,
             Notifications::class,
         ];
     }
@@ -72,9 +72,9 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
 
     public function getDbContent(string $type): ?string
     {
-        foreach ($this->locator->get(CafContentInlineRepository::class)->findAll() as $cafContentInline) {
-            if ($cafContentInline->getCodeContentInline() === $type) {
-                return $cafContentInline->getContenuContentInline();
+        foreach ($this->locator->get(ContentInlineRepository::class)->findAll() as $cafContentInline) {
+            if ($cafContentInline->getCode() === $type) {
+                return $cafContentInline->getContenu();
             }
         }
 
@@ -87,8 +87,8 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
             return null;
         }
 
-        if ($commission = $this->locator->get(CafCommissionRepository::class)->findVisibleCommission($code)) {
-            return $commission->getTitleCommission();
+        if ($commission = $this->locator->get(CommissionRepository::class)->findVisibleCommission($code)) {
+            return $commission->getTitle();
         }
 
         return null;
@@ -96,13 +96,13 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
 
     public function getCommissions(): iterable
     {
-        return iterator_to_array($this->locator->get(CafCommissionRepository::class)->findVisible());
+        return iterator_to_array($this->locator->get(CommissionRepository::class)->findVisible());
     }
 
     public function getCommissionPicto(string $code = null, string $style = null): string
     {
-        if ($code && $commission = $this->locator->get(CafCommissionRepository::class)->findVisibleCommission($code)) {
-            $id = $commission->getIdCommission();
+        if ($code && $commission = $this->locator->get(CommissionRepository::class)->findVisibleCommission($code)) {
+            $id = $commission->getId();
         } else {
             $id = 0;
         }
@@ -126,7 +126,7 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         return $rel;
     }
 
-    public function getUserPicto(CafUser $user, $style = '')
+    public function getUserPicto(User $user, $style = '')
     {
         switch ($style) {
             case 'pic':
@@ -138,7 +138,7 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
                 break;
         }
 
-        $rel = '/ftp/user/'.$user->getIdUser().'/'.$style.'profil.jpg';
+        $rel = '/ftp/user/'.$user->getId().'/'.$style.'profil.jpg';
 
         if (!file_exists(__DIR__.'/../../../public'.$rel)) {
             $rel = '/ftp/user/0/'.$style.'profil.jpg';

@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 
 if ('evt_create' == ($_POST['operation'] ?? null)) {
-    $user_evt = getUser()->getIdUser();
+    $user_evt = getUser()->getId();
     $tsp_crea_evt = time();
     $benevoles = is_array($_POST['benevoles']) ? $_POST['benevoles'] : [];
 }
