@@ -71,10 +71,17 @@ services:
       arguments:
         $adminPassord: '%env(PASSWORD_ADMIN)%'
 
+    App\Repository\EvtRepository:
+        arguments:
+            $maxSortiesAccueil: '%env(int:MAX_SORTIES_ACCUEIL)%'
+
     App\EventListener\ForceHttpsListener:
       arguments:
         $routerContextScheme: '%env(ROUTER_CONTEXT_SCHEME)%'
         $routerContextHost: '%env(ROUTER_CONTEXT_HOST)%'
+
+    Symfony\Component\String\Slugger\SluggerInterface:
+        class: Symfony\Component\String\Slugger\AsciiSlugger
 
     # services used in legacy
     legacy_router:
