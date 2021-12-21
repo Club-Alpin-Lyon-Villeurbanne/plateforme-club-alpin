@@ -1,5 +1,7 @@
 <?php
 
+use App\Ftp\FtpFile;
+use App\Legacy\ImageManipulator;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 require __DIR__.'/../app/includes.php';
@@ -45,13 +47,10 @@ if (admin()) {
         if (!is_file($srcImg)) {
             $errTab[] = "Image introuvable : $srcImg";
         } else {
-            // include APP.'redims.php';
-            // utilisable ?
-            // $ext=strtolower(array_pop(explode('.', $srcImg)));
             $ext = strtolower(substr(strrchr($srcImg, '.'), 1));
-            if ('jpg' == $ext || 'jpeg' == $ext || 'png' == $ext) {
+            if (in_array($ext, FtpFile::getAllowedImagesExtension(), true)) {
                 // dimensions de la source
-                $size = getimagesize($srcImg);
+                $size = ImageManipulator::getImageSize($srcImg);
                 $wSource = $size[0];
                 $hSource = $size[1];
                 // vars
@@ -59,18 +58,6 @@ if (admin()) {
                 $filename = substr($srcImg, strrpos($srcImg, '/') + 1);
                 $log .= "\n\n dir=$dir";
                 $log .= "\n\n filename=$filename";
-
-                /*
-                // vars 1
-                $W_max=$wDestNocrop;
-                $H_max=$hDestNocrop;
-                $rep_Dst=$dir;
-                $img_Dst= $preview?'preview-'.$filename:$filename;
-                $rep_Src=$dir;
-                $img_Src=$filename;
-                // crop
-                // if(!fctcropimage($W_fin, $H_fin, $rep_Dst, $img_Dst, $rep_Src, $img_Src))				$errTab[]="Image : Erreur de crop";
-                */
 
                 // resize/crop manuel
                 $phpImage = imagecreatetruecolor($wDestNocrop, $hDestNocrop);

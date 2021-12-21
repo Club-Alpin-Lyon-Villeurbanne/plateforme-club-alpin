@@ -16,6 +16,11 @@ class FtpFile
 
     public static function getAllowedExtensions(): array
     {
-        return ['gpx', 'kml', 'kmz', 'jpg', 'gif', 'jpeg', 'png', 'doc', 'docx', 'odt', 'pdf', 'avi', 'mov', 'mp3', 'rar', 'zip', 'txt', 'xls', 'csv', 'ppt', 'pptx', 'ai', 'psd', 'fla', 'swf', 'eps'];
+        return ['gpx', 'kml', 'kmz', 'jpg', 'gif', 'jpeg', 'bmp', 'webp', 'png', 'doc', 'docx', 'odt', 'pdf', 'avi', 'mov', 'mp3', 'rar', 'zip', 'txt', 'xls', 'csv', 'ppt', 'pptx', 'ai', 'psd', 'fla', 'swf', 'eps'];
+    }
+
+    public static function getAllowedImagesExtension(): array
+    {
+        return ['jpeg', 'jpg', 'gif', 'png', 'bmp', 'webp'];
     }
 }

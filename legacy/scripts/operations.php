@@ -315,7 +315,7 @@ if ('user_reset' == ($_POST['operation'] ?? null)) {
     } else {
         $req = "UPDATE caf_user
 				SET valid_user =  '0',
-				email_user =  '',
+				email_user = NULL,
 				mdp_user =  ''
 				WHERE caf_user.id_user =$id_user";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {

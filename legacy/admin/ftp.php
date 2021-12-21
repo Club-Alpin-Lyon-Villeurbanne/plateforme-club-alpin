@@ -51,7 +51,7 @@ if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier,
 		<!-- jquery -->
 		<script type="text/javascript" src="/js/jquery-1.5.2.min.js"></script>
 		<script type="text/javascript" src="/js/fonctionsAdmin.js"></script>
-		<script type="text/javascript" src="ftp.js"></script>
+		<script type="text/javascript" src="/admin/ftp.js"></script>
 		<!-- fancybox -->
 		<script type="text/javascript" src="/tools/fancybox/jquery.fancybox.pack.js" charset="utf-8"></script>
 		<!-- <script type="text/javascript" src="/tools/fancybox/jquery.mousewheel-3.0.4.pack.js" charset="utf-8"></script> -->
