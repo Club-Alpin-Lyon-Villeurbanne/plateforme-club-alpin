@@ -1,5 +1,7 @@
 <?php
 
+use App\Legacy\ImageManipulator;
+
 require __DIR__.'/../../app/includes.php';
 
 $errTab = [];
@@ -59,19 +61,8 @@ if (0 === count($errTab)) {
 
     // redimensionnement des images
     if (0 === count($errTab)) {
-        $size = getimagesize($targetDir.$filename);
-        if ($size[0] > 600 || $size[1] > 800) {
-            require __DIR__.'/../../app/redims.php';
-            $W_max = 600;
-            $H_max = 800;
-            $rep_Dst = $targetDir;
-            $img_Dst = $filename;
-            $rep_Src = $targetDir;
-            $img_Src = $filename;
-            // redim 1
-            if (!resizeImage($W_max, $H_max, $rep_Src.$img_Src, $rep_Dst.$img_Dst)) {
-                $errTab[] = 'Image : Erreur de redim';
-            }
+        if (!ImageManipulator::resizeImage(600, 800, $targetDir.$filename, $targetDir.$filename, true)) {
+            $errTab[] = 'Image : Erreur de redim';
         }
     }
 }

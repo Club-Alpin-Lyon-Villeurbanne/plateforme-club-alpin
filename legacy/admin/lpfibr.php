@@ -207,7 +207,7 @@ if (admin()) {
     $extTab = [];
     // extensions autorisées ici en fonction du type demandé
     if ('image' == $type) {
-        $extTab = ['jpg', 'jpeg', 'png'];
+        $extTab = FtpFile::getAllowedImagesExtension();
     } elseif ('file' == $type) {
         $extTab = FtpFile::getAllowedExtensions();
     }
@@ -253,7 +253,8 @@ if (admin()) {
                             case 'jpg':
                             case 'png':
                             case 'gif':
-                            case 'JPEG':
+                            case 'bmp':
+                            case 'webp':
                             case 'jpeg': $icon = '/img/base/image.png'; break;
                             // TTT DE TEXTES
                             case 'odt': $icon = '/img/base/OOffice.jpg'; break;

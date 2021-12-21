@@ -1,5 +1,6 @@
 <?php
 
+use App\Legacy\ImageManipulator;
 use App\Legacy\LegacyContainer;
 
 require __DIR__.'/../../app/includes.php';
@@ -40,19 +41,10 @@ if (admin()) {
             }
         }
     }
-    $ext = strtolower(substr(strrchr($filename, '.'), 1));
 
-    // redimensionnement des images
-    if ((!isset($errTab) || 0 === count($errTab)) && ('jpg' == $ext || 'jpeg' == $ext || 'png' == $ext)) {
-        $size = getimagesize($targetDir.$filename);
-        if ($size[0] > $MAX_DIMS || $size[1] > $MAX_DIMS) {
-            include __DIR__.'/../../app/redims.php';
-            $W_max = $MAX_DIMS;
-            $H_max = $MAX_DIMS;
-            // redim 1
-            if (!resizeImage($W_max, $H_max, $targetDir.$filename, $targetDir.$filename)) {
-                $errTab[] = 'Image : Erreur de redim';
-            }
+    if (!isset($errTab) || 0 === count($errTab)) {
+        if (!ImageManipulator::resizeImage($MAX_DIMS, $MAX_DIMS, $targetDir.$filename, $targetDir.$filename, true)) {
+            $errTab[] = 'Image : Erreur de redim';
         }
     }
 
