@@ -222,7 +222,7 @@ if (user()) {
 
     // restrion au type image
     if ('image' === $type) {
-        $extTab = ['jpg', 'jpeg', 'png'];
+        $extTab = FtpFile::getAllowedImagesExtension();
     } else {
         $extTab = FtpFile::getAllowedExtensions();
     }
@@ -254,6 +254,8 @@ if (user()) {
                             case 'png':
                             case 'gif':
                             case 'jpeg':
+                            case 'bmp':
+                            case 'webp':
                                 $icon = '/img/base/image.png';
                                 break;
                             case 'odt':

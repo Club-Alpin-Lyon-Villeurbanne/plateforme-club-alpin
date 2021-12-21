@@ -10,6 +10,8 @@
         'jpeg' => 'image/jpg',
         'gif' => 'image/gif',
         'png' => 'image/png',
+        'webp' => 'image/webp',
+        'bpm' => 'image/bpm',
     ];
 
     $image = __DIR__.'/../config/'.$_SERVER['HTTP_HOST'].'/img/'.$_GET['cstImg'];

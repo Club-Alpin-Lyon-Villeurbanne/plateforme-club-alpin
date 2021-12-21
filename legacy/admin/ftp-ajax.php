@@ -1,6 +1,7 @@
 <?php
 
 use App\Ftp\FtpFile;
+use App\Legacy\ImageManipulator;
 
 require __DIR__.'/../app/includes.php';
 
@@ -46,7 +47,7 @@ if (0 === count($errTab)) {
             $tmp['filemtime'] = filemtime($dossier.$file);
             $tmp['filetype'] = filetype($dossier.$file);
             $tmp['ext'] = substr(strrchr($file, '.'), 1);
-            $imgDim = getimagesize($dossier.$file);
+            $imgDim = ImageManipulator::getImageSize($dossier.$file);
             $tmp['imgw'] = (int) ($imgDim[0]);
             $tmp['imgh'] = (int) ($imgDim[1]);
             // $tmp['stat']=stat($dossier.$file);

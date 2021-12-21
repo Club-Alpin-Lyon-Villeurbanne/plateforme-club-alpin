@@ -351,7 +351,7 @@ elseif ('gestion-des-articles' == $p1 && (allowed('article_validate_all') || all
 		ORDER BY topubly_article desc,  tsp_validate_article ASC
 		LIMIT '.($limite * ($pagenum - 1)).", $limite";
     }
-    $articleStandby = [];
+    $articleStandby = $articleStandbyRedac = [];
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {

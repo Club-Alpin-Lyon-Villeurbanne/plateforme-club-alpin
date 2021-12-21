@@ -1,5 +1,7 @@
 <?php
 
+use App\Ftp\FtpFile;
+use App\Legacy\ImageManipulator;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 require __DIR__.'/../app/includes.php';
@@ -45,13 +47,10 @@ if (admin()) {
         if (!is_file($srcImg)) {
             $errTab[] = "Image introuvable : $srcImg";
         } else {
-            // include APP.'redims.php';
-            // utilisable ?
-            // $ext=strtolower(array_pop(explode('.', $srcImg)));
             $ext = strtolower(substr(strrchr($srcImg, '.'), 1));
-            if ('jpg' == $ext || 'jpeg' == $ext || 'png' == $ext) {
+            if (in_array($ext, FtpFile::getAllowedImagesExtension(), true)) {
                 // dimensions de la source
-                $size = getimagesize($srcImg);
+                $size = ImageManipulator::getImageSize($srcImg);
                 $wSource = $size[0];
                 $hSource = $size[1];
                 // vars
