@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Commission;
 use App\Entity\Evt;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -14,9 +15,12 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class EvtRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private int $maxSortiesAccueil;
+
+    public function __construct(ManagerRegistry $registry, int $maxSortiesAccueil)
     {
         parent::__construct($registry, Evt::class);
+        $this->maxSortiesAccueil = $maxSortiesAccueil;
     }
 
     public function getUnvalidatedEvt(array $commissions = [])
@@ -53,5 +57,27 @@ class EvtRepository extends ServiceEntityRepository
             'datemin' => time(),
             'datemax' => strtotime('midnight +8 days'),
         ]);
+    }
+
+    public function getUpcomingEvents(?Commission $commission)
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->select('e, c')
+            ->leftJoin('e.commission', 'c')
+            ->where('e.status > 0')
+            ->andWhere('e.tsp > :date')
+            ->setParameter('date', time())
+            ->orderBy('e.tsp', 'asc')
+            ->setMaxResults($this->maxSortiesAccueil)
+        ;
+
+        if ($commission) {
+            $qb = $qb->andWhere('c.idCommission = :commission_id')
+                ->setParameter('commission_id', $commission->getIdCommission());
+        }
+
+        return $qb
+            ->getQuery()
+            ->getResult();
     }
 }
