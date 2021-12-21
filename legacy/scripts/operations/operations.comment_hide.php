@@ -23,7 +23,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
 // verif de droits
 if (!isset($errTab) || 0 === count($errTab)) {
-    if ($comment['user_comment'] != (string) getUser()->getIdUser() && !allowed('comment_delete_any')) {
+    if ($comment['user_comment'] != (string) getUser()->getId() && !allowed('comment_delete_any')) {
         $errTab[] = "<p class='erreur'>Vous n'avez pas les droits pour supprimer ce commentaire.</p>";
     }
 }

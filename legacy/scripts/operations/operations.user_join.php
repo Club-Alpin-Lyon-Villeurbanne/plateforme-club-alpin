@@ -26,7 +26,7 @@ if ('on' == $_POST['filiations']) {
 
 // Evenement défini et utilisateur aussi
 $id_evt = (int) ($_POST['id_evt']);
-$id_user = getUser()->getIdUser();
+$id_user = getUser()->getId();
 if (!$id_user || !$id_evt) {
     $errTab[] = 'Erreur de données';
 }
@@ -53,8 +53,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
         foreach ($_POST['id_user_filiation'] as $id_user_tmp) {
             // vérification que c'est bien mon affilié
             // sauf moi-meme
-            if ($id_user_tmp != getUser()->getIdUser()) {
-                $req = "SELECT COUNT(id_user) FROM caf_user WHERE cafnum_parent_user LIKE '".LegacyContainer::get('legacy_mysqli_handler')->escapeString(getUser()->getCafnumUser())."' AND id_user=".(int) $id_user_tmp;
+            if ($id_user_tmp != getUser()->getId()) {
+                $req = "SELECT COUNT(id_user) FROM caf_user WHERE cafnum_parent_user LIKE '".LegacyContainer::get('legacy_mysqli_handler')->escapeString(getUser()->getCafnum())."' AND id_user=".(int) $id_user_tmp;
                 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 $row = $result->fetch_row();
                 if (!$row[0]) {
@@ -363,8 +363,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // E-MAIL AU PRE-INSCRIT
     if (!isset($errTab) || 0 === count($errTab)) {
-        $toMail = getUser()->getEmailUser();
-        $toName = getUser()->getFirstnameUser();
+        $toMail = getUser()->getEmail();
+        $toName = getUser()->getFirstname();
 
         // contenu
 
@@ -409,7 +409,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             ";
         } else {
             // je n'inscrit que moi
-            if (1 == count($inscrits) && $inscrits[0]['id_user'] == getUser()->getIdUser()) {
+            if (1 == count($inscrits) && $inscrits[0]['id_user'] == getUser()->getId()) {
                 $content_main = "<h2>$subject</h2>
                     <p>
                         Bonjour $toName,<br />

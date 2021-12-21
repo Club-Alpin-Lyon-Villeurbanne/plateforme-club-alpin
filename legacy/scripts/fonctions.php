@@ -137,7 +137,7 @@ function get_niveaux($id_user, $editable = false)
     }
 
     // A t'on les droits de lecture ou les informations nous concernent-elles personnellement ?
-    if (false == $editable && (LegacyContainer::get('legacy_user_rights')->allowed('user_note_comm_read') || (user() && $id_user == (string) getUser()->getIdUser()))) {
+    if (false == $editable && (LegacyContainer::get('legacy_user_rights')->allowed('user_note_comm_read') || (user() && $id_user == (string) getUser()->getId()))) {
         $req = 'SELECT `id_commission` FROM `caf_commission` ';
         $comms = LegacyContainer::get('legacy_user_rights')->getCommissionListForRight('user_note_comm_read');
 
@@ -653,7 +653,7 @@ function mon_inscription($id_evt)
     $my_choices = false;
 
     if (user()) {
-        $req = "SELECT * FROM `caf_evt_join` WHERE `evt_evt_join` = $id_evt AND `user_evt_join` = ".getUser()->getIdUser().' LIMIT 1;';
+        $req = "SELECT * FROM `caf_evt_join` WHERE `evt_evt_join` = $id_evt AND `user_evt_join` = ".getUser()->getId().' LIMIT 1;';
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $my_choices = $row;
@@ -825,7 +825,7 @@ function get_future_destinations($can_modify = false, $for_event_creation = fals
         if (allowed('destination_supprimer') || allowed('destination_modifier') || allowed('destination_activer_desactiver')) {
             $req .= '';
         } else {
-            $mon_id = LegacyContainer::get('legacy_mysqli_handler')->escapeString(getUser()->getIdUser());
+            $mon_id = LegacyContainer::get('legacy_mysqli_handler')->escapeString(getUser()->getId());
             $req .= ' AND (id_user_who_create = '.$mon_id.'  OR id_user_responsable = '.$mon_id.' OR id_user_adjoint = '.$mon_id.')';
         }
     }

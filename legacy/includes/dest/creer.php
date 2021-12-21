@@ -41,7 +41,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
     ?>
 
     <?php if (!isset($_POST['id_user_responsable']) && user()) {
-        $_POST['id_user_responsable'] = (string) getUser()->getIdUser();
+        $_POST['id_user_responsable'] = (string) getUser()->getId();
     } ?>
 
     <?php if ($id_dest_to_update) {
@@ -52,7 +52,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
         <input type="hidden" name="operation"
                value="<?php echo $id_dest_to_update ? 'dest_update' : 'dest_create'; ?>"/>
         <?php /* Création */ if (!$id_dest_to_update) { ?>
-            <input type="hidden" name="id_user_who_create" value="<?php echo user() ? (string) getUser()->getIdUser() : null; ?>"/>
+            <input type="hidden" name="id_user_who_create" value="<?php echo user() ? (string) getUser()->getId() : null; ?>"/>
         <?php } ?>
         <?php /* Modification */ if ($id_dest_to_update) { ?>
             <input type="hidden" name="id_dest_to_update" value="<?php echo (int) $id_dest_to_update; ?>"/>

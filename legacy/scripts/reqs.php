@@ -121,7 +121,7 @@ if (user()) {
 // PROFIL : infos generales, d'avantage d'info que dans la session seule
 if ('profil' == $p1 && 'infos' == $p2 && getUser()) {
     $tmpUser = false;
-    $req = 'SELECT * FROM caf_user WHERE id_user='.getUser()->getIdUser().' LIMIT 1';
+    $req = 'SELECT * FROM caf_user WHERE id_user='.getUser()->getId().' LIMIT 1';
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // filiation : ais-je des "enfants"
@@ -159,7 +159,7 @@ elseif ('profil' == $p1 && 'articles' == $p2) {
 
     $articleTab = [];
     $req = 'SELECT SQL_CALC_FOUND_ROWS * FROM caf_article
-			WHERE user_article = '.getUser()->getIdUser().'
+			WHERE user_article = '.getUser()->getId().'
 			ORDER BY tsp_crea_article DESC LIMIT '.($limite * ($pagenum - 1)).", $limite";
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
@@ -212,7 +212,7 @@ elseif ('article' == $p1) {
         // on a le droit de voir cet article ?
         if (1 == $handle['status_article'] // publié
             || ((allowed('article_validate_all') || allowed('article_validate')) && $_GET['forceshow']) // ou mode validateur
-            || (user() && $handle['user_article'] == (string) getUser()->getIdUser()) // ou j'en suis l'auteur
+            || (user() && $handle['user_article'] == (string) getUser()->getId()) // ou j'en suis l'auteur
             ) {
             // auteur :
             $req = 'SELECT id_user, nickname_user
@@ -731,7 +731,7 @@ elseif ('creer-une-sortie' == $p1) {
             $req = 'SELECT  id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
 						, title_commission, code_commission
 				FROM caf_evt, caf_commission
-				WHERE user_evt = '.getUser()->getIdUser()."
+				WHERE user_evt = '.getUser()->getId()."
 				AND cycle_master_evt=1
 				AND id_commission = commission_evt
 				AND code_commission = '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2)."'
@@ -845,7 +845,7 @@ elseif ('creer-une-sortie' == $p1) {
                         $req = 'SELECT id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
 				FROM caf_evt, caf_commission
 				WHERE id_evt='.$handle['cycle_parent_evt'].'
-				AND user_evt != '.getUser()->getIdUser().'
+				AND user_evt != '.getUser()->getId().'
 				AND cycle_master_evt=1
 				ORDER BY tsp_evt DESC
 				LIMIT 1';
@@ -928,9 +928,9 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     $handle['cancelled_evt'] = 1;
                 }
                 // ou je suis responsable de la destination
-                if ((user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser())
-                        || (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser())
-                        || (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
+                if ((user() && $destination['id_user_who_create'] == (string) getUser()->getId())
+                        || (user() && $destination['id_user_responsable'] == (string) getUser()->getId())
+                        || (user() && $destination['id_user_adjoint'] == (string) getUser()->getId())
                 ) {
                     $on_peut_voir = true;
                 }
@@ -941,7 +941,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                 ($on_peut_voir && (1 == $handle['status_evt'])) // publiée
                 || (allowed('evt_validate') && $_GET['forceshow']) // ou mode validateur
                 || (allowed('evt_validate_all') && $_GET['forceshow']) // ou mode validateur
-                || (user() && $handle['user_evt'] == (string) getUser()->getIdUser()) // ou j'en suis l'auteur ? QUID de l'encadrant ?
+                || (user() && $handle['user_evt'] == (string) getUser()->getId()) // ou j'en suis l'auteur ? QUID de l'encadrant ?
             ) {
                 $current_commission = $handle['code_commission'];
 
@@ -1056,7 +1056,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                 if (user()) {
                     $req = "SELECT * FROM caf_evt_join
                         WHERE evt_evt_join=$id_evt
-                        AND user_evt_join=".getUser()->getIdUser().'
+                        AND user_evt_join=".getUser()->getId().'
                         ORDER BY tsp_evt_join DESC
                         LIMIT 1';
                     $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -1110,8 +1110,8 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
 
                     // si je suis chef de famille (filiations) je rajoute la liste de mes "enfants" pour les inscrire
                     $filiations = [];
-                    if (user() && getUser()->getCafnumUser()) {
-                        $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, civ_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_parent_user LIKE '".LegacyContainer::get('legacy_mysqli_handler')->escapeString(getUser()->getCafnumUser())."' LIMIT 15";
+                    if (user() && getUser()->getCafnum()) {
+                        $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, civ_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_parent_user LIKE '".LegacyContainer::get('legacy_mysqli_handler')->escapeString(getUser()->getCafnum())."' LIMIT 15";
                         $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                             $filiations[] = $handle2;
@@ -1144,14 +1144,14 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
             ('destination' == $p1 || 'feuille-de-sortie' == $p1) && '1' === $dest['publie'] // Correctif CRI le 23/08/15
             || (
                 user() &&
-                ((user() && $dest['id_user_who_create'] == (string) getUser()->getIdUser()) // ou j'en suis l'auteur
-                    || (user() && $dest['id_user_responsable'] == (string) getUser()->getIdUser()) // ou j'en le resp.
-                    || (user() && $dest['id_user_adjoint'] == (string) getUser()->getIdUser()) // ou j'en suis le coresp.
+                ((user() && $dest['id_user_who_create'] == (string) getUser()->getId()) // ou j'en suis l'auteur
+                    || (user() && $dest['id_user_responsable'] == (string) getUser()->getId()) // ou j'en le resp.
+                    || (user() && $dest['id_user_adjoint'] == (string) getUser()->getId()) // ou j'en suis le coresp.
                     || (allowed('destination_activer_desactiver') && $_GET['forceshow']) // ou mode validateur
                     || (allowed('destination_supprimer') && $_GET['forceshow']) // ou mode validateur
                     || (allowed('destination_modifier') && $_GET['forceshow']) // ou mode validateur
                     || (admin() || superadmin()) // ou mode validateur
-                    || (user() && in_array((string) getUser()->getIdUser(), get_all_encadrants_destination($id_destination), true)) // je suis l'un des co/encadrant de l'une des sorties
+                    || (user() && in_array((string) getUser()->getId(), get_all_encadrants_destination($id_destination), true)) // je suis l'un des co/encadrant de l'une des sorties
                 )
             )
         ) {
@@ -1171,8 +1171,8 @@ elseif ('annuler-une-sortie' == $p1) {
         $id_destination = (int) (substr(strrchr($p3, '-'), 1));
         $destination = get_destination($id_destination);
         if (allowed('destination_supprimer')
-            || (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser())
-            || (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
+            || (user() && $destination['id_user_responsable'] == (string) getUser()->getId())
+            || (user() && $destination['id_user_adjoint'] == (string) getUser()->getId())
         ) {
             $destination['joins'] = [];
             $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user

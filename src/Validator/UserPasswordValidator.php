@@ -2,7 +2,7 @@
 
 namespace App\Validator;
 
-use App\Entity\CafUser;
+use App\Entity\User;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
@@ -40,11 +40,11 @@ class UserPasswordValidator extends ConstraintValidator
         }
 
         $user = $this->security->getUser();
-        if (!$user instanceof CafUser) {
-            throw new ConstraintDefinitionException(sprintf('The User object must implement "%s".', CafUser::class));
+        if (!$user instanceof User) {
+            throw new ConstraintDefinitionException(sprintf('The User object must implement "%s".', User::class));
         }
 
-        if (!$this->hasherFactory->getPasswordHasher('login_form')->verify($user->getMdpUser(), $password, $user->getSalt())) {
+        if (!$this->hasherFactory->getPasswordHasher('login_form')->verify($user->getMdp(), $password, $user->getSalt())) {
             $this->context->addViolation($constraint->message);
         }
     }
