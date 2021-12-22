@@ -107,45 +107,7 @@
 
 	<!-- partie droite -->
 
-	<div id="right1">
-		<div class="right-light">
-			&nbsp; <!-- important -->
-			<?php
-            // PRESENTATION DE LA COMMISSINO
-            if (user()) {
-                inclure('presentation-'.($current_commission ?: 'general'), 'right-light-in');
-            }
-            // hors connexion : login
-            else {
-                ?>
-				<br />
-				<br />
-                <div style="padding:0 10px 0 20px;">
-                    <h1>Vous avez déja un compte ?</h1>
-
-                    <?php echo twigRender('login_form.html.twig'); ?>
-                </div>
-				<?php
-            }
-
-            // RECHERCHE
-            require __DIR__.'/../includes/recherche.php';
-            ?>
-		</div>
-
-
-		<div class="right-green">
-			<div class="right-green-in">
-
-				<?php
-                // AGENDA sur fond vert
-                require __DIR__.'/../includes/droite-agenda.php';
-                ?>
-
-			</div>
-		</div>
-
-	</div>
+    <?php require __DIR__.'/../includes/right-type-agenda.php'; ?>
 
 	<br style="clear:both" />
 </div>
