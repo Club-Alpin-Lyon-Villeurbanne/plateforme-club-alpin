@@ -2,10 +2,13 @@
 
 namespace App\Bridge\Twig;
 
+use App\Entity\Commission;
 use App\Entity\User;
 use App\Notifications;
 use App\Repository\CommissionRepository;
 use App\Repository\ContentInlineRepository;
+use App\Repository\EvtRepository;
+use App\Repository\PartenaireRepository;
 use Psr\Container\ContainerInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use Twig\Extension\AbstractExtension;
@@ -23,6 +26,8 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
     public static function getSubscribedServices()
     {
         return [
+            PartenaireRepository::class,
+            EvtRepository::class,
             ContentInlineRepository::class,
             CommissionRepository::class,
             Notifications::class,
@@ -36,6 +41,9 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
             new TwigFunction('commission_title', [$this, 'getCommissionTitle']),
             new TwigFunction('commission_picto', [$this, 'getCommissionPicto']),
             new TwigFunction('list_commissions', [$this, 'getCommissions']),
+            new TwigFunction('get_commission', [$this, 'getCommission']),
+            new TwigFunction('list_events', [$this, 'getEvents']),
+            new TwigFunction('list_partenaires', [$this, 'getPartenaires']),
             new TwigFunction('user_picto', [$this, 'getUserPicto']),
             new TwigFunction('notifications_counter', [$this, 'getNotificationsCounter']),
             new TwigFunction('notifications_counter_destinations', [$this, 'getNotificationsDestinations']),
@@ -43,6 +51,16 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
             new TwigFunction('notifications_counter_sorties', [$this, 'getNotificationsValidationSortie']),
             new TwigFunction('notifications_counter_sorties_president', [$this, 'getNotificationsValidationSortiePresident']),
         ];
+    }
+
+    public function getPartenaires(): iterable
+    {
+        return $this->locator->get(PartenaireRepository::class)->findEnabled();
+    }
+
+    public function getEvents(?Commission $commission): iterable
+    {
+        return $this->locator->get(EvtRepository::class)->getUpcomingEvents($commission);
     }
 
     public function getNotificationsCounter(): int
@@ -97,6 +115,11 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
     public function getCommissions(): iterable
     {
         return iterator_to_array($this->locator->get(CommissionRepository::class)->findVisible());
+    }
+
+    public function getCommission(?string $code): ?Commission
+    {
+        return $this->locator->get(CommissionRepository::class)->findVisibleCommission($code);
     }
 
     public function getCommissionPicto(string $code = null, string $style = null): string

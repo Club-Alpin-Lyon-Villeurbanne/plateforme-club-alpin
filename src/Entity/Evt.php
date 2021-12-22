@@ -410,12 +410,12 @@ class Evt
         return $this;
     }
 
-    public function getTsp(): ?string
+    public function getTsp(): ?int
     {
         return $this->tsp;
     }
 
-    public function setTsp(string $tsp): self
+    public function setTsp(int $tsp): self
     {
         $this->tsp = $tsp;
 

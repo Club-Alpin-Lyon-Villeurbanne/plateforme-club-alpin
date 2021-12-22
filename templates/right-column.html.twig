@@ -1,0 +1,94 @@
+{% if current_commission is not defined %}
+    {% set current_commission = null %}
+{% endif %}
+<div id="right1">
+    <div class="right-light">
+        &nbsp; {# important #}
+        {{ easy_include('presentation-' ~ (current_commission ?: 'general'), 'right-light-in') }}
+
+        <script type="text/javascript" src="/js/slidesjs/jquery.slides.min.js"></script>
+
+        <div class="right-light-in">
+            {% set partenaires = list_partenaires() %}
+
+            {% if partenaires | length > 0 %}
+                <h1 class="partenaires-h1"><a href="/pages/nos-partenaires-prives.html" title="nos partenaires">nos partenaires</a></h1>
+                <div id="slider-partenaires">
+
+                    <div id="slides">
+                        {% for partenaire in partenaires %}
+                            <a target="_blank" href="/goto/partenaire/{{ partenaire.getId }}/{{ partenaire.getName | slugify }}.html">
+                                <img src="/ftp/partenaires/{{ partenaire.getImage }}" alt="{{ partenaire.getName }}">
+                            </a>
+                        {% endfor %}
+                    </div>
+
+                    <script type="text/javascript">
+                        $(function(){
+                            if ($("#slides > a").length > 1) {
+                                $("#slides").slidesjs({
+                                    start: 1,
+                                    width: 270,
+                                    height: 110,
+                                    navigation: {active: false},
+                                    pagination: {active: false},
+                                    play: {active: false,effect: "slide",auto: true}
+                                });
+                            } else {
+                                $("#slides").show();
+                            }
+                        });
+                    </script>
+                </div>
+            {% endif %}
+        </div>
+
+        <form action="/recherche.html" id="recherche-form" class="right-light-in" method="get">
+            <p class="big">Recherche :</p>
+            <input type="text" class="textfield" name="str" value="{{ app.request.query.get('str') }}" placeholder="ex: {{ ['Refuge du gouter', 'Enneigement', 'Ski de randonnée', 'Mont Blanc', 'Slackline'] | random_item }}">
+            <input type="submit" value="OK" class="submit" />
+            {% if current_commission %}
+                <input type="checkbox" checked="checked" name="commission" value="{{ current_commission }}" id="search_filter" {{ app.request.query.get('filter') ? 'checked="checked"' }}>
+                <label for="search_filter"> commission <span style="color:black">{{ commission_title(current_commission) }}</span> uniquement</label>
+            {% endif %}
+        </form>
+    </div>
+
+
+    <div class="right-green">
+        <div class="right-green-in">
+
+            {% if current_commission %}
+                <h1 class="agenda-h1"><a href="agenda/{{ current_commission }}.html" title="Afficher l'agenda complet pour cette commission">Agenda</a></h1>
+            {% else %}
+                <h1 class="agenda-h1"><a href="agenda.html" title="Afficher l'agenda complet">Agenda</a></h1>
+            {% endif %}
+
+            <div id="evt-list">
+                {% for event in list_events(get_commission(current_commission)) %}
+                    <a href="sortie/{{ event.code }}-{{ event.id }}.html?commission={{ event.commission.code }}" title="Voir la sortie">
+                        <span style="color:#fff">{{ event.tsp | date('D d/m') }} </span> |
+                        {% if event.cancelled %}
+                            <span class="cancelled">Sortie annulée</span>
+                        {% else %}
+                            <span style="color:#4D4D4D">{{ event.commission.title }}</span>
+                        {% endif %}
+                        <h2>{{ event.titre }}</h2>
+                    </a>
+                {% else %}
+                    {% if current_commission %}
+                        <p>Désolé, il n'y a pas de sortie à venir pour cette commission...</p>
+                    {% else %}
+                        <p>Désolé, il n'y a pas de sortie à venir...</p>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+
+            {% if current_commission %}
+                <a href="agenda/{{ current_commission }}.html" title="Afficher l'agenda complet pour cette commission" class="lien-big">> Voir toutes les sorties {{ commission_title(current_commission) }}</a>
+            {% endif %}
+            <a href="agenda.html" title="Afficher l'agenda complet" class="lien-big">> Voir toutes les sorties du club</a>
+        </div>
+    </div>
+</div>
