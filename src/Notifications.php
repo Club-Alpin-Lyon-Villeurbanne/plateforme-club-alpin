@@ -8,15 +8,15 @@ use App\Repository\EvtRepository;
 
 class Notifications
 {
-    private EvtRepository $cafEvtRepository;
+    private EvtRepository $evtRepository;
     private ArticleRepository $cafArticleRepository;
     private DestinationRepository $cafDestinationRepository;
     private UserRights $userRights;
 
-    public function __construct(DestinationRepository $cafDestinationRepository, EvtRepository $cafEvtRepository, ArticleRepository $cafArticleRepository, UserRights $userRights)
+    public function __construct(DestinationRepository $cafDestinationRepository, EvtRepository $evtRepository, ArticleRepository $cafArticleRepository, UserRights $userRights)
     {
         $this->cafDestinationRepository = $cafDestinationRepository;
-        $this->cafEvtRepository = $cafEvtRepository;
+        $this->evtRepository = $evtRepository;
         $this->cafArticleRepository = $cafArticleRepository;
         $this->userRights = $userRights;
     }
@@ -24,13 +24,13 @@ class Notifications
     public function getValidationSortie(): int
     {
         if ($this->userRights->allowed('evt_validate_all')) {
-            return $this->cafEvtRepository->getUnvalidatedEvt();
+            return $this->evtRepository->getUnvalidatedEvt();
         }
 
         if ($this->userRights->allowed('evt_validate')) {
             $commissions = $this->userRights->getCommissionListForRight('evt_validate');
 
-            return $this->cafEvtRepository->getUnvalidatedEvt($commissions);
+            return $this->evtRepository->getUnvalidatedEvt($commissions);
         }
 
         return 0;
@@ -42,7 +42,7 @@ class Notifications
             return 0;
         }
 
-        return $this->cafEvtRepository->getUnvalidatedPresidentEvt();
+        return $this->evtRepository->getUnvalidatedPresidentEvt();
     }
 
     public function getValidationArticle(): int

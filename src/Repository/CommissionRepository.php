@@ -30,8 +30,12 @@ class CommissionRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findVisibleCommission(string $code): ?Commission
+    public function findVisibleCommission(?string $code): ?Commission
     {
+        if (null === $code) {
+            return null;
+        }
+
         return $this->createQueryBuilder('c')
             ->where('c.vis = 1')
             ->andWhere('c.code = :code')

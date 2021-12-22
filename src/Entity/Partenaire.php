@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
+use App\Repository\PartenaireRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Partenaire.
  *
  * @ORM\Table(name="caf_partenaires")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=PartenaireRepository::class)
  */
 class Partenaire
 {

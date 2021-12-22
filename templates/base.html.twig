@@ -95,8 +95,12 @@
                     </div>
                 <![endif]-->
                 {% include 'header.html.twig' %}
-                <div id="main" role="main">
-                {% block body %}{% endblock %}
+                <div id="main" class="bigoo" role="main">
+                    <div id="left1">
+                        {% block body %}{% endblock %}
+                    </div>
+                    {% include 'right-column.html.twig' %}
+                    <br style="clear:both" />
                 </div>
                 {% include 'footer.html.twig' %}
             </div>
