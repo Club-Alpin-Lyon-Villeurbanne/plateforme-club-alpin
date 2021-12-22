@@ -73,7 +73,7 @@ class EvtRepository extends ServiceEntityRepository
 
         if ($commission) {
             $qb = $qb->andWhere('c.idCommission = :commission_id')
-                ->setParameter('commission_id', $commission->getIdCommission());
+                ->setParameter('commission_id', $commission->getId());
         }
 
         return $qb
