@@ -9,9 +9,9 @@ if (user()) {
         allowed('destination_modifier') ||
         allowed('destination_activer_desactiver') ||
         allowed('destination_supprimer') ||
-        (user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser()) ||
-        (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser()) ||
-        (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
+        (user() && $destination['id_user_who_create'] == (string) getUser()->getId()) ||
+        (user() && $destination['id_user_responsable'] == (string) getUser()->getId()) ||
+        (user() && $destination['id_user_adjoint'] == (string) getUser()->getId())
     ) {
         //pas publiée
         if ('0' == $destination['publie']) {
@@ -38,9 +38,9 @@ if (user()) {
 
         if (
             allowed('destination_modifier') ||
-            (user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser()) ||
-            (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser()) ||
-            (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
+            (user() && $destination['id_user_who_create'] == (string) getUser()->getId()) ||
+            (user() && $destination['id_user_responsable'] == (string) getUser()->getId()) ||
+            (user() && $destination['id_user_adjoint'] == (string) getUser()->getId())
         ) {
             if (1 != $destination['annule'] && !$id_dest_to_update) {
                 echo '<a href="creer-une-sortie/creer-une-destination/update-'.$destination['id'].'.html"

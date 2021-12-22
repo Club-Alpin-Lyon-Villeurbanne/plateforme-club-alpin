@@ -1,6 +1,6 @@
 <?php
 
-use App\Entity\CafUserAttr;
+use App\Entity\UserAttr;
 use App\Legacy\LegacyContainer;
 
 ?>
@@ -15,7 +15,7 @@ use App\Legacy\LegacyContainer;
             $id_commission = (int) ($_GET['id_commission']);
             $code_commission = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_GET['code_commission']);
 
-            if (!(admin() || allowed('comm_edit') || (user() && getUser()->hasAttribute(CafUserAttr::RESPONSABLE_COMMISSION, $code_commission)))) {
+            if (!(admin() || allowed('comm_edit') || (user() && getUser()->hasAttribute(UserAttr::RESPONSABLE_COMMISSION, $code_commission)))) {
                 echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour afficher cette page</p>';
             } else {
                 $commissionTmp = false;

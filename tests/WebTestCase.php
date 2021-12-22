@@ -2,9 +2,8 @@
 
 namespace App\Tests;
 
-use App\Entity\CafUser;
-use App\Repository\CafUserRepository;
-use Bundle\BlackfireBundle\Entity\User;
+use App\Entity\User;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -21,22 +20,22 @@ abstract class WebTestCase extends BaseWebTestCase
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
 
-        $user = new CafUser();
-        $user->setEmailUser($email);
-        $user->setFirstnameUser('prenom');
-        $user->setLastnameUser('nom');
-        $user->setNicknameUser('nickname');
-        $user->setCafnumParentUser('');
-        $user->setTelUser('');
-        $user->setTel2User('');
-        $user->setAdresseUser('');
-        $user->setCpUser('');
-        $user->setVilleUser('');
-        $user->setPaysUser('');
-        $user->setCivUser('');
-        $user->setMoreinfoUser('');
-        $user->setCookietokenUser('');
-        $user->setNomadeParentUser(0);
+        $user = new User();
+        $user->setEmail($email);
+        $user->setFirstname('prenom');
+        $user->setLastname('nom');
+        $user->setNickname('nickname');
+        $user->setCafnumParent('');
+        $user->setTel('');
+        $user->setTel2('');
+        $user->setAdresse('');
+        $user->setCp('');
+        $user->setVille('');
+        $user->setPays('');
+        $user->setCiv('');
+        $user->setMoreinfo('');
+        $user->setCookietoken('');
+        $user->setNomadeParent(0);
 
         $em->persist($user);
         $em->flush();
@@ -52,11 +51,11 @@ abstract class WebTestCase extends BaseWebTestCase
 
         $em = $this->getContainer()->get('doctrine')->getManager();
 
-        if ($username instanceof CafUser) {
+        if ($username instanceof User) {
             $em->refresh($username);
             $user = $username;
         } else {
-            $user = $this->getContainer()->get(CafUserRepository::class)->findOneByEmailUser($username);
+            $user = $this->getContainer()->get(UserRepository::class)->findOneByEmail($username);
         }
 
         if (!$user) {

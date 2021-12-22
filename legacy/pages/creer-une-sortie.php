@@ -42,9 +42,9 @@
                 if ($p3) { ?>
 					<?php if (
                         allowed('destination_modifier') ||
-                        (user() && $destination['id_user_who_create'] == (string) getUser()->getIdUser()) ||
-                        (user() && $destination['id_user_responsable'] == (string) getUser()->getIdUser()) ||
-                        (user() && $destination['id_user_adjoint'] == (string) getUser()->getIdUser())
+                        (user() && $destination['id_user_who_create'] == (string) getUser()->getId()) ||
+                        (user() && $destination['id_user_responsable'] == (string) getUser()->getId()) ||
+                        (user() && $destination['id_user_adjoint'] == (string) getUser()->getId())
                     ) { ?>
                         <h1 class="page-h1">Modifier une <b>destination</b></h1>
                         <?php require __DIR__.'/../includes/dest/creer.php'; ?>
@@ -98,7 +98,7 @@
                 // je n'ai pas le droit de créer une sortie pour cette commission
                 elseif (!allowed('evt_create', 'commission:'.$p2)) {
                     echo '<p class="erreur">Vous n\'avez pas l\'autorisation d\'accéder à cette page car vous ne semblez pas avoir les droits de création de sortie pour la commission '.html_utf8($p2).'.</p>';
-                } elseif (getUser()->getDoitRenouvelerUser()) {
+                } elseif (getUser()->getDoitRenouveler()) {
                     inclure('info-encadrant-licence-obsolete', 'vide');
                 }
 

@@ -5,7 +5,7 @@ if (user() && allowed('evt_join')) {
     $my_choices = mon_inscription($id_evt);
 
     // user non bridé (licence à jour)
-    if (!getUser()->getDoitRenouvelerUser()) {
+    if (!getUser()->getDoitRenouveler()) {
         // sortie pas passée
         if ($evt['tsp_evt'] > time()) {
             if ($destination) {
@@ -22,7 +22,7 @@ if (user() && allowed('evt_join')) {
 
                             <h2>Note importante sur les inscriptions :</h2>
 
-                            <?php $uid = user_in_destination(user() ? (string) getUser()->getIdUser() : '', $destination['id']);
+                            <?php $uid = user_in_destination(user() ? (string) getUser()->getId() : '', $destination['id']);
                     if ($uid && $uid != $evt['id_evt']) { ?>
 
                                 <p>Désolé, vous êtes déjà inscrit à une autre sortie de cette destination. Vous ne pouvez pas participer à deux sorties simultanées.</p>

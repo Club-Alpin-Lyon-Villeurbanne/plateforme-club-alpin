@@ -7,7 +7,7 @@ security:
             encode_as_base64: false
             iterations: 1
 
-        App\Entity\CafUser:
+        App\Entity\User:
             algorithm: auto
             migrate_from:
                 - legacy
@@ -19,8 +19,8 @@ security:
         # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             entity:
-                class: App\Entity\CafUser
-                property: emailUser
+                class: App\Entity\User
+                property: email
 
     firewalls:
         dev:
@@ -40,7 +40,7 @@ security:
 
             login_link:
                 check_route: session_email_check
-                signature_properties: ['idUser']
+                signature_properties: ['id']
                 lifetime: 10800 # 3 hours
                 success_handler: App\Security\Authentication\MagiclinkResetPasswordHandler
 

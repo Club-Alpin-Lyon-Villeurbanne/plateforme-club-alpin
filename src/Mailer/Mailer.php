@@ -2,7 +2,7 @@
 
 namespace App\Mailer;
 
-use App\Entity\CafUser;
+use App\Entity\User;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -28,9 +28,9 @@ class Mailer
     }
 
     /**
-     * @param array|string|CafUser $to
-     * @param string|CafUser|null  $sender
-     * @param string|bool|null     $replyTo
+     * @param array|string|User $to
+     * @param string|User|null  $sender
+     * @param string|bool|null  $replyTo
      *
      * @throws TransportExceptionInterface
      */
@@ -46,9 +46,9 @@ class Mailer
 
         $toFlat = [];
         foreach ($to as $email => $name) {
-            if ($name instanceof CafUser) {
+            if ($name instanceof User) {
                 // ie. `[User, User]`
-                $toFlat[] = new Address($name->getEmailUser(), $name->getNicknameUser() ?? '');
+                $toFlat[] = new Address($name->getEmail(), $name->getNickname() ?? '');
             } elseif ($email === $name || is_numeric($email)) {
                 // ie. `[email => email]` or `[email, email]`
                 $toFlat[] = new Address($name);
@@ -58,8 +58,8 @@ class Mailer
             }
         }
 
-        if ($sender instanceof CafUser) {
-            $sender = new Address($sender->getEmailUser(), $sender->getNicknameUser() ?? '');
+        if ($sender instanceof User) {
+            $sender = new Address($sender->getEmail(), $sender->getNickname() ?? '');
         }
 
         $email = (new Email())

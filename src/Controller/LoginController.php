@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-use App\Entity\CafUser;
+use App\Entity\User;
 use App\Form\ChangePasswordType;
 use App\Form\ResetPasswordType;
 use App\Form\SetPasswordType;
 use App\Mailer\Mailer;
-use App\Repository\CafUserRepository;
+use App\Repository\UserRepository;
 use App\Security\RecaptchaValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -59,7 +59,7 @@ class LoginController extends AbstractController
      *
      * @Template
      */
-    public function passwordLostAction(Request $request, CafUserRepository $userRepository, LoginLinkHandlerInterface $loginLinkHandler, Mailer $mailer, RecaptchaValidator $recaptchaValidator)
+    public function passwordLostAction(Request $request, UserRepository $userRepository, LoginLinkHandlerInterface $loginLinkHandler, Mailer $mailer, RecaptchaValidator $recaptchaValidator)
     {
         if ($this->isGranted('ROLE_USER')) {
             if ($request->query->has('target') && $this->isValidRedirect($request->query->get('target'))) {
@@ -118,7 +118,7 @@ class LoginController extends AbstractController
      */
     public function setPasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer)
     {
-        /** @var CafUser $user */
+        /** @var User $user */
         $user = $this->getUser();
 
         $url = $request->getSession()->get('user_password.target', $this->generateUrl('legacy_root'));
@@ -141,7 +141,7 @@ class LoginController extends AbstractController
 
         return [
             'form' => $form->createView(),
-            'username' => $user->getEmailUser(),
+            'username' => $user->getEmail(),
         ];
     }
 
@@ -163,9 +163,9 @@ class LoginController extends AbstractController
         $form = $this->createForm(ChangePasswordType::class);
         $form->add('submit', SubmitType::class, ['label' => 'Ré-initialiser', 'attr' => ['class' => 'nice2']]);
         if ($form->handleRequest($request)->isSubmitted() && $form->isValid()) {
-            /** @var CafUser $user */
+            /** @var User $user */
             $user = $this->getUser();
-            $user->setMdpUser(
+            $user->setMdp(
                 $hasherFactory->getPasswordHasher('login_form')->hash(
                     $form->get('password')->getData()
                 )

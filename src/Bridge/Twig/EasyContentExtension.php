@@ -2,7 +2,7 @@
 
 namespace App\Bridge\Twig;
 
-use App\Repository\CafContentHtmlRepository;
+use App\Repository\ContentHtmlRepository;
 use App\UserRights;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -23,7 +23,7 @@ class EasyContentExtension extends AbstractExtension implements ServiceSubscribe
     {
         return [
             AuthorizationCheckerInterface::class,
-            CafContentHtmlRepository::class,
+            ContentHtmlRepository::class,
             UserRights::class,
         ];
     }
@@ -51,7 +51,7 @@ class EasyContentExtension extends AbstractExtension implements ServiceSubscribe
             }
         }
 
-        $content = $this->locator->get(CafContentHtmlRepository::class)->findByCodeContent($elt);
+        $content = $this->locator->get(ContentHtmlRepository::class)->findByCodeContent($elt);
         $ret = '';
 
         if ($this->locator->get(AuthorizationCheckerInterface::class)->isGranted('ROLE_ADMIN')) {
@@ -64,7 +64,7 @@ class EasyContentExtension extends AbstractExtension implements ServiceSubscribe
                     '</a>';
 
             if ($editVis) {
-                $ret .= '<a href="javascript:void(0)" onclick="window.document.majVisBlock(this, \''.$elt.'\')" rel="'.($content ? $content->getVisContentHtml() : '').'" title="Activer / Masquer ce bloc de contenu" class="edit" style="color:white; font-weight:100; padding:2px 3px 2px 1px; font-size:11px; font-family:Arial; ">
+                $ret .= '<a href="javascript:void(0)" onclick="window.document.majVisBlock(this, \''.$elt.'\')" rel="'.($content ? $content->getVis() : '').'" title="Activer / Masquer ce bloc de contenu" class="edit" style="color:white; font-weight:100; padding:2px 3px 2px 1px; font-size:11px; font-family:Arial; ">
                             <img src="/img/base/page_white_key.png" alt="VIS" title="Activer / Masquer ce bloc de contenu" />Visibilité</a>';
             }
 
@@ -74,7 +74,7 @@ class EasyContentExtension extends AbstractExtension implements ServiceSubscribe
         }
 
         if ($content) {
-            $ret .= $content->getContenuContentHtml();
+            $ret .= $content->getContenu();
         } else {
             if ($this->locator->get(AuthorizationCheckerInterface::class)->isGranted('ROLE_ADMIN')) {
                 $ret .= '<div class="blocdesactive"><img src="/img/base/bullet_key.png" alt="" title="" /> Bloc de contenu désactivé</div>';
