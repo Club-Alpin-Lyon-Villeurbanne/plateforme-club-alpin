@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundle\BlackfireBundle\Tests\Command\Dev;
+namespace App\Tests\Command\Dev;
 
 use App\Tests\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;

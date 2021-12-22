@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Repository\CafArticleRepository;
+use App\Repository\ArticleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -121,7 +121,7 @@ class LegacyController extends AbstractController
      *     methods={"GET", "POST"}
      * )
      */
-    public function p2Action($p1, $p2, CafArticleRepository $articleRepository)
+    public function p2Action($p1, $p2, ArticleRepository $articleRepository)
     {
         return new StreamedResponse(function () use ($p1, $p2, $articleRepository) {
             $legacyDir = __DIR__.'/../../legacy/';
@@ -134,7 +134,7 @@ class LegacyController extends AbstractController
                 $id_article = \array_slice(explode('-', $p2), -1)[0];
                 $article = $articleRepository->find($id_article);
                 if ($article && $article->getCommission()) {
-                    $current_commission = $article->getCommission()->getCodeCommission();
+                    $current_commission = $article->getCommission()->getCode();
                 }
             }
 

@@ -13,7 +13,7 @@ if (!user()) {
 }
 
 if (0 === count($errTab)) {
-    $targetDir = __DIR__.'/../../../public/ftp/user/'.getUser()->getIdUser().'/files/';
+    $targetDir = __DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/files/';
 
     // Handle file uploads via XMLHttpRequest
     require __DIR__.'/vfu.classes.php';

@@ -2,8 +2,8 @@
 
 namespace App;
 
-use App\Entity\CafUser;
-use App\Entity\CafUserAttr;
+use App\Entity\User;
+use App\Entity\UserAttr;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -92,7 +92,7 @@ class UserRights
         $userAllowedTo = [];
         $user = $this->tokenStorage->getToken() ? $this->tokenStorage->getToken()->getUser() : null;
 
-        if (!$user instanceof CafUser || $user->getDoitRenouvelerUser()) {
+        if (!$user instanceof User || $user->getDoitRenouveler()) {
             $sql = 'SELECT DISTINCT code_userright '
                 .'FROM caf_userright, caf_usertype_attr, caf_usertype ' // des droits au type
                 ."WHERE code_usertype='visiteur' " // type visiteur
@@ -129,7 +129,7 @@ class UserRights
             .'ORDER BY params_user_attr ASC, code_userright ASC, limited_to_comm_usertype ASC LIMIT 0 , 500 ' // order by params permet d'optimiser la taille de la var globale. Si, si promis (14 lignes plus loin) !
         ;
 
-        $result = $this->connection->prepare($sql)->executeQuery(['user' => $user->getIdUser()])->fetchAllAssociative();
+        $result = $this->connection->prepare($sql)->executeQuery(['user' => $user->getId()])->fetchAllAssociative();
 
         // ajout du droit, avec ses paramètres, au tableau global des droits de cet user
         // sans paramètre, la valeur est une string 'true'
@@ -156,7 +156,7 @@ class UserRights
         }
 
         // Tous les utilisateurs connectés non salariés ont le statut "adhérent"
-        if (!$user->hasAttribute(CafUserAttr::SALARIE)) {
+        if (!$user->hasAttribute(UserAttr::SALARIE)) {
             $sql = 'SELECT DISTINCT code_userright, limited_to_comm_usertype '
                 .'FROM caf_userright, caf_usertype_attr, caf_usertype '
                 ."WHERE code_usertype LIKE 'adherent' " // usertype adherent

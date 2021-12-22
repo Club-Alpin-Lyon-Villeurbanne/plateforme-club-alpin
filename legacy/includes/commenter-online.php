@@ -11,7 +11,7 @@
     ?>
 
 	<div style="float:left; width:75px; padding-top:3px;">
-		<img src="<?php echo userImg((string) getUser()->getIdUser(), 'pic'); ?>" alt="" title="" />
+		<img src="<?php echo userImg((string) getUser()->getId(), 'pic'); ?>" alt="" title="" />
 	</div>
 	<div style="float:left; width:530px;">
 		<textarea name="cont_comment" class="type2" style="width:460px; height:90px;" placeholder="Laisser un commentaire" ></textarea>

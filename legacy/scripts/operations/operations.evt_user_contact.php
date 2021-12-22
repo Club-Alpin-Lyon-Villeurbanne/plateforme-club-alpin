@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 $id_evt = (int) ($_POST['id_evt']);
-$user_evt = getUser()->getIdUser();
+$user_evt = getUser()->getId();
 $objet = trim(stripslashes($_POST['objet']));
 $message = trim(stripslashes($_POST['message']));
 
@@ -76,11 +76,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     LegacyContainer::get('legacy_mailer')->send($to, 'transactional/message-sortie', [
         'objet' => $objet,
-        'message_author' => sprintf('%s %s', $author->getFirstnameUser(), $author->getLastnameUser()),
+        'message_author' => sprintf('%s %s', $author->getFirstname(), $author->getLastname()),
         'url_sortie' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$code_evt.'-'.$id_evt.'.html',
         'name_sortie' => $titre_evt,
         'message' => $message,
-    ], [], $author, $author->getEmailUser());
+    ], [], $author, $author->getEmail());
 }
 
 // reset vals

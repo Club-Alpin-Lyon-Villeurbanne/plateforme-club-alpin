@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\CafUser;
+use App\Entity\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,11 +29,11 @@ class JwtController extends AbstractController
             ], Response::HTTP_UNAUTHORIZED, ['WWW-Authenticate' => 'Bearer']);
         }
 
-        /** @var CafUser $user */
+        /** @var User $user */
         $user = $this->getUser();
 
         return new JsonResponse([
-            'id' => $user->getIdUser(),
+            'id' => $user->getId(),
             'token' => $JWTTokenManager->create($user),
         ]);
     }

@@ -1,6 +1,6 @@
 <?php
 
-use App\Entity\CafUser;
+use App\Entity\User;
 use App\Legacy\LegacyContainer;
 use Symfony\Bridge\Twig\AppVariable;
 
@@ -264,17 +264,17 @@ function formatSize($bytes, $format = '%.2f')
 function user(): bool
 {
     if ($token = LegacyContainer::get('security.token_storage')->getToken()) {
-        if ($token->getUser() instanceof CafUser) {
+        if ($token->getUser() instanceof User) {
             return true;
         }
     }
 
     return false;
 }
-function getUser(): ?Cafuser
+function getUser(): ?User
 {
     if ($token = LegacyContainer::get('security.token_storage')->getToken()) {
-        if ($token->getUser() instanceof CafUser) {
+        if ($token->getUser() instanceof User) {
             return $token->getUser();
         }
     }

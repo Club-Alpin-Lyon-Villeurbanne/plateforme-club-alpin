@@ -6,7 +6,7 @@ require __DIR__.'/../app/includes.php';
 
 if (user()) {
     // bien connecté ?
-    $id_user = getUser()->getIdUser();
+    $id_user = getUser()->getId();
     if (!$id_user) {
         echo 'ERREUR : id invalide';
         exit();

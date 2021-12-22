@@ -59,7 +59,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // article publié et commentable ?
     $req = "INSERT INTO caf_comment(id_comment, status_comment, tsp_comment, user_comment, name_comment, email_comment, cont_comment, parent_type_comment, parent_comment)
-                            VALUES (NULL ,  '1', 			 '".time()."',  '".getUser()->getIdUser()."',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
+                            VALUES (NULL ,  '1', 			 '".time()."',  '".getUser()->getId()."',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
@@ -70,8 +70,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
         $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-        if (getUser()->getEmailUser()) {
-            $mail->AddReplyTo(getUser()->getEmailUser());
+        if (getUser()->getEmail()) {
+            $mail->AddReplyTo(getUser()->getEmail());
         }
         $mail->AddAddress($comment_article[2]);
         $mail->Subject = $p_sitename." - J'ai ajouté un commentaire à votre article !";

@@ -34,7 +34,7 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
     // Mise à jour : annulation
     if (!isset($errTab) || 0 === count($errTab)) {
-        $req = "UPDATE caf_evt SET cancelled_evt='1', cancelled_who_evt='".getUser()->getIdUser()."', cancelled_when_evt='".time()."'  WHERE caf_evt.id_evt =$id_evt";
+        $req = "UPDATE caf_evt SET cancelled_evt='1', cancelled_who_evt='".getUser()->getId()."', cancelled_when_evt='".time()."'  WHERE caf_evt.id_evt =$id_evt";
         // annulation de toutes les sorties du cycle
         if (true || $_POST['del_cycle_master_evt']) {
             $req .= " OR caf_evt.cycle_parent_evt=$id_evt";
@@ -56,7 +56,7 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             <p>
                 La sortie ".$handle['title_commission'].' du '.date('d/m/Y', $handle['tsp_evt']).',
                 &laquo;<i> '.html_utf8($handle['titre_evt'])." </i>&raquo;
-                vient d'être annulée par <a href=\"".LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.getUser()->getIdUser().'.html">'.getUser()->getNicknameUser().'</a>.
+                vient d'être annulée par <a href=\"".LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.getUser()->getId().'.html">'.getUser()->getNickname().'</a>.
                 Voici le message joint :
             </p>
             <p>&laquo;<i> '.nl2br(html_utf8($msg))." </i>&raquo;</p>
