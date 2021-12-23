@@ -3,18 +3,10 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-//___________________ CONFIGURATION DES PAGES
-//___________________ Cette version déclare une variable contenant toutes les specs de toutes
-//___________________ les pages, ce qui est lourd pour le serveur mais pratique pour la gestion des menus
-
-// defaut
 $p_defpage = 'accueil';
 if (!$p1) {
     $p1 = $p_defpage;
 }
-
-// options des pages
-cont(false); // initialisation des contenus
 
 $p_pages = [];
 
@@ -29,14 +21,14 @@ $req = 'SELECT * FROM  `caf_page` '
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     $p_pages[$handle['code_page']] = [
-        'meta_title_page' => $handle['meta_title_page'] ? $handle['default_name_page'] : cont('meta-title-'.$handle['code_page']),
+        'meta_title_page' => $handle['meta_title_page'] ? cont('meta-title-'.$handle['code_page']) : $handle['default_name_page'],
         'meta_description_page' => $handle['meta_description_page'] ? cont('meta-description-'.$handle['code_page']) : cont('site-meta-description'),
         'vis_page' => $handle['vis_page'],
         'menu_page' => $handle['menu_page'],
         'menuadmin_page' => $handle['menuadmin_page'],
         'default_name_page' => $handle['default_name_page'],
-        'admin_page' => $handle['admin_page'] ? true : false,
-        'superadmin_page' => $handle['superadmin_page'] ? true : false,
+        'admin_page' => (bool) $handle['admin_page'],
+        'superadmin_page' => (bool) $handle['superadmin_page'],
         'parent_page' => $handle['parent_page'],
         'id_page' => $handle['id_page'],
         'add_js_page' => $handle['add_js_page'],
