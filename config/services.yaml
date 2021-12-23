@@ -83,6 +83,10 @@ services:
     Symfony\Component\String\Slugger\SluggerInterface:
         class: Symfony\Component\String\Slugger\AsciiSlugger
 
+    App\Legacy\ContentHtml:
+        arguments:
+            $inlineContentPath: '%content_inline_path%'
+
     # services used in legacy
     legacy_router:
         public: true

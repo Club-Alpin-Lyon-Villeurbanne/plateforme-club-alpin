@@ -29,7 +29,6 @@ $req = 'SELECT * FROM  `caf_page` '
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     $p_pages[$handle['code_page']] = [
-        // 'meta_title_page'=>$handle['meta_title_page']?cont('meta-title-'.$handle['code_page']):cont('meta-title-site'),
         'meta_title_page' => $handle['meta_title_page'] ? $handle['default_name_page'] : cont('meta-title-'.$handle['code_page']),
         'meta_description_page' => $handle['meta_description_page'] ? cont('meta-description-'.$handle['code_page']) : cont('site-meta-description'),
         'vis_page' => $handle['vis_page'],

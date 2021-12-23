@@ -10,11 +10,13 @@ class ContentHtml
 {
     private Environment $environment;
     private LoggerInterface $logger;
+    private string $inlineContentPath;
 
-    public function __construct(Environment $environment, LoggerInterface $logger)
+    public function __construct(Environment $environment, LoggerInterface $logger, string $inlineContentPath)
     {
         $this->environment = $environment;
         $this->logger = $logger;
+        $this->inlineContentPath = $inlineContentPath;
     }
 
     public function getEasyInclude($elt, $style = 'vide')
@@ -28,5 +30,18 @@ class ContentHtml
         }
 
         return '<div id="'.$elt.'" class="'.$style.'">'.$content.'</div>';
+    }
+
+    public function getInlineContent(string $key): string
+    {
+        $inlineContent = require $this->inlineContentPath;
+
+        if (!isset($inlineContent[$key])) {
+            $this->logger->error(sprintf('Unable to find inline content %s', $key));
+
+            return '';
+        }
+
+        return $inlineContent[$key];
     }
 }

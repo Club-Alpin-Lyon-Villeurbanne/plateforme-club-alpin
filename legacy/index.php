@@ -124,27 +124,6 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
                 <p><?php echo cont('operation-en-cours'); ?><br /><br /><img src="/img/base/loading.gif" alt="" title="" /></p>
             </div>
 
-            <!-- affichage des manques de contenus en admin -->
-            <?php
-            if (admin() && count($contLog) && !$p_pageadmin) {
-                echo '<div id="adminmissing">
-                    <img src="/img/base/x.png" alt="" title="Fermer" style="float:right; cursor:pointer; padding:5px;" onclick="$(this).parent().fadeOut();" />
-                    <div style="float:left; padding:12px 10px 3px 35px">Admin : champs non remplis dans cette page</div>';
-
-                // si on est dans la langue par défaut, redirection vers la page des contenus :
-                for ($i = 0; $i < count($contLog); ++$i) {
-                    $tmp = $contLog[$i];
-                    echo '<form style="display:inline" method="post" action="admin-contenus/fr.html">
-                            <input type="hidden" name="operation" value="forceAddContent" />
-                            <input type="text" readonly="readonly" name="code_content_inline" value="'.$tmp.'" onclick="$(this).parent().submit();" />
-                        </form>';
-                }
-
-                echo '</div>';
-            }
-            ?>
-
-
             <!-- lbxMsg : popup d'information -->
             <?php require __DIR__.'/includes/generic/lbxMsg.php'; ?>
 

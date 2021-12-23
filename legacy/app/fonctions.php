@@ -8,20 +8,9 @@ use Symfony\Bridge\Twig\AppVariable;
 
 global $_POST;
 global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
-global $CONTENUS_INLINE;
-global $contLog;
 global $president;
 global $versCettePage;
 global $vicepresident;
-
-// gestion des contenus
-$contLog = [];
-$CONTENUS_HTML = [];
-$CONTENUS_INLINE = [];
-
-// ----------------------------------------------------------------------------------------------------------------
-// -------------------------------------------- FONCTIONS SPECIFIQUES AU SITE DU CLUB ALPIN FRANCAIS
-// ----------------------------------------------------------------------------------------------------------------
 
 function presidence()
 {
@@ -333,47 +322,9 @@ function linker($link)
     return $link;
 }
 
-// ma fonction d'insertion élément inline
-function cont($code = false, $html = false)
+function cont(string $code)
 {
-    global $CONTENUS_INLINE;
-
-    // log des erreurs
-    global $contLog;
-    // premier appel à la fonction
-    if (!count($CONTENUS_INLINE)) {
-        // v2 : BDD
-        // sélection de chaque élément par ordre DESC
-        $req = "SELECT `code_content_inline`, `contenu_content_inline`
-            FROM  `caf_content_inline`
-            WHERE  `lang_content_inline` LIKE  'fr'
-            ORDER BY  `date_content_inline` DESC
-            ";
-        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-        while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-            // uniquement si pas déja renseigné
-            if (!isset($CONTENUS_INLINE[$handle['code_content_inline']])) {
-                $CONTENUS_INLINE[$handle['code_content_inline']] = $handle['contenu_content_inline'];
-            }
-        }
-        // debug
-        $CONTENUS_INLINE['dev'] = 'dev';
-    }
-
-    if (isset($CONTENUS_INLINE[$code])) {
-        if (!$html) {
-            return strip_tags($CONTENUS_INLINE[$code]);
-        }
-
-        return $CONTENUS_INLINE[$code];
-    }
-    // pas de contenu
-
-    if (!in_array($code, $contLog, true) && $code) {
-        $contLog[] = $code;
-    }
-    // afficher rien
-    return '';
+    return LegacyContainer::get('legacy_content_html')->getInlineContent($code);
 }
 
 function inclure($elt, $style = 'vide')

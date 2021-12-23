@@ -434,16 +434,6 @@ if ('page_del' == ($_POST['operation'] ?? null) && superadmin()) {
     require $operationsDir.'operations.page_del.php';
 }
 
-// BASE: add groupe de contenu
-if ('addContentGroup' == ($_POST['operation'] ?? null) && admin()) {
-    require $operationsDir.'operations.addContentGroup.php';
-}
-
-// BASE: add contenu inline
-if ('addContentInline' == ($_POST['operation'] ?? null) && admin()) {
-    require $operationsDir.'operations.addContentInline.php';
-}
-
 // GENERIQUE: maj
 if ('majBd' == ($_POST['operation'] ?? null) && admin()) {
     $table = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_POST['table']);

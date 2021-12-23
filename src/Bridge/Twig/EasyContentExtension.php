@@ -5,7 +5,6 @@ namespace App\Bridge\Twig;
 use App\Legacy\ContentHtml;
 use App\UserRights;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -22,7 +21,6 @@ class EasyContentExtension extends AbstractExtension implements ServiceSubscribe
     public static function getSubscribedServices()
     {
         return [
-            AuthorizationCheckerInterface::class,
             UserRights::class,
             ContentHtml::class,
         ];

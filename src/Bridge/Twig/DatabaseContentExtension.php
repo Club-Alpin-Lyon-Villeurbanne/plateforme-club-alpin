@@ -4,9 +4,9 @@ namespace App\Bridge\Twig;
 
 use App\Entity\Commission;
 use App\Entity\User;
+use App\Legacy\ContentHtml;
 use App\Notifications;
 use App\Repository\CommissionRepository;
-use App\Repository\ContentInlineRepository;
 use App\Repository\EvtRepository;
 use App\Repository\PartenaireRepository;
 use Psr\Container\ContainerInterface;
@@ -28,16 +28,16 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         return [
             PartenaireRepository::class,
             EvtRepository::class,
-            ContentInlineRepository::class,
             CommissionRepository::class,
             Notifications::class,
+            ContentHtml::class,
         ];
     }
 
     public function getFunctions()
     {
         return [
-            new TwigFunction('db_content', [$this, 'getDbContent']),
+            new TwigFunction('inline_content', [$this, 'getContentInline']),
             new TwigFunction('commission_title', [$this, 'getCommissionTitle']),
             new TwigFunction('commission_picto', [$this, 'getCommissionPicto']),
             new TwigFunction('list_commissions', [$this, 'getCommissions']),
@@ -106,15 +106,9 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         return $this->locator->get(Notifications::class)->getValidationSortiePresident();
     }
 
-    public function getDbContent(string $type): ?string
+    public function getContentInline(string $type): ?string
     {
-        foreach ($this->locator->get(ContentInlineRepository::class)->findAll() as $cafContentInline) {
-            if ($cafContentInline->getCode() === $type) {
-                return $cafContentInline->getContenu();
-            }
-        }
-
-        return null;
+        return $this->locator->get(ContentHtml::class)->getInlineContent($type);
     }
 
     public function getCommissionTitle(?string $code): ?string
