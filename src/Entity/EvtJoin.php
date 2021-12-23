@@ -29,9 +29,8 @@ class EvtJoin
     private $status = '0';
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="evt_evt_join", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Evt", inversedBy="joins", fetch="EAGER")
+     * @ORM\JoinColumn(name="evt_evt_join", nullable=false, referencedColumnName="id_evt", nullable=false, onDelete="CASCADE")
      */
     private $evt;
 
@@ -129,12 +128,12 @@ class EvtJoin
         return $this;
     }
 
-    public function getEvt(): ?int
+    public function getEvt(): ?Evt
     {
         return $this->evt;
     }
 
-    public function setEvt(int $evt): self
+    public function setEvt(Evt $evt): self
     {
         $this->evt = $evt;
 
