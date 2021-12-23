@@ -10,7 +10,6 @@ global $_POST;
 global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
 global $CONTENUS_INLINE;
 global $contLog;
-global $p_inclurelist;
 global $president;
 global $versCettePage;
 global $vicepresident;
@@ -377,80 +376,11 @@ function cont($code = false, $html = false)
     return '';
 }
 
-$p_inclurelist = [];
-// ma fonction d'insertion /modification élément HTML en front office
-function inclure($elt, $style = 'vide', $options = [])
+function inclure($elt, $style = 'vide')
 {
-    global $versCettePage;
-    global $p_inclurelist;
-
-    // assurer un seul id d'élément par page
-    if (!in_array($elt, $p_inclurelist, true)) {
-        // default options values
-        $editVis = true;
-        $connect = true;
-
-        foreach ($options as $key => $val) {
-            if ('editVis' == $key) {
-                $editVis = $val;
-            }
-            if ('connect' == $key) {
-                $connect = $val;
-            }
-        }
-
-        $code_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($elt);
-
-        // Contenu
-        $req = "SELECT `vis_content_html`,`contenu_content_html` FROM `caf_content_html` WHERE `code_content_html` LIKE '$code_content_html' AND lang_content_html LIKE 'fr' ORDER BY `date_content_html` DESC LIMIT 1";
-        $handleTab = [];
-        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-        $found = false;
-        $currentElement = ['vis_content_html' => 1, 'contenu_content_html' => null]; // default values
-        while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-            $found = true;
-            $currentElement = $handle;
-        }
-
-        // AFFICHAGE DES OUTILS ADMIN
-        // mode admin : permet la modification
-        if (admin()) {
-            // fancybox
-            echo '<div id="'.$elt.'" class="contenuEditable '.$style.'">
-                <div class="editHtmlTools" style="text-align:left;">
-                    <a href="editElt.php?p='.$elt.'&amp;class='.$style.'" title="Modifier l\'&eacute;l&eacute;ment '.$elt.'" class="edit fancyframeadmin" style="color:white; font-weight:100; padding:2px 3px 2px 1px; font-size:11px; font-family:Arial;">
-                        <img src="/img/base/page_edit.png" id="imgEdit'.$elt.'" alt="EDIT" title="Modifier l\'&eacute;l&eacute;ment '.$elt.'" />Modifier</a>
-                    '.($editVis ? '
-                    <a href="javascript:void(0)" onclick="window.document.majVisBlock(this, \''.$elt.'\')" rel="'.$currentElement['vis_content_html'].'" title="Activer / Masquer ce bloc de contenu" class="edit" style="color:white; font-weight:100; padding:2px 3px 2px 1px; font-size:11px; font-family:Arial; ">
-                        <img src="/img/base/page_white_key.png" alt="VIS" title="Activer / Masquer ce bloc de contenu" />Visibilité</a>
-                        ' : '').'
-                </div>';
-        } else {
-            echo '<div id="'.$elt.'" class="'.$style.'">';
-        }
-        // AFFICHAGE DU CONTENU
-        if ($currentElement['vis_content_html']) {
-            echo $currentElement['contenu_content_html'];
-        }
-        // contenu masqué
-        else {
-            if (admin()) {
-                echo '<div class="blocdesactive"><img src="/img/base/bullet_key.png" alt="" title="" /> Bloc de contenu désactivé</div>';
-            }
-        }
-
-        if (!$found) {
-            echo '&nbsp;';
-        }
-        // pour débugger les blocs flottants
-        echo '</div>';
-
-        // enregistrer l'inclusino de ce elt
-        $p_inclurelist[] = $elt;
-    } else {
-        echo '<p class="erreur" style="clear:both; ">Erreur de développement : les codes d\'éléments HTML ne peuvent être en doublon dans une même page</p>';
-    }
+    echo LegacyContainer::get('legacy_content_html')->getEasyInclude($elt, $style);
 }
+
 // Affiche (ECHO !!) dans un input hidden ou text le contenu de la variable postée échappée quand elle existe, ou une valeur par défaut
 function inputVal($inputName, $defaultVal = '')
 {
