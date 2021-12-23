@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -258,6 +259,11 @@ class Evt
     private $joinMax;
 
     /**
+     * @ORM\OneToMany(targetEntity="EvtJoin", mappedBy="evt", cascade={"persist"})
+     */
+    private $joins;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="ngens_max_evt", type="integer", nullable=false, options={"comment": "Nombre de gens pouvant y aller au total. Donnée ""visuelle"" uniquement, pas de calcul."})
@@ -298,6 +304,11 @@ class Evt
      * @ORM\Column(name="cb_evt", type="boolean", nullable=true)
      */
     private $cb;
+
+    public function __construct()
+    {
+        $this->joins = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -391,6 +402,11 @@ class Evt
     public function getUser(): ?User
     {
         return $this->user;
+    }
+
+    public function getJoins()
+    {
+        return $this->joins;
     }
 
     public function getCommission(): Commission
