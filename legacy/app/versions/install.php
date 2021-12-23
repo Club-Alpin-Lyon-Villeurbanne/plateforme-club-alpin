@@ -1,7 +1,7 @@
 <?php
 
     /*
-    include "_inc.php"; // on charge les paramètres bdd
+    require "_inc.php"; // on charge les paramètres bdd
 
     $bdd = mysql_connect(BDD_HOST,BDD_LOGIN,BDD_PASS);
     mysql_select_db(BDD_NAME,$bdd);
