@@ -37,7 +37,7 @@ class ContentHtml
         $inlineContent = require $this->inlineContentPath;
 
         if (!isset($inlineContent[$key])) {
-            $this->logger->error(sprintf('Unable to find inline content %s', $key));
+            $this->logger->error(sprintf('Unable to find inline content "%s".', $key));
 
             return '';
         }
