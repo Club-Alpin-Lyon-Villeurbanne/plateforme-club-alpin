@@ -136,7 +136,7 @@ foreach ($datasTab as $email => $evtdatas) {
     foreach ($evtdatas as $tmp) {
         $evtList[] = [
             'name' => date('d/m/Y', $tmp['tsp_evt']).' - '.$tmp['titre_evt'],
-            'url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html',
+            'url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html?forceshow=true',
         ];
     }
 
