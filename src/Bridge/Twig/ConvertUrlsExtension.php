@@ -2,6 +2,7 @@
 
 namespace App\Bridge\Twig;
 
+use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
@@ -10,12 +11,29 @@ class ConvertUrlsExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('converturls', [$this, 'autoConvertUrls'],
-                [
-                    'pre_escape' => 'html',
-                    'is_safe' => ['html'],
-                ]),
+            new TwigFilter('converturls', [$this, 'autoConvertUrls'], [
+                'pre_escape' => 'html',
+                'is_safe' => ['html'],
+            ]),
+            new TwigFilter('mail_this', [$this, 'mailThis'], [
+                'needs_environment' => true,
+                'is_safe' => ['html'],
+            ]),
         ];
+    }
+
+    public function mailThis(Environment $environment, string $address, ?string $placeholder = null)
+    {
+        [$user, $domain] = explode('@', $address, 2);
+        [$domain, $tld] = explode('.', $domain, 2);
+
+        return sprintf(
+            '<a class="mailthisanchor"></a><script type="text/javascript" class="mailthis">mailThis(\'%s\', \'%s\', \'%s\', undefined, %s)</script>',
+            twig_escape_filter($environment, $user, 'js'),
+            twig_escape_filter($environment, $domain, 'js'),
+            twig_escape_filter($environment, $tld, 'js'),
+            $placeholder ? sprintf('\'%s\'', twig_escape_filter($environment, $placeholder, 'js')) : 'undefined',
+        );
     }
 
     /**

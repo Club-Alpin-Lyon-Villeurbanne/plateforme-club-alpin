@@ -39,7 +39,8 @@
         "symfony/validator": "5.3.*",
         "symfony/web-link": "5.3.*",
         "symfony/webpack-encore-bundle": "^1.13",
-        "symfony/yaml": "5.3.*"
+        "symfony/yaml": "5.3.*",
+        "twig/twig": "^3.3"
     },
     "require-dev": {
         "symfony/browser-kit": "5.3.*",
