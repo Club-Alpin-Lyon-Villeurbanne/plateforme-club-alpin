@@ -9,7 +9,14 @@
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                     <td bgcolor="#ffffff" style="background: #ffffff; border-radius: 2px; padding: 15px 20px;">
+                        <h1>{{ block('subject') }}</h1>
+                        <p>
+                            {% block hello %}Bonjour,{% endblock %}
+                        </p>
                         {% block inner_html '' %}
+                        <p>
+                            {% block goodbye %}Bonne journée.{% endblock %}
+                        </p>
                     </td>
                 </tr>
             </table>

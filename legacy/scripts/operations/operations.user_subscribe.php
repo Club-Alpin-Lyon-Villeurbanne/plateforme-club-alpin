@@ -17,8 +17,8 @@ if (12 != strlen($cafnum_user)) {
 if (!isMail($email_user)) {
     $errTab[] = 'Merci de renseigner une adresse e-mail valide';
 }
-if (strlen($mdp_user) < 8 || strlen($mdp_user) > 40) {
-    $errTab[] = 'Le mot de passe doit faire de 8 à 40 caractères';
+if (strlen($mdp_user) < 8 || strlen($mdp_user) > 128) {
+    $errTab[] = 'Le mot de passe doit faire de 8 à 128 caractères';
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
@@ -151,40 +151,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
         // check-in vars : string à retourner lors de la confirmation= md5 de la concaténation id-email
         $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$cookietoken_user.'-'.$id_user.'.html';
 
-        // content vars
-        $subject = 'Validez votre compte adhérent du '.$p_sitename;
-        $content_header = '';
-        $content_main = '
-            <h1>'.$subject.'</h1>
-            <p>
-                Bonjour <i>'.$firstname_user.'</i>,<br /><br />Vous venez de créer votre compte adhérent
-                sur le site du '.$p_sitename.'. Pour confirmer votre adresse e-mail et pouvoir vous connecter, cliquez
-                sur le lien ci-dessous :
-            </p>
-            <p><a class="bigLink" href="'.$url.'">'.$url.'</a></p>
-            <p>A tout de suite !</p>
-            ';
-        $content_footer = '';
-
-        $altcontent_main = 'Bonjour '.$firstname_user.', >Vous venez de créer votre compte adhérent
-                sur le site du '.$p_sitename.'. Pour confirmer votre adresse e-mail et pouvoir vous connecter, copier le
-                sur le lien ci-dessous dans votre navigateur internet : '.$url;
-
-        // PHPMAILER
-        require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-        $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-
-        $mail->AddAddress(stripslashes($email_user), stripslashes($nickname_user));
-        $mail->Subject = $subject;
-        //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)\nSinon copiez-coller le lien suivant dans votre navigateur:\n$url"; // optional, comment out and test
-        $mail->setMailBody($content_main);
-        $mail->setAltMailBody($altcontent_main);
-        $mail->setMailHeader($content_header);
-        $mail->setMailFooter($content_footer);
-        // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-
-        if (!$mail->Send()) {
-            $errTab[] = "Échec à l'envoi du mail. Merci de nous contacter par téléphone pour nous faire part de cette erreur... Plus d'infos : ".($mail->ErrorInfo);
-        }
+        LegacyContainer::get('legacy_mailer')->send(stripslashes($email_user), 'transactional/compte-validation', [
+            $url => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$cookietoken_user.'-'.$id_user.'.html',
+        ]);
     }
 }

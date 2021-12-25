@@ -1,0 +1,28 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    Désinscription de {{ username }}
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        {{ username }} était inscrit(e) à la sortie <a href="{{ event_url }}">{{ event_name }}</a>.
+        Il(elle) vient de supprimer son inscription.
+    </p>
+    <p>
+        Plus d'infos :
+    </p>
+    <ul>
+        <li><b>Pseudo : </b> {{ user.nickname }}</li>
+        <li><b>Email : </b> <a href="mailto:{{ user.email }}">{{ user.email }}</a></li>
+    </ul>
+{% endblock %}
+
+{% block inner_txt %}
+    {{ username }} était inscrit(e) à la sortie {{ event_name }} ({{ event_url }}).
+    Il(elle) vient de supprimer son inscription.
+
+    Plus d'infos :
+      - Pseudo: {{ user.nickname }}
+      - Email: {{ user.email }}
+{% endblock %}

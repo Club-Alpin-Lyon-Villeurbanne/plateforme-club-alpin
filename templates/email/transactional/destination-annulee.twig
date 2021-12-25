@@ -1,0 +1,24 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    Sorties du {{ dest_date}} annulées !
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        Les sorties du {{ dest_date }}, destination <a href="{{ dest_url }}">{{ dest_name }}</a>
+        viennent d'être annulées par <a href="{{ cancel_user_url }}">{{ cancel_user_name }}</a>.
+        Voici le message joint :
+    </p>
+    <p>
+        {{ message | converturls | nl2br }}
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+Les sorties du {{ dest_date }}, destination {{ dest_name }} ({{ dest_url }})
+viennent d'être annulées par {{ cancel_user_name }} ({{ cancel_user_url }}).
+Voici le message joint :
+
+{{ message }}
+{% endblock %}

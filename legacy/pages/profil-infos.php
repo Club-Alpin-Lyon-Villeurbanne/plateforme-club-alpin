@@ -44,7 +44,7 @@ if (user()) {
         <?php } ?>
 
         <!-- Infos : filiations (enfants) -->
-        <?php if (count($tmpUser['enfants'])) { ?>
+        <?php if (count($tmpUser['enfants'] ?? [])) { ?>
             <h2><span class="bleucaf">&gt;</span> Filiation :</h2>
             <?php inclure('infos-profil-filiation-enfants', 'vide'); ?>
             <ul class="nice-list">
