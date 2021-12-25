@@ -1,0 +1,21 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    Votre article a été refusé
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        Désolé, il semble que votre article <a href="{{ article_url }}">{{ article_name }}</a> ne soit pas validé
+        par les responsables. Voici ci-dessous le message joint :</p>
+    <p>
+        {{ message | converturls | nl2br }}
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+Désolé, il semble que votre article {{ article_name }} ({{ article_url }}) ne soit pas validé
+par les responsables. Voici ci-dessous le message joint :
+
+    {{ message }}
+{% endblock %}

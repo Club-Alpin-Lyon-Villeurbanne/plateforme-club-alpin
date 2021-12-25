@@ -39,48 +39,23 @@ if (!isset($errTab) || 0 === count($errTab)) {
 if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_evt || 2 == $status_evt)) {
     // content vars
     if (1 == $status_evt) {
-        $subject = 'Votre sortie a été publiée sur le site';
-        $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html';
-        $content_main = "<h2>$subject</h2>
-            <p>Félicitations, votre sortie &laquo;<i>".html_utf8($authorDatas['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $authorDatas['tsp_evt']).' a été publiée sur le site du '.$p_sitename.' par les responsables. Pour y accéder, cliquez sur le lien ci-dessous :</p>
-            <p>
-                <a href="'.$url.'" title="">'.$url.'</a>
-            </p>';
+        LegacyContainer::get('legacy_mailer')->send($authorDatas['email_user'], 'transactional/sortie-publiee', [
+            'event_name' => $authorDatas['titre_evt'],
+            'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html',
+            'event_date' => date('d/m/Y', $authorDatas['tsp_evt']),
+        ]);
     }
     if (2 == $status_evt) {
-        $subject = 'Votre sortie a été refusée';
-        $content_main = "<h2>$subject</h2>
-            <p>Désolé, il semble que votre événement créé sur le site du ".$p_sitename.' ne soit pas validé par les responsables. Voici ci-dessous le message joint :</p>
-            <p>&laquo;<i>'.html_utf8(stripslashes($_POST['msg'] ?: '...')).'</i>&raquo;</p>
-            <p>Sortie concernée : &laquo;<i>'.html_utf8($authorDatas['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $authorDatas['tsp_evt']).'</p>
-            <p>
-                Pour administrer vos sorties, rendez-vous sur votre profil :
-                <a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/sorties.html" title="">'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/sorties.html</a>
-            </p>
-            ';
-    }
-    $content_header = '';
-    $content_footer = '';
-
-    // PHPMAILER
-    require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-    $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-    $mail->AddAddress($authorDatas['email_user'], $authorDatas['firstname_user'].' '.$authorDatas['lastname_user']);
-    $mail->Subject = $subject;
-    //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-    $mail->setMailBody($content_main);
-    $mail->setMailHeader($content_header);
-    $mail->setMailFooter($content_footer);
-    // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-
-    if (!$mail->Send()) {
-        $errTab[] = "Échec à l'envoi du mail. Merci de nous contacter par téléphone pour nous faire part de cette erreur... Plus d'infos : ".($mail->ErrorInfo);
+        LegacyContainer::get('legacy_mailer')->send($authorDatas['email_user'], 'transactional/sortie-refusee', [
+            'message' => stripslashes($_POST['msg'] ?: '...'),
+            'event_name' => $authorDatas['titre_evt'],
+            'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html',
+            'event_date' => date('d/m/Y', $authorDatas['tsp_evt']),
+        ]);
     }
 }
 
-// Si l'événement est validé, on avertit les sbires, joints par l'auteur, qu'ils sont inscrits d'office à l'événement
 if ((!isset($errTab) || 0 === count($errTab)) && 1 == $status_evt) {
-    // liste des personnes inscrites (sauf l'auteur : un e-mail suffit)
     $handle['joins'] = [];
     $req = "SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user
             , role_evt_join
@@ -94,36 +69,12 @@ if ((!isset($errTab) || 0 === count($errTab)) && 1 == $status_evt) {
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     while ($row = $result->fetch_assoc()) {
-        // construction du mail
-        $subject = 'Vous êtes inscrit à une sortie qui vient d\'être publiée';
-        $content_main = "<h2>$subject</h2>
-            <p>Bonjour ".$row['firstname_user'].",</p>
-            <p>
-                Une nouvelle sortie vient d'être publiée sur le site.
-                <a href=\"".LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.(int) ($authorDatas['id_user']).'.html">'.$authorDatas['nickname_user'].'</a>
-                vous a pré-inscrit pour cette sortie en tant que <b>'.$row['role_evt_join'].'</b>.
-            </p>
-            <p>
-                Pour voir la fiche de cette sortie, cliquez ci-dessous :<br />
-                <a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html" title="">'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html</a>
-            </p>
-            ';
-        $content_header = '';
-        $content_footer = '';
-
-        // PHPMAILER
-        require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-        $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-        $mail->AddAddress($row['email_user'], $row['firstname_user'].' '.$row['lastname_user']);
-        $mail->Subject = $subject;
-        //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-        $mail->setMailBody($content_main);
-        $mail->setMailHeader($content_header);
-        $mail->setMailFooter($content_footer);
-        // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-
-        if (!$mail->Send()) {
-            $errTab[] = "Échec à l'envoi du mail. Merci de nous contacter par téléphone pour nous faire part de cette erreur... Plus d'infos : ".($mail->ErrorInfo);
-        }
+        LegacyContainer::get('legacy_mailer')->send($row['email_user'], 'transactional/sortie-publiee-inscrit', [
+            'author_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.(int) ($authorDatas['id_user']).'.html',
+            'author_nickname' => $authorDatas['nickname_user'],
+            'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html" title="">'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html',
+            'event_name' => $authorDatas['titre_evt'],
+            'role' => $row['role_evt_join'],
+        ], [], null, $authorDatas['email_user']);
     }
 }

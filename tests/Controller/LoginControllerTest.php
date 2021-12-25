@@ -90,8 +90,8 @@ class LoginControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', $user->getEmail());
-        $this->assertEmailTextBodyContains($emails[0], 'Votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
-        $this->assertEmailHtmlBodyContains($emails[0], 'Votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
+        $this->assertEmailTextBodyContains($emails[0], 'Votre mot de passe');
+        $this->assertEmailHtmlBodyContains($emails[0], 'Votre mot de passe');
     }
 
     public function testSetPassword()
@@ -119,8 +119,8 @@ class LoginControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNickname(), $user->getEmail()));
-        $this->assertEmailTextBodyContains($emails[0], 'Modification de votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
-        $this->assertEmailHtmlBodyContains($emails[0], 'Modification de votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
+        $this->assertEmailTextBodyContains($emails[0], 'Modification de votre mot de passe');
+        $this->assertEmailHtmlBodyContains($emails[0], 'Modification de votre mot de passe');
     }
 
     public function testChangePassword()
@@ -154,7 +154,7 @@ class LoginControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNickname(), $user->getEmail()));
-        $this->assertEmailTextBodyContains($emails[0], 'Modification de votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
-        $this->assertEmailHtmlBodyContains($emails[0], 'Modification de votre mot de passe du Club Alpin Français Lyon-Villeurbanne');
+        $this->assertEmailTextBodyContains($emails[0], 'Modification de votre mot de passe');
+        $this->assertEmailHtmlBodyContains($emails[0], 'Modification de votre mot de passe');
     }
 }

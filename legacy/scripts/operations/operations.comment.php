@@ -58,36 +58,18 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $cont_comment_mysql = LegacyContainer::get('legacy_mysqli_handler')->escapeString($cont_comment);
 
     // article publié et commentable ?
-    $req = "INSERT INTO caf_comment(id_comment, status_comment, tsp_comment, user_comment, name_comment, email_comment, cont_comment, parent_type_comment, parent_comment)
-                            VALUES (NULL ,  '1', 			 '".time()."',  '".getUser()->getId()."',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
+    $req = "INSERT INTO caf_comment(status_comment, tsp_comment, user_comment, name_comment, email_comment, cont_comment, parent_type_comment, parent_comment)
+                            VALUES ('1', 			 '".time()."',  '".getUser()->getId()."',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
 
-    // PHPMAILER - envoi mail vers auteur
     if ('' !== $comment_article[2]) {
-        $content_main = '<h1>Bonjour !<h1><p>Votre article <a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$comment_article[4].'-'.$comment_article[0].'.html#comments" title="">'.$comment_article[3].'</a> a été commenté avec le texte suivant :</p><p><i>'.$cont_comment.'</i></p><br /><br /><p>PS : ceci est un mail automatique.</p>';
-
-        require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-        $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-        if (getUser()->getEmail()) {
-            $mail->AddReplyTo(getUser()->getEmail());
-        }
-        $mail->AddAddress($comment_article[2]);
-        $mail->Subject = $p_sitename." - J'ai ajouté un commentaire à votre article !";
-        //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-        $mail->setMailBody($content_main);
-        $mail->setMailHeader(isset($content_header) ? $content_header : '');
-        $mail->setMailFooter(isset($content_footer) ? $content_footer : '');
-
-        // débug local
-        if ('127.0.0.1' == $_SERVER['HTTP_HOST']) {
-            $mail->IsMail();
-        }
-
-        if (!$mail->Send()) {
-            $errTab[] = "Échec à l'envoi du mail. Merci de nous contacter par téléphone pour nous faire part de cette erreur... Plus d'infos : ".($mail->ErrorInfo);
-        }
+        LegacyContainer::get('legacy_mailer')->send($comment_article[2], 'transactional/article-comment', [
+            'article_name' => $comment_article[3],
+            'article_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$comment_article[4].'-'.$comment_article[0].'.html#comments',
+            'message' => $cont_comment,
+        ], [], null, getUser()->getEmail());
     }
 }
 
