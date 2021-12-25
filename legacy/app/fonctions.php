@@ -2,6 +2,8 @@
 
 use App\Entity\User;
 use App\Legacy\LegacyContainer;
+use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\NoRFCWarningsValidation;
 use Symfony\Bridge\Twig\AppVariable;
 
 global $_POST;
@@ -588,11 +590,7 @@ function superadmin()
 // check mail
 function isMail($mail)
 {
-    if (preg_match("#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#", $mail)) {
-        return true;
-    }
-
-    return false;
+    return (new EmailValidator())->isValid($mail, new NoRFCWarningsValidation());
 }
 
 // function de supp de dossier (dangerous)
