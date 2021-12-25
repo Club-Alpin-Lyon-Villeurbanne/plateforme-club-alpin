@@ -3,12 +3,12 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %} - {{ sitename }}</title>
-        <meta name="description" content="Site officiel du {{ sitename }} : activités sportives été et hiver, alpinisme, randonnée, ski, refuges...">
+        <meta name="description" content="{% block meta_description %}Site officiel du {{ sitename }} : activités sportives été et hiver, alpinisme, randonnée, ski, refuges...{% endblock %}">
         <meta name="viewport" content="width=1200">
         <link rel="shortcut icon" href="favicon.ico" />
 
         <meta property="og:title" content="{{ sitename }}" />
-        <meta property="og:description" content="Site officiel du {{ sitename }} : activités sportives été et hiver, alpinisme, randonnée, ski, refuges..." />
+        <meta property="og:description" content="{{ block('meta_description') }}" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="{{ app.request.uri }}" />
         <meta property="og:site_name" content="{{ sitename }}" />
@@ -95,6 +95,7 @@
                     </div>
                 <![endif]-->
                 {% include 'header.html.twig' %}
+                <div id="bigfond" style="background-image:url({{ fond_commission(current_commission is defined ? current_commission : null) }});"></div>
                 <div id="main" class="bigoo" role="main">
                     <div id="left1">
                         {% block body %}{% endblock %}
