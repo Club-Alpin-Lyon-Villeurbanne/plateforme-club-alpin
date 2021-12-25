@@ -45,12 +45,30 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
             new TwigFunction('list_events', [$this, 'getEvents']),
             new TwigFunction('list_partenaires', [$this, 'getPartenaires']),
             new TwigFunction('user_picto', [$this, 'getUserPicto']),
+            new TwigFunction('fond_commission', [$this, 'getFondCommission']),
             new TwigFunction('notifications_counter', [$this, 'getNotificationsCounter']),
             new TwigFunction('notifications_counter_destinations', [$this, 'getNotificationsDestinations']),
             new TwigFunction('notifications_counter_articles', [$this, 'getNotificationsValidationArticle']),
             new TwigFunction('notifications_counter_sorties', [$this, 'getNotificationsValidationSortie']),
             new TwigFunction('notifications_counter_sorties_president', [$this, 'getNotificationsValidationSortiePresident']),
         ];
+    }
+
+    public function getFondCommission(?string $code)
+    {
+        if ($code && $commission = $this->locator->get(CommissionRepository::class)->findVisibleCommission($code)) {
+            $id = $commission->getId();
+        } else {
+            $id = 0;
+        }
+
+        $rel = '/ftp/commission/'.$id.'/bigfond.jpg';
+
+        if (!file_exists(__DIR__.'/../../../public/'.$rel)) {
+            $rel = '/ftp/commission/0/bigfond.jpg';
+        }
+
+        return $rel;
     }
 
     public function getPartenaires(): iterable
