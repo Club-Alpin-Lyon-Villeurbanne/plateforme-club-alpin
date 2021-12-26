@@ -26,7 +26,7 @@
 
 					<!-- contacter -->
 					<?php
-                    if ($auth_contact_user) {
+                    if (user() && $auth_contact_user) {
                         echo '<a href="javascript:void(0)" title="Utiliser le formulaire de contact pour écrire un message à cet adhérent" class="nice2" style="float:right" onclick="$(\'#trigger-userinfo, #trigger-usercontact\').slideToggle()">
 								<img src="/img/base/email.png" alt="" title="" /> &nbsp; &nbsp; Contacter
 							</a>';

@@ -44,37 +44,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     $errTab[] = 'Erreur SQL';
                 }
 
-                // envoi mail encadrant
-                $subject = 'Votre sortie a été réactivée sur le site';
-                $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html';
-                $content_main = "<h2>$subject</h2>
-                    <p>Félicitations, votre sortie &laquo;<i>".html_utf8($handle['titre_evt']).'</i>&raquo;, prévue pour le '.date('d/m/Y', $handle['tsp_evt']).' a été réactivée sur le site du '.$p_sitename.'.<br /><br /><b>Pensez à ajouter des (co)encadrants.</b><br /><br /> Pour y accéder, cliquez sur le lien ci-dessous :</p>
-                    <p>
-                        <a href="'.$url.'" title="">'.$url.'</a>
-                    </p>';
-
-                if ($handle['cycle_master_evt']) {
-                    $content_main .= '<b>Cette sortie est un début de cycle, pensez à réactiver les sorties suivantes !</b>';
-                }
-
-                $content_header = '';
-                $content_footer = '';
-
-                // PHPMAILER
-                require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-                $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-
-                $mail->AddAddress($handle['email_user'], $handle['firstname_user'].' '.$handle['lastname_user']);
-                $mail->Subject = $subject;
-                //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-                $mail->setMailBody($content_main);
-                $mail->setMailHeader($content_header);
-                $mail->setMailFooter($content_footer);
-                // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-
-                if (!$mail->Send()) {
-                    $errTab[] = "Échec à l'envoi du mail. Merci de nous contacter par téléphone pour nous faire part de cette erreur... Plus d'infos : ".($mail->ErrorInfo);
-                }
+                LegacyContainer::get('legacy_mailer')->send($handle['email_user'], 'transactional/sortie-reactivee', [
+                    'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html',
+                    'event_name' => $handle['titre_evt'],
+                    'is_cycle' => $handle['cycle_master_evt'],
+                ]);
             }
 
             // redirection vers la page de la sortie

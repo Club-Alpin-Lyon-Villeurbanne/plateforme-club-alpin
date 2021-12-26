@@ -21,9 +21,9 @@ if ('pages/' != substr($p, 0, 6) && 'includes/' != substr($p, 0, 9)) {
 
     //_________________________________________________ HEADER AU CHOIX (inclut le doctype)
     if ($pageAdmin) {
-        require __DIR__.'/pages/header-admin.php';
+        require __DIR__.'/includes/generic/header-admin.php';
     } else {
-        require __DIR__.'/pages/header.php';
+        require __DIR__.'/includes/generic/header.php';
     }
 
     echo '<div id="includer-stuff">';

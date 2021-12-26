@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -43,11 +44,12 @@ class Evt
     private $statusLegal;
 
     /**
-     * @var int
+     * @var User
      *
-     * @ORM\Column(name="status_legal_who_evt", type="integer", nullable=true, options={"comment": "ID du validateur légal"})
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="status_legal_who_evt", referencedColumnName="id_user", nullable=true)
      */
-    private $statusLegalWho = '0';
+    private $statusLegalWho;
 
     /**
      * @var bool
@@ -258,6 +260,11 @@ class Evt
     private $joinMax;
 
     /**
+     * @ORM\OneToMany(targetEntity="EvtJoin", mappedBy="evt", cascade={"persist"})
+     */
+    private $joins;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="ngens_max_evt", type="integer", nullable=false, options={"comment": "Nombre de gens pouvant y aller au total. Donnée ""visuelle"" uniquement, pas de calcul."})
@@ -298,6 +305,11 @@ class Evt
      * @ORM\Column(name="cb_evt", type="boolean", nullable=true)
      */
     private $cb;
+
+    public function __construct()
+    {
+        $this->joins = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -340,12 +352,12 @@ class Evt
         return $this;
     }
 
-    public function getStatusLegalWho(): ?int
+    public function getStatusLegalWho(): ?User
     {
         return $this->statusLegalWho;
     }
 
-    public function setStatusLegalWho(int $statusLegalWho): self
+    public function setStatusLegalWho(User $statusLegalWho): self
     {
         $this->statusLegalWho = $statusLegalWho;
 
@@ -391,6 +403,12 @@ class Evt
     public function getUser(): ?User
     {
         return $this->user;
+    }
+
+    /** @return EvtJoin[] */
+    public function getParticipant()
+    {
+        return $this->joins;
     }
 
     public function getCommission(): Commission

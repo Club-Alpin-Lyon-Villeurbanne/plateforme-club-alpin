@@ -1,0 +1,20 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    Votre article a reçu un commentaire
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        Votre article <a href="{{ article_url }}">{{ article_name }}</a> a reçu un commentaire :
+    </p>
+    <p>
+        {{ message | converturls | nl2br }}
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+Votre article {{ article_name }} ({{ article_url }}) a reçu un commentaire :
+
+{{ message }}
+{% endblock %}

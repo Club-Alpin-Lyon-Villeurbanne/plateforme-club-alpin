@@ -29,9 +29,9 @@ class Article
     private $status = '0';
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="status_who_article", type="integer", nullable=true, options={"comment": "ID du membre qui change le statut"})
+     * @var User
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="status_who_article", referencedColumnName="id_user", nullable=true)
      */
     private $statusWho;
 
@@ -71,9 +71,10 @@ class Article
     private $tspLastedit = 'CURRENT_TIMESTAMP';
 
     /**
-     * @var int
+     * @var User
      *
-     * @ORM\Column(name="user_article", type="integer", nullable=false, options={"comment": "ID du créateur"})
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="user_article", referencedColumnName="id_user", nullable=false)
      */
     private $user;
 
@@ -142,12 +143,12 @@ class Article
         return $this;
     }
 
-    public function getStatusWho(): ?int
+    public function getStatusWho(): ?User
     {
         return $this->statusWho;
     }
 
-    public function setStatusWho(int $statusWho): self
+    public function setStatusWho(User $statusWho): self
     {
         $this->statusWho = $statusWho;
 
@@ -214,12 +215,12 @@ class Article
         return $this;
     }
 
-    public function getUser(): ?int
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(int $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 

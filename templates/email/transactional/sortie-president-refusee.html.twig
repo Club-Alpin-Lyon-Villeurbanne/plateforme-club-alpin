@@ -1,0 +1,15 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    Votre sortie a été refusée à la validation
+{%- endblock %}
+
+{% block inner_html %}
+<p>
+    Désolé, votre sortie <a href="{{ event_url }}">{{ event_name }}</a> prévue pour le {{ event_date }} a été refusée par le président.
+</p>
+{% endblock %}
+
+{% block inner_txt %}
+Désolé, votre sortie {{ event_name }} ({{ event_url }}) prévue pour le {{ event_date }} a été refusée par le président.
+{% endblock %}
