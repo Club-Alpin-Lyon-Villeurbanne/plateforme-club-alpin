@@ -5,9 +5,8 @@
 {%- endblock %}
 
 {% block inner_html %}
-    <h1>{{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} à valider</h1>
     <p>
-        Vous êtes responsable de commission, et il y a {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} en attente de publication sur le site du {{ sitename }}.
+        Vous êtes responsable de commission, et il y a {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} en attente de publication.
     </p>
     <p>
         Prenez soin de vous rendre sur <a href="{{ url('legacy_root') }}gestion-des-sorties.html">votre page de gestion</a>,
@@ -25,9 +24,7 @@
 {% endblock %}
 
 {% block inner_txt %}
-    {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} à valider.
-
-    Vous êtes responsable de commission, et il y a {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} en attente de publication sur le site du {{ sitename }}.
+    Vous êtes responsable de commission, et il y a {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} en attente de publication.
 
     Prenez soin de vous rendre sur votre page de gestion [{{ url('legacy_root') }}gestion-des-sorties.html],
     et de vérifier attentivement toutes les informations liées à chaque sortie en attente de publication.

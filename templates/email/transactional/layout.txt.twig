@@ -1,4 +1,9 @@
 {% block txt %}
+{{ block('subject') }}
+
+{% block hello %}Bonjour,{% endblock %}
+
 {% block inner_txt %}{% endblock %}
 
+{% block goodbye %}Bonne journée.{% endblock %}
 {% endblock %}

@@ -1,0 +1,17 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    Vous avez été inscrit à une sortie
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        Vous venez d'être inscrit(e) {{ role ? 'en tant que ' ~ role : '' }}
+        à la sortie <a href="{{ event_url }}">{{ event_name }}</a>.
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+    Vous venez d'être inscrit(e) {{ role ? 'en tant que ' ~ role : '' }}
+    à la sortie {{ event_name }} ({{ event_url }}).
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    Vous êtes inscrit à une sortie qui vient d'être publiée
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        Une nouvelle sortie <a href="{{ event_url }}" title="">{{ event_name }}</a> vient d'être publiée sur le site.
+        <a href="{{ author_url }}">{{ author_name }}</a>
+        vous a pré-inscrit pour cette sortie en tant que <b>{{ role }}</b>.
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+Une nouvelle sortie {{ event_name }} ({{ event_url }}) vient d'être publiée sur le site.
+{{ author_name }} ({{ author_url }}) vous a pré-inscrit pour cette sortie en tant que {{ role }}.
+{% endblock %}

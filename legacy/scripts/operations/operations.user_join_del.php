@@ -73,104 +73,34 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $errTab[] = 'Erreur SQL';
             }
 
-            // phpmailer
-            require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-
-            // vars
             $tmpUserName = (getUser()->getFirstname().' '.getUser()->getLastname());
-            $evtName = html_utf8($_POST['titre_evt']);
-            $evtUrl = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html');
+            $evtName = $_POST['titre_evt'];
+            $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html';
 
-            // contenu
-            $subject = 'Désinscription de '.$tmpUserName;
-            $content_main = "<h2>$subject</h2>
-                <p>
-                    ".html_utf8($tmpUserName)."
-                    était inscrit à la sortie <a href='$evtUrl'>$evtName</a>. <b>Il vient de supprimer son inscription.</b>
-                </p>
-                <p>
-                    Plus d'infos :
-                </p>
-                <ul>
-                    <li><b>Pseudo : </b> ".html_utf8(getUser()->getNickname())."</li>
-                    <li><b>Email : </b> <a href='mailto:".html_utf8(getUser()->getEmail())."'>".html_utf8(getUser()->getEmail()).'</a></li>
-                    <li><b>Tel : </b> '.html_utf8(getUser()->getTel()).'</li>
-                    <li><b>Tel2 : </b> '.html_utf8(getUser()->getTel2()).'</li>
-                </ul>
-                ';
-            $content_header = '';
-            $content_footer = '';
-
-            $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-
-            $mail->AddReplyTo(getUser()->getEmail());
-            $mail->Subject = $subject;
-            //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-            $mail->setMailBody($content_main);
-            $mail->setMailHeader($content_header);
-            $mail->setMailFooter($content_footer);
-            $mail->AddAddress($toMail, $toName);
-            // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-
-            if (!$mail->Send()) {
-                $errTab[] = "Échec à l'envoi du mail à ".$toMail.". Plus d'infos : ".($mail->ErrorInfo);
-            }
+            LegacyContainer::get('legacy_mailer')->send($toMail, 'transactional/sortie-desinscription', [
+                'username' => $tmpUserName,
+                'event_url' => $evtUrl,
+                'event_name' => $evtName,
+                'user' => getUser(),
+            ], [], null, getUser()->getEmail());
 
             // paiement en ligne
             // envoi d'un email pour indiquer la désinscription d'un participant avec paiement en ligne
             if (1 == $is_cb) {
-                $toMail = 'comptabilite@clubalpinlyon.fr';
-                $toName = 'Trésorier';
                 $toNameFull = getUser()->getFirstname().' '.getUser()->getLastname();
                 $toCafNum = getUser()->getCafnum();
 
-                $subject = 'Désinscription avec paiement en ligne';
-                $content_main = "<h2>$subject</h2>
-                    <p>
-                        Bonjour,<br />
-                        Un participant ayant payé en ligne vient de se <span color='green'>désinscrire</span>
-                         de la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;.
-                    </p>
-                    <p>
-                        Merci de prendre contact avec l'encadrant.
-                        <br />
-                        La gestion du paiement (modification/remboursement) se passe sur https://paiement.systempay.fr/vads-merchant/.
-                    </p>
-                    <p>
-                        Informations supplémentaires :<br />
-                        <ul>
-                            <li>Transaction : $evtName du $evtDate - $toNameFull</li>
-                            <li>Sortie : $evtName du $evtDate</li>
-                            <li>Montant : $evtTarif</li>
-                            <li>Adhérent : $toNameFull / $toCafNum</li>
-                            <li>Endadrant : $encName / $encEmail</li>
-                        </ul>
-                        <br />
-                        Bonne journée.
-                    </p>
-                ";
-
-                $content_header = '';
-                $content_footer = '';
-
-                $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-
-                $mail->Subject = $subject;
-                $mail->setMailBody($content_main);
-                $mail->setMailHeader($content_header);
-                $mail->setMailFooter($content_footer);
-                $mail->AddAddress($toMail, $toName);
-
-                // débug local
-                if ('127.0.0.1' == $_SERVER['HTTP_HOST']) {
-                    $mail->IsMail();
-                }
-
-                if (!$mail->Send()) {
-                    $errTabMail[] = "Échec à l'envoi du mail à ".html_utf8($toMail).". Plus d'infos : ".($mail->ErrorInfo);
-                }
+                LegacyContainer::get('legacy_mailer')->send('comptabilite@clubalpinlyon.fr', 'transactional/sortie-desinscription-paiement-ligne', [
+                    'event_name' => $evtName,
+                    'event_url' => $evtUrl,
+                    'event_date' => $evtDate,
+                    'adherent' => $toNameFull,
+                    'event_tarif' => $evtTarif,
+                    'caf_num' => $toCafNum,
+                    'encadrant_name' => $encName,
+                    'encadrant_email' => $encEmail,
+                ]);
             }
-            // fin paiement en ligne
         }
     }
 }

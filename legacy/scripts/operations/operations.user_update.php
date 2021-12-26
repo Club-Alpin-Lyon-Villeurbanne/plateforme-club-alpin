@@ -119,44 +119,10 @@ if ('' !== $email_user_mailchange) {
         }
     }
 
-    // ENVOI DU MAIL
     if (!isset($errTab) || 0 === count($errTab)) {
-        // check-in vars : string à retourner lors de la confirmation= md5 de la concaténation id-email
-        $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'email-change/'.$token.'-'.$id_user_mailchange.'.html';
-
-        // content vars
-        $subject = 'Modification de votre e-mail !';
-        $content_header = '';
-        $content_main = '
-            <h1>'.$subject.'</h1>
-            <p>Vous avez demandé à utiliser cette adresse e-mail comme identifiant. Cliquez sur le lien ci-dessous pour confirmer
-            et vous pourrez utiliser cette adresse e-mail pour vous connecter au site et recevoir les notifications.
-            Attention ce lien ne fonctionne que pendant une heure.</p>
-            <p><a class="bigLink" href="'.$url.'" title="">'.$url.'</a></p>
-            <p>Si vous n\'avez pas demandé à recevoir ce mail, il suffit de l\'ignorer.</p>
-            ';
-        $content_footer = '';
-
-        // PHPMAILER
-        require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-        $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-
-        $mail->AddAddress($email_user_mailchange, getUser()->getNickname());
-        $mail->Subject = $subject;
-        //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-        $mail->setMailBody($content_main);
-        $mail->setMailHeader($content_header);
-        $mail->setMailFooter($content_footer);
-        // $mail->setMailBody('TEST');
-        // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-
-        // débug local
-        if ('127.0.0.1' == $_SERVER['HTTP_HOST']) {
-            $mail->IsMail();
-        }
-
-        if (!$mail->Send()) {
-            $errTab[] = "Échec à l'envoi du mail. Merci de nous contacter par téléphone pour nous faire part de cette erreur... Plus d'infos : ".($mail->ErrorInfo);
-        }
+        LegacyContainer::get('legacy_mailer')->send($email_user_mailchange, 'transactional/email-update', [
+            'email' => $email_user_mailchange,
+            'url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'email-change/'.$token.'-'.$id_user_mailchange.'.html',
+        ]);
     }
 }

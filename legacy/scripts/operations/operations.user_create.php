@@ -32,8 +32,8 @@ if (strlen($lastname_user) < 2) {
 if (!isMail($email_user)) {
     $errTab[] = 'Adresse e-mail invalide';
 }
-if (strlen($mdp_user) < 8 || strlen($mdp_user) > 40) {
-    $errTab[] = 'Le mot de passe doit faire de 8 à 40 caractères';
+if (strlen($mdp_user) < 8 || strlen($mdp_user) > 128) {
+    $errTab[] = 'Le mot de passe doit faire de 8 à 128 caractères';
 }
 if ($mdp_user != $_POST['mdp_user_confirm']) {
     $errTab[] = 'Veuillez entrer deux fois le même mot de passe, sans espace';
@@ -74,8 +74,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if ($row[0]) {
         $errTab[] = 'Un compte validé existe déjà avec cette adresse e-mail. Avez-vous <a href="'.generateRoute('session_password_lost').'" class="fancyframe" title="">oublié le mot de passe ?</a>';
     } else {
-        $req = "INSERT INTO `caf_user` (`id_user`, `email_user`, `mdp_user`, `cafnum_user`, `firstname_user`, `lastname_user`, `nickname_user`, `created_user`, `birthday_user`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `civ_user`, `moreinfo_user`, `auth_contact_user`, `valid_user`, `cookietoken_user`, `manuel_user`)
-                            VALUES (NULL, '$email_user', '$mdp_user', '$cafnum_user', '$firstname_user', '$lastname_user', '$nickname_user', '".time()."', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$pays_user', '$civ_user', '', '$auth_contact_user', '1', '', '1');";
+        $req = "INSERT INTO `caf_user` (`email_user`, `mdp_user`, `cafnum_user`, `firstname_user`, `lastname_user`, `nickname_user`, `created_user`, `birthday_user`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `civ_user`, `moreinfo_user`, `auth_contact_user`, `valid_user`, `cookietoken_user`, `manuel_user`, cafnum_parent_user, nomade_user, nomade_parent_user, doit_renouveler_user, alerte_renouveler_user)
+                            VALUES ('$email_user', '$mdp_user', '$cafnum_user', '$firstname_user', '$lastname_user', '$nickname_user', '".time()."', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$pays_user', '$civ_user', '', '$auth_contact_user', '1', '', '1', '', '0', '0', '0', '0');";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }

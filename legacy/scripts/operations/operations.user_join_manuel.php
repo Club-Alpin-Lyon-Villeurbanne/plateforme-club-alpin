@@ -186,46 +186,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
 
             if (0 === count($errTabMail)) {
-                // phpmailer
-                require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-
-                // contenu
-                $subject = 'Vous avez été inscrit à une sortie du CAF';
-                $content_main = "<h2>$subject</h2>
-                    <p>
-                        Bonjour $toName,<br />
-                        Vous venez d'être inscrit ".('manuel' == $role_evt_join ? '' : ' en tant que <i>'.$role_evt_join.'</i>')."
-                        à la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;.
-                    </p>
-                    <p>
-                        Cliquez sur le lien ci-dessous pour en savoir plus :<br />
-                        <a href='$evtUrl'>$evtUrl</a><br />
-                        <br />
-                        Bonne journée.
-                    </p>
-                ";
-
-                $content_header = '';
-                $content_footer = '';
-
-                $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-
-                $mail->Subject = $subject;
-                //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-                $mail->setMailBody($content_main);
-                $mail->setMailHeader($content_header);
-                $mail->setMailFooter($content_footer);
-                $mail->AddAddress($toMail, $toName);
-                // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-
-                // débug local
-                if ('127.0.0.1' == $_SERVER['HTTP_HOST']) {
-                    $mail->IsMail();
-                }
-
-                if (!$mail->Send()) {
-                    $errTabMail[] = "Échec à l'envoi du mail à ".html_utf8($toMail).". Plus d'infos : ".($mail->ErrorInfo);
-                }
+                LegacyContainer::get('legacy_mailer')->send($toMail, 'transactional/sortie-inscription', [
+                    'role' => 'manuel' === $role_evt_join ? null : $role_evt_join,
+                    'event_name' => $evtName,
+                    'event_url' => $evtUrl,
+                ]);
             }
         }
     }

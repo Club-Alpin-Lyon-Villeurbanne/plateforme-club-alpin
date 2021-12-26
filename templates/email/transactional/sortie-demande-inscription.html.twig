@@ -1,0 +1,63 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    {% if is_destination %}
+        {{ inscrits | length  }} nouvelle{{ inscrits|length > 1 ? 's' : '' }} inscription{{ inscrits|length > 1 ? 's' : '' }} à la sortie {{ event_name }}
+    {% else %}
+        {{ inscrits | length  }} nouvelle{{ inscrits|length > 1 ? 's' : '' }} demande{{ inscrits|length > 1 ? 's' : '' }} d'inscription à la sortie {{ event_name }}
+    {% endif %}
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        {{ inscrits|length }} adhérent{{ inscrits|length > 1 ? 's' : '' }} {{ inscrits|length > 1 ? 'vient' : 'viennent' }} de {{ is_destination ? "s'inscrire" : "se préinscrire" }}
+        à la sortie <a href="{{ event_url }}">{{ event_name }}</a>
+    </p>
+    <ul>
+        {% for inscrit in inscrits %}
+            <li>
+                <b>Nom :</b> {{ inscrit.firstname }} {{ inscrit.lastname }}
+            </li>
+        {% endfor %}
+        <li>
+            <b>Rôle :</b> {{ role }}
+        </li>
+        {% if is_cb %}
+            <li>
+                <b>Paiement en ligne :</b> {{ cb == 1 ? 'oui' : 'non' }}
+            </li>
+        {% endif %}
+        {% if is_restaurant %}
+            <li>
+                <b>Restaurant :</b> {{ restaurant == 1 ? 'oui' : 'non' }}
+            </li>
+        {% endif %}
+        {% if is_destination %}
+            <li>
+                {{ covoiturage == 1 ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif' }}
+            </li>
+        {% endif %}
+    </ul>
+    <p>
+        Vous recevez ce message car vous êtes {{ dest_role }} sur cette sortie.
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+    {{ inscrits|length }} adhérent{{ inscrits|length > 1 ? 's' : '' }} {{ inscrits|length > 1 ? 'vient' : 'viennent' }} de {{ is_destination ? "s'inscrire" : "se préinscrire" }}
+    à la sortie {{ event_name }} ({{ event_url }}).
+
+    Rôle : {{ role }}
+
+{% if is_cb %}
+    Paiement en ligne :< {{ cb == 1 ? 'oui' : 'non' }}
+{% endif %}
+{% if is_restaurant %}
+    Restaurant : {{ restaurant == 1 ? 'oui' : 'non' }}
+{% endif %}
+{% if is_destination %}
+    {{ covoiturage == 1 ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif' }}
+{% endif %}
+
+    Vous recevez ce message car vous êtes {{ dest_role }} sur cette sortie.
+{% endblock %}

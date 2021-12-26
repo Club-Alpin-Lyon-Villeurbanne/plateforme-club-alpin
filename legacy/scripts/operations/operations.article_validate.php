@@ -48,49 +48,19 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 }
 
-// envoi de mail à l'auteur pour - lui confirmer la création / OU / l'informer du refus
 if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_article || 2 == $status_article)) {
-    // content vars
-    $subject = $content_main = null;
-
     if (1 == $status_article) {
-        $subject = 'Votre article a été publié sur le site';
-        $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].'.html';
-        $content_main = "<h2>$subject</h2>
-            <p>Félicitations, votre article &laquo;<i>".html_utf8($authorDatas['titre_article']).'</i>&raquo;, créé le '.date('d/m/Y', $authorDatas['tsp_crea_article']).' a été publié sur le site du '.$p_sitename.' par les responsables. Pour y accéder, cliquez sur le lien ci-dessous :</p>
-            <p>
-                <a href="'.$url.'" title="">'.$url.'</a>
-            </p>';
+        LegacyContainer::get('legacy_mailer')->send($authorDatas['email_user'], 'transactional/article-valide', [
+            'article_name' => $authorDatas['titre_article'],
+            'article_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].'.html',
+        ]);
     }
     if (2 == $status_article) {
-        $subject = 'Votre article a été refusé';
-        $content_main = "<h2>$subject</h2>
-            <p>Désolé, il semble que votre article créé sur le site du CAF ne soit pas validé par les responsables. Voici ci-dessous le message joint :</p>
-            <p>&laquo;<i>".html_utf8(stripslashes($_POST['msg'] ?: '...')).'</i>&raquo;</p>
-            <p>Article concernée : &laquo;<i>'.html_utf8($authorDatas['titre_article']).'</i>&raquo;, créé le '.date('d/m/Y', $authorDatas['tsp_crea_article']).'</p>
-            <p>
-                Pour gérer vos articles, rendez-vous sur votre profil :
-                <a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/articles.html" title="">'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'profil/articles.html</a>
-            </p>
-            ';
-    }
-    $content_header = '';
-    $content_footer = '';
-
-    // PHPMAILER
-    require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-
-    $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-    $mail->AddAddress($authorDatas['email_user'], $authorDatas['firstname_user'].' '.$authorDatas['lastname_user']);
-    $mail->Subject = $subject;
-    //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-    $mail->setMailBody($content_main);
-    $mail->setMailHeader($content_header);
-    $mail->setMailFooter($content_footer);
-    // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-
-    if (!$mail->Send()) {
-        $errTab[] = "Échec à l'envoi du mail. Merci de nous contacter par téléphone pour nous faire part de cette erreur... Plus d'infos : ".($mail->ErrorInfo);
+        LegacyContainer::get('legacy_mailer')->send($authorDatas['email_user'], 'transactional/article-refuse', [
+            'article_name' => $authorDatas['titre_article'],
+            'article_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].'.html',
+            'message' => stripslashes($_POST['msg'] ?: '...'),
+        ]);
     }
 }
 

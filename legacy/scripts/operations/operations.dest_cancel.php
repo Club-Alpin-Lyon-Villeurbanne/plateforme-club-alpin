@@ -49,24 +49,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // message aux participants si la sortie est annulée alors qu'elle est publiée
     if ((!isset($errTab) || 0 === count($errTab)) && 1 == $destination['publie']) {
-        // phpmailer
-        require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-
-        // contenu commun à chaque envoi
-        $subject = 'Sorties du '.display_date($destination['date']).' annulées !';
-        $content_main = "<h2>$subject</h2>
-            <p>
-                Les sorties du ".display_date($destination['date']).', destination
-                &laquo;<i> '.html_utf8($destination['nom'])." </i>&raquo;
-                viennent d'être annulées par <a href=\"".LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.getUser()->getId().'.html">'.getUser()->getNickname().'</a>.
-                Voici le message joint :
-            </p>
-            <p>&laquo;<i> '.nl2br(html_utf8($msg))." </i>&raquo;</p>
-            <p><a href='".LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'destination/'.html_utf8($destination['code']).'-'.(int) ($destination['id']).".html' title=''>&lt; Voir la page dédiée</a></p>
-            ";
-        $content_header = '';
-        $content_footer = '';
-
         $destination['joins'] = [];
         $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
                     , role_evt_join
@@ -84,26 +66,24 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
         }
 
-        // PHPMAILER
-        // ENVOI DU MAIL A CHACUN
-        $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-        $mail->Subject = $subject;
-        $mail->setMailBody($content_main);
-        $mail->setMailHeader($content_header);
-        $mail->setMailFooter($content_footer);
+        $users = [];
+
         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-            // debug nomades
             if (isMail($handle2['email_user'])) {
-                $mail->AddAddress($handle2['email_user'], $handle2['firstname_user'].' '.$handle2['lastname_user']);
-            // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
+                $users[] = $handle2['email_user'];
             } else {
                 $nomadMsg[] = $handle2['civ_user'].' '.$handle2['firstname_user'].' '.$handle2['lastname_user'].' - '.$handle2['tel_user'].' - '.$handle2['tel2_user'];
             }
         }
 
-        if (!$mail->Send()) {
-            $errTab[] = "Échec à l'envoi du mail. Plus d'infos : ".($mail->ErrorInfo);
-        }
+        LegacyContainer::get('legacy_mailer')->send($users, 'transactional/destination-annulee', [
+            'cancel_user_name' => getUser()->getNickname(),
+            'cancel_user_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.getUser()->getId().'.html',
+            'dest_date' => display_date($destination['date']),
+            'dest_name' => $destination['nom'],
+            'dest_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'destination/'.html_utf8($destination['code']).'-'.(int) ($destination['id']).'.html',
+            'message' => $msg,
+        ]);
     }
 
     // redirection vers la page de la sortie avec le message "annulé"

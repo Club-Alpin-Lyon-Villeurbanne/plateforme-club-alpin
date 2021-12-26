@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Mailer\Mailer;
-use PHPMailer\PHPMailer\SMTP;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,13 +30,6 @@ class MailTestCommand extends Command
         require_once __DIR__.'/../../legacy/app/mailer/class.phpmailer.caf.php';
 
         $email = $input->getArgument('email');
-
-        $mailer = new \CAFPHPMailer(true);
-        $mailer->SMTPDebug = SMTP::DEBUG_LOWLEVEL;
-        $mailer->AddAddress($email);
-        $mailer->Subject = 'Test mail using PHPMailer';
-        $mailer->setMailBody('Body test');
-        $mailer->send();
 
         $this->mailer->send($email, 'transactional/test');
 
