@@ -99,9 +99,10 @@ class Article
     private $commission;
 
     /**
-     * @var int
+     * @var Evt
      *
-     * @ORM\Column(name="evt_article", type="integer", nullable=false, options={"comment": "ID sortie liée"})
+     * @ORM\OneToOne(targetEntity="Evt")
+     * @ORM\JoinColumn(name="evt_article", referencedColumnName="id_evt", nullable=true)
      */
     private $evt;
 
@@ -110,7 +111,7 @@ class Article
      *
      * @ORM\Column(name="une_article", type="boolean", nullable=false, options={"comment": "A la une ?"})
      */
-    private $une = '0';
+    private $une = false;
 
     /**
      * @var string
@@ -256,12 +257,12 @@ class Article
         return $this->commission;
     }
 
-    public function getEvt(): ?int
+    public function getEvt(): ?Evt
     {
         return $this->evt;
     }
 
-    public function setEvt(int $evt): self
+    public function setEvt(Evt $evt): self
     {
         $this->evt = $evt;
 

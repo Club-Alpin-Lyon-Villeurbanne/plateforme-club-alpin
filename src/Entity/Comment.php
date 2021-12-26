@@ -36,9 +36,9 @@ class Comment
     private $tsp;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="user_comment", type="integer", nullable=false)
+     * @var User
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="user_comment", referencedColumnName="id_user", nullable=false)
      */
     private $user;
 
@@ -106,12 +106,12 @@ class Comment
         return $this;
     }
 
-    public function getUser(): ?int
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(int $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
