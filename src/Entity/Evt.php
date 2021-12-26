@@ -404,7 +404,8 @@ class Evt
         return $this->user;
     }
 
-    public function getJoins()
+    /** @return EvtJoin[] */
+    public function getParticipant()
     {
         return $this->joins;
     }
