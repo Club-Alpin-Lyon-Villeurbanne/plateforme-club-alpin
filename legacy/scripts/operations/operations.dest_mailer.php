@@ -29,10 +29,6 @@ if ($destination['mail']) {
 }
 
 if (0 === count($errTab)) {
-    // ENVOI DU MAIL
-
-    require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-
     if (!$errTabMail && $mail_to_responsables) {
         foreach ($encadrants as $encadrant) {
             // recup de son email & nom
@@ -42,51 +38,13 @@ if (0 === count($errTab)) {
                 $errTabMail[] = "Les coordonnées du contact $toMail sont erronées. Il ne sera pas alerté.";
             }
 
-            // recup infos evt
-            $evtUrl = '';
-            $evtName = '';
-            $evtUrl = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$encadrant['sortie']['code_evt'].'-'.$encadrant['sortie']['id_evt'].'.html');
-            $evtName = html_utf8($encadrant['sortie']['titre_evt']);
-
-            $evtFiche = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'feuille-de-sortie/evt-'.$encadrant['sortie']['id_evt'].'.html');
-            $destFiche = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'feuille-de-sortie/dest-'.$id_destination.'.html');
-
             if (0 === count($errTabMail)) {
-                // contenu
-                $subject = "Vous êtes responsable d'une sortie à venir du CAF";
-                $content_main = "<h2>$subject</h2>
-						<p>
-							Bonjour $toName,<br />
-							Vous êtes (co-)encadrant de la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;. Les inscriptions ont été cloturées.
-						</p>
-						<p>
-							Cliquez sur le lien ci-dessous pour en savoir plus :<br />
-							<a href='$evtUrl'>$evtUrl</a> et imprimez au besoin <a href='$evtFiche'>la fiche de sortie</a> et <a href='$destFiche'>la fiche de destination</a>.<br />
-							<br />
-							Bonne journée.
-						</p>
-						<ul>
-                            <li>'$evtFiche'</li>
-                            <li>'$destFiche'</li>
-                        </ul>
-					";
-
-                $content_header = '';
-                $content_footer = '';
-
-                $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-
-                $mail->Subject = $subject;
-                //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-                $mail->setMailBody($content_main);
-                $mail->setMailHeader($content_header);
-                $mail->setMailFooter($content_footer);
-                $mail->AddAddress($toMail, $toName);
-                // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-
-                if (!$mail->Send()) {
-                    $errTabMail[] = "Échec à l'envoi du mail à ".html_utf8($toMail).". Plus d'infos : ".($mail->ErrorInfo);
-                }
+                LegacyContainer::get('legacy_mailer')->send($toMail, 'transactional/destination-cloturee', [
+                    'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$encadrant['sortie']['code_evt'].'-'.$encadrant['sortie']['id_evt'].'.html',
+                    'event_name' => $encadrant['sortie']['titre_evt'],
+                    'event_fiche' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'feuille-de-sortie/evt-'.$encadrant['sortie']['id_evt'].'.html',
+                    'dest_fiche' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'feuille-de-sortie/dest-'.$id_destination.'.html',
+                ]);
             }
         }
     }

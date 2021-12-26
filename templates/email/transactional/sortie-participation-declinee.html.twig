@@ -1,0 +1,17 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    Votre inscription est déclinée
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        Vous avez demandé à participer à la sortie <a href="{{ event_url }}">{{ event_name }}</a>,
+        mais votre demande a malheureusement été déclinée.
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+Vous avez demandé à participer à la sortie {{ event_name }} ({{ event_url }}),
+mais votre demande a malheureusement été déclinée.
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    Votre article a été publié sur le site
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        Félicitations, votre article <a href="{{ article_url }}">{{ article_name }}</a> a été publié
+        par les responsables.
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+Félicitations, votre article {{ article_name }} ({{ article_url }}) a été publié
+par les responsables.
+{% endblock %}

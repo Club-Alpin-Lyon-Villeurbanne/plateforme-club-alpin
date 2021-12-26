@@ -1,0 +1,32 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    Modification de votre adresse e-mail
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        Vous avez demandé à utiliser l'adresse e-mail {{ email }} comme identifiant. Cliquez sur le lien ci-dessous pour confirmer
+        et vous pourrez utiliser cette adresse pour vous connecter au site et recevoir les notifications.
+    </p>
+    <p>
+        Attention ce lien ne fonctionne que pendant une heure.
+    </p>
+    <p>
+        Si vous n'avez pas demandé à recevoir ce mail, il suffit de l'ignorer.
+    </p>
+    <p>
+        <a href="{{ url }}" title="">{{ url }}</a>
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+Vous avez demandé à utiliser l'adresse e-mail {{ email }} comme identifiant. Cliquez sur le lien ci-dessous pour confirmer
+et vous pourrez utiliser cette adresse pour vous connecter au site et recevoir les notifications.
+
+Attention ce lien ne fonctionne que pendant une heure.
+
+Si vous n'avez pas demandé à recevoir ce mail, il suffit de l'ignorer.
+
+{{ url }}
+{% endblock %}

@@ -190,165 +190,58 @@ if (isset($_POST['id_evt_join']) && (!isset($errTab) || 0 === count($errTab))) {
                                     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                                     while ($row = $result->fetch_assoc()) {
                                         $toMail = $row['email_user'];
-                                        // $toName=$row['civ_user'].' '.$row['lastname_user'];
-                                        // $toTel=$row['tel_user'].' '.($row['tel2_user']?' - '.$row['tel2_user'] :'');
                                     }
                                 }
 
                                 // PAS nomade : email
                                 if (!$isNomade && ('' !== $toMail)) {
-                                    // if(!isMail($toMail)) $errTab[]="Aucun e-mail n'a été envoyé à $toName.";
-
                                     if (!isset($errTab) || 0 === count($errTab)) {
-                                        // phpmailer
-                                        require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-
-                                        // vars
-                                        $evtName = html_utf8($_POST['titre_evt']);
-                                        $evtUrl = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html');
+                                        $evtName = $_POST['titre_evt'];
+                                        $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html';
 
                                         switch ($role_evt_join) {
                                             case 'encadrant':
                                             case 'coencadrant':
                                             case 'benevole':
-                                                $role = $role_evt_join;
+                                                $role = $role_evt_join.'(e)';
                                                 break;
                                             default:
-                                                $role = 'participant';
+                                                $role = 'participant(e)';
                                         }
 
-                                        // contenu
+                                        $context = [
+                                            'role' => $role,
+                                            'event_url' => $evtUrl,
+                                            'event_name' => $evtName,
+                                        ];
+
                                         if (1 == $status_evt_join_new) {
-                                            $subject = 'Votre inscription est confirmée';
-                                            $content_main = "<h2>$subject</h2>
-                                                <p>
-                                                    Bonjour $toName,<br />
-                                                    Vous venez d'être confirmé(e) comme $role à la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;.
-                                                </p>
-                                                <p>
-                                                    Cliquez sur le lien ci-dessous pour en savoir plus :<br />
-                                                    <a href='$evtUrl'>$evtUrl</a><br />
-                                                    <br />
-                                                    Bonne journée.
-                                                </p>
-                                            ";
+                                            LegacyContainer::get('legacy_mailer')->send($toMail, 'transactional/sortie-participation-confirmee', $context);
                                         }
                                         if (2 == $status_evt_join_new) {
-                                            $subject = 'Votre inscription est déclinée';
-                                            $content_main = "<h2>$subject</h2>
-                                                <p>
-                                                    Bonjour $toName,<br />
-                                                    Vous avez demandé à participer à la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;, mais
-                                                    votre demande a malheureusement été déclinée.
-                                                </p>
-                                                <p>
-                                                    Cliquez sur le lien ci-dessous pour en savoir plus :<br />
-                                                    <a href='$evtUrl'>$evtUrl</a><br />
-                                                    <br />
-                                                    Bonne journée.
-                                                </p>
-                                            ";
+                                            LegacyContainer::get('legacy_mailer')->send($toMail, 'transactional/sortie-participation-declinee', $context);
                                         }
 
-                                        $content_header = '';
-                                        $content_footer = '';
-
-                                        $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-
-                                        $mail->Subject = $subject;
-                                        //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-                                        $mail->setMailBody($content_main);
-                                        $mail->setMailHeader($content_header);
-                                        $mail->setMailFooter($content_footer);
-                                        $mail->AddAddress($toMail, $toName);
-                                        // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-
-                                        // débug local
-                                        if ('127.0.0.1' == $_SERVER['HTTP_HOST']) {
-                                            $mail->IsMail();
-                                        }
-
-                                        if (!$mail->Send()) {
-                                            $errTabMail[] = "Échec à l'envoi du mail à ".html_utf8($toMail).". Plus d'infos : ".($mail->ErrorInfo);
-                                        }
-
-                                        // paiement en ligne
-                                        // envoi d'un email pour indiquer la validation par l'encadrant d'un participant avec paiement en ligne
                                         if (1 == $is_cb) {
-                                            $toMail = 'comptabilite@clubalpinlyon.fr';
+                                            $context = [
+                                                'event_name' => $evtName,
+                                                'event_url' => $evtUrl,
+                                                'event_date' => $evtDate,
+                                                'adherent' => $toNameFull,
+                                                'event_tarif' => $evtTarif,
+                                                'caf_num' => $toCafNum,
+                                                'encadrant_name' => $encName,
+                                                'encadrant_email' => $encEmail,
+                                            ];
 
-                                            // contenu
                                             if (1 == $status_evt_join_new) {
-                                                $subject = 'Inscription avec paiement en ligne validée';
-                                                $content_main = "<h2>$subject</h2>
-                                                    <p>
-                                                        Bonjour,<br />
-                                                        Un participant ayant payé en ligne vient d'être <span color='green'>validé</span> à la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;.
-                                                    </p>
-                                                    <p>
-                                                        Merci d'aller valider le paiement sur https://paiement.systempay.fr/vads-merchant/.
-                                                    </p>
-                                                    <p>
-                                                        Informations supplémentaires :<br />
-                                                        <ul>
-                                                            <li>Transaction : $evtName du $evtDate - $toNameFull</li>
-                                                            <li>Sortie : $evtName du $evtDate</li>
-                                                            <li>Montant : $evtTarif</li>
-                                                            <li>Adhérent : $toNameFull / $toCafNum</li>
-                                                            <li>Endadrant : $encName / $encEmail</li>
-                                                        </ul>
-                                                        <br />
-                                                        Bonne journée.
-                                                    </p>
-                                                ";
+                                                LegacyContainer::get('legacy_mailer')->send('comptabilite@clubalpinlyon.fr', 'transactional/sortie-participation-confirmee-paiement-ligne', $context);
                                             }
 
                                             if (2 == $status_evt_join_new) {
-                                                $subject = 'Inscription avec paiement en ligne refusée';
-                                                $content_main = "<h2>$subject</h2>
-                                                    <p>
-                                                        Bonjour,<br />
-                                                        Un participant ayant payé en ligne vient d'être <span color='red'>refusé</span> à la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;.
-                                                    </p>
-                                                    <p>
-                                                        Merci d'aller annuler le paiement sur https://paiement.systempay.fr/vads-merchant/.
-                                                    </p>
-                                                    <p>
-                                                        Informations supplémentaires :<br />
-                                                        <ul>
-                                                            <li>Transaction : $evtName du $evtDate - $toNameFull</li>
-                                                            <li>Sortie : $evtName du $evtDate</li>
-                                                            <li>Montant : $evtTarif</li>
-                                                            <li>Adhérent : $toNameFull / $toCafNum</li>
-                                                            <li>Endadrant : $encName / $encEmail</li>
-                                                        </ul>
-                                                        <br />
-                                                        Bonne journée.
-                                                    </p>
-                                                ";
-                                            }
-
-                                            $content_header = '';
-                                            $content_footer = '';
-
-                                            $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-
-                                            $mail->Subject = $subject;
-                                            $mail->setMailBody($content_main);
-                                            $mail->setMailHeader($content_header);
-                                            $mail->setMailFooter($content_footer);
-                                            $mail->AddAddress($toMail, $toName);
-
-                                            // débug local
-                                            if ('127.0.0.1' == $_SERVER['HTTP_HOST']) {
-                                                $mail->IsMail();
-                                            }
-
-                                            if (!$mail->Send()) {
-                                                $errTabMail[] = "Échec à l'envoi du mail à ".html_utf8($toMail).". Plus d'infos : ".($mail->ErrorInfo);
+                                                LegacyContainer::get('legacy_mailer')->send('comptabilite@clubalpinlyon.fr', 'transactional/sortie-participation-declinee-paiement-ligne', $context);
                                             }
                                         }
-                                        // fin paiement en ligne
                                     }
                                 }
                             }

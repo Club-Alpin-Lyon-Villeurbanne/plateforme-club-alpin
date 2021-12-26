@@ -513,8 +513,3 @@ if ('majConts' == ($_POST['operation'] ?? null) && admin()) {
 if ('page_new' == ($_POST['operation'] ?? null) && admin()) {
     require $operationsDir.'operations.page_new.php';
 }
-
-// CONTACT
-if ('contact' == ($_POST['operation'] ?? null)) {
-    require $operationsDir.'operations.contact.php';
-}

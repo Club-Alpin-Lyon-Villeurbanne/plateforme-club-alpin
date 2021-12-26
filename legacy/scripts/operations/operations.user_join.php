@@ -192,8 +192,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
             } else { */
 
             if (!$update) {
-                $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
-                          VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
+                $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage, affiliant_user_join, lastchange_when_evt_join, lastchange_who_evt_join)
+                          VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage, 0, 0, 0);";
             } elseif (in_array($id_user, $update, true)) {
                 $req = "UPDATE `caf_evt_join`
                             SET
@@ -283,81 +283,31 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $inscrits[] = $row;
-            // echo 'adding '.$row['firstname_user'];
         }
 
-        // SEND
-        // phpmailer
-        require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-
-        foreach ($inscrits as $cetinscrit) {
-            foreach ($destinataires as $id_destinataire => $destinataire) {
-                $toMail = $destinataire['email_user'];
-                $toName = $destinataire['firstname_user'];
-
-                // contenu
-                if ($is_destination) {
-                    $subject = 'Nouvelle inscription à la sortie « '.$evtName.' »';
-                } else {
-                    $subject = "Nouvelle demande d'inscription à la sortie « ".$evtName.' »';
-                }
-
-                $content_main = "<h2>$subject</h2>
-                    <p>
-                        Bonjour $toName,<br />
-                        Un nouvel adhérent vient de ".($is_destination ? 's\'inscrire' : 'se préinscrire')."
-                        à la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;.
-                    </p>
-                    <p>
-                        Nom : ".html_utf8($cetinscrit['civ_user'].' '.$cetinscrit['firstname_user'].' '.$cetinscrit['lastname_user']).' <br />
-                        Pseudo : '.html_utf8($cetinscrit['nickname_user']).' <br />';
-                //Age : ".getYearsSinceDate($cetinscrit['birthday_user'])." ans <br />
-                $content_main .= 'Rôle : '.$role_evt_join.
-                        ('NULL' != $is_cb ? '<br />'.'Paiement en ligne : '.(1 == $is_cb ? 'oui' : 'non') : '').
-                        ('NULL' != $is_restaurant ? '<br />'.'Restaurant : '.(1 == $is_restaurant ? 'oui' : 'non') : '').
-                        ('NULL' != $id_destination ? ' <br />'.(1 == $is_covoiturage ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif') : '')
-                        .'
-                    </p>
-                    <p>
-                        Vous recevez ce message car
-                        '.
-                            ($destinataire['role_evt_join'] ?
-                                  ' vous êtes '.$destinataire['role_evt_join'].' sur cette sortie.'
-                                : " vous êtes l'auteur de cette sortie."
-                            )
-                        ."
-                    </p>
-                    <p>
-                        Cliquez sur le lien ci-dessous pour voir la fiche sortie :<br />
-                        <a href='$evtUrl'>$evtUrl</a><br />
-                        <br />
-                        Bonne journée.
-                    </p>
-                ";
-
-                $content_header = '';
-                $content_footer = '';
-
-                $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-
-                $mail->AddReplyTo($cetinscrit['email_user']);
-                $mail->Subject = $subject;
-                //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-                $mail->setMailBody($content_main);
-                $mail->setMailHeader($content_header);
-                $mail->setMailFooter($content_footer);
-                $mail->AddAddress($toMail, $toName);
-                // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-
-                // débug local
-                if ('127.0.0.1' == $_SERVER['HTTP_HOST']) {
-                    $mail->IsMail();
-                }
-
-                if (!$mail->Send()) {
-                    $errTab[] = "Échec à l'envoi du mail à ".html_utf8($toMail).". Plus d'infos : ".($mail->ErrorInfo);
-                }
-            }
+        foreach ($destinataires as $id_destinataire => $destinataire) {
+            LegacyContainer::get('legacy_mailer')->send($destinataire['email_user'], 'transactional/sortie-demande-inscription', [
+                'role' => $role_evt_join,
+                'event_name' => $evtName,
+                'event_url' => $evtUrl,
+                'is_destination' => $is_destination,
+                'inscrits' => array_map(function ($cetinscrit) {
+                    return [
+                        'firstname' => $cetinscrit['firstname_user'],
+                        'lastname' => $cetinscrit['lastname_user'],
+                        'nickname' => $cetinscrit['nickname_user'],
+                    ];
+                }, $inscrits),
+                'firstname' => $cetinscrit['firstname_user'],
+                'lastname' => $cetinscrit['lastname_user'],
+                'nickname' => $cetinscrit['nickname_user'],
+                'is_cb' => 'NULL' != $is_cb,
+                'cb' => $is_cb,
+                'is_restaurant' => 'NULL' != $is_restaurant,
+                'restaurant' => $is_restaurant,
+                'covoiturage' => $is_covoiturage,
+                'dest_role' => $destinataire['role_evt_join'] ?: 'l\'auteur',
+            ], [], null, $cetinscrit['email_user']);
         }
     }
 
@@ -381,116 +331,43 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         // inscription simple de moi à moi
         if (!$filiations) {
-            $content_main = "<h2>$subject</h2>
-                <p>
-                    Bonjour $toName,<br />
-                    Vous venez de vous <i>".($is_destination ? 'inscrire' : 'préinscrire')."</i> à la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;.
-                </p>
-                <p>
-                    Nom : ".html_utf8($cetinscrit['civ_user'].' '.$cetinscrit['firstname_user'].' '.$cetinscrit['lastname_user']).' <br />
-                    Pseudo : '.html_utf8($cetinscrit['nickname_user']).' <br />';
-            //Age : ".getYearsSinceDate($cetinscrit['birthday_user'])." ans <br />
-            $content_main .= 'Rôle : '.$role_evt_join.
-                        ('NULL' != $is_cb ? ' <br />'.'Paiement en ligne : '.(1 == $is_cb ? 'oui' : 'non') : '').
-                        ('NULL' != $is_restaurant ? ' <br />'.'Restaurant : '.(1 == $is_restaurant ? 'oui' : 'non') : '').
-                        ('NULL' != $id_destination ? ' <br />'.(1 == $is_covoiturage ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif'.($ramassage ? ' : ramassage le '.$ramassage['date'].' à '.$ramassage['lieu']['nom'] : '')) : '')
-                    ."
-                </p>
-                <p>
-                    Les responsables de cette sortie ont été prévenus de votre demande et sont en charge de la confirmation
-                    ou non de votre participation. Vous serez averti par e-mail quand votre participation sera confirmée.
-                </p>
-                <p>
-                    Cliquez sur le lien ci-dessous pour voir la fiche sortie :<br />
-                    <a href='$evtUrl'>$evtUrl</a><br />
-                    <br />
-                    Bonne journée !
-                </p>
-            ";
+            LegacyContainer::get('legacy_mailer')->send(getUser()->getEmail(), 'transactional/sortie-demande-inscription-confirmation', [
+                'role' => $role_evt_join,
+                'event_name' => $evtName,
+                'event_url' => $evtUrl,
+                'is_destination' => $is_destination,
+                'inscrits' => [
+                    [
+                        'firstname' => $cetinscrit['firstname_user'],
+                        'lastname' => $cetinscrit['lastname_user'],
+                        'nickname' => $cetinscrit['nickname_user'],
+                    ],
+                ],
+                'is_cb' => 'NULL' != $is_cb,
+                'cb' => $is_cb,
+                'is_restaurant' => 'NULL' != $is_restaurant,
+                'restaurant' => $is_restaurant,
+                'covoiturage' => $is_covoiturage,
+            ]);
         } else {
-            // je n'inscrit que moi
-            if (1 == count($inscrits) && $inscrits[0]['id_user'] == getUser()->getId()) {
-                $content_main = "<h2>$subject</h2>
-                    <p>
-                        Bonjour $toName,<br />
-                        Vous venez de vous <i>".($is_destination ? 'inscrire' : 'préinscrire')."</i> à la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;.
-                    </p>
-                    <p>
-                        Nom : ".html_utf8($cetinscrit['civ_user'].' '.$cetinscrit['firstname_user'].' '.$cetinscrit['lastname_user']).' <br />
-                        Pseudo : '.html_utf8($cetinscrit['nickname_user']).' <br />';
-                //Age : ".getYearsSinceDate($cetinscrit['birthday_user'])." ans <br />
-                $content_main .= 'Rôle : '.$role_evt_join.
-                        ('NULL' != $is_cb ? ' <br />'.'Paiement en ligne : '.(1 == $is_cb ? 'oui' : 'non') : '').
-                        ('NULL' != $is_restaurant ? ' <br />'.'Restaurant : '.(1 == $is_restaurant ? 'oui' : 'non') : '').
-                        ('NULL' != $id_destination ? ' <br />'.(1 == $is_covoiturage ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif'.($ramassage ? ' : ramassage le '.$ramassage['date'].' à '.$ramassage['lieu']['nom'] : '')) : '')
-                    ."
-                    </p>
-                    <p>
-                        Les responsables de cette sortie ont été prévenus de votre demande et sont en charge de la confirmation
-                        ou non de votre participation. Vous serez averti par e-mail quand votre participation sera confirmée.
-                    </p>
-                    <p>
-                        Cliquez sur le lien ci-dessous pour voir la fiche sortie :<br />
-                        <a href='$evtUrl'>$evtUrl</a><br />
-                        <br />
-                        Bonne journée !
-                    </p>
-                ";
-            }
-            // j'inscrit n autres que moi
-            else {
-                $content_main = "<h2>$subject</h2>
-                    <p>
-                        Bonjour $toName,<br />
-                        Vous venez de <i>".($is_destination ? 'inscrire' : 'préinscrire')."</i> plusieurs personnes à la sortie &laquo; <a href='$evtUrl'>$evtName</a> &raquo;.
-                    </p>";
-                foreach ($inscrits as $cetinscrit) {
-                    $content_main .= '
-                        <p>
-                            Nom : '.html_utf8($cetinscrit['civ_user'].' '.$cetinscrit['firstname_user'].' '.$cetinscrit['lastname_user']).' <br />
-                            Pseudo : '.html_utf8($cetinscrit['nickname_user']).' <br />';
-                    //Age : ".getYearsSinceDate($cetinscrit['birthday_user'])." ans <br />".
-                    $content_main .= ('NULL' != $is_cb ? 'Paiement en ligne : '.(1 == $is_cb ? 'oui' : 'non') : '').
-                                ('NULL' != $is_restaurant ? 'Restaurant : '.(1 == $is_restaurant ? 'oui' : 'non') : '').
-                                ('NULL' != $id_destination ? ' <br />'.(1 == $is_covoiturage ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif'.($ramassage ? ' : ramassage le '.$ramassage['date'].' à '.$ramassage['lieu']['nom'] : '')) : '')
-                            .'
-                        </p>
-                        ';
-                }
-                $content_main .= "
-                    <p>
-                        Les responsables de cette sortie ont été prévenus de votre demande et sont en charge de la confirmation
-                        ou non de ces participations. Vous serez alors averti par e-mail.
-                    </p>
-                    <p>
-                        Cliquez sur le lien ci-dessous pour voir la fiche sortie :<br />
-                        <a href='$evtUrl'>$evtUrl</a><br />
-                        <br />
-                        Bonne journée !
-                    </p>
-                ";
-            }
-        }
-
-        $content_header = '';
-        $content_footer = '';
-
-        $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-        $mail->Subject = $subject;
-        //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-        $mail->setMailBody($content_main);
-        $mail->setMailHeader($content_header);
-        $mail->setMailFooter($content_footer);
-        $mail->AddAddress($toMail, $toName);
-        // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-
-        // débug local
-        if ('127.0.0.1' == $_SERVER['HTTP_HOST']) {
-            $mail->IsMail();
-        }
-
-        if (!$mail->Send()) {
-            $errTab[] = "Échec à l'envoi du mail à ".html_utf8($toMail).". Plus d'infos : ".($mail->ErrorInfo);
+            LegacyContainer::get('legacy_mailer')->send(getUser()->getEmail(), 'transactional/sortie-demande-inscription-confirmation', [
+                'role' => $role_evt_join,
+                'event_name' => $evtName,
+                'event_url' => $evtUrl,
+                'is_destination' => $is_destination,
+                'inscrits' => array_map(function ($cetinscrit) {
+                    return [
+                        'firstname' => $cetinscrit['firstname_user'],
+                        'lastname' => $cetinscrit['lastname_user'],
+                        'nickname' => $cetinscrit['nickname_user'],
+                    ];
+                }, $inscrits),
+                'is_cb' => 'NULL' != $is_cb,
+                'cb' => $is_cb,
+                'is_restaurant' => 'NULL' != $is_restaurant,
+                'restaurant' => $is_restaurant,
+                'covoiturage' => $is_covoiturage,
+            ]);
         }
     }
 }

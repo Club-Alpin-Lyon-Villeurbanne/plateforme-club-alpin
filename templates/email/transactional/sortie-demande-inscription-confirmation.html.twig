@@ -1,0 +1,83 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    {% if is_destination %}
+        Votre inscription à la sortie {{ event_name }}
+    {% else %}
+        Votre demande d'inscription à la sortie {{ event_name }}
+    {% endif %}
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        {% if inscrits|length > 1 %}
+            Vous venez {{ is_destination ? "d'inscrire" : "de préinscrire" }} plusieurs personnes
+        {% else %}
+        Vous venez de vous {{ is_destination ? "inscrire" : "préinscrire" }}
+        {% endif %}
+        à la sortie <a href="{{ event_url }}">{{ event_name }}</a>
+    </p>
+    <p>
+        <b>Participant{{ inscrits|length > 1 ? 's' : ''}} :</b>
+    </p>
+    <ul>
+    {% for inscrit in inscrits %}
+        <li>
+            <b>Nom :</b> {{ inscrit.firstname }} {{ inscrit.lastname }}
+        </li>
+    {% endfor %}
+    </ul>
+    <ul>
+        <li>
+            <b>Rôle :</b> {{ role }}
+        </li>
+        {% if is_cb %}
+            <li>
+                <b>Paiement en ligne :</b> {{ cb == 1 ? 'oui' : 'non' }}
+            </li>
+        {% endif %}
+        {% if is_restaurant %}
+            <li>
+                <b>Restaurant :</b> {{ restaurant == 1 ? 'oui' : 'non' }}
+            </li>
+        {% endif %}
+        {% if is_destination %}
+            <li>
+                {{ covoiturage == 1 ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif' }}
+            </li>
+        {% endif %}
+    </ul>
+    <p>
+        Les responsables de cette sortie ont été prévenus de votre demande et sont en charge de la confirmation
+        ou non de votre participation. Vous serez averti par e-mail quand votre participation sera confirmée.
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+    {% if inscrits|length > 1 %}
+        Vous venez {{ is_destination ? "d'inscrire" : "de préinscrire" }} plusieurs personnes
+    {% else %}
+        Vous venez de vous {{ is_destination ? "inscrire" : "préinscrire" }}
+    {% endif %}
+    à la sortie <a href="{{ event_url }}">{{ event_name }}</a>
+
+    Participant{{ inscrits|length > 1 ? 's' : ''}} :
+
+{% for inscrit in inscrits %}
+    Nom : {{ inscrit.firstname }} {{ inscrit.lastname }}
+{% endfor %}
+
+    Rôle : {{ role }}
+{% if is_cb %}
+    Paiement en ligne : {{ cb == 1 ? 'oui' : 'non' }}
+{% endif %}
+{% if is_restaurant %}
+    Restaurant : {{ restaurant == 1 ? 'oui' : 'non' }}
+{% endif %}
+{% if is_destination %}
+    {{ covoiturage == 1 ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif' }}
+{% endif %}
+
+    Les responsables de cette sortie ont été prévenus de votre demande et sont en charge de la confirmation
+    ou non de votre participation. Vous serez averti par e-mail quand votre participation sera confirmée.
+{% endblock %}

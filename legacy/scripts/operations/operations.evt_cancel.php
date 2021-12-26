@@ -47,24 +47,6 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
     // message aux participants si la sortie est annulée alors qu'elle est publiée
     if ((!isset($errTab) || 0 === count($errTab)) && 1 == $handle['status_evt']) {
-        // phpmailer
-        require_once __DIR__.'/../../app/mailer/class.phpmailer.caf.php';
-
-        // contenu commun à chaque envoi
-        $subject = 'Sortie du '.date('d/m/Y', $handle['tsp_evt']).' annulée !';
-        $content_main = "<h2>$subject</h2>
-            <p>
-                La sortie ".$handle['title_commission'].' du '.date('d/m/Y', $handle['tsp_evt']).',
-                &laquo;<i> '.html_utf8($handle['titre_evt'])." </i>&raquo;
-                vient d'être annulée par <a href=\"".LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.getUser()->getId().'.html">'.getUser()->getNickname().'</a>.
-                Voici le message joint :
-            </p>
-            <p>&laquo;<i> '.nl2br(html_utf8($msg))." </i>&raquo;</p>
-            <p><a href='".LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.html_utf8($handle['code_evt']).'-'.(int) ($handle['id_evt']).".html' title=''>&lt; Voir la page dédiée</a></p>
-            ";
-        $content_header = '';
-        $content_footer = '';
-
         // participants:
         // si la sortie est enfant d'un cycle, on cherche les participants à la sortie parente
         if ($handle['cycle_parent_evt']) {
@@ -95,26 +77,21 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             }
         }
 
-        // PHPMAILER
-        // ENVOI DU MAIL A CHACUN
-        $mail = new CAFPHPMailer(); // defaults to using php "mail()"
-        $mail->Subject = $subject;
-        //$mail->AltBody  = "Pour voir ce message, utilisez un client mail supportant le format HTML (Outlook, Thunderbird, Mail...)"; // optional, comment out and test
-        $mail->setMailBody($content_main);
-        $mail->setMailHeader($content_header);
-        $mail->setMailFooter($content_footer);
         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-            // debug nomades
-            if (isMail($handle2['email_user'])) {
-                $mail->AddAddress($handle2['email_user'], $handle2['firstname_user'].' '.$handle2['lastname_user']);
-            // $mail->AddAttachment("images/phpmailer_mini.gif"); // attachment
-            } else {
+            if (!isMail($handle2['email_user'])) {
                 $nomadMsg[] = $handle2['civ_user'].' '.$handle2['firstname_user'].' '.$handle2['lastname_user'].' - '.$handle2['tel_user'].' - '.$handle2['tel2_user'];
-            }
-        }
 
-        if (!$mail->Send()) {
-            $errTab[] = "Échec à l'envoi du mail. Plus d'infos : ".($mail->ErrorInfo);
+                continue;
+            }
+
+            LegacyContainer::get('legacy_mailer')->send($handle2['email_user'], 'transactional/sortie-annulation', [
+                'event_name' => $handle['titre_evt'],
+                'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.(int) ($handle['id_evt']).'.html',
+                'event_date' => date('d/m/Y', $handle['tsp_evt']),
+                'cancel_user_name' => getUser()->getNickname(),
+                'cancel_user_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.getUser()->getId().'.html',
+                'message' => $msg,
+            ]);
         }
     }
     // redirection vers la page de la sortie avec le message "annulé"
