@@ -30,25 +30,6 @@ class LegacyController extends AbstractController
 
     /**
      * @Route(
-     *     name="legacy_rss",
-     *     path="/rss.xml",
-     *     methods={"GET"}
-     * )
-     */
-    public function rssAction()
-    {
-        return new StreamedResponse(function () {
-            $legacyDir = __DIR__.'/../../legacy/';
-            $path = 'rss.php';
-
-            ob_start();
-            require $legacyDir.$path;
-            ob_end_flush();
-        });
-    }
-
-    /**
-     * @Route(
      *     name="legacy_img_adresse",
      *     path="/img/adresse-website.png",
      *     methods={"GET"}

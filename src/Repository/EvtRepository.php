@@ -80,4 +80,27 @@ class EvtRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /** @return Evt[] */
+    public function getEvents(int $quantity, ?Commission $commission = null)
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->select('e, c')
+            ->leftJoin('e.commission', 'c')
+            ->where('e.status > 0')
+            ->andWhere('e.tsp > :now')
+            ->setParameter('now', time())
+            ->orderBy('e.tsp', 'ASC')
+            ->setMaxResults($quantity)
+        ;
+
+        if ($commission) {
+            $qb = $qb->andWhere('e.commission = :commission_id')
+                ->setParameter('commission_id', $commission->getId());
+        }
+
+        return $qb
+            ->getQuery()
+            ->getResult();
+    }
 }

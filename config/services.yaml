@@ -71,6 +71,10 @@ services:
       arguments:
         $adminPassord: '%env(PASSWORD_ADMIN)%'
 
+    App\Controller\RssController:
+      arguments:
+        $sitename: '%env(SITENAME)%'
+
     App\Repository\EvtRepository:
         arguments:
             $maxSortiesAccueil: '%env(int:MAX_SORTIES_ACCUEIL)%'

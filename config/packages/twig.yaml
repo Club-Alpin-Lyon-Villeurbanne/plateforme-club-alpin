@@ -2,7 +2,7 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     globals:
         url_site: '%env(ROUTER_CONTEXT_SCHEME)%://%env(ROUTER_CONTEXT_HOST)%'
-        sitename: 'Club Alpin Français de Lyon-Villeurbanne'
+        sitename: '%env(SITENAME)%'
         recaptcha:
             site_key: "%env(RECAPTCHA_KEY)%"
         analytics_account: "%env(ANALYTICS_ACCOUNT)%"

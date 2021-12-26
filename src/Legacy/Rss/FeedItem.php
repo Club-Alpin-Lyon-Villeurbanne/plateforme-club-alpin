@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Legacy\Rss;
+
  /**
   * Univarsel Feed Writer.
   *
@@ -19,7 +21,7 @@
       *
       * @param    contant     (RSS1/RSS2/ATOM) RSS2 is default
       */
-     public function __construct($version = RSS2)
+     public function __construct($version = FeedWriter::RSS2)
      {
          $this->version = $version;
      }
@@ -50,7 +52,7 @@
       */
      public function addElementArray($elementArray)
      {
-         if (!is_array($elementArray)) {
+         if (!\is_array($elementArray)) {
              return;
          }
          foreach ($elementArray as $elementName => $content) {
@@ -79,7 +81,7 @@
       */
      public function setDescription($description)
      {
-         $tag = (ATOM == $this->version) ? 'summary' : 'description';
+         $tag = (FeedWriter::ATOM == $this->version) ? 'summary' : 'description';
          $this->addElement($tag, $description);
      }
 
@@ -108,10 +110,10 @@
              $date = strtotime($date);
          }
 
-         if (ATOM == $this->version) {
+         if (FeedWriter::ATOM == $this->version) {
              $tag = 'updated';
              $value = date(\DATE_ATOM, $date);
-         } elseif (RSS2 == $this->version) {
+         } elseif (FeedWriter::RSS2 == $this->version) {
              $tag = 'pubDate';
              $value = date(\DATE_RSS, $date);
          } else {
@@ -131,7 +133,7 @@
       */
      public function setLink($link)
      {
-         if (RSS2 == $this->version || RSS1 == $this->version) {
+         if (FeedWriter::RSS2 == $this->version || FeedWriter::RSS1 == $this->version) {
              $this->addElement('link', $link);
          } else {
              $this->addElement('link', '', ['href' => $link]);

@@ -3,10 +3,8 @@ parameters:
 
   ignoreErrors:
     - '#Function twig_escape_filter not found\.#'
-    - '#Constant (ATOM|RSS1|RSS2) not found\.#'
     - '#Variable \$p_[a-z_]+ might not be defined#'
     - '#Variable \$p\d might not be defined#'
-    - '#Instantiated class FeedWriter not found#'
 
   autoload_files:
     - vendor/bin/.phpunit/phpunit-9.5-0/vendor/autoload.php
