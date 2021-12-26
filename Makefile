@@ -92,6 +92,12 @@ composer-install:
 	@touch $@
 .PHONY: composer-install
 
+composer-update:
+	@echo "INSTALL $(@D)"
+	@$(ON_PHP) bash -c "composer update --no-interaction --prefer-dist"
+	@touch $@
+.PHONY: composer-update
+
 setup-db: composer-install ## Migrate (env="dev")
 	@echo "Checking if the database is up..."
 	@$(ON_PHP) timeout --foreground 120s bash -c 'while ! timeout --foreground 3s echo > /dev/tcp/caf-db/3306 2 > /dev/null ; do sleep 1; done' \
