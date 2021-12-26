@@ -29,23 +29,26 @@ class Destination
     private $idLieu;
 
     /**
-     * @var int
+     * @var User
      *
-     * @ORM\Column(name="id_user_who_create", type="integer", nullable=false, options={"unsigned": true})
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="id_user_who_create", referencedColumnName="id_user", nullable=false)
      */
     private $idUserWhoCreate;
 
     /**
-     * @var int
+     * @var User
      *
-     * @ORM\Column(name="id_user_responsable", type="integer", nullable=false, options={"unsigned": true})
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="id_user_responsable", referencedColumnName="id_user", nullable=false)
      */
     private $idUserResponsable;
 
     /**
-     * @var int|null
+     * @var User|null
      *
-     * @ORM\Column(name="id_user_adjoint", type="integer", nullable=true, options={"unsigned": true})
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="id_user_adjoint", referencedColumnName="id_user", nullable=true)
      */
     private $idUserAdjoint;
 
@@ -157,36 +160,36 @@ class Destination
         return $this;
     }
 
-    public function getIdUserWhoCreate(): ?int
+    public function getIdUserWhoCreate(): ?User
     {
         return $this->idUserWhoCreate;
     }
 
-    public function setIdUserWhoCreate(int $idUserWhoCreate): self
+    public function setIdUserWhoCreate(User $idUserWhoCreate): self
     {
         $this->idUserWhoCreate = $idUserWhoCreate;
 
         return $this;
     }
 
-    public function getIdUserResponsable(): ?int
+    public function getIdUserResponsable(): User
     {
         return $this->idUserResponsable;
     }
 
-    public function setIdUserResponsable(int $idUserResponsable): self
+    public function setIdUserResponsable(User $idUserResponsable): self
     {
         $this->idUserResponsable = $idUserResponsable;
 
         return $this;
     }
 
-    public function getIdUserAdjoint(): ?int
+    public function getIdUserAdjoint(): ?User
     {
         return $this->idUserAdjoint;
     }
 
-    public function setIdUserAdjoint(?int $idUserAdjoint): self
+    public function setIdUserAdjoint(?User $idUserAdjoint): self
     {
         $this->idUserAdjoint = $idUserAdjoint;
 

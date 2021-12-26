@@ -22,9 +22,10 @@ class UserNiveau
     private $id;
 
     /**
-     * @var int
+     * @var User
      *
-     * @ORM\Column(name="id_user", type="integer", nullable=false, options={"unsigned": true})
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="id_user", referencedColumnName="id_user", nullable=false)
      */
     private $idUser;
 
@@ -61,12 +62,12 @@ class UserNiveau
         return $this->id;
     }
 
-    public function getIdUser(): ?int
+    public function getIdUser(): ?User
     {
         return $this->idUser;
     }
 
-    public function setIdUser(int $idUser): self
+    public function setIdUser(User $idUser): self
     {
         $this->idUser = $idUser;
 
