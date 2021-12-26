@@ -33,12 +33,12 @@ class Commission
      *
      * @ORM\Column(name="vis_commission", type="boolean", nullable=false)
      */
-    private $vis;
+    private $vis = true;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="code_commission", type="string", length=50, nullable=false)
+     * @ORM\Column(name="code_commission", type="string", length=50, nullable=false, unique=true)
      */
     private $code;
 
@@ -48,6 +48,13 @@ class Commission
      * @ORM\Column(name="title_commission", type="string", length=30, nullable=false)
      */
     private $title;
+
+    public function __construct(string $title, string $code, int $ordre)
+    {
+        $this->title = $title;
+        $this->code = $code;
+        $this->ordre = $ordre;
+    }
 
     public function getId(): ?int
     {

@@ -19,7 +19,7 @@ class SortieAnnulationVoter extends Voter
 
     protected function supports($attribute, $subject)
     {
-        return \in_array($attribute, ['SORTIE_ANNULATION'], true);
+        return \in_array($attribute, ['SORTIE_CANCEL', 'SORTIE_UNCANCEL'], true);
     }
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
@@ -31,9 +31,28 @@ class SortieAnnulationVoter extends Voter
         }
 
         if (!$subject instanceof Evt) {
-            throw new \InvalidArgumentException('The voter requires an event subject');
+            throw new \InvalidArgumentException(sprintf('The voter "%s" requires an event subject', __CLASS__));
         }
 
-        return $this->userRights->allowed('evt_cancel');
+        if ('SORTIE_UNCANCEL' === $attribute && !$subject->getCancelled()) {
+            return false;
+        }
+
+        if ('SORTIE_CANCEL' === $attribute && $subject->getCancelled()) {
+            return false;
+        }
+
+        if ($subject->getUser() !== $user
+            && !$this->userRights->allowed('evt_validate_all')
+            && !$this->userRights->allowedOnCommission('evt_validate', $subject->getCommission())
+        ) {
+            return false;
+        }
+
+        if ($subject->isFinished()) {
+            return false;
+        }
+
+        return $this->userRights->allowedOnCommission('evt_cancel', $subject->getCommission());
     }
 }

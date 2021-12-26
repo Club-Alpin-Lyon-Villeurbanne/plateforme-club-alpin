@@ -329,12 +329,41 @@ class Evt
      */
     private $articles;
 
-    public function __construct()
-    {
+    public function __construct(
+        User $user,
+        Commission $commission,
+        string $titre,
+        string $code,
+        \DateTime $dateStart,
+        \DateTime $dateEnd,
+        string $rdv,
+        float $rdvLat,
+        float $rdvLong,
+        string $description,
+        int $demarrageInscriptions,
+        int $maxInscriptions,
+        int $maxParticipants
+    ) {
+        $this->user = $user;
+        $this->titre = $titre;
+        $this->code = $code;
+        $this->tsp = $dateStart->getTimestamp();
+        $this->tspEnd = $dateEnd->getTimestamp();
+        $this->place = ''; // unused, must be dropped
+        $this->rdv = $rdv;
+        $this->lat = $rdvLat;
+        $this->long = $rdvLong;
+        $this->description = $description;
+        $this->joinStart = $demarrageInscriptions;
+        $this->joinMax = $maxInscriptions;
+        $this->ngensMax = $maxParticipants;
+        $this->commission = $commission;
         $this->joins = new ArrayCollection();
         $this->articles = new ArrayCollection();
         $this->cycleChildren = new ArrayCollection();
         $this->tspCrea = time();
+
+        $this->joins->add(new EvtJoin($this, $user, EvtJoin::ROLE_ENCADRANT, EvtJoin::STATUS_VALIDE));
     }
 
     public function getId(): ?int
@@ -459,8 +488,12 @@ class Evt
         });
     }
 
-    public function getParticipant(User $user): ?EvtJoin
+    public function getParticipant(?User $user): ?EvtJoin
     {
+        if (!$user) {
+            return null;
+        }
+
         foreach ($this->joins as $join) {
             if ($join->getUser() === $user) {
                 return $join;
@@ -555,7 +588,7 @@ class Evt
 
     public function hasStarted(): bool
     {
-        return $this->tsp > time();
+        return $this->tsp < time();
     }
 
     public function startsAfter(string $when): bool

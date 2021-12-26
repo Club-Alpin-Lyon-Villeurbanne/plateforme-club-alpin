@@ -1,0 +1,44 @@
+<a class="agenda-evt-debut" target="_top" href="{{ path('sortie', { code : event.code, id: event.id }) }}" title="">
+    <div class="picto">
+        <img src="{{ commission_picto(event.commission.code, 'light') }}" alt="" title="" class="picto-light" />
+        <img src="{{ commission_picto(event.commission.code, 'dark') }}" alt="" title="" class="picto-dark" />
+    </div>
+
+    <div class="droite">
+
+        <span title="{{ event | temoin_event_title }}" style="padding: 10px 10px 5px 5px;float:left;">
+            <span class="temoin-places-dispos {{ event | temoin_event }}"></span>
+        </span>
+
+        <h2>
+            {% if event.cancelled %}
+                <span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>
+            {% endif %}
+
+            {{ event.titre }}
+
+            {% if event.groupe %}
+               <small>({{ event.groupe.nom }})</small>
+            {% endif %}
+            {% if event.cycleMaster %}
+                <img src="/img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie de début de cycle" />
+            {% elseif event.cycleParent %}
+                <img src="/img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie faisant partie d'un cycle" />
+            {% endif %}
+        </h2>
+
+        <p>
+            <b>{{ event.commission.title }}</b>
+            {% if event.difficulte %}
+                - <b>{{ event.difficulte }}</b>
+            {% endif %}
+            {% if event.massif %}
+                - <b>{{ event.massif }}</b>
+            {% endif %}
+            {% if my_status %}
+                - Votre rôle : <b>{{ my_status.role }}</b>
+            {% endif %}
+        </p>
+    </div>
+    <br style="clear:both" />
+</a>
