@@ -136,3 +136,7 @@ services:
     legacy_mailer:
         public: true
         alias: App\Mailer\Mailer
+
+    legacy_content_html:
+        public: true
+        alias: App\Legacy\ContentHtml

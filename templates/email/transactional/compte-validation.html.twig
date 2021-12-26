@@ -1,0 +1,27 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+Validez votre compte adhérent
+{%- endblock %}
+
+{% block goodbye %}A tout de suite!{% endblock %}
+
+{% block inner_html %}
+    <p>
+        Vous venez de créer votre compte adhérent.
+        Pour confirmer votre adresse e-mail et pouvoir vous connecter, cliquez
+        sur le lien ci-dessous :
+    </p>
+    <p>
+        <a class="bigLink" href="{{ url }}">{{ url }}</a>
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+Bonjour,
+
+Vous venez de créer votre compte adhérent.
+Pour confirmer votre adresse e-mail et pouvoir vous connecter, cliquez sur le lien ci-dessous :
+
+{{ url }}
+{% endblock %}
