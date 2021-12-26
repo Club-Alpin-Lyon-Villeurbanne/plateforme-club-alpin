@@ -37,7 +37,8 @@ class EvtJoin
     /**
      * @var int
      *
-     * @ORM\Column(name="user_evt_join", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
+     * @ORM\JoinColumn(name="user_evt_join", nullable=false, referencedColumnName="id_user", onDelete="CASCADE")
      */
     private $user;
 
