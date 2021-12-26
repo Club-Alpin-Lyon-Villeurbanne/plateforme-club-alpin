@@ -265,6 +265,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addAttribute(Usertype $userType, $params = null)
     {
+        if ($userType->getLimitedToComm() && null === $params) {
+            throw new \InvalidArgumentException('User type is limited to commission.');
+        }
+
         $this->attrs->add(new UserAttr($this, $userType, $params));
     }
 
@@ -314,7 +318,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->cafnumParent;
     }
 
-    public function setCafnumParent(string $cafnumParent): self
+    public function setCafnumParent(?string $cafnumParent): self
     {
         $this->cafnumParent = $cafnumParent;
 

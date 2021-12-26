@@ -8,7 +8,7 @@ use App\UserRights;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
-class SortieValidateVoter extends Voter
+class SortieViewVoter extends Voter
 {
     private UserRights $userRights;
 
@@ -19,7 +19,7 @@ class SortieValidateVoter extends Voter
 
     protected function supports($attribute, $subject)
     {
-        return \in_array($attribute, ['SORTIE_VALIDATE'], true);
+        return \in_array($attribute, ['SORTIE_VIEW'], true);
     }
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
@@ -34,11 +34,19 @@ class SortieValidateVoter extends Voter
             throw new \InvalidArgumentException(sprintf('The voter "%s" requires an event subject', __CLASS__));
         }
 
-        if (!$subject->getCancelled() && $subject->isPublicStatusValide()) {
-            return false;
+        if (Evt::STATUS_PUBLISHED_VALIDE === $subject->getStatus()) {
+            return true;
         }
 
-        if ($this->userRights->allowed('evt_validate_all') || $this->userRights->allowedOnCommission('evt_validate', $subject->getCommission())) {
+        if ($this->userRights->allowed('evt_validate')) {
+            return true;
+        }
+
+        if ($this->userRights->allowed('evt_validate_all')) {
+            return true;
+        }
+
+        if ($subject->getUser() === $user) {
             return true;
         }
 

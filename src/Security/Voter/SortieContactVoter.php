@@ -4,11 +4,12 @@ namespace App\Security\Voter;
 
 use App\Entity\Evt;
 use App\Entity\User;
+use App\Entity\UserAttr;
 use App\UserRights;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
-class SortieValidateVoter extends Voter
+class SortieContactVoter extends Voter
 {
     private UserRights $userRights;
 
@@ -19,7 +20,7 @@ class SortieValidateVoter extends Voter
 
     protected function supports($attribute, $subject)
     {
-        return \in_array($attribute, ['SORTIE_VALIDATE'], true);
+        return \in_array($attribute, ['SORTIE_CONTACT_PARTICIPANTS'], true);
     }
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
@@ -34,14 +35,16 @@ class SortieValidateVoter extends Voter
             throw new \InvalidArgumentException(sprintf('The voter "%s" requires an event subject', __CLASS__));
         }
 
-        if (!$subject->getCancelled() && $subject->isPublicStatusValide()) {
-            return false;
+        if ($user === $subject->getUser()) {
+            return true;
         }
-
-        if ($this->userRights->allowed('evt_validate_all') || $this->userRights->allowedOnCommission('evt_validate', $subject->getCommission())) {
+        if ($user->hasAttribute(UserAttr::SALARIE)) {
+            return true;
+        }
+        if ($subject->getEncadrants()->contains($user)) {
             return true;
         }
 
-        return false;
+        return $this->userRights->allowed('evt_contact_all');
     }
 }
