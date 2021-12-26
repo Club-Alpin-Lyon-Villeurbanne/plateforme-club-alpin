@@ -44,11 +44,12 @@ class Evt
     private $statusLegal;
 
     /**
-     * @var int
+     * @var User
      *
-     * @ORM\Column(name="status_legal_who_evt", type="integer", nullable=true, options={"comment": "ID du validateur légal"})
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="status_legal_who_evt", referencedColumnName="id_user", nullable=true)
      */
-    private $statusLegalWho = '0';
+    private $statusLegalWho;
 
     /**
      * @var bool
@@ -351,12 +352,12 @@ class Evt
         return $this;
     }
 
-    public function getStatusLegalWho(): ?int
+    public function getStatusLegalWho(): ?User
     {
         return $this->statusLegalWho;
     }
 
-    public function setStatusLegalWho(int $statusLegalWho): self
+    public function setStatusLegalWho(User $statusLegalWho): self
     {
         $this->statusLegalWho = $statusLegalWho;
 
