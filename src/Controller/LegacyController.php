@@ -21,19 +21,6 @@ class LegacyController extends AbstractController
         });
     }
 
-    #[Route(path: '/rss.xml', name: 'legacy_rss', methods: ['GET'])]
-    public function rssAction(): StreamedResponse
-    {
-        return new StreamedResponse(function () {
-            $legacyDir = __DIR__.'/../../legacy/';
-            $path = 'rss.php';
-
-            ob_start();
-            require $legacyDir.$path;
-            ob_end_flush();
-        });
-    }
-
     #[Route(path: '/img/adresse-website.png', name: 'legacy_img_adresse', methods: ['GET'])]
     public function adresseWebsiteAction(): StreamedResponse
     {
