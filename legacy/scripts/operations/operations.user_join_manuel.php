@@ -143,7 +143,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     VALUES (
                         NULL ,		$status_evt_join, '$id_evt',    '$id_user',  '$role_evt_join', ".time().',
                         '.time().', 			'.getUser()->getId().",
-                        $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage,  0);";
+                        $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage,  null);";
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             } else {
