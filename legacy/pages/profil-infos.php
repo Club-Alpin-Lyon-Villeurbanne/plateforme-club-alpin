@@ -225,9 +225,6 @@ if (user()) {
             <hr style="margin: 20px 0" />
 
             <h2 id="niveaux"><span class="bleucaf">&gt;</span>Infos sur mon niveau</h2>
-            <div>
-                <?php inclure('infos-profil-niveau-commission', 'vide'); ?>
-            </div>
             <?php
                 $ecriture = get_niveaux($tmpUser['id_user'], true);
     if ($ecriture) {
