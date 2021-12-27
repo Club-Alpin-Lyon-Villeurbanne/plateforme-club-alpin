@@ -454,9 +454,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
         <textarea name="tarif_detail" class="type2" style="width:95%; min-height:80px" placeholder="Ex : Remontées mécaniques 12€, Péage 11.50€, Car 7€, Vin chaud 5€ = somme 35.50"><?php echo inputVal('tarif_detail', ''); ?></textarea>
         <br>
 
-        <?php
-        inclure('infos-resto', 'mini');
-        ?>
         <label><input type="checkbox" name="repas_restaurant" id="repas_restaurant" <?php if (1 == $_POST['repas_restaurant'] || 'on' == $_POST['repas_restaurant']) {
             echo 'checked="checked"';
         } ?> >&nbsp;Repas au restaurant possible</label>
