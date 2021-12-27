@@ -23,7 +23,7 @@ class ContentHtml
         try {
             $content = $this->environment->render($template);
         } catch (LoaderError $e) {
-            $this->logger->error(sprintf('Unable to find html content "%s".', $template));
+            $this->logger->error(sprintf('Unable to find html content "%s".', $template), ['exception' => new \RuntimeException(sprintf('Unable to find html content "%s".', $template), $e->getCode(), $e)]);
             $content = '';
         }
 
