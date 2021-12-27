@@ -43,9 +43,9 @@ class EvtJoin
     private $user;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="affiliant_user_join", type="integer", nullable=false, options={"comment": "Si non nulle, cette valeur cible l'utilisateur qui a joint cet user via la fonction d'affiliation. C'est donc lui qui doit recevoir les emails informatifs."})
+     * @var User
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="affiliant_user_join", referencedColumnName="id_user", nullable=true)
      */
     private $affiliantUserJoin;
 
@@ -71,9 +71,9 @@ class EvtJoin
     private $lastchangeWhen;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="lastchange_who_evt_join", type="integer", nullable=false, options={"comment": "Qui a modifié cet élément"})
+     * @var User
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="lastchange_who_evt_join", referencedColumnName="id_user", nullable=false)
      */
     private $lastchangeWho;
 
@@ -153,12 +153,12 @@ class EvtJoin
         return $this;
     }
 
-    public function getAffiliantUserJoin(): ?int
+    public function getAffiliantUserJoin(): ?User
     {
         return $this->affiliantUserJoin;
     }
 
-    public function setAffiliantUserJoin(int $affiliantUserJoin): self
+    public function setAffiliantUserJoin(User $affiliantUserJoin): self
     {
         $this->affiliantUserJoin = $affiliantUserJoin;
 
@@ -201,12 +201,12 @@ class EvtJoin
         return $this;
     }
 
-    public function getLastchangeWho(): ?int
+    public function getLastchangeWho(): ?User
     {
         return $this->lastchangeWho;
     }
 
-    public function setLastchangeWho(int $lastchangeWho): self
+    public function setLastchangeWho(User $lastchangeWho): self
     {
         $this->lastchangeWho = $lastchangeWho;
 
