@@ -324,8 +324,8 @@ if (admin()) {
         }
 
         // Enregistrement
-        $req = "INSERT INTO  `caf_content_html` (`id_content_html` ,`code_content_html` ,`lang_content_html` ,`contenu_content_html` ,`date_content_html` ,`linkedtopage_content_html`, `current_content_html`, `vis_content_html`)
-															VALUES (NULL ,  '$code_content_html',  'fr',  '$contenu_content_html',  '".time()."',  '$linkedtopage_content_html', 1, $vis_content_html);";
+        $req = "INSERT INTO  `caf_content_html` (code_content_html ,`lang_content_html` ,`contenu_content_html` ,`date_content_html` ,`linkedtopage_content_html`, `current_content_html`, `vis_content_html`)
+															VALUES ('$code_content_html',  'fr',  '$contenu_content_html',  '".time()."',  '$linkedtopage_content_html', 1, $vis_content_html);";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             header('HTTP/1.0 400 Bad request');
             echo 'Erreur SQL';
