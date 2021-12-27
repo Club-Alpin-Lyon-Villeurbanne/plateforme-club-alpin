@@ -13,6 +13,7 @@ final class Version20211226231353 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE caf_article CHANGE evt_article evt_article INT DEFAULT NULL');
         $this->addSql('UPDATE caf_article SET evt_article = null WHERE evt_article = 0');
+        $this->addSql('UPDATE caf_article SET evt_article = null WHERE evt_article NOT IN (SELECT id_evt FROM caf_evt)');
         $this->addSql('ALTER TABLE caf_article ADD CONSTRAINT FK_A0BDE6C7F4CDCE2 FOREIGN KEY (evt_article) REFERENCES caf_evt (id_evt)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_A0BDE6C7F4CDCE2 ON caf_article (evt_article)');
 
