@@ -22,7 +22,7 @@ final class Version20211226231353 extends AbstractMigration
         $this->addSql('ALTER TABLE caf_comment ADD CONSTRAINT FK_36F3BACDCC794C66 FOREIGN KEY (user_comment) REFERENCES caf_user (id_user)');
         $this->addSql('CREATE INDEX IDX_36F3BACDCC794C66 ON caf_comment (user_comment)');
 
-        $this->addSql('ALTER TABLE caf_evt_join CHANGE affiliant_user_join affiliant_user_join BIGINT DEFAULT NULL, CHANGE lastchange_who_evt_join lastchange_who_evt_join BIGINT NOT NULL');
+        $this->addSql('ALTER TABLE caf_evt_join CHANGE affiliant_user_join affiliant_user_join BIGINT DEFAULT NULL, CHANGE lastchange_who_evt_join lastchange_who_evt_join BIGINT DEFAULT NULL');
         $this->addSql('UPDATE caf_evt_join SET affiliant_user_join = null WHERE affiliant_user_join = 0');
         $this->addSql('UPDATE caf_evt_join SET affiliant_user_join = null WHERE affiliant_user_join NOT IN (SELECT id_user FROM caf_user)');
         $this->addSql('ALTER TABLE caf_evt_join ADD CONSTRAINT FK_F03790373A719826 FOREIGN KEY (affiliant_user_join) REFERENCES caf_user (id_user)');

@@ -73,7 +73,7 @@ class EvtJoin
     /**
      * @var User
      * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(name="lastchange_who_evt_join", referencedColumnName="id_user", nullable=false)
+     * @ORM\JoinColumn(name="lastchange_who_evt_join", referencedColumnName="id_user", nullable=true)
      */
     private $lastchangeWho;
 
