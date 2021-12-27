@@ -101,7 +101,7 @@ class Article
     /**
      * @var Evt
      *
-     * @ORM\OneToOne(targetEntity="Evt")
+     * @ORM\ManyToOne(targetEntity="Evt")
      * @ORM\JoinColumn(name="evt_article", referencedColumnName="id_evt", nullable=true)
      */
     private $evt;
