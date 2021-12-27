@@ -398,8 +398,8 @@ if ('usertype_attr_edit' == ($_POST['operation'] ?? null) && admin()) {
             $tab = explode('-', $pair);
             $type_usertype_attr = (int) ($tab[0]);
             $right_usertype_attr = (int) ($tab[1]);
-            if (!LegacyContainer::get('legacy_mysqli_handler')->query("INSERT INTO caf_usertype_attr (id_usertype_attr, type_usertype_attr, right_usertype_attr, details_usertype_attr)
-															VALUES (NULL , '$type_usertype_attr', '$right_usertype_attr', '".time()."');")) {
+            if (!LegacyContainer::get('legacy_mysqli_handler')->query("INSERT INTO caf_usertype_attr (type_usertype_attr, right_usertype_attr, details_usertype_attr)
+															VALUES ('$type_usertype_attr', '$right_usertype_attr', '".time()."');")) {
                 $errTab[] = "Erreur de setting ($type_usertype_attr - $right_usertype_attr)";
             }
         }

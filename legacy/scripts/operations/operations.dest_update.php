@@ -15,8 +15,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $lieu_lat = LegacyContainer::get('legacy_mysqli_handler')->escapeString($lieu_lat);
         $lieu_lng = LegacyContainer::get('legacy_mysqli_handler')->escapeString($lieu_lng);
 
-        $sql = "INSERT INTO `caf_lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
-            VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
+        $sql = "INSERT INTO `caf_lieu` (`nom`, `description`, `ign`, `lat`, `lng`)
+            VALUES ('$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($sql)) {
             $errTab[] = 'Erreur SQL lors de la création du lieu';
         } else {
@@ -64,8 +64,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $intitule = LegacyContainer::get('legacy_mysqli_handler')->escapeString($bus['intitule']);
             $places_max = LegacyContainer::get('legacy_mysqli_handler')->escapeString($bus['places_max']);
             $places_disponibles = LegacyContainer::get('legacy_mysqli_handler')->escapeString($bus['places_disponibles']);
-            $sql = 'INSERT INTO `caf_bus` (`id`, `id_destination`, `intitule`, `places_max`, `places_disponibles`) '.
-                "VALUES (NULL, '$id_dest_to_update', '$intitule', '$places_max', '$places_disponibles');";
+            $sql = 'INSERT INTO `caf_bus` (`id_destination`, `intitule`, `places_max`, `places_disponibles`) '.
+                "VALUES ('$id_dest_to_update', '$intitule', '$places_max', '$places_disponibles');";
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($sql)) {
                 $errTab[] = 'Erreur SQL création du bus';
             }

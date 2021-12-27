@@ -43,7 +43,7 @@ if (!$erreur) {
     $description_page = LegacyContainer::get('legacy_mysqli_handler')->escapeString($description_page);
 
     // save
-    $req = "INSERT INTO `caf_page` (`id_page` ,`ordre_page` ,`parent_page` ,`code_page` ,`nom_page` ,`niveau_page` ,`titre_page` ,`description_page` ,`vis_page`)
-                                VALUES (NULL , '$ordre_page', '$parent_page', '$code_page', '$nom_page', '$niveau_page', '$titre_page', '$description_page', '$vis_page');";
+    $req = "INSERT INTO `caf_page` (`ordre_page` ,`parent_page` ,`code_page` ,`nom_page` ,`niveau_page` ,`titre_page` ,`description_page` ,`vis_page`)
+                                VALUES ('$ordre_page', '$parent_page', '$code_page', '$nom_page', '$niveau_page', '$titre_page', '$description_page', '$vis_page');";
     LegacyContainer::get('legacy_mysqli_handler')->query($req);
 }

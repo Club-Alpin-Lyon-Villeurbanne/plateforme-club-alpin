@@ -23,7 +23,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
 
             if ((!isset($errTab) || 0 === count($errTab)) && (null !== $commentaire || $niveau_technique > 0 || $niveau_physique > 0)) {
-                $req = "INSERT INTO `caf_user_niveau` (`id`, `id_user`, `id_commission`, `niveau_technique`, `niveau_physique`, `commentaire`) VALUES (NULL, '".$id_user."', '".$id_commission."', '".$niveau_technique."', '".$niveau_physique."', ";
+                $req = "INSERT INTO `caf_user_niveau` (`id_user`, `id_commission`, `niveau_technique`, `niveau_physique`, `commentaire`) VALUES ('".$id_user."', '".$id_commission."', '".$niveau_technique."', '".$niveau_physique."', ";
                 if (null === $commentaire) {
                     $req .= 'NULL';
                 } else {
