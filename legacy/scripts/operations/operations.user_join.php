@@ -193,7 +193,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
             if (!$update) {
                 $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage, affiliant_user_join, lastchange_when_evt_join, lastchange_who_evt_join)
-                          VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage, 0, 0, 0);";
+                          VALUES(NULL ,			 $status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage, null, 0, null);";
             } elseif (in_array($id_user, $update, true)) {
                 $req = "UPDATE `caf_evt_join`
                             SET
