@@ -54,8 +54,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $row = $result->fetch_row();
         if (!$row[0]) {
             // ajout
-            $req = "INSERT INTO caf_user_attr(id_user_attr ,user_user_attr ,usertype_user_attr ,params_user_attr ,details_user_attr)
-                                        VALUES (NULL , '$id_user', '$id_usertype', '$params_user_attr', '".time()."');";
+            $req = "INSERT INTO caf_user_attr(user_user_attr ,usertype_user_attr ,params_user_attr ,details_user_attr)
+                                        VALUES ('$id_user', '$id_usertype', '$params_user_attr', '".time()."');";
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }

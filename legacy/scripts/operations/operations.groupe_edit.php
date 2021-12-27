@@ -27,8 +27,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
             if (!isset($errTab) || 0 === count($errTab)) {
                 $req =
-                "INSERT INTO `caf_groupe` (`id`, `id_commission`, `nom`, `description`, `niveau_physique`, `niveau_technique`, `actif`)
-                    VALUES (NULL, '".$id_comm."', '".$nom."', '".$description."', '".$niveau_physique."', '".$niveau_technique."', '1');";
+                "INSERT INTO `caf_groupe` (`id_commission`, `nom`, `description`, `niveau_physique`, `niveau_technique`, `actif`)
+                    VALUES ('".$id_comm."', '".$nom."', '".$description."', '".$niveau_physique."', '".$niveau_technique."', '1');";
                 if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL insertion groupe';
                 }

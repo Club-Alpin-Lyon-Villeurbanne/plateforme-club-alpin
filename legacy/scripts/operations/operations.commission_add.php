@@ -194,8 +194,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $code_commission .= $suffixe;
 
     // enregistrement
-    $req = "INSERT INTO caf_commission(id_commission, ordre_commission, vis_commission, code_commission, title_commission)
-                                                VALUES (NULL ,  '',  '0',  '$code_commission',  '$title_commission');";
+    $req = "INSERT INTO caf_commission(ordre_commission, vis_commission, code_commission, title_commission)
+                                                VALUES ('',  '0',  '$code_commission',  '$title_commission');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }

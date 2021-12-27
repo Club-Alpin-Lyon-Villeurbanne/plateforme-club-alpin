@@ -154,15 +154,15 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if (!isset($errTab) || 0 === count($errTab)) {
             foreach ($encadrants as $id_user) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
-                    $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
-                                                        VALUES(NULL , 1,               '$id_evt',  '$id_user',  'encadrant', ".time().');';
+                    $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
+                                                        VALUES(1,               '$id_evt',  '$id_user',  'encadrant', ".time().');';
                     LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 }
             }
             foreach ($coencadrants as $id_user) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
-                    $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
-                                                        VALUES(NULL , 1, '$id_evt',  '$id_user',  'coencadrant', ".time().');';
+                    $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
+                                                        VALUES(1, '$id_evt',  '$id_user',  'coencadrant', ".time().');';
                     LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 }
             }
@@ -170,8 +170,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
             if ('evt_create' == $_POST['operation']) {
                 foreach ($benevoles as $id_user) {
                     $id_user = (int) $id_user;
-                    $req = "INSERT INTO caf_evt_join(id_evt_join, status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
-                                                        VALUES(NULL , 1, '$id_evt',  '$id_user',  'benevole', ".time().');';
+                    $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
+                                                        VALUES(1, '$id_evt',  '$id_user',  'benevole', ".time().');';
                     LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 }
             }
@@ -197,8 +197,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     $lieu_lat = LegacyContainer::get('legacy_mysqli_handler')->escapeString($depose['lat']);
                     $lieu_lng = LegacyContainer::get('legacy_mysqli_handler')->escapeString($depose['lng']);
 
-                    $sql = "INSERT INTO `caf_lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
-                            VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
+                    $sql = "INSERT INTO `caf_lieu` (`nom`, `description`, `ign`, `lat`, `lng`)
+                            VALUES ('$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
 
                     if (!LegacyContainer::get('legacy_mysqli_handler')->query($sql)) {
                         $errTab[] = 'Erreur SQL lors de la création du lieu de depose';
@@ -219,8 +219,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
                         $lieu_lat = LegacyContainer::get('legacy_mysqli_handler')->escapeString($reprise['lat']);
                         $lieu_lng = LegacyContainer::get('legacy_mysqli_handler')->escapeString($reprise['lng']);
 
-                        $sql = "INSERT INTO `caf_lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
-                                VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
+                        $sql = "INSERT INTO `caf_lieu` (`nom`, `description`, `ign`, `lat`, `lng`)
+                                VALUES ('$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
 
                         if (!LegacyContainer::get('legacy_mysqli_handler')->query($sql)) {
                             $errTab[] = 'Erreur SQL lors de la création du lieu de reprise';
@@ -235,9 +235,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     $date_reprise = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_POST['lieu']['reprise']['date_reprise']);
 
                     $req = "INSERT INTO `caf_evt_destination`
-                                (`id`, `id_evt`, `id_destination`, `id_lieu_depose`, `date_depose`, `id_lieu_reprise`, `date_reprise`)
+                                (`id_evt`, `id_destination`, `id_lieu_depose`, `date_depose`, `id_lieu_reprise`, `date_reprise`)
                            VALUES
-                                (NULL, $id_evt, $id_destination, $id_lieu_depose, '$date_depose', $id_lieu_reprise, '$date_reprise');";
+                                ($id_evt, $id_destination, $id_lieu_depose, '$date_depose', $id_lieu_reprise, '$date_reprise');";
 
                     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                         $errTab[] = 'Erreur SQL de jointure evt/destination ';
