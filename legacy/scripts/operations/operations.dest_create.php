@@ -15,8 +15,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $lieu_lat = LegacyContainer::get('legacy_mysqli_handler')->escapeString($lieu_lat);
     $lieu_lng = LegacyContainer::get('legacy_mysqli_handler')->escapeString($lieu_lng);
 
-    $sql = "INSERT INTO `caf_lieu` (`id`, `nom`, `description`, `ign`, `lat`, `lng`)
-        VALUES (NULL, '$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
+    $sql = "INSERT INTO `caf_lieu` (`nom`, `description`, `ign`, `lat`, `lng`)
+        VALUES ('$lieu_nom', '$lieu_description', '$lieu_ign', '$lieu_lat', '$lieu_lng');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($sql)) {
         $errTab[] = 'Erreur SQL lors de la création du lieu';
     } else {
@@ -41,8 +41,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $inscription_locked = LegacyContainer::get('legacy_mysqli_handler')->escapeString($inscription_locked);
 
         $sql = 'INSERT INTO `caf_destination` '.
-            '(`id`, `id_lieu`, `id_user_who_create`, `id_user_responsable`, `id_user_adjoint`, `nom`, `code`, `description`, `ign`, `date`, `date_fin`, `cout_transport`, `inscription_ouverture`, `inscription_fin`, `inscription_locked`) '.
-            "VALUES (NULL, '$id_lieu', '$id_user_who_create', '$id_user_responsable','$id_user_adjoint', '$nom', '$code', '$description', '$ign', '$date', '$date_fin', '$cout_transport', '$inscription_ouverture', '$inscription_fin', '$inscription_locked');";
+            '(`id_lieu`, `id_user_who_create`, `id_user_responsable`, `id_user_adjoint`, `nom`, `code`, `description`, `ign`, `date`, `date_fin`, `cout_transport`, `inscription_ouverture`, `inscription_fin`, `inscription_locked`) '.
+            "VALUES ('$id_lieu', '$id_user_who_create', '$id_user_responsable','$id_user_adjoint', '$nom', '$code', '$description', '$ign', '$date', '$date_fin', '$cout_transport', '$inscription_ouverture', '$inscription_fin', '$inscription_locked');";
 
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($sql)) {
             $errTab[] = 'Erreur SQL lors de la création de la destination : ';
