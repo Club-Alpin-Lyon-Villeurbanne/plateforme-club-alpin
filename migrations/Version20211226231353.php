@@ -18,13 +18,16 @@ final class Version20211226231353 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_A0BDE6C7F4CDCE2 ON caf_article (evt_article)');
 
         $this->addSql('ALTER TABLE caf_comment CHANGE user_comment user_comment BIGINT NOT NULL');
+        $this->addSql('DELETE FROM caf_comment WHERE user_comment NOT IN (SELECT id_user FROM caf_user)');
         $this->addSql('ALTER TABLE caf_comment ADD CONSTRAINT FK_36F3BACDCC794C66 FOREIGN KEY (user_comment) REFERENCES caf_user (id_user)');
         $this->addSql('CREATE INDEX IDX_36F3BACDCC794C66 ON caf_comment (user_comment)');
 
         $this->addSql('ALTER TABLE caf_evt_join CHANGE affiliant_user_join affiliant_user_join BIGINT DEFAULT NULL, CHANGE lastchange_who_evt_join lastchange_who_evt_join BIGINT NOT NULL');
         $this->addSql('UPDATE caf_evt_join SET affiliant_user_join = null WHERE affiliant_user_join = 0');
+        $this->addSql('UPDATE caf_evt_join SET affiliant_user_join = null WHERE affiliant_user_join NOT IN (SELECT id_user FROM caf_user)');
         $this->addSql('ALTER TABLE caf_evt_join ADD CONSTRAINT FK_F03790373A719826 FOREIGN KEY (affiliant_user_join) REFERENCES caf_user (id_user)');
         $this->addSql('UPDATE caf_evt_join SET lastchange_who_evt_join = null WHERE lastchange_who_evt_join = 0');
+        $this->addSql('UPDATE caf_evt_join SET lastchange_who_evt_join = null WHERE lastchange_who_evt_join NOT IN (SELECT id_user FROM caf_user)');
         $this->addSql('ALTER TABLE caf_evt_join ADD CONSTRAINT FK_F0379037DBB00F1F FOREIGN KEY (lastchange_who_evt_join) REFERENCES caf_user (id_user)');
         $this->addSql('CREATE INDEX IDX_F03790373A719826 ON caf_evt_join (affiliant_user_join)');
         $this->addSql('CREATE INDEX IDX_F0379037DBB00F1F ON caf_evt_join (lastchange_who_evt_join)');
@@ -33,7 +36,7 @@ final class Version20211226231353 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql('ALTER TABLE caf_article DROP FOREIGN KEY FK_A0BDE6C7F4CDCE2');
-        $this->addSql('DROP INDEX UNIQ_A0BDE6C7F4CDCE2 ON caf_article');
+        $this->addSql('DROP INDEX IDX_A0BDE6C7F4CDCE2 ON caf_article');
         $this->addSql('ALTER TABLE caf_article CHANGE evt_article evt_article INT NOT NULL COMMENT \'ID sortie liée\'');
 
         $this->addSql('ALTER TABLE caf_comment DROP FOREIGN KEY FK_36F3BACDCC794C66');
