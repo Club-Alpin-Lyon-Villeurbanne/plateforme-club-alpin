@@ -309,8 +309,8 @@ function mylog($code, $desc, $connectme = true)
     $date_log_admin = time();
     $ip_log_admin = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_SERVER['REMOTE_ADDR']);
 
-    $req = "INSERT INTO `caf_log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`)
-        VALUES (NULL , '$code_log_admin',  '$desc_log_admin',  '$date_log_admin', '$ip_log_admin')";
+    $req = "INSERT INTO `caf_log_admin` (`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`)
+        VALUES ('$code_log_admin',  '$desc_log_admin',  '$date_log_admin', '$ip_log_admin')";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL lors du log';
     }
