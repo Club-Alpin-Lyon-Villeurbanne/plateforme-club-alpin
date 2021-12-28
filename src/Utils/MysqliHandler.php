@@ -44,6 +44,10 @@ class MysqliHandler
         $result = $this->mysqli->query($sql);
 
         if ($this->mysqli->errno > 0) {
+            if ('prod' !== $this->kernelEnvironment) {
+                throw new \RuntimeException(sprintf('Error while executing SQL query: "%s"', $this->mysqli->error));
+            }
+
             $request = $this->requestStack->getMainRequest();
             $url = null;
 
