@@ -29,7 +29,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $description_evt = LegacyContainer::get('legacy_mysqli_handler')->escapeString($description_evt);
 
     if (0 == $id_groupe) {
-        $id_groupe = 'NULL';
+        $id_groupe = null;
     } else {
         $id_groupe = LegacyContainer::get('legacy_mysqli_handler')->escapeString($id_groupe);
     }
@@ -63,7 +63,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     if ('evt_create' == $_POST['operation']) {
         $req = "INSERT INTO caf_evt(status_evt ,status_legal_evt ,user_evt ,commission_evt ,tsp_evt ,tsp_end_evt ,tsp_crea_evt ,place_evt ,titre_evt ,code_evt ,massif_evt ,rdv_evt ,tarif_evt, cb_evt, tarif_detail, repas_restaurant, tarif_restaurant, denivele_evt ,distance_evt ,lat_evt ,long_evt ,matos_evt ,itineraire, difficulte_evt ,description_evt , need_benevoles_evt , join_start_evt, join_max_evt, ngens_max_evt, cycle_master_evt ,cycle_parent_evt ,child_version_from_evt ,child_version_tosubmit, id_groupe, cancelled_evt)
-					VALUES ('0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '$place_evt', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$cb_evt', '$tarif_detail', '$repas_restaurant', $tarif_restaurant, $denivele_evt, $distance_evt, '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', '$cycle_master_evt', '$cycle_parent_evt', '0', '0', $id_groupe, '0');";
+					VALUES ('0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '$place_evt', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$cb_evt', '$tarif_detail', '$repas_restaurant', $tarif_restaurant, $denivele_evt, $distance_evt, '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', '$cycle_master_evt', '$cycle_parent_evt', '0', '0', ".($id_groupe ?: 'null').", '0');";
     } elseif ('evt_update' == $_POST['operation']) {
         // MISE A JOUR de l'éléments existant // IMPORTANT : le status repasse à 0
         $req = "UPDATE caf_evt SET `status_evt`=0,
@@ -91,9 +91,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 				`ngens_max_evt` =  '$ngens_max_evt',
 				`description_evt` =  '$description_evt',
 				`need_benevoles_evt` =  '$need_benevoles_evt'";
-        if (0 == $id_groupe) {
-            $req .= ', id_groupe = 0 ';
-        } else {
+        if (null != $id_groupe) {
             $req .= ", id_groupe = '$id_groupe' ";
         }
         if (0 == $cycle_master_evt) {
@@ -156,14 +154,18 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
                     $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
                                                         VALUES(1,               '$id_evt',  '$id_user',  'encadrant', ".time().');';
-                    LegacyContainer::get('legacy_mysqli_handler')->query($req);
+                    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+                        $errTab[] = 'Erreur SQL: '.LegacyContainer::get('legacy_mysqli_handler')->lastError();
+                    }
                 }
             }
             foreach ($coencadrants as $id_user) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
                     $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
                                                         VALUES(1, '$id_evt',  '$id_user',  'coencadrant', ".time().');';
-                    LegacyContainer::get('legacy_mysqli_handler')->query($req);
+                    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+                        $errTab[] = 'Erreur SQL: '.LegacyContainer::get('legacy_mysqli_handler')->lastError();
+                    }
                 }
             }
             // Seulement en création :
@@ -172,7 +174,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     $id_user = (int) $id_user;
                     $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
                                                         VALUES(1, '$id_evt',  '$id_user',  'benevole', ".time().');';
-                    LegacyContainer::get('legacy_mysqli_handler')->query($req);
+                    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+                        $errTab[] = 'Erreur SQL: '.LegacyContainer::get('legacy_mysqli_handler')->lastError();
+                    }
                 }
             }
         }
