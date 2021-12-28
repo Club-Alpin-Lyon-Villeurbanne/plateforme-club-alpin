@@ -17,8 +17,8 @@ if (getArrayFirstValue($handleCount->fetch_array(\MYSQLI_NUM))) {
 if (!isset($errTab) || 0 === count($errTab)) {
     $nom_content_inline_group = LegacyContainer::get('legacy_mysqli_handler')->escapeString($nom_content_inline_group);
 
-    $req = "INSERT INTO `caf_content_inline_group` (`id_content_inline_group` ,`ordre_content_inline_group` ,`nom_content_inline_group`)
-                                                    VALUES (NULL , '', '$nom_content_inline_group');";
+    $req = "INSERT INTO `caf_content_inline_group` (`ordre_content_inline_group` ,`nom_content_inline_group`)
+                                                    VALUES ('', '$nom_content_inline_group');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $erreur = 'Erreur BDD<br />'.$req;
     }

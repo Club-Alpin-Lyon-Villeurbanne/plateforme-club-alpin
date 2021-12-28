@@ -204,8 +204,8 @@ foreach ($fileTab as $file) {
                         echo "INSERT $cafnum_user\n";
 
                         // insertion
-                        $req = "INSERT INTO caf_user(id_user, cafnum_user , firstname_user , lastname_user , created_user , birthday_user , tel_user , tel2_user , adresse_user , cp_user , ville_user , civ_user , cafnum_parent_user, valid_user, doit_renouveler_user, alerte_renouveler_user, ts_insert_user, nickname_user)
-						VALUES (NULL, '$cafnum_user', '$firstname_user', '$lastname_user',  '".time()."', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$civ_user', '$cafnum_parent_user', 0, $doit_renouveler_user, $alerte_renouveler_user, ".time()." , '$nickname_user');";
+                        $req = "INSERT INTO caf_user(cafnum_user , firstname_user , lastname_user , created_user , birthday_user , tel_user , tel2_user , adresse_user , cp_user , ville_user , civ_user , cafnum_parent_user, valid_user, doit_renouveler_user, alerte_renouveler_user, ts_insert_user, nickname_user)
+						VALUES ('$cafnum_user', '$firstname_user', '$lastname_user',  '".time()."', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$civ_user', '$cafnum_parent_user', 0, $doit_renouveler_user, $alerte_renouveler_user, ".time()." , '$nickname_user');";
                         ++$nb_insert;
                     } elseif ($idUser = mysqli_result($handleSql, 0)) {
                         // adherent existant : mise a jour
@@ -246,16 +246,16 @@ foreach ($fileTab as $file) {
 
         echo "INSERT: $nb_insert, UPDATE:$nb_update\n";
 
-        $req = "INSERT INTO  `caf_log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`ip_log_admin`,`date_log_admin`)
-			VALUES (NULL , 'import-ffcam',  'INSERT: $nb_insert, UPDATE:$nb_update, fichier ".basename($file)."', '127.0.0.1', '".time()."');";
+        $req = "INSERT INTO  `caf_log_admin` (`code_log_admin` ,`desc_log_admin` ,`ip_log_admin`,`date_log_admin`)
+			VALUES ('import-ffcam',  'INSERT: $nb_insert, UPDATE:$nb_update, fichier ".basename($file)."', '127.0.0.1', '".time()."');";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL lors du log';
         }
     } else {
         echo "!!! Erreur : le fichier n'existe pas : $file\n";
 
-        $req = "INSERT INTO  `caf_log_admin` (`id_log_admin` ,`code_log_admin` ,`desc_log_admin` ,`ip_log_admin`,`date_log_admin`)
-			VALUES (NULL , 'import-ffcam',  'fichier inexistant : $file', '127.0.0.1', '".time()."');";
+        $req = "INSERT INTO  `caf_log_admin` (`code_log_admin` ,`desc_log_admin` ,`ip_log_admin`,`date_log_admin`)
+			VALUES ('import-ffcam',  'fichier inexistant : $file', '127.0.0.1', '".time()."');";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL lors du log';
         }
