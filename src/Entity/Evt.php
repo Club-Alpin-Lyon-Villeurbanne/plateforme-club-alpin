@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -85,11 +86,12 @@ class Evt
     private $commission;
 
     /**
-     * @var int|null
+     * @var Groupe|null
      *
-     * @ORM\Column(name="id_groupe", type="integer", nullable=true, options={"unsigned": true})
+     * @ORM\ManyToOne(targetEntity="Groupe", fetch="EAGER")
+     * @ORM\JoinColumn(name="id_groupe", referencedColumnName="id", nullable=true)
      */
-    private $idGroupe;
+    private $groupe;
 
     /**
      * @var int
@@ -306,14 +308,25 @@ class Evt
      */
     private $cb;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Article", mappedBy="evt")
+     */
+    private $articles;
+
     public function __construct()
     {
         $this->joins = new ArrayCollection();
+        $this->articles = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getArticles(): Collection
+    {
+        return $this->articles;
     }
 
     public function getStatus(): ?int
@@ -405,10 +418,18 @@ class Evt
         return $this->user;
     }
 
-    /** @return EvtJoin[] */
-    public function getParticipant()
+    /** @return Collection */
+    public function getParticipants()
     {
         return $this->joins;
+    }
+
+    /** @return Collection */
+    public function getEncadrants()
+    {
+        return $this->getParticipants()->filter(function (EvtJoin $participant) {
+            return EvtJoin::STATUS_NON_VALIDE === $participant->getStatus() && \in_array($participant->getRole(), ['encadrant', 'coencadrant'], true);
+        });
     }
 
     public function getCommission(): Commission
@@ -416,14 +437,14 @@ class Evt
         return $this->commission;
     }
 
-    public function getIdGroupe(): ?int
+    public function getGroupe(): ?Groupe
     {
-        return $this->idGroupe;
+        return $this->groupe;
     }
 
-    public function setIdGroupe(?int $idGroupe): self
+    public function setGroupe(?Groupe $groupe): self
     {
-        $this->idGroupe = $idGroupe;
+        $this->groupe = $groupe;
 
         return $this;
     }
@@ -438,6 +459,11 @@ class Evt
         $this->tsp = $tsp;
 
         return $this;
+    }
+
+    public function isFinished(): bool
+    {
+        return $this->tspEnd < time();
     }
 
     public function getTspEnd(): ?string
