@@ -54,7 +54,7 @@ class LegacyRouteLoader extends Loader
                 '_controller' => 'App\Controller\LegacyController::loadLegacyScript',
                 'requestPath' => '/'.$legacyScriptFile->getRelativePathname(),
                 'legacyScript' => '/legacy/'.$legacyScriptFile->getRelativePathname(),
-            ]));
+            ]), -10);
         }
 
         return $collection;

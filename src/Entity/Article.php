@@ -15,7 +15,7 @@ class Article
     /**
      * @var int
      *
-     * @ORM\Column(name="id_article", type="integer", nullable=false, options={"unsigned": true})
+     * @ORM\Column(name="id_article", type="integer", nullable=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */

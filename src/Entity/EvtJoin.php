@@ -12,6 +12,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class EvtJoin
 {
+    public const STATUS_NON_CONFIRME = 0;
+    public const STATUS_NON_VALIDE = 1;
+    public const STATUS_NON_REFUSE = 2;
+
     /**
      * @var int
      *
@@ -26,7 +30,7 @@ class EvtJoin
      *
      * @ORM\Column(name="status_evt_join", type="smallint", nullable=false, options={"comment": "0=non confirmé - 1=validé - 2=refusé"})
      */
-    private $status = '0';
+    private $status = self::STATUS_NON_CONFIRME;
 
     /**
      * @ORM\ManyToOne(targetEntity="Evt", inversedBy="joins", fetch="EAGER")
