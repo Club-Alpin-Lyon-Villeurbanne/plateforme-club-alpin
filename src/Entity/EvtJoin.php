@@ -13,8 +13,15 @@ use Doctrine\ORM\Mapping as ORM;
 class EvtJoin
 {
     public const STATUS_NON_CONFIRME = 0;
-    public const STATUS_NON_VALIDE = 1;
-    public const STATUS_NON_REFUSE = 2;
+    public const STATUS_VALIDE = 1;
+    public const STATUS_REFUSE = 2;
+    public const STATUS_ABSENT = 3;
+
+    public const ROLE_MANUEL = 'manuel';
+    public const ROLE_INSCRIT = 'inscrit';
+    public const ROLE_ENCADRANT = 'encadrant';
+    public const ROLE_COENCADRANT = 'coencadrant';
+    public const ROLE_BENEVOLE = 'benevole';
 
     /**
      * @var int
@@ -39,7 +46,7 @@ class EvtJoin
     private $evt;
 
     /**
-     * @var int
+     * @var User
      *
      * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
      * @ORM\JoinColumn(name="user_evt_join", nullable=false, referencedColumnName="id_user", onDelete="CASCADE")
@@ -133,6 +140,51 @@ class EvtJoin
         return $this;
     }
 
+    public function isStatusEnAttente()
+    {
+        return self::STATUS_NON_CONFIRME === $this->status;
+    }
+
+    public function isStatusValide()
+    {
+        return self::STATUS_VALIDE === $this->status;
+    }
+
+    public function isStatusRefuse()
+    {
+        return self::STATUS_REFUSE === $this->status;
+    }
+
+    public function isStatusAbsent()
+    {
+        return self::STATUS_ABSENT === $this->status;
+    }
+
+    public function isRoleManuel()
+    {
+        return self::ROLE_MANUEL === $this->role;
+    }
+
+    public function isRoleInscrit()
+    {
+        return self::ROLE_INSCRIT === $this->role;
+    }
+
+    public function isRoleEncadrant()
+    {
+        return self::ROLE_ENCADRANT === $this->role;
+    }
+
+    public function isRoleCoencadrant()
+    {
+        return self::ROLE_COENCADRANT === $this->role;
+    }
+
+    public function isRoleBenevole()
+    {
+        return self::ROLE_BENEVOLE === $this->role;
+    }
+
     public function getEvt(): ?Evt
     {
         return $this->evt;
@@ -145,7 +197,7 @@ class EvtJoin
         return $this;
     }
 
-    public function getUser(): ?int
+    public function getUser(): ?User
     {
         return $this->user;
     }
