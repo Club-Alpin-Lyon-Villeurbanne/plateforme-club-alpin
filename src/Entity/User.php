@@ -47,7 +47,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="cafnum_user", type="string", length=20, nullable=true, options={"comment": "Numéro de licence"})
+     * @ORM\Column(name="cafnum_user", type="string", length=20, nullable=true, options={"comment": "Numéro de licence"}, unique=true)
      */
     private $cafnum;
 
