@@ -281,11 +281,15 @@ class Evt
     private $cycleMaster;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="cycle_parent_evt", type="integer", nullable=false, options={"comment": "Si cette sortie est l'enfant d'un cycle, l'id du parent est ici"})
+     * @ORM\ManyToOne(targetEntity="Evt", inversedBy="cycleChildren")
+     * @ORM\JoinColumn(name="cycle_parent_evt", referencedColumnName="id_evt", nullable=true)
      */
     private $cycleParent;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Evt", mappedBy="cycleParent")
+     */
+    private $cycleChildren;
 
     /**
      * @var int
@@ -317,6 +321,7 @@ class Evt
     {
         $this->joins = new ArrayCollection();
         $this->articles = new ArrayCollection();
+        $this->cycleChildren = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -766,16 +771,22 @@ class Evt
         return $this;
     }
 
-    public function getCycleParent(): ?int
+    public function getCycleParent(): ?self
     {
         return $this->cycleParent;
     }
 
-    public function setCycleParent(int $cycleParent): self
+    public function setCycleParent(self $cycleParent): self
     {
         $this->cycleParent = $cycleParent;
 
         return $this;
+    }
+
+    /** @return Evt[] */
+    public function getCycleChildren(): Collection
+    {
+        return $this->cycleChildren;
     }
 
     public function getChildVersionFrom(): ?int
