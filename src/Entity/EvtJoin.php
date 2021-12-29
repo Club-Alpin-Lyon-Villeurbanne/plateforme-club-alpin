@@ -70,7 +70,7 @@ class EvtJoin
     /**
      * @var int
      *
-     * @ORM\Column(name="lastchange_when_evt_join", type="bigint", nullable=false, options={"comment": "Quand a été modifié cet élément"})
+     * @ORM\Column(name="lastchange_when_evt_join", type="bigint", nullable=true, options={"comment": "Quand a été modifié cet élément"})
      */
     private $lastchangeWhen;
 
