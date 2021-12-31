@@ -22,18 +22,20 @@ class EvtDestination
     private $id;
 
     /**
-     * @var int
+     * @var Evt
      *
-     * @ORM\Column(name="id_evt", type="integer", nullable=false, options={"unsigned": true})
+     * @ORM\OneToOne(targetEntity="Evt", inversedBy="destination")
+     * @ORM\JoinColumn(name="id_evt", referencedColumnName="id_evt", nullable=false)
      */
-    private $idEvt;
+    private $event;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="id_destination", type="integer", nullable=false, options={"unsigned": true})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Destination", inversedBy="events")
+     * @ORM\JoinColumn(name="id_destination", referencedColumnName="id", nullable=false)
      */
-    private $idDestination;
+    private $destination;
 
     /**
      * @var int|null
@@ -68,26 +70,19 @@ class EvtDestination
         return $this->id;
     }
 
-    public function getIdEvt(): ?int
+    public function getDestination(): Destination
     {
-        return $this->idEvt;
+        return $this->destination;
     }
 
-    public function setIdEvt(int $idEvt): self
+    public function getEvent(): Evt
     {
-        $this->idEvt = $idEvt;
-
-        return $this;
+        return $this->event;
     }
 
-    public function getIdDestination(): ?int
+    public function setEvent(Evt $event): self
     {
-        return $this->idDestination;
-    }
-
-    public function setIdDestination(int $idDestination): self
-    {
-        $this->idDestination = $idDestination;
+        $this->event = $event;
 
         return $this;
     }
