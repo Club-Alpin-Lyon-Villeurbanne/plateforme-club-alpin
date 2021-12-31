@@ -107,7 +107,7 @@ if (!$_POST['id_destination']) {
     // $errTab[] = 'Verifier les données en cas de destination';
 
 // Gestion des cycles
-$cycle_parent_evt = 0;
+$cycle_parent_evt = null;
 $cycle_master_evt = 0;
 if ('none' == $_POST['cycle']) { // ceci est la première sortie d'un cycle, la parente
     unset($_POST['cycle_parent_evt']);
