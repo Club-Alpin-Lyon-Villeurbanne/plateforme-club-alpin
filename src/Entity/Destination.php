@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -143,6 +144,16 @@ class Destination
      */
     private $inscriptionLocked = '0';
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\EvtDestination", mappedBy="destination")
+     */
+    private $events;
+
+    public function __construct()
+    {
+        $this->events = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -158,6 +169,12 @@ class Destination
         $this->idLieu = $idLieu;
 
         return $this;
+    }
+
+    /** @return EvtDestination[] */
+    public function getEvents()
+    {
+        return $this->events;
     }
 
     public function getIdUserWhoCreate(): ?User

@@ -14,6 +14,14 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Evt
 {
+    public const STATUS_PUBLISHED_UNSEEN = 0;
+    public const STATUS_PUBLISHED_VALIDE = 1;
+    public const STATUS_PUBLISHED_REFUSE = 2;
+
+    public const STATUS_LEGAL_UNSEEN = 0;
+    public const STATUS_LEGAL_VALIDE = 1;
+    public const STATUS_LEGAL_REFUSE = 2;
+
     /**
      * @var int
      *
@@ -262,6 +270,8 @@ class Evt
     private $joinMax;
 
     /**
+     * @var EvtJoin[]
+     *
      * @ORM\OneToMany(targetEntity="EvtJoin", mappedBy="evt", cascade={"persist"})
      */
     private $joins;
@@ -317,6 +327,11 @@ class Evt
      */
     private $articles;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\EvtDestination", mappedBy="event")
+     */
+    private $destination;
+
     public function __construct()
     {
         $this->joins = new ArrayCollection();
@@ -332,6 +347,11 @@ class Evt
     public function getArticles(): Collection
     {
         return $this->articles;
+    }
+
+    public function getDestination(): ?EvtDestination
+    {
+        return $this->destination;
     }
 
     public function getStatus(): ?int
@@ -423,18 +443,37 @@ class Evt
         return $this->user;
     }
 
-    /** @return Collection */
-    public function getParticipants()
+    /** @return EvtJoin[] */
+    public function getParticipants($roles = null, $status = EvtJoin::STATUS_VALIDE): Collection
     {
-        return $this->joins;
+        if (null !== $roles && !\is_array($roles)) {
+            $roles = (array) $roles;
+        }
+        if (null !== $status && !\is_array($status)) {
+            $status = (array) $status;
+        }
+
+        return $this->joins->filter(function (EvtJoin $participant) use ($roles, $status) {
+            return (null === $roles || \in_array($participant->getRole(), $roles, true))
+                && (null === $status || \in_array($participant->getStatus(), $status, true));
+        });
     }
 
-    /** @return Collection */
-    public function getEncadrants()
+    public function getParticipant(User $user): ?EvtJoin
     {
-        return $this->getParticipants()->filter(function (EvtJoin $participant) {
-            return EvtJoin::STATUS_NON_VALIDE === $participant->getStatus() && \in_array($participant->getRole(), ['encadrant', 'coencadrant'], true);
-        });
+        foreach ($this->joins as $join) {
+            if ($join->getUser() === $user) {
+                return $join;
+            }
+        }
+
+        return null;
+    }
+
+    /** @return EvtJoin[] */
+    public function getEncadrants($types = [EvtJoin::ROLE_ENCADRANT, EvtJoin::ROLE_COENCADRANT]): Collection
+    {
+        return $this->getParticipants($types, [EvtJoin::STATUS_VALIDE]);
     }
 
     public function getCommission(): Commission
@@ -464,6 +503,51 @@ class Evt
         $this->tsp = $tsp;
 
         return $this;
+    }
+
+    public function isPublicStatusUnseen()
+    {
+        return self::STATUS_PUBLISHED_UNSEEN === $this->status;
+    }
+
+    public function isPublicStatusValide()
+    {
+        return self::STATUS_PUBLISHED_VALIDE === $this->status;
+    }
+
+    public function isPublicStatusRefuse()
+    {
+        return self::STATUS_PUBLISHED_REFUSE === $this->status;
+    }
+
+    public function isLegalStatusUnseen()
+    {
+        return self::STATUS_LEGAL_UNSEEN === $this->statusLegal;
+    }
+
+    public function isLegalStatusValide()
+    {
+        return self::STATUS_LEGAL_VALIDE === $this->statusLegal;
+    }
+
+    public function isLegalStatusRefuse()
+    {
+        return self::STATUS_LEGAL_REFUSE === $this->statusLegal;
+    }
+
+    public function hasStarted(): bool
+    {
+        return $this->tsp > time();
+    }
+
+    public function startsAfter(string $when): bool
+    {
+        return $this->tsp > strtotime($when);
+    }
+
+    public function joinHasStarted(): bool
+    {
+        return $this->joinStart < time();
     }
 
     public function isFinished(): bool
