@@ -35,11 +35,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     if (!$handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                         $errTab[] = 'Erreur SQL SELECT COUNT';
                     } elseif ($handleSql2->num_rows() > 0) {
-                        $cycle_parent_evt = 0;
+                        $cycle_parent_evt = null;
                     }
                 }
 
-                $req = "UPDATE caf_evt SET cancelled_evt='0', cancelled_who_evt='0', cancelled_when_evt='0', status_evt='0',cycle_parent_evt=$cycle_parent_evt WHERE caf_evt.id_evt =$id_evt";
+                $req = "UPDATE caf_evt SET cancelled_evt='0', cancelled_who_evt='0', cancelled_when_evt='0', status_evt='0',cycle_parent_evt=".($cycle_parent_evt ? "'$cycle_parent_evt'" : 'null')." WHERE caf_evt.id_evt =$id_evt";
                 if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL';
                 }
