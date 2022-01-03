@@ -99,8 +99,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
         } else {
             $req .= ", cycle_master_evt = '$cycle_master_evt' ";
         }
-        if (0 == $cycle_parent_evt) {
-            $req .= ', cycle_parent_evt = 0 ';
+        if (!$cycle_parent_evt) {
+            $req .= ', cycle_parent_evt = null ';
         } else {
             $req .= ", cycle_parent_evt = '$cycle_parent_evt' ";
             $req2 = "UPDATE caf_evt SET cycle_master_evt = 1 WHERE id_evt=$cycle_parent_evt";
