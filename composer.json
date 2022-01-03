@@ -41,8 +41,6 @@
         "symfony/web-link": "5.3.*",
         "symfony/webpack-encore-bundle": "^1.13",
         "symfony/yaml": "5.3.*",
-        "twig/extra-bundle": "^3.3",
-        "twig/string-extra": "^3.3",
         "twig/twig": "^3.3"
     },
     "require-dev": {
@@ -64,11 +62,6 @@
         "platform-check": false,
         "platform": {
             "php": "7.4.25"
-        },
-        "allow-plugins": {
-            "composer/package-versions-deprecated": true,
-            "symfony/flex": true,
-            "symfony/runtime": true
         }
     },
     "autoload": {
