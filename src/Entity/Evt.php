@@ -39,9 +39,10 @@ class Evt
     private $status;
 
     /**
-     * @var int
+     * @var User
      *
-     * @ORM\Column(name="status_who_evt", type="integer", nullable=true, options={"comment": "ID de l'user qui a changé le statut en dernier"})
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="status_who_evt", referencedColumnName="id_user", nullable=true)
      */
     private $statusWho;
 
@@ -68,9 +69,10 @@ class Evt
     private $cancelled = '0';
 
     /**
-     * @var int
+     * @var User
      *
-     * @ORM\Column(name="cancelled_who_evt", type="integer", nullable=true, options={"comment": "ID user qui a  annulé l'evt"})
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(name="cancelled_who_evt", referencedColumnName="id_user", nullable=true)
      */
     private $cancelledWho;
 
@@ -366,12 +368,12 @@ class Evt
         return $this;
     }
 
-    public function getStatusWho(): ?int
+    public function getStatusWho(): ?User
     {
         return $this->statusWho;
     }
 
-    public function setStatusWho(int $statusWho): self
+    public function setStatusWho(User $statusWho): self
     {
         $this->statusWho = $statusWho;
 
@@ -414,12 +416,12 @@ class Evt
         return $this;
     }
 
-    public function getCancelledWho(): ?int
+    public function getCancelledWho(): ?User
     {
         return $this->cancelledWho;
     }
 
-    public function setCancelledWho(int $cancelledWho): self
+    public function setCancelledWho(User $cancelledWho): self
     {
         $this->cancelledWho = $cancelledWho;
 
