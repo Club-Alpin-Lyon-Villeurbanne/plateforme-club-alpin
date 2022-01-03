@@ -520,6 +520,10 @@ function superadmin()
 // check mail
 function isMail($mail)
 {
+    if (null === $mail) {
+        return false;
+    }
+
     return (new EmailValidator())->isValid($mail, new NoRFCWarningsValidation());
 }
 
