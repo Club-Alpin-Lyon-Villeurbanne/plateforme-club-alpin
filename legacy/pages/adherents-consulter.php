@@ -63,7 +63,7 @@ if (!admin() && !allowed('user_edit_notme')) {
         }
 
         // FILIATION CHEF DE FAMILLE ?
-        if ('' !== $userTab['cafnum_parent_user']) {
+        if ('' != $userTab['cafnum_parent_user']) {
             $req = "SELECT id_user, firstname_user, lastname_user, cafnum_user FROM caf_user WHERE cafnum_user = '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($userTab['cafnum_parent_user'])."' LIMIT 1";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $userTab['cafnum_parent_user'] = $result->fetch_assoc();
