@@ -49,7 +49,7 @@ class UserAttr
     /**
      * @var string
      *
-     * @ORM\Column(name="params_user_attr", type="string", length=200, nullable=false)
+     * @ORM\Column(name="params_user_attr", type="string", length=200, nullable=true)
      */
     private $params;
 
@@ -59,6 +59,14 @@ class UserAttr
      * @ORM\Column(name="details_user_attr", type="string", length=100, nullable=false, options={"comment": "date - de qui... ?"})
      */
     private $details;
+
+    public function __construct(User $user, Usertype $userType, $params = null)
+    {
+        $this->user = $user;
+        $this->userType = $userType;
+        $this->params = $params;
+        $this->details = time();
+    }
 
     public function getId(): ?int
     {
