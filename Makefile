@@ -3,6 +3,11 @@
 # correctly support redirection
 SHELL=/bin/bash
 
+ifneq ($(MAKE_NO_DOT_ENV),true)
+	include .env
+	-include .env.local
+endif
+
 ##
 ## Globals
 ##
@@ -110,6 +115,13 @@ setup-db: composer-install ## Migrate (env="dev")
 	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
 	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
 .PHONY: setup-db
+
+fixtures: ## Load fixtures (env="dev" email="")
+ifeq ("$(email)","")
+	$(eval email ?= none)
+endif
+	@$(ON_PHP) bin/console --env=$(env) caf:fixtures:load $(email) resources/fixtures/$(env)/
+.PHONY: fixtures
 
 package: yarn-install yarn-build ## Creates software package
 	@cp .env .env.backup

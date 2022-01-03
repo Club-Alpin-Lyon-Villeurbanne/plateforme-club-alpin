@@ -131,7 +131,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="pays_user", type="string", length=50, nullable=false)
+     * @ORM\Column(name="pays_user", type="string", length=50, nullable=true)
      */
     private $pays;
 
