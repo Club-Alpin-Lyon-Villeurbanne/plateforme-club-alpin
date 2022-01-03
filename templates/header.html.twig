@@ -128,6 +128,16 @@
                     <div style="width:515px; min-height:160px; float:left; border-right:1px solid #c6e39f; min-height:130px; padding:0px 5px 0 0">
                         <div class="nav-user">
                             <p class="menutitle">Mes sorties</p>
+
+                                {% if allowed('evt_create') %}
+                                    <a href="{{ path('minibus') }}" title="">
+                                        <span class="star">
+                                            <img src="/img/base/bullet_star.png" alt="" title="" />
+                                        </span>
+
+                                        réservation de Minibus
+                                    </a>
+                                {% endif %}
                             
                                 {% if allowed('evt_validate') %}
                                     {# publier une sortie (notification au besoin, variable définie dans SCRIPTS.'reqs.php') #}
