@@ -54,7 +54,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="cafnum_parent_user", type="string", length=20, nullable=false, options={"comment": "Filiation : numéro CAF du parent"})
+     * @ORM\Column(name="cafnum_parent_user", type="string", length=20, nullable=true, options={"comment": "Filiation : numéro CAF du parent"})
      */
     private $cafnumParent;
 
@@ -96,35 +96,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="tel_user", type="string", length=30, nullable=false)
+     * @ORM\Column(name="tel_user", type="string", length=30, nullable=true)
      */
     private $tel;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="tel2_user", type="string", length=30, nullable=false)
+     * @ORM\Column(name="tel2_user", type="string", length=30, nullable=true)
      */
     private $tel2;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="adresse_user", type="string", length=100, nullable=false)
+     * @ORM\Column(name="adresse_user", type="string", length=100, nullable=true)
      */
     private $adresse;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="cp_user", type="string", length=10, nullable=false)
+     * @ORM\Column(name="cp_user", type="string", length=10, nullable=true)
      */
     private $cp;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="ville_user", type="string", length=30, nullable=false)
+     * @ORM\Column(name="ville_user", type="string", length=30, nullable=true)
      */
     private $ville;
 
@@ -138,14 +138,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="civ_user", type="string", length=10, nullable=false)
+     * @ORM\Column(name="civ_user", type="string", length=10, nullable=true)
      */
     private $civ;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="moreinfo_user", type="string", length=500, nullable=false, options={"comment": "FORMATIONS ?"})
+     * @ORM\Column(name="moreinfo_user", type="string", length=500, nullable=true, options={"comment": "FORMATIONS ?"})
      */
     private $moreinfo;
 
@@ -166,7 +166,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="cookietoken_user", type="string", length=32, nullable=false)
+     * @ORM\Column(name="cookietoken_user", type="string", length=32, nullable=true)
      */
     private $cookietoken;
 
@@ -187,7 +187,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var int
      *
-     * @ORM\Column(name="nomade_parent_user", type="integer", nullable=false, options={"comment": "Dans le cas d'un user NOMADE, l'ID de son créateur"})
+     * @ORM\Column(name="nomade_parent_user", type="integer", nullable=true, options={"comment": "Dans le cas d'un user NOMADE, l'ID de son créateur"})
      */
     private $nomadeParent;
 
@@ -261,6 +261,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return false;
+    }
+
+    public function addAttribute(Usertype $userType, $params = null)
+    {
+        $this->attrs->add(new UserAttr($this, $userType, $params));
     }
 
     public function getId(): ?int

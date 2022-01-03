@@ -167,7 +167,7 @@ foreach ($fileTab as $file) {
                         $cafnum_parent_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[1].$line[5]); // concaténation ligne 1 (club) pour obtenir un numéro d'adhérent complet
                     } else {
                         // filiation inexistante
-                        $cafnum_parent_user = '';
+                        $cafnum_parent_user = null;
                     }
                     //echo $i."\nligne ".__LINE__."\n";
                     // OBSOLESCENCE DU COMPTE : CET ADHÉRENT DOIT-IL RENOUVELER SA LICENCE ?? BASÉ SUR LA DATE EN 8e colonne
@@ -205,7 +205,7 @@ foreach ($fileTab as $file) {
 
                         // insertion
                         $req = "INSERT INTO caf_user(cafnum_user , firstname_user , lastname_user , created_user , birthday_user , tel_user , tel2_user , adresse_user , cp_user , ville_user , civ_user , cafnum_parent_user, valid_user, doit_renouveler_user, alerte_renouveler_user, ts_insert_user, nickname_user)
-						VALUES ('$cafnum_user', '$firstname_user', '$lastname_user',  '".time()."', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$civ_user', '$cafnum_parent_user', 0, $doit_renouveler_user, $alerte_renouveler_user, ".time()." , '$nickname_user');";
+						VALUES ('$cafnum_user', '$firstname_user', '$lastname_user',  '".time()."', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$civ_user', ".(null === $cafnum_parent_user ? 'null' : "'".$cafnum_parent_user."'").", 0, $doit_renouveler_user, $alerte_renouveler_user, ".time()." , '$nickname_user');";
                         ++$nb_insert;
                     } elseif ($idUser = mysqli_result($handleSql, 0)) {
                         // adherent existant : mise a jour
@@ -214,10 +214,43 @@ foreach ($fileTab as $file) {
 
                         // si l'adhérent n'a pas encore ré-adhéré, on ne met pas à jour la date d'adhésion
                         if ('0000-00-00' == $line[7]) {
-                            $req = 'UPDATE caf_user SET ts_update_user='.time().", firstname_user='$firstname_user', lastname_user='$lastname_user', doit_renouveler_user='$doit_renouveler_user', birthday_user='$birthday_user', civ_user='$civ_user', cafnum_parent_user='$cafnum_parent_user', tel_user='$tel_user',	tel2_user='$tel2_user', adresse_user='$adresse_user', cp_user='$cp_user', ville_user='$ville_user', alerte_renouveler_user='$alerte_renouveler_user', nickname_user='$nickname_user', manuel_user=0, nomade_user=0 WHERE id_user=$idUser AND cafnum_user = '$cafnum_user'";
+                            $req = 'UPDATE caf_user SET
+                                        ts_update_user='.time().",
+                                        firstname_user='$firstname_user',
+                                        lastname_user='$lastname_user',
+                                        doit_renouveler_user='$doit_renouveler_user',
+                                        birthday_user='$birthday_user',
+                                        civ_user='$civ_user',
+                                        cafnum_parent_user=".(null === $cafnum_parent_user ? 'null' : "'".$cafnum_parent_user."'").',
+                                        tel_user='.(null === $tel_user ? 'null' : "'".$tel_user."'").',
+                                        tel2_user='.(null === $tel2_user ? 'null' : "'".$tel2_user."'").',
+                                        adresse_user='.(null === $adresse_user ? 'null' : "'".$adresse_user."'").',
+                                        cp_user='.(null === $cp_user ? 'null' : "'".$cp_user."'").',
+                                        ville_user='.(null === $ville_user ? 'null' : "'".$ville_user."'").",
+                                        alerte_renouveler_user='$alerte_renouveler_user',
+                                        nickname_user='$nickname_user',
+                                        manuel_user=0,
+                                        nomade_user=0
+                                    WHERE id_user=$idUser AND cafnum_user = '$cafnum_user'";
                             ++$nb_update;
                         } else {
-                            $req = 'UPDATE caf_user SET ts_update_user='.time().", firstname_user='$firstname_user', lastname_user='$lastname_user', doit_renouveler_user='$doit_renouveler_user', birthday_user='$birthday_user', civ_user='$civ_user', cafnum_parent_user='$cafnum_parent_user', tel_user='$tel_user',	tel2_user='$tel2_user', adresse_user='$adresse_user', cp_user='$cp_user', ville_user='$ville_user', alerte_renouveler_user='$alerte_renouveler_user', nickname_user='$nickname_user', manuel_user=0, nomade_user=0 ".
+                            $req = 'UPDATE caf_user SET
+                                        ts_update_user='.time().",
+                                        firstname_user='$firstname_user',
+                                        lastname_user='$lastname_user',
+                                        doit_renouveler_user='$doit_renouveler_user',
+                                        birthday_user='$birthday_user',
+                                        civ_user='$civ_user',
+                                        cafnum_parent_user=".(null === $cafnum_parent_user ? 'null' : "'".$cafnum_parent_user."'").',
+                                        tel_user='.(null === $tel_user ? 'null' : "'".$tel_user."'").',
+                                        tel2_user='.(null === $tel2_user ? 'null' : "'".$tel2_user."'").',
+                                        adresse_user='.(null === $adresse_user ? 'null' : "'".$adresse_user."'").',
+                                        cp_user='.(null === $cp_user ? 'null' : "'".$cp_user."'").',
+                                        ville_user='.(null === $ville_user ? 'null' : "'".$ville_user."'").",
+                                        alerte_renouveler_user='$alerte_renouveler_user',
+                                        nickname_user='$nickname_user',
+                                        manuel_user=0,
+                                        nomade_user=0".
                             $date_adhesion_user
                             ." WHERE id_user=$idUser AND cafnum_user = '$cafnum_user'";
                             ++$nb_update;
@@ -273,9 +306,9 @@ if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
 }
 
 // suppression des filiations sur comptes non mis ŕ jour depuis + de 200j
-$req = "UPDATE caf_user SET cafnum_parent_user = '' WHERE
+$req = 'UPDATE caf_user SET cafnum_parent_user = null WHERE
     ts_update_user < (UNIX_TIMESTAMP( ) - ( 86400 * 200 ))
-";
+';
 
 if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
     echo 'Erreur SQL lors du log:'.LegacyContainer::get('legacy_mysqli_handler')->lastError();
