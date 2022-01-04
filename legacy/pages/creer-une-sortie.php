@@ -6,7 +6,7 @@
 	<!-- partie gauche -->
 	<div id="left1">
 
-        <?php if (!$p2) { ?>
+        <?php if (false && !$p2) { ?>
             <h1 class="page-h1">La fonctionnalité "<b>destination</b>"</h1>
             <div style="padding:10px 0 0 30px; line-height:18px; ">
             <p>Vous avez besoin d'un <b>bus</b> pour votre sortie ? La fonctionnalité <b>destination</b> vous permet de gérer cette situation.</p>
@@ -35,7 +35,7 @@
             </div>
         <?php } ?>
 
-        <?php if ($p2 && 'creer-une-destination' == $p2) { ?>
+        <?php if (false && $p2 && 'creer-une-destination' == $p2) { ?>
 
 				<?php
                 // MODIFICATION DESTINATION
