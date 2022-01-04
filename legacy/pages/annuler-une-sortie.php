@@ -16,153 +16,84 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
                 if ($evt) {
                     $joins = $evt['joins'];
                 }
-                if ($destination) {
-                    $joins = $destination['joins'];
+
+                // sortie non trouvée, pas de message d'erreur, équivalent à un 404
+                if (!$evt && !$errPage) {
+                    echo '<br /><br /><br /><p class="erreur">Hmmm... C\'est ennuyeux : nous n\'arrivons pas à trouver la sortie correspondant à cette URL.</p>';
+                }
+                // sortie non trouvée, avec message d'erreur, tentative d'accès mesquine ou sortié dévalidée
+                if (!$evt && $errPage) {
+                    echo '<div class="erreur">'.$errPage.'</div>';
                 }
 
-                if ('destination' == $p2) {
-                    // destination non trouvée, pas de message d'erreur, équivalent à un 404
-                    if (!$destination && !$errPage) {
-                        echo '<br /><br /><br /><p class="erreur">Hmmm... C\'est ennuyeux : nous n\'arrivons pas à trouver la destination correspondant à cette URL.</p>';
-                    }
-                    // destination non trouvée, avec message d'erreur, tentative d'accès mesquine ou sortié dévalidée
-                    if (!$destination && $errPage) {
-                        echo '<div class="erreur">'.$errPage.'</div>';
-                    }
-                    // destination trouvée, pas d'erreur, affichage normal :
-                    if ($destination && !$errPage) {
-                        ?>
-                        <h1>Annuler une destination</h1>
-                        <?php
-                        inclure($p1, 'vide');
-                        inclure($p1.'-'.$p2, 'vide');
-                        if (isset($_POST['operation']) && 'dest_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                            echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div><br /><br />';
-                            echo '<a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'destination/'.$destination['code'].'-'.$destination['id'].'.html">Retourner vers la fiche de destination</a>';
-                        } else {
-                            if ('1' != $destination['annule']) {
-                                ?>
+                // sortie trouvée, pas d'erreur, affichage normal :
+                if ($evt && !$errPage) {
+                    ?>
+                    <h1>Annuler une sortie</h1>
 
-                                <form action="<?php echo $versCettePage; ?>" method="post" class="loading">
-                                    <input type="hidden" name="operation" value="dest_cancel" />
-
-                                    <?php
-                                    // TABLEAU
-                                    if (isset($_POST['operation']) && 'dest_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                                        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
-                                    }
-                                if (isset($_POST['operation']) && 'dest_cancel' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                                    echo '<p class="info">Cette destination a été annulée.</p>';
-                                } ?>
-                                    <br />
-
-                                    <?php
-
-                                    // si la sortie est publiée, on annonce que des e-mails vont être envoyés
-                                    if (1 == $destination['publie']) {
-                                        ?>
-                                        <textarea class="type2" style="width:610px" name="msg" placeholder="ex : Sorties annulées pour cause de météo défavorable."><?php echo inputVal('msg', ''); ?></textarea>
-
-                                        <a href="javascript:void(0)" title="Enregistrer" class="nice2 red" onclick="$(this).parents('form').submit()">
-                                            Annuler définitivement la destination ci-dessous et avertir <?php echo count($joins); ?> participant(s) inscrit(s).
-                                        </a>
-                                    <?php
-                                    }
-                                // sinon le message n'est pas necessaire
-                                else {
-                                    ?>
-                                        <p class="mini">La destinatin n'est pas publiée : aucun message ne sera envoyé</p>
-
-                                        <a href="javascript:void(0)" title="Enregistrer" class="nice2 red" onclick="$(this).parents('form').submit()">
-                                            Annuler définitivement la destination ci-dessous
-                                        </a>
-                                    <?php
-                                } ?>
-                                </form>
-                            <?php
-                            }
-                        } ?>
                     <?php
-                    }
-                } else {
-                    // sortie non trouvée, pas de message d'erreur, équivalent à un 404
-                    if (!$evt && !$errPage) {
-                        echo '<br /><br /><br /><p class="erreur">Hmmm... C\'est ennuyeux : nous n\'arrivons pas à trouver la sortie correspondant à cette URL.</p>';
-                    }
-                    // sortie non trouvée, avec message d'erreur, tentative d'accès mesquine ou sortié dévalidée
-                    if (!$evt && $errPage) {
-                        echo '<div class="erreur">'.$errPage.'</div>';
-                    }
+                    inclure($p1, 'vide');
+                    if (isset($_POST['operation']) && 'evt_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div><br /><br />';
+                        echo '<a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$evt['code_evt'].'-'.$evt['id_evt'].'.html">Retourner vers la fiche de sortie</a>';
+                    } else {
+                        if ('1' != $evt['cancelled_evt']) {
+                            ?>
 
-                    // sortie trouvée, pas d'erreur, affichage normal :
-                    if ($evt && !$errPage) {
-                        ?>
-                        <h1>Annuler une sortie</h1>
+                            <form action="<?php echo $versCettePage; ?>" method="post" class="loading">
+                                <input type="hidden" name="operation" value="evt_cancel" />
 
-                        <?php
-                        inclure($p1, 'vide');
-                        if (isset($_POST['operation']) && 'evt_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                            echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div><br /><br />';
-                            echo '<a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$evt['code_evt'].'-'.$evt['id_evt'].'.html">Retourner vers la fiche de sortie</a>';
-                        } else {
-                            if ('1' != $evt['cancelled_evt']) {
-                                ?>
-
-                                <form action="<?php echo $versCettePage; ?>" method="post" class="loading">
-                                    <input type="hidden" name="operation" value="evt_cancel" />
-
-                                    <?php
-                                    // TABLEAU
-                                    if (isset($_POST['operation']) && 'evt_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                                        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
-                                    }
-                                if (isset($_POST['operation']) && 'evt_cancel' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                                    echo '<p class="info">Cette sortie a été annulée.</p>';
-                                } ?>
-                                    <br />
-
-                                    <?php
-
-                                    if ($evt['cycle_master_evt'] > 0) {
-                                        echo "<b>Cette sortie est la première d'un cycle de plusieurs sorties. <b>Son annulation entraînera l'annulation de toutes les sorties du cycle.</b></b><br /><br />";
-                                    }
-
-                                // si la sortie est publiée, on annonce que des e-mails vont être envoyés
-                                if (1 == $evt['status_evt']) {
-                                    ?>
-                                        <textarea class="type2" style="width:610px" name="msg" placeholder="ex : Sortie annulée pour cause de météo défavorable."><?php echo inputVal('msg', ''); ?></textarea>
-                                        <?php
-                                            if (false && $evt['cycle_master_evt']) {
-                                                echo '<input type="checkbox" name="del_cycle_master_evt" value="1" checked /> <b>SORTIE DE DEBUT DE CYCLE</b>, annuler toutes les sorties du cycle';
-                                            } ?>
-
-
-                                        <a href="javascript:void(0)" title="Enregistrer" class="nice2 red" onclick="$(this).parents('form').submit()">
-                                            Annuler définitivement la sortie ci-dessous et avertir <?php echo count($joins); ?> participant(s) inscrit(s).
-                                        </a>
-                                        <?php
-                                }
-                                // sinon le message n'est pas necessaire
-                                else {
-                                    ?>
-                                        <p class="mini">La sortie n'est pas publiée : aucun message ne sera envoyé</p>
-                                        <?php
-                                            if (false && $evt['cycle_master_evt']) {
-                                                echo '<input type="checkbox" name="del_cycle_master_evt" value="1" checked /> <b>SORTIE DE DEBUT DE CYCLE</b>, annuler toutes les sorties du cycle';
-                                            } ?>
-
-                                        <a href="javascript:void(0)" title="Enregistrer" class="nice2 red" onclick="$(this).parents('form').submit()">
-                                            Annuler définitivement la sortie ci-dessous
-                                        </a>
-                                        <?php
-                                } ?>
-                                </form>
                                 <?php
+                                // TABLEAU
+                                if (isset($_POST['operation']) && 'evt_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                                    echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                                }
+                            if (isset($_POST['operation']) && 'evt_cancel' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+                                echo '<p class="info">Cette sortie a été annulée.</p>';
                             } ?>
-                            <br />
-                            <br />
-            <?php
-                        }
+                                <br />
+
+                                <?php
+
+                                if ($evt['cycle_master_evt'] > 0) {
+                                    echo "<b>Cette sortie est la première d'un cycle de plusieurs sorties. <b>Son annulation entraînera l'annulation de toutes les sorties du cycle.</b></b><br /><br />";
+                                }
+
+                            // si la sortie est publiée, on annonce que des e-mails vont être envoyés
+                            if (1 == $evt['status_evt']) {
+                                ?>
+                                    <textarea class="type2" style="width:610px" name="msg" placeholder="ex : Sortie annulée pour cause de météo défavorable."><?php echo inputVal('msg', ''); ?></textarea>
+                                    <?php
+                                        if (false && $evt['cycle_master_evt']) {
+                                            echo '<input type="checkbox" name="del_cycle_master_evt" value="1" checked /> <b>SORTIE DE DEBUT DE CYCLE</b>, annuler toutes les sorties du cycle';
+                                        } ?>
+
+
+                                    <a href="javascript:void(0)" title="Enregistrer" class="nice2 red" onclick="$(this).parents('form').submit()">
+                                        Annuler définitivement la sortie ci-dessous et avertir <?php echo count($joins); ?> participant(s) inscrit(s).
+                                    </a>
+                                    <?php
+                            }
+                            // sinon le message n'est pas necessaire
+                            else {
+                                ?>
+                                    <p class="mini">La sortie n'est pas publiée : aucun message ne sera envoyé</p>
+                                    <?php
+                                        if (false && $evt['cycle_master_evt']) {
+                                            echo '<input type="checkbox" name="del_cycle_master_evt" value="1" checked /> <b>SORTIE DE DEBUT DE CYCLE</b>, annuler toutes les sorties du cycle';
+                                        } ?>
+
+                                    <a href="javascript:void(0)" title="Enregistrer" class="nice2 red" onclick="$(this).parents('form').submit()">
+                                        Annuler définitivement la sortie ci-dessous
+                                    </a>
+                                    <?php
+                            } ?>
+                            </form>
+                            <?php
+                        } ?>
+                        <br />
+                        <br />
+        <?php
                     }
                 } ?>
 
@@ -210,9 +141,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
                 // RESUME DE LA SORTIE
                 if ($evt) {
                     require __DIR__.'/../includes/evt-resume.php';
-                }
-                if ($destination) {
-                    require __DIR__.'/../includes/dest/display.php';
                 } ?>
 
             <?php

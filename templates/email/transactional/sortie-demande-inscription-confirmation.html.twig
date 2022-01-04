@@ -1,19 +1,15 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    {% if is_destination %}
-        Votre inscription à la sortie {{ event_name }}
-    {% else %}
-        Votre demande d'inscription à la sortie {{ event_name }}
-    {% endif %}
+    Votre demande d'inscription à la sortie {{ event_name }}
 {%- endblock %}
 
 {% block inner_html %}
     <p>
         {% if inscrits|length > 1 %}
-            Vous venez {{ is_destination ? "d'inscrire" : "de préinscrire" }} plusieurs personnes
+            Vous venez de préinscrire plusieurs personnes
         {% else %}
-        Vous venez de vous {{ is_destination ? "inscrire" : "préinscrire" }}
+        Vous venez de vous préinscrire
         {% endif %}
         à la sortie <a href="{{ event_url }}">{{ event_name }}</a>
     </p>
@@ -41,11 +37,6 @@
                 <b>Restaurant :</b> {{ restaurant == 1 ? 'oui' : 'non' }}
             </li>
         {% endif %}
-        {% if is_destination %}
-            <li>
-                {{ covoiturage == 1 ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif' }}
-            </li>
-        {% endif %}
     </ul>
     <p>
         Les responsables de cette sortie ont été prévenus de votre demande et sont en charge de la confirmation
@@ -55,9 +46,9 @@
 
 {% block inner_txt %}
     {% if inscrits|length > 1 %}
-        Vous venez {{ is_destination ? "d'inscrire" : "de préinscrire" }} plusieurs personnes
+        Vous venez de préinscrire plusieurs personnes
     {% else %}
-        Vous venez de vous {{ is_destination ? "inscrire" : "préinscrire" }}
+        Vous venez de vous préinscrire
     {% endif %}
     à la sortie <a href="{{ event_url }}">{{ event_name }}</a>
 
@@ -73,9 +64,6 @@
 {% endif %}
 {% if is_restaurant %}
     Restaurant : {{ restaurant == 1 ? 'oui' : 'non' }}
-{% endif %}
-{% if is_destination %}
-    {{ covoiturage == 1 ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif' }}
 {% endif %}
 
     Les responsables de cette sortie ont été prévenus de votre demande et sont en charge de la confirmation

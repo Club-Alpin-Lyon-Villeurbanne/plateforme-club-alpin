@@ -80,31 +80,27 @@ if ($ngens_max_evt < $join_max_evt) {
     $errTab[] = "Il devrait y avoir davantage de places totales que de possibilités d'inscriptions";
 }
 
-if (!$_POST['id_destination']) {
-    if (!$join_start_evt_days) {
-        $errTab[] = 'Merci de préciser le nombre de jours avant la sortie, pour les inscriptions';
-    }
-    if (strlen($rdv_evt) < 3 || strlen($rdv_evt) > 200) {
-        $errTab[] = "Merci d'entrer un lieu de rendez-vous de 3 à 200 caractères";
-    }
-    if (!$lat_evt || !$long_evt || 1 == $lat_evt || 1 == $long_evt) {
-        $errTab[] = 'Coordonnées introuvables. Vérifiez le positionnement du curseur sur la carte.';
-    }
-    if (!preg_match('#[0-9]{2}/[0-9]{2}/[0-9]{4}#', $tsp_evt_day)) {
-        $errTab[] = 'La date du rendez-vous doit être au format jj/mm/aaaa.';
-    }
-    if (!preg_match('#[0-9]{2}:[0-9]{2}#', $tsp_evt_hour)) {
-        $errTab[] = "L'heure du rendez-vous doit être au format hh:mm.";
-    }
-    if (!preg_match('#[0-9]{2}/[0-9]{2}/[0-9]{4}#', $tsp_end_evt_day)) {
-        $errTab[] = 'La date de fin doit être au format jj/mm/aaaa.';
-    }
-    if (!preg_match('#[0-9]{2}:[0-9]{2}#', $tsp_end_evt_hour)) {
-        $errTab[] = "L'heure de fin doit être au format hh:mm.";
-    }
+if (!$join_start_evt_days) {
+    $errTab[] = 'Merci de préciser le nombre de jours avant la sortie, pour les inscriptions';
 }
-    // Dans le cas de la destination
-    // $errTab[] = 'Verifier les données en cas de destination';
+if (strlen($rdv_evt) < 3 || strlen($rdv_evt) > 200) {
+    $errTab[] = "Merci d'entrer un lieu de rendez-vous de 3 à 200 caractères";
+}
+if (!$lat_evt || !$long_evt || 1 == $lat_evt || 1 == $long_evt) {
+    $errTab[] = 'Coordonnées introuvables. Vérifiez le positionnement du curseur sur la carte.';
+}
+if (!preg_match('#[0-9]{2}/[0-9]{2}/[0-9]{4}#', $tsp_evt_day)) {
+    $errTab[] = 'La date du rendez-vous doit être au format jj/mm/aaaa.';
+}
+if (!preg_match('#[0-9]{2}:[0-9]{2}#', $tsp_evt_hour)) {
+    $errTab[] = "L'heure du rendez-vous doit être au format hh:mm.";
+}
+if (!preg_match('#[0-9]{2}/[0-9]{2}/[0-9]{4}#', $tsp_end_evt_day)) {
+    $errTab[] = 'La date de fin doit être au format jj/mm/aaaa.';
+}
+if (!preg_match('#[0-9]{2}:[0-9]{2}#', $tsp_end_evt_hour)) {
+    $errTab[] = "L'heure de fin doit être au format hh:mm.";
+}
 
 // Gestion des cycles
 $cycle_parent_evt = null;
@@ -127,117 +123,22 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // checks dates
     $copy_depose_to_reprise = false;
 
-    if (!$_POST['id_destination']) {
-        // tsp de début
-        $tab = explode('/', $tsp_evt_day);
-        $tab2 = explode(':', $tsp_evt_hour);
-        $tsp_evt = mktime($tab2[0], $tab2[1], 0, $tab[1], $tab[0], $tab[2]);
+    // tsp de début
+    $tab = explode('/', $tsp_evt_day);
+    $tab2 = explode(':', $tsp_evt_hour);
+    $tsp_evt = mktime($tab2[0], $tab2[1], 0, $tab[1], $tab[0], $tab[2]);
 
-        // génération du timestamp de départ des inscriptions : join_start_evt devient un timestamp
-        $join_start_evt = $tsp_evt - ($join_start_evt_days * 60 * 60 * 24);
-        $join_start_evt = mktime(0, 0, 0, date('n', $join_start_evt), date('j', $join_start_evt), date('Y', $join_start_evt));
+    // génération du timestamp de départ des inscriptions : join_start_evt devient un timestamp
+    $join_start_evt = $tsp_evt - ($join_start_evt_days * 60 * 60 * 24);
+    $join_start_evt = mktime(0, 0, 0, date('n', $join_start_evt), date('j', $join_start_evt), date('Y', $join_start_evt));
 
-        // tsp de fin
-        $tab = explode('/', $tsp_end_evt_day);
-        $tab2 = explode(':', $tsp_end_evt_hour);
-        $tsp_end_evt = mktime($tab2[0], $tab2[1], 0, $tab[1], $tab[0], $tab[2]);
+    // tsp de fin
+    $tab = explode('/', $tsp_end_evt_day);
+    $tab2 = explode(':', $tsp_end_evt_hour);
+    $tsp_end_evt = mktime($tab2[0], $tab2[1], 0, $tab[1], $tab[0], $tab[2]);
 
-        if ($join_start_evt_days <= 1 || $join_start_evt > $tsp_evt) {
-            $errTab[] = "Vérifiez les dates d'inscription : vous devez entrer un nombre de jours supérieur ou égal à 2 pour les délais d'inscriptions.";
-        }
-    } else {
-        // destination
-        $destination = get_destination((int) ($_POST['id_destination']));
-        if ($destination) {
-            $tsp_evt = strtotime($destination['date']);
-            $tsp_end_evt = strtotime($destination['date_fin'].' 23:59:00');
-            $join_start_evt = strtotime($destination['inscription_ouverture']);
-        }
-        // Date de dépose doit etre ultérieure à date destination
-        // Date de récup doit etre ultérieure à date de dépose
-        if ($_POST['lieu']) {
-            if (!isset($_POST['lieu']['id_lieu_reprise'])) {
-                if (isset($_POST['lieu']['reprise']['same_as_depose']) || isset($_POST['lieu']['reprise']['use_existant']) || isset($_POST['lieu']['reprise']['nom'])) {
-                } else {
-                    $errTab[] = 'Un lieu de reprise est obligatoire.';
-                }
-            }
-            if (!isset($_POST['lieu']['id_lieu_depose'])) {
-                if (isset($_POST['lieu']['depose']['use_existant']) || isset($_POST['lieu']['depose']['nom'])) {
-                } else {
-                    $errTab[] = 'Un lieu de dépose est obligatoire.';
-                }
-            }
-
-            foreach ($_POST['lieu'] as $key => $lieu) {
-                $depose_exists = $reprise_exists = false;
-                if (isset($lieu['date_depose'])) {
-                    if (!preg_match('#[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}#', $lieu['date_depose'])) {
-                        $errTab[] = 'La date et horaire de dépose doit être au format aaaa-mm-dd hh:ii:ss.';
-                    }
-                    // On ne créé pas ${$key}
-                }
-                if (isset($lieu['date_reprise'])) {
-                    if (!preg_match('#[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}#', $lieu['date_reprise'])) {
-                        $errTab[] = 'La date et horaire de reprise doit être au format aaaa-mm-dd hh:ii:ss.';
-                    }
-                    // On ne créé pas ${$key}
-                }
-                if (in_array($key, ['id_lieu_depose', 'id_lieu_reprise'], true)) {
-                } else {
-                    // On ne créé pas ${$key}
-                    if (isset($lieu['use_existant']) && !empty($lieu['use_existant'])) {
-                        // On fait un overwrite
-                        if ('depose' == $key) {
-                            $_POST['lieu']['id_lieu_depose'] = $lieu['use_existant'];
-                        }
-                        if ('reprise' == $key) {
-                            $_POST['lieu']['id_lieu_reprise'] = $lieu['use_existant'];
-                        }
-                    }
-                    // On créé ${$key}
-                    else {
-                        if (isset($lieu['nom'])) {
-                            $lieu_nom = trim(stripslashes($lieu['nom']));
-                            if ('depose' == $key) {
-                                if (empty($lieu_nom)) {
-                                    $errTab[] = 'Vérifiez le nom du lieu de dépose, il ne peut être vide.';
-                                }
-                            }
-                            if ('reprise' == $key) {
-                                if (empty($lieu_nom)) {
-                                    $errTab[] = 'Vérifiez le nom du lieu de reprise, il ne peut être vide.';
-                                }
-                            }
-                            ${$key}['nom'] = $lieu_nom;
-                        }
-                        if (isset($lieu['description'])) {
-                            ${$key}['description'] = trim(stripslashes($lieu['description']));
-                        }
-                        if (isset($lieu['ign'])) {
-                            ${$key}['ign'] = trim(stripslashes(get_iframe_src($lieu['ign'])));
-                        }
-                        if (isset($lieu['lat'])) {
-                            ${$key}['lat'] = (float) ($lieu['lat']);
-                            ${$key}['lat'] = str_replace(',', '.', ${$key}['lat']);
-                        }
-                        if (isset($lieu['lng'])) {
-                            ${$key}['lng'] = (float) ($lieu['lng']);
-                            ${$key}['lng'] = str_replace(',', '.', ${$key}['lng']);
-                        }
-                    }
-                }
-            }
-            if ($_POST['lieu']['depose']['date_depose'] > $_POST['lieu']['reprise']['date_reprise']) {
-                $errTab[] = 'Vérifiez votre horaire de reprise, il ne peut être avant celui de dépose.';
-            }
-
-            if (isset($_POST['lieu']['reprise']['same_as_depose']) && 'on' == $_POST['lieu']['reprise']['same_as_depose']) {
-                $copy_depose_to_reprise = true;
-            }
-            // Nous avons désormais :
-            // $depose = array(), $reprise = array()
-        }
+    if ($join_start_evt_days <= 1 || $join_start_evt > $tsp_evt) {
+        $errTab[] = "Vérifiez les dates d'inscription : vous devez entrer un nombre de jours supérieur ou égal à 2 pour les délais d'inscriptions.";
     }
 }
 

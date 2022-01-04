@@ -2,12 +2,11 @@
 
 use App\Legacy\LegacyContainer;
 
-$destination = ['partenaire'];
 $partenaire = null;
 
 // CONTROLES
-if (!in_array($p2, $destination, true)) {
-    $errTab[] = 'destination inconnue';
+if ('partenaire' !== $p2) {
+    $errTab[] = 'partenaire inconnu';
 }
 if (!is_numeric($p3)) {
     $errTab[] = 'partenaire inconnu';

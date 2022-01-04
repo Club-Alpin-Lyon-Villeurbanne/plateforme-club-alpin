@@ -52,14 +52,6 @@ if (!is_array($_POST['id_user'])) {
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
-    // on vérifie le statut d'inscription de la destination
-    if ($_POST['id_destination']) {
-        $inscriptions_status = inscriptions_status_destination($_POST['id_destination']);
-        if (true != $inscriptions_status['status']) {
-            $errTab[] = 'Les inscriptions à la destination ne sont pas possibles';
-        }
-    }
-
     // verification de la validité de la sortie
     $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND status_evt != 1 LIMIT 1";
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -99,32 +91,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $is_restaurant = 'NULL';
         }
 
-        if ($_POST['id_bus_lieu_destination']) {
-            $id_bus_lieu_destination = $_POST['id_bus_lieu_destination'][$i];
-            $is_covoiturage = '0';
-            if ('-1' == $id_bus_lieu_destination) {
-                $id_bus_lieu_destination = '0';
-                $is_covoiturage = '1';
-            }
-        } else {
-            $id_bus_lieu_destination = 'NULL';
-            $is_covoiturage = 'NULL';
-        }
-
-        // on vérifie ls places dans les bus
-        if ($_POST['id_destination']) {
-            $id_destination = $_POST['id_destination'];
-
-            // Vérifier les places dans le bus sélectionné
-            if ($id_bus_lieu_destination > 0) { // sinon c'est du covoiturage
-                $nbp = nb_places_restante_bus_ramassage($id_bus_lieu_destination);
-                if ($nbp <= 0) {
-                    $errTab[] = 'Ce bus est désormais plein. Merci de choisir un autre lieu de ramassage pour '.$_POST['civ_user'][$i].' '.$_POST['lastname_user'][$i].' '.$_POST['firstname_user'][$i].' et suivants.';
-                }
-            }
-        } else {
-            $id_destination = 'NULL';
-        }
+        $is_covoiturage = 'NULL';
 
         // si pas de pb, intégration
         $role_evt_join = LegacyContainer::get('legacy_mysqli_handler')->escapeString($role_evt_join);
@@ -139,11 +106,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $req = "INSERT INTO caf_evt_join(
                         status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join,
                         lastchange_when_evt_join, lastchange_who_evt_join,
-                        is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage, affiliant_user_join)
+                        is_cb, is_restaurant, is_covoiturage, affiliant_user_join)
                     VALUES (
                         $status_evt_join, '$id_evt',    '$id_user',  '$role_evt_join', ".time().',
                         '.time().', 			'.getUser()->getId().",
-                        $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage,  null);";
+                        $is_cb, $is_restaurant, $is_covoiturage,  null);";
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             } else {
@@ -155,7 +122,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 unset($_POST['role_evt_join'][$i]);
                 unset($_POST['is_cb'][$i]);
                 unset($_POST['is_restaurant'][$i]);
-                unset($_POST['id_bus_lieu_destination'][$i]);
             }
         }
 

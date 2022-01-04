@@ -118,32 +118,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $is_restaurant = 'NULL';
         }
 
-        if ($_POST['id_bus_lieu_destination']) {
-            $id_bus_lieu_destination = $_POST['id_bus_lieu_destination'];
-            $is_covoiturage = '0';
-            if ('-1' == $id_bus_lieu_destination) {
-                $id_bus_lieu_destination = '0';
-                $is_covoiturage = '1';
-            }
-        } else {
-            $id_bus_lieu_destination = 'NULL';
-            $is_covoiturage = 'NULL';
-        }
-
-        // on vérifie ls places dans les bus
-        if ($_POST['id_destination']) {
-            $id_destination = $_POST['id_destination'];
-
-            // Vérifier les places dans le bus sélectionné
-            if ($id_bus_lieu_destination > 0) { // sinon c'est du covoiturage
-                $nbp = nb_places_restante_bus_ramassage($id_bus_lieu_destination);
-                if ($nbp <= 0) {
-                    $errTab[] = 'Ce bus est désormais plein. Merci de choisir un autre lieu de ramassage pour '.$civ_user.' '.$lastname_user.' '.$firstname_user.' et suivants.';
-                }
-            }
-        } else {
-            $id_destination = 'NULL';
-        }
+        $is_covoiturage = 'NULL';
 
         if (!isset($errTab) || 0 === count($errTab)) {
             $role_evt_join = LegacyContainer::get('legacy_mysqli_handler')->escapeString($role_evt_join);
@@ -154,9 +129,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $status_evt_join = 1;
             }
 
-            $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage, affiliant_user_join)
+            $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_cb, is_restaurant, is_covoiturage, affiliant_user_join)
                                     VALUES($status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().', 		'.time().', 			'.getUser()->getId().",
-                        $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage, null);";
+                        $is_cb, $is_restaurant, $is_covoiturage, null);";
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }
