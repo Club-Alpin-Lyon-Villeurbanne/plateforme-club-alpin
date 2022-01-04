@@ -31,45 +31,47 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
     <?php
-    // liens dans le cas de la creation d'une sortie
-    if ($destination) {
-        echo '<input type="hidden" name="id_destination" value="'.(int) ($destination['id']).'" />';
-        echo '<h2 class="trigger-h2 '.($id_evt_to_update ? 'off' : '').'"  title="Cliquer pour ouvrir ou fermer">DESTINATION : <span class="bleucaf">'.html_utf8($destination['nom']).'</span><span class="date"> / '.display_jour($destination['date']).'</span></h2>';
-    //echo '<div id="destination-info" class="trigger-me">';
-    } else {
-        echo '<h2 class="trigger-h2" title="Cliquer pour ouvrir ou fermer">DESTINATION : </h2>';
+    if (false) {
+        // liens dans le cas de la creation d'une sortie
+        if ($destination) {
+            echo '<input type="hidden" name="id_destination" value="'.(int) ($destination['id']).'" />';
+            echo '<h2 class="trigger-h2 '.($id_evt_to_update ? 'off' : '').'"  title="Cliquer pour ouvrir ou fermer">DESTINATION : <span class="bleucaf">'.html_utf8($destination['nom']).'</span><span class="date"> / '.display_jour($destination['date']).'</span></h2>';
         //echo '<div id="destination-info" class="trigger-me">';
-    }
-
-    if (!$id_evt_to_update) {
-        $destinations = get_future_destinations(false, true); ?>
-        <?php
-        if (!$destination) {
-            echo '<p>Si vous avez besoin d\'un bus, vous pouvez lier cette sortie à une destination :</p>';
         } else {
-            echo '<p>Vous pouvez choisir une autre destination :</p>';
-        } ?>
-        <div class="faux-select-wrapper" id="choix-destination">
-            <div class="faux-select">
-                <a href="<?php echo 'creer-une-sortie/'.html_utf8($p2).'.html'; ?>" <?php if (!$destination) {
-            echo ' class="up" ';
-        } ?>><i>Pas de destination</i></a>
-                <?php
-                foreach ($destinations as $dest) {
-                    echo '<a href="creer-une-sortie/'.html_utf8($p2).'/destination-'.$dest['id'].'.html" title="" class="'.($destination['id'] == $dest['id'] ? 'up' : '').'" style="text-align:right;padding-right:50px;">
-                        <b>'.html_utf8($dest['nom']).'</b>
-                        <span class="date"> / '.display_jour($dest['date']).'</span>
-                    </a> ';
-                } ?>
-            </div>
-        </div><br class="clear">
-    <?php
+            echo '<h2 class="trigger-h2" title="Cliquer pour ouvrir ou fermer">DESTINATION : </h2>';
+            //echo '<div id="destination-info" class="trigger-me">';
+        }
+
+        if (!$id_evt_to_update) {
+            $destinations = get_future_destinations(false, true); ?>
+            <?php
+            if (!$destination) {
+                echo '<p>Si vous avez besoin d\'un bus, vous pouvez lier cette sortie à une destination :</p>';
+            } else {
+                echo '<p>Vous pouvez choisir une autre destination :</p>';
+            } ?>
+            <div class="faux-select-wrapper" id="choix-destination">
+                <div class="faux-select">
+                    <a href="<?php echo 'creer-une-sortie/'.html_utf8($p2).'.html'; ?>" <?php if (!$destination) {
+                echo ' class="up" ';
+            } ?>><i>Pas de destination</i></a>
+                    <?php
+                    foreach ($destinations as $dest) {
+                        echo '<a href="creer-une-sortie/'.html_utf8($p2).'/destination-'.$dest['id'].'.html" title="" class="'.($destination['id'] == $dest['id'] ? 'up' : '').'" style="text-align:right;padding-right:50px;">
+                            <b>'.html_utf8($dest['nom']).'</b>
+                            <span class="date"> / '.display_jour($dest['date']).'</span>
+                        </a> ';
+                    } ?>
+                </div>
+            </div><br class="clear">
+        <?php
+        }
+        echo '<div id="destination-info" class="trigger-me">';
+        if ($destination) {
+            require __DIR__.'/../../includes/dest/display.php';
+        }
+        echo '</div>';
     }
-    echo '<div id="destination-info" class="trigger-me">';
-    if ($destination) {
-        require __DIR__.'/../../includes/dest/display.php';
-    }
-    echo '</div>';
 
     ?><br class="clear">
 

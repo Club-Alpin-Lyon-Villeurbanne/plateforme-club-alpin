@@ -46,6 +46,8 @@
         "twig/twig": "^3.3"
     },
     "require-dev": {
+        "doctrine/data-fixtures": "^1.5",
+        "nelmio/alice": "^3.9",
         "symfony/browser-kit": "5.3.*",
         "symfony/css-selector": "5.3.*",
         "symfony/debug-bundle": "5.3.*",
@@ -77,6 +79,9 @@
         }
     },
     "autoload-dev": {
+        "files": [
+            "resources/fixtures/dev/DevData.php"
+        ],
         "psr-4": {
             "App\\Tests\\": "tests/"
         }
