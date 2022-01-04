@@ -13,7 +13,6 @@ $MAX_ARTICLES_ACCUEIL = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_A
 $notif_validerunarticle = 0;
 $notif_validerunesortie = 0;
 $notif_validerunesortie_president = 0;
-$notif_publier_destination = 0;
 
 // commission courante sur cette page
 $current_commission = false;
@@ -104,18 +103,6 @@ if (allowed('article_validate_all')) { // pouvoir de valider les articles
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $notif_validerunarticle = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
-}
-
-// NOTIFICATIONS DESTINATION
-if (user()) {
-    $destinations_modifier = get_future_destinations(true);
-    if ($destinations_modifier) {
-        foreach ($destinations_modifier as $dest_modif) {
-            if (0 == $dest_modif['publie']) {
-                ++$notif_publier_destination;
-            }
-        }
-    }
 }
 
 // PROFIL : infos generales, d'avantage d'info que dans la session seule
@@ -496,83 +483,66 @@ elseif ('agenda' == $p1) {
 
     // pour chaque event
     while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-        $use = false;
-        if ($id_dest = is_sortie_in_destination($handle['id_evt'])) {
-            $destination = get_destination($id_dest, false);
-            $status_dest = is_destination_status($destination, 'publie');
-            $annule_dest = is_destination_status($destination, 'annule');
-            if (true == $status_dest) {
-                $use = true;
-            }
-            if (true == $annule_dest) {
-                $handle['cancelled_evt'] = 1;
-            }
-            $handle['destination'] = $destination;
-        } else {
-            $use = true;
+        $handle['groupe'] = get_groupe($handle['id_groupe']);
+
+        // dates utiles pour ranger cet evenemtn dans le tableau
+        $tmpStartD = date('d', $handle['tsp_evt']); // jour de cet evt de 1 à 28-30-31
+        $tmpStartM = date('m', $handle['tsp_evt']); // mois de cet evt
+        $tmpStartY = date('Y', $handle['tsp_evt']); // annee de cet evt
+        $tmpEndD = date('d', $handle['tsp_end_evt']); // Jour de fin
+        $tmpEndM = date('m', $handle['tsp_end_evt']); // Mois de fin
+        $tmpEndY = date('Y', $handle['tsp_end_evt']); // annee de fin
+
+        $handle['jourN'] = false; // compte des jours à afficher ?
+
+        // s'il court sur plusieurs jours on initialise le compte des jours
+        if ($tmpStartD.$tmpStartM != $tmpEndD.$tmpEndM) {
+            $handle['jourN'] = 1;
         }
-        if ($use) {
-            $handle['groupe'] = get_groupe($handle['id_groupe']);
 
-            // dates utiles pour ranger cet evenemtn dans le tableau
-            $tmpStartD = date('d', $handle['tsp_evt']); // jour de cet evt de 1 à 28-30-31
-            $tmpStartM = date('m', $handle['tsp_evt']); // mois de cet evt
-            $tmpStartY = date('Y', $handle['tsp_evt']); // annee de cet evt
-            $tmpEndD = date('d', $handle['tsp_end_evt']); // Jour de fin
-            $tmpEndM = date('m', $handle['tsp_end_evt']); // Mois de fin
-            $tmpEndY = date('Y', $handle['tsp_end_evt']); // annee de fin
+        // si cet événement débute ce mois
+        if ($tmpStartM == $month) {
+            // echo 'ADD '.$handle['id_evt'].' on '.$tmpStartD.'<hr />';
+            // info statistique
+            ++$nEvts;
 
-            $handle['jourN'] = false; // compte des jours à afficher ?
+            // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
+            require __DIR__.'/../includes/evt-temoin-reqs.php';
 
-            // s'il court sur plusieurs jours on initialise le compte des jours
-            if ($tmpStartD.$tmpStartM != $tmpEndD.$tmpEndM) {
-                $handle['jourN'] = 1;
-            }
+            // on l'ajoute au bon jour, colonne 'debut'
+            $agendaTab[(int) $tmpStartD]['debut'][] = $handle;
+        }
+        // s'il court sur plusieurs jours (on inclut les evts qui commencent avant ce mois)
+        if ($tmpStartD.$tmpStartM != $tmpEndD.$tmpEndM) {
+            // on l'ajoute sur chaque jour ou il court sauf le premier, deja inqiqué colonne 'courant'
+            $bool = true;
+            // jour auquel commencer
+            if ($tmpStartM != $month) {
+                $i = 1;
+            } // si l'evt a commencé avant le mois en cours, on commence à ajouter les lignes à 1 (premier jour)
+            else {
+                $i = $tmpStartD + 1;
+            } // sinon, on commence à ajouter les lignes au jour du mois
 
-            // si cet événement débute ce mois
-            if ($tmpStartM == $month) {
-                // echo 'ADD '.$handle['id_evt'].' on '.$tmpStartD.'<hr />';
-                // info statistique
-                ++$nEvts;
+            while ($bool) {
+                // Nième jour de cet event :
+                $tmpDay = mktime(23, 59, 59, $month, $i, $year); // jour ciblé ici
+                $handle['jourN'] = ceil(($tmpDay - $handle['tsp_evt']) / 86400); // nombre de jours d'ecart
 
-                // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
-                require __DIR__.'/../includes/evt-temoin-reqs.php';
-
-                // on l'ajoute au bon jour, colonne 'debut'
-                $agendaTab[(int) $tmpStartD]['debut'][] = $handle;
-            }
-            // s'il court sur plusieurs jours (on inclut les evts qui commencent avant ce mois)
-            if ($tmpStartD.$tmpStartM != $tmpEndD.$tmpEndM) {
-                // on l'ajoute sur chaque jour ou il court sauf le premier, deja inqiqué colonne 'courant'
-                $bool = true;
-                // jour auquel commencer
-                if ($tmpStartM != $month) {
-                    $i = 1;
-                } // si l'evt a commencé avant le mois en cours, on commence à ajouter les lignes à 1 (premier jour)
-                else {
-                    $i = $tmpStartD + 1;
-                } // sinon, on commence à ajouter les lignes au jour du mois
-
-                while ($bool) {
-                    // Nième jour de cet event :
-                    $tmpDay = mktime(23, 59, 59, $month, $i, $year); // jour ciblé ici
-                    $handle['jourN'] = ceil(($tmpDay - $handle['tsp_evt']) / 86400); // nombre de jours d'ecart
-
-                    // si ce jour dépasse le nombre de jours du mois, on s'arrête là
-                    if ($i > $nDays) {
-                        $bool = false;
-                    }
-                    // si ce jour est supérieur au jour de fin dans le bon mois, on s'arrête là
-                    if ($tmpEndM == $month && $i > $tmpEndD) {
-                        $bool = false;
-                    }
-
-                    if ($bool || 1 == $i) {
-                        // jour N si l'event est sur plusieur jours
-                        $agendaTab[$i]['courant'][] = $handle;
-                    }
-                    ++$i; // incrémenation d'un jour
+                // si ce jour dépasse le nombre de jours du mois, on s'arrête là
+                if ($i > $nDays) {
+                    $bool = false;
                 }
+                // si ce jour est supérieur au jour de fin dans le bon mois, on s'arrête là
+                if ($tmpEndM == $month && $i > $tmpEndD) {
+                    $bool = false;
+                }
+
+                if ($bool || 1 == $i) {
+                    // jour N si l'event est sur plusieur jours
+                    $agendaTab[$i]['courant'][] = $handle;
+                }
+                ++$i; // incrémenation d'un jour
             }
         }
     }
@@ -585,303 +555,206 @@ elseif ('creer-une-sortie' == $p1) {
         exit;
     }
 
-    $destinations = $destinations_modifier = [];
-    $destinations = get_future_destinations();
-    $destinations_modifier = get_future_destinations(false, true);
-
     if ($p2) {
-        // DESTINATION
-        if ('creer-une-destination' == $p2) {
-            $select_leaders = [];
-            $id_right = $ids_usertype = $ids_users = null;
+        // CREER UNE SORTIE : même page utilisée pour modifier une sortie, gérée ici si on passe un paramètre en "p3"
+        $id_evt_to_update = false; // variable pour annoncer au formulaire qu'il s'agit d'un update et non d'une créa. Par defaut, créa : false
+        $update_status = false;
 
-            // Select ID code 'leader'
-            $req = "SELECT id_userright, code_userright FROM `caf_userright` WHERE `code_userright` LIKE 'destination_leader'";
+        // LSITE DES ENCADRANTS AUTORISÉS À ASSOCIER À LA COMMISSION COURANTE
+        // encadrants
+        $encadrantsTab = [];
+        $com = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2);
+        $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
+            FROM caf_user, caf_user_attr, caf_usertype
+            WHERE doit_renouveler_user=0
+            AND id_user =user_user_attr
+            AND usertype_user_attr=id_usertype
+            AND code_usertype='encadrant'
+            AND params_user_attr='commission:$com'
+            ORDER BY  lastname_user ASC";
+        // CRI - 29/08/2015
+        // Correctif car la commission du jeudi compte plus de 50 encadrants
+        // LIMIT 0 , 50";
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+            $encadrantsTab[] = $handle;
+        }
+
+        // coencadrants
+        $coencadrantsTab = [];
+        $com = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2);
+        $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
+            FROM caf_user, caf_user_attr, caf_usertype
+            WHERE doit_renouveler_user=0
+            AND id_user =user_user_attr
+            AND usertype_user_attr=id_usertype
+            AND code_usertype='coencadrant'
+            AND params_user_attr='commission:$com'
+            ORDER BY  lastname_user ASC";
+        // CRI - 29/08/2015
+        // Correctif car la commission du jeudi compte plus de 50 encadrants
+        // LIMIT 0 , 50";
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+            $coencadrantsTab[] = $handle;
+        }
+
+        // benevoles
+        $benevolesTab = [];
+        $com = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2);
+        $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
+            FROM caf_user, caf_user_attr, caf_usertype
+            WHERE doit_renouveler_user=0
+            AND id_user =user_user_attr
+            AND usertype_user_attr=id_usertype
+            AND code_usertype='benevole'
+            AND params_user_attr='commission:$com'
+            ORDER BY  lastname_user ASC
+            LIMIT 0 , 50";
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+            $benevolesTab[] = $handle;
+        }
+
+        // sorties creees par moi, et premières d'un cycle, dans la commission courante
+        $parentEvents = [];
+        $req = 'SELECT  id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
+                    , title_commission, code_commission
+            FROM caf_evt, caf_commission
+            WHERE user_evt = '.getUser()->getId()."
+            AND cycle_master_evt=1
+            AND id_commission = commission_evt
+            AND code_commission = '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2)."'
+            ORDER BY tsp_evt DESC
+            LIMIT 200";
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+            // compte de sorties enfant
+            $req = 'SELECT COUNT(id_evt) FROM caf_evt WHERE cycle_parent_evt='.$handle['id_evt'];
+            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+            $handle['nchildren'] = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
+
+            $parentEvents[] = $handle;
+        }
+
+        // MISE A JOUR
+        if ($p3 && 'update-' == substr($p3, 0, 7)) {
+            // un ID de sortie est vise, il s'agit d'une modif et non d'une creation
+            $id_evt = (int) (substr(strrchr($p3, '-'), 1));
+
+            $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cb_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
+                    , denivele_evt, distance_evt, matos_evt, difficulte_evt, description_evt, lat_evt, long_evt
+                    , ngens_max_evt
+                    , join_start_evt, join_max_evt, id_groupe, repas_restaurant, tarif_detail, tarif_restaurant, need_benevoles_evt, itineraire
+                    , nickname_user
+                    , title_commission, code_commission
+            FROM caf_evt, caf_user, caf_commission as commission
+            WHERE id_evt=$id_evt
+            AND id_user = user_evt
+            AND commission_evt=commission.id_commission
+            LIMIT 1";
+
+            $handleTab = [];
             $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+
             while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-                $id_right = $handle['id_userright'];
-            }
+                // variable pour annoncer au formulaire qu'il s'agit d'un update et non d'une creation
+                $id_evt_to_update = $id_evt;
+                $update_status = $handle['status_evt'];
 
-            // Selection des roles ayant le droit concerné (leader)
-            $req = 'SELECT type_usertype_attr FROM `caf_usertype_attr` WHERE `right_usertype_attr` = '.$id_right;
-            $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            if ($handleSql) {
-                while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-                    $ids_usertype[] = $handle['type_usertype_attr'];
-                }
-            }
-            // Sélection des utilisateurs et de leurs roles
-            if ($ids_usertype) {
-                $req = 'SELECT *  FROM `caf_user_attr`, caf_usertype, `caf_user`
-					WHERE `usertype_user_attr` IN ('.implode(',', $ids_usertype).')
-					AND id_usertype = usertype_user_attr
-					AND id_user = user_user_attr
-					ORDER BY hierarchie_usertype DESC
-					'; // GROUP BY user_user_attr
-
-                $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-                    $ids_users[$handle['id_user']][$handle['lastname_user'].', '.$handle['firstname_user']][$handle['title_usertype']][] = $handle;
-                }
-            } else {
-                $errTab[] = "Aucun type d'utilisateur défini pour le droit 'destination_leader' ";
-            }
-
-            if ($ids_users) {
-                foreach ($ids_users as $id_user => $user) {
-                    foreach ($user as $name => $roles) {
-                        $select_leaders[$id_user] = $name;
-                        $r = 0;
-                        foreach ($roles as $role => $precision) {
-                            if ($r > 0) {
-                                $select_leaders[$id_user] .= ', ';
-                            } else {
-                                $select_leaders[$id_user] .= ' : ';
-                            }
-                            $select_leaders[$id_user] .= $role;
-                            ++$r;
-                            $countPrecision = count($precision);
-                            $select_leaders[$id_user] .= count($precision) > 1 ? ' ('.count($precision).')' : '';
-                        }
+                // Recup' encadrants,coencadrants,benevoles
+                $encadrants = [];
+                $coencadrants = [];
+                $benevoles = [];
+                $req = "SELECT * FROM caf_evt_join WHERE evt_evt_join=$id_evt LIMIT 300";
+                $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+                while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
+                    if ('encadrant' == $handle2['role_evt_join']) {
+                        $encadrants[] = $handle2['user_evt_join'];
+                    }
+                    if ('coencadrant' == $handle2['role_evt_join']) {
+                        $coencadrants[] = $handle2['user_evt_join'];
+                    }
+                    if ('benevole' == $handle2['role_evt_join']) {
+                        $benevoles[] = $handle2['user_evt_join'];
                     }
                 }
-            } // Return $select_leaders : leaders name and their roles
 
-            if ($p3 && 'update' == substr($p3, 0, 6)) {
-                $exp = explode('-', $p3);
-                $id_dest_to_update = $exp[1];
-
-                $destination = get_destination($id_dest_to_update, false);
-
-                if ($destination) {
-                    // Lieu
-                    $id_lieu = $destination['id_lieu'];
-                    $destination['ancien_lieu'] = get_lieu($id_lieu);
-                    // Bus
-                    $destination['bus'] = get_bus_destination($id_dest_to_update);
-                }
-
-                $_POST = $destination;
-            }
-        }
-        // SORTIE
-        else {
-            // CREER UNE SORTIE : même page utilisée pour modifier une sortie, gérée ici si on passe un paramètre en "p3"
-            $id_evt_to_update = false; // variable pour annoncer au formulaire qu'il s'agit d'un update et non d'une créa. Par defaut, créa : false
-            $update_status = false;
-
-            // LSITE DES ENCADRANTS AUTORISÉS À ASSOCIER À LA COMMISSION COURANTE
-            // encadrants
-            $encadrantsTab = [];
-            $com = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2);
-            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
-				FROM caf_user, caf_user_attr, caf_usertype
-				WHERE doit_renouveler_user=0
-				AND id_user =user_user_attr
-				AND usertype_user_attr=id_usertype
-				AND code_usertype='encadrant'
-				AND params_user_attr='commission:$com'
-				ORDER BY  lastname_user ASC";
-            // CRI - 29/08/2015
-            // Correctif car la commission du jeudi compte plus de 50 encadrants
-            // LIMIT 0 , 50";
-            $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-                $encadrantsTab[] = $handle;
-            }
-
-            // coencadrants
-            $coencadrantsTab = [];
-            $com = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2);
-            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
-				FROM caf_user, caf_user_attr, caf_usertype
-				WHERE doit_renouveler_user=0
-				AND id_user =user_user_attr
-				AND usertype_user_attr=id_usertype
-				AND code_usertype='coencadrant'
-				AND params_user_attr='commission:$com'
-				ORDER BY  lastname_user ASC";
-            // CRI - 29/08/2015
-            // Correctif car la commission du jeudi compte plus de 50 encadrants
-            // LIMIT 0 , 50";
-            $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-                $coencadrantsTab[] = $handle;
-            }
-
-            // benevoles
-            $benevolesTab = [];
-            $com = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2);
-            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
-				FROM caf_user, caf_user_attr, caf_usertype
-				WHERE doit_renouveler_user=0
-				AND id_user =user_user_attr
-				AND usertype_user_attr=id_usertype
-				AND code_usertype='benevole'
-				AND params_user_attr='commission:$com'
-				ORDER BY  lastname_user ASC
-				LIMIT 0 , 50";
-            $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-                $benevolesTab[] = $handle;
-            }
-
-            // sorties creees par moi, et premières d'un cycle, dans la commission courante
-            $parentEvents = [];
-            $req = 'SELECT  id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
-						, title_commission, code_commission
-				FROM caf_evt, caf_commission
-				WHERE user_evt = '.getUser()->getId()."
-				AND cycle_master_evt=1
-				AND id_commission = commission_evt
-				AND code_commission = '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2)."'
-				ORDER BY tsp_evt DESC
-				LIMIT 200";
-            $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-                // compte de sorties enfant
-                $req = 'SELECT COUNT(id_evt) FROM caf_evt WHERE cycle_parent_evt='.$handle['id_evt'];
-                $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                $handle['nchildren'] = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
-
-                $parentEvents[] = $handle;
-            }
-
-            // MISE A JOUR
-            if ($p3 && 'update-' == substr($p3, 0, 7)) {
-                // un ID de sortie est vise, il s'agit d'une modif et non d'une creation
-                $id_evt = (int) (substr(strrchr($p3, '-'), 1));
-
-                $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cb_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
-						, denivele_evt, distance_evt, matos_evt, difficulte_evt, description_evt, lat_evt, long_evt
-						, ngens_max_evt
-						, join_start_evt, join_max_evt, id_groupe, repas_restaurant, tarif_detail, tarif_restaurant, need_benevoles_evt, itineraire
-						, nickname_user
-						, title_commission, code_commission
-				FROM caf_evt, caf_user, caf_commission as commission
-				WHERE id_evt=$id_evt
-				AND id_user = user_evt
-				AND commission_evt=commission.id_commission
-				LIMIT 1";
-
-                $handleTab = [];
-                $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-
-                while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-                    // variable pour annoncer au formulaire qu'il s'agit d'un update et non d'une creation
-                    $id_evt_to_update = $id_evt;
-                    $update_status = $handle['status_evt'];
-
-                    // Recup' encadrants,coencadrants,benevoles
-                    $encadrants = [];
-                    $coencadrants = [];
-                    $benevoles = [];
-                    $req = "SELECT * FROM caf_evt_join WHERE evt_evt_join=$id_evt LIMIT 300";
+                // benevoles
+                $benevolesTab = [];
+                if (count($benevoles) > 0) {
+                    $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
+            FROM caf_user
+            WHERE id_user IN ('.implode(',', $benevoles).')
+            ORDER BY  lastname_user ASC
+            LIMIT 0 , 50';
                     $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                        if ('encadrant' == $handle2['role_evt_join']) {
-                            $encadrants[] = $handle2['user_evt_join'];
-                        }
-                        if ('coencadrant' == $handle2['role_evt_join']) {
-                            $coencadrants[] = $handle2['user_evt_join'];
-                        }
-                        if ('benevole' == $handle2['role_evt_join']) {
-                            $benevoles[] = $handle2['user_evt_join'];
-                        }
-                    }
-
-                    // benevoles
-                    $benevolesTab = [];
-                    if (count($benevoles) > 0) {
-                        $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
-				FROM caf_user
-				WHERE id_user IN ('.implode(',', $benevoles).')
-				ORDER BY  lastname_user ASC
-				LIMIT 0 , 50';
-                        $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                        while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                            $benevolesTab[] = $handle2;
-                        }
-                    }
-
-                    // méthode "sale & rapide" : on remplace les valeurs POST par défaut, par celles issues de la BDD
-                    $_POST['commission_evt'] = $handle['commission_evt'];
-                    $_POST['titre_evt'] = $handle['titre_evt'];
-                    $_POST['encadrants'] = $encadrants;
-                    $_POST['coencadrants'] = $coencadrants;
-                    $_POST['benevoles'] = $benevoles;
-                    $_POST['tarif_evt'] = $handle['tarif_evt'];
-                    $_POST['cb_evt'] = $handle['cb_evt'];
-                    $_POST['tarif_detail'] = $handle['tarif_detail'];
-                    $_POST['tarif_restaurant'] = $handle['tarif_restaurant'];
-                    $_POST['repas_restaurant'] = $handle['repas_restaurant'];
-                    $_POST['massif_evt'] = $handle['massif_evt'];
-                    $_POST['cycle_master_evt'] = $handle['cycle_master_evt'];
-                    $_POST['cycle_parent_evt'] = $handle['cycle_parent_evt'];
-                    $_POST['id_groupe'] = $handle['id_groupe'];
-                    $_POST['itineraire'] = $handle['itineraire'];
-                    $_POST['rdv_evt'] = $handle['rdv_evt'];
-                    $_POST['lat_evt'] = $handle['lat_evt'];
-                    $_POST['long_evt'] = $handle['long_evt'];
-                    $_POST['tsp_evt_day'] = date('d/m/Y', $handle['tsp_evt']);
-                    $_POST['tsp_evt_hour'] = date('H:i', $handle['tsp_evt']);
-                    $_POST['tsp_end_evt_day'] = date('d/m/Y', $handle['tsp_end_evt']);
-                    $_POST['tsp_end_evt_hour'] = date('H:i', $handle['tsp_end_evt']);
-                    $_POST['denivele_evt'] = $handle['denivele_evt'];
-                    $_POST['ngens_max_evt'] = $handle['ngens_max_evt'];
-                    $_POST['distance_evt'] = $handle['distance_evt'];
-                    $_POST['matos_evt'] = $handle['matos_evt'];
-                    $_POST['difficulte_evt'] = $handle['difficulte_evt'];
-                    $_POST['description_evt'] = $handle['description_evt'];
-                    $_POST['join_max_evt'] = $handle['join_max_evt'];
-                    $_POST['need_benevoles_evt'] = $handle['need_benevoles_evt'];
-                    // special : tsp to days. le timestamp enregistré commence à minuit pile
-                    $_POST['join_start_evt_days'] = floor(($handle['tsp_evt'] - $handle['join_start_evt']) / 86400);
-
-                    // c'est une sortie enfant, recup du parent si sortie creee par un tiers
-                    if ($handle['cycle_parent_evt'] > 0) {
-                        $_POST['cycle'] = 'child';
-
-                        $req = 'SELECT id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
-				FROM caf_evt, caf_commission
-				WHERE id_evt='.$handle['cycle_parent_evt'].'
-				AND user_evt != '.getUser()->getId().'
-				AND cycle_master_evt=1
-				ORDER BY tsp_evt DESC
-				LIMIT 1';
-                        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                        $parentEvents[] = $handleSql->fetch_array(\MYSQLI_ASSOC);
+                        $benevolesTab[] = $handle2;
                     }
                 }
 
-                // Cette sortie est elle dans une destination ?
-                $id_destination = is_sortie_in_destination($id_evt);
-                if ($id_destination) {
-                    $destination = get_destination($id_destination, true);
-                    $_POST = array_merge($_POST, get_sortie_destination($id_destination, $id_evt));
-                }
-            } elseif ($p3 && 'destination' == substr($p3, 0, 11)) {
-                $id_destination = (int) (substr(strrchr($p3, '-'), 1));
-                $destination = get_destination($id_destination, true);
-                if (!$destination) {
-                    $errPage[] = 'Cette destination n\'est pas disponible';
+                // méthode "sale & rapide" : on remplace les valeurs POST par défaut, par celles issues de la BDD
+                $_POST['commission_evt'] = $handle['commission_evt'];
+                $_POST['titre_evt'] = $handle['titre_evt'];
+                $_POST['encadrants'] = $encadrants;
+                $_POST['coencadrants'] = $coencadrants;
+                $_POST['benevoles'] = $benevoles;
+                $_POST['tarif_evt'] = $handle['tarif_evt'];
+                $_POST['cb_evt'] = $handle['cb_evt'];
+                $_POST['tarif_detail'] = $handle['tarif_detail'];
+                $_POST['tarif_restaurant'] = $handle['tarif_restaurant'];
+                $_POST['repas_restaurant'] = $handle['repas_restaurant'];
+                $_POST['massif_evt'] = $handle['massif_evt'];
+                $_POST['cycle_master_evt'] = $handle['cycle_master_evt'];
+                $_POST['cycle_parent_evt'] = $handle['cycle_parent_evt'];
+                $_POST['id_groupe'] = $handle['id_groupe'];
+                $_POST['itineraire'] = $handle['itineraire'];
+                $_POST['rdv_evt'] = $handle['rdv_evt'];
+                $_POST['lat_evt'] = $handle['lat_evt'];
+                $_POST['long_evt'] = $handle['long_evt'];
+                $_POST['tsp_evt_day'] = date('d/m/Y', $handle['tsp_evt']);
+                $_POST['tsp_evt_hour'] = date('H:i', $handle['tsp_evt']);
+                $_POST['tsp_end_evt_day'] = date('d/m/Y', $handle['tsp_end_evt']);
+                $_POST['tsp_end_evt_hour'] = date('H:i', $handle['tsp_end_evt']);
+                $_POST['denivele_evt'] = $handle['denivele_evt'];
+                $_POST['ngens_max_evt'] = $handle['ngens_max_evt'];
+                $_POST['distance_evt'] = $handle['distance_evt'];
+                $_POST['matos_evt'] = $handle['matos_evt'];
+                $_POST['difficulte_evt'] = $handle['difficulte_evt'];
+                $_POST['description_evt'] = $handle['description_evt'];
+                $_POST['join_max_evt'] = $handle['join_max_evt'];
+                $_POST['need_benevoles_evt'] = $handle['need_benevoles_evt'];
+                // special : tsp to days. le timestamp enregistré commence à minuit pile
+                $_POST['join_start_evt_days'] = floor(($handle['tsp_evt'] - $handle['join_start_evt']) / 86400);
+
+                // c'est une sortie enfant, recup du parent si sortie creee par un tiers
+                if ($handle['cycle_parent_evt'] > 0) {
+                    $_POST['cycle'] = 'child';
+
+                    $req = 'SELECT id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
+            FROM caf_evt, caf_commission
+            WHERE id_evt='.$handle['cycle_parent_evt'].'
+            AND user_evt != '.getUser()->getId().'
+            AND cycle_master_evt=1
+            ORDER BY tsp_evt DESC
+            LIMIT 1';
+                    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+                    $parentEvents[] = $handleSql->fetch_array(\MYSQLI_ASSOC);
                 }
             }
         }
     }
 }
 // PAGE SORTIE
-elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
-    $evt = $dest = false;
-    $id_evt = $id_destination = null;
+elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
+    $evt = false;
+    $id_evt = null;
     $errPage = false; // message d'erreur spécifique à la page courante si besoin
 
     if ('feuille-de-sortie' == $p1) {
         $type = strstr($p2, '-', true);
         switch ($type) {
-            case 'dest':
-                $id_destination = (int) (substr(strrchr($p2, '-'), 1));
-                break;
             case 'evt':
                 $id_evt = (int) (substr(strrchr($p2, '-'), 1));
                 break;
@@ -890,8 +763,6 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
         }
     } elseif ('sortie' == $p1) {
         $id_evt = (int) (substr(strrchr($p2, '-'), 1));
-    } elseif ('destination' == $p1) {
-        $id_destination = (int) (substr(strrchr($p2, '-'), 1));
     }
 
     if ($id_evt) {
@@ -915,26 +786,6 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             $on_peut_voir = true;
-
-            // Cette sortie fait partie d'une destination ?
-            $is_dest = is_sortie_in_destination($id_evt);
-            // sortie de destination
-            if ($is_dest) {
-                $destination = get_destination($is_dest, true);
-                if (0 == is_destination_status($destination, 'publie')) {
-                    $on_peut_voir = false;
-                }
-                if (1 == is_destination_status($destination, 'annule')) {
-                    $handle['cancelled_evt'] = 1;
-                }
-                // ou je suis responsable de la destination
-                if ((user() && $destination['id_user_who_create'] == (string) getUser()->getId())
-                        || (user() && $destination['id_user_responsable'] == (string) getUser()->getId())
-                        || (user() && $destination['id_user_adjoint'] == (string) getUser()->getId())
-                ) {
-                    $on_peut_voir = true;
-                }
-            }
 
             // on a le droit de voir cette page ?
             if (
@@ -995,7 +846,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
 
                 // participants "speciaux" avec droits :
                 $req = "SELECT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
-                            , role_evt_join, is_cb, is_restaurant, is_covoiturage, id_destination, id_bus_lieu_destination
+                            , role_evt_join, is_cb, is_restaurant, is_covoiturage
                     FROM caf_evt_join, caf_user
                     WHERE evt_evt_join = $id_evt
                     AND user_evt_join = id_user
@@ -1010,7 +861,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
 
                 // participants "enattente" :
                 $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
-                            , role_evt_join, is_cb, is_restaurant , is_covoiturage, id_destination, id_bus_lieu_destination
+                            , role_evt_join, is_cb, is_restaurant , is_covoiturage
                     FROM caf_evt_join, caf_user
                     WHERE evt_evt_join  = '.(int) (($handle['cycle_parent_evt'] ?: $id_evt)).'
                     AND user_evt_join = id_user
@@ -1024,7 +875,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
 
                 // participants "normaux" : inscrit en ligne : leur role est à "inscrit"
                 $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
-                            , role_evt_join, is_cb, is_restaurant , is_covoiturage, id_destination, id_bus_lieu_destination
+                            , role_evt_join, is_cb, is_restaurant , is_covoiturage
                     FROM caf_evt_join, caf_user
                     WHERE evt_evt_join  = '.(int) (($handle['cycle_parent_evt'] ?: $id_evt))."
                     AND user_evt_join = id_user
@@ -1038,7 +889,7 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
 
                 // participants "manuel" : inscrit par l'orga : leur role est à "manuel"
                 $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
-                            , role_evt_join, is_cb, is_restaurant , is_covoiturage, id_destination, id_bus_lieu_destination
+                            , role_evt_join, is_cb, is_restaurant , is_covoiturage
                     FROM caf_evt_join, caf_user
                     WHERE evt_evt_join  = '.(int) (($handle['cycle_parent_evt'] ?: $id_evt))."
                     AND user_evt_join = id_user
@@ -1119,133 +970,75 @@ elseif ('sortie' == $p1 || 'destination' == $p1 || 'feuille-de-sortie' == $p1) {
                     }
                 }
 
-                if ($is_dest) {
-                    // recupération des lieux
-                    $liaison = get_sortie_destination($is_dest, $id_evt);
-                    $handle['lieu'] = $liaison['lieu'];
-                }
-
                 // go
                 $evt = $handle;
             } else {
                 $errPage = 'Accès non autorisé';
             }
         }
-    } elseif ($id_destination) {
-        get_all_encadrants_destination($id_destination);
-        $dest = get_destination($id_destination, true);
-
-        // Correctif CRI le 23/08/15 car demande impression fiche destination retourne une erreur 404
-        // Remplacement de:
-        // $p1 =='destination'
-        // par :
-        // ($p1 == 'destination' || $p1 == 'feuille-de-sortie')
-        if (
-            ('destination' == $p1 || 'feuille-de-sortie' == $p1) && '1' === $dest['publie'] // Correctif CRI le 23/08/15
-            || (
-                user() &&
-                ((user() && $dest['id_user_who_create'] == (string) getUser()->getId()) // ou j'en suis l'auteur
-                    || (user() && $dest['id_user_responsable'] == (string) getUser()->getId()) // ou j'en le resp.
-                    || (user() && $dest['id_user_adjoint'] == (string) getUser()->getId()) // ou j'en suis le coresp.
-                    || (allowed('destination_activer_desactiver') && $_GET['forceshow']) // ou mode validateur
-                    || (allowed('destination_supprimer') && $_GET['forceshow']) // ou mode validateur
-                    || (allowed('destination_modifier') && $_GET['forceshow']) // ou mode validateur
-                    || (admin() || superadmin()) // ou mode validateur
-                    || (user() && in_array((string) getUser()->getId(), get_all_encadrants_destination($id_destination), true)) // je suis l'un des co/encadrant de l'une des sorties
-                )
-            )
-        ) {
-            $destination = $dest;
-        } else {
-            $errPage = 'Accès non autorisé';
-        }
     }
 }
 // PAGE ANNULER UNE SORTIE
 elseif ('annuler-une-sortie' == $p1) {
     $evt = false;
-    $destination = false;
     $errPage = false; // message d'erreur spécifique à la page courante si besoin
 
-    if ('destination' == $p2) {
-        $id_destination = (int) (substr(strrchr($p3, '-'), 1));
-        $destination = get_destination($id_destination);
-        if (allowed('destination_supprimer')
-            || (user() && $destination['id_user_responsable'] == (string) getUser()->getId())
-            || (user() && $destination['id_user_adjoint'] == (string) getUser()->getId())
-        ) {
-            $destination['joins'] = [];
+    $id_evt = (int) (substr(strrchr($p2, '-'), 1));
+
+    // sélection complète, non conditionnelle par rapport au status
+    $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt,
+              tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
+                , cancelled_evt, cancelled_who_evt, cancelled_when_evt, description_evt, denivele_evt, difficulte_evt, matos_evt, need_benevoles_evt
+                , lat_evt, long_evt
+                , join_start_evt
+                , ngens_max_evt, join_max_evt
+                , nickname_user
+                , title_commission, code_commission
+        FROM caf_evt, caf_user, caf_commission
+        WHERE id_evt=$id_evt
+        AND id_user = user_evt
+        AND commission_evt=id_commission
+        LIMIT 1";
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+
+    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+        // on a le droit de supprimer cette page ?
+        if (allowed('evt_cancel', 'commission:'.$handle['code_commission'])) {
+            // participants:
+            // si la sortie est enfant d'un cycle, on cherche les participants à la sortie parente
+            if ($handle['cycle_parent_evt']) {
+                $id_evt_forjoins = $handle['cycle_parent_evt'];
+            } else {
+                $id_evt_forjoins = $handle['id_evt'];
+            }
+
+            $handle['joins'] = [];
             $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
-                        , role_evt_join
-                    FROM caf_evt_join, caf_user
-                    WHERE id_destination = $id_destination
-                    AND user_evt_join = id_user
-                    LIMIT 500";
+                    , role_evt_join
+                FROM caf_evt_join, caf_user
+                WHERE evt_evt_join = $id_evt_forjoins
+                AND user_evt_join = id_user
+                LIMIT 300";
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                $destination['joins'][] = $handle2;
+                $handle['joins'][] = $handle2;
             }
-        } else {
-            $errPage = 'Accès non autorisé';
-        }
-    } else {
-        $id_evt = (int) (substr(strrchr($p2, '-'), 1));
 
-        // sélection complète, non conditionnelle par rapport au status
-        $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt,
-                  tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
-                    , cancelled_evt, cancelled_who_evt, cancelled_when_evt, description_evt, denivele_evt, difficulte_evt, matos_evt, need_benevoles_evt
-                    , lat_evt, long_evt
-                    , join_start_evt
-                    , ngens_max_evt, join_max_evt
-                    , nickname_user
-                    , title_commission, code_commission
-            FROM caf_evt, caf_user, caf_commission
-            WHERE id_evt=$id_evt
-            AND id_user = user_evt
-            AND commission_evt=id_commission
-            LIMIT 1";
-        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-
-        while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-            // on a le droit de supprimer cette page ?
-            if (allowed('evt_cancel', 'commission:'.$handle['code_commission'])) {
-                // participants:
-                // si la sortie est enfant d'un cycle, on cherche les participants à la sortie parente
-                if ($handle['cycle_parent_evt']) {
-                    $id_evt_forjoins = $handle['cycle_parent_evt'];
-                } else {
-                    $id_evt_forjoins = $handle['id_evt'];
-                }
-
-                $handle['joins'] = [];
-                $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
-                        , role_evt_join
-                    FROM caf_evt_join, caf_user
-                    WHERE evt_evt_join = $id_evt_forjoins
-                    AND user_evt_join = id_user
-                    LIMIT 300";
+            // si la sortie est annulée, on recupère les details de "WHO" : qui l'a annulée
+            if ('1' == $handle['cancelled_evt']) {
+                $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user
+                    FROM caf_user
+                    WHERE id_user='.(int) ($handle['cancelled_who_evt']).'
+                    LIMIT 300';
                 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                    $handle['joins'][] = $handle2;
+                    $handle['cancelled_who_evt'] = $handle2;
                 }
-
-                // si la sortie est annulée, on recupère les details de "WHO" : qui l'a annulée
-                if ('1' == $handle['cancelled_evt']) {
-                    $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user
-                        FROM caf_user
-                        WHERE id_user='.(int) ($handle['cancelled_who_evt']).'
-                        LIMIT 300';
-                    $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                    while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                        $handle['cancelled_who_evt'] = $handle2;
-                    }
-                }
-
-                $evt = $handle;
-            } else {
-                $errPage = 'Accès non autorisé';
             }
+
+            $evt = $handle;
+        } else {
+            $errPage = 'Accès non autorisé';
         }
     }
 }

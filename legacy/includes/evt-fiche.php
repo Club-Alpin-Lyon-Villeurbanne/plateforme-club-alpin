@@ -65,21 +65,6 @@ if (!$evt) {
 		<?php
     }
 
-    /* imprimer la fiche de destination */
-    if (isset($destination) && (allowed('destination_print')
-            || (user() && $destination['id_user_who_create'] == getUser()->getId())
-            || (user() && $destination['id_user_responsable'] == getUser()->getId())
-            || (user() && $destination['id_user_adjoint'] == getUser()->getId())
-            || (user() && in_array((string) getUser()->getId(), get_all_encadrants_destination($destination['id']), true)) // je suis l'un des co/encadrant de l'une des sorties
-        )) {
-        ?>
-            <a href="<?php echo 'feuille-de-sortie/dest-'.(int) ($destination['id']).'.html'; ?>" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
-                <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
-                Imprimer la fiche de destination
-            </a>
-        <?php
-    }
-
     echo '
 		<br />
 		<br />';
@@ -154,20 +139,6 @@ if (!$evt) {
             }
         } ?>
 
-        <?php if (user() && user_in_destination((string) getUser()->getId(), $destination['id'])) { ?>
-            <div class="note mr10 bbox">
-                <p>Je suis inscrit à une sortie de cette destination. Je souhaite connaissance des personnes inscrites
-                    et je peux organiser mon covoiturage vers les lieux de ramassage des bus et vers les lieux de départ des sorties.</p>
-                <p>
-                    <a    href="destination/<?php echo html_utf8($destination['code']).'-'.(int) ($destination['id']); ?>.html#organisation_covoiturage"
-                            title="Plus d'infos en cliquant"
-                            target="_blank">J'accède à ces informations complémentaires</a>
-                    concernant <span class="bleucaf"><?php echo $destination['nom']; ?></span>.
-                </p>
-            </div>
-        <?php } ?>
-
-
         <?php
         // FORMULAIRE DE SUPPRESSION D'INSCRIPTION
         if (user() && 'neutre' != $monStatut) { ?>
@@ -213,19 +184,6 @@ if (!$evt) {
 
         // GESTION DES INSCRIPTIONS
         require __DIR__.'/../includes/evt/gestion_inscriptions.php';
-    }
-
-    if ($destination) {
-        ?>
-        <h2 class="trigger-h2 " >Cette sortie fait partie de la destination <span class="bleucaf"><?php echo $destination['nom']; ?></span></h2>
-        <div class="trigger-me">
-            <div class="note">
-                <?php require __DIR__.'/../includes/dest/display.php'; ?>
-            </div>
-        </div>
-        <br>
-        <h2>La sortie :</h2>
-    <?php
     }
 
     // LISTE D'INFOS DIFFICULTE ETC...
@@ -278,7 +236,7 @@ if (!$evt) {
             echo '<ul class="nice-list">'
                 // tarif ?
                 .($evt['tarif_evt'] > 0 ?
-                    '<li class="wide"><b>TARIF :</b> '.str_replace(',', '.', (float) ($evt['tarif_evt'])).'&nbsp;Euros '.($destination ? ' <small>(hors transport collectif : + '.str_replace(',', '.', (float) ($destination['cout_transport'])).'&nbsp;Euros)</small>' : '').'</li>'
+                    '<li class="wide"><b>TARIF :</b> '.str_replace(',', '.', (float) ($evt['tarif_evt'])).'&nbsp;Euros</li>'
                 : '')
                 // Paiement en ligne
                 .($evt['cb_evt'] > 0 ?
@@ -295,117 +253,47 @@ if (!$evt) {
             .'</ul><hr style="clear:both" />';
         }
 
-        if (!$destination) {
-            // DATES
-            echo '<ul class="nice-list">';
+        // DATES
+        echo '<ul class="nice-list">';
 
-            // rdv : heure
-            echo '<li><b>DÉPART :</b> Le '.date('d', $evt['tsp_evt']).' '.mois(date('m', $evt['tsp_evt'])).' '.date('Y', $evt['tsp_evt']);
-            if (allowed('user_read_limited')) {
-                echo ', '.date('H:i', $evt['tsp_evt']);
-            }
-            echo '</li>';
-
-            // retour : le meme jour ou un autre jour
-            echo '<li><b>RETOUR :</b> '.(date('dmy', $evt['tsp_evt']) == date('dmy', $evt['tsp_end_evt']) ? 'Le même jour' : 'Le '.date('d', $evt['tsp_end_evt']).' '.mois(date('m', $evt['tsp_end_evt']))).'.</li>';
-            echo '</ul>';
-
-            // LIEUX et TRANSPORTS (réservé aux membres)
-            if (allowed('user_read_limited')) {
-                echo '<ul class="nice-list">'
-                    // rdv : lieu
-                    .'<li><b>RDV :</b> '.html_utf8($evt['rdv_evt']).'</li>'
-                    // titre carte
-                    .'<li class="wide"><b>POINT DE RENDEZ-VOUS SUR LA CARTE :</b> </li>'
-                .'</ul><br style="clear:both" />';
-
-                // MAP TRANSPORT?>
-                <div id="map-fichesortie"></div>
-                <!-- ****************** // CARTE RDV -->
-                    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
-                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" type="text/css"  media="screen" />
-                    <script>
-                    var lat            = <?php echo str_replace(',', '.', (float) ($evt['lat_evt'])); ?>;
-                    var lon            = <?php echo str_replace(',', '.', (float) ($evt['long_evt'])); ?>;
-                    var zoom           = 16;
-                    var mymap = L.map('map-fichesortie').setView([lat, lon], zoom);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar', attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(mymap);
-                    var marker = L.marker([lat, lon]).addTo(mymap);
-                    </script>
-                <!-- ****************** // FIN CARTE RDV -->
-
-                <?php
-            }
-            echo '<hr />';
-        } else {
-            if (allowed('user_read_limited')) {
-                ?>
-
-                <?php $l = 0;
-                foreach ($evt['lieu'] as $type => $lieu) {?>
-                <div class="lft half">
-                        <?php if ('depose' == $type) { ?>
-                            <img src="/img/start.png"  class="lft mr10"><b>Lieu de dépose :</b><br><?php echo html_utf8($lieu['nom']); ?>, le <?php $djdd = display_jour($lieu['date_depose']); echo $djdd; ?> à <?php echo display_time($lieu['date_depose']); ?>
-                        <?php } elseif ('reprise' == $type) { ?>
-                            <img src="/img/finish.png"  class="lft mr10""><b>Lieu de reprise :</b><br><?php echo html_utf8($lieu['nom']); ?>, <?php $djdr = display_jour($lieu['date_reprise']); if ($djdr != $djdd) {
-                    echo 'le '.$djdr;
-                } ?> à <?php echo display_time($lieu['date_reprise']); ?>
-                        <?php } ?>
-                </div>
-                    <?php } ?><br class="clear">
-
-                <div id="map_dr"></div>
-                <br>
-                <hr />
-
-                <?php if ($destination) { ?>
-
-                    <!-- ****************** scripts osm -->
-                    <!--<script type="text/javascript" src="/js/jquery.ba-throttle-debounce.min.js"></script>-->
-                    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
-                            integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
-                            crossorigin=""></script>
-                    <script type="text/javascript" src="/js/osm-organiser.js"></script>
-                    <!-- ****************** // osm-->
-
-                        $(document).ready(function(){
-                            // Carte de prévisualisation des points de dépose et reprise
-                            map_initialize('map_dr');
-                            var markers_dr = [
-                                <?php
-                                    $l = 0;
-                                    foreach ($evt['lieu'] as $type => $lieu) {
-                                        if ($l > 0) {
-                                            echo ',';
-                                        } ?>["<?php echo html_utf8($lieu['nom']); ?>",<?php echo $lieu['lat']; ?>,<?php echo $lieu['lng'];
-                                        if ('depose' == $type) {
-                                            echo ', "depose"';
-                                        } else {
-                                            echo ', "reprise"';
-                                        } ?>]<?php ++$l;
-                                    } ?>
-                            ];
-                            var infos_dr = [
-                                <?php $l = 0; foreach ($evt['lieu'] as $type => $lieu) {?><?php if ($l > 0) {
-                                        echo ',';
-                                    } ?>
-                                ["<?php
-                                    echo '<b>';
-                                    if ('depose' == $type) {
-                                        echo 'Lieu de dépose : ';
-                                    } else {
-                                        echo 'Lieu de reprise : ';
-                                    }
-                                    echo '</b><br>';
-                                    echo html_utf8($lieu['nom']); ?>"]<?php ++$l; }  ?>
-                            ];
-                            renderMultipleMarkers(markers_dr, infos_dr);
-                        });
-                    </script>
-                <?php } ?>
-            <?php
-            }
+        // rdv : heure
+        echo '<li><b>DÉPART :</b> Le '.date('d', $evt['tsp_evt']).' '.mois(date('m', $evt['tsp_evt'])).' '.date('Y', $evt['tsp_evt']);
+        if (allowed('user_read_limited')) {
+            echo ', '.date('H:i', $evt['tsp_evt']);
         }
+        echo '</li>';
+
+        // retour : le meme jour ou un autre jour
+        echo '<li><b>RETOUR :</b> '.(date('dmy', $evt['tsp_evt']) == date('dmy', $evt['tsp_end_evt']) ? 'Le même jour' : 'Le '.date('d', $evt['tsp_end_evt']).' '.mois(date('m', $evt['tsp_end_evt']))).'.</li>';
+        echo '</ul>';
+
+        // LIEUX et TRANSPORTS (réservé aux membres)
+        if (allowed('user_read_limited')) {
+            echo '<ul class="nice-list">'
+                // rdv : lieu
+                .'<li><b>RDV :</b> '.html_utf8($evt['rdv_evt']).'</li>'
+                // titre carte
+                .'<li class="wide"><b>POINT DE RENDEZ-VOUS SUR LA CARTE :</b> </li>'
+            .'</ul><br style="clear:both" />';
+
+            // MAP TRANSPORT?>
+            <div id="map-fichesortie"></div>
+            <!-- ****************** // CARTE RDV -->
+                <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" type="text/css"  media="screen" />
+                <script>
+                var lat            = <?php echo str_replace(',', '.', (float) ($evt['lat_evt'])); ?>;
+                var lon            = <?php echo str_replace(',', '.', (float) ($evt['long_evt'])); ?>;
+                var zoom           = 16;
+                var mymap = L.map('map-fichesortie').setView([lat, lon], zoom);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar', attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(mymap);
+                var marker = L.marker([lat, lon]).addTo(mymap);
+                </script>
+            <!-- ****************** // FIN CARTE RDV -->
+
+            <?php
+        }
+        echo '<hr />';
     }
 
     // LISTE D'INFOS ENCADREMENT

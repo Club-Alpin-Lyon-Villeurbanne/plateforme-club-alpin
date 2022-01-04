@@ -138,9 +138,6 @@ if ('1' != $evt['cancelled_evt']) {
                             <?php if (1 == $evt['repas_restaurant']) { ?>
                             <th width='5%'><abbr title="Restaurant">R.</abbr></th>
                             <?php } ?>
-                            <?php if ($destination) { ?>
-                            <th><abbr title="Covoiturage">C.</abbr></th>
-                            <?php } ?>
                         </tr>
                     </thead>
                     <tbody>
@@ -150,7 +147,7 @@ if ('1' != $evt['cancelled_evt']) {
 
         // participants non filtrés
         $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user
-                                    , id_evt_join , role_evt_join, tsp_evt_join, status_evt_join, doit_renouveler_user, is_cb, is_restaurant, is_covoiturage, id_destination, id_bus_lieu_destination
+                                    , id_evt_join , role_evt_join, tsp_evt_join, status_evt_join, doit_renouveler_user, is_cb, is_restaurant, is_covoiturage
                             FROM caf_evt_join, caf_user
                             WHERE evt_evt_join =$id_evt
                             AND user_evt_join = id_user
@@ -339,9 +336,6 @@ if ('1' != $evt['cancelled_evt']) {
             }
             if (1 == $evt['repas_restaurant']) {
                 echo '<td><img src="/img/base/'.('1' == $row['is_restaurant'] ? 'resto-oui.png' : ('0' == $row['is_restaurant'] ? 'resto-non.png' : 'resto-nsp.png')).'" title="'.('1' == $row['is_restaurant'] ? 'Oui' : ('0' == $row['is_restaurant'] ? 'Non' : 'NSP')).'" /></td>';
-            }
-            if ($destination) {
-                echo '<td>'.((null === $row['is_covoiturage'] && null === $row['id_bus_lieu_destination']) ? '<img src="/img/base/error.png" title="Mettre à jour les préférences" width="16px">' : ($row['is_covoiturage'] ? '<img src="/img/voiture.png" title="Covoiturage" width="16px">' : '')).'</th>';
             }
             echo '</tr>';
         } ?>

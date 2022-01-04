@@ -89,20 +89,6 @@ class EvtJoin
     private $lastchangeWho;
 
     /**
-     * @var int|null
-     *
-     * @ORM\Column(name="id_bus_lieu_destination", type="integer", nullable=true, options={"unsigned": true})
-     */
-    private $idBusLieuDestination;
-
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="id_destination", type="integer", nullable=true, options={"unsigned": true})
-     */
-    private $idDestination;
-
-    /**
      * @var bool|null
      *
      * @ORM\Column(name="is_covoiturage", type="boolean", nullable=true)
@@ -265,30 +251,6 @@ class EvtJoin
     public function setLastchangeWho(User $lastchangeWho): self
     {
         $this->lastchangeWho = $lastchangeWho;
-
-        return $this;
-    }
-
-    public function getIdBusLieuDestination(): ?int
-    {
-        return $this->idBusLieuDestination;
-    }
-
-    public function setIdBusLieuDestination(?int $idBusLieuDestination): self
-    {
-        $this->idBusLieuDestination = $idBusLieuDestination;
-
-        return $this;
-    }
-
-    public function getIdDestination(): ?int
-    {
-        return $this->idDestination;
-    }
-
-    public function setIdDestination(?int $idDestination): self
-    {
-        $this->idDestination = $idDestination;
 
         return $this;
     }

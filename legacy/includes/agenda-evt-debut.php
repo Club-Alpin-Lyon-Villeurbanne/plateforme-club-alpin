@@ -37,9 +37,6 @@ echo '" title="">';
                 echo ' <img src="/img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie faisant partie d\'un cycle" />';
             }
             ?>
-            <?php if ($evt['destination']) { ?>
-                <small class="rght " ><?php echo $evt['destination']['nom']; ?></small>
-            <?php } ?>
 		</h2>
 
 		<!-- infos -->
