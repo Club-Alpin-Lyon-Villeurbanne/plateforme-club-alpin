@@ -163,15 +163,15 @@
                                     </a>
                                 {% endif %}
 
-                                {% if allowed('destination_creer') or allowed('destination_modifier') %}
-                                    <a href="/profil/destinations.html" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
+{#                                {% if allowed('destination_creer') or allowed('destination_modifier') %}#}
+{#                                    <a href="/profil/destinations.html" title="">#}
+{#                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>#}
 
-                                        {% set notif_destination = notifications_counter_destinations() %}
-                                        {% if notif_destination > 0 %}<span class="notification">{{ notif_destination }}</span>{% endif %}
-                                        destinations
-                                    </a>
-                                {% endif %}
+{#                                        {% set notif_destination = notifications_counter_destinations() %}#}
+{#                                        {% if notif_destination > 0 %}<span class="notification">{{ notif_destination }}</span>{% endif %}#}
+{#                                        destinations#}
+{#                                    </a>#}
+{#                                {% endif %}#}
 
                                 {% if allowed('evt_create') %}
                                     {# créer une sortie (par défaut : pour la commission courante si autorisé)#}
