@@ -6,9 +6,6 @@
 
 {% block inner_html %}
     <p>
-        Bonjour !
-    </p>
-    <p>
         Vous avez reçu un message de {{ message_author }} au sujet de la sortie <a href="{{ url_sortie }}">{{ name_sortie }}</a>.
     </p>
     <p>
@@ -20,8 +17,6 @@
 {% endblock %}
 
 {% block inner_txt %}
-Bonjour !
-
 Vous avez reçu un message de {{ message_author }} au sujet de la sortie <a href="{{ url_sortie }}">{{ name_sortie }}</a>.
 
 Message :
