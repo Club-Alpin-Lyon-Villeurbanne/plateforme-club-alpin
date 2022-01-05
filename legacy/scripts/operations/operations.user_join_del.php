@@ -23,7 +23,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $evtName = html_utf8($row[1]);
         $evtDate = html_utf8(date('d-m-Y', $row[2]));
         $evtTarif = html_utf8($row[3]);
-        $evtUrl = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($evtCode).'-'.$evtId.'.html');
+        $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($evtCode).'-'.$evtId.'.html';
     }
 
     // Informations sur l'encadrant
