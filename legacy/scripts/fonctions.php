@@ -321,30 +321,6 @@ function empietement_sortie($id_user, $evt)
     return $sorties;
 }
 
-function user_in_destination($id_user, $id_destination, $valid = true)
-{
-    if ('' === trim($id_destination)) {
-        return false;
-    }
-
-    $is_in = false;
-
-    $req = "SELECT * FROM `caf_evt_join`
-            WHERE `user_evt_join` = $id_user
-                AND `id_destination` = $id_destination "
-        .(true === $valid ? ' AND `status_evt_join` = 1 ' : '')
-        .' ';
-
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $is_in = $row['evt_evt_join'];
-        }
-    }
-
-    return $is_in;
-}
-
 function user_in_cb($id_user, $valid = true)
 {
     $is_cb = false;
@@ -362,67 +338,6 @@ function user_in_cb($id_user, $valid = true)
     }
 
     return $is_cb;
-}
-
-function user_in_destination_repas($id_user, $id_destination, $valid = true)
-{
-    if ('' === trim($id_destination)) {
-        return false;
-    }
-
-    $is_repas = false;
-
-    $req = "SELECT * FROM `caf_evt_join`
-            WHERE `user_evt_join` = $id_user
-                AND `id_destination` = $id_destination "
-        .(true === $valid ? ' AND `status_evt_join` = 1 ' : '')
-        .' ';
-
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $is_repas = $row['is_restaurant'];
-        }
-    }
-
-    return $is_repas;
-}
-
-function user_sortie_in_dest($id_user, $id_destination, $valid = true)
-{
-    $sortie = false;
-
-    $req = "SELECT evt_evt_join FROM `caf_evt_join`
-            WHERE `user_evt_join` = $id_user
-                AND `id_destination` = $id_destination "
-        .(true === $valid ? ' AND `status_evt_join` = 1 ' : '')
-        .' ORDER BY `id_bus_lieu_destination` ASC';
-
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $sortie = get_sortie($row['evt_evt_join'], 'commission');
-        }
-    }
-
-    return $sortie;
-}
-
-function covoiturage_sorties_destination($id_destination)
-{
-    $personnes = false;
-    $count = 0;
-
-    $req = "SELECT * FROM `caf_evt_join` WHERE `id_destination` = $id_destination AND `is_covoiturage` = 1 AND status_evt_join = 1 ORDER BY `evt_evt_join` ASC";
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $personnes['sortie'][$row['evt_evt_join']][] = $row['user_evt_join'];
-            ++$count;
-        }
-    }
-
-    return ['total' => $count, 'covoiturage' => $personnes];
 }
 
 function get_sortie($id_evt, $type = 'full')
@@ -466,7 +381,7 @@ function get_encadrants($id_evt, $only_ids = false)
 {
     $users = false;
     $req = "SELECT id_user, civ_user,  cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user
-                            , role_evt_join, is_cb, is_restaurant, is_covoiturage, id_destination, id_bus_lieu_destination
+                            , role_evt_join, is_cb, is_restaurant, is_covoiturage
                     FROM caf_evt_join, caf_user
                     WHERE evt_evt_join = $id_evt
                     AND user_evt_join = id_user
@@ -489,165 +404,6 @@ function get_encadrants($id_evt, $only_ids = false)
     return $users;
 }
 
-function get_all_encadrants_destination($id_destination, $only_ids = true)
-{
-    $users = [];
-
-    $sorties = get_sorties_for_destination($id_destination);
-    if ($sorties) {
-        foreach ($sorties as $sortie) {
-            $tmp = get_encadrants($sortie['id_evt']);
-            foreach ($tmp as $u) {
-                if ($only_ids) {
-                    $users[] = $u['id_user'];
-                } else {
-                    $users[] = $u;
-                }
-            }
-        }
-    }
-    if ($users) {
-        $users = array_unique($users);
-    }
-
-    return $users;
-}
-
-/*
- * entrée : bus or id_bus
- */
-function nb_places_restantes_bus($bus)
-{
-    $id_bus = null;
-
-    if (is_array($bus)) {
-        if (isset($bus['places_disponibles'])) {
-            return $bus['places_disponibles'];
-        }
-        if (isset($bus['id'])) {
-            $id_bus = $bus['id'];
-        }
-    } else {
-        $id_bus = $bus;
-    }
-    $bus = get_bus($id_bus, ['pts']);
-
-    return $bus['places_disponibles'];
-}
-
-function get_info_bus_lieu_destination($id_bus_lieu_destination)
-{
-    $infos = [];
-    $req = "SELECT id_lieu, date FROM `caf_bus_lieu_destination` WHERE `id` = $id_bus_lieu_destination LIMIT 1";
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($row = $result->fetch_assoc()) {
-        $id_lieu = $row['id_lieu'];
-        $req_lieu = 'SELECT * FROM `caf_lieu` WHERE `id` = '.$id_lieu;
-        $lieu = LegacyContainer::get('legacy_mysqli_handler')->query($req_lieu);
-        while ($rowLieu = $lieu->fetch_assoc()) {
-            $infos['lieu'] = $rowLieu;
-        }
-        $infos['date'] = $row['date'];
-    }
-
-    return $infos;
-}
-
-function ramassage_appartient_quel_bus($id_bus_lieu_destination)
-{
-    $bus_id = false;
-
-    $req = "SELECT id_bus FROM `caf_bus_lieu_destination` WHERE `id` = $id_bus_lieu_destination LIMIT 1";
-
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($row = $result->fetch_assoc()) {
-        $bus_id = $row['id_bus'];
-    }
-
-    return $bus_id;
-}
-
-function nb_places_restante_bus_ramassage($id_bus_lieu_destination)
-{
-    $id_bus = ramassage_appartient_quel_bus($id_bus_lieu_destination);
-
-    return nb_places_restantes_bus($id_bus);
-}
-
-function get_bus($id_bus, $params = ['dest', 'pts'])
-{
-    $id_bus = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $id_bus);
-    $req = "SELECT * FROM caf_bus WHERE id = $id_bus LIMIT 1";
-    $bus = null;
-
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($row = $result->fetch_assoc()) {
-        $row['places_disponibles'] = $row['places_max'];
-
-        if (in_array('dest', $params, true)) {
-            $destination = get_destination($row['id_destination']);
-            if (is_array($destination)) {
-                $row['destination'] = $destination;
-            }
-        }
-
-        if (in_array('pts', $params, true)) {
-            $pts_ramassage = get_points_ramassage($id_bus, $row['id_destination']);
-            if (is_array($pts_ramassage)) {
-                $row['ramassage'] = $pts_ramassage;
-                if ($pts_ramassage) {
-                    foreach ($pts_ramassage as $point) {
-                        if (isset($point['utilisateurs']['valide'])) {
-                            $row['places_disponibles'] -= count($point['utilisateurs']['valide']);
-                        }
-                    }
-                }
-            }
-        }
-
-        $bus = $row;
-    }
-
-    return $bus;
-}
-
-function get_points_ramassage($id_bus, $id_destination)
-{
-    $points = null;
-    $id_bus = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $id_bus);
-    $id_destination = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $id_destination);
-
-    $req = "SELECT
-              BLD.id as bdl_id, id_bus, id_destination, id_lieu, type_lieu, date,
-              L.id as l_id, nom, description, ign, lat, lng
-            FROM    `caf_bus_lieu_destination` AS BLD,
-                    `caf_lieu` AS L
-            WHERE   `id_bus` = $id_bus
-                    AND `id_destination` = $id_destination
-                    AND L.`id` = BLD.`id_lieu`
-            ORDER BY    BLD.`date` ASC;";
-
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($row = $result->fetch_assoc()) {
-        $users = [];
-        $req2 = 'SELECT * FROM `caf_evt_join` WHERE `id_bus_lieu_destination` = '.$row['bdl_id']." AND `id_destination` = $id_destination AND status_evt_join = 1";
-        $result2 = LegacyContainer::get('legacy_mysqli_handler')->query($req2);
-        while ($row2 = $result2->fetch_assoc()) {
-            if (1 == $row2['status_evt_join']) {
-                $users['valide'][] = $row2['user_evt_join'];
-            }
-        }
-        if ($users['valide']) {
-            $users['valide'] = array_unique($users['valide']);
-        }
-        $row['utilisateurs'] = $users;
-
-        $points[$row['bdl_id']] = $row;
-    }
-
-    return $points;
-}
-
 function mon_inscription($id_evt)
 {
     $my_choices = false;
@@ -661,104 +417,6 @@ function mon_inscription($id_evt)
     }
 
     return $my_choices;
-}
-
-function get_destination($id_dest, $full = false)
-{
-    $destination = null;
-    $id_dest = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $id_dest);
-    $req = "SELECT * FROM caf_destination WHERE id = $id_dest LIMIT 1";
-
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($row = $result->fetch_assoc()) {
-        $destination = $row;
-        if (true == $full) {
-            // Lieu
-            $destination['lieu'] = get_lieu($destination['id_lieu']);
-            unset($destination['id_lieu']);
-            // Bus
-            $destination['bus'] = get_bus_destination($id_dest);
-            // Users
-            $destination['responsable'] = get_user($destination['id_user_responsable']);
-            $destination['co-responsable'] = get_user($destination['id_user_adjoint']);
-            $destination['createur'] = get_user($destination['id_user_who_create']);
-            // Sorties
-
-            $destination['sorties'] = get_sorties_for_destination($id_dest);
-        }
-    }
-
-    return $destination;
-}
-
-/* recupere les information de liaison evt/destination (lieux et horaires de depose reprise */
-function get_sortie_destination($id_dest, $id_evt, $lieux = true)
-{
-    $sortie = false;
-
-    $id_dest = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $id_dest);
-    $req = 'SELECT * FROM `caf_evt_destination` WHERE ';
-    if (0 != $id_dest) {
-        $req .= " id_destination = $id_dest AND ";
-    }
-    $req .= " id_evt = $id_evt LIMIT 1";
-
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($row = $result->fetch_assoc()) {
-        if ($lieux) {
-            $row['lieu']['depose'] = get_lieu($row['id_lieu_depose']);
-            unset($row['id_lieu_depose']);
-            $row['lieu']['reprise'] = get_lieu($row['id_lieu_reprise']);
-            unset($row['id_lieu_reprise']);
-            $row['lieu']['depose']['date_depose'] = $row['date_depose'];
-            unset($row['date_depose']);
-            $row['lieu']['reprise']['date_reprise'] = $row['date_reprise'];
-            unset($row['date_reprise']);
-        }
-        $sortie = $row;
-    }
-
-    return $sortie;
-}
-
-function get_sorties_for_destination($id_dest, $ids_only = false)
-{
-    $sorties = false;
-    $ids = $full = [];
-
-    $id_dest = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $id_dest);
-    $req = "SELECT * FROM `caf_evt_destination` WHERE id_destination = $id_dest";
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($row = $result->fetch_assoc()) {
-        $ids[$row['id_evt']] = $row['id_evt'];
-        $full[$row['id_evt']] = $row;
-    }
-
-    if ($ids && !$ids_only) {
-        $req = 'SELECT * FROM `caf_evt`, `caf_commission` AS commission ';
-        $req .= ' WHERE ';
-        $req .= ' commission_evt=commission.id_commission AND ';
-        $req .= ' id_evt IN (\'';
-        $req .= implode("', '", $ids);
-        $req .= '\') ';
-
-        // Groupes
-        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $row['destination'] = $full[$row['id_evt']];
-                if ($row['id_groupe']) {
-                    $row['groupe'] = get_groupe($row['id_groupe']);
-                }
-                unset($row['id_groupe']);
-                $sorties[] = $row;
-            }
-        }
-
-        return $sorties;
-    }
-
-    return $ids;
 }
 
 function get_user($id_user, $valid = true, $simple = true)
@@ -785,19 +443,6 @@ function get_user($id_user, $valid = true, $simple = true)
     return $user;
 }
 
-function get_bus_destination($id_destination)
-{
-    $busses = [];
-    // Bus
-    $req = 'SELECT * FROM `caf_bus` WHERE `id_destination` = '.$id_destination;
-    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-        $busses[$handle['id']] = get_bus($handle['id'], ['pts']);
-    }
-
-    return $busses;
-}
-
 function get_lieu($id_lieu)
 {
     $lieu = null;
@@ -810,33 +455,6 @@ function get_lieu($id_lieu)
     }
 
     return $lieu;
-}
-
-function get_future_destinations($can_modify = false, $for_event_creation = false)
-{
-    $destinations = [];
-
-    $req = "SELECT * FROM `caf_destination`
-	        WHERE `date` > '".date('Y-m-d H:i:s')."' ";
-    if ($for_event_creation) {
-        $req .= ' AND publie = 0 AND annule != 1';
-    }
-    if ($can_modify) {
-        if (allowed('destination_supprimer') || allowed('destination_modifier') || allowed('destination_activer_desactiver')) {
-            $req .= '';
-        } else {
-            $mon_id = LegacyContainer::get('legacy_mysqli_handler')->escapeString(getUser()->getId());
-            $req .= ' AND (id_user_who_create = '.$mon_id.'  OR id_user_responsable = '.$mon_id.' OR id_user_adjoint = '.$mon_id.')';
-        }
-    }
-    $req .= ' ORDER BY date ASC';
-    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-        $handle['sorties'] = get_sorties_for_destination($handle['id']);
-        $destinations[] = $handle;
-    }
-
-    return $destinations;
 }
 
 function get_iframe_src($field = null)
@@ -882,73 +500,6 @@ function display_new_lieu()
             '<br>'/*.
             '<label for="ign">Extrait IGN : <small>Insérez le code de partage fourni par <a href="https://www.geoportail.gouv.fr/" target="_blank">GeoPortail</a>.</small></label>'.
             '<textarea name="lieu[ign]" id="ign" style="width:95%;height:80px;" class="type2">'.inputVal('lieu|ign', '').'</textarea>'*/;
-}
-
-function display_previous_lieux($name = null, $id_destination)
-{
-    $previous_lieux_destination = get_lieux_depose_reprise_destination($id_destination);
-    $chain = null;
-    if ($previous_lieux_destination) {
-        $chain .= '<select name="lieu['.$name.'][use_existant]" class="type2" style="width:95%;">';
-        $chain .= '<option value=""> - Utiliser un lieu de cette destination</option>';
-        foreach ($previous_lieux_destination as $previous_dest) {
-            $chain .= '<option value="'.$previous_dest['id'].'"';
-            if (isset($_POST['lieu'][$name]['use_existant']) && $_POST['lieu'][$name]['use_existant'] == $previous_dest['id']) {
-                $chain .= ' selected="selected" ';
-            }
-            $chain .= '>'.html_utf8($previous_dest['nom']).'</option>';
-        }
-        $chain .= '</select><br><b>OU</b> créer un nouveau lieu :<br><br>';
-    } else {
-        $chain = false;
-    }
-
-    return $chain;
-}
-
-function get_lieux_depose_reprise_destination($id_destination)
-{
-    $ids = $lieux = false;
-
-    $id_destination = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $id_destination);
-    $req = "SELECT id_lieu_depose, id_lieu_reprise FROM `caf_evt_destination` WHERE `id_destination` = $id_destination";
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $ids[] = $row['id_lieu_depose'];
-            $ids[] = $row['id_lieu_reprise'];
-        }
-    }
-    if ($ids) {
-        $ids = array_unique($ids);
-        foreach ($ids as $id) {
-            $lieux[$id] = get_lieu($id);
-        }
-    }
-
-    return $lieux;
-}
-
-function get_lieux_destination($id_destination, $type = null)
-{
-    $ids = $lieux = false;
-
-    $id_destination = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $id_destination);
-    $req = "SELECT id_lieu_$type, date_$type FROM `caf_evt_destination` WHERE `id_destination` = $id_destination ORDER BY date_$type ASC";
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $ids[$row['id_lieu_'.$type]] = $row['date_'.$type];
-        }
-    }
-    if ($ids) {
-        foreach ($ids as $id => $heure) {
-            $lieux[$id] = get_lieu($id);
-            $lieux[$id]['date'] = $heure;
-        }
-    }
-
-    return $lieux;
 }
 
 function display_new_lieu_complexe($name = null, $reset = false)
@@ -1025,108 +576,4 @@ function display_jour($datetime)
     $oDate = new DateTime($datetime);
 
     return jour($oDate->format('N'), 'short').$oDate->format(' d ').mois($oDate->format('m')).$oDate->format(' Y ');
-}
-
-/* transmettre le trableau destination OU l'identifiant */
-function inscriptions_status_destination($destination)
-{
-    if (!is_array($destination)) {
-        $destination = get_destination($destination);
-    }
-    $status = $msg = null;
-    if (is_array($destination)) {
-        $today = new DateTime(date('Y-m-d H:i:s'));
-        $ouverture = new DateTime($destination['inscription_ouverture']);
-        $fermeture = new DateTime($destination['inscription_fin']);
-
-        if (1 == $destination['inscription_locked']) {
-            $msg = 'Les inscriptions ont été bloquées pour le moment. Merci de réessayer plus tard.';
-        } else {
-            if ($today < $ouverture) {
-                $msg = 'Les inscriptions ne sont pas encore possibles. Elles le seront à partir de '.display_jour($destination['inscription_ouverture']).' à '.display_time($destination['inscription_ouverture']);
-            } elseif ($today > $fermeture) {
-                $msg = 'Les inscriptions sont terminées.';
-            } else {
-                $status = true;
-                $msg = 'Les inscriptions sont possibles jusqu\'à '.display_jour($destination['inscription_fin']).' à '.display_time($destination['inscription_fin']);
-            }
-        }
-    }
-
-    return ['status' => $status, 'message' => $msg];
-}
-
-/* transmettre le trableau destination OU l'identifiant */
-function is_destination_status($destination, $param = false)
-{
-    $status = false;
-    if (!is_array($destination)) {
-        $destination = get_destination($destination, false);
-    }
-    if (is_array($destination)) {
-        switch ($param) {
-            case false:
-                break;
-            case 'publie':
-                if ('1' == $destination[$param]) {
-                    $status = true;
-                }
-                break;
-            case 'annule':
-                if ('1' == $destination[$param]) {
-                    $status = true;
-                }
-                break;
-        }
-    }
-
-    return $status;
-}
-
-function is_sortie_in_destination($id_evt)
-{
-    $destination = false;
-
-    $req = 'SELECT * FROM `caf_evt_destination` WHERE `id_evt` = '.$id_evt;
-    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-        $destination = $handle['id_destination'];
-    }
-
-    return $destination;
-}
-
-function select_lieux_ramasse_connus($id_current_dest = false, $full = true, $exlude = false)
-{
-    $ids = false;
-    $lieux = false;
-
-    $req = "SELECT id_lieu FROM `caf_bus_lieu_destination` WHERE `type_lieu` LIKE 'ramasse' ";
-    if ($id_current_dest) {
-        $req .= " AND id_destination = $id_current_dest ";
-    }
-    if ($exlude) {
-        $req .= " AND id_bus != $exlude ";
-    }
-    $req .= ' GROUP BY id_lieu';
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $ids[] = $row['id_lieu'];
-        }
-    }
-
-    if ($ids && $full) {
-        $req = 'SELECT * FROM `caf_lieu` WHERE `id` IN ('.implode(',', $ids).')';
-        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $lieux[] = $row;
-            }
-        }
-
-        return $lieux;
-    }
-
-    return $ids;
 }

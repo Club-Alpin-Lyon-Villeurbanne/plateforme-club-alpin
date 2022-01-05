@@ -81,9 +81,7 @@ presidence();
             <table style='width:560px'>
                 <thead>
                 <tr>
-                    <th colspan="3" style="text-align:center; font-size:17px"><small>FEUILLE DE SORTIE</small><br><?php echo html_utf8($evt['titre_evt']); ?><?php if ($destination) {
-                        echo '<br><small>Destination : ['.$destination['nom'].']</small>';
-                    } ?></th>
+                    <th colspan="3" style="text-align:center; font-size:17px"><small>FEUILLE DE SORTIE</small><br><?php echo html_utf8($evt['titre_evt']); ?></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -212,22 +210,6 @@ presidence();
     </tbody>
 </table>
 
-<?php if ($destination) {
-                    $b = 1;
-                    echo '<ul><img src="/img/bus.png" title="bus" class="lft mr10" />';
-                    foreach ($destination['bus'] as $id_bus => $bus) {
-                        echo '<li class="lft mr20">'.$bus['intitule'].'<ul>';
-                        foreach ($bus['ramassage'] as $id_ramassage => $point) {
-                            if (count($point['utilisateurs']) > 0) {
-                                $busses[$id_ramassage] = ['short' => '['.$b++.']', 'long' => $point['nom'].' à '.display_time($point['date'])];
-                                echo '<li><b>'.$busses[$id_ramassage]['short'].'</b> '.$busses[$id_ramassage]['long'].'</li>';
-                            }
-                        }
-                        echo '</ul></li>';
-                    }
-                    echo '</ul><br class="clear"> ';
-                } ?>
-
 <table>
     <thead>
     <tr>
@@ -239,7 +221,6 @@ presidence();
         <th>TÉL. <abbr title="En cas d'urgence">I.C.E</abbr></th>
         <?php if ('1' == $evt['cb_evt']) { ?><th><abbr title="Paiement en ligne"><img src="/img/base/cb-oui.png"/></abbr></th><?php } ?>
         <?php if ('1' == $evt['repas_restaurant']) { ?><th><abbr title="Restaurant"><img src="/img/base/resto-oui.png"/></abbr></th><?php } ?>
-        <?php if ($destination) { ?><th><abbr title="Transport"><img src="/img/bus.png" title="bus" width="14px"  />&nbsp;<img src="/img/voiture.png" title="covoiturage" width="14px" /></abbr></th><?php } ?>
     </tr>
     </thead>
     <tbody>
@@ -279,15 +260,6 @@ presidence();
                 echo 'OUI';
             } elseif ('0' == $tmp['is_restaurant']) {
                 echo '-';
-            } else {
-                echo '<small>NSP</small>';
-            } ?></td><?php } ?>
-                <?php if ($destination) { ?><td><?php if (null == $tmp['is_covoiturage']) {
-                echo '<img src="/img/base/error.png" title="Non renseigné !" width="12px" />';
-            } elseif ('1' == $tmp['is_covoiturage']) {
-                echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="/img/voiture.png" title="covoiturage" width="12px" />';
-            } elseif ($tmp['id_bus_lieu_destination'] > 0) {
-                echo '<img src="/img/bus.png" title="bus" width="12px" /> '.$busses[$tmp['id_bus_lieu_destination']]['short'];
             } else {
                 echo '<small>NSP</small>';
             } ?></td><?php } ?>
