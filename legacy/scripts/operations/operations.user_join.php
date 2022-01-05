@@ -267,7 +267,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $evt = $row;
         }
 
-        $evtUrl = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$evt['code_evt'].'-'.$evt['id_evt'].'.html');
+        $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$evt['code_evt'].'-'.$evt['id_evt'].'.html';
         $evtName = $evt['titre_evt'];
 
         // infos sur ce nouvel inscrit
@@ -296,6 +296,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                         'firstname' => $cetinscrit['firstname_user'],
                         'lastname' => $cetinscrit['lastname_user'],
                         'nickname' => $cetinscrit['nickname_user'],
+                        'email' => $cetinscrit['email_user'],
                     ];
                 }, $inscrits),
                 'firstname' => $cetinscrit['firstname_user'],
@@ -341,6 +342,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                         'firstname' => $cetinscrit['firstname_user'],
                         'lastname' => $cetinscrit['lastname_user'],
                         'nickname' => $cetinscrit['nickname_user'],
+                        'email' => $cetinscrit['email_user'],
                     ],
                 ],
                 'is_cb' => 'NULL' != $is_cb,
@@ -360,6 +362,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                         'firstname' => $cetinscrit['firstname_user'],
                         'lastname' => $cetinscrit['lastname_user'],
                         'nickname' => $cetinscrit['nickname_user'],
+                        'email' => $cetinscrit['email_user'],
                     ];
                 }, $inscrits),
                 'is_cb' => 'NULL' != $is_cb,
