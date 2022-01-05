@@ -63,8 +63,8 @@ class Mailer
         }
 
         $email = (new Email())
-            ->sender($this->mailEmitter)
-            ->from($sender ?? $this->mailEmitter)
+            ->sender($sender ?? $this->mailEmitter)
+            ->from($this->mailEmitter)
             ->subject($subject)
             ->html($htmlBody)
             ->text($txtBody)
