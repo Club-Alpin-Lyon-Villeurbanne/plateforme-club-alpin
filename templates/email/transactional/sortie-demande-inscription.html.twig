@@ -10,13 +10,13 @@
 
 {% block inner_html %}
     <p>
-        {{ inscrits|length }} adhérent{{ inscrits|length > 1 ? 's' : '' }} {{ inscrits|length > 1 ? 'vient' : 'viennent' }} de {{ is_destination ? "s'inscrire" : "se préinscrire" }}
+        {{ inscrits|length }} adhérent{{ inscrits|length > 1 ? 's' : '' }} {{ inscrits|length > 1 ? 'viennent' : 'vient' }} de {{ is_destination ? "s'inscrire" : "se préinscrire" }}
         à la sortie <a href="{{ event_url }}">{{ event_name }}</a>
     </p>
     <ul>
         {% for inscrit in inscrits %}
             <li>
-                <b>Nom :</b> {{ inscrit.firstname }} {{ inscrit.lastname }}
+                <b>Nom :</b> <a href="mailto:{{ inscrit.email }}">{{ inscrit.firstname }} {{ inscrit.lastname }}</a>
             </li>
         {% endfor %}
         <li>
@@ -44,8 +44,12 @@
 {% endblock %}
 
 {% block inner_txt %}
-    {{ inscrits|length }} adhérent{{ inscrits|length > 1 ? 's' : '' }} {{ inscrits|length > 1 ? 'vient' : 'viennent' }} de {{ is_destination ? "s'inscrire" : "se préinscrire" }}
+    {{ inscrits|length }} adhérent{{ inscrits|length > 1 ? 's' : '' }} {{ inscrits|length > 1 ? 'viennent' : 'vient' }} de {{ is_destination ? "s'inscrire" : "se préinscrire" }}
     à la sortie {{ event_name }} ({{ event_url }}).
+
+    {% for inscrit in inscrits %}
+        Nom : {{ inscrit.firstname }} {{ inscrit.lastname }} - {{ inscrit.email }}
+    {% endfor %}
 
     Rôle : {{ role }}
 

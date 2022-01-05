@@ -181,8 +181,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $req = "SELECT id_evt, code_evt, titre_evt FROM caf_evt WHERE id_evt=$id_evt LIMIT 1";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($row = $result->fetch_assoc()) {
-                $evtUrl = html_utf8(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$row['code_evt'].'-'.$row['id_evt'].'.html');
-                $evtName = html_utf8($row['titre_evt']);
+                $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$row['code_evt'].'-'.$row['id_evt'].'.html';
+                $evtName = $row['titre_evt'];
             }
 
             if (0 === count($errTabMail)) {
