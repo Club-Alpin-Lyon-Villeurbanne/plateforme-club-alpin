@@ -40,8 +40,6 @@
         echo '<div class="erreur"><img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Sortie annulée :</b><br /> Cette sortie a été annulée le '.date('d/m/Y à H:i');
         if ($evt['cancelled_who_evt'] && $evt['cancelled_who_evt']['id_user']) {
             echo ', par '.userlink($evt['cancelled_who_evt']['id_user'], $evt['cancelled_who_evt']['nickname_user']);
-        } else {
-            echo ', suite à annulation de la destination.';
         }
         echo '<br />';
         if (user() && allowed('evt_cancel')) {
@@ -53,16 +51,7 @@
         // evt publie
         $messageDiv = true;
 
-        if (isset($destination)) {
-            if (0 == is_destination_status($destination, 'publie')) {
-                $destination_publiee = false;
-            }
-        }
-        if (isset($destination_publiee) && !$destination_publiee) {
-            echo '<div class="alerte"><b>Note :</b> Cette sortie n\'est pas publiée, elle fait partie d\'une destination qui n\'est pas encore publiée !<br />';
-        } else {
-            echo '<div class="alerte"><b>Note :</b> Cette sortie est publiée et visible par les adhérents !<br />';
-        }
+        echo '<div class="alerte"><b>Note :</b> Cette sortie est publiée et visible par les adhérents !<br />';
     }
 
     // j'en suis l'auteur ? Elle est pas validée ? modification possible !

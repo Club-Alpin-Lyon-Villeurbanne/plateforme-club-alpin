@@ -7,10 +7,6 @@ use App\Legacy\LegacyContainer;
 if (user()) {
     // id de la sortie, pour n'afficher que les adhérents non inscrits
     $id_evt = (int) ($_GET['id_evt']);
-    $id_dest = is_sortie_in_destination($id_evt);
-    if ($id_dest) {
-        $busses = get_bus_destination($id_dest);
-    }
 
     $showAll = (int) ($_GET['showAll']);
 
@@ -117,17 +113,8 @@ if (user()) {
 							LIMIT 8000';
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($elt = $result->fetch_assoc()) {
-                // si dans destination :
-                if ($id_dest) {
-                    // SELECTION : on n'affiche que les adhérents qui ne sont pas inscrit à cette sortie
-                    $sorties_ids = get_sorties_for_destination($id_dest, true);
-                    $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE (id_destination=$id_dest OR evt_evt_join IN (".implode(',', $sorties_ids).')) AND user_evt_join = '.(int) ($elt['id_user']).' LIMIT 1';
-                }
-                //sinon
-                else {
-                    // SELECTION : on n'affiche que les adhérents qui ne sont pas inscrit à cette sortie
-                    $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join = ".(int) ($elt['id_user']).' LIMIT 1';
-                }
+                // SELECTION : on n'affiche que les adhérents qui ne sont pas inscrit à cette sortie
+                $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join = ".(int) ($elt['id_user']).' LIMIT 1';
 
                 $result2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 $row = $result2->fetch_row();
@@ -197,10 +184,6 @@ if (user()) {
 
 				<form action="<?php echo $versCettePage; ?>" method="post" enctype="multipart/form-data" class="loading">
 					<input type="hidden" name="operation" value="user_join_manuel" />
-                    <?php if ($id_dest) { ?>
-					<input type="hidden" name="id_destination" value="<?php echo $id_dest; ?>" />
-                    <?php } ?>
-
 					<?php
                     // MESSAGES A LA SOUMISSION
                     if (isset($_POST['operation']) && 'user_join_manuel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
@@ -224,7 +207,6 @@ if (user()) {
 							<th style="font-size:12px; text-align:left">Rôle</th>
 							<?php if ('1' == $sortie['cb_evt']) { ?><th style="font-size:12px; text-align:left">Paiement en ligne</th><?php } ?>
                             <?php if ('1' == $sortie['repas_restaurant']) { ?><th style="font-size:12px; text-align:left">Restaurant</th><?php } ?>
-                            <?php if ($id_dest) { ?><th style="font-size:12px; text-align:left">Transport</th><?php } ?>
 						</thead>
 						<tbody>
 							<?php
@@ -267,30 +249,6 @@ if (user()) {
                                             .'<option value="1" '.('1' == $_POST['is_restaurant'][$i] ? ' selected="selected" ' : '').'>Oui</option>'
                                         .'</select>'
                                     .'</td>' : '');
-                                if ($id_dest) {
-                                    echo '<td>'
-                                        .'<select name="id_bus_lieu_destination[]">'
-                                        .'<option value="-1" '.('-1' == $_POST['id_bus_lieu_destination'][$i] ? ' selected="selected" ' : '').'>Covoiturage</option>';
-                                    // toutes les autres options / arrets de bus
-                                    $b = 1;
-                                    foreach ($busses as $bus) {
-                                        if ($bus['ramassage']) {
-                                            foreach ($bus['ramassage'] as $point) {
-                                                if ($bus['places_disponibles'] > 0) {
-                                                    ?>
-                                        <option value="<?php echo $point['bdl_id']; ?>" <?php if ($_POST['id_bus_lieu_destination'][$i] == $point['bdl_id']) {
-                                                        echo ' selected="selected" ';
-                                                    } ?>>
-                                            <?php echo $bus['intitule']; ?> - <?php echo $point['nom']; ?>, à <?php echo display_time($point['date']); ?> (<?php echo $bus['places_disponibles']; ?> places restantes)
-                                        </option>
-                                        <?php
-                                                }
-                                            }
-                                        }
-                                    }
-                                    echo '</select>'
-                                        .'</td>';
-                                }
                                 echo '</tr>';
                             } ?>
 						</tbody>

@@ -3,19 +3,7 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$id_destination = $is_cb = $is_covoiturage = $evtUrl = $cetinscrit = $evtName = $is_restaurant = $inscrits = $id_bus_lieu_destination = null;
-
-// Destination : ai-je choisi mon moyen de transport ?
-$is_destination = false;
-if ($_POST['id_destination']) {
-    $is_destination = true;
-    $id_destination = (int) ($_POST['id_destination']);
-    if (!isset($_POST['id_bus_lieu_destination'])) {
-        $errTab[] = "Vous devez préciser votre lieu de ramassage ou sélectionner l'option de transport individuel / covoiturage";
-    } else {
-        $id_bus_lieu_destination = (int) ($_POST['id_bus_lieu_destination']);
-    }
-}
+$is_cb = $is_covoiturage = $evtUrl = $cetinscrit = $evtName = $is_restaurant = $inscrits = null;
 
 // Filiations
 if ('on' == $_POST['filiations']) {
@@ -64,16 +52,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
         }
     }
 
-    // verification de la validité de la destination
-    if ($is_destination) {
-        $req = "SELECT COUNT(id) FROM caf_destination WHERE ( id=$id_destination AND annule != 0 ) OR ( id=$id_destination AND  publie != 1 ) LIMIT 1";
-        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-        $row = $result->fetch_row();
-        if ($row[0]) {
-            $errTab[] = 'Cette destination ne semble pas publiée ou est annulée, les inscriptions sont impossible';
-        }
-    }
-
     // verification de la validité de la sortie
     $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND status_evt != 1 LIMIT 1";
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -90,29 +68,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $errTab[] = 'Cette sortie a deja demarrée';
     }
 
-    // destination :
-    if ($is_destination) {
-        // Inscriptions ouvertes ?
-        $inscriptions_status = inscriptions_status_destination($id_destination);
-        if (true != $inscriptions_status['status']) {
-            $errTab[] = 'Les inscriptions ne sont pas possibles';
-        }
-
-        // Vérifier les places dans le bus sélectionné
-        if ($id_bus_lieu_destination > 0) { // sinon c'est du covoiturage
-            $nbp = nb_places_restante_bus_ramassage($id_bus_lieu_destination);
-            if ($nbp <= 0) {
-                $errTab[] = 'Ce bus est désormais plein. Merci de choisir un autre lieu de ramassage.';
-            }
-        }
-    } else {
-        // verification du timing de la sortie : inscriptions
-        $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND join_start_evt > ".time().' LIMIT 1';
-        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-        $row = $result->fetch_row();
-        if ($row[0]) {
-            $errTab[] = 'Les inscriptions ne sont pas encore ouvertes';
-        }
+    // verification du timing de la sortie : inscriptions
+    $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND join_start_evt > ".time().' LIMIT 1';
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+    $row = $result->fetch_row();
+    if ($row[0]) {
+        $errTab[] = 'Les inscriptions ne sont pas encore ouvertes';
     }
 
     // Doit on faire une mise à jour ?
@@ -168,20 +129,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
         }
 
-        if (!$is_destination) {
-            $id_bus_lieu_destination = 'NULL';
-            $id_destination = 'NULL';
-            $is_covoiturage = 'NULL';
-        } else {
-            if ($id_bus_lieu_destination < 0) {
-                $id_bus_lieu_destination = 0;
-                $is_covoiturage = 1;
-            } else {
-                $is_covoiturage = 0;
-            }
-        }
+        $is_covoiturage = 'NULL';
 
-        $status_evt_join = ($is_destination ? '1' : '0');
+        $status_evt_join = '1';
 
         $evt = get_evt($id_evt);
 
@@ -192,12 +142,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
             } else { */
 
             if (!$update) {
-                $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage, affiliant_user_join, lastchange_when_evt_join, lastchange_who_evt_join)
-                          VALUES($status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage, null, null, null);";
+                $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, is_covoiturage, affiliant_user_join, lastchange_when_evt_join, lastchange_who_evt_join)
+                          VALUES($status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $is_covoiturage, null, null, null);";
             } elseif (in_array($id_user, $update, true)) {
                 $req = "UPDATE `caf_evt_join`
                             SET
-                                `id_bus_lieu_destination` = $id_bus_lieu_destination, `id_destination` = $id_destination, `is_covoiturage` = $is_covoiturage, `is_cb` = $is_cb, `is_restaurant` = $is_restaurant
+                                `is_covoiturage` = $is_covoiturage, `is_cb` = $is_cb, `is_restaurant` = $is_restaurant
                             WHERE
                                 `user_evt_join` = $id_user AND evt_evt_join = $id_evt;";
             }
@@ -213,12 +163,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
                 } else { */
                 if (!$update || !in_array($id_user_tmp, $update, true)) {
-                    $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, affiliant_user_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, id_bus_lieu_destination, id_destination, is_covoiturage)
-                              VALUES($status_evt_join, 		'$id_evt',  '$id_user_tmp',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $id_bus_lieu_destination, $id_destination, $is_covoiturage);";
+                    $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, affiliant_user_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, is_covoiturage)
+                              VALUES($status_evt_join, 		'$id_evt',  '$id_user_tmp',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $is_covoiturage);";
                 } elseif (in_array($id_user_tmp, $update, true)) {
                     $req = "UPDATE `caf_evt_join`
                             SET
-                                `id_bus_lieu_destination` = $id_bus_lieu_destination, `id_destination` = $id_destination, `is_covoiturage` = $is_covoiturage, `is_cb` = $is_cb, `is_restaurant` = $is_restaurant
+                                `is_covoiturage` = $is_covoiturage, `is_cb` = $is_cb, `is_restaurant` = $is_restaurant
                             WHERE
                                 `user_evt_join` = $id_user_tmp AND evt_evt_join = $id_evt;";
                 }
@@ -290,7 +240,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'role' => $role_evt_join,
                 'event_name' => $evtName,
                 'event_url' => $evtUrl,
-                'is_destination' => $is_destination,
                 'inscrits' => array_map(function ($cetinscrit) {
                     return [
                         'firstname' => $cetinscrit['firstname_user'],
@@ -317,18 +266,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $toMail = getUser()->getEmail();
         $toName = getUser()->getFirstname();
 
-        // contenu
-
-        if ($is_destination) {
-            $subject = 'Votre inscription à « '.$evtName.' »';
-        } else {
-            $subject = "Votre demande d'inscription à « ".$evtName.' »';
-        }
-
         $ramassage = false;
-        if ($id_bus_lieu_destination) {
-            $ramassage = get_info_bus_lieu_destination($id_bus_lieu_destination);
-        }
 
         // inscription simple de moi à moi
         if (!$filiations) {
@@ -336,7 +274,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'role' => $role_evt_join,
                 'event_name' => $evtName,
                 'event_url' => $evtUrl,
-                'is_destination' => $is_destination,
                 'inscrits' => [
                     [
                         'firstname' => $cetinscrit['firstname_user'],
@@ -356,7 +293,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'role' => $role_evt_join,
                 'event_name' => $evtName,
                 'event_url' => $evtUrl,
-                'is_destination' => $is_destination,
                 'inscrits' => array_map(function ($cetinscrit) {
                     return [
                         'firstname' => $cetinscrit['firstname_user'],
