@@ -3,19 +3,16 @@
 namespace App;
 
 use App\Repository\ArticleRepository;
-use App\Repository\DestinationRepository;
 use App\Repository\EvtRepository;
 
 class Notifications
 {
     private EvtRepository $evtRepository;
     private ArticleRepository $cafArticleRepository;
-    private DestinationRepository $cafDestinationRepository;
     private UserRights $userRights;
 
-    public function __construct(DestinationRepository $cafDestinationRepository, EvtRepository $evtRepository, ArticleRepository $cafArticleRepository, UserRights $userRights)
+    public function __construct(EvtRepository $evtRepository, ArticleRepository $cafArticleRepository, UserRights $userRights)
     {
-        $this->cafDestinationRepository = $cafDestinationRepository;
         $this->evtRepository = $evtRepository;
         $this->cafArticleRepository = $cafArticleRepository;
         $this->userRights = $userRights;
@@ -60,13 +57,8 @@ class Notifications
         return 0;
     }
 
-    public function getDestinations(): int
-    {
-        return $this->cafDestinationRepository->getCountFutureUnpublishedDestinations();
-    }
-
     public function getAll(): int
     {
-        return $this->getDestinations() + $this->getValidationArticle() + $this->getValidationSortie() + $this->getValidationSortiePresident();
+        return $this->getValidationArticle() + $this->getValidationSortie() + $this->getValidationSortiePresident();
     }
 }

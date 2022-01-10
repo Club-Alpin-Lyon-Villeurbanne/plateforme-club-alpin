@@ -5,6 +5,8 @@ doctrine:
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
         #server_version: '13'
+        schema_filter: ~^(?!caf_bus|caf_bus_lieu_destination|caf_content_html|caf_destination|caf_evt_destination)~
+
     orm:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware

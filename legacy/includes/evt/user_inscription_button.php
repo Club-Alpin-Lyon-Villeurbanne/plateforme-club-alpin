@@ -1,7 +1,7 @@
 <?php
 if ($evt['join_max_evt'] > 0) {
     $style = null;
-    if (null === $my_choices['id_bus_lieu_destination'] && null === $my_choices['id_destination'] && null === $my_choices['is_covoiturage']) {
+    if (null === $my_choices['is_covoiturage']) {
         $style = " style='border:1px solid red; background:rgba(255,153,153,.4);' ";
     } ?>
     <div style="text-align:center; padding:0 30px 0 0">
