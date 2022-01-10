@@ -329,11 +329,6 @@ class Evt
      */
     private $articles;
 
-    /**
-     * @ORM\OneToOne(targetEntity="App\Entity\EvtDestination", mappedBy="event")
-     */
-    private $destination;
-
     public function __construct()
     {
         $this->joins = new ArrayCollection();
@@ -349,11 +344,6 @@ class Evt
     public function getArticles(): Collection
     {
         return $this->articles;
-    }
-
-    public function getDestination(): ?EvtDestination
-    {
-        return $this->destination;
     }
 
     public function getStatus(): ?int

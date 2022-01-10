@@ -7,10 +7,6 @@ use App\Legacy\LegacyContainer;
 if (user()) {
     // id de la sortie
     $id_evt = (int) ($_GET['id_evt']);
-    $id_dest = is_sortie_in_destination($id_evt);
-    if ($id_dest) {
-        $busses = get_bus_destination($id_dest);
-    }
     $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$id_evt;
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($sorties = $result->fetch_assoc()) {
@@ -28,9 +24,6 @@ if (user()) {
 
 		<form action="<?php echo $versCettePage; ?>" method="post" class="loading">
 			<input type="hidden" name="operation" value="user_join_nomade" />
-            <?php if ($id_dest) { ?>
-                <input type="hidden" name="id_destination" value="<?php echo $id_dest; ?>" />
-            <?php } ?>
 
 			<?php
             // MESSAGES A LA SOUMISSION
@@ -139,7 +132,7 @@ if (user()) {
 				<input type="text" name="tel2_user" class="type1" value="<?php echo inputVal('tel2_user', ''); ?>" placeholder="Facultatif" style="width:90%" />
 			</div>
 
-            <?php if ('1' == $sortie['cb_evt'] || '1' == $sortie['repas_restaurant'] || $id_dest) { ?>
+            <?php if ('1' == $sortie['cb_evt'] || '1' == $sortie['repas_restaurant']) { ?>
             <hr class="  clear">
                 <h2>Options :</h2>
             <?php } ?>
@@ -163,31 +156,6 @@ if (user()) {
                 </select>
             </div>
             <?php } ?>
-            <?php if ($id_dest) { ?>
-                <div class="lft" style="padding: 5px 10px 5px 0;">
-                <label for="id_bus_lieu_destination"><b>Transport : </b></label><br>
-                <select name="id_bus_lieu_destination" class="type1" style="width:90%">
-                    <option value="-1" <?php echo '-1' == $_POST['id_bus_lieu_destination'][$i] ? ' selected="selected" ' : ''; ?> >Covoiturage</option>
-                    <?php
-                        $b = 1; foreach ($busses as $bus) {
-                            if ($bus['ramassage']) {
-                                foreach ($bus['ramassage'] as $point) {
-                                    if ($bus['places_disponibles'] > 0) {
-                                        ?>
-                    <option value="<?php echo $point['bdl_id']; ?>" <?php if ($_POST['id_bus_lieu_destination'] == $point['bdl_id']) {
-                                            echo ' selected="selected" ';
-                                        } ?>>
-                        <?php echo $bus['intitule']; ?> - <?php echo $point['nom']; ?>, à <?php echo display_time($point['date']); ?> (<?php echo $bus['places_disponibles']; ?> places restantes)
-                    </option>
-                    <?php
-                                    }
-                                }
-                            }
-                        } ?>
-                </select>
-                </div>
-            <?php } ?>
-
 
 			<br style="clear:both" />
 			<br />

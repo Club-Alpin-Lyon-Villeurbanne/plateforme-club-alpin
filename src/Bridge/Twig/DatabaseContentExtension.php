@@ -47,7 +47,6 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
             new TwigFunction('user_picto', [$this, 'getUserPicto']),
             new TwigFunction('fond_commission', [$this, 'getFondCommission']),
             new TwigFunction('notifications_counter', [$this, 'getNotificationsCounter']),
-            new TwigFunction('notifications_counter_destinations', [$this, 'getNotificationsDestinations']),
             new TwigFunction('notifications_counter_articles', [$this, 'getNotificationsValidationArticle']),
             new TwigFunction('notifications_counter_sorties', [$this, 'getNotificationsValidationSortie']),
             new TwigFunction('notifications_counter_sorties_president', [$this, 'getNotificationsValidationSortiePresident']),
@@ -84,11 +83,6 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
     public function getNotificationsCounter(): int
     {
         return $this->locator->get(Notifications::class)->getAll();
-    }
-
-    public function getNotificationsDestinations(): int
-    {
-        return $this->locator->get(Notifications::class)->getDestinations();
     }
 
     public function getNotificationsValidationArticle(): int

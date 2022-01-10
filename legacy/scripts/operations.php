@@ -109,36 +109,6 @@ if ('evt_user_contact' == ($_POST['operation'] ?? null) && user()) {
     require $operationsDir.'operations.evt_user_contact.php';
 }
 
-// DESTINATION : création
-if ('dest_create' == ($_POST['operation'] ?? null) && user()) {
-    require $operationsDir.'operations.dest_create.php';
-}
-
-// DESTINATION : update
-if ('dest_update' == ($_POST['operation'] ?? null) && user()) {
-    require $operationsDir.'operations.dest_update.php';
-}
-
-// DESTINATION : validation rapide / changement d'état
-if (in_array($_POST['operation'] ?? null, ['dest_validate', 'dest_lock', 'dest_annuler'], true) && user()) {
-    require $operationsDir.'operations.dest_quick_update.php';
-}
-
-// DESTINATION : annulation
-if ('dest_cancel' == ($_POST['operation'] ?? null) && user()) {
-    require $operationsDir.'operations.dest_cancel.php';
-}
-
-// DESTINATION : enoiv emails cloture
-if ('dest_mailer' == ($_POST['operation'] ?? null) && user()) {
-    require $operationsDir.'operations.dest_mailer.php';
-}
-
-// BUS : update
-if ('bus_update' == ($_POST['operation'] ?? null) && user()) {
-    require $operationsDir.'operations.bus_update.php';
-}
-
 // ARTICLE : publication OU refus
 if ('article_validate' == ($_POST['operation'] ?? null) && user()) {
     require $operationsDir.'operations.article_validate.php';

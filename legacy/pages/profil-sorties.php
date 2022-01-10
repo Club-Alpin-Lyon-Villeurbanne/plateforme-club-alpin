@@ -50,16 +50,7 @@ if (user()) {
         $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-            if ($id_dest = is_sortie_in_destination($handle['id_evt'])) {
-                $destination = get_destination($id_dest, false);
-                $status_dest = is_destination_status($destination, 'publie');
-                if (true == $status_dest) {
-                    $use = true;
-                }
-                $handle['destination'] = $destination;
-            } else {
-                $use = true;
-            }
+            $use = true;
 
             // compte places totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
             require __DIR__.'/../includes/evt-temoin-reqs.php';
@@ -95,16 +86,7 @@ if (user()) {
         $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-            if ($id_dest = is_sortie_in_destination($handle['id_evt'])) {
-                $destination = get_destination($id_dest, false);
-                $status_dest = is_destination_status($destination, 'publie');
-                if (true == $status_dest) {
-                    $use = true;
-                }
-                $handle['destination'] = $destination;
-            } else {
-                $use = true;
-            }
+            $use = true;
 
             // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
             require __DIR__.'/../includes/evt-temoin-reqs.php';
@@ -172,16 +154,7 @@ if (user()) {
         $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-            if ($id_dest = is_sortie_in_destination($handle['id_evt'])) {
-                $destination = get_destination($id_dest, false);
-                $status_dest = is_destination_status($destination, 'publie');
-                if (true == $status_dest) {
-                    $use = true;
-                }
-                $handle['destination'] = $destination;
-            } else {
-                $use = true;
-            }
+            $use = true;
 
             // compte places totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
             require __DIR__.'/../includes/evt-temoin-reqs.php';
@@ -252,9 +225,7 @@ if (user()) {
                             .'<td class="agenda-gauche">'
                                 .jour(date('N', $evt['tsp_evt']), 'short').' '.date('d', $evt['tsp_evt']).' '.mois(date('m', $evt['tsp_evt'])).
                                 // STATUT si j'en suis l'auteur :
-                                ($evt['destination'] ?
-                                    (0 == $evt['destination']['publie'] ? '<p class="alerte">Destination en attente de publication</p>' : $status_evt)
-                                    : $status_evt)
+                                $status_evt
                             .'</td>'
                             .'<td>';
                     require __DIR__.'/../includes/evt-tools.php';

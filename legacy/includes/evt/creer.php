@@ -17,9 +17,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
     // message d'erreur
     if (isset($_POST['operation']) && isset($errTab) && count($errTab) > 0) {
         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul>';
-        if (!$destination) {
-            echo '<b>Attention :</b> Le marqueur rouge sur la carte a peut-être été déplacé !';
-        }
+        echo '<b>Attention :</b> Le marqueur rouge sur la carte a peut-être été déplacé !';
         echo '</div>';
     }
     // message d'info : si c'est une modification de sortie
@@ -28,52 +26,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
     }
     ?>
 
-
-
-    <?php
-    if (false) {
-        // liens dans le cas de la creation d'une sortie
-        if ($destination) {
-            echo '<input type="hidden" name="id_destination" value="'.(int) ($destination['id']).'" />';
-            echo '<h2 class="trigger-h2 '.($id_evt_to_update ? 'off' : '').'"  title="Cliquer pour ouvrir ou fermer">DESTINATION : <span class="bleucaf">'.html_utf8($destination['nom']).'</span><span class="date"> / '.display_jour($destination['date']).'</span></h2>';
-        //echo '<div id="destination-info" class="trigger-me">';
-        } else {
-            echo '<h2 class="trigger-h2" title="Cliquer pour ouvrir ou fermer">DESTINATION : </h2>';
-            //echo '<div id="destination-info" class="trigger-me">';
-        }
-
-        if (!$id_evt_to_update) {
-            $destinations = get_future_destinations(false, true); ?>
-            <?php
-            if (!$destination) {
-                echo '<p>Si vous avez besoin d\'un bus, vous pouvez lier cette sortie à une destination :</p>';
-            } else {
-                echo '<p>Vous pouvez choisir une autre destination :</p>';
-            } ?>
-            <div class="faux-select-wrapper" id="choix-destination">
-                <div class="faux-select">
-                    <a href="<?php echo 'creer-une-sortie/'.html_utf8($p2).'.html'; ?>" <?php if (!$destination) {
-                echo ' class="up" ';
-            } ?>><i>Pas de destination</i></a>
-                    <?php
-                    foreach ($destinations as $dest) {
-                        echo '<a href="creer-une-sortie/'.html_utf8($p2).'/destination-'.$dest['id'].'.html" title="" class="'.($destination['id'] == $dest['id'] ? 'up' : '').'" style="text-align:right;padding-right:50px;">
-                            <b>'.html_utf8($dest['nom']).'</b>
-                            <span class="date"> / '.display_jour($dest['date']).'</span>
-                        </a> ';
-                    } ?>
-                </div>
-            </div><br class="clear">
-        <?php
-        }
-        echo '<div id="destination-info" class="trigger-me">';
-        if ($destination) {
-            require __DIR__.'/../../includes/dest/display.php';
-        }
-        echo '</div>';
-    }
-
-    ?><br class="clear">
+    <br class="clear">
 
 
     <!-- liste des commissions où poster l'evt -->
@@ -89,7 +42,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
                     <?php
                     foreach ($comTab as $code => $data) {
                         if (allowed('evt_create', 'commission:'.$code)) {
-                            echo '<a href="creer-une-sortie/'.html_utf8($code).($destination ? '/'.$destination['code'] : '').'.html" title="" class="'.($code == $current_commission ? 'up' : '').'">'.html_utf8($data['title_commission']).'</a> ';
+                            echo '<a href="creer-une-sortie/'.html_utf8($code).'.html" title="" class="'.($code == $current_commission ? 'up' : '').'">'.html_utf8($data['title_commission']).'</a> ';
                         }
                     } ?>
                 </div>
@@ -204,182 +157,69 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
     <h2 class="clear trigger-h2">Informations :</h2>
     <div class="trigger-me">
 
-        <?php if (!$destination) { ?>
-            <div>
-                Massif :<br />
-                <input style="width:95%;" type="text" name="massif_evt" class="type2" value="<?php echo inputVal('massif_evt', ''); ?>" placeholder="ex : Chartreuse" />
-            </div>
-        <?php } ?>
+        <div>
+            Massif :<br />
+            <input style="width:95%;" type="text" name="massif_evt" class="type2" value="<?php echo inputVal('massif_evt', ''); ?>" placeholder="ex : Chartreuse" />
+        </div>
 
-        <?php if (!$destination) { ?>
-            <br />
-            Cette sortie fait-elle partie d'un cycle de plusieurs sorties ?
-            <?php inclure('infos-cycle', 'mini'); ?>
+        <br />
+        Cette sortie fait-elle partie d'un cycle de plusieurs sorties ?
+        <?php inclure('infos-cycle', 'mini'); ?>
 
-            <?php if (!$_POST['cycle_master_evt']) {
+        <?php if (!$_POST['cycle_master_evt']) {
                 // cette sortie n'est pas un debut de cycle
                 // et si c'est une sortie de cycle, il n'y a pas de sortie associee pour le moment?>
 
-                <label class="biglabel" for="cycle_none">
-                    <input type="radio" name="cycle" id="cycle_none" value="none" <?php if ('none' == $_POST['cycle'] || !$_POST['cycle']) {
+            <label class="biglabel" for="cycle_none">
+                <input type="radio" name="cycle" id="cycle_none" value="none" <?php if ('none' == $_POST['cycle'] || !$_POST['cycle']) {
                     echo 'checked="checked"';
                 } ?> /> Non, c'est une sortie unique
-                </label>
-            <?php
+            </label>
+        <?php
             } ?>
 
-            <?php if (!$_POST['cycle']) { ?>
-                <label class="biglabel" for="cycle_parent">
-                    <input type="radio" name="cycle" id="cycle_parent" value="parent" <?php if ($_POST['cycle_master_evt']) {
+        <?php if (!$_POST['cycle']) { ?>
+            <label class="biglabel" for="cycle_parent">
+                <input type="radio" name="cycle" id="cycle_parent" value="parent" <?php if ($_POST['cycle_master_evt']) {
                 echo 'checked="checked"';
             }?> /> Oui, cette sortie est la première d'un cycle,
-                    <?php
-                    if ($_POST['cycle_master_evt']) {
-                        echo '<b>des sorties sont dejà associées</b>';
-                    } else {
-                        echo 'd\'autres sorties vont suivre';
-                    }
-                    ?>
-                </label>
-            <?php } ?>
+                <?php
+                if ($_POST['cycle_master_evt']) {
+                    echo '<b>des sorties sont dejà associées</b>';
+                } else {
+                    echo 'd\'autres sorties vont suivre';
+                }
+                ?>
+            </label>
+        <?php } ?>
 
-            <?php if (!($_POST['parent'] || $_POST['cycle_master_evt'])) { ?>
-                <label class="biglabel" for="cycle_child">
-                    <input type="radio" name="cycle" id="cycle_child" value="child" <?php if ('child' == $_POST['cycle']) {
-                        echo 'checked="checked"';
-                    } ?> /> Oui, cette sortie est la suite d'une sortie précédente
-                </label>
+        <?php if (!($_POST['parent'] || $_POST['cycle_master_evt'])) { ?>
+            <label class="biglabel" for="cycle_child">
+                <input type="radio" name="cycle" id="cycle_child" value="child" <?php if ('child' == $_POST['cycle']) {
+                    echo 'checked="checked"';
+                } ?> /> Oui, cette sortie est la suite d'une sortie précédente
+            </label>
 
-                <div id="cycle_parent_select" style="display:<?php //echo ($_POST['cycle']=='child'?'block':'none'); /**/?>; ">
-                    <?php
-                    // LISTE DES SORTIES MASTER DE CYCLES
-                    if (!count($parentEvents)) {
-                        echo '<p class="alerte">Vous n\'avez pas encore créé de première sortie pour un cycle. Vous devez commencer par entrer la première sortie du cycle pour pouvoir y joindre d\'autres sorties ensuite.</p>';
-                    } else {
-                        ?>
-                        Merci de sélectionner la sortie parente (la première sortie du cycle) :<br />
-                        <select name="cycle_parent_evt">
-                            <?php
-                            foreach ($parentEvents as $tmpEvt) {
-                                echo '<option value="'.$tmpEvt['id_evt'].'" '.($_POST['cycle_parent_evt'] == $tmpEvt['id_evt'] ? 'selected="selected"' : '').'>'.html_utf8($tmpEvt['titre_evt']).' - Le '.date('d/m/Y', $tmpEvt['tsp_evt']).' - '.$tmpEvt['nchildren'].' sorties liées</option>';
-                            } ?>
-                        </select>
-                    <?php
-                    }
+            <div id="cycle_parent_select" style="display:<?php //echo ($_POST['cycle']=='child'?'block':'none'); /**/?>; ">
+                <?php
+                // LISTE DES SORTIES MASTER DE CYCLES
+                if (!count($parentEvents)) {
+                    echo '<p class="alerte">Vous n\'avez pas encore créé de première sortie pour un cycle. Vous devez commencer par entrer la première sortie du cycle pour pouvoir y joindre d\'autres sorties ensuite.</p>';
+                } else {
                     ?>
-                </div>
-            <?php } ?>
-        <?php } else { ?>
-            <input type="hidden" name="cycle" id="cycle_none" value="none">
+                    Merci de sélectionner la sortie parente (la première sortie du cycle) :<br />
+                    <select name="cycle_parent_evt">
+                        <?php
+                        foreach ($parentEvents as $tmpEvt) {
+                            echo '<option value="'.$tmpEvt['id_evt'].'" '.($_POST['cycle_parent_evt'] == $tmpEvt['id_evt'] ? 'selected="selected"' : '').'>'.html_utf8($tmpEvt['titre_evt']).' - Le '.date('d/m/Y', $tmpEvt['tsp_evt']).' - '.$tmpEvt['nchildren'].' sorties liées</option>';
+                        } ?>
+                    </select>
+                <?php
+                }
+                ?>
+            </div>
         <?php } ?>
         <br />
-
-        <?php if ($destination) { ?>
-
-            <div class="lft half first">
-                <b>Le bus vous déposera :</b><br><br>
-
-                <?php $lds = get_lieux_destination($destination['id'], 'depose'); ?>
-                <?php if ($lds) { ?>
-                    <div class="small">
-                    <p class="note">Dans la mesure du possible et pour limiter les trajets inutiles, <b>utiliser les lieux de dépose et horaires déjà convenus</b> pour cette destination :</p>
-                    <ul>
-                <?php foreach ($lds as $ld) { ?>
-                    <li><?php echo $ld['nom']; ?>, à <?php echo display_time($ld['date']); ?></li>
-                    <?php } ?>
-                    </ul></div><hr>
-                <?php } ?>
-
-                <label for="date_depose">Horaire :</label>
-                <input type="text" class="type2" name="lieu[depose][date_depose]" id="date_depose" value="<?php echo inputVal('lieu|depose|date_depose', ''); ?>" placeholder="aaaa-mm-jj hh:ii:ss"><br>
-                <p><small>Cet horaire est important : il permet aux adhérents qui se rendent à la sortie par leurs propres moyens de vous y retrouver.</small></p>
-
-                <?php if ($_POST['lieu']['depose']['id']) {  ?>
-
-                    <br><input type="hidden" name="lieu[id_lieu_depose]" value="<?php echo $_POST['lieu']['depose']['id']; ?>">
-
-                    <div class="display_lieu" data-id_lieu="<?php echo $_POST['lieu']['depose']['id']; ?>" style="position:relative;">
-                        <?php echo display_edit_lieu_link($_POST['lieu']['depose']['id'], inputVal('lieu|depose|nom', '')); ?>
-                        <b><?php echo inputVal('lieu|depose|nom', ''); ?></b><br>
-                        <div class="map" data-lat="" data-lng=""></div>
-                        <?php if ($_POST['lieu']['depose']['ign']) { ?>
-                            <div class="ign"><?php echo display_frame_geoportail(inputVal('lieu|depose|ign', ''), 620, 350); ?></div>
-                        <?php } ?>
-                        <div class="description"><?php echo inputVal('lieu|depose|description', ''); ?></div>
-                    </div>
-                    <a href="" id="modify_lieu_depose" class="add">Changer de lieu</a>
-
-
-                <?php } else { ?>
-                    <a href="" id="modify_lieu_depose" class="add">Définir un lieu</a>
-                <?php } ?>
-
-                <div id="new_lieu_depose"></div>
-
-
-            </div>
-            <div class="lft half last ">
-                <b>Le bus vous reprendra :</b><br><br>
-
-                <?php $lds = get_lieux_destination($destination['id'], 'reprise'); ?>
-                <?php if ($lds) { ?>
-                    <div class="small">
-                    <p class="note bbox">Dans la mesure du possible et pour limiter les trajets inutiles, <b>utiliser les lieux de reprise et horaires déjà convenus</b> pour cette destination :</p>
-                    <ul>
-                        <?php foreach ($lds as $ld) { ?>
-                            <li><?php echo $ld['nom']; ?>, à <?php echo display_time($ld['date']); ?></li>
-                        <?php } ?>
-                    </ul></div><hr>
-                <?php } ?>
-
-                <label for="date_reprise">Horaire :</label>
-                <input type="text" class="type2" name="lieu[reprise][date_reprise]" id="date_reprise" value="<?php echo inputVal('lieu|reprise|date_reprise', ''); ?>" placeholder="aaaa-mm-jj hh:ii:ss"><br>
-
-                <p><small>Cet horaire est important : il permet d'éviter les retards au retour.</small></p>
-                <?php if ($_POST['lieu']['reprise']['id']) { ?>
-
-                    <br><input type="hidden" name="lieu[id_lieu_reprise]" value="<?php echo $_POST['lieu']['reprise']['id']; ?>">
-
-                    <div class="display_lieu" data-id_lieu="<?php echo $_POST['lieu']['reprise']['id']; ?>" style="position:relative;">
-                        <?php echo display_edit_lieu_link($_POST['lieu']['reprise']['id'], inputVal('lieu|reprise|nom', '')); ?>
-                        <b><?php echo inputVal('lieu|reprise|nom', ''); ?></b><br>
-                        <div class="map" data-lat="" data-lng=""></div>
-                        <?php if ($_POST['lieu']['reprise']['ign']) { ?>
-                            <div class="ign"><?php echo display_frame_geoportail(inputVal('lieu|reprise|ign', ''), 620, 350); ?></div>
-                        <?php } ?>
-                        <div class="description"><?php echo inputVal('lieu|reprise|description', ''); ?></div>
-                    </div>
-                    <div class="check-nice">
-                        <label class="in_front">
-                            <input type="checkbox" id="same_as_depose" name="lieu[reprise][same_as_depose]" > Utiliser même lieu que dépose
-                        </label><br>
-                    </div>
-                    <span class="lft"> OU&nbsp;</span>&nbsp;<a href="" id="modify_lieu_reprise" class="add lft">Changer de lieu</a>
-
-
-                <?php } else { ?>
-                    <div class="check-nice">
-                <label class="in_front">
-                    <input type="checkbox" id="same_as_depose" name="lieu[reprise][same_as_depose]" <?php if ('on' == $_POST['lieu']['reprise']['same_as_depose']) {
-                        echo ' checked="checked" ';
-                    }  ?> > Utiliser même lieu que dépose
-                </label><br>
-                    </div>
-                    <span class="lft"> OU&nbsp;</span>&nbsp;<a href="" id="modify_lieu_reprise" class="add lft">Autre lieu</a>
-
-                <?php //echo display_new_lieu_complexe('reprise');
-                } ?>
-                <div id="new_lieu_reprise"></div>
-
-            </div>
-            <br class="clear"><br>
-
-            <?php if ($_POST['lieu']['depose']['id'] && $_POST['lieu']['reprise']['id']) { ?>
-                <div id="map_dr"></div>
-            <?php } ?>
-
-        <?php } else { ?>
-
 
         <br />
         <div style="float:left; width:45%; padding:0 20px 5px 0;">
@@ -426,7 +266,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
             <input type="button" value="même jour ?" class="nice" onclick="$('input[name=tsp_end_evt_day]').val($('input[name=tsp_evt_day]').val())" style="margin-top:7px" />
         </div>
 
-        <?php } ?>
 
         <br style="clear:both" />
         <br />
@@ -481,7 +320,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
             </p>
             <br style="clear:both" />
 
-            <?php if (!$destination) { ?>
             <div style="width:45%; padding-right:3%; float:left">
                 Les inscriptions démarrent :<br />
                 <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_start_evt_days" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_start_evt_days', ''); ?>" placeholder=" > 2" />
@@ -489,7 +327,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 									jours avant la sortie.
 								</span>
             </div>
-            <?php } ?>
 
             <div style="width:50%; float:left">
                 Inscriptions maximum via le formulaire internet :<br />
@@ -498,16 +335,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
                     inscriptions en ligne max.
                 </span>
             </div>
-
-            <?php if ($destination) { ?>
-                <div style="width:100%;clear:both;">
-                <br><p><b>Dates</b> :</p>
-                    <ul class="nice-list">
-                        <li class="wide">Ouverture : <?php echo display_jour($destination['inscription_ouverture']).' à '.display_time($destination['inscription_ouverture']); ?></li>
-                        <li class="wide">Fermeture : <?php echo display_jour($destination['inscription_fin']).' à '.display_time($destination['inscription_fin']); ?></li>
-                    </ul>
-                </div>
-            <?php } ?>
 
         </div>
 
@@ -745,118 +572,3 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
    crossorigin=""></script>
 <script type="text/javascript" src="/js/osm-organiser.js"></script>
 <!-- ****************** // osm-->
-
-<?php if ($destination) { ?>
-<script type="text/javascript">
-
-
-    $(document).ready(function(){
-        // datepicker
-        var dayNamesMin = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa" ];
-        var    monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Spetembre", "Octobre", "Novembre", "Décembre" ];
-
-        function setDay(elt, day, hour) {
-            from = day.split("-");
-            if (hour != undefined)
-                fromH = hour.split(":");
-            else fromH = new Array(0,0,0);
-            daymin = new Date(from[0], from[1] - 1, from[2], fromH[0], fromH[1], fromH[2]);
-            daymax = new Date(from[0], from[1] - 1, from[2], '23', '59', '0');
-            elt.datepicker( "option", "maxDate", daymax )
-                .datetimepicker( "option", "maxDateTime", daymax )
-                .datepicker( "option", "minDate", daymin )
-                .datetimepicker( "option", "minDateTime", daymin );
-            return false;
-        }
-
-        $('#date_depose').datetimepicker({
-            dateFormat: 'yy-mm-dd',
-            timeFormat: 'HH:mm:ss',
-            firstDay: 1,
-            closeText:'Ok',
-            timeText:'',
-            hourText:'Heures',
-            minuteText:'Minutes',
-            secondText:'Secondes',
-            stepMinute:'5',
-            dayNamesMin: dayNamesMin,
-            monthNames: monthNames
-        });
-
-        $('#date_reprise').datetimepicker({
-            dateFormat: 'yy-mm-dd',
-            timeFormat: 'HH:mm:ss',
-            firstDay: 1,
-            closeText:'Ok',
-            timeText:'',
-            hourText:'Heures',
-            minuteText:'Minutes',
-            secondText:'Secondes',
-            stepMinute:'5',
-            dayNamesMin: dayNamesMin,
-            monthNames: monthNames
-        });
-
-        <?php
-            /* TODO */
-            // Mis en place : test sur l'heure de destination / sortie
-            // => todo : le premier horaire (dépose), devrait être plus tardif que le dernier horaire de ramassage en bus
-        ?>
-        setDay( $('#date_depose'), '<?php $expDate = explode(' ', $destination['date']); echo $expDate[0]; ?>', '<?php echo $expDate[1]; ?>');
-        <?php if ($expDate[0] == $destination['date_fin']) { ?>
-            setDay( $('#date_reprise'), '<?php echo $expDate[0]; ?>', '<?php echo $expDate[1]; ?>');
-        <?php } else { ?>
-            setDay( $('#date_reprise'), '<?php echo $destination['date_fin']; ?>');
-        <?php } ?>
-
-    });
-
-</script>
-
-    <script>
-        var previous_lieux_reprise = '<?php echo display_previous_lieux('reprise', $destination['id']); ?>';
-        var new_lieu_reprise = '<?php echo display_new_lieu_complexe('reprise', true); ?>';
-        $('#same_as_depose').click(function(e){
-            do_action_modify();
-        });
-
-        function do_action_modify() {
-            $('#new_lieu_reprise').html('');
-            maps['lieu_reprise']=false;
-            $('#modify_lieu_reprise').show();
-        }
-        $('#modify_lieu_reprise').click(function(e){
-            e.preventDefault();
-            $('#same_as_depose').attr('checked', false).parent('label').removeClass('up').addClass('down');
-            $('#new_lieu_reprise').html('<a href="" id="cancel_lieu_reprise" class="cancel">Annuler le changement de lieu</a><br>'+previous_lieux_reprise+new_lieu_reprise);
-            initialiserBloc($('#lieu_reprise'));
-            $('#modify_lieu_reprise').hide();
-            $('#cancel_lieu_reprise').on('click', function(e){
-                e.preventDefault();
-                do_action_modify();
-                return false;
-            });
-            return false;
-        });
-    </script>
-    <script>
-        var previous_lieux_depose = '<?php echo display_previous_lieux('depose', $destination['id']); ?>';
-        var new_lieu_depose = '<?php echo display_new_lieu_complexe('depose', true); ?>';
-        $('#modify_lieu_depose').click(function(e){
-            e.preventDefault();
-            $('#new_lieu_depose').html('<a href="" id="cancel_lieu_depose" class="cancel">Annuler le changement de lieu</a><br>'+previous_lieux_depose+new_lieu_depose);
-            initialiserBloc($('#lieu_depose'));
-            $('#modify_lieu_depose').hide();
-            $('#cancel_lieu_depose').on('click', function(e){
-                e.preventDefault();
-                $('#new_lieu_depose').html('');
-                $('#modify_lieu_depose').show();
-                return false;
-            });
-            return false;
-        });
-        <?php if (isset($_POST['lieu']['depose']['use_existant'])) { ?>
-        $('#modify_lieu_depose').trigger('click'); $('#modify_lieu_depose').hide();
-        <?php } ?>
-    </script>
-<?php } ?>

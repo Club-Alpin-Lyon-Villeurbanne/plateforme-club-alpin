@@ -1,16 +1,12 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    {% if is_destination %}
-        {{ inscrits | length  }} nouvelle{{ inscrits|length > 1 ? 's' : '' }} inscription{{ inscrits|length > 1 ? 's' : '' }} à la sortie {{ event_name }}
-    {% else %}
-        {{ inscrits | length  }} nouvelle{{ inscrits|length > 1 ? 's' : '' }} demande{{ inscrits|length > 1 ? 's' : '' }} d'inscription à la sortie {{ event_name }}
-    {% endif %}
+    {{ inscrits | length  }} nouvelle{{ inscrits|length > 1 ? 's' : '' }} demande{{ inscrits|length > 1 ? 's' : '' }} d'inscription à la sortie {{ event_name }}
 {%- endblock %}
 
 {% block inner_html %}
     <p>
-        {{ inscrits|length }} adhérent{{ inscrits|length > 1 ? 's' : '' }} {{ inscrits|length > 1 ? 'viennent' : 'vient' }} de {{ is_destination ? "s'inscrire" : "se préinscrire" }}
+        {{ inscrits|length }} adhérent{{ inscrits|length > 1 ? 's' : '' }} {{ inscrits|length > 1 ? 'viennent' : 'vient' }} de se préinscrire
         à la sortie <a href="{{ event_url }}">{{ event_name }}</a>
     </p>
     <ul>
@@ -32,11 +28,6 @@
                 <b>Restaurant :</b> {{ restaurant == 1 ? 'oui' : 'non' }}
             </li>
         {% endif %}
-        {% if is_destination %}
-            <li>
-                {{ covoiturage == 1 ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif' }}
-            </li>
-        {% endif %}
     </ul>
     <p>
         Vous recevez ce message car vous êtes {{ dest_role }} sur cette sortie.
@@ -44,7 +35,7 @@
 {% endblock %}
 
 {% block inner_txt %}
-    {{ inscrits|length }} adhérent{{ inscrits|length > 1 ? 's' : '' }} {{ inscrits|length > 1 ? 'viennent' : 'vient' }} de {{ is_destination ? "s'inscrire" : "se préinscrire" }}
+    {{ inscrits|length }} adhérent{{ inscrits|length > 1 ? 's' : '' }} {{ inscrits|length > 1 ? 'viennent' : 'vient' }} de se préinscrire
     à la sortie {{ event_name }} ({{ event_url }}).
 
     {% for inscrit in inscrits %}
@@ -58,9 +49,6 @@
 {% endif %}
 {% if is_restaurant %}
     Restaurant : {{ restaurant == 1 ? 'oui' : 'non' }}
-{% endif %}
-{% if is_destination %}
-    {{ covoiturage == 1 ? 'Vient par ses propres moyens au départ de la sortie' : 'Vient en bus collectif' }}
 {% endif %}
 
     Vous recevez ce message car vous êtes {{ dest_role }} sur cette sortie.

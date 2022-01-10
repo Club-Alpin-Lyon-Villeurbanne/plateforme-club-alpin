@@ -27,11 +27,7 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
     <title>
     <?php echo html_utf8($meta_title); ?>
     <?php if ('feuille-de-sortie' == $p1) { ?>
-        <?php if ($evt) { ?>
         - Feuille de sortie - <?php echo html_utf8($evt['titre_evt']); ?>-<?php echo date('d.m.Y', $evt['tsp_evt']); ?>
-        <?php } else { ?>
-        - Feuille de destination - <?php echo html_utf8($destination['nom']); ?> - le <?php echo display_date($destination['date']); ?> à <?php echo display_time($destination['date']); ?>
-        <?php } ?>
     <?php } ?>
     </title>
     <base href="<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>" />
