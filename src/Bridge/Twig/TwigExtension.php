@@ -29,7 +29,20 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         return [
             new TwigFilter('slugify', [$this, 'slugify']),
             new TwigFilter('random_item', [$this, 'getRandomItem']),
+            new TwigFilter('intldate', [$this, 'formatDate']),
         ];
+    }
+
+    public function formatDate($date, string $format = 'd/MM/YYYY')
+    {
+        return (new \IntlDateFormatter(
+            'fr-FR',
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            'Europe/Paris',
+            \IntlDateFormatter::GREGORIAN,
+            $format
+        ))->format($date);
     }
 
     public function slugify(string $string)
