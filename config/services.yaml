@@ -57,6 +57,8 @@ services:
         arguments:
             $logFilters: !tagged_iterator sentry_handler.log_filter
 
+    Egulias\EmailValidator\EmailValidator: ~
+
     App\Mailer\Mailer:
         arguments:
             $replyTo: '%env(MAIL_EMITTER_EMAIL)%'
