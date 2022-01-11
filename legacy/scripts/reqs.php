@@ -112,7 +112,7 @@ if ('profil' == $p1 && 'infos' == $p2 && getUser()) {
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // filiation : ais-je des "enfants"
-        if ('' !== $handle['cafnum_user']) {
+        if ('' !== trim($handle['cafnum_user'])) {
             $handle['enfants'] = [];
             $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_parent_user = '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($handle['cafnum_user'])."' LIMIT 100";
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -122,9 +122,9 @@ if ('profil' == $p1 && 'infos' == $p2 && getUser()) {
         }
 
         // filiation : ais-je un parent
-        if ('' !== $handle['cafnum_parent_user']) {
+        if ('' !== trim($handle['cafnum_parent_user'])) {
             $handle['parent'] = [];
-            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_user = '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($handle['cafnum_parent_user'])."' LIMIT 100";
+            $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_user = '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($handle['cafnum_parent_user'])."' LIMIT 1";
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 $handle['parent'] = $handle2;
