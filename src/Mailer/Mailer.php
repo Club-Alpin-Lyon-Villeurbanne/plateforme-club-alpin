@@ -3,6 +3,8 @@
 namespace App\Mailer;
 
 use App\Entity\User;
+use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\MessageIDValidation;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -12,17 +14,20 @@ class Mailer
 {
     private MailerInterface $mailer;
     private MailerRenderer $renderer;
+    private EmailValidator $emailValidator;
     private string $replyTo;
     private string $mailEmitter;
 
     public function __construct(
         MailerInterface $mailer,
         MailerRenderer $renderer,
+        EmailValidator $emailValidator,
         string $replyTo,
         string $nameEmitter
     ) {
         $this->mailer = $mailer;
         $this->renderer = $renderer;
+        $this->emailValidator = $emailValidator;
         $this->replyTo = $replyTo;
         $this->mailEmitter = sprintf('%s <%s>', $nameEmitter, $replyTo);
     }
@@ -48,18 +53,40 @@ class Mailer
         foreach ($to as $email => $name) {
             if ($name instanceof User) {
                 // ie. `[User, User]`
-                $toFlat[] = new Address($name->getEmail(), $name->getNickname() ?? '');
+                if ($this->isValid($name->getEmail())) {
+                    $toFlat[] = new Address($name->getEmail(), $name->getNickname() ?? '');
+                }
             } elseif ($email === $name || is_numeric($email)) {
                 // ie. `[email => email]` or `[email, email]`
-                $toFlat[] = new Address($name);
+                if ($this->isValid($name)) {
+                    $toFlat[] = new Address($name);
+                }
             } else {
                 // ie. `[email => name]`
-                $toFlat[] = new Address($email, $name);
+                if ($this->isValid($email)) {
+                    $toFlat[] = new Address($email, $name);
+                }
             }
         }
 
+        if (empty($toFlat)) {
+            return;
+        }
+
         if ($sender instanceof User) {
-            $sender = new Address($sender->getEmail(), $sender->getNickname() ?? '');
+            if ($this->isValid($sender->getEmail())) {
+                $sender = new Address($sender->getEmail(), $sender->getNickname() ?? '');
+            } else {
+                $sender = null;
+            }
+        }
+
+        if ($replyTo instanceof User) {
+            if ($this->isValid($replyTo->getEmail())) {
+                $replyTo = new Address($replyTo->getEmail(), $replyTo->getNickname() ?? '');
+            } else {
+                $replyTo = null;
+            }
         }
 
         $email = (new Email())
@@ -88,5 +115,14 @@ class Mailer
         }
 
         $this->mailer->send($email);
+    }
+
+    private function isValid(?string $email): bool
+    {
+        if ('' === trim($email)) {
+            return false;
+        }
+
+        return $this->emailValidator->isValid($email, new MessageIDValidation());
     }
 }
