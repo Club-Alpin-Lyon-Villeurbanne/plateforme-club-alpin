@@ -152,7 +152,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$cookietoken_user.'-'.$id_user.'.html';
 
         LegacyContainer::get('legacy_mailer')->send(stripslashes($email_user), 'transactional/compte-validation', [
-            $url => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$cookietoken_user.'-'.$id_user.'.html',
+            'url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$cookietoken_user.'-'.$id_user.'.html',
         ]);
     }
 }
