@@ -131,7 +131,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         $is_covoiturage = 'NULL';
 
-        $status_evt_join = '1';
+        $status_evt_join = '0';
 
         $evt = get_evt($id_evt);
 
