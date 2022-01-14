@@ -85,6 +85,10 @@ services:
         $routerContextScheme: '%env(ROUTER_CONTEXT_SCHEME)%'
         $routerContextHost: '%env(ROUTER_CONTEXT_HOST)%'
 
+    App\Bridge\Twig\TwigExtension:
+      arguments:
+          $maxTimestampForLegalValidation: '%env(MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%'
+
     Symfony\Component\String\Slugger\SluggerInterface:
         class: Symfony\Component\String\Slugger\AsciiSlugger
 

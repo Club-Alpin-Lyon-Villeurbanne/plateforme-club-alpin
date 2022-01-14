@@ -79,7 +79,7 @@ php-cs-fix: bin/tools/php-cs-fixer ## Analyze and fix PHP code with php-cs-fixer
 
 phpstan: ## Analyze PHP code with phpstan
 phpstan: bin/tools/phpstan composer-install vendor/bin/.phpunit/phpunit-9.5-0/vendor/autoload.php
-	@$(ON_PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse legacy public src tests -c phpstan.neon -l 1
+	@$(ON_PHP) php -dmemory_limit=-1 ./bin/tools/phpstan analyse legacy public src tests resources -c phpstan.neon -l 1
 .PHONY: phpstan
 
 phpunit: vendor/autoload.php vendor/bin/.phpunit/phpunit-9.5-0/vendor/autoload.php ## Run phpunit
