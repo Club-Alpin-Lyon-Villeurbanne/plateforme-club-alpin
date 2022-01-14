@@ -15,19 +15,19 @@ if (!admin()) {
 	</p>
 	<p>
 	<strong>Voir les partenaires :</strong>
-		<a href="admin-partenaires.html?show=all" <?php if ('all' == $show) {
+		<a href="/admin-partenaires.html?show=all" <?php if ('all' == $show) {
         echo 'style="background:#d3d6ff"';
     } ?> class="boutonFancy">&nbsp;tous&nbsp;</a>
-		<a href="admin-partenaires.html?show=enabled" <?php if ('enabled' == $show) {
+		<a href="/admin-partenaires.html?show=enabled" <?php if ('enabled' == $show) {
         echo 'style="background:#d3d6ff"';
     } ?> class="boutonFancy">&nbsp;activé&nbsp;</a>&nbsp;
-		<a href="admin-partenaires.html?show=disabled" <?php if ('disabled' == $show) {
+		<a href="/admin-partenaires.html?show=disabled" <?php if ('disabled' == $show) {
         echo 'style="background:#d3d6ff"';
     } ?> class="boutonFancy">&nbsp;désactivé&nbsp;</a>&nbsp;
-		<a href="admin-partenaires.html?show=private" <?php if ('private' == $show) {
+		<a href="/admin-partenaires.html?show=private" <?php if ('private' == $show) {
         echo 'style="background:#d3d6ff"';
     } ?> class="boutonFancy">&nbsp;privé&nbsp;</a>&nbsp;
-		<a href="admin-partenaires.html?show=public" <?php if ('public' == $show) {
+		<a href="/admin-partenaires.html?show=public" <?php if ('public' == $show) {
         echo 'style="background:#d3d6ff"';
     } ?> class="boutonFancy">&nbsp;public&nbsp;</a>&nbsp;
 	</p>

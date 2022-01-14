@@ -512,7 +512,7 @@ use App\Legacy\LegacyContainer;
                     while ($article = $result->fetch_assoc()) {
                         echo '<tr id="tr-'.$article['id_article'].'" class="vis-on">'
                         .'<td>'.date('d.m.Y', $article['tsp_validate_article']).'</td>'
-                        .'<td><a href="article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html" target="_blank">'.$article['titre_article'].'</a></td>'
+                        .'<td><a href="/article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html" target="_blank">'.$article['titre_article'].'</a></td>'
                         .'<td>'.userlink($article['id_user'], ucfirst(mb_strtolower($article['firstname_user'], 'UTF-8')).' '.$article['lastname_user']).'</td>'
                         .'<td>'.html_utf8($article['title_commission']).'</td>'
                         .'<td>';

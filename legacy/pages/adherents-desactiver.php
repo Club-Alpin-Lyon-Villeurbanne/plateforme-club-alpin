@@ -15,7 +15,7 @@ if (!allowed('user_desactivate_any')) {
 			Voulez-vous vraiment désactiver ce compte utilisateur ? Il sera toujours existant dans la base de donnée,
 			et pourra être réactivé à tout moment. Cette personne ne pourra plus se connecter au site en tant qu'utilisateur.<br />
 			<img src="/img/base/user_desactive.png" alt="DESACTIVE" title="Utilisateur désactivé manuellement" /> Cette icône apparaîtra
-			dans la ligne concernée sur la page des <a href="adherents.html?show=dels" title="" target="_top">adhérents désactivés</a>.
+			dans la ligne concernée sur la page des <a href="/adherents.html?show=dels" title="" target="_top">adhérents désactivés</a>.
 		</p>
 
 		<form action="<?php echo $versCettePage; ?>" method="post">
@@ -28,7 +28,7 @@ if (!allowed('user_desactivate_any')) {
                 echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
             }
     if (isset($_POST['operation']) && 'user_desactiver' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<p class="info">Utilisateur désactivé (Vous devrez <a href="adherents.html" title="" target="_top">actualiser la page</a> pour voir le changement)</p>';
+        echo '<p class="info">Utilisateur désactivé (Vous devrez <a href="/adherents.html" title="" target="_top">actualiser la page</a> pour voir le changement)</p>';
     } else {
         ?>
 				<input type="submit" class="nice2 orange" value="Désactiver" />

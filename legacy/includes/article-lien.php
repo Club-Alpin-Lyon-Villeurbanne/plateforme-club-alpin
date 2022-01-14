@@ -45,7 +45,7 @@ if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) ($article['id_article'])
         // une commission est bien liée
         if ($article['commission'] ?? null) {
             ?>
-			<a href="accueil/<?php echo html_utf8($article['commission']['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
+			<a href="/accueil/<?php echo html_utf8($article['commission']['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
 				<?php echo html_utf8($article['commission']['title_commission']); ?>
 			</a>
 			<?php
@@ -53,7 +53,7 @@ if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) ($article['id_article'])
         // 0 = actu club
         elseif (0 == $article['commission_article']) {
             ?>
-			<a href="accueil.html#home-articles" title="Toutes les actus du club">
+			<a href="/accueil.html#home-articles" title="Toutes les actus du club">
 				CLUB
 			</a>
 			<?php

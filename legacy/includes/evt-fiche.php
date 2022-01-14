@@ -32,7 +32,7 @@ if (!$evt) {
     // j'en suis l'auteur mais elle est passée ? Rédiger un compte rendu
     if (user() && $evt['user_evt'] == (string) getUser()->getId() && $evt['tsp_end_evt'] < time()) {
         ?>
-		<a href="article-new.html?compterendu=true&amp;commission_article=-1&amp;evt_article=<?php echo $evt['id_evt']; ?>&amp;titre_article=<?php echo urlencode('Compte rendu de sortie : '.$evt['titre_evt']); ?>" title="Vous êtes l'auteur de cette sortie ? Rédigez un petit compte rendu !" class="nice2 noprint">
+		<a href="/article-new.html?compterendu=true&amp;commission_article=-1&amp;evt_article=<?php echo $evt['id_evt']; ?>&amp;titre_article=<?php echo urlencode('Compte rendu de sortie : '.$evt['titre_evt']); ?>" title="Vous êtes l'auteur de cette sortie ? Rédigez un petit compte rendu !" class="nice2 noprint">
 			<img src="/img/base/pencil_add.png" alt="" title="" style="" />
 			Compte rendu
 		</a>
