@@ -18,7 +18,7 @@ use App\Legacy\LegacyContainer;
             // creation des raccourcis vers les commissions
             echo '<p>';
             foreach ($comTab as $code => $data) {
-                echo '<a class="lien-big" style="color:black;" href="responsables.html#'.$data['code_commission'].'">'.html_utf8($data['title_commission']).'</a>
+                echo '<a class="lien-big" style="color:black;" href="/responsables.html#'.$data['code_commission'].'">'.html_utf8($data['title_commission']).'</a>
 				&nbsp;';
             }
             echo '<p>';

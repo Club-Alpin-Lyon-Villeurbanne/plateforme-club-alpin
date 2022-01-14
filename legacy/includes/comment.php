@@ -10,7 +10,7 @@ if ($comment) {
             // SUPPRIMER CE COMMENTAIRE
             if ((user() && $comment['user_comment'] == (string) getUser()->getId()) || allowed('comment_delete_any')) {
                 ?>
-				<a href="includer.php?p=includes/comment-del.php&amp;id_comment=<?php echo (int) ($comment['id_comment']); ?>" title="Supprimer ce commentaire" style="float:right" class="fancyframe">
+				<a href="/includer.php?p=includes/comment-del.php&amp;id_comment=<?php echo (int) ($comment['id_comment']); ?>" title="Supprimer ce commentaire" style="float:right" class="fancyframe">
 					<img src="/img/base/delete.png" alt="SUPPR" title="" />
 				</a>
 				<?php

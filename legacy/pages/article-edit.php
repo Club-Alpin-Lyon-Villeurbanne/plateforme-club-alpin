@@ -64,7 +64,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
                     }
                 // message d'info : si c'est une modification
                 if (isset($_POST['operation']) && 'article_update' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                    echo '<p class="info"><img src="/img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date('H:i:s', time()).'. <b>Important :</b> cet article doit à présent être validé par un responsable pour être publié sur le site.<a href="profil/articles/self.html" title="">&gt; Retourner à la liste de mes articles</a></p>';
+                    echo '<p class="info"><img src="/img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date('H:i:s', time()).'. <b>Important :</b> cet article doit à présent être validé par un responsable pour être publié sur le site.<a href="/profil/articles/self.html" title="">&gt; Retourner à la liste de mes articles</a></p>';
                 } ?>
 
 
