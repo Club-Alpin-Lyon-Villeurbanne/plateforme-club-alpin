@@ -45,4 +45,18 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function getFiliations(User $user)
+    {
+        if (!$user->getCafnum()) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('u')
+            ->where('u.cafnumParent = :cafNum')
+            ->setParameter('cafNum', $user->getCafnum())
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

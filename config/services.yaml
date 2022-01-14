@@ -59,6 +59,9 @@ services:
 
     Egulias\EmailValidator\EmailValidator: ~
 
+    App\Repository\CommissionRepository:
+        public: true
+
     App\Mailer\Mailer:
         arguments:
             $replyTo: '%env(MAIL_EMITTER_EMAIL)%'
