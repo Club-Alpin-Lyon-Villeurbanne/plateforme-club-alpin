@@ -88,8 +88,6 @@ La fonction "userlink" affiche un lien vers le profil d'un utilisateur en foncti
 */
 function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user = false, $lastname_user = false, $style = 'public')
 {
-    $return = '';
-
     switch ($style) {
         case 'public': 	$return = html_utf8($nickname_user); break;
         case 'short': 	$return = html_utf8($civ_user).' '.html_utf8($firstname_user).' '.strtoupper(substr(trim($lastname_user), 0, 1)); break;

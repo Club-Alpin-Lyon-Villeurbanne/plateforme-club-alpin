@@ -3,17 +3,18 @@
 namespace App\Security\Voter;
 
 use App\Entity\User;
-use Symfony\Component\HttpFoundation\RequestStack;
+use App\Entity\UserAttr;
+use App\Security\AdminDetector;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class UserFlagsVoter extends Voter
 {
-    private RequestStack $requestStack;
+    private AdminDetector $adminDetector;
 
-    public function __construct(RequestStack $requestStack)
+    public function __construct(AdminDetector $adminDetector)
     {
-        $this->requestStack = $requestStack;
+        $this->adminDetector = $adminDetector;
     }
 
     protected function supports($attribute, $subject)
@@ -29,12 +30,10 @@ class UserFlagsVoter extends Voter
             return false;
         }
 
-        $request = $this->requestStack->getMainRequest();
-
-        if (!$request || !$request->hasSession()) {
-            return false;
+        if ('ROLE_ALLOWED_TO_SWITCH' === $attribute && $user->hasAttribute(UserAttr::DEVELOPPEUR)) {
+            return true;
         }
 
-        return $request->getSession()->get('admin_caf', false);
+        return $this->adminDetector->isAdmin();
     }
 }
