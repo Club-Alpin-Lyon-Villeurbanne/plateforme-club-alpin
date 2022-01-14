@@ -91,7 +91,7 @@ select.type1{border-color:#eaeaea; padding-top:5px; padding-bottom:6px;}
 .type2:focus{background-color:#ccff99; outline:0;}
 .userlink{font-weight:inherit; font-size:12px;}
 .userlink:hover, .userlink:focus {text-decoration:underline;}
-.biglink{display:inline-block; margin:auto; text-align:center; background:#ebebeb; padding:5px 40px; font-weight:100; font-family:DINBold; font-size:14px; color:#666666;}
+.biglink{display:inline-block; margin:auto; text-align:center; background:#ebebeb; padding:5px 40px; font-weight:100; font-family:DINBold; font-size:14px; color:#666666; cursor:pointer; border: none;}
 .biglink:hover, .biglink:focus{text-decoration:none; outline:0; color:black; background:#d7d7d7;}
 .pageSelect{padding:15px 0; white-space:nowrap; overflow:hidden; margin-right:20px;}
 .pageSelect a{display:inline-block; text-align:center; background:#ebebeb; padding:5px 10px; font-weight:100; font-family:DIN; font-size:11px; color:#666666; margin:0 1px;}
@@ -327,7 +327,7 @@ tr.status-1 {border-top:1px solid #d3d3d3;background-image:url(../img/red-overla
 .status-legal, .note{background:white; box-shadow:0 0 15px -8px black; padding:3px 15px; margin:0px 30px 0 0;}
 .note{padding:15px;margin:0}
 .imgprofil{box-shadow:0 0 20px -7px black; border:2px solid white;}
-#edit_profil_image{float:left; width:180px; height:135px;padding:right:20px;}
+#edit_profil_image{float:left; width:180px; height:135px;/*padding:right:20px;*/}
 #edit_profil_image .imgprofil{max-width:280px; max-height:135px;}
 #edit_profil_image .delete{position:absolute;}
 #edit_profil_image .delete img{cursor:pointer; position:relative; bottom:7px; right:7px;}
