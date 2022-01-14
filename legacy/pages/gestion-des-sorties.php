@@ -33,7 +33,7 @@
                                         .'<div class="evt-tools">'
 
                                             // apercu
-                                            .'<a class="nice2" href="sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
+                                            .'<a class="nice2" href="/sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
 
                             // Modération
                             echo '

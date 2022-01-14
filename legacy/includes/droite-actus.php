@@ -3,9 +3,9 @@
 use App\Legacy\LegacyContainer;
 
 if ($current_commission) {
-    echo '<h1 class="actus-h1"><a href="accueil/'.$current_commission.'.html" title="Afficher tous les articles pour cette commission">actus</a></h1>';
+    echo '<h1 class="actus-h1"><a href="/accueil/'.$current_commission.'.html" title="Afficher tous les articles pour cette commission">actus</a></h1>';
 } else {
-    echo '<h1 class="actus-h1"><a href="accueil.html" title="Afficher tous les articles">actus</a></h1>';
+    echo '<h1 class="actus-h1"><a href="/accueil.html" title="Afficher tous les articles">actus</a></h1>';
 }
 ?>
 
@@ -73,7 +73,7 @@ if ($current_commission) {
             // un ID de commission est bien enregistré
             if ($article['commission']) {
                 ?>
-                <a href="accueil/<?php echo html_utf8($article['commission']['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
+                <a href="/accueil/<?php echo html_utf8($article['commission']['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
                     <?php echo html_utf8($article['commission']['title_commission']); ?>
                 </a>
                 <?php
@@ -81,7 +81,7 @@ if ($current_commission) {
         // 0 = actu club
         elseif (0 == $article['commission_article']) {
             ?>
-                <a href="accueil.html#home-articles" title="Toutes les actus du club">
+                <a href="/accueil.html#home-articles" title="Toutes les actus du club">
                     CLUB
                 </a>
                 <?php
@@ -114,7 +114,7 @@ if ($current_commission) {
 <!-- lien vers la page actus -->
 <?php
 if ($current_commission) {
-        echo '<a href="accueil/'.$current_commission.'.html" title="Afficher tous les articles pour cette commission" class="lien-big">&gt; Voir tous les articles '.$comTab[$current_commission]['title_commission'].'</a>';
+        echo '<a href="/accueil/'.$current_commission.'.html" title="Afficher tous les articles pour cette commission" class="lien-big">&gt; Voir tous les articles '.$comTab[$current_commission]['title_commission'].'</a>';
     } else {
-        echo '<a href="accueil.html" title="Afficher tous les articles" class="lien-big">&gt; Voir tous les articles</a>';
+        echo '<a href="/accueil.html" title="Afficher tous les articles" class="lien-big">&gt; Voir tous les articles</a>';
     }

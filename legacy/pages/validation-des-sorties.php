@@ -34,7 +34,7 @@
                                         .'<div class="evt-tools">'
 
                                             // apercu
-                                            .'<a class="nice2" href="sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant validation" target="_blank">Aperçu / validation de la page</a> '
+                                            .'<a class="nice2" href="/sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant validation" target="_blank">Aperçu / validation de la page</a> '
 
                                         .'</div>';
 

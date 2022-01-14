@@ -8,7 +8,7 @@ if (isset($errTab) && count($errTab) > 0) {
     ?>
 	<h3>Votre compte est validé</h3>
 	<p>
-		Vous allez être redirigé vers <a href="profil.html" title="Prendre un raccourci">votre espace personnel</a> dans
+		Vous allez être redirigé vers <a href="/profil.html" title="Prendre un raccourci">votre espace personnel</a> dans
 		<span id="decompte"></span> secondes.
 	</p>
 	<script type="text/javascript">
