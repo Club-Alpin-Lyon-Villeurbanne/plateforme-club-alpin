@@ -30,7 +30,7 @@ if (user()) {
                 <?php
                 foreach (getUser()->getAttributes() as $attr) {
                     if (UserAttr::RESPONSABLE_COMMISSION === $attr->getCode()) {
-                        echo '<li><a href="commission-consulter.html?code_commission='.$attr->getCommission().'" title="Fiche commission">'.$attr->getTitle().', '.$attr->getCommission().'</a></li>';
+                        echo '<li><a href="/commission-consulter.html?code_commission='.$attr->getCommission().'" title="Fiche commission">'.$attr->getTitle().', '.$attr->getCommission().'</a></li>';
                     } elseif (in_array($attr->getCode(), [UserAttr::ENCADRANT, UserAttr::COENCADRANT], true)) {
                         echo '<li>'.$attr->getTitle().', '.$attr->getCommission().'</li>';
                     } else {

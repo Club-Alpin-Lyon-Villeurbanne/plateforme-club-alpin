@@ -141,7 +141,7 @@
                             
                                 {% if allowed('evt_validate') %}
                                     {# publier une sortie (notification au besoin, variable définie dans SCRIPTS.'reqs.php') #}
-                                    <a href="gestion-des-sorties.html" title="">
+                                    <a href="/gestion-des-sorties.html" title="">
                                         <span class="star">
                                             <img src="/img/base/bullet_star.png" alt="" title="" />
                                         </span>
@@ -154,7 +154,7 @@
 
                                 {% if allowed('evt_legal_accept') %}
                                     {# valider juridiquement une sortie#}
-                                    <a href="validation-des-sorties.html" title="">
+                                    <a href="/validation-des-sorties.html" title="">
                                         <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
 
                                         {% set notif_president = notifications_counter_sorties_president() %}
@@ -165,7 +165,7 @@
 
                                 {% if allowed('evt_create') %}
                                     {# créer une sortie (par défaut : pour la commission courante si autorisé)#}
-                                    <a href="creer-une-sortie.html" title="">
+                                    <a href="/creer-une-sortie.html" title="">
                                         <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
                                         proposer une sortie
                                     </a>
@@ -193,7 +193,7 @@
                                 <p class="menutitle">Articles</p>
 
                                 {% if allowed('article_create') %}
-                                    <a href="article-new.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                    <a href="/article-new.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
                                         <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>rédiger un article
                                     </a>
                                     <a href="/profil/articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
@@ -202,7 +202,7 @@
                                 {% endif %}
 
                                 {% if allowed('article_validate') or allowed('article_validate_all') %}
-                                    <a href="gestion-des-articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                    <a href="/gestion-des-articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
                                         <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
 
                                         {% set notif_article = notifications_counter_articles() %}
@@ -211,7 +211,7 @@
                                     </a>
                                 {% endif %}
 
-                                <a href="recherche.html" title="">rechercher un article</a><br />
+                                <a href="/recherche.html" title="">rechercher un article</a><br />
 
                             </div>
 
@@ -223,13 +223,13 @@
                                     <p class="menutitle" style="padding-top:13px;">Adhérents</p>
 
                                     {% if allowed('user_see_all') %}
-                                        <a href="adherents.html" title="">
+                                        <a href="/adherents.html" title="">
                                             <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>gestion des adhérents
                                         </a>
                                     {% endif %}
 
                                     {% if allowed('user_create_manually') %}
-                                        <a href="adherents-creer.html" title="">
+                                        <a href="/adherents-creer.html" title="">
                                             <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>créer un adhérent/salarié
                                         </a>
                                     {% endif %}
@@ -240,13 +240,13 @@
                             <div class="nav-user">
                                 <p class="menutitle" style="padding-top:13px;">Commissions</p>
                                 {% if allowed('comm_edit') %}
-                                    <a href="gestion-des-commissions.html" title="">
+                                    <a href="/gestion-des-commissions.html" title="">
                                         <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>gestion des commissions
                                     </a>
                                 {% endif %}
 
                                 {% if allowed('comm_create') %}
-                                    <a href="commission-add.html" title="">
+                                    <a href="/commission-add.html" title="">
                                         <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>créer une commission
                                     </a>
                                 {% endif %}

@@ -57,17 +57,17 @@
     // j'en suis l'auteur ? Elle est pas validée ? modification possible !
     if ((user() && $evt['user_evt'] == (string) getUser()->getId()) || allowed('evt_validate_all') || allowed('evt_validate', 'commission:'.$evt['code_commission'])) {
         if (1 != $evt['cancelled_evt']) {
-            echo '<a href="creer-une-sortie/'.$evt['code_commission'].'/update-'.$evt['id_evt'].'.html" title="Vous êtes l\'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange"><img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie</a>';
+            echo '<a href="/creer-une-sortie/'.$evt['code_commission'].'/update-'.$evt['id_evt'].'.html" title="Vous êtes l\'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange"><img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie</a>';
         }
 
         // sortie à venir
         if ($evt['tsp_end_evt'] > time()) {
             if (allowed('evt_delete', 'commission:'.$evt['code_commission']) && (1 != $evt['status_evt'] || (1 == $evt['status_evt'] && 1 == $evt['cancelled_evt']))) {
                 // supprimer
-                echo '<a class="nice2 noprint red" href="supprimer-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Supprimer définitivement la sortie ci-dessous"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie</a>';
+                echo '<a class="nice2 noprint red" href="/supprimer-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Supprimer définitivement la sortie ci-dessous"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie</a>';
             } elseif (allowed('evt_cancel', 'commission:'.$evt['code_commission']) && '1' != $evt['cancelled_evt']) {
                 //annuler
-                echo '<a class="nice2 noprint red" href="annuler-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Annuler la sortie ci-dessous">
+                echo '<a class="nice2 noprint red" href="/annuler-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Annuler la sortie ci-dessous">
 				<img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie</a>';
             }
         }

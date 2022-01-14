@@ -7,12 +7,12 @@
 {% block inner_html %}
     <p>
         Une nouvelle sortie <a href="{{ event_url }}" title="">{{ event_name }}</a> vient d'être publiée sur le site.
-        <a href="{{ author_url }}">{{ author_name }}</a>
+        <a href="{{ author_url }}">{{ author_nickname }}</a>
         vous a pré-inscrit pour cette sortie en tant que <b>{{ role }}</b>.
     </p>
 {% endblock %}
 
 {% block inner_txt %}
 Une nouvelle sortie {{ event_name }} ({{ event_url }}) vient d'être publiée sur le site.
-{{ author_name }} ({{ author_url }}) vous a pré-inscrit pour cette sortie en tant que {{ role }}.
+{{ author_nickname }} ({{ author_url }}) vous a pré-inscrit pour cette sortie en tant que {{ role }}.
 {% endblock %}

@@ -19,7 +19,7 @@ if (user()) {
     // publié ? voir
     if (1 == $article['status_article']) {
         ?>
-			<a href="article/<?php echo html_utf8($article['code_article'].'-'.$article['id_article']); ?>.html" title="" class="nice2">
+			<a href="/article/<?php echo html_utf8($article['code_article'].'-'.$article['id_article']); ?>.html" title="" class="nice2">
 				Voir
 			</a>
 			<?php
@@ -28,7 +28,7 @@ if (user()) {
     // Sinon : apercu
     else {
         ?>
-			<a href="article/<?php echo html_utf8($article['code_article'].'-'.$article['id_article']); ?>.html?forceshow=true" title="" class="nice2">
+			<a href="/article/<?php echo html_utf8($article['code_article'].'-'.$article['id_article']); ?>.html?forceshow=true" title="" class="nice2">
 				Aperçu
 			</a>
 			<?php
@@ -44,7 +44,7 @@ if (user()) {
     */
 
     // on peut toujours modifier?>
-		<a href="article-edit/<?php echo (int) ($article['id_article']); ?>.html" title="" class="nice2 orange">
+		<a href="/article-edit/<?php echo (int) ($article['id_article']); ?>.html" title="" class="nice2 orange">
 			Modifier
 		</a>
 		<?php
