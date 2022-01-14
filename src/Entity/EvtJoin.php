@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
+use App\Repository\EvtJoinRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * EvtJoin.
  *
  * @ORM\Table(name="caf_evt_join")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="EvtJoinRepository::class")
  */
 class EvtJoin
 {
@@ -109,6 +110,15 @@ class EvtJoin
      */
     private $isCb;
 
+    public function __construct(Evt $event, User $user, string $role, int $status)
+    {
+        $this->evt = $event;
+        $this->user = $user;
+        $this->role = $role;
+        $this->status = $status;
+        $this->tsp = time();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -176,6 +186,11 @@ class EvtJoin
         return $this->evt;
     }
 
+    public function getEvent(): ?Evt
+    {
+        return $this->evt;
+    }
+
     public function setEvt(Evt $evt): self
     {
         $this->evt = $evt;
@@ -188,7 +203,7 @@ class EvtJoin
         return $this->user;
     }
 
-    public function setUser(int $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 

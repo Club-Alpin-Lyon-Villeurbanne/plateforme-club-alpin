@@ -1,0 +1,14 @@
+App\Entity\Evt:
+    sortie{1..10}:
+        user: '@user1'
+        titre: '<sentence(4)>'
+        place: '<address()>'
+        code: '<word()>'
+        rdv: '<address()>'
+        lat: '<latitude()>'
+        long: '<longitude()>'
+        description: '<paragraph()>'
+
+        massif: '<word()>'
+        matos: '<sentence(12)>'
+        difficulte: '<word()>'
