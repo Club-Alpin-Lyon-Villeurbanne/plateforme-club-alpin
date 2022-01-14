@@ -5,6 +5,7 @@ $finder = PhpCsFixer\Finder::create()
         __DIR__.'/bin',
         __DIR__.'/legacy',
         __DIR__.'/public',
+        __DIR__.'/resources',
         __DIR__.'/src',
         __DIR__.'/tests',
     ])

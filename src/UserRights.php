@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Entity\Commission;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use Doctrine\DBAL\Connection;
@@ -20,6 +21,11 @@ class UserRights
         $this->checker = $checker;
         $this->tokenStorage = $tokenStorage;
         $this->connection = $connection;
+    }
+
+    public function allowedOnCommission(string $code, Commission $commission)
+    {
+        return $this->allowed($code, 'commission:'.$commission->getCode());
     }
 
     public function allowed($code_userright, $param = '')
