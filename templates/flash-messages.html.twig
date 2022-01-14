@@ -1,5 +1,5 @@
 {%- macro get_class(level) -%}
-    {% if level == 'danger' or level == 'warning' %}
+    {% if level == 'danger' or level == 'error' or level == 'warning' %}
         erreur
     {% else %}
         info
