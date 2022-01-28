@@ -34,7 +34,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     $req = "SELECT id_evt FROM caf_evt WHERE id_evt=$id_evt AND cancelled_evt='0'";
                     if (!$handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                         $errTab[] = 'Erreur SQL SELECT COUNT';
-                    } elseif ($handleSql2->num_rows() > 0) {
+                    } elseif ($handleSql2->num_rows > 0) {
                         $cycle_parent_evt = null;
                     }
                 }
