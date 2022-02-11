@@ -46,7 +46,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
         }
     if (isset($_POST['operation']) && 'page_add' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'. Vous pouvez actualiser cette page</p>';
-        echo '<script stype="text/javascript">parent.location.href="admin-pages.html?showmsg=page_add";</script>';
+        echo '<script stype="text/javascript">parent.location.href="/admin-pages.html?showmsg=page_add";</script>';
     } ?>
 
 		<b>Page parente :</b><br />

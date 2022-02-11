@@ -224,11 +224,11 @@ if ('1' != $evt['cancelled_evt']) {
                 foreach ($row['empietements'] as $tmpJoin) {
                     // préinscrit
                     if (0 == $tmpJoin['status_evt_join']) {
-                        echo '<br />- Adhérent pré-inscrit sur <br /><a href="sortie/'.$tmpJoin['code_evt'].'-'.$tmpJoin['id_evt'].'.html" title="">'.html_utf8($tmpJoin['titre_evt']).'</a> ';
+                        echo '<br />- Adhérent pré-inscrit sur <br /><a href="/sortie/'.$tmpJoin['code_evt'].'-'.$tmpJoin['id_evt'].'.html" title="">'.html_utf8($tmpJoin['titre_evt']).'</a> ';
                     }
                     // inscrit confirmé
                     if (1 == $tmpJoin['status_evt_join']) {
-                        echo '<br />- Adhérent <span style="color:red">confirmé</span> sur <br /> <a href="sortie/'.$tmpJoin['code_evt'].'-'.$tmpJoin['id_evt'].'.html" title="">'.html_utf8($tmpJoin['titre_evt']).'</a><br />';
+                        echo '<br />- Adhérent <span style="color:red">confirmé</span> sur <br /> <a href="/sortie/'.$tmpJoin['code_evt'].'-'.$tmpJoin['id_evt'].'.html" title="">'.html_utf8($tmpJoin['titre_evt']).'</a><br />';
                     }
 
                     // s'il est confirmé ailleurs, on bride l'outil de mise à jour
@@ -443,10 +443,10 @@ if ('1' != $evt['cancelled_evt']) {
 
                 if (allowed('user_see_all') || allowed('evt_join_notme') || allowed('evt_join_doall')) {
                     // Ajout de adhérents manuellement
-                    echo '<a class="nice2 blue fancyframe" href="includer.php?p=includes/join_manual.php&amp;id_evt='.$id_evt.'" title="">Inscrire manuellement des adhérents du club</a>';
+                    echo '<a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_manual.php&amp;id_evt='.$id_evt.'" title="">Inscrire manuellement des adhérents du club</a>';
 
                     // Ajout de adhérents nomades
-                    echo '<a class="nice2 blue fancyframe" href="includer.php?p=includes/join_nomad.php&amp;id_evt='.$id_evt.'" title="">Ajouter un adhérent "Nomade"</a>';
+                    echo '<a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_nomad.php&amp;id_evt='.$id_evt.'" title="">Ajouter un adhérent "Nomade"</a>';
                 }
             } ?>
             <br style="clear:both"  /><br />

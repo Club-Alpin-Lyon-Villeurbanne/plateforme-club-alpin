@@ -237,11 +237,11 @@ if (user()) {
                         foreach ($empiete as $tmpJoin) {
                             // préinscrit
                             if (0 == $tmpJoin['status_evt_join']) {
-                                echo '<br />- Adhérent pré-inscrit sur <a href="sortie/'.$tmpJoin['code_evt'].'-'.$tmpJoin['id_evt'].'.html" title="">'.html_utf8($tmpJoin['titre_evt']).'</a> ';
+                                echo '<br />- Adhérent pré-inscrit sur <a href="/sortie/'.$tmpJoin['code_evt'].'-'.$tmpJoin['id_evt'].'.html" title="">'.html_utf8($tmpJoin['titre_evt']).'</a> ';
                             }
                             // inscrit confirmé
                             if (1 == $tmpJoin['status_evt_join']) {
-                                echo '<br />- Adhérent <span style="color:red">confirmé</span> sur <a href="sortie/'.$tmpJoin['code_evt'].'-'.$tmpJoin['id_evt'].'.html" title="">'.html_utf8($tmpJoin['titre_evt']).'</a>';
+                                echo '<br />- Adhérent <span style="color:red">confirmé</span> sur <a href="/sortie/'.$tmpJoin['code_evt'].'-'.$tmpJoin['id_evt'].'.html" title="">'.html_utf8($tmpJoin['titre_evt']).'</a>';
                             }
                         }
                         echo '</div>';

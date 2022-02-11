@@ -70,17 +70,17 @@ use App\Legacy\LegacyContainer;
                             echo '</p><br>';
                         }
                         if (allowed('comm_desactivate', 'commission:'.$row['code_commission'])) {
-                            echo '<a href="includer.php?p=includes/commission-edit-vis.php&amp;id_commission='.(int) ($row['id_commission']).'" title="" class="fancyframe nice2">Activer / Désactiver</a> ';
+                            echo '<a href="/includer.php?p=includes/commission-edit-vis.php&amp;id_commission='.(int) ($row['id_commission']).'" title="" class="fancyframe nice2">Activer / Désactiver</a> ';
                         }
                         if (allowed('comm_edit', 'commission:'.$row['code_commission'])) {
-                            echo '<a href="commission-edit.html?id_commission='.(int) ($row['id_commission']).'" title="" class="nice2">Modifier cette commission</a> <br />';
+                            echo '<a href="/commission-edit.html?id_commission='.(int) ($row['id_commission']).'" title="" class="nice2">Modifier cette commission</a> <br />';
                         }
                         if (allowed('comm_read', 'commission:'.$row['code_commission'])) {
-                            echo '<a href="commission-consulter.html?id_commission='.(int) ($row['id_commission']).'" title="" class="nice2">Fiche commission</a><br />';
+                            echo '<a href="/commission-consulter.html?id_commission='.(int) ($row['id_commission']).'" title="" class="nice2">Fiche commission</a><br />';
                         }
-                        // .'<a href="includer.php?p=includes/commission-edit-text.php&amp;id_commission='.intval($row['id_commission']).'" title="" class="fancyframe nice2">Modifier le titre</a> <br />'
-                        // .'<a href="includer.php?p=includes/commission-edit-bigfond.php&amp;id_commission='.intval($row['id_commission']).'" title="" class="fancyframe nice2">Modifier l\'image de fond</a> '
-                        // .'<a href="includer.php?p=includes/commission-edit-pictos.php&amp;id_commission='.intval($row['id_commission']).'" title="" class="fancyframe nice2">Modifier les pictogrammes</a> <br />'
+                        // .'<a href="/includer.php?p=includes/commission-edit-text.php&amp;id_commission='.intval($row['id_commission']).'" title="" class="fancyframe nice2">Modifier le titre</a> <br />'
+                        // .'<a href="/includer.php?p=includes/commission-edit-bigfond.php&amp;id_commission='.intval($row['id_commission']).'" title="" class="fancyframe nice2">Modifier l\'image de fond</a> '
+                        // .'<a href="/includer.php?p=includes/commission-edit-pictos.php&amp;id_commission='.intval($row['id_commission']).'" title="" class="fancyframe nice2">Modifier les pictogrammes</a> <br />'
                         echo '</div>'
                                     .'<br style="clear:both" />'
                                 .'</div>';

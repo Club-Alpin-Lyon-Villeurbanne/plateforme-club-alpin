@@ -19,7 +19,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 	</p>
 	<br />
 
-	<a href="includer.php?admin=true&p=pages/admin-pages-add.php" title="" class="fancyframe boutonFancy"><img src="/img/base/page_white_add.png" alt="" title="" /> Nouvelle page</a>
+	<a href="/includer.php?admin=true&p=pages/admin-pages-add.php" title="" class="fancyframe boutonFancy"><img src="/img/base/page_white_add.png" alt="" title="" /> Nouvelle page</a>
 
 	<?php
     // TABLEAU D'ERREURS

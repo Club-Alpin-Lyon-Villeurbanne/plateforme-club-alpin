@@ -67,7 +67,7 @@ elseif (!allowed('user_read_public')) {
 		<?php
         if (allowed('user_read_limited')) {
             ?>
-			<a href="user-full/<?php echo $id_user; ?>.html" title="Quitter cette page pour voir la fiche complète de cet adhérent" class="nice2" target="_top">
+			<a href="/user-full/<?php echo $id_user; ?>.html" title="Quitter cette page pour voir la fiche complète de cet adhérent" class="nice2" target="_top">
 				<img src="/img/base/user.png" alt="" title="" /> &nbsp; &nbsp; Profil complet
 			</a>
 			<?php

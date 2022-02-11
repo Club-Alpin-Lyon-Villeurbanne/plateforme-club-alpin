@@ -20,7 +20,7 @@ if ($lbxMsg) {
             $msg = '<p><center><img src="/img/base/tick.png" alt="" title="" /></center> <br />Votre sortie a bien été enregistrée. Vous avez indiqué qu\'elle fait partie d\'un cycle. Vous pouvez d\'ores et déja ajouter une nouvelle sortie à ce cycle : nous avons préremplie la page ci-dessous pour vous faciliter la saisie. Si vous ne souhaitez pas entrer une nouvelle sortie maintenant, vous pouvez le faire à tout moment.<br /><center><input type="button" value="continuer" class="nice2" onclick="$.fancybox.close()"/></center></p>';
             break;
         case 'evt_create_success_newcycle_2':
-            $msg = '<p><center><img src="/img/base/tick.png" alt="" title="" /></center> <br />Votre sortie a bien été ajoutée à ce cycle de sorties. Vous pouvez ajouter une nouvelle sortie à ce cycle en remplissant à nouveau la page ci-dessous, ou <a href="profil/sorties/self.html" title="">terminer la saisie de sortie pour ce cycle</a>.<br /><center><input type="button" value="continuer" class="nice2" onclick="$.fancybox.close()"/></center></p>';
+            $msg = '<p><center><img src="/img/base/tick.png" alt="" title="" /></center> <br />Votre sortie a bien été ajoutée à ce cycle de sorties. Vous pouvez ajouter une nouvelle sortie à ce cycle en remplissant à nouveau la page ci-dessous, ou <a href="/profil/sorties/self.html" title="">terminer la saisie de sortie pour ce cycle</a>.<br /><center><input type="button" value="continuer" class="nice2" onclick="$.fancybox.close()"/></center></p>';
             break;
 
         // annulation de sortie, alertes nomades

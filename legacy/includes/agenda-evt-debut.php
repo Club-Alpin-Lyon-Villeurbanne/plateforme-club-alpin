@@ -1,5 +1,5 @@
 <?php
-echo '<a class="agenda-evt-debut" target="_top" href="sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html?commission='.$evt['code_commission'];
+echo '<a class="agenda-evt-debut" target="_top" href="/sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html?commission='.$evt['code_commission'];
 if (allowed('evt_validate') && 1 != $evt['status_evt']) {
     echo '&forceshow=true';
 }

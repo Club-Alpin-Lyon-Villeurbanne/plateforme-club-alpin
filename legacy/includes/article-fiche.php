@@ -129,7 +129,7 @@ if (!$article) {
 
     // edition
     if (allowed('article_edit_notmine') || allowed('article_edit', 'commission:'.$article['commission_article'])) {
-        echo '<a href="article-edit/'.(int) ($article['id_article']).'.html" title="" class="nice2 orange">
+        echo '<a href="/article-edit/'.(int) ($article['id_article']).'.html" title="" class="nice2 orange">
 			<img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cet article
 		</a>';
     }

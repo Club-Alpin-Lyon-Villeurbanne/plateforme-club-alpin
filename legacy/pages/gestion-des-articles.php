@@ -47,7 +47,7 @@
                         .'<div class="article-tools-valid">'
 
                             // apercu
-                            .'<a class="nice2" href="article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
+                            .'<a class="nice2" href="/article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
 
                         // Moderation
                         echo '
@@ -73,7 +73,7 @@
 							</div>';
                         echo '</div>'
 
-                            .'<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html?forceshow=true" target="_blank">'
+                            .'<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="/article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html?forceshow=true" target="_blank">'
                                 // image liee
                                 .'<img src="'.$img.'" alt="" title="" style="width:100%; " />'
                             .'</a></div>'
@@ -81,7 +81,7 @@
 
                             // INFOS
                             .'<p style="padding:5px 5px; line-height:18px;">'
-                                .'<b><a href="article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html?forceshow=true" target="_blank">'.html_utf8($article['titre_article']).'</a></b><br />'
+                                .'<b><a href="/article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html?forceshow=true" target="_blank">'.html_utf8($article['titre_article']).'</a></b><br />'
                                 .'<b>Type d\'article :</b> '.$type.'<br />'
                                 .'<span class="mini">Par '.userlink($article['id_user'], $article['nickname_user']).'</span> - '
                                 .'<span class="mini">Le '.jour(date('N', $article['tsp_article']), 'short').' '.date('d', $article['tsp_article']).' '.mois(date('m', $article['tsp_article'])).' à '.date('H:i', $article['tsp_article']).'<br />'
@@ -127,11 +127,11 @@
                         .'<div class="article-tools-valid">'
 
                             // apercu
-                            .'<a class="nice2" href="article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
+                            .'<a class="nice2" href="/article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
 
                         // edition
                         if (allowed('article_edit_notmine') || allowed('article_edit', 'commission:'.$article['commission_article'])) {
-                            echo '<a href="article-edit/'.(int) ($article['id_article']).'.html" title="" class="nice2 orange">
+                            echo '<a href="/article-edit/'.(int) ($article['id_article']).'.html" title="" class="nice2 orange">
 									Modifier
 								</a>';
                         }
@@ -154,7 +154,7 @@
 
                         echo '</div>';
 
-                        echo '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html?forceshow=true" target="_blank">'
+                        echo '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="/article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html?forceshow=true" target="_blank">'
                                 // image liee
                                 .'<img src="'.$img.'" alt="" title="" style="width:100%; " />'
                             .'</a></div>'
@@ -162,7 +162,7 @@
 
                             // INFOS
                             .'<p style="padding:5px 5px; line-height:18px;">'
-                                .'<b><a href="article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html?forceshow=true" target="_blank">'.html_utf8($article['titre_article']).'</a></b><br />'
+                                .'<b><a href="/article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html?forceshow=true" target="_blank">'.html_utf8($article['titre_article']).'</a></b><br />'
                                 .'<b>Type d\'article :</b> '.$type.'<br />'
                                 .'<span class="mini">Par '.userlink($article['id_user'], $article['nickname_user']).'</span> - '
                                 .'<span class="mini">Le '.jour(date('N', $article['tsp_article']), 'short').' '.date('d', $article['tsp_article']).' '.mois(date('m', $article['tsp_article'])).' à '.date('H:i', $article['tsp_article']).'<br />'

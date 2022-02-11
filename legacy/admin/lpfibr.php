@@ -162,7 +162,7 @@ if (admin()) {
 								window.location.href='lpfibr.php?type=<?php echo $type; ?>';
 							// message d'erreur si certains ont fonctionné
 							if($(".qq-upload-fail:visible").length && $(".qq-upload-success:visible").length){
-								html='<p class="erreur">Certains éléments ont bien été envoyés, mais pas tous. <a href="lpfibr.php?type=<?php echo $type; ?>" >Cliquez ici pour actualiser le cadre et afficher les nouveaux éléments</a>.</p>';
+								html='<p class="erreur">Certains éléments ont bien été envoyés, mais pas tous. <a href="/lpfibr.php?type=<?php echo $type; ?>" >Cliquez ici pour actualiser le cadre et afficher les nouveaux éléments</a>.</p>';
 								$("#uploadLog").html(html);
 							}
 						},

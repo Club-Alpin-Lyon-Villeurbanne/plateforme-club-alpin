@@ -11,7 +11,7 @@
         } else {
             // cette page est-elle visible aux visiteurs ?
             if (!$currentPage2['vis_page']) {
-                echo '<p class="info" style="position:relative; top:35px;">Cette page n\'est pas accessible aux visiteurs du site. Pour la rendre visible, prenez le temps de modifier les contenus ci-dessous, puis rendez-vous dans <a href="admin-pages-libres.html" title="">l\'espace d\'administration des pages</a>.</p><br />';
+                echo '<p class="info" style="position:relative; top:35px;">Cette page n\'est pas accessible aux visiteurs du site. Pour la rendre visible, prenez le temps de modifier les contenus ci-dessous, puis rendez-vous dans <a href="/admin-pages-libres.html" title="">l\'espace d\'administration des pages</a>.</p><br />';
             }
 
             echo '<h1 class="page-h1">'.$meta_title.'</h1>';

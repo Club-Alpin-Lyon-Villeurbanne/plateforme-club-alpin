@@ -28,7 +28,7 @@ if (!allowed('user_reset')) {
                 echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
             }
     if (isset($_POST['operation']) && 'user_reset' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<p class="info">Utilisateur réinitialisé (Vous devrez <a href="adherents.html" title="" target="_top">actualiser la page</a> pour voir le changement)</p>';
+        echo '<p class="info">Utilisateur réinitialisé (Vous devrez <a href="/adherents.html" title="" target="_top">actualiser la page</a> pour voir le changement)</p>';
     } else {
         ?>
 				<input type="submit" class="nice2 orange" value="Réinitialiser cet adhérent" />
