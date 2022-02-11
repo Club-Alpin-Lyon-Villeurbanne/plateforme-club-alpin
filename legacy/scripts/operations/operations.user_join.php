@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$is_cb = $is_covoiturage = $evtUrl = $cetinscrit = $evtName = $is_restaurant = $inscrits = null;
+$is_cb = $is_covoiturage = $evtUrl = $evtName = $is_restaurant = $inscrits = null;
 
 // Filiations
 if ('on' == $_POST['filiations']) {
@@ -248,16 +248,16 @@ if (!isset($errTab) || 0 === count($errTab)) {
                         'email' => $cetinscrit['email_user'],
                     ];
                 }, $inscrits),
-                'firstname' => $cetinscrit['firstname_user'],
-                'lastname' => $cetinscrit['lastname_user'],
-                'nickname' => $cetinscrit['nickname_user'],
+                'firstname' => getUser()->getFirstname(),
+                'lastname' => getUser()->getLastname(),
+                'nickname' => getUser()->getNickname(),
                 'is_cb' => 'NULL' != $is_cb,
                 'cb' => $is_cb,
                 'is_restaurant' => 'NULL' != $is_restaurant,
                 'restaurant' => $is_restaurant,
                 'covoiturage' => $is_covoiturage,
                 'dest_role' => $destinataire['role_evt_join'] ?: 'l\'auteur',
-            ], [], null, $cetinscrit['email_user']);
+            ], [], null, getUser()->getEmail());
         }
     }
 
@@ -276,10 +276,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'event_url' => $evtUrl,
                 'inscrits' => [
                     [
-                        'firstname' => $cetinscrit['firstname_user'],
-                        'lastname' => $cetinscrit['lastname_user'],
-                        'nickname' => $cetinscrit['nickname_user'],
-                        'email' => $cetinscrit['email_user'],
+                        'firstname' => getUser()->getFirstname(),
+                        'lastname' => getUser()->getLastname(),
+                        'nickname' => getUser()->getNickname(),
+                        'email' => getUser()->getEmail(),
                     ],
                 ],
                 'is_cb' => 'NULL' != $is_cb,

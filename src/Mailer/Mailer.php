@@ -87,6 +87,8 @@ class Mailer
             } else {
                 $replyTo = null;
             }
+        } elseif ($this->isValid($replyTo)) {
+            $replyTo = new Address($replyTo, $replyTo);
         }
 
         $email = (new Email())
