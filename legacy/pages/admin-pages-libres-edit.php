@@ -32,7 +32,7 @@ if (!admin()) {
         }
     if (isset($_POST['operation']) && 'pagelibre_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'. Vous pouvez actualiser cette page</p>';
-        echo '<script stype="text/javascript">parent.location.href="admin-pages-libres.html?showmsg=pagelibre_edit";</script>';
+        echo '<script stype="text/javascript">parent.location.href="/admin-pages-libres.html?showmsg=pagelibre_edit";</script>';
     } ?>
 
 		<div style="float:left; width:430px; padding-right:20px;">

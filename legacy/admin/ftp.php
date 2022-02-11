@@ -145,7 +145,7 @@ if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier,
 									window.location.href='ftp.php?mode=<?php echo $mode; ?>&dossier=<?php echo $dossier; ?>';
 								// message d'erreur si certains ont fonctionné
 								if($(".qq-upload-fail:visible").length && $(".qq-upload-success:visible").length){
-									html='<p class="erreur">Certains éléments ont bien été envoyés, mais pas tous. <a href="ftp.php?mode=<?php echo $mode; ?>&dossier=<?php echo $dossier; ?>" >Cliquez ici pour actualiser le cadre et afficher les nouveaux éléments</a>.</p>';
+									html='<p class="erreur">Certains éléments ont bien été envoyés, mais pas tous. <a href="/ftp.php?mode=<?php echo $mode; ?>&dossier=<?php echo $dossier; ?>" >Cliquez ici pour actualiser le cadre et afficher les nouveaux éléments</a>.</p>';
 									$("#uploadLog").html(html);
 								}
 								*/

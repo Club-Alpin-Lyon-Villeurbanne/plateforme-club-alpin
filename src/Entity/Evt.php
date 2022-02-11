@@ -34,9 +34,9 @@ class Evt
     /**
      * @var int
      *
-     * @ORM\Column(name="status_evt", type="smallint", nullable=false, options={"comment": "0-unseen 1-ok 2-refused"})
+     * @ORM\Column(name="status_evt", type="smallint", nullable=false, options={"comment": "0-unseen 1-ok 2-refused", "default": 0})
      */
-    private $status;
+    private $status = 0;
 
     /**
      * @var User
@@ -49,9 +49,9 @@ class Evt
     /**
      * @var int
      *
-     * @ORM\Column(name="status_legal_evt", type="smallint", nullable=false, options={"comment": "0-unseen 1-ok 2-refused"})
+     * @ORM\Column(name="status_legal_evt", type="smallint", nullable=false, options={"comment": "0-unseen 1-ok 2-refused", "default": 0})
      */
-    private $statusLegal;
+    private $statusLegal = 0;
 
     /**
      * @var User
@@ -155,7 +155,7 @@ class Evt
     /**
      * @var string
      *
-     * @ORM\Column(name="massif_evt", type="string", length=100, nullable=false)
+     * @ORM\Column(name="massif_evt", type="string", length=100, nullable=true)
      */
     private $massif;
 
@@ -225,14 +225,14 @@ class Evt
     /**
      * @var string
      *
-     * @ORM\Column(name="matos_evt", type="text", length=65535, nullable=false)
+     * @ORM\Column(name="matos_evt", type="text", length=65535, nullable=true)
      */
     private $matos;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="difficulte_evt", type="string", length=50, nullable=false)
+     * @ORM\Column(name="difficulte_evt", type="string", length=50, nullable=true)
      */
     private $difficulte;
 
@@ -290,7 +290,7 @@ class Evt
      *
      * @ORM\Column(name="cycle_master_evt", type="boolean", nullable=false, options={"comment": "Est-ce la première sortie d'un cycle de sorties liées ?"})
      */
-    private $cycleMaster;
+    private $cycleMaster = false;
 
     /**
      * @ORM\ManyToOne(targetEntity="Evt", inversedBy="cycleChildren")
@@ -334,6 +334,7 @@ class Evt
         $this->joins = new ArrayCollection();
         $this->articles = new ArrayCollection();
         $this->cycleChildren = new ArrayCollection();
+        $this->tspCrea = time();
     }
 
     public function getId(): ?int
@@ -411,19 +412,19 @@ class Evt
         return $this->cancelledWho;
     }
 
-    public function setCancelledWho(User $cancelledWho): self
+    public function setCancelledWho(?User $cancelledWho): self
     {
         $this->cancelledWho = $cancelledWho;
 
         return $this;
     }
 
-    public function getCancelledWhen(): ?string
+    public function getCancelledWhen(): ?int
     {
         return $this->cancelledWhen;
     }
 
-    public function setCancelledWhen(string $cancelledWhen): self
+    public function setCancelledWhen(?int $cancelledWhen): self
     {
         $this->cancelledWhen = $cancelledWhen;
 
@@ -433,6 +434,13 @@ class Evt
     public function getUser(): ?User
     {
         return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
     }
 
     /** @return EvtJoin[] */
@@ -462,6 +470,17 @@ class Evt
         return null;
     }
 
+    public function getParticipantById(int $id): ?EvtJoin
+    {
+        foreach ($this->joins as $join) {
+            if ($join->getId() === $id) {
+                return $join;
+            }
+        }
+
+        return null;
+    }
+
     /** @return EvtJoin[] */
     public function getEncadrants($types = [EvtJoin::ROLE_ENCADRANT, EvtJoin::ROLE_COENCADRANT]): Collection
     {
@@ -471,6 +490,13 @@ class Evt
     public function getCommission(): Commission
     {
         return $this->commission;
+    }
+
+    public function setCommission(Commission $commission): self
+    {
+        $this->commission = $commission;
+
+        return $this;
     }
 
     public function getGroupe(): ?Groupe

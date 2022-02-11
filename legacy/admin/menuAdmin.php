@@ -10,7 +10,7 @@ if (admin()) {
     } ?>">
 		<!-- specs -->
 		<a href="<?php echo generateRoute('admin_logout'); ?>" title="" class="adminmenulink special"><img src="/img/base/door_out.png" alt="" title="" /> Déconnexion</a>
-		<a href="includer.php?p=includes/admin-log.php&admin=true" title="Voir les activités administrateur" class="adminmenulink special fancyframe"><img src="/img/base/report.png" alt="" title="" /> Log</a>
+		<a href="/includer.php?p=includes/admin-log.php&admin=true" title="Voir les activités administrateur" class="adminmenulink special fancyframe"><img src="/img/base/report.png" alt="" title="" /> Log</a>
 		<a href="<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>" title="Retour au site" class="adminmenulink special"><img src="/img/base/house.png" alt="" title="" /> Retour au site</a>
 
 		<span style="float:left">Menu administrateur : </span>
@@ -29,19 +29,19 @@ if (admin()) {
             } ?>
 
 			<!--
-			<a href="admin-contenus.html" title="" class="adminmenulink <?php if ('admin-contenus' == $p1) {
+			<a href="/admin-contenus.html" title="" class="adminmenulink <?php if ('admin-contenus' == $p1) {
                 echo 'up';
             } ?>">Contenus statiques</a>
-			<a href="admin-actus.html" title="" class="adminmenulink <?php if ('admin-actus' == $p1) {
+			<a href="/admin-actus.html" title="" class="adminmenulink <?php if ('admin-actus' == $p1) {
                 echo 'up';
             } ?>">Actualités</a>
-			<a href="admin-reas.html" title="Organisez vos réalisations" class="adminmenulink <?php if ('admin-reas' == $p1) {
+			<a href="/admin-reas.html" title="Organisez vos réalisations" class="adminmenulink <?php if ('admin-reas' == $p1) {
                 echo 'up';
             } ?>">Réalisations</a>
-			<a href="admin-partenaires.html" title="Organisez l'onglet valeurs en pied de page" class="adminmenulink <?php if ('admin-partenaires' == $p1) {
+			<a href="/admin-partenaires.html" title="Organisez l'onglet valeurs en pied de page" class="adminmenulink <?php if ('admin-partenaires' == $p1) {
                 echo 'up';
             } ?>">Onglet "Partenaires"</a>
-			<a href="admin-newsletter.html" title="Inscrits à la newsletter" class="adminmenulink <?php if ('admin-newsletter' == $p1) {
+			<a href="/admin-newsletter.html" title="Inscrits à la newsletter" class="adminmenulink <?php if ('admin-newsletter' == $p1) {
                 echo 'up';
             } ?>">Newsletter</a>
 			-->

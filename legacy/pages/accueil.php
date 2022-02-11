@@ -50,7 +50,7 @@
                         $img = '/ftp/articles/0/wide-figure.jpg';
                     }
 
-                    echo '<a href="article/'.html_utf8($article['code_article'].'-'.$article['id_article']).'.html" class="slide" style="background-image:url('.$img.')" title="CLIQUEZ POUR VOIR L\'ARTICLE">
+                    echo '<a href="/article/'.html_utf8($article['code_article'].'-'.$article['id_article']).'.html" class="slide" style="background-image:url('.$img.')" title="CLIQUEZ POUR VOIR L\'ARTICLE">
 						<p class="alaune">ARTICLE A LA UNE</p>
 						<h2>'.html_utf8($article['titre_article']).'</h2>
 					</a>';
@@ -71,7 +71,7 @@
             else {
                 echo '<h1 class="actus-h1 shortened" id="home-articles">Les actus <b>'.html_utf8($comTab[$current_commission]['title_commission']).'</b></h1>';
                 if (count($articlesTab)) {
-                    echo '<a href="accueil.html" title="Afficher tous les articles sans distinction" class="lien-big" style="float:right; margin:6px 20px 0 0"><span style="color:#3C91BF">&gt;</span> Voir toutes les actus</a>';
+                    echo '<a href="/accueil.html" title="Afficher tous les articles sans distinction" class="lien-big" style="float:right; margin:6px 20px 0 0"><span style="color:#3C91BF">&gt;</span> Voir toutes les actus</a>';
                 }
             }
 
@@ -101,18 +101,18 @@
 
             echo '<br style="clear:both" />';
             if ($current_commission) {
-                echo '<a href="accueil.html#home-actus" title="Afficher tous les articles sans distinction" class="lien-big" style="float:right; margin:6px 20px 0 0"><span style="color:#3C91BF">&gt;</span> Voir toutes les actus</a>';
+                echo '<a href="/accueil.html#home-actus" title="Afficher tous les articles sans distinction" class="lien-big" style="float:right; margin:6px 20px 0 0"><span style="color:#3C91BF">&gt;</span> Voir toutes les actus</a>';
             }
 
             ?>
 			<!-- liens vers les flux RSS -->
-			<a href="rss.xml?mode=articles" title="Flux RSS de toutes les actualités du club" class="nice2">
+			<a href="/rss.xml?mode=articles" title="Flux RSS de toutes les actualités du club" class="nice2">
 				<img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
 				actualités du club
 			</a>
 			<?php
             if ($current_commission) {
-                echo '<a href="rss.xml?mode=articles-'.$current_commission.'" title="Flux RSS des actualités «'.$current_commission.'» uniquement" class="nice2">
+                echo '<a href="/rss.xml?mode=articles-'.$current_commission.'" title="Flux RSS des actualités «'.$current_commission.'» uniquement" class="nice2">
 						<img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
 						actualités «'.$comTab[$current_commission]['title_commission'].'»
 					</a>';

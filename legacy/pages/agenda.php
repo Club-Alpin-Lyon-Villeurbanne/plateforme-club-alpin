@@ -34,11 +34,11 @@ $min_year = (int) (date('Y')) - 3;
 				<div class="faux-select faux-select-wide">
 					<?php
                     // première ligne : tjrs toutes les comms
-                    echo '<a href="agenda.html?month='.(int) $month.'&amp;year='.(int) $year.'" title="" class="'.($current_commission ? '' : 'up').'">Toutes les sorties</a> ';
+                    echo '<a href="/agenda.html?month='.(int) $month.'&amp;year='.(int) $year.'" title="" class="'.($current_commission ? '' : 'up').'">Toutes les sorties</a> ';
                     // choix de la commission
                     ksort($comTab);
                     foreach ($comTab as $code => $data) {
-                        echo '<a href="agenda/'.html_utf8($code).'.html?month='.(int) $month.'&amp;year='.(int) $year.'" title="" class="'.($code == $current_commission ? 'up' : '').'">'.html_utf8($data['title_commission']).'</a> ';
+                        echo '<a href="/agenda/'.html_utf8($code).'.html?month='.(int) $month.'&amp;year='.(int) $year.'" title="" class="'.($code == $current_commission ? 'up' : '').'">'.html_utf8($data['title_commission']).'</a> ';
                     }
                     ?>
 				</div>
@@ -63,7 +63,7 @@ $min_year = (int) (date('Y')) - 3;
                             $tmpMonth = $i;
                         }
                         if ($tmpYear <= $max_year && $tmpYear >= $min_year) {
-                            echo '<a href="agenda'.($current_commission ? '/'.$current_commission : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" class="'.($month == $tmpMonth ? 'up' : '').'">'
+                            echo '<a href="/agenda'.($current_commission ? '/'.$current_commission : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" class="'.($month == $tmpMonth ? 'up' : '').'">'
                                 .mois($tmpMonth).' '.$tmpYear.'</a>';
                         }
                     }
@@ -85,7 +85,7 @@ $min_year = (int) (date('Y')) - 3;
                 --$tmpYear;
             }
             if ($tmpYear >= $min_year) {
-                echo '<a style="float:left" href="agenda'.($p2 ? '/'.$p2 : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" title="" class="fader2"><img src="/img/arrow-left.png" alt="&lt;" title="Mois précédent" style="height:30px" /></a>';
+                echo '<a style="float:left" href="/agenda'.($p2 ? '/'.$p2 : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" title="" class="fader2"><img src="/img/arrow-left.png" alt="&lt;" title="Mois précédent" style="height:30px" /></a>';
             }
 
             $tmpMonth = $month + 1;
@@ -95,7 +95,7 @@ $min_year = (int) (date('Y')) - 3;
                 ++$tmpYear;
             }
             if ($tmpYear <= $max_year) {
-                echo '<a style="float:right" href="agenda'.($p2 ? '/'.$p2 : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" title="" class="fader2"><img src="/img/arrow-right.png" alt="&gt;" title="Mois suivant" style="height:30px" /></a>';
+                echo '<a style="float:right" href="/agenda'.($p2 ? '/'.$p2 : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" title="" class="fader2"><img src="/img/arrow-right.png" alt="&gt;" title="Mois suivant" style="height:30px" /></a>';
             }
             ?>
 
@@ -165,7 +165,7 @@ $min_year = (int) (date('Y')) - 3;
                 --$tmpYear;
             }
             if ($tmpYear >= $min_year) {
-                echo '<a style="float:left" href="agenda'.($p2 ? '/'.$p2 : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" title="" class="fader2"><img src="/img/arrow-left.png" alt="&lt;" title="Mois précédent" /></a>';
+                echo '<a style="float:left" href="/agenda'.($p2 ? '/'.$p2 : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" title="" class="fader2"><img src="/img/arrow-left.png" alt="&lt;" title="Mois précédent" /></a>';
             }
 
             $tmpMonth = $month + 1;
@@ -175,20 +175,20 @@ $min_year = (int) (date('Y')) - 3;
                 ++$tmpYear;
             }
             if ($tmpYear <= $max_year) {
-                echo '<a style="float:right" href="agenda'.($p2 ? '/'.$p2 : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" title="" class="fader2"><img src="/img/arrow-right.png" alt="&gt;" title="Mois suivant" /></a>';
+                echo '<a style="float:right" href="/agenda'.($p2 ? '/'.$p2 : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" title="" class="fader2"><img src="/img/arrow-right.png" alt="&gt;" title="Mois suivant" /></a>';
             }
             ?>
 
 			<!-- liens vers les flux RSS -->
 			<br style="clear:both" />
 			<br />
-			<a href="rss.xml?mode=sorties" title="Flux RSS de toutes les sorties du club" class="nice2">
+			<a href="/rss.xml?mode=sorties" title="Flux RSS de toutes les sorties du club" class="nice2">
 				<img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
 				sorties du club
 			</a>
 			<?php
             if ($current_commission) {
-                echo '<a href="rss.xml?mode=sorties-'.$current_commission.'" title="Flux RSS des sorties «'.$current_commission.'» uniquement" class="nice2">
+                echo '<a href="/rss.xml?mode=sorties-'.$current_commission.'" title="Flux RSS des sorties «'.$current_commission.'» uniquement" class="nice2">
 						<img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
 						sorties «'.$current_commission.'»
 					</a>';

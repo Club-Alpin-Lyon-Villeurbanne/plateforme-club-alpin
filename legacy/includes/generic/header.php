@@ -15,7 +15,7 @@ global $ogImage;
 	</script>
 
 	<!-- icon -->
-	<link rel="shortcut icon" href="favicon.ico" />
+	<link rel="shortcut icon" href="/favicon.ico" />
 
 	<!-- css SCREEN ONLY  -->
 	<!-- media="screen" -->

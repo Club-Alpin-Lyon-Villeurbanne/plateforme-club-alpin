@@ -15,8 +15,8 @@
 				Notez bien le mot de passe que vous choisissez, et prenez bien soin d'entrer une adresse e-mail valide !
 			</p>
 			<p>
-				Dans la <a href="adherents.html" title="" target="_top">page adhérents</a>, les utilisateurs créés ici sont signalés par le logo <img src="/img/base/user_manuel.png" alt="" title="M : créé MANUELLEMENT" />.
-				Une fois votre adhérent créé, rendez-vous sur la <a href="adherents.html" title="" target="_top">page adhérents</a> pour lui attribuer les
+				Dans la <a href="/adherents.html" title="" target="_top">page adhérents</a>, les utilisateurs créés ici sont signalés par le logo <img src="/img/base/user_manuel.png" alt="" title="M : créé MANUELLEMENT" />.
+				Une fois votre adhérent créé, rendez-vous sur la <a href="/adherents.html" title="" target="_top">page adhérents</a> pour lui attribuer les
 				types d'adhérents désirés (exemple : <i>salarié</i>) en cliquant sur le bouton <img src="/img/base/user_star.png" alt="" title="" />.
 			</p>
 			<hr />
@@ -31,7 +31,7 @@
                 }
             if (isset($_POST['operation']) && 'user_create' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                 echo '<p class="info">Nouvel adhérent bien créé à '.date('H:i:s', time()).'.<br />
-					Rendez-vous sur la <a href="adherents.html" title="" target="_top">page adhérents</a> pour lui attribuer les
+					Rendez-vous sur la <a href="/adherents.html" title="" target="_top">page adhérents</a> pour lui attribuer les
 					status désirés (exemple : <i>salarié</i>) en cliquant sur le bouton <img src="/img/base/user_star.png" alt="" title="" />.</p>';
             } else {
                 ?>
