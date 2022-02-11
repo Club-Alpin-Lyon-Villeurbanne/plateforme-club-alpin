@@ -2,8 +2,10 @@
 
 namespace App\Utils;
 
+use App\Entity\User;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class MysqliHandler
 {
@@ -11,9 +13,11 @@ class MysqliHandler
     private ?\mysqli $mysqli;
     private RequestStack $requestStack;
     private string $kernelEnvironment;
+    private TokenStorageInterface $tokenStorage;
 
-    public function __construct(LoggerInterface $logger, RequestStack $requestStack, string $kernelEnvironment)
+    public function __construct(TokenStorageInterface $tokenStorage, LoggerInterface $logger, RequestStack $requestStack, string $kernelEnvironment)
     {
+        $this->tokenStorage = $tokenStorage;
         $this->logger = $logger;
         $this->requestStack = $requestStack;
         $this->kernelEnvironment = $kernelEnvironment;
@@ -55,12 +59,20 @@ class MysqliHandler
                 $url = $request->getUri();
             }
 
+            $user = null;
+            if ($token = $this->tokenStorage->getToken()) {
+                if (($u = $token->getUser()) instanceof User) {
+                    $user = $u->getEmail().' ('.$u->getId().')';
+                }
+            }
+
             $this->logger->error(sprintf('SQL error: %s', $this->mysqli->error), [
                 'error' => $this->mysqli->error,
                 'error number' => $this->mysqli->errno,
                 'sql' => $sql,
                 'exception' => new \RuntimeException(sprintf('SQL error: %s', $this->mysqli->error)),
                 'url' => $url,
+                'user' => $user,
             ]);
         }
 
