@@ -136,7 +136,7 @@ if ('profil' == $p1 && 'infos' == $p2 && getUser()) {
 }
 
 // MES ARTICLES
-elseif ('profil' == $p1 && 'articles' == $p2) {
+elseif ('profil' == $p1 && 'articles' == $p2 && getUser()) {
     // pagination
     $limite = $MAX_ARTICLES_ADHERENT; // nombre d'elements affiches
     $pagenum = (int) ($_GET['pagenum'] ?? 0);
