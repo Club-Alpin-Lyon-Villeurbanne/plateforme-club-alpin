@@ -12,6 +12,8 @@ if ('on' == $_POST['filiations']) {
     $filiations = false;
 }
 
+$idUsersFiliations = $_POST['id_user_filiation'] ?? [];
+
 // Evenement défini et utilisateur aussi
 $id_evt = (int) ($_POST['id_evt']);
 $id_user = getUser()->getId();
@@ -34,11 +36,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // si filiations : création du tableau des joints et vérifications
     if ($filiations) {
-        if (!count($_POST['id_user_filiation'])) {
+        if (!count($idUsersFiliations)) {
             $errTab[] = 'Merci de choisir au moins une personne à inscrire';
         }
         // pour chaque id envoyé
-        foreach ($_POST['id_user_filiation'] as $id_user_tmp) {
+        foreach ($idUsersFiliations as $id_user_tmp) {
             // vérification que c'est bien mon affilié
             // sauf moi-meme
             if ($id_user_tmp != getUser()->getId()) {
@@ -91,7 +93,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
     // pour les inscriptions d'affilié
     else {
-        foreach ($_POST['id_user_filiation'] as $id_user_tmp) {
+        foreach ($idUsersFiliations as $id_user_tmp) {
             $id_user_tmp = (int) $id_user_tmp;
             $req = "SELECT id_user, lastname_user, firstname_user, civ_user
             FROM caf_evt_join, caf_user
@@ -157,7 +159,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         }
         // filiations
         else {
-            foreach ($_POST['id_user_filiation'] as $id_user_tmp) {
+            foreach ($idUsersFiliations as $id_user_tmp) {
                 /* if (count(empietement_sortie($id_user_tmp, $evt)) > 0) {
                     $errTab[]="Utilisateur $id_user_tmp déjà inscrit sur une sortie simultanée.";
 
@@ -225,7 +227,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $req = 'SELECT email_user, nickname_user, firstname_user, lastname_user, civ_user, birthday_user '
         .'FROM caf_user '
         .($filiations ?
-            'WHERE id_user = '.(implode(' OR id_user = ', $_POST['id_user_filiation'])).' ' // filiation : liste d'ids
+            'WHERE id_user = '.(implode(' OR id_user = ', $idUsersFiliations)).' ' // filiation : liste d'ids
             :
             "WHERE id_user = $id_user "
         )
