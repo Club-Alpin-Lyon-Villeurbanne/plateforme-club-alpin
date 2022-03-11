@@ -40,10 +40,18 @@ function display_sorties($id_user, $limit = 10, $title = '')
         echo '<p class="mini">'.$total.' sortie(s) en tout</p>';
         echo '<div style="width:490px">';
         // liste
+        echo '<table id="agenda">';
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             $evt = $handle;
+
+            echo '<tr>'
+                    .'<td class="agenda-gauche">'.date('d/m/Y', $evt['tsp_evt']).'</td>'
+                    .'<td>';
             require __DIR__.'/../includes/agenda-evt-debut.php';
+            echo '</td>'
+                .'</tr>';
         }
+        echo '</table>';
         echo '</div><hr />';
     }
 }
