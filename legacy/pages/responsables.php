@@ -29,7 +29,7 @@ use App\Legacy\LegacyContainer;
 
                 echo '<h2><a id="'.$data['code_commission'].'">&gt; '.html_utf8($data['title_commission']).'</a></h2>';
                 $req = " SELECT
-						id_user, civ_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user
+						id_user, civ_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, doit_renouveler_user
 						, title_usertype
 					FROM
 						caf_user
@@ -44,6 +44,7 @@ use App\Legacy\LegacyContainer;
 						)
 					AND usertype_user_attr = id_usertype
 					AND user_user_attr = id_user
+					AND doit_renouveler_user = 0
 					AND params_user_attr LIKE 'commission:".$code."'
 					ORDER BY code_usertype DESC, lastname_user ASC
 					";
