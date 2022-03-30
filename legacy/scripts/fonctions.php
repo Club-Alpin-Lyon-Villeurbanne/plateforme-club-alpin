@@ -38,7 +38,7 @@ function display_sorties($id_user, $limit = 10, $title = '')
     if ($total > 0) {
         echo '<h2 id="user-sorties">'.$title.' :</h2>';
         echo '<p class="mini">'.$total.' sortie(s) en tout</p>';
-        echo '<div style="width:490px">';
+        echo '<div style="width:620px">';
         // liste
         echo '<table id="agenda">';
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -52,7 +52,7 @@ function display_sorties($id_user, $limit = 10, $title = '')
                 .'</tr>';
         }
         echo '</table>';
-        echo '</div><hr />';
+        echo '</div><br style="clear:both" />';
     }
 }
 /*

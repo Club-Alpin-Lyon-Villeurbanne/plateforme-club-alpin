@@ -119,7 +119,6 @@ elseif (!allowed('user_read_public')) {
 			<!-- infos persos-->
 			<?php require __DIR__.'/../includes/user/infos_privees.php'; ?>
 
-			<hr  />
 			<br style="clear:both" />
 
             <?php $ecriture = get_niveaux($tmpUser['id_user'], true);
@@ -137,7 +136,7 @@ elseif (!allowed('user_read_public')) {
         if ($lecture) {
             display_niveaux($lecture, 'lecture');
         } ?>
-			<hr  />
+
 			<br style="clear:both" />
             <?php
     } ?>
