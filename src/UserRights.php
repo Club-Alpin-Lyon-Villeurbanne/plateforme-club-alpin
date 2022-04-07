@@ -8,13 +8,14 @@ use App\Entity\UserAttr;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Contracts\Service\ResetInterface;
 
-class UserRights
+class UserRights implements ResetInterface
 {
     private AuthorizationCheckerInterface $checker;
     private TokenStorageInterface $tokenStorage;
     private Connection $connection;
-    private $userAllowedToCache;
+    private ?array $userAllowedToCache = null;
 
     public function __construct(AuthorizationCheckerInterface $checker, TokenStorageInterface $tokenStorage, Connection $connection)
     {
@@ -26,6 +27,11 @@ class UserRights
     public function allowedOnCommission(string $code, Commission $commission)
     {
         return $this->allowed($code, 'commission:'.$commission->getCode());
+    }
+
+    public function reset()
+    {
+        $this->userAllowedToCache = null;
     }
 
     public function allowed($code_userright, $param = '')
@@ -100,11 +106,10 @@ class UserRights
 
         if (!$user instanceof User || $user->getDoitRenouveler()) {
             $sql = 'SELECT DISTINCT code_userright '
-                .'FROM caf_userright, caf_usertype_attr, caf_usertype ' // des droits au type
-                ."WHERE code_usertype='visiteur' " // type visiteur
-                .'AND id_usertype = type_usertype_attr ' // du type visiteur à ses attributions
-                .'AND id_userright = right_usertype_attr ' // de ses attributions a ses droits
-                .'LIMIT 500 '
+                .'  FROM caf_userright, caf_usertype_attr, caf_usertype ' // des droits au type
+                ."  WHERE code_usertype = 'visiteur' " // type visiteur
+                .'      AND id_usertype = type_usertype_attr ' // du type visiteur à ses attributions
+                .'      AND id_userright = right_usertype_attr ' // de ses attributions a ses droits
             ;
 
             $result = $this->connection->prepare($sql)->executeQuery()->fetchAllAssociative();
@@ -127,12 +132,12 @@ class UserRights
         $userAllowedTo = ['default' => '1']; // minimum une valeur
 
         $sql = 'SELECT DISTINCT code_userright, params_user_attr, limited_to_comm_usertype ' // on veut le code, et les paramètres de chaque droit, et savoir si ce droit est limité à une commission ou non
-            .'FROM caf_userright, caf_usertype_attr, caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
-            .'WHERE user_user_attr = :user ' // de user à user_attr
-            .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
-            .'AND id_usertype=type_usertype_attr ' // de usertype à usertype_attr
-            .'AND right_usertype_attr=id_userright ' // de usertype_attr à userright
-            .'ORDER BY params_user_attr ASC, code_userright ASC, limited_to_comm_usertype ASC LIMIT 0 , 500 ' // order by params permet d'optimiser la taille de la var globale. Si, si promis (14 lignes plus loin) !
+            .'  FROM caf_userright, caf_usertype_attr, caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
+            .'  WHERE user_user_attr = :user ' // de user à user_attr
+            .'     AND usertype_user_attr = id_usertype ' // de user_attr à usertype
+            .'     AND id_usertype = type_usertype_attr ' // de usertype à usertype_attr
+            .'     AND right_usertype_attr = id_userright ' // de usertype_attr à userright
+            .' ORDER BY params_user_attr ASC, code_userright ASC, limited_to_comm_usertype ASC' // order by params permet d'optimiser la taille de la var globale. Si, si promis (14 lignes plus loin) !
         ;
 
         $result = $this->connection->prepare($sql)->executeQuery(['user' => $user->getId()])->fetchAllAssociative();
@@ -168,7 +173,7 @@ class UserRights
                 ."WHERE code_usertype LIKE 'adherent' " // usertype adherent
                 .'AND id_usertype=type_usertype_attr '
                 .'AND right_usertype_attr=id_userright '
-                .'ORDER BY  code_userright ASC, limited_to_comm_usertype ASC LIMIT 0 , 500 '
+                .'ORDER BY  code_userright ASC, limited_to_comm_usertype ASC'
             ;
 
             $result = $this->connection->prepare($sql)->executeQuery()->fetchAllAssociative();

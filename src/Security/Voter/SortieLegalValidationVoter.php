@@ -31,7 +31,7 @@ class SortieLegalValidationVoter extends Voter
         }
 
         if (!$subject instanceof Evt) {
-            throw new \InvalidArgumentException('The voter requires an event subject');
+            throw new \InvalidArgumentException(sprintf('The voter "%s" requires an event subject', __CLASS__));
         }
 
         if ($this->userRights->allowed('evt_legal_accept') && $subject->isLegalStatusUnseen() && $subject->isPublicStatusValide()) {

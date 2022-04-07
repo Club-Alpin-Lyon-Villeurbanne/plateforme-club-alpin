@@ -45,11 +45,6 @@ if ('commission_edit' == ($_POST['operation'] ?? null) && user()) {
     require $operationsDir.'operations.groupe_edit.php';
 }
 
-// JOINS : USER / SORTIE : changement en bloc des statuts par l'organisateur
-if ('user_join_update_status' == ($_POST['operation'] ?? null) && user()) {
-    require $operationsDir.'operations.user_join_update_status.php';
-}
-
 // JOINS : USER / SORTIE : annulation
 if ('user_join_del' == ($_POST['operation'] ?? null) && user()) {
     require $operationsDir.'operations.user_join_del.php';
@@ -85,11 +80,6 @@ if ('evt_cancel' == ($_POST['operation'] ?? null) && user()) {
     require $operationsDir.'operations.evt_cancel.php';
 }
 
-// SORTIE : publication OU refus
-if ('evt_validate' == ($_POST['operation'] ?? null) && user()) {
-    require $operationsDir.'operations.evt_validate.php';
-}
-
 // SORTIE : modification : remet le status à 0
 if ('evt_update' == ($_POST['operation'] ?? null) && user()) {
     require $operationsDir.'operations.evt_update.php';
@@ -98,15 +88,6 @@ if ('evt_update' == ($_POST['operation'] ?? null) && user()) {
 // SORTIE : création
 if ('evt_create' == ($_POST['operation'] ?? null) && user()) {
     require $operationsDir.'operations.evt_create.php';
-}
-
-// SORTIE : validation légale ou refus
-if ('evt_legal_update' == ($_POST['operation'] ?? null) && user()) {
-    require $operationsDir.'operations.evt_legal_update.php';
-}
-// SORTIE : contacter les inscrits
-if ('evt_user_contact' == ($_POST['operation'] ?? null) && user()) {
-    require $operationsDir.'operations.evt_user_contact.php';
 }
 
 // ARTICLE : publication OU refus
