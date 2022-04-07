@@ -2,8 +2,11 @@
 
 namespace App\Tests;
 
+use App\Entity\Commission;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Repository\UsertypeRepository;
+use App\UserRights;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
@@ -16,9 +19,13 @@ abstract class WebTestCase extends BaseWebTestCase
 {
     protected ?KernelBrowser $client = null;
 
-    protected function signup($email = 'test@clubalpinlyon.fr')
+    protected function signup(string $email = null)
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
+
+        if (null === $email) {
+            $email = 'test-'.bin2hex(random_bytes(12)).'@clubalpinlyon.fr';
+        }
 
         $user = new User();
         $user->setEmail($email);
@@ -102,5 +109,29 @@ abstract class WebTestCase extends BaseWebTestCase
         static::getContainer()->get('session_listener')->onKernelRequest($event);
 
         return $request->getSession();
+    }
+
+    protected function createCommission(string $name = 'Alpinisme'): Commission
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $commission = new Commission($name, sprintf('commission-%s', bin2hex(random_bytes(12))), 1);
+        $em->persist($commission);
+        $em->flush();
+
+        return $commission;
+    }
+
+    protected function addAttribute(User $user, string $attribute, ?string $param = null)
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $userTypeRepo = $this->getContainer()->get(UsertypeRepository::class);
+        $user->addAttribute($userTypeRepo->getByCode($attribute), $param);
+        $em->flush();
+        self::getContainer()->get(UserRights::class)->reset();
+    }
+
+    protected function csrfToken($csrfTokenId)
+    {
+        return $this->client->getContainer()->get('security.csrf.token_manager')->getToken($csrfTokenId)->getValue();
     }
 }

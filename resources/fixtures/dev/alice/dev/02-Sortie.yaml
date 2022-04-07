@@ -12,3 +12,34 @@ App\Entity\Evt:
         massif: '<word()>'
         matos: '<sentence(12)>'
         difficulte: '<word()>'
+
+    sortieMaster:
+        user: '@user1'
+        titre: 'Sortie master de cycle <sentence(4)>'
+        place: '<address()>'
+        code: '<word()>'
+        rdv: '<address()>'
+        lat: '<latitude()>'
+        long: '<longitude()>'
+        description: '<paragraph()>'
+        cycleMaster: true
+
+        massif: '<word()>'
+        matos: '<sentence(12)>'
+        difficulte: '<word()>'
+
+    sortiesCycle{1..5}:
+        user: '@user1'
+        titre: 'Sortie children de cycle <sentence(4)>'
+        place: '<address()>'
+        code: '<word()>'
+        rdv: '<address()>'
+        lat: '<latitude()>'
+        long: '<longitude()>'
+        description: '<paragraph()>'
+        cycleParent: '@sortieMaster'
+
+        massif: '<word()>'
+        matos: '<sentence(12)>'
+        difficulte: '<word()>'
+

@@ -28,7 +28,7 @@ class EvtJoinRepository extends ServiceEntityRepository
             ->innerJoin('p.evt', 'e')
             ->where('p.status != :status_refuse')
             ->setParameter('status_refuse', EvtJoin::STATUS_REFUSE)
-            ->where('p.status != :status_absent')
+            ->andWhere('p.status != :status_absent')
             ->setParameter('status_absent', EvtJoin::STATUS_ABSENT)
             ->andWhere('e.id != :id')
             ->setParameter('id', $event->getId())
