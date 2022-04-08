@@ -522,10 +522,10 @@
                                             {{ participant.user.tel2 }}
                                         </td>
                                         {% if event.cb %}
-                                            <td><img src="/img/base/'.('1' == $row['is_cb'] ? 'cb-oui.png' : ('0' == $row['is_cb'] ? 'cb-non.png' : 'cb-nsp.png')).'" title="'.('1' == $row['is_cb'] ? 'Oui' : ('0' == $row['is_cb'] ? 'Non' : 'NSP')).'" /></td>
+                                            <td><img src="/img/base/{{ ('1' == row['is_cb'] ? 'cb-oui.png' : ('0' == row['is_cb'] ? 'cb-non.png' : 'cb-nsp.png')) }}" title="{{ ('1' == row['is_cb'] ? 'Oui' : ('0' == row['is_cb'] ? 'Non' : 'NSP')) }}" /></td>
                                         {% endif %}
                                         {% if event.repasRestaurant %}
-                                            <td><img src="/img/base/'.('1' == $row['is_restaurant'] ? 'resto-oui.png' : ('0' == $row['is_restaurant'] ? 'resto-non.png' : 'resto-nsp.png')).'" title="'.('1' == $row['is_restaurant'] ? 'Oui' : ('0' == $row['is_restaurant'] ? 'Non' : 'NSP')).'" /></td>
+                                            <td><img src="/img/base/{{ ('1' == row['is_restaurant'] ? 'resto-oui.png' : ('0' == row['is_restaurant'] ? 'resto-non.png' : 'resto-nsp.png'))}}" title="{{('1' == row['is_restaurant'] ? 'Oui' : ('0' == row['is_restaurant'] ? 'Non' : 'NSP'))}}" /></td>
                                         {% endif %}
                                     </tr>
                                 {% endfor %}
