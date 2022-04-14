@@ -31,8 +31,8 @@
     <input type="hidden" name="is_restaurant" value="1">
     <p>
         <label style="width:100%;clear:both;overflow:hidden;">
-            <input type="checkbox" name="jeveuxmangerauresto" <?php echo 1 == $my_choices['is_restaurant'] ? ' checked="checked" ' : ''; ?> />
-            Cochez cette case si vous souhaitez profiter du <b>repas au restaurant</b>, pour un tarif de <b><?php echo $evt['tarif_restaurant']; ?> &euro;</b> (généralement hors consommations).
+            <input type="checkbox" name="jeveuxmangerauresto" {{ my_choices['is_restaurant'] ? ' checked="checked" ' : '' }} />
+            Cochez cette case si vous souhaitez profiter du <b>repas au restaurant</b>, pour un tarif de <b>{{evt['tarif_restaurant']}} &euro;</b> (généralement hors consommations).
         </label>
     </p>
 {% endif %}
