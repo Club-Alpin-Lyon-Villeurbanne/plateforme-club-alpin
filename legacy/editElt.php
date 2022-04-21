@@ -343,28 +343,3 @@ if (admin()) {
 } else {
     echo 'Acess denied<br />Votre session administrateur semble avoir expiré.';
 }
-?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
