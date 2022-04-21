@@ -15,7 +15,7 @@ if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $partenairesTab[] = $row;
         } else {
             error_log("l'image partenaire n'existe pas : ".'ftp/partenaires/'.$row['part_image']);
-            //mylog("partenaires", "l'image partenaire n'existe pas : ".'ftp/partenaires/'.$row['part_image'], false);
+            // mylog("partenaires", "l'image partenaire n'existe pas : ".'ftp/partenaires/'.$row['part_image'], false);
         }
     }
     $partenairesNb = count($partenairesTab);

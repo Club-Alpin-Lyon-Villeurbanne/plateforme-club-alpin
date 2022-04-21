@@ -19,7 +19,7 @@ if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
     $errTab[] = 'Aucun enregistrement affecté';
 } else {
     if (is_file($uploaddir.$partenaireTab['part_image'])) {
-        //delete old file
+        // delete old file
         unlink($uploaddir.$partenaireTab['part_image']);
     }
 }

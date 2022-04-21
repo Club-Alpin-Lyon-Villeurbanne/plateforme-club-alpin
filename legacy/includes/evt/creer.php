@@ -200,7 +200,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
                 } ?> /> Oui, cette sortie est la suite d'une sortie précédente
             </label>
 
-            <div id="cycle_parent_select" style="display:<?php //echo ($_POST['cycle']=='child'?'block':'none'); /**/?>; ">
+            <div id="cycle_parent_select" style="display:<?php // echo ($_POST['cycle']=='child'?'block':'none'); /**/?>; ">
                 <?php
                 // LISTE DES SORTIES MASTER DE CYCLES
                 if (!count($parentEvents)) {

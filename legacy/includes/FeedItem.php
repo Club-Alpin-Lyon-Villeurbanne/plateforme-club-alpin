@@ -11,7 +11,7 @@
   */
  class FeedItem
  {
-     private $elements = [];    //Collection of feed elements
+     private $elements = [];    // Collection of feed elements
      private $version;
 
      /**

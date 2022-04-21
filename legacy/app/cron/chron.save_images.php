@@ -33,7 +33,7 @@ while ($article = $result->fetch_assoc()) {
         }
 
         $dest = preg_replace('@ftp/user/(\d+)/images/@', 'ftp/articles/'.$article['id_article'].'/$1_', $v);
-        //echo $dest."<hr />";
+        // echo $dest."<hr />";
         // controle si fichier source present
         $source = __DIR__.'/../../../public/'.$v;
         $destination = __DIR__.'/../../../public/'.$dest;
@@ -43,7 +43,7 @@ while ($article = $result->fetch_assoc()) {
                 // le fichier destination n'a pas deja ete copie, on le copie
                 if (copy($source, $destination)) {
                     // copie fichier OK
-                    //echo "copie du fichier de '".$v."' vers '".$dest."'<br />\n";
+                    // echo "copie du fichier de '".$v."' vers '".$dest."'<br />\n";
                     ++$nb_copies;
                 }
             }
@@ -52,7 +52,7 @@ while ($article = $result->fetch_assoc()) {
             if (file_exists($destination)) {
                 if (filesize($source) == filesize($destination)) {
                     //  on remplace le chemin de l'image dans le texte de l'article
-                    //echo "remplacement du chemin de l'image '".$dest."'<br />\n";
+                    // echo "remplacement du chemin de l'image '".$dest."'<br />\n";
                     $dest_cont_article = str_replace($v, $dest, $dest_cont_article);
                 } else {
                     unlink($destination);

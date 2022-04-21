@@ -12,15 +12,15 @@ if (isset($config['sentry_dsn'])) {
 
 $scriptsDir = __DIR__.'/../scripts/';
 
-//_________________________________________________ FONCTIONS MAISON
+// _________________________________________________ FONCTIONS MAISON
 require __DIR__.'/../app/fonctions.php';
-//_________________________________________________ VARIABLES "GLOBALES" DU SITE
+// _________________________________________________ VARIABLES "GLOBALES" DU SITE
 require __DIR__.'/../config/params.php';
-//_________________________________________________ FONCTIONS PARTAGEES
+// _________________________________________________ FONCTIONS PARTAGEES
 require __DIR__.'/../scripts/fonctions.php';
-//_________________________________________________ OPERATIONS ADMIN & CLIENT
+// _________________________________________________ OPERATIONS ADMIN & CLIENT
 require __DIR__.'/../scripts/operations.php';
-//_________________________________________________ PARAMS PAGE EN COURS (META/TITRES/EXIST.)
+// _________________________________________________ PARAMS PAGE EN COURS (META/TITRES/EXIST.)
 require __DIR__.'/../app/pages.php';
-//_________________________________________________ REQUETES INHERENTES A LA PAGE
+// _________________________________________________ REQUETES INHERENTES A LA PAGE
 require __DIR__.'/../scripts/reqs.php';

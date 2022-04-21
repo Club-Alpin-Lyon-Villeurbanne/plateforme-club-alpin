@@ -27,7 +27,7 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
     <title>
     <?php echo html_utf8($meta_title); ?>
     <?php if ('feuille-de-sortie' == $p1) { ?>
-        - Feuille de sortie - <?php echo html_utf8($evt['titre_evt']); ?>-<?php echo date('d.m.Y', $evt['tsp_evt']); ?>
+        - Feuille de sortie - <?php echo html_utf8($evt['titre_evt']); ?> - <?php echo date('d.m.Y', $evt['tsp_evt']); ?>
     <?php } ?>
     </title>
     <base href="<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>" />
@@ -43,13 +43,13 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
     ?>
     <?php
 
-        //_________________________________________________ HEADER AU CHOIX (inclut le doctype)
+        // _________________________________________________ HEADER AU CHOIX (inclut le doctype)
         if ($p_pageadmin) {
             require __DIR__.'/includes/generic/header-admin.php';
         } else {
             require __DIR__.'/includes/generic/header.php';
         }
-        //_________________________________________________ Ajout des CSS par page
+        // _________________________________________________ Ajout des CSS par page
         if (is_array($p_addCss)) {
             foreach ($p_addCss as $handle) {
                 if ($handle) {
@@ -57,7 +57,7 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
                 }
             }
         }
-        //_________________________________________________ Ajout des JS par page
+        // _________________________________________________ Ajout des JS par page
         if (is_array($p_addJs)) {
             foreach ($p_addJs as $handle) {
                 if ($handle) {
@@ -75,12 +75,12 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
     <div id="container">
         <div id="siteHeight">
             <?php
-                //_________________________________________________ MENU ADMINISTRATEUR
+                // _________________________________________________ MENU ADMINISTRATEUR
                 if (admin()) {
                     require __DIR__.'/admin/menuAdmin.php';
                 }
 
-                //_________________________________________________ CONTENU IMPRESSION FEUILLE SORTIE
+                // _________________________________________________ CONTENU IMPRESSION FEUILLE SORTIE
                 if ('feuille-de-sortie' == $p1) {
                     echo '<div id="pageAdmin" class="'.($currentPage['superadmin_page'] ? 'superadmin' : '').'">';
                     if (file_exists(__DIR__.'/pages/'.$p1.'.php')) {
@@ -90,7 +90,7 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
                     }
                     echo '</div>';
                 }
-                //_________________________________________________ CONTENU COMMUN AUX PAGES PUBLIQUES
+                // _________________________________________________ CONTENU COMMUN AUX PAGES PUBLIQUES
                 elseif (!$p_pageadmin || !admin()) {
                     // include page
                     require __DIR__.'/includes/generic/top.php';
@@ -102,7 +102,7 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
                     }
                     require __DIR__.'/includes/generic/footer.php';
                 }
-                //_________________________________________________ CONTENU PAGES ADMIN
+                // _________________________________________________ CONTENU PAGES ADMIN
                 else {
                     echo '<div id="pageAdmin" class="'.($currentPage['superadmin_page'] ? 'superadmin' : '').'">';
                     if (file_exists(__DIR__.'/pages/'.$p1.'.php') && '404' != $p1) {

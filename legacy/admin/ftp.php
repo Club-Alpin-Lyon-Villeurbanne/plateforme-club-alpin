@@ -12,7 +12,7 @@ if (!admin()) {
     exit();
 }
 
-//Selection des fichiers a afficher ou pas
+// Selection des fichiers a afficher ou pas
 // NOW IN PARAMS.PHP
 
 $mode = 'relatif';
@@ -96,7 +96,7 @@ if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier,
                         sort($files);
 
                         foreach ($files as $file) {
-                            //while($file=readdir($opendir)){
+                            // while($file=readdir($opendir)){
                             // c'est un dossier, non masqué
                             if (is_dir($dir.$file) && !FtpFile::shouldHide($file)) {
                                 $one = true;
