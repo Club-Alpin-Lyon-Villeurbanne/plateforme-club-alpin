@@ -42,7 +42,7 @@
 
 			<hr />
 			<?php
-            //$fileTab=array('ftp/fichiers-proteges/7300.txt','ftp/fichiers-proteges/7380.txt');
+            // $fileTab=array('ftp/fichiers-proteges/7300.txt','ftp/fichiers-proteges/7380.txt');
             $fileTab = [__DIR__.'/../../public/ftp/fichiers-proteges/74800.txt'];
             foreach ($fileTab as $file) {
                 ?>

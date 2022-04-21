@@ -455,18 +455,20 @@ class SortieController extends AbstractController
         $em->remove($participant);
         $em->flush();
 
+        $user = $this->getUser();
+
         if ($participant->isStatusValide()) {
             $mailer->send($event->getUser(), 'transactional/sortie-desinscription', [
                 'username' => $participant->getUser()->getFirstname().' '.$participant->getUser()->getLastname(),
                 'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]),
                 'event_name' => $event->getTitre(),
-                'user' => getUser(),
-            ], [], null, getUser()->getEmail());
+                'user' => $user,
+            ], [], null, $user->getEmail());
         }
 
         if ($participant->getIsCb()) {
-            $toNameFull = getUser()->getFirstname().' '.getUser()->getLastname();
-            $toCafNum = getUser()->getCafnum();
+            $toNameFull = $user->getFirstname().' '.$user->getLastname();
+            $toCafNum = $user->getCafnum();
 
             $mailer->send('comptabilite@clubalpinlyon.fr', 'transactional/sortie-desinscription-paiement-ligne', [
                 'event_name' => $event->getTitre(),

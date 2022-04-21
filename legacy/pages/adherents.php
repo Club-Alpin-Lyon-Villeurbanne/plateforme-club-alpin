@@ -152,7 +152,7 @@
                                 .('2' == $elt['valid_user'] ? '<img src="/img/base/user_desactive.png" alt="DESACTIVE" title="Utilisateur désactivé manuellement" /> ' : '')
                                 .(int) ($elt['id_user']).' '
                             .'</td>'
-                            //.'<td>'.intval($elt['valid_user']).'</td>'
+                            // .'<td>'.intval($elt['valid_user']).'</td>'
                             .'<td>'.html_utf8($elt['civ_user']).'</td>'
                             .'<td>'.html_utf8($elt['lastname_user']).'</td>'
                             .'<td>'.html_utf8($elt['firstname_user']).'</td>'
@@ -161,10 +161,10 @@
                             .'<td>'.(allowed('user_read_private') ? '<span style="display:none">'.$elt['birthday_user'].'</span>'.($elt['birthday_user'] ? (int) ($elt['birthday_user']).' ans' : '...') : $img_lock).'</td>'
                             .'<td>'.(allowed('user_read_private') ? html_utf8($elt['tel_user']).'<br />'.html_utf8($elt['tel2_user']) : $img_lock).'</td>'
                             .'<td>'.(allowed('user_read_private') ? '<a href="mailto:'.html_utf8($elt['email_user']).'" title="Contact direct">'.html_utf8($elt['email_user']).'</a>' : $img_lock).'</td>'
-                            //.'<td>'.(allowed('user_read_private')?nl2br(html_utf8($elt['adresse_user'])):$img_lock).'</td>'
+                            // .'<td>'.(allowed('user_read_private')?nl2br(html_utf8($elt['adresse_user'])):$img_lock).'</td>'
                             .'<td>'.(allowed('user_read_private') ? html_utf8($elt['cp_user']) : $img_lock).'</td>'
                             .'<td>'.(allowed('user_read_private') ? html_utf8($elt['ville_user']) : $img_lock).'</td>'
-                            //.'<td>'.(allowed('user_read_private')?html_utf8($elt['pays_user']):$img_lock).'</td>'
+                            // .'<td>'.(allowed('user_read_private')?html_utf8($elt['pays_user']):$img_lock).'</td>'
                             // .'<td></td>'
 
                         .'</tr>';

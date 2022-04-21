@@ -5,9 +5,9 @@ use App\Legacy\LegacyContainer;
 $errTab = [];
 $operationsDir = __DIR__.'/operations/';
 
-/* -------------------------- **/
-/* OPERATIONS SPECIFIQUES CAF **/
-/* -------------------------- **/
+/* -------------------------- * */
+/* OPERATIONS SPECIFIQUES CAF * */
+/* -------------------------- * */
 
 // SPECIAL : REINIT EMAIL : seconde étape (confirmation depuis le lien dans l'email
 if ('email-change' == $p1 && $p2) {
@@ -372,9 +372,9 @@ if ('pagelibre_del' == ($_POST['operation'] ?? null) && admin()) {
     require $operationsDir.'operations.pagelibre_del.php';
 }
 
-/* -------------------------- **/
-/* OPERATIONS BASE      **/
-/* -------------------------- **/
+/* -------------------------- * */
+/* OPERATIONS BASE      * */
+/* -------------------------- * */
 
 // BASE: page add
 if ('page_add' == ($_POST['operation'] ?? null) && superadmin()) {

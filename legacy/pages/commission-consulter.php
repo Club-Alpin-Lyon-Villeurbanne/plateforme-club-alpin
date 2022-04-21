@@ -37,7 +37,7 @@ use App\Legacy\LegacyContainer;
                 } else {
                     echo "<h1>Fiche de la commission '".$commissionTmp['title_commission']."'</h1><hr />";
 
-                    //print_r ($commissionTmp);
+                    // print_r ($commissionTmp);
 
                     // ENCADRANTS
                     $req = " SELECT
