@@ -8,7 +8,7 @@ parameters:
     - '#Variable \$p\d might not be defined#'
     - '#Instantiated class FeedWriter not found#'
 
-  autoload_files:
+  bootstrapFiles:
     - vendor/bin/.phpunit/phpunit-9.5-0/vendor/autoload.php
 
   excludePaths:
