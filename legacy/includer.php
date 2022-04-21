@@ -19,7 +19,7 @@ if ('pages/' != substr($p, 0, 6) && 'includes/' != substr($p, 0, 9)) {
         $versCettePage .= '&'.$key.'='.$val;
     }
 
-    //_________________________________________________ HEADER AU CHOIX (inclut le doctype)
+    // _________________________________________________ HEADER AU CHOIX (inclut le doctype)
     if ($pageAdmin) {
         require __DIR__.'/includes/generic/header-admin.php';
     } else {

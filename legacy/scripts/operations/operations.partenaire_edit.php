@@ -106,7 +106,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             } else {
                 // deplacement du fichier dans le dossier partenaires
                 if (is_file($uploaddir.$partenaireTab['part_image'])) {
-                    //delete old file
+                    // delete old file
                     unlink($uploaddir.$partenaireTab['part_image']);
                 }
                 if (!move_uploaded_file($_FILES['part_image']['tmp_name'], $uploaddir.$partenaireTab['part_image'])) {

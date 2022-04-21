@@ -3,9 +3,9 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-//___________________ CONFIGURATION DES PAGES
-//___________________ Cette version déclare une variable contenant toutes les specs de toutes
-//___________________ les pages, ce qui est lourd pour le serveur mais pratique pour la gestion des menus
+// ___________________ CONFIGURATION DES PAGES
+// ___________________ Cette version déclare une variable contenant toutes les specs de toutes
+// ___________________ les pages, ce qui est lourd pour le serveur mais pratique pour la gestion des menus
 
 // defaut
 $p_defpage = 'accueil';

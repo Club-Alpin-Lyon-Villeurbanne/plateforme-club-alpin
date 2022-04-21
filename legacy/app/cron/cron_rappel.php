@@ -153,7 +153,7 @@ foreach ($datasTab as $email => $evtdatas) {
 }
 
 // *******************************
-//CONTACT DES PRESIDENTS - VICE-PRES POUR VALIDER LEGALEMENT LES SORTIES EN ATTENTE
+// CONTACT DES PRESIDENTS - VICE-PRES POUR VALIDER LEGALEMENT LES SORTIES EN ATTENTE
 error_log('---------------------------- please_validate_legal_evt ----------------------------');
 $nEltsToValidate = 0;
 // c'est un tableau associatif qui va contenir en cle les emails des responsables, et en valeur la liste des sorties liees

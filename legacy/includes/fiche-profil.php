@@ -7,7 +7,7 @@ $id_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) ($_
 $tmpUser = false;
 
 $req = "SELECT * FROM caf_user WHERE id_user = $id_user LIMIT 1";
-//AND valid_user = 1
+// AND valid_user = 1
 // echo '<!-- '.$req.' -->';
 
 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -92,13 +92,13 @@ elseif (!allowed('user_read_public')) {
 		<!-- statuts -->
 		<ul class="nice-list">
 			<?php
-            //if(allowed('user_read_limited')){
+            // if(allowed('user_read_limited')){
                 foreach ($tmpUser['statuts'] as $status) {
                     echo '<li style="">'.$status.'</li>';
                 }
-    //} else {
-    //echo '<li style="">Adhérent du club</li>';
-    //}?>
+    // } else {
+    // echo '<li style="">Adhérent du club</li>';
+    // }?>
 		</ul>
 		<br style="clear:both" />
 

@@ -245,7 +245,7 @@ function formatSize($bytes, $format = '%.2f')
     $units = ['o', 'Ko', 'Mo', 'Go', 'To'];
 
     $b = (float) $bytes;
-    /*On gére le cas des tailles de fichier négatives*/
+    /* On gére le cas des tailles de fichier négatives */
     if ($b > 0) {
         $e = (int) (log($b, 1024));
         /**Si on a pas l'unité on retourne en To*/

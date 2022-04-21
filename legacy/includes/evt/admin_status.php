@@ -5,7 +5,7 @@
     $messageDiv = false;
 
     if ('0' == $evt['status_evt']) {
-        //pas validee
+        // pas validee
         $messageDiv = true;
 
         echo '<div class="alerte"><b>Note : Cette sortie n\'est pas publiée sur le site</b>. Si vous voyez ce message apparaître, c\'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n\'ont pas accès aux informations ci-dessous.<br />';
@@ -31,7 +31,7 @@
 				</div></div>';
         }
     } elseif ('2' == $evt['status_evt']) {
-        //refuse
+        // refuse
         $messageDiv = true;
         echo '<div class="alerte"><b>Note : Cette sortie a été refusée</b>. Si vous voyez ce message apparaître, c\'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n\'ont pas accès aux informations ci-dessous.<br /><br />';
     } elseif ('1' == $evt['cancelled_evt']) {
@@ -66,7 +66,7 @@
                 // supprimer
                 echo '<a class="nice2 noprint red" href="/supprimer-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Supprimer définitivement la sortie ci-dessous"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie</a>';
             } elseif (allowed('evt_cancel', 'commission:'.$evt['code_commission']) && '1' != $evt['cancelled_evt']) {
-                //annuler
+                // annuler
                 echo '<a class="nice2 noprint red" href="/annuler-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Annuler la sortie ci-dessous">
 				<img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie</a>';
             }

@@ -39,7 +39,7 @@ define('ATOM', 'ATOM');
          $this->channels['title'] = $version.' Feed';
          $this->channels['link'] = 'https://www.ajaxray.com/blog';
 
-         //Tag names to encode in CDATA
+         // Tag names to encode in CDATA
          $this->CDATAEncoding = ['description', 'content:encoded', 'summary'];
      }
 
@@ -294,7 +294,7 @@ define('ATOM', 'ATOM');
       */
      private function printChannels()
      {
-         //Start channel tag
+         // Start channel tag
          switch ($this->version) {
              case RSS2:
                  echo '<channel>'.\PHP_EOL;
@@ -304,19 +304,19 @@ define('ATOM', 'ATOM');
                  break;
          }
 
-         //Print Items of channel
+         // Print Items of channel
          foreach ($this->channels as $key => $value) {
              if (ATOM == $this->version && 'link' == $key) {
                  // ATOM prints link element as href attribute
                  echo $this->makeNode($key, '', ['href' => $value]);
-                 //Add the id for ATOM
+                 // Add the id for ATOM
                  echo $this->makeNode('id', $this->uuid($value, 'urn:uuid:'));
              } else {
                  echo $this->makeNode($key, $value);
              }
          }
 
-         //RSS 1.0 have special tag <rdf:Seq> with channel
+         // RSS 1.0 have special tag <rdf:Seq> with channel
          if (RSS1 == $this->version) {
              echo '<items>'.\PHP_EOL.'<rdf:Seq>'.\PHP_EOL;
              foreach ($this->items as $item) {
@@ -337,7 +337,7 @@ define('ATOM', 'ATOM');
          foreach ($this->items as $item) {
              $thisItems = $item->getElements();
 
-             //the argument is printed as rdf:about attribute of item in rss 1.0
+             // the argument is printed as rdf:about attribute of item in rss 1.0
              echo $this->startItem($thisItems['link']['content']);
 
              foreach ($thisItems as $feedItem) {

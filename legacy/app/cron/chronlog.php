@@ -4,9 +4,9 @@ use App\Legacy\LegacyContainer;
 
 require __DIR__.'/../../app/includes.php';
 
-//_________________________________________________ FONCTIONS MAISON
+// _________________________________________________ FONCTIONS MAISON
 require __DIR__.'/../../app/fonctions.php';
-//_________________________________________________ VARIABLES "GLOBALES" DU SITE
+// _________________________________________________ VARIABLES "GLOBALES" DU SITE
 require __DIR__.'/../../config/params.php';
 
 ?>
@@ -21,7 +21,7 @@ require __DIR__.'/../../config/params.php';
 if (!admin()) {
     echo 'Mode admin requis';
 } else {
-    //_________________________________________________
+    // _________________________________________________
     // cette page a pour objet d'effectuer les tâches automatisées du site
 
     // TRIGGER CAPITAL ! ACTIVE ET DESACTIVE L'EFFICACITE DU CHRON - ENVOI DE MAIL - INSERTION BDD
