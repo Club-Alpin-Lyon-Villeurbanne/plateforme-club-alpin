@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * EvtJoin.
  *
  * @ORM\Table(name="caf_evt_join")
- * @ORM\Entity(repositoryClass="EvtJoinRepository::class")
+ * @ORM\Entity(repositoryClass=EvtJoinRepository::class)
  */
 class EvtJoin
 {
