@@ -34,10 +34,10 @@ if (!$display) {
 }
 
 if ('0' == $evt['status_evt']) {
-    //pas validee
+    // pas validee
     echo '<div class="alerte"><b>Note : Cette sortie n\'est pas publiée sur le site</b>. Si vous voyez ce message apparaître, c\'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n\'ont pas accès aux informations ci-dessous.<br /></div>';
 } elseif ('2' == $evt['status_evt']) {
-    //refuse
+    // refuse
     $messageDiv = true;
     echo '<div class="alerte"><b>Note : Cette sortie a été refusée</b>. Si vous voyez ce message apparaître, c\'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n\'ont pas accès aux informations ci-dessous.<br /><br /></div>';
 } elseif ('1' == $evt['cancelled_evt']) {
@@ -53,7 +53,7 @@ presidence();
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Feuille de sortie-<?php echo html_utf8($evt['titre_evt']); ?>-<?php echo date('d.m.Y', $evt['tsp_evt']); ?></title>
+    <title>Feuille de sortie-<?php echo html_utf8($evt['titre_evt']); ?> - <?php echo date('d.m.Y', $evt['tsp_evt']); ?></title>
 
     <link rel="stylesheet" href="/css/style1.css" type="text/css" />
     <link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" />

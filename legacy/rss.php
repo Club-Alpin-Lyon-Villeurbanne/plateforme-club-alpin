@@ -8,7 +8,7 @@ header('Content-Type: text/xml');
 
 require __DIR__.'/app/includes.php';
 
-//_________________________________________________ RSS
+// _________________________________________________ RSS
 require_once __DIR__.'/includes/FeedWriter.php';
 require_once __DIR__.'/includes/FeedItem.php';
 
@@ -31,7 +31,7 @@ while ($handle = $handleSql->fetch_assoc()) {
     }
 }
 
-//_________________________________________________ PARAMS XML
+// _________________________________________________ PARAMS XML
 $rss_limit = 30;
 $entryTab = [];
 $current_commission = $rss_datas = null;
@@ -160,44 +160,44 @@ if (preg_match('#^sorties#', $_GET['mode'])) {
     }
 }
 
-//Creating an instance of FeedWriter class.
-//The constant RSS2 is passed to mention the version
+// Creating an instance of FeedWriter class.
+// The constant RSS2 is passed to mention the version
 $CafFeed = new FeedWriter(RSS2);
 
-//Setting the channel elements
-//Use wrapper functions for common channel elements
+// Setting the channel elements
+// Use wrapper functions for common channel elements
 $CafFeed->setTitle($rss_datas['title']);
 $CafFeed->setLink(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL));
 $CafFeed->setDescription($rss_datas['description']);
 
-//Image title and link must match with the 'title' and 'link' channel elements for RSS 2.0
-//$CafFeed->setImage('Testing the RSS writer class','https://www.ajaxray.com/projects/rss','https://www.rightbrainsolution.com/images/logo.gif');
+// Image title and link must match with the 'title' and 'link' channel elements for RSS 2.0
+// $CafFeed->setImage('Testing the RSS writer class','https://www.ajaxray.com/projects/rss','https://www.rightbrainsolution.com/images/logo.gif');
 
-//Use core setChannelElement() function for other optional channels
+// Use core setChannelElement() function for other optional channels
 $CafFeed->setChannelElement('language', 'fr-fr');
 $CafFeed->setChannelElement('pubDate', date(\DATE_RSS, time()));
 
-//Adding a feed. Genarally this portion will be in a loop and add all feeds.
+// Adding a feed. Genarally this portion will be in a loop and add all feeds.
 
 foreach ($entryTab as $entry) {
     $entry['description'] = str_replace('href="/', 'href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL), $entry['description']);
     $entry['description'] = str_replace('"ftp/', '"'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/', $entry['description']);
     $entry['description'] = str_replace('"IMG/', '"'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'IMG/', $entry['description']);
 
-    //Create an empty FeedItem
+    // Create an empty FeedItem
     $newItem = $CafFeed->createNewItem();
 
-    //Add elements to the feed item
-    //Use wrapper functions to add common feed elements
+    // Add elements to the feed item
+    // Use wrapper functions to add common feed elements
     $newItem->setTitle($entry['title']);
     $newItem->setLink($entry['link']);
-    //The parameter is a timestamp for setDate() function
+    // The parameter is a timestamp for setDate() function
     $newItem->setDate($entry['timestamp'] ?: time());
     $newItem->setDescription($entry['description']);
     $newItem->addElement('guid', $entry['link'], ['isPermaLink' => 'true']);
 
-    //Now add the feed item
+    // Now add the feed item
     $CafFeed->addItem($newItem);
 }
-//OK. Everything is done. Now genarate the feed.
+// OK. Everything is done. Now genarate the feed.
 $CafFeed->genarateFeed();

@@ -150,9 +150,9 @@ if (!admin() && !allowed('user_edit_notme')) {
     }
 
     if ($userTab['alerte_renouveler_user'] || $userTab['doit_renouveler_user']) {
-        //$rowValue = '<span class="alerte">'.$rowValue.'</span>';
+        // $rowValue = '<span class="alerte">'.$rowValue.'</span>';
         if ($userTab['doit_renouveler_user']) {
-            //$rowValue .= '   (expirée)';
+            // $rowValue .= '   (expirée)';
             $rowValue .= '&nbsp;&nbsp;&nbsp;<img src="/img/base/delete.png">';
         }
     } elseif ($userTab['date_adhesion_user']) {

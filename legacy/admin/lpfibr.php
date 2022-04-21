@@ -219,7 +219,7 @@ if (admin()) {
         // ext
         $ext = strtolower(substr(strrchr($fichier, '.'), 1));
 
-        //Selection des fichiers a afficher ou pas
+        // Selection des fichiers a afficher ou pas
         if (in_array($ext, $extTab, true)) {
             // est-ce bien un fichier
             if (!is_dir($dossier.'/'.$fichier)) {

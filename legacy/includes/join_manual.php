@@ -10,7 +10,7 @@ if (user()) {
 
     $showAll = (int) ($_GET['showAll']);
 
-    //if(!allowed('user_see_all')){
+    // if(!allowed('user_see_all')){
     if (!allowed('evt_join_notme')) {
         echo '<p class="erreur">Vous n\'avez pas les droits requis pour afficher cette page</p>';
     } elseif (!$id_evt) {
