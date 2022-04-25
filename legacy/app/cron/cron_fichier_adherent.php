@@ -18,7 +18,7 @@ function mysqli_result($res, $row = 0, $col = 0)
     return false;
 }
 
-//_________________________________________________
+// _________________________________________________
 // cette page a pour objet d'effectuer les tâches automatisées du site
 
 // TRIGGER CAPITAL ! ACTIVE ET DESACTIVE L'EFFICACITE DU CHRON - ENVOI DE MAIL - INSERTION BDD
@@ -116,7 +116,7 @@ foreach ($fileTab as $file) {
 
                     $line[26] = preg_replace('/[^\d]+/', '', $line[26]); // suppression des espaces dans les tel
                     $line[27] = preg_replace('/[^\d]+/', '', $line[27]); // suppression des espaces dans les tel
-//echo $i."\nligne ".__LINE__."\n";
+// echo $i."\nligne ".__LINE__."\n";
                     if (10 != strlen($line[26])) {
                         // la mise en forme du numero a echouee
                         // retablissement du numero original du fichier
@@ -127,10 +127,10 @@ foreach ($fileTab as $file) {
                         // retablissement du numero original du fichier
                         $line[27] = $tel2_user_old;
                     }
-                    //echo $i."\nligne ".__LINE__."\n";
+                    // echo $i."\nligne ".__LINE__."\n";
                     $line[26] = preg_replace('/[^\d]+/', '', $line[26]); // suppression des espaces dans les tel
                     $line[27] = preg_replace('/[^\d]+/', '', $line[27]); // suppression des espaces dans les tel
-//echo $i."\nligne ".__LINE__."\n";
+// echo $i."\nligne ".__LINE__."\n";
                     $cafnum_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[0]);
                     $firstname_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[10]);
                     $lastname_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[9]);
@@ -148,19 +148,19 @@ foreach ($fileTab as $file) {
                     $alerte_renouveler_user = '0';
                     $nickname_user = NicknameGenerator::generateNickname($firstname_user, $lastname_user);
 
-                    //echo $i."\nligne ".__LINE__."\n";
+                    // echo $i."\nligne ".__LINE__."\n";
                     // formatage du nom et prénom & civilité : en minuscule, avec majuscule au début
                     $formatTab = [8, 9, 10]; // index dans le tableau, des elements à formater
                     foreach ($formatTab as $indice) {
                         // $tmpTab = explode(' ', $line[$indice]);
                         $tmpTab = preg_split("/[\s-]+/", $line[$indice]); // séparateur incluant les tirets
-                        //print_r($tmpTab);
+                        // print_r($tmpTab);
                         $line[$indice] = '';
                         foreach ($tmpTab as $str) {
                             $line[$indice] .= ($line[$indice] ? ' ' : '').mb_strtoupper(substr($str, 0, 1), 'UTF-8').mb_strtolower(substr($str, 1), 'UTF-8');
                         }
                     }
-                    //echo $i."\nligne ".__LINE__."\n";
+                    // echo $i."\nligne ".__LINE__."\n";
                     // FILIATION : MISE À JOUR DE LA VALEUR
                     if ((int) $line[5] > 0) {
                         // filiation existante
@@ -169,7 +169,7 @@ foreach ($fileTab as $file) {
                         // filiation inexistante
                         $cafnum_parent_user = null;
                     }
-                    //echo $i."\nligne ".__LINE__."\n";
+                    // echo $i."\nligne ".__LINE__."\n";
                     // OBSOLESCENCE DU COMPTE : CET ADHÉRENT DOIT-IL RENOUVELER SA LICENCE ?? BASÉ SUR LA DATE EN 8e colonne
                     if ('0000-00-00' == $line[7]) {
                         // on vérifie la date, car il y a un battement entre le 25 aout (pour prendre large) et le 31 décembre
@@ -190,12 +190,12 @@ foreach ($fileTab as $file) {
                         $alerte_renouveler_user = '0';
                     }
 
-                    //echo $i."\nligne ".__LINE__."\n";
+                    // echo $i."\nligne ".__LINE__."\n";
                     // on vérifie que ce numéro d'adhérent n'existe pas déjà dans la base de donnée USER
                     $req = "SELECT id_user FROM caf_user WHERE cafnum_user LIKE '$cafnum_user'";
                     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
-                    //echo  $req."\n";
+                    // echo  $req."\n";
 
                     if (0 == mysqli_num_rows($handleSql)) {
                         echo "aucun ID trouve pour $cafnum_user";

@@ -31,8 +31,8 @@ $().ready(function() {
 			  }
 			];
 			
-			var lat            = 45.7337532;
-			var lon            = 4.9092352;
+			var lat            = 45.73413;
+			var lon            = 4.90965;
 			var zoom           = 16;
 
 			map = L.map('map-creersortie').setView([lat, lon], zoom);
@@ -88,7 +88,7 @@ $().ready(function() {
 	// /////////
 	// LAUNCHES
 
-	autoLoadMap=[45.7337532,4.9092352];
+	autoLoadMap=[45.73413, 4.90965];
 	if(typeof(autoLoadMap)!="undefined") {
 		if(autoLoadMap.length){
 			if(map_initialize()) {

@@ -74,7 +74,7 @@ class FixturesLoadCommand extends Command
 
 //        $purger = new ORMPurger($em);
 //        $purger->setPurgeMode($input->getOption('purge-with-truncate') ? ORMPurger::PURGE_MODE_TRUNCATE : ORMPurger::PURGE_MODE_DELETE);
-        $executor = new ORMExecutor($em); //, $purger);
+        $executor = new ORMExecutor($em); // , $purger);
         $executor->setLogger(function ($message) use ($output) {
             $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
         });

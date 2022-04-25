@@ -6,9 +6,9 @@ $MAX_VERSIONS = LegacyContainer::getParameter('legacy_env_CONTENT_MAX_VERSIONS')
 
 require __DIR__.'/app/includes.php';
 
-//_________________________________________________
-//_____________________________ PAGE
-//_________________________________________________
+// _________________________________________________
+// _____________________________ PAGE
+// _________________________________________________
 
 if (admin()) {
     // affichage normal : pas de donnees recues
@@ -260,7 +260,7 @@ if (admin()) {
 			</html>
 			<?php
     }
-    /// OPERATIONS
+    // / OPERATIONS
     else {
         $vis_content_html = (int) ($_POST['vis_content_html']);
         $code_content_html = $_POST['code_content_html'];
@@ -343,28 +343,3 @@ if (admin()) {
 } else {
     echo 'Acess denied<br />Votre session administrateur semble avoir expiré.';
 }
-?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

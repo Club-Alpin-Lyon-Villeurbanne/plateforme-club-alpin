@@ -39,7 +39,51 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
             new TwigFilter('intldate', [$this, 'formatDate']),
             new TwigFilter('participant_status_name', [$this, 'getParticipantStatusName']),
             new TwigFilter('participant_role_name', [$this, 'getParticipantRoleName']),
+            new TwigFilter('temoin_event', [$this, 'getTemoinPlacesSortie']),
+            new TwigFilter('temoin_event_title', [$this, 'getTemoinPlacesSortieTitle']),
         ];
+    }
+
+    public function getTemoinPlacesSortie(Evt $event)
+    {
+        if ($event->getCycleParent()) {
+            return '';
+        }
+        if ($event->getCancelled()) {
+            return 'off';
+        }
+        if ($event->hasStarted()) {
+            return 'off';
+        }
+        if (!$event->joinHasStarted()) {
+            return '';
+        }
+        if ($event->getJoinMax() <= \count($event->getParticipants())) {
+            return 'off';
+        }
+
+        return 'on';
+    }
+
+    public function getTemoinPlacesSortieTitle(Evt $event)
+    {
+        if ($event->getCycleParent()) {
+            return 'Les inscriptions pour cette sortie ont lieu dans la première sortie du cycle';
+        }
+        if ($event->getCancelled()) {
+            return 'Cette sortie est annulée';
+        }
+        if ($event->hasStarted()) {
+            return 'Les inscriptions sont terminées';
+        }
+        if (!$event->joinHasStarted()) {
+            return sprintf('Les inscriptions pour cette sortie commenceront le %s', date('d/m/y', $event->getJoi));
+        }
+        if ($event->getJoinMax() <= \count($event->getParticipants())) {
+            return sprintf('Les %d places libres ont été réservées', $event->getJoinMax());
+        }
+
+        return sprintf('%d places restantes', $event->getJoinMax() - \count($event->getParticipants()));
     }
 
     public function getParticipantStatusName(?EvtJoin $participant): string
