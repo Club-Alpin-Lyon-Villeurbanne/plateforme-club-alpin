@@ -12,7 +12,7 @@ if (!admin()) {
         exit();
     }
     if (-1 == $part_id) {
-        //nouveau
+        // nouveau
         $operation = 'add';
         echo '<h1>Ajouter un partenaire</h1>';
     } else {

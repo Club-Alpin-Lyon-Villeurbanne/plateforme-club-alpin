@@ -154,10 +154,10 @@ if (!admin()) {
                     .'<td><span style="display:none">'.$elt['birthday_user'].'</span>'.($elt['birthday_user'] ? (int) ($elt['birthday_user']).' ans' : '...').'</td>'
                     .'<td>'.html_utf8($elt['tel_user']).'<br />'.html_utf8($elt['tel2_user']).'</td>'
                     .'<td><a href="mailto:'.html_utf8($elt['email_user']).'" title="Contact direct">'.html_utf8($elt['email_user']).'</a></td>'
-                    //.'<td>'.nl2br(html_utf8($elt['adresse_user'])).'</td>'
+                    // .'<td>'.nl2br(html_utf8($elt['adresse_user'])).'</td>'
                     .'<td>'.html_utf8($elt['cp_user']).'</td>'
                     .'<td>'.html_utf8($elt['ville_user']).'</td>'
-                    //.'<td>'.html_utf8($elt['pays_user']).'</td>'
+                    // .'<td>'.html_utf8($elt['pays_user']).'</td>'
                     .'<td>'.($elt['doit_renouveler_user'] ? 'expirée' : 'valide').' '.(!$elt['doit_renouveler_user'] && $elt['alerte_renouveler_user'] ? '<span style="color:red">* Doit renouveler</span>' : '').'</td>'
                     // .'<td></td>'
                 .'</tr>';

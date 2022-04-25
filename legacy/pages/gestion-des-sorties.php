@@ -37,19 +37,15 @@
 
                             // Modération
                             echo '
-											<form action="'.$versCettePage.'" method="post" style="display:inline" class="loading">
-												<input type="hidden" name="operation" value="evt_validate" />
-												<input type="hidden" name="status_evt" value="1" />
-												<input type="hidden" name="id_evt" value="'.((int) ($evt['id_evt'])).'" />
+											<form action="'.generateRoute('sortie_validate', ['id' => (int) ($evt['id_evt'])]).'" method="post" style="display:inline" class="loading">
+												<input type="hidden" name="csrf_token" value="'.csrfToken('sortie_validate').'" />
 												<input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
 											</form>
 
 											<input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
 											<div style="display:none" id="refuser-'.(int) ($evt['id_evt']).'">
-												<form action="'.$versCettePage.'" method="post" class="loading">
-													<input type="hidden" name="operation" value="evt_validate" />
-													<input type="hidden" name="status_evt" value="2" />
-													<input type="hidden" name="id_evt" value="'.((int) ($evt['id_evt'])).'" />
+                                                <form action="'.generateRoute('sortie_refus', ['id' => (int) ($evt['id_evt'])]).'" method="post" class="loading">
+                                                    <input type="hidden" name="csrf_token" value="'.csrfToken('sortie_refus').'" />
 
 													<p>Laissez un message à l\'auteur pour lui expliquer la raison du refus :</p>
 													<input type="text" name="msg" class="type1" placeholder="ex: Mauvais point de RDV" />

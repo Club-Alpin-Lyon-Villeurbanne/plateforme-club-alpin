@@ -199,22 +199,22 @@ if ('1' != $evt['cancelled_evt']) {
             echo '<td class="mini joinlabels status'.($row['status_evt_join']).'">
                                         ';
 
-            $disable0 = true; //attente
-                                        $disable1 = true; //accepte
-                                        $disable2 = true; //refuse
-                                        $disable3 = true; //absent
-                                        $disable_1 = true; //desinscrire
+            $disable0 = true; // attente
+                                        $disable1 = true; // accepte
+                                        $disable2 = true; // refuse
+                                        $disable3 = true; // absent
+                                        $disable_1 = true; // desinscrire
 
                                         if (allowed('evt_joining_accept') || allowed('evt_join_doall')) {
-                                            $disable0 = false; //attente
-                                            $disable1 = false; //accepte
-                                            $disable3 = false; //absent
+                                            $disable0 = false; // attente
+                                            $disable1 = false; // accepte
+                                            $disable3 = false; // absent
                                         }
             if (allowed('evt_joining_refuse') || allowed('evt_join_doall')) {
-                $disable2 = false; //refuse
+                $disable2 = false; // refuse
             }
             if (allowed('evt_unjoin_notme') || allowed('evt_join_doall')) {
-                $disable_1 = false; //desinscrire
+                $disable_1 = false; // desinscrire
             }
 
             // empiètements
@@ -280,7 +280,7 @@ if ('1' != $evt['cancelled_evt']) {
                                                 </label>';
                     }
                 } else {
-                    //echo '<input type="hidden" name="status_evt_join_'.intval($row['id_evt_join']).'" value="'.intval($row['status_evt_join']).'" />';
+                    // echo '<input type="hidden" name="status_evt_join_'.intval($row['id_evt_join']).'" value="'.intval($row['status_evt_join']).'" />';
                     echo ''.(0 == $row['status_evt_join'] ? 'En attente' : '')
                                                 .(1 == $row['status_evt_join'] ? 'Accepté' : '')
                                                 .(2 == $row['status_evt_join'] ? 'Refusé' : '')
@@ -296,7 +296,7 @@ if ('1' != $evt['cancelled_evt']) {
                 echo '<br /><img src="/img/base/bullet_error.png" alt="!" title="Attention. Ne reçoit pas d\'e-mail" style="vertical-align:top" /><br />';
             } elseif ($droitDeModif && (0 == strcmp($row['role_evt_join'], 'manuel') || 0 == strcmp($row['role_evt_join'], 'inscrit') || 0 == strcmp($row['role_evt_join'], 'benevole'))) {
                 if (0 == strcmp($row['role_evt_join'], 'manuel')) {
-                    //manuel
+                    // manuel
                     echo '<label style="display:block; white-space:nowrap;" for="role_join_'.(int) ($row['id_evt_join']).'_m">
                                                     <input  '.(0 == strcmp($row['role_evt_join'], 'manuel') ? 'checked="checked"' : '').' name="role_evt_join_'.(int) ($row['id_evt_join']).'" type="radio" id="role_join_'.(int) ($row['id_evt_join']).'_m" value="manuel" />
                                                     Manuel
@@ -310,11 +310,11 @@ if ('1' != $evt['cancelled_evt']) {
                                                 <input '.(0 == strcmp($row['role_evt_join'], 'benevole') ? 'checked="checked"' : '').' name="role_evt_join_'.(int) ($row['id_evt_join']).'" type="radio" id="role_join_'.(int) ($row['id_evt_join']).'_b" value="benevole" />
                                                 Bénévole
                                                 </label>';
-                //echo '<select name="role_evt_join_'.intval($row['id_evt_join']).'">';
-                //echo '<option value="inscrit" '.((strcmp($row['role_evt_join'],'inscrit')==0)?'selected="selected"':'').'>Inscrit</option>';
-                //echo '<option value="benevole" '.((strcmp($row['role_evt_join'],'benevole')==0)?'selected="selected"':'').'>Bénévole</option>';
-                //echo '<option value="coencadrant" '.((strcmp($row['role_evt_join'],'coencadrant')==0)?'selected="selected"':'').'>Co-encadrant</option>';
-                //echo '<option value="encadrant" '.((strcmp($row['role_evt_join'],'encadrant')==0)?'selected="selected"':'').'>Encadrant</option>';
+                // echo '<select name="role_evt_join_'.intval($row['id_evt_join']).'">';
+                // echo '<option value="inscrit" '.((strcmp($row['role_evt_join'],'inscrit')==0)?'selected="selected"':'').'>Inscrit</option>';
+                // echo '<option value="benevole" '.((strcmp($row['role_evt_join'],'benevole')==0)?'selected="selected"':'').'>Bénévole</option>';
+                // echo '<option value="coencadrant" '.((strcmp($row['role_evt_join'],'coencadrant')==0)?'selected="selected"':'').'>Co-encadrant</option>';
+                // echo '<option value="encadrant" '.((strcmp($row['role_evt_join'],'encadrant')==0)?'selected="selected"':'').'>Encadrant</option>';
                 echo '</select>';
             } else {
                 echo html_utf8($row['role_evt_join']);
