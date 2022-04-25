@@ -284,9 +284,9 @@ function csrfToken(string $intention): ?string
 {
     return LegacyContainer::get('legacy_csrf_token_manager')->getToken($intention);
 }
-function generateRoute(string $path): ?string
+function generateRoute(string $path, array $parameters = []): ?string
 {
-    return LegacyContainer::get('legacy_router')->generate($path);
+    return LegacyContainer::get('legacy_router')->generate($path, $parameters);
 }
 function twigRender(string $path, array $params = []): ?string
 {
