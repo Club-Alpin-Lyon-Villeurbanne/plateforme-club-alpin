@@ -22,10 +22,13 @@ class ArticleRepository extends ServiceEntityRepository
     public function getUnvalidatedArticle(array $commissions = [])
     {
         $sql = 'SELECT COUNT(a.id_article)
-            FROM caf_article a
-            INNER JOIN caf_commission c ON c.id_commission = a.commission_article
-            WHERE a.status_article=0
-            AND a.topubly_article=1';
+            FROM caf_article a';
+
+        if (!empty($commissions)) {
+            $sql .= ' INNER JOIN caf_commission c ON c . id_commission = a . commission_article ';
+        }
+
+        $sql .= ' WHERE a.status_article=0 AND a.topubly_article=1';
 
         $params = [];
         $sqlPart = [];
