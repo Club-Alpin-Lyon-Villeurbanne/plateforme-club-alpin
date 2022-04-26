@@ -822,7 +822,7 @@
             {% if not event.cancelled %}
                 {% set nInscritsHorsEncadrement = event.participants([constant('App\\Entity\\EvtJoin::ROLE_INSCRIT'), constant('App\\Entity\\EvtJoin::ROLE_BENEVOLE'), constant('App\\Entity\\EvtJoin::ROLE_MANUEL')]) | length %}
                 {% set nInscritsTotal = nInscritsHorsEncadrement + event.participants([constant('App\\Entity\\EvtJoin::ROLE_COENCADRANT'), constant('App\\Entity\\EvtJoin::ROLE_ENCADRANT')]) | length %}
-                {% set nPlacesRestantesOnline = event.joinMax - event.participants([constant('App\\Entity\\EvtJoin::ROLE_INSCRIT'), constant('App\\Entity\\EvtJoin::ROLE_BENEVOLE')]) | length %}
+                {% set nPlacesRestantesOnline = max(0, event.joinMax - event.participants([constant('App\\Entity\\EvtJoin::ROLE_INSCRIT'), constant('App\\Entity\\EvtJoin::ROLE_BENEVOLE')]) | length) %}
                 {% set nEnAttente = event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME')) | length %}
 
                 {% if nPlacesRestantesOnline > event.ngensMax - nInscritsTotal %}
