@@ -1,5 +1,6 @@
 App\Entity\Evt:
     sortie{1..10}:
+        __construct: ['@user1', '@commission_alpinisme', '<sentence(4)>', '<word()>', '<dateTime("+5 days")>', '<dateTime("+8 days")>', '<address()>', '<latitude()>', '<longitude()>', '<paragraph()>', 200, 10, 10]
         user: '@user1'
         titre: '<sentence(4)>'
         place: '<address()>'
@@ -14,6 +15,7 @@ App\Entity\Evt:
         difficulte: '<word()>'
 
     sortieMaster:
+        __construct: ['@user1', '@commission_alpinisme',  'Sortie master de cycle <sentence(4)>', '<word()>', '<dateTime("+5 days")>', '<dateTime("+8 days")>', '<address()>', '<latitude()>', '<longitude()>', '<paragraph()>', 200, 10, 10]
         user: '@user1'
         titre: 'Sortie master de cycle <sentence(4)>'
         place: '<address()>'
@@ -29,6 +31,7 @@ App\Entity\Evt:
         difficulte: '<word()>'
 
     sortiesCycle{1..5}:
+        __construct: ['@user1', '@commission_alpinisme',  'Sortie children de cycle <sentence(4)>', '<word()>', '<dateTime("+5 days")>', '<dateTime("+8 days")>', '<address()>', '<latitude()>', '<longitude()>', '<paragraph()>', 200, 10, 10]
         user: '@user1'
         titre: 'Sortie children de cycle <sentence(4)>'
         place: '<address()>'
