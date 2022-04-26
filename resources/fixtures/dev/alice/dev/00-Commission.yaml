@@ -1,0 +1,3 @@
+App\Entity\Commission:
+    commission_alpinisme:
+        __construct: ['Alpinisme', 'alpinisme', 2]
