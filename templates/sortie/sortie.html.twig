@@ -838,7 +838,7 @@
                     <span style="font-size:14px; font-family:DINBold; color:#666666">
                         {{ nInscritsTotal }} PARTICIPANT{{ nInscritsTotal > 1 ? 'S' : '' }} INSCRIT{{ nInscritsTotal > 1 ? 'S' : '' }}
                         SUR  {{ event.ngensMax }} PLACE{{ event.ngensMax ? 'S' : '' }} AU TOTAL
-                        ({{ event.ngensMax > 0 ? (100 * nInscritsTotal / 12) | round : 0 }}%)
+                        ({{ event.ngensMax > 0 ? (100 * nInscritsTotal / ngensMax) | round : 0 }}%)
                     </span><br />
                     {{ nPlacesRestantesOnline }} place{{ nPlacesRestantesOnline > 1 ? 's' : '' }} restante{{ nPlacesRestantesOnline > 1 ? 's' : '' }}
                     pour les inscriptions en ligne
