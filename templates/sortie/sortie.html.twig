@@ -812,12 +812,6 @@
             {% endif %}
         {% endif %}
 
-
-
-
-
-
-
         {% if not event.cycleParent %}
             {% if not event.cancelled %}
                 {% set nInscritsHorsEncadrement = event.participants([constant('App\\Entity\\EvtJoin::ROLE_INSCRIT'), constant('App\\Entity\\EvtJoin::ROLE_BENEVOLE'), constant('App\\Entity\\EvtJoin::ROLE_MANUEL')]) | length %}
@@ -848,13 +842,13 @@
                     </span><br />
                     {{ nPlacesRestantesOnline }} place{{ nPlacesRestantesOnline > 1 ? 's' : '' }} restante{{ nPlacesRestantesOnline > 1 ? 's' : '' }}
                     pour les inscriptions en ligne
-                    {{ nEnAttente > 0 ? ' et '~nEnAttente~' inscription'~{{ nEnAttente > 1 ? 's' : '' }}~' en attente de confirmation' : '' }}
+                    {{ nEnAttente > 0 ? ' et '~nEnAttente~' inscription'~ (nEnAttente > 1 ? 's' : '' ) ~' en attente de confirmation' : '' }}
                 </p>
 
                 {% if nInscritsHorsEncadrement > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
                     <table class="big-lines-table" style="width:570px; margin-left:20px;">
 
-                        {% for inscrit in event.participants(null, constant('App\\Entity\\EvtJoin::ROLE_INSCRIT')) %}
+                        {% for inscrit in event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_VALIDE')) %}
                             <td>
                             <td>
                                 {% if allowed('user_read_private', event.commission.code) %}
