@@ -1,7 +1,7 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} à valider
+    {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} à publier
 {%- endblock %}
 
 {% block inner_html %}
