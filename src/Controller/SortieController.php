@@ -164,7 +164,7 @@ class SortieController extends AbstractController
                 continue;
             }
 
-            if ($event->isFinished() || 'on' != $request->request->get('disablemails')) {
+            if ($event->isFinished() || 'on' === $request->request->get('disablemails')) {
                 continue;
             }
 
