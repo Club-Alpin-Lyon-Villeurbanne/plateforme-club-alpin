@@ -83,6 +83,11 @@ class SortieController extends AbstractController
         ]);
 
         foreach ($event->getParticipants() as $participant) {
+            if ($participant->getUser() === $event->getUser()) {
+                // mail already sent
+                continue;
+            }
+
             $mailer->send($participant->getUser(), 'transactional/sortie-publiee-inscrit', [
                 'author_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.$event->getUser()->getId().'.html',
                 'author_nickname' => $event->getUser()->getNickname(),
