@@ -118,17 +118,13 @@ class SortieControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(302);
 
         $emails = $this->getMailerMessages();
-        $this->assertCount(2, $emails);
+        $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
         $this->assertEmailTextBodyContains($emails[0], 'Félicitations, votre sortie');
         $this->assertEmailTextBodyContains($emails[0], 'a été publiée par les responsables.');
         $this->assertEmailHtmlBodyContains($emails[0], 'Félicitations, votre sortie');
         $this->assertEmailHtmlBodyContains($emails[0], 'a été publiée par les responsables.');
-
-        $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
-        $this->assertEmailTextBodyContains($emails[1], 'vous a pré-inscrit pour cette sortie en tant que');
-        $this->assertEmailHtmlBodyContains($emails[1], 'vous a pré-inscrit pour cette sortie en tant que');
     }
 
     public function testSortieValidateInvalidCsrf()
