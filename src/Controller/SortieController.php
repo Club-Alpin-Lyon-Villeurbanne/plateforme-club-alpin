@@ -9,7 +9,6 @@ use App\Repository\EvtJoinRepository;
 use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -39,10 +38,13 @@ class SortieController extends AbstractController
      *     priority="10"
      * )
      * @Template
-     * @Security("is_granted('SORTIE_VIEW', event)")
      */
     public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository)
     {
+        if (!$this->isGranted('SORTIE_VIEW', $event)) {
+            throw new AccessDeniedHttpException('Not found');
+        }
+
         $user = $this->getUser();
 
         return [

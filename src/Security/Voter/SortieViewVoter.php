@@ -3,7 +3,6 @@
 namespace App\Security\Voter;
 
 use App\Entity\Evt;
-use App\Entity\User;
 use App\UserRights;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -24,12 +23,6 @@ class SortieViewVoter extends Voter
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
-        $user = $token->getUser();
-
-        if (!$user instanceof User) {
-            return false;
-        }
-
         if (!$subject instanceof Evt) {
             throw new \InvalidArgumentException(sprintf('The voter "%s" requires an event subject', __CLASS__));
         }
@@ -46,7 +39,9 @@ class SortieViewVoter extends Voter
             return true;
         }
 
-        if ($subject->getUser() === $user) {
+        $user = $token->getUser();
+
+        if ($user && $subject->getUser() === $user) {
             return true;
         }
 
