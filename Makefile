@@ -116,7 +116,7 @@ setup-db: composer-install ## Migrate (env="dev")
 	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
 .PHONY: setup-db
 
-fixtures: ## Load fixtures (env="dev" email="")
+fixtures: migrate ## Load fixtures (env="dev" email="")
 ifeq ("$(email)","")
 	$(eval email ?= none)
 endif
