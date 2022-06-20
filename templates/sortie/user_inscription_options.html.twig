@@ -14,7 +14,7 @@
         </label>
         <div class="paiement" style="display:none">
             <a style="border:1px solid red; background:rgba(255,153,153,.4);"
-               href="{{ url_paiement }}?lck_vads_order_id={{ event.title | paiement_title(user) }}&lck_vads_ext_info_Encadrant={{ event.user.firstname~' '~event.user.lastname | url_encode }}&lck_vads_ext_info_E-mail%20encadrant={{ event.user.email | url_encode }}&lck_vads_ext_info_Sortie={{ event.title ~ ' - ' ~ event.id ~ ' du ' ~ (event.tsp | date('d-m-Y')) | url_encode }}&lck_vads_cust_first_name={{ app.user.firstname | url_encode }}&lck_vads_cust_last_name={{ app.user.lastname | url_encode }}&lck_vads_cust_id={{ app.user.cafnum | url_encode }}&lck_vads_cust_email={{ app.user.email | url_encode }}&lck_vads_cust_cell_phone={{ app.user.tel | url_encode }}&lck_vads_amount={{ event.tarif | url_encode }}"
+               href="{{ url_paiement }}?lck_vads_order_id={{ event.title | paiement_title(event, user) }}&lck_vads_ext_info_Encadrant={{ event.user.firstname~' '~event.user.lastname | url_encode }}&lck_vads_ext_info_E-mail%20encadrant={{ event.user.email | url_encode }}&lck_vads_ext_info_Sortie={{ event.title ~ ' - ' ~ event.id ~ ' du ' ~ (event.tsp | date('d-m-Y')) | url_encode }}&lck_vads_cust_first_name={{ app.user.firstname | url_encode }}&lck_vads_cust_last_name={{ app.user.lastname | url_encode }}&lck_vads_cust_id={{ app.user.cafnum | url_encode }}&lck_vads_cust_email={{ app.user.email | url_encode }}&lck_vads_cust_cell_phone={{ app.user.tel | url_encode }}&lck_vads_amount={{ event.tarif | url_encode }}"
                target="_blank"
                alt="paiement en ligne">
             Cliquez ici  pour payer en ligne (avant de valider la demande d'inscription)
@@ -81,7 +81,7 @@
                     echo 'none';
                 } ?>">
                 <a style="border:1px solid red; background:rgba(255,153,153,.4);"
-                    href="{{ url_paiement }}?lck_vads_order_id={{ event.title | paiement_title(filiation) }}&lck_vads_ext_info_Encadrant={{ filiation.firstname~' '~filiation.lastname | url_encode }}&lck_vads_ext_info_E-mail%20encadrant={{ filiation.email | url_encode }}&lck_vads_ext_info_Sortie={{ event.title ~ ' - ' ~ event.id ~ ' du ' ~ (event.tsp | date('d-m-Y')) | url_encode }}&lck_vads_cust_first_name={{ app.user.firstname | url_encode }}&lck_vads_cust_last_name={{ app.user.lastname | url_encode }}&lck_vads_cust_id={{ app.user.cafnum | url_encode }}&lck_vads_cust_email={{ app.user.email | url_encode }}&lck_vads_cust_cell_phone={{ app.user.tel | url_encode }}&lck_vads_amount={{ event.tarif | url_encode }}"
+                    href="{{ url_paiement }}?lck_vads_order_id={{ event.title | paiement_title(event, filiation) }}&lck_vads_ext_info_Encadrant={{ filiation.firstname~' '~filiation.lastname | url_encode }}&lck_vads_ext_info_E-mail%20encadrant={{ filiation.email | url_encode }}&lck_vads_ext_info_Sortie={{ event.title ~ ' - ' ~ event.id ~ ' du ' ~ (event.tsp | date('d-m-Y')) | url_encode }}&lck_vads_cust_first_name={{ app.user.firstname | url_encode }}&lck_vads_cust_last_name={{ app.user.lastname | url_encode }}&lck_vads_cust_id={{ app.user.cafnum | url_encode }}&lck_vads_cust_email={{ app.user.email | url_encode }}&lck_vads_cust_cell_phone={{ app.user.tel | url_encode }}&lck_vads_amount={{ event.tarif | url_encode }}"
                     target="_blank"
                     alt="paiement en ligne">
                     Cliquez ici pour payer en ligne (avant de valider la demande d'inscription)
