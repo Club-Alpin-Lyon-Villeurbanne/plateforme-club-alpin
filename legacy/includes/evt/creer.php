@@ -239,11 +239,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
             <input type="hidden" name="lat_evt" value="<?php echo inputVal('lat_evt', ''); ?>" />
             <input type="hidden" name="long_evt" value="<?php echo inputVal('long_evt', ''); ?>" />
 
-            <!--
-            <input type="hidden" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le point sur la carte" />
-            <input type="hidden" name="lat_evt" value="45.7337532" />
-            <input type="hidden" name="long_evt" value="4.9092352" />
-            -->
         </div>
         <br style="clear:both" />
 
@@ -278,13 +273,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
         <div style="float:left; padding:0 20px 5px 0;">
             Tarif :<br />
             <input type="text" name="tarif_evt" class="type2" value="<?php echo inputVal('tarif_evt', ''); ?>" placeholder="ex : 35.50 " />€
-        </div>
-        <br style="clear:both" />
-
-        <div style="float:left; padding:0 20px 5px 0;">
-            <input type="checkbox" name="cb_evt" <?php if (1 == $_POST['cb_evt'] || 'on' == $_POST['cb_evt']) {
-                echo 'checked="checked"';
-            } ?>/> paiement en ligne possible
         </div>
         <br style="clear:both" />
 
