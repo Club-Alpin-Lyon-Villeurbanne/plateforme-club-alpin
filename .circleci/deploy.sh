@@ -17,6 +17,8 @@ if [ $TARGET == "clubalpinlyon.top" ]; then
 fi;
 TARGET_DIR="$BASE_TARGET/deployments/$TIMESTAMP"
 CURRENT_DIR="$BASE_TARGET/deployments/current"
+mkdir -p $TARGET_DIR
+mkdir -p $CURRENT_DIR
 
 echo "Deploying to $TARGET_DIR"
 
