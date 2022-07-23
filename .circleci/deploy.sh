@@ -18,7 +18,6 @@ fi;
 TARGET_DIR="$BASE_TARGET/deployments/$TIMESTAMP"
 CURRENT_DIR="$BASE_TARGET/deployments/current"
 mkdir -p $TARGET_DIR
-mkdir -p $CURRENT_DIR
 
 echo "Deploying to $TARGET_DIR"
 
@@ -32,7 +31,9 @@ if [ $TARGET == "clubalpinlyon.fr" ]; then
   ln -s "$BASE_TARGET/ffcam-ftp-folder" "$TARGET_DIR/legacy/config/ffcam-ftp-folder"
 fi;
 
-unlink $CURRENT_DIR
+if [[ -f "$CURRENT_DIR" ]]; then
+  unlink $CURRENT_DIR
+fi
 ln -s $TARGET_DIR $CURRENT_DIR
 
 $CURRENT_DIR/bin/console doctrine:migrations:sync-metadata-storage --env=prod
