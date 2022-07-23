@@ -4,13 +4,17 @@ set -euo pipefail
 DEFAULT_TARGET="test.clubalpinlyon.fr"
 TARGET=${1:-$DEFAULT_TARGET}
 
-if [ $TARGET != "clubalpinlyon.fr" ] && [ $TARGET != "test.clubalpinlyon.fr" ]; then
-  echo "Invalid target \"$TARGET\", must be one of \"clubalpinlyon.fr\", \"test.clubalpinlyon.fr\""
+if [ $TARGET != "clubalpinlyon.fr" ] && [ $TARGET != "test.clubalpinlyon.fr" ] && [ $TARGET != "clubalpinlyon.top" ]; then
+  echo "Invalid target \"$TARGET\", must be one of \"clubalpinlyon.fr\", \"test.clubalpinlyon.fr\", \"clubalpinlyon.top\""
   exit 1;
 fi;
 
 TIMESTAMP=$(date +%s)
 BASE_TARGET="/home/kahe0589/$TARGET"
+
+if [ $TARGET == "clubalpinlyon.top" ]; then
+  BASE_TARGET="/var/www/html/$TARGET"
+fi;
 TARGET_DIR="$BASE_TARGET/deployments/$TIMESTAMP"
 CURRENT_DIR="$BASE_TARGET/deployments/current"
 
