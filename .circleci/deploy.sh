@@ -13,7 +13,7 @@ TIMESTAMP=$(date +%s)
 BASE_TARGET="/home/kahe0589/$TARGET"
 
 if [ $TARGET == "clubalpinlyon.top" ]; then
-  BASE_TARGET="/var/www/html/$TARGET"
+  BASE_TARGET="/var/www/$TARGET"
 fi;
 TARGET_DIR="$BASE_TARGET/deployments/$TIMESTAMP"
 CURRENT_DIR="$BASE_TARGET/deployments/current"

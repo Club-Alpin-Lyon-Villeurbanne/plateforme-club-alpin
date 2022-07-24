@@ -108,13 +108,13 @@ jobs:
                   ;;
                 "aws-migration" )
                     echo "\nTransfering package...\n\n"
-                    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no package.zip ec2-user@13.38.231.2:/var/www/html/clubalpinlyon.top/
+                    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no package.zip ec2-user@13.38.231.2:/var/www/clubalpinlyon.top/
                     echo "\nTransfering deploy script...\n\n"
-                    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no .circleci/deploy.sh ec2-user@13.38.231.2:/var/www/html/clubalpinlyon.top/
+                    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no .circleci/deploy.sh ec2-user@13.38.231.2:/var/www/clubalpinlyon.top/
                     echo "\nRunning deploy...\n\n"
-                    LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@13.38.231.2 /var/www/html/clubalpinlyon.top/deploy.sh clubalpinlyon.top
+                    LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@13.38.231.2 /var/www/clubalpinlyon.top/deploy.sh clubalpinlyon.top
                     echo "\nCleanup...\n\n"
-                    LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@13.38.231.2 rm /var/www/html/clubalpinlyon.top/deploy.sh /var/www/html/clubalpinlyon.top/package.zip
+                    LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@13.38.231.2 rm /var/www/clubalpinlyon.top/deploy.sh /var/www/clubalpinlyon.top/package.zip
                     echo "\nDone!\n\n"
                   ;;
             esac
