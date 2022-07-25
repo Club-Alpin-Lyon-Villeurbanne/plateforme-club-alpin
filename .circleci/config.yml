@@ -63,17 +63,17 @@ jobs:
                 "aws-migration" )
                     cp infrastructure/confs/aws/robots.txt public/robots.txt
                     cp infrastructure/confs/aws/.env.prod .
-                    sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_DB_PASSWORD/g" .env.prod
-                    sed -i "s/DB_USER_TO_REPLACE/$AWS_DB_USER/g" .env.prod
-                    sed -i "s/DB_NAME_TO_REPLACE/$AWS_DB_NAME/g" .env.prod
-                    sed -i "s/DB_HOST_TO_REPLACE/$AWS_DB_HOST/g" .env.prod
+                    sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_DEV_DB_PASSWORD/g" .env.prod
+                    sed -i "s/DB_USER_TO_REPLACE/$AWS_DEV_DB_USER/g" .env.prod
+                    sed -i "s/DB_NAME_TO_REPLACE/$AWS_DEV_DB_NAME/g" .env.prod
+                    sed -i "s/DB_HOST_TO_REPLACE/$AWS_DEV_DB_HOST/g" .env.prod
                     cp legacy/config/www.clubalpinlyon.top/config.php legacy/config/config.php
                     sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/www.clubalpinlyon.top/params.php"
                     sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/config.php"
-                    sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_DB_PASSWORD/g" "legacy/config/config.php"
-                    sed -i "s/DB_USER_TO_REPLACE/$AWS_DB_USER/g" "legacy/config/config.php"
-                    sed -i "s/DB_NAME_TO_REPLACE/$AWS_DB_NAME/g" "legacy/config/config.php"
-                    sed -i "s/DB_HOST_TO_REPLACE/$AWS_DB_HOST/g" "legacy/config/config.php"
+                    sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_DEV_DB_PASSWORD/g" "legacy/config/config.php"
+                    sed -i "s/DB_USER_TO_REPLACE/$AWS_DEV_DB_USER/g" "legacy/config/config.php"
+                    sed -i "s/DB_NAME_TO_REPLACE/$AWS_DEV_DB_NAME/g" "legacy/config/config.php"
+                    sed -i "s/DB_HOST_TO_REPLACE/$AWS_DEV_DB_HOST/g" "legacy/config/config.php"
                     cp legacy/config/www.clubalpinlyon.fr/params.php legacy/config/params.php
                   ;;
             esac
