@@ -18,11 +18,6 @@ jobs:
             - composer-v1-{{ checksum "composer.lock" }}
             # fallback to using the latest cache if no exact match is found (See https://circleci.com/docs/2.0/caching/)
             - composer-v1-
-#      - run:
-#          name: Check connection with deployment server
-#          command: |
-#            ssh-keyscan 141.94.251.125 >> ~/.ssh/known_hosts;
-#            LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kahe0589@109.234.162.184 -J jump-user@141.94.251.125 echo "Successfully connected to prod server";
       - run:
           name: Build Docker image, run tests and prepare package
           command: |
@@ -71,12 +66,14 @@ jobs:
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_DB_PASSWORD/g" .env.prod
                     sed -i "s/DB_USER_TO_REPLACE/$AWS_DB_USER/g" .env.prod
                     sed -i "s/DB_NAME_TO_REPLACE/$AWS_DB_NAME/g" .env.prod
+                    sed -i "s/DB_HOST_TO_REPLACE/$AWS_DB_HOST/g" .env.prod
                     cp legacy/config/www.clubalpinlyon.top/config.php legacy/config/config.php
                     sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/www.clubalpinlyon.top/params.php"
                     sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/config.php"
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_DB_PASSWORD/g" "legacy/config/config.php"
                     sed -i "s/DB_USER_TO_REPLACE/$AWS_DB_USER/g" "legacy/config/config.php"
                     sed -i "s/DB_NAME_TO_REPLACE/$AWS_DB_NAME/g" "legacy/config/config.php"
+                    sed -i "s/DB_HOST_TO_REPLACE/$AWS_DB_HOST/g" "legacy/config/config.php"
                     cp legacy/config/www.clubalpinlyon.fr/params.php legacy/config/params.php
                   ;;
             esac
