@@ -22,5 +22,5 @@ if ($evt['join_max_evt'] > 0) {
     </div>
 <?php
 } else {
-                echo '<hr /><div class="alerte">Pas d\'inscription par internet, inscrivez-vous au local du club !</div>';
+                echo '<hr /><div class="alerte">Pas d\'inscription par internet</div>';
             }
