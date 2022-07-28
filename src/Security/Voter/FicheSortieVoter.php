@@ -42,6 +42,12 @@ class FicheSortieVoter extends Voter
             return true;
         }
 
-        return $subject->getEncadrants()->contains($user);
+        foreach ($subject->getEncadrants() as $evtJoin) {
+            if ($evtJoin->getUser() === $user) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
