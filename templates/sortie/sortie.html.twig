@@ -13,7 +13,7 @@
             <br />
             <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
             <span class="bleucaf">&gt;</span>
-            {% if my_status %}
+            {% if not my_status %}
             JE SOUHAITE REJOINDRE CETTE SORTIE
             {% else %}
             JE METS A JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
