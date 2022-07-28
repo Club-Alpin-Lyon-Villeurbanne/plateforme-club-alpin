@@ -41,8 +41,11 @@ class SortieContactVoter extends Voter
         if ($user->hasAttribute(UserAttr::SALARIE)) {
             return true;
         }
-        if ($subject->getEncadrants()->contains($user)) {
-            return true;
+
+        foreach ($subject->getEncadrants() as $evtJoin) {
+            if ($evtJoin->getUser() === $user) {
+                return true;
+            }
         }
 
         return $this->userRights->allowed('evt_contact_all');
