@@ -141,6 +141,7 @@ package: yarn-install yarn-build ## Creates software package
 		var/cache/prod \
 		vendor \
 		.env.local.php \
+		.env.prod \
 		composer.json \
 		composer.lock \
 	@mv .env.backup .env
