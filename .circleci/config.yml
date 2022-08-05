@@ -33,6 +33,7 @@ jobs:
 
             case ${CIRCLE_BRANCH} in
                 "aws-migration" )
+                    echo "\nStart replacing variables...\n\n"
                     cp infrastructure/confs/production/robots.txt public/robots.txt
                     cp infrastructure/confs/production/.env.prod .
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_PROD_DB_PASSWORD/g" .env.prod
@@ -50,6 +51,7 @@ jobs:
                     cp legacy/config/www.clubalpinlyon.fr/params.php legacy/config/params.php
                   ;;
                 "main" )
+                    echo "\nStart replacing variables...\n\n"
                     cp infrastructure/confs/aws/robots.txt public/robots.txt
                     cp infrastructure/confs/aws/.env.prod .
                     sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_DEV_DB_PASSWORD/g" .env.prod
