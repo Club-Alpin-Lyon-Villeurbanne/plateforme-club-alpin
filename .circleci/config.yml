@@ -49,6 +49,8 @@ jobs:
                     sed -i "s/DB_NAME_TO_REPLACE/$AWS_PROD_DB_NAME/g" "legacy/config/config.php"
                     sed -i "s/DB_HOST_TO_REPLACE/$AWS_PROD_DB_HOST/g" "legacy/config/config.php"
                     cp legacy/config/www.clubalpinlyon.fr/params.php legacy/config/params.php
+                    cat legacy/config/config.php
+                    cat .env.prod
                   ;;
                 "main" )
                     echo "\nStart replacing variables...\n\n"
