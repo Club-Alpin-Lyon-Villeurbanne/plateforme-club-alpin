@@ -10,11 +10,7 @@ if [ $TARGET != "clubalpinlyon.fr" ] && [ $TARGET != "test.clubalpinlyon.fr" ] &
 fi;
 
 TIMESTAMP=$(date +%s)
-BASE_TARGET="/home/kahe0589/$TARGET"
-
-if [ $TARGET == "clubalpinlyon.top" ]; then
-  BASE_TARGET="/var/www/$TARGET"
-fi;
+BASE_TARGET="/var/www/$TARGET"
 TARGET_DIR="$BASE_TARGET/deployments/$TIMESTAMP"
 CURRENT_DIR="$BASE_TARGET/deployments/current"
 mkdir -p $TARGET_DIR
