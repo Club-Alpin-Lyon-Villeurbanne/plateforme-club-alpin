@@ -27,9 +27,8 @@ if [ $TARGET == "clubalpinlyon.fr" ]; then
   ln -s "$BASE_TARGET/ffcam-ftp-folder" "$TARGET_DIR/legacy/config/ffcam-ftp-folder"
 fi;
 
-if [[ -f "$CURRENT_DIR" ]]; then
-  unlink $CURRENT_DIR
-fi
+unlink $CURRENT_DIR
+
 ln -s $TARGET_DIR $CURRENT_DIR
 
 $CURRENT_DIR/bin/console doctrine:migrations:sync-metadata-storage --env=prod
