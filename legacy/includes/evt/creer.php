@@ -180,7 +180,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
         <?php if (!$_POST['cycle']) { ?>
             <label class="biglabel" for="cycle_parent">
-                <input type="radio" name="cycle" id="cycle_parent" value="parent" <?php if ($_POST['cycle_master_evt']) {
+                <input type="radio" disabled="true" name="cycle" id="cycle_parent" value="parent" <?php if ($_POST['cycle_master_evt']) {
                 echo 'checked="checked"';
             }?> /> Oui, cette sortie est la première d'un cycle,
                 <?php
