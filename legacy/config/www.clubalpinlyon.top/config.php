@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'sentry_dsn' => 'https://eaa373582efe4133aa456361e19f0518@o1046113.ingest.sentry.io/6021900',
+    'sentry_dsn' => 'https://6d27eabb1f5b4a2c90922b00e472c034@o1046113.ingest.sentry.io/6600048',
     'https' => true,
-    'url' => 'https://www.clubalpinlyon.fr',
+    'url' => 'https://www.clubalpinlyon.top',
     'use_smtp' => true,
     'smtp_conf' => [
         'host' => 'smtp.eu.mailgun.org',
