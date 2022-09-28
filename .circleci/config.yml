@@ -32,7 +32,7 @@ jobs:
             rm legacy/config/params.php
 
             case ${CIRCLE_BRANCH} in
-                "aws-migration" )
+                "main" )
                     echo "\nStart replacing variables...\n\n"
                     cp infrastructure/confs/production/robots.txt public/robots.txt
                     cp infrastructure/confs/production/.env.prod .
@@ -49,10 +49,8 @@ jobs:
                     sed -i "s/DB_NAME_TO_REPLACE/$AWS_PROD_DB_NAME/g" "legacy/config/config.php"
                     sed -i "s/DB_HOST_TO_REPLACE/$AWS_PROD_DB_HOST/g" "legacy/config/config.php"
                     cp legacy/config/www.clubalpinlyon.fr/params.php legacy/config/params.php
-                    cat legacy/config/config.php
-                    cat .env.prod
                   ;;
-                "main" )
+                "dev-branch" )
                     echo "\nStart replacing variables...\n\n"
                     cp infrastructure/confs/aws/robots.txt public/robots.txt
                     cp infrastructure/confs/aws/.env.prod .
@@ -75,7 +73,7 @@ jobs:
             make package
 
             case ${CIRCLE_BRANCH} in
-                "aws-migration" )
+                "main" )
                     echo "\nTransfering package...\n\n"
                     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no package.zip ec2-user@35.180.143.141:/var/www/clubalpinlyon.fr/
                     echo "\nTransfering deploy script...\n\n"
@@ -86,7 +84,7 @@ jobs:
                     LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 rm /var/www/clubalpinlyon.fr/deploy.sh /var/www/clubalpinlyon.fr/package.zip
                     echo "\nDone!\n\n"
                   ;;
-                "main" )
+                "dev-branch" )
                     echo "\nTransfering package...\n\n"
                     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no package.zip ec2-user@13.36.212.104:/var/www/clubalpinlyon.top/
                     echo "\nTransfering deploy script...\n\n"
