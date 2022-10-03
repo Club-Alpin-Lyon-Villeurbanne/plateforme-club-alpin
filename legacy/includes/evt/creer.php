@@ -281,16 +281,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
         ?>
         Détails des frais :
         <textarea name="tarif_detail" class="type2" style="width:95%; min-height:80px" placeholder="Ex : Remontées mécaniques 12€, Péage 11.50€, Car 7€, Vin chaud 5€ = somme 35.50"><?php echo inputVal('tarif_detail', ''); ?></textarea>
-        <br>
-
-        <label><input type="checkbox" name="repas_restaurant" id="repas_restaurant" <?php if (1 == $_POST['repas_restaurant'] || 'on' == $_POST['repas_restaurant']) {
-            echo 'checked="checked"';
-        } ?> >&nbsp;Repas au restaurant possible</label>
-        <div id="tarif_restaurant">
-            Tarif du repas :<br />
-            <input type="text" name="tarif_restaurant" class="type2" value="<?php echo inputVal('tarif_restaurant', ''); ?>" placeholder="ex : 55.90 " />€
-        </div>
-
         <br />
     </div>
 
@@ -525,28 +515,15 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
         // else						checkbox.parents('label').addClass('down').removeClass('up');
     }
 
-    function toggleTarifRestaurant() {
-        if ($('#repas_restaurant').prop('checked')) {
-            $('#tarif_restaurant').show();
-        } else {
-            $('#tarif_restaurant input').val('');
-            $('#tarif_restaurant').hide();
-        }
-    }
-
     // bind + onready
     $().ready(function() {
         // au chargement de la page
         $('#individus input:checked').each(function(){
             switchUserJoin($(this));
         });
-        toggleTarifRestaurant();
         // au clic
         $('#individus input').bind('click change', function(){
             switchUserJoin($(this));
-        });
-        $('#repas_restaurant').bind('click change', function(){
-            toggleTarifRestaurant();
         });
     });
 
