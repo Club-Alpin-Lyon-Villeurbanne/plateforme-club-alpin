@@ -96,20 +96,6 @@ class EvtJoin
      */
     private $isCovoiturage;
 
-    /**
-     * @var bool|null
-     *
-     * @ORM\Column(name="is_restaurant", type="boolean", nullable=true)
-     */
-    private $isRestaurant;
-
-    /**
-     * @var bool|null
-     *
-     * @ORM\Column(name="is_cb", type="boolean", nullable=true)
-     */
-    private $isCb;
-
     public function __construct(Evt $event, User $user, string $role, int $status)
     {
         $this->evt = $event;
@@ -278,30 +264,6 @@ class EvtJoin
     public function setIsCovoiturage(?bool $isCovoiturage): self
     {
         $this->isCovoiturage = $isCovoiturage;
-
-        return $this;
-    }
-
-    public function getIsRestaurant(): ?bool
-    {
-        return $this->isRestaurant;
-    }
-
-    public function setIsRestaurant(?bool $isRestaurant): self
-    {
-        $this->isRestaurant = $isRestaurant;
-
-        return $this;
-    }
-
-    public function getIsCb(): ?bool
-    {
-        return $this->isCb;
-    }
-
-    public function setIsCb(?bool $isCb): self
-    {
-        $this->isCb = $isCb;
 
         return $this;
     }

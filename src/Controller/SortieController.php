@@ -224,27 +224,6 @@ class SortieController extends AbstractController
             if (EvtJoin::STATUS_REFUSE === $status) {
                 $mailer->send($toMail, 'transactional/sortie-participation-declinee', $context);
             }
-
-            if ($participant->getEvt()->getCb()) {
-                $context = [
-                    'event_name' => $event->getTitre(),
-                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'event_date' => date('d-m-Y', $event->getTsp()),
-                    'adherent' => $participant->getUser()->getFirstname().' '.$participant->getUser()->getLastname(),
-                    'event_tarif' => $event->getTarif(),
-                    'caf_num' => $participant->getUser()->getCafnum(),
-                    'encadrant_name' => $event->getUser()->getFirstname().' '.$event->getUser()->getLastname(),
-                    'encadrant_email' => $event->getUser()->getEmail(),
-                ];
-
-                if (EvtJoin::STATUS_VALIDE === $status) {
-                    $mailer->send('comptabilite@clubalpinlyon.fr', 'transactional/sortie-participation-confirmee-paiement-ligne', $context);
-                }
-
-                if (EvtJoin::STATUS_REFUSE === $status) {
-                    $mailer->send('comptabilite@clubalpinlyon.fr', 'transactional/sortie-participation-declinee-paiement-ligne', $context);
-                }
-            }
         }
 
         $em->flush();
@@ -471,22 +450,6 @@ class SortieController extends AbstractController
                 'event_name' => $event->getTitre(),
                 'user' => $user,
             ], [], null, $user->getEmail());
-        }
-
-        if ($participant->getIsCb()) {
-            $toNameFull = $user->getFirstname().' '.$user->getLastname();
-            $toCafNum = $user->getCafnum();
-
-            $mailer->send('comptabilite@clubalpinlyon.fr', 'transactional/sortie-desinscription-paiement-ligne', [
-                'event_name' => $event->getTitre(),
-                'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                'event_date' => date('d-m-y', $event->getTsp()),
-                'adherent' => $toNameFull,
-                'event_tarif' => $event->getTarif(),
-                'caf_num' => $toCafNum,
-                'encadrant_name' => $event->getUser()->getFirstname().' '.$event->getUser()->getLastname(),
-                'encadrant_email' => $event->getUser()->getEmail(),
-            ]);
         }
 
         $this->addFlash('info', 'La participation est annulée');

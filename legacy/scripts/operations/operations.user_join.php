@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$is_cb = $is_covoiturage = $evtUrl = $evtName = $is_restaurant = $inscrits = null;
+$is_covoiturage = $evtUrl = $evtName = $inscrits = null;
 
 // Filiations
 if ('on' == $_POST['filiations']) {
@@ -111,26 +111,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // SI PAS DE PB, INTÉGRATION BDD
     if (!isset($errTab) || 0 === count($errTab)) {
-        if ('on' == $_POST['jeveuxpayerenligne']) {
-            $is_cb = 1;
-        } else {
-            if (isset($_POST['is_cb'])) {
-                $is_cb = 0;
-            } else {
-                $is_cb = 'NULL';
-            }
-        }
-
-        if ('on' == $_POST['jeveuxmangerauresto']) {
-            $is_restaurant = 1;
-        } else {
-            if (isset($_POST['is_restaurant'])) {
-                $is_restaurant = 0;
-            } else {
-                $is_restaurant = 'NULL';
-            }
-        }
-
         $is_covoiturage = 'NULL';
 
         $status_evt_join = '0';
@@ -144,12 +124,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
             } else { */
 
             if (!$update) {
-                $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, is_covoiturage, affiliant_user_join, lastchange_when_evt_join, lastchange_who_evt_join)
-                          VALUES($status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $is_covoiturage, null, null, null);";
+                $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_covoiturage, affiliant_user_join, lastchange_when_evt_join, lastchange_who_evt_join)
+                          VALUES($status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().", $is_covoiturage, null, null, null);";
             } elseif (in_array($id_user, $update, true)) {
                 $req = "UPDATE `caf_evt_join`
                             SET
-                                `is_covoiturage` = $is_covoiturage, `is_cb` = $is_cb, `is_restaurant` = $is_restaurant
+                                `is_covoiturage` = $is_covoiturage
                             WHERE
                                 `user_evt_join` = $id_user AND evt_evt_join = $id_evt;";
             }
@@ -165,12 +145,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
                 } else { */
                 if (!$update || !in_array($id_user_tmp, $update, true)) {
-                    $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, affiliant_user_join, role_evt_join, tsp_evt_join, is_cb, is_restaurant, is_covoiturage)
-                              VALUES($status_evt_join, 		'$id_evt',  '$id_user_tmp',  '$id_user',  	'$role_evt_join', ".time().", $is_cb, $is_restaurant, $is_covoiturage);";
+                    $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, affiliant_user_join, role_evt_join, tsp_evt_join, is_covoiturage)
+                              VALUES($status_evt_join, 		'$id_evt',  '$id_user_tmp',  '$id_user',  	'$role_evt_join', ".time().", $is_covoiturage);";
                 } elseif (in_array($id_user_tmp, $update, true)) {
                     $req = "UPDATE `caf_evt_join`
                             SET
-                                `is_covoiturage` = $is_covoiturage, `is_cb` = $is_cb, `is_restaurant` = $is_restaurant
+                                `is_covoiturage` = $is_covoiturage
                             WHERE
                                 `user_evt_join` = $id_user_tmp AND evt_evt_join = $id_evt;";
                 }
@@ -253,10 +233,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'firstname' => getUser()->getFirstname(),
                 'lastname' => getUser()->getLastname(),
                 'nickname' => getUser()->getNickname(),
-                'is_cb' => 'NULL' != $is_cb,
-                'cb' => $is_cb,
-                'is_restaurant' => 'NULL' != $is_restaurant,
-                'restaurant' => $is_restaurant,
                 'covoiturage' => $is_covoiturage,
                 'dest_role' => $destinataire['role_evt_join'] ?: 'l\'auteur',
             ], [], null, getUser()->getEmail());
@@ -284,10 +260,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
                         'email' => getUser()->getEmail(),
                     ],
                 ],
-                'is_cb' => 'NULL' != $is_cb,
-                'cb' => $is_cb,
-                'is_restaurant' => 'NULL' != $is_restaurant,
-                'restaurant' => $is_restaurant,
                 'covoiturage' => $is_covoiturage,
             ]);
         } else {
@@ -303,10 +275,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
                         'email' => $cetinscrit['email_user'],
                     ];
                 }, $inscrits),
-                'is_cb' => 'NULL' != $is_cb,
-                'cb' => $is_cb,
-                'is_restaurant' => 'NULL' != $is_restaurant,
-                'restaurant' => $is_restaurant,
                 'covoiturage' => $is_covoiturage,
             ]);
         }

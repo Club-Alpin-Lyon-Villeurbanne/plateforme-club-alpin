@@ -132,31 +132,6 @@ if (user()) {
 				<input type="text" name="tel2_user" class="type1" value="<?php echo inputVal('tel2_user', ''); ?>" placeholder="Facultatif" style="width:90%" />
 			</div>
 
-            <?php if ('1' == $sortie['cb_evt'] || '1' == $sortie['repas_restaurant']) { ?>
-            <hr class="  clear">
-                <h2>Options :</h2>
-            <?php } ?>
-            <?php if ('1' == $sortie['cb_evt']) { ?>
-            <div class=" tiers clear">
-                <label for="is_cb"><b>Paiement en ligne : </b></label><br>
-                <select name="is_cb" class="type1" style="width:90%">
-                    <option value="-1" <?php echo '-1' == $_POST['is_cb'] ? ' selected="selected" ' : ''; ?> >NSP</option>
-                    <option value="0" <?php echo '0' == $_POST['is_cb'] ? ' selected="selected" ' : ''; ?> >Non</option>
-                    <option value="1" <?php echo '1' == $_POST['is_cb'] ? ' selected="selected" ' : ''; ?> >Oui</option>
-                </select>
-            </div>
-            <?php } ?>
-            <?php if ('1' == $sortie['repas_restaurant']) { ?>
-            <div class=" tiers clear">
-                <label for="is_restaurant"><b>Restaurant : </b></label><br>
-                <select name="is_restaurant" class="type1" style="width:90%">
-                    <option value="-1" <?php echo '-1' == $_POST['is_restaurant'] ? ' selected="selected" ' : ''; ?> >NSP</option>
-                    <option value="0" <?php echo '0' == $_POST['is_restaurant'] ? ' selected="selected" ' : ''; ?> >Non</option>
-                    <option value="1" <?php echo '1' == $_POST['is_restaurant'] ? ' selected="selected" ' : ''; ?> >Oui</option>
-                </select>
-            </div>
-            <?php } ?>
-
 			<br style="clear:both" />
 			<br />
 			<a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">

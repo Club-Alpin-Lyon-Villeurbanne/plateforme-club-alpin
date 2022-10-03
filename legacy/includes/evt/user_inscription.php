@@ -13,7 +13,7 @@ if (user() && allowed('evt_join')) {
                 // inscriptions démarrées
                 if ($evt['join_start_evt'] < time()) {
                     // Je ne suis pas déja inscrit (ou bien je dispose de filiations à inscrire)
-                    if ('neutre' == $monStatut || count($filiations) || $evt['repas_restaurant']) {
+                    if ('neutre' == $monStatut || count($filiations)) {
                         require __DIR__.'/../../includes/evt/user_inscription_button.php'; ?>
 
                         <div id="inscription" style="display:<?php if (isset($_POST['operation']) && 'user_join' == $_POST['operation']) {
