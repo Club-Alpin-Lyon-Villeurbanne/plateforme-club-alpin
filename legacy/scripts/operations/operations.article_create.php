@@ -40,7 +40,7 @@ if (
     || !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/wide-figure.jpg')
     || !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/min-figure.jpg')
     ) {
-    $errTab[] = 'Les images liées sont introuvables';
+    $errTab[] = 'Merci de rajouter une photo à l\'article';
 }
 
 // enregistrement en BD
