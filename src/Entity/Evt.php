@@ -181,20 +181,6 @@ class Evt
     private $tarifDetail;
 
     /**
-     * @var bool
-     *
-     * @ORM\Column(name="repas_restaurant", type="boolean", nullable=false)
-     */
-    private $repasRestaurant = '0';
-
-    /**
-     * @var float|null
-     *
-     * @ORM\Column(name="tarif_restaurant", type="float", precision=10, scale=2, nullable=true)
-     */
-    private $tarifRestaurant;
-
-    /**
      * @var int|null
      *
      * @ORM\Column(name="denivele_evt", type="integer", nullable=true, options={"unsigned": true})
@@ -316,13 +302,6 @@ class Evt
      * @ORM\Column(name="child_version_tosubmit", type="boolean", nullable=false)
      */
     private $childVersionTosubmit = '0';
-
-    /**
-     * @var bool|null
-     *
-     * @ORM\Column(name="cb_evt", type="boolean", nullable=true)
-     */
-    private $cb;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Article", mappedBy="evt")
@@ -726,30 +705,6 @@ class Evt
         return $this;
     }
 
-    public function getRepasRestaurant(): ?bool
-    {
-        return $this->repasRestaurant;
-    }
-
-    public function setRepasRestaurant(bool $repasRestaurant): self
-    {
-        $this->repasRestaurant = $repasRestaurant;
-
-        return $this;
-    }
-
-    public function getTarifRestaurant(): ?float
-    {
-        return $this->tarifRestaurant;
-    }
-
-    public function setTarifRestaurant(?float $tarifRestaurant): self
-    {
-        $this->tarifRestaurant = $tarifRestaurant;
-
-        return $this;
-    }
-
     public function getDenivele(): ?int
     {
         return $this->denivele;
@@ -944,18 +899,6 @@ class Evt
     public function setChildVersionTosubmit(bool $childVersionTosubmit): self
     {
         $this->childVersionTosubmit = $childVersionTosubmit;
-
-        return $this;
-    }
-
-    public function getCb(): ?bool
-    {
-        return $this->cb;
-    }
-
-    public function setCb(?bool $cb): self
-    {
-        $this->cb = $cb;
 
         return $this;
     }

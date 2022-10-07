@@ -219,8 +219,6 @@ presidence();
         <th>AGE</th>
         <th>TÉL. PERSONNEL</th>
         <th>TÉL. <abbr title="En cas d'urgence">I.C.E</abbr></th>
-        <?php if ('1' == $evt['cb_evt']) { ?><th><abbr title="Paiement en ligne"><img src="/img/base/cb-oui.png"/></abbr></th><?php } ?>
-        <?php if ('1' == $evt['repas_restaurant']) { ?><th><abbr title="Restaurant"><img src="/img/base/resto-oui.png"/></abbr></th><?php } ?>
     </tr>
     </thead>
     <tbody>
@@ -249,20 +247,6 @@ presidence();
                 <td><?php echo getYearsSinceDate($tmp['birthday_user']); ?></td>
                 <td><?php echo html_utf8($tmp['tel_user']); ?></td>
                 <td><?php echo html_utf8($tmp['tel2_user']); ?></td>
-                <?php if ('1' == $evt['cb_evt']) { ?><td><?php if ('1' == $tmp['is_cb']) {
-                echo 'OUI';
-            } elseif ('0' == $tmp['is_cb']) {
-                echo '-';
-            } else {
-                echo '<small>NSP</small>';
-            } ?></td><?php } ?>
-                <?php if ('1' == $evt['repas_restaurant']) { ?><td><?php if ('1' == $tmp['is_restaurant']) {
-                echo 'OUI';
-            } elseif ('0' == $tmp['is_restaurant']) {
-                echo '-';
-            } else {
-                echo '<small>NSP</small>';
-            } ?></td><?php } ?>
             </tr>
         <?php
         }
@@ -278,8 +262,6 @@ presidence();
                 <td></td>
                 <td></td>
                 <td></td>
-                <?php if ('1' == $evt['cb_evt']) { ?><td></td><?php } ?>
-                <?php if ('1' == $evt['repas_restaurant']) { ?><td></td><?php } ?>
             </tr>
         <?php
         }

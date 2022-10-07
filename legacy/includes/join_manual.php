@@ -169,7 +169,7 @@ if (user()) {
                     echo '<p class="info">Inscription effectuée. <a href="'.$versCettePage.'">Retour</a></p>';
                 }
             } else {
-                // On récupère des informations complémentaires sur la sortie : besoin de bénévoles ? possibilité de restaurant ?
+                // On récupère des informations complémentaires sur la sortie : besoin de bénévoles ?
                 $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$id_evt;
                 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($sorties = $result->fetch_assoc()) {
@@ -205,8 +205,6 @@ if (user()) {
 							<th style="font-size:12px; text-align:left">Nom</th>
 							<th style="font-size:12px; text-align:left">Pseudo</th>
 							<th style="font-size:12px; text-align:left">Rôle</th>
-							<?php if ('1' == $sortie['cb_evt']) { ?><th style="font-size:12px; text-align:left">Paiement en ligne</th><?php } ?>
-                            <?php if ('1' == $sortie['repas_restaurant']) { ?><th style="font-size:12px; text-align:left">Restaurant</th><?php } ?>
 						</thead>
 						<tbody>
 							<?php
@@ -234,21 +232,7 @@ if (user()) {
                                             // .'<option value="coencadrant">Co-encadrant</option>'
                                             // .'<option value="encadrant">Encadrant</option>'
                                         .'</select>'
-                                    .'</td>'
-                                    .('1' == $sortie['cb_evt'] ? '<td>'
-                                        .'<select name="is_cb[]">'
-                                            .'<option value="-1" '.('-1' == $_POST['is_cb'][$i] ? ' selected="selected" ' : '').'>NSP</option>'
-                                            .'<option value="0" '.('0' == $_POST['is_cb'][$i] ? ' selected="selected" ' : '').'>Non</option>'
-                                            .'<option value="1" '.('1' == $_POST['is_cb'][$i] ? ' selected="selected" ' : '').'>Oui</option>'
-                                        .'</select>'
-                                    .'</td>' : '')
-                                    .('1' == $sortie['repas_restaurant'] ? '<td>'
-                                        .'<select name="is_restaurant[]">'
-                                            .'<option value="-1" '.('-1' == $_POST['is_restaurant'][$i] ? ' selected="selected" ' : '').'>NSP</option>'
-                                            .'<option value="0" '.('0' == $_POST['is_restaurant'][$i] ? ' selected="selected" ' : '').'>Non</option>'
-                                            .'<option value="1" '.('1' == $_POST['is_restaurant'][$i] ? ' selected="selected" ' : '').'>Oui</option>'
-                                        .'</select>'
-                                    .'</td>' : '');
+                                    .'</td>';
                                 echo '</tr>';
                             } ?>
 						</tbody>
