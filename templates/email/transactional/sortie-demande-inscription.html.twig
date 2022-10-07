@@ -18,16 +18,6 @@
         <li>
             <b>Rôle :</b> {{ role }}
         </li>
-        {% if is_cb %}
-            <li>
-                <b>Paiement en ligne :</b> {{ cb == 1 ? 'oui' : 'non' }}
-            </li>
-        {% endif %}
-        {% if is_restaurant %}
-            <li>
-                <b>Restaurant :</b> {{ restaurant == 1 ? 'oui' : 'non' }}
-            </li>
-        {% endif %}
     </ul>
     <p>
         Vous recevez ce message car vous êtes {{ dest_role }} sur cette sortie.
@@ -43,13 +33,6 @@
     {% endfor %}
 
     Rôle : {{ role }}
-
-{% if is_cb %}
-    Paiement en ligne :< {{ cb == 1 ? 'oui' : 'non' }}
-{% endif %}
-{% if is_restaurant %}
-    Restaurant : {{ restaurant == 1 ? 'oui' : 'non' }}
-{% endif %}
 
     Vous recevez ce message car vous êtes {{ dest_role }} sur cette sortie.
 {% endblock %}

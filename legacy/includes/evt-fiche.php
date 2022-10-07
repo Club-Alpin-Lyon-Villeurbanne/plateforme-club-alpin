@@ -232,23 +232,15 @@ if (!$evt) {
         .'<hr style="clear:both" />';
 
         // TARIFICATIONS DE LA SORTIE (réservé aux membres)
-        if (allowed('user_read_limited') && ($evt['tarif_evt'] > 0 || $evt['cb_evt'] > 0 || $evt['tarif_detail'] || $evt['repas_restaurant'] > 0)) {
+        if (allowed('user_read_limited') && ($evt['tarif_evt'] > 0 || $evt['tarif_detail'] > 0)) {
             echo '<ul class="nice-list">'
                 // tarif ?
                 .($evt['tarif_evt'] > 0 ?
                     '<li class="wide"><b>TARIF :</b> '.str_replace(',', '.', (float) ($evt['tarif_evt'])).'&nbsp;Euros</li>'
                 : '')
-                // Paiement en ligne
-                .($evt['cb_evt'] > 0 ?
-                    '<li class="wide"><b>Paiement en ligne :</b> le paiement en ligne pour cette sortie est possible </li>'
-                : '')
                 // Détail du tarif
                 .($evt['tarif_detail'] ?
                     '<li class="wide"><b>DÉTAIL :</b> '.html_utf8($evt['tarif_detail']).'</li>'
-                : '')
-                // Restaurant
-                .($evt['repas_restaurant'] > 0 ?
-                    '<li class="wide"><b>RESTAURATION :</b> Un repas au restaurant (choix individuel) au cours de la sortie est possible '.($evt['tarif_restaurant'] > 0 ? ' pour un montant de '.str_replace(',', '.', (float) ($evt['tarif_restaurant'])).'&nbsp;Euros' : ' (tarif non précisé)').'</li>'
                 : '')
             .'</ul><hr style="clear:both" />';
         }

@@ -15,13 +15,7 @@ $id_groupe = (int) ($_POST['id_groupe']);
 $titre_evt = trim(stripslashes($_POST['titre_evt']));
 
 $tarif_evt = (float) ($_POST['tarif_evt']); $tarif_evt = str_replace(',', '.', $tarif_evt);
-$cb_evt = 'on' == $_POST['cb_evt'] ? 1 : 0;
 $tarif_detail = $_POST['tarif_detail'] = trim(stripslashes($_POST['tarif_detail']));
-$repas_restaurant = 'on' == $_POST['repas_restaurant'] ? 1 : 0;
-$tarif_restaurant = (float) ($_POST['tarif_restaurant']); $tarif_restaurant = str_replace(',', '.', $tarif_restaurant);
-if (0 == $repas_restaurant) {
-    $tarif_restaurant = null;
-}
 
 $massif_evt = trim(stripslashes($_POST['massif_evt']));
 $rdv_evt = trim(stripslashes($_POST['rdv_evt']));
