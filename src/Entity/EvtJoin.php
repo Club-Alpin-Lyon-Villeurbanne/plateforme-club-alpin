@@ -21,6 +21,7 @@ class EvtJoin
     public const ROLE_MANUEL = 'manuel';
     public const ROLE_INSCRIT = 'inscrit';
     public const ROLE_ENCADRANT = 'encadrant';
+    public const ROLE_STAGIAIRE = 'stagiaire';
     public const ROLE_COENCADRANT = 'coencadrant';
     public const ROLE_BENEVOLE = 'benevole';
 
@@ -155,6 +156,11 @@ class EvtJoin
     public function isRoleEncadrant()
     {
         return self::ROLE_ENCADRANT === $this->role;
+    }
+
+    public function isRoleStagiaire()
+    {
+        return self::ROLE_STAGIAIRE === $this->role;
     }
 
     public function isRoleCoencadrant()

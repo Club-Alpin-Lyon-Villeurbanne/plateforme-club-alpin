@@ -115,6 +115,8 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         switch ($participant->getRole()) {
             case EvtJoin::ROLE_BENEVOLE:
                 return 'Bénévole';
+            case EvtJoin::ROLE_STAGIAIRE:
+                return 'Stagiaire';
             case EvtJoin::ROLE_COENCADRANT:
                 return 'Co-encadrant(e)';
             case EvtJoin::ROLE_ENCADRANT:

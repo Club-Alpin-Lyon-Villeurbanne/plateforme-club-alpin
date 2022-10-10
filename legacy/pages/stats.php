@@ -358,7 +358,7 @@ use App\Legacy\LegacyContainer;
 						WHERE id_user = user_user_attr
 						AND params_user_attr LIKE 'commission:".$key."'
 						AND usertype_user_attr LIKE id_usertype
-						AND code_usertype LIKE 'encadrant'
+						AND (code_usertype LIKE 'encadrant' OR code_usertype LIKE 'stagiaire')
 						";
                     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     $row = $result->fetch_row();

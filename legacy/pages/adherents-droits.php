@@ -46,6 +46,9 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
             if ('encadrant' == $row['code_usertype'] && allowed('user_giveright_1', $row['params_user_attr'])) {
                 $deleteRight = true;
             }
+            if ('stagiaire' == $row['code_usertype'] && allowed('user_giveright_1', $row['params_user_attr'])) {
+                $deleteRight = true;
+            }
             if ('coencadrant' == $row['code_usertype'] && allowed('user_giveright_1', $row['params_user_attr'])) {
                 $deleteRight = true;
             }
@@ -113,6 +116,9 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
             $afficher = true;
         }
         if ('encadrant' == $row['code_usertype'] && allowed('user_giveright_1')) {
+            $afficher = true;
+        }
+        if ('stagiaire' == $row['code_usertype'] && allowed('user_giveright_1')) {
             $afficher = true;
         }
         if ('redacteur' == $row['code_usertype'] && allowed('user_giveright_1')) {

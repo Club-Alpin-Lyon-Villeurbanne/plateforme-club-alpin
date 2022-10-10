@@ -103,7 +103,7 @@ if (!$evt) {
 				</p><br />';
         }
 
-        if ('encadrant' == $monStatut || 'coencadrant' == $monStatut || 'benevole' == $monStatut) {
+        if ('encadrant' == $monStatut || 'stagiaire' == $monStatut || 'coencadrant' == $monStatut || 'benevole' == $monStatut) {
             // avant l'evt
             if ($evt['tsp_end_evt'] > time()) {
                 echo '<p class="info">
@@ -315,6 +315,18 @@ if (!$evt) {
         echo '</li><br style="clear:both" />';
     }
 
+    // stagiaire(s)
+    if (count($evt['joins']['stagiaire'])) {
+        echo '<li class="wide"><b>STAGIAIRES :</b> ';
+        for ($i = 0; $i < count($evt['joins']['stagiaire']); ++$i) {
+            if ($i) {
+                echo ', ';
+            }
+            echo userlink($evt['joins']['stagiaire'][$i]['id_user'], $evt['joins']['stagiaire'][$i]['nickname_user']);
+        }
+        echo '</li><br style="clear:both" />';
+    }
+
     // coencadrant(s)
     if (count($evt['joins']['coencadrant'])) {
         echo '<li class="wide"><b>CO-ENCADRANTS :</b> ';
@@ -358,7 +370,7 @@ if (!$evt) {
         if ('1' != $evt['cancelled_evt']) {
             // participants
             $nInscritsHorsEncadrement = count($evt['joins']['inscrit']) + count($evt['joins']['benevole']) + count($evt['joins']['manuel']);
-            $nInscritsTotal = $nInscritsHorsEncadrement + count($evt['joins']['coencadrant']) + count($evt['joins']['encadrant']);
+            $nInscritsTotal = $nInscritsHorsEncadrement + count($evt['joins']['coencadrant']) + count($evt['joins']['encadrant']) + count($evt['joins']['stagiaire']);
             $nPlacesRestantesOnline = $evt['join_max_evt'] - count($evt['joins']['inscrit']) - count($evt['joins']['benevole']);
             $nEnAttente = count($evt['joins']['enattente']);
 
@@ -433,6 +445,7 @@ if (!$evt) {
                 'inscrit',
                 'manuel',
                 'encadrant',
+                'stagiaire',
                 'coencadrant',
                 'benevole',
                 'enattente',

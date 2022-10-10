@@ -182,7 +182,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         .'WHERE id_user = user_evt_join '
         ."AND evt_evt_join = $id_evt "
         .'AND status_evt_join = 1 '
-        ."AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant') ";
+        ."AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant') ";
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $destinataires[''.$row['id_user']] = $row;
