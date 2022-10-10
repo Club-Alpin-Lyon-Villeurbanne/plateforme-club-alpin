@@ -17,6 +17,7 @@ class UserAttr
     public const ADHERENT = 'adherent';
     public const REDACTEUR = 'redacteur';
     public const ENCADRANT = 'encadrant';
+    public const STAGIAIRE = 'stagiaire';
     public const RESPONSABLE_COMMISSION = 'responsable-commission';
     public const PRESIDENT = 'president';
     public const VICE_PRESIDENT = 'vice-president';

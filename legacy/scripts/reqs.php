@@ -580,6 +580,24 @@ elseif ('creer-une-sortie' == $p1) {
             $encadrantsTab[] = $handle;
         }
 
+        $stagiairesTab = [];
+        $com = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2);
+        $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
+            FROM caf_user, caf_user_attr, caf_usertype
+            WHERE doit_renouveler_user=0
+            AND id_user =user_user_attr
+            AND usertype_user_attr=id_usertype
+            AND code_usertype='stagiaire'
+            AND params_user_attr='commission:$com'
+            ORDER BY  lastname_user ASC";
+        // CRI - 29/08/2015
+        // Correctif car la commission du jeudi compte plus de 50 encadrants
+        // LIMIT 0 , 50";
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+            $stagiairesTab[] = $handle;
+        }
+
         // coencadrants
         $coencadrantsTab = [];
         $com = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2);
@@ -664,6 +682,7 @@ elseif ('creer-une-sortie' == $p1) {
 
                 // Recup' encadrants,coencadrants,benevoles
                 $encadrants = [];
+                $stagiaires = [];
                 $coencadrants = [];
                 $benevoles = [];
                 $req = "SELECT * FROM caf_evt_join WHERE evt_evt_join=$id_evt LIMIT 300";
@@ -671,6 +690,9 @@ elseif ('creer-une-sortie' == $p1) {
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                     if ('encadrant' == $handle2['role_evt_join']) {
                         $encadrants[] = $handle2['user_evt_join'];
+                    }
+                    if ('stagiaire' == $handle2['role_evt_join']) {
+                        $stagiaires[] = $handle2['user_evt_join'];
                     }
                     if ('coencadrant' == $handle2['role_evt_join']) {
                         $coencadrants[] = $handle2['user_evt_join'];
@@ -698,6 +720,7 @@ elseif ('creer-une-sortie' == $p1) {
                 $_POST['commission_evt'] = $handle['commission_evt'];
                 $_POST['titre_evt'] = $handle['titre_evt'];
                 $_POST['encadrants'] = $encadrants;
+                $_POST['stagiaires'] = $stagiaires;
                 $_POST['coencadrants'] = $coencadrants;
                 $_POST['benevoles'] = $benevoles;
                 $_POST['tarif_evt'] = $handle['tarif_evt'];
@@ -804,7 +827,7 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
                 }
 
                 // participants integres a la sortie
-                $handle['joins'] = ['inscrit' => [], 'manuel' => [], 'encadrant' => [], 'coencadrant' => [], 'benevole' => [], 'enattente' => []];
+                $handle['joins'] = ['inscrit' => [], 'manuel' => [], 'encadrant' => [], 'stagiaire' => [], 'coencadrant' => [], 'benevole' => [], 'enattente' => []];
 
                 if ($handle['cycle_parent_evt']) {
                     // cette sortie fait partie d'un cycle, alors on ajoute un lien vers son parent
@@ -849,7 +872,7 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
                     AND user_evt_join = id_user
                     AND status_evt_join = 1
                     AND
-                        (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant' OR role_evt_join LIKE 'benevole')
+                        (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant' OR role_evt_join LIKE 'benevole')
                     LIMIT 300";
                 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
