@@ -205,6 +205,7 @@ class SortieController extends AbstractController
                     $roleName = $participant->getRole().'(e)';
                     break;
                 case EvtJoin::ROLE_BENEVOLE:
+                case EvtJoin::ROLE_STAGIAIRE:
                     $roleName = $participant->getRole();
                     break;
                 default:

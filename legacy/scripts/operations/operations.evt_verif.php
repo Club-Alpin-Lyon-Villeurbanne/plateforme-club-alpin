@@ -45,6 +45,7 @@ $ngens_max_evt = (int) ($_POST['ngens_max_evt']);
 // tableaux
 $encadrants = is_array($_POST['encadrants']) ? $_POST['encadrants'] : [];
 $coencadrants = is_array($_POST['coencadrants']) ? $_POST['coencadrants'] : [];
+$stagiaires = is_array($_POST['stagiaires']) ? $_POST['stagiaires'] : [];
 
 if ('evt_create' == ($_POST['operation'] ?? null)) {
     if (!$user_evt) {
@@ -64,7 +65,7 @@ if (!$commission_evt) {
 if (strlen($titre_evt) < 10 || strlen($titre_evt) > 100) {
     $errTab[] = "Merci d'entrer un titre pour cette sortie, de 10 à 100 caractères";
 }
-if (!count($encadrants) && !count($coencadrants)) {
+if (!count($encadrants) && !count($coencadrants) && !count($stagiaires)) {
     $errTab[] = 'Veuillez sélectionner au moins un encadrant ou co-encadrant';
 }
 if (strlen($description_evt) < 3) {
@@ -157,6 +158,23 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 .'FROM caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
                 ."WHERE user_user_attr=$id_user " // de user à user_attr
                 ."AND code_usertype LIKE 'encadrant' " // droit
+                ."AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
+                .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
+            ;
+            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+            $row = $result->fetch_row();
+            if (!$row[0]) {
+                $errTab[] = "Erreur, il semble que vous ayez lié un encadrant non autorisé. ID_encadrant=$id_user et commission:$code_commission.";
+            }
+        }
+        // stagiaire :
+        foreach ($stagiaires as $id_user) {
+            $id_user = (int) $id_user;
+            $req = ''
+                .'SELECT COUNT(id_user_attr) ' // le résultat est >1 si l'user a les droits
+                .'FROM caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
+                ."WHERE user_user_attr=$id_user " // de user à user_attr
+                ."AND code_usertype LIKE 'stagiaire'" // droit
                 ."AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
                 .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
             ;

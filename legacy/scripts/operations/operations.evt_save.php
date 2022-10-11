@@ -122,7 +122,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 }
             }
 
-            $new_encadrants = array_merge($encadrants, $coencadrants);
+            $new_encadrants = array_merge($encadrants, $coencadrants, $stagiaires);
             foreach ($deja_encadrants as $id_encadrant) {
                 if (in_array($id_encadrant, $new_encadrants, true)) {
                     // on ne touche pas, il reste avec son statut
@@ -142,6 +142,15 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
                     $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
                                                         VALUES(1,               '$id_evt',  '$id_user',  'encadrant', ".time().');';
+                    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+                        $errTab[] = 'Erreur SQL: '.LegacyContainer::get('legacy_mysqli_handler')->lastError();
+                    }
+                }
+            }
+            foreach ($stagiaires as $id_user) {
+                if (!in_array($id_user, $deja_encadrants, true)) {
+                    $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
+                                                        VALUES(1,               '$id_evt',  '$id_user',  'stagiaire', ".time().');';
                     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                         $errTab[] = 'Erreur SQL: '.LegacyContainer::get('legacy_mysqli_handler')->lastError();
                     }

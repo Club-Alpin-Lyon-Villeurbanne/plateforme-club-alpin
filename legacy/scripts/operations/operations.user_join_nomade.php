@@ -20,7 +20,7 @@ $req = "SELECT COUNT(id_evt_join)
 FROM caf_evt_join
 WHERE evt_evt_join=$id_evt
 AND user_evt_join = ".getUser()->getId()."
-AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant')
+AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant')
 LIMIT 1";
 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $row = $result->fetch_row();

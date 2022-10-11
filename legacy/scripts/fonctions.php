@@ -376,7 +376,7 @@ function get_encadrants($id_evt, $only_ids = false)
                     AND user_evt_join = id_user
                     AND status_evt_join = 1
                     AND
-                        (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant')
+                        (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant')
                     LIMIT 300";
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     if ($result) {
