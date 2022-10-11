@@ -342,6 +342,7 @@ class Evt
         $this->cycleChildren = new ArrayCollection();
         $this->tspCrea = time();
 
+        // FIX ME fix encadrant
         $this->joins->add(new EvtJoin($this, $user, EvtJoin::ROLE_ENCADRANT, EvtJoin::STATUS_VALIDE));
     }
 
@@ -494,7 +495,7 @@ class Evt
     }
 
     /** @return EvtJoin[] */
-    public function getEncadrants($types = [EvtJoin::ROLE_ENCADRANT, EvtJoin::ROLE_COENCADRANT]): Collection
+    public function getEncadrants($types = [EvtJoin::ROLE_ENCADRANT, EvtJoin::ROLE_STAGIAIRE, EvtJoin::ROLE_COENCADRANT]): Collection
     {
         return $this->getParticipants($types, [EvtJoin::STATUS_VALIDE]);
     }

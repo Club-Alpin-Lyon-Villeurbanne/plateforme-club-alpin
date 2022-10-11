@@ -13,6 +13,7 @@ if ('1' != $evt['cancelled_evt']) {
         || allowed('evt_join_doall')
         // ou je participe à cette sortie en tant qu'encadrant / coencadrant
         || 'encadrant' == $monStatut
+        || 'stagiaire' == $monStatut
         || 'coencadrant' == $monStatut
         || (user() && getUser()->hasAttribute(UserAttr::SALARIE))
         || ((allowed('evt_join_notme') || allowed('evt_unjoin_notme') || allowed('evt_joining_accept') || allowed('evt_joining_refuse')) && (user() && getUser()->hasAttribute(UserAttr::RESPONSABLE_COMMISSION, $evt['code_commission'])))
@@ -32,7 +33,7 @@ if ('1' != $evt['cancelled_evt']) {
             $droitDeModif = true;
         }
         // ou je participe à cette sortie en tant qu'encadrant / coencadrant
-        if ('encadrant' == $monStatut || 'coencadrant' == $monStatut) {
+        if ('encadrant' == $monStatut || 'stagiaire' == $monStatut || 'coencadrant' == $monStatut) {
             $droitDeModif = true;
         }
         // ou je suis resp de comm pour la sortie
@@ -215,7 +216,7 @@ if ('1' != $evt['cancelled_evt']) {
                 echo '</div>';
             }
 
-            if ('encadrant' != $row['role_evt_join']) {// && $row['role_evt_join'] != 'coencadrant'
+            if ('encadrant' != $row['role_evt_join'] && 'stagiaire' != $row['role_evt_join']) {// && $row['role_evt_join'] != 'coencadrant'
                 if ($droitDeModif) {
                     echo '<span style="display:none">'.(int) ($row['status_evt_join']).'</span>
                                                 <input type="hidden" name="id_evt_join[]" value="'.(int) ($row['id_evt_join']).'" />';
