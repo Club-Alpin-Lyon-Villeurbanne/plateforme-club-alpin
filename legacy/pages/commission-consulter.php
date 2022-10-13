@@ -51,6 +51,7 @@ use App\Legacy\LegacyContainer;
 							(
 								code_usertype LIKE 'responsable-commission'
 								|| code_usertype LIKE 'encadrant'
+								|| code_usertype LIKE 'stagiaire'
 								|| code_usertype LIKE 'coencadrant'
 							)
 						AND usertype_user_attr = id_usertype

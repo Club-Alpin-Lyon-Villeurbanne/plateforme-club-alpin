@@ -20,7 +20,7 @@ $req = "SELECT COUNT(id_evt_join)
 FROM caf_evt_join
 WHERE evt_evt_join=$id_evt
 AND user_evt_join = ".getUser()->getId()."
-AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant')
+AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant')
 LIMIT 1";
 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $row = $result->fetch_row();
@@ -92,32 +92,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if (!isset($errTab) || 0 === count($errTab)) {
         // securite
 
-        if ($_POST['is_cb']) {
-            $is_cb = $_POST['is_cb'];
-            if ('1' == $is_cb) {
-                $is_cb = 1;
-            } elseif ('0' == $is_cb) {
-                $is_cb = 0;
-            } else {
-                $is_cb = 'NULL';
-            }
-        } else {
-            $is_cb = 'NULL';
-        }
-
-        if ($_POST['is_restaurant']) {
-            $is_restaurant = $_POST['is_restaurant'];
-            if ('1' == $is_restaurant) {
-                $is_restaurant = 1;
-            } elseif ('0' == $is_restaurant) {
-                $is_restaurant = 0;
-            } else {
-                $is_restaurant = 'NULL';
-            }
-        } else {
-            $is_restaurant = 'NULL';
-        }
-
         $is_covoiturage = 'NULL';
 
         if (!isset($errTab) || 0 === count($errTab)) {
@@ -129,9 +103,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $status_evt_join = 1;
             }
 
-            $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_cb, is_restaurant, is_covoiturage, affiliant_user_join)
+            $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_covoiturage, affiliant_user_join)
                                     VALUES($status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().', 		'.time().', 			'.getUser()->getId().",
-                        $is_cb, $is_restaurant, $is_covoiturage, null);";
+                        $is_covoiturage, null);";
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }

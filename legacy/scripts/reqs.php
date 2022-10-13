@@ -580,6 +580,24 @@ elseif ('creer-une-sortie' == $p1) {
             $encadrantsTab[] = $handle;
         }
 
+        $stagiairesTab = [];
+        $com = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2);
+        $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
+            FROM caf_user, caf_user_attr, caf_usertype
+            WHERE doit_renouveler_user=0
+            AND id_user =user_user_attr
+            AND usertype_user_attr=id_usertype
+            AND code_usertype='stagiaire'
+            AND params_user_attr='commission:$com'
+            ORDER BY  lastname_user ASC";
+        // CRI - 29/08/2015
+        // Correctif car la commission du jeudi compte plus de 50 encadrants
+        // LIMIT 0 , 50";
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+            $stagiairesTab[] = $handle;
+        }
+
         // coencadrants
         $coencadrantsTab = [];
         $com = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2);
@@ -642,10 +660,10 @@ elseif ('creer-une-sortie' == $p1) {
             // un ID de sortie est vise, il s'agit d'une modif et non d'une creation
             $id_evt = (int) (substr(strrchr($p3, '-'), 1));
 
-            $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cb_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
+            $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
                     , denivele_evt, distance_evt, matos_evt, difficulte_evt, description_evt, lat_evt, long_evt
                     , ngens_max_evt
-                    , join_start_evt, join_max_evt, id_groupe, repas_restaurant, tarif_detail, tarif_restaurant, need_benevoles_evt, itineraire
+                    , join_start_evt, join_max_evt, id_groupe, tarif_detail, need_benevoles_evt, itineraire
                     , nickname_user
                     , title_commission, code_commission
             FROM caf_evt, caf_user, caf_commission as commission
@@ -664,6 +682,7 @@ elseif ('creer-une-sortie' == $p1) {
 
                 // Recup' encadrants,coencadrants,benevoles
                 $encadrants = [];
+                $stagiaires = [];
                 $coencadrants = [];
                 $benevoles = [];
                 $req = "SELECT * FROM caf_evt_join WHERE evt_evt_join=$id_evt LIMIT 300";
@@ -671,6 +690,9 @@ elseif ('creer-une-sortie' == $p1) {
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                     if ('encadrant' == $handle2['role_evt_join']) {
                         $encadrants[] = $handle2['user_evt_join'];
+                    }
+                    if ('stagiaire' == $handle2['role_evt_join']) {
+                        $stagiaires[] = $handle2['user_evt_join'];
                     }
                     if ('coencadrant' == $handle2['role_evt_join']) {
                         $coencadrants[] = $handle2['user_evt_join'];
@@ -698,13 +720,11 @@ elseif ('creer-une-sortie' == $p1) {
                 $_POST['commission_evt'] = $handle['commission_evt'];
                 $_POST['titre_evt'] = $handle['titre_evt'];
                 $_POST['encadrants'] = $encadrants;
+                $_POST['stagiaires'] = $stagiaires;
                 $_POST['coencadrants'] = $coencadrants;
                 $_POST['benevoles'] = $benevoles;
                 $_POST['tarif_evt'] = $handle['tarif_evt'];
-                $_POST['cb_evt'] = $handle['cb_evt'];
                 $_POST['tarif_detail'] = $handle['tarif_detail'];
-                $_POST['tarif_restaurant'] = $handle['tarif_restaurant'];
-                $_POST['repas_restaurant'] = $handle['repas_restaurant'];
                 $_POST['massif_evt'] = $handle['massif_evt'];
                 $_POST['cycle_master_evt'] = $handle['cycle_master_evt'];
                 $_POST['cycle_parent_evt'] = $handle['cycle_parent_evt'];
@@ -770,10 +790,10 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
         $req = "SELECT
                 id_evt, code_evt, status_evt, status_legal_evt, status_who_evt, status_legal_who_evt,
                     user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt,
-                    rdv_evt,titre_evt, massif_evt, tarif_evt, cb_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt,
+                    rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt,
                     cancelled_evt, cancelled_who_evt, cancelled_when_evt, description_evt, denivele_evt, difficulte_evt,
                     matos_evt, need_benevoles_evt, lat_evt, long_evt, join_start_evt, ngens_max_evt, join_max_evt,
-                    id_groupe, repas_restaurant, tarif_detail, tarif_restaurant, distance_evt, itineraire,
+                    id_groupe, tarif_detail, distance_evt, itineraire,
                 nickname_user, civ_user, firstname_user, lastname_user, tel_user,
                 title_commission, code_commission
             FROM caf_evt as evt, caf_user as user, caf_commission as commission
@@ -807,7 +827,7 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
                 }
 
                 // participants integres a la sortie
-                $handle['joins'] = ['inscrit' => [], 'manuel' => [], 'encadrant' => [], 'coencadrant' => [], 'benevole' => [], 'enattente' => []];
+                $handle['joins'] = ['inscrit' => [], 'manuel' => [], 'encadrant' => [], 'stagiaire' => [], 'coencadrant' => [], 'benevole' => [], 'enattente' => []];
 
                 if ($handle['cycle_parent_evt']) {
                     // cette sortie fait partie d'un cycle, alors on ajoute un lien vers son parent
@@ -846,13 +866,13 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
 
                 // participants "speciaux" avec droits :
                 $req = "SELECT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
-                            , role_evt_join, is_cb, is_restaurant, is_covoiturage
+                            , role_evt_join, is_covoiturage
                     FROM caf_evt_join, caf_user
                     WHERE evt_evt_join = $id_evt
                     AND user_evt_join = id_user
                     AND status_evt_join = 1
                     AND
-                        (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant' OR role_evt_join LIKE 'benevole')
+                        (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant' OR role_evt_join LIKE 'benevole')
                     LIMIT 300";
                 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -861,7 +881,7 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
 
                 // participants "enattente" :
                 $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
-                            , role_evt_join, is_cb, is_restaurant , is_covoiturage
+                            , role_evt_join , is_covoiturage
                     FROM caf_evt_join, caf_user
                     WHERE evt_evt_join  = '.(int) (($handle['cycle_parent_evt'] ?: $id_evt)).'
                     AND user_evt_join = id_user
@@ -875,7 +895,7 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
 
                 // participants "normaux" : inscrit en ligne : leur role est à "inscrit"
                 $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
-                            , role_evt_join, is_cb, is_restaurant , is_covoiturage
+                            , role_evt_join, is_covoiturage
                     FROM caf_evt_join, caf_user
                     WHERE evt_evt_join  = '.(int) (($handle['cycle_parent_evt'] ?: $id_evt))."
                     AND user_evt_join = id_user
@@ -889,7 +909,7 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
 
                 // participants "manuel" : inscrit par l'orga : leur role est à "manuel"
                 $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
-                            , role_evt_join, is_cb, is_restaurant , is_covoiturage
+                            , role_evt_join, is_covoiturage
                     FROM caf_evt_join, caf_user
                     WHERE evt_evt_join  = '.(int) (($handle['cycle_parent_evt'] ?: $id_evt))."
                     AND user_evt_join = id_user

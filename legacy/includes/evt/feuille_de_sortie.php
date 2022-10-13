@@ -11,7 +11,8 @@ if (admin() ||
             (user() && $evt['user_evt'] == (string) getUser()->getId()) ||
             allowed('evt_validate_all') ||
             allowed('evt_join_doall') ||
-            'encadrant' == $monStatut || 'coencadrant' == $monStatut ||
+            'encadrant' == $monStatut ||
+            'stagiaire' == $monStatut || 'coencadrant' == $monStatut ||
             allowed('evt_validate', 'commission:'.$evt['code_commission'])
         )
         || (user() && getUser()->hasAttribute(UserAttr::SALARIE)) ||
@@ -44,7 +45,7 @@ if ('0' == $evt['status_evt']) {
     echo '<div class="erreur"><img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Sortie annulée :</b><br /> Cette sortie a été annulée le '.date('d/m/Y à H:i').', par '.userlink($evt['cancelled_who_evt']['id_user'], $evt['cancelled_who_evt']['nickname_user']).'.<br /></div>';
 }
 
-$nAccepteesCalc = count($evt['joins']['encadrant']) + count($evt['joins']['coencadrant']) + count($evt['joins']['benevole']) + count($evt['joins']['inscrit']) + count($evt['joins']['manuel']);
+$nAccepteesCalc = count($evt['joins']['encadrant']) + count($evt['joins']['stagiaire']) + count($evt['joins']['coencadrant']) + count($evt['joins']['benevole']) + count($evt['joins']['inscrit']) + count($evt['joins']['manuel']);
 
 presidence();
 ?>
@@ -152,6 +153,15 @@ presidence();
                     </tr>
                 <?php
                 }
+                foreach ($evt['joins']['stagiaire'] as $tmp) {
+                    ?>
+                    <tr>
+                        <td><b><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></b></td>
+                        <th>TEL</th>
+                        <td><?php echo $tmp['tel_user']; ?></td>
+                    </tr>
+                <?php
+                }
                 foreach ($evt['joins']['coencadrant'] as $tmp) {
                     ?>
                     <tr>
@@ -219,8 +229,6 @@ presidence();
         <th>AGE</th>
         <th>TÉL. PERSONNEL</th>
         <th>TÉL. <abbr title="En cas d'urgence">I.C.E</abbr></th>
-        <?php if ('1' == $evt['cb_evt']) { ?><th><abbr title="Paiement en ligne"><img src="/img/base/cb-oui.png"/></abbr></th><?php } ?>
-        <?php if ('1' == $evt['repas_restaurant']) { ?><th><abbr title="Restaurant"><img src="/img/base/resto-oui.png"/></abbr></th><?php } ?>
     </tr>
     </thead>
     <tbody>
@@ -229,6 +237,7 @@ presidence();
     // constitution de la liste complete des participants
     $joinsParticipants = array_merge(
         $evt['joins']['encadrant'],
+        $evt['joins']['stagiaire'],
         $evt['joins']['coencadrant'],
         $evt['joins']['benevole'],
         $evt['joins']['inscrit'],
@@ -249,20 +258,6 @@ presidence();
                 <td><?php echo getYearsSinceDate($tmp['birthday_user']); ?></td>
                 <td><?php echo html_utf8($tmp['tel_user']); ?></td>
                 <td><?php echo html_utf8($tmp['tel2_user']); ?></td>
-                <?php if ('1' == $evt['cb_evt']) { ?><td><?php if ('1' == $tmp['is_cb']) {
-                echo 'OUI';
-            } elseif ('0' == $tmp['is_cb']) {
-                echo '-';
-            } else {
-                echo '<small>NSP</small>';
-            } ?></td><?php } ?>
-                <?php if ('1' == $evt['repas_restaurant']) { ?><td><?php if ('1' == $tmp['is_restaurant']) {
-                echo 'OUI';
-            } elseif ('0' == $tmp['is_restaurant']) {
-                echo '-';
-            } else {
-                echo '<small>NSP</small>';
-            } ?></td><?php } ?>
             </tr>
         <?php
         }
@@ -278,8 +273,6 @@ presidence();
                 <td></td>
                 <td></td>
                 <td></td>
-                <?php if ('1' == $evt['cb_evt']) { ?><td></td><?php } ?>
-                <?php if ('1' == $evt['repas_restaurant']) { ?><td></td><?php } ?>
             </tr>
         <?php
         }

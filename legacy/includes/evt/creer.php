@@ -101,6 +101,25 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
             <br style="clear:both" />
         </div>
 
+        <h2 class="trigger-h2">Stagiaire(s) :</h2>
+        <div class="trigger-me check-nice">
+            <?php
+            $stagiaires = is_array($_POST['stagiaires']) ? $_POST['stagiaires'] : [];
+            if (!count($stagiairesTab)) {
+                echo '<p class="info">Aucun adhérent n\'est déclaré <b>stagiaire</b> pour cette commission.</p>';
+            }
+            foreach ($stagiairesTab as $stagiaire) {
+                echo '<label for="stagiaire-'.$stagiaire['id_user'].'">
+                    <input type="checkbox" '.(in_array($stagiaire['id_user'], $stagiaires, true) ? 'checked="checked"' : '').' name="stagiaires[]" value="'.$stagiaire['id_user'].'" id="encadrant-'.$stagiaire['id_user'].'" />
+                    '.$stagiaire['firstname_user'].'
+                    '.$stagiaire['lastname_user'].'
+                    <a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user='.$stagiaire['id_user'].'" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
+                </label>';
+            }
+            ?>
+            <br style="clear:both" />
+        </div>
+
         <h2 class="trigger-h2">Co-Encadrant(s) :</h2>
         <div class="trigger-me check-nice">
             <?php
@@ -281,16 +300,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
         ?>
         Détails des frais :
         <textarea name="tarif_detail" class="type2" style="width:95%; min-height:80px" placeholder="Ex : Remontées mécaniques 12€, Péage 11.50€, Car 7€, Vin chaud 5€ = somme 35.50"><?php echo inputVal('tarif_detail', ''); ?></textarea>
-        <br>
-
-        <label><input type="checkbox" name="repas_restaurant" id="repas_restaurant" <?php if (1 == $_POST['repas_restaurant'] || 'on' == $_POST['repas_restaurant']) {
-            echo 'checked="checked"';
-        } ?> >&nbsp;Repas au restaurant possible</label>
-        <div id="tarif_restaurant">
-            Tarif du repas :<br />
-            <input type="text" name="tarif_restaurant" class="type2" value="<?php echo inputVal('tarif_restaurant', ''); ?>" placeholder="ex : 55.90 " />€
-        </div>
-
         <br />
     </div>
 
@@ -498,7 +507,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 <script type="text/javascript">
     // un même user ne peut être à la fois Encadrant et bénévole
     function switchUserJoin(checkbox){
-        var typeTab=new Array('encadrant', 'coencadrant');
+        var typeTab=new Array('encadrant', 'stagiaire', 'coencadrant');
         var tab=checkbox.attr('id').split('-');
         var type=tab[0];
         var id=tab[1];
@@ -525,28 +534,15 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
         // else						checkbox.parents('label').addClass('down').removeClass('up');
     }
 
-    function toggleTarifRestaurant() {
-        if ($('#repas_restaurant').prop('checked')) {
-            $('#tarif_restaurant').show();
-        } else {
-            $('#tarif_restaurant input').val('');
-            $('#tarif_restaurant').hide();
-        }
-    }
-
     // bind + onready
     $().ready(function() {
         // au chargement de la page
         $('#individus input:checked').each(function(){
             switchUserJoin($(this));
         });
-        toggleTarifRestaurant();
         // au clic
         $('#individus input').bind('click change', function(){
             switchUserJoin($(this));
-        });
-        $('#repas_restaurant').bind('click change', function(){
-            toggleTarifRestaurant();
         });
     });
 
