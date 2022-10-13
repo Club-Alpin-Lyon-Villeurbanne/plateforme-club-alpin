@@ -21,6 +21,7 @@ class EvtJoin
     public const ROLE_MANUEL = 'manuel';
     public const ROLE_INSCRIT = 'inscrit';
     public const ROLE_ENCADRANT = 'encadrant';
+    public const ROLE_STAGIAIRE = 'stagiaire';
     public const ROLE_COENCADRANT = 'coencadrant';
     public const ROLE_BENEVOLE = 'benevole';
 
@@ -96,20 +97,6 @@ class EvtJoin
      */
     private $isCovoiturage;
 
-    /**
-     * @var bool|null
-     *
-     * @ORM\Column(name="is_restaurant", type="boolean", nullable=true)
-     */
-    private $isRestaurant;
-
-    /**
-     * @var bool|null
-     *
-     * @ORM\Column(name="is_cb", type="boolean", nullable=true)
-     */
-    private $isCb;
-
     public function __construct(Evt $event, User $user, string $role, int $status)
     {
         $this->evt = $event;
@@ -169,6 +156,11 @@ class EvtJoin
     public function isRoleEncadrant()
     {
         return self::ROLE_ENCADRANT === $this->role;
+    }
+
+    public function isRoleStagiaire()
+    {
+        return self::ROLE_STAGIAIRE === $this->role;
     }
 
     public function isRoleCoencadrant()
@@ -278,30 +270,6 @@ class EvtJoin
     public function setIsCovoiturage(?bool $isCovoiturage): self
     {
         $this->isCovoiturage = $isCovoiturage;
-
-        return $this;
-    }
-
-    public function getIsRestaurant(): ?bool
-    {
-        return $this->isRestaurant;
-    }
-
-    public function setIsRestaurant(?bool $isRestaurant): self
-    {
-        $this->isRestaurant = $isRestaurant;
-
-        return $this;
-    }
-
-    public function getIsCb(): ?bool
-    {
-        return $this->isCb;
-    }
-
-    public function setIsCb(?bool $isCb): self
-    {
-        $this->isCb = $isCb;
 
         return $this;
     }

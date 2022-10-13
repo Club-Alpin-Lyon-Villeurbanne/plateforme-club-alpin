@@ -38,6 +38,6 @@ class UserJoinSortieVoter extends Voter
             return false;
         }
 
-        return null === $subject->getParticipant($user) || \count($this->userRepo->getFiliations($user)) > 0 || $subject->getRepasRestaurant();
+        return null === $subject->getParticipant($user) || \count($this->userRepo->getFiliations($user)) > 0;
     }
 }

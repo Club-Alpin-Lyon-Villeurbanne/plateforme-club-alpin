@@ -303,7 +303,7 @@ function empietement_sortie($id_user, $evt)
     }
 
     // on recherche une inscription à une sortie qui empiète sur la sortie en cours
-    $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt, status_evt_join, role_evt_join, is_cb, is_restaurant
+    $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt, status_evt_join, role_evt_join
             FROM caf_evt, caf_evt_join
             WHERE evt_evt_join = id_evt
             AND id_evt != '.(int) ($evt['id_evt']).'
@@ -329,25 +329,6 @@ function empietement_sortie($id_user, $evt)
     return $sorties;
 }
 
-function user_in_cb($id_user, $valid = true)
-{
-    $is_cb = false;
-
-    $req = "SELECT * FROM `caf_evt_join`
-            WHERE `user_evt_join` = $id_user "
-        .(true === $valid ? ' AND `status_evt_join` = 1 ' : '')
-        .' ';
-
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $is_cb = $row['is_cb'];
-        }
-    }
-
-    return $is_cb;
-}
-
 function get_sortie($id_evt, $type = 'full')
 {
     $sortie = false;
@@ -355,7 +336,7 @@ function get_sortie($id_evt, $type = 'full')
 
     switch ($type) {
         case 'full':
-            $data = 'id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cb_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt, repas_restaurant
+            $data = 'id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
 				, cancelled_evt, cancelled_who_evt, cancelled_when_evt, description_evt, denivele_evt, difficulte_evt, matos_evt, need_benevoles_evt
 				, lat_evt, long_evt
 				, join_start_evt
@@ -364,7 +345,7 @@ function get_sortie($id_evt, $type = 'full')
 				, title_commission, code_commission';
             break;
         case 'commission':
-            $data = 'id_evt, title_commission, code_commission, repas_restaurant';
+            $data = 'id_evt, title_commission, code_commission';
             break;
     }
 
@@ -389,13 +370,13 @@ function get_encadrants($id_evt, $only_ids = false)
 {
     $users = false;
     $req = "SELECT id_user, civ_user,  cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user
-                            , role_evt_join, is_cb, is_restaurant, is_covoiturage
+                            , role_evt_join, is_covoiturage
                     FROM caf_evt_join, caf_user
                     WHERE evt_evt_join = $id_evt
                     AND user_evt_join = id_user
                     AND status_evt_join = 1
                     AND
-                        (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'coencadrant')
+                        (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant')
                     LIMIT 300";
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     if ($result) {

@@ -13,6 +13,7 @@ $handle['temoin-title'] = '';
 $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join
             WHERE status_evt_join =1
             AND role_evt_join NOT LIKE 'encadrant'
+            AND role_evt_join NOT LIKE 'stagiaire'
             AND role_evt_join NOT LIKE 'coencadrant'
             AND evt_evt_join =".(int) ($handle['id_evt']).'
             ORDER BY caf_evt_join.id_evt_join ASC';
