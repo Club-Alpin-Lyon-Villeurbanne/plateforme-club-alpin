@@ -110,7 +110,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
             }
             foreach ($stagiairesTab as $stagiaire) {
                 echo '<label for="stagiaire-'.$stagiaire['id_user'].'">
-                    <input type="checkbox" '.(in_array($stagiaire['id_user'], $stagiaire, true) ? 'checked="checked"' : '').' name="stagiaires[]" value="'.$stagiaire['id_user'].'" id="encadrant-'.$stagiaire['id_user'].'" />
+                    <input type="checkbox" '.(in_array($stagiaire['id_user'], $stagiaires, true) ? 'checked="checked"' : '').' name="stagiaires[]" value="'.$stagiaire['id_user'].'" id="encadrant-'.$stagiaire['id_user'].'" />
                     '.$stagiaire['firstname_user'].'
                     '.$stagiaire['lastname_user'].'
                     <a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user='.$stagiaire['id_user'].'" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
