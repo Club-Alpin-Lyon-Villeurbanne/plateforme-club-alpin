@@ -86,6 +86,7 @@ $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt
             , id_commission, code_commission
         FROM caf_evt, caf_commission
         WHERE status_evt = 0
+        AND tsp_evt IS NOT NULL
         AND commission_evt = id_commission '
         .'ORDER BY tsp_crea_evt ASC ';
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
