@@ -497,7 +497,7 @@ class SortieController extends AbstractController
                 continue;
             }
 
-            $join = $newEvent->addParticipant($participant->getUser(), $participant->getRole());
+            $join = $newEvent->addParticipant($participant->getUser(), $participant->getRole(), $participant->getStatus());
             $em->persist($join);
         }
 
