@@ -52,6 +52,7 @@ if (allowed('evt_validate_all')) { // pouvoir de valider toutes les sorties de t
     $req = 'SELECT COUNT(id_evt)
 	FROM caf_evt, caf_user
 	WHERE status_evt=0
+    AND tsp_evt IS NOT NULL
 	AND id_user=user_evt '
     .'ORDER BY tsp_crea_evt ASC ';
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -63,6 +64,7 @@ if (allowed('evt_validate_all')) { // pouvoir de valider toutes les sorties de t
     // compte des sorties à valider, selon la (les) commission dont nous sommes responsables
     $req = "SELECT COUNT(id_evt) FROM caf_evt, caf_user, caf_commission
 		WHERE status_evt=0
+        AND tsp_evt IS NOT NULL
 		AND id_user=user_evt
 		AND commission_evt=id_commission
 		AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."') " // condition OR pour toutes les commissions autorisées
@@ -1138,6 +1140,7 @@ elseif ('gestion-des-sorties' == $p1 && (allowed('evt_validate_all') || allowed(
 					, title_commission, code_commission
 		FROM caf_evt, caf_user, caf_commission
 		WHERE status_evt=0
+        AND tsp_evt IS NOT NULL
 		AND id_user = user_evt
 		AND commission_evt=id_commission '
         .'ORDER BY tsp_evt ASC
@@ -1156,6 +1159,7 @@ elseif ('gestion-des-sorties' == $p1 && (allowed('evt_validate_all') || allowed(
 					, title_commission, code_commission
 		FROM caf_evt, caf_user, caf_commission
 		WHERE status_evt=0
+        AND tsp_evt IS NOT NULL
 		AND id_user=user_evt
 		AND commission_evt=id_commission
 		AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."') " // condition OR pour toutes les commissions autorisées
