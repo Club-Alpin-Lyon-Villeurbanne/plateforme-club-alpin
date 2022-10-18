@@ -326,8 +326,10 @@ function empietement_sortie($id_user, $evt)
             LIMIT 1000';
 
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($tmpJoin = $result->fetch_assoc()) {
-        $sorties[] = $tmpJoin;
+    if ($result) {
+        while ($tmpJoin = $result->fetch_assoc()) {
+            $sorties[] = $tmpJoin;
+        }
     }
 
     return $sorties;
