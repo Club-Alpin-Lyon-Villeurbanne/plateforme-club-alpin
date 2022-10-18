@@ -78,6 +78,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
                             else {
                                 ?>
                                     <p class="mini">La sortie n'est pas publiée : aucun message ne sera envoyé</p>
+                                    <textarea class="type2" style="width:610px; display:none;" name="msg" placeholder="ex : Sortie annulée pour cause de météo défavorable.">No msg sent</textarea>
                                     <?php
                                         if (false && $evt['cycle_master_evt']) {
                                             echo '<input type="checkbox" name="del_cycle_master_evt" value="1" checked /> <b>SORTIE DE DEBUT DE CYCLE</b>, annuler toutes les sorties du cycle';
