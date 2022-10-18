@@ -40,7 +40,7 @@ if (user()) {
 				WHERE id_user = user_evt
 				AND user_evt=".getUser()->getId().'
 				AND id_commission = commission_evt
-				ORDER BY  tsp_evt DESC
+				ORDER BY tsp_evt IS NOT NULL, tsp_evt DESC
 				LIMIT '.($limite * ($pagenum - 1)).", $limite";
 
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -76,7 +76,7 @@ if (user()) {
 				AND user_evt_join = '.getUser()->getId().'
 				AND user_evt_join = id_user '
                 // de la plus récente a la plus ancienne
-                .'ORDER BY  tsp_evt DESC
+                .'ORDER BY tsp_evt IS NOT NULL, tsp_evt DESC
 				LIMIT '.($limite * ($pagenum - 1)).", $limite";
 
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
