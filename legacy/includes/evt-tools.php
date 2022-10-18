@@ -17,7 +17,7 @@ if ($evt) {
 
         // SUPPRIMER
         // on ne peut supprimer que si elle n'est pas publiée OU annulée OU passée
-        .((allowed('evt_delete') && ($evt['cancelled_evt'] || 1 != $evt['status_evt'] || $evt['tsp_end_evt'] < time()))
+        .(((allowed('evt_delete') || $evt['user_evt'] == getUser()->getId()) && ($evt['cancelled_evt'] || 1 != $evt['status_evt'] || $evt['tsp_end_evt'] < time() || null === $evt['tsp_end_evt']))
             ? '<a class="nice2 red" href="/supprimer-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Supprimer définitivement la sortie ci-dessous">Supprimer</a>' : '')
 
     .'</div>';
