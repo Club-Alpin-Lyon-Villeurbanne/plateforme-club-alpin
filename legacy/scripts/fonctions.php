@@ -306,6 +306,10 @@ function empietement_sortie($id_user, $evt)
         $evt = get_evt($evt);
     }
 
+    if (!$evt['tsp_evt'] || !$evt['tsp_end_evt']) {
+        return $sorties;
+    }
+
     // on recherche une inscription à une sortie qui empiète sur la sortie en cours
     $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt, status_evt_join, role_evt_join
             FROM caf_evt, caf_evt_join

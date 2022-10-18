@@ -221,6 +221,10 @@ if (user()) {
                         .(1 == $evt['status_evt'] && user() && $evt['user_evt'] == (string) getUser()->getId() ? '<p class="info">Sortie publiée sur le site</p>' : '')
                         .(2 == $evt['status_evt'] && user() && $evt['user_evt'] == (string) getUser()->getId() ? '<p class="erreur">Sortie refusée et non publiée</p>' : '');
 
+                    if (0 == $evt['status_evt'] && user() && $evt['user_evt'] == (string) getUser()->getId() && null === $evt['tsp_evt']) {
+                        $status_evt = '<p class="alerte">Sortie à finaliser</p>';
+                    }
+
                     echo '<tr>'
                             .'<td class="agenda-gauche">'
                                 .jour(date('N', $evt['tsp_evt']), 'short').' '.date('d', $evt['tsp_evt']).' '.mois(date('m', $evt['tsp_evt'])).
