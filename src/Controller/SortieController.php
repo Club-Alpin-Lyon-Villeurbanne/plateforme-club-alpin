@@ -471,6 +471,10 @@ class SortieController extends AbstractController
      */
     public function sortieDuplicate(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
     {
+        if (!$this->isGranted('SORTIE_DUPLICATE', $event)) {
+            throw new AccessDeniedHttpException('Not found');
+        }
+
         if (!$this->isCsrfTokenValid('sortie_duplicate', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
         }
