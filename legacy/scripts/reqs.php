@@ -733,10 +733,10 @@ elseif ('creer-une-sortie' == $p1) {
                 $_POST['rdv_evt'] = $handle['rdv_evt'];
                 $_POST['lat_evt'] = $handle['lat_evt'];
                 $_POST['long_evt'] = $handle['long_evt'];
-                $_POST['tsp_evt_day'] = date('d/m/Y', $handle['tsp_evt']);
-                $_POST['tsp_evt_hour'] = date('H:i', $handle['tsp_evt']);
-                $_POST['tsp_end_evt_day'] = date('d/m/Y', $handle['tsp_end_evt']);
-                $_POST['tsp_end_evt_hour'] = date('H:i', $handle['tsp_end_evt']);
+                $_POST['tsp_evt_day'] = $handle['tsp_evt'] ? date('d/m/Y', $handle['tsp_evt']) : '';
+                $_POST['tsp_evt_hour'] = $handle['tsp_evt'] ? date('H:i', $handle['tsp_evt']) : '';
+                $_POST['tsp_end_evt_day'] = $handle['tsp_end_evt'] ? date('d/m/Y', $handle['tsp_end_evt']) : '';
+                $_POST['tsp_end_evt_hour'] = $handle['tsp_end_evt'] ? date('H:i', $handle['tsp_end_evt']) : '';
                 $_POST['denivele_evt'] = $handle['denivele_evt'];
                 $_POST['ngens_max_evt'] = $handle['ngens_max_evt'];
                 $_POST['distance_evt'] = $handle['distance_evt'];

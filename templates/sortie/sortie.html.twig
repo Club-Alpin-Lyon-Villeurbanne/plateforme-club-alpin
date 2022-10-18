@@ -167,7 +167,17 @@
         </a>
         {% endif %}
 
-		<br />
+        {% if app.user and app.user.hasAttribute(constant('App\\Entity\\UserAttr::DEVELOPPEUR')) %}
+        <form action="{{ path('sortie_duplicate', { id: event.id }) }}" method="post" class="loading">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
+
+            <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants" class="nice2">
+                Créer une sortie avec ce groupe
+            </a>
+        </form>
+        {% endif %}
+
+        <br />
         <br />
 
         {% set my_status = event.participant(app.user) %}
