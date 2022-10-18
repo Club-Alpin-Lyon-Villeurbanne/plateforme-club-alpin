@@ -167,7 +167,7 @@
         </a>
         {% endif %}
 
-        {% if app.user and app.user.id == 3932 %}
+        {% if is_granted('SORTIE_DUPLICATE', event) %}
         <form action="{{ path('sortie_duplicate', { id: event.id }) }}" method="post" class="loading">
             <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
 
