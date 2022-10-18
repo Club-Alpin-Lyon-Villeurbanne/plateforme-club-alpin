@@ -476,7 +476,7 @@ class SortieController extends AbstractController
         }
 
         $newEvent = new Evt(
-            $event->getUser(),
+            $this->getUser(),
             $event->getCommission(),
             '',
             '',
@@ -493,7 +493,7 @@ class SortieController extends AbstractController
         $em->persist($newEvent);
 
         foreach ($event->getParticipants() as $participant) {
-            if ($participant->getUser() === $event->getUser()) {
+            if ($participant->getUser() === $newEvent->getUser()) {
                 continue;
             }
 
