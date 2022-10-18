@@ -106,14 +106,14 @@ class Evt
     /**
      * @var int
      *
-     * @ORM\Column(name="tsp_evt", type="bigint", nullable=false, options={"comment": "timestamp du début du event"})
+     * @ORM\Column(name="tsp_evt", type="bigint", nullable=true, options={"comment": "timestamp du début du event"})
      */
     private $tsp;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="tsp_end_evt", type="bigint", nullable=false)
+     * @ORM\Column(name="tsp_end_evt", type="bigint", nullable=true)
      */
     private $tspEnd;
 
@@ -246,7 +246,7 @@ class Evt
     /**
      * @var int
      *
-     * @ORM\Column(name="join_start_evt", type="integer", nullable=false, options={"comment": "Timestamp de départ des inscriptions"})
+     * @ORM\Column(name="join_start_evt", type="integer", nullable=true, options={"comment": "Timestamp de départ des inscriptions"})
      */
     private $joinStart;
 
@@ -313,21 +313,21 @@ class Evt
         Commission $commission,
         string $titre,
         string $code,
-        \DateTime $dateStart,
-        \DateTime $dateEnd,
+        ?\DateTime $dateStart,
+        ?\DateTime $dateEnd,
         string $rdv,
         float $rdvLat,
         float $rdvLong,
         string $description,
-        int $demarrageInscriptions,
+        ?int $demarrageInscriptions,
         int $maxInscriptions,
         int $maxParticipants
     ) {
         $this->user = $user;
         $this->titre = $titre;
         $this->code = $code;
-        $this->tsp = $dateStart->getTimestamp();
-        $this->tspEnd = $dateEnd->getTimestamp();
+        $this->tsp = $dateStart ? $dateStart->getTimestamp() : null;
+        $this->tspEnd = $dateEnd ? $dateEnd->getTimestamp() : null;
         $this->place = ''; // unused, must be dropped
         $this->rdv = $rdv;
         $this->lat = $rdvLat;
@@ -450,6 +450,14 @@ class Evt
         $this->user = $user;
 
         return $this;
+    }
+
+    public function addParticipant(User $user, string $role = EvtJoin::ROLE_INSCRIT, int $status = EvtJoin::STATUS_NON_CONFIRME): EvtJoin
+    {
+        $participant = new EvtJoin($this, $user, $role, $status);
+        $this->joins->add($participant);
+
+        return $participant;
     }
 
     /** @return EvtJoin[] */
