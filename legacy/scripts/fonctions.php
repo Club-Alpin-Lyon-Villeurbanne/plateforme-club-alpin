@@ -250,6 +250,10 @@ function get_groupes($id_commission, $force_valid = false)
 {
     $groupes = [];
 
+    if (null == $id_commission) {
+        return $groupes;
+    }
+
     $req = 'SELECT * FROM `caf_groupe` WHERE `id_commission` = '.$id_commission;
     if ($force_valid) {
         $req .= ' AND actif = 1 ';
