@@ -57,6 +57,7 @@ class EvtJoin
 
     /**
      * @var User
+     *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="affiliant_user_join", referencedColumnName="id_user", nullable=true)
      */
@@ -85,6 +86,7 @@ class EvtJoin
 
     /**
      * @var User
+     *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="lastchange_who_evt_join", referencedColumnName="id_user", nullable=true)
      */

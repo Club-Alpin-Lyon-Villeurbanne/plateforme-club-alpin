@@ -5,6 +5,7 @@
     } else {
         echo html_utf8($tmpUser['nickname_user']);
     }
+
     if (allowed('user_read_private') && $tmpUser['doit_renouveler_user']) {
         echo '<div class="alerte">LICENCE EXPIRÉE</div>';
     }

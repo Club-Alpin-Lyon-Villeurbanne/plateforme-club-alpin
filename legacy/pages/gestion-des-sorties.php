@@ -33,18 +33,18 @@
                                         .'<div class="evt-tools">'
 
                                             // apercu
-                                            .'<a class="nice2" href="/sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
+                                            .'<a class="nice2" href="/sortie/'.html_utf8($evt['code_evt']).'-'.(int) $evt['id_evt'].'.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
 
                             // Modération
                             echo '
-											<form action="'.generateRoute('sortie_validate', ['id' => (int) ($evt['id_evt'])]).'" method="post" style="display:inline" class="loading">
+											<form action="'.generateRoute('sortie_validate', ['id' => (int) $evt['id_evt']]).'" method="post" style="display:inline" class="loading">
 												<input type="hidden" name="csrf_token" value="'.csrfToken('sortie_validate').'" />
 												<input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
 											</form>
 
 											<input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
-											<div style="display:none" id="refuser-'.(int) ($evt['id_evt']).'">
-                                                <form action="'.generateRoute('sortie_refus', ['id' => (int) ($evt['id_evt'])]).'" method="post" class="loading">
+											<div style="display:none" id="refuser-'.(int) $evt['id_evt'].'">
+                                                <form action="'.generateRoute('sortie_refus', ['id' => (int) $evt['id_evt']]).'" method="post" class="loading">
                                                     <input type="hidden" name="csrf_token" value="'.csrfToken('sortie_refus').'" />
 
 													<p>Laissez un message à l\'auteur pour lui expliquer la raison du refus :</p>
@@ -53,7 +53,7 @@
 													<input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
 												</form>
 											</div>
-											<a class="nice2 noprint red" href="/supprimer-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Supprimer définitivement la sortie"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie</a>
+											<a class="nice2 noprint red" href="/supprimer-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) $evt['id_evt'].'.html" title="Supprimer définitivement la sortie"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie</a>
 											'
                                         .'</div>';
 
@@ -87,7 +87,7 @@
                     echo '</nav>';
                 }
             }
-            ?>
+			?>
 			<br style="clear:both" />
 		</div>
 	</div>
@@ -95,7 +95,7 @@
 	<!-- partie droite -->
 	<?php
     require __DIR__.'/../includes/right-type-agenda.php';
-    ?>
+			?>
 
 
 	<br style="clear:both" />

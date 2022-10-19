@@ -37,6 +37,7 @@ class SortieController extends AbstractController
      *     methods={"GET"},
      *     priority="10"
      * )
+     *
      * @Template
      */
     public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository)

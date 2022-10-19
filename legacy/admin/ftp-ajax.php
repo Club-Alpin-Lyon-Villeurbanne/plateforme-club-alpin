@@ -48,8 +48,8 @@ if (0 === count($errTab)) {
             $tmp['filetype'] = filetype($dossier.$file);
             $tmp['ext'] = substr(strrchr($file, '.'), 1);
             $imgDim = ImageManipulator::getImageSize($dossier.$file);
-            $tmp['imgw'] = (int) ($imgDim[0]);
-            $tmp['imgh'] = (int) ($imgDim[1]);
+            $tmp['imgw'] = (int) $imgDim[0];
+            $tmp['imgh'] = (int) $imgDim[1];
             // $tmp['stat']=stat($dossier.$file);
             $fileTab[] = $tmp;
         }

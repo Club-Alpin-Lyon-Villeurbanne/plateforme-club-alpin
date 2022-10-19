@@ -39,7 +39,7 @@ use App\Legacy\LegacyContainer;
                         echo '<div class="item '.(1 == $row['vis_commission'] ? 'on' : 'off').'">'
                                     .'<div class="item-1">'
                                         // pour ajax
-                                        .'<input type="hidden" name="id_commission" value="'.(int) ($row['id_commission']).'" class="id_commission" />'
+                                        .'<input type="hidden" name="id_commission" value="'.(int) $row['id_commission'].'" class="id_commission" />'
                                         // bigfond
                                         .'<a href="'.$bigImgUrl.'" title="" class="fancybox"><img style="width:100%" src="'.$bigImgUrl.'" alt="" title="Agrandir" /></a>'
                                         .'<br />'
@@ -70,13 +70,13 @@ use App\Legacy\LegacyContainer;
                             echo '</p><br>';
                         }
                         if (allowed('comm_desactivate', 'commission:'.$row['code_commission'])) {
-                            echo '<a href="/includer.php?p=includes/commission-edit-vis.php&amp;id_commission='.(int) ($row['id_commission']).'" title="" class="fancyframe nice2">Activer / Désactiver</a> ';
+                            echo '<a href="/includer.php?p=includes/commission-edit-vis.php&amp;id_commission='.(int) $row['id_commission'].'" title="" class="fancyframe nice2">Activer / Désactiver</a> ';
                         }
                         if (allowed('comm_edit', 'commission:'.$row['code_commission'])) {
-                            echo '<a href="/commission-edit.html?id_commission='.(int) ($row['id_commission']).'" title="" class="nice2">Modifier cette commission</a> <br />';
+                            echo '<a href="/commission-edit.html?id_commission='.(int) $row['id_commission'].'" title="" class="nice2">Modifier cette commission</a> <br />';
                         }
                         if (allowed('comm_read', 'commission:'.$row['code_commission'])) {
-                            echo '<a href="/commission-consulter.html?id_commission='.(int) ($row['id_commission']).'" title="" class="nice2">Fiche commission</a><br />';
+                            echo '<a href="/commission-consulter.html?id_commission='.(int) $row['id_commission'].'" title="" class="nice2">Fiche commission</a><br />';
                         }
                         // .'<a href="/includer.php?p=includes/commission-edit-text.php&amp;id_commission='.intval($row['id_commission']).'" title="" class="fancyframe nice2">Modifier le titre</a> <br />'
                         // .'<a href="/includer.php?p=includes/commission-edit-bigfond.php&amp;id_commission='.intval($row['id_commission']).'" title="" class="fancyframe nice2">Modifier l\'image de fond</a> '
@@ -92,14 +92,14 @@ use App\Legacy\LegacyContainer;
 				</div>
 				<?php
             }
-            ?>
+?>
 		</div>
 	</div>
 
 	<!-- partie droite -->
 	<?php
     require __DIR__.'/../includes/right-type-agenda.php';
-    ?>
+?>
 
 	<br style="clear:both" />
 </div>

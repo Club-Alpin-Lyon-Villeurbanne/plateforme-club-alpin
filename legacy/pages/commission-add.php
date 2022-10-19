@@ -32,8 +32,8 @@
 					</div>
 					<p>
 						<input type="checkbox" name="disable-bigfond" id="disable-bigfond" <?php if (isset($_POST['disable-bigfond']) && 'on' == $_POST['disable-bigfond']) {
-                    echo 'checked="checked"';
-                } ?>/>
+						    echo 'checked="checked"';
+						} ?>/>
 						<label for="disable-bigfond" class='mini'>Laisser tomber, utiliser l'image par défaut (déconseillé)</label>
 					</p>
 
@@ -74,8 +74,8 @@
 					</div>
 					<p>
 						<input type="checkbox" name="disable-pictos" id="disable-pictos" <?php if ('on' == $_POST['disable-pictos']) {
-                    echo 'checked="checked"';
-                } ?>/>
+						    echo 'checked="checked"';
+						} ?>/>
 						<label for="disable-pictos" class='mini'>Laisser tomber, utiliser les pictos du CAF par défaut (déconseillé)</label>
 					</p>
 					<hr />
@@ -104,14 +104,14 @@
 				<br />
 				<?php
             }
-            ?>
+			?>
 		</div>
 	</div>
 
 	<!-- partie droite -->
 	<?php
     require __DIR__.'/../includes/right-type-agenda.php';
-    ?>
+			?>
 
 	<br style="clear:both" />
 </div>

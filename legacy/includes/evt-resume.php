@@ -55,7 +55,7 @@ if (!$evt) {
         .'<li><b>RDV :</b> '.html_utf8($evt['rdv_evt']).'</li>'
         // tarif ?
         .($evt['tarif_evt'] > 0 ?
-            '<li><b>TARIF :</b> '.(float) ($evt['tarif_evt']).' Euros</li>'
+            '<li><b>TARIF :</b> '.(float) $evt['tarif_evt'].' Euros</li>'
         : '')
     .'</ul><br style="clear:both" />';
 }

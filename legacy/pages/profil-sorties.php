@@ -25,9 +25,9 @@ if (user()) {
 				, caf_commission ';
 
     // pagniation
-        $limite = 10; // n elts par page
-        $total = 0; // n elts en tout dans la base
-        $pagenum = (int) ($_GET['pagenum'] ?? 0);
+    $limite = 10; // n elts par page
+    $total = 0; // n elts en tout dans la base
+    $pagenum = (int) ($_GET['pagenum'] ?? 0);
     if ($pagenum < 1) {
         $pagenum = 1;
     } // les pages commencent à 1
@@ -254,10 +254,10 @@ if (user()) {
                     echo '</td>'
                         .'</tr>';
                 }
-            ?>
+        ?>
 			</table>
 			<?php
-        }
+    }
 
     // NAV - PAGES
     if ($total > $limite) {

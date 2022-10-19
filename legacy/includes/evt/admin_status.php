@@ -13,15 +13,15 @@
         if ((allowed('evt_validate_all') || allowed('evt_validate', 'commission:'.$evt['code_commission'])) && (1 != $evt['status_evt'] || (1 == $evt['status_evt'] && 1 == $evt['cancelled_evt']))) {
             echo '<div><form action="'.$versCettePage.'" method="post" class="loading" style="display:inline"><input type="hidden" name="operation" value="evt_validate" />';
             echo '<input type="hidden" name="status_evt" value="1" />';
-            echo '<input type="hidden" name="id_evt" value="'.((int) ($evt['id_evt'])).'" />';
+            echo '<input type="hidden" name="id_evt" value="'.((int) $evt['id_evt']).'" />';
             echo '<input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />';
             echo '</form>';
             echo '<input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
-				<div style="display:none" id="refuser-'.(int) ($evt['id_evt']).'">
+				<div style="display:none" id="refuser-'.(int) $evt['id_evt'].'">
 					<form action="'.$versCettePage.'?forceshow=true" method="post" class="loading">
 						<input type="hidden" name="operation" value="evt_validate" />
 						<input type="hidden" name="status_evt" value="2" />
-						<input type="hidden" name="id_evt" value="'.((int) ($evt['id_evt'])).'" />
+						<input type="hidden" name="id_evt" value="'.((int) $evt['id_evt']).'" />
 
 						<p>Laissez un message à l\'auteur pour lui expliquer la raison du refus :</p>
 						<input type="text" name="msg" class="type1" placeholder="ex: Mauvais point de RDV" />
@@ -55,6 +55,7 @@
     }
 
     // j'en suis l'auteur ? Elle est pas validée ? modification possible !
+
     if ((user() && $evt['user_evt'] == (string) getUser()->getId()) || allowed('evt_validate_all') || allowed('evt_validate', 'commission:'.$evt['code_commission'])) {
         if (1 != $evt['cancelled_evt']) {
             echo '<a href="/creer-une-sortie/'.$evt['code_commission'].'/update-'.$evt['id_evt'].'.html" title="Vous êtes l\'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange"><img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie</a>';
@@ -64,10 +65,10 @@
         if ($evt['tsp_end_evt'] > time()) {
             if (allowed('evt_delete', 'commission:'.$evt['code_commission']) && (1 != $evt['status_evt'] || (1 == $evt['status_evt'] && 1 == $evt['cancelled_evt']))) {
                 // supprimer
-                echo '<a class="nice2 noprint red" href="/supprimer-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Supprimer définitivement la sortie ci-dessous"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie</a>';
+                echo '<a class="nice2 noprint red" href="/supprimer-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) $evt['id_evt'].'.html" title="Supprimer définitivement la sortie ci-dessous"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie</a>';
             } elseif (allowed('evt_cancel', 'commission:'.$evt['code_commission']) && '1' != $evt['cancelled_evt']) {
                 // annuler
-                echo '<a class="nice2 noprint red" href="/annuler-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Annuler la sortie ci-dessous">
+                echo '<a class="nice2 noprint red" href="/annuler-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) $evt['id_evt'].'.html" title="Annuler la sortie ci-dessous">
 				<img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie</a>';
             }
         }

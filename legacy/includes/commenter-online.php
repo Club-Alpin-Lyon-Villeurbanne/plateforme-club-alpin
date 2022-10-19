@@ -8,7 +8,7 @@
     if ('comment' == ($_POST['operation'] ?? null) && isset($errTab) && count($errTab) > 0) {
         echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
     }
-    ?>
+?>
 
 	<div style="float:left; width:75px; padding-top:3px;">
 		<img src="<?php echo userImg((string) getUser()->getId(), 'pic'); ?>" alt="" title="" />

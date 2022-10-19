@@ -6,9 +6,9 @@ use App\Legacy\LegacyContainer;
 
 if (user()) {
     // id de la sortie, pour n'afficher que les adhérents non inscrits
-    $id_evt = (int) ($_GET['id_evt']);
+    $id_evt = (int) $_GET['id_evt'];
 
-    $showAll = (int) ($_GET['showAll']);
+    $showAll = (int) $_GET['showAll'];
 
     // if(!allowed('user_see_all')){
     if (!allowed('evt_join_notme')) {
@@ -30,11 +30,11 @@ if (user()) {
 				Cliquez sur le bouton "<i>Inscrire les adhérents sélectionnés</i>" pour passer à l'étape suivante et sélectionner leur rôls éventuels (simple inscrit, bénévole...).
 				<br />
 				<a href="<?php echo $versCettePage; ?>" <?php if (!$showAll) {
-                echo 'style="background:#d3d6ff"';
-            } ?> class="boutonFancy">Voir uniquement les adhérents validés</a>
+				    echo 'style="background:#d3d6ff"';
+				} ?> class="boutonFancy">Voir uniquement les adhérents validés</a>
 				<a href="<?php echo $versCettePage; ?>&showAll=1" <?php if ($showAll) {
-                echo 'style="background:#d3d6ff"';
-            } ?> class="boutonFancy">Voir tous les adhérents de la base (+long)</a>
+				    echo 'style="background:#d3d6ff"';
+				} ?> class="boutonFancy">Voir tous les adhérents de la base (+long)</a>
 
 			</p>
 			<br />
@@ -101,7 +101,7 @@ if (user()) {
 					</thead>
 					<tbody>
 						<?php
-                        $total = 0;
+				            $total = 0;
             // REQ des users validés
             $userTab = [];
             $req = 'SELECT  id_user, email_user, cafnum_user, firstname_user, lastname_user, nickname_user
@@ -114,7 +114,7 @@ if (user()) {
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($elt = $result->fetch_assoc()) {
                 // SELECTION : on n'affiche que les adhérents qui ne sont pas inscrit à cette sortie
-                $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join = ".(int) ($elt['id_user']).' LIMIT 1';
+                $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join = ".(int) $elt['id_user'].' LIMIT 1';
 
                 $result2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 $row = $result2->fetch_row();
@@ -125,7 +125,7 @@ if (user()) {
                                     .'<td>'
                                         .'<img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />'
                                         .'<img src="/img/label-down.png" class="cross" alt="OFF" title="" />'
-                                        .'<input type="checkbox" name="id_user[]" value="'.(int) ($elt['id_user']).'" />'
+                                        .'<input type="checkbox" name="id_user[]" value="'.(int) $elt['id_user'].'" />'
                                         // inputs hidden disabled : activés quand le case est cliquée (jquery)
                                         .'<input type="hidden" disabled="disabled" name="civ_user[]" value="'.html_utf8($elt['civ_user']).'" />'
                                         .'<input type="hidden" disabled="disabled" name="lastname_user[]" value="'.html_utf8($elt['lastname_user']).'" />'
@@ -133,7 +133,7 @@ if (user()) {
                                     .'</td>'
                                     .'<td>'
                                         .html_utf8($elt['cafnum_user']).'<br />'
-                                        .(int) ($elt['id_user']).' '
+                                        .(int) $elt['id_user'].' '
                                     .'</td>'
                                     .'<td>'.html_utf8($elt['civ_user']).'</td>'
                                     .'<td>'.html_utf8($elt['lastname_user']).'</td>'
@@ -213,7 +213,7 @@ if (user()) {
                                 echo '<tr>'
                                     .'<td>'
                                         // vars to re-post
-                                        .'<input type="hidden" name="id_user[]" value="'.(int) ($_POST['id_user'][$i]).'" />'
+                                        .'<input type="hidden" name="id_user[]" value="'.(int) $_POST['id_user'][$i].'" />'
                                         .'<input type="hidden" name="civ_user[]" value="'.html_utf8(stripslashes($_POST['civ_user'][$i])).'" />'
                                         .'<input type="hidden" name="lastname_user[]" value="'.html_utf8(stripslashes($_POST['lastname_user'][$i])).'" />'
                                         .'<input type="hidden" name="firstname_user[]" value="'.html_utf8(stripslashes($_POST['firstname_user'][$i])).'" />'

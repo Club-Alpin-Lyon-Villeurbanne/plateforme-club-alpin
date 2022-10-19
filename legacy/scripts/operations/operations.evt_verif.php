@@ -8,26 +8,30 @@ if ('evt_create' == ($_POST['operation'] ?? null)) {
     $benevoles = is_array($_POST['benevoles']) ? $_POST['benevoles'] : [];
 }
 if ('evt_update' == ($_POST['operation'] ?? null)) {
-    $id_evt = (int) ($_POST['id_evt_to_update']);
+    $id_evt = (int) $_POST['id_evt_to_update'];
 }
-$commission_evt = (int) ($_POST['commission_evt']);
-$id_groupe = (int) ($_POST['id_groupe']);
+$commission_evt = (int) $_POST['commission_evt'];
+$id_groupe = (int) $_POST['id_groupe'];
 $titre_evt = trim(stripslashes($_POST['titre_evt']));
 
-$tarif_evt = (float) ($_POST['tarif_evt']); $tarif_evt = str_replace(',', '.', $tarif_evt);
+$tarif_evt = (float) $_POST['tarif_evt'];
+$tarif_evt = str_replace(',', '.', $tarif_evt);
 $tarif_detail = $_POST['tarif_detail'] = trim(stripslashes($_POST['tarif_detail']));
 
 $massif_evt = trim(stripslashes($_POST['massif_evt']));
 $rdv_evt = trim(stripslashes($_POST['rdv_evt']));
-$lat_evt = (float) ($_POST['lat_evt']); $lat_evt = str_replace(',', '.', $lat_evt);
-$long_evt = (float) ($_POST['long_evt']); $long_evt = str_replace(',', '.', $long_evt);
+$lat_evt = (float) $_POST['lat_evt'];
+$lat_evt = str_replace(',', '.', $lat_evt);
+$long_evt = (float) $_POST['long_evt'];
+$long_evt = str_replace(',', '.', $long_evt);
 $tsp_evt_day = trim(stripslashes($_POST['tsp_evt_day']));
 $tsp_evt_hour = trim(stripslashes($_POST['tsp_evt_hour']));
 $tsp_end_evt_day = trim(stripslashes($_POST['tsp_end_evt_day']));
 $tsp_end_evt_hour = '23:59';
 
-$denivele_evt = (int) ($_POST['denivele_evt']);
-$distance_evt = (float) ($_POST['distance_evt']); $distance_evt = str_replace(',', '.', $distance_evt);
+$denivele_evt = (int) $_POST['denivele_evt'];
+$distance_evt = (float) $_POST['distance_evt'];
+$distance_evt = str_replace(',', '.', $distance_evt);
 $matos_evt = trim(stripslashes($_POST['matos_evt']));
 $itineraire = trim(stripslashes($_POST['itineraire']));
 $difficulte_evt = trim(stripslashes($_POST['difficulte_evt']));
@@ -36,12 +40,12 @@ $need_benevoles_evt = 'on' == $_POST['need_benevoles_evt'] ? 1 : 0;
 
 // inscriptions
 if ('child' != $_POST['cycle']) {
-    $join_start_evt_days = (int) ($_POST['join_start_evt_days']);
+    $join_start_evt_days = (int) $_POST['join_start_evt_days'];
 } else {
     $join_start_evt_days = 10;
 }
-$join_max_evt = (int) ($_POST['join_max_evt']);
-$ngens_max_evt = (int) ($_POST['ngens_max_evt']);
+$join_max_evt = (int) $_POST['join_max_evt'];
+$ngens_max_evt = (int) $_POST['ngens_max_evt'];
 // tableaux
 $encadrants = is_array($_POST['encadrants']) ? $_POST['encadrants'] : [];
 $coencadrants = is_array($_POST['coencadrants']) ? $_POST['coencadrants'] : [];
@@ -110,7 +114,7 @@ if ('none' == $_POST['cycle']) { // ceci est la première sortie d'un cycle, la 
     unset($_POST['parent']);
     unset($_POST['cycle_parent_evt']);
 } elseif ('child' == $_POST['cycle']) { // ceci est une sortie enfant d'un cycle enregistré
-    $cycle_parent_evt = (int) ($_POST['cycle_parent_evt']);
+    $cycle_parent_evt = (int) $_POST['cycle_parent_evt'];
 }
 
 // vérifications des dates

@@ -182,7 +182,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $passed = false;
     $suffixe = '';
     while (!$passed) {
-        $req = "SELECT COUNT(id_commission) FROM caf_commission WHERE code_commission LIKE '$code_commission"."$suffixe'";
+        $req = "SELECT COUNT(id_commission) FROM caf_commission WHERE code_commission LIKE '$code_commission$suffixe'";
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $row = $result->fetch_row();
         if (0 == $row[0]) {

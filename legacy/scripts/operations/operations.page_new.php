@@ -8,7 +8,7 @@ $nom_page = stripslashes($_POST['nom_page']);			// nom dans le menu
 $titre_page = stripslashes($_POST['titre_page']);		// title
 $description_page = stripslashes($_POST['description_page']);
 $code_page = formater(stripslashes($_POST['nom_page']), 3);	// code (URL), ajouter boucle unique
-$parent_page = (int) ($_POST['parent_page']);			// id parent, ou 0
+$parent_page = (int) $_POST['parent_page'];			// id parent, ou 0
 $vis_page = 0; // par défaut
 
 if (!$titre_page) {

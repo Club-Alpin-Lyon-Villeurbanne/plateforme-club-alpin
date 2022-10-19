@@ -30,6 +30,7 @@ class Article
 
     /**
      * @var User
+     *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="status_who_article", referencedColumnName="id_user", nullable=true)
      */

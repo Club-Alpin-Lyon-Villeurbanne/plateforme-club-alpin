@@ -174,7 +174,7 @@ foreach ($fileTab as $file) {
                     if ('0000-00-00' == $line[7]) {
                         // on vérifie la date, car il y a un battement entre le 25 aout (pour prendre large) et le 31 décembre
                         // où le non-renouvellement de licence est toléré
-                        if (((int) (date('m')) < 8 || (8 == (int) (date('m')) && (int) (date('d')) < 25)) || ((int) (date('m')) > 10)) {
+                        if (((int) date('m') < 8 || (8 == (int) date('m') && (int) date('d') < 25)) || ((int) date('m') > 10)) {
                             // avant le 25.08 - desactivation
                             $doit_renouveler_user = '1';
                             $alerte_renouveler_user = '1';

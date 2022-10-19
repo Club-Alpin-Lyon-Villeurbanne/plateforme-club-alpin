@@ -37,6 +37,7 @@ class Comment
 
     /**
      * @var User
+     *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="user_comment", referencedColumnName="id_user", nullable=false)
      */

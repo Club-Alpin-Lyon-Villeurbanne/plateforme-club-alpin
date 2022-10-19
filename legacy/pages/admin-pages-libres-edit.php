@@ -5,7 +5,7 @@ use App\Legacy\LegacyContainer;
 if (!admin()) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
-    $id_page = (int) ($_GET['id_page']);
+    $id_page = (int) $_GET['id_page'];
     $req = "SELECT * FROM caf_page WHERE id_page=$id_page LIMIT 1";
     $page = false;
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -15,7 +15,7 @@ if (!admin()) {
 
     if (!$page) {
         echo '<div class="erreur">ID invalide</div>';
-        exit();
+        exit;
     } ?>
 
 	<h2><img src="/img/base/page_white_add.png" /> Modifier les METAS de cette page</h2>
@@ -73,7 +73,7 @@ if (!admin()) {
 		Quelle est l'importance de cette page <b>par rapport aux autres pages du site</b> ? (50% = neutre)<br />
 		<br />
 		<div id="slider" style="width:260px; float:left; padding-right:40px; "></div>
-		<input type="text" name="priority_page" readonly="readonly" id="slideamount" value="<?php echo (int) ($page['priority_page']) * 100; ?>" style="border:none; background:none; text-align:right; width:30px"></b><sub>/100 %</sub><br />
+		<input type="text" name="priority_page" readonly="readonly" id="slideamount" value="<?php echo (int) $page['priority_page'] * 100; ?>" style="border:none; background:none; text-align:right; width:30px"></b><sub>/100 %</sub><br />
 
 		<br />
 		<hr style="margin:10px 0; clear:both" />
@@ -126,7 +126,7 @@ if (!admin()) {
 			range: "max",
 			min: 0,
 			max: 100,
-			value: <?php echo (int) ($page['priority_page']) * 100; ?>,
+			value: <?php echo (int) $page['priority_page'] * 100; ?>,
 			step: 10,
 			slide: function(event, ui){		$("#slideamount").val(ui.value);		}
 		});

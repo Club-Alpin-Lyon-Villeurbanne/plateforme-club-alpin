@@ -87,7 +87,7 @@
                 // REQUETES SQL POUR LES ARTICLES :
                 display_articles($id_user, 200, 'Ses articles');
             }
-            ?>
+			?>
 			<br style="clear:both" />
 		</div>
 	</div>

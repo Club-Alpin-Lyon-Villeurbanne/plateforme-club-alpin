@@ -8,7 +8,7 @@ $log .= "\n TEST utf 8 : Смотрите эту страницу в Росси�
 if (admin()) {
     $result = [];
 
-    $id_content_inline = (int) ($_POST['id']);
+    $id_content_inline = (int) $_POST['id'];
     $log .= "\n id_content_inline :  ".$id_content_inline;
     $contenu_content_inline = $_POST['val'];
     $log .= "\n contenu_content_inline :  \n".$contenu_content_inline;

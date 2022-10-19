@@ -17,12 +17,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
         case 'partenaire':
             $part_id = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p3);
             // if (preg_match ('/Googlebot/i', $_SERVER['HTTP_USER_AGENT']===FALSE)) {
-                // comptage si pas robot
-                $req = "UPDATE caf_partenaires SET part_click=part_click+1 WHERE part_id = '$part_id' LIMIT 1";
+            // comptage si pas robot
+            $req = "UPDATE caf_partenaires SET part_click=part_click+1 WHERE part_id = '$part_id' LIMIT 1";
 
-                if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-                    $errTab[] = 'Erreur SQL';
-                }
+            if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+                $errTab[] = 'Erreur SQL';
+            }
             // }
             $req = "SELECT part_url FROM caf_partenaires WHERE part_id = '$part_id' LIMIT 1";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);

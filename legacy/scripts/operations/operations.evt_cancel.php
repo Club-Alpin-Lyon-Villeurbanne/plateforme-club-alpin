@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$id_evt = (int) (substr(strrchr($p2, '-'), 1));
+$id_evt = (int) substr(strrchr($p2, '-'), 1);
 $msg = trim(stripslashes($_POST['msg']));
 $nomadMsg = []; // message spécial par raport aux nomades
 
@@ -50,9 +50,9 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // participants:
         // si la sortie est enfant d'un cycle, on cherche les participants à la sortie parente
         if ($handle['cycle_parent_evt']) {
-            $id_evt_forjoins = (int) ($handle['cycle_parent_evt']);
+            $id_evt_forjoins = (int) $handle['cycle_parent_evt'];
         } else {
-            $id_evt_forjoins = (int) ($handle['id_evt']);
+            $id_evt_forjoins = (int) $handle['id_evt'];
         }
 
         $handle['joins'] = [];
@@ -86,7 +86,7 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
             LegacyContainer::get('legacy_mailer')->send($handle2['email_user'], 'transactional/sortie-annulation', [
                 'event_name' => $handle['titre_evt'],
-                'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.(int) ($handle['id_evt']).'.html',
+                'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.(int) $handle['id_evt'].'.html',
                 'event_date' => date('d/m/Y', $handle['tsp_evt']),
                 'cancel_user_name' => getUser()->getNickname(),
                 'cancel_user_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.getUser()->getId().'.html',
@@ -101,7 +101,7 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             header('Location: /sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html');
         // echo 'nop';
         } else {
-            header('Location: /sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html?lbxMsg=nomadMsg&nomadMsg='.(implode('****', $nomadMsg)));
+            header('Location: /sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html?lbxMsg=nomadMsg&nomadMsg='.implode('****', $nomadMsg));
         }
     }
 }

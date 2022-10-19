@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 
 $tab = explode('-', $p2);
 $token_user_mailchange = $tab[0];
-$id_user_mailchange = (int) ($tab[1]);
+$id_user_mailchange = (int) $tab[1];
 
 // recup infos user par id donné
 if ($id_user_mailchange) {
