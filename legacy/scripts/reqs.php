@@ -334,8 +334,12 @@ elseif ('gestion-des-articles' == $p1 && (allowed('article_validate_all') || all
 		FROM caf_article
 		LEFT JOIN caf_commission ON (caf_commission.id_commission = caf_article.commission_article)
 		LEFT JOIN caf_user ON (caf_user.id_user = caf_article.user_article)
+		LEFT JOIN caf_evt ON (caf_evt.id_evt = caf_article.evt_article)
+		LEFT JOIN caf_commission as caf_commission_evt ON (caf_evt.commission_evt = caf_commission.id_commission)
 		WHERE status_article=0
-		AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."') " // condition OR pour toutes les commissions autorisées
+		AND (
+		    (caf_commission.code_commission LIKE '".implode("' OR caf_commission.code_commission LIKE '", $tab)."')  // condition OR pour toutes les commissions autorisées
+            OR (caf_commission_evt.code_commission LIKE '".implode("' OR caf_commission_evt.code_commission LIKE '", $tab)."')) "
         .'AND id_user = user_article
 		ORDER BY topubly_article desc,  tsp_validate_article ASC
 		LIMIT '.($limite * ($pagenum - 1)).", $limite";
