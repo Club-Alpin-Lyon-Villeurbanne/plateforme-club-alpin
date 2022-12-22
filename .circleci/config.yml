@@ -10,8 +10,6 @@ jobs:
 
       - add_ssh_keys:
           fingerprints:
-            - "ba:5a:94:59:70:b4:28:07:1f:38:ea:1e:66:69:b2:52" # OVH env
-            - "54:47:31:7d:c0:af:fe:ca:06:61:5d:4a:ef:04:d5:16" # SSH public key for AWS dev env
             - "77:54:f0:b9:2d:a4:9e:7a:5a:98:77:ed:89:d7:2b:2e" # SSH public key for AWS prod env
 
       - restore_cache: # special step to restore the dependency cache if `composer.lock` does not change
@@ -32,7 +30,7 @@ jobs:
             rm legacy/config/params.php
 
             case ${CIRCLE_BRANCH} in
-                "main" )
+                "production" )
                     echo "\nStart replacing variables...\n\n"
                     cp infrastructure/confs/production/robots.txt public/robots.txt
                     cp infrastructure/confs/production/.env.prod .
@@ -50,7 +48,7 @@ jobs:
                     sed -i "s/DB_HOST_TO_REPLACE/$AWS_PROD_DB_HOST/g" "legacy/config/config.php"
                     cp legacy/config/www.clubalpinlyon.fr/params.php legacy/config/params.php
                   ;;
-                "dev-branch" )
+                "main" )
                     echo "\nStart replacing variables...\n\n"
                     cp infrastructure/confs/aws/robots.txt public/robots.txt
                     cp infrastructure/confs/aws/.env.prod .
@@ -73,7 +71,7 @@ jobs:
             make package
 
             case ${CIRCLE_BRANCH} in
-                "main" )
+                "production" )
                     echo "\nTransfering package...\n\n"
                     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no package.zip ec2-user@35.180.143.141:/var/www/clubalpinlyon.fr/
                     echo "\nTransfering deploy script...\n\n"
@@ -84,7 +82,7 @@ jobs:
                     LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 rm /var/www/clubalpinlyon.fr/deploy.sh /var/www/clubalpinlyon.fr/package.zip
                     echo "\nDone!\n\n"
                   ;;
-                "dev-branch" )
+                "main" )
                     echo "\nTransfering package...\n\n"
                     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no package.zip ec2-user@35.180.143.141:/var/www/clubalpinlyon.top/
                     echo "\nTransfering deploy script...\n\n"
