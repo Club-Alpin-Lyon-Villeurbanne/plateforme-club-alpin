@@ -35,7 +35,6 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
             new TwigFilter('slugify', [$this, 'slugify']),
             new TwigFilter('random_item', [$this, 'getRandomItem']),
             new TwigFilter('is_legal_validable', [$this, 'isLegalValidable']),
-            new TwigFilter('paiement_title', [$this, 'getPaiementTitle']),
             new TwigFilter('intldate', [$this, 'formatDate']),
             new TwigFilter('participant_status_name', [$this, 'getParticipantStatusName']),
             new TwigFilter('participant_role_name', [$this, 'getParticipantRoleName']),
@@ -159,14 +158,5 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         }
 
         return $items[array_rand($items)];
-    }
-
-    public function getPaiementTitle(Evt $event, User $user)
-    {
-        $title = $this->locator->get(SluggerInterface::class)->slug($event->getTitre());
-        $compl = ' du '.date('d-m-Y', $event->getTsp()).' '.$user->getFirstname().' '.$user->getLastname();
-        $size_compl = \strlen($compl);
-
-        return substr($title, 0, 64 - $size_compl).$compl;
     }
 }

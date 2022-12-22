@@ -1,11 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-DEFAULT_TARGET="test.clubalpinlyon.fr"
+DEFAULT_TARGET="clubalpinlyon.top"
 TARGET=${1:-$DEFAULT_TARGET}
 
-if [ $TARGET != "clubalpinlyon.fr" ] && [ $TARGET != "test.clubalpinlyon.fr" ] && [ $TARGET != "clubalpinlyon.top" ]; then
-  echo "Invalid target \"$TARGET\", must be one of \"clubalpinlyon.fr\", \"test.clubalpinlyon.fr\", \"clubalpinlyon.top\""
+if [ $TARGET != "clubalpinlyon.fr" ] && [ $TARGET != "clubalpinlyon.top" ]; then
+  echo "Invalid target \"$TARGET\", must be one of \"clubalpinlyon.fr\", \"clubalpinlyon.top\""
   exit 1;
 fi;
 

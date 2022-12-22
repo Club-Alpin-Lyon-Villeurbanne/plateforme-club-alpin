@@ -2,8 +2,6 @@
 
 use App\Legacy\LegacyContainer;
 
-$URL_PAIEMENT = LegacyContainer::getParameter('legacy_env_URL_PAIEMENT');
-
 ?>
 <p>
     <label style="width:100%;clear:both;overflow:hidden;">
