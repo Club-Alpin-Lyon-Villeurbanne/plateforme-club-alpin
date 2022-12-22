@@ -1,8 +1,3 @@
-<?php
-
-use App\Legacy\LegacyContainer;
-
-?>
 <p>
     <label style="width:100%;clear:both;overflow:hidden;">
         <input type="checkbox" name="confirm" /> J'ai lu les conditions d'usage ci-dessus et confirme ma demande d'inscription.
