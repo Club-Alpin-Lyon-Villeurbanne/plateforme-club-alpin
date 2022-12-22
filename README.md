@@ -21,8 +21,8 @@ L'infrastructure de ce site est gérée par Terraform dans le repo [`infrastruct
 
 
 Le deployement se fait automatiquement par [circleci](https://circleci.com/gh/Club-Alpin-Lyon-Villeurbanne/caflyon/tree/main).  
-Pusher un commit (ou mergé une PR) sur `main` lancer le deployment [sur l'env de dev](https://www.clubalpinlyon.top).  
-Pusher un commit (ou mergé une PR) sur `production` lancer le deployment [sur l'env de production](https://www.clubalpinlyon.fr).  
+Pusher un commit (ou mergé une PR) sur la branche `main` lancer le deployment [sur l'env de dev](https://www.clubalpinlyon.top).  
+Pusher un commit (ou mergé une PR) sur la branche `production` lancer le deployment [sur l'env de production](https://www.clubalpinlyon.fr).  
 CircleCI va remplacer les credentials pour la DB par les vrais puis enverra en FTP les fichiers sur le server.  
 Les secrets (mot de passe de db, mot de passe ftp, etc...) sont stockés en tant [que variable d'environment dans circleci](https://app.circleci.com/settings/project/github/Club-Alpin-Lyon-Villeurbanne/caflyon/environment-variables).  
 
