@@ -42,13 +42,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     // récupération du statut de l'inscription : si elle est valide, l'orga recoit un e-mail
-    $req = "SELECT status_evt_join, is_cb FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join=$id_user ORDER BY tsp_evt_join DESC LIMIT 1 ";
+    $req = "SELECT status_evt_join FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join=$id_user ORDER BY tsp_evt_join DESC LIMIT 1 ";
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $status_evt_join = 0;
-    $is_cb = 0;
     while ($row = $result->fetch_assoc()) {
         $status_evt_join = $row['status_evt_join'];
-        $is_cb = $row['is_cb'];
     }
 
     if (1 == $status_evt_join || 0 == $status_evt_join) {
@@ -83,24 +81,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'event_name' => $evtName,
                 'user' => getUser(),
             ], [], null, getUser()->getEmail());
-
-            // paiement en ligne
-            // envoi d'un email pour indiquer la désinscription d'un participant avec paiement en ligne
-            if (1 == $is_cb) {
-                $toNameFull = getUser()->getFirstname().' '.getUser()->getLastname();
-                $toCafNum = getUser()->getCafnum();
-
-                LegacyContainer::get('legacy_mailer')->send('comptabilite@clubalpinlyon.fr', 'transactional/sortie-desinscription-paiement-ligne', [
-                    'event_name' => $evtName,
-                    'event_url' => $evtUrl,
-                    'event_date' => $evtDate,
-                    'adherent' => $toNameFull,
-                    'event_tarif' => $evtTarif,
-                    'caf_num' => $toCafNum,
-                    'encadrant_name' => $encName,
-                    'encadrant_email' => $encEmail,
-                ]);
-            }
         }
     }
 }
