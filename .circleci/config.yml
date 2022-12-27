@@ -34,7 +34,7 @@ jobs:
 
               echo "Push to prod"
 
-            elif [[ "$MESSAGE" == *push_to_dev* ]] || [[ ${CIRCLE_BRANCH} == "main" ]]; then
+            elif [[ ${MESSAGE} == *push_to_dev* ]] || [[ ${CIRCLE_BRANCH} == "main" ]]; then
 
               echo "push to dev"
             fi
