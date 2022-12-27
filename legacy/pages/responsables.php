@@ -39,6 +39,7 @@ use App\Legacy\LegacyContainer;
 						(
 							code_usertype LIKE 'responsable-commission'
 							|| code_usertype LIKE 'encadrant'
+							|| code_usertype LIKE 'stagiaire'
 							|| code_usertype LIKE 'coencadrant'
 							|| code_usertype LIKE 'benevole'
 						)
@@ -46,7 +47,7 @@ use App\Legacy\LegacyContainer;
 					AND user_user_attr = id_user
 					AND doit_renouveler_user = 0
 					AND params_user_attr LIKE 'commission:".$code."'
-					ORDER BY code_usertype DESC, lastname_user ASC
+					ORDER BY hierarchie_usertype DESC, lastname_user ASC
 					";
                 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 

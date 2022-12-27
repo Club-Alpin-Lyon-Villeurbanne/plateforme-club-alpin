@@ -40,7 +40,7 @@ if (user()) {
 				WHERE id_user = user_evt
 				AND user_evt=".getUser()->getId().'
 				AND id_commission = commission_evt
-				ORDER BY  tsp_evt DESC
+				ORDER BY tsp_evt IS NOT NULL, tsp_evt DESC
 				LIMIT '.($limite * ($pagenum - 1)).", $limite";
 
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -76,7 +76,7 @@ if (user()) {
 				AND user_evt_join = '.getUser()->getId().'
 				AND user_evt_join = id_user '
                 // de la plus récente a la plus ancienne
-                .'ORDER BY  tsp_evt DESC
+                .'ORDER BY tsp_evt IS NOT NULL, tsp_evt DESC
 				LIMIT '.($limite * ($pagenum - 1)).", $limite";
 
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -221,9 +221,13 @@ if (user()) {
                         .(1 == $evt['status_evt'] && user() && $evt['user_evt'] == (string) getUser()->getId() ? '<p class="info">Sortie publiée sur le site</p>' : '')
                         .(2 == $evt['status_evt'] && user() && $evt['user_evt'] == (string) getUser()->getId() ? '<p class="erreur">Sortie refusée et non publiée</p>' : '');
 
+                    if (0 == $evt['status_evt'] && user() && $evt['user_evt'] == (string) getUser()->getId() && null === $evt['tsp_evt']) {
+                        $status_evt = '<p class="alerte">Sortie à finaliser</p>';
+                    }
+
                     echo '<tr>'
                             .'<td class="agenda-gauche">'
-                                .jour(date('N', $evt['tsp_evt']), 'short').' '.date('d', $evt['tsp_evt']).' '.mois(date('m', $evt['tsp_evt'])).
+                                .(null !== $evt['tsp_evt'] ? jour(date('N', $evt['tsp_evt']), 'short').' '.date('d', $evt['tsp_evt']).' '.mois(date('m', $evt['tsp_evt'])) : '').
                                 // STATUT si j'en suis l'auteur :
                                 $status_evt
                             .'</td>'

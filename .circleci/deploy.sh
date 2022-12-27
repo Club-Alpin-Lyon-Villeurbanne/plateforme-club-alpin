@@ -1,18 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
-DEFAULT_TARGET="test.clubalpinlyon.fr"
+DEFAULT_TARGET="clubalpinlyon.top"
 TARGET=${1:-$DEFAULT_TARGET}
 
-if [ $TARGET != "clubalpinlyon.fr" ] && [ $TARGET != "test.clubalpinlyon.fr" ]; then
-  echo "Invalid target \"$TARGET\", must be one of \"clubalpinlyon.fr\", \"test.clubalpinlyon.fr\""
+if [ $TARGET != "clubalpinlyon.fr" ] && [ $TARGET != "clubalpinlyon.top" ]; then
+  echo "Invalid target \"$TARGET\", must be one of \"clubalpinlyon.fr\", \"clubalpinlyon.top\""
   exit 1;
 fi;
 
 TIMESTAMP=$(date +%s)
-BASE_TARGET="/home/kahe0589/$TARGET"
+BASE_TARGET="/var/www/$TARGET"
 TARGET_DIR="$BASE_TARGET/deployments/$TIMESTAMP"
 CURRENT_DIR="$BASE_TARGET/deployments/current"
+mkdir -p $TARGET_DIR
 
 echo "Deploying to $TARGET_DIR"
 
@@ -27,6 +28,7 @@ if [ $TARGET == "clubalpinlyon.fr" ]; then
 fi;
 
 unlink $CURRENT_DIR
+
 ln -s $TARGET_DIR $CURRENT_DIR
 
 $CURRENT_DIR/bin/console doctrine:migrations:sync-metadata-storage --env=prod

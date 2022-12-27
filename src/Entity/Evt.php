@@ -106,14 +106,14 @@ class Evt
     /**
      * @var int
      *
-     * @ORM\Column(name="tsp_evt", type="bigint", nullable=false, options={"comment": "timestamp du début du event"})
+     * @ORM\Column(name="tsp_evt", type="bigint", nullable=true, options={"comment": "timestamp du début du event"})
      */
     private $tsp;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="tsp_end_evt", type="bigint", nullable=false)
+     * @ORM\Column(name="tsp_end_evt", type="bigint", nullable=true)
      */
     private $tspEnd;
 
@@ -181,20 +181,6 @@ class Evt
     private $tarifDetail;
 
     /**
-     * @var bool
-     *
-     * @ORM\Column(name="repas_restaurant", type="boolean", nullable=false)
-     */
-    private $repasRestaurant = '0';
-
-    /**
-     * @var float|null
-     *
-     * @ORM\Column(name="tarif_restaurant", type="float", precision=10, scale=2, nullable=true)
-     */
-    private $tarifRestaurant;
-
-    /**
      * @var int|null
      *
      * @ORM\Column(name="denivele_evt", type="integer", nullable=true, options={"unsigned": true})
@@ -260,7 +246,7 @@ class Evt
     /**
      * @var int
      *
-     * @ORM\Column(name="join_start_evt", type="integer", nullable=false, options={"comment": "Timestamp de départ des inscriptions"})
+     * @ORM\Column(name="join_start_evt", type="integer", nullable=true, options={"comment": "Timestamp de départ des inscriptions"})
      */
     private $joinStart;
 
@@ -318,13 +304,6 @@ class Evt
     private $childVersionTosubmit = '0';
 
     /**
-     * @var bool|null
-     *
-     * @ORM\Column(name="cb_evt", type="boolean", nullable=true)
-     */
-    private $cb;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Article", mappedBy="evt")
      */
     private $articles;
@@ -334,21 +313,21 @@ class Evt
         Commission $commission,
         string $titre,
         string $code,
-        \DateTime $dateStart,
-        \DateTime $dateEnd,
+        ?\DateTime $dateStart,
+        ?\DateTime $dateEnd,
         string $rdv,
         float $rdvLat,
         float $rdvLong,
         string $description,
-        int $demarrageInscriptions,
+        ?int $demarrageInscriptions,
         int $maxInscriptions,
         int $maxParticipants
     ) {
         $this->user = $user;
         $this->titre = $titre;
         $this->code = $code;
-        $this->tsp = $dateStart->getTimestamp();
-        $this->tspEnd = $dateEnd->getTimestamp();
+        $this->tsp = $dateStart ? $dateStart->getTimestamp() : null;
+        $this->tspEnd = $dateEnd ? $dateEnd->getTimestamp() : null;
         $this->place = ''; // unused, must be dropped
         $this->rdv = $rdv;
         $this->lat = $rdvLat;
@@ -363,6 +342,7 @@ class Evt
         $this->cycleChildren = new ArrayCollection();
         $this->tspCrea = time();
 
+        // FIX ME fix encadrant
         $this->joins->add(new EvtJoin($this, $user, EvtJoin::ROLE_ENCADRANT, EvtJoin::STATUS_VALIDE));
     }
 
@@ -472,6 +452,14 @@ class Evt
         return $this;
     }
 
+    public function addParticipant(User $user, string $role = EvtJoin::ROLE_INSCRIT, int $status = EvtJoin::STATUS_NON_CONFIRME): EvtJoin
+    {
+        $participant = new EvtJoin($this, $user, $role, $status);
+        $this->joins->add($participant);
+
+        return $participant;
+    }
+
     /** @return EvtJoin[] */
     public function getParticipants($roles = null, $status = EvtJoin::STATUS_VALIDE): Collection
     {
@@ -515,7 +503,7 @@ class Evt
     }
 
     /** @return EvtJoin[] */
-    public function getEncadrants($types = [EvtJoin::ROLE_ENCADRANT, EvtJoin::ROLE_COENCADRANT]): Collection
+    public function getEncadrants($types = [EvtJoin::ROLE_ENCADRANT, EvtJoin::ROLE_STAGIAIRE, EvtJoin::ROLE_COENCADRANT]): Collection
     {
         return $this->getParticipants($types, [EvtJoin::STATUS_VALIDE]);
     }
@@ -726,30 +714,6 @@ class Evt
         return $this;
     }
 
-    public function getRepasRestaurant(): ?bool
-    {
-        return $this->repasRestaurant;
-    }
-
-    public function setRepasRestaurant(bool $repasRestaurant): self
-    {
-        $this->repasRestaurant = $repasRestaurant;
-
-        return $this;
-    }
-
-    public function getTarifRestaurant(): ?float
-    {
-        return $this->tarifRestaurant;
-    }
-
-    public function setTarifRestaurant(?float $tarifRestaurant): self
-    {
-        $this->tarifRestaurant = $tarifRestaurant;
-
-        return $this;
-    }
-
     public function getDenivele(): ?int
     {
         return $this->denivele;
@@ -944,18 +908,6 @@ class Evt
     public function setChildVersionTosubmit(bool $childVersionTosubmit): self
     {
         $this->childVersionTosubmit = $childVersionTosubmit;
-
-        return $this;
-    }
-
-    public function getCb(): ?bool
-    {
-        return $this->cb;
-    }
-
-    public function setCb(?bool $cb): self
-    {
-        $this->cb = $cb;
 
         return $this;
     }

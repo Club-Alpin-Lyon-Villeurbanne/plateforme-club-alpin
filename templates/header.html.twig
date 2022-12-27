@@ -129,7 +129,7 @@
                         <div class="nav-user">
                             <p class="menutitle">Mes sorties</p>
 
-                                {% if allowed('evt_create') %}
+                                {% if app.user %}
                                     <a href="{{ path('minibus') }}" title="">
                                         <span class="star">
                                             <img src="/img/base/bullet_star.png" alt="" title="" />
@@ -137,8 +137,15 @@
 
                                         réservation de minibus
                                     </a>
+                                    <a href="{{ path('local_club') }}" title="">
+                                        <span class="star">
+                                            <img src="/img/base/bullet_star.png" alt="" title="" />
+                                        </span>
+
+                                        disponibilité local club
+                                    </a>
                                 {% endif %}
-                            
+
                                 {% if allowed('evt_validate') %}
                                     {# publier une sortie (notification au besoin, variable définie dans SCRIPTS.'reqs.php') #}
                                     <a href="/gestion-des-sorties.html" title="">

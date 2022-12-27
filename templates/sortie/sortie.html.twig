@@ -13,7 +13,7 @@
             <br />
             <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
             <span class="bleucaf">&gt;</span>
-            {% if my_status %}
+            {% if not my_status %}
             JE SOUHAITE REJOINDRE CETTE SORTIE
             {% else %}
             JE METS A JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
@@ -25,7 +25,7 @@
             </a>
         </div>
     {% else %}
-        <hr /><div class="alerte">Pas d'inscription par internet, inscrivez-vous au local du club !</div>
+        <hr /><div class="alerte">Pas d'inscription par internet</div>
     {% endif %}
 {% endmacro %}
 
@@ -167,7 +167,17 @@
         </a>
         {% endif %}
 
-		<br />
+        {% if is_granted('SORTIE_DUPLICATE', event) %}
+        <form action="{{ path('sortie_duplicate', { id: event.id }) }}" method="post" class="loading">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
+
+            <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants" class="nice2">
+                Créer une nouvelle sortie avec ce groupe
+            </a>
+        </form>
+        {% endif %}
+
+        <br />
         <br />
 
         {% set my_status = event.participant(app.user) %}
@@ -205,7 +215,7 @@
             {% endif %}
 
             {% if my_status and my_status.status == constant('App\\Entity\\EvtJoin::STATUS_VALIDE') %}
-                {% if my_status.role == 'encadrant' or my_status.role == 'coencadrant' or my_status.role == 'benevole' %}
+                {% if my_status.role == 'encadrant' or my_status.role == 'stagiaire' or my_status.role == 'coencadrant' or my_status.role == 'benevole' %}
                     {% if not event.finished %}
                         {% if allowed('evt_unjoin') %}
                         <p class="info">
@@ -327,12 +337,6 @@
                                     <th width='15%'>Rôle</th>
                                     <th width='10%'>Date</th>
                                     <th>Contact</th>
-                                    {% if event.cb %}
-                                    <th width='5%'><abbr title="Paiement en ligne">P.</abbr></th>
-                                    {% endif %}
-                                    {% if event.repasRestaurant %}
-                                    <th width='5%'><abbr title="Restaurant">R.</abbr></th>
-                                    {% endif %}
                                 </tr>
                             </thead>
                             <tbody>
@@ -521,12 +525,6 @@
                                             {{ participant.user.tel }}<br />
                                             {{ participant.user.tel2 }}
                                         </td>
-                                        {% if event.cb %}
-                                            <td><img src="/img/base/{{ ('1' == row['is_cb'] ? 'cb-oui.png' : ('0' == row['is_cb'] ? 'cb-non.png' : 'cb-nsp.png')) }}" title="{{ ('1' == row['is_cb'] ? 'Oui' : ('0' == row['is_cb'] ? 'Non' : 'NSP')) }}" /></td>
-                                        {% endif %}
-                                        {% if event.repasRestaurant %}
-                                            <td><img src="/img/base/{{ ('1' == row['is_restaurant'] ? 'resto-oui.png' : ('0' == row['is_restaurant'] ? 'resto-non.png' : 'resto-nsp.png'))}}" title="{{('1' == row['is_restaurant'] ? 'Oui' : ('0' == row['is_restaurant'] ? 'Non' : 'NSP'))}}" /></td>
-                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -543,18 +541,6 @@
                             <li>
                                 <b id="nRefusees">{{ event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_ABSENT')) | length }}</b> absent(s).
                             </li>
-                            {% if event.cb %}
-                            <li>
-                                <b id="nCb"><?php echo $nCb; ?></b> paiement en ligne confirmé<?php if ($nCb_nsp) { ?>,
-                                <b id="nCb_nsp"><?php echo $nCb_nsp; ?></b> NSP <small>(inscriptions manuelles, nomades et organisateur)</small><?php } ?>.
-                            </li>
-                            {% endif %}
-                            {% if event.repasRestaurant %}
-                            <li>
-                                <b id="nRestaurant"><?php echo $nRestaurant; ?></b> restaurant confirmé<?php if ($nRestaurant_nsp) { ?>,
-                                <b id="nRestaurant_nsp"><?php echo $nRestaurant_nsp; ?></b> NSP <small>(inscriptions manuelles, nomades et organisateur)</small><?php } ?>.
-                            </li>
-                            {% endif %}
                         </ul>
 
                         <br style="clear:both"  />
@@ -672,19 +658,13 @@
             <div class="description_evt">{{ event.description | raw }}</div>
             <hr style="clear:both" />
 
-            {% if allowed('user_read_limited') and (event.tarif > 0 or event.cb > 0 or event.tarifDetail or event.repasRestaurant) %}
+            {% if allowed('user_read_limited') and (event.tarif > 0 or event.tarifDetail) %}
                 <ul class="nice-list">
                     {% if event.tarif %}
                         <li class="wide"><b>TARIF :</b> {{ event.tarif }} Euros</li>
                     {% endif %}
-                    {% if event.cb > 0 %}
-                        <li class="wide"><b>PAIEMENT EN LIGNE :</b> le paiement en ligne pour cette sortie est possible</li>
-                    {% endif %}
                     {% if event.tarifDetail %}
                         <li class="wide"><b>DÉTAIL :</b> {{ event.tarifDetail }}</li>
-                    {% endif %}
-                    {% if event.repasRestaurant %}
-                        <li class="wide"><b>RESTAURATION :</b> Un repas au restaurant (choix individuel) au cours de la sortie est possible</li>
                     {% endif %}
                 </ul>
                 <br style="clear:both" />
@@ -743,6 +723,18 @@
                         {% if loop.index > 1 %}, {% endif %}
                         <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}" class="fancyframe userlink">
                             {{ encadrant.user.nickname }}
+                        </a>
+                    {% endfor %}
+                </li>
+                <br style="clear:both" />
+            {% endif %}
+
+            {% if event.encadrants('stagiaire') | length > 0 %}
+                <li class="wide"><b>STAGIAIRE :</b>
+                    {% for stagiaire in event.encadrants('stagiaire') %}
+                        {% if loop.index > 1 %}, {% endif %}
+                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ stagiaire.user.id }}" class="fancyframe userlink">
+                            {{ stagiaire.user.nickname }}
                         </a>
                     {% endfor %}
                 </li>
@@ -815,7 +807,7 @@
         {% if not event.cycleParent %}
             {% if not event.cancelled %}
                 {% set nInscritsHorsEncadrement = event.participants([constant('App\\Entity\\EvtJoin::ROLE_INSCRIT'), constant('App\\Entity\\EvtJoin::ROLE_BENEVOLE'), constant('App\\Entity\\EvtJoin::ROLE_MANUEL')]) | length %}
-                {% set nInscritsTotal = nInscritsHorsEncadrement + event.participants([constant('App\\Entity\\EvtJoin::ROLE_COENCADRANT'), constant('App\\Entity\\EvtJoin::ROLE_ENCADRANT')]) | length %}
+                {% set nInscritsTotal = nInscritsHorsEncadrement + event.participants([constant('App\\Entity\\EvtJoin::ROLE_COENCADRANT'), constant('App\\Entity\\EvtJoin::ROLE_STAGIAIRE'), constant('App\\Entity\\EvtJoin::ROLE_ENCADRANT')]) | length %}
                 {% set nPlacesRestantesOnline = max(0, event.joinMax - event.participants([constant('App\\Entity\\EvtJoin::ROLE_INSCRIT'), constant('App\\Entity\\EvtJoin::ROLE_BENEVOLE')]) | length) %}
                 {% set nEnAttente = event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME')) | length %}
 
@@ -838,7 +830,7 @@
                     <span style="font-size:14px; font-family:DINBold; color:#666666">
                         {{ nInscritsTotal }} PARTICIPANT{{ nInscritsTotal > 1 ? 'S' : '' }} INSCRIT{{ nInscritsTotal > 1 ? 'S' : '' }}
                         SUR  {{ event.ngensMax }} PLACE{{ event.ngensMax ? 'S' : '' }} AU TOTAL
-                        ({{ event.ngensMax > 0 ? (100 * nInscritsTotal / ngensMax) | round : 0 }}%)
+                        ({{ event.ngensMax > 0 ? (100 * nInscritsTotal / event.ngensMax) | round : 0 }}%)
                     </span><br />
                     {{ nPlacesRestantesOnline }} place{{ nPlacesRestantesOnline > 1 ? 's' : '' }} restante{{ nPlacesRestantesOnline > 1 ? 's' : '' }}
                     pour les inscriptions en ligne

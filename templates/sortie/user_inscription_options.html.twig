@@ -5,38 +5,6 @@
 </p>
 <hr class="clear">
 
-{% if event.cb %}
-    <input type="hidden" name="is_cb" value="1">
-    <p>
-        <label style="width:100%;clear:both;overflow:hidden;">
-            <input type="checkbox" name="jeveuxpayerenligne" onclick="$('.paiement').slideToggle(200)" />
-            Cochez cette case si vous souhaitez payer en ligne
-        </label>
-        <div class="paiement" style="display:none">
-            <a style="border:1px solid red; background:rgba(255,153,153,.4);"
-               href="{{ url_paiement }}?lck_vads_order_id={{ event.title | paiement_title(user) }}&lck_vads_ext_info_Encadrant={{ event.user.firstname~' '~event.user.lastname | url_encode }}&lck_vads_ext_info_E-mail%20encadrant={{ event.user.email | url_encode }}&lck_vads_ext_info_Sortie={{ event.title ~ ' - ' ~ event.id ~ ' du ' ~ (event.tsp | date('d-m-Y')) | url_encode }}&lck_vads_cust_first_name={{ app.user.firstname | url_encode }}&lck_vads_cust_last_name={{ app.user.lastname | url_encode }}&lck_vads_cust_id={{ app.user.cafnum | url_encode }}&lck_vads_cust_email={{ app.user.email | url_encode }}&lck_vads_cust_cell_phone={{ app.user.tel | url_encode }}&lck_vads_amount={{ event.tarif | url_encode }}"
-               target="_blank"
-               alt="paiement en ligne">
-            Cliquez ici  pour payer en ligne (avant de valider la demande d'inscription)
-            </a>.
-            <br />
-            ATTENTION : le paiement en ligne n'implique pas une inscription automatique à la sortie, la validation
-            de l'inscription reste à la discrétion des encadrants !
-        </div>
-    </p>
-{% endif %}
-
-{% if event.repasRestaurant %}
-
-    <input type="hidden" name="is_restaurant" value="1">
-    <p>
-        <label style="width:100%;clear:both;overflow:hidden;">
-            <input type="checkbox" name="jeveuxmangerauresto" {{ my_choices['is_restaurant'] ? ' checked="checked" ' : '' }} />
-            Cochez cette case si vous souhaitez profiter du <b>repas au restaurant</b>, pour un tarif de <b>{{evt['tarif_restaurant']}} &euro;</b> (généralement hors consommations).
-        </label>
-    </p>
-{% endif %}
-
 {% if event.needBenevoles and not my_status %}
     <p>
         <label style="width:100%;clear:both;overflow:hidden;">
@@ -73,21 +41,6 @@
                 value="{{ filiation.id }}"
                 id="filiation_id_user_{{ filiation.id }}" />
             {{ filiation.lastname }}, {{ filiation.firstname }} ({{ filiation.id }}, {{ filiation.nickname }})
-
-            {% if event.cb %}
-            <div id="paiement_enfant_{{ filiation.id }}" style="display:<?php if (1 == $my_choices['is_cb']) {
-                    echo 'hidden';
-                } else {
-                    echo 'none';
-                } ?>">
-                <a style="border:1px solid red; background:rgba(255,153,153,.4);"
-                    href="{{ url_paiement }}?lck_vads_order_id={{ event.title | paiement_title(filiation) }}&lck_vads_ext_info_Encadrant={{ filiation.firstname~' '~filiation.lastname | url_encode }}&lck_vads_ext_info_E-mail%20encadrant={{ filiation.email | url_encode }}&lck_vads_ext_info_Sortie={{ event.title ~ ' - ' ~ event.id ~ ' du ' ~ (event.tsp | date('d-m-Y')) | url_encode }}&lck_vads_cust_first_name={{ app.user.firstname | url_encode }}&lck_vads_cust_last_name={{ app.user.lastname | url_encode }}&lck_vads_cust_id={{ app.user.cafnum | url_encode }}&lck_vads_cust_email={{ app.user.email | url_encode }}&lck_vads_cust_cell_phone={{ app.user.tel | url_encode }}&lck_vads_amount={{ event.tarif | url_encode }}"
-                    target="_blank"
-                    alt="paiement en ligne">
-                    Cliquez ici pour payer en ligne (avant de valider la demande d'inscription)
-                </a>
-            </div>
-            {% endif %}
         </label>
     {% endfor %}
     <hr class="clear" />

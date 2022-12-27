@@ -12,7 +12,6 @@ parameters:
     legacy_env_CRON_DATE_BUTOIRES: "%env(json:CRON_DATE_BUTOIRES)%"
     legacy_env_MAX_TIMESTAMP_FOR_LEGAL_VALIDATION: "%env(string:MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%"
     legacy_env_MAX_SORTIES_ACCUEIL: "%env(int:MAX_SORTIES_ACCUEIL)%"
-    legacy_env_URL_PAIEMENT: "%env(string:URL_PAIEMENT)%"
     legacy_env_MAX_ADMINS_SUB_LEVELS: "%env(int:MAX_ADMINS_SUB_LEVELS)%"
     legacy_env_MAX_ARTICLES_VALIDATION: "%env(int:MAX_ARTICLES_VALIDATION)%"
     legacy_env_MAX_SORTIES_VALIDATION: "%env(int:MAX_SORTIES_VALIDATION)%"

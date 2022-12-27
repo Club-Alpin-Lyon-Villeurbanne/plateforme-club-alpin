@@ -65,7 +65,7 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
         // desinscription des participants de la sortie
         if (!isset($errTab) || 0 === count($errTab)) {
-            $req = "DELETE FROM caf_evt_join WHERE role_evt_join NOT IN ('encadrant', 'coencadrant') AND (caf_evt_join.evt_evt_join = $id_evt";
+            $req = "DELETE FROM caf_evt_join WHERE role_evt_join NOT IN ('encadrant', 'stagiaire', 'coencadrant') AND (caf_evt_join.evt_evt_join = $id_evt";
 
             // desinscription de toutes les sorties du cycle si annulation du cycle complet, normalement y'en a pas...
             if (true || $_POST['del_cycle_master_evt']) {

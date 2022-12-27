@@ -9,7 +9,6 @@ use App\Repository\EvtJoinRepository;
 use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -39,10 +38,13 @@ class SortieController extends AbstractController
      *     priority="10"
      * )
      * @Template
-     * @Security("is_granted('SORTIE_VIEW', event)")
      */
     public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository)
     {
+        if (!$this->isGranted('SORTIE_VIEW', $event)) {
+            throw new AccessDeniedHttpException('Not found');
+        }
+
         $user = $this->getUser();
 
         return [
@@ -78,15 +80,20 @@ class SortieController extends AbstractController
 
         $mailer->send($event->getUser(), 'transactional/sortie-publiee', [
             'event_name' => $event->getTitre(),
-            'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]),
+            'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'event_date' => date('d/m/Y', $event->getTsp()),
         ]);
 
         foreach ($event->getParticipants() as $participant) {
+            if ($participant->getUser() === $event->getUser()) {
+                // mail already sent
+                continue;
+            }
+
             $mailer->send($participant->getUser(), 'transactional/sortie-publiee-inscrit', [
                 'author_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.$event->getUser()->getId().'.html',
                 'author_nickname' => $event->getUser()->getNickname(),
-                'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]),
+                'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'event_name' => $event->getTitre(),
                 'role' => $participant->getRole(),
             ], [], null, $event->getUser()->getEmail());
@@ -164,7 +171,7 @@ class SortieController extends AbstractController
                 continue;
             }
 
-            if ($event->isFinished() || 'on' != $request->request->get('disablemails')) {
+            if ($event->isFinished() || 'on' === $request->request->get('disablemails')) {
                 continue;
             }
 
@@ -198,6 +205,7 @@ class SortieController extends AbstractController
                     $roleName = $participant->getRole().'(e)';
                     break;
                 case EvtJoin::ROLE_BENEVOLE:
+                case EvtJoin::ROLE_STAGIAIRE:
                     $roleName = $participant->getRole();
                     break;
                 default:
@@ -207,7 +215,7 @@ class SortieController extends AbstractController
 
             $context = [
                 'role' => $roleName,
-                'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]),
+                'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'event_name' => $event->getTitre(),
             ];
 
@@ -216,27 +224,6 @@ class SortieController extends AbstractController
             }
             if (EvtJoin::STATUS_REFUSE === $status) {
                 $mailer->send($toMail, 'transactional/sortie-participation-declinee', $context);
-            }
-
-            if ($participant->getEvt()->getCb()) {
-                $context = [
-                    'event_name' => $event->getTitre(),
-                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]),
-                    'event_date' => date('d-m-Y', $event->getTsp()),
-                    'adherent' => $participant->getUser()->getFirstname().' '.$participant->getUser()->getLastname(),
-                    'event_tarif' => $event->getTarif(),
-                    'caf_num' => $participant->getUser()->getCafnum(),
-                    'encadrant_name' => $event->getUser()->getFirstname().' '.$event->getUser()->getLastname(),
-                    'encadrant_email' => $event->getUser()->getEmail(),
-                ];
-
-                if (EvtJoin::STATUS_VALIDE === $status) {
-                    $mailer->send('comptabilite@clubalpinlyon.fr', 'transactional/sortie-participation-confirmee-paiement-ligne', $context);
-                }
-
-                if (EvtJoin::STATUS_REFUSE === $status) {
-                    $mailer->send('comptabilite@clubalpinlyon.fr', 'transactional/sortie-participation-declinee-paiement-ligne', $context);
-                }
             }
         }
 
@@ -272,7 +259,7 @@ class SortieController extends AbstractController
         $mailer->send($event->getUser(), 'transactional/sortie-refusee', [
             'message' => $request->request->get('msg', '...'),
             'event_name' => $event->getTitre(),
-            'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]),
+            'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'event_date' => date('d/m/Y', $event->getTsp()),
         ]);
 
@@ -307,7 +294,7 @@ class SortieController extends AbstractController
 
         $mailer->send($event->getUser(), 'transactional/sortie-president-validee', [
             'event_name' => $event->getTitre(),
-            'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]),
+            'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'event_date' => date('d/m/Y', $event->getTsp()),
         ]);
 
@@ -344,7 +331,7 @@ class SortieController extends AbstractController
 
         $mailer->send($event->getUser(), 'transactional/sortie-president-refusee', [
             'event_name' => $event->getTitre(),
-            'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]),
+            'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'event_date' => date('d/m/Y', $event->getTsp()),
         ]);
 
@@ -419,7 +406,7 @@ class SortieController extends AbstractController
         $mailer->send($participants, 'transactional/message-sortie', [
             'objet' => $request->request->get('objet'),
             'message_author' => sprintf('%s %s', $event->getUser()->getFirstname(), $event->getUser()->getLastname()),
-            'url_sortie' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]),
+            'url_sortie' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'name_sortie' => $event->getTitre(),
             'message' => $request->request->get('message'),
         ], [], $event->getUser(), $event->getUser()->getEmail());
@@ -460,30 +447,66 @@ class SortieController extends AbstractController
         if ($participant->isStatusValide()) {
             $mailer->send($event->getUser(), 'transactional/sortie-desinscription', [
                 'username' => $participant->getUser()->getFirstname().' '.$participant->getUser()->getLastname(),
-                'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]),
+                'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'event_name' => $event->getTitre(),
                 'user' => $user,
             ], [], null, $user->getEmail());
         }
 
-        if ($participant->getIsCb()) {
-            $toNameFull = $user->getFirstname().' '.$user->getLastname();
-            $toCafNum = $user->getCafnum();
-
-            $mailer->send('comptabilite@clubalpinlyon.fr', 'transactional/sortie-desinscription-paiement-ligne', [
-                'event_name' => $event->getTitre(),
-                'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]),
-                'event_date' => date('d-m-y', $event->getTsp()),
-                'adherent' => $toNameFull,
-                'event_tarif' => $event->getTarif(),
-                'caf_num' => $toCafNum,
-                'encadrant_name' => $event->getUser()->getFirstname().' '.$event->getUser()->getLastname(),
-                'encadrant_email' => $event->getUser()->getEmail(),
-            ]);
-        }
-
         $this->addFlash('info', 'La participation est annulée');
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
+    }
+
+    /**
+     * @Route(
+     *     name="sortie_duplicate",
+     *     path="/sortie/{id}/duplicate",
+     *     requirements={
+     *         "id": "\d+"
+     *     },
+     *     methods={"POST"},
+     *     priority="10"
+     * )
+     */
+    public function sortieDuplicate(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
+    {
+        if (!$this->isGranted('SORTIE_DUPLICATE', $event)) {
+            throw new AccessDeniedHttpException('Not found');
+        }
+
+        if (!$this->isCsrfTokenValid('sortie_duplicate', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        $newEvent = new Evt(
+            $this->getUser(),
+            $event->getCommission(),
+            '',
+            '',
+            null,
+            null,
+            $event->getRdv(),
+            $event->getLat(),
+            $event->getLong(),
+            '',
+            null,
+            $event->getJoinMax(),
+            $event->getNgensMax()
+        );
+        $em->persist($newEvent);
+
+        foreach ($event->getParticipants() as $participant) {
+            if ($participant->getUser() === $newEvent->getUser()) {
+                continue;
+            }
+
+            $join = $newEvent->addParticipant($participant->getUser(), $participant->getRole(), $participant->getStatus());
+            $em->persist($join);
+        }
+
+        $em->flush();
+
+        return $this->redirect(sprintf('/creer-une-sortie/%s/update-%d.html', $newEvent->getCommission()->getCode(), $newEvent->getId()));
     }
 }

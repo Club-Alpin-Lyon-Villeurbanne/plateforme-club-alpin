@@ -103,7 +103,7 @@ if (!$evt) {
 				</p><br />';
         }
 
-        if ('encadrant' == $monStatut || 'coencadrant' == $monStatut || 'benevole' == $monStatut) {
+        if ('encadrant' == $monStatut || 'stagiaire' == $monStatut || 'coencadrant' == $monStatut || 'benevole' == $monStatut) {
             // avant l'evt
             if ($evt['tsp_end_evt'] > time()) {
                 echo '<p class="info">
@@ -232,23 +232,15 @@ if (!$evt) {
         .'<hr style="clear:both" />';
 
         // TARIFICATIONS DE LA SORTIE (réservé aux membres)
-        if (allowed('user_read_limited') && ($evt['tarif_evt'] > 0 || $evt['cb_evt'] > 0 || $evt['tarif_detail'] || $evt['repas_restaurant'] > 0)) {
+        if (allowed('user_read_limited') && ($evt['tarif_evt'] > 0 || $evt['tarif_detail'] > 0)) {
             echo '<ul class="nice-list">'
                 // tarif ?
                 .($evt['tarif_evt'] > 0 ?
                     '<li class="wide"><b>TARIF :</b> '.str_replace(',', '.', (float) ($evt['tarif_evt'])).'&nbsp;Euros</li>'
                 : '')
-                // Paiement en ligne
-                .($evt['cb_evt'] > 0 ?
-                    '<li class="wide"><b>Paiement en ligne :</b> le paiement en ligne pour cette sortie est possible </li>'
-                : '')
                 // Détail du tarif
                 .($evt['tarif_detail'] ?
                     '<li class="wide"><b>DÉTAIL :</b> '.html_utf8($evt['tarif_detail']).'</li>'
-                : '')
-                // Restaurant
-                .($evt['repas_restaurant'] > 0 ?
-                    '<li class="wide"><b>RESTAURATION :</b> Un repas au restaurant (choix individuel) au cours de la sortie est possible '.($evt['tarif_restaurant'] > 0 ? ' pour un montant de '.str_replace(',', '.', (float) ($evt['tarif_restaurant'])).'&nbsp;Euros' : ' (tarif non précisé)').'</li>'
                 : '')
             .'</ul><hr style="clear:both" />';
         }
@@ -323,6 +315,18 @@ if (!$evt) {
         echo '</li><br style="clear:both" />';
     }
 
+    // stagiaire(s)
+    if (count($evt['joins']['stagiaire'])) {
+        echo '<li class="wide"><b>STAGIAIRES :</b> ';
+        for ($i = 0; $i < count($evt['joins']['stagiaire']); ++$i) {
+            if ($i) {
+                echo ', ';
+            }
+            echo userlink($evt['joins']['stagiaire'][$i]['id_user'], $evt['joins']['stagiaire'][$i]['nickname_user']);
+        }
+        echo '</li><br style="clear:both" />';
+    }
+
     // coencadrant(s)
     if (count($evt['joins']['coencadrant'])) {
         echo '<li class="wide"><b>CO-ENCADRANTS :</b> ';
@@ -366,7 +370,7 @@ if (!$evt) {
         if ('1' != $evt['cancelled_evt']) {
             // participants
             $nInscritsHorsEncadrement = count($evt['joins']['inscrit']) + count($evt['joins']['benevole']) + count($evt['joins']['manuel']);
-            $nInscritsTotal = $nInscritsHorsEncadrement + count($evt['joins']['coencadrant']) + count($evt['joins']['encadrant']);
+            $nInscritsTotal = $nInscritsHorsEncadrement + count($evt['joins']['coencadrant']) + count($evt['joins']['encadrant']) + count($evt['joins']['stagiaire']);
             $nPlacesRestantesOnline = $evt['join_max_evt'] - count($evt['joins']['inscrit']) - count($evt['joins']['benevole']);
             $nEnAttente = count($evt['joins']['enattente']);
 
@@ -441,6 +445,7 @@ if (!$evt) {
                 'inscrit',
                 'manuel',
                 'encadrant',
+                'stagiaire',
                 'coencadrant',
                 'benevole',
                 'enattente',
