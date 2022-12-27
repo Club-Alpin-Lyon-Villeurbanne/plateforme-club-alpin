@@ -21,13 +21,23 @@ jobs:
           command: |
             make build up composer-install setup-db migrate env=test
             make php-cs
-            make phpstan
+            make phpstan  
 
             cp legacy/config/config.php.tpl legacy/config/config.php
             cp legacy/config/params.php.tpl legacy/config/params.php
             make phpunit
             rm legacy/config/config.php
             rm legacy/config/params.php
+            MESSAGE=$(git log -1 HEAD --pretty=format:%s)
+
+            if [[ ${CIRCLE_BRANCH} == "production" ]]; then
+
+              echo "Push to prod"
+
+            elif [[ "$MESSAGE" == *push_to_dev* ]] || [[ ${CIRCLE_BRANCH} == "main" ]]; then
+
+              echo "push to dev"
+            fi
 
             case ${CIRCLE_BRANCH} in
                 "production" )
