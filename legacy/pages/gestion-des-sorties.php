@@ -53,6 +53,7 @@
 													<input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
 												</form>
 											</div>
+											<a class="nice2 noprint red" href="/supprimer-une-sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html" title="Supprimer définitivement la sortie"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie</a>
 											'
                                         .'</div>';
 

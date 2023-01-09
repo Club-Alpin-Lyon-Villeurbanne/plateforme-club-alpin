@@ -28,7 +28,8 @@ class EvtRepository extends ServiceEntityRepository
         $sql = 'SELECT count(e.id_evt)
             FROM caf_evt e
             INNER JOIN caf_commission c ON c.id_commission = e.commission_evt
-            WHERE status_evt = \'0\'';
+            WHERE status_evt = \'0\'
+                AND tsp_evt IS NOT NULL';
 
         $params = [];
         $sqlPart = [];
