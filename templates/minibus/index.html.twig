@@ -16,15 +16,7 @@
             </ul>
             <hr />
             <p>
-                La participation est de
-            </p>
-            <ul>
-                <li>0.40 €/km pour les 400 premiers kilomètres</li>
-                <li>0.25 €/km de 401 à 800km</li>
-                <li>puis 0.10 €/km à partir de 801km</li>
-            </ul>
-            <p>
-                Avec un forfait minimum de 90 € par réservation.
+                La participation est de 0.30 €/km (Ne comprends pas le carburant ni les péages)
             </p>
             <p>
                 Le simulateur ci-dessous permet de calculer
@@ -107,13 +99,7 @@
         $(function() {
             function doUpdate() {
                 var km = $('#simulateur_km').val();
-                var total = 0;
-
-                total += Math.min(km, 400) * 0.4;
-                total += Math.min(Math.max(0, km - 400), 400) * 0.25;
-                total += Math.max(0, km - 800) * 0.1;
-
-                $('#simulateur_total').text(Math.round(Math.max(90, total)));
+                $('#simulateur_total').text(Math.round(km * 0.30));
             }
 
             doUpdate();
