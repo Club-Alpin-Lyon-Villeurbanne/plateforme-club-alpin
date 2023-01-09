@@ -181,64 +181,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
             <input style="width:95%;" type="text" name="massif_evt" class="type2" value="<?php echo inputVal('massif_evt', ''); ?>" placeholder="ex : Chartreuse" />
         </div>
 
-        <br />
-        Cette sortie fait-elle partie d'un cycle de plusieurs sorties ?
-        <?php inclure('infos-cycle', 'mini'); ?>
-
-        <?php if (!$_POST['cycle_master_evt']) {
-                // cette sortie n'est pas un debut de cycle
-                // et si c'est une sortie de cycle, il n'y a pas de sortie associee pour le moment?>
-
-            <label class="biglabel" for="cycle_none">
-                <input type="radio" name="cycle" id="cycle_none" value="none" <?php if ('none' == $_POST['cycle'] || !$_POST['cycle']) {
-                    echo 'checked="checked"';
-                } ?> /> Non, c'est une sortie unique
-            </label>
-        <?php
-            } ?>
-
-        <?php if (!$_POST['cycle']) { ?>
-            <label class="biglabel" for="cycle_parent">
-                <input type="radio" disabled="true" name="cycle" id="cycle_parent" value="parent" <?php if ($_POST['cycle_master_evt']) {
-                echo 'checked="checked"';
-            }?> /> Oui, cette sortie est la première d'un cycle,
-                <?php
-                if ($_POST['cycle_master_evt']) {
-                    echo '<b>des sorties sont dejà associées</b>';
-                } else {
-                    echo 'd\'autres sorties vont suivre';
-                }
-                ?>
-            </label>
-        <?php } ?>
-
-        <?php if (!($_POST['parent'] || $_POST['cycle_master_evt'])) { ?>
-            <label class="biglabel" for="cycle_child">
-                <input type="radio" name="cycle" id="cycle_child" value="child" <?php if ('child' == $_POST['cycle']) {
-                    echo 'checked="checked"';
-                } ?> /> Oui, cette sortie est la suite d'une sortie précédente
-            </label>
-
-            <div id="cycle_parent_select" style="display:<?php // echo ($_POST['cycle']=='child'?'block':'none'); /**/?>; ">
-                <?php
-                // LISTE DES SORTIES MASTER DE CYCLES
-                if (!count($parentEvents)) {
-                    echo '<p class="alerte">Vous n\'avez pas encore créé de première sortie pour un cycle. Vous devez commencer par entrer la première sortie du cycle pour pouvoir y joindre d\'autres sorties ensuite.</p>';
-                } else {
-                    ?>
-                    Merci de sélectionner la sortie parente (la première sortie du cycle) :<br />
-                    <select name="cycle_parent_evt">
-                        <?php
-                        foreach ($parentEvents as $tmpEvt) {
-                            echo '<option value="'.$tmpEvt['id_evt'].'" '.($_POST['cycle_parent_evt'] == $tmpEvt['id_evt'] ? 'selected="selected"' : '').'>'.html_utf8($tmpEvt['titre_evt']).' - Le '.date('d/m/Y', $tmpEvt['tsp_evt']).' - '.$tmpEvt['nchildren'].' sorties liées</option>';
-                        } ?>
-                    </select>
-                <?php
-                }
-                ?>
-            </div>
-        <?php } ?>
-        <br />
+        <input type="hidden" name="cycle" id="cycle_none" value="none" />
 
         <br />
         <div style="float:left; width:45%; padding:0 20px 5px 0;">

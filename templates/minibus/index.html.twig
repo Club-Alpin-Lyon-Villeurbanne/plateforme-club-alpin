@@ -16,15 +16,7 @@
             </ul>
             <hr />
             <p>
-                La participation est de
-            </p>
-            <ul>
-                <li>0.40 €/km pour les 400 premiers kilomètres</li>
-                <li>0.25 €/km de 401 à 800km</li>
-                <li>puis 0.10 €/km à partir de 801km</li>
-            </ul>
-            <p>
-                Avec un forfait minimum de 90 € par réservation.
+                La participation est de 0.30 €/km (Ne comprends pas le carburant ni les péages)
             </p>
             <p>
                 Le simulateur ci-dessous permet de calculer
@@ -45,7 +37,7 @@
             <h1><span class="bleucaf">Réservation</span></h1>
             <p>
                 Pour faire une demande de réservation, utiliser le formulaire
-                <a href="https://forms.gle/MshTVQY5ctXxoJoy7" target="_blank">https://forms.gle/MshTVQY5ctXxoJoy7</a>.
+                <a href="https://forms.gle/viKQybTHPQ7zoeRFA" target="_blank">https://forms.gle/viKQybTHPQ7zoeRFA</a>.
             </p>
             <p>
                 Vous pouvez télécharger <a href="https://drive.google.com/file/d/1-6tAgu-Hd7PtMb86Ffb06NuBaki1nAnr/view?usp=sharing" target="_blank">la fiche d'utilisation</a>.
@@ -56,7 +48,47 @@
 
             <hr />
             <h1><span class="bleucaf">Agenda des demandes</span></h1>
-            <iframe src="https://calendar.google.com/calendar/embed?src=4nblpne6khaopr9aas1g2ts4b4%40group.calendar.google.com&ctz=Europe%2FParis" style="border: 0" width="100%" height="600" frameborder="0" scrolling="no"></iframe>
+            <iframe src="https://calendar.google.com/calendar/embed?src=c_1888gj6pig9r0jg8hddqtbie8alh6%40resource.calendar.google.com&ctz=Europe%2FParis" style="border: 0" width="100%" height="600" frameborder="0" scrolling="no"></iframe>
+
+            <hr />
+            <h1><span class="bleucaf">En cas d'indisponibilité</span></h1>
+            <p>
+                En cas d'indisponibilité du minibus du club, nous avons un partenariat avec Cargo
+                pour Traffic 9 Places avec pneus neige et chaînessur demande.
+            </p>
+            <p>
+                1 seule interlocutrice pour les resa :Mme Latefa Boulares 06 46 02 11 99<br/>
+                2 adresses pour récupérer le véhicule:
+            </p>
+            <ul>
+                <li>
+                    302 Cours Emile Zola, Villeurbanne, Métro Flachet<br/>
+                </li>
+                <li>
+                    ou 80 Cours Gambetta 69007 Lyon, Metro GaribaldiZ
+                </li>
+            </ul>
+            <p>
+                Procédure:
+            </p>
+            <ul>
+                <li>
+                    Réservation uniquement après de Mme Boulares avant mercredi midi
+                </li>
+                <li>
+                    Prendre le véhicule le vendredi soir avant 18h
+                </li>
+                <li>
+                    Rendre le véhicule lundi entre 7H30 et 9H ou clés dans la boites au lettre avant lundi 7h et indiquer ou vous avez garé le véhicule
+                </li>
+                <li>
+                    Indiquer le nom et la collective sur le bon de commande et présenter la carte du club.<br/>
+                    Cargo enverra la facture au club
+                </li>
+                <li>
+                    L'encadrant fera un virement ou un chèque correspondant à la facture Cargo à remettre à la comptabilité du club (Nathalie).
+                </li>
+            </ul>
         </div>
     </div>
 {% endblock %}
@@ -67,13 +99,7 @@
         $(function() {
             function doUpdate() {
                 var km = $('#simulateur_km').val();
-                var total = 0;
-
-                total += Math.min(km, 400) * 0.4;
-                total += Math.min(Math.max(0, km - 400), 400) * 0.25;
-                total += Math.max(0, km - 800) * 0.1;
-
-                $('#simulateur_total').text(Math.round(Math.max(90, total)));
+                $('#simulateur_total').text(Math.round(km * 0.30));
             }
 
             doUpdate();

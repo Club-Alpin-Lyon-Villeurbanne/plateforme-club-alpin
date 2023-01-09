@@ -457,4 +457,56 @@ class SortieController extends AbstractController
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
+
+    /**
+     * @Route(
+     *     name="sortie_duplicate",
+     *     path="/sortie/{id}/duplicate",
+     *     requirements={
+     *         "id": "\d+"
+     *     },
+     *     methods={"POST"},
+     *     priority="10"
+     * )
+     */
+    public function sortieDuplicate(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
+    {
+        if (!$this->isGranted('SORTIE_DUPLICATE', $event)) {
+            throw new AccessDeniedHttpException('Not found');
+        }
+
+        if (!$this->isCsrfTokenValid('sortie_duplicate', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        $newEvent = new Evt(
+            $this->getUser(),
+            $event->getCommission(),
+            '',
+            '',
+            null,
+            null,
+            $event->getRdv(),
+            $event->getLat(),
+            $event->getLong(),
+            '',
+            null,
+            $event->getJoinMax(),
+            $event->getNgensMax()
+        );
+        $em->persist($newEvent);
+
+        foreach ($event->getParticipants() as $participant) {
+            if ($participant->getUser() === $newEvent->getUser()) {
+                continue;
+            }
+
+            $join = $newEvent->addParticipant($participant->getUser(), $participant->getRole(), $participant->getStatus());
+            $em->persist($join);
+        }
+
+        $em->flush();
+
+        return $this->redirect(sprintf('/creer-une-sortie/%s/update-%d.html', $newEvent->getCommission()->getCode(), $newEvent->getId()));
+    }
 }

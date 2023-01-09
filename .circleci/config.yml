@@ -10,8 +10,6 @@ jobs:
 
       - add_ssh_keys:
           fingerprints:
-            - "ba:5a:94:59:70:b4:28:07:1f:38:ea:1e:66:69:b2:52" # OVH env
-            - "54:47:31:7d:c0:af:fe:ca:06:61:5d:4a:ef:04:d5:16" # SSH public key for AWS dev env
             - "77:54:f0:b9:2d:a4:9e:7a:5a:98:77:ed:89:d7:2b:2e" # SSH public key for AWS prod env
 
       - restore_cache: # special step to restore the dependency cache if `composer.lock` does not change
@@ -23,79 +21,79 @@ jobs:
           command: |
             make build up composer-install setup-db migrate env=test
             make php-cs
-            make phpstan
+            make phpstan  
 
             cp legacy/config/config.php.tpl legacy/config/config.php
             cp legacy/config/params.php.tpl legacy/config/params.php
             make phpunit
             rm legacy/config/config.php
             rm legacy/config/params.php
+            MESSAGE=$(git log -1 HEAD --pretty=format:%s)
 
-            case ${CIRCLE_BRANCH} in
-                "main" )
-                    echo "\nStart replacing variables...\n\n"
-                    cp infrastructure/confs/production/robots.txt public/robots.txt
-                    cp infrastructure/confs/production/.env.prod .
-                    sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_PROD_DB_PASSWORD/g" .env.prod
-                    sed -i "s/DB_USER_TO_REPLACE/$AWS_PROD_DB_USER/g" .env.prod
-                    sed -i "s/DB_NAME_TO_REPLACE/$AWS_PROD_DB_NAME/g" .env.prod
-                    sed -i "s/DB_HOST_TO_REPLACE/$AWS_PROD_DB_HOST/g" .env.prod
-                    sed -i "s/DEBUG_PARAM_TO_REPLACE/APP_DEBUG=false/g" .env.prod
-                    cp legacy/config/www.clubalpinlyon.fr/config.php legacy/config/config.php
-                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/www.clubalpinlyon.fr/params.php"
-                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/config.php"
-                    sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_PROD_DB_PASSWORD/g" "legacy/config/config.php"
-                    sed -i "s/DB_USER_TO_REPLACE/$AWS_PROD_DB_USER/g" "legacy/config/config.php"
-                    sed -i "s/DB_NAME_TO_REPLACE/$AWS_PROD_DB_NAME/g" "legacy/config/config.php"
-                    sed -i "s/DB_HOST_TO_REPLACE/$AWS_PROD_DB_HOST/g" "legacy/config/config.php"
-                    cp legacy/config/www.clubalpinlyon.fr/params.php legacy/config/params.php
-                  ;;
-                "dev-branch" )
-                    echo "\nStart replacing variables...\n\n"
-                    cp infrastructure/confs/aws/robots.txt public/robots.txt
-                    cp infrastructure/confs/aws/.env.prod .
-                    sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_DEV_DB_PASSWORD/g" .env.prod
-                    sed -i "s/DB_USER_TO_REPLACE/$AWS_DEV_DB_USER/g" .env.prod
-                    sed -i "s/DB_NAME_TO_REPLACE/$AWS_DEV_DB_NAME/g" .env.prod
-                    sed -i "s/DB_HOST_TO_REPLACE/$AWS_DEV_DB_HOST/g" .env.prod
-                    sed -i "s/DEBUG_PARAM_TO_REPLACE/APP_DEBUG=true/g" .env.prod
-                    cp legacy/config/www.clubalpinlyon.top/config.php legacy/config/config.php
-                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/www.clubalpinlyon.top/params.php"
-                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/config.php"
-                    sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_DEV_DB_PASSWORD/g" "legacy/config/config.php"
-                    sed -i "s/DB_USER_TO_REPLACE/$AWS_DEV_DB_USER/g" "legacy/config/config.php"
-                    sed -i "s/DB_NAME_TO_REPLACE/$AWS_DEV_DB_NAME/g" "legacy/config/config.php"
-                    sed -i "s/DB_HOST_TO_REPLACE/$AWS_DEV_DB_HOST/g" "legacy/config/config.php"
-                    cp legacy/config/www.clubalpinlyon.fr/params.php legacy/config/params.php
-                  ;;
-            esac
+            if [[ ${CIRCLE_BRANCH} == "production" ]]; then
+              echo "\nStart replacing variables for 'production' environment...\n\n"
+              cp infrastructure/confs/production/robots.txt public/robots.txt
+              cp infrastructure/confs/production/.env.prod .
+              sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_PROD_DB_PASSWORD/g" .env.prod
+              sed -i "s/DB_USER_TO_REPLACE/$AWS_PROD_DB_USER/g" .env.prod
+              sed -i "s/DB_NAME_TO_REPLACE/$AWS_PROD_DB_NAME/g" .env.prod
+              sed -i "s/DB_HOST_TO_REPLACE/$AWS_PROD_DB_HOST/g" .env.prod
+              sed -i "s/DEBUG_PARAM_TO_REPLACE/APP_DEBUG=false/g" .env.prod
+              cp legacy/config/www.clubalpinlyon.fr/config.php legacy/config/config.php
+              sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/www.clubalpinlyon.fr/params.php"
+              sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/config.php"
+              sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_PROD_DB_PASSWORD/g" "legacy/config/config.php"
+              sed -i "s/DB_USER_TO_REPLACE/$AWS_PROD_DB_USER/g" "legacy/config/config.php"
+              sed -i "s/DB_NAME_TO_REPLACE/$AWS_PROD_DB_NAME/g" "legacy/config/config.php"
+              sed -i "s/DB_HOST_TO_REPLACE/$AWS_PROD_DB_HOST/g" "legacy/config/config.php"
+              cp legacy/config/www.clubalpinlyon.fr/params.php legacy/config/params.php
+
+            elif [[ ${MESSAGE} == *push_to_dev* ]] || [[ ${CIRCLE_BRANCH} == "main" ]]; then
+
+              echo "\nStart replacing variables for 'dev' environment...\n\n"
+              cp infrastructure/confs/aws/robots.txt public/robots.txt
+              cp infrastructure/confs/aws/.env.prod .
+              sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_DEV_DB_PASSWORD/g" .env.prod
+              sed -i "s/DB_USER_TO_REPLACE/$AWS_DEV_DB_USER/g" .env.prod
+              sed -i "s/DB_NAME_TO_REPLACE/$AWS_DEV_DB_NAME/g" .env.prod
+              sed -i "s/DB_HOST_TO_REPLACE/$AWS_DEV_DB_HOST/g" .env.prod
+              sed -i "s/DEBUG_PARAM_TO_REPLACE/APP_DEBUG=true/g" .env.prod
+              cp legacy/config/www.clubalpinlyon.top/config.php legacy/config/config.php
+              sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/www.clubalpinlyon.top/params.php"
+              sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/config.php"
+              sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_DEV_DB_PASSWORD/g" "legacy/config/config.php"
+              sed -i "s/DB_USER_TO_REPLACE/$AWS_DEV_DB_USER/g" "legacy/config/config.php"
+              sed -i "s/DB_NAME_TO_REPLACE/$AWS_DEV_DB_NAME/g" "legacy/config/config.php"
+              sed -i "s/DB_HOST_TO_REPLACE/$AWS_DEV_DB_HOST/g" "legacy/config/config.php"
+              cp legacy/config/www.clubalpinlyon.fr/params.php legacy/config/params.php
+
+            fi
 
             make package
 
-            case ${CIRCLE_BRANCH} in
-                "main" )
-                    echo "\nTransfering package...\n\n"
-                    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no package.zip ec2-user@35.180.143.141:/var/www/clubalpinlyon.fr/
-                    echo "\nTransfering deploy script...\n\n"
-                    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no .circleci/deploy.sh ec2-user@35.180.143.141:/var/www/clubalpinlyon.fr/
-                    echo "\nRunning deploy...\n\n"
-                    LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 /var/www/clubalpinlyon.fr/deploy.sh clubalpinlyon.fr
-                    echo "\nCleanup...\n\n"
-                    LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 rm /var/www/clubalpinlyon.fr/deploy.sh /var/www/clubalpinlyon.fr/package.zip
-                    echo "\nDone!\n\n"
-                  ;;
-                "dev-branch" )
-                    echo "\nTransfering package...\n\n"
-                    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no package.zip ec2-user@13.36.212.104:/var/www/clubalpinlyon.top/
-                    echo "\nTransfering deploy script...\n\n"
-                    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no .circleci/deploy.sh ec2-user@13.36.212.104:/var/www/clubalpinlyon.top/
-                    echo "\nRunning deploy...\n\n"
-                    LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@13.36.212.104 /var/www/clubalpinlyon.top/deploy.sh clubalpinlyon.top
-                    echo "\nCleanup...\n\n"
-                    LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@13.36.212.104 rm /var/www/clubalpinlyon.top/deploy.sh /var/www/clubalpinlyon.top/package.zip
-                    echo "\nDone!\n\n"
-                  ;;
-            esac
+            if [[ ${CIRCLE_BRANCH} == "production" ]]; then
+              echo "\nDeploying on clubalpinlyon.fr (production env)...\n\n"
+              echo "\nTransfering package...\n\n"
+              scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no package.zip ec2-user@35.180.143.141:/var/www/clubalpinlyon.fr/
+              echo "\nTransfering deploy script...\n\n"
+              scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no .circleci/deploy.sh ec2-user@35.180.143.141:/var/www/clubalpinlyon.fr/
+              echo "\nRunning deploy...\n\n"
+              LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 /var/www/clubalpinlyon.fr/deploy.sh clubalpinlyon.fr
+              echo "\nCleanup...\n\n"
+              LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 rm /var/www/clubalpinlyon.fr/deploy.sh /var/www/clubalpinlyon.fr/package.zip
+              echo "\nDone!\n\n"
+            elif [[ ${MESSAGE} == *push_to_dev* ]] || [[ ${CIRCLE_BRANCH} == "main" ]]; then
+              echo "\nDeploying on clubalpinlyon.top (dev env)...\n\n"
+              echo "\nTransfering package...\n\n"
+              scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no package.zip ec2-user@35.180.143.141:/var/www/clubalpinlyon.top/
+              echo "\nTransfering deploy script...\n\n"
+              scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no .circleci/deploy.sh ec2-user@35.180.143.141:/var/www/clubalpinlyon.top/
+              echo "\nRunning deploy...\n\n"
+              LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 /var/www/clubalpinlyon.top/deploy.sh clubalpinlyon.top
+              echo "\nCleanup...\n\n"
+              LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 rm /var/www/clubalpinlyon.top/deploy.sh /var/www/clubalpinlyon.top/package.zip
+              echo "\nDone!\n\n"
+            fi
       - save_cache: # special step to save the dependency cache with the `composer.lock` cache key template
           key: composer-v1-{{ checksum "composer.lock" }}
           paths:

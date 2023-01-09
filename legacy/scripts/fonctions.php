@@ -250,6 +250,10 @@ function get_groupes($id_commission, $force_valid = false)
 {
     $groupes = [];
 
+    if (null == $id_commission) {
+        return $groupes;
+    }
+
     $req = 'SELECT * FROM `caf_groupe` WHERE `id_commission` = '.$id_commission;
     if ($force_valid) {
         $req .= ' AND actif = 1 ';
@@ -302,6 +306,10 @@ function empietement_sortie($id_user, $evt)
         $evt = get_evt($evt);
     }
 
+    if (!$evt['tsp_evt'] || !$evt['tsp_end_evt']) {
+        return $sorties;
+    }
+
     // on recherche une inscription à une sortie qui empiète sur la sortie en cours
     $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt, status_evt_join, role_evt_join
             FROM caf_evt, caf_evt_join
@@ -322,8 +330,10 @@ function empietement_sortie($id_user, $evt)
             LIMIT 1000';
 
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($tmpJoin = $result->fetch_assoc()) {
-        $sorties[] = $tmpJoin;
+    if ($result) {
+        while ($tmpJoin = $result->fetch_assoc()) {
+            $sorties[] = $tmpJoin;
+        }
     }
 
     return $sorties;
