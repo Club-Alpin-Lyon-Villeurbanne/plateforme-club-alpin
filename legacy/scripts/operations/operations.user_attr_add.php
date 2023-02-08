@@ -1,6 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\MailingListSync;
 
 $needComm = false; // besoin, ou pas de spécifier la commission liée à ce type
 
@@ -96,6 +97,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
                                         VALUES ('$id_user', '$id_usertype', '$params_user_attr', '".time()."');";
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
+            } else {
+                LegacyContainer::get(MailingListSync::class)->addToMailingList($id_user, $id_usertype, $params_user_attr);
             }
         }
     }

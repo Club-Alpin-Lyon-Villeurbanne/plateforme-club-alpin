@@ -88,6 +88,10 @@ services:
       arguments:
           $maxTimestampForLegalValidation: '%env(MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%'
 
+    App\MailingListSync:
+      arguments:
+          $appScriptId: 'env(APP_SCRIPT_ID_ADD_MAILING_LIST)'
+
     Symfony\Component\String\Slugger\SluggerInterface:
         class: Symfony\Component\String\Slugger\AsciiSlugger
 
