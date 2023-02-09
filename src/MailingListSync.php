@@ -48,10 +48,49 @@ class MailingListSync
         $response = $this->client->request('GET', sprintf('https://script.google.com/a/macros/clubalpinlyon.fr/s/%s/exec?%s', $this->appScriptId, http_build_query([
             'email' => $userEmail,
             'commission' => $commissionName,
+            'action' => 'insert'
         ], '', '&')));
 
         if (!$response->getStatusCode() >= 400) {
             $this->logger->error('Error while subscribing a user to a mailing list', [
+                'email' => $userEmail,
+                'commission' => $commissionName,
+            ]);
+        }
+    }
+
+    public function removeFromMailingList(int $userId, int $userType, string $commissionName)
+    {
+        if (!$this->appScriptId) {
+            return;
+        }
+
+        // "encadrant" (4)
+        // "responsable de commission" (5)
+        // "benevole" (10)
+        // "coencadrant" (11)
+        // "stagiaire" (12)
+        if (!\in_array($userType, [4, 5, 10, 11, 12], true)) {
+            return;
+        }
+
+        $commissionName = \array_slice(explode('-', $commissionName), -1)[0];
+
+        $userEmail = $this->connection->prepare('SELECT email_user FROM `caf_user` AS C WHERE C.id_user = :id')
+            ->executeQuery(['id' => $userId])
+            ->fetchFirstColumn();
+
+        if (!$userEmail || !$commissionName) {
+            return;
+        }
+        $response = $this->client->request('GET', sprintf('https://script.google.com/a/macros/clubalpinlyon.fr/s/%s/exec?%s', $this->appScriptId, http_build_query([
+            'email' => $userEmail,
+            'commission' => $commissionName,
+            'action' => 'remove'
+        ], '', '&')));
+
+        if (!$response->getStatusCode() >= 400) {
+            $this->logger->error('Error while removing a user from a mailing list', [
                 'email' => $userEmail,
                 'commission' => $commissionName,
             ]);
