@@ -93,7 +93,7 @@
 					<?php
                 }
             }
-            ?>
+			?>
 			<br style="clear:both" />
 		</div>
 	</div>
@@ -101,7 +101,7 @@
 	<!-- partie droite -->
 	<?php
     require __DIR__.'/../includes/right-type-agenda.php';
-    ?>
+			?>
 
 	<br style="clear:both" />
 </div>

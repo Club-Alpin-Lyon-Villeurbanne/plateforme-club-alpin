@@ -7,8 +7,8 @@ if (!$article) {
     echo '<p class="erreur">Erreur : article non trouvé ou non autorisé</p>';
 } else {
     // check image
-    if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg')) {
-        $img = '/ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg';
+    if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) $article['id_article'].'/wide-figure.jpg')) {
+        $img = '/ftp/articles/'.(int) $article['id_article'].'/wide-figure.jpg';
     } else {
         $img = '/ftp/articles/0/wide-figure.jpg';
     } ?>
@@ -55,12 +55,12 @@ if (!$article) {
 		</h1>
 		<p class="date">
 			<?php
-            ?>
+    ?>
 		</p>
 		<p class="auteur">
 			<?php
 
-                echo 'Le '.date('d.m.Y', $article['tsp_article']);
+        echo 'Le '.date('d.m.Y', $article['tsp_article']);
 
     echo ', par ';
     echo userlink($article['auteur']['id_user'], $article['auteur']['nickname_user']);
@@ -103,16 +103,16 @@ if (!$article) {
 			<form action="'.$versCettePage.'" method="post" style="display:inline" class="loading">
 				<input type="hidden" name="operation" value="article_validate" />
 				<input type="hidden" name="status_article" value="1" />
-				<input type="hidden" name="id_article" value="'.((int) ($article['id_article'])).'" />
+				<input type="hidden" name="id_article" value="'.((int) $article['id_article']).'" />
 				<input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
 			</form>
 
 			<input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
-			<div style="display:none" id="refuser-'.(int) ($article['id_article']).'">
+			<div style="display:none" id="refuser-'.(int) $article['id_article'].'">
 				<form action="'.$versCettePage.'" method="post" class="loading">
 					<input type="hidden" name="operation" value="article_validate" />
 					<input type="hidden" name="status_article" value="2" />
-					<input type="hidden" name="id_article" value="'.((int) ($article['id_article'])).'" />
+					<input type="hidden" name="id_article" value="'.((int) $article['id_article']).'" />
 
 					<p>Laissez un message à l\'auteur pour lui expliquer la raison du refus :</p>
 					<input type="text" name="msg" class="type1" placeholder="ex : Décocher &laquo;A la Une&raquo;" />
@@ -129,7 +129,7 @@ if (!$article) {
 
     // edition
     if (allowed('article_edit_notmine') || allowed('article_edit', 'commission:'.$article['commission_article'])) {
-        echo '<a href="/article-edit/'.(int) ($article['id_article']).'.html" title="" class="nice2 orange">
+        echo '<a href="/article-edit/'.(int) $article['id_article'].'.html" title="" class="nice2 orange">
 			<img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cet article
 		</a>';
     }
@@ -139,7 +139,7 @@ if (!$article) {
         echo '<a href="javascript:$.fancybox($(\'#supprimer-form-'.$article['id_article'].'\').html());" title="" class="nice2 red">
 				<img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cet article
 			</a>';
-        echo '<div id="supprimer-form-'.(int) ($article['id_article']).'" style="display:none">
+        echo '<div id="supprimer-form-'.(int) $article['id_article'].'" style="display:none">
 				<form action="'.$versCettePage.'" method="post" style="width:600px; text-align:left">
 					<input type="hidden" name="operation" value="article_del" />
 					<input type="hidden" name="id_article" value="'.$article['id_article'].'" />

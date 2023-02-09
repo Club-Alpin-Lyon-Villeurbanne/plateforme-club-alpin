@@ -6,7 +6,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 $errTabMail = [];
 
 // vars
-$id_evt = (int) ($_GET['id_evt']); // spécial : donné dans l'URL
+$id_evt = (int) $_GET['id_evt']; // spécial : donné dans l'URL
 
 // suis-je encadrant sur cette sortie ?
 $suis_encadrant = false;
@@ -36,7 +36,7 @@ if (!allowed('evt_join_doall') && !allowed('evt_join_notme') && !$suis_encadrant
     $errTab[] = 'Opération interdite : Il semble que vous ne soyez pas autorisé à ajouter des inscrits';
 }
 
-    // checks :
+// checks :
 if (!$id_evt) {
     $errTab[] = 'ID event manquant';
 }
@@ -62,7 +62,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // pour chaque id donné
     foreach ($_POST['id_user'] as $i => $user) {
-        $id_user = (int) ($_POST['id_user'][$i]);
+        $id_user = (int) $_POST['id_user'][$i];
         $role_evt_join = stripslashes($_POST['role_evt_join'][$i]);
 
         $is_covoiturage = 'NULL';

@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Lieu.
  *
  * @ORM\Table(name="caf_lieu")
+ *
  * @ORM\Entity
  */
 class Lieu
@@ -16,7 +17,9 @@ class Lieu
      * @var int
      *
      * @ORM\Column(name="id", type="integer", nullable=false, options={"unsigned": true})
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;

@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Evt.
  *
  * @ORM\Table(name="caf_evt")
+ *
  * @ORM\Entity
  */
 class Evt
@@ -26,7 +27,9 @@ class Evt
      * @var int
      *
      * @ORM\Column(name="id_evt", type="integer", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
@@ -42,6 +45,7 @@ class Evt
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User")
+     *
      * @ORM\JoinColumn(name="status_who_evt", referencedColumnName="id_user", nullable=true)
      */
     private $statusWho;
@@ -57,6 +61,7 @@ class Evt
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User")
+     *
      * @ORM\JoinColumn(name="status_legal_who_evt", referencedColumnName="id_user", nullable=true)
      */
     private $statusLegalWho;
@@ -72,6 +77,7 @@ class Evt
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User")
+     *
      * @ORM\JoinColumn(name="cancelled_who_evt", referencedColumnName="id_user", nullable=true)
      */
     private $cancelledWho;
@@ -85,12 +91,14 @@ class Evt
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
+     *
      * @ORM\JoinColumn(name="user_evt", referencedColumnName="id_user", nullable=false)
      */
     private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity="Commission")
+     *
      * @ORM\JoinColumn(name="commission_evt", referencedColumnName="id_commission", nullable=false)
      */
     private $commission;
@@ -99,6 +107,7 @@ class Evt
      * @var Groupe|null
      *
      * @ORM\ManyToOne(targetEntity="Groupe", fetch="EAGER")
+     *
      * @ORM\JoinColumn(name="id_groupe", referencedColumnName="id", nullable=true)
      */
     private $groupe;
@@ -280,6 +289,7 @@ class Evt
 
     /**
      * @ORM\ManyToOne(targetEntity="Evt", inversedBy="cycleChildren")
+     *
      * @ORM\JoinColumn(name="cycle_parent_evt", referencedColumnName="id_evt", nullable=true)
      */
     private $cycleParent;

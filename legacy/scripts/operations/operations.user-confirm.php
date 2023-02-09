@@ -7,7 +7,7 @@ $id_user = null;
 if ($p2) {
     $tab = explode('-', $p2);
     $cookietoken_user = $tab[0];
-    $id_user = (int) ($tab[1]);
+    $id_user = (int) $tab[1];
 
     // validation user
     if ($id_user) {

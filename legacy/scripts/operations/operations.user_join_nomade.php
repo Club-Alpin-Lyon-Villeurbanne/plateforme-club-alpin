@@ -4,8 +4,8 @@ use App\Legacy\LegacyContainer;
 use App\Utils\NicknameGenerator;
 
 // vars
-$id_evt = (int) ($_GET['id_evt']); // spécial : donné dans l'URL
-$id_user = (int) ($_POST['id_user']);
+$id_evt = (int) $_GET['id_evt']; // spécial : donné dans l'URL
+$id_user = (int) $_POST['id_user'];
 $civ_user = stripslashes($_POST['civ_user']);
 $cafnum_user = preg_replace('/\s+/', '', stripslashes($_POST['cafnum_user']));
 $firstname_user = stripslashes($_POST['firstname_user']);

@@ -89,9 +89,12 @@ La fonction "userlink" affiche un lien vers le profil d'un utilisateur en foncti
 function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user = false, $lastname_user = false, $style = 'public')
 {
     switch ($style) {
-        case 'public': 	$return = html_utf8($nickname_user); break;
-        case 'short': 	$return = html_utf8($civ_user).' '.html_utf8($firstname_user).' '.strtoupper(substr(trim($lastname_user), 0, 1)); break;
-        case 'full': 	$return = html_utf8($civ_user).' '.html_utf8($firstname_user).' '.html_utf8($lastname_user); break;
+        case 'public': 	$return = html_utf8($nickname_user);
+        break;
+        case 'short': 	$return = html_utf8($civ_user).' '.html_utf8($firstname_user).' '.strtoupper(substr(trim($lastname_user), 0, 1));
+        break;
+        case 'full': 	$return = html_utf8($civ_user).' '.html_utf8($firstname_user).' '.html_utf8($lastname_user);
+        break;
         default:		return;
     }
 
@@ -145,8 +148,10 @@ de la commission désirée ou bien le picto par défaut si celui-ci n'existe pas
 function comPicto($id_commission, $style = '')
 {
     switch ($style) {
-        case 'light': 	$style = '-'.$style; break;
-        case 'dark': 	$style = '-'.$style; break;
+        case 'light': 	$style = '-'.$style;
+        break;
+        case 'dark': 	$style = '-'.$style;
+        break;
         default:		$style = '';
     }
 
@@ -247,7 +252,7 @@ function formatSize($bytes, $format = '%.2f')
     $b = (float) $bytes;
     /* On gére le cas des tailles de fichier négatives */
     if ($b > 0) {
-        $e = (int) (log($b, 1024));
+        $e = (int) log($b, 1024);
         /**Si on a pas l'unité on retourne en To*/
         if (false === isset($units[$e])) {
             $e = 4;
@@ -527,39 +532,39 @@ function isMail($mail)
 
 // function de supp de dossier (dangerous)
 // if(admin()){
-    function clearDir($dossierSupp)
-    {
-        $ouverture = @opendir($dossierSupp);
-        if (!$ouverture) {
-            return;
-        }
-        if (strlen($dossierSupp) > 1) {
-            while ($fichierSupp = readdir($ouverture)) {
-                if ('.' == $fichierSupp || '..' == $fichierSupp) {
-                    continue;
-                }
-
-                if (is_dir($dossierSupp.'/'.$fichierSupp)) {
-                    $r = clearDir($dossierSupp.'/'.$fichierSupp);
-                    if (!$r) {
-                        return false;
-                    }
-                } else {
-                    $r = @unlink($dossierSupp.'/'.$fichierSupp);
-                    if (!$r) {
-                        return false;
-                    }
-                }
-            }
-            closedir($ouverture);
-            $r = @rmdir($dossierSupp);
-            if (!$r) {
-                return false;
-            }
-
-            return true;
-        }
+function clearDir($dossierSupp)
+{
+    $ouverture = @opendir($dossierSupp);
+    if (!$ouverture) {
+        return;
     }
+    if (strlen($dossierSupp) > 1) {
+        while ($fichierSupp = readdir($ouverture)) {
+            if ('.' == $fichierSupp || '..' == $fichierSupp) {
+                continue;
+            }
+
+            if (is_dir($dossierSupp.'/'.$fichierSupp)) {
+                $r = clearDir($dossierSupp.'/'.$fichierSupp);
+                if (!$r) {
+                    return false;
+                }
+            } else {
+                $r = @unlink($dossierSupp.'/'.$fichierSupp);
+                if (!$r) {
+                    return false;
+                }
+            }
+        }
+        closedir($ouverture);
+        $r = @rmdir($dossierSupp);
+        if (!$r) {
+            return false;
+        }
+
+        return true;
+    }
+}
 // }
 
 function getArrayFirstValue($array)

@@ -6,7 +6,7 @@ if (!allowed('comm_edit')) {
     $errTab[] = 'Vous n\'avez pas les droits nécessaires pour cette operation';
 }
 $title_commission = stripslashes($_POST['title_commission']);
-$id_commission = (int) ($_GET['id_commission']);
+$id_commission = (int) $_GET['id_commission'];
 $uploads_dir = __DIR__.'/../../../public/ftp/commission/'.$id_commission;
 
 // CHECKIN VARS

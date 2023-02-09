@@ -79,23 +79,23 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
                         .($page['vis_page']
                             ? '<div class="page-element-info-2 on"><img src="/img/base/vis-on.png" alt="MENU" title="Cette page est visible sur le site" /></div>'
                             : '<div class="page-element-info-2 off"><img src="/img/base/vis-off.png" alt="MENU" title="Cette page n\'apparaît PAS sur le site" /></div>'
-                            )
+                        )
                         // picto d'état menu
                         .($page['menu_page']
-                            ? '<div class="page-element-info-2 on"><img src="/img/base/chart_organisation.png" alt="MENU" title="Cette page apparaît dans le menu principal" /></div>'
-                            : '<div class="page-element-info-2 off"><img src="/img/base/chart_organisation_delete.png" alt="MENU" title="Cette page n\'apparaît PAS dans le menu principal" /></div>'
-                            )
+                        ? '<div class="page-element-info-2 on"><img src="/img/base/chart_organisation.png" alt="MENU" title="Cette page apparaît dans le menu principal" /></div>'
+                        : '<div class="page-element-info-2 off"><img src="/img/base/chart_organisation_delete.png" alt="MENU" title="Cette page n\'apparaît PAS dans le menu principal" /></div>'
+                        )
                         // picto d'état priorité
                         .($page['priority_page'] > 0
-                            ? '<div class="page-element-info-2 on">'.(round($page['priority_page'] * 10)).'<sub>/10</sub></div>'
-                            : '<div class="page-element-info-2 off">Ø</div>'
-                            )
+                        ? '<div class="page-element-info-2 on">'.round($page['priority_page'] * 10).'<sub>/10</sub></div>'
+                        : '<div class="page-element-info-2 off">Ø</div>'
+                        )
                         // nifos texte
                         .'<div class="page-element-separator"></div>'
                         .'<div class="page-element-info-1">'.$page['code_page'].'</div>'
                         // .'<div class="page-element-info-1">'.$page['default_name_page'].'</div>'
                         .'<div class="page-element-info-1">'.implode('<br />', $page['nom']).'</div>'
-                        ;
+                ;
 
                 listPages($tab, $page['id_page'], $level + 1);
                 // echo '<img src="/img/base/ghost.gif" alt="" title="" style="clear:both" />';

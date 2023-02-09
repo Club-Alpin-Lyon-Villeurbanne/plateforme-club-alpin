@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$id_evt = (int) ($_POST['id_evt']);
+$id_evt = (int) $_POST['id_evt'];
 $id_user = getUser()->getId();
 
 $evtDate = $evtTarif = $encEmail = $encName = null;

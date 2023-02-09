@@ -5,10 +5,10 @@ use App\Legacy\LegacyContainer;
 if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('user_givepresidence')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
-    $id_user = (int) ($_GET['id_user']);
+    $id_user = (int) $_GET['id_user'];
     if (!$id_user) {
         echo 'Erreur : id invalide';
-        exit();
+        exit;
     } ?>
 
 	<div style="text-align:left;">
@@ -76,7 +76,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
 								<input type="hidden" name="id_user_attr" value="'.$row['id_user_attr'].'" />
 								<input type="image" src="/img/base/x.png" alt="DEL" title="Supprimer cet attribut" class="upfade" />
 							</form>'
-                        ;
+                ;
             }
 
             echo '</li>';
@@ -85,7 +85,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
     }
 
     // AJOUTER UN ATTRIBUT
-        ?>
+    ?>
 		<form action="<?php echo $versCettePage; ?>" method="post">
 			<input type="hidden" name="operation" value="user_attr_add" />
 			<input type="hidden" name="id_user" value="<?php echo $id_user; ?>" />
@@ -93,9 +93,9 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
 			<h2>Ajouter un attribut à cet adhérent :</h2>
 			<?php
             // message
-            if (isset($_POST['operation']) && 'user_attr_add' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
-            }
+        if (isset($_POST['operation']) && 'user_attr_add' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+            echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+        }
     if (isset($_POST['operation']) && 'user_attr_add' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<div class="info">Mise à jour effectuée à '.date('H:i:s', time()).'.</div>';
     }
@@ -144,7 +144,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
         }
 
         if ($afficher) {
-            echo '<option value="'.(int) ($row['id_usertype']).'" class="precise-comm-'.(int) ($row['limited_to_comm_usertype']).'">'.html_utf8($row['title_usertype']).'</option>';
+            echo '<option value="'.(int) $row['id_usertype'].'" class="precise-comm-'.(int) $row['limited_to_comm_usertype'].'">'.html_utf8($row['title_usertype']).'</option>';
         }
     }
     echo '</select>';

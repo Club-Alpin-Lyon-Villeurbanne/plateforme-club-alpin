@@ -12,5 +12,5 @@ if (allowed('user_read_private')) {
             .'<li class="wide">'.html_utf8($tmpUser['adresse_user'].' '.$tmpUser['cp_user'].' '.$tmpUser['ville_user'].' '.$tmpUser['pays_user']).' </li>'
         .'</ul>'
         .'<br style="clear:both" />'
-        ;
+    ;
 }

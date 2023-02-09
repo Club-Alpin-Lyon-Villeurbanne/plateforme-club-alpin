@@ -2,7 +2,7 @@
 
 if (admin()) {
     $str = utf8_encode($_POST['str']);
-    $type = (int) ($_POST['type']);
+    $type = (int) $_POST['type'];
     $result = [];
     $result['content'] = htmlspecialchars(substr(formater($str, $type), 0, 45), \ENT_NOQUOTES);
     $result['success'] = true;

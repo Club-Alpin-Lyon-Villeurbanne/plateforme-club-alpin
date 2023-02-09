@@ -113,7 +113,9 @@ class LoginController extends AbstractController
      *     path="/password",
      *     methods={"GET", "POST"}
      * )
+     *
      * @Security("is_granted('IS_AUTHENTICATED_FULLY') and is_granted('ROLE_USER')")
+     *
      * @Template
      */
     public function setPasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer)
@@ -154,7 +156,9 @@ class LoginController extends AbstractController
      *     path="/change-password",
      *     methods={"GET", "POST"}
      * )
+     *
      * @Security("is_granted('ROLE_USER')")
+     *
      * @Template
      */
     public function changePasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer)

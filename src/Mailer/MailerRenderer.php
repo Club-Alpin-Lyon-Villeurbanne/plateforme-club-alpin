@@ -15,7 +15,7 @@ class MailerRenderer
 
     public function renderBody($template, $format, array $context = [])
     {
-        if (!\in_array($format, ($formats = ['html', 'txt']), true)) {
+        if (!\in_array($format, $formats = ['html', 'txt'], true)) {
             throw new \InvalidArgumentException(sprintf('"%s" is not a valid format (only "%s" are allowed).', $format, implode('", "', $formats)));
         }
 

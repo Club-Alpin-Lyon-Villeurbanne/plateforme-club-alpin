@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Image.
  *
  * @ORM\Table(name="caf_img")
+ *
  * @ORM\Entity
  */
 class Image
@@ -16,7 +17,9 @@ class Image
      * @var int
      *
      * @ORM\Column(name="id_img", type="integer", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;

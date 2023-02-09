@@ -72,7 +72,7 @@ presidence();
                 <div style="padding-left:45px;">
                     <?php
                     inclure('adresse-fiche-sortie', '');
-                    ?>
+                ?>
                 </div>
             <?php } else { ?>
                 <p class="alerte">Cette sortie n'a pas été validée légalement par les dirigeants de <?php echo $p_sitename; ?>.<br>La sortie se fait sous la responsabilité des organisateurs et des participants.</p>
@@ -96,14 +96,14 @@ presidence();
                                 <td><?php echo html_utf8(strtoupper($p['lastname_user']).', '.ucfirst(strtolower($p['firstname_user']))); ?></td>
                                 <th>TEL</th>
                                 <td><?php
-                                    if (!empty($p['tel_user'])) {
-                                        echo html_utf8($p['tel_user']).'<br>';
-                                    } else {
-                                        if (!empty($p['tel2_user'])) {
-                                            echo html_utf8($p['tel2_user']);
-                                        }
+                                if (!empty($p['tel_user'])) {
+                                    echo html_utf8($p['tel_user']).'<br>';
+                                } else {
+                                    if (!empty($p['tel2_user'])) {
+                                        echo html_utf8($p['tel2_user']);
                                     }
-                                    ?></td>
+                                }
+                            ?></td>
                             </tr>
                         <?php } ?>
                     <?php } ?>
@@ -116,14 +116,14 @@ presidence();
                                 <td><?php echo html_utf8(strtoupper($vp['lastname_user']).', '.ucfirst(strtolower($vp['firstname_user']))); ?></td>
                                 <th>TEL</th>
                                 <td><?php
-                                    if (!empty($vp['tel_user'])) {
-                                        echo html_utf8($vp['tel_user']).'<br>';
-                                    } else {
-                                        if (!empty($vp['tel2_user'])) {
-                                            echo html_utf8($vp['tel2_user']);
-                                        }
-                                    }
-                                    ?></td>
+                            if (!empty($vp['tel_user'])) {
+                                echo html_utf8($vp['tel_user']).'<br>';
+                            } else {
+                                if (!empty($vp['tel2_user'])) {
+                                    echo html_utf8($vp['tel2_user']);
+                                }
+                            }
+                            ?></td>
                             </tr>
                         <?php } ?>
                     <?php } ?>
@@ -171,7 +171,7 @@ presidence();
                     </tr>
                 <?php
                 }
-                ?>
+?>
                 </tbody>
             </table>
         </td>
@@ -190,8 +190,8 @@ presidence();
         <td width='25%'><?php echo date('d.m.Y', $evt['tsp_evt']); ?></td>
         <th width='20%'>COURSE, LIEU : </th>
         <td width='30%'><?php echo html_utf8($evt['titre_evt']); ?><?php if (count($evt['groupe']) > 0) {
-                    echo ' - '.$evt['groupe']['nom'];
-                } ?></td>
+            echo ' - '.$evt['groupe']['nom'];
+        } ?></td>
     </tr>
     <tr>
         <th>DISTANCE : </th>
@@ -234,23 +234,23 @@ presidence();
     <tbody>
     <?php
     $number = 1;
-    // constitution de la liste complete des participants
-    $joinsParticipants = array_merge(
-        $evt['joins']['encadrant'],
-        $evt['joins']['stagiaire'],
-        $evt['joins']['coencadrant'],
-        $evt['joins']['benevole'],
-        $evt['joins']['inscrit'],
-        $evt['joins']['manuel']);
+// constitution de la liste complete des participants
+$joinsParticipants = array_merge(
+    $evt['joins']['encadrant'],
+    $evt['joins']['stagiaire'],
+    $evt['joins']['coencadrant'],
+    $evt['joins']['benevole'],
+    $evt['joins']['inscrit'],
+    $evt['joins']['manuel']);
 
-    if (is_array($joinsParticipants)) {
-        foreach ($joinsParticipants as $it => $tmpUser) {
-            $joinsParticipants[$tmpUser['lastname_user'].$tmpUser['firstname_user'].$tmpUser['id_user']] = $tmpUser;
-            unset($joinsParticipants[$it]);
-        }
-        ksort($joinsParticipants);
-        foreach ($joinsParticipants as $tmp) {
-            ?>
+if (is_array($joinsParticipants)) {
+    foreach ($joinsParticipants as $it => $tmpUser) {
+        $joinsParticipants[$tmpUser['lastname_user'].$tmpUser['firstname_user'].$tmpUser['id_user']] = $tmpUser;
+        unset($joinsParticipants[$it]);
+    }
+    ksort($joinsParticipants);
+    foreach ($joinsParticipants as $tmp) {
+        ?>
             <tr>
                 <td><?php echo $number++; ?></td>
                 <td><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></td>
@@ -260,12 +260,12 @@ presidence();
                 <td><?php echo html_utf8($tmp['tel2_user']); ?></td>
             </tr>
         <?php
-        }
     }
-    // lignes vides
-    if (!isset($_GET['hide_blank']) || 'y' != $_GET['hide_blank']) {
-        for ($i = $number; $i <= (max($evt['ngens_max_evt'], $nAccepteesCalc) * 1); ++$i) {
-            ?>
+}
+// lignes vides
+if (!isset($_GET['hide_blank']) || 'y' != $_GET['hide_blank']) {
+    for ($i = $number; $i <= (max($evt['ngens_max_evt'], $nAccepteesCalc) * 1); ++$i) {
+        ?>
             <tr>
                 <td><?php echo $number++; ?></td>
                 <td></td>
@@ -275,9 +275,9 @@ presidence();
                 <td></td>
             </tr>
         <?php
-        }
     }
-    ?>
+}
+?>
     </tbody>
 </table>
 Imprimé le <?php echo html_utf8(date('d.m.Y à H:i')); ?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>[<a href="<?php echo $_GET['hide_blank'] ? $versCettePage : $versCettePage.'?hide_blank=y'; ?>"><?php echo $_GET['hide_blank'] ? 'Afficher' : 'Masquer'; ?> les lignes vides</a>]</small>

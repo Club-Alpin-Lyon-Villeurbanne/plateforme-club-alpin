@@ -6,8 +6,8 @@ $lang_content_inline = trim(stripslashes($_POST['lang_content_inline']));
 $code_content_inline = trim(stripslashes($_POST['code_content_inline']));
 $contenu_content_inline = trim(stripslashes($_POST['contenu_content_inline']));
 // details
-$groupe_content_inline = (int) ($_POST['groupe_content_inline']);
-$linkedtopage_content_inline = (int) ($_POST['linkedtopage_content_inline']);
+$groupe_content_inline = (int) $_POST['groupe_content_inline'];
+$linkedtopage_content_inline = (int) $_POST['linkedtopage_content_inline'];
 
 // checks
 // $pattern="#^[a-z](-)*$#";

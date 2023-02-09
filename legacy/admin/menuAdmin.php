@@ -6,8 +6,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 if (admin()) {
     ?>
 	<div id="menuAdmin" style="<?php if ($p_pageadmin) {
-        echo 'position:relative';
-    } ?>">
+	    echo 'position:relative';
+	} ?>">
 		<!-- specs -->
 		<a href="<?php echo generateRoute('admin_logout'); ?>" title="" class="adminmenulink special"><img src="/img/base/door_out.png" alt="" title="" /> Déconnexion</a>
 		<a href="/includer.php?p=includes/admin-log.php&admin=true" title="Voir les activités administrateur" class="adminmenulink special fancyframe"><img src="/img/base/report.png" alt="" title="" /> Log</a>
@@ -17,33 +17,33 @@ if (admin()) {
 
 		<div style="margin-left:160px">
             <?php
-            foreach ($p_pages as $code => $datas) {
-                // pour chaque page admin seulement
-                if ($datas['menuadmin_page']) {
-                    // cas particulier : la page traductions seulement en cas de langues multiples
-                    if ('admin-traductions' != $code) {
-                        echo '<a href="'.$code.'.html" title="" class="'.($datas['superadmin_page'] ? 'superadmin ' : '').' adminmenulink '.($p1 == $code ? 'up' : '').'">
+	        foreach ($p_pages as $code => $datas) {
+	            // pour chaque page admin seulement
+	            if ($datas['menuadmin_page']) {
+	                // cas particulier : la page traductions seulement en cas de langues multiples
+	                if ('admin-traductions' != $code) {
+	                    echo '<a href="'.$code.'.html" title="" class="'.($datas['superadmin_page'] ? 'superadmin ' : '').' adminmenulink '.($p1 == $code ? 'up' : '').'">
                             '.($datas['superadmin_page'] ? '<img src="/img/base/bullet_star.png" alt="" title="Option super-admin" />' : '').$datas['default_name_page'].'</a>';
-                    }
-                }
-            } ?>
+	                }
+	            }
+	        } ?>
 
 			<!--
 			<a href="/admin-contenus.html" title="" class="adminmenulink <?php if ('admin-contenus' == $p1) {
-                echo 'up';
-            } ?>">Contenus statiques</a>
+			    echo 'up';
+			} ?>">Contenus statiques</a>
 			<a href="/admin-actus.html" title="" class="adminmenulink <?php if ('admin-actus' == $p1) {
-                echo 'up';
-            } ?>">Actualités</a>
+			    echo 'up';
+			} ?>">Actualités</a>
 			<a href="/admin-reas.html" title="Organisez vos réalisations" class="adminmenulink <?php if ('admin-reas' == $p1) {
-                echo 'up';
-            } ?>">Réalisations</a>
+			    echo 'up';
+			} ?>">Réalisations</a>
 			<a href="/admin-partenaires.html" title="Organisez l'onglet valeurs en pied de page" class="adminmenulink <?php if ('admin-partenaires' == $p1) {
-                echo 'up';
-            } ?>">Onglet "Partenaires"</a>
+			    echo 'up';
+			} ?>">Onglet "Partenaires"</a>
 			<a href="/admin-newsletter.html" title="Inscrits à la newsletter" class="adminmenulink <?php if ('admin-newsletter' == $p1) {
-                echo 'up';
-            } ?>">Newsletter</a>
+			    echo 'up';
+			} ?>">Newsletter</a>
 			-->
 
 		</div>

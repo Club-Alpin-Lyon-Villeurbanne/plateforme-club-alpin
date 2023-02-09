@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Usertype.
  *
  * @ORM\Table(name="caf_usertype")
+ *
  * @ORM\Entity
  */
 class Usertype
@@ -16,7 +17,9 @@ class Usertype
      * @var int
      *
      * @ORM\Column(name="id_usertype", type="integer", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;

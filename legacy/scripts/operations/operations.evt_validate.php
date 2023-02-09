@@ -5,8 +5,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 $subject = $content_main = $authorDatas = null;
 
-$id_evt = (int) ($_POST['id_evt']);
-$status_evt = (int) ($_POST['status_evt']);
+$id_evt = (int) $_POST['id_evt'];
+$status_evt = (int) $_POST['status_evt'];
 
 // checks
 if (!$id_evt) {
@@ -70,7 +70,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && 1 == $status_evt) {
 
     while ($row = $result->fetch_assoc()) {
         LegacyContainer::get('legacy_mailer')->send($row['email_user'], 'transactional/sortie-publiee-inscrit', [
-            'author_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.(int) ($authorDatas['id_user']).'.html',
+            'author_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.(int) $authorDatas['id_user'].'.html',
             'author_nickname' => $authorDatas['nickname_user'],
             'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$authorDatas['code_evt'].'-'.$authorDatas['id_evt'].'.html',
             'event_name' => $authorDatas['titre_evt'],

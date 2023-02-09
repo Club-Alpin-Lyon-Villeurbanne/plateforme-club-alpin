@@ -5,10 +5,10 @@ use App\Legacy\LegacyContainer;
 if (!admin()) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
-    $part_id = (int) ($_GET['part_id']);
+    $part_id = (int) $_GET['part_id'];
     if ($part_id <= 0) {
         echo 'Erreur : id invalide';
-        exit();
+        exit;
     }
 
     if ($part_id > 0) {

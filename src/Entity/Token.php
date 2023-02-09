@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Token.
  *
  * @ORM\Table(name="caf_token")
+ *
  * @ORM\Entity
  */
 class Token
@@ -16,7 +17,9 @@ class Token
      * @var string
      *
      * @ORM\Column(name="id_token", type="string", length=32, nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;

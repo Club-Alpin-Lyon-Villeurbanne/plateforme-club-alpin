@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Message.
  *
  * @ORM\Table(name="caf_message")
+ *
  * @ORM\Entity
  */
 class Message
@@ -16,7 +17,9 @@ class Message
      * @var int
      *
      * @ORM\Column(name="id_message", type="integer", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;

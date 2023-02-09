@@ -6,10 +6,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 if (!admin() && !allowed('user_edit_notme')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
-    $id_user = (int) ($_GET['id_user']);
+    $id_user = (int) $_GET['id_user'];
     if (!$id_user) {
         echo 'Erreur : id invalide';
-        exit();
+        exit;
     }
 
     if (isset($userTab) && 0 == count($userTab)) {
@@ -24,7 +24,7 @@ if (!admin() && !allowed('user_edit_notme')) {
             }
         } else {
             echo 'Erreur : id invalide';
-            exit();
+            exit;
         }
 
         // NOMBRE DE SORTIES
@@ -110,7 +110,7 @@ if (!admin() && !allowed('user_edit_notme')) {
     $rowValue = '<a href="/user-full/'.$userTab['id_user'].'.html" title="Fiche profil" target="_top">'.$userTab['nickname_user'].'</a>';
     // possibilite de supprimer le user si pas de sortie ni articles
     if (admin() && !is_array($userTab['sorties']) && !is_array($userTab['articles'])) {
-        $rowValue .= '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/adherents-supprimer.php&amp;id_user='.(int) ($userTab['id_user']).'&amp;nom='.urlencode($userTab['civ_user'].' '.$elt['firstname_user'].' '.$userTab['lastname_user']).'" title="Supprimer le compte de cet utilisateur"><img src="/img/base/user_delete.png" alt="SUPPRIMER" title=""></a> ';
+        $rowValue .= '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/adherents-supprimer.php&amp;id_user='.(int) $userTab['id_user'].'&amp;nom='.urlencode($userTab['civ_user'].' '.$elt['firstname_user'].' '.$userTab['lastname_user']).'" title="Supprimer le compte de cet utilisateur"><img src="/img/base/user_delete.png" alt="SUPPRIMER" title=""></a> ';
     }
     printTableRow('Pseudo :', $rowValue);
 
@@ -130,14 +130,14 @@ if (!admin() && !allowed('user_edit_notme')) {
 
     $rowValue = '';
     if ($userTab['cafnum_parent_user']) {
-        $rowValue = '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user='.(int) ($userTab['cafnum_parent_user']['id_user']).'">'.$userTab['cafnum_parent_user']['firstname_user'].' '.$userTab['cafnum_parent_user']['lastname_user'].'</a>';
+        $rowValue = '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user='.(int) $userTab['cafnum_parent_user']['id_user'].'">'.$userTab['cafnum_parent_user']['firstname_user'].' '.$userTab['cafnum_parent_user']['lastname_user'].'</a>';
         printTableRow('Parent (chef de famille) :', $rowValue);
     }
 
     $rowValue = '';
     if (is_array($userTab['enfants'])) {
         foreach ($userTab['enfants'] as $enfant) {
-            $rowValue[] = '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user='.(int) ($enfant['id_user']).'">'.$enfant['firstname_user'].' '.$enfant['lastname_user'].'</a>';
+            $rowValue[] = '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user='.(int) $enfant['id_user'].'">'.$enfant['firstname_user'].' '.$enfant['lastname_user'].'</a>';
         }
 
         printTableRow('Adhérents affiliés : ', implode('<br />', $rowValue));
@@ -177,13 +177,13 @@ if (!admin() && !allowed('user_edit_notme')) {
 
     $rowValue = '';
     switch ($userTab['auth_contact_user']) {
-                            case 'all': $rowValue .= 'Tous les visiteurs du site';
-                                break;
-                            case 'users': $rowValue .= 'Tous les adhérents, inscrits et connectés sur ce site';
-                                break;
-                            case 'none': $rowValue .= 'Responsables du club uniquement';
-                                break;
-                        }
+        case 'all': $rowValue .= 'Tous les visiteurs du site';
+            break;
+        case 'users': $rowValue .= 'Tous les adhérents, inscrits et connectés sur ce site';
+            break;
+        case 'none': $rowValue .= 'Responsables du club uniquement';
+            break;
+    }
     printTableRow('Qui peut me contacter sur le site, via un formulaire de contact (adresse e-mail jamais dévoilée) ? :', $rowValue);
     if ($userTab['manuel_user']) {
         printTableRow('Créé manuellement :', 'OUI&nbsp;&nbsp;&nbsp;<img src="/img/base/user_manuel.png">');
@@ -191,7 +191,7 @@ if (!admin() && !allowed('user_edit_notme')) {
     if ($userTab['nomade_user']) {
         printTableRow('Nomade :', 'OUI&nbsp;&nbsp;&nbsp;<img src="/img/base/nomade_user.png">');
     }
-    printTableRow('Statut compte internet :', ((1 == $userTab['valid_user']) ? 'ACTIF' : ((2 == $userTab['valid_user']) ? 'DESACTIVE' : 'NON ACTIF')));
+    printTableRow('Statut compte internet :', (1 == $userTab['valid_user']) ? 'ACTIF' : ((2 == $userTab['valid_user']) ? 'DESACTIVE' : 'NON ACTIF'));
     if ($userTab['created_user']) {
         printTableRow('Création du compte :', date('d/m/Y', $userTab['created_user']));
     }
@@ -204,7 +204,7 @@ if (!admin() && !allowed('user_edit_notme')) {
     if (is_array($userTab['articles'])) {
         $rowValue = [];
         foreach ($userTab['articles'] as $article) {
-            $rowValue[] = '<a href="/article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html?forceshow=true" target="_blank">'.date('d.m.Y', $article['tsp_validate_article']).' - '.$article['titre_article'].'</a>';
+            $rowValue[] = '<a href="/article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html?forceshow=true" target="_blank">'.date('d.m.Y', $article['tsp_validate_article']).' - '.$article['titre_article'].'</a>';
         }
         printTableRow('Articles :', '<font size="-1" >'.implode('<br />', $rowValue).'</font>');
     }
@@ -215,7 +215,7 @@ if (!admin() && !allowed('user_edit_notme')) {
         $rowRoleEvtValue = '';
         foreach ($userTab['sorties'] as $evt) {
             ++$rowValueHeader[$evt['role_evt_join']];
-            $row = '<a target="_blank" href="/sortie/'.html_utf8($evt['code_evt']).'-'.(int) ($evt['id_evt']).'.html?commission='.$evt['code_commission'];
+            $row = '<a target="_blank" href="/sortie/'.html_utf8($evt['code_evt']).'-'.(int) $evt['id_evt'].'.html?commission='.$evt['code_commission'];
             if (allowed('evt_validate') && 1 != $evt['status_evt']) {
                 $row .= '&forceshow=true';
             }
@@ -226,7 +226,7 @@ if (!admin() && !allowed('user_edit_notme')) {
         foreach ($rowValueHeader as $role => $nbRole) {
             $rowRoleEvtValue .= "&nbsp;&nbsp;&nbsp;- $role : $nbRole<br />";
         }
-        printTableRow('Sorties :<br />'.'<font size="-1" >'.$rowRoleEvtValue.'</font>', '<font size="-1" >'.implode('<br />', $rowValue).'</font>');
+        printTableRow('Sorties :<br /><font size="-1" >'.$rowRoleEvtValue.'</font>', '<font size="-1" >'.implode('<br />', $rowValue).'</font>');
     }
     printTableRow('N° ID en base :', $userTab['id_user']); ?>
 

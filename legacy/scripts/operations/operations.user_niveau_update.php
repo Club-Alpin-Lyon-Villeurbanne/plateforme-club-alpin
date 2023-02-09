@@ -13,10 +13,10 @@ if (!user()) {
 if (!isset($errTab) || 0 === count($errTab)) {
     if (isset($_POST['new_niveau']) && is_array($_POST['new_niveau'])) {
         foreach ($_POST['new_niveau'] as $niveau) {
-            $id_user = (int) ($niveau['id_user']);
-            $id_commission = (int) ($niveau['id_commission']);
-            $niveau_technique = (int) ($niveau['niveau_technique']);
-            $niveau_physique = (int) ($niveau['niveau_physique']);
+            $id_user = (int) $niveau['id_user'];
+            $id_commission = (int) $niveau['id_commission'];
+            $niveau_technique = (int) $niveau['niveau_technique'];
+            $niveau_physique = (int) $niveau['niveau_physique'];
             $commentaire = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim(stripslashes($niveau['commentaire'])));
             if (empty($commentaire)) {
                 $commentaire = null;
@@ -44,8 +44,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $errTab[] = 'Id niveau ne correspond pas';
             }
 
-            $niveau_technique = (int) ($niveau['niveau_technique']);
-            $niveau_physique = (int) ($niveau['niveau_physique']);
+            $niveau_technique = (int) $niveau['niveau_technique'];
+            $niveau_physique = (int) $niveau['niveau_physique'];
             $commentaire = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim(stripslashes($niveau['commentaire'])));
             if (empty($commentaire)) {
                 $commentaire = null;
