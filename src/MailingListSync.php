@@ -2,9 +2,6 @@
 
 namespace App;
 
-use App\Entity\User;
-use App\Repository\ArticleRepository;
-use App\Repository\EvtRepository;
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -35,7 +32,7 @@ class MailingListSync
         // "benevole" (10)
         // "coencadrant" (11)
         // "stagiaire" (12)
-        if (!in_array($userType, [4, 5, 10, 11, 12], true)) {
+        if (!\in_array($userType, [4, 5, 10, 11, 12], true)) {
             return;
         }
 
