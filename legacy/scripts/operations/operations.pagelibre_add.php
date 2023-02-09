@@ -6,7 +6,7 @@ $parent_page = 54; /* ◊◊◊◊◊ IMPORTANT : doit être l'ID de l'entrée '
 $default_name_page = LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['default_name_page']));
 $default_description_page = LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['default_description_page']));
 $code_page = strtolower(trim(LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['code_page']))));
-$priority_page = (int) ($_POST['priority_page']) / 10;
+$priority_page = (int) $_POST['priority_page'] / 10;
 
 // meta description par defaut, ou sur-mesure ?
 if ($default_description_page) {

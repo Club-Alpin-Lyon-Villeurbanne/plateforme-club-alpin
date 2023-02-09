@@ -19,14 +19,14 @@
             // FICHE DE LA SORTIE
             require __DIR__.'/../includes/evt-fiche.php';
         }
-        ?>
+		?>
 		<br style="clear:both" />
 	</div>
 
 	<!-- partie droite -->
 	<?php
     require __DIR__.'/../includes/right-type-agenda.php';
-    ?>
+		?>
 
 
 	<br style="clear:both" />

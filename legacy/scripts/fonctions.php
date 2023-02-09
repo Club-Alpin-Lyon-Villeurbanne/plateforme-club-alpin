@@ -187,7 +187,8 @@ function display_niveaux($niveaux, $type = 'lecture', $deja_displayed = false)
     switch ($type) {
         case 'ecriture':
             ?>
-            <?php $n = 0; foreach ($niveaux as $niveau) { ?>
+            <?php $n = 0;
+            foreach ($niveaux as $niveau) { ?>
             <div class="niveau editable">
                 <div class="picto">
                     <img src="<?php echo comPicto($niveau['id_commission'], 'medium'); ?>" alt="" title="" class="picto-medium" />
@@ -196,16 +197,16 @@ function display_niveaux($niveaux, $type = 'lecture', $deja_displayed = false)
                     <b><?php echo $niveau['title_commission']; ?></b>
                 </div>
                 <?php if (isset($niveau['niveau_id'])) {
-                $clef = 'niveau['.$niveau['niveau_id'].']'; ?>
+                    $clef = 'niveau['.$niveau['niveau_id'].']'; ?>
                 <input type="hidden" name="<?php echo $clef; ?>[id]" value="<?php echo $niveau['niveau_id']; ?>">
                 <?php
-            } else {
-                $clef = 'new_niveau['.$n.']'; ?>
+                } else {
+                    $clef = 'new_niveau['.$n.']'; ?>
                 <input type="hidden" name="<?php echo $clef; ?>" value="<?php echo $niveau['niveau_id']; ?>">
                 <input type="hidden" name="<?php echo $clef; ?>[id_commission]" value="<?php echo $niveau['id_commission']; ?>">
                 <input type="hidden" name="<?php echo $clef; ?>[id_user]" value="<?php echo $niveau['id_user']; ?>">
                 <?php
-            } ?>
+                } ?>
                 <div class="input">
                     <label>Niveau technique</label>
                     <input type="text" name="<?php echo $clef; ?>[niveau_technique]" value="<?php echo $niveau['niveau_technique']; ?>">
@@ -217,11 +218,12 @@ function display_niveaux($niveaux, $type = 'lecture', $deja_displayed = false)
                     <textarea name="<?php echo $clef; ?>[commentaire]"><?php echo $niveau['commentaire']; ?></textarea>
                 </div>
             </div>
-            <?php ++$n; } ?>
+            <?php ++$n;
+            } ?>
             <?php
             break;
         case 'lecture':
-        ?>
+            ?>
             <?php foreach ($niveaux as $niveau) { ?>
             <?php if ((is_array($deja_displayed) && !isset($deja_displayed['n_'.$niveau['niveau_id']])) || !$deja_displayed) { ?>
             <?php if ($niveau['niveau_technique'] || $niveau['niveau_physique'] || null !== $niveau['commentaire']) { ?>
@@ -239,7 +241,9 @@ function display_niveaux($niveaux, $type = 'lecture', $deja_displayed = false)
                         <quote ><?php echo $niveau['commentaire']; ?></quote>
                     </div>
                 </div>
-            <?php }}} ?>
+            <?php }
+            }
+            } ?>
         <?php
             break;
         default: break;
@@ -314,7 +318,7 @@ function empietement_sortie($id_user, $evt)
     $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt, status_evt_join, role_evt_join
             FROM caf_evt, caf_evt_join
             WHERE evt_evt_join = id_evt
-            AND id_evt != '.(int) ($evt['id_evt']).'
+            AND id_evt != '.(int) $evt['id_evt'].'
             AND user_evt_join = '.(int) $id_user
             .' AND status_evt != 2 '
             // timing :

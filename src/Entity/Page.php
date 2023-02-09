@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Page.
  *
  * @ORM\Table(name="caf_page")
+ *
  * @ORM\Entity
  */
 class Page
@@ -16,7 +17,9 @@ class Page
      * @var int
      *
      * @ORM\Column(name="id_page", type="integer", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;

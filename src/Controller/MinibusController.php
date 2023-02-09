@@ -11,7 +11,9 @@ class MinibusController extends AbstractController
 {
     /**
      * @Route("/minibus", name="minibus")
+     *
      * @Template
+     *
      * @Security("is_granted('ROLE_USER')")
      */
     public function index()

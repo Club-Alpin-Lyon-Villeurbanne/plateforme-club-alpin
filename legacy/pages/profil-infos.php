@@ -37,7 +37,7 @@ if (user()) {
                         echo '<li>'.$attr->getTitle().'</li>';
                     }
                 }
-                ?>
+            ?>
             </ul>
             <br style="clear:both" />
             <hr />
@@ -49,11 +49,11 @@ if (user()) {
             <?php inclure('infos-profil-filiation-enfants', 'vide'); ?>
             <ul class="nice-list">
                 <?php
-                foreach ($tmpUser['enfants'] as $enfant) {
-                    // echo '<li>'.$enfant['firstname_user'].' '.$enfant['lastname_user'].'</li>';
-                    echo '<li>'.userlink($enfant['id_user'], $enfant['nickname_user'], '', $enfant['firstname_user'], $enfant['lastname_user'], $style = 'full').'</li>';
-                }
-                ?>
+            foreach ($tmpUser['enfants'] as $enfant) {
+                // echo '<li>'.$enfant['firstname_user'].' '.$enfant['lastname_user'].'</li>';
+                echo '<li>'.userlink($enfant['id_user'], $enfant['nickname_user'], '', $enfant['firstname_user'], $enfant['lastname_user'], $style = 'full').'</li>';
+            }
+            ?>
             </ul>
             <br style="clear:both" />
             <hr />
@@ -66,9 +66,9 @@ if (user()) {
             <?php inclure('infos-profil-filiation-parent', 'vide'); ?>
             <ul class="nice-list">
                 <?php
-                $parent = $tmpUser['parent'];
-                echo '<li>'.userlink($parent['id_user'], $parent['nickname_user'], '', $parent['firstname_user'], $parent['lastname_user'], $style = 'full').'</li>';
-                ?>
+            $parent = $tmpUser['parent'];
+            echo '<li>'.userlink($parent['id_user'], $parent['nickname_user'], '', $parent['firstname_user'], $parent['lastname_user'], $style = 'full').'</li>';
+            ?>
             </ul>
             <br style="clear:both" />
             <hr />
@@ -118,17 +118,17 @@ if (user()) {
             <!--
             <div>
                 <label for="gender_male"><input type="radio" name="civ_user" value="M." id="gender_m" <?php if ('M.' == $tmpUser['civ_user']) {
-        echo 'checked="checked"';
-    } ?> />M.</label>
+                    echo 'checked="checked"';
+                } ?> />M.</label>
                 <label for="gender_mm"><input type="radio" name="civ_user" value="Mme." id="gender_mm" <?php if ('Mme.' == $tmpUser['civ_user']) {
-        echo 'checked="checked"';
-    } ?> />Mme.</label>
+                    echo 'checked="checked"';
+                } ?> />Mme.</label>
                 <label for="gender_mlle"><input type="radio" name="civ_user" value="Mlle." id="gender_mlle" <?php if ('Mlle.' == $tmpUser['civ_user']) {
-        echo 'checked="checked"';
-    } ?> />Mlle.</label>
+                    echo 'checked="checked"';
+                } ?> />Mlle.</label>
                 <label for="gender_unknown"><input type="radio" name="civ_user" value="..." id="gender_unknown" <?php if ('...' == $tmpUser['civ_user']) {
-        echo 'checked="checked"';
-    } ?> />...</label>
+                    echo 'checked="checked"';
+                } ?> />...</label>
             </div>
             -->
             <br style="clear:both" />
@@ -167,19 +167,19 @@ if (user()) {
                 Votre date d'adhésion ou de renouvellement :
                 <b>
                 <?php
-                    // notification d'alerte si l'user doit renouveler sa licence
+                                // notification d'alerte si l'user doit renouveler sa licence
 
-                    if ($tmpUser['alerte_renouveler_user']) {
-                        echo '<span class="alerte">';
-                    }
-    if ($tmpUser['date_adhesion_user'] > 0) {
-        echo date('d/m/Y', $tmpUser['date_adhesion_user']);
-    } else {
-        echo 'aucune date connue.';
-    }
-    if ($tmpUser['alerte_renouveler_user']) {
-        echo '</span>';
-    } ?>
+                                if ($tmpUser['alerte_renouveler_user']) {
+                                    echo '<span class="alerte">';
+                                }
+                if ($tmpUser['date_adhesion_user'] > 0) {
+                    echo date('d/m/Y', $tmpUser['date_adhesion_user']);
+                } else {
+                    echo 'aucune date connue.';
+                }
+                if ($tmpUser['alerte_renouveler_user']) {
+                    echo '</span>';
+                } ?>
                 </b>
             </div>
 
@@ -206,7 +206,7 @@ if (user()) {
             <br style="clear:both" /><br style="clear:both" />
             Adresse <span class="mini">- N° &amp; rue - code postal - ville - pays</span><br />
             <b><?php
-                echo html_utf8($tmpUser['adresse_user']);
+                            echo html_utf8($tmpUser['adresse_user']);
     echo '<br style="clear:both" />';
     echo html_utf8($tmpUser['cp_user']);
     echo '&nbsp;&nbsp;&nbsp;';

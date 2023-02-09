@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Article.
  *
  * @ORM\Table(name="caf_article", indexes={@ORM\Index(name="id_article", columns={"id_article"})})
+ *
  * @ORM\Entity
  */
 class Article
@@ -16,7 +17,9 @@ class Article
      * @var int
      *
      * @ORM\Column(name="id_article", type="integer", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
@@ -30,7 +33,9 @@ class Article
 
     /**
      * @var User
+     *
      * @ORM\ManyToOne(targetEntity="User")
+     *
      * @ORM\JoinColumn(name="status_who_article", referencedColumnName="id_user", nullable=true)
      */
     private $statusWho;
@@ -74,6 +79,7 @@ class Article
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User")
+     *
      * @ORM\JoinColumn(name="user_article", referencedColumnName="id_user", nullable=false)
      */
     private $user;
@@ -94,6 +100,7 @@ class Article
 
     /**
      * @ORM\ManyToOne(targetEntity="Commission")
+     *
      * @ORM\JoinColumn(name="commission_article", referencedColumnName="id_commission", nullable=true)
      */
     private $commission;
@@ -102,6 +109,7 @@ class Article
      * @var Evt
      *
      * @ORM\ManyToOne(targetEntity="Evt")
+     *
      * @ORM\JoinColumn(name="evt_article", referencedColumnName="id_evt", nullable=true)
      */
     private $evt;

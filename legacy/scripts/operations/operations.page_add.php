@@ -4,8 +4,8 @@ use App\Legacy\LegacyContainer;
 
 $default_name_page = null;
 
-$parent_page = (int) ($_POST['parent_page']);
-$menu_page = (int) ($_POST['menu_page']);
+$parent_page = (int) $_POST['parent_page'];
+$menu_page = (int) $_POST['menu_page'];
 
 $titreTab = $_POST['titre'];
 if (!strlen($titreTab[0])) {
@@ -19,8 +19,8 @@ if ($menu_page) {
 }
 $code_page = strtolower(trim(LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['code_page']))));
 // $default_name_page=trim(LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['default_name_page'])));
-$meta_title_page = (int) ($_POST['meta_title_page']);
-$priority_page = (int) ($_POST['priority_page']) / 100;
+$meta_title_page = (int) $_POST['meta_title_page'];
+$priority_page = (int) $_POST['priority_page'] / 100;
 // $add_css_page=trim(LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['add_css_page'])));
 // $add_js_page=trim(LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['add_js_page'])));
 $add_js_page = $add_css_page = '';

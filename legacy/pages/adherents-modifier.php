@@ -6,10 +6,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 if (!admin() && !allowed('user_edit_notme')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
-    $id_user = (int) ($_GET['id_user']);
+    $id_user = (int) $_GET['id_user'];
     if (!$id_user) {
         echo 'Erreur : id invalide';
-        exit();
+        exit;
     }
 
     if (null === $userTab || 0 === count($userTab)) {

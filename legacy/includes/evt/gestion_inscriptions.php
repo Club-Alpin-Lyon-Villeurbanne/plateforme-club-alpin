@@ -17,7 +17,7 @@ if ('1' != $evt['cancelled_evt']) {
         || 'coencadrant' == $monStatut
         || (user() && getUser()->hasAttribute(UserAttr::SALARIE))
         || ((allowed('evt_join_notme') || allowed('evt_unjoin_notme') || allowed('evt_joining_accept') || allowed('evt_joining_refuse')) && (user() && getUser()->hasAttribute(UserAttr::RESPONSABLE_COMMISSION, $evt['code_commission'])))
-        ) {
+    ) {
         // droit de modification en fonction des conditions ci-dessus :
         $droitDeModif = false;
         // je suis salarie
@@ -161,7 +161,7 @@ if ('1' != $evt['cancelled_evt']) {
             $row['empietements'] = empietement_sortie($row['id_user'], $evt);
 
             // AFFICHAGE DE LA LIGNE DE CET INSCRIT
-            echo '<tr class="status'.($row['status_evt_join']).'" style="color:gray; font-size:10px;">';
+            echo '<tr class="status'.$row['status_evt_join'].'" style="color:gray; font-size:10px;">';
 
             echo '<td>'
                                         .html_utf8(strtoupper($row['lastname_user'])).', '
@@ -173,20 +173,20 @@ if ('1' != $evt['cancelled_evt']) {
             }
             echo '</td>';
 
-            echo '<td class="mini joinlabels status'.($row['status_evt_join']).'">
+            echo '<td class="mini joinlabels status'.$row['status_evt_join'].'">
                                         ';
 
             $disable0 = true; // attente
-                                        $disable1 = true; // accepte
-                                        $disable2 = true; // refuse
-                                        $disable3 = true; // absent
-                                        $disable_1 = true; // desinscrire
+            $disable1 = true; // accepte
+            $disable2 = true; // refuse
+            $disable3 = true; // absent
+            $disable_1 = true; // desinscrire
 
-                                        if (allowed('evt_joining_accept') || allowed('evt_join_doall')) {
-                                            $disable0 = false; // attente
-                                            $disable1 = false; // accepte
-                                            $disable3 = false; // absent
-                                        }
+            if (allowed('evt_joining_accept') || allowed('evt_join_doall')) {
+                $disable0 = false; // attente
+                $disable1 = false; // accepte
+                $disable3 = false; // absent
+            }
             if (allowed('evt_joining_refuse') || allowed('evt_join_doall')) {
                 $disable2 = false; // refuse
             }
@@ -209,50 +209,50 @@ if ('1' != $evt['cancelled_evt']) {
                     }
 
                     // s'il est confirmé ailleurs, on bride l'outil de mise à jour
-                                                // if($tmpJoin['status_evt_join'] == 1) $disable1 = true;
-                                                // **** OPTION RETIREE : car une sortie du meme jour finit par défaut à minuit
-                                                // et on veut pouvoir s'inscrire à la sortie barbecue après la sortie rando !
+                    // if($tmpJoin['status_evt_join'] == 1) $disable1 = true;
+                    // **** OPTION RETIREE : car une sortie du meme jour finit par défaut à minuit
+                    // et on veut pouvoir s'inscrire à la sortie barbecue après la sortie rando !
                 }
                 echo '</div>';
             }
 
             if ('encadrant' != $row['role_evt_join'] && 'stagiaire' != $row['role_evt_join']) {// && $row['role_evt_join'] != 'coencadrant'
                 if ($droitDeModif) {
-                    echo '<span style="display:none">'.(int) ($row['status_evt_join']).'</span>
-                                                <input type="hidden" name="id_evt_join[]" value="'.(int) ($row['id_evt_join']).'" />';
+                    echo '<span style="display:none">'.(int) $row['status_evt_join'].'</span>
+                                                <input type="hidden" name="id_evt_join[]" value="'.(int) $row['id_evt_join'].'" />';
 
                     if (0 == $row['status_evt_join']) {
                         // EN ATTENTE
-                        echo '<label for="join_'.(int) ($row['id_evt_join']).'_0">
-                                                        <input '.(0 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable0 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) ($row['id_evt_join']).'" id="join_'.(int) ($row['id_evt_join']).'_0" value="0" />
+                        echo '<label for="join_'.(int) $row['id_evt_join'].'_0">
+                                                        <input '.(0 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable0 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) $row['id_evt_join'].'" id="join_'.(int) $row['id_evt_join'].'_0" value="0" />
                                                         En attente
                                                     </label>';
                     }
 
                     if ((time() >= $evt['tsp_end_evt'] && 1 == $row['status_evt_join']) || time() < $evt['tsp_end_evt']) {
-                        echo '<label for="join_'.(int) ($row['id_evt_join']).'_1">
-                                                <input '.(1 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable1 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) ($row['id_evt_join']).'" id="join_'.(int) ($row['id_evt_join']).'_1" value="1" />
+                        echo '<label for="join_'.(int) $row['id_evt_join'].'_1">
+                                                <input '.(1 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable1 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) $row['id_evt_join'].'" id="join_'.(int) $row['id_evt_join'].'_1" value="1" />
                                                 Accepté
                                                 </label>';
                     }
 
                     if (time() >= $evt['tsp_end_evt'] && 2 != $row['status_evt_join']) {
-                        echo '<label for="join_'.(int) ($row['id_evt_join']).'_3">
-                                                        <input '.(3 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable3 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) ($row['id_evt_join']).'" id="join_'.(int) ($row['id_evt_join']).'_3" value="3" />
+                        echo '<label for="join_'.(int) $row['id_evt_join'].'_3">
+                                                        <input '.(3 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable3 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) $row['id_evt_join'].'" id="join_'.(int) $row['id_evt_join'].'_3" value="3" />
                                                         Absent
                                                     </label>';
                     }
 
                     if ((time() >= $evt['tsp_end_evt'] && 2 == $row['status_evt_join']) || time() < $evt['tsp_end_evt']) {
-                        echo '<label for="join_'.(int) ($row['id_evt_join']).'_2">
-                                                <input '.(2 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable2 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) ($row['id_evt_join']).'" id="join_'.(int) ($row['id_evt_join']).'_2" value="2" />
+                        echo '<label for="join_'.(int) $row['id_evt_join'].'_2">
+                                                <input '.(2 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable2 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) $row['id_evt_join'].'" id="join_'.(int) $row['id_evt_join'].'_2" value="2" />
                                                 Refusé
                                                 </label>';
                     }
 
                     if (time() < $evt['tsp_end_evt']) {
-                        echo '<label for="join_'.(int) ($row['id_evt_join']).'_-1">
-                                                <input name="status_evt_join_'.(int) ($row['id_evt_join']).'" '.($disable_1 ? 'disabled="disabled"' : '').' type="radio" id="join_'.(int) ($row['id_evt_join']).'_-1" value="-1" />
+                        echo '<label for="join_'.(int) $row['id_evt_join'].'_-1">
+                                                <input name="status_evt_join_'.(int) $row['id_evt_join'].'" '.($disable_1 ? 'disabled="disabled"' : '').' type="radio" id="join_'.(int) $row['id_evt_join'].'_-1" value="-1" />
                                                 Désinscrire
                                                 </label>';
                     }
@@ -274,17 +274,17 @@ if ('1' != $evt['cancelled_evt']) {
             } elseif ($droitDeModif && (0 == strcmp($row['role_evt_join'], 'manuel') || 0 == strcmp($row['role_evt_join'], 'inscrit') || 0 == strcmp($row['role_evt_join'], 'benevole'))) {
                 if (0 == strcmp($row['role_evt_join'], 'manuel')) {
                     // manuel
-                    echo '<label style="display:block; white-space:nowrap;" for="role_join_'.(int) ($row['id_evt_join']).'_m">
-                                                    <input  '.(0 == strcmp($row['role_evt_join'], 'manuel') ? 'checked="checked"' : '').' name="role_evt_join_'.(int) ($row['id_evt_join']).'" type="radio" id="role_join_'.(int) ($row['id_evt_join']).'_m" value="manuel" />
+                    echo '<label style="display:block; white-space:nowrap;" for="role_join_'.(int) $row['id_evt_join'].'_m">
+                                                    <input  '.(0 == strcmp($row['role_evt_join'], 'manuel') ? 'checked="checked"' : '').' name="role_evt_join_'.(int) $row['id_evt_join'].'" type="radio" id="role_join_'.(int) $row['id_evt_join'].'_m" value="manuel" />
                                                     Manuel
                                                     </label>';
                 }
-                echo '<label style="display:block; white-space:nowrap;" for="role_join_'.(int) ($row['id_evt_join']).'_i">
-                                                <input  '.(0 == strcmp($row['role_evt_join'], 'inscrit') ? 'checked="checked"' : '').' name="role_evt_join_'.(int) ($row['id_evt_join']).'" type="radio" id="role_join_'.(int) ($row['id_evt_join']).'_i" value="inscrit" />
+                echo '<label style="display:block; white-space:nowrap;" for="role_join_'.(int) $row['id_evt_join'].'_i">
+                                                <input  '.(0 == strcmp($row['role_evt_join'], 'inscrit') ? 'checked="checked"' : '').' name="role_evt_join_'.(int) $row['id_evt_join'].'" type="radio" id="role_join_'.(int) $row['id_evt_join'].'_i" value="inscrit" />
                                                 Inscrit
                                                 </label>';
-                echo '<label style="display:block; white-space:nowrap;" for="role_join_'.(int) ($row['id_evt_join']).'_b">
-                                                <input '.(0 == strcmp($row['role_evt_join'], 'benevole') ? 'checked="checked"' : '').' name="role_evt_join_'.(int) ($row['id_evt_join']).'" type="radio" id="role_join_'.(int) ($row['id_evt_join']).'_b" value="benevole" />
+                echo '<label style="display:block; white-space:nowrap;" for="role_join_'.(int) $row['id_evt_join'].'_b">
+                                                <input '.(0 == strcmp($row['role_evt_join'], 'benevole') ? 'checked="checked"' : '').' name="role_evt_join_'.(int) $row['id_evt_join'].'" type="radio" id="role_join_'.(int) $row['id_evt_join'].'_b" value="benevole" />
                                                 Bénévole
                                                 </label>';
                 // echo '<select name="role_evt_join_'.intval($row['id_evt_join']).'">';
@@ -332,8 +332,8 @@ if ('1' != $evt['cancelled_evt']) {
                     ?>
                     <p class="mini">
                         <input type="checkbox" name="disablemails" <?php if ('on' == $_POST['disablemails']) {
-                        echo 'checked="checked"';
-                    } ?> />
+                            echo 'checked="checked"';
+                        } ?> />
                         Ne pas envoyer les e-mails lors de la mise à jour (déconseillé, sauf après l'événement).
                     </p>
 
@@ -366,7 +366,7 @@ if ('1' != $evt['cancelled_evt']) {
                         echo 'none';
                     } ?>; border : 1px solid #eaeaea; box-shadow:0 0 20px -10px gray;; padding:10px; margin:10px 0 20px 0;; border-radius:10px">
                         <input type="hidden" name="operation" value="evt_user_contact" />
-                        <input type="hidden" name="id_evt" value="<?php echo (int) ($evt['id_evt']); ?>" />
+                        <input type="hidden" name="id_evt" value="<?php echo (int) $evt['id_evt']; ?>" />
 
                         <h2>Formulaire de contact</h2>
                         <?php
@@ -379,17 +379,17 @@ if ('1' != $evt['cancelled_evt']) {
                     } ?>
 
                         <input type="radio" name="status_sendmail" id="status_sendmail_1" value="1" <?php if ('evt_user_contact' != ($_POST['operation'] ?? null) || '1' == $_POST['status_sendmail']) {
-                        echo 'checked="checked"';
-                    } ?> /><label for="status_sendmail_1"> Envoyer uniquement aux adhérents confirmés pour la sortie</label><br />
+                            echo 'checked="checked"';
+                        } ?> /><label for="status_sendmail_1"> Envoyer uniquement aux adhérents confirmés pour la sortie</label><br />
                         <input type="radio" name="status_sendmail" id="status_sendmail_2" value="2" <?php if ('2' == $_POST['status_sendmail']) {
-                        echo 'checked="checked"';
-                    } ?> /><label for="status_sendmail_2"> Envoyer uniquement aux adhérents refusés/absents</label><br />
+                            echo 'checked="checked"';
+                        } ?> /><label for="status_sendmail_2"> Envoyer uniquement aux adhérents refusés/absents</label><br />
                         <input type="radio" name="status_sendmail" id="status_sendmail_0" value="0" <?php if ('0' == $_POST['status_sendmail']) {
-                        echo 'checked="checked"';
-                    } ?> /><label for="status_sendmail_0"> Envoyer uniquement aux adhérents en attente de confirmation</label><br />
+                            echo 'checked="checked"';
+                        } ?> /><label for="status_sendmail_0"> Envoyer uniquement aux adhérents en attente de confirmation</label><br />
                         <input type="radio" name="status_sendmail" id="status_sendmail_all" value="*" <?php if ('*' == $_POST['status_sendmail']) {
-                        echo 'checked="checked"';
-                    } ?> /><label for="status_sendmail_all"> Envoyer à toute la liste des inscrits, confirmés ou non</label><br />
+                            echo 'checked="checked"';
+                        } ?> /><label for="status_sendmail_all"> Envoyer à toute la liste des inscrits, confirmés ou non</label><br />
 
                         <br />
                         Objet :<br />

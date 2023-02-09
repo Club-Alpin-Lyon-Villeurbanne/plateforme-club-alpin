@@ -2,12 +2,12 @@
 
 use App\Legacy\LegacyContainer;
 
-$id_page = (int) ($_POST['id_page']);
+$id_page = (int) $_POST['id_page'];
 $default_name_page = LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['default_name_page']));
 $default_description_page = LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['default_description_page']));
 $code_page = strtolower(trim(LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['code_page']))));
 $code_page_original = strtolower(trim(LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['code_page_original'])))); // sert à verifier si le code a changé
-$priority_page = (int) ($_POST['priority_page']) / 10;
+$priority_page = (int) $_POST['priority_page'] / 10;
 
 // meta description par defaut, ou sur-mesure ?
 if ($default_description_page) {

@@ -9,8 +9,8 @@ $tsp_article = time();
 $user_article = getUser()->getId();
 $titre_article = stripslashes($_POST['titre_article']);
 $code_article = substr(formater($titre_article, 3), 0, 30);
-$commission_article = (int) ($_POST['commission_article']);
-$evt_article = (int) ($_POST['evt_article']);
+$commission_article = (int) $_POST['commission_article'];
+$evt_article = (int) $_POST['evt_article'];
 $une_article = ('on' == $_POST['une_article'] ? 1 : 0);
 $cont_article = stripslashes($_POST['cont_article']);
 $id_article = null;
@@ -39,7 +39,7 @@ if (
     !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/figure.jpg')
     || !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/wide-figure.jpg')
     || !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/min-figure.jpg')
-    ) {
+) {
     $errTab[] = 'Merci de rajouter une photo à l\'article';
 }
 

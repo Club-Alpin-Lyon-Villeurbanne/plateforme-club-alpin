@@ -15,12 +15,12 @@ if (admin()) {
     if ((!isset($_POST['etape'])) || ('enregistrement' != $_POST['etape'])) {
         // récupération du contenu
         $code_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_GET['p']);
-        $id_content_html = (int) ($_GET['id_content_html']);
+        $id_content_html = (int) $_GET['id_content_html'];
 
         if (!$code_content_html) {
             header('HTTP/1.0 404 Not Found');
             echo 'Erreur : code_content_html introuvable.';
-            exit();
+            exit;
         }
 
         // récupération des dernieres versions dans cette langue
@@ -40,7 +40,7 @@ if (admin()) {
                     return '<a href="mailto:'.$matches[1].'@'.$matches[2].'.'.$matches[3].'" '.$matches[4].'>'.$matches[5].'</a>';
                 },
                 $handle['contenu_content_html']
-                );
+            );
 
             $contentVersionsTab[] = $handle;
         }
@@ -262,7 +262,7 @@ if (admin()) {
     }
     // / OPERATIONS
     else {
-        $vis_content_html = (int) ($_POST['vis_content_html']);
+        $vis_content_html = (int) $_POST['vis_content_html'];
         $code_content_html = $_POST['code_content_html'];
         $linkedtopage_content_html = $_POST['linkedtopage_content_html'];
         $contenu_content_html = stripslashes($_POST['contenu_content_html']);
@@ -311,7 +311,7 @@ if (admin()) {
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 header('HTTP/1.0 400 Bad Request');
                 echo '<br />Erreur SQL clean !';
-                exit();
+                exit;
             }
         }
 
@@ -320,7 +320,7 @@ if (admin()) {
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             header('HTTP/1.0 400 Bad Request');
             echo 'Erreur SQL';
-            exit();
+            exit;
         }
 
         // Enregistrement
@@ -329,7 +329,7 @@ if (admin()) {
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             header('HTTP/1.0 400 Bad request');
             echo 'Erreur SQL';
-            exit();
+            exit;
         }
 
         // log

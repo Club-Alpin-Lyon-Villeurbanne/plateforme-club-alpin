@@ -10,7 +10,7 @@ if (admin()) {
     if (!$id_user && !admin()) {
         header('HTTP/1.0 401 Authorization Required');
         echo 'ERREUR : id invalide';
-        exit();
+        exit;
     }
 
     // recuperation du dossier
@@ -22,16 +22,16 @@ if (admin()) {
         $dossier = __DIR__.'/../../public/ftp/telechargements/';
     } else {
         echo "ERREUR : type invalide ($type / $dossier)";
-        exit();
+        exit;
     } ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="https://www.w3.org/1999/xhtml" xml:lang="fr">
 		<head>
 		<title><?php if ('image' == $type) {
-        echo 'Vos images en ligne';
-    } else {
-        echo 'Vos fichiers en téléchargements';
-    } ?></title>
+		    echo 'Vos images en ligne';
+		} else {
+		    echo 'Vos fichiers en téléchargements';
+		} ?></title>
 
 		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/style1.css">
 		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
@@ -123,18 +123,18 @@ if (admin()) {
 			<!-- TEXTE EXPLICATIF -->
 			<p>
 				<?php
-                if ('image' == $type) {
-                    echo '
+		            if ('image' == $type) {
+		                echo '
 					Déposez ici les images que vous souhaitez insérer dans vos articles.
 					La plupart des formats d\'images sont supportés, poids maximum : 20Mo.
 					';
-                }
-    if ('file' == $type) {
-        echo "
+		            }
+		if ('file' == $type) {
+		    echo "
 					Déposez ici les fichiers que vous souhaitez proposer en téléchargement.<br />
 					Ext. autorisées : <span style='font-size:9px'>".implode(', ', FtpFile::getAllowedExtensions()).'</span>
 					';
-    } ?>
+		} ?>
 			</p>
 
 			<!-- valums file upload -->
@@ -176,20 +176,20 @@ if (admin()) {
 
 			<!-- OPERATIONS -->
 			<?php
-            if ('delete' == $_GET['operation']) {
-                $file = $_GET['file'];
-                if (!file_exists($dossier.$file)) {
-                    echo '<p class="erreur"> Erreur : fichier non trouvé</p>';
-                } elseif (strpos(' '.$file, '../')) {
-                    echo '<p class="erreur"> Erreur tentative de piratage</p>';
-                } else {
-                    if (unlink($dossier.$file)) {
-                        echo '<p class="info">Fichier '.$file.' supprimé</p>';
-                    } else {
-                        echo '<p class="erreur"> Erreur technique lors de la suppression.</p>';
-                    }
-                }
-            } ?>
+		        if ('delete' == $_GET['operation']) {
+		            $file = $_GET['file'];
+		            if (!file_exists($dossier.$file)) {
+		                echo '<p class="erreur"> Erreur : fichier non trouvé</p>';
+		            } elseif (strpos(' '.$file, '../')) {
+		                echo '<p class="erreur"> Erreur tentative de piratage</p>';
+		            } else {
+		                if (unlink($dossier.$file)) {
+		                    echo '<p class="info">Fichier '.$file.' supprimé</p>';
+		                } else {
+		                    echo '<p class="erreur"> Erreur technique lors de la suppression.</p>';
+		                }
+		            }
+		        } ?>
 
 			<table>
 				<thead>
@@ -201,8 +201,8 @@ if (admin()) {
 					<!--<th>Créé le</th>-->
 				</thead>
 				<?php
-                // tableau des fichiers
-                $tabFichiers = [];
+		            // tableau des fichiers
+		            $tabFichiers = [];
 
     $extTab = [];
     // extensions autorisées ici en fonction du type demandé
@@ -249,20 +249,24 @@ if (admin()) {
         } else {
             $ext = strtolower(substr(strrchr($fichier, '.'), 1));
             switch ($ext) { // on indique sur quelle variable on travaille
-                            // IMAGES
-                            case 'jpg':
-                            case 'png':
-                            case 'gif':
-                            case 'bmp':
-                            case 'webp':
-                            case 'jpeg': $icon = '/img/base/image.png'; break;
-                            // TTT DE TEXTES
-                            case 'odt': $icon = '/img/base/OOffice.jpg'; break;
-                            case 'doc': $icon = '/img/base/iconeDoc.gif'; break;
-                            case 'pdf': $icon = '/img/base/pdf.png'; break;
-                            // DEFAUT
-                            default: $icon = '/img/base/fichier.png';
-                        }
+                // IMAGES
+                case 'jpg':
+                case 'png':
+                case 'gif':
+                case 'bmp':
+                case 'webp':
+                case 'jpeg': $icon = '/img/base/image.png';
+                break;
+                    // TTT DE TEXTES
+                case 'odt': $icon = '/img/base/OOffice.jpg';
+                break;
+                case 'doc': $icon = '/img/base/iconeDoc.gif';
+                break;
+                case 'pdf': $icon = '/img/base/pdf.png';
+                break;
+                    // DEFAUT
+                default: $icon = '/img/base/fichier.png';
+            }
         }
 
         // taille (octets)
@@ -286,14 +290,14 @@ if (admin()) {
                                 '<a class="fancybox" href="'.$icon.'" title="'.html_utf8($fichier).'"><img src="'.$icon.'" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
                             :
                                 '<a target="_blank" href="'.$dossier.$fichier.'" title="Ouvrir '.html_utf8($fichier).' dans une nouvelle fenêtre"><img src="'.$icon.'" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
-                            ).'
+        ).'
 						</td>
 						<td>
 							'.('image' == $type ?
-                                '<a class="fancybox" href="'.$icon.'" title="'.html_utf8($fichier).'">'.substr($fichier, 0, 70).'</a>'
-                            :
-                                '<a target="_blank" href="'.$dossier.$fichier.'" title="Ouvrir '.html_utf8($fichier).' dans une nouvelle fenêtre">'.substr($fichier, 0, 70).'</a>'
-                            ).'
+            '<a class="fancybox" href="'.$icon.'" title="'.html_utf8($fichier).'">'.substr($fichier, 0, 70).'</a>'
+        :
+            '<a target="_blank" href="'.$dossier.$fichier.'" title="Ouvrir '.html_utf8($fichier).' dans une nouvelle fenêtre">'.substr($fichier, 0, 70).'</a>'
+        ).'
 						</td>
 						<td>
 							<span style="display:none">'.$fsize.'</span>
@@ -307,8 +311,8 @@ if (admin()) {
 						</td>'
                         /*
                         <td>
-                            <span style="display:none">'.$ctime.'</span>
-                            '.date('d/m/y H:i', $ctime).'
+        <span style="display:none">'.$ctime.'</span>
+        '.date('d/m/y H:i', $ctime).'
                         </td>
                         */
                         .'

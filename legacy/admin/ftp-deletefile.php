@@ -7,7 +7,7 @@ require __DIR__.'/../app/includes.php';
 if (!admin()) {
     header('HTTP/1.0 401 Authorization Required');
     echo 'Votre session administrateur a expiré';
-    exit();
+    exit;
 }
 
 $errTab = [];
@@ -59,7 +59,7 @@ if (count($errTab) > 0) {
                 parent.$.fancybox.close();
             </script>
             <?php
-            exit();
+            exit;
         }
     }
 

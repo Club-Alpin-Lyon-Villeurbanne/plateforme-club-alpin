@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ChronLaunch.
  *
  * @ORM\Table(name="caf_chron_launch")
+ *
  * @ORM\Entity
  */
 class ChronLaunch
@@ -16,7 +17,9 @@ class ChronLaunch
      * @var int
      *
      * @ORM\Column(name="id_chron_launch", type="integer", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;

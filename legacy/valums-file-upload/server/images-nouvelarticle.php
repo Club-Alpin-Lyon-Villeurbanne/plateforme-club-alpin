@@ -13,7 +13,7 @@ if (!user()) {
 }
 
 $mode = $_GET['mode'];
-$id_article = (int) ($_GET['id_article']);
+$id_article = (int) $_GET['id_article'];
 
 if ('edit' == $mode && !$id_article) {
     $errTab[] = 'ID sortie manquant';

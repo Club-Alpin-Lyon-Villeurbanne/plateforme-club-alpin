@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-$id_article = (int) ($_POST['id_article']);
+$id_article = (int) $_POST['id_article'];
 
 $req = 'UPDATE caf_article SET tsp_validate_article='.time()." WHERE caf_article.id_article=$id_article"; // premiere validation
 

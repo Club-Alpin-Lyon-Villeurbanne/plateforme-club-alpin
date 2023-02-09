@@ -39,14 +39,14 @@
 					Civilité* :<br />
 					<select name="civ_user">
 						<option value="M" <?php if ('M' == $_POST['civ_user']) {
-                    echo 'selected="selected"';
-                } ?>>M.</option>
+						    echo 'selected="selected"';
+						} ?>>M.</option>
 						<option value="MME" <?php if ('MME' == $_POST['civ_user']) {
-                    echo 'selected="selected"';
-                } ?>>Mme.</option>
+						    echo 'selected="selected"';
+						} ?>>Mme.</option>
 						<option value="MLLE" <?php if ('MLLE' == $_POST['civ_user']) {
-                    echo 'selected="selected"';
-                } ?>>Mlle.</option>
+						    echo 'selected="selected"';
+						} ?>>Mlle.</option>
 					</select>
 					<br />
 
@@ -109,7 +109,7 @@
 
 			<?php
         }
-        ?>
+		?>
 		<br style="clear:both" />
 	</div>
 </div>

@@ -29,7 +29,9 @@ class AdminController extends AbstractController
      *     path="/admin/",
      *     methods={"GET", "POST"}
      * )
+     *
      * @Security("is_granted('ROLE_USER')")
+     *
      * @Template
      */
     public function index(Request $request)
@@ -61,7 +63,9 @@ class AdminController extends AbstractController
      *     path="/admin/logout",
      *     methods={"GET"}
      * )
+     *
      * @Security("is_granted('ROLE_USER')")
+     *
      * @Template
      */
     public function adminLogout(Request $request)

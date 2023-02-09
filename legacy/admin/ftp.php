@@ -9,7 +9,7 @@ require __DIR__.'/../app/includes.php';
 if (!admin()) {
     header('HTTP/1.0 401 Authorization Required');
     echo 'Votre session administrateur a expiré';
-    exit();
+    exit;
 }
 
 // Selection des fichiers a afficher ou pas
@@ -35,7 +35,7 @@ if (!isset($_GET['dossier'])) {
 // checks :
 if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier, '../') > 1) {
     echo '<p class="erreur">Erreur ! Le dossier demandé n\'a pas le bon format.</p>';
-    exit();
+    exit;
 }
 
 ?><!doctype html>
@@ -78,43 +78,43 @@ if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier,
 
 				<div class="level top">
 					<a href="../ftp/" title="Racine du dossier" class="dirlink <?php if ('../ftp/' == $dossier) {
-    echo 'selected';
-}?>">Dossier FTP</a>
+					    echo 'selected';
+					}?>">Dossier FTP</a>
 					<?php
-                    function arbo_read($dir, $level)
-                    {
-                        global $dossier;
-                        $one = false; // booleen : un dossier trouve au moins
-                        $opendir = opendir($dir);
-                        $files = [];
+					                    function arbo_read($dir, $level)
+					                    {
+					                        global $dossier;
+					                        $one = false; // booleen : un dossier trouve au moins
+					                        $opendir = opendir($dir);
+					                        $files = [];
 
-                        $j = 0; // compte des fichiers
-                        while ($f = readdir($opendir)) {
-                            $files[$j] = $f;
-                            ++$j;
-                        }
-                        sort($files);
+					                        $j = 0; // compte des fichiers
+					                        while ($f = readdir($opendir)) {
+					                            $files[$j] = $f;
+					                            ++$j;
+					                        }
+					                        sort($files);
 
-                        foreach ($files as $file) {
-                            // while($file=readdir($opendir)){
-                            // c'est un dossier, non masqué
-                            if (is_dir($dir.$file) && !FtpFile::shouldHide($file)) {
-                                $one = true;
-                                echo '<div class="level level'.$level.'">'
-                                    .'<a class="dirtrigger" href="'.$dir.$file.'/" title=""></a>'
-                                    .'<a class="dirlink '.($dossier == $dir.$file.'/' ? 'selected' : '').'" href="'.$dir.$file.'/" title="">'.$file.'</a>';
-                                // if(!arbo_read($dir.$file.'/', $level+1)) echo '<div class="level level'.($level+1).'">-</div>';
-                                if (!arbo_read($dir.$file.'/', $level + 1)) {
-                                    echo '<span class="removetrigger"></span>';
-                                }
-                                echo '</div>';
-                            }
-                        }
+					                        foreach ($files as $file) {
+					                            // while($file=readdir($opendir)){
+					                            // c'est un dossier, non masqué
+					                            if (is_dir($dir.$file) && !FtpFile::shouldHide($file)) {
+					                                $one = true;
+					                                echo '<div class="level level'.$level.'">'
+					                                    .'<a class="dirtrigger" href="'.$dir.$file.'/" title=""></a>'
+					                                    .'<a class="dirlink '.($dossier == $dir.$file.'/' ? 'selected' : '').'" href="'.$dir.$file.'/" title="">'.$file.'</a>';
+					                                // if(!arbo_read($dir.$file.'/', $level+1)) echo '<div class="level level'.($level+1).'">-</div>';
+					                                if (!arbo_read($dir.$file.'/', $level + 1)) {
+					                                    echo '<span class="removetrigger"></span>';
+					                                }
+					                                echo '</div>';
+					                            }
+					                        }
 
-                        return $one;
-                    }
-                    arbo_read($racine, 0);
-                    ?>
+					                        return $one;
+					                    }
+					                    arbo_read($racine, 0);
+?>
 				</div>
 			</div>
 

@@ -9,10 +9,10 @@ $allowedExts = ['png']; // we need transparency
 $uploaddir = __DIR__.'/../../../public/ftp/partenaires/';
 
 $partenaireTab = [];
-$partenaireTab['part_id'] = (int) (trim(stripslashes($_POST['part_id'])));
-$partenaireTab['part_order'] = (int) (trim(stripslashes($_POST['part_order'])));
-$partenaireTab['part_type'] = (int) (trim(stripslashes($_POST['part_type'])));
-$partenaireTab['part_enable'] = (int) (trim(stripslashes($_POST['part_enable'])));
+$partenaireTab['part_id'] = (int) trim(stripslashes($_POST['part_id']));
+$partenaireTab['part_order'] = (int) trim(stripslashes($_POST['part_order']));
+$partenaireTab['part_type'] = (int) trim(stripslashes($_POST['part_type']));
+$partenaireTab['part_enable'] = (int) trim(stripslashes($_POST['part_enable']));
 $partenaireTab['part_name'] = trim(stripslashes($_POST['part_name']));
 $partenaireTab['part_image'] = trim($_POST['part_image']);
 $partenaireTab['part_desc'] = trim(stripslashes($_POST['part_desc']));
@@ -100,7 +100,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if ($_FILES['part_image']['size'] > 0) {
         // CHECKS
         $extension = strtolower(substr(strrchr($_FILES['part_image']['name'], '.'), 1));
-        if ((('image/png' == $_FILES['part_image']['type']) && in_array($extension, $allowedExts, true))) {
+        if (('image/png' == $_FILES['part_image']['type']) && in_array($extension, $allowedExts, true)) {
             if ($_FILES['photo']['error'] > 0) {
                 $errTab[] = "Erreur dans l'image : ".$_FILES['part_image']['error'];
             } else {

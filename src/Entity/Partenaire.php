@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Partenaire.
  *
  * @ORM\Table(name="caf_partenaires")
+ *
  * @ORM\Entity(repositoryClass=PartenaireRepository::class)
  */
 class Partenaire
@@ -17,7 +18,9 @@ class Partenaire
      * @var int
      *
      * @ORM\Column(name="part_id", type="integer", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;

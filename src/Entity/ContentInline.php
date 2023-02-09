@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ContentInline.
  *
  * @ORM\Table(name="caf_content_inline", indexes={@ORM\Index(name="contenu_content_inline", columns={"contenu_content_inline"})})
+ *
  * @ORM\Entity
  */
 class ContentInline
@@ -16,7 +17,9 @@ class ContentInline
      * @var int
      *
      * @ORM\Column(name="id_content_inline", type="integer", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;

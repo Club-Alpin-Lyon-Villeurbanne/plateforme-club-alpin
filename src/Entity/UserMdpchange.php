@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * UserMdpchange.
  *
  * @ORM\Table(name="caf_user_mdpchange")
+ *
  * @ORM\Entity
  */
 class UserMdpchange
@@ -16,7 +17,9 @@ class UserMdpchange
      * @var int
      *
      * @ORM\Column(name="id_user_mdpchange", type="integer", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;

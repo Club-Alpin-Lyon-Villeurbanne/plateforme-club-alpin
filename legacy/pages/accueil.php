@@ -20,7 +20,7 @@
                         for ($i = 0; $i < count($sliderTab); ++$i) {
                             echo '<a href="javascript:void(0)" title="" class="'.($i ? '' : 'up').'"><span>'.($i + 1).'</span></a>';
                         }
-                        ?>
+						?>
 						<!--
 						<a href="javascript:void(0)" title="" class="up"><span>1</span></a>
 						<a href="javascript:void(0)" title=""><span>2</span></a>
@@ -44,8 +44,8 @@
                     $article = $sliderTab[$i];
 
                     // check image
-                    if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg')) {
-                        $img = '/ftp/articles/'.(int) ($article['id_article']).'/wide-figure.jpg';
+                    if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) $article['id_article'].'/wide-figure.jpg')) {
+                        $img = '/ftp/articles/'.(int) $article['id_article'].'/wide-figure.jpg';
                     } else {
                         $img = '/ftp/articles/0/wide-figure.jpg';
                     }
@@ -55,7 +55,7 @@
 						<h2>'.html_utf8($article['titre_article']).'</h2>
 					</a>';
                 }
-                ?>
+						?>
 
 			</div>
 		</div>
@@ -100,24 +100,24 @@
             }
 
             echo '<br style="clear:both" />';
-            if ($current_commission) {
-                echo '<a href="/accueil.html#home-actus" title="Afficher tous les articles sans distinction" class="lien-big" style="float:right; margin:6px 20px 0 0"><span style="color:#3C91BF">&gt;</span> Voir toutes les actus</a>';
-            }
+						if ($current_commission) {
+						    echo '<a href="/accueil.html#home-actus" title="Afficher tous les articles sans distinction" class="lien-big" style="float:right; margin:6px 20px 0 0"><span style="color:#3C91BF">&gt;</span> Voir toutes les actus</a>';
+						}
 
-            ?>
+						?>
 			<!-- liens vers les flux RSS -->
 			<a href="/rss.xml?mode=articles" title="Flux RSS de toutes les actualités du club" class="nice2">
 				<img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
 				actualités du club
 			</a>
 			<?php
-            if ($current_commission) {
-                echo '<a href="/rss.xml?mode=articles-'.$current_commission.'" title="Flux RSS des actualités «'.$current_commission.'» uniquement" class="nice2">
+						if ($current_commission) {
+						    echo '<a href="/rss.xml?mode=articles-'.$current_commission.'" title="Flux RSS des actualités «'.$current_commission.'» uniquement" class="nice2">
 						<img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
 						actualités «'.$comTab[$current_commission]['title_commission'].'»
 					</a>';
-            }
-            ?>
+						}
+						?>
 			<br style="clear:both" />
 
 		</div>
@@ -127,7 +127,7 @@
 	<!-- partie droite -->
 	<?php
     require __DIR__.'/../includes/right-type-agenda.php';
-    ?>
+						?>
 
 
 	<br style="clear:both" />

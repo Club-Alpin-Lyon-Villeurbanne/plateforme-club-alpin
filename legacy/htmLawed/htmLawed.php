@@ -21,10 +21,10 @@ function htmLawed($t, $C = 1, $S = [])
         $C['xml:lang'] = isset($C['xml:lang']) ? $C['xml:lang'] : 2;
     }
     // config eles
-$e = ['a' => 1, 'abbr' => 1, 'acronym' => 1, 'address' => 1, 'applet' => 1, 'area' => 1, 'b' => 1, 'bdo' => 1, 'big' => 1, 'blockquote' => 1, 'br' => 1, 'button' => 1, 'caption' => 1, 'center' => 1, 'cite' => 1, 'code' => 1, 'col' => 1, 'colgroup' => 1, 'dd' => 1, 'del' => 1, 'dfn' => 1, 'dir' => 1, 'div' => 1, 'dl' => 1, 'dt' => 1, 'em' => 1, 'embed' => 1, 'fieldset' => 1, 'font' => 1, 'form' => 1, 'h1' => 1, 'h2' => 1, 'h3' => 1, 'h4' => 1, 'h5' => 1, 'h6' => 1, 'hr' => 1, 'i' => 1, 'iframe' => 1, 'img' => 1, 'input' => 1, 'ins' => 1, 'isindex' => 1, 'kbd' => 1, 'label' => 1, 'legend' => 1, 'li' => 1, 'map' => 1, 'menu' => 1, 'noscript' => 1, 'object' => 1, 'ol' => 1, 'optgroup' => 1, 'option' => 1, 'p' => 1, 'param' => 1, 'pre' => 1, 'q' => 1, 'rb' => 1, 'rbc' => 1, 'rp' => 1, 'rt' => 1, 'rtc' => 1, 'ruby' => 1, 's' => 1, 'samp' => 1, 'script' => 1, 'select' => 1, 'small' => 1, 'span' => 1, 'strike' => 1, 'strong' => 1, 'sub' => 1, 'sup' => 1, 'table' => 1, 'tbody' => 1, 'td' => 1, 'textarea' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1, 'tt' => 1, 'u' => 1, 'ul' => 1, 'var' => 1]; // 86/deprecated+embed+ruby
-if (!empty($C['safe'])) {
-    unset($e['applet'], $e['embed'], $e['iframe'], $e['object'], $e['script']);
-}
+    $e = ['a' => 1, 'abbr' => 1, 'acronym' => 1, 'address' => 1, 'applet' => 1, 'area' => 1, 'b' => 1, 'bdo' => 1, 'big' => 1, 'blockquote' => 1, 'br' => 1, 'button' => 1, 'caption' => 1, 'center' => 1, 'cite' => 1, 'code' => 1, 'col' => 1, 'colgroup' => 1, 'dd' => 1, 'del' => 1, 'dfn' => 1, 'dir' => 1, 'div' => 1, 'dl' => 1, 'dt' => 1, 'em' => 1, 'embed' => 1, 'fieldset' => 1, 'font' => 1, 'form' => 1, 'h1' => 1, 'h2' => 1, 'h3' => 1, 'h4' => 1, 'h5' => 1, 'h6' => 1, 'hr' => 1, 'i' => 1, 'iframe' => 1, 'img' => 1, 'input' => 1, 'ins' => 1, 'isindex' => 1, 'kbd' => 1, 'label' => 1, 'legend' => 1, 'li' => 1, 'map' => 1, 'menu' => 1, 'noscript' => 1, 'object' => 1, 'ol' => 1, 'optgroup' => 1, 'option' => 1, 'p' => 1, 'param' => 1, 'pre' => 1, 'q' => 1, 'rb' => 1, 'rbc' => 1, 'rp' => 1, 'rt' => 1, 'rtc' => 1, 'ruby' => 1, 's' => 1, 'samp' => 1, 'script' => 1, 'select' => 1, 'small' => 1, 'span' => 1, 'strike' => 1, 'strong' => 1, 'sub' => 1, 'sup' => 1, 'table' => 1, 'tbody' => 1, 'td' => 1, 'textarea' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1, 'tt' => 1, 'u' => 1, 'ul' => 1, 'var' => 1]; // 86/deprecated+embed+ruby
+    if (!empty($C['safe'])) {
+        unset($e['applet'], $e['embed'], $e['iframe'], $e['object'], $e['script']);
+    }
     $x = !empty($C['elements']) ? str_replace(["\n", "\r", "\t", ' '], '', $C['elements']) : '*';
     if ('-*' == $x) {
         $e = [];
@@ -40,7 +40,7 @@ if (!empty($C['safe'])) {
                 if ('+' == $v[0]) {
                     $e[substr($v, 1)] = 1;
                 }
-                if ('-' == $v[0] && isset($e[($v = substr($v, 1))]) && !in_array('+'.$v, $m, true)) {
+                if ('-' == $v[0] && isset($e[$v = substr($v, 1)]) && !in_array('+'.$v, $m, true)) {
                     unset($e[$v]);
                 }
             }
@@ -153,45 +153,53 @@ function hl_attrval($t, $p)
     $l = strlen($t);
     foreach ($p as $k => $v) {
         switch ($k) {
-  case 'maxlen': if ($l > $v) {
-      $o = 0;
-  }
-  break; case 'minlen': if ($l < $v) {
-      $o = 0;
-  }
-  break; case 'maxval': if ((float) ($t) > $v) {
-      $o = 0;
-  }
-  break; case 'minval': if ((float) ($t) < $v) {
-      $o = 0;
-  }
-  break; case 'match': if (!preg_match($v, $t)) {
-      $o = 0;
-  }
-  break; case 'nomatch': if (preg_match($v, $t)) {
-      $o = 0;
-  }
-  break; case 'oneof':
-   $m = 0;
-   foreach (explode('|', $v) as $n) {
-       if ($t == $n) {
-           $m = 1;
-           break;
-       }
-   }
-   $o = $m;
-  break; case 'noneof':
-   $m = 1;
-   foreach (explode('|', $v) as $n) {
-       if ($t == $n) {
-           $m = 0;
-           break;
-       }
-   }
-   $o = $m;
-  break; default:
-  break;
- }
+            case 'maxlen': if ($l > $v) {
+                $o = 0;
+            }
+                break;
+                case 'minlen': if ($l < $v) {
+                    $o = 0;
+                }
+                    break;
+                    case 'maxval': if ((float) $t > $v) {
+                        $o = 0;
+                    }
+                        break;
+                        case 'minval': if ((float) $t < $v) {
+                            $o = 0;
+                        }
+                            break;
+                            case 'match': if (!preg_match($v, $t)) {
+                                $o = 0;
+                            }
+                                break;
+                                case 'nomatch': if (preg_match($v, $t)) {
+                                    $o = 0;
+                                }
+                                    break;
+                                    case 'oneof':
+                                        $m = 0;
+                                        foreach (explode('|', $v) as $n) {
+                                            if ($t == $n) {
+                                                $m = 1;
+                                                break;
+                                            }
+                                        }
+                                        $o = $m;
+                                        break;
+                                        case 'noneof':
+                                            $m = 1;
+                                            foreach (explode('|', $v) as $n) {
+                                                if ($t == $n) {
+                                                    $m = 0;
+                                                    break;
+                                                }
+                                            }
+                                            $o = $m;
+                                            break;
+                                            default:
+                                                break;
+        }
         if (!$o) {
             break;
         }
@@ -205,25 +213,25 @@ function hl_bal($t, $do = 1, $in = 'div')
 {
     // balance tags
 // by content
-$cB = ['blockquote' => 1, 'form' => 1, 'map' => 1, 'noscript' => 1]; // Block
-$cE = ['area' => 1, 'br' => 1, 'col' => 1, 'embed' => 1, 'hr' => 1, 'img' => 1, 'input' => 1, 'isindex' => 1, 'param' => 1]; // Empty
-$cF = ['button' => 1, 'del' => 1, 'div' => 1, 'dd' => 1, 'fieldset' => 1, 'iframe' => 1, 'ins' => 1, 'li' => 1, 'noscript' => 1, 'object' => 1, 'td' => 1, 'th' => 1]; // Flow; later context-wise dynamic move of ins & del to $cI
-$cI = ['a' => 1, 'abbr' => 1, 'acronym' => 1, 'address' => 1, 'b' => 1, 'bdo' => 1, 'big' => 1, 'caption' => 1, 'cite' => 1, 'code' => 1, 'dfn' => 1, 'dt' => 1, 'em' => 1, 'font' => 1, 'h1' => 1, 'h2' => 1, 'h3' => 1, 'h4' => 1, 'h5' => 1, 'h6' => 1, 'i' => 1, 'kbd' => 1, 'label' => 1, 'legend' => 1, 'p' => 1, 'pre' => 1, 'q' => 1, 'rb' => 1, 'rt' => 1, 's' => 1, 'samp' => 1, 'small' => 1, 'span' => 1, 'strike' => 1, 'strong' => 1, 'sub' => 1, 'sup' => 1, 'tt' => 1, 'u' => 1, 'var' => 1]; // Inline
-$cN = ['a' => ['a' => 1], 'button' => ['a' => 1, 'button' => 1, 'fieldset' => 1, 'form' => 1, 'iframe' => 1, 'input' => 1, 'label' => 1, 'select' => 1, 'textarea' => 1], 'fieldset' => ['fieldset' => 1], 'form' => ['form' => 1], 'label' => ['label' => 1], 'noscript' => ['script' => 1], 'pre' => ['big' => 1, 'font' => 1, 'img' => 1, 'object' => 1, 'script' => 1, 'small' => 1, 'sub' => 1, 'sup' => 1], 'rb' => ['ruby' => 1], 'rt' => ['ruby' => 1]]; // Illegal
-$cN2 = array_keys($cN);
+    $cB = ['blockquote' => 1, 'form' => 1, 'map' => 1, 'noscript' => 1]; // Block
+    $cE = ['area' => 1, 'br' => 1, 'col' => 1, 'embed' => 1, 'hr' => 1, 'img' => 1, 'input' => 1, 'isindex' => 1, 'param' => 1]; // Empty
+    $cF = ['button' => 1, 'del' => 1, 'div' => 1, 'dd' => 1, 'fieldset' => 1, 'iframe' => 1, 'ins' => 1, 'li' => 1, 'noscript' => 1, 'object' => 1, 'td' => 1, 'th' => 1]; // Flow; later context-wise dynamic move of ins & del to $cI
+    $cI = ['a' => 1, 'abbr' => 1, 'acronym' => 1, 'address' => 1, 'b' => 1, 'bdo' => 1, 'big' => 1, 'caption' => 1, 'cite' => 1, 'code' => 1, 'dfn' => 1, 'dt' => 1, 'em' => 1, 'font' => 1, 'h1' => 1, 'h2' => 1, 'h3' => 1, 'h4' => 1, 'h5' => 1, 'h6' => 1, 'i' => 1, 'kbd' => 1, 'label' => 1, 'legend' => 1, 'p' => 1, 'pre' => 1, 'q' => 1, 'rb' => 1, 'rt' => 1, 's' => 1, 'samp' => 1, 'small' => 1, 'span' => 1, 'strike' => 1, 'strong' => 1, 'sub' => 1, 'sup' => 1, 'tt' => 1, 'u' => 1, 'var' => 1]; // Inline
+    $cN = ['a' => ['a' => 1], 'button' => ['a' => 1, 'button' => 1, 'fieldset' => 1, 'form' => 1, 'iframe' => 1, 'input' => 1, 'label' => 1, 'select' => 1, 'textarea' => 1], 'fieldset' => ['fieldset' => 1], 'form' => ['form' => 1], 'label' => ['label' => 1], 'noscript' => ['script' => 1], 'pre' => ['big' => 1, 'font' => 1, 'img' => 1, 'object' => 1, 'script' => 1, 'small' => 1, 'sub' => 1, 'sup' => 1], 'rb' => ['ruby' => 1], 'rt' => ['ruby' => 1]]; // Illegal
+    $cN2 = array_keys($cN);
     $cR = ['blockquote' => 1, 'dir' => 1, 'dl' => 1, 'form' => 1, 'map' => 1, 'menu' => 1, 'noscript' => 1, 'ol' => 1, 'optgroup' => 1, 'rbc' => 1, 'rtc' => 1, 'ruby' => 1, 'select' => 1, 'table' => 1, 'tbody' => 1, 'tfoot' => 1, 'thead' => 1, 'tr' => 1, 'ul' => 1];
     $cS = ['colgroup' => ['col' => 1], 'dir' => ['li' => 1], 'dl' => ['dd' => 1, 'dt' => 1], 'menu' => ['li' => 1], 'ol' => ['li' => 1], 'optgroup' => ['option' => 1], 'option' => ['#pcdata' => 1], 'rbc' => ['rb' => 1], 'rp' => ['#pcdata' => 1], 'rtc' => ['rt' => 1], 'ruby' => ['rb' => 1, 'rbc' => 1, 'rp' => 1, 'rt' => 1, 'rtc' => 1], 'select' => ['optgroup' => 1, 'option' => 1], 'script' => ['#pcdata' => 1], 'table' => ['caption' => 1, 'col' => 1, 'colgroup' => 1, 'tfoot' => 1, 'tbody' => 1, 'tr' => 1, 'thead' => 1], 'tbody' => ['tr' => 1], 'tfoot' => ['tr' => 1], 'textarea' => ['#pcdata' => 1], 'thead' => ['tr' => 1], 'tr' => ['td' => 1, 'th' => 1], 'ul' => ['li' => 1]]; // Specific - immediate parent-child
     if ($GLOBALS['C']['direct_list_nest']) {
         $cS['ol'] = $cS['ul'] += ['ol' => 1, 'ul' => 1];
     }
     $cO = ['address' => ['p' => 1], 'applet' => ['param' => 1], 'blockquote' => ['script' => 1], 'fieldset' => ['legend' => 1, '#pcdata' => 1], 'form' => ['script' => 1], 'map' => ['area' => 1], 'object' => ['param' => 1, 'embed' => 1]]; // Other
-$cT = ['colgroup' => 1, 'dd' => 1, 'dt' => 1, 'li' => 1, 'option' => 1, 'p' => 1, 'td' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1]; // Omitable closing
+    $cT = ['colgroup' => 1, 'dd' => 1, 'dt' => 1, 'li' => 1, 'option' => 1, 'p' => 1, 'td' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1]; // Omitable closing
 // block/inline type; ins & del both type; #pcdata: text
-$eB = ['address' => 1, 'blockquote' => 1, 'center' => 1, 'del' => 1, 'dir' => 1, 'dl' => 1, 'div' => 1, 'fieldset' => 1, 'form' => 1, 'ins' => 1, 'h1' => 1, 'h2' => 1, 'h3' => 1, 'h4' => 1, 'h5' => 1, 'h6' => 1, 'hr' => 1, 'isindex' => 1, 'menu' => 1, 'noscript' => 1, 'ol' => 1, 'p' => 1, 'pre' => 1, 'table' => 1, 'ul' => 1];
+    $eB = ['address' => 1, 'blockquote' => 1, 'center' => 1, 'del' => 1, 'dir' => 1, 'dl' => 1, 'div' => 1, 'fieldset' => 1, 'form' => 1, 'ins' => 1, 'h1' => 1, 'h2' => 1, 'h3' => 1, 'h4' => 1, 'h5' => 1, 'h6' => 1, 'hr' => 1, 'isindex' => 1, 'menu' => 1, 'noscript' => 1, 'ol' => 1, 'p' => 1, 'pre' => 1, 'table' => 1, 'ul' => 1];
     $eI = ['#pcdata' => 1, 'a' => 1, 'abbr' => 1, 'acronym' => 1, 'applet' => 1, 'b' => 1, 'bdo' => 1, 'big' => 1, 'br' => 1, 'button' => 1, 'cite' => 1, 'code' => 1, 'del' => 1, 'dfn' => 1, 'em' => 1, 'embed' => 1, 'font' => 1, 'i' => 1, 'iframe' => 1, 'img' => 1, 'input' => 1, 'ins' => 1, 'kbd' => 1, 'label' => 1, 'map' => 1, 'object' => 1, 'q' => 1, 'ruby' => 1, 's' => 1, 'samp' => 1, 'select' => 1, 'script' => 1, 'small' => 1, 'span' => 1, 'strike' => 1, 'strong' => 1, 'sub' => 1, 'sup' => 1, 'textarea' => 1, 'tt' => 1, 'u' => 1, 'var' => 1];
     $eN = ['a' => 1, 'big' => 1, 'button' => 1, 'fieldset' => 1, 'font' => 1, 'form' => 1, 'iframe' => 1, 'img' => 1, 'input' => 1, 'label' => 1, 'object' => 1, 'ruby' => 1, 'script' => 1, 'select' => 1, 'small' => 1, 'sub' => 1, 'sup' => 1, 'textarea' => 1]; // Exclude from specific ele; $cN values
-$eO = ['area' => 1, 'caption' => 1, 'col' => 1, 'colgroup' => 1, 'dd' => 1, 'dt' => 1, 'legend' => 1, 'li' => 1, 'optgroup' => 1, 'option' => 1, 'param' => 1, 'rb' => 1, 'rbc' => 1, 'rp' => 1, 'rt' => 1, 'rtc' => 1, 'script' => 1, 'tbody' => 1, 'td' => 1, 'tfoot' => 1, 'thead' => 1, 'th' => 1, 'tr' => 1]; // Missing in $eB & $eI
-$eF = $eB + $eI;
+    $eO = ['area' => 1, 'caption' => 1, 'col' => 1, 'colgroup' => 1, 'dd' => 1, 'dt' => 1, 'legend' => 1, 'li' => 1, 'optgroup' => 1, 'option' => 1, 'param' => 1, 'rb' => 1, 'rbc' => 1, 'rp' => 1, 'rt' => 1, 'rtc' => 1, 'script' => 1, 'tbody' => 1, 'td' => 1, 'tfoot' => 1, 'thead' => 1, 'th' => 1, 'tr' => 1]; // Missing in $eB & $eI
+    $eF = $eB + $eI;
 
     // $in sets allowed child
     $in = ((isset($eF[$in]) && '#pcdata' != $in) || isset($eO[$in])) ? $in : 'div';
@@ -320,13 +328,13 @@ $eF = $eB + $eI;
                 unset($e);
                 continue;
             } // Last open
-  $add = ''; // Nesting - close open tags that need to be
-  for ($j = -1, $cj = count($q); ++$j < $cj;) {
-      if (($d = array_pop($q)) == $e) {
-          break;
-      }
-      $add .= "</{$d}>";
-  }
+            $add = ''; // Nesting - close open tags that need to be
+            for ($j = -1, $cj = count($q); ++$j < $cj;) {
+                if (($d = array_pop($q)) == $e) {
+                    break;
+                }
+                $add .= "</{$d}>";
+            }
             echo $add, '</', $e, '>';
             unset($e);
             continue;
@@ -477,7 +485,7 @@ function hl_cmtcd($t)
         return '';
     }
     if ('comment' == $n) {
-        if (' ' != substr(($t = preg_replace('`--+`', '-', substr($t, 4, -3))), -1)) {
+        if (' ' != substr($t = preg_replace('`--+`', '-', substr($t, 4, -3)), -1)) {
             $t .= ' ';
         }
     } else {
@@ -485,7 +493,7 @@ function hl_cmtcd($t)
     }
     $t = 2 == $v ? str_replace(['&', '<', '>'], ['&amp;', '&lt;', '&gt;'], $t) : $t;
 
-    return str_replace(['&', '<', '>'], ["\x03", "\x04", "\x05"], ('comment' == $n ? "\x01\x02\x04!--$t--\x05\x02\x01" : "\x01\x01\x04$t\x05\x01\x01"));
+    return str_replace(['&', '<', '>'], ["\x03", "\x04", "\x05"], 'comment' == $n ? "\x01\x02\x04!--$t--\x05\x02\x01" : "\x01\x01\x04$t\x05\x01\x01");
     // eof
 }
 
@@ -526,9 +534,9 @@ function hl_prot($p, $c = null)
     if (isset($c['*']) || !strcspn($p, '#?;') || (substr($p, 0, 7) == $d)) {
         return "{$b}{$p}{$a}";
     } // All ok, frag, query, param
-if (preg_match('`^([a-z\d\-+.&#; ]+?)(:|&#(58|x3a);|%3a|\\\\0{0,4}3a).`i', $p, $m) && !isset($c[strtolower($m[1])])) { // Denied prot
- return "{$b}{$d}{$p}{$a}";
-}
+    if (preg_match('`^([a-z\d\-+.&#; ]+?)(:|&#(58|x3a);|%3a|\\\\0{0,4}3a).`i', $p, $m) && !isset($c[strtolower($m[1])])) { // Denied prot
+        return "{$b}{$d}{$p}{$a}";
+    }
     if ($C['abs_url']) {
         if (-1 == $C['abs_url'] && 0 === strpos($p, $C['base_url'])) { // Make url rel
             $p = substr($p, strlen($C['base_url']));
@@ -566,7 +574,7 @@ function hl_regex($p)
         ini_set('track_errors', 1);
     }
     unset($php_errormsg);
-    if (($d = ini_get('display_errors'))) {
+    if ($d = ini_get('display_errors')) {
         ini_set('display_errors', 0);
     }
     preg_match($p, '');
@@ -589,9 +597,9 @@ function hl_spec($t)
     // final $spec
     $s = [];
     $t = str_replace(["\t", "\r", "\n", ' '], '', preg_replace('/"(?>(`.|[^"])*)"/sme', 'substr(str_replace(array(";", "|", "~", " ", ",", "/", "(", ")", \'`"\'), array("\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07", "\x08", "\""), "$0"), 1, -1)', trim($t)));
-    for ($i = count(($t = explode(';', $t))); --$i >= 0;) {
+    for ($i = count($t = explode(';', $t)); --$i >= 0;) {
         $w = $t[$i];
-        if (empty($w) || ($e = strpos($w, '=')) === false || !strlen(($a = substr($w, $e + 1)))) {
+        if (empty($w) || ($e = strpos($w, '=')) === false || !strlen($a = substr($w, $e + 1))) {
             continue;
         }
         $y = $n = [];
@@ -629,7 +637,7 @@ function hl_spec($t)
             continue;
         }
         foreach (explode(',', substr($w, 0, $e)) as $v) {
-            if (!strlen(($v = strtolower($v)))) {
+            if (!strlen($v = strtolower($v))) {
                 continue;
             }
             if (count($y)) {
@@ -660,37 +668,37 @@ function hl_tag($t)
     if (!preg_match('`^<(/?)([a-zA-Z][a-zA-Z1-6]*)([^>]*?)\s?>$`m', $t, $m)) {
         return str_replace(['<', '>'], ['&lt;', '&gt;'], $t);
     }
-    if (!isset($C['elements'][($e = strtolower($m[2]))])) {
+    if (!isset($C['elements'][$e = strtolower($m[2])])) {
         return ($C['keep_bad'] % 2) ? str_replace(['<', '>'], ['&lt;', '&gt;'], $t) : '';
     }
     // attr string
     $a = str_replace(["\n", "\r", "\t"], ' ', trim($m[3]));
     // tag transform
-static $eD = ['applet' => 1, 'center' => 1, 'dir' => 1, 'embed' => 1, 'font' => 1, 'isindex' => 1, 'menu' => 1, 's' => 1, 'strike' => 1, 'u' => 1]; // Deprecated
-if ($C['make_tag_strict'] && isset($eD[$e])) {
-    $trt = hl_tag2($e, $a, $C['make_tag_strict']);
-    if (!$e) {
-        return ($C['keep_bad'] % 2) ? str_replace(['<', '>'], ['&lt;', '&gt;'], $t) : '';
+    static $eD = ['applet' => 1, 'center' => 1, 'dir' => 1, 'embed' => 1, 'font' => 1, 'isindex' => 1, 'menu' => 1, 's' => 1, 'strike' => 1, 'u' => 1]; // Deprecated
+    if ($C['make_tag_strict'] && isset($eD[$e])) {
+        $trt = hl_tag2($e, $a, $C['make_tag_strict']);
+        if (!$e) {
+            return ($C['keep_bad'] % 2) ? str_replace(['<', '>'], ['&lt;', '&gt;'], $t) : '';
+        }
     }
-}
     // close tag
-static $eE = ['area' => 1, 'br' => 1, 'col' => 1, 'embed' => 1, 'hr' => 1, 'img' => 1, 'input' => 1, 'isindex' => 1, 'param' => 1]; // Empty ele
-if (!empty($m[1])) {
-    return !isset($eE[$e]) ? (empty($C['hook_tag']) ? "</$e>" : $C['hook_tag']($e)) : (($C['keep_bad']) % 2 ? str_replace(['<', '>'], ['&lt;', '&gt;'], $t) : '');
-}
+    static $eE = ['area' => 1, 'br' => 1, 'col' => 1, 'embed' => 1, 'hr' => 1, 'img' => 1, 'input' => 1, 'isindex' => 1, 'param' => 1]; // Empty ele
+    if (!empty($m[1])) {
+        return !isset($eE[$e]) ? (empty($C['hook_tag']) ? "</$e>" : $C['hook_tag']($e)) : ($C['keep_bad'] % 2 ? str_replace(['<', '>'], ['&lt;', '&gt;'], $t) : '');
+    }
 
     // open tag & attr
-static $aN = ['abbr' => ['td' => 1, 'th' => 1], 'accept-charset' => ['form' => 1], 'accept' => ['form' => 1, 'input' => 1], 'accesskey' => ['a' => 1, 'area' => 1, 'button' => 1, 'input' => 1, 'label' => 1, 'legend' => 1, 'textarea' => 1], 'action' => ['form' => 1], 'align' => ['caption' => 1, 'embed' => 1, 'applet' => 1, 'iframe' => 1, 'img' => 1, 'input' => 1, 'object' => 1, 'legend' => 1, 'table' => 1, 'hr' => 1, 'div' => 1, 'h1' => 1, 'h2' => 1, 'h3' => 1, 'h4' => 1, 'h5' => 1, 'h6' => 1, 'p' => 1, 'col' => 1, 'colgroup' => 1, 'tbody' => 1, 'td' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1], 'alt' => ['applet' => 1, 'area' => 1, 'img' => 1, 'input' => 1], 'archive' => ['applet' => 1, 'object' => 1], 'axis' => ['td' => 1, 'th' => 1], 'bgcolor' => ['embed' => 1, 'table' => 1, 'tr' => 1, 'td' => 1, 'th' => 1], 'border' => ['table' => 1, 'img' => 1, 'object' => 1], 'bordercolor' => ['table' => 1, 'td' => 1, 'tr' => 1], 'cellpadding' => ['table' => 1], 'cellspacing' => ['table' => 1], 'char' => ['col' => 1, 'colgroup' => 1, 'tbody' => 1, 'td' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1], 'charoff' => ['col' => 1, 'colgroup' => 1, 'tbody' => 1, 'td' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1], 'charset' => ['a' => 1, 'script' => 1], 'checked' => ['input' => 1], 'cite' => ['blockquote' => 1, 'q' => 1, 'del' => 1, 'ins' => 1], 'classid' => ['object' => 1], 'clear' => ['br' => 1], 'code' => ['applet' => 1], 'codebase' => ['object' => 1, 'applet' => 1], 'codetype' => ['object' => 1], 'color' => ['font' => 1], 'cols' => ['textarea' => 1], 'colspan' => ['td' => 1, 'th' => 1], 'compact' => ['dir' => 1, 'dl' => 1, 'menu' => 1, 'ol' => 1, 'ul' => 1], 'coords' => ['area' => 1, 'a' => 1], 'data' => ['object' => 1], 'datetime' => ['del' => 1, 'ins' => 1], 'declare' => ['object' => 1], 'defer' => ['script' => 1], 'dir' => ['bdo' => 1], 'disabled' => ['button' => 1, 'input' => 1, 'optgroup' => 1, 'option' => 1, 'select' => 1, 'textarea' => 1], 'enctype' => ['form' => 1], 'face' => ['font' => 1], 'flashvars' => ['embed' => 1], 'for' => ['label' => 1], 'frame' => ['table' => 1], 'frameborder' => ['iframe' => 1], 'headers' => ['td' => 1, 'th' => 1], 'height' => ['embed' => 1, 'iframe' => 1, 'td' => 1, 'th' => 1, 'img' => 1, 'object' => 1, 'applet' => 1], 'href' => ['a' => 1, 'area' => 1], 'hreflang' => ['a' => 1], 'hspace' => ['applet' => 1, 'img' => 1, 'object' => 1], 'ismap' => ['img' => 1, 'input' => 1], 'label' => ['option' => 1, 'optgroup' => 1], 'language' => ['script' => 1], 'longdesc' => ['img' => 1, 'iframe' => 1], 'marginheight' => ['iframe' => 1], 'marginwidth' => ['iframe' => 1], 'maxlength' => ['input' => 1], 'method' => ['form' => 1], 'model' => ['embed' => 1], 'multiple' => ['select' => 1], 'name' => ['button' => 1, 'embed' => 1, 'textarea' => 1, 'applet' => 1, 'select' => 1, 'form' => 1, 'iframe' => 1, 'img' => 1, 'a' => 1, 'input' => 1, 'object' => 1, 'map' => 1, 'param' => 1], 'nohref' => ['area' => 1], 'noshade' => ['hr' => 1], 'nowrap' => ['td' => 1, 'th' => 1], 'object' => ['applet' => 1], 'onblur' => ['a' => 1, 'area' => 1, 'button' => 1, 'input' => 1, 'label' => 1, 'select' => 1, 'textarea' => 1], 'onchange' => ['input' => 1, 'select' => 1, 'textarea' => 1], 'onfocus' => ['a' => 1, 'area' => 1, 'button' => 1, 'input' => 1, 'label' => 1, 'select' => 1, 'textarea' => 1], 'onreset' => ['form' => 1], 'onselect' => ['input' => 1, 'textarea' => 1], 'onsubmit' => ['form' => 1], 'pluginspage' => ['embed' => 1], 'pluginurl' => ['embed' => 1], 'prompt' => ['isindex' => 1], 'readonly' => ['textarea' => 1, 'input' => 1], 'rel' => ['a' => 1], 'rev' => ['a' => 1], 'rows' => ['textarea' => 1], 'rowspan' => ['td' => 1, 'th' => 1], 'rules' => ['table' => 1], 'scope' => ['td' => 1, 'th' => 1], 'scrolling' => ['iframe' => 1], 'selected' => ['option' => 1], 'shape' => ['area' => 1, 'a' => 1], 'size' => ['hr' => 1, 'font' => 1, 'input' => 1, 'select' => 1], 'span' => ['col' => 1, 'colgroup' => 1], 'src' => ['embed' => 1, 'script' => 1, 'input' => 1, 'iframe' => 1, 'img' => 1], 'standby' => ['object' => 1], 'start' => ['ol' => 1], 'summary' => ['table' => 1], 'tabindex' => ['a' => 1, 'area' => 1, 'button' => 1, 'input' => 1, 'object' => 1, 'select' => 1, 'textarea' => 1], 'target' => ['a' => 1, 'area' => 1, 'form' => 1], 'type' => ['a' => 1, 'embed' => 1, 'object' => 1, 'param' => 1, 'script' => 1, 'input' => 1, 'li' => 1, 'ol' => 1, 'ul' => 1, 'button' => 1], 'usemap' => ['img' => 1, 'input' => 1, 'object' => 1], 'valign' => ['col' => 1, 'colgroup' => 1, 'tbody' => 1, 'td' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1], 'value' => ['input' => 1, 'option' => 1, 'param' => 1, 'button' => 1, 'li' => 1], 'valuetype' => ['param' => 1], 'vspace' => ['applet' => 1, 'img' => 1, 'object' => 1], 'width' => ['embed' => 1, 'hr' => 1, 'iframe' => 1, 'img' => 1, 'object' => 1, 'table' => 1, 'td' => 1, 'th' => 1, 'applet' => 1, 'col' => 1, 'colgroup' => 1, 'pre' => 1], 'wmode' => ['embed' => 1], 'xml:space' => ['pre' => 1, 'script' => 1, 'style' => 1]]; // Ele-specific
-static $aNE = ['checked' => 1, 'compact' => 1, 'declare' => 1, 'defer' => 1, 'disabled' => 1, 'ismap' => 1, 'multiple' => 1, 'nohref' => 1, 'noresize' => 1, 'noshade' => 1, 'nowrap' => 1, 'readonly' => 1, 'selected' => 1]; // Empty
-static $aNP = ['action' => 1, 'cite' => 1, 'classid' => 1, 'codebase' => 1, 'data' => 1, 'href' => 1, 'longdesc' => 1, 'model' => 1, 'pluginspage' => 1, 'pluginurl' => 1, 'usemap' => 1]; // Need scheme check; excludes style, on* & src
-static $aNU = ['class' => ['param' => 1, 'script' => 1], 'dir' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'iframe' => 1, 'param' => 1, 'script' => 1], 'id' => ['script' => 1], 'lang' => ['applet' => 1, 'br' => 1, 'iframe' => 1, 'param' => 1, 'script' => 1], 'xml:lang' => ['applet' => 1, 'br' => 1, 'iframe' => 1, 'param' => 1, 'script' => 1], 'onclick' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'ondblclick' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onkeydown' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onkeypress' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onkeyup' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onmousedown' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onmousemove' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onmouseout' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onmouseover' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onmouseup' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'style' => ['param' => 1, 'script' => 1], 'title' => ['param' => 1, 'script' => 1]]; // Univ & exceptions
+    static $aN = ['abbr' => ['td' => 1, 'th' => 1], 'accept-charset' => ['form' => 1], 'accept' => ['form' => 1, 'input' => 1], 'accesskey' => ['a' => 1, 'area' => 1, 'button' => 1, 'input' => 1, 'label' => 1, 'legend' => 1, 'textarea' => 1], 'action' => ['form' => 1], 'align' => ['caption' => 1, 'embed' => 1, 'applet' => 1, 'iframe' => 1, 'img' => 1, 'input' => 1, 'object' => 1, 'legend' => 1, 'table' => 1, 'hr' => 1, 'div' => 1, 'h1' => 1, 'h2' => 1, 'h3' => 1, 'h4' => 1, 'h5' => 1, 'h6' => 1, 'p' => 1, 'col' => 1, 'colgroup' => 1, 'tbody' => 1, 'td' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1], 'alt' => ['applet' => 1, 'area' => 1, 'img' => 1, 'input' => 1], 'archive' => ['applet' => 1, 'object' => 1], 'axis' => ['td' => 1, 'th' => 1], 'bgcolor' => ['embed' => 1, 'table' => 1, 'tr' => 1, 'td' => 1, 'th' => 1], 'border' => ['table' => 1, 'img' => 1, 'object' => 1], 'bordercolor' => ['table' => 1, 'td' => 1, 'tr' => 1], 'cellpadding' => ['table' => 1], 'cellspacing' => ['table' => 1], 'char' => ['col' => 1, 'colgroup' => 1, 'tbody' => 1, 'td' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1], 'charoff' => ['col' => 1, 'colgroup' => 1, 'tbody' => 1, 'td' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1], 'charset' => ['a' => 1, 'script' => 1], 'checked' => ['input' => 1], 'cite' => ['blockquote' => 1, 'q' => 1, 'del' => 1, 'ins' => 1], 'classid' => ['object' => 1], 'clear' => ['br' => 1], 'code' => ['applet' => 1], 'codebase' => ['object' => 1, 'applet' => 1], 'codetype' => ['object' => 1], 'color' => ['font' => 1], 'cols' => ['textarea' => 1], 'colspan' => ['td' => 1, 'th' => 1], 'compact' => ['dir' => 1, 'dl' => 1, 'menu' => 1, 'ol' => 1, 'ul' => 1], 'coords' => ['area' => 1, 'a' => 1], 'data' => ['object' => 1], 'datetime' => ['del' => 1, 'ins' => 1], 'declare' => ['object' => 1], 'defer' => ['script' => 1], 'dir' => ['bdo' => 1], 'disabled' => ['button' => 1, 'input' => 1, 'optgroup' => 1, 'option' => 1, 'select' => 1, 'textarea' => 1], 'enctype' => ['form' => 1], 'face' => ['font' => 1], 'flashvars' => ['embed' => 1], 'for' => ['label' => 1], 'frame' => ['table' => 1], 'frameborder' => ['iframe' => 1], 'headers' => ['td' => 1, 'th' => 1], 'height' => ['embed' => 1, 'iframe' => 1, 'td' => 1, 'th' => 1, 'img' => 1, 'object' => 1, 'applet' => 1], 'href' => ['a' => 1, 'area' => 1], 'hreflang' => ['a' => 1], 'hspace' => ['applet' => 1, 'img' => 1, 'object' => 1], 'ismap' => ['img' => 1, 'input' => 1], 'label' => ['option' => 1, 'optgroup' => 1], 'language' => ['script' => 1], 'longdesc' => ['img' => 1, 'iframe' => 1], 'marginheight' => ['iframe' => 1], 'marginwidth' => ['iframe' => 1], 'maxlength' => ['input' => 1], 'method' => ['form' => 1], 'model' => ['embed' => 1], 'multiple' => ['select' => 1], 'name' => ['button' => 1, 'embed' => 1, 'textarea' => 1, 'applet' => 1, 'select' => 1, 'form' => 1, 'iframe' => 1, 'img' => 1, 'a' => 1, 'input' => 1, 'object' => 1, 'map' => 1, 'param' => 1], 'nohref' => ['area' => 1], 'noshade' => ['hr' => 1], 'nowrap' => ['td' => 1, 'th' => 1], 'object' => ['applet' => 1], 'onblur' => ['a' => 1, 'area' => 1, 'button' => 1, 'input' => 1, 'label' => 1, 'select' => 1, 'textarea' => 1], 'onchange' => ['input' => 1, 'select' => 1, 'textarea' => 1], 'onfocus' => ['a' => 1, 'area' => 1, 'button' => 1, 'input' => 1, 'label' => 1, 'select' => 1, 'textarea' => 1], 'onreset' => ['form' => 1], 'onselect' => ['input' => 1, 'textarea' => 1], 'onsubmit' => ['form' => 1], 'pluginspage' => ['embed' => 1], 'pluginurl' => ['embed' => 1], 'prompt' => ['isindex' => 1], 'readonly' => ['textarea' => 1, 'input' => 1], 'rel' => ['a' => 1], 'rev' => ['a' => 1], 'rows' => ['textarea' => 1], 'rowspan' => ['td' => 1, 'th' => 1], 'rules' => ['table' => 1], 'scope' => ['td' => 1, 'th' => 1], 'scrolling' => ['iframe' => 1], 'selected' => ['option' => 1], 'shape' => ['area' => 1, 'a' => 1], 'size' => ['hr' => 1, 'font' => 1, 'input' => 1, 'select' => 1], 'span' => ['col' => 1, 'colgroup' => 1], 'src' => ['embed' => 1, 'script' => 1, 'input' => 1, 'iframe' => 1, 'img' => 1], 'standby' => ['object' => 1], 'start' => ['ol' => 1], 'summary' => ['table' => 1], 'tabindex' => ['a' => 1, 'area' => 1, 'button' => 1, 'input' => 1, 'object' => 1, 'select' => 1, 'textarea' => 1], 'target' => ['a' => 1, 'area' => 1, 'form' => 1], 'type' => ['a' => 1, 'embed' => 1, 'object' => 1, 'param' => 1, 'script' => 1, 'input' => 1, 'li' => 1, 'ol' => 1, 'ul' => 1, 'button' => 1], 'usemap' => ['img' => 1, 'input' => 1, 'object' => 1], 'valign' => ['col' => 1, 'colgroup' => 1, 'tbody' => 1, 'td' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1], 'value' => ['input' => 1, 'option' => 1, 'param' => 1, 'button' => 1, 'li' => 1], 'valuetype' => ['param' => 1], 'vspace' => ['applet' => 1, 'img' => 1, 'object' => 1], 'width' => ['embed' => 1, 'hr' => 1, 'iframe' => 1, 'img' => 1, 'object' => 1, 'table' => 1, 'td' => 1, 'th' => 1, 'applet' => 1, 'col' => 1, 'colgroup' => 1, 'pre' => 1], 'wmode' => ['embed' => 1], 'xml:space' => ['pre' => 1, 'script' => 1, 'style' => 1]]; // Ele-specific
+    static $aNE = ['checked' => 1, 'compact' => 1, 'declare' => 1, 'defer' => 1, 'disabled' => 1, 'ismap' => 1, 'multiple' => 1, 'nohref' => 1, 'noresize' => 1, 'noshade' => 1, 'nowrap' => 1, 'readonly' => 1, 'selected' => 1]; // Empty
+    static $aNP = ['action' => 1, 'cite' => 1, 'classid' => 1, 'codebase' => 1, 'data' => 1, 'href' => 1, 'longdesc' => 1, 'model' => 1, 'pluginspage' => 1, 'pluginurl' => 1, 'usemap' => 1]; // Need scheme check; excludes style, on* & src
+    static $aNU = ['class' => ['param' => 1, 'script' => 1], 'dir' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'iframe' => 1, 'param' => 1, 'script' => 1], 'id' => ['script' => 1], 'lang' => ['applet' => 1, 'br' => 1, 'iframe' => 1, 'param' => 1, 'script' => 1], 'xml:lang' => ['applet' => 1, 'br' => 1, 'iframe' => 1, 'param' => 1, 'script' => 1], 'onclick' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'ondblclick' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onkeydown' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onkeypress' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onkeyup' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onmousedown' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onmousemove' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onmouseout' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onmouseover' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'onmouseup' => ['applet' => 1, 'bdo' => 1, 'br' => 1, 'font' => 1, 'iframe' => 1, 'isindex' => 1, 'param' => 1, 'script' => 1], 'style' => ['param' => 1, 'script' => 1], 'title' => ['param' => 1, 'script' => 1]]; // Univ & exceptions
 
-if ($C['lc_std_val']) {
-    // predef attr vals for $eAL & $aNE ele
-    static $aNL = ['all' => 1, 'baseline' => 1, 'bottom' => 1, 'button' => 1, 'center' => 1, 'char' => 1, 'checkbox' => 1, 'circle' => 1, 'col' => 1, 'colgroup' => 1, 'cols' => 1, 'data' => 1, 'default' => 1, 'file' => 1, 'get' => 1, 'groups' => 1, 'hidden' => 1, 'image' => 1, 'justify' => 1, 'left' => 1, 'ltr' => 1, 'middle' => 1, 'none' => 1, 'object' => 1, 'password' => 1, 'poly' => 1, 'post' => 1, 'preserve' => 1, 'radio' => 1, 'rect' => 1, 'ref' => 1, 'reset' => 1, 'right' => 1, 'row' => 1, 'rowgroup' => 1, 'rows' => 1, 'rtl' => 1, 'submit' => 1, 'text' => 1, 'top' => 1];
-    static $eAL = ['a' => 1, 'area' => 1, 'bdo' => 1, 'button' => 1, 'col' => 1, 'form' => 1, 'img' => 1, 'input' => 1, 'object' => 1, 'optgroup' => 1, 'option' => 1, 'param' => 1, 'script' => 1, 'select' => 1, 'table' => 1, 'td' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1, 'xml:space' => 1];
-    $lcase = isset($eAL[$e]) ? 1 : 0;
-}
+    if ($C['lc_std_val']) {
+        // predef attr vals for $eAL & $aNE ele
+        static $aNL = ['all' => 1, 'baseline' => 1, 'bottom' => 1, 'button' => 1, 'center' => 1, 'char' => 1, 'checkbox' => 1, 'circle' => 1, 'col' => 1, 'colgroup' => 1, 'cols' => 1, 'data' => 1, 'default' => 1, 'file' => 1, 'get' => 1, 'groups' => 1, 'hidden' => 1, 'image' => 1, 'justify' => 1, 'left' => 1, 'ltr' => 1, 'middle' => 1, 'none' => 1, 'object' => 1, 'password' => 1, 'poly' => 1, 'post' => 1, 'preserve' => 1, 'radio' => 1, 'rect' => 1, 'ref' => 1, 'reset' => 1, 'right' => 1, 'row' => 1, 'rowgroup' => 1, 'rows' => 1, 'rtl' => 1, 'submit' => 1, 'text' => 1, 'top' => 1];
+        static $eAL = ['a' => 1, 'area' => 1, 'bdo' => 1, 'button' => 1, 'col' => 1, 'form' => 1, 'img' => 1, 'input' => 1, 'object' => 1, 'optgroup' => 1, 'option' => 1, 'param' => 1, 'script' => 1, 'select' => 1, 'table' => 1, 'td' => 1, 'tfoot' => 1, 'th' => 1, 'thead' => 1, 'tr' => 1, 'xml:space' => 1];
+        $lcase = isset($eAL[$e]) ? 1 : 0;
+    }
 
     $depTr = 0;
     if ($C['no_deprecated_attr']) {
@@ -710,33 +718,35 @@ if ($C['lc_std_val']) {
     while (strlen($a)) {
         $w = 0;
         switch ($mode) {
-  case 0: // Name
-   if (preg_match('`^[a-zA-Z][\-a-zA-Z:]+`', $a, $m)) {
-       $nm = strtolower($m[0]);
-       $w = $mode = 1;
-       $a = ltrim(substr_replace($a, '', 0, strlen($m[0])));
-   }
-  break; case 1:
-   if ('=' == $a[0]) { // =
-       $w = 1;
-       $mode = 2;
-       $a = ltrim($a, '= ');
-   } else { // No val
-       $w = 1;
-       $mode = 0;
-       $a = ltrim($a);
-       $aA[$nm] = '';
-   }
-  break; case 2: // Val
-   if (preg_match('`^((?:"[^"]*")|(?:\'[^\']*\')|(?:\s*[^\s"\']+))(.*)`', $a, $m)) {
-       $a = ltrim($m[2]);
-       $m = $m[1];
-       $w = 1;
-       $mode = 0;
-       $aA[$nm] = trim(('"' == $m[0] || '\'' == $m[0]) ? substr($m, 1, -1) : $m);
-   }
-  break;
- }
+            case 0: // Name
+                if (preg_match('`^[a-zA-Z][\-a-zA-Z:]+`', $a, $m)) {
+                    $nm = strtolower($m[0]);
+                    $w = $mode = 1;
+                    $a = ltrim(substr_replace($a, '', 0, strlen($m[0])));
+                }
+                break;
+                case 1:
+                    if ('=' == $a[0]) { // =
+                        $w = 1;
+                        $mode = 2;
+                        $a = ltrim($a, '= ');
+                    } else { // No val
+                        $w = 1;
+                        $mode = 0;
+                        $a = ltrim($a);
+                        $aA[$nm] = '';
+                    }
+                    break;
+                    case 2: // Val
+                        if (preg_match('`^((?:"[^"]*")|(?:\'[^\']*\')|(?:\s*[^\s"\']+))(.*)`', $a, $m)) {
+                            $a = ltrim($m[2]);
+                            $m = $m[1];
+                            $w = 1;
+                            $mode = 0;
+                            $aA[$nm] = trim(('"' == $m[0] || '\'' == $m[0]) ? substr($m, 1, -1) : $m);
+                        }
+                        break;
+        }
         if (0 == $w) { // Parse errs, deal with space, " & '
             $a = preg_replace('`^(?:"[^"]*("|$)|\'[^\']*(\'|$)|\S)*\s*`', '', $a);
             $mode = 0;
@@ -756,7 +766,7 @@ if ($C['lc_std_val']) {
             if (isset($aNE[$k])) {
                 $v = $k;
             } elseif (!empty($lcase) && (('button' != $e || 'input' != $e) || 'type' == $k)) { // Rather loose but ?not cause issues
-                $v = (isset($aNL[($v2 = strtolower($v))])) ? $v2 : $v;
+                $v = (isset($aNL[$v2 = strtolower($v)])) ? $v2 : $v;
             }
             if ('style' == $k && !$C['style_pass']) {
                 if (false !== strpos($v, '&#')) {
@@ -766,7 +776,7 @@ if ($C['lc_std_val']) {
                 $v = preg_replace_callback('`(url(?:\()(?: )*(?:\'|"|&(?:quot|apos);)?)(.+?)((?:\'|"|&(?:quot|apos);)?(?: )*(?:\)))`iS', 'hl_prot', $v);
                 $v = !$C['css_expression'] ? preg_replace('`expression`i', ' ', preg_replace('`\\\\\S|(/|(%2f))(\*|(%2a))`i', ' ', $v)) : $v;
             } elseif (isset($aNP[$k]) || false !== strpos($k, 'src') || 'o' == $k[0]) {
-                $v = str_replace("\xad", ' ', (false !== strpos($v, '&') ? str_replace(['&#xad;', '&#173;', '&shy;'], ' ', $v) : $v));
+                $v = str_replace("\xad", ' ', false !== strpos($v, '&') ? str_replace(['&#xad;', '&#173;', '&shy;'], ' ', $v) : $v);
                 $v = hl_prot($v, $k);
                 if ('href' == $k) { // X-spam
                     if ($C['anti_mail_spam'] && 0 === strpos($v, 'mailto:')) {
@@ -887,13 +897,13 @@ if ($C['lc_std_val']) {
     }
     // unique ID
     if ($C['unique_ids'] && isset($a['id'])) {
-        if (!preg_match('`^[A-Za-z][A-Za-z0-9_\-.:]*$`', ($id = $a['id'])) || (isset($GLOBALS['hl_Ids'][$id]) && 1 == $C['unique_ids'])) {
+        if (!preg_match('`^[A-Za-z][A-Za-z0-9_\-.:]*$`', $id = $a['id']) || (isset($GLOBALS['hl_Ids'][$id]) && 1 == $C['unique_ids'])) {
             unset($a['id']);
         } else {
             while (isset($GLOBALS['hl_Ids'][$id])) {
                 $id = $C['unique_ids'].$id;
             }
-            $GLOBALS['hl_Ids'][($a['id'] = $id)] = 1;
+            $GLOBALS['hl_Ids'][$a['id'] = $id] = 1;
         }
     }
     // xml:lang
@@ -953,7 +963,7 @@ function hl_tag2(&$e, &$a, $t = 1)
         if (preg_match('`color\s*=\s*(\'|")?(.+?)(\\1|\s|$)`i', $a, $m)) {
             $a2 .= ' color: '.trim($m[2]).';';
         }
-        if (preg_match('`size\s*=\s*(\'|")?(.+?)(\\1|\s|$)`i', $a, $m) && isset($fs[($m = trim($m[2]))])) {
+        if (preg_match('`size\s*=\s*(\'|")?(.+?)(\\1|\s|$)`i', $a, $m) && isset($fs[$m = trim($m[2])])) {
             $a2 .= ' font-size: '.$fs[$m].';';
         }
         $e = 'span';
@@ -981,7 +991,7 @@ function hl_tidy($t, $w, $p)
         return str_replace(["\x01", "\x02", "\x03", "\x04", "\x05", "\x07"], ['<', '>', "\n", "\r", "\t", ' '], $t);
     }
     $s = strpos(" $w", 't') ? "\t" : ' ';
-    $s = preg_match('`\d`', $w, $m) ? str_repeat($s, $m[0]) : str_repeat($s, ("\t" == $s ? 1 : 2));
+    $s = preg_match('`\d`', $w, $m) ? str_repeat($s, $m[0]) : str_repeat($s, "\t" == $s ? 1 : 2);
     $N = preg_match('`[ts]([1-9])`', $w, $m) ? $m[1] : 0;
     $a = ['br' => 1];
     $b = ['button' => 1, 'input' => 1, 'option' => 1];
@@ -1013,7 +1023,7 @@ function hl_tidy($t, $w, $p)
                         continue 2;
                     }
                 } else {
-                    echo "\n", str_repeat($s, $n), "$e\n", str_repeat($s, (1 != $x ? ++$n : $n));
+                    echo "\n", str_repeat($s, $n), "$e\n", str_repeat($s, 1 != $x ? ++$n : $n);
                 }
                 echo ltrim($r);
                 continue;
@@ -1039,7 +1049,7 @@ function hl_tidy($t, $w, $p)
     }
     $t = preg_replace('`[\n]\s*?[\n]+`', "\n", ob_get_contents());
     ob_end_clean();
-    if (($l = strpos(" $w", 'r') ? (strpos(" $w", 'n') ? "\r\n" : "\r") : 0)) {
+    if ($l = strpos(" $w", 'r') ? (strpos(" $w", 'n') ? "\r\n" : "\r") : 0) {
         $t = str_replace("\n", $l, $t);
     }
 

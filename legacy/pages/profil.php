@@ -101,7 +101,7 @@
                 echo '<p class="erreur">Erreur : fichier introuvable</p>';
             }
         }
-        ?>
+?>
 		<br style="clear:both" />
 	</div>
 

@@ -1,6 +1,6 @@
 <?php
 // URL
-$url = 'article/'.html_utf8($article['code_article']).'-'.(int) ($article['id_article']).'.html';
+$url = 'article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html';
 // if($current_commission) $url.='?commission='.$current_commission; // v1 : commission courante sur la page
 if ($article['commission']['code_commission'] ?? null) {
     $url .= '?commission='.$article['commission']['code_commission'];
@@ -17,8 +17,8 @@ if (1 != $article['status_article']) {
 }
 
 // check image
-if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) ($article['id_article']).'/min-figure.jpg')) {
-    $img = '/ftp/articles/'.(int) ($article['id_article']).'/min-figure.jpg';
+if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) $article['id_article'].'/min-figure.jpg')) {
+    $img = '/ftp/articles/'.(int) $article['id_article'].'/min-figure.jpg';
 } else {
     $img = '/ftp/articles/0/min-figure.jpg';
 }
@@ -42,37 +42,37 @@ if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) ($article['id_article'])
 
         echo strftime('%d.%m.%y - ', $article['tsp_article']);
 
-        // une commission est bien liée
-        if ($article['commission'] ?? null) {
-            ?>
+// une commission est bien liée
+if ($article['commission'] ?? null) {
+    ?>
 			<a href="/accueil/<?php echo html_utf8($article['commission']['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
 				<?php echo html_utf8($article['commission']['title_commission']); ?>
 			</a>
 			<?php
-        }
-        // 0 = actu club
-        elseif (0 == $article['commission_article']) {
-            ?>
+}
+// 0 = actu club
+elseif (0 == $article['commission_article']) {
+    ?>
 			<a href="/accueil.html#home-articles" title="Toutes les actus du club">
 				CLUB
 			</a>
 			<?php
-        }
-        // -1 = compte rendu de sortie (code_commission compris dans evt)
-        elseif (-1 == $article['commission_article']) {
-            $urlEvt = 'sortie/'.$article['evt']['code_evt'].'-'.$article['evt']['id_evt'].'.html?commission='.html_utf8($article['evt']['code_commission']); ?>
+}
+// -1 = compte rendu de sortie (code_commission compris dans evt)
+elseif (-1 == $article['commission_article']) {
+    $urlEvt = 'sortie/'.$article['evt']['code_evt'].'-'.$article['evt']['id_evt'].'.html?commission='.html_utf8($article['evt']['code_commission']); ?>
 			<a href="<?php echo $urlEvt; ?>" title="Voir la sortie liée à cet article : &laquo; <?php echo html_utf8($article['evt']['titre_evt']); ?> &raquo;">
 				compte rendu de sortie
 			</a>
 			<?php
-        }
+}
 
-        ?>
+?>
 
 	</p>
 	<!-- summup -->
 	<p class="summup">
-		<?php echo limiterTexte((strip_tags($article['cont_article'])), 170); ?>
+		<?php echo limiterTexte(strip_tags($article['cont_article']), 170); ?>
 		<a href="<?php echo $url; ?>" title="Voir cet article">
 			[...]
 		</a>
