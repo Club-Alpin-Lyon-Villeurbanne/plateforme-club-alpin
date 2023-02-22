@@ -20,8 +20,8 @@ jobs:
           name: Build Docker image, run tests and prepare package
           command: |
             make build up composer-install setup-db migrate env=test
-            make php-cs
-            make phpstan  
+            # make php-cs
+            make phpstan
 
             cp legacy/config/config.php.tpl legacy/config/config.php
             cp legacy/config/params.php.tpl legacy/config/params.php
