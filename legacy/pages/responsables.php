@@ -12,23 +12,23 @@ use App\Legacy\LegacyContainer;
 			<?php
             inclure($p1, 'vide');
 
-            // liste des commissions visibles par ordre alphabétique
-            ksort($comTab);
+// liste des commissions visibles par ordre alphabétique
+ksort($comTab);
 
-            // creation des raccourcis vers les commissions
-            echo '<p>';
-            foreach ($comTab as $code => $data) {
-                echo '<a class="lien-big" style="color:black;" href="/responsables.html#'.$data['code_commission'].'">'.html_utf8($data['title_commission']).'</a>
+// creation des raccourcis vers les commissions
+echo '<p>';
+foreach ($comTab as $code => $data) {
+    echo '<a class="lien-big" style="color:black;" href="/responsables.html#'.$data['code_commission'].'">'.html_utf8($data['title_commission']).'</a>
 				&nbsp;';
-            }
-            echo '<p>';
+}
+echo '<p>';
 
-            // la requete se fait ds la boucle
-            foreach ($comTab as $code => $data) {
-                $dejaVus = []; // IDs des users déja mis en responsable dans cette commsision (evite les doublons pour qqn à la fois resp. de comm' et encadrant...)
+// la requete se fait ds la boucle
+foreach ($comTab as $code => $data) {
+    $dejaVus = []; // IDs des users déja mis en responsable dans cette commsision (evite les doublons pour qqn à la fois resp. de comm' et encadrant...)
 
-                echo '<h2><a id="'.$data['code_commission'].'">&gt; '.html_utf8($data['title_commission']).'</a></h2>';
-                $req = " SELECT
+    echo '<h2><a id="'.$data['code_commission'].'">&gt; '.html_utf8($data['title_commission']).'</a></h2>';
+    $req = " SELECT
 						id_user, civ_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, doit_renouveler_user
 						, title_usertype
 					FROM
@@ -49,29 +49,29 @@ use App\Legacy\LegacyContainer;
 					AND params_user_attr LIKE 'commission:".$code."'
 					ORDER BY hierarchie_usertype DESC, lastname_user ASC
 					";
-                $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
-                echo '<table class="big-lines-table"><tbody>';
-                while ($row = $result->fetch_assoc()) {
-                    if (!in_array($row['id_user'], $dejaVus, true)) {
-                        echo '<tr>
+    echo '<table class="big-lines-table"><tbody>';
+    while ($row = $result->fetch_assoc()) {
+        if (!in_array($row['id_user'], $dejaVus, true)) {
+            echo '<tr>
 								<td style="text-align:center; width:60px;"><img src="'.userImg($row['id_user'], 'pic').'" alt="" title="" style="max-height:40px; max-width:60px;" /></td>
 								<td>'.userlink($row['id_user'], $row['nickname_user']).'</td>
 								<td>'.$row['title_usertype'].'</td>
 							</tr>';
-                    }
-                    $dejaVus[] = $row['id_user'];
-                }
-                echo '</tbody></table><hr /><br />';
-            }
-            ?>
+        }
+        $dejaVus[] = $row['id_user'];
+    }
+    echo '</tbody></table><hr /><br />';
+}
+?>
 		</div>
 	</div>
 
 	<!-- partie droite -->
 	<?php
     require __DIR__.'/../includes/right-type-agenda.php';
-    ?>
+?>
 
 	<br style="clear:both" />
 

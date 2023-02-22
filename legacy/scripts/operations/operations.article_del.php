@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-$id_article = (int) ($_POST['id_article']);
+$id_article = (int) $_POST['id_article'];
 
 $req = "DELETE FROM caf_article WHERE id_article=$id_article AND status_article!=1 ";
 if (allowed('article_delete_notmine')) {
@@ -24,4 +24,4 @@ if (!isset($errTab) || 0 === count($errTab)) {
 }
 
 header('Location: /gestion-des-articles.html');
-exit();
+exit;

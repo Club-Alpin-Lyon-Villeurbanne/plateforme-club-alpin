@@ -47,7 +47,7 @@
                 }
                 require __DIR__.'/../includes/evt/creer.php';
             }
-            ?>
+        ?>
         </div><br>
 
 	</div><!-- fin left -->
@@ -55,7 +55,7 @@
 	<!-- partie droite -->
 	<?php
     require __DIR__.'/../includes/right-type-agenda.php';
-    ?>
+        ?>
 
 	<br style="clear:both" />
 </div>

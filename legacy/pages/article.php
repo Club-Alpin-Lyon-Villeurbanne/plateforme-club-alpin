@@ -18,14 +18,14 @@
             // FICHE DE LA article
             require __DIR__.'/../includes/article-fiche.php';
         }
-        ?>
+		?>
 		<br style="clear:both" />
 	</div>
 
 	<!-- partie droite -->
 	<?php
     require __DIR__.'/../includes/right-type-agenda.php';
-    ?>
+		?>
 
 
 	<br style="clear:both" />

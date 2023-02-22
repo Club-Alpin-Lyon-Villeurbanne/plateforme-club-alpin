@@ -61,7 +61,7 @@ if (!array_key_exists('mode', $_GET) || preg_match('#^articles#', $_GET['mode'])
 		FROM  `caf_article`
 		WHERE  `status_article` =1 '
         // commission donnée : filtre (mais on inclut les actus club, commission=0)
-        .($current_commission ? ' AND (commission_article = '.(int) ($comTab[$current_commission]['id_commission']).' OR commission_article = 0) ' : '')
+        .($current_commission ? ' AND (commission_article = '.(int) $comTab[$current_commission]['id_commission'].' OR commission_article = 0) ' : '')
         ."ORDER BY  `tsp_validate_article` DESC
 		LIMIT $rss_limit";
 
@@ -70,7 +70,7 @@ if (!array_key_exists('mode', $_GET) || preg_match('#^articles#', $_GET['mode'])
         // info de la commission liée
         if ($handle['commission_article'] > 0) {
             $req = 'SELECT * FROM caf_commission
-				WHERE id_commission = '.(int) ($handle['commission_article']).'
+				WHERE id_commission = '.(int) $handle['commission_article'].'
 				LIMIT 1';
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_assoc()) {
@@ -84,8 +84,8 @@ if (!array_key_exists('mode', $_GET) || preg_match('#^articles#', $_GET['mode'])
         $entry['timestamp'] = $handle['tsp_article'];
 
         // check image
-        if (is_file(__DIR__.'/../public/ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg')) {
-            $entry['img'] = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg';
+        if (is_file(__DIR__.'/../public/ftp/articles/'.(int) $handle['id_article'].'/wide-figure.jpg')) {
+            $entry['img'] = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/articles/'.(int) $handle['id_article'].'/wide-figure.jpg';
         }
 
         $entryTab[] = $entry;
@@ -117,7 +117,7 @@ if (preg_match('#^sorties#', $_GET['mode'])) {
 		AND tsp_evt > '.time().'
 		'
         // commission donnée : filtre
-        .($current_commission ? ' AND commission_evt = '.(int) ($comTab[$current_commission]['id_commission']).' ' : '')
+        .($current_commission ? ' AND commission_evt = '.(int) $comTab[$current_commission]['id_commission'].' ' : '')
         ."ORDER BY  `tsp_evt` ASC
 		LIMIT $rss_limit";
 
@@ -126,7 +126,7 @@ if (preg_match('#^sorties#', $_GET['mode'])) {
         // info de la commission liée
         if ($handle['commission_evt'] > 0) {
             $req = 'SELECT * FROM caf_commission
-				WHERE id_commission = '.(int) ($handle['commission_evt']).'
+				WHERE id_commission = '.(int) $handle['commission_evt'].'
 				LIMIT 1';
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_assoc()) {

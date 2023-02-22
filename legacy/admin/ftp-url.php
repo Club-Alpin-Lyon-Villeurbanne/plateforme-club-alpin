@@ -8,13 +8,13 @@ require __DIR__.'/../app/includes.php';
 if (!admin()) {
     header('HTTP/1.0 401 Authorization Required');
     echo 'Votre session administrateur a expiré';
-    exit();
+    exit;
 }
 
-    $targetRel = $_GET['target'];
-    $targetAbs = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).$_GET['target']; // substr = supprimer admin/
+$targetRel = $_GET['target'];
+$targetAbs = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).$_GET['target']; // substr = supprimer admin/
 
-    ?><!doctype html>
+?><!doctype html>
 	<html lang="fr">
 		<head>
 			<meta charset="utf-8">

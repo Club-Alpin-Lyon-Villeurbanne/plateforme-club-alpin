@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$id_evt = (int) (substr(strrchr($p2, '-'), 1));
+$id_evt = (int) substr(strrchr($p2, '-'), 1);
 
 // checks
 if (!$id_evt) {

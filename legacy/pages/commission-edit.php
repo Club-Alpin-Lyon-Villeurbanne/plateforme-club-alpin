@@ -14,7 +14,7 @@ use App\Legacy\LegacyContainer;
                 echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour afficher cette page</p>';
             } else {
                 // vérification de l'ID de commission
-                $id_commission = (int) ($_GET['id_commission']);
+                $id_commission = (int) $_GET['id_commission'];
                 $commissionTmp = false;
                 $req = "SELECT * FROM caf_commission WHERE id_commission = $id_commission";
                 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -46,8 +46,8 @@ use App\Legacy\LegacyContainer;
 
 						<hr />
 						<div style="float:left; background:white; padding:7px;">
-							<a href="<?php echo comFd((int) ($commissionTmp['id_commission'])); ?>" class="fancybox" title="Image actuelle">
-								<img src="<?php echo comFd((int) ($commissionTmp['id_commission'])).'?ac='.time(); ?>" alt="" title="Image actuelle" style="width:150px" />
+							<a href="<?php echo comFd((int) $commissionTmp['id_commission']); ?>" class="fancybox" title="Image actuelle">
+								<img src="<?php echo comFd((int) $commissionTmp['id_commission']).'?ac='.time(); ?>" alt="" title="Image actuelle" style="width:150px" />
 							</a>
 						</div>
 						<div style="float:right; width:440px">
@@ -67,7 +67,7 @@ use App\Legacy\LegacyContainer;
 								<tr>
 									<td rowspan="2">
 										<div style="float:left; background:white; padding:5px; margin-right:10px">
-											<img src="<?php echo comPicto((int) ($commissionTmp['id_commission'])).'?ac='.time(); ?>" alt="" title="Image actuelle" />
+											<img src="<?php echo comPicto((int) $commissionTmp['id_commission']).'?ac='.time(); ?>" alt="" title="Image actuelle" />
 										</div>
 									</td>
 									<td> Pictogramme bleu CAF : <strong>#50b5e1</strong></td>
@@ -80,7 +80,7 @@ use App\Legacy\LegacyContainer;
 								<tr>
 									<td rowspan="2">
 										<div style="float:left; background:#eaeaea; padding:5px; margin-right:10px">
-											<img src="<?php echo comPicto((int) ($commissionTmp['id_commission']), 'light').'?ac='.time(); ?>" alt="" title="Image actuelle" />
+											<img src="<?php echo comPicto((int) $commissionTmp['id_commission'], 'light').'?ac='.time(); ?>" alt="" title="Image actuelle" />
 										</div>
 									</td>
 									<td> Pictogramme blanc : <strong>#ffffff</strong></td>
@@ -93,7 +93,7 @@ use App\Legacy\LegacyContainer;
 								<tr>
 									<td rowspan="2">
 										<div style="float:left; background:white; padding:5px; margin-right:10px">
-											<img src="<?php echo comPicto((int) ($commissionTmp['id_commission']), 'dark').'?ac='.time(); ?>" alt="" title="Image actuelle" />
+											<img src="<?php echo comPicto((int) $commissionTmp['id_commission'], 'dark').'?ac='.time(); ?>" alt="" title="Image actuelle" />
 										</div>
 									</td>
 									<td> Pictogramme sombre : <strong>#044e68</strong></td>
@@ -107,8 +107,8 @@ use App\Legacy\LegacyContainer;
 						<!--
 						<p>
 							<input type="checkbox" name="disable-pictos" id="disable-pictos" <?php if ('on' == $_POST['disable-pictos']) {
-                            echo 'checked="checked"';
-                        } ?>/>
+							    echo 'checked="checked"';
+							} ?>/>
 							<label for="disable-pictos" class='mini'>Laisser tomber, utiliser les pictos du CAF par défaut (déconseillé)</label>
 						</p>
 						-->
@@ -128,8 +128,8 @@ use App\Legacy\LegacyContainer;
                                 <?php if (allowed('comm_groupe_edit')) { ?>
                                     <li style="list-style-type:none;" >
                                         <div class="niveau editable <?php if (0 == $groupe['actif']) {
-                            echo ' vis-off ';
-                        } ?>">
+                                            echo ' vis-off ';
+                                        } ?>">
                                             <input type="hidden" name="groupe[<?php echo $groupe['id']; ?>][id]" value="<?php echo $groupe['id']; ?>">
                                             <p><label><b>* Nom :</b></label><br>
                                             <input type="text" name="groupe[<?php echo $groupe['id']; ?>][nom]" value="<?php echo $groupe['nom']; ?>"  class="type1"></p>
@@ -153,8 +153,8 @@ use App\Legacy\LegacyContainer;
                                 <?php } else { ?>
                                     <li style="list-style-type:none;" >
                                         <div class="niveau <?php if (allowed('comm_groupe_activer_desactiver') || allowed('comm_groupe_delete')) { ?> editable <?php } ?><?php if (0 == $groupe['actif']) {
-                            echo ' vis-off ';
-                        } ?>">
+                                            echo ' vis-off ';
+                                        } ?>">
                                             <input type="hidden" name="groupe[<?php echo $groupe['id']; ?>][id]" value="<?php echo $groupe['id']; ?>">
                                             <b><?php echo $groupe['nom']; ?></b>
                                             <p>Niveau physique : <span class="starify"><?php echo $groupe['niveau_physique']; ?></span>, Niveau technique : <span class="starify"><?php echo $groupe['niveau_technique']; ?></span></p>
@@ -199,14 +199,14 @@ use App\Legacy\LegacyContainer;
                     }
                 }
             }
-            ?>
+?>
 		</div>
 	</div>
 
 	<!-- partie droite -->
 	<?php
     require __DIR__.'/../includes/right-type-agenda.php';
-    ?>
+?>
 
 	<br style="clear:both" />
 </div>

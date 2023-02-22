@@ -5,10 +5,10 @@ use App\Legacy\LegacyContainer;
 if (!admin()) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
-    $id_user = (int) ($_GET['id_user']);
+    $id_user = (int) $_GET['id_user'];
     if (!$id_user) {
         echo 'Erreur : id invalide';
-        exit();
+        exit;
     } ?>
 	<h2>Attribution des statuts à l'utilisateur : <?php echo html_utf8($_GET['nom']); ?></h2>
 	<?php
@@ -65,7 +65,7 @@ if (!admin()) {
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     echo '<select name="id_usertype"><option></option>';
     while ($row = $result->fetch_assoc()) {
-        echo '<option value="'.(int) ($row['id_usertype']).'" class="precise-comm-'.(int) ($row['limited_to_comm_usertype']).'">'.html_utf8($row['title_usertype']).'</option>';
+        echo '<option value="'.(int) $row['id_usertype'].'" class="precise-comm-'.(int) $row['limited_to_comm_usertype'].'">'.html_utf8($row['title_usertype']).'</option>';
     }
     echo '</select>';
 

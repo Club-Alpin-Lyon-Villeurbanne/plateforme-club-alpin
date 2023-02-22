@@ -12,5 +12,5 @@ $tmpTab = ['Refuge du gouter', 'Enneigement', 'Ski de randonnée', 'Mont Blanc',
     if ($current_commission) {
         echo '<input type="checkbox" checked="checked" name="commission" value="'.html_utf8($current_commission).'" id="search_filter" '.(($_GET['filter'] ?? null) ? 'checked="checked"' : '').'><label for="search_filter"> commission <span style="color:black">'.$comTab[$current_commission]['title_commission'].'</span> uniquement</label>';
     }
-    ?>
+?>
 </form>

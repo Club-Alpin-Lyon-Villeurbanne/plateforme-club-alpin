@@ -10,7 +10,7 @@ require __DIR__.'/../app/includes.php';
 if (!admin()) {
     header('HTTP/1.0 401 Authorization Required');
     echo 'Votre session administrateur a expiré';
-    exit();
+    exit;
 }
 
 $errTab = [];
@@ -74,7 +74,7 @@ if (count($errTab) > 0) {
                 parent.document.location.href='ftp.php?dossier='+parent.currentDir;
             </script>
             <?php
-            exit();
+            exit;
         }
     }
 

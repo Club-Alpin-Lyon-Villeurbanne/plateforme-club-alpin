@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-$id_page = (int) ($_POST['id_page']);
+$id_page = (int) $_POST['id_page'];
 
 // Récupération des sous-pages de cette page
 $req = "SELECT * FROM `caf_page` WHERE parent_page=$id_page OR id_page=$id_page LIMIT 1000";

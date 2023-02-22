@@ -19,7 +19,7 @@ switch ($p1) {
     default:
         $parent_type_comment = false;
 }
-$parent_comment = (int) ($_POST['parent_comment']);
+$parent_comment = (int) $_POST['parent_comment'];
 
 // checks
 if (strlen($cont_comment) < 10) {

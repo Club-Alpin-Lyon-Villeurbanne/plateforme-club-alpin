@@ -6,8 +6,8 @@ $id_article = (int) $p2;
 $status_article = 0;
 $topubly_article = ('on' == $_POST['topubly_article'] ? 1 : 0);
 $titre_article = stripslashes($_POST['titre_article']);
-$commission_article = (int) ($_POST['commission_article']);
-$evt_article = (int) ($_POST['evt_article']);
+$commission_article = (int) $_POST['commission_article'];
+$evt_article = (int) $_POST['evt_article'];
 $une_article = ('on' == $_POST['une_article'] ? 1 : 0);
 $cont_article = stripslashes($_POST['cont_article']);
 

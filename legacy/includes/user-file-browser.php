@@ -9,7 +9,7 @@ if (user()) {
     $id_user = getUser()->getId();
     if (!$id_user) {
         echo 'ERREUR : id invalide';
-        exit();
+        exit;
     }
 
     $publicRoot = __DIR__.'/../../public';
@@ -38,16 +38,16 @@ if (user()) {
         $dossier = $publicRoot.'/ftp/user/'.$id_user.'/files/';
     } else {
         echo "ERREUR : type invalide ($type)";
-        exit();
+        exit;
     } ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="https://www.w3.org/1999/xhtml" xml:lang="fr">
 		<head>
 		<title><?php if ('image' == $type) {
-        echo 'Vos images en ligne';
-    } else {
-        echo 'Vos fichiers en ligne';
-    } ?></title>
+		    echo 'Vos images en ligne';
+		} else {
+		    echo 'Vos fichiers en ligne';
+		} ?></title>
 
 		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/style1.css">
 		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
@@ -139,18 +139,18 @@ if (user()) {
 			<!-- TEXTE EXPLICATIF -->
 			<p>
 				<?php
-                if ('image' == $type) {
-                    echo '
+		            if ('image' == $type) {
+		                echo '
 					Déposez ici les images que vous souhaitez insérer dans vos articles. Elles seront redimensionnées automatiquement
 					pour correspondre au format du site. La plupart des formats d\'images sont supportés, poids maximum : 20Mo.
 					';
-                }
-    if ('file' == $type) {
-        echo "
+		            }
+		if ('file' == $type) {
+		    echo "
 					Déposez ici les fichiers que vous souhaitez proposer en téléchargement. Poid maximum : 5Mo.<br />
 					Ext. autorisées : <span style='font-size:9px'>".implode(', ', FtpFile::getAllowedExtensions()).'</span>
 					';
-    } ?>
+		} ?>
 			</p>
 
 			<!-- valums file upload -->
@@ -192,20 +192,20 @@ if (user()) {
 
 			<!-- OPERATIONS -->
 			<?php
-            if ('delete' == $_GET['operation']) {
-                $file = $_GET['file'];
-                if (!file_exists($dossier.$file)) {
-                    echo '<p class="erreur"> Erreur : fichier non trouvé</p>';
-                } elseif (strpos(' '.$file, '../')) {
-                    echo '<p class="erreur"> Erreur tentative de piratage</p>';
-                } else {
-                    if (unlink($dossier.$file)) {
-                        echo '<p class="info">Fichier '.$file.' supprimé</p>';
-                    } else {
-                        echo '<p class="erreur"> Erreur technique lors de la suppression.</p>';
-                    }
-                }
-            } ?>
+		        if ('delete' == $_GET['operation']) {
+		            $file = $_GET['file'];
+		            if (!file_exists($dossier.$file)) {
+		                echo '<p class="erreur"> Erreur : fichier non trouvé</p>';
+		            } elseif (strpos(' '.$file, '../')) {
+		                echo '<p class="erreur"> Erreur tentative de piratage</p>';
+		            } else {
+		                if (unlink($dossier.$file)) {
+		                    echo '<p class="info">Fichier '.$file.' supprimé</p>';
+		                } else {
+		                    echo '<p class="erreur"> Erreur technique lors de la suppression.</p>';
+		                }
+		            }
+		        } ?>
 
 			<table>
 				<thead>
@@ -217,8 +217,8 @@ if (user()) {
 					<!--<th>Créé le</th>-->
 				</thead>
 				<?php
-                // tableau des fichiers
-                $tabFichiers = [];
+		            // tableau des fichiers
+		            $tabFichiers = [];
 
     // restrion au type image
     if ('image' === $type) {
@@ -250,27 +250,27 @@ if (user()) {
             $icon = $url;
         } else {
             switch ($extension) {
-                            case 'jpg':
-                            case 'png':
-                            case 'gif':
-                            case 'jpeg':
-                            case 'bmp':
-                            case 'webp':
-                                $icon = '/img/base/image.png';
-                                break;
-                            case 'odt':
-                                $icon = '/img/base/OOffice.jpg';
-                                break;
-                            case 'doc':
-                                $icon = '/img/base/iconeDoc.gif';
-                                break;
-                            case 'pdf':
-                                $icon = '/img/base/pdf.png';
-                                break;
-                            default:
-                                $icon = '/img/base/fichier.png';
-                                break;
-                        }
+                case 'jpg':
+                case 'png':
+                case 'gif':
+                case 'jpeg':
+                case 'bmp':
+                case 'webp':
+                    $icon = '/img/base/image.png';
+                    break;
+                case 'odt':
+                    $icon = '/img/base/OOffice.jpg';
+                    break;
+                case 'doc':
+                    $icon = '/img/base/iconeDoc.gif';
+                    break;
+                case 'pdf':
+                    $icon = '/img/base/pdf.png';
+                    break;
+                default:
+                    $icon = '/img/base/fichier.png';
+                    break;
+            }
         }
 
         $tabFichiers[] = [
@@ -306,14 +306,14 @@ if (user()) {
                             '<a class="fancybox" href="'.$fichier['icon'].'" title="'.html_utf8($fichier['file']).'"><img src="'.$fichier['icon'].'" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
                             :
                             '<a target="_blank" href="'.$fichier['filepath'].'" title="Ouvrir '.html_utf8($fichier['file']).' dans une nouvelle fenêtre"><img src="'.$fichier['icon'].'" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
-                        ).'
+        ).'
 						</td>
 						<td>
 							'.('image' == $type ?
-                            '<a class="fancybox" href="'.$fichier['icon'].'" title="'.html_utf8($fichier['file']).'">'.substr($fichier['file'], 0, 70).'</a>'
-                            :
-                            '<a target="_blank" href="'.$fichier['filepath'].'" title="Ouvrir '.html_utf8($fichier['file']).' dans une nouvelle fenêtre">'.substr($fichier['file'], 0, 70).'</a>'
-                        ).'
+            '<a class="fancybox" href="'.$fichier['icon'].'" title="'.html_utf8($fichier['file']).'">'.substr($fichier['file'], 0, 70).'</a>'
+            :
+            '<a target="_blank" href="'.$fichier['filepath'].'" title="Ouvrir '.html_utf8($fichier['file']).' dans une nouvelle fenêtre">'.substr($fichier['file'], 0, 70).'</a>'
+        ).'
 						</td>
 						<td>
 							<span style="display:none">'.$fichier['size'].'</span>

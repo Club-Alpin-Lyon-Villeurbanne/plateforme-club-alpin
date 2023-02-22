@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 
 // id du profil
-$id_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) ($_GET['id_user']));
+$id_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $_GET['id_user']);
 $tmpUser = false;
 
 $req = "SELECT * FROM caf_user WHERE id_user = $id_user LIMIT 1";
@@ -110,8 +110,8 @@ elseif (!allowed('user_read_public')) {
         } ?>
 
 		<div id="trigger-userinfo" style="display:<?php if (isset($_POST['operation']) && 'user_contact' == $_POST['operation']) {
-            echo 'none';
-        } ?>">
+		    echo 'none';
+		} ?>">
 
 
 

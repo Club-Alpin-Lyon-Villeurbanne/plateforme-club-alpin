@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-$id_comment = (int) ($_POST['id_comment']);
+$id_comment = (int) $_POST['id_comment'];
 if (!$id_comment) {
     $errTab[] = 'ID commentaire introuvable.';
 }

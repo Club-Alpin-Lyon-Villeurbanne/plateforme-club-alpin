@@ -16,20 +16,20 @@ if (!admin()) {
 	<p>
 	<strong>Voir les partenaires :</strong>
 		<a href="/admin-partenaires.html?show=all" <?php if ('all' == $show) {
-        echo 'style="background:#d3d6ff"';
-    } ?> class="boutonFancy">&nbsp;tous&nbsp;</a>
+		    echo 'style="background:#d3d6ff"';
+		} ?> class="boutonFancy">&nbsp;tous&nbsp;</a>
 		<a href="/admin-partenaires.html?show=enabled" <?php if ('enabled' == $show) {
-        echo 'style="background:#d3d6ff"';
-    } ?> class="boutonFancy">&nbsp;activé&nbsp;</a>&nbsp;
+		    echo 'style="background:#d3d6ff"';
+		} ?> class="boutonFancy">&nbsp;activé&nbsp;</a>&nbsp;
 		<a href="/admin-partenaires.html?show=disabled" <?php if ('disabled' == $show) {
-        echo 'style="background:#d3d6ff"';
-    } ?> class="boutonFancy">&nbsp;désactivé&nbsp;</a>&nbsp;
+		    echo 'style="background:#d3d6ff"';
+		} ?> class="boutonFancy">&nbsp;désactivé&nbsp;</a>&nbsp;
 		<a href="/admin-partenaires.html?show=private" <?php if ('private' == $show) {
-        echo 'style="background:#d3d6ff"';
-    } ?> class="boutonFancy">&nbsp;privé&nbsp;</a>&nbsp;
+		    echo 'style="background:#d3d6ff"';
+		} ?> class="boutonFancy">&nbsp;privé&nbsp;</a>&nbsp;
 		<a href="/admin-partenaires.html?show=public" <?php if ('public' == $show) {
-        echo 'style="background:#d3d6ff"';
-    } ?> class="boutonFancy">&nbsp;public&nbsp;</a>&nbsp;
+		    echo 'style="background:#d3d6ff"';
+		} ?> class="boutonFancy">&nbsp;public&nbsp;</a>&nbsp;
 	</p>
 
 	<!-- AFFICHAGE DU TABLEAU -->
@@ -83,7 +83,7 @@ if (!admin()) {
 		<tbody>
 			<?php
 
-            $total = 0;
+		        $total = 0;
 
     for ($i = 0; $i < count($partenairesTab); ++$i) {
         $elt = $partenairesTab[$i];
@@ -91,12 +91,12 @@ if (!admin()) {
         echo '<tr id="tr-'.$elt['part_id'].'" class="'.($elt['part_enable'] ? 'vis-on' : 'vis-off').'">'
                     .'<td style="white-space:nowrap;">';
         // edit
-        echo '<a href="/includer.php?p=pages/partenaire-modifier.php&amp;part_id='.(int) ($elt['part_id']).'" class="fancyframe" title="Modifier ce partenaire"><img src="/img/base/application_form_edit.png" alt="MODIFIER" title=""></a> ';
-        echo '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/partenaire-supprimer.php&amp;part_id='.(int) ($elt['part_id']).'" class="fancyframe" title="Supprimer"><img src="/img/base/delete.png" alt="SUPPRIMER" title="SUPPRIMER"  style="margin-bottom:-2px;"></a> ';
+        echo '<a href="/includer.php?p=pages/partenaire-modifier.php&amp;part_id='.(int) $elt['part_id'].'" class="fancyframe" title="Modifier ce partenaire"><img src="/img/base/application_form_edit.png" alt="MODIFIER" title=""></a> ';
+        echo '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/partenaire-supprimer.php&amp;part_id='.(int) $elt['part_id'].'" class="fancyframe" title="Supprimer"><img src="/img/base/delete.png" alt="SUPPRIMER" title="SUPPRIMER"  style="margin-bottom:-2px;"></a> ';
 
         if (1 == $elt['part_enable']) {
             // desactiver
-//						echo '<a href="/includer.php?p=pages/partenaire-disable.php&amp;part_id='.intval($elt['part_id']).'" class="fancyframe" title="Désactiver ce partenaire"><img src="/img/base/delete.png" alt="DESACTIVER" title=""></a> ';
+            //						echo '<a href="/includer.php?p=pages/partenaire-disable.php&amp;part_id='.intval($elt['part_id']).'" class="fancyframe" title="Désactiver ce partenaire"><img src="/img/base/delete.png" alt="DESACTIVER" title=""></a> ';
         }
         // activer
         //						echo '<a href="/includer.php?p=pages/partenaire-enable.php&amp;part_id='.intval($elt['part_id']).'" class="fancyframe" title="Activer ce partenaire"><img src="/img/base/add.png" alt="ACTIVER" title=""></a> ';

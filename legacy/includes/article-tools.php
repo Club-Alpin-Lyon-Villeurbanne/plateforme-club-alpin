@@ -44,7 +44,7 @@ if (user()) {
     */
 
     // on peut toujours modifier?>
-		<a href="/article-edit/<?php echo (int) ($article['id_article']); ?>.html" title="" class="nice2 orange">
+		<a href="/article-edit/<?php echo (int) $article['id_article']; ?>.html" title="" class="nice2 orange">
 			Modifier
 		</a>
 		<?php

@@ -8,7 +8,7 @@ if (!admin()) {
 }
 $uploaddir = __DIR__.'/../../../public/ftp/partenaires/';
 
-$part_id = (int) ($_POST['part_id']);
+$part_id = (int) $_POST['part_id'];
 $partenaireTab['part_image'] = trim($_POST['part_image']);
 
 $req = "DELETE FROM `caf_partenaires` WHERE part_id='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($part_id)."'";
@@ -24,4 +24,4 @@ if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
     }
 }
 
-exit();
+exit;
