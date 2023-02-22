@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-$id_page = (int) ($_POST['id_page']);
+$id_page = (int) $_POST['id_page'];
 
 if (!$id_page) {
     $errTab[] = 'ID manquant';

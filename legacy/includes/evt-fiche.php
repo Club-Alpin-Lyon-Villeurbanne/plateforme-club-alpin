@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 echo '<div id="fiche-sortie">';
-if (isset($errTab) && count($errTab) > 0 && (!in_array(($_POST['operation'] ?? null), ['user_join_del', 'user_join_update_status', 'evt_user_contact', 'user_join'], true))) {
+if (isset($errTab) && count($errTab) > 0 && (!in_array($_POST['operation'] ?? null, ['user_join_del', 'user_join_update_status', 'evt_user_contact', 'user_join'], true))) {
     echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
 }
 if (!$evt) {
@@ -58,7 +58,7 @@ if (!$evt) {
 		</a>
 		-->
 
-			<a href="<?php echo 'feuille-de-sortie/evt-'.(int) ($evt['id_evt']).'.html'; ?>" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
+			<a href="<?php echo 'feuille-de-sortie/evt-'.(int) $evt['id_evt'].'.html'; ?>" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
 				<img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
 				Imprimer la fiche de sortie
 			</a>
@@ -146,13 +146,13 @@ if (!$evt) {
             if (allowed('evt_unjoin')) {
                 ?>
 			<div id="inscription-annuler" style="display:<?php if (isset($_POST['operation']) && 'user_join_del' == $_POST['operation']) {
-                    echo 'block';
-                } else {
-                    echo 'none';
-                } ?>">
+			    echo 'block';
+			} else {
+			    echo 'none';
+			} ?>">
 				<?php
-                // messages informatifs
-                inclure('formalites-inscription-suppression', 'formalites');
+			// messages informatifs
+			inclure('formalites-inscription-suppression', 'formalites');
 
                 // TABLEAU d'erreurs
                 if (isset($_POST['operation']) && 'user_join_del' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
@@ -176,7 +176,8 @@ if (!$evt) {
 			</div>
 			<br />
 			<?php
-            }}
+            }
+        }
         // message en cas de succès de désinscription
         if (isset($_POST['operation']) && 'user_join_del' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
             echo '<div class="info">Vous n\'êtes plus inscrit à cette sortie.</div>';
@@ -236,7 +237,7 @@ if (!$evt) {
             echo '<ul class="nice-list">'
                 // tarif ?
                 .($evt['tarif_evt'] > 0 ?
-                    '<li class="wide"><b>TARIF :</b> '.str_replace(',', '.', (float) ($evt['tarif_evt'])).'&nbsp;Euros</li>'
+                    '<li class="wide"><b>TARIF :</b> '.str_replace(',', '.', (float) $evt['tarif_evt']).'&nbsp;Euros</li>'
                 : '')
                 // Détail du tarif
                 .($evt['tarif_detail'] ?
@@ -274,8 +275,8 @@ if (!$evt) {
                 <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
                 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" type="text/css"  media="screen" />
                 <script>
-                var lat            = <?php echo str_replace(',', '.', (float) ($evt['lat_evt'])); ?>;
-                var lon            = <?php echo str_replace(',', '.', (float) ($evt['long_evt'])); ?>;
+                var lat            = <?php echo str_replace(',', '.', (float) $evt['lat_evt']); ?>;
+                var lon            = <?php echo str_replace(',', '.', (float) $evt['long_evt']); ?>;
                 var zoom           = 16;
                 var mymap = L.map('map-fichesortie').setView([lat, lon], zoom);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar', attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(mymap);
@@ -395,7 +396,7 @@ if (!$evt) {
                 </span>
 				<span  style="font-size:14px; font-family:DINBold; color:#666666">
 					'.$nInscritsTotal.' PARTICIPANT'.($nInscritsTotal > 1 ? 'S' : '').' INSCRIT'.($nInscritsTotal > 1 ? 'S' : '').'
-					SUR  '.$evt['ngens_max_evt'].' PLACE'.($evt['ngens_max_evt'] > 1 ? 'S' : '').' AU TOTAL ('.($evt['ngens_max_evt'] > 0 ? sprintf('%2d%%', (100 * $nInscritsTotal / $evt['ngens_max_evt'])) : '0').')
+					SUR  '.$evt['ngens_max_evt'].' PLACE'.($evt['ngens_max_evt'] > 1 ? 'S' : '').' AU TOTAL ('.($evt['ngens_max_evt'] > 0 ? sprintf('%2d%%', 100 * $nInscritsTotal / $evt['ngens_max_evt']) : '0').')
 				</span><br />
 				'.$nPlacesRestantesOnline.' place'.($nPlacesRestantesOnline > 1 ? 's' : '').' restante'.($nPlacesRestantesOnline > 1 ? 's' : '').' pour les inscriptions en ligne
 				'.($nEnAttente ? ' - '.$nEnAttente.' inscriptions en attente de confirmation' : '').'

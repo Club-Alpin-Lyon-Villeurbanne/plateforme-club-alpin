@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-$id_comment = (int) ($_GET['id_comment']);
+$id_comment = (int) $_GET['id_comment'];
 if (!$id_comment) {
     echo "<p class='erreur'>ID commentaire introuvable.</p>";
 } else {

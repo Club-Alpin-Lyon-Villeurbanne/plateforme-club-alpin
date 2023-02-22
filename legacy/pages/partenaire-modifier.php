@@ -6,10 +6,10 @@ if (!admin()) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     $operation = 'edit';
-    $part_id = (int) ($_GET['part_id']);
+    $part_id = (int) $_GET['part_id'];
     if (!$part_id) {
         echo 'Erreur : id invalide';
-        exit();
+        exit;
     }
     if (-1 == $part_id) {
         // nouveau
@@ -115,14 +115,14 @@ if (!admin()) {
 						<div class="nice-checkboxes">
 							<label for="part_type_private">
 								<input type="radio" <?php if (1 == $partenaireTab['part_type']) {
-                                            echo 'checked="checked"';
-                                        } ?> name="part_type" value="1" id="part_type_private" />
+								    echo 'checked="checked"';
+								} ?> name="part_type" value="1" id="part_type_private" />
 								Privé
 							</label>
 							<label for="part_type_public">
 								<input type="radio" <?php if (2 == $partenaireTab['part_type']) {
-                                            echo 'checked="checked"';
-                                        } ?> name="part_type" value="2" id="part_type_public" />
+								    echo 'checked="checked"';
+								} ?> name="part_type" value="2" id="part_type_public" />
 								Public
 							</label>
 						</div>
@@ -133,14 +133,14 @@ if (!admin()) {
 						<div class="nice-checkboxes">
 							<label for="part_enable_yes">
 								<input type="radio" <?php if (1 == $partenaireTab['part_enable']) {
-                                            echo 'checked="checked"';
-                                        } ?> name="part_enable" value="1" id="part_enable_yes" />
+								    echo 'checked="checked"';
+								} ?> name="part_enable" value="1" id="part_enable_yes" />
 								Activé
 							</label>
 							<label for="part_enable_no">
 								<input type="radio" <?php if (1 != $partenaireTab['part_enable']) {
-                                            echo 'checked="checked"';
-                                        } ?> name="part_enable" value="0" id="part_enable_no" />
+								    echo 'checked="checked"';
+								} ?> name="part_enable" value="0" id="part_enable_no" />
 								Désactivé
 							</label>
 						</div>

@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * FtpAllowedext.
  *
  * @ORM\Table(name="caf_ftp_allowedext")
+ *
  * @ORM\Entity
  */
 class FtpAllowedext
@@ -16,7 +17,9 @@ class FtpAllowedext
      * @var int
      *
      * @ORM\Column(name="id_ftp_allowedext", type="integer", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;

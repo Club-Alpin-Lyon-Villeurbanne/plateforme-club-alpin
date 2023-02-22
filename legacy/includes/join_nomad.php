@@ -6,7 +6,7 @@ use App\Legacy\LegacyContainer;
 
 if (user()) {
     // id de la sortie
-    $id_evt = (int) ($_GET['id_evt']);
+    $id_evt = (int) $_GET['id_evt'];
     $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$id_evt;
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($sorties = $result->fetch_assoc()) {
@@ -53,11 +53,11 @@ if (user()) {
 				</script>
 				<select name="id_user" class="type1" style="width:40%">
 					<option value="0" <?php if ('0' == $_POST['id_user']) {
-            echo 'selected="selected"';
-        } ?>>- Non merci, créer un nouvel adhérent nomade</option>
+					    echo 'selected="selected"';
+					} ?>>- Non merci, créer un nouvel adhérent nomade</option>
 					<?php
-                    // liste des adhérents (table user) créés par moi
-        $req = 'SELECT  id_user, cafnum_user, firstname_user, lastname_user, civ_user
+					            // liste des adhérents (table user) créés par moi
+					$req = 'SELECT  id_user, cafnum_user, firstname_user, lastname_user, civ_user
 								, created_user, tel_user, tel2_user
 						FROM  caf_user
 						WHERE valid_user=1
@@ -66,17 +66,17 @@ if (user()) {
 						LIMIT 1000';
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
-            echo '<option value="'.(int) ($row['id_user']).'">'.html_utf8($row['cafnum_user'].' - '.$row['firstname_user'].' '.$row['lastname_user']).' - le '.date('d/m/y', $row['created_user']).'</option>';
+            echo '<option value="'.(int) $row['id_user'].'">'.html_utf8($row['cafnum_user'].' - '.$row['firstname_user'].' '.$row['lastname_user']).' - le '.date('d/m/y', $row['created_user']).'</option>';
 
             echo '
 						<script type="text/javascript">
 							prefilled[prefilled.length] = {
-								"civ_user": "'.addslashes(($row['civ_user'])).'",
-								"cafnum_user": "'.addslashes(($row['cafnum_user'])).'",
-								"firstname_user": "'.addslashes(($row['firstname_user'])).'",
-								"lastname_user": "'.addslashes(($row['lastname_user'])).'",
-								"tel_user": "'.addslashes(($row['tel_user'])).'",
-								"tel2_user": "'.addslashes(($row['tel2_user'])).'"
+								"civ_user": "'.addslashes($row['civ_user']).'",
+								"cafnum_user": "'.addslashes($row['cafnum_user']).'",
+								"firstname_user": "'.addslashes($row['firstname_user']).'",
+								"lastname_user": "'.addslashes($row['lastname_user']).'",
+								"tel_user": "'.addslashes($row['tel_user']).'",
+								"tel2_user": "'.addslashes($row['tel2_user']).'"
 							};
 						</script>';
         } ?>
@@ -94,14 +94,14 @@ if (user()) {
 				<b>Civilité :</b><br />
 				<select name="civ_user" class="type1" style="width:30%">
 					<option value="M." <?php if ('M.' == $_POST['civ_user']) {
-            echo 'selected="selected"';
-        } ?>>M.</option>
+					    echo 'selected="selected"';
+					} ?>>M.</option>
 					<option value="Mme." <?php if ('Mme.' == $_POST['civ_user']) {
-            echo 'selected="selected"';
-        } ?>>Mme.</option>
+					    echo 'selected="selected"';
+					} ?>>Mme.</option>
 					<option value="Mlle." <?php if ('Mlle.' == $_POST['civ_user']) {
-            echo 'selected="selected"';
-        } ?>>Mlle.</option>
+					    echo 'selected="selected"';
+					} ?>>Mlle.</option>
 				</select>
 			</div>
 

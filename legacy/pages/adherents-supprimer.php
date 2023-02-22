@@ -3,10 +3,10 @@
 if (!admin()) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
-    $id_user = (int) ($_GET['id_user']);
+    $id_user = (int) $_GET['id_user'];
     if (!$id_user) {
         echo 'Erreur : id invalide';
-        exit();
+        exit;
     } ?>
 
 	<div style="text-align:left;">

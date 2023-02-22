@@ -162,7 +162,7 @@ elseif ('profil' == $p1 && 'articles' == $p2 && getUser()) {
         // info de la commission liée
         if ($handle['commission_article'] > 0) {
             $req = 'SELECT * FROM caf_commission
-				WHERE id_commission = '.(int) ($handle['commission_article']).'
+				WHERE id_commission = '.(int) $handle['commission_article'].'
 				LIMIT 1';
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -173,7 +173,7 @@ elseif ('profil' == $p1 && 'articles' == $p2 && getUser()) {
         // info de la sortie liée
         if ($handle['evt_article'] > 0) {
             $req = 'SELECT code_evt, id_evt, titre_evt FROM caf_evt
-				WHERE id_evt = '.(int) ($handle['evt_article']).'
+				WHERE id_evt = '.(int) $handle['evt_article'].'
 				LIMIT 1';
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -188,7 +188,7 @@ elseif ('profil' == $p1 && 'articles' == $p2 && getUser()) {
 elseif ('article' == $p1) {
     $article = false;
     $errPage = false; // message d'erreur spécifique à la page courante si besoin
-    $id_article = (int) (substr(strrchr($p2, '-'), 1));
+    $id_article = (int) substr(strrchr($p2, '-'), 1);
 
     // sélection complète, non conditionnelle par rapport au status
     $req = "SELECT *
@@ -202,11 +202,11 @@ elseif ('article' == $p1) {
         if (1 == $handle['status_article'] // publié
             || ((allowed('article_validate_all') || allowed('article_validate')) && $_GET['forceshow']) // ou mode validateur
             || (user() && $handle['user_article'] == (string) getUser()->getId()) // ou j'en suis l'auteur
-            ) {
+        ) {
             // auteur :
             $req = 'SELECT id_user, nickname_user
 				FROM caf_user
-				WHERE id_user='.(int) ($handle['user_article']).'
+				WHERE id_user='.(int) $handle['user_article'].'
 				LIMIT 1';
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -216,7 +216,7 @@ elseif ('article' == $p1) {
             // info de la sortie liée
             if ($handle['evt_article'] > 0) {
                 $req = 'SELECT code_evt, id_evt, titre_evt FROM caf_evt
-					WHERE id_evt = '.(int) ($handle['evt_article']).'
+					WHERE id_evt = '.(int) $handle['evt_article'].'
 					LIMIT 1';
                 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -241,7 +241,7 @@ elseif ('article' == $p1) {
 
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                 // infos user
-                $req = 'SELECT nickname_user FROM caf_user WHERE id_user='.(int) ($handle2['user_comment']).' LIMIT 1';
+                $req = 'SELECT nickname_user FROM caf_user WHERE id_user='.(int) $handle2['user_comment'].' LIMIT 1';
                 $handleSql3 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($handle3 = $handleSql3->fetch_array(\MYSQLI_ASSOC)) {
                     $handle2['nickname_user'] = $handle3['nickname_user'];
@@ -260,8 +260,8 @@ elseif ('article' == $p1) {
             $meta_title = $handle['titre_article'].' | '.$p_sitename;
             $meta_description = limiterTexte(strip_tags($handle['cont_article']), 200).'...';
             // opengraphe : image pour les partages
-            if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg')) {
-                $ogImage = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/articles/'.(int) ($handle['id_article']).'/wide-figure.jpg';
+            if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) $handle['id_article'].'/wide-figure.jpg')) {
+                $ogImage = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/articles/'.(int) $handle['id_article'].'/wide-figure.jpg';
             }
 
             // maj nb vues
@@ -389,7 +389,7 @@ elseif ('accueil' == $p1) {
         // .($current_commission?" AND (commission_article = ".intval($comTab[$current_commission]['id_commission'])." OR commission_article = 0) ":'')
         $req .= ' AND ((commission_article = 0 AND DATEDIFF(NOW(), tsp_lastedit)<30)
 				OR
-				(commission_article = '.(int) ($comTab[$current_commission]['id_commission']).')
+				(commission_article = '.(int) $comTab[$current_commission]['id_commission'].')
 			) ';
     }
     // commission donnée : filtre (mais on inclut les actus club, commission=0)
@@ -406,7 +406,7 @@ elseif ('accueil' == $p1) {
         // info de la commission liée
         if ($handle['commission_article'] > 0) {
             $req = 'SELECT * FROM caf_commission
-				WHERE id_commission = '.(int) ($handle['commission_article']).'
+				WHERE id_commission = '.(int) $handle['commission_article'].'
 				LIMIT 1';
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -420,7 +420,7 @@ elseif ('accueil' == $p1) {
 					code_evt, id_evt, titre_evt
 					, code_commission
 				FROM caf_evt, caf_commission
-				WHERE id_evt = '.(int) ($handle['evt_article']).'
+				WHERE id_evt = '.(int) $handle['evt_article'].'
 				AND id_commission = commission_evt
 				LIMIT 1';
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -440,8 +440,8 @@ elseif ('agenda' == $p1) {
         $year = date('Y');
         $month = date('m');
     } else {
-        $year = (int) ($_GET['year']);
-        $month = (int) ($_GET['month']);
+        $year = (int) $_GET['year'];
+        $month = (int) $_GET['month'];
     }
 
     // nombre de jours dans ce mois (!! réutilisé dans la page !!)
@@ -660,7 +660,7 @@ elseif ('creer-une-sortie' == $p1) {
         // MISE A JOUR
         if ($p3 && 'update-' == substr($p3, 0, 7)) {
             // un ID de sortie est vise, il s'agit d'une modif et non d'une creation
-            $id_evt = (int) (substr(strrchr($p3, '-'), 1));
+            $id_evt = (int) substr(strrchr($p3, '-'), 1);
 
             $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
                     , denivele_evt, distance_evt, matos_evt, difficulte_evt, description_evt, lat_evt, long_evt
@@ -778,13 +778,13 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
         $type = strstr($p2, '-', true);
         switch ($type) {
             case 'evt':
-                $id_evt = (int) (substr(strrchr($p2, '-'), 1));
+                $id_evt = (int) substr(strrchr($p2, '-'), 1);
                 break;
             default:
                 break;
         }
     } elseif ('sortie' == $p1) {
-        $id_evt = (int) (substr(strrchr($p2, '-'), 1));
+        $id_evt = (int) substr(strrchr($p2, '-'), 1);
     }
 
     if ($id_evt) {
@@ -841,7 +841,7 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
                             , caf_user
                             , caf_commission
                         WHERE id_user = user_evt
-                        AND id_evt='.(int) ($handle['cycle_parent_evt']).'
+                        AND id_evt='.(int) $handle['cycle_parent_evt'].'
                         AND id_commission = commission_evt
                         ORDER BY  `tsp_crea_evt` DESC
                         LIMIT 1';
@@ -885,7 +885,7 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
                 $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                             , role_evt_join , is_covoiturage
                     FROM caf_evt_join, caf_user
-                    WHERE evt_evt_join  = '.(int) (($handle['cycle_parent_evt'] ?: $id_evt)).'
+                    WHERE evt_evt_join  = '.(int) ($handle['cycle_parent_evt'] ?: $id_evt).'
                     AND user_evt_join = id_user
                     AND status_evt_join = 0
                     LIMIT 300';
@@ -899,7 +899,7 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
                 $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                             , role_evt_join, is_covoiturage
                     FROM caf_evt_join, caf_user
-                    WHERE evt_evt_join  = '.(int) (($handle['cycle_parent_evt'] ?: $id_evt))."
+                    WHERE evt_evt_join  = '.(int) ($handle['cycle_parent_evt'] ?: $id_evt)."
                     AND user_evt_join = id_user
                     AND role_evt_join LIKE 'inscrit'
                     AND status_evt_join = 1
@@ -913,7 +913,7 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
                 $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                             , role_evt_join, is_covoiturage
                     FROM caf_evt_join, caf_user
-                    WHERE evt_evt_join  = '.(int) (($handle['cycle_parent_evt'] ?: $id_evt))."
+                    WHERE evt_evt_join  = '.(int) ($handle['cycle_parent_evt'] ?: $id_evt)."
                     AND user_evt_join = id_user
                     AND role_evt_join LIKE 'manuel'
                     AND status_evt_join = 1
@@ -956,7 +956,7 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
                     if ('1' == $handle['cancelled_evt']) {
                         $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, nomade_user, civ_user
                             FROM caf_user
-                            WHERE id_user='.(int) ($handle['cancelled_who_evt']).'
+                            WHERE id_user='.(int) $handle['cancelled_who_evt'].'
                             LIMIT 300';
                         $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -1005,7 +1005,7 @@ elseif ('annuler-une-sortie' == $p1) {
     $evt = false;
     $errPage = false; // message d'erreur spécifique à la page courante si besoin
 
-    $id_evt = (int) (substr(strrchr($p2, '-'), 1));
+    $id_evt = (int) substr(strrchr($p2, '-'), 1);
 
     // sélection complète, non conditionnelle par rapport au status
     $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt,
@@ -1050,7 +1050,7 @@ elseif ('annuler-une-sortie' == $p1) {
             if ('1' == $handle['cancelled_evt']) {
                 $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user
                     FROM caf_user
-                    WHERE id_user='.(int) ($handle['cancelled_who_evt']).'
+                    WHERE id_user='.(int) $handle['cancelled_who_evt'].'
                     LIMIT 300';
                 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -1068,7 +1068,7 @@ elseif ('annuler-une-sortie' == $p1) {
 elseif ('supprimer-une-sortie' == $p1) {
     $evt = false;
     $errPage = false; // message d'erreur spécifique à la page courante si besoin
-    $id_evt = (int) (substr(strrchr($p2, '-'), 1));
+    $id_evt = (int) substr(strrchr($p2, '-'), 1);
 
     // sélection complète, non conditionnelle par rapport au status
     $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
@@ -1093,7 +1093,7 @@ elseif ('supprimer-une-sortie' == $p1) {
             $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
 					, role_evt_join
 				FROM caf_evt_join, caf_user
-				WHERE evt_evt_join ='.(int) ($handle['id_evt']).'
+				WHERE evt_evt_join ='.(int) $handle['id_evt'].'
 				AND user_evt_join = id_user
 				LIMIT 300';
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -1105,7 +1105,7 @@ elseif ('supprimer-une-sortie' == $p1) {
             if ('1' == $handle['cancelled_evt']) {
                 $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user
 					FROM caf_user
-					WHERE id_user='.(int) ($handle['cancelled_who_evt']).'
+					WHERE id_user='.(int) $handle['cancelled_who_evt'].'
 					LIMIT 300';
                 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -1275,7 +1275,7 @@ elseif ('admin-partenaires' == $p1 && admin()) {
         $partenairesTab[] = $row;
     }
 
-    //	print_r($partenairesTab);exit;
+//	print_r($partenairesTab);exit;
 }
 
 // FICHE USER
@@ -1331,7 +1331,7 @@ elseif ('recherche' == $p1 && strlen($_GET['str'])) {
 			AND status_article = 1
 			'
             // commission donnée : filtre (mais on inclut les actus club, commission=0)
-            .($current_commission ? ' AND (commission_article = '.(int) ($comTab[$current_commission]['id_commission']).' OR commission_article = 0) ' : '')
+            .($current_commission ? ' AND (commission_article = '.(int) $comTab[$current_commission]['id_commission'].' OR commission_article = 0) ' : '')
             // RECHERCHE
             ." AND (
 						titre_article LIKE  '%$safeStrSql%'
@@ -1351,7 +1351,7 @@ elseif ('recherche' == $p1 && strlen($_GET['str'])) {
             // info de la commission liée
             if ($handle['commission_article'] > 0) {
                 $req = 'SELECT * FROM caf_commission
-					WHERE id_commission = '.(int) ($handle['commission_article']).'
+					WHERE id_commission = '.(int) $handle['commission_article'].'
 					LIMIT 1';
                 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {

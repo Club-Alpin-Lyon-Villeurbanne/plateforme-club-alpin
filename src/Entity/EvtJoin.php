@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * EvtJoin.
  *
  * @ORM\Table(name="caf_evt_join")
+ *
  * @ORM\Entity(repositoryClass=EvtJoinRepository::class)
  */
 class EvtJoin
@@ -29,7 +30,9 @@ class EvtJoin
      * @var int
      *
      * @ORM\Column(name="id_evt_join", type="integer", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
@@ -43,6 +46,7 @@ class EvtJoin
 
     /**
      * @ORM\ManyToOne(targetEntity="Evt", inversedBy="joins", fetch="EAGER")
+     *
      * @ORM\JoinColumn(name="evt_evt_join", nullable=false, referencedColumnName="id_evt", nullable=false, onDelete="CASCADE")
      */
     private $evt;
@@ -51,13 +55,16 @@ class EvtJoin
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
+     *
      * @ORM\JoinColumn(name="user_evt_join", nullable=false, referencedColumnName="id_user", onDelete="CASCADE")
      */
     private $user;
 
     /**
      * @var User
+     *
      * @ORM\ManyToOne(targetEntity="User")
+     *
      * @ORM\JoinColumn(name="affiliant_user_join", referencedColumnName="id_user", nullable=true)
      */
     private $affiliantUserJoin;
@@ -85,7 +92,9 @@ class EvtJoin
 
     /**
      * @var User
+     *
      * @ORM\ManyToOne(targetEntity="User")
+     *
      * @ORM\JoinColumn(name="lastchange_who_evt_join", referencedColumnName="id_user", nullable=true)
      */
     private $lastchangeWho;

@@ -12,6 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * User.
  *
  * @ORM\Table(name="caf_user")
+ *
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -20,7 +21,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var int
      *
      * @ORM\Column(name="id_user", type="bigint", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;

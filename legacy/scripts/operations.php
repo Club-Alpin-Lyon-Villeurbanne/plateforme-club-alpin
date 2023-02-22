@@ -168,7 +168,7 @@ if ('user_attr_add' == ($_POST['operation'] ?? null)) {
 // USER : supression d'attribut
 if ('user_attr_del' == ($_POST['operation'] ?? null)) {
     $errTab[] = 'tooddo';
-    $id_user_attr = (int) ($_POST['id_user_attr']);
+    $id_user_attr = (int) $_POST['id_user_attr'];
     if (!$id_user_attr) {
         $errTab[] = 'No id';
     } else {
@@ -190,7 +190,7 @@ if ('user_edit' == ($_POST['operation'] ?? null)) {
 
 // USER : SUPPRIMER
 if ('user_delete' == ($_POST['operation'] ?? null)) {
-    $id_user = (int) ($_POST['id_user']);
+    $id_user = (int) $_POST['id_user'];
     if (!$id_user) {
         $errTab[] = 'No id';
     } elseif (!admin() || !allowed('user_delete')) {
@@ -226,7 +226,7 @@ if ('user_delete' == ($_POST['operation'] ?? null)) {
 
 // USER : DESACTIVER
 if ('user_desactiver' == ($_POST['operation'] ?? null)) {
-    $id_user = (int) ($_POST['id_user']);
+    $id_user = (int) $_POST['id_user'];
     if (!$id_user) {
         $errTab[] = 'No id';
     } elseif (!allowed('user_desactivate_any')) {
@@ -242,7 +242,7 @@ if ('user_desactiver' == ($_POST['operation'] ?? null)) {
 }
 // USER : REACTIVER
 if ('user_reactiver' == ($_POST['operation'] ?? null)) {
-    $id_user = (int) ($_POST['id_user']);
+    $id_user = (int) $_POST['id_user'];
     if (!$id_user) {
         $errTab[] = 'No id';
     } elseif (!allowed('user_reactivate')) {
@@ -258,7 +258,7 @@ if ('user_reactiver' == ($_POST['operation'] ?? null)) {
 }
 // USER : RESET
 if ('user_reset' == ($_POST['operation'] ?? null)) {
-    $id_user = (int) ($_POST['id_user']);
+    $id_user = (int) $_POST['id_user'];
     if (!$id_user) {
         $errTab[] = 'No id';
     } elseif (!allowed('user_reset')) {
@@ -320,7 +320,7 @@ if ('user_attr_add_admin' == ($_POST['operation'] ?? null) && admin()) {
 
 // ADMIN : supression d'attribut
 if ('user_attr_del_admin' == ($_POST['operation'] ?? null) && admin()) {
-    $id_user_attr = (int) ($_POST['id_user_attr']);
+    $id_user_attr = (int) $_POST['id_user_attr'];
     if (!$id_user_attr) {
         $errTab[] = 'No id';
     } else {
@@ -347,8 +347,8 @@ if ('usertype_attr_edit' == ($_POST['operation'] ?? null) && admin()) {
     if (0 === count($errTab)) {
         foreach ($_POST['usertype_attr'] as $pair) {
             $tab = explode('-', $pair);
-            $type_usertype_attr = (int) ($tab[0]);
-            $right_usertype_attr = (int) ($tab[1]);
+            $type_usertype_attr = (int) $tab[0];
+            $right_usertype_attr = (int) $tab[1];
             if (!LegacyContainer::get('legacy_mysqli_handler')->query("INSERT INTO caf_usertype_attr (type_usertype_attr, right_usertype_attr, details_usertype_attr)
 															VALUES ('$type_usertype_attr', '$right_usertype_attr', '".time()."');")) {
                 $errTab[] = "Erreur de setting ($type_usertype_attr - $right_usertype_attr)";
@@ -400,7 +400,7 @@ if ('majBd' == ($_POST['operation'] ?? null) && admin()) {
     $table = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_POST['table']);
     $champ = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_POST['champ']);
     $val = LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($_POST['val']));
-    $id = (int) ($_POST['id']);
+    $id = (int) $_POST['id'];
 
     if (!$table) {
         $errTab[] = 'Table manquante';
@@ -423,7 +423,7 @@ if ('majBd' == ($_POST['operation'] ?? null) && admin()) {
 // GENERIQUE: sup
 if ('supBd' == ($_POST['operation'] ?? null) && admin()) {
     $table = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_POST['table']);
-    $id = (int) ($_POST['id']);
+    $id = (int) $_POST['id'];
 
     $req = 'DELETE FROM `caf_'.$table.'` WHERE `caf_'.$table.'`.`id_'.$table."` = $id LIMIT 1;";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {

@@ -11,7 +11,9 @@ class LocalClubController extends AbstractController
 {
     /**
      * @Route("/local-club", name="local_club")
+     *
      * @Template
+     *
      * @Security("is_granted('ROLE_USER')")
      */
     public function index()

@@ -6,14 +6,14 @@ $log = (isset($log) ? $log : '')."\n accès à ".date('H:i:s');
 $result = null;
 
 if (admin()) {
-    $id_content_inline = (int) ($_POST['id']);
+    $id_content_inline = (int) $_POST['id'];
     $log .= "\n id_content_inline :  ".$id_content_inline;
     $code_content_inline = $_POST['code_content_inline'];
     $contenu_content_inline = $_POST['contenu_content_inline'];
     $log .= "\n contenu_content_inline :  \n".$contenu_content_inline;
     $contenu_content_inline = html_entity_decode($contenu_content_inline, \ENT_QUOTES, 'UTF-8');
     $log .= "\n html_entity_decode :  \n".$contenu_content_inline;
-    $groupe_content_inline = (int) ($_POST['groupe_content_inline']);
+    $groupe_content_inline = (int) $_POST['groupe_content_inline'];
     $log .= "\n groupe_content_inline :  \n".$groupe_content_inline;
     $lang_content_inline = stripslashes(utf8_encode($_POST['lang_content_inline']));
     $log .= "\n lang_content_inline :  \n".$lang_content_inline;

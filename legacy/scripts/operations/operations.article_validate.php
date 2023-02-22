@@ -3,8 +3,8 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$id_article = (int) ($_POST['id_article']);
-$status_article = (int) ($_POST['status_article']);
+$id_article = (int) $_POST['id_article'];
+$status_article = (int) $_POST['status_article'];
 
 // checks
 if (!$id_article) {
@@ -66,5 +66,5 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_article || 2 == $
 
 if (2 == $status_article) {
     header('Location: /gestion-des-articles.html');
-    exit();
+    exit;
 }

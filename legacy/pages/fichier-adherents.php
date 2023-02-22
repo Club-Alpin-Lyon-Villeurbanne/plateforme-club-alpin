@@ -76,7 +76,7 @@
 				<?php
             }
         }
-        ?>
+		?>
 		<br style="clear:both" />
 	</div>
 </div>

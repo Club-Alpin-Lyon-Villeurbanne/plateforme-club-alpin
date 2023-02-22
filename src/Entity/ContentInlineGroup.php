@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ContentInlineGroup.
  *
  * @ORM\Table(name="caf_content_inline_group")
+ *
  * @ORM\Entity
  */
 class ContentInlineGroup
@@ -16,7 +17,9 @@ class ContentInlineGroup
      * @var int
      *
      * @ORM\Column(name="id_content_inline_group", type="integer", nullable=false)
+     *
      * @ORM\Id
+     *
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;

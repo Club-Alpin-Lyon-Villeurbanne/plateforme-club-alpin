@@ -18,13 +18,13 @@
 
             inclure('main-pagelibre-'.$currentPage2['id_page'], 'main-type');
         }
-        ?>
+		?>
 	</div>
 
 	<!-- partie droite -->
 	<?php
     require __DIR__.'/../includes/right-type-agenda.php';
-    ?>
+		?>
 
 	<br style="clear:both" />
 </div>

@@ -6,7 +6,7 @@ use App\Legacy\LegacyContainer;
 
 if (user()) {
     // id de la comm
-    $id_commission = (int) ($_GET['id_commission']);
+    $id_commission = (int) $_GET['id_commission'];
 
     if (!allowed('comm_edit')) {
         echo '<p class="erreur">Vous n\'avez pas les droits requis pour afficher cette page</p>';

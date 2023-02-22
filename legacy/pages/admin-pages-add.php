@@ -70,7 +70,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
         <br />
         <br />
         */
-        ?>
+    ?>
 		<div style="float:left; width:430px; padding-right:20px;">
 			<b>Titre de la page pour chaque langue :</b><br />
 			<p style="width:350px; font-size:10px; line-height:9px;">META titles : ce titre apparaît dans le menu supérieur du navigateur, et dans les résultats de recherche Google</p>
@@ -96,19 +96,19 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 		<b>Menu principal du site :</b>
 		<div class="buttonset">
 			<input type="radio" id="menu_page_0" name="menu_page" value="0" <?php if ('0' == $_POST['menu_page'] || !$_POST) {
-            echo 'checked="checked"';
-        } ?> /><label for="menu_page_0"> <img src="/img/base/chart_organisation_delete.png" style="border-radius:3px; background:white; padding:3px; float:left; position:relative; bottom:3px; right:3px; " alt="" title="" /> Absent du menu principal</label>
+			    echo 'checked="checked"';
+			} ?> /><label for="menu_page_0"> <img src="/img/base/chart_organisation_delete.png" style="border-radius:3px; background:white; padding:3px; float:left; position:relative; bottom:3px; right:3px; " alt="" title="" /> Absent du menu principal</label>
 			<input type="radio" id="menu_page_1" name="menu_page" value="1" <?php if ('1' == $_POST['menu_page']) {
-            echo 'checked="checked"';
-        } ?> /><label for="menu_page_1"> <img src="/img/base/chart_organisation_add.png" style="border-radius:3px; background:white; padding:3px; float:left; position:relative; bottom:3px; right:3px; " alt="" title="" /> Apparaît dans le menu principal</label>
+			    echo 'checked="checked"';
+			} ?> /><label for="menu_page_1"> <img src="/img/base/chart_organisation_add.png" style="border-radius:3px; background:white; padding:3px; float:left; position:relative; bottom:3px; right:3px; " alt="" title="" /> Apparaît dans le menu principal</label>
 		</div>
 		<br />
 
 		<div id="infomenu" style="display:<?php if (1 == $_POST['menu_page']) {
-            echo 'block';
-        } else {
-            echo 'none';
-        } ?>">
+		    echo 'block';
+		} else {
+		    echo 'none';
+		} ?>">
 			<b>Intitulé du lien dans le menu principal :</b><br />
             <img src="/img/base/flag-fr.png" title="fr" alt="fr" style="height:28px; vertical-align:top" />
             <input type="text" name="menuname[]" class="type1" value="<?php echo html_utf8(stripslashes($_POST['menuname'][0])); ?>" placeholder="" /><br />
@@ -119,20 +119,20 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 		<hr style="margin:10px 0; clear:both" />
 
 		<?php
-        /*
-        <b>Fichiers javascript liés :</b><br />
-        Séparés par un point-virgule<br />
-        <input type="text" name="add_js_page" class="type1" value="<?php echo inputVal('add_js_page', '');?>" />
-        <br />
-        <br />
+		/*
+		<b>Fichiers javascript liés :</b><br />
+		Séparés par un point-virgule<br />
+		<input type="text" name="add_js_page" class="type1" value="<?php echo inputVal('add_js_page', '');?>" />
+		<br />
+		<br />
 
-        <b>Fichiers CSS liés :</b><br />
-        Séparés par un point-virgule<br />
-        <input type="text" name="add_css_page" class="type1" value="<?php echo inputVal('add_css_page', '');?>" />
-        <br />
-        <br />
-        */
-        ?>
+		<b>Fichiers CSS liés :</b><br />
+		Séparés par un point-virgule<br />
+		<input type="text" name="add_css_page" class="type1" value="<?php echo inputVal('add_css_page', '');?>" />
+		<br />
+		<br />
+		*/
+    ?>
 
 		<b>Priorité au référencement :</b><br />
 		Quelle est l'importance de cette page <b>par rapport aux autres pages du site</b> (5=neutre) ?<br />

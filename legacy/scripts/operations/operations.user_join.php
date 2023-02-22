@@ -15,7 +15,7 @@ if ('on' == $_POST['filiations']) {
 $idUsersFiliations = $_POST['id_user_filiation'] ?? [];
 
 // Evenement défini et utilisateur aussi
-$id_evt = (int) ($_POST['id_evt']);
+$id_evt = (int) $_POST['id_evt'];
 $id_user = getUser()->getId();
 if (!$id_user || !$id_evt) {
     $errTab[] = 'Erreur de données';
@@ -207,7 +207,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $req = 'SELECT email_user, nickname_user, firstname_user, lastname_user, civ_user, birthday_user '
         .'FROM caf_user '
         .($filiations ?
-            'WHERE id_user = '.(implode(' OR id_user = ', $idUsersFiliations)).' ' // filiation : liste d'ids
+            'WHERE id_user = '.implode(' OR id_user = ', $idUsersFiliations).' ' // filiation : liste d'ids
             :
             "WHERE id_user = $id_user "
         )
