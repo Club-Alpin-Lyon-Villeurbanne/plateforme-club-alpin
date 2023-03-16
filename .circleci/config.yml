@@ -48,7 +48,7 @@ jobs:
               sed -i "s/DB_HOST_TO_REPLACE/$AWS_PROD_DB_HOST/g" "legacy/config/config.php"
               cp legacy/config/www.clubalpinlyon.fr/params.php legacy/config/params.php
 
-            elif [[ ${CIRCLE_BRANCH} == "main" ]]; then
+            elif [[ ${MESSAGE} == *push_to_dev* ]] || [[ ${CIRCLE_BRANCH} == "main" ]]; then
 
               echo "\nStart replacing variables for 'staging' environment...\n\n"
               cp infrastructure/confs/staging/robots.txt public/robots.txt
@@ -82,7 +82,7 @@ jobs:
               echo "\nCleanup...\n\n"
               LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 rm /var/www/clubalpinlyon.fr/deploy.sh /var/www/clubalpinlyon.fr/package.zip
               echo "\nDone!\n\n"
-            elif [[ ${CIRCLE_BRANCH} == "main" ]]; then
+            elif [[ ${MESSAGE} == *push_to_dev* ]] || [[ ${CIRCLE_BRANCH} == "main" ]]; then
               echo "\nDeploying on clubalpinlyon.top (staging env)...\n\n"
               echo "\nTransfering package...\n\n"
               scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no package.zip ec2-user@35.180.143.141:/var/www/clubalpinlyon.top/
