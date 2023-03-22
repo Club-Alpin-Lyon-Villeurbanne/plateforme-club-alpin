@@ -1,93 +1,98 @@
-    <div id="ndf">
-        <h2 class="trigger-h2">Note de frais :</h2>
-        <div class="trigger-me check-nice">
-            Transport utilisé
-            <select id="ndf-transport">
-                <option id="1" value="1">Voiture personnelle</option>
-                <option id="2" value="2">Minibus du Club</option>
-                <option id="3" value="3">Minibus de location</option>
-                <option id="4" value="4">Transports en commun</option>
-            </select>
-            <br style="clear:both" />
-            <div id="transport-voiture">
-                <h3>voiture</h3>
-                <label for="km">Nombre de kms (aller/retour)
-                    <input type="text" /> km
-                </label>
-                <label for="peage">Frais de péage
-                    <input type="text" /> €
-                </label>
-                <label>Justificatif péage
-                <input type="file" />
-                </label>
-            </div>
-            <div id="transport-minibus-club">
-                <h3>minibus-club</h3>
-            </div>
-            <div id="transport-minibus-location">
-                <h3>minibus-location</h3>
-            </div>
-            <div id="transport-commun">
-                <h3>transports en commun</h3>
-            </div>
-            <div>
-                <h3>Hébergement</h3>
-                <label>Montant nuitée 1
-                <input type="text" />€
-                </label>
-                <label>Justificatif nuitée 1
-                <input type="file"/>
-                </label>
-                <button>Ajouter une nuitée</button>
-            </div>
-            <div>
-                <h3>Autres frais</h3>
-                <label>Montant frais 1
-                <input type="text" />€
-                </label>
-                <label>Description frais 1
-                <input type="text" />
-                </label>
-                <label>Justificatif frais 1
-                <input type="file"/>
-                </label>
-                <button>Ajouter une nuitée</button>
-            </div>
-            <div>
-                <h3>Autres frais</h3>
-                <label>je renonce au remboursement de cette note de frais
-                <input type="radio" />
-                </label><br />
-                <label>je demande le remboursement de cette note de frais
-                <input type="radio" />
-                </label>
-                <button>Valider ma note de frais</button>
-            </div>
-        </div>
-    </div>
-    <script type="text/javascript">
-    // bind
-    $().ready(function() {
-        $('#transport-minibus-club, #transport-minibus-location, #transport-commun').hide();
-        $('#ndf-transport').change(function() {
-            $('#transport-voiture, #transport-minibus-club, #transport-minibus-location, #transport-commun').hide();
-            var selectedTransport = $(this).val();
-            switch (selectedTransport) {
-                case "1":
-                    $('#transport-voiture').show();
-                    break;
-                case "2":
-                    $('#transport-minibus-club').show();
-                    break;
-                case "3":
-                    $('#transport-minibus-location').show();
-                    break;
-                case "4":
-                    $('#transport-commun').show();
-                    break;
-                default:
-                break;
-            }
-        });
-    });
+<div id="ndf">
+	<h2 class="trigger-h2">Note de frais :</h2>
+	<div class="trigger-me check-nice">
+		Transport utilisé
+		<select id="ndf-transport">
+			<option id="1" value="1">Voiture personnelle</option>
+			<option id="2" value="2">Minibus du Club</option>
+			<option id="3" value="3">Minibus de location</option>
+			<option id="4" value="4">Transports en commun</option>
+		</select>
+		<br style="clear:both"/>
+		<div id="transport-voiture">
+			<h3>voiture</h3>
+			<label for="km">Nombre de kms (aller/retour)
+				<input type="text"/>
+				km
+			</label>
+			<label for="peage">Frais de péage
+				<input type="text"/>
+				€
+			</label>
+			<label>Justificatif péage
+				<input type="file"/>
+			</label>
+		</div>
+		<div id="transport-minibus-club">
+			<h3>minibus-club</h3>
+		</div>
+		<div id="transport-minibus-location">
+			<h3>minibus-location</h3>
+		</div>
+		<div id="transport-commun">
+			<h3>transports en commun</h3>
+		</div>
+		<br style="clear:both"/>
+		<div>
+			<h3>Hébergement</h3>
+			<label>Montant nuitée 1
+				<input type="text"/>€
+			</label>
+			<label>Justificatif nuitée 1
+				<input type="file"/>
+			</label>
+			<button>Ajouter une nuitée</button>
+		</div>
+		<br style="clear:both"/>
+		<div>
+			<h3>Autres frais</h3>
+			<label>Montant frais 1
+				<input type="text"/>€
+			</label>
+			<label>Description frais 1
+				<input type="text"/>
+			</label>
+			<label>Justificatif frais 1
+				<input type="file"/>
+			</label>
+			<button>Ajouter des frais</button>
+		</div>
+		<br style="clear:both"/>
+		<div>
+			<label>je renonce au remboursement de cette note de frais
+				<input type="radio"/>
+			</label><br/>
+			<label>je demande le remboursement de cette note de frais
+				<input type="radio"/>
+			</label>
+			<button>Valider ma note de frais</button>
+		</div>
+	</div>
+</div>
+<hr/>
+<script type="text/javascript">
+	// bind
+$().ready(function () {
+$('#transport-minibus-club, #transport-minibus-location, #transport-commun').hide();
+$('#ndf-transport').change(function () {
+$('#transport-voiture, #transport-minibus-club, #transport-minibus-location, #transport-commun').hide();
+var selectedTransport = $(this).val();
+switch (selectedTransport) {
+case "1":
+$('#transport-voiture').show();
+break;
+case "2":
+$('#transport-minibus-club').show();
+break;
+case "3":
+$('#transport-minibus-location').show();
+break;
+case "4":
+$('#transport-commun').show();
+break;
+default:
+break;
+}
+});
+});
 </script>
