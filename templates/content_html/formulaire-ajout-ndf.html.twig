@@ -1,0 +1,59 @@
+    <div id="ndf">
+        <h2 class="trigger-h2">Note de frais :</h2>
+        <div class="trigger-me check-nice">
+            Transport utilisé
+            <select id="ndf-transport">
+                <option id="1">Voiture personnelle</option>
+                <option>Minibus du Club</option>
+                <option>Minibus de location</option>
+                <option>Transports en commun</option>
+            </select>
+            <br style="clear:both" />
+            <div id="transport-voiture">
+                <h3>voiture</h3>
+                <label for="km">Nombre de kms (aller/retour)
+                    <input type="text" /> km
+                </label>
+                <label for="peage">Frais de péage
+                    <input type="text" /> €
+                </label>
+            </div>
+            <div id="transport-minibus-club">
+                minibus-club
+            </div>
+            <div id="transport-minibus-location">
+                minibus-location
+            </div>
+            <div id="transport-commun">
+                commun
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    // bind
+    $().ready(function() {
+        $('#ndf-transport').on('change', function() {
+            $('#transport-voiture').hide();
+            $('#transport-minibus-club').hide();
+            $('#transport-minibus-location').hide();
+            $('#transport-commun').hide();
+            var selectedTransport = $(this).val();
+            switch (selectedTransport) {
+                case 1:
+                    $('#transport-voiture').show();
+                    break;
+                case 2:
+                    $('#transport-minibus-club').show();
+                    break;
+                case 3:
+                    $('#transport-minibus-location').show();
+                    break;
+                case 4:
+                    $('#transport-commun').show();
+                    break;
+                default:
+                break;
+            }
+        });
+    });
+</script>
