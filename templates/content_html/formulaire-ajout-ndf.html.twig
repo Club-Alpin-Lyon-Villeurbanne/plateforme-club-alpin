@@ -3,6 +3,9 @@
 input {
   width: 50px;
 }
+input, label {
+    display:block;
+}
 </style>
 
 <div id="ndf">
@@ -16,11 +19,13 @@ input {
 			<option id="4" value="4">Transports en commun</option>
 		</select>
 		<br style="clear:both"/>
-		<div id="transport-voiture">
+		<div id="transport-voiture" style="background: #eeeff4;margin: 10px 0 10px 0;">
 			<h3>voiture</h3>
-			<label for="km">Nombre de kms (aller/retour)
-				<input type="text" placeholder="Nombre de kilométres" name="km"/>
-			</label>
+            <div style="float:left;margin-right:20px;">
+                <label for="km">Nombre de kms (aller/retour)</label>
+                <input type="text" placeholder="Nombre de kilométres" name="km"/>
+            </div>
+			
 			<label for="peage">Frais de péage
 				<input type="text" placeholder="Frais de péage" name="peage"/>
 				€
@@ -29,17 +34,17 @@ input {
 				<input type="file"/>
 			</label>
 		</div>
-		<div id="transport-minibus-club">
+		<div id="transport-minibus-club" style="background: #eeeff4;margin: 10px 0 10px 0;">
 			<h3>minibus-club</h3>
 		</div>
-		<div id="transport-minibus-location">
+		<div id="transport-minibus-location" style="background: #eeeff4;margin: 10px 0 10px 0;">
 			<h3>minibus-location</h3>
 		</div>
-		<div id="transport-commun">
+		<div id="transport-commun" style="background: #eeeff4;margin: 10px 0 10px 0;">
 			<h3>transports en commun</h3>
 		</div>
 		<br style="clear:both"/>
-		<div>
+		<div style="background: #eeeff4;margin: 10px 0 10px 0;">
 			<h3>Hébergement</h3>
 			<label>Montant nuitée 1
 				<input type="text"/>€
@@ -50,7 +55,7 @@ input {
 			<button>Ajouter une nuitée</button>
 		</div>
 		<br style="clear:both"/>
-		<div>
+		<div style="background: #eeeff4;margin: 10px 0 10px 0;">
 			<h3>Autres frais</h3>
 			<label>Montant frais 1
 				<input type="text"/>€
@@ -65,14 +70,16 @@ input {
 			<button>Ajouter des frais</button>
 		</div>
 		<br style="clear:both"/>
-		<div>
+		<div style="background: #eeeff4;margin: 10px 0 10px 0;">
 			<label>je renonce au remboursement de cette note de frais
 				<input type="radio"/>
-			</label><br/>
+			</label>
+		    <br style="clear:both"/>
 			<label>je demande le remboursement de cette note de frais
-				<input type="radio"/>
+				<input type="radio" />
 			</label>
 			<button>Valider ma note de frais</button>
+			<button disabled>Envoyer cette note de frais</button>
 		</div>
 	</div>
 </div>
