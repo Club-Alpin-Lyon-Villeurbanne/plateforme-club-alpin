@@ -1,6 +1,8 @@
+<link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+
 <div id="ndf">
 	<h2 class="trigger-h2">Note de frais :</h2>
-	<div class="trigger-me check-nice">
+	<div class="trigger-me check-nice grid">
 		Transport utilisé
 		<select id="ndf-transport">
 			<option id="1" value="1">Voiture personnelle</option>
@@ -12,11 +14,10 @@
 		<div id="transport-voiture">
 			<h3>voiture</h3>
 			<label for="km">Nombre de kms (aller/retour)
-				<input type="text"/>
-				km
+				<input type="text" placeholder="Nombre de kilométres" name="km" />
 			</label>
 			<label for="peage">Frais de péage
-				<input type="text"/>
+				<input type="text" placeholder="Frais de péage" name="peage" />
 				€
 			</label>
 			<label>Justificatif péage
@@ -52,6 +53,7 @@
 			<label>Description frais 1
 				<input type="text"/>
 			</label>
+			<br style="clear:both"/>
 			<label>Justificatif frais 1
 				<input type="file"/>
 			</label>
