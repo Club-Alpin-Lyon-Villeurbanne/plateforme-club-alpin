@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/css/pico.slim.min.css" type="text/css" />
+<link rel="stylesheet" href="/css/pico.slim.min.css" type="text/css"/>
 
 <div class="ndf">
 	<h2 class="trigger-h2">Note de frais :</h2>
@@ -14,10 +14,10 @@
 		<div id="transport-voiture">
 			<h3>voiture</h3>
 			<label for="km">Nombre de kms (aller/retour)
-				<input type="text" placeholder="Nombre de kilométres" name="km" />
+				<input type="text" placeholder="Nombre de kilométres" name="km"/>
 			</label>
 			<label for="peage">Frais de péage
-				<input type="text" placeholder="Frais de péage" name="peage" />
+				<input type="text" placeholder="Frais de péage" name="peage"/>
 				€
 			</label>
 			<label>Justificatif péage
@@ -74,27 +74,27 @@
 <hr/>
 <script type="text/javascript">
 	// bind
-$().ready(function () {
-$('#transport-minibus-club, #transport-minibus-location, #transport-commun').hide();
-$('#ndf-transport').change(function () {
-$('#transport-voiture, #transport-minibus-club, #transport-minibus-location, #transport-commun').hide();
-var selectedTransport = $(this).val();
-switch (selectedTransport) {
-case "1":
-$('#transport-voiture').show();
-break;
-case "2":
-$('#transport-minibus-club').show();
-break;
-case "3":
-$('#transport-minibus-location').show();
-break;
-case "4":
-$('#transport-commun').show();
-break;
-default:
-break;
-}
-});
-});
+    $().ready(function () {
+        $('#transport-minibus-club, #transport-minibus-location, #transport-commun').hide();
+        $('#ndf-transport').change(function () {
+            $('#transport-voiture, #transport-minibus-club, #transport-minibus-location, #transport-commun').hide();
+            var selectedTransport = $(this).val();
+            switch (selectedTransport) {
+            case "1":
+                $('#transport-voiture').show();
+            break;
+            case "2":
+                $('#transport-minibus-club').show();
+            break;
+            case "3":
+                $('#transport-minibus-location').show();
+            break;
+            case "4":
+                $('#transport-commun').show();
+            break;
+            default:
+            break;
+            }
+        });
+    });
 </script>
