@@ -29,7 +29,7 @@ input[type='radio'] {
             <label for="km">Nombre de kms (aller/retour)
                 <input type="text" placeholder="Nombre de kilométres" name="km"/>
             </label>
-			
+		    <br style="clear:both"/>
 			<label for="peage">Frais de péage
 				<input type="text" placeholder="Frais de péage" name="peage"/>
 			</label>
@@ -39,12 +39,60 @@ input[type='radio'] {
 		</div>
 		<div id="transport-minibus-club" style="background: #eeeff4;margin: 10px 0 10px 0;">
 			<h3>minibus-club</h3>
+            <label for="km">Nombre de passagers
+                <input type="text" placeholder="Nombre de passagers" name="passagers"/>
+            </label>
+            <label for="km">Nombre de kms (aller/retour)
+                <input type="text" placeholder="Nombre de kilométres" name="km"/>
+            </label>
+		    <br style="clear:both"/>
+			<label for="peage">Cout essence
+				<input type="text" placeholder="Cout essence" name="essence"/>
+			</label>
+		    <br style="clear:both"/>
+			<label for="peage">Frais de péage
+				<input type="text" placeholder="Frais de péage" name="peage"/>
+			</label>
+			<label>Justificatif peage
+				<input type="file"/>
+			</label>
 		</div>
 		<div id="transport-minibus-location" style="background: #eeeff4;margin: 10px 0 10px 0;">
 			<h3>minibus-location</h3>
+            <label for="km">Nombre de passagers
+                <input type="text" placeholder="Nombre de passagers" name="passagers"/>
+            </label>
+            <label for="km">Nombre de kms (aller/retour)
+                <input type="text" placeholder="Nombre de kilométres" name="km"/>
+            </label>
+            <label for="km">prix de loc par km
+                <input type="text" placeholder="prix loc" name="loc"/>
+            </label>
+		    <br style="clear:both"/>
+			<label for="peage">Cout essence
+				<input type="text" placeholder="Cout essence" name="essence"/>
+			</label>
+		    <br style="clear:both"/>
+			<label for="peage">Frais de péage
+				<input type="text" placeholder="Frais de péage" name="peage"/>
+			</label>
+			<label>Justificatif peage
+				<input type="file"/>
+			</label>
 		</div>
 		<div id="transport-commun" style="background: #eeeff4;margin: 10px 0 10px 0;">
 			<h3>transports en commun</h3>
+			<label>Montant transport 1
+				<input type="text"/>
+			</label>
+			<label>Description transport 1 (bus, train ou autre)
+				<input type="text"/>
+			</label>
+			<br style="clear:both"/>
+			<label>Justificatif transport 1
+				<input type="file"/>
+			</label>
+			<button>Ajouter un transport</button>
 		</div>
 		<br style="clear:both"/>
 		<div style="background: #eeeff4;margin: 10px 0 10px 0;">
