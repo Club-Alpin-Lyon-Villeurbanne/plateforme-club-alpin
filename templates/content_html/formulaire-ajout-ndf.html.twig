@@ -5,6 +5,10 @@ input {
 }
 input, label {
     display:block;
+    width: 100%;
+}
+input[type='radio'] {
+    display: inline;
 }
 </style>
 
@@ -69,12 +73,12 @@ input, label {
 		</div>
 		<br style="clear:both"/>
 		<div style="background: #eeeff4;margin: 10px 0 10px 0;">
-			<label>je renonce au remboursement de cette note de frais
-				<input type="radio" id="remboursement" name="remboursement" value="0" />
+			<label>
+				<input type="radio" id="remboursement" name="remboursement" value="0" /> je renonce au remboursement de cette note de frais
 			</label>
 		    <br style="clear:both"/>
-			<label>je demande le remboursement de cette note de frais
-				<input type="radio" id="remboursement" name="remboursement" value="1" />
+			<label>
+				<input type="radio" id="remboursement" name="remboursement" value="1" /> je demande le remboursement de cette note de frais
 			</label>
 		    <br style="clear:both"/>
 			<button>Valider ma note de frais</button>
