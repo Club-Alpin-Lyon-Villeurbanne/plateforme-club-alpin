@@ -940,5 +940,7 @@ class Evt
     public function setNdfStatut(string $ndfStatut): self
     {
         $this->ndfStatut = $ndfStatut;
+
+        return $this;
     }
 }
