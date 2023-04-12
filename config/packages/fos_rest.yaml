@@ -12,8 +12,9 @@ fos_rest:
         formats:
 #             xml: true
             json : true
+
 #    exception:
 #        codes:
 #            App\Exception\MyException: 403
 #        messages:
-#            App\Exception\MyException: Forbidden area.
+#            App\Exception\MyException: Forbidden area
