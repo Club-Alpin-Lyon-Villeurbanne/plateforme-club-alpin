@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Evt.
@@ -318,6 +319,14 @@ class Evt
      */
     private $articles;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ndf_statut", type="string", length=30, nullable=false)
+     * @Assert\Choice(choices = {"en_attente", "complete", "valide", "non_applicable"})
+     */
+    private $ndfStatut;
+
     public function __construct(
         User $user,
         Commission $commission,
@@ -351,6 +360,7 @@ class Evt
         $this->articles = new ArrayCollection();
         $this->cycleChildren = new ArrayCollection();
         $this->tspCrea = time();
+        $this->ndfStatut = "en_attente";
 
         // FIX ME fix encadrant
         $this->joins->add(new EvtJoin($this, $user, EvtJoin::ROLE_ENCADRANT, EvtJoin::STATUS_VALIDE));
@@ -920,5 +930,15 @@ class Evt
         $this->childVersionTosubmit = $childVersionTosubmit;
 
         return $this;
+    }
+
+    public function getNdfStatut(): ?string
+    {
+        return $this->ndfStatut;
+    }
+
+    public function setNdfStatut(string $ndfStatut): self
+    {
+        $this->ndfStatut = $ndfStatut;
     }
 }

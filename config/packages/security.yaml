@@ -58,7 +58,7 @@ security:
                 always_remember_me: true
 
         web-api:
-            pattern:   ^/web-api
+            pattern:   ^/api
             stateless: true
             provider: app_user_provider
             jwt: ~

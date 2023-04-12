@@ -148,3 +148,8 @@ services:
     legacy_content_html:
         public: true
         alias: App\Legacy\ContentHtml
+
+# sensio_framework_extra:
+#     view:
+#         listener:
+#             alias: Sensio\Bundle\FrameworkExtraBundle\EventListener\TemplateListener
