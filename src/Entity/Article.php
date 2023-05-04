@@ -87,14 +87,14 @@ class Article
     /**
      * @var string
      *
-     * @ORM\Column(name="titre_article", type="string", length=200, nullable=false)
+     * @ORM\Column(name="titre_article", type="string", length=200, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $titre;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="code_article", type="string", length=50, nullable=false, options={"comment": "Pour affichage dans les URL"})
+     * @ORM\Column(name="code_article", type="string", length=50, nullable=false, options={"comment": "Pour affichage dans les URL", "collation": "utf8mb4_unicode_ci"})
      */
     private $code;
 
@@ -124,7 +124,7 @@ class Article
     /**
      * @var string
      *
-     * @ORM\Column(name="cont_article", type="text", length=65535, nullable=false)
+     * @ORM\Column(name="cont_article", type="text", length=65535, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $cont;
 
