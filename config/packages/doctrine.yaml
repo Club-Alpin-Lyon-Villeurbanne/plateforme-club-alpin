@@ -6,6 +6,7 @@ doctrine:
         # either here or in the DATABASE_URL env var (see .env file)
         #server_version: '13'
         schema_filter: ~^(?!caf_bus|caf_bus_lieu_destination|caf_content_html|caf_destination|caf_evt_destination)~
+        charset: utf8mb4
         default_table_options:
             charset:              utf8mb4
             collate:              utf8mb4_unicode_ci # when using doctrine/dbal 2.x
