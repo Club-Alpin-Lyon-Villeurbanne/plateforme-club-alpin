@@ -3,9 +3,14 @@ framework:
         # default failure transport
         failure_transport: failed
 
+        serializer:
+            symfony_serializer:
+                format: json
+
         transports:
             mails:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                serializer: messenger.transport.symfony_serializer
                 retry_strategy:
                     max_retries: 3
                     # milliseconds delay
