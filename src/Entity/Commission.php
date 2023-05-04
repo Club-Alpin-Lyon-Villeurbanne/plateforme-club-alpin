@@ -41,14 +41,14 @@ class Commission
     /**
      * @var string
      *
-     * @ORM\Column(name="code_commission", type="string", length=50, nullable=false, unique=true)
+     * @ORM\Column(name="code_commission", type="string", length=50, nullable=false, unique=true, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $code;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="title_commission", type="string", length=30, nullable=false)
+     * @ORM\Column(name="title_commission", type="string", length=30, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $title;
 
