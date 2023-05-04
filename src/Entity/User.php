@@ -43,7 +43,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="mdp_user", type="string", length=1024, nullable=true)
+     * @ORM\Column(name="mdp_user", type="string", length=1024, nullable=true, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $mdp;
 
@@ -64,21 +64,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="firstname_user", type="string", length=50, nullable=false)
+     * @ORM\Column(name="firstname_user", type="string", length=50, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $firstname;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="lastname_user", type="string", length=50, nullable=false)
+     * @ORM\Column(name="lastname_user", type="string", length=50, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $lastname;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="nickname_user", type="string", length=20, nullable=false)
+     * @ORM\Column(name="nickname_user", type="string", length=20, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $nickname;
 
@@ -148,7 +148,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="moreinfo_user", type="string", length=500, nullable=true, options={"comment": "FORMATIONS ?"})
+     * @ORM\Column(name="moreinfo_user", type="string", length=500, nullable=true, options={"comment": "FORMATIONS ?", "collation": "utf8mb4_unicode_ci"})
      */
     private $moreinfo;
 
