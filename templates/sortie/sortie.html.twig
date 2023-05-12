@@ -239,6 +239,8 @@
                             <img src="/img/inscrit-check.png" alt="" title="" style="float:left" />
                             <br />Vous êtes inscrit comme participant à cette sortie.<br />&nbsp;
                             <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
+                        </p><br />
+<p>
                             <add-to-calendar-button
                                 name="{{ event.titre }}"
                                 label="Ajouter à mon agenda"
@@ -250,7 +252,8 @@
                                 endTime="{{ event.tspEnd | date('H:i') }}"
                                 timeZone="Europe/Paris"
                             ></add-to-calendar-button>
-                        </p><br />
+                            </p>
+                            <br />
                         {% endif %}
                     {% else %}
                         <p class="info">

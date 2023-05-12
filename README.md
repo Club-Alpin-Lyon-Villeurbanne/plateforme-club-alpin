@@ -26,6 +26,14 @@ Pusher un commit (ou mergé une PR) sur la branche `production` lancer le deploy
 CircleCI va remplacer les credentials pour la DB par les vrais puis enverra en FTP les fichiers sur le server.  
 Les secrets (mot de passe de db, mot de passe ftp, etc...) sont stockés en tant [que variable d'environment dans circleci](https://app.circleci.com/settings/project/github/Club-Alpin-Lyon-Villeurbanne/caflyon/environment-variables).  
 
+# Cronjobs
+Quelques cronjobs sont programmés pour effectuer certaines taches:
+- envoi de mail
+- fichier adherent
+- sauvegarde des images
+- rappels
+- renouvellement du certificat SSL
+
 # Base de données
 
 La base de données est hébergée et gérée par AWS RDS. Elle se trouve dans un VPC privée, ce qui nécessite d'utiliser un tunnel SSH pour y accéder.
