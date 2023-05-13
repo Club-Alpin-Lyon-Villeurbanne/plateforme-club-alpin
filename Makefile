@@ -126,9 +126,7 @@ endif
 package: yarn-install yarn-build ## Creates software package
 	@cp .env .env.backup
 	@sed -i 's/APP_ENV=.*/APP_ENV=$(env)/g' .env
-	ifeq ("$(env)","prod")
-		NO_DEV="--no-dev"
-	endif
+	NO_DEV=$([ "$env" == "prod" ] && echo "--no-dev" || echo "")
 	@$(ON_PHP) bash -c "APP_ENV=$(env) composer $(NO_DEV) install --optimize-autoloader --no-interaction --apcu-autoloader --prefer-dist"
 	@$(ON_PHP) bash -c "APP_ENV=$(env) composer dump-env $(env)"
 	@rm -rf package.zip
