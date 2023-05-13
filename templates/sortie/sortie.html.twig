@@ -122,22 +122,6 @@
                 </div><br />
             {% endif %}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         {% for article in event.articles %}
         <a style="float:right; font-family:DIN, Arial; font-weight:normal; display:block; padding:5px 20px 0 0;" href="/article/{{ article.code }}-{{ article.id }}.html" title="{{ article.titre }}">
             <span class="bleucaf">></span> Voir le compte rendu de sortie "{{ article.titre }}"
@@ -238,22 +222,24 @@
                         <p class="info">
                             <img src="/img/inscrit-check.png" alt="" title="" style="float:left" />
                             <br />Vous êtes inscrit comme participant à cette sortie.<br />&nbsp;
-                            <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
+                            <div class="button-container">
+                                <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
 
-                            <add-to-calendar-button
-                                name="{{ event.titre }}"
-                                label="Ajouter à mon agenda"
-                                options="'Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'"
-                                location="{{ event.rdv }}"
-                                startDate="{{ event.tsp | intldate('yyyy-MM-dd') }}"
-                                endDate="{{ event.tspEnd | intldate('yyyy-MM-dd') }}"
-                                startTime="{{ event.tsp | date('H:i') }}"
-                                endTime="{{ event.tspEnd | date('H:i') }}"
-                                timeZone="Europe/Paris"
-                                buttonStyle="text"
-                                hideIconButton
-                                size="2"
-                            ></add-to-calendar-button>
+                                <add-to-calendar-button
+                                    name="{{ event.titre }}"
+                                    label="Ajouter à mon agenda"
+                                    options="'Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'"
+                                    location="{{ event.rdv }}"
+                                    startDate="{{ event.tsp | intldate('yyyy-MM-dd') }}"
+                                    endDate="{{ event.tspEnd | intldate('yyyy-MM-dd') }}"
+                                    startTime="{{ event.tsp | date('H:i') }}"
+                                    endTime="{{ event.tspEnd | date('H:i') }}"
+                                    timeZone="Europe/Paris"
+                                    buttonStyle="text"
+                                    hideIconButton
+                                    size="2"
+                                ></add-to-calendar-button>
+                            </div>
                         </p><br />
 <p>
                             </p>
