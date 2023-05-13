@@ -1,6 +1,6 @@
 * {margin:0;padding:0}
 html{}
-body{font-size:12px;font-family:Verdana, sans-serif;text-align:center;background:#f7f8fc;color:#333333;}
+body{font-size:12px;font-family:Verdana, sans-serif;text-align:center;background:#f7f8fc;color:#333333;padding-top: 50px;}
 h1, h2, h3, h4, h5{font-family:DIN; font-weight:100; /* text-transform:uppercase; */}
 h1 b, h2 b, h3 b, h4 b, h5 b,h1 strong, h2 strong, h3 strong, h4 strong, h5 strong {font-family:DINBold; font-weight:100;}
 h1 a, h2 a, h3 a, h4 a, h5 a {font-family:inherit; font-weight:inherit;}
