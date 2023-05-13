@@ -2,7 +2,9 @@
 set -euo pipefail
 
 DEFAULT_TARGET="clubalpinlyon.top"
+DEFAULT_ENV="dev"
 TARGET=${1:-$DEFAULT_TARGET}
+ENV=${2:-$DEFAULT_ENV}
 
 if [ $TARGET != "clubalpinlyon.fr" ] && [ $TARGET != "clubalpinlyon.top" ]; then
   echo "Invalid target \"$TARGET\", must be one of \"clubalpinlyon.fr\", \"clubalpinlyon.top\""
@@ -31,6 +33,6 @@ unlink $CURRENT_DIR
 
 ln -s $TARGET_DIR $CURRENT_DIR
 
-$CURRENT_DIR/bin/console doctrine:migrations:sync-metadata-storage --env=prod
-$CURRENT_DIR/bin/console doctrine:migrations:migrate --env=prod --no-interaction
-$CURRENT_DIR/bin/console messenger:setup-transports --env=prod
+$CURRENT_DIR/bin/console doctrine:migrations:sync-metadata-storage --env=$ENV
+$CURRENT_DIR/bin/console doctrine:migrations:migrate --env=$ENV --no-interaction
+$CURRENT_DIR/bin/console messenger:setup-transports --env=$ENV
