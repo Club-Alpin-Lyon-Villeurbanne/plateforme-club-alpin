@@ -70,8 +70,34 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
     <!--[if lt IE 9]>
         <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
+	{% if app.environment != "prod" %}
+            <style>
+                body {
+                    padding-top: 50px;
+                }
+                #test-banner {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    background-color: #f44336; /* You can change this color to suit your preference */
+                    color: #ffffff;
+                    text-align: center;
+                    z-index: 9999;
+                    padding: 10px 0;
+                    font-size: 16px;
+                    font-weight: bold;
+                }
+            </style>
+        {% endif %}
 </head>
 <body>
+{% if app.environment != "prod" %}
+        <div id="test-banner">
+            <p>Attention, vous vous trouvez sur un site de test. Veuillez <a href="https://clubalpinlyon.fr">cliquer ici pour accéder au site de production</a>.</p>
+        </div>
+    {% endif %}
     <div id="container">
         <div id="siteHeight">
             <?php

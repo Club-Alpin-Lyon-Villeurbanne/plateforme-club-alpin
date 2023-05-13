@@ -31,7 +31,7 @@ Quelques cronjobs sont programmés pour effectuer certaines taches:
 - envoi de mail
 - fichier adherent: vérification des fichiers adhérents provenant de la FFCAM (validité des adhésions)
 - sauvegarde des images
-- rappels
+- rappels (chaque nuit, envoi des mails de validation des sorties)
 - renouvellement du certificat SSL
 
 # Base de données
