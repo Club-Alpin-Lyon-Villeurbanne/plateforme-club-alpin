@@ -56,14 +56,6 @@ global $ogImage;
 		<script src="/js/fonctionsAdmin.js" type="text/javascript"></script>
 	<?php } ?>
 
-	<!-- cufon
-    <script type="text/javascript">
-		// CUFON
-		Cufon.replace('h1:not(.nocufon)', { fontFamily: 'Myriad Pro' });
-		Cufon.replace('.cufon');
-    </script>
-	-->
-
     <script src="/js/onready.js" type="text/javascript"></script>
     <script src="/js/onready-site.js" type="text/javascript"></script>
 
