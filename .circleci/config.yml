@@ -52,12 +52,12 @@ jobs:
 
               echo "\nStart replacing variables for 'staging' environment...\n\n"
               cp infrastructure/confs/staging/robots.txt public/robots.txt
-              cp infrastructure/confs/staging/.env.prod .
-              sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_DEV_DB_PASSWORD/g" .env.prod
-              sed -i "s/DB_USER_TO_REPLACE/$AWS_DEV_DB_USER/g" .env.prod
-              sed -i "s/DB_NAME_TO_REPLACE/$AWS_DEV_DB_NAME/g" .env.prod
-              sed -i "s/DB_HOST_TO_REPLACE/$AWS_DEV_DB_HOST/g" .env.prod
-              sed -i "s/DEBUG_PARAM_TO_REPLACE/APP_DEBUG=true/g" .env.prod
+              cp infrastructure/confs/staging/.env.dev .
+              sed -i "s/DB_PASSWORD_TO_REPLACE/$AWS_DEV_DB_PASSWORD/g" .env.dev
+              sed -i "s/DB_USER_TO_REPLACE/$AWS_DEV_DB_USER/g" .env.dev
+              sed -i "s/DB_NAME_TO_REPLACE/$AWS_DEV_DB_NAME/g" .env.dev
+              sed -i "s/DB_HOST_TO_REPLACE/$AWS_DEV_DB_HOST/g" .env.dev
+              sed -i "s/DEBUG_PARAM_TO_REPLACE/APP_DEBUG=true/g" .env.dev
               cp legacy/config/www.clubalpinlyon.top/config.php legacy/config/config.php
               sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/www.clubalpinlyon.top/params.php"
               sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/$MAILCHIMP_PASSWORD/g" "legacy/config/config.php"
@@ -78,7 +78,7 @@ jobs:
               echo "\nTransfering deploy script...\n\n"
               scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no .circleci/deploy.sh ec2-user@35.180.143.141:/var/www/clubalpinlyon.fr/
               echo "\nRunning deploy...\n\n"
-              LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 /var/www/clubalpinlyon.fr/deploy.sh clubalpinlyon.fr
+              LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 /var/www/clubalpinlyon.fr/deploy.sh clubalpinlyon.fr prod
               echo "\nCleanup...\n\n"
               LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 rm /var/www/clubalpinlyon.fr/deploy.sh /var/www/clubalpinlyon.fr/package.zip
               echo "\nDone!\n\n"
@@ -89,7 +89,7 @@ jobs:
               echo "\nTransfering deploy script...\n\n"
               scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no .circleci/deploy.sh ec2-user@35.180.143.141:/var/www/clubalpinlyon.top/
               echo "\nRunning deploy...\n\n"
-              LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 /var/www/clubalpinlyon.top/deploy.sh clubalpinlyon.top
+              LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 /var/www/clubalpinlyon.top/deploy.sh clubalpinlyon.top dev
               echo "\nCleanup...\n\n"
               LANG=en_US.utf8 LC_ALL=en_US.utf8 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@35.180.143.141 rm /var/www/clubalpinlyon.top/deploy.sh /var/www/clubalpinlyon.top/package.zip
               echo "\nDone!\n\n"
