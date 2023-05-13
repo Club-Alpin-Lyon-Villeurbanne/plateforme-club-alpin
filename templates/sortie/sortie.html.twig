@@ -219,8 +219,9 @@
                 {% else %}
                     {% if not event.finished %}
                         {% if allowed('evt_unjoin') %}
-                        <p class="info">
-                            <img src="/img/inscrit-check.png" alt="" title="" style="float:left" />
+                        <p class="info info-container">
+                            <img src="/img/inscrit-check.png" alt="" title="" />
+                            <div class="text-container">
                             <br />Vous êtes inscrit comme participant à cette sortie.<br />&nbsp;
                             <div class="button-container">
                                 <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
@@ -240,9 +241,8 @@
                                     size="2"
                                 ></add-to-calendar-button>
                             </div>
-                        </p><br />
-<p>
-                            </p>
+                            </div>
+                        </p>
                             <br />
                         {% endif %}
                     {% else %}
