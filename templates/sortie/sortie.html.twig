@@ -242,10 +242,24 @@
 													<div class="button-container">
 														<input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" />
 
-														<add-to-calendar-button name="{{ event.titre }}" label="Ajouter à mon agenda" options="'Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'" location="{{ event.rdv }}" startdate="{{ event.tsp | intldate('yyyy-MM-dd') }}" enddate="{{ event.tspEnd | intldate('yyyy-MM-dd') }}" starttime="{{ event.tsp | date('H:i') }}" endtime="{{ event.tspEnd | date('H:i') }}" timezone="Europe/Paris" buttonstyle="text" hideiconbutton size="2"></add-to-calendar-button>
+														<add-to-calendar-button
+                                                            name="{{ event.titre }}"
+                                                            label="Ajouter à mon agenda"
+                                                            options="'Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'"
+                                                            location="{{ event.rdv }}"
+                                                            startdate="{{ event.tsp | intldate('yyyy-MM-dd') }}"
+                                                            enddate="{{ event.tspEnd | intldate('yyyy-MM-dd') }}"
+                                                            starttime="{{ event.tsp | date('H:i') }}"
+                                                            endtime="{{ event.tspEnd | date('H:i') }}"
+                                                            timezone="Europe/Paris"
+                                                            buttonstyle="flat"
+                                                            trigger="click"
+                                                            hideiconbutton
+                                                            size="2">
+                                                        </add-to-calendar-button>
 													</div>
 												</div>
-											</div>
+											</p>
 										{% endif %}
 									{% else %}
 										<p class="info">

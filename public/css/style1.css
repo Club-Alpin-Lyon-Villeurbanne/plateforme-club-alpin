@@ -412,3 +412,19 @@ form .niveau.editable:hover .input{background-image:none;}
     #menuAdmin, #adminmissing {display:none;}
     #organisation_covoiturage td {font-size:10px;}
 }
+
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.info-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.text-container {
+    margin-top: 6px;
+    margin-left: 10px; /* Adjust this value based on the desired space between the image and the text */
+}
