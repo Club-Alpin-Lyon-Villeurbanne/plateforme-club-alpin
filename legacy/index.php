@@ -74,7 +74,7 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
 	{% if app.environment != "prod" %}
             <style>
                 body {
-                    padding-top: 50px;
+                    padding-top: 30px;
                 }
                 #test-banner {
                     position: fixed;
