@@ -1,1005 +1,1043 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ event.titre }}{% endblock %}
+{% block title %}
+	{{ event.titre }}
+{% endblock %}
 
 {% macro user_inscription_button(event, filiations, my_status) %}
 
-    {% if event.joinMax > 0 %}
-        {% set style = '' %}
-        {% if my_status and not my_status.isCovoiturage %}
-            {% set style = 'border:1px solid red; background:rgba(255,153,153,.4);' %}
-        {% endif %}
-        <div style="text-align:center; padding:0 30px 0 0">
-            <br />
-            <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
-            <span class="bleucaf">&gt;</span>
-            {% if not my_status %}
-            JE SOUHAITE REJOINDRE CETTE SORTIE
-            {% else %}
-            JE METS A JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
-            {% endif %}
+	{% if event.joinMax > 0 %}
+		{% set style = '' %}
+		{% if my_status and not my_status.isCovoiturage %}
+			{% set style = 'border:1px solid red; background:rgba(255,153,153,.4);' %}
+		{% endif %}
+		<div style="text-align:center; padding:0 30px 0 0">
+			<br/>
+			<a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
+				<span class="bleucaf">&gt;</span>
+				{% if not my_status %}
+					JE SOUHAITE REJOINDRE CETTE SORTIE
+				{% else %}
+					JE METS A JOUR MES PREFERENCES
+					{% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;
+					{% endif %}
+				{% endif %}
 
-            {% if filiations|length > 0 %}
-                <span class="bleucaf">&nbsp; / &nbsp;</span> INSCRIRE DES ADHÉRENTS AFFILIÉS
-            {% endif %}
-            </a>
-        </div>
-    {% else %}
-        <hr /><div class="alerte">Pas d'inscription par internet</div>
-    {% endif %}
+				{% if filiations|length > 0 %}
+					<span class="bleucaf">&nbsp; / &nbsp;</span>
+					INSCRIRE DES ADHÉRENTS AFFILIÉS
+				{% endif %}
+			</a>
+		</div>
+	{% else %}
+		<hr/><div class="alerte">Pas d'inscription par internet</div>
+	{% endif %}
 {% endmacro %}
 
 {% block body %}
-    <div id="left1">
-
-        <div id="fiche-sortie">
-
-            {% set closeDiv = false %}
-
-            {% if event.publicStatusUnseen %}
-                {% set closeDiv = true %}
-
-                <div class="alerte">
-                    <b>Note : Cette sortie n'est pas publiée sur le site</b>.
-                    Si vous voyez ce message apparaître, c'est que vous disposez de droits particuliers
-                    qui vous autorisent à voir cette page.
-                    Les usagers réguliers du site n'ont pas accès aux informations ci-dessous.<br />
-
-                {% if is_granted('SORTIE_VALIDATE', event) %}
-                    <div>
-                        <form action="{{ path('sortie_validate', { id: event.id }) }}" method="post" class="loading" style="display:inline">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_validate') }}" />
-                            <input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
-                        </form>
-                        <input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
-                        <div style="display:none" id="refuser-{{ event.id }}">
-                            <form action="{{ path('sortie_refus', { id: event.id }) }}" method="post" class="loading">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_refus') }}" />
-                                <p>Laissez un message à l'auteur pour lui expliquer la raison du refus :</p>
-                                <input type="text" name="msg" class="type1" placeholder="ex: Mauvais point de RDV" />
-                                <input type="submit" value="Refuser la publication" class="nice2 red" />
-                                <input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
-                            </form>
-                        </div>
-                    </div>
-                {% endif %}
-            {% elseif event.publicStatusRefuse %}
-                {% set closeDiv = true %}
-                <div class="alerte">
-                    <b>Note : Cette sortie a été refusée</b>.
-                    Si vous voyez ce message apparaître, c'est que vous disposez de droits particuliers
-                    qui vous autorisent à voir cette page. Les usagers réguliers du site n'ont pas accès
-                    aux informations ci-dessous.<br /><br />
-            {% elseif event.cancelled %}
-                {% set closeDiv = true %}
-                <div class="erreur">
-                    <img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" />
-                    <b>Sortie annulée :</b><br /> Cette sortie a été annulée le {{ event.cancelledWhen | date('d/m/Y à H:i') }}
-
-                {% if event.cancelledWho %}
-                    , par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.cancelledWho.id }}" class="fancyframe userlink">{{ event.cancelledWho.nickname }}</a>
-                {% endif %}
-                <br />
-
-                {% if is_granted('SORTIE_UNCANCEL', event) %}
-                    <form action="{{ path('sortie_uncancel', { id: event.id }) }}" method="post" class="loading">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_uncancel') }}" />
-                        <input type="submit" value="Réactiver cette sortie" class="nice2 red" title="Réactiver cette sortie" />
-                    </form>
-                {% endif %}
-
-            {# FIX ME Replace with a voter #}
-            {% elseif event.publicStatusValide and is_granted('SORTIE_UPDATE', event) %}
-                {% set closeDiv = true %}
-
-                <div class="alerte">
-                    <b>Note :</b> Cette sortie est publiée et visible par les adhérents !<br />
-            {% endif %}
-
-            {% if is_granted('SORTIE_UPDATE', event) %}
-                {% if not event.cancelled %}
-                    <a href="/creer-une-sortie/{{ event.commission.code }}/update-{{ event.id }}.html" title="Vous êtes l'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
-                        <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie
-                    </a>
-                {% endif %}
-
-                {% if not event.finished %}
-                    {% if allowed('evt_delete', 'commission:' ~ event.commission.code) and (event.publicStatusValide or event.cancelled) %}
-                        <a class="nice2 noprint red" href="/supprimer-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Supprimer définitivement la sortie ci-dessous">
-                            <img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie
-                        </a>
-                    {% endif %}
-                {% endif %}
-            {% endif %}
-
-            {% if is_granted('SORTIE_CANCEL', event) %}
-                <a class="nice2 noprint red" href="/annuler-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Annuler la sortie ci-dessous">
-                    <img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie
-                </a>
-            {% endif %}
-
-            {% if closeDiv %}
-                </div><br />
-            {% endif %}
-
-        {% for article in event.articles %}
-        <a style="float:right; font-family:DIN, Arial; font-weight:normal; display:block; padding:5px 20px 0 0;" href="/article/{{ article.code }}-{{ article.id }}.html" title="{{ article.titre }}">
-            <span class="bleucaf">></span> Voir le compte rendu de sortie "{{ article.titre }}"
-        </a>
-        {% endfor %}
-
-        <h1>
-            <span class="commission">{{ event.commission.title }}</span>
-            <span class="bleucaf">></span> {{ event.titre }}
-            {% if event.groupe %}
-                <small> ({{ event.groupe.nom }}) </small>
-            {% endif %}
-            <span class="date"> / {{ event.tsp | intldate('cccc d MMMM') }}</span>
-        </h1>
-
-        {% if app.user and event.user.id == app.user.id and event.isFinished %}
-        <a href="/article-new.html?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
-            <img src="/img/base/pencil_add.png" alt="" title="" style="" />
-            Compte rendu
-        </a>
-        {% endif %}
-
-        {% if is_granted('FICHE_SORTIE', event) %}
-        <a href="/feuille-de-sortie/evt-{{ event.id }}.html" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
-            <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
-            Imprimer la fiche de sortie
-        </a>
-        {% endif %}
-
-        {% if is_granted('SORTIE_DUPLICATE', event) %}
-        <form action="{{ path('sortie_duplicate', { id: event.id }) }}" method="post" class="loading">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
-
-            <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants" class="nice2">
-                Créer une nouvelle sortie avec ce groupe
-            </a>
-        </form>
-        {% endif %}
-
-        <br />
-        <br />
-
-        {% set my_status = event.participant(app.user) %}
-
-        {% if not event.cycleParent %}
-        {# les messages et options liées aux inscriptions ne s'appliquent pas sur les suites de cycles #}
-
-            {% if my_status and my_status.status == constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME') %}
-                {% if not event.finished %}
-                    {% if allowed('evt_unjoin') %}
-                    <p class="alerte">
-                        <img src="/img/inscrit-standby.png" alt="" title="" style="float:left" />
-                        <br />Vous avez demandé à participer à cette sortie, et votre demande est en attente de validation.<br />
-                        <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
-                    </p>
-                    <br />
-                    {% endif %}
-                {% else %}
-                    <p class="alerte">
-                        <img src="/img/inscrit-standby.png" alt="" title="" style="float:left" />
-                        <br />Vous avez demandé à participer à cette sortie, mais votre demande est restée en attente.<br />&nbsp;
-                    </p>
-                    <br />
-                {% endif %}
-            {% endif %}
-
-            {% if my_status and my_status.status == constant('App\\Entity\\EvtJoin::STATUS_REFUSE') %}
-                <p class="erreur">
-                    <img src="/img/inscrit-cross.png" alt="" title="" style="float:left" />
-                    <br />
-                    Vous avez demandé à participer à cette sortie, mais l'organisateur a décliné votre inscription.
-                    N'hésitez pas à le contacter pour en savoir plus.<br />&nbsp;
-                </p>
-                <br />
-            {% endif %}
-
-            {% if my_status and my_status.status == constant('App\\Entity\\EvtJoin::STATUS_VALIDE') %}
-                {% if my_status.role == 'encadrant' or my_status.role == 'stagiaire' or my_status.role == 'coencadrant' or my_status.role == 'benevole' %}
-                    {% if not event.finished %}
-                        {% if allowed('evt_unjoin') %}
-                        <p class="info">
-                            <img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" />
-                            <br />Vous êtes inscrit à cette sortie en tant que : {{ my_status.role }}.<br />&nbsp;
-                            <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
-                        </p>
-                        <br />
-                        {% endif %}
-                    {% else %}
-                        <p class="info">
-                            <img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" />
-                            <br />Vous avez participé à cette sortie en tant que : {{ my_status.role }}.<br />&nbsp;
-                        </p>
-                        <br />
-                    {% endif %}
-                {% else %}
-                    {% if not event.finished %}
-                        {% if allowed('evt_unjoin') %}
-                        <p class="info info-container">
-                            <img src="/img/inscrit-check.png" alt="" title="" />
-                            <div class="text-container">
-                            <br />Vous êtes inscrit comme participant à cette sortie.<br />&nbsp;
-                            <div class="button-container">
-                                <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
-
-                                <add-to-calendar-button
-                                    name="{{ event.titre }}"
-                                    label="Ajouter à mon agenda"
-                                    options="'Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'"
-                                    location="{{ event.rdv }}"
-                                    startDate="{{ event.tsp | intldate('yyyy-MM-dd') }}"
-                                    endDate="{{ event.tspEnd | intldate('yyyy-MM-dd') }}"
-                                    startTime="{{ event.tsp | date('H:i') }}"
-                                    endTime="{{ event.tspEnd | date('H:i') }}"
-                                    timeZone="Europe/Paris"
-                                    buttonStyle="text"
-                                    hideIconButton
-                                    size="2"
-                                ></add-to-calendar-button>
-                            </div>
-                            </div>
-                        </p>
-                            <br />
-                        {% endif %}
-                    {% else %}
-                        <p class="info">
-                            <img src="/img/inscrit-check.png" alt="" title="" style="float:left" />
-                            <br />Vous avez participé à cette sortie.<br />&nbsp;
-                        </p><br />
-                    {% endif %}
-                {% endif %}
-            {% endif %}
-
-            {% if my_status and my_status.status != constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME') %}
-
-                {% if is_granted('PARTICIPANT_ANNULATION', my_status) %}
-                    <div id="inscription-annuler" style="display: none;">
-                        {{ easy_include('formalites-inscription-suppression', 'formalites') }}
-
-                        <form action="{{ path('sortie_remove_participant', { id: my_status.id }) }}" method="post" class="loading">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
-
-                            <p style="text-align:center">
-                                <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
-                                    <span class="bleucaf">&gt;</span>
-                                    ANNULER MA DEMANDE D'INSCRIPTION
-                                </a>
-                            </p>
-                        </form>
-
-                    </div>
-                    <br />
-                {% endif %}
-            {% endif %}
-
-            {% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
-                <link rel="stylesheet" href="/tools/datatables/media/css/jquery.dataTables.sobre.css" type="text/css" media="screen" />
-                <script type="text/javascript" src="/tools/datatables/media/js/jquery.dataTables.min.js"></script>
-                <script type="text/javascript">
-
-                    // jquery
-                    $(document).ready(function(){
-
-                        var expr = new RegExp('>[ \t\r\n\v\f]*<', 'g');
-                        var tbhtml = $('.datatable').html();
-                        $('.datatable').html(tbhtml.replace(expr, '><'));
-
-                        // datatables
-                        $('.datatable').dataTable( {
-                            "aaSorting": [[ 1, "asc" ], [ 0, "asc" ]],
-                            "iDisplayLength" : -1,
-                            "bLengthChange": false,
-                            "bFilter": false,
-                            "bPaginate": false,
-                            "bInfo": false
-                            // "aLengthMenu": [[-1],  ["All"]]
-                            // "bLengthChange": false
-                            // "sDom": 'T<"clear">lfrtip'
-                        } );
-
-                        // format de couleur du changement de statut
-                        $('.joinlabels input').bind('change', function(){
-                            // changment ligne
-                            $(this).parents('tr').removeClass('status0 status1 status2 status3 status-1').addClass('status'+$(this).val());
-
-                            // changement des stats
-                            var nAcceptees=0;
-                            var nRefusees=0;
-                            $('.joinlabels input:checked[type=radio]').each(function(){
-                                if($(this).val()==1) 	nAcceptees++;
-                                if($(this).val()==2) 	nRefusees++;
-
-                            });
-                            $('#nAcceptees').html(nAcceptees);
-                            $('#nRefusees').html(nRefusees);
-                        });
-
-                    });
-                </script>
-
-                <div id="inscription-gestion">
-                    {% if not event.finished %}
-                        {{ easy_include('formalites-gestion-des-inscrits', 'vide') }}
-                    {% else %}
-                        {{ easy_include('formalites-gestion-des-inscrits-evt-passe', 'vide') }}
-                    {% endif %}
-
-                    <br />
-
-                    <form action="{{ path('sortie_update_inscription', { id: event.id })}}" method="post" class="loading">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_update_inscriptions') }}" />
-
-                        <table class="datatable">
-                            <thead>
-                                <tr>
-                                    <th width='30%'>Nom / Pseudo</th>
-                                    <th width='15%'>Statut</th>
-                                    <th width='15%'>Rôle</th>
-                                    <th width='10%'>Date</th>
-                                    <th>Contact</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-{#                                // PARTICIPANTS - EMPIETEMENTS : VÉRIFICATION DE (PRÉ)INSCRIPTIONS À D'AUTRES SORTIES DANS LE MEME TIMING#}
-{#                                // création du tableau "empiètement" pour chaque user#}
-{#                                $row['empietements'] = empietement_sortie($row['id_user'], $evt);#}
-
-                                {% for participant in event.participants(null, null) %}
-                                    <tr class="status{{ participant.status }}" style="color:gray; font-size:10px;">
-
-                                        <td>
-                                            {{ participant.user.lastname | upper }}, {{ participant.user.firstname | capitalize }}<br/>
-                                            <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ participant.user.id }}" class="fancyframe userlink">{{ participant.user.nickname }}</a>
-
-                                            {% if participant.user.doitRenouveler %}
-                                                <img src="/img/base/delete.png" title="licence expirée" style="margin-bottom:-4px;">
-                                            {% endif %}
-                                        </td>
-
-                                        <td class="mini joinlabels status{{ participant.status }}">
-
-                                        {% set disable_waiting = true %}
-                                        {% set disable_accepted = true %}
-                                        {% set disable_refused = true %}
-                                        {% set disable_absent = true %}
-                                        {% set disable_unsubscribe = true %}
-
-                                        {% if allowed('evt_joining_accept') or allowed('evt_join_doall') %}
-                                            {% set disable_waiting = false %}
-                                            {% set disable_accepted = false %}
-                                            {% set disable_absent = false %}
-                                        {% endif %}
-                                        {% if allowed('evt_joining_refuse') or allowed('evt_join_doall') %}
-                                            {% set disable_refused = false %}
-                                        {% endif %}
-                                        {% if allowed('evt_unjoin_notme') or allowed('evt_join_doall') %}
-                                            {% set disable_unsubscribe = false %}
-                                        {% endif %}
-
-                                        {% if empietements[participant.user.id] is defined %}
-                                            <div class="empietements">
-                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Attention au timing :</b>
-                                                {% for empietement in empietements[participant.user.id] %}
-                                                    {% if empietement.status == constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME') %}
-                                                        <br />- Adhérent pré-inscrit sur
-                                                        <br /><a href="{{ path('sortie', { code : empietement.event.code, id: empietement.event.id }) }}">{{ empietement.event.titre }}</a>
-                                                    {% elseif empietement.status == constant('App\\Entity\\EvtJoin::STATUS_VALIDE') %}
-                                                        <br />- Adhérent <span style="color:red">confirmé</span> sur <br />
-                                                        <br /><a href="{{ path('sortie', { code : empietement.event.code, id: empietement.event.id }) }}">{{ empietement.event.titre }}</a>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-
-                                        {% if participant.role != 'encadrant' %}
-                                            <span style="display:none">{{ participant.status }}</span>
-                                            <input type="hidden" name="id_evt_join[]" value="{{ participant.id }}" />
-
-                                            {% if participant.isStatusEnAttente %}
-                                                <label for="join_{{ participant.id }}_0">
-                                                    <input
-                                                        checked="checked"
-                                                        {{ disable_waiting ? 'disabled="disabled"' : '' }}
-                                                        type="radio"
-                                                        name="status_evt_join_{{ participant.id }}"
-                                                        id="join_{{ participant.id }}_0"
-                                                        value="0"
-                                                    />
-                                                    En attente
-                                                </label>
-                                            {% endif %}
-
-                                            {% if (event.finished and participant.isStatusValide) or not event.finished %}
-                                                <label for="join_{{ participant.id }}_1">
-                                                    <input
-                                                        {{ participant.isStatusValide ? 'checked="checked"' : '' }}
-                                                        {{ disable_accepted ? 'disabled="disabled"' : '' }}
-                                                        type="radio"
-                                                        name="status_evt_join_{{ participant.id }}"
-                                                        id="join_{{ participant.id }}_1"
-                                                        value="1"
-                                                    />
-                                                    Accepté
-                                                </label>
-                                            {% endif %}
-
-                                            {% if event.finished and not participant.isStatusRefuse %}
-                                                <label for="join_{{ participant.id }}_3">
-                                                    <input
-                                                        {{ participant.isStatusAbsent ? 'checked="checked"' : '' }}
-                                                        {{ disable_absent ? 'disabled="disabled"' : '' }}
-                                                        type="radio"
-                                                        name="status_evt_join_{{ participant.id }}"
-                                                        id="join_{{ participant.id }}_3"
-                                                        value="3"
-                                                    />
-                                                    Absent
-                                                </label>
-                                            {% endif %}
-
-                                            {% if (event.finished and participant.isStatusRefuse) or not event.finished %}
-                                                <label for="join_{{ participant.id }}_2">
-                                                    <input
-                                                        {{ participant.isStatusRefuse ? 'checked="checked"' : '' }}
-                                                        {{ disable_refused ? 'disabled="disabled"' : '' }}
-                                                        type="radio"
-                                                        name="status_evt_join_{{ participant.id }}"
-                                                        id="join_{{ participant.id }}_2"
-                                                        value="2"
-                                                    />
-                                                    Refusé
-                                                </label>
-                                            {% endif %}
-
-                                            {% if not event.finished %}
-                                                <label for="join_{{ participant.id }}_-1">
-                                                    <input
-                                                        name="status_evt_join_{{ participant.id }}"
-                                                        {{ disable_unsubscribe ? 'disabled="disabled"' : '' }}
-                                                        type="radio"
-                                                        id="join_{{ participant.id }}_-1"
-                                                        value="-1"
-                                                    />
-                                                    Désinscrire
-                                                </label>
-                                            {% endif %}
-
-                                        {% endif %}
-
-                                        </td>
-                                        <td class="mini" >
-                                            {% if participant.user.nomade %}
-                                                <br />
-                                                <img
-                                                    src="/img/base/bullet_error.png"
-                                                    alt="!"
-                                                    title="Attention. Ne reçoit pas d'e-mail"
-                                                    style="vertical-align:top"
-                                                />
-                                                <br />
-                                            {% elseif participant.isRoleManuel or participant.isRoleInscrit or participant.isRoleBenevole %}
-                                                {% if participant.isRoleManuel %}
-                                                    <label style="display:block; white-space:nowrap;" for="role_join_{{ participant.id }}_m">
-                                                        <input
-                                                            checked="checked"
-                                                            name="role_evt_join_{{ participant.id }}"
-                                                            type="radio"
-                                                            id="role_join_{{ participant.id }}_m"
-                                                            value="manuel"
-                                                        />
-                                                        Manuel
-                                                    </label>
-                                                {% endif %}
-                                                <label style="display:block; white-space:nowrap;" for="role_join_{{ participant.id }}_i">
-                                                    <input
-                                                        {% if participant.isRoleInscrit %}checked="checked"{% endif%}
-                                                        name="role_evt_join_{{ participant.id }}"
-                                                        type="radio"
-                                                        id="role_join_{{ participant.id }}_i"
-                                                        value="inscrit"
-                                                    />
-                                                    Inscrit
-                                                </label>
-                                                <label style="display:block; white-space:nowrap;" for="role_join_{{ participant.id }}_b">
-                                                    <input
-                                                        {% if participant.isRoleBenevole %}checked="checked"{% endif%}
-                                                        name="role_evt_join_{{ participant.id }}"
-                                                        type="radio"
-                                                        id="role_join_{{ participant.id }}_b"
-                                                        value="benevole"
-                                                    />
-                                                    Bénévole
-                                                </label>
-                                            {% else %}
-                                                {{ participant | participant_role_name }}
-                                            {% endif %}
-
-                                        </td>
-                                        <td style="white-space:nowrap">
-                                            <span style="display:none">{{ participant.tsp }}</span>
-                                            {{ participant.tsp | date('d/m') }}<br />
-                                            {{ participant.tsp | date('à H:i') }}
-                                        </td>
-                                        <td>
-                                            <a href="mailto:{{ participant.user.email }}">{{ participant.user.email | u.truncate(15, '...') }}</a><br />
-                                            {{ participant.user.tel }}<br />
-                                            {{ participant.user.tel2 }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-
-                        <!-- stats affichées -->
-                        <p>Stats :</p>
-                        <ul>
-                            <li>
-                                <b id="nDemandes">{{ event.participants(null, null) | length }}</b> demande(s), dont
-                                <b id="nAcceptees">{{ event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_VALIDE')) | length }}</b> acceptée(s), et
-                                <b id="nRefusees">{{ event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_REFUSE')) | length }}</b> refusée(s).
-                            </li>
-                            <li>
-                                <b id="nRefusees">{{ event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_ABSENT')) | length }}</b> absent(s).
-                            </li>
-                        </ul>
-
-                        <br style="clear:both"  />
-
-                        {% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
-                            <p class="mini">
-                                <input type="checkbox" name="disablemails" />
-                                Ne pas envoyer les e-mails lors de la mise à jour (déconseillé, sauf après l'événement).
-                            </p>
-
-                            <div style="text-align:center">
-                                <br />
-                                <button type="submit" style="cursor: pointer; border: none;" class="biglink" title="Enregistrer">
-                                    <span class="bleucaf">&gt;</span>
-                                    ENREGISTRER LES STATUTS CI-DESSUS
-                                </button>
-                            </div>
-                        {% elseif event.participant(app.user) %}
-                            <p class="mini">{{ event.participant(app.user) | participant_status_name }} : Vous ne pouvez pas modifier les inscriptions</p>
-                        {% endif %}
-                        <br />
-                        <br />
-                    </form>
-                    <hr />
-
-                    {% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
-                        <h2 id="autresoptions">Autres options :</h2>
-
-                        {% if is_granted('SORTIE_CONTACT_PARTICIPANTS', event) %}
-                        <!-- Contact par email des participants (orga uniquement) -->
-                        <a class="nice2 blue" href="javascript:void(0)" onclick="$('#contact-inscrits').slideToggle()" title="">
-                            <img src="/img/base/email.png" alt="" title="" /> Envoyer un e-mail groupé aux inscrits
-                        </a>
-                        <br />
-
-                        <form action="{{ path('contact_participants', { id: event.id }) }}" method="post" id="contact-inscrits" style="display: none; border : 1px solid #eaeaea; box-shadow:0 0 20px -10px gray;; padding:10px; margin:10px 0 20px 0;; border-radius:10px">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token('contact_participants') }}" />
-
-                            <h2>Formulaire de contact</h2>
-
-                            <input required type="radio" name="status_sendmail" id="status_sendmail_1" value="1" />
-                            <label for="status_sendmail_1"> Envoyer uniquement aux adhérents confirmés pour la sortie</label><br />
-
-                            <input required type="radio" name="status_sendmail" id="status_sendmail_2" value="2" />
-                            <label for="status_sendmail_2"> Envoyer uniquement aux adhérents refusés/absents</label><br />
-
-                            <input required type="radio" name="status_sendmail" id="status_sendmail_0" value="0" />
-                            <label for="status_sendmail_0"> Envoyer uniquement aux adhérents en attente de confirmation</label><br />
-
-                            <input required type="radio" name="status_sendmail" id="status_sendmail_all" value="*" />
-                            <label for="status_sendmail_all"> Envoyer à toute la liste des inscrits, confirmés ou non</label><br />
-
-                            <br />
-                            Objet :<br />
-                            <input required type="text" name="objet" class="type1" style="width:95%" value="" placeholder="Note importante pour la sortie du {{ event.tsp | date('d/m') }}" /><br />
-                            Message :<br />
-                            <textarea required name="message" class="type1" style="width:95%; height:150px"></textarea>
-
-                            <br /><br />
-                            <input type="submit" class="nice" value="&gt; Envoyer mon message" onclick="$.fancybox.close()" />
-                         </form>
-                        {% endif %}
-
-                        {% if allowed('user_see_all') or allowed('evt_join_notme') or allowed('evt_join_doall') %}
-                            <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_manual.php&amp;id_evt={{ event.id }}" title="">
-                                Inscrire manuellement des adhérents du club
-                            </a>
-
-                            <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_nomad.php&amp;id_evt={{ event.id }}" title="">
-                                Ajouter un adhérent "Nomade"
-                            </a>
-                        {% endif %}
-                    {% endif %}
-                <br style="clear:both"  /><br />
-
-            </div>
-            <br />
-            <hr />
-            {% endif %}
-        {% endif %}
-
-        {% if event.massif or event.itineraire %}
-            <ul class="nice-list">
-                {% if event.massif %}
-                    <li class="wide"><b>MASSIF :</b> {{ event.massif }}</li>
-                {% endif %}
-                {% if event.itineraire %}
-                    <li class="wide"><b>ITINÉRAIRE :</b> {{ event.itineraire }}</li>
-                {% endif %}
-            </ul>
-            <br style="clear:both" />
-            <hr />
-        {% endif %}
-
-        {% if event.denivele or event.distance > 0 or event.difficulte or event.matos %}
-            <ul class="nice-list">
-                {% if event.denivele %}
-                    <li class="wide"><b>DÉNIVELÉ :</b> {{ event.denivele }}</li>
-                {% endif %}
-                {% if event.distance > 0 %}
-                    <li class="wide"><b>DISTANCE :</b> {{ event.distance }} km</li>
-                {% endif %}
-                {% if event.difficulte %}
-                    <li class="wide"><b>DIFFICULTÉ :</b> {{ event.difficulte }}</li>
-                {% endif %}
-                {% if event.matos %}
-                    <li class="wide"><b>MATÉRIEL :</b> {{ event.matos }}</li>
-                {% endif %}
-            </ul>
-            <br style="clear:both" />
-            <hr />
-        {% endif %}
-
-        {% if not event.cancelled %}
-            <div class="description_evt">{{ event.description | raw }}</div>
-            <hr style="clear:both" />
-
-            {% if allowed('user_read_limited') and (event.tarif > 0 or event.tarifDetail) %}
-                <ul class="nice-list">
-                    {% if event.tarif %}
-                        <li class="wide"><b>TARIF :</b> {{ event.tarif }} Euros</li>
-                    {% endif %}
-                    {% if event.tarifDetail %}
-                        <li class="wide"><b>DÉTAIL :</b> {{ event.tarifDetail }}</li>
-                    {% endif %}
-                </ul>
-                <br style="clear:both" />
-                <hr />
-            {% endif %}
-
-            <ul class="nice-list">
-                <li>
-                    <b>DÉPART :</b> Le {{ event.tsp | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tsp|date('H:i') }}{% endif %}
-                </li>
-                <li>
-                    <b>RETOUR :</b>
-                    {% if event.tsp | date('dmY') == event.tspEnd | date('dmY') %}
-                        Le même jour
-                    {% else %}
-                        Le {{ event.tspEnd | intldate('cccc d MMMM') }}
-                    {% endif %}
-                </li>
-            </ul>
-
-            {% if allowed('user_read_limited') %}
-                <ul class="nice-list">
-                    <li><b>RDV :</b> {{ event.rdv }}</li>
-                    <li class="wide"><b>POINT DE RENDEZ-VOUS SUR LA CARTE :</b> </li>
-                </ul>
-                <br style="clear:both" />
-                <div id="map-fichesortie"></div>
-                <script>
-                    $(function() {
-                        var zoom = 16;
-                        var lat = {{ event.lat|replace({',':'.'}) }};
-                        var lon = {{ event.long|replace({',':'.'}) }};
-                        var mymap = L.map('map-fichesortie').setView([lat, lon], zoom);
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {foo: 'bar', attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'}).addTo(mymap);
-                        var marker = L.marker([lat, lon]).addTo(mymap);
-                    })
-                </script>
-            {% endif %}
-            <hr />
-        {% endif %}
-
-        <ul class="nice-list">
-            <li class="wide">
-                <b>SORTIE DÉPOSÉE PAR :</b>
-                <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.user.id }}" class="fancyframe userlink">
-                    {{ event.user.nickname }}
-                </a>
-                <span class="mini">
-                - le {{ event.tspCrea | date('d/m/y') }}{% if event.tspEdit %}, modifiée le {{ event.tspEdit | date('d/m/y à H:i') }} {% endif %}
-            </span>
-            </li>
-
-            {% if event.encadrants('encadrant') | length > 0 %}
-                <li class="wide"><b>ENCADRANTS :</b>
-                    {% for encadrant in event.encadrants('encadrant') %}
-                        {% if loop.index > 1 %}, {% endif %}
-                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}" class="fancyframe userlink">
-                            {{ encadrant.user.nickname }}
-                        </a>
-                    {% endfor %}
-                </li>
-                <br style="clear:both" />
-            {% endif %}
-
-            {% if event.encadrants('stagiaire') | length > 0 %}
-                <li class="wide"><b>STAGIAIRE :</b>
-                    {% for stagiaire in event.encadrants('stagiaire') %}
-                        {% if loop.index > 1 %}, {% endif %}
-                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ stagiaire.user.id }}" class="fancyframe userlink">
-                            {{ stagiaire.user.nickname }}
-                        </a>
-                    {% endfor %}
-                </li>
-                <br style="clear:both" />
-            {% endif %}
-
-            {% if event.encadrants('coencadrant') | length > 0 %}
-                <li class="wide"><b>CO-ENCADRANTS :</b>
-                    {% for encadrant in event.encadrants('coencadrant') %}
-                        {% if loop.index > 1 %}, {% endif %}
-                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}" class="fancyframe userlink">
-                            {{ encadrant.user.nickname }}
-                        </a>
-                    {% endfor %}
-                </li>
-                <br style="clear:both" />
-            {% endif %}
-
-            {% if event.encadrants('benevole') | length > 0 %}
-                <li class="wide"><b>BÉNÉVOLES :</b>
-                    {% for encadrant in event.encadrants('benevole') %}
-                        {% if loop.index > 1 %}, {% endif %}
-                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}" class="fancyframe userlink">
-                            {{ encadrant.user.nickname }}
-                        </a>
-                    {% endfor %}
-                </li>
-                <br style="clear:both" />
-            {% endif %}
-
-            <br style="clear:both" />
-
-            {% if event.needBenevoles and not event.cancelled %}
-                {{ easy_include('alerte-benevoles', 'alerte-benevoles') }}
-            {% endif %}
-
-        </ul>
-        <br style="clear:both" />
-        {% if not event.hasStarted and event | is_legal_validable  %}
-            {{ easy_include('status-legal-' ~ event.statusLegal, 'status-legal') }}
-            <br />
-
-            {% if is_granted('SORTIE_LEGAL_VALIDATION', event) %}
-                <div class="status-legal noprint">
-                    <h2>Validation de la sortie :</h2>
-                    <p>
-                        Pour valider cette sortie en tant que sortie officielle du CAF,
-                        ou refuser d'associer cette sortie au {{ sitename }},
-                        cliquez sur un des boutons ci-dessous.
-                    </p>
-                    <p>
-                        <b>Attention !</b> Cette opération est définitive !
-                    </p>
-
-                    <form action="{{ path('sortie_legal_refus', { id: event.id }) }}" method="post" class="loading" style="display:inline">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_legal_refus') }}" />
-                        <input type="submit" class="nice2 red" value="Refuser la validation" />
-                    </form>
-                    <form action="{{ path('sortie_legal_validate', { id: event.id }) }}" method="post" class="loading" style="display:inline">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_legal_validate') }}" />
-                        <input type="submit" class="nice2 green" value="Valider" />
-                    </form>
-
-                    <br />&nbsp;
-                </div>
-                <br />
-            {% endif %}
-        {% endif %}
-
-        {% if not event.cycleParent %}
-            {% if not event.cancelled %}
-                {% set nInscritsHorsEncadrement = event.participants([constant('App\\Entity\\EvtJoin::ROLE_INSCRIT'), constant('App\\Entity\\EvtJoin::ROLE_BENEVOLE'), constant('App\\Entity\\EvtJoin::ROLE_MANUEL')]) | length %}
-                {% set nInscritsTotal = nInscritsHorsEncadrement + event.participants([constant('App\\Entity\\EvtJoin::ROLE_COENCADRANT'), constant('App\\Entity\\EvtJoin::ROLE_STAGIAIRE'), constant('App\\Entity\\EvtJoin::ROLE_ENCADRANT')]) | length %}
-                {% set nPlacesRestantesOnline = max(0, event.joinMax - event.participants([constant('App\\Entity\\EvtJoin::ROLE_INSCRIT'), constant('App\\Entity\\EvtJoin::ROLE_BENEVOLE')]) | length) %}
-                {% set nEnAttente = event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME')) | length %}
-
-                {% if nPlacesRestantesOnline > event.ngensMax - nInscritsTotal %}
-                    {% set nPlacesRestantesOnline = max(0, event.ngensMax - nInscritsTotal) %}
-                {% endif %}
-
-                <hr />
-                <ul class="nice-list">
-                    <li><b>NOMBRE TOTAL DE PLACES :</b> {{ event.ngensMax }}
-                    <li><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}
-                </ul>
-
-                <br style="clear:both" /><hr />
-
-                <p>
-                    <span style="padding: 10px 10px 5px 5px;float:left;">
-                        <span class="temoin-places-dispos {{ nPlacesRestantesOnline > 0 ? 'on' : 'off' }}"></span>
-                    </span>
-                    <span style="font-size:14px; font-family:DINBold; color:#666666">
-                        {{ nInscritsTotal }} PARTICIPANT{{ nInscritsTotal > 1 ? 'S' : '' }} INSCRIT{{ nInscritsTotal > 1 ? 'S' : '' }}
-                        SUR  {{ event.ngensMax }} PLACE{{ event.ngensMax ? 'S' : '' }} AU TOTAL
-                        ({{ event.ngensMax > 0 ? (100 * nInscritsTotal / event.ngensMax) | round : 0 }}%)
-                    </span><br />
-                    {{ nPlacesRestantesOnline }} place{{ nPlacesRestantesOnline > 1 ? 's' : '' }} restante{{ nPlacesRestantesOnline > 1 ? 's' : '' }}
-                    pour les inscriptions en ligne
-                    {{ nEnAttente > 0 ? ' et '~nEnAttente~' inscription'~ (nEnAttente > 1 ? 's' : '' ) ~' en attente de confirmation' : '' }}
-                </p>
-
-                {% if nInscritsHorsEncadrement > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
-                    <table class="big-lines-table" style="width:570px; margin-left:20px;">
-
-                        {% for inscrit in event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_VALIDE')) %}
-                            <td>
-                            <td>
-                                {% if allowed('user_read_private', event.commission.code) %}
-                                    <p class="mini">{{ inscrit.user.lastname|upper }}, {{ inscrit.user.firstname|capitalize }}</p>
-                                {% endif %}
-                                <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
-                            </td>
-                            <td class="small">
-                                {% if allowed('user_read_private', event.commission.code) %}
-                                    {{ inscrit.user.tel }}
-                                {% endif %}
-                            <td class="small">
-                                {% if allowed('user_read_private', event.commission.code) %}
-                                    {{ inscrit.user.tel2 }}
-                                {% endif %}
-                            <td class="small">
-                                {% if allowed('user_read_private', event.commission.code) %}
-                                    {{ inscrit.user.email }}
-                                {% endif %}
-                            </td>
-                            <td class="small">
-                                {% if allowed('user_read_limited', event.commission.code) and inscrit.isCovoiturage %}
-                                    <img src="/img/voiture.png" title="Covoiturage" width="16px">
-                                {% endif %}
-                            </td>
-                            </tr>
-                        {% endfor %}
-
-                        {% for inscrit in event.participants(null, constant('App\\Entity\\EvtJoin::ROLE_MANUEL')) %}
-
-                            <tr>
-                                <td>
-                                    {% if allowed('user_read_private', event.commission.code) %}
-                                        <p class="mini">{{ inscrit.user.lastname|upper }}, {{ inscrit.user.firstname|capitalize }}</p>
-                                    {% endif %}
-                                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
-                                </td>
-                                <td class="small">
-                                    {% if allowed('user_read_private', event.commission.code) %}
-                                        {{ inscrit.user.tel }}
-                                    {% endif %}
-                                <td class="small">
-                                    {% if allowed('user_read_private', event.commission.code) %}
-                                        {{ inscrit.user.tel2 }}
-                                    {% endif %}
-                                <td class="small">
-                                    {% if allowed('user_read_private', event.commission.code) %}
-                                        {{ inscrit.user.email }}
-                                    {% endif %}
-                                </td>
-                                <td class="small">
-                                    {% if allowed('user_read_limited', event.commission.code) and inscrit.isCovoiturage %}
-                                        <img src="/img/voiture.png" title="Covoiturage" width="16px">
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-
-                    </table>
-                {% endif %}
-
-                {# si utilisateur est inscrit, il a accès #}
-                {% if nPlacesRestantesOnline > 0 or event.participant(app.user) %}
-
-                    {% if allowed('evt_join') %}
-
-                        {% if not app.user.doitRenouveler %}
-                            {% if not event.hasStarted %}
-                                {% if event.joinHasStarted %}
-                                    {% if is_granted('JOIN_SORTIE', event) %}
-                                        {{ _self.user_inscription_button(event, filiations, my_status) }}
-
-                                        <div id="inscription" style="display:none">
-
-                                        {{ easy_include('formalites-inscription', 'formalites') }}
-
-                                        <form action="{{ app.request.requestUri }}#inscription" method="post" class="loading">
-
-                                            <input type="hidden" name="operation" value="user_join" />
-                                            <input type="hidden" name="id_evt" value="{{ event.id }}" />
-
-                                            <div class="check-nice ">
-                                                {% include 'sortie/user_inscription_options.html.twig' %}
-                                            </div>
-
-                                            <p style="text-align:center">
-                                                <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
-                                                    <span class="bleucaf">&gt;</span>
-                                                    {% if not my_status %}
-                                                        ENVOYER MA DEMANDE D'INSCRIPTION
-                                                    {% else %}
-                                                        METTRE A JOUR MES PREFERENCES
-                                                    {% endif %}
-                                                </a>
-                                            </p>
-                                        </form>
-
-                                    </div>
-                                    {% endif %}
-                                {% else %}
-                                    <hr />
-                                    <h2>Inscriptions :</h2>
-                                    <p>Les inscriptions pour cette sortie commenceront le {{ event.joinStart | date('d/m/y') }}</p>
-                                {% endif %}
-                            {% else %}
-                                {{ easy_include('info-inscription-passee', 'vide') }}
-                            {% endif %}
-                        {% else %}
-                            {{ easy_include('info-inscription-licence-obsolete', 'vide') }}
-                        {% endif %}
-                    {% else %}
-                        {{ easy_include('info-inscription-non-connecte', 'vide') }}
-                    {% endif %}
-
-                {% else %}
-                    <p>Le nombre de places disponibles à la réservation depuis internet est atteint.</p>
-                {% endif %}
-            {% endif %}
-        {% else %}
-            {{ easy_include('info-inscription-nieme-cycle', 'vide') }}
-        {% endif %}
-
-        {% if event.cycleParent %}
-            <table id="agenda">
-                <tr>
-                    <td class="agenda-gauche">{{ event.cycleParent.tsp | date('d/m/Y') }}</td>
-                    <td>
-                        {{ include('sortie/agenda-evt-debut.html.twig', { event: event.cycleParent, my_status: my_status }) }}
-                    </td>
-                </tr>
-            </table>
-        {% elseif event.cycleChildren | length > 0 %}
-            <br style="clear:both" /><hr />
-            <ul class="nice-list">'
-                <li class="wide"><b>SORTIE{{ event.cycleChildren | length > 1 }} SUIVANTE{{ event.cycleChildren | length > 1 }} DE CE CYCLE :</b>
-            </ul>
-
-            <table id="agenda">
-                {% for childEvt in event.cycleChildren %}
-                    <tr>
-                        <td class="agenda-gauche">{{ childEvt.tsp | date('d/m/Y') }}</td>
-                        <td>
-                            {{ include('sortie/agenda-evt-debut.html.twig', { event: childEvt, my_status: my_status }) }}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </table>
-        {% endif %}
-    </div>
-    <br style="clear:both" />
-</div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" type="text/css"  media="screen" />
-{% endblock %}
+	<div id="left1">
+
+		<div id="fiche-sortie">
+
+			{% set closeDiv = false %}
+
+			{% if event.publicStatusUnseen %}
+				{% set closeDiv = true %}
+
+				<div class="alerte">
+					<b>Note : Cette sortie n'est pas publiée sur le site</b>.
+						                    Si vous voyez ce message apparaître, c'est que vous disposez de droits particuliers
+						                    qui vous autorisent à voir cette page.
+						                    Les usagers réguliers du site n'ont pas accès aux informations ci-dessous.<br/>
+
+					{% if is_granted('SORTIE_VALIDATE', event) %}
+						<div>
+							<form action="{{ path('sortie_validate', { id: event.id }) }}" method="post" class="loading" style="display:inline">
+								<input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_validate') }}"/>
+								<input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie"/>
+							</form>
+							<input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie."/>
+							<div style="display:none" id="refuser-{{ event.id }}">
+								<form action="{{ path('sortie_refus', { id: event.id }) }}" method="post" class="loading">
+									<input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_refus') }}"/>
+									<p>Laissez un message à l'auteur pour lui expliquer la raison du refus :</p>
+									<input type="text" name="msg" class="type1" placeholder="ex: Mauvais point de RDV"/>
+									<input type="submit" value="Refuser la publication" class="nice2 red"/>
+									<input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()"/>
+								</form>
+							</div>
+						</div>
+					{% endif %}
+				{% elseif event.publicStatusRefuse %}
+					{% set closeDiv = true %}
+					<div class="alerte">
+						<b>Note : Cette sortie a été refusée</b>.
+							                    Si vous voyez ce message apparaître, c'est que vous disposez de droits particuliers
+							                    qui vous autorisent à voir cette page. Les usagers réguliers du site n'ont pas accès
+							                    aux informations ci-dessous.<br/><br/>
+					{% elseif event.cancelled %}
+						{% set closeDiv = true %}
+						<div class="erreur">
+							<img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;"/>
+							<b>Sortie annulée :</b><br/>
+							Cette sortie a été annulée le
+							{{ event.cancelledWhen | date('d/m/Y à H:i') }}
+
+							{% if event.cancelledWho %}
+								, par
+								<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.cancelledWho.id }}" class="fancyframe userlink">{{ event.cancelledWho.nickname }}</a>
+							{% endif %}
+							<br/>
+
+							{% if is_granted('SORTIE_UNCANCEL', event) %}
+								<form action="{{ path('sortie_uncancel', { id: event.id }) }}" method="post" class="loading">
+									<input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_uncancel') }}"/>
+									<input type="submit" value="Réactiver cette sortie" class="nice2 red" title="Réactiver cette sortie"/>
+								</form>
+							{% endif %}
+
+							{# FIX ME Replace with a voter #}
+						{% elseif event.publicStatusValide and is_granted('SORTIE_UPDATE', event) %}
+							{% set closeDiv = true %}
+
+							<div class="alerte">
+								<b>Note :</b>
+								Cette sortie est publiée et visible par les adhérents !<br/>
+							{% endif %}
+
+							{% if is_granted('SORTIE_UPDATE', event) %}
+								{% if not event.cancelled %}
+									<a href="/creer-une-sortie/{{ event.commission.code }}/update-{{ event.id }}.html" title="Vous êtes l'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
+										<img src="/img/base/pencil.png" alt="" title="" style=""/>&nbsp;&nbsp;Modifier cette sortie
+									</a>
+								{% endif %}
+
+								{% if not event.finished %}
+									{% if allowed('evt_delete', 'commission:' ~ event.commission.code) and (event.publicStatusValide or event.cancelled) %}
+										<a class="nice2 noprint red" href="/supprimer-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Supprimer définitivement la sortie ci-dessous">
+											<img src="/img/base/x2.png" alt="" title="" style=""/>&nbsp;&nbsp;Supprimer cette sortie
+										</a>
+									{% endif %}
+								{% endif %}
+							{% endif %}
+
+							{% if is_granted('SORTIE_CANCEL', event) %}
+								<a class="nice2 noprint red" href="/annuler-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Annuler la sortie ci-dessous">
+									<img src="/img/base/delete.png" alt="" title="" style=""/>&nbsp;&nbsp;Annuler cette sortie
+								</a>
+							{% endif %}
+
+							{% if closeDiv %}
+							</div><br/>
+						{% endif %}
+
+						{% for article in event.articles %}
+							<a style="float:right; font-family:DIN, Arial; font-weight:normal; display:block; padding:5px 20px 0 0;" href="/article/{{ article.code }}-{{ article.id }}.html" title="{{ article.titre }}">
+								<span class="bleucaf">></span>
+								Voir le compte rendu de sortie "{{ article.titre }}"
+							</a>
+						{% endfor %}
+
+						<h1>
+							<span class="commission">{{ event.commission.title }}</span>
+							<span class="bleucaf">></span>
+							{{ event.titre }}
+							{% if event.groupe %}
+								<small>
+									({{ event.groupe.nom }})
+								</small>
+							{% endif %}
+							<span class="date">
+								/
+								{{ event.tsp | intldate('cccc d MMMM') }}</span>
+						</h1>
+
+						{% if app.user and event.user.id == app.user.id and event.isFinished %}
+							<a href="/article-new.html?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
+								<img src="/img/base/pencil_add.png" alt="" title="" style=""/>
+								Compte rendu
+							</a>
+						{% endif %}
+
+						{% if is_granted('FICHE_SORTIE', event) %}
+							<a href="/feuille-de-sortie/evt-{{ event.id }}.html" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
+								<img src="/img/base/print.png" alt="PRINT" title="" style="height:20px"/>
+								Imprimer la fiche de sortie
+							</a>
+						{% endif %}
+
+						{% if is_granted('SORTIE_DUPLICATE', event) %}
+							<form action="{{ path('sortie_duplicate', { id: event.id }) }}" method="post" class="loading">
+								<input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}"/>
+
+								<a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants" class="nice2">
+									Créer une nouvelle sortie avec ce groupe
+								</a>
+							</form>
+						{% endif %}
+
+						<br/>
+						<br/>
+
+						{% set my_status = event.participant(app.user) %}
+
+						{% if not event.cycleParent %}
+							{# les messages et options liées aux inscriptions ne s'appliquent pas sur les suites de cycles #}
+
+							{% if my_status and my_status.status == constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME') %}
+								{% if not event.finished %}
+									{% if allowed('evt_unjoin') %}
+										<p class="alerte">
+											<img src="/img/inscrit-standby.png" alt="" title="" style="float:left"/>
+											<br/>Vous avez demandé à participer à cette sortie, et votre demande est en attente de validation.<br/>
+											<input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;"/>
+										</p>
+										<br/>
+									{% endif %}
+								{% else %}
+									<p class="alerte">
+										<img src="/img/inscrit-standby.png" alt="" title="" style="float:left"/>
+										<br/>Vous avez demandé à participer à cette sortie, mais votre demande est restée en attente.<br/>&nbsp;
+									</p>
+									<br/>
+								{% endif %}
+							{% endif %}
+
+							{% if my_status and my_status.status == constant('App\\Entity\\EvtJoin::STATUS_REFUSE') %}
+								<p class="erreur">
+									<img src="/img/inscrit-cross.png" alt="" title="" style="float:left"/>
+									<br/>
+									Vous avez demandé à participer à cette sortie, mais l'organisateur a décliné votre inscription.
+									                    N'hésitez pas à le contacter pour en savoir plus.<br/>&nbsp;
+								</p>
+								<br/>
+							{% endif %}
+
+							{% if my_status and my_status.status == constant('App\\Entity\\EvtJoin::STATUS_VALIDE') %}
+								{% if my_status.role == 'encadrant' or my_status.role == 'stagiaire' or my_status.role == 'coencadrant' or my_status.role == 'benevole' %}
+									{% if not event.finished %}
+										{% if allowed('evt_unjoin') %}
+											<p class="info">
+												<img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left"/>
+												<br/>Vous êtes inscrit à cette sortie en tant que :
+												{{ my_status.role }}.<br/>&nbsp;
+												<input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;"/>
+											</p>
+											<br/>
+										{% endif %}
+									{% else %}
+										<p class="info">
+											<img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left"/>
+											<br/>Vous avez participé à cette sortie en tant que :
+											{{ my_status.role }}.<br/>&nbsp;
+										</p>
+										<br/>
+									{% endif %}
+								{% else %}
+									{% if not event.finished %}
+										{% if allowed('evt_unjoin') %}
+											<p class="info info-container">
+												<img src="/img/inscrit-check.png" alt="" title=""/>
+												<div class="text-container">Vous êtes inscrit comme participant à cette sortie.
+													<div class="button-container">
+														<input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;"/>
+
+														<add-to-calendar-button name="{{ event.titre }}" label="Ajouter à mon agenda" options="'Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'" location="{{ event.rdv }}" startdate="{{ event.tsp | intldate('yyyy-MM-dd') }}" enddate="{{ event.tspEnd | intldate('yyyy-MM-dd') }}" starttime="{{ event.tsp | date('H:i') }}" endtime="{{ event.tspEnd | date('H:i') }}" timezone="Europe/Paris" buttonstyle="text" hideiconbutton size="2"></add-to-calendar-button>
+													</div>
+												</div>
+											</p>
+										{% endif %}
+									{% else %}
+										<p class="info">
+											<img src="/img/inscrit-check.png" alt="" title="" style="float:left"/>
+											<br/>Vous avez participé à cette sortie.<br/>&nbsp;
+										</p><br/>
+									{% endif %}
+								{% endif %}
+							{% endif %}
+
+							{% if my_status and my_status.status != constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME') %}
+
+								{% if is_granted('PARTICIPANT_ANNULATION', my_status) %}
+									<div id="inscription-annuler" style="display: none;">
+										{{ easy_include('formalites-inscription-suppression', 'formalites') }}
+
+										<form action="{{ path('sortie_remove_participant', { id: my_status.id }) }}" method="post" class="loading">
+											<input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}"/>
+
+											<p style="text-align:center">
+												<a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+													<span class="bleucaf">&gt;</span>
+													ANNULER MA DEMANDE D'INSCRIPTION
+												</a>
+											</p>
+										</form>
+
+									</div>
+									<br/>
+								{% endif %}
+							{% endif %}
+
+							{% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
+								<link rel="stylesheet" href="/tools/datatables/media/css/jquery.dataTables.sobre.css" type="text/css" media="screen"/>
+								<script type="text/javascript" src="/tools/datatables/media/js/jquery.dataTables.min.js"></script>
+								<script type="text/javascript">
+
+									// jquery
+$(document).ready(function () {
+
+var expr = new RegExp('>[ \t\r\n\v\f]*<', 'g');
+var tbhtml = $('.datatable').html();
+$('.datatable').html(tbhtml.replace(expr, '><'));
+
+// datatables
+$('.datatable').dataTable({
+"aaSorting": [
+[
+1, "asc"
+],
+[
+0, "asc"
+]
+],
+"iDisplayLength": -1,
+"bLengthChange": false,
+"bFilter": false,
+"bPaginate": false,
+"bInfo": false
+// "aLengthMenu": [[-1],  ["All"]]
+// "bLengthChange": false
+// "sDom": 'T<"clear">lfrtip'
+});
+
+// format de couleur du changement de statut
+$('.joinlabels input').bind('change', function () { // changment ligne
+$(this).parents('tr').removeClass('status0 status1 status2 status3 status-1').addClass('status' + $(this).val());
+
+// changement des stats
+var nAcceptees = 0;
+var nRefusees = 0;
+$('.joinlabels input:checked[type=radio]').each(function () {
+if ($(this).val() == 1) 
+nAcceptees++;
+
+if ($(this).val() == 2) 
+nRefusees++;
+
+
+});
+$('#nAcceptees').html(nAcceptees);
+$('#nRefusees').html(nRefusees);
+});
+
+});
+								</script>
+
+								<div id="inscription-gestion">
+									{% if not event.finished %}
+										{{ easy_include('formalites-gestion-des-inscrits', 'vide') }}
+									{% else %}
+										{{ easy_include('formalites-gestion-des-inscrits-evt-passe', 'vide') }}
+									{% endif %}
+
+									<br/>
+
+									<form action="{{ path('sortie_update_inscription', { id: event.id })}}" method="post" class="loading">
+										<input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_update_inscriptions') }}"/>
+
+										<table class="datatable">
+											<thead>
+												<tr>
+													<th width='30%'>Nom / Pseudo</th>
+													<th width='15%'>Statut</th>
+													<th width='15%'>Rôle</th>
+													<th width='10%'>Date</th>
+													<th>Contact</th>
+												</tr>
+											</thead>
+											<tbody>
+												{#                                // PARTICIPANTS - EMPIETEMENTS : VÉRIFICATION DE (PRÉ)INSCRIPTIONS À D'AUTRES SORTIES DANS LE MEME TIMING#}
+												{#                                // création du tableau "empiètement" pour chaque user#}
+												{#                                $row['empietements'] = empietement_sortie($row['id_user'], $evt);#}
+
+													{% for participant in event.participants(null, null) %}
+														<tr class="status{{ participant.status }}" style="color:gray; font-size:10px;"> <td>
+															{{ participant.user.lastname | upper }},
+															{{ participant.user.firstname | capitalize }}<br/>
+															<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ participant.user.id }}" class="fancyframe userlink">{{ participant.user.nickname }}</a>
+
+															{% if participant.user.doitRenouveler %}
+																<img src="/img/base/delete.png" title="licence expirée" style="margin-bottom:-4px;">
+															{% endif %}
+														</td>
+
+														<td class="mini joinlabels status{{ participant.status }}">
+
+															{% set disable_waiting = true %}
+															{% set disable_accepted = true %}
+															{% set disable_refused = true %}
+															{% set disable_absent = true %}
+															{% set disable_unsubscribe = true %}
+
+															{% if allowed('evt_joining_accept') or allowed('evt_join_doall') %}
+																{% set disable_waiting = false %}
+																{% set disable_accepted = false %}
+																{% set disable_absent = false %}
+															{% endif %}
+															{% if allowed('evt_joining_refuse') or allowed('evt_join_doall') %}
+																{% set disable_refused = false %}
+															{% endif %}
+															{% if allowed('evt_unjoin_notme') or allowed('evt_join_doall') %}
+																{% set disable_unsubscribe = false %}
+															{% endif %}
+
+															{% if empietements[participant.user.id] is defined %}
+																<div class="empietements">
+																	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Attention au timing :</b>
+																	{% for empietement in empietements[participant.user.id] %}
+																		{% if empietement.status == constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME') %}
+																			<br/>- Adhérent pré-inscrit sur
+																			<br/><a href="{{ path('sortie', { code : empietement.event.code, id: empietement.event.id }) }}">{{ empietement.event.titre }}</a>
+																		{% elseif empietement.status == constant('App\\Entity\\EvtJoin::STATUS_VALIDE') %}
+																			<br/>- Adhérent
+																			<span style="color:red">confirmé</span>
+																			sur
+																			<br/>
+																			<br/><a href="{{ path('sortie', { code : empietement.event.code, id: empietement.event.id }) }}">{{ empietement.event.titre }}</a>
+																		{% endif %}
+																	{% endfor %}
+																</div>
+															{% endif %}
+
+															{% if participant.role != 'encadrant' %}
+																<span style="display:none">{{ participant.status }}</span>
+																<input type="hidden" name="id_evt_join[]" value="{{ participant.id }}"/>
+
+																{% if participant.isStatusEnAttente %}
+																	<label for="join_{{ participant.id }}_0">
+																		<input checked="checked" {{ disable_waiting ? 'disabled="disabled"' : '' }} type="radio" name="status_evt_join_{{ participant.id }}" id="join_{{ participant.id }}_0" value="0"/>
+																		En attente
+																	</label>
+																{% endif %}
+
+																{% if (event.finished and participant.isStatusValide) or not event.finished %}
+																	<label for="join_{{ participant.id }}_1">
+																		<input {{ participant.isStatusValide ? 'checked="checked"' : '' }} {{ disable_accepted ? 'disabled="disabled"' : '' }} type="radio" name="status_evt_join_{{ participant.id }}" id="join_{{ participant.id }}_1" value="1"/>
+																		Accepté
+																	</label>
+																{% endif %}
+
+																{% if event.finished and not participant.isStatusRefuse %}
+																	<label for="join_{{ participant.id }}_3">
+																		<input {{ participant.isStatusAbsent ? 'checked="checked"' : '' }} {{ disable_absent ? 'disabled="disabled"' : '' }} type="radio" name="status_evt_join_{{ participant.id }}" id="join_{{ participant.id }}_3" value="3"/>
+																		Absent
+																	</label>
+																{% endif %}
+
+																{% if (event.finished and participant.isStatusRefuse) or not event.finished %}
+																	<label for="join_{{ participant.id }}_2">
+																		<input {{ participant.isStatusRefuse ? 'checked="checked"' : '' }} {{ disable_refused ? 'disabled="disabled"' : '' }} type="radio" name="status_evt_join_{{ participant.id }}" id="join_{{ participant.id }}_2" value="2"/>
+																		Refusé
+																	</label>
+																{% endif %}
+
+																{% if not event.finished %}
+																	<label for="join_{{ participant.id }}_-1">
+																		<input name="status_evt_join_{{ participant.id }}" {{ disable_unsubscribe ? 'disabled="disabled"' : '' }} type="radio" id="join_{{ participant.id }}_-1" value="-1"/>
+																		Désinscrire
+																	</label>
+																{% endif %}
+
+															{% endif %}
+
+														</td>
+														<td class="mini">
+															{% if participant.user.nomade %}
+																<br/>
+																<img src="/img/base/bullet_error.png" alt="!" title="Attention. Ne reçoit pas d'e-mail" style="vertical-align:top"/>
+																<br/>
+															{% elseif participant.isRoleManuel or participant.isRoleInscrit or participant.isRoleBenevole %}
+																{% if participant.isRoleManuel %}
+																	<label style="display:block; white-space:nowrap;" for="role_join_{{ participant.id }}_m">
+																		<input checked="checked" name="role_evt_join_{{ participant.id }}" type="radio" id="role_join_{{ participant.id }}_m" value="manuel"/>
+																		Manuel
+																	</label>
+																{% endif %}
+																<label style="display:block; white-space:nowrap;" for="role_join_{{ participant.id }}_i">
+																	<input {% if participant.isRoleInscrit %} checked="checked" {% endif%} name="role_evt_join_{{ participant.id }}" type="radio" id="role_join_{{ participant.id }}_i" value="inscrit"/>
+																	Inscrit
+																</label>
+																<label style="display:block; white-space:nowrap;" for="role_join_{{ participant.id }}_b">
+																	<input {% if participant.isRoleBenevole %} checked="checked" {% endif%} name="role_evt_join_{{ participant.id }}" type="radio" id="role_join_{{ participant.id }}_b" value="benevole"/>
+																	Bénévole
+																</label>
+															{% else %}
+																{{ participant | participant_role_name }}
+															{% endif %}
+
+														</td>
+														<td style="white-space:nowrap">
+															<span style="display:none">{{ participant.tsp }}</span>
+															{{ participant.tsp | date('d/m') }}<br/>
+															{{ participant.tsp | date('à H:i') }}
+														</td>
+														<td>
+															<a href="mailto:{{ participant.user.email }}">{{ participant.user.email | u.truncate(15, '...') }}</a><br/>
+															{{ participant.user.tel }}<br/>
+															{{ participant.user.tel2 }}
+														</td>
+													</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+
+										<!-- stats affichées -->
+										<p>Stats :</p>
+										<ul>
+											<li>
+												<b id="nDemandes">{{ event.participants(null, null) | length }}</b>
+												demande(s), dont
+												<b id="nAcceptees">{{ event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_VALIDE')) | length }}</b>
+												acceptée(s), et
+												<b id="nRefusees">{{ event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_REFUSE')) | length }}</b>
+												refusée(s).
+											</li>
+											<li>
+												<b id="nRefusees">{{ event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_ABSENT')) | length }}</b>
+												absent(s).
+											</li>
+										</ul>
+
+										<br style="clear:both"/>
+
+										{% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
+											<p class="mini">
+												<input type="checkbox" name="disablemails"/>
+												Ne pas envoyer les e-mails lors de la mise à jour (déconseillé, sauf après l'événement).
+											</p>
+
+											<div style="text-align:center">
+												<br/>
+												<button type="submit" style="cursor: pointer; border: none;" class="biglink" title="Enregistrer">
+													<span class="bleucaf">&gt;</span>
+													ENREGISTRER LES STATUTS CI-DESSUS
+												</button>
+											</div>
+										{% elseif event.participant(app.user) %}
+											<p class="mini">{{ event.participant(app.user) | participant_status_name }}
+												: Vous ne pouvez pas modifier les inscriptions</p>
+										{% endif %}
+										<br/>
+										<br/>
+									</form>
+									<hr/>
+
+									{% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
+										<h2 id="autresoptions">Autres options :</h2>
+
+										{% if is_granted('SORTIE_CONTACT_PARTICIPANTS', event) %}
+											<!-- Contact par email des participants (orga uniquement) -->
+											<a class="nice2 blue" href="javascript:void(0)" onclick="$('#contact-inscrits').slideToggle()" title="">
+												<img src="/img/base/email.png" alt="" title=""/>
+												Envoyer un e-mail groupé aux inscrits
+											</a>
+											<br/>
+
+											<form action="{{ path('contact_participants', { id: event.id }) }}" method="post" id="contact-inscrits" style="display: none; border : 1px solid #eaeaea; box-shadow:0 0 20px -10px gray;; padding:10px; margin:10px 0 20px 0;; border-radius:10px">
+												<input type="hidden" name="csrf_token" value="{{ csrf_token('contact_participants') }}"/>
+
+												<h2>Formulaire de contact</h2>
+
+												<input required type="radio" name="status_sendmail" id="status_sendmail_1" value="1"/>
+												<label for="status_sendmail_1">
+													Envoyer uniquement aux adhérents confirmés pour la sortie</label><br/>
+
+												<input required type="radio" name="status_sendmail" id="status_sendmail_2" value="2"/>
+												<label for="status_sendmail_2">
+													Envoyer uniquement aux adhérents refusés/absents</label><br/>
+
+												<input required type="radio" name="status_sendmail" id="status_sendmail_0" value="0"/>
+												<label for="status_sendmail_0">
+													Envoyer uniquement aux adhérents en attente de confirmation</label><br/>
+
+												<input required type="radio" name="status_sendmail" id="status_sendmail_all" value="*"/>
+												<label for="status_sendmail_all">
+													Envoyer à toute la liste des inscrits, confirmés ou non</label><br/>
+
+												<br/>
+												Objet :<br/>
+												<input required type="text" name="objet" class="type1" style="width:95%" value="" placeholder="Note importante pour la sortie du {{ event.tsp | date('d/m') }}"/><br/>
+												Message :<br/>
+												<textarea required name="message" class="type1" style="width:95%; height:150px"></textarea>
+
+												<br/><br/>
+												<input type="submit" class="nice" value="&gt; Envoyer mon message" onclick="$.fancybox.close()"/>
+											</form>
+										{% endif %}
+
+										{% if allowed('user_see_all') or allowed('evt_join_notme') or allowed('evt_join_doall') %}
+											<a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_manual.php&amp;id_evt={{ event.id }}" title="">
+												Inscrire manuellement des adhérents du club
+											</a>
+
+											<a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_nomad.php&amp;id_evt={{ event.id }}" title="">
+												Ajouter un adhérent "Nomade"
+											</a>
+										{% endif %}
+									{% endif %}
+									<br style="clear:both"/><br/>
+
+								</div>
+								<br/>
+								<hr/>
+							{% endif %}
+						{% endif %}
+
+						{% if event.massif or event.itineraire %}
+							<ul class="nice-list">
+								{% if event.massif %}
+									<li class="wide">
+										<b>MASSIF :</b>
+										{{ event.massif }}</li>
+								{% endif %}
+								{% if event.itineraire %}
+									<li class="wide">
+										<b>ITINÉRAIRE :</b>
+										{{ event.itineraire }}</li>
+								{% endif %}
+							</ul>
+							<br style="clear:both"/>
+							<hr/>
+						{% endif %}
+
+						{% if event.denivele or event.distance > 0 or event.difficulte or event.matos %}
+							<ul class="nice-list">
+								{% if event.denivele %}
+									<li class="wide">
+										<b>DÉNIVELÉ :</b>
+										{{ event.denivele }}</li>
+								{% endif %}
+								{% if event.distance > 0 %}
+									<li class="wide">
+										<b>DISTANCE :</b>
+										{{ event.distance }}
+										km</li>
+								{% endif %}
+								{% if event.difficulte %}
+									<li class="wide">
+										<b>DIFFICULTÉ :</b>
+										{{ event.difficulte }}</li>
+								{% endif %}
+								{% if event.matos %}
+									<li class="wide">
+										<b>MATÉRIEL :</b>
+										{{ event.matos }}</li>
+								{% endif %}
+							</ul>
+							<br style="clear:both"/>
+							<hr/>
+						{% endif %}
+
+						{% if not event.cancelled %}
+							<div class="description_evt">{{ event.description | raw }}</div>
+							<hr style="clear:both"/>
+
+							{% if allowed('user_read_limited') and (event.tarif > 0 or event.tarifDetail) %}
+								<ul class="nice-list">
+									{% if event.tarif %}
+										<li class="wide">
+											<b>TARIF :</b>
+											{{ event.tarif }}
+											Euros</li>
+									{% endif %}
+									{% if event.tarifDetail %}
+										<li class="wide">
+											<b>DÉTAIL :</b>
+											{{ event.tarifDetail }}</li>
+									{% endif %}
+								</ul>
+								<br style="clear:both"/>
+								<hr/>
+							{% endif %}
+
+							<ul class="nice-list">
+								<li>
+									<b>DÉPART :</b>
+									Le
+									{{ event.tsp | intldate('cccc d MMMM') }}
+									{% if allowed('user_read_limited') %}
+										{{ event.tsp|date('H:i') }}
+									{% endif %}
+								</li>
+								<li>
+									<b>RETOUR :</b>
+									{% if event.tsp | date('dmY') == event.tspEnd | date('dmY') %}
+										Le même jour
+									{% else %}
+										Le
+										{{ event.tspEnd | intldate('cccc d MMMM') }}
+									{% endif %}
+								</li>
+							</ul>
+
+							{% if allowed('user_read_limited') %}
+								<ul class="nice-list">
+									<li>
+										<b>RDV :</b>
+										{{ event.rdv }}</li>
+									<li class="wide">
+										<b>POINT DE RENDEZ-VOUS SUR LA CARTE :</b>
+									</li>
+								</ul>
+								<br style="clear:both"/>
+								<div id="map-fichesortie"></div>
+								<script>
+									$(function () {
+var zoom = 16;
+var lat = {{ event.lat|replace({',':'.'}) }};
+var lon = {{ event.long|replace({',':'.'}) }};
+var mymap = L.map('map-fichesortie').setView([
+lat, lon
+], zoom);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png?{foo}', {
+foo: 'bar',
+attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+}).addTo(mymap);
+var marker = L.marker([lat, lon]).addTo(mymap);
+})
+								</script>
+							{% endif %}
+							<hr/>
+						{% endif %}
+
+						<ul class="nice-list">
+							<li class="wide">
+								<b>SORTIE DÉPOSÉE PAR :</b>
+								<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.user.id }}" class="fancyframe userlink">
+									{{ event.user.nickname }}
+								</a>
+								<span class="mini">
+									- le
+									{{ event.tspCrea | date('d/m/y') }}
+									{% if event.tspEdit %}, modifiée le
+										{{ event.tspEdit | date('d/m/y à H:i') }}
+									{% endif %}
+								</span>
+							</li>
+
+							{% if event.encadrants('encadrant') | length > 0 %}
+								<li class="wide">
+									<b>ENCADRANTS :</b>
+									{% for encadrant in event.encadrants('encadrant') %}
+										{% if loop.index > 1 %},
+										{% endif %}
+										<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}" class="fancyframe userlink">
+											{{ encadrant.user.nickname }}
+										</a>
+									{% endfor %}
+								</li>
+								<br style="clear:both"/>
+							{% endif %}
+
+							{% if event.encadrants('stagiaire') | length > 0 %}
+								<li class="wide">
+									<b>STAGIAIRE :</b>
+									{% for stagiaire in event.encadrants('stagiaire') %}
+										{% if loop.index > 1 %},
+										{% endif %}
+										<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ stagiaire.user.id }}" class="fancyframe userlink">
+											{{ stagiaire.user.nickname }}
+										</a>
+									{% endfor %}
+								</li>
+								<br style="clear:both"/>
+							{% endif %}
+
+							{% if event.encadrants('coencadrant') | length > 0 %}
+								<li class="wide">
+									<b>CO-ENCADRANTS :</b>
+									{% for encadrant in event.encadrants('coencadrant') %}
+										{% if loop.index > 1 %},
+										{% endif %}
+										<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}" class="fancyframe userlink">
+											{{ encadrant.user.nickname }}
+										</a>
+									{% endfor %}
+								</li>
+								<br style="clear:both"/>
+							{% endif %}
+
+							{% if event.encadrants('benevole') | length > 0 %}
+								<li class="wide">
+									<b>BÉNÉVOLES :</b>
+									{% for encadrant in event.encadrants('benevole') %}
+										{% if loop.index > 1 %},
+										{% endif %}
+										<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}" class="fancyframe userlink">
+											{{ encadrant.user.nickname }}
+										</a>
+									{% endfor %}
+								</li>
+								<br style="clear:both"/>
+							{% endif %}
+
+							<br style="clear:both"/>
+
+							{% if event.needBenevoles and not event.cancelled %}
+								{{ easy_include('alerte-benevoles', 'alerte-benevoles') }}
+							{% endif %}
+
+						</ul>
+						<br style="clear:both"/>
+						{% if not event.hasStarted and event | is_legal_validable  %}
+							{{ easy_include('status-legal-' ~ event.statusLegal, 'status-legal') }}
+							<br/>
+
+							{% if is_granted('SORTIE_LEGAL_VALIDATION', event) %}
+								<div class="status-legal noprint">
+									<h2>Validation de la sortie :</h2>
+									<p>
+										Pour valider cette sortie en tant que sortie officielle du CAF,
+										                        ou refuser d'associer cette sortie au
+										{{ sitename }},
+										                        cliquez sur un des boutons ci-dessous.
+									</p>
+									<p>
+										<b>Attention !</b>
+										Cette opération est définitive !
+									</p>
+
+									<form action="{{ path('sortie_legal_refus', { id: event.id }) }}" method="post" class="loading" style="display:inline">
+										<input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_legal_refus') }}"/>
+										<input type="submit" class="nice2 red" value="Refuser la validation"/>
+									</form>
+									<form action="{{ path('sortie_legal_validate', { id: event.id }) }}" method="post" class="loading" style="display:inline">
+										<input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_legal_validate') }}"/>
+										<input type="submit" class="nice2 green" value="Valider"/>
+									</form>
+
+									<br/>&nbsp;
+								</div>
+								<br/>
+							{% endif %}
+						{% endif %}
+
+						{% if not event.cycleParent %}
+							{% if not event.cancelled %}
+								{% set nInscritsHorsEncadrement = event.participants([constant('App\\Entity\\EvtJoin::ROLE_INSCRIT'), constant('App\\Entity\\EvtJoin::ROLE_BENEVOLE'), constant('App\\Entity\\EvtJoin::ROLE_MANUEL')]) | length %}
+								{% set nInscritsTotal = nInscritsHorsEncadrement + event.participants([constant('App\\Entity\\EvtJoin::ROLE_COENCADRANT'), constant('App\\Entity\\EvtJoin::ROLE_STAGIAIRE'), constant('App\\Entity\\EvtJoin::ROLE_ENCADRANT')]) | length %}
+								{% set nPlacesRestantesOnline = max(0, event.joinMax - event.participants([constant('App\\Entity\\EvtJoin::ROLE_INSCRIT'), constant('App\\Entity\\EvtJoin::ROLE_BENEVOLE')]) | length) %}
+								{% set nEnAttente = event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME')) | length %}
+
+								{% if nPlacesRestantesOnline > event.ngensMax - nInscritsTotal %}
+									{% set nPlacesRestantesOnline = max(0, event.ngensMax - nInscritsTotal) %}
+								{% endif %}
+
+								<hr/>
+								<ul class="nice-list">
+									<li>
+										<b>NOMBRE TOTAL DE PLACES :</b>
+										{{ event.ngensMax }}
+									</li>
+									<li>
+										<b>DISPONIBLES VIA INTERNET :</b>
+										{{ nPlacesRestantesOnline }}
+									</li>
+								</ul>
+
+								<br style="clear:both"/><hr/>
+
+								<p>
+									<span style="padding: 10px 10px 5px 5px;float:left;">
+										<span class="temoin-places-dispos {{ nPlacesRestantesOnline > 0 ? 'on' : 'off' }}"></span>
+									</span>
+									<span style="font-size:14px; font-family:DINBold; color:#666666">
+										{{ nInscritsTotal }}
+										PARTICIPANT{{ nInscritsTotal > 1 ? 'S' : '' }}
+										INSCRIT{{ nInscritsTotal > 1 ? 'S' : '' }}
+										SUR
+										{{ event.ngensMax }}
+										PLACE{{ event.ngensMax ? 'S' : '' }}
+										AU TOTAL
+										                        ({{ event.ngensMax > 0 ? (100 * nInscritsTotal / event.ngensMax) | round : 0 }}%)
+									</span><br/>
+									{{ nPlacesRestantesOnline }}
+									place{{ nPlacesRestantesOnline > 1 ? 's' : '' }}
+									restante{{ nPlacesRestantesOnline > 1 ? 's' : '' }}
+									pour les inscriptions en ligne
+									{{ nEnAttente > 0 ? ' et '~nEnAttente~' inscription'~ (nEnAttente > 1 ? 's' : '' ) ~' en attente de confirmation' : '' }}
+								</p>
+
+								{% if nInscritsHorsEncadrement > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
+									<table class="big-lines-table" style="width:570px; margin-left:20px;">
+
+										{% for inscrit in event.participants(null, constant('App\\Entity\\EvtJoin::STATUS_VALIDE')) %}
+											<td></td>
+											<td>
+												{% if allowed('user_read_private', event.commission.code) %}
+													<p class="mini">{{ inscrit.user.lastname|upper }},
+														{{ inscrit.user.firstname|capitalize }}</p>
+												{% endif %}
+												<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
+											</td>
+											<td class="small">
+												{% if allowed('user_read_private', event.commission.code) %}
+													{{ inscrit.user.tel }}
+												{% endif %}
+											</td>
+											<td class="small">
+												{% if allowed('user_read_private', event.commission.code) %}
+													{{ inscrit.user.tel2 }}
+												{% endif %}
+											</td>
+											<td class="small">
+												{% if allowed('user_read_private', event.commission.code) %}
+													{{ inscrit.user.email }}
+												{% endif %}
+											</td>
+											<td class="small">
+												{% if allowed('user_read_limited', event.commission.code) and inscrit.isCovoiturage %}
+													<img src="/img/voiture.png" title="Covoiturage" width="16px">
+												{% endif %}
+											</td>
+										</tr>
+									{% endfor %}
+
+									{% for inscrit in event.participants(null, constant('App\\Entity\\EvtJoin::ROLE_MANUEL')) %}
+
+										<tr>
+											<td>
+												{% if allowed('user_read_private', event.commission.code) %}
+													<p class="mini">{{ inscrit.user.lastname|upper }},
+														{{ inscrit.user.firstname|capitalize }}</p>
+												{% endif %}
+												<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
+											</td>
+											<td class="small">
+												{% if allowed('user_read_private', event.commission.code) %}
+													{{ inscrit.user.tel }}
+												{% endif %}
+											</td>
+											<td class="small">
+												{% if allowed('user_read_private', event.commission.code) %}
+													{{ inscrit.user.tel2 }}
+												{% endif %}
+											</td>
+											<td class="small">
+												{% if allowed('user_read_private', event.commission.code) %}
+													{{ inscrit.user.email }}
+												{% endif %}
+											</td>
+											<td class="small">
+												{% if allowed('user_read_limited', event.commission.code) and inscrit.isCovoiturage %}
+													<img src="/img/voiture.png" title="Covoiturage" width="16px">
+												{% endif %}
+											</td>
+										</tr>
+									{% endfor %}
+
+								</table>
+							{% endif %}
+
+							{# si utilisateur est inscrit, il a accès #}
+							{% if nPlacesRestantesOnline > 0 or event.participant(app.user) %}
+
+								{% if allowed('evt_join') %}
+
+									{% if not app.user.doitRenouveler %}
+										{% if not event.hasStarted %}
+											{% if event.joinHasStarted %}
+												{% if is_granted('JOIN_SORTIE', event) %}
+													{{ _self.user_inscription_button(event, filiations, my_status) }}
+
+													<div id="inscription" style="display:none">
+
+														{{ easy_include('formalites-inscription', 'formalites') }}
+
+														<form action="{{ app.request.requestUri }}#inscription" method="post" class="loading">
+
+															<input type="hidden" name="operation" value="user_join"/>
+															<input type="hidden" name="id_evt" value="{{ event.id }}"/>
+
+															<div class="check-nice ">
+																{% include 'sortie/user_inscription_options.html.twig' %}
+															</div>
+
+															<p style="text-align:center">
+																<a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+																	<span class="bleucaf">&gt;</span>
+																	{% if not my_status %}
+																		ENVOYER MA DEMANDE D'INSCRIPTION
+																	{% else %}
+																		METTRE A JOUR MES PREFERENCES
+																	{% endif %}
+																</a>
+															</p>
+														</form>
+
+													</div>
+												{% endif %}
+											{% else %}
+												<hr/>
+												<h2>Inscriptions :</h2>
+												<p>Les inscriptions pour cette sortie commenceront le
+													{{ event.joinStart | date('d/m/y') }}</p>
+											{% endif %}
+										{% else %}
+											{{ easy_include('info-inscription-passee', 'vide') }}
+										{% endif %}
+									{% else %}
+										{{ easy_include('info-inscription-licence-obsolete', 'vide') }}
+									{% endif %}
+								{% else %}
+									{{ easy_include('info-inscription-non-connecte', 'vide') }}
+								{% endif %}
+
+							{% else %}
+								<p>Le nombre de places disponibles à la réservation depuis internet est atteint.</p>
+							{% endif %}
+						{% endif %}
+					{% else %}
+						{{ easy_include('info-inscription-nieme-cycle', 'vide') }}
+					{% endif %}
+
+					{% if event.cycleParent %}
+						<table id="agenda">
+							<tr>
+								<td class="agenda-gauche">{{ event.cycleParent.tsp | date('d/m/Y') }}</td>
+								<td>
+									{{ include('sortie/agenda-evt-debut.html.twig', { event: event.cycleParent, my_status: my_status }) }}
+								</td>
+							</tr>
+						</table>
+					{% elseif event.cycleChildren | length > 0 %}
+						<br style="clear:both"/><hr/>
+						<ul class="nice-list">'
+							<li class="wide">
+								<b>SORTIE{{ event.cycleChildren | length > 1 }}
+									SUIVANTE{{ event.cycleChildren | length > 1 }}
+									DE CE CYCLE :</b>
+							</li>
+						</ul>
+
+						<table id="agenda">
+							{% for childEvt in event.cycleChildren %}
+								<tr>
+									<td class="agenda-gauche">{{ childEvt.tsp | date('d/m/Y') }}</td>
+									<td>
+										{{ include('sortie/agenda-evt-debut.html.twig', { event: childEvt, my_status: my_status }) }}
+									</td>
+								</tr>
+							{% endfor %}
+						</table>
+					{% endif %}
+				</div>
+				<br style="clear:both"/>
+			</div>
+		{% endblock %}
+
+		{% block javascripts %}
+			{{ parent() }}
+			<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+			<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" type="text/css" media="screen"/>
+		{% endblock %}
