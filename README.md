@@ -29,7 +29,7 @@ Les secrets (mot de passe de db, mot de passe ftp, etc...) sont stockés en tant
 # Cronjobs
 Quelques cronjobs sont programmés pour effectuer certaines taches:
 - envoi de mail
-- fichier adherent
+- fichier adherent: vérification des fichiers adhérents provenant de la FFCAM (validité des adhésions)
 - sauvegarde des images
 - rappels
 - renouvellement du certificat SSL

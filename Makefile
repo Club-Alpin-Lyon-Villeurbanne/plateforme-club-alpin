@@ -140,6 +140,7 @@ package: yarn-install yarn-build ## Creates software package
 		templates \
 		var/cache/prod \
 		vendor \
+		resources \
 		.env.local.php \
 		composer.json \
 		composer.lock \
