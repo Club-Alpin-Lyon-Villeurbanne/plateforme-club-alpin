@@ -2,9 +2,7 @@
 set -euo pipefail
 
 DEFAULT_TARGET="clubalpinlyon.top"
-DEFAULT_ENV="dev"
 TARGET=${1:-$DEFAULT_TARGET}
-ENV=${2:-$DEFAULT_ENV}
 
 if [ $TARGET != "clubalpinlyon.fr" ] && [ $TARGET != "clubalpinlyon.top" ]; then
   echo "Invalid target \"$TARGET\", must be one of \"clubalpinlyon.fr\", \"clubalpinlyon.top\""
@@ -17,7 +15,7 @@ TARGET_DIR="$BASE_TARGET/deployments/$TIMESTAMP"
 CURRENT_DIR="$BASE_TARGET/deployments/current"
 mkdir -p $TARGET_DIR
 
-echo "Deploying to $TARGET_DIR on env $ENV"
+echo "Deploying to $TARGET_DIR"
 
 unzip -q "$BASE_TARGET/package.zip" -d "$TARGET_DIR"
 ln -s "$BASE_TARGET/ftp" "$TARGET_DIR/public"
@@ -33,9 +31,6 @@ unlink $CURRENT_DIR
 
 ln -s $TARGET_DIR $CURRENT_DIR
 
-# remove all deployment folders
-find $BASE_TARGET/deployments/ -mindepth 1 -maxdepth 1 -type d ! -name "$TIMESTAMP" -exec rm -r {} \;
-
-$CURRENT_DIR/bin/console doctrine:migrations:sync-metadata-storage --env=$ENV
-$CURRENT_DIR/bin/console doctrine:migrations:migrate --env=$ENV --no-interaction
-$CURRENT_DIR/bin/console messenger:setup-transports --env=$ENV
+$CURRENT_DIR/bin/console doctrine:migrations:sync-metadata-storage --env=prod
+$CURRENT_DIR/bin/console doctrine:migrations:migrate --env=prod --no-interaction
+$CURRENT_DIR/bin/console messenger:setup-transports --env=prod
