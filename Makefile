@@ -125,10 +125,9 @@ endif
 
 package: yarn-install yarn-build ## Creates software package
 	@cp .env .env.backup
-	@sed -i 's/APP_ENV=.*/APP_ENV=$(env)/g' .env
-	NO_DEV=$([ "$env" == "prod" ] && echo "--no-dev" || echo "")
-	@$(ON_PHP) bash -c "APP_ENV=$(env) composer $(NO_DEV) install --optimize-autoloader --no-interaction --apcu-autoloader --prefer-dist"
-	@$(ON_PHP) bash -c "APP_ENV=$(env) composer dump-env $(env)"
+	@sed -i 's/APP_ENV=.*/APP_ENV=prod/g' .env
+	@$(ON_PHP) bash -c "APP_ENV=prod composer install --no-dev --optimize-autoloader --no-interaction --apcu-autoloader --prefer-dist"
+	@$(ON_PHP) bash -c "APP_ENV=prod composer dump-env prod"
 	@rm -rf package.zip
 	@zip -q -r package.zip \
 		backup \
@@ -141,7 +140,6 @@ package: yarn-install yarn-build ## Creates software package
 		templates \
 		var/cache/prod \
 		vendor \
-		resources \
 		.env.local.php \
 		composer.json \
 		composer.lock \
