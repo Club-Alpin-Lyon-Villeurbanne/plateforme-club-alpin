@@ -70,8 +70,41 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
     <!--[if lt IE 9]>
         <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <?php
+        if (LegacyContainer::getParameter('legacy_env_GOOGLE_SITE_VERIFICATION') != "prod") {
+    ?>
+        <style>
+            body {
+                padding-top: 30px;
+            }
+            #test-banner {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background-color: #f44336; /* You can change this color to suit your preference */
+                color: #ffffff;
+                text-align: center;
+                z-index: 9999;
+                padding: 10px 0;
+                font-size: 16px;
+                font-weight: bold;
+            }
+        </style>
+    <?php
+        }
+    ?>
 </head>
 <body>
+    <?php
+        if (LegacyContainer::getParameter('legacy_env_GOOGLE_SITE_VERIFICATION') != "prod") {
+    ?>
+        <div id="test-banner">
+            <p>Attention, vous vous trouvez sur un site de test. Veuillez <a href="https://clubalpinlyon.fr">cliquer ici pour accéder au site de production</a>.</p>
+        </div>
+    <?php
+        }
+    ?>
     <div id="container">
         <div id="siteHeight">
             <?php
