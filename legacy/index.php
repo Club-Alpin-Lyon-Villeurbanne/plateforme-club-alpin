@@ -82,7 +82,7 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
                 top: 0;
                 left: 0;
                 width: 100%;
-                background-color: #f44336; /* You can change this color to suit your preference */
+                background-color: #f44336;
                 color: #ffffff;
                 text-align: center;
                 z-index: 9999;
