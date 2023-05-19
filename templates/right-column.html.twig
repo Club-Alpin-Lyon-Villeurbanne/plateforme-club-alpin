@@ -73,9 +73,11 @@
                             <span class="cancelled">Sortie annulée</span>
                         {% else %}
                             <span style="color:#4D4D4D">{{ event.commission.title }}
-                                <span style="padding: 10px 10px 5px 5px;float:left;">
-                                    <span class="temoin-places-dispos {{ nPlacesRestantesOnline > 0 ? 'on' : 'off' }}">
+                            {% if nPlacesRestantesOnline > 0 %}
+                                <span>
+                                    complet
                                 </span>
+                            {% endif %}
                             </span>
                         </span>
                         {% endif %}
