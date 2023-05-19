@@ -1,6 +1,7 @@
 {% if current_commission is not defined %}
     {% set current_commission = null %}
 {% endif %}
+{% set nPlacesRestantesOnline = max(0, event.joinMax - event.participants([constant('App\\Entity\\EvtJoin::ROLE_INSCRIT'), constant('App\\Entity\\EvtJoin::ROLE_BENEVOLE')]) | length) %}
 <div id="right1">
     <div class="right-light">
         &nbsp; {# important #}
@@ -71,7 +72,12 @@
                         {% if event.cancelled %}
                             <span class="cancelled">Sortie annulée</span>
                         {% else %}
-                            <span style="color:#4D4D4D">{{ event.commission.title }}</span>
+                            <span style="color:#4D4D4D">{{ event.commission.title }}
+                                <span style="padding: 10px 10px 5px 5px;float:left;">
+                                    <span class="temoin-places-dispos {{ nPlacesRestantesOnline > 0 ? 'on' : 'off' }}">
+                                </span>
+                            </span>
+                        </span>
                         {% endif %}
                         <h2>{{ event.titre }}</h2>
                     </a>
