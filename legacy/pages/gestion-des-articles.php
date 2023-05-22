@@ -84,7 +84,7 @@
                                 .'<b><a href="/article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html?forceshow=true" target="_blank">'.html_utf8($article['titre_article']).'</a></b><br />'
                                 .'<b>Type d\'article :</b> '.$type.'<br />'
                                 .'<span class="mini">Par '.userlink($article['id_user'], $article['nickname_user']).'</span> - '
-                                .'<span class="mini">Le '.jour(date('N', $article['tsp_article']), 'short').' '.date('d', $article['tsp_article']).' '.mois(date('m', $article['tsp_article'])).' à '.date('H:i', $article['tsp_article']).'<br />'
+                                .'<span class="mini">Le '.jour(date('N', $article['tsp_article']), 'short').' '.date('d', $article['tsp_article']).' '.mois(date('m', $article['tsp_article'])).' '.date('Y', $article['tsp_article']).' à '.date('H:i', $article['tsp_article']).'<br />'
                                 .($article['une_article'] ? '<span class="mini"><b><img src="/img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d\'accueil !</span>' : '')
                             .'</ul>'
 
@@ -165,7 +165,7 @@
                                 .'<b><a href="/article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html?forceshow=true" target="_blank">'.html_utf8($article['titre_article']).'</a></b><br />'
                                 .'<b>Type d\'article :</b> '.$type.'<br />'
                                 .'<span class="mini">Par '.userlink($article['id_user'], $article['nickname_user']).'</span> - '
-                                .'<span class="mini">Le '.jour(date('N', $article['tsp_article']), 'short').' '.date('d', $article['tsp_article']).' '.mois(date('m', $article['tsp_article'])).' à '.date('H:i', $article['tsp_article']).'<br />'
+                                .'<span class="mini">Le '.jour(date('N', $article['tsp_article']), 'short').' '.date('d', $article['tsp_article']).' '.mois(date('m', $article['tsp_article'])).' '.date('Y', $article['tsp_article']).' à '.date('H:i', $article['tsp_article']).'<br />'
                                 .($article['une_article'] ? '<span class="mini"><b><img src="/img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d\'accueil !</span>' : '')
                             .'</ul>'
 
