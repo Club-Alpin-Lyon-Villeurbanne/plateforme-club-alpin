@@ -97,7 +97,7 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
 </head>
 <body>
     <?php
-        if (LegacyContainer::getParameter('legacy_env_GOOGLE_SITE_VERIFICATION') != "prod") {
+        if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
     ?>
         <div id="test-banner">
             <p>Attention, vous vous trouvez sur un site de test. Veuillez <a href="https://clubalpinlyon.fr">cliquer ici pour accéder au site de production</a>.</p>
