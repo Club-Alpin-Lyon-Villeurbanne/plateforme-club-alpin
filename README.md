@@ -97,6 +97,8 @@ Ce setup devrait aussi fonctionner sous Windows ou Linux en remplaçant homebrew
    1. `cp legacy/config/config.php.tpl legacy/config/config.php`
    2. Modifier la partie `db` pour y mettre la config locale de votre DB
    3. `cp legacy/config/params.php.tpl legacy/config/params.php`
+   4. `cp .env .env.local`
+   5. Modifier la partie `DATABASE_URL` pour y mettre la config locale de votre DB
 5. Installer et builder les dépendances de l'interface `yarn install && yarn build`
 6. Lancer Symfony: `symfony server:start --dir=public`
 7. Et voila 🎉 le site devrait etre accessible à l'adresse `http://127.0.0.1:8000/`
