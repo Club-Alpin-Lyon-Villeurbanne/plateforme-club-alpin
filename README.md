@@ -71,6 +71,36 @@ Les identifiants sont stockés sur notre compte bitwarden.
  - L'accès à l'UI se fait avec "contact@herewecom.com" et mot de passe "test"
  - Les tests se lancent apres avoir setup l'env de test `make setup-db migrate env=test` puis `make phpunit`
 
+### Local setup sur Mac (M1)
+
+L'environnement tourne sans docker en utilisant le CLI de Symfony sur un Mac possédant un processeur Apple M1.  
+Ce setup devrait aussi fonctionner sous Windows ou Linux en remplaçant homebrew par son équivalent.
+
+#### Requirements
+- [homebrew](https://brew.sh/index_fr)
+
+### Étapes
+
+1. Installer et Configurer la DB
+   1. Install en utilisant homebrew: `brew install mysqld`
+   2. Démarrer la DB: `brew services start php`
+   3. Configurer le compte root: `mysql_secure_installation`
+   4. Créer la DB `caflvproduction`
+   5. Importer le dump de la DB (demander à Nicolas pour le dump pseudonymisé): `mysql -u root -p caflvproduction < caflv_pseudonymised-prod-dump-20230523.sql`
+2. Installer php 7.4 (ℹ️ php7.4 n'existe plus sur le package manager homebrew, il faut ajouter un repository supplémentaire)
+   1. `brew tap shivammathur/php`
+   2. `brew install shivammathur/php/php@7.4`
+   3. `brew link php@7.4` (le flag `--overwrite` peut etre necessaire en fonction de votre config)
+   4. `php -v` pour vérifier que c'est la bonne version
+3. Installer le CLI de symfony
+   1. `curl -sS https://get.symfony.com/cli/installer | bash`
+4. Copier et configurer les fichiers de config
+   1. `cp legacy/config/config.php.tpl legacy/config/config.php`
+   2. Modifier la partie `db` pour y mettre la config locale de votre DB
+   3. `cp legacy/config/params.php.tpl legacy/config/params.php`
+5. Installer et builder les dépendances de l'interface `yarn install && yarn build`
+6. Lancer Symfony: `symfony server:start --dir=public`
+7. Et voila 🎉 le site devrait etre accessible à l'adresse `http://127.0.0.1:8000/`
 
 ## 👋 Contribution au projet
 
