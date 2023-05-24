@@ -394,7 +394,7 @@ if ('1' != $evt['cancelled_evt']) {
                         <br />
                         Objet :<br />
                         <input type="text" name="objet" class="type1" style="width:95%" value="<?php 
-                        if ('' != $_POST['objet']) {
+                        if (isset($_POST['objet']) && '' !== $_POST['objet']) {
                             echo html_utf8(stripslashes($_POST['objet']));
                         } else {
                             echo "Note importante pour la sortie du ".date('d/m', $evt['tsp_evt']);
