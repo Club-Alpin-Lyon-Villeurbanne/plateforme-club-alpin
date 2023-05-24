@@ -71,7 +71,7 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
         <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <?php
-        if (LegacyContainer::getParameter('legacy_env_GOOGLE_SITE_VERIFICATION') != "prod") {
+        if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
     ?>
         <style>
             body {
