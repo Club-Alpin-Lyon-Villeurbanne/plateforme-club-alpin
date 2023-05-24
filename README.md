@@ -41,14 +41,13 @@ Les cronjobs sont accessibles sur le serveur en utilisant la commande `sudo cron
 
 La base de données est hébergée et gérée par AWS RDS. Elle se trouve dans un VPC privée, ce qui nécessite d'utiliser un tunnel SSH pour y accéder.
 Le hostname est: `caflv-production-aurora-mysql.cluster-cw75ek4t1pty.eu-west-3.rds.amazonaws.com`
-Le nom de la base de prod est `caflvproduction`
-Le nom d'utilisateur est `demander à Nicolas`
-Idem pour le mot de passe :)
+Le nom de la base de prod est `caflvproduction` et celle de dev est `caflvdev`.
+Les identifiants sont dans bitwarden. Demandez un accès à Nicolas ou Romain.
 
 ## Recaptcha
 
 Recaptcha est utilisé pour s'assurer que l'utilisateur est bien humain. Ce système est transparent pour l'utilisateur final.
-La config de recaptch (nom de domaine) se fait sur le site de recaptcha en utilisant le compte `clubcaflv@gmail.com`.
+La config de recaptcha (nom de domaine) se fait sur la console de recaptcha en utilisant le compte `clubcaflv@gmail.com`.
 
 ## Matrice des droits des utilisateurs
 
@@ -108,18 +107,13 @@ Nous encourageons vivement les contributions à notre projet. Que vous soyez un 
 
 ### Processus de contribution
 
-1. **Clone du répertoire** : Clonez le répertoire sur votre machine locale pour y apporter des modifications.
-
-2. **Création d'une nouvelle branche** : Créez une nouvelle branche sur votre clone. Nommez-la de manière appropriée en fonction de la fonctionnalité ou de la correction de bug sur laquelle vous travaillez.  
-ℹ️ Notez que notre branche `main` est la branche principale de développement, elle est protégée et ne doit pas être utilisée pour le développement direct. Tout push sur cette branche déclenchera un déploiement sur notre environnement de test [https://www.clubalpinlyon.top](https://www.clubalpinlyon.top).
-
-3. **Apportez vos modifications** : Effectuez les modifications nécessaires sur cette branche. Assurez-vous de suivre les conventions de codage du projet.
-
-4. **Commit de vos modifications** : Une fois que vous êtes satisfait de vos modifications, faites un commit en décrivant clairement les modifications que vous avez apportées.
-
-5. **Push vers le répertoire** : Faites un push de votre branche vers le répertoire sur GitHub. Un processus de CI/CD sera enclenché une fois que la branche est pushée.
-
-6. **Créez une Pull Request (PR)** : Rendez-vous sur la page du répertoire principal du projet sur GitHub. Vous devriez voir une notification vous invitant à créer une PR à partir de votre branche récemment mise à jour. Cliquez sur le bouton "Compare & pull request" et remplissez les détails nécessaires. Lorsqu'une PR est mergée, le processus de CI/CD s'enclenche également pour assurer la qualité du code et l'intégrité de l'application.
+1. **Forker le répertoire** : Forker le répertoire sur votre compte github.
+2. **Clone du répertoire** : Clonez le répertoire forké sur votre machine locale pour y apporter des modifications.
+3. **Création d'une nouvelle branche** : Créez une nouvelle branche sur votre clone. Nommez-la de manière appropriée en fonction de la fonctionnalité ou de la correction de bug sur laquelle vous travaillez.   ℹ️ Notez que notre branche `main` est la branche principale de développement, elle est protégée et ne doit pas être utilisée pour le développement direct. Tout push sur cette branche déclenchera un déploiement sur notre environnement de test [https://www.clubalpinlyon.top](https://www.clubalpinlyon.top).
+4. **Apportez vos modifications** : Effectuez les modifications nécessaires sur cette branche. Assurez-vous de suivre les conventions de codage du projet.
+5. **Commit de vos modifications** : Une fois que vous êtes satisfait de vos modifications, faites un commit en décrivant clairement les modifications que vous avez apportées.
+6. **Push vers le répertoire** : Faites un push de votre branche vers le répertoire sur GitHub. Un processus de CI/CD sera enclenché une fois que la branche est pushée.
+7. **Créez une Pull Request (PR)** : Rendez-vous sur la page du répertoire principal du projet sur GitHub. Vous devriez voir une notification vous invitant à créer une PR à partir de votre branche récemment mise à jour. Cliquez sur le bouton "Compare & pull request" et remplissez les détails nécessaires. Lorsqu'une PR est mergée, le processus de CI/CD s'enclenche également pour assurer la qualité du code et l'intégrité de l'application.
 
 ### Code Reviews et Pull Requests
 
