@@ -281,7 +281,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->attrs->add(new UserAttr($this, $userType, $params));
     }
 
-    public function getNdfDemandes(): Collection
+    public function getNdfDemandes(): ArrayCollection
     {
         return $this->ndfDemandes;
     }
