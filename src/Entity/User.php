@@ -229,10 +229,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $tsUpdate;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDemande", mappedBy="demandeur")
+     */
+    private $ndfDemandes;
+
     public function __construct()
     {
         $this->attrs = new ArrayCollection();
         $this->created = time();
+        $this->ndfDemandes = new ArrayCollection();
     }
 
     /** @return UserAttr[] */
@@ -273,6 +279,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         $this->attrs->add(new UserAttr($this, $userType, $params));
+    }
+
+    public function getNdfDemandes(): Collection
+    {
+        return $this->ndfDemandes;
+    }
+
+    public function addNdfDemande(NdfDemande $ndfDemande): self
+    {
+        if (!$this->ndfDemandes->contains($ndfDemande)) {
+            $this->ndfDemandes[] = $ndfDemande;
+        }
+
+        return $this;
+    }
+
+    public function removeNdfDemande(NdfDemande $ndfDemande): self
+    {
+        if ($this->ndfDemandes->contains($ndfDemande)) {
+            $this->ndfDemandes->removeElement($ndfDemande);
+        }
+
+        return $this;
     }
 
     public function getId(): ?int

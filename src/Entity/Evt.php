@@ -320,6 +320,11 @@ class Evt
     private $articles;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDemande", mappedBy="sortie")
+     */
+    private $ndfDemandes;    
+
+    /**
      * @var string
      *
      * @ORM\Column(name="ndf_statut", type="string", length=30, nullable=false)
@@ -360,6 +365,7 @@ class Evt
         $this->articles = new ArrayCollection();
         $this->cycleChildren = new ArrayCollection();
         $this->tspCrea = time();
+        $this->ndfDemandes = new ArrayCollection();
         $this->ndfStatut = "en_attente";
 
         // FIX ME fix encadrant
@@ -374,6 +380,29 @@ class Evt
     public function getArticles(): Collection
     {
         return $this->articles;
+    }
+
+    public function getNdfDemandes(): Collection
+    {
+        return $this->ndfDemandes;
+    }
+
+    public function addNdfDemande(NdfDemande $ndfDemande): self
+    {
+        if (!$this->ndfDemandes->contains($ndfDemande)) {
+            $this->ndfDemandes[] = $ndfDemande;
+        }
+
+        return $this;
+    }
+
+    public function removeNdfDemande(NdfDemande $ndfDemande): self
+    {
+        if ($this->ndfDemandes->contains($ndfDemande)) {
+            $this->ndfDemandes->removeElement($ndfDemande);
+        }
+
+        return $this;
     }
 
     public function getStatus(): ?int
