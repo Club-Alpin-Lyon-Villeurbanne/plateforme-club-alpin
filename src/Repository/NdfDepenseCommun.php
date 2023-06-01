@@ -2,21 +2,21 @@
 
 namespace App\Repository;
 
-use App\Entity\NdfDemande;
+use App\Entity\NdfDepenseCommun;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method NdfDemande|null find($id, $lockMode = null, $lockVersion = null)
- * @method NdfDemande|null findOneBy(array $criteria, array $orderBy = null)
- * @method NdfDemande[]    findAll()
- * @method NdfDemande[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method NdfDepenseCommun|null find($id, $lockMode = null, $lockVersion = null)
+ * @method NdfDepenseCommun|null findOneBy(array $criteria, array $orderBy = null)
+ * @method NdfDepenseCommun[]    findAll()
+ * @method NdfDepenseCommun[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class NdfDemandeRepository extends ServiceEntityRepository
+class NdfDepenseCommunRepository extends ServiceEntityRepository
 {
 
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, NdfDemande::class);
+        parent::__construct($registry, NdfDepenseCommun::class);
     }
 }
