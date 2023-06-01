@@ -68,6 +68,43 @@ class NdfDemande
      */
     private $demandeur;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="type_transport", type="string", length=20, nullable=true, options={"comment": "Type de transport utilsé"})
+     */
+    private $typeTransport;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseVoiture", mappedBy="ndf_demande_id")
+     */
+    private $ndfDepensesVoiture;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseMinibusLoc", mappedBy="ndf_demande_id")
+     */
+    private $ndfDepensesMinibusLoc;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseMinibusClub", mappedBy="ndf_demande_id")
+     */
+    private $ndfDepensesMinibusClub;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseCommun", mappedBy="ndf_demande_id")
+     */
+    private $ndfDepensesCommun;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseHebergement", mappedBy="ndf_demande_id")
+     */
+    private $ndfDepensesHebergement;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseAutre", mappedBy="ndf_demande_id")
+     */
+    private $ndfDepensesAutre;
+
     public function __construct(
         Evt $sortie,
         User $demandeur,
@@ -78,6 +115,13 @@ class NdfDemande
         $this->sortie = $sortie;
         $this->statut = $statut;
         $this->statutCommentaire = $statutCommentaire;
+        $this->ndfDepensesVoiture = new ArrayCollection();
+        $this->ndfDepensesMinibusLoc = new ArrayCollection();
+        $this->ndfDepensesMinibusClub = new ArrayCollection();
+        $this->ndfDepensesCommun = new ArrayCollection();
+        $this->ndfDepensesHebergement = new ArrayCollection();
+        $this->ndfDepensesAutre = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -105,6 +149,18 @@ class NdfDemande
     public function setStatutCommentaire(String $statutCommentaire): self
     {
         $this->statutCommentaire = $statutCommentaire;
+
+        return $this;
+    }
+
+    public function getTypeTransport(): ?string
+    {
+        return $this->typeTransport;
+    }
+
+    public function setTypeTransport(String $typeTransport): self
+    {
+        $this->typeTransport = $typeTransport;
 
         return $this;
     }
@@ -141,6 +197,144 @@ class NdfDemande
     public function setSortie(Evt $sortie): self
     {
         $this->sortie = $sortie;
+
+        return $this;
+    }
+
+    public function getNdfDepensesVoiture(): Collection
+    {
+        return $this->ndfDepensesVoiture;
+    }
+
+    public function addNdfDepensesVoiture(NdfDemande $ndfDepensesVoiture): self
+    {
+        if (!$this->ndfDepensesVoiture->contains($ndfDepensesVoiture)) {
+            $this->ndfDepensesVoiture[] = $ndfDepensesVoiture;
+        }
+
+        return $this;
+    }
+
+    public function removeNdfDepensesVoiture(NdfDemande $ndfDepensesVoiture): self
+    {
+        if ($this->ndfDepensesVoiture->contains($ndfDepensesVoiture)) {
+            $this->ndfDepensesVoiture->removeElement($ndfDepensesVoiture);
+        }
+
+        return $this;
+    }
+
+    public function getNdfDepensesMinibusLoc(): Collection
+    {
+        return $this->ndfDepensesMinibusLoc;
+    }
+
+    public function addNdfDepensesMinibusLoc(NdfDemande $ndfDepensesMinibusLoc): self
+    {
+        if (!$this->ndfDepensesMinibusLoc->contains($ndfDepensesMinibusLoc)) {
+            $this->ndfDepensesMinibusLoc[] = $ndfDepensesMinibusLoc;
+        }
+
+        return $this;
+    }
+
+    public function removeNdfDepensesMinibusLoc(NdfDemande $ndfDepensesMinibusLoc): self
+    {
+        if ($this->ndfDepensesMinibusLoc->contains($ndfDepensesMinibusLoc)) {
+            $this->ndfDepensesMinibusLoc->removeElement($ndfDepensesMinibusLoc);
+        }
+
+        return $this;
+    }
+
+    public function getNdfDepensesMinibusClub(): Collection
+    {
+        return $this->ndfDepensesMinibusClub;
+    }
+
+    public function addNdfDepensesMinibusClub(NdfDemande $ndfDepensesMinibusClub): self
+    {
+        if (!$this->ndfDepensesMinibusClub->contains($ndfDepensesMinibusClub)) {
+            $this->ndfDepensesMinibusClub[] = $ndfDepensesMinibusClub;
+        }
+
+        return $this;
+    }
+
+    public function removeNdfDepensesMinibusClub(NdfDemande $ndfDepensesMinibusClub): self
+    {
+        if ($this->ndfDepensesMinibusClub->contains($ndfDepensesMinibusClub)) {
+            $this->ndfDepensesMinibusClub->removeElement($ndfDepensesMinibusClub);
+        }
+
+        return $this;
+    }
+
+    public function getNdfDepensesCommun(): Collection
+    {
+        return $this->ndfDepensesCommun;
+    }
+
+    public function addNdfDepensesCommun(NdfDemande $ndfDepensesCommun): self
+    {
+        if (!$this->ndfDepensesCommun->contains($ndfDepensesCommun)) {
+            $this->ndfDepensesCommun[] = $ndfDepensesCommun;
+        }
+
+        return $this;
+    }
+
+    public function removeNdfDepensesCommun(NdfDemande $ndfDepensesCommun): self
+    {
+        if ($this->ndfDepensesCommun->contains($ndfDepensesCommun)) {
+            $this->ndfDepensesCommun->removeElement($ndfDepensesCommun);
+        }
+
+        return $this;
+    }
+
+    public function getNdfDepensesHebergement(): Collection
+    {
+        return $this->ndfDepensesHebergement;
+    }
+
+    public function addNdfDepensesHebergement(NdfDemande $ndfDepensesHebergement): self
+    {
+        if (!$this->ndfDepensesHebergement->contains($ndfDepensesHebergement)) {
+            $this->ndfDepensesHebergement[] = $ndfDepensesHebergement;
+        }
+
+        return $this;
+    }
+
+    public function removeNdfDepensesHebergement(NdfDemande $ndfDepensesHebergement): self
+    {
+        if ($this->ndfDepensesHebergement->contains($ndfDepensesHebergement)) {
+            $this->ndfDepensesHebergement->removeElement($ndfDepensesHebergement);
+        }
+
+        return $this;
+    }
+
+    public function getNdfDepensesAutre(): Collection
+    {
+        return $this->ndfDepensesAutre;
+    }
+
+    public function addNdfDepensesAutre(NdfDemande $ndfDepensesAutre): self
+    {
+        if (!$this->ndfDepensesAutre->contains($ndfDepensesAutre)) {
+            $this->ndfDepensesAutre[] = $ndfDepensesAutre;
+        }
+
+        return $this;
+    }
+
+    public function removeNdfDepensesAutre(NdfDemande $ndfDepensesAutre): self
+    {
+        if ($this->ndfDepensesAutre->contains($ndfDepensesAutre)) {
+            $this->ndfDepensesAutre->removeElement($ndfDepensesAutre);
+        }
 
         return $this;
     }
