@@ -25,10 +25,37 @@ Pusher un commit (ou mergé une PR) sur la branche `production` lancer le deploy
 CircleCI va remplacer les credentials pour la DB par les vrais puis enverra en FTP les fichiers sur le server.  
 Les secrets (mot de passe de db, mot de passe ftp, etc...) sont stockés en tant [que variable d'environment dans circleci](https://app.circleci.com/settings/project/github/Club-Alpin-Lyon-Villeurbanne/caflyon/environment-variables).  
 
+# Cronjobs
+
+Quelques cronjobs sont programmés pour effectuer certaines taches:
+- envoi de mail
+- fichier adherent: vérification des fichiers adhérents provenant de la FFCAM (validité des adhésions)
+- sauvegarde des images
+- rappels (chaque nuit, envoi des mails de validation des sorties)
+- renouvellement du certificat SSL
+
+Les cronjobs sont accessibles sur le serveur en utilisant la commande `sudo crontab -e`
+
+# Base de données
+
+La base de données est hébergée et gérée par AWS RDS. Elle se trouve dans un VPC privée, ce qui nécessite d'utiliser un tunnel SSH pour y accéder.
+Le hostname est: `caflv-production-aurora-mysql.cluster-cw75ek4t1pty.eu-west-3.rds.amazonaws.com`
+Le nom de la base de prod est `caflvproduction`
+Le nom d'utilisateur est `demander à Nicolas`
+Idem pour le mot de passe :)
+
 # Recaptcha
 
 Recaptcha est utilisé pour s'assurer que l'utilisateur est bien humain. Ce système est transparent pour l'utilisateur final.
-La config de recaptch (nom de domaine) se fait sur le site de recaptcha en utilisant le compte `clubcaflv`.
+La config de recaptch (nom de domaine) se fait sur le site de recaptcha en utilisant le compte `clubcaflv@gmail.com`.
+
+# Matrice des droits des utilisateurs
+
+Un espace admin permet d'administrer différentes aspects du site.
+https://www.clubalpinlyon.fr/admin/
+Les identifiants sont stockés sur notre compte bitwarden.
+
+[Matrice des droits des utilisateurs](matrice-des-droits.png)
 
 # local setup
 
