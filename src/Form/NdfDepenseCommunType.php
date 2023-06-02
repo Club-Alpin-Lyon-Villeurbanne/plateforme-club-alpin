@@ -11,7 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class NdfDemandeCommunType extends AbstractType
+class NdfDepenseCommunType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {

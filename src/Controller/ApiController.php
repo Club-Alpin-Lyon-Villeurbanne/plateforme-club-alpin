@@ -104,7 +104,8 @@ class ApiController extends AbstractFOSRestController
             ];
         
         }
-        $view = $this->view($formatted, 200);
+        $data = ['data' => $formatted];
+        $view = $this->view($data, 200);
         $view->setFormat('json');
 
         return $this->handleView($view);
