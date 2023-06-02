@@ -16,6 +16,9 @@ use FOS\RestBundle\View\View;
 use App\Entity\NdfDemande;
 use App\Repository\NdfDemandeRepository;
 
+use App\Entity\Evt;
+use App\Repository\EvtRepository;
+
 
 /**
  * @Route("/api")
@@ -77,5 +80,35 @@ class ApiController extends AbstractFOSRestController
 
         return $this->handleView($view);
     }
+
+    /**
+     * @Rest\Get("/sorties")
+     */
+    public function getSorties(EvtRepository $repository, Request $request)
+    {
+        $page = null !== $request->get('page') ? $request->get('page') : 1;
+        $limit = null !== $request->get('limit') ? $request->get('limit') : 50;
+
+        $sorties = $repository->findBy([],[], $limit, ($page-1)*$limit);
+        $formatted = [];
+        foreach ($sorties as $sortie) {
+            $formatted[] = [
+                'id' => $sortie->getId(),
+                'commission' => $sortie->getCommission()->getTitle(),
+                'titre' => $sortie->getTitre(),
+                'date_debut' => $sortie->getTsp(),
+                'date_fin' => $sortie->getTspEnd(),
+                'statut_ndf' => $sortie->getNdfStatut(),
+                'lieu' => $sortie->getPlace(),
+                'nb_participants' => count($sortie->getParticipants())
+            ];
+        
+        }
+        $view = $this->view($formatted, 200);
+        $view->setFormat('json');
+
+        return $this->handleView($view);
+    }
+
 
 }
