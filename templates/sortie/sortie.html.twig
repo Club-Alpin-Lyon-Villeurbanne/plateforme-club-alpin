@@ -605,13 +605,17 @@
                         {% endif %}
 
                         {% if allowed('user_see_all') or allowed('evt_join_notme') or allowed('evt_join_doall') %}
-                            <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_manual.php&amp;id_evt={{ event.id }}" title="">
-                                Inscrire manuellement des adhérents du club
-                            </a>
+                            {% if not event.publicStatusUnseen %}
+                                <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_manual.php&amp;id_evt={{ event.id }}" title="">
+                                    Inscrire manuellement des adhérents du club
+                                </a>
 
-                            <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_nomad.php&amp;id_evt={{ event.id }}" title="">
-                                Ajouter un adhérent "Nomade"
-                            </a>
+                                <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_nomad.php&amp;id_evt={{ event.id }}" title="">
+                                    Ajouter un adhérent "Nomade"
+                                </a>
+                            {% else %}
+                                <i>Vous pourrez ajouter des participants quand la sortie sera publiée
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 <br style="clear:both"  /><br />
