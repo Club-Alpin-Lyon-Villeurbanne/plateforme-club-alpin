@@ -218,12 +218,33 @@
                 {% if my_status.role == 'encadrant' or my_status.role == 'stagiaire' or my_status.role == 'coencadrant' or my_status.role == 'benevole' %}
                     {% if not event.finished %}
                         {% if allowed('evt_unjoin') %}
-                        <p class="info">
-                            <img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" />
-                            <br />Vous êtes inscrit à cette sortie en tant que : {{ my_status.role }}.<br />&nbsp;
-                            <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
-                        </p>
-                        <br />
+                        <div class="info info-container">
+                            <img src="/img/inscrit-check.png" alt="" title=""/>
+                            <div class="text-container">Vous êtes inscrit à cette sortie en tant que : {{ my_status.role }}.
+                                <div class="button-container">
+                                    <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" />
+                                    <input id="add-to-calendar" type="button" class="nice" value="Ajouter à mon agenda" />
+
+                                    <script>
+                                    const config = {
+                                        name: "{{ event.titre }}",
+                                        startDate: "{{ event.tsp | intldate('yyyy-MM-dd') }}",
+                                        startTime: "{{ event.tsp | date('H:i') }}",
+                                        endDate: "{{ event.tspEnd | intldate('yyyy-MM-dd') }}",
+                                        endTime: "{{ event.tspEnd | date('H:i') }}",
+                                        location: "{{ event.rdv }}",
+                                        options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
+                                        timeZone: "Europe/Paris",
+                                        language: "fr"
+                                    };
+                                    const button = document.getElementById('add-to-calendar');
+                                    if (button) {
+                                        button.addEventListener('click', () => atcb_action(config, button));
+                                    }
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
                         {% endif %}
                     {% else %}
                         <p class="info">
@@ -235,11 +256,34 @@
                 {% else %}
                     {% if not event.finished %}
                         {% if allowed('evt_unjoin') %}
-                        <p class="info">
-                            <img src="/img/inscrit-check.png" alt="" title="" style="float:left" />
-                            <br />Vous êtes inscrit comme participant à cette sortie.<br />&nbsp;
-                            <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
-                        </p><br />
+                        <div class="info info-container">
+                            <img src="/img/inscrit-check.png" alt="" title=""/>
+                            <div class="text-container">Vous êtes inscrit comme participant à cette sortie.
+                                <div class="button-container">
+                                    <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" />
+
+                                    <input id="add-to-calendar" type="button" class="nice" value="Ajouter à mon agenda" />
+
+                                    <script>
+                                    const config = {
+                                        name: "{{ event.titre | e('js') }}",
+                                        startDate: "{{ event.tsp | intldate('yyyy-MM-dd') }}",
+                                        startTime: "{{ event.tsp | date('H:i') }}",
+                                        endDate: "{{ event.tspEnd | intldate('yyyy-MM-dd') }}",
+                                        endTime: "{{ event.tspEnd | date('H:i') }}",
+                                        location: "{{ event.rdv | e('js') }}",
+                                        options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
+                                        timeZone: "Europe/Paris",
+                                        language: "fr"
+                                    };
+                                    const button = document.getElementById('add-to-calendar');
+                                    if (button) {
+                                        button.addEventListener('click', () => atcb_action(config, button));
+                                    }
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
                         {% endif %}
                     {% else %}
                         <p class="info">
