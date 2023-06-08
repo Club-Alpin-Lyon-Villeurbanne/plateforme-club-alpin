@@ -417,6 +417,7 @@ form .niveau.editable:hover .input{background-image:none;}
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 10px;
 }
 .info-container {
     display: flex;
