@@ -82,7 +82,7 @@ class ApiController extends AbstractFOSRestController
                'demandeur' => $demande->getDemandeur()->getFirstName()." ".$demande->getDemandeur()->getLastName(),
                'sortie' => $demande->getSortie()->getTitre(),
                'remboursement' => $demande->getRemboursement(),
-               'statut' => $demande->getStatut(),
+               'statut' => $demande->getStatut()
             ];
         }
 
