@@ -15,6 +15,8 @@ use App\Form\NdfDepenseCommunType;
 use App\Form\NdfDepenseVoitureType;
 use App\Form\NdfDepenseMinibusClubType;
 use App\Form\NdfDepenseMinibusLocType;
+use App\Form\NdfDepenseHebergementType;
+use App\Entity\NdfDemande;
 
 class NdfDemandeType extends AbstractType
 {

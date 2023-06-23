@@ -11,6 +11,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+use App\Entity\NdfDepenseVoiture;
+
 class NdfDepenseVoitureType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -34,7 +36,7 @@ class NdfDepenseVoitureType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => NdfDemande::class
+            'data_class' => NdfDepenseVoiture::class
         ));
     }
 }

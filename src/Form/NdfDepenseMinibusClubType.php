@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+use app\Entity\NdfDepenseMinibusClub;
+
 class NdfDepenseMinibusClubType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -37,7 +39,7 @@ class NdfDepenseMinibusClubType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => NdfDemandeMinibusClub::class
+            'data_class' => NdfDepenseMinibusClub::class
         ]);
     }
 }
