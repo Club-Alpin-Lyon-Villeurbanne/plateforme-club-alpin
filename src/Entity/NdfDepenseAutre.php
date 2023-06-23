@@ -31,7 +31,7 @@ class NdfDepenseAutre
     /**
      * @var int
      *
-     * @ORM\Column(name="ordre", type="int", nullable=false)
+     * @ORM\Column(name="ordre", type="integer", nullable=false)
      */
     private $ordre;
 

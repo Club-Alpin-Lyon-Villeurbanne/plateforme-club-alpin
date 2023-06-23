@@ -33,12 +33,50 @@ class ApiController extends AbstractFOSRestController
     /**
      * @Rest\Get("/ndf")
      */
-    public function getNdfDemandes(NdfDemandeRepository $repository)
+    public function getNdfDemandes(NdfDemandeRepository $repository, Request $request)
     {
-        $demandes = $repository->findAll();
+        $page = null !== $request->get('page') ? $request->get('page') : 1;
+        $limit = null !== $request->get('limit') ? $request->get('limit') : 50;
+
+        $filters = $request->get('filters')??[];
+        $filtersRequest = [];
+        $addDetails = false;
+
+        if(array_key_exists('sortie', $filters) && preg_match('/^[0-9]+/',$filters['sortie'])) {
+            $filtersRequest['sortie'] = $filters['sortie'];
+        }
+        if(array_key_exists('details', $filters) && $filters['details'] == 1) {
+            $addDetails = true;
+        }
+
+
+        $demandes = $repository->findBy($filtersRequest,['id'=>'DESC'], $limit, ($page-1)*$limit);
 
         $formatted = [];
         foreach ($demandes as $demande) {
+            
+            //On va aller chercher les infos des ndfs
+            if($addDetails) {
+                //depenseCommun
+                $depensesCommunes = $demande->getNdfDepenseCommun();
+                $depensesAutres = [];
+                foreach ($depensesCommunes as $depense) {
+                    $depenseAutres[] = [
+                        'montant' => $depense->getMontant(),
+                        'commentaire' => $depense->getCommentaire()
+                    ];
+                }
+                $depensesHebergements = $demande->getNdfHebergement();
+                foreach ($depensesHebergements as $depense) {
+                    $depenseHebergements[] = [
+                        'ordre' => $depense->getOrdre(),
+                        'montant' => $depense->getMontant(),
+                        'commentaire' => $depense->getCommentaire()
+                    ];
+                }
+            }
+
+
             $formatted[] = [
                'id' => $demande->getId(),
                'demandeur' => $demande->getDemandeur()->getFirstName()." ".$demande->getDemandeur()->getLastName(),
@@ -89,7 +127,14 @@ class ApiController extends AbstractFOSRestController
         $page = null !== $request->get('page') ? $request->get('page') : 1;
         $limit = null !== $request->get('limit') ? $request->get('limit') : 50;
 
-        $sorties = $repository->findBy([],[], $limit, ($page-1)*$limit);
+        $filters = $request->get('filters')??[];
+        $filtersRequest = [];
+
+        if(array_key_exists('statut_ndf', $filters) && in_array($filters['statut_ndf'], ["en_attente", "complete", "valide", "non_applicable"])) {
+            $filtersRequest['ndfStatut'] = $filters['statut_ndf'];
+        }
+
+        $sorties = $repository->findBy($filtersRequest,['id'=>'DESC'], $limit, ($page-1)*$limit);
         $formatted = [];
         foreach ($sorties as $sortie) {
             $formatted[] = [

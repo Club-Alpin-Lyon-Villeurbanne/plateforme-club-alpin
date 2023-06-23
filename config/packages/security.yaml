@@ -21,11 +21,21 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
+        api_user_provider:
+            entity:
+                class: App\Entity\ApiUser
+                property: application
 
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+        api:
+            pattern:   ^/api/
+            stateless: true
+            custom_authenticators:
+                - App\Security\ApiKeyAuthenticator
+            provider: api_user_provider
         main:
             lazy: true
             provider: app_user_provider
@@ -56,18 +66,6 @@ security:
                 secure: 'auto'
                 httponly: true
                 always_remember_me: true
-
-        web-api:
-            pattern:   ^/api
-            stateless: true
-            provider: app_user_provider
-            jwt: ~
-
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used

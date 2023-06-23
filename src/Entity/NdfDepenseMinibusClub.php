@@ -31,14 +31,14 @@ class NdfDepenseMinibusClub
     /**
      * @var int
      *
-     * @ORM\Column(name="nbre_km", type="int", nullable=false)
+     * @ORM\Column(name="nbre_km", type="integer", nullable=false)
      */
     private $nbreKm;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="nbre_passager", type="int", nullable=false)
+     * @ORM\Column(name="nbre_passager", type="integer", nullable=false)
      */
     private $nbrePassager;
 
