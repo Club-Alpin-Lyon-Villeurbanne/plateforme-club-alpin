@@ -10,7 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-use app\Entity\NdfDepenseMinibusClub;
+use App\Entity\NdfDepenseMinibusClub;
 
 class NdfDepenseMinibusClubType extends AbstractType
 {
