@@ -393,7 +393,12 @@ if ('1' != $evt['cancelled_evt']) {
 
                         <br />
                         Objet :<br />
-                        <input type="text" name="objet" class="type1" style="width:95%" value="<?php echo html_utf8(stripslashes($_POST['objet'])); ?>" placeholder="Note importante pour la sortie du <?php echo date('d/m', $evt['tsp_evt']); ?>" /><br />
+                        <input type="text" name="objet" class="type1" style="width:95%" value="<?php 
+                        if (isset($_POST['objet']) && '' !== $_POST['objet']) {
+                            echo html_utf8(stripslashes($_POST['objet']));
+                        } else {
+                            echo "Note importante pour la sortie du ".date('d/m', $evt['tsp_evt']);
+                        } ?>" placeholder="Note importante pour la sortie du <?php echo date('d/m', $evt['tsp_evt']); ?>" /><br />
                         Message :<br />
                         <textarea name="message" class="type1" style="width:95%; height:150px"><?php echo html_utf8(stripslashes($_POST['message'])); ?></textarea>
 

@@ -412,3 +412,17 @@ form .niveau.editable:hover .input{background-image:none;}
     #menuAdmin, #adminmissing {display:none;}
     #organisation_covoiturage td {font-size:10px;}
 }
+
+.label-complet {
+    display: inline-block;
+    padding: .2em .6em .3em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+    background-color: #6c757d;
+}
