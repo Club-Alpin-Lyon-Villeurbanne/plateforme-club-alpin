@@ -97,10 +97,10 @@ presidence();
                                 <th>TEL</th>
                                 <td><?php
                                 if (!empty($p['tel_user'])) {
-                                    echo html_utf8($p['tel_user']).'<br>';
+                                    echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $p['tel_user'])).'<br>';
                                 } else {
                                     if (!empty($p['tel2_user'])) {
-                                        echo html_utf8($p['tel2_user']);
+                                        echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $p['tel2_user']));
                                     }
                                 }
                             ?></td>
@@ -117,10 +117,10 @@ presidence();
                                 <th>TEL</th>
                                 <td><?php
                             if (!empty($vp['tel_user'])) {
-                                echo html_utf8($vp['tel_user']).'<br>';
+                                echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $vp['tel_user'])).'<br>';
                             } else {
                                 if (!empty($vp['tel2_user'])) {
-                                    echo html_utf8($vp['tel2_user']);
+                                    echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $vp['tel2_user']));
                                 }
                             }
                             ?></td>
@@ -138,7 +138,7 @@ presidence();
                 <tr>
                     <td><?php echo html_utf8(strtoupper($evt['lastname_user']).', '.ucfirst(strtolower($evt['firstname_user']))); ?></td>
                     <th>TEL</th>
-                    <td><?php echo html_utf8($evt['tel_user']); ?></td>
+                    <td><?php echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $evt['tel_user'])); ?></td>
                 </tr>
                 <tr>
                     <th colspan="3">ENCADRANT(S) : </th>
@@ -149,7 +149,7 @@ presidence();
                     <tr>
                         <td><b><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></b></td>
                         <th>TEL</th>
-                        <td><?php echo $tmp['tel_user']; ?></td>
+                        <td><?php echo preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user']); ?></td>
                     </tr>
                 <?php
                 }
@@ -158,7 +158,7 @@ presidence();
                     <tr>
                         <td><b><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></b></td>
                         <th>TEL</th>
-                        <td><?php echo $tmp['tel_user']; ?></td>
+                        <td><?php echo preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user']); ?></td>
                     </tr>
                 <?php
                 }
@@ -167,7 +167,7 @@ presidence();
                     <tr>
                         <td><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></td>
                         <th>TEL</th>
-                        <td><?php echo $tmp['tel_user']; ?></td>
+                        <td><?php echo preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user']); ?></td>
                     </tr>
                 <?php
                 }
@@ -256,8 +256,8 @@ if (is_array($joinsParticipants)) {
                 <td><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></td>
                 <td><?php echo html_utf8($tmp['cafnum_user']); ?></td>
                 <td><?php echo getYearsSinceDate($tmp['birthday_user']); ?></td>
-                <td><?php echo html_utf8($tmp['tel_user']); ?></td>
-                <td><?php echo html_utf8($tmp['tel2_user']); ?></td>
+                <td><?php echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user'])); ?></td>
+                <td><?php echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel2_user'])); ?></td>
             </tr>
         <?php
     }
