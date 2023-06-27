@@ -57,32 +57,89 @@ class ApiController extends AbstractFOSRestController
             
             //On va aller chercher les infos des ndfs
             if($addDetails) {
-                //depenseCommun
-                $depensesCommunes = $demande->getNdfDepenseCommun();
-                $depensesAutres = [];
-                foreach ($depensesCommunes as $depense) {
-                    $depenseAutres[] = [
-                        'montant' => $depense->getMontant(),
-                        'commentaire' => $depense->getCommentaire()
-                    ];
-                }
-                $depensesHebergements = $demande->getNdfHebergement();
+                $depensesHebergements = $demande->getNdfDepenseHebergement();
+                $depenseHebergement = [];
                 foreach ($depensesHebergements as $depense) {
-                    $depenseHebergements[] = [
+                    $depenseHebergement[] = [
                         'ordre' => $depense->getOrdre(),
                         'montant' => $depense->getMontant(),
                         'commentaire' => $depense->getCommentaire()
                     ];
                 }
-            }
 
+                //depenseAutre
+                $depensesAutres = $demande->getNdfDepenseAutre();
+                $depenseAutre = [];
+                foreach ($depensesAutres as $depense) {
+                    $depenseAutre[] = [
+                        'ordre' => $depense->getOrdre(),
+                        'montant' => $depense->getMontant(),
+                        'commentaire' => $depense->getCommentaire()
+                    ];
+                }
+
+                switch ($demande->typeTransport) {
+                    case 'voiture':
+                        $depensesVoiture = $demande->getNdfDepenseVoiture();
+                        $depenseTransport = [
+                            'type' => 'voiture',
+                            'nbre_kms' => $depensesVoiture->getNbreKm(),
+                            'frais_peage' => $depensesVoiture->getFraisPeage(),
+                            'commentaire' => $depensesVoiture->getCommentaire()
+                        ];
+                        break;
+                    case 'minibus_loc':
+                        $depensesMinibusLoc = $demande->getNdfDepenseMinibusLoc();
+                        $depenseTransport = [
+                            'type' => 'minibus_loc',
+                            'nbre_kms' => $depensesMinibusLoc->getNbreKm(),
+                            'prix_loc_km' => $depensesMinibusLoc->getPrixLocKm(),
+                            'frais_peage' => $depensesMinibusLoc->getFraisPeage(),
+                            'cout_essence' => $depensesMinibusLoc->getCoutEssence(),
+                            'nbre_passager' => $depensesMinibusLoc->getNbrePassager()
+                        ];
+                        break;
+                    case 'minibus_club':
+                        $depensesMinibusClub = $demande->getNdfDepenseMinibusClub();
+                        $depenseTransport = [
+                            'type' => 'minibus_club',
+                            'nbre_kms' => $depensesMinibusClub->getNbreKm(),
+                            'frais_peage' => $depensesMinibusClub->getFraisPeage(),
+                            'cout_essence' => $depensesMinibusClub->getCoutEssence(),
+                            'nbre_passager' => $depensesMinibusClub->getNbrePassager()
+                        ];
+                        break;
+                    case 'commun':
+                        //depenseCommun
+                        $depensesCommuns = $demande->getNdfDepenseCommun();
+                        $depenseTransport = [
+                            'type' => 'commun'
+                        ];
+                        foreach ($depensesCommuns as $depense) {
+                            $depenseTransport[] = [
+                                'ordre' => $depense->getOrdre(),
+                                'montant' => $depense->getMontant(),
+                                'commentaire' => $depense->getCommentaire()
+                            ];
+                        }
+                        break;
+                    default:
+                        //pas de transport
+                        $depenseTransport = [];
+                }
+            }
 
             $formatted[] = [
                'id' => $demande->getId(),
                'demandeur' => $demande->getDemandeur()->getFirstName()." ".$demande->getDemandeur()->getLastName(),
                'sortie' => $demande->getSortie()->getTitre(),
                'remboursement' => $demande->getRemboursement(),
-               'statut' => $demande->getStatut()
+               'statut' => $demande->getStatut(),
+               'depenses' => [
+                    'depense_transport' => $depenseTransport,
+                    'depense_hebergement' => $depenseHebergement,
+                    'depense_autre' => $depenseAutre
+               ]
             ];
         }
 
