@@ -412,6 +412,21 @@ form .niveau.editable:hover .input{background-image:none;}
     #menuAdmin, #adminmissing {display:none;}
     #organisation_covoiturage td {font-size:10px;}
 }
+/* Used for add-to-calendar button in sortie.html.twig */
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px;
+}
+.info-container {
+    display: flex;
+    align-items: flex-start;
+}
+.text-container {
+    margin-top: 6px;
+    margin-left: 10px;
+}
 
 .label-complet {
     display: inline-block;
