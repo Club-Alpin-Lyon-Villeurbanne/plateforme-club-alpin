@@ -108,8 +108,8 @@ class NdfDemande
     public function __construct(
         Evt $sortie,
         User $demandeur,
-        string $statut,
-        string $statutCommentaire
+        string $statut = 'en_cours',
+        string $statutCommentaire = ''
     ) {
         $this->demandeur = $demandeur;
         $this->sortie = $sortie;

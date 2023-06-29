@@ -44,42 +44,42 @@ class NdfDemandeType extends AbstractType
                 'expanded' => TRUE,
                 'required' => TRUE,
             ])
-            ->add('depenses_minibus_club', CollectionType::class, [
+            ->add('ndf_depenses_minibus_club', CollectionType::class, [
                 'entry_type' => NdfDepenseMinibusClubType::class,
                 'allow_add' => TRUE,
                 'allow_delete' => TRUE,
                 'required' => FALSE,
                 'mapped' => TRUE,
             ])
-            ->add('depenses_minibus_loc', CollectionType::class, [
+            ->add('ndf_depenses_minibus_loc', CollectionType::class, [
                 'entry_type' => NdfDepenseMinibusLocType::class,
                 'allow_add' => TRUE,
                 'allow_delete' => TRUE,
                 'required' => FALSE,
                 'mapped' => TRUE,
             ])
-            ->add('depenses_voiture', CollectionType::class, [
+            ->add('ndf_depenses_voiture', CollectionType::class, [
                 'entry_type' => NdfDepenseVoitureType::class,
                 'allow_add' => TRUE,
                 'allow_delete' => TRUE,
                 'required' => FALSE,
                 'mapped' => TRUE,
             ])
-            ->add('depenses_commun', CollectionType::class, [
+            ->add('ndf_depenses_commun', CollectionType::class, [
                 'entry_type' => NdfDepenseCommunType::class,
                 'allow_add' => TRUE,
                 'allow_delete' => TRUE,
                 'required' => FALSE,
                 'mapped' => TRUE,
             ])
-            ->add('depenses_hebergement', CollectionType::class, [
+            ->add('ndf_depenses_hebergement', CollectionType::class, [
                 'entry_type' => NdfDepenseHebergementType::class,
                 'allow_add' => TRUE,
                 'allow_delete' => TRUE,
                 'required' => FALSE,
                 'mapped' => TRUE,
             ])
-            ->add('depenses_autre', CollectionType::class, [
+            ->add('ndf_depenses_autre', CollectionType::class, [
                 'entry_type' => NdfDepenseAutreType::class,
                 'allow_add' => TRUE,
                 'allow_delete' => TRUE,

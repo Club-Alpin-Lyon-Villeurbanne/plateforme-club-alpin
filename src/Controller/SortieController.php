@@ -4,10 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Evt;
 use App\Entity\EvtJoin;
+use App\Entity\NdfDemande;
 use App\Mailer\Mailer;
 use App\Repository\EvtJoinRepository;
 use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
+use App\Form\NdfDemandeType;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -40,7 +42,7 @@ class SortieController extends AbstractController
      *
      * @Template
      */
-    public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository)
+    public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository, Request $request)
     {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
             throw new AccessDeniedHttpException('Not found');
@@ -48,10 +50,19 @@ class SortieController extends AbstractController
 
         $user = $this->getUser();
 
+        if($user) {
+            $demande = new NdfDemande($event, $user);
+
+            $form = $this->createForm(NdfDemandeType::class, $demande);
+            $form->handleRequest($request);
+        }
+
+
         return [
             'event' => $event,
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participantRepository->getEmpietements($event),
+            'ndf_form' => $user ? $form->createView() : null
         ];
     }
 
