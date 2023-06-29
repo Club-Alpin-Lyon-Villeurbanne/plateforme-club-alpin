@@ -16,6 +16,8 @@ use FOS\RestBundle\View\View;
 use App\Entity\NdfDemande;
 use App\Repository\NdfDemandeRepository;
 
+use App\Utils\Ndf;
+
 use App\Entity\Evt;
 use App\Repository\EvtRepository;
 
@@ -54,11 +56,14 @@ class ApiController extends AbstractFOSRestController
 
         $formatted = [];
         foreach ($demandes as $demande) {
+
+            $depensesDetails = 'Ajoutez le filter "details" pour en savoir plus';
             
             //On va aller chercher les infos des ndfs
             if($addDetails) {
-                $depensesHebergements = $demande->getNdfDepenseHebergement();
+                $depensesHebergements = $demande->getNdfDepensesHebergement();
                 $depenseHebergement = [];
+
                 foreach ($depensesHebergements as $depense) {
                     $depenseHebergement[] = [
                         'ordre' => $depense->getOrdre(),
@@ -68,7 +73,7 @@ class ApiController extends AbstractFOSRestController
                 }
 
                 //depenseAutre
-                $depensesAutres = $demande->getNdfDepenseAutre();
+                $depensesAutres = $demande->getNdfDepensesAutre();
                 $depenseAutre = [];
                 foreach ($depensesAutres as $depense) {
                     $depenseAutre[] = [
@@ -80,7 +85,7 @@ class ApiController extends AbstractFOSRestController
 
                 switch ($demande->typeTransport) {
                     case 'voiture':
-                        $depensesVoiture = $demande->getNdfDepenseVoiture();
+                        $depensesVoiture = $demande->getNdfDepensesVoiture();
                         $depenseTransport = [
                             'type' => 'voiture',
                             'nbre_kms' => $depensesVoiture->getNbreKm(),
@@ -89,7 +94,7 @@ class ApiController extends AbstractFOSRestController
                         ];
                         break;
                     case 'minibus_loc':
-                        $depensesMinibusLoc = $demande->getNdfDepenseMinibusLoc();
+                        $depensesMinibusLoc = $demande->getNdfDepensesMinibusLoc();
                         $depenseTransport = [
                             'type' => 'minibus_loc',
                             'nbre_kms' => $depensesMinibusLoc->getNbreKm(),
@@ -100,7 +105,7 @@ class ApiController extends AbstractFOSRestController
                         ];
                         break;
                     case 'minibus_club':
-                        $depensesMinibusClub = $demande->getNdfDepenseMinibusClub();
+                        $depensesMinibusClub = $demande->getNdfDepensesMinibusClub();
                         $depenseTransport = [
                             'type' => 'minibus_club',
                             'nbre_kms' => $depensesMinibusClub->getNbreKm(),
@@ -111,7 +116,7 @@ class ApiController extends AbstractFOSRestController
                         break;
                     case 'commun':
                         //depenseCommun
-                        $depensesCommuns = $demande->getNdfDepenseCommun();
+                        $depensesCommuns = $demande->getNdfDepensesCommun();
                         $depenseTransport = [
                             'type' => 'commun'
                         ];
@@ -127,6 +132,11 @@ class ApiController extends AbstractFOSRestController
                         //pas de transport
                         $depenseTransport = [];
                 }
+                $depensesDetails = [
+                    'depense_transport' => $depenseTransport,
+                    'depense_hebergement' => $depenseHebergement,
+                    'depense_autre' => $depenseAutre
+               ];
             }
 
             $formatted[] = [
@@ -134,12 +144,10 @@ class ApiController extends AbstractFOSRestController
                'demandeur' => $demande->getDemandeur()->getFirstName()." ".$demande->getDemandeur()->getLastName(),
                'sortie' => $demande->getSortie()->getTitre(),
                'remboursement' => $demande->getRemboursement(),
+               'taux_remboursement_kms' => Ndf::getTauxKms(new \DateTime('@' . $demande->getSortie()->getTsp())),
+               'plafond_remboursement_hebergement' => Ndf::getPlafondHebergement(new \DateTime('@' . $demande->getSortie()->getTsp())),
                'statut' => $demande->getStatut(),
-               'depenses' => [
-                    'depense_transport' => $depenseTransport,
-                    'depense_hebergement' => $depenseHebergement,
-                    'depense_autre' => $depenseAutre
-               ]
+               'depenses' => $depensesDetails
             ];
         }
 
