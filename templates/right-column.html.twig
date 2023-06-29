@@ -73,7 +73,7 @@
                             <span class="cancelled">Sortie annulée</span>
                         {% else %}
                             <span style="color:#4D4D4D">{{ event.commission.title }}
-                            {% if nPlacesRestantesOnline > 0 %}
+                            {% if nPlacesRestantesOnline <= 0 %}
                                 <span class="label-complet"> complet </span>
                             {% endif %}
                             </span>
@@ -98,3 +98,18 @@
         </div>
     </div>
 </div>
+<style>
+    .label-complet {
+        display: inline-block;
+        padding: .2em .6em .3em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: .25em;
+        background-color: #6c757d;
+    }
+</style>
