@@ -9,7 +9,6 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 use App\Entity\NdfDepenseMinibusLoc;
 
 class NdfDepenseMinibusLocType extends AbstractType
