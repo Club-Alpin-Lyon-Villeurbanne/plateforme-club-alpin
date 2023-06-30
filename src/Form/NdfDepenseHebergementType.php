@@ -6,7 +6,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
@@ -31,7 +30,7 @@ class NdfDepenseHebergementType extends AbstractType
                 'label' => 'Descriptif trajet',
                 'required' => FALSE,
             ])
-            ->add('ordre', HiddenType::class, [
+            ->add('ordre', IntegerType::class, [
                 'label' => 'Ordre',
                 'required' => FALSE,
             ])

@@ -1,0 +1,20 @@
+<div id="links-collection-widget" class="collection-widget mt-2" data-title="#{{ type }}-collection-widget-title" data-list="#{{ type }}-collection-widget-list" style="overflow: visible;">
+	{% set prototype = include('sortie/ndf_depense.html.twig', { depense: depenses.vars.prototype }) %}
+	<div class="list row gx-4 mt-2 form-group collection-widget" id="{{ type }}-collection-widget-list"
+          data-prototype="{{ prototype|e }}"
+          data-widget-tags="{{ '<div class="col-md-6 mb-3 mb-md-4 collection-widget-item"></div>'|e }}">
+		{% if depenses is not null and depenses|length > 0 %}
+	  		{% for depense in depenses %}
+	  			<div class="col-md-6 mb-3 mb-md-4 collection-widget-item" data-item-id="{{ loop.index }}">
+	    			{% include 'ndf_depense.html.twig' with { depense: depense } %}
+	    		</div>
+	  		{% endfor %}
+		{% endif %}
+		{% do depenses.setRendered %}
+		<div class="col-md-6 mb-3 mb-md-4 add-block">
+			<a href="javascript:void(0);" class="add-collection-widget {{ type }}" data-widget="#{{ type }}-collection-widget">
+				<i class='cnm-icon-pluss'></i>
+			</a>
+		</div>
+	</div>
+</div>

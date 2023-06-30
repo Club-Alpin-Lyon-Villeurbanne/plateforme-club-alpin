@@ -31,22 +31,23 @@ class NdfDemandeType extends AbstractType
                 ],
                 'multiple' => FALSE,
                 'expanded' => TRUE,
-                'required' => TRUE,
+                'required' => TRUE
             ])
             ->add('type_transport', ChoiceType::class, [
                 'label' => 'Transport utilisé',
                 'choices' => [
-                    'Aucun' => NULL,
+                    'Aucun' => '',
                     'Minibus du Club' => 'minibus_club',
                     'Minibus de location' => 'minibus_loc',
                     'Voiture personnelle' => 'voiture',
                     'Transport en commun' => 'commun'
                 ],
                 'multiple' => FALSE,
-                'expanded' => TRUE,
-                'required' => TRUE,
+                'expanded' => FALSE,
+                'required' => FALSE,
             ])
             ->add('ndf_depenses_minibus_club', CollectionType::class, [
+                'label' => FALSE,
                 'entry_type' => NdfDepenseMinibusClubType::class,
                 'allow_add' => TRUE,
                 'allow_delete' => TRUE,
@@ -54,6 +55,7 @@ class NdfDemandeType extends AbstractType
                 'mapped' => TRUE,
             ])
             ->add('ndf_depenses_minibus_loc', CollectionType::class, [
+                'label' => FALSE,
                 'entry_type' => NdfDepenseMinibusLocType::class,
                 'allow_add' => TRUE,
                 'allow_delete' => TRUE,
@@ -61,6 +63,7 @@ class NdfDemandeType extends AbstractType
                 'mapped' => TRUE,
             ])
             ->add('ndf_depenses_voiture', CollectionType::class, [
+                'label' => FALSE,
                 'entry_type' => NdfDepenseVoitureType::class,
                 'allow_add' => TRUE,
                 'allow_delete' => TRUE,
@@ -68,6 +71,7 @@ class NdfDemandeType extends AbstractType
                 'mapped' => TRUE,
             ])
             ->add('ndf_depenses_commun', CollectionType::class, [
+                'label' => FALSE,
                 'entry_type' => NdfDepenseCommunType::class,
                 'allow_add' => TRUE,
                 'allow_delete' => TRUE,
@@ -75,6 +79,7 @@ class NdfDemandeType extends AbstractType
                 'mapped' => TRUE,
             ])
             ->add('ndf_depenses_hebergement', CollectionType::class, [
+                'label' => 'Hébergement',
                 'entry_type' => NdfDepenseHebergementType::class,
                 'allow_add' => TRUE,
                 'allow_delete' => TRUE,
@@ -82,6 +87,7 @@ class NdfDemandeType extends AbstractType
                 'mapped' => TRUE,
             ])
             ->add('ndf_depenses_autre', CollectionType::class, [
+                'label' => 'Autre',
                 'entry_type' => NdfDepenseAutreType::class,
                 'allow_add' => TRUE,
                 'allow_delete' => TRUE,

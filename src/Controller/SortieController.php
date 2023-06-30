@@ -50,16 +50,36 @@ class SortieController extends AbstractController
 
         $user = $this->getUser();
 
-        if($user) {
+        // @TO REMOVE: @ben hack to log with local benoit@spotlab.net account (don't know how to add account...)
+        // $user = $repository->findUserByEmail('benoit@spotlab.net');
+
+        if ($user) {
             $demande = new NdfDemande($event, $user);
 
             $form = $this->createForm(NdfDemandeType::class, $demande);
             $form->handleRequest($request);
+
+            if ($form->isSubmitted()) {
+                if ($form->isValid()) {
+                    try {
+                        $this->em->persist($demande);
+                        $this->em->flush($demande);
+
+                    } catch (\Exception $e) {
+                        $messageService->add('error', $e->getMessage());
+                    }
+                
+                } else {
+                    $errors = (string) $form->getErrors(TRUE, FALSE);
+                    dd($errors);
+                }
+            }
         }
 
 
         return [
             'event' => $event,
+            'demande' => $demande,
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participantRepository->getEmpietements($event),
             'ndf_form' => $user ? $form->createView() : null

@@ -1,0 +1,36 @@
+{% if depense is defined %}
+	<div class="card">
+		{% if type == 'minibus_club' %}
+			{{ form_row(depense.nbre_passager, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.nbre_km, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.cout_essence, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.frais_peage, { 'attr': { 'class': 'collection-widget-row' }}) }}
+		{% elseif type == 'minibus_loc' %}
+			{{ form_row(depense.nbre_passager, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.nbre_km, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.prix_loc_km, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.cout_essence, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.frais_peage, { 'attr': { 'class': 'collection-widget-row' }}) }}
+		{% elseif type == 'voiture' %}
+			{{ form_row(depense.nbre_km, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.frais_peage, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.commentaire, { 'attr': { 'class': 'collection-widget-row' }}) }}
+		{% elseif type == 'commun' %}
+			{{ form_row(depense.montant, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.ordre, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.commentaire, { 'attr': { 'class': 'collection-widget-row' }}) }}
+		{% elseif type == 'hebergement' %}
+			{{ form_row(depense.nbre_km, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.montant, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.ordre, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.commentaire, { 'attr': { 'class': 'collection-widget-row' }}) }}
+		{% elseif type == 'autre' %}
+			{{ form_row(depense.montant, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.ordre, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{{ form_row(depense.commentaire, { 'attr': { 'class': 'collection-widget-row' }}) }}
+		{% endif %}
+		<a href="#" class="text-danger remove-collection-widget" data-widget="#{{ type }}-collection-widget">
+			<i class='remove-btn'></i>
+		</a>
+	</div>
+{% endif %}
