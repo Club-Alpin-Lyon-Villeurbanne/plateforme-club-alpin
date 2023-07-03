@@ -56,6 +56,7 @@ class SortieController extends AbstractController
 
         if ($user) {
             $demande = NULL;
+            $form = NULL;
             $demande = $ndfDemandeRepository->getForUserAndEvent($user, $event);
             if (empty($demande)) {
                 $demande = new NdfDemande($event, $user);
@@ -107,7 +108,7 @@ class SortieController extends AbstractController
             'demande' => $user ? $demande : null,
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participantRepository->getEmpietements($event),
-            'ndf_form' => $user ? $form->createView() : null
+            'ndf_form' => $user ? (empty($form) ? NULL : $form->createView()) : null
         ];
     }
 

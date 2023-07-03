@@ -153,203 +153,201 @@
   }
 </style>
 
-{% if ndf_form is not empty %}
 
-  <div class="ndf-form-wrapper">
-    <h2 class="title">Saisie de notes de frais</h2>
+<div class="ndf-form-wrapper">
+  <h2 class="title">Saisie de notes de frais</h2>
 
-    {% if demande is empty or demande.id is empty %}
+  
+  {% if ndf_form is not empty %}
+    {{ form_start(ndf_form, {
+      'method': 'post',
+      'action': path('sortie', { 'code': event.code, 'id': event.id }),
+      'attr': {
+        'class': 'ndf-form'
+      }
+    }) }}
 
-      {{ form_start(ndf_form, {
-        'method': 'post',
-        'action': path('sortie', { 'code': event.code, 'id': event.id }),
-        'attr': {
-          'class': 'ndf-form'
+      {{ form_row(ndf_form.remboursement, { 'attr': { 'class': 'checkboxes' }}) }}
+
+      <div class="transport">
+        {{ form_row(ndf_form.type_transport, { 'attr': { 'class': 'transport-choice' }}) }}
+
+        <div class="transport-type minibus_club" style="display:none;">
+          {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_minibus_club, 'type': 'minibus_club' } %}
+        </div>
+        <div class="transport-type minibus_loc" style="display:none;">
+          {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_minibus_loc, 'type': 'minibus_loc' } %}
+        </div>
+        <div class="transport-type voiture" style="display:none;">
+          {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_voiture, 'type': 'voiture' } %}
+        </div>
+        <div class="transport-type commun" style="display:none;">
+          {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_commun, 'type': 'commun' } %}
+        </div>
+      </div>
+
+      {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_hebergement, 'type': 'hebergement' } %}
+
+      {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_autre, 'type': 'autre' } %}
+
+      <div class="center">
+        <input class="submit" type="submit" value="Envoyer les notes de frais" />
+      </div>
+
+    {{ form_end(ndf_form) }}
+
+  {% else %}
+    <p><i>Vous avez déjà saisi une note de frais</i></p>
+  {% endif %}
+</div>
+<hr>
+
+<script>
+  !function($, undef) {
+
+    ///////////////////////////////
+    // COLLECTION WIDGET
+    ///////////////////////////////
+
+    var closeBtnClass = 'close',
+        closeBtn = '<btn class="btn btn-fill btn-success btn-sm '+closeBtnClass+'"><i class="material-icons">close</i></div>';
+
+    var addToList = function ($list, $addBtn) {
+
+        // Try to find the counter of the list
+        var counter = $list.attr('data-widget-counter');
+
+        // If the counter does not exist, use the length of the list
+        if (counter === undefined) {
+            counter = $list.children('.collection-widget-item').length;
+            $list
+                .children('.collection-widget-item')
+                    .each(function() {
+                        var itemId = $(this).data('item-id');
+                        if (itemId && itemId >= counter) {
+                            counter = itemId+1;
+                        }
+                    });
         }
-      }) }}
 
-        {{ form_row(ndf_form.remboursement, { 'attr': { 'class': 'checkboxes' }}) }}
+        // grab the prototype template
+        var newWidget = $list.attr('data-prototype');
+        // replace the "__name__" used in the id and name of the prototype
+        // with a number that's unique to your emails
+        // end name attribute looks like name="contact[emails][2]"
+        newWidget = newWidget.replace(/__name__/g, counter);
 
-        <div class="transport">
-          {{ form_row(ndf_form.type_transport, { 'attr': { 'class': 'transport-choice' }}) }}
+        // create a new list element and add it to the list
+        var $newElem = $($list.attr('data-widget-tags')).html(newWidget/* */);
+        $newElem.attr('data-item-id', counter);
 
-          <div class="transport-type minibus_club" style="display:none;">
-            {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_minibus_club, 'type': 'minibus_club' } %}
-          </div>
-          <div class="transport-type minibus_loc" style="display:none;">
-            {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_minibus_loc, 'type': 'minibus_loc' } %}
-          </div>
-          <div class="transport-type voiture" style="display:none;">
-            {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_voiture, 'type': 'voiture' } %}
-          </div>
-          <div class="transport-type commun" style="display:none;">
-            {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_commun, 'type': 'commun' } %}
-          </div>
-        </div>
+        $list.find('.'+closeBtnClass).remove();
 
-        {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_hebergement, 'type': 'hebergement' } %}
+        var $addBlk = $addBtn.closest('.add-block');
+        if ($addBlk.length > 0) {
+            $addBlk.before($newElem);
+        }
+        else {        
+            $newElem.appendTo($list);
+        }
 
-        {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_autre, 'type': 'autre' } %}
+        if ($newElem.parent().parent().parent().data('list') == '#addresses-collection-widget-list') {
+            $newElem.find('a.address-edit').click();
+        }
 
-        <div class="center">
-          <input class="submit" type="submit" value="Envoyer les notes de frais" />
-        </div>
+        if ($newElem.find('.contact-edit').length > 0) {
+            $newElem.find('.contact-edit').click();
+        }
 
-      {{ form_end(ndf_form) }}
+        if ($newElem.find('.activity-edit').length > 0) {
+            $newElem.find('.activity-edit').click();
+        }
 
-    {% else %}
-      <p><i>Vous avez déjà saisi une note de frais</i></p>
-    {% endif %}
-  </div>
-  <hr>
+        // Increase the counter
+        counter++;
+        // And store it, the length cannot be used if deleting widgets is allowed
+        $list.attr('data-widget-counter', counter);
+    };
 
-  <script>
-    !function($, undef) {
+    $('body').on('click', '.add-collection-widget', function(e) {
+        e.preventDefault();
 
-      ///////////////////////////////
-      // COLLECTION WIDGET
-      ///////////////////////////////
+        var $widget = $($(this).attr('data-widget')),
+            $list = $($widget.attr('data-list'));
 
-      var closeBtnClass = 'close',
-          closeBtn = '<btn class="btn btn-fill btn-success btn-sm '+closeBtnClass+'"><i class="material-icons">close</i></div>';
+        addToList($list, $(this));
 
-      var addToList = function ($list, $addBtn) {
+        $widget.trigger('change');
+        $widget.show();
 
-          // Try to find the counter of the list
-          var counter = $list.attr('data-widget-counter');
+        /*if ($('body .sorter').length > 0){
+            window.triggerSortables(); // launch sortables because of new sub sortable lists
+        }
 
-          // If the counter does not exist, use the length of the list
-          if (counter === undefined) {
-              counter = $list.children('.collection-widget-item').length;
-              $list
-                  .children('.collection-widget-item')
-                      .each(function() {
-                          var itemId = $(this).data('item-id');
-                          if (itemId && itemId >= counter) {
-                              counter = itemId+1;
-                          }
-                      });
-          }
+        // Autocomplete on new widget
+        $widget.find('.select2entity').select2entity();
+        $widget.find('.phone .country').addClass('hint');*/
+    });
 
-          // grab the prototype template
-          var newWidget = $list.attr('data-prototype');
-          // replace the "__name__" used in the id and name of the prototype
-          // with a number that's unique to your emails
-          // end name attribute looks like name="contact[emails][2]"
-          newWidget = newWidget.replace(/__name__/g, counter);
+    $('body').on('action','.remove-collection-widget', function(e) {
+        var $widget =  $($(this).attr('data-widget')),
+            $widgetItem = $(this).parents('.collection-widget-item');
 
-          // create a new list element and add it to the list
-          var $newElem = $($list.attr('data-widget-tags')).html(newWidget/* */);
-          $newElem.attr('data-item-id', counter);
+        $widgetItem.remove();
 
-          $list.find('.'+closeBtnClass).remove();
+        var $list = $($widget.attr('data-list'));
+        if ($list.children().length === 0) {
+            $widget.hide();
+        }
 
-          var $addBlk = $addBtn.closest('.add-block');
-          if ($addBlk.length > 0) {
-              $addBlk.before($newElem);
-          }
-          else {        
-              $newElem.appendTo($list);
-          }
+        var counter = $list.children('.collection-widget-item').length;
+        $list
+            .children('.collection-widget-item')
+                .each(function() {
+                    var itemId = $(this).data('item-id');
+                    if (itemId && itemId >= counter) {
+                        counter = itemId+1;
+                    }
+                });
 
-          if ($newElem.parent().parent().parent().data('list') == '#addresses-collection-widget-list') {
-              $newElem.find('a.address-edit').click();
-          }
+        $list.attr('data-widget-counter', counter);
 
-          if ($newElem.find('.contact-edit').length > 0) {
-              $newElem.find('.contact-edit').click();
-          }
+        /*$('.tooltip.bs-tooltip-auto ').remove();*/
+    });
 
-          if ($newElem.find('.activity-edit').length > 0) {
-              $newElem.find('.activity-edit').click();
-          }
 
-          // Increase the counter
-          counter++;
-          // And store it, the length cannot be used if deleting widgets is allowed
-          $list.attr('data-widget-counter', counter);
-      };
+    $('body').on('click','.remove-collection-widget', function(e) {
+        e.preventDefault();
 
-      $('body').on('click', '.add-collection-widget', function(e) {
-          e.preventDefault();
+        $(this).trigger('action');
+    });
 
-          var $widget = $($(this).attr('data-widget')),
-              $list = $($widget.attr('data-list'));
+    $('body').on('updateAndShow', '.collection-widget', function(e) {
+        $(this).trigger('change');
+        $(this).show();
+    });
 
-          addToList($list, $(this));
 
-          $widget.trigger('change');
-          $widget.show();
+    ///////////////////////////////
+    // TRANSPORT SELECT
+    ///////////////////////////////
 
-          /*if ($('body .sorter').length > 0){
-              window.triggerSortables(); // launch sortables because of new sub sortable lists
-          }
+    $('body').on('change', '#ndf_demande_type_transport', function() {
+      var val = $(this).val();
+      $('.ndf-form .transport-type').each(function() {
+        $(this).find('.collection-widget-item').remove();
 
-          // Autocomplete on new widget
-          $widget.find('.select2entity').select2entity();
-          $widget.find('.phone .country').addClass('hint');*/
+        if (val == '' || !$(this).hasClass(val)) {
+          $(this).hide();
+        }
+        else {
+          $(this)
+            .show()
+            .find('.add-collection-widget')
+              .click();
+        }
       });
+    });
 
-      $('body').on('action','.remove-collection-widget', function(e) {
-          var $widget =  $($(this).attr('data-widget')),
-              $widgetItem = $(this).parents('.collection-widget-item');
-
-          $widgetItem.remove();
-
-          var $list = $($widget.attr('data-list'));
-          if ($list.children().length === 0) {
-              $widget.hide();
-          }
-
-          var counter = $list.children('.collection-widget-item').length;
-          $list
-              .children('.collection-widget-item')
-                  .each(function() {
-                      var itemId = $(this).data('item-id');
-                      if (itemId && itemId >= counter) {
-                          counter = itemId+1;
-                      }
-                  });
-
-          $list.attr('data-widget-counter', counter);
-
-          /*$('.tooltip.bs-tooltip-auto ').remove();*/
-      });
-
-
-      $('body').on('click','.remove-collection-widget', function(e) {
-          e.preventDefault();
-
-          $(this).trigger('action');
-      });
-
-      $('body').on('updateAndShow', '.collection-widget', function(e) {
-          $(this).trigger('change');
-          $(this).show();
-      });
-
-
-      ///////////////////////////////
-      // TRANSPORT SELECT
-      ///////////////////////////////
-
-      $('body').on('change', '#ndf_demande_type_transport', function() {
-        var val = $(this).val();
-        $('.ndf-form .transport-type').each(function() {
-          $(this).find('.collection-widget-item').remove();
-
-          if (val == '' || !$(this).hasClass(val)) {
-            $(this).hide();
-          }
-          else {
-            $(this)
-              .show()
-              .find('.add-collection-widget')
-                .click();
-          }
-        });
-      });
-
-    }(window.jQuery);
-  </script>
-{% endif %}
+  }(window.jQuery);
+</script>

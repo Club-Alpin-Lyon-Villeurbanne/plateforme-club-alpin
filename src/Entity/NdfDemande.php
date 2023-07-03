@@ -257,13 +257,6 @@ class NdfDemande
         return $this;
     }
 
-    public function setNdfDepensesMinibusLoc($elements): self
-    {
-        foreach ($elements as $element) {
-            $this->addNdfDepensesMinibusLoc($element); // the method from your example
-        }
-    }
-
     public function getNdfDepensesMinibusClub(): Collection
     {
         return $this->ndfDepensesMinibusClub;
@@ -327,7 +320,6 @@ class NdfDemande
 
     public function addNdfDepensesHebergement(NdfDemande $ndfDepensesHebergement): self
     {
-        dd('yo');
         if (!$this->ndfDepensesHebergement->contains($ndfDepensesHebergement)) {
             $this->ndfDepensesHebergement[] = $ndfDepensesHebergement;
             $ndfDepensesHebergement->setNdfDemande($this);
