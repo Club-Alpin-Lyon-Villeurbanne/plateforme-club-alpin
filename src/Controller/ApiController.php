@@ -83,36 +83,48 @@ class ApiController extends AbstractFOSRestController
                     ];
                 }
 
-                switch ($demande->typeTransport) {
+                switch ($demande->getTypeTransport()) {
                     case 'voiture':
                         $depensesVoiture = $demande->getNdfDepensesVoiture();
                         $depenseTransport = [
-                            'type' => 'voiture',
-                            'nbre_kms' => $depensesVoiture->getNbreKm(),
-                            'frais_peage' => $depensesVoiture->getFraisPeage(),
-                            'commentaire' => $depensesVoiture->getCommentaire()
+                            'type' => 'voiture'
                         ];
+                        foreach ($depensesVoiture as $depense) {
+                            $depenseTransport[] = [
+                                'nbre_kms' => $depensesVoiture->getNbreKm(),
+                                'frais_peage' => $depensesVoiture->getFraisPeage(),
+                                'commentaire' => $depensesVoiture->getCommentaire()
+                            ];
+                        }
                         break;
                     case 'minibus_loc':
                         $depensesMinibusLoc = $demande->getNdfDepensesMinibusLoc();
                         $depenseTransport = [
-                            'type' => 'minibus_loc',
-                            'nbre_kms' => $depensesMinibusLoc->getNbreKm(),
-                            'prix_loc_km' => $depensesMinibusLoc->getPrixLocKm(),
-                            'frais_peage' => $depensesMinibusLoc->getFraisPeage(),
-                            'cout_essence' => $depensesMinibusLoc->getCoutEssence(),
-                            'nbre_passager' => $depensesMinibusLoc->getNbrePassager()
+                            'type' => 'minibus_loc'
                         ];
+                        foreach ($depensesMinibusLoc as $depense) {
+                            $depenseTransport[] = [
+                                'nbre_kms' => $depensesMinibusLoc->getNbreKm(),
+                                'prix_loc_km' => $depensesMinibusLoc->getPrixLocKm(),
+                                'frais_peage' => $depensesMinibusLoc->getFraisPeage(),
+                                'cout_essence' => $depensesMinibusLoc->getCoutEssence(),
+                                'nbre_passager' => $depensesMinibusLoc->getNbrePassager()
+                            ];
+                        }
                         break;
                     case 'minibus_club':
                         $depensesMinibusClub = $demande->getNdfDepensesMinibusClub();
                         $depenseTransport = [
-                            'type' => 'minibus_club',
-                            'nbre_kms' => $depensesMinibusClub->getNbreKm(),
-                            'frais_peage' => $depensesMinibusClub->getFraisPeage(),
-                            'cout_essence' => $depensesMinibusClub->getCoutEssence(),
-                            'nbre_passager' => $depensesMinibusClub->getNbrePassager()
+                            'type' => 'minibus_club'
                         ];
+                        foreach ($depensesMinibusClub as $depense) {
+                            $depenseTransport[] = [
+                                'nbre_kms' => $depensesMinibusClub->getNbreKm(),
+                                'frais_peage' => $depensesMinibusClub->getFraisPeage(),
+                                'cout_essence' => $depensesMinibusClub->getCoutEssence(),
+                                'nbre_passager' => $depensesMinibusClub->getNbrePassager()
+                            ];
+                        }
                         break;
                     case 'commun':
                         //depenseCommun
