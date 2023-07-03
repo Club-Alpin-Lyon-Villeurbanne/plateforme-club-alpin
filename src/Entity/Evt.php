@@ -144,35 +144,35 @@ class Evt
     /**
      * @var string
      *
-     * @ORM\Column(name="place_evt", type="string", length=100, nullable=false, options={"comment": "Lieu de RDV covoiturage"})
+     * @ORM\Column(name="place_evt", type="string", length=100, nullable=false, options={"comment": "Lieu de RDV covoiturage", "collation": "utf8mb4_unicode_ci"})
      */
     private $place;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="titre_evt", type="string", length=100, nullable=false)
+     * @ORM\Column(name="titre_evt", type="string", length=100, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $titre;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="code_evt", type="string", length=30, nullable=false)
+     * @ORM\Column(name="code_evt", type="string", length=30, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $code;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="massif_evt", type="string", length=100, nullable=true)
+     * @ORM\Column(name="massif_evt", type="string", length=100, nullable=true, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $massif;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="rdv_evt", type="string", length=200, nullable=false, options={"comment": "Lieu détaillé du rdv"})
+     * @ORM\Column(name="rdv_evt", type="string", length=200, nullable=false, options={"comment": "Lieu détaillé du rdv", "collation": "utf8mb4_unicode_ci"})
      */
     private $rdv;
 
@@ -186,7 +186,7 @@ class Evt
     /**
      * @var string|null
      *
-     * @ORM\Column(name="tarif_detail", type="text", length=65535, nullable=true)
+     * @ORM\Column(name="tarif_detail", type="text", length=65535, nullable=true, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $tarifDetail;
 
@@ -221,28 +221,28 @@ class Evt
     /**
      * @var string
      *
-     * @ORM\Column(name="matos_evt", type="text", length=65535, nullable=true)
+     * @ORM\Column(name="matos_evt", type="text", length=65535, nullable=true, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $matos;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="difficulte_evt", type="string", length=50, nullable=true)
+     * @ORM\Column(name="difficulte_evt", type="string", length=50, nullable=true, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $difficulte;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="itineraire", type="text", length=65535, nullable=true)
+     * @ORM\Column(name="itineraire", type="text", length=65535, nullable=true, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $itineraire;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="description_evt", type="text", length=65535, nullable=false)
+     * @ORM\Column(name="description_evt", type="text", length=65535, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
     private $description;
 

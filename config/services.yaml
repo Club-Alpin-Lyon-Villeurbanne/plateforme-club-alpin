@@ -18,6 +18,7 @@ parameters:
     legacy_env_MAX_ARTICLES_ADHERENT: "%env(int:MAX_ARTICLES_ADHERENT)%"
     legacy_env_MAX_ARTICLES_ACCUEIL: "%env(int:MAX_ARTICLES_ACCUEIL)%"
     legacy_env_MAX_IMAGE_SIZE: "%env(int:MAX_IMAGE_SIZE)%"
+    legacy_env_DISPLAY_BANNER: "%env(bool:DISPLAY_BANNER)%"
 
 services:
     # default configuration for services in *this* file
