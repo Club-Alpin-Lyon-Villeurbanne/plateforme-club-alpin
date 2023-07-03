@@ -76,7 +76,7 @@ class SortieController extends AbstractController
 
         return [
             'event' => $event,
-            'demande' => $demande,
+            'demande' => $user ? $demande : null,
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participantRepository->getEmpietements($event),
             'ndf_form' => $user ? $form->createView() : null
