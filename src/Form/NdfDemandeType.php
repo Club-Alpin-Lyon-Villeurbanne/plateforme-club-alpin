@@ -44,7 +44,7 @@ class NdfDemandeType extends AbstractType
                 ],
                 'multiple' => FALSE,
                 'expanded' => FALSE,
-                'required' => FALSE,
+                'required' => TRUE,
             ])
             ->add('ndf_depenses_minibus_club', CollectionType::class, [
                 'label' => FALSE,

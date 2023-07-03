@@ -158,42 +158,48 @@
   <div class="ndf-form-wrapper">
     <h2 class="title">Saisie de notes de frais</h2>
 
-    {{ form_start(ndf_form, {
-      'method': 'post',
-      'action': path('sortie', { 'code': event.code, 'id': event.id }),
-      'attr': {
-        'class': 'ndf-form'
-      }
-    }) }}
+    {% if demande is empty or demande.id is empty %}
 
-      {{ form_row(ndf_form.remboursement, { 'attr': { 'class': 'checkboxes' }}) }}
+      {{ form_start(ndf_form, {
+        'method': 'post',
+        'action': path('sortie', { 'code': event.code, 'id': event.id }),
+        'attr': {
+          'class': 'ndf-form'
+        }
+      }) }}
 
-      <div class="transport">
-        {{ form_row(ndf_form.type_transport, { 'attr': { 'class': 'transport-choice' }}) }}
+        {{ form_row(ndf_form.remboursement, { 'attr': { 'class': 'checkboxes' }}) }}
 
-        <div class="transport-type minibus_club" style="display:none;">
-          {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_minibus_club, 'type': 'minibus_club' } %}
+        <div class="transport">
+          {{ form_row(ndf_form.type_transport, { 'attr': { 'class': 'transport-choice' }}) }}
+
+          <div class="transport-type minibus_club" style="display:none;">
+            {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_minibus_club, 'type': 'minibus_club' } %}
+          </div>
+          <div class="transport-type minibus_loc" style="display:none;">
+            {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_minibus_loc, 'type': 'minibus_loc' } %}
+          </div>
+          <div class="transport-type voiture" style="display:none;">
+            {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_voiture, 'type': 'voiture' } %}
+          </div>
+          <div class="transport-type commun" style="display:none;">
+            {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_commun, 'type': 'commun' } %}
+          </div>
         </div>
-        <div class="transport-type minibus_loc" style="display:none;">
-          {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_minibus_loc, 'type': 'minibus_loc' } %}
+
+        {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_hebergement, 'type': 'hebergement' } %}
+
+        {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_autre, 'type': 'autre' } %}
+
+        <div class="center">
+          <input class="submit" type="submit" value="Envoyer les notes de frais" />
         </div>
-        <div class="transport-type voiture" style="display:none;">
-          {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_voiture, 'type': 'voiture' } %}
-        </div>
-        <div class="transport-type commun" style="display:none;">
-          {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_commun, 'type': 'commun' } %}
-        </div>
-      </div>
 
-      {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_hebergement, 'type': 'hebergement' } %}
+      {{ form_end(ndf_form) }}
 
-      {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_autre, 'type': 'autre' } %}
-
-      <div class="center">
-        <input class="submit" type="submit" value="Envoyer les notes de frais" />
-      </div>
-
-    {{ form_end(ndf_form) }}
+    {% else %}
+      <p><i>Vous avez déjà saisi une note de frais</i></p>
+    {% endif %}
   </div>
   <hr>
 

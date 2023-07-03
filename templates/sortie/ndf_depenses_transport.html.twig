@@ -6,7 +6,7 @@
 		{% if depenses is not null and depenses|length > 0 %}
 	  		{% for depense in depenses %}
 	  			<div class="col-md-6 mb-3 mb-md-4 collection-widget-item" data-item-id="{{ loop.index }}">
-	    			{% include 'ndf_depense.html.twig' with { depense: depense } %}
+	    			{% include 'sortie/ndf_depense.html.twig' with { depense: depense } %}
 	    		</div>
 	  		{% endfor %}
 		{% endif %}

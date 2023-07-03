@@ -9,6 +9,7 @@ use App\Mailer\Mailer;
 use App\Repository\EvtJoinRepository;
 use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
+use App\Repository\NdfDemandeRepository;
 use App\Form\NdfDemandeType;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -42,7 +43,7 @@ class SortieController extends AbstractController
      *
      * @Template
      */
-    public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository, EntityManagerInterface $em, Request $request)
+    public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository, EntityManagerInterface $em, NdfDemandeRepository $ndfDemandeRepository, Request $request)
     {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
             throw new AccessDeniedHttpException('Not found');
@@ -54,21 +55,48 @@ class SortieController extends AbstractController
         // $user = $repository->findUserByEmail('benoit@spotlab.net');
 
         if ($user) {
-            $demande = new NdfDemande($event, $user);
+            $demande = NULL;
+            $demande = $ndfDemandeRepository->getForUserAndEvent($user, $event);
+            if (empty($demande)) {
+                $demande = new NdfDemande($event, $user);
 
-            $form = $this->createForm(NdfDemandeType::class, $demande);
-            $form->handleRequest($request);
+                $form = $this->createForm(NdfDemandeType::class, $demande);
+                $form->handleRequest($request);
 
-            if ($form->isSubmitted()) {
-                if ($form->isValid()) {
-                    $em->persist($demande);
-                    dd($demande);
-                    $em->flush();
-                    $this->addFlash('success', 'Note de frais enregistrée!');
-                
-                } else {
-                    $errors = (string) $form->getErrors(TRUE, FALSE);
-                    dd($errors);
+                if ($form->isSubmitted()) {
+                    if ($form->isValid()) {
+                        foreach ($demande->getNdfDepensesVoiture() as $depense) {
+                            $depense->setNdfDemande($demande);
+                            $em->persist($demande);
+                        }
+                        foreach ($demande->getNdfDepensesMinibusClub() as $depense) {
+                            $depense->setNdfDemande($demande);
+                            $em->persist($demande);
+                        }
+                        foreach ($demande->getNdfDepensesMinibusLoc() as $depense) {
+                            $depense->setNdfDemande($demande);
+                            $em->persist($demande);
+                        }
+                        foreach ($demande->getNdfDepensesCommun() as $depense) {
+                            $depense->setNdfDemande($demande);
+                            $em->persist($demande);
+                        }
+                        foreach ($demande->getNdfDepensesHebergement() as $depense) {
+                            $depense->setNdfDemande($demande);
+                            $em->persist($demande);
+                        }
+                        foreach ($demande->getNdfDepensesAutre() as $depense) {
+                            $depense->setNdfDemande($demande);
+                            $em->persist($demande);
+                        }
+                        $em->persist($demande);
+                        $em->flush();
+                        $this->addFlash('success', 'Note de frais enregistrée!');
+                    
+                    } else {
+                        $errors = (string) $form->getErrors(TRUE, FALSE);
+                        dd($errors);
+                    }
                 }
             }
         }
