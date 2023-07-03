@@ -18,10 +18,6 @@ class NdfDepenseHebergementType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('nbre_km', IntegerType::class, [
-                'label' => 'Nombre de kms (aller/retour)',
-                'required' => FALSE,
-            ])
             ->add('montant', MoneyType::class, [
                 'label' => 'Montant',
                 'required' => FALSE,

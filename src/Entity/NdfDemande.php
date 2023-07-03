@@ -76,32 +76,32 @@ class NdfDemande
     private $typeTransport;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseVoiture", mappedBy="ndf_demande_id")
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseVoiture", mappedBy="ndfDemande", cascade={"remove", "persist"})
      */
     private $ndfDepensesVoiture;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseMinibusLoc", mappedBy="ndf_demande_id")
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseMinibusLoc", mappedBy="ndfDemande", cascade={"remove", "persist"})
      */
     private $ndfDepensesMinibusLoc;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseMinibusClub", mappedBy="ndf_demande_id")
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseMinibusClub", mappedBy="ndfDemande", cascade={"remove", "persist"})
      */
     private $ndfDepensesMinibusClub;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseCommun", mappedBy="ndf_demande_id")
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseCommun", mappedBy="ndfDemande", cascade={"remove", "persist"})
      */
     private $ndfDepensesCommun;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseHebergement", mappedBy="ndf_demande_id")
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseHebergement", mappedBy="ndfDemande", cascade={"remove", "persist"})
      */
     private $ndfDepensesHebergement;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseAutre", mappedBy="ndf_demande_id")
+     * @ORM\OneToMany(targetEntity="App\Entity\NdfDepenseAutre", mappedBy="ndfDemande", cascade={"remove", "persist"})
      */
     private $ndfDepensesAutre;
 
@@ -210,6 +210,7 @@ class NdfDemande
     {
         if (!$this->ndfDepensesVoiture->contains($ndfDepensesVoiture)) {
             $this->ndfDepensesVoiture[] = $ndfDepensesVoiture;
+            $ndfDepensesVoiture->setNdfDemande($this);
         }
 
         return $this;
@@ -219,6 +220,10 @@ class NdfDemande
     {
         if ($this->ndfDepensesVoiture->contains($ndfDepensesVoiture)) {
             $this->ndfDepensesVoiture->removeElement($ndfDepensesVoiture);
+            // set the owning side to null (unless already changed)
+            if ($ndfDepensesVoiture->getNdfDemande() === $this) {
+                $ndfDepensesVoiture->setNdfDemande(null);
+            }
         }
 
         return $this;
@@ -233,6 +238,7 @@ class NdfDemande
     {
         if (!$this->ndfDepensesMinibusLoc->contains($ndfDepensesMinibusLoc)) {
             $this->ndfDepensesMinibusLoc[] = $ndfDepensesMinibusLoc;
+            $ndfDepensesMinibusLoc->setNdfDemande($this);
         }
 
         return $this;
@@ -242,6 +248,10 @@ class NdfDemande
     {
         if ($this->ndfDepensesMinibusLoc->contains($ndfDepensesMinibusLoc)) {
             $this->ndfDepensesMinibusLoc->removeElement($ndfDepensesMinibusLoc);
+            // set the owning side to null (unless already changed)
+            if ($ndfDepensesMinibusLoc->getNdfDemande() === $this) {
+                $ndfDepensesMinibusLoc->setNdfDemande(null);
+            }
         }
 
         return $this;
@@ -256,6 +266,7 @@ class NdfDemande
     {
         if (!$this->ndfDepensesMinibusClub->contains($ndfDepensesMinibusClub)) {
             $this->ndfDepensesMinibusClub[] = $ndfDepensesMinibusClub;
+            $ndfDepensesMinibusClub->setNdfDemande($this);
         }
 
         return $this;
@@ -265,6 +276,10 @@ class NdfDemande
     {
         if ($this->ndfDepensesMinibusClub->contains($ndfDepensesMinibusClub)) {
             $this->ndfDepensesMinibusClub->removeElement($ndfDepensesMinibusClub);
+            // set the owning side to null (unless already changed)
+            if ($ndfDepensesMinibusClub->getNdfDemande() === $this) {
+                $ndfDepensesMinibusClub->setNdfDemande(null);
+            }
         }
 
         return $this;
@@ -279,6 +294,7 @@ class NdfDemande
     {
         if (!$this->ndfDepensesCommun->contains($ndfDepensesCommun)) {
             $this->ndfDepensesCommun[] = $ndfDepensesCommun;
+            $ndfDepensesCommun->setNdfDemande($this);
         }
 
         return $this;
@@ -288,6 +304,10 @@ class NdfDemande
     {
         if ($this->ndfDepensesCommun->contains($ndfDepensesCommun)) {
             $this->ndfDepensesCommun->removeElement($ndfDepensesCommun);
+            // set the owning side to null (unless already changed)
+            if ($ndfDepensesCommun->getNdfDemande() === $this) {
+                $ndfDepensesCommun->setNdfDemande(null);
+            }
         }
 
         return $this;
@@ -300,8 +320,10 @@ class NdfDemande
 
     public function addNdfDepensesHebergement(NdfDemande $ndfDepensesHebergement): self
     {
+        dd('yo');
         if (!$this->ndfDepensesHebergement->contains($ndfDepensesHebergement)) {
             $this->ndfDepensesHebergement[] = $ndfDepensesHebergement;
+            $ndfDepensesHebergement->setNdfDemande($this);
         }
 
         return $this;
@@ -311,6 +333,10 @@ class NdfDemande
     {
         if ($this->ndfDepensesHebergement->contains($ndfDepensesHebergement)) {
             $this->ndfDepensesHebergement->removeElement($ndfDepensesHebergement);
+            // set the owning side to null (unless already changed)
+            if ($ndfDepensesHebergement->getNdfDemande() === $this) {
+                $ndfDepensesHebergement->setNdfDemande(null);
+            }
         }
 
         return $this;
@@ -325,6 +351,7 @@ class NdfDemande
     {
         if (!$this->ndfDepensesAutre->contains($ndfDepensesAutre)) {
             $this->ndfDepensesAutre[] = $ndfDepensesAutre;
+            $ndfDepensesAutre->setNdfDemande($this);
         }
 
         return $this;
@@ -334,6 +361,10 @@ class NdfDemande
     {
         if ($this->ndfDepensesAutre->contains($ndfDepensesAutre)) {
             $this->ndfDepensesAutre->removeElement($ndfDepensesAutre);
+            // set the owning side to null (unless already changed)
+            if ($ndfDepensesAutre->getNdfDemande() === $this) {
+                $ndfDepensesAutre->setNdfDemande(null);
+            }
         }
 
         return $this;

@@ -36,13 +36,13 @@ class SortieController extends AbstractController
      *         "id": "\d+",
      *         "code": "[a-z0-9-]+"
      *     },
-     *     methods={"GET"},
+     *     methods={"GET", "POST"},
      *     priority="10"
      * )
      *
      * @Template
      */
-    public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository, Request $request)
+    public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository, EntityManagerInterface $em, Request $request)
     {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
             throw new AccessDeniedHttpException('Not found');
@@ -61,13 +61,10 @@ class SortieController extends AbstractController
 
             if ($form->isSubmitted()) {
                 if ($form->isValid()) {
-                    try {
-                        $this->em->persist($demande);
-                        $this->em->flush($demande);
-
-                    } catch (\Exception $e) {
-                        $messageService->add('error', $e->getMessage());
-                    }
+                    $em->persist($demande);
+                    dd($demande);
+                    $em->flush();
+                    $this->addFlash('success', 'Note de frais enregistrée!');
                 
                 } else {
                     $errors = (string) $form->getErrors(TRUE, FALSE);
