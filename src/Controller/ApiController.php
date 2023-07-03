@@ -91,9 +91,9 @@ class ApiController extends AbstractFOSRestController
                         ];
                         foreach ($depensesVoiture as $depense) {
                             $depenseTransport[] = [
-                                'nbre_kms' => $depensesVoiture->getNbreKm(),
-                                'frais_peage' => $depensesVoiture->getFraisPeage(),
-                                'commentaire' => $depensesVoiture->getCommentaire()
+                                'nbre_kms' => $depense->getNbreKm(),
+                                'frais_peage' => $depense->getFraisPeage(),
+                                'commentaire' => $depense->getCommentaire()
                             ];
                         }
                         break;
@@ -104,11 +104,11 @@ class ApiController extends AbstractFOSRestController
                         ];
                         foreach ($depensesMinibusLoc as $depense) {
                             $depenseTransport[] = [
-                                'nbre_kms' => $depensesMinibusLoc->getNbreKm(),
-                                'prix_loc_km' => $depensesMinibusLoc->getPrixLocKm(),
-                                'frais_peage' => $depensesMinibusLoc->getFraisPeage(),
-                                'cout_essence' => $depensesMinibusLoc->getCoutEssence(),
-                                'nbre_passager' => $depensesMinibusLoc->getNbrePassager()
+                                'nbre_kms' => $depense->getNbreKm(),
+                                'prix_loc_km' => $depense->getPrixLocKm(),
+                                'frais_peage' => $depense->getFraisPeage(),
+                                'cout_essence' => $depense->getCoutEssence(),
+                                'nbre_passager' => $depense->getNbrePassager()
                             ];
                         }
                         break;
@@ -119,10 +119,10 @@ class ApiController extends AbstractFOSRestController
                         ];
                         foreach ($depensesMinibusClub as $depense) {
                             $depenseTransport[] = [
-                                'nbre_kms' => $depensesMinibusClub->getNbreKm(),
-                                'frais_peage' => $depensesMinibusClub->getFraisPeage(),
-                                'cout_essence' => $depensesMinibusClub->getCoutEssence(),
-                                'nbre_passager' => $depensesMinibusClub->getNbrePassager()
+                                'nbre_kms' => $depense->getNbreKm(),
+                                'frais_peage' => $depense->getFraisPeage(),
+                                'cout_essence' => $depense->getCoutEssence(),
+                                'nbre_passager' => $depense->getNbrePassager()
                             ];
                         }
                         break;
@@ -154,7 +154,10 @@ class ApiController extends AbstractFOSRestController
             $formatted[] = [
                'id' => $demande->getId(),
                'demandeur' => $demande->getDemandeur()->getFirstName()." ".$demande->getDemandeur()->getLastName(),
-               'sortie' => $demande->getSortie()->getTitre(),
+               'sortie' => [
+                    'id' => $demande->getSortie()->getId(),
+                    'titre' => $demande->getSortie()->getTitre()
+               ],
                'remboursement' => $demande->getRemboursement(),
                'taux_remboursement_kms' => Ndf::getTauxKms(new \DateTime('@' . $demande->getSortie()->getTsp())),
                'plafond_remboursement_hebergement' => Ndf::getPlafondHebergement(new \DateTime('@' . $demande->getSortie()->getTsp())),
