@@ -160,7 +160,7 @@
 
     {{ form_start(ndf_form, {
       'method': 'post',
-      'action': path('sortie_ndf', { 'code': event.code, 'id': event.id }),
+      'action': path('sortie', { 'code': event.code, 'id': event.id }),
       'attr': {
         'class': 'ndf-form'
       }
