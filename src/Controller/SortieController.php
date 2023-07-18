@@ -78,15 +78,24 @@ class SortieController extends AbstractController
                             $depense->setNdfDemande($demande);
                             $em->persist($demande);
                         }
+                        $ordre = 0;
                         foreach ($demande->getNdfDepensesCommun() as $depense) {
+                            $depense->setOrdre($ordre);
+                            $ordre++;
                             $depense->setNdfDemande($demande);
                             $em->persist($demande);
                         }
+                        $ordre = 0;
                         foreach ($demande->getNdfDepensesHebergement() as $depense) {
+                            $depense->setOrdre($ordre);
+                            $ordre++;
                             $depense->setNdfDemande($demande);
                             $em->persist($demande);
                         }
+                        $ordre = 0;
                         foreach ($demande->getNdfDepensesAutre() as $depense) {
+                            $depense->setOrdre($ordre);
+                            $ordre++;
                             $depense->setNdfDemande($demande);
                             $em->persist($demande);
                         }
