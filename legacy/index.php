@@ -178,17 +178,16 @@ if (admin() && count($contLog) && !$p_pageadmin) {
             <?php require __DIR__.'/includes/generic/lbxMsg.php'; ?>
 
             <?php if (LegacyContainer::getParameter('legacy_env_ANALYTICS_ACCOUNT')) { ?>
-            <script type="text/javascript">
-                var _gaq = _gaq || [];
-                _gaq.push(['_setAccount', '<?php echo LegacyContainer::getParameter('legacy_env_ANALYTICS_ACCOUNT'); ?>']);
-                _gaq.push(['_trackPageview']);
+            <!-- Google tag (gtag.js) -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo LegacyContainer::getParameter('legacy_env_ANALYTICS_ACCOUNT'); ?>"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
 
-                (function() {
-                    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-                })();
+                gtag('config', '<?php echo LegacyContainer::getParameter('legacy_env_ANALYTICS_ACCOUNT'); ?>');
             </script>
+
             <?php } ?>
         </div> <!--! end of #siteHeight -->
     </div> <!--! end of #container -->
