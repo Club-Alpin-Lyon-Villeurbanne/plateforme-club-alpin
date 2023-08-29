@@ -7,11 +7,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
-use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\View\ViewHandler;
-use FOS\RestBundle\View\View;
 
 use App\Entity\NdfDemande;
 use App\Repository\NdfDemandeRepository;
@@ -25,16 +22,24 @@ use App\Repository\EvtRepository;
 /**
  * @Route("/api")
  */
-class ApiController extends AbstractFOSRestController
+class ApiController extends AbstractController
 {
 
     public function __construct()
     {
     }
 
+
+
     /**
-     * @Rest\Get("/ndf")
+     * @Route(
+     *     name="api_ndf_list",
+     *     path="/ndf",
+     *     methods={"GET"}
+     * )
      */
+
+
     public function getNdfDemandes(NdfDemandeRepository $repository, Request $request)
     {
         $page = null !== $request->get('page') ? $request->get('page') : 1;
@@ -165,16 +170,18 @@ class ApiController extends AbstractFOSRestController
                'depenses' => $depensesDetails
             ];
         }
-
-        $view = $this->view($formatted, 200);
-        $view->setFormat('json');
-
-        return $this->handleView($view);
+        $data = ['data' => $formatted];
+        return $this->json($data, 200);
+       
     }
 
 
     /**
-     * @Rest\Get("/ndf/{id}")
+     * @Route(
+     *     name="api_ndf",
+     *     path="/ndf/{id}",
+     *     methods={"GET"}
+     * )
      */
     public function getNdfDemande($id, NdfDemandeRepository $repository)
     {
@@ -189,18 +196,22 @@ class ApiController extends AbstractFOSRestController
                'statut' => $demande->getStatut(),
             ];
 
-            $view = $this->view($formatted, 200);
-        } else {
-            $view = $this->view(404);
-        }
-        
-        $view->setFormat('json');
+            $data = ['data' => $formatted];
 
-        return $this->handleView($view);
+            $view = $this->json($data, 200);
+        } else {
+            $view = $this->json([],404);
+        }
+
+        return $view;
     }
 
     /**
-     * @Rest\Get("/sorties")
+     * @Route(
+     *     name="api_sorties",
+     *     path="/sorties",
+     *     methods={"GET"}
+     * )
      */
     public function getSorties(EvtRepository $repository, Request $request)
     {
@@ -230,11 +241,18 @@ class ApiController extends AbstractFOSRestController
         
         }
         $data = ['data' => $formatted];
-        $view = $this->view($data, 200);
-        $view->setFormat('json');
-
-        return $this->handleView($view);
+        return $this->json($data, 200);
     }
 
+    /**
+     * @Route(
+     *     name="api_ndf_modify",
+     *     path="/ndf",
+     *     methods={"PATCH"}
+     * )
+     */
+    public function modifyNdf($id, NdfDemandeRepository $repository)
+    {
 
+    }
 }

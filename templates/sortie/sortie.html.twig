@@ -299,9 +299,9 @@
 
             {# Temp: keep it here for tests, and after remove it and uncomment up code #}
             {# {{ easy_include('formulaire-ajout-ndf', 'vide') }} #}
-
-            {% include 'sortie/ndf_encadrant.html.twig' %}
-
+            {% if is_granted('ROLE_ADMIN') %}
+                {% include 'sortie/ndf_encadrant.html.twig' %}
+            {% endif %}
             {% if my_status and my_status.status != constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME') %}
 
                 {% if is_granted('PARTICIPANT_ANNULATION', my_status) %}
