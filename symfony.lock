@@ -112,18 +112,6 @@
     "jean85/pretty-package-versions": {
         "version": "2.0.5"
     },
-    "jms/serializer-bundle": {
-        "version": "5.2",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "main",
-            "version": "4.0",
-            "ref": "cc04e10cf7171525b50c18b36004edf64cb478be"
-        },
-        "files": [
-            "config/packages/jms_serializer.yaml"
-        ]
-    },
     "laminas/laminas-code": {
         "version": "4.4.3"
     },
