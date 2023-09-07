@@ -5,7 +5,7 @@ namespace App\Utils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class Ndf
+class NoteDeFrais
 {
 	public static function getTauxKms($date)
     {

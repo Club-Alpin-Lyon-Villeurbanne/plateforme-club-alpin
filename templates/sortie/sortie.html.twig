@@ -252,9 +252,6 @@
                             <br />Vous avez participé à cette sortie en tant que : {{ my_status.role }}.<br />&nbsp;
                         </p>
                         <br />
-                        {# {% if my_status.role == 'encadrant' or my_status.role == 'stagiaire' or my_status.role == 'coencadrant' %}
-                            {{ easy_include('formulaire-ajout-ndf', 'vide') }}
-                        {# {% endif %} #}
                     {% endif %}
                 {% else %}
                     {% if not event.finished %}
@@ -296,12 +293,7 @@
                     {% endif %}
                 {% endif %}
             {% endif %}
-
-            {# Temp: keep it here for tests, and after remove it and uncomment up code #}
-            {# {{ easy_include('formulaire-ajout-ndf', 'vide') }} #}
-            {% if is_granted('ROLE_ADMIN') %}
-                {% include 'sortie/ndf_encadrant.html.twig' %}
-            {% endif %}
+            
             {% if my_status and my_status.status != constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME') %}
 
                 {% if is_granted('PARTICIPANT_ANNULATION', my_status) %}

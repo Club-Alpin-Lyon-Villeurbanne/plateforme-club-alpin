@@ -13,7 +13,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\NdfDemande;
 use App\Repository\NdfDemandeRepository;
 
-use App\Utils\Ndf;
+use App\Utils\NoteDeFrais;
+use App\Utils\ApiKeywords;
 
 use App\Entity\Evt;
 use App\Repository\EvtRepository;
@@ -71,9 +72,9 @@ class ApiController extends AbstractController
 
                 foreach ($depensesHebergements as $depense) {
                     $depenseHebergement[] = [
-                        'ordre' => $depense->getOrdre(),
-                        'montant' => $depense->getMontant(),
-                        'commentaire' => $depense->getCommentaire()
+                        ApiKeywords::ORDRE => $depense->getOrdre(),
+                        ApiKeywords::MONTANT => $depense->getMontant(),
+                        ApiKeywords::COMMENT => $depense->getCommentaire()
                     ];
                 }
 
@@ -82,9 +83,9 @@ class ApiController extends AbstractController
                 $depenseAutre = [];
                 foreach ($depensesAutres as $depense) {
                     $depenseAutre[] = [
-                        'ordre' => $depense->getOrdre(),
-                        'montant' => $depense->getMontant(),
-                        'commentaire' => $depense->getCommentaire()
+                        ApiKeywords::ORDRE => $depense->getOrdre(),
+                        ApiKeywords::MONTANT => $depense->getMontant(),
+                        ApiKeywords::COMMENT => $depense->getCommentaire()
                     ];
                 }
 
@@ -92,42 +93,42 @@ class ApiController extends AbstractController
                     case 'voiture':
                         $depensesVoiture = $demande->getNdfDepensesVoiture();
                         $depenseTransport = [
-                            'type' => 'voiture'
+                            ApiKeywords::TYPE => 'voiture'
                         ];
                         foreach ($depensesVoiture as $depense) {
                             $depenseTransport[] = [
-                                'nbre_kms' => $depense->getNbreKm(),
-                                'frais_peage' => $depense->getFraisPeage(),
-                                'commentaire' => $depense->getCommentaire()
+                                ApiKeywords::NBRE_KMS => $depense->getNbreKm(),
+                                ApiKeywords::FRAIS_PEAGE => $depense->getFraisPeage(),
+                                ApiKeywords::COMMENT => $depense->getCommentaire()
                             ];
                         }
                         break;
                     case 'minibus_loc':
                         $depensesMinibusLoc = $demande->getNdfDepensesMinibusLoc();
                         $depenseTransport = [
-                            'type' => 'minibus_loc'
+                            ApiKeywords::TYPE => 'minibus_loc'
                         ];
                         foreach ($depensesMinibusLoc as $depense) {
                             $depenseTransport[] = [
-                                'nbre_kms' => $depense->getNbreKm(),
-                                'prix_loc_km' => $depense->getPrixLocKm(),
-                                'frais_peage' => $depense->getFraisPeage(),
-                                'cout_essence' => $depense->getCoutEssence(),
-                                'nbre_passager' => $depense->getNbrePassager()
+                                ApiKeywords::NBRE_KMS => $depense->getNbreKm(),
+                                ApiKeywords::PRIX_LOC_KM => $depense->getPrixLocKm(),
+                                ApiKeywords::FRAIS_PEAGE => $depense->getFraisPeage(),
+                                ApiKeywords::ESSENCE => $depense->getCoutEssence(),
+                                ApiKeywords::NBRE_PASSAGER => $depense->getNbrePassager()
                             ];
                         }
                         break;
                     case 'minibus_club':
                         $depensesMinibusClub = $demande->getNdfDepensesMinibusClub();
                         $depenseTransport = [
-                            'type' => 'minibus_club'
+                            ApiKeywords::TYPE => 'minibus_club'
                         ];
                         foreach ($depensesMinibusClub as $depense) {
                             $depenseTransport[] = [
-                                'nbre_kms' => $depense->getNbreKm(),
-                                'frais_peage' => $depense->getFraisPeage(),
-                                'cout_essence' => $depense->getCoutEssence(),
-                                'nbre_passager' => $depense->getNbrePassager()
+                                ApiKeywords::NBRE_KMS => $depense->getNbreKm(),
+                                ApiKeywords::FRAIS_PEAGE => $depense->getFraisPeage(),
+                                ApiKeywords::ESSENCE => $depense->getCoutEssence(),
+                                ApiKeywords::NBRE_PASSAGER => $depense->getNbrePassager()
                             ];
                         }
                         break;
@@ -135,13 +136,13 @@ class ApiController extends AbstractController
                         //depenseCommun
                         $depensesCommuns = $demande->getNdfDepensesCommun();
                         $depenseTransport = [
-                            'type' => 'commun'
+                            ApiKeywords::TYPE => 'commun'
                         ];
                         foreach ($depensesCommuns as $depense) {
                             $depenseTransport[] = [
-                                'ordre' => $depense->getOrdre(),
-                                'montant' => $depense->getMontant(),
-                                'commentaire' => $depense->getCommentaire()
+                                ApiKeywords::ORDRE => $depense->getOrdre(),
+                                ApiKeywords::MONTANT => $depense->getMontant(),
+                                ApiKeywords::COMMENT => $depense->getCommentaire()
                             ];
                         }
                         break;
@@ -150,27 +151,27 @@ class ApiController extends AbstractController
                         $depenseTransport = [];
                 }
                 $depensesDetails = [
-                    'depense_transport' => $depenseTransport,
-                    'depense_hebergement' => $depenseHebergement,
-                    'depense_autre' => $depenseAutre
+                    ApiKeywords::DEPENSE_TRANSPORT => $depenseTransport,
+                    ApiKeywords::DEPENSE_HEBERGEMENT => $depenseHebergement,
+                    ApiKeywords::DEPENSE_AUTRE => $depenseAutre
                ];
             }
 
             $formatted[] = [
-               'id' => $demande->getId(),
-               'demandeur' => $demande->getDemandeur()->getFirstName()." ".$demande->getDemandeur()->getLastName(),
-               'sortie' => [
-                    'id' => $demande->getSortie()->getId(),
-                    'titre' => $demande->getSortie()->getTitre()
+               ApiKeywords::ID => $demande->getId(),
+               ApiKeywords::DEMANDEUR => $demande->getDemandeur()->getFirstName()." ".$demande->getDemandeur()->getLastName(),
+               ApiKeywords::SORTIE => [
+                    ApiKeywords::ID => $demande->getSortie()->getId(),
+                    ApiKeywords::TITRE => $demande->getSortie()->getTitre()
                ],
-               'remboursement' => $demande->getRemboursement(),
-               'taux_remboursement_kms' => Ndf::getTauxKms(new \DateTime('@' . $demande->getSortie()->getTsp())),
-               'plafond_remboursement_hebergement' => Ndf::getPlafondHebergement(new \DateTime('@' . $demande->getSortie()->getTsp())),
-               'statut' => $demande->getStatut(),
-               'depenses' => $depensesDetails
+               ApiKeywords::REMBOURSEMENT => $demande->getRemboursement(),
+               ApiKeywords::TAUX_REMBOURSEMENT_KM => NoteDeFrais::getTauxKms(new \DateTime('@' . $demande->getSortie()->getTsp())),
+               ApiKeywords::PLAFOND_REMBOURSEMENT_HEBERGEMENT => NoteDeFrais::getPlafondHebergement(new \DateTime('@' . $demande->getSortie()->getTsp())),
+               ApiKeywords::STATUT => $demande->getStatut(),
+               ApiKeywords::DEPENSES => $depensesDetails
             ];
         }
-        $data = ['data' => $formatted];
+        $data = [ApiKeywords::DATA => $formatted];
         return $this->json($data, 200);
        
     }
@@ -189,14 +190,14 @@ class ApiController extends AbstractController
 
         if(!empty($demande)) {
             $formatted = [
-               'id' => $demande->getId(),
-               'demandeur' => $demande->getDemandeur()->getFirstName()." ".$demande->getDemandeur()->getLastName(),
-               'sortie' => $demande->getSortie()->getTitre(),
-               'remboursement' => $demande->getRemboursement(),
-               'statut' => $demande->getStatut(),
+               ApiKeywords::ID => $demande->getId(),
+               ApiKeywords::DEMANDEUR => $demande->getDemandeur()->getFirstName()." ".$demande->getDemandeur()->getLastName(),
+               ApiKeywords::SORTIE => $demande->getSortie()->getTitre(),
+               ApiKeywords::REMBOURSEMENT => $demande->getRemboursement(),
+               ApiKeywords::STATUT => $demande->getStatut(),
             ];
 
-            $data = ['data' => $formatted];
+            $data = [ApiKeywords::DATA => $formatted];
 
             $view = $this->json($data, 200);
         } else {
@@ -229,18 +230,18 @@ class ApiController extends AbstractController
         $formatted = [];
         foreach ($sorties as $sortie) {
             $formatted[] = [
-                'id' => $sortie->getId(),
-                'commission' => $sortie->getCommission()->getTitle(),
-                'titre' => $sortie->getTitre(),
-                'date_debut' => $sortie->getTsp(),
-                'date_fin' => $sortie->getTspEnd(),
-                'statut_ndf' => $sortie->getNdfStatut(),
-                'lieu' => $sortie->getPlace(),
-                'nb_participants' => count($sortie->getParticipants())
+                ApiKeywords::ID => $sortie->getId(),
+                ApiKeywords::COMMISSION => $sortie->getCommission()->getTitle(),
+                ApiKeywords::TITRE => $sortie->getTitre(),
+                ApiKeywords::DATE_DEBUT => $sortie->getTsp(),
+                ApiKeywords::DATE_FIN => $sortie->getTspEnd(),
+                ApiKeywords::STATUT => $sortie->getNdfStatut(),
+                ApiKeywords::LIEU => $sortie->getPlace(),
+                ApiKeywords::NBRE_PARTICIPANTS => count($sortie->getParticipants())
             ];
         
         }
-        $data = ['data' => $formatted];
+        $data = [ApiKeywords::DATA => $formatted];
         return $this->json($data, 200);
     }
 
@@ -253,6 +254,6 @@ class ApiController extends AbstractController
      */
     public function modifyNdf($id, NdfDemandeRepository $repository)
     {
-
+        return $this->json([], 501);
     }
 }
