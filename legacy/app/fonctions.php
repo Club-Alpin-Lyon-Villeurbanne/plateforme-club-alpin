@@ -389,8 +389,8 @@ function inputVal($inputName, $defaultVal = '')
 {
     global $_POST;
     $input = explode('|', $inputName);
-    if (!$input[1]) {
-        if ($_POST[$inputName]) {
+    if (empty($input[1])) {
+        if (!empty($_POST[$inputName])) {
             return html_utf8(stripslashes($_POST[$inputName]));
         }
 

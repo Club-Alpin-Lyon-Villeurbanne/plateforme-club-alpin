@@ -198,24 +198,24 @@ function display_niveaux($niveaux, $type = 'lecture', $deja_displayed = false)
                 </div>
                 <?php if (isset($niveau['niveau_id'])) {
                     $clef = 'niveau['.$niveau['niveau_id'].']'; ?>
-                <input type="hidden" name="<?php echo $clef; ?>[id]" value="<?php echo $niveau['niveau_id']; ?>">
+                <input type="hidden" name="<?php echo $clef; ?>[id]" value="<?php echo $niveau['niveau_id'] ?? ''; ?>">
                 <?php
                 } else {
                     $clef = 'new_niveau['.$n.']'; ?>
-                <input type="hidden" name="<?php echo $clef; ?>" value="<?php echo $niveau['niveau_id']; ?>">
-                <input type="hidden" name="<?php echo $clef; ?>[id_commission]" value="<?php echo $niveau['id_commission']; ?>">
-                <input type="hidden" name="<?php echo $clef; ?>[id_user]" value="<?php echo $niveau['id_user']; ?>">
+                <input type="hidden" name="<?php echo $clef; ?>" value="<?php echo $niveau['niveau_id'] ?? ''; ?>">
+                <input type="hidden" name="<?php echo $clef; ?>[id_commission]" value="<?php echo $niveau['id_commission'] ?? ''; ?>">
+                <input type="hidden" name="<?php echo $clef; ?>[id_user]" value="<?php echo $niveau['id_user'] ?? ''; ?>">
                 <?php
                 } ?>
                 <div class="input">
                     <label>Niveau technique</label>
-                    <input type="text" name="<?php echo $clef; ?>[niveau_technique]" value="<?php echo $niveau['niveau_technique']; ?>">
+                    <input type="text" name="<?php echo $clef; ?>[niveau_technique]" value="<?php echo $niveau['niveau_technique'] ?? ''; ?>">
                     <label>Niveau physique</label>
-                    <input type="text" name="<?php echo $clef; ?>[niveau_physique]" value="<?php echo $niveau['niveau_physique']; ?>">
+                    <input type="text" name="<?php echo $clef; ?>[niveau_physique]" value="<?php echo $niveau['niveau_physique'] ?? ''; ?>">
                 </div>
                 <div class="input textarea">
                     <label>Commentaire</label>
-                    <textarea name="<?php echo $clef; ?>[commentaire]"><?php echo $niveau['commentaire']; ?></textarea>
+                    <textarea name="<?php echo $clef; ?>[commentaire]"><?php echo $niveau['commentaire'] ?? ''; ?></textarea>
                 </div>
             </div>
             <?php ++$n;
@@ -227,7 +227,7 @@ function display_niveaux($niveaux, $type = 'lecture', $deja_displayed = false)
             <?php foreach ($niveaux as $niveau) { ?>
             <?php if ((is_array($deja_displayed) && !isset($deja_displayed['n_'.$niveau['niveau_id']])) || !$deja_displayed) { ?>
             <?php if ($niveau['niveau_technique'] || $niveau['niveau_physique'] || null !== $niveau['commentaire']) { ?>
-                <div class="niveau" data-commission="<?php echo $niveau['id_commission']; ?>">
+                <div class="niveau" data-commission="<?php echo $niveau['id_commission'] ?? ''; ?>">
                     <div class="picto">
                         <img src="<?php echo comPicto($niveau['id_commission'], 'medium'); ?>" alt="" title="" class="picto-medium" />
                     </div>

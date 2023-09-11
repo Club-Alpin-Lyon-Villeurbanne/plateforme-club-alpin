@@ -3,7 +3,7 @@
 require __DIR__.'/app/includes.php';
 
 $p = $_GET['p'];
-$pageAdmin = $_GET['admin'];
+$pageAdmin = $_GET['admin'] ?? null;
 
 // verification d'inclusion
 if ('pages/' != substr($p, 0, 6) && 'includes/' != substr($p, 0, 9)) {
