@@ -1308,7 +1308,7 @@ elseif ('user-full' == $p1) {
 }
 
 // RECHERCHE
-elseif ('recherche' == $p1 && strlen($_GET['str'])) {
+elseif ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
     // vérification des caractères
     $safeStr = substr(html_utf8(stripslashes($_GET['str'])), 0, 80);
     $safeStrSql = LegacyContainer::get('legacy_mysqli_handler')->escapeString(substr(stripslashes($_GET['str']), 0, 80));

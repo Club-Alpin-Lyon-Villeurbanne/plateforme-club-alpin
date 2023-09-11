@@ -6,10 +6,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 $destinataire = $expediteur = null;
 
 $id_user = (int) $_POST['id_user'];
-$nom = stripslashes($_POST['nom']);
-$email = stripslashes($_POST['email']);
-$objet = stripslashes($_POST['objet']);
-$message = stripslashes($_POST['message']);
+$nom = stripslashes($_POST['nom'] ?? '');
+$email = stripslashes($_POST['email'] ?? '');
+$objet = stripslashes($_POST['objet'] ?? '');
+$message = stripslashes($_POST['message'] ?? '');
 
 if (strlen($objet) < 4) {
     $errTab[] = 'Veuillez entrer un objet de plus de 4 caractères';
