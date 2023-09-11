@@ -1,6 +1,6 @@
 <?php
 echo '<a class="agenda-evt-debut" target="_top" href="/sortie/'.html_utf8($evt['code_evt']).'-'.(int) $evt['id_evt'].'.html?commission='.$evt['code_commission'];
-if (allowed('evt_validate') && 1 != $evt['status_evt']) {
+if (allowed('evt_validate') && isset($evt['status_evt']) && 1 != $evt['status_evt']) {
     echo '&forceshow=true';
 }
 echo '" title="">';
@@ -8,8 +8,8 @@ echo '" title="">';
 
 	<!-- picto -->
 	<div class="picto">
-		<img src="<?php echo comPicto($evt['commission_evt'], 'light'); ?>" alt="" title="" class="picto-light" />
-		<img src="<?php echo comPicto($evt['commission_evt'], 'dark'); ?>" alt="" title="" class="picto-dark" />
+		<img src="<?php echo comPicto($evt['commission_evt'] ?? '', 'light'); ?>" alt="" title="" class="picto-light" />
+		<img src="<?php echo comPicto($evt['commission_evt'] ?? '', 'dark'); ?>" alt="" title="" class="picto-dark" />
 	</div>
 
 	<div class="droite">
@@ -22,7 +22,7 @@ echo '" title="">';
 		<!-- titre -->
 		<h2>
 			<?php
-            if ($evt['cancelled_evt']) {
+            if (isset($evt['cancelled_evt']) && $evt['cancelled_evt']) {
                 echo ' <span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>';
             }
             echo html_utf8($evt['titre_evt'].(isset($evt['jourN']) && $evt['jourN'] ? ' [jour '.$evt['jourN'].']' : ''));
@@ -50,7 +50,7 @@ echo ''
     // massif, ou pas
     .($evt['massif_evt'] ? ' - <b>'.html_utf8($evt['massif_evt']).'</b>' : '')
     // rôle de l'user dans cette sortie
-    .($evt['role_evt_join'] ? ' - Votre rôle : <b>'.html_utf8($evt['role_evt_join']).'</b>' : '')
+    .(isset($evt['role_evt_join']) && $evt['role_evt_join'] ? ' - Votre rôle : <b>'.html_utf8($evt['role_evt_join']).'</b>' : '')
 ;
 ?>
 		</p>
