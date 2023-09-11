@@ -417,7 +417,7 @@ function mois($mois)
 {
     $tab = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
-    return $tab[(int) $mois - 1];
+    return isset($tab[(int) $mois - 1]) && $tab[(int) $mois - 1];
 }
 function jour($n, $mode = 'full')
 {

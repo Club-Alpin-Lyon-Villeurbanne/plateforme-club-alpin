@@ -16,7 +16,7 @@ echo '" title="">';
 
 		<!-- temoin de validité des places libres. Ajouter class ok / full -->
         <span title="<?php echo $evt['temoin-title'] ?? ''; ?>" style="padding: 10px 10px 5px 5px;float:left;">
-            <span class="temoin-places-dispos <?php echo $evt['temoin']; ?>"></span>
+            <span class="temoin-places-dispos <?php if (isset($evt['temoin'])) { echo $evt['temoin']; } ?>"></span>
         </span>
 
 		<!-- titre -->
@@ -25,8 +25,8 @@ echo '" title="">';
             if ($evt['cancelled_evt']) {
                 echo ' <span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>';
             }
-            echo html_utf8($evt['titre_evt'].($evt['jourN'] ? ' [jour '.$evt['jourN'].']' : ''));
-if (is_array($evt['groupe'])) {
+            echo html_utf8($evt['titre_evt'].(isset($evt['jourN']) && $evt['jourN'] ? ' [jour '.$evt['jourN'].']' : ''));
+if (isset($evt['groupe']) && is_array($evt['groupe'])) {
     echo ' <small>('.html_utf8($evt['groupe']['nom']).')</small>';
 }
 if ($evt['cycle_master_evt'] > 0) {
@@ -46,7 +46,7 @@ echo ''
     // commission
     .'<b>'.html_utf8($evt['title_commission']).'</b>'
     // difficulté, ou pas
-    .($evt['difficulte_evt'] ? ' - <b>'.html_utf8($evt['difficulte_evt']).'</b>' : '')
+    .(isset($evt['difficulte_evt']) && $evt['difficulte_evt'] ? ' - <b>'.html_utf8($evt['difficulte_evt']).'</b>' : '')
     // massif, ou pas
     .($evt['massif_evt'] ? ' - <b>'.html_utf8($evt['massif_evt']).'</b>' : '')
     // rôle de l'user dans cette sortie
