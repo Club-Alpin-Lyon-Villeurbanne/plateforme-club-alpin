@@ -436,12 +436,12 @@ elseif ('accueil' == $p1) {
 // PAGE AGENDA : LISTE DES SORTIES D'UN MOIS DONNÉ
 elseif ('agenda' == $p1) {
     // mois donné
-    if (!$_GET['month']) {
+    if (isset($_GET['month']) && !$_GET['month']) {
         $year = date('Y');
         $month = date('m');
     } else {
-        $year = (int) $_GET['year'];
-        $month = (int) $_GET['month'];
+        $year = (int) ($_GET['year'] ?? null);
+        $month = (int) ($_GET['month'] ?? null);
     }
 
     // nombre de jours dans ce mois (!! réutilisé dans la page !!)
@@ -1221,7 +1221,7 @@ elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1
     $userTab = [];
     $show = 'valid';
     // fonctions disponibles
-    if (in_array($_GET['show'], ['all', 'manual', 'notvalid', 'nomade', 'dels', 'expired', 'valid-expired'], true)) {
+    if (isset($_GET['show']) && in_array($_GET['show'], ['all', 'manual', 'notvalid', 'nomade', 'dels', 'expired', 'valid-expired'], true)) {
         $show = $_GET['show'];
     }
     $show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
@@ -1256,7 +1256,7 @@ elseif ('admin-partenaires' == $p1 && admin()) {
     $partenairesTab = [];
     $show = 'all';
     // fonctions disponibles
-    if (in_array($_GET['show'], ['all', 'public', 'private', 'enabled', 'disabled'], true)) {
+    if (isset($_GET['show']) && in_array($_GET['show'], ['all', 'public', 'private', 'enabled', 'disabled'], true)) {
         $show = $_GET['show'];
     }
     $show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);

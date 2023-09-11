@@ -5,7 +5,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 // spécial : si la variable compterendu est passée à true en GT, alors les vars POST prennent quelques valeurs par défaut
 // ceci sert au bouton "Rédiger un compte rendu" présent sur la fiche de sortie ET au rappels depuis le Chron
-if ($_GET['compterendu']) {
+if (isset($_GET['compterendu']) && $_GET['compterendu']) {
     // $_POST['commission_article']=$_GET['commission_article'];
     $_POST['commission_article'] = '-1';
     $_POST['evt_article'] = $_GET['evt_article'];
@@ -23,7 +23,7 @@ if ($_GET['compterendu']) {
 
 		<!-- // Titre. créa ou modif ? -->
 		<?php
-        if (!$id_article_to_update) {
+        if (isset($id_article_to_update) && !$id_article_to_update) {
             echo '<h1 class="page-h1">Nouvel <b>article</b></h1>';
         } else {
             echo '<h1 class="page-h1"><b>Modifier</b> cet article</h1>';
@@ -43,13 +43,13 @@ if ($_GET['compterendu']) {
     // on a donné une commission pour laquelle j'ai les droits, alors go
     else {
         // modification de sortie actuellement publiée = message d'avertissement
-        if ($id_article_to_update && 1 == $update_status) {
+        if (isset($id_article_to_update) && $id_article_to_update && 1 == $update_status) {
             echo '<p class="alerte">Attention : si vous modifiez cet article, il devra à nouveau être validée par un responsable avant d\'être publié sur le site !</p>';
         } ?>
 
 				<form action="<?php echo $versCettePage; ?>" method="post">
-					<input type="hidden" name="operation" value="<?php echo $id_article_to_update ? 'article_update' : 'article_create'; ?>" />
-					<input type="hidden" name="id_article_to_update" value="<?php echo (int) $id_article_to_update; ?>" />
+					<input type="hidden" name="operation" value="<?= isset($id_article_to_update) && $id_article_to_update ? 'article_update' : 'article_create'; ?>" />
+					<input type="hidden" name="id_article_to_update" value="<?php echo (int) ($id_article_to_update ?? ''); ?>" />
 
 					<?php
             // message d'erreur
