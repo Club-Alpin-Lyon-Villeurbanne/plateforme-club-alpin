@@ -15,7 +15,7 @@ services:
             - ~/.phive:/var/www/.phive
             - ~/.composer:/var/www/.composer
         ports:
-            - "80:80"
+            - "8081:80"
             - "443:443"
         links:
             - caf-db:db
@@ -28,7 +28,7 @@ services:
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         ports:
-            - "8080:80"
+            - "8181:80"
         links:
             - caf-db:db
         environment:
@@ -38,7 +38,7 @@ services:
             default: ~
 
     caf-db:
-        image: mariadb:10.3.32
+        image: mariadb:11.1.2
         environment:
             MARIADB_ROOT_PASSWORD: test
             MARIADB_DATABASE: caf
