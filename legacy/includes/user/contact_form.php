@@ -23,9 +23,9 @@ if (isset($_POST['operation']) && 'user_contact' == $_POST['operation'] && (!iss
 
             <br />
             Objet :<br />
-            <input type="text" name="objet" class="type1" style="width:<?php echo $contact_form_width; ?>" value="<?php echo html_utf8(stripslashes($_POST['objet'])); ?>" placeholder="" /><br />
+            <input type="text" name="objet" class="type1" style="width:<?php echo $contact_form_width; ?>" value="<?= !empty($_POST['objet']) ? html_utf8(stripslashes($_POST['objet']) ): ''; ?>" placeholder="" /><br />
             Message :<br />
-            <textarea name="message" class="type1" style="width:<?php echo $contact_form_width; ?>; height:150px"><?php echo html_utf8(stripslashes($_POST['message'])); ?></textarea>
+            <textarea name="message" class="type1" style="width:<?php echo $contact_form_width; ?>; height:150px"><?= !empty($_POST['message']) ?  html_utf8(stripslashes($_POST['message'])): ''; ?></textarea>
 
             <br /><br />
             <input type="submit" class="nice" value="&gt; Envoyer mon message" onclick="$.fancybox.close()" />
