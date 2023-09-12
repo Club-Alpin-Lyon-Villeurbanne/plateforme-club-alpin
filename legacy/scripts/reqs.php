@@ -200,7 +200,7 @@ elseif ('article' == $p1) {
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // on a le droit de voir cet article ?
         if (1 == $handle['status_article'] // publié
-            || ((allowed('article_validate_all') || allowed('article_validate')) && $_GET['forceshow']) // ou mode validateur
+            || ((allowed('article_validate_all') || allowed('article_validate')) && isset($_GET['forceshow']) && $_GET['forceshow']) // ou mode validateur
             || (user() && $handle['user_article'] == (string) getUser()->getId()) // ou j'en suis l'auteur
         ) {
             // auteur :
@@ -812,8 +812,8 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
             // on a le droit de voir cette page ?
             if (
                 ($on_peut_voir && (1 == $handle['status_evt'])) // publiée
-                || (allowed('evt_validate') && $_GET['forceshow']) // ou mode validateur
-                || (allowed('evt_validate_all') && $_GET['forceshow']) // ou mode validateur
+                || (allowed('evt_validate') && isset($_GET['forceshow']) && $_GET['forceshow']) // ou mode validateur
+                || (allowed('evt_validate_all') && isset($_GET['forceshow']) &&  $_GET['forceshow']) // ou mode validateur
                 || (user() && $handle['user_evt'] == (string) getUser()->getId()) // ou j'en suis l'auteur ? QUID de l'encadrant ?
             ) {
                 $current_commission = $handle['code_commission'];
