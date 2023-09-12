@@ -38,13 +38,13 @@
 
 					Civilité* :<br />
 					<select name="civ_user">
-						<option value="M" <?php if ('M' == $_POST['civ_user']) {
+						<option value="M" <?php if (isset($_POST['civ_user']) && 'M' == $_POST['civ_user']) {
 						    echo 'selected="selected"';
 						} ?>>M.</option>
-						<option value="MME" <?php if ('MME' == $_POST['civ_user']) {
+						<option value="MME" <?php if (isset($_POST['civ_user']) && 'MME' == $_POST['civ_user']) {
 						    echo 'selected="selected"';
 						} ?>>Mme.</option>
-						<option value="MLLE" <?php if ('MLLE' == $_POST['civ_user']) {
+						<option value="MLLE" <?php if (isset($_POST['civ_user']) && 'MLLE' == $_POST['civ_user']) {
 						    echo 'selected="selected"';
 						} ?>>Mlle.</option>
 					</select>
@@ -95,7 +95,7 @@
 
 					<br />
 					Qui peut le / la contacter sur le site, via un formulaire de contact (adresse e-mail jamais dévoilée) ?<br />
-                    <?php $whocan_selected = $tmpUser['auth_contact_user']; ?>
+                    <?php $whocan_selected = $tmpUser['auth_contact_user'] ?? null; ?>
                     <?php $whocan_table = true; ?>
                     <?php require __DIR__.'/../includes/user/whocan_contact.php'; ?>
 
