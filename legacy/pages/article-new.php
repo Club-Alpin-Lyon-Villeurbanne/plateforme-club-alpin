@@ -23,7 +23,7 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
 
 		<!-- // Titre. créa ou modif ? -->
 		<?php
-        if (isset($id_article_to_update) && !$id_article_to_update) {
+        if (empty($id_article_to_update) || !$id_article_to_update) {
             echo '<h1 class="page-h1">Nouvel <b>article</b></h1>';
         } else {
             echo '<h1 class="page-h1"><b>Modifier</b> cet article</h1>';
@@ -72,10 +72,10 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
 						<select name="commission_article" class="type1" style="width:95%">
 
 							<option value="">- Choisissez :</option>
-							<option value="0" <?php if ('0' == $_POST['commission_article']) {
+							<option value="0" <?php if (isset($_POST['commission_article']) && '0' == $_POST['commission_article']) {
 							    echo 'selected="selected"';
 							} ?>>Actualité du club : apparait dans toutes les commissions</option>
-							<option value="-1" <?php if ('-1' == $_POST['commission_article']) {
+							<option value="-1" <?php if (isset($_POST['commission_article']) && '-1' == $_POST['commission_article']) {
 							    echo 'selected="selected"';
 							} ?>>Compte rendu de sortie</option>
 
@@ -84,7 +84,7 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
 							                // articles liés aux commissions
 							                foreach ($comTab as $code => $data) {
 							                    if (allowed('article_create', 'commission:'.$code)) {
-							                        echo '<option value="'.$data['id_commission'].'" '.($_POST['commission_article'] == $data['id_commission'] ? 'selected="selected"' : '').'>Actualité &laquo; '.html_utf8($data['title_commission']).' &raquo;</option>';
+							                        echo '<option value="'.$data['id_commission'].'" '.(isset($_POST['commission_article']) && $_POST['commission_article'] == $data['id_commission'] ? 'selected="selected"' : '').'>Actualité &laquo; '.html_utf8($data['title_commission']).' &raquo;</option>';
 							                    }
 							                } ?>
 							</optgroup>
@@ -102,7 +102,7 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
 							<?php
 
                             // besoin de la liste des sorties publiées
-                $req = 'SELECT id_evt, commission_evt, tsp_evt, tsp_end_evt, titre_evt, code_evt FROM caf_evt WHERE status_evt =1 ORDER BY tsp_evt DESC LIMIT 0 , 300';
+                $req = 'SELECT id_evt, commission_evt, tsp_evt, tsp_end_evt, titre_evt, code_evt FROM caf_evt WHERE status_evt =1 ORDER BY tsp_evt DESC LIMIT 0,300';
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $handleSql->fetch_assoc()) {
             echo '<option value="'.$row['id_evt'].'" '.($_POST['evt_article'] == $row['id_evt'] ? 'selected="selected"' : '').'>'

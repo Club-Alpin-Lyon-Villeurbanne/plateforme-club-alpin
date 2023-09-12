@@ -195,7 +195,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // enregistrement
     $req = "INSERT INTO caf_commission(ordre_commission, vis_commission, code_commission, title_commission)
-                                                VALUES ('',  '0',  '$code_commission',  '$title_commission');";
+                                                VALUES (0,  '0',  '$code_commission',  '$title_commission');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
@@ -212,7 +212,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // création du dossier
     if (!file_exists($newDir)) {
-        if (!mkdir($newDir) && !is_dir($newDir)) {
+        if (!mkdir($newDir, 0755, true) && !is_dir($newDir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $newDir));
         }
     }
