@@ -65,7 +65,7 @@
         "sort-packages": true,
         "platform-check": false,
         "platform": {
-            "php": "7.4.25"
+            "php": "8.2"
         },
         "allow-plugins": {
             "composer/package-versions-deprecated": true,

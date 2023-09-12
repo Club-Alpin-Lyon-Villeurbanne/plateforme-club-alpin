@@ -10,16 +10,16 @@ $uploads_dir = __DIR__.'/../../../public/ftp/transit/nouvellecommission';
 
 // CHECKIN VARS
 if (!isset($errTab) || 0 === count($errTab)) {
-    if ('on' != $_POST['disable-bigfond'] && $_FILES['bigfond']['size'] < 5) {
+    if (isset($_POST['disable-bigfond']) && 'on' != $_POST['disable-bigfond'] && $_FILES['bigfond']['size'] < 5) {
         $errTab[] = 'Grande image non trouvée';
     }
-    if ('on' != $_POST['disable-pictos'] && $_FILES['picto']['size'] < 5) {
+    if (isset($_POST['disable-pictos']) && 'on' != $_POST['disable-pictos'] && $_FILES['picto']['size'] < 5) {
         $errTab[] = 'Picto bleu non trouvé';
     }
-    if ('on' != $_POST['disable-pictos'] && $_FILES['picto-light']['size'] < 5) {
+    if (isset($_POST['disable-pictos']) && 'on' != $_POST['disable-pictos'] && $_FILES['picto-light']['size'] < 5) {
         $errTab[] = 'Picto blanc non trouvé';
     }
-    if ('on' != $_POST['disable-pictos'] && $_FILES['picto-dark']['size'] < 5) {
+    if (isset($_POST['disable-pictos']) && 'on' != $_POST['disable-pictos'] && $_FILES['picto-dark']['size'] < 5) {
         $errTab[] = 'Picto sombre non trouvé';
     }
     if (strlen($title_commission) < 3) {
@@ -47,7 +47,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 }
 
 // GRANDE IMAGE
-if ((!isset($errTab) || 0 === count($errTab)) && 'on' != $_POST['disable-bigfond']) {
+if ((!isset($errTab) || 0 === count($errTab)) && isset($_POST['disable-bigfond']) && 'on' != $_POST['disable-bigfond']) {
     $tmp_name = $_FILES['bigfond']['tmp_name'];
     $name = $_FILES['bigfond']['name'];
     $type = $_FILES['bigfond']['type'];
@@ -78,7 +78,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && 'on' != $_POST['disable-bigfond
 }
 
 // PICTO 1
-if ((!isset($errTab) || 0 === count($errTab)) && 'on' != $_POST['disable-pictos']) {
+if ((!isset($errTab) || 0 === count($errTab)) && isset($_POST['disable-pictos']) && 'on' != $_POST['disable-pictos']) {
     $tmp_name = $_FILES['picto']['tmp_name'];
     $name = $_FILES['picto']['name'];
     $type = $_FILES['picto']['type'];
@@ -109,7 +109,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && 'on' != $_POST['disable-pictos'
 }
 
 // PICTO 2
-if ((!isset($errTab) || 0 === count($errTab)) && 'on' != $_POST['disable-pictos']) {
+if ((!isset($errTab) || 0 === count($errTab)) && isset($_POST['disable-pictos']) && 'on' != $_POST['disable-pictos']) {
     $tmp_name = $_FILES['picto-light']['tmp_name'];
     $name = $_FILES['picto-light']['name'];
     $type = $_FILES['picto-light']['type'];
@@ -140,7 +140,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && 'on' != $_POST['disable-pictos'
 }
 
 // PICTO 3
-if ((!isset($errTab) || 0 === count($errTab)) && 'on' != $_POST['disable-pictos']) {
+if ((!isset($errTab) || 0 === count($errTab)) && isset($_POST['disable-pictos']) && 'on' != $_POST['disable-pictos']) {
     $tmp_name = $_FILES['picto-dark']['tmp_name'];
     $name = $_FILES['picto-dark']['name'];
     $type = $_FILES['picto-dark']['type'];
