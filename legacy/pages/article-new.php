@@ -105,7 +105,7 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
                 $req = 'SELECT id_evt, commission_evt, tsp_evt, tsp_end_evt, titre_evt, code_evt FROM caf_evt WHERE status_evt =1 ORDER BY tsp_evt DESC LIMIT 0,300';
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $handleSql->fetch_assoc()) {
-            echo '<option value="'.$row['id_evt'].'" '.($_POST['evt_article'] == $row['id_evt'] ? 'selected="selected"' : '').'>'
+            echo '<option value="'.$row['id_evt'].'" '.(isset($_POST['evt_article']) && $_POST['evt_article'] == $row['id_evt'] ? 'selected="selected"' : '').'>'
                                 // .jour(date('N', $row['tsp_evt']))
                                 .' '.date('d', $row['tsp_evt'])
                                 .' '.mois(date('m', $row['tsp_evt']))
@@ -122,7 +122,7 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
 						<br />
 						<br />
 
-						<input type="checkbox" class="custom" name="une_article" <?php if ('on' == $_POST['une_article']) {
+						<input type="checkbox" class="custom" name="une_article" <?php if (isset($_POST['une_article']) && 'on' == $_POST['une_article']) {
 						    echo 'checked="checked"';
 						} ?> />
 						Placer cet article à la Une ?
@@ -146,11 +146,11 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
 						        $found = false;
 
         // dans le cas d'une création
-        if (!$id_article_to_update) {
+        if (empty($id_article_to_update) || !$id_article_to_update) {
             $dir = 'ftp/user/'.getUser()->getId().'/transit-nouvelarticle/';
         }
         // dans le cas d'une modification
-        if ($id_evt_to_update) {
+        if (isset($id_evt_to_update) && $id_evt_to_update) {
             $dir = 'ftp/articles/'.$id_evt_to_update.'/';
         }
         if (file_exists(__DIR__.'/../../public/'.$dir.'min-figure.jpg') &&
@@ -170,7 +170,7 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
 									sizeLimit: 20 * 1024 * 1024,
 									element: document.getElementById('file-uploader-ftp'),
 									// on passe
-									action: '/valums-file-upload/server/images-nouvelarticle.php<?php if ($id_article_to_update) {
+									action: '/valums-file-upload/server/images-nouvelarticle.php<?php if (isset($id_article_to_update) && $id_article_to_update) {
 									    echo '?mode=edit&id_article='.$id_article_to_update;
 									} ?>',
 									// pour chaque image envoyée
@@ -225,7 +225,7 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
 						</p><br />
 
 						<div style="position:relative; right:0px; ">
-							<textarea name="cont_article" style="width:625px; "><?php echo stripslashes($_POST['cont_article']); ?></textarea>
+							<textarea name="cont_article" style="width:625px; "><?php echo stripslashes($_POST['cont_article'] ?? ''); ?></textarea>
 						</div>
 
 						<br />
@@ -250,7 +250,7 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
 						<?php inclure('info-topubly-checkbox', 'vide'); ?>
 						<div class="check-nice">
 							<label for="topubly_article" style="float:none; width:100%">
-								<input type="checkbox" name="topubly_article" id="topubly_article" <?php if ('on' == $_POST['topubly_article']/*  or !$_POST */) {
+								<input type="checkbox" name="topubly_article" id="topubly_article" <?php if (isset($_POST['topubly_article']) && 'on' == $_POST['topubly_article']/*  or !$_POST */) {
 								    echo 'checked="checked"';
 								} ?>>
 								Demander la publication de cet article dès que possible ?
