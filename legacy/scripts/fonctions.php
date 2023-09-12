@@ -226,7 +226,7 @@ function display_niveaux($niveaux, $type = 'lecture', $deja_displayed = false)
             ?>
             <?php foreach ($niveaux as $niveau) { ?>
             <?php if ((is_array($deja_displayed) && !isset($deja_displayed['n_'.$niveau['niveau_id']])) || !$deja_displayed) { ?>
-            <?php if ($niveau['niveau_technique'] || $niveau['niveau_physique'] || null !== $niveau['commentaire']) { ?>
+            <?php if ((isset($niveau['niveau_technique']) && $niveau['niveau_technique']) || (isset($niveau['niveau_physique']) && $niveau['niveau_physique']) || (isset($niveau['commentaire']) && null !== $niveau['commentaire'])) { ?>
                 <div class="niveau" data-commission="<?php echo $niveau['id_commission'] ?? ''; ?>">
                     <div class="picto">
                         <img src="<?php echo comPicto($niveau['id_commission'], 'medium'); ?>" alt="" title="" class="picto-medium" />

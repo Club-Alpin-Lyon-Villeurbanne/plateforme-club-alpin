@@ -73,7 +73,7 @@
 						</table>
 					</div>
 					<p>
-						<input type="checkbox" name="disable-pictos" id="disable-pictos" <?php if ('on' == $_POST['disable-pictos']) {
+						<input type="checkbox" name="disable-pictos" id="disable-pictos" <?php if (isset($_POST['disable-pictos']) && 'on' == $_POST['disable-pictos']) {
 						    echo 'checked="checked"';
 						} ?>/>
 						<label for="disable-pictos" class='mini'>Laisser tomber, utiliser les pictos du CAF par défaut (déconseillé)</label>
