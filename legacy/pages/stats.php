@@ -82,7 +82,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 
     /*** USERS **/
 
-    if ('users' == $p2) {
+    if ('users' == $p2 && isset($key)) {
         $comTab[$key]['stats'] = [];
 
         foreach ($comTab as $key => $comm) {
