@@ -17,12 +17,12 @@ class UserJoinSortieVoter extends Voter
         $this->userRepo = $userRepo;
     }
 
-    protected function supports($attribute, $subject)
+    protected function supports($attribute, $subject): bool
     {
         return \in_array($attribute, ['JOIN_SORTIE'], true);
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 

@@ -21,12 +21,12 @@ class SortieInscriptionsModificationVoter extends Voter
         $this->adminDetector = $adminDetector;
     }
 
-    protected function supports($attribute, $subject)
+    protected function supports($attribute, $subject): bool
     {
         return \in_array($attribute, ['SORTIE_INSCRIPTIONS_MODIFICATION'], true);
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 
