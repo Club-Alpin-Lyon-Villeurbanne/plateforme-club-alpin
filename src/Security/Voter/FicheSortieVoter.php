@@ -17,12 +17,12 @@ class FicheSortieVoter extends Voter
         $this->userRights = $userRights;
     }
 
-    protected function supports($attribute, $subject)
+    protected function supports($attribute, $subject): bool
     {
         return \in_array($attribute, ['FICHE_SORTIE'], true);
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 

@@ -265,26 +265,33 @@ function formatSize($bytes, $format = '%.2f')
 
     return sprintf($format.' %s', $b, $units[$e]);
 }
+
+global $container;
+$container = $this->container;
+
 function user(): bool
 {
-    if ($token = LegacyContainer::get('security.token_storage')->getToken()) {
+    global $container;
+    if ($token = LegacyContainer::get('security.token_storage', $container)->getToken()) {
         if ($token->getUser() instanceof User) {
             return true;
         }
     }
 
     return false;
-}
+};
+
 function getUser(): ?User
 {
-    if ($token = LegacyContainer::get('security.token_storage')->getToken()) {
+    global $container;
+    if ($token = LegacyContainer::get('security.token_storage', $container)->getToken()) {
         if ($token->getUser() instanceof User) {
             return $token->getUser();
         }
     }
 
     return null;
-}
+};
 function csrfToken(string $intention): ?string
 {
     return LegacyContainer::get('legacy_csrf_token_manager')->getToken($intention);

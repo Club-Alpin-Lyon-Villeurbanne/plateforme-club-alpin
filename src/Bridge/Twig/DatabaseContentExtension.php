@@ -23,7 +23,7 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         $this->locator = $locator;
     }
 
-    public static function getSubscribedServices()
+    public static function getSubscribedServices(): array
     {
         return [
             PartenaireRepository::class,

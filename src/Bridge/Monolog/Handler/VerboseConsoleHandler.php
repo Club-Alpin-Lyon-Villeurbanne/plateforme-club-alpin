@@ -2,6 +2,7 @@
 
 namespace App\Bridge\Monolog\Handler;
 
+use Monolog\LogRecord;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler as BaseConsoleHandler;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -36,7 +37,7 @@ class VerboseConsoleHandler extends BaseConsoleHandler
         parent::close();
     }
 
-    public function handle(array $record): bool
+    public function handle(LogRecord $record): bool
     {
         if (!$this->output || !$this->output->isVerbose()) {
             return false;
