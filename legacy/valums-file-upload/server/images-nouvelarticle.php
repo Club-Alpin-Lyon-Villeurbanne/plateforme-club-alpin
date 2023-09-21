@@ -23,13 +23,13 @@ if (0 === count($errTab)) {
     // creation des dossiers utiles pour l'user s'ils n'existnent pas
     $dir = __DIR__.'/../../../public/ftp/user/'.getUser()->getId();
     if (!file_exists($dir)) {
-        if (!mkdir($dir, 755, true) && !is_dir($dir)) {
+        if (!mkdir($dir) && !is_dir($dir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
         }
     }
     $dir = __DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle';
     if (!file_exists($dir)) {
-        if (!mkdir($dir, 755, true) && !is_dir($dir)) {
+        if (!mkdir($dir) && !is_dir($dir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
         }
     }
