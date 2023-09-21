@@ -89,11 +89,9 @@ if (0 === count($errTab)) {
 
     if (0 === count($errTab)) {
         $img_Dst = 'wide-'.$filename;
-        
-        try {
-            ImageManipulator::cropImage(665, 365, $targetDir.$filename, $targetDir.$img_Dst);
-        } catch (\Exception $e) {
-            $errTab[] = 'Erreur de crop wide : ' . $e->getMessage();
+
+        if (!ImageManipulator::cropImage(665, 365, $targetDir.$filename, $targetDir.$img_Dst)) {
+            $errTab[] = 'Image : Erreur de crop wide';
         }
 
         $img_Dst = 'min-'.$filename;
