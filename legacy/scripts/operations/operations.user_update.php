@@ -65,7 +65,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
             $uploadedFile = $uploaddir.$filename;
 
             if (!file_exists($rep_Dst)) {
-                if (!mkdir($rep_Dst) && !is_dir($rep_Dst)) {
+                if (!mkdir($rep_Dst, 755, true) && !is_dir($rep_Dst)) {
                     throw new \RuntimeException(sprintf('Directory "%s" was not created', $rep_Dst));
                 }
             }
