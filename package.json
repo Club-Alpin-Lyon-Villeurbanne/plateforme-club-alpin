@@ -15,5 +15,10 @@
         "dev": "encore dev",
         "watch": "encore dev --watch",
         "build": "encore production --progress"
+    },
+    "dependencies": {
+        "dotenv": "^16.3.1",
+        "sass": "^1.68.0",
+        "sass-loader": "^13.3.2"
     }
 }

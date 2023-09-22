@@ -1,0 +1,61 @@
+<section class="page-section">
+    <h2>Notes de frais</h2>
+    <form>
+        {# Description des trajets #}
+        <div class="form-group">
+            <label for="travel-description">Description des trajets</label>
+            <textarea class="form-control" id="travel-description" name="travel-description" rows="3"></textarea>
+        </div>
+
+        {# Kilométres parcourus : #}
+        <div class="form-group">
+            <label for="travel-distance">Kilométres parcourus</label>
+            <input type="number" class="form-control" id="travel-distance" name="travel-distance" />
+        </div>
+
+        {# Total péage (en €) #}
+        <div class="form-group">
+            <label for="toll-cost">Total péage (en €)</label>
+            <input type="number" class="form-control" id="toll-cost" name="toll-cost" />
+        </div>
+
+        {# Coût de l'hébergement (en €) - limité à 45€/jour #}
+        <div class="form-group">
+            <label for="hosting-cost">Coût de l'hébergement (en €) - limité à 45€/jour</label>
+            <input type="number" class="form-control" id="hosting-cost" name="hosting-cost" />
+        </div>
+
+        {# Don ? #}
+        {# Radio controls "je souhaite être remboursé" and "je souhaite faire un don au club" #}
+        <div class="form-group">
+            <div>
+                <label for="refund">
+                    <input type="radio" class="form-control" id="refund" name="refund" value="true" />
+                    Je souhaite être remboursé
+                </label>
+            </div>
+            <div>
+                <label for="no-refund">
+                    <input type="radio" class="form-control" id="no-refund" name="refund"  value="false"/>
+                    Je souhaite faire don de ces frais au club
+                </label>
+            </div>
+        </div>
+
+
+        {# Attestation : "J'atteste de l'exactitude de ces renseignements" #}
+        <div class="form-group">
+            <div>
+                <label for="travel-attestation">
+                    <input type="checkbox" class="form-control" id="travel-attestation" name="travel-attestation" />
+                    J'atteste de l'exactitude de ces renseignements
+                </label>
+            </div>
+        </div>
+
+
+        {# validation #}
+        <button type="submit" class="btn btn-primary">Valider</button>
+    </form>
+</section>
+<hr />
