@@ -1,0 +1,10 @@
+.page-section {
+    box-shadow: $large-box-shadow;
+    padding: $gutter;
+    background-color: $white;
+    margin: 0px $gutter-large 0 0;
+
+    h2 {
+        margin-bottom: $gutter;
+    }
+}
