@@ -293,6 +293,10 @@
                     {% endif %}
                 {% endif %}
             {% endif %}
+
+            {% if is_granted('ROLE_ADMIN') %}
+                {% include 'sortie/ndf_encadrant.html.twig' %}
+            {% endif %}
             
             {% if my_status and my_status.status != constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME') %}
 

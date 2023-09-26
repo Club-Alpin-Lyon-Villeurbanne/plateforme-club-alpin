@@ -9,6 +9,8 @@ use App\Mailer\Mailer;
 use App\Repository\EvtJoinRepository;
 use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
+use App\Repository\NdfDemandeRepository;
+use App\Form\NdfDemandeType;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,18 +43,78 @@ class SortieController extends AbstractController
      *
      * @Template
      */
-    public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository, EntityManagerInterface $em, Request $request)
+    public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository, EntityManagerInterface $em, NdfDemandeRepository $ndfDemandeRepository, Request $request)
     {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
             throw new AccessDeniedHttpException('Not found');
         }
 
         $user = $this->getUser();
-        
+
+        if ($user) {
+            $demande = NULL;
+            $form = NULL;
+            $demande = $ndfDemandeRepository->getForUserAndEvent($user, $event);
+            if (empty($demande)) {
+                $demande = new NdfDemande($event, $user);
+
+                $form = $this->createForm(NdfDemandeType::class, $demande);
+                $form->handleRequest($request);
+
+                if ($form->isSubmitted()) {
+                    if ($form->isValid()) {
+                        foreach ($demande->getNdfDepensesVoiture() as $depense) {
+                            $depense->setNdfDemande($demande);
+                            $em->persist($demande);
+                        }
+                        foreach ($demande->getNdfDepensesMinibusClub() as $depense) {
+                            $depense->setNdfDemande($demande);
+                            $em->persist($demande);
+                        }
+                        foreach ($demande->getNdfDepensesMinibusLoc() as $depense) {
+                            $depense->setNdfDemande($demande);
+                            $em->persist($demande);
+                        }
+                        $ordre = 0;
+                        foreach ($demande->getNdfDepensesCommun() as $depense) {
+                            $depense->setOrdre($ordre);
+                            $ordre++;
+                            $depense->setNdfDemande($demande);
+                            $em->persist($demande);
+                        }
+                        $ordre = 0;
+                        foreach ($demande->getNdfDepensesHebergement() as $depense) {
+                            $depense->setOrdre($ordre);
+                            $ordre++;
+                            $depense->setNdfDemande($demande);
+                            $em->persist($demande);
+                        }
+                        $ordre = 0;
+                        foreach ($demande->getNdfDepensesAutre() as $depense) {
+                            $depense->setOrdre($ordre);
+                            $ordre++;
+                            $depense->setNdfDemande($demande);
+                            $em->persist($demande);
+                        }
+                        $em->persist($demande);
+                        $em->flush();
+                        $this->addFlash('success', 'Note de frais enregistrée!');
+                    
+                    } else {
+                        $errors = (string) $form->getErrors(TRUE, FALSE);
+                        dd($errors);
+                    }
+                }
+            }
+        }
+
+
         return [
             'event' => $event,
+            'demande' => $user ? $demande : null,
             'filiations' => $user ? $repository->getFiliations($user) : null,
-            'empietements' => $participantRepository->getEmpietements($event)
+            'empietements' => $participantRepository->getEmpietements($event),
+            'ndf_form' => $user ? (empty($form) ? NULL : $form->createView()) : null
         ];
     }
 
