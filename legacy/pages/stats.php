@@ -43,9 +43,9 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 			<form action="<?php echo $versCettePage; ?>">
 				<b>Période :</b><br />
 				du
-				<input type="text" name="dateMin" class="type2" style="" value="<?= $dateMin ?? '' ?>" placeholder="jj/mm/aaaa" />
+				<input type="text" name="dateMin" class="type2" style="" value="<?php echo $dateMin ?? '' ?>" placeholder="jj/mm/aaaa" />
 				au
-				<input type="text" name="dateMax" class="type2" style="" value="<?= $dateMax ?? '' ?>" placeholder="jj/mm/aaaa" />
+				<input type="text" name="dateMax" class="type2" style="" value="<?php echo $dateMax ?? '' ?>" placeholder="jj/mm/aaaa" />
 
 				<input type="submit" class="type1" value="Appliquer" />
 
