@@ -5,7 +5,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 ?>
 <form action="<?php echo $versCettePage; ?>" method="post" style="overflow:hidden">
-    <input type="hidden" name="operation" value="<?= isset($id_evt_to_update) && $id_evt_to_update ? 'evt_update' : 'evt_create' ?>" />
+    <input type="hidden" name="operation" value="<?php echo isset($id_evt_to_update) && $id_evt_to_update ? 'evt_update' : 'evt_create' ?>" />
     <input type="hidden" name="id_evt_to_update" value="<?php echo (int) $id_evt_to_update; ?>" />
 
     <?php
@@ -250,7 +250,7 @@ inclure('infos-carte', 'mini');
     <div class="trigger-me" style="padding-right:20px">
 
         <!-- si on rensigne une suite de cycle, cette section est blqoquée  -->
-        <div id="inscriptions-on" style="display:<?= isset($suiteDeCycle) && $suiteDeCycle ? 'none' : 'block' ?>">
+        <div id="inscriptions-on" style="display:<?php echo isset($suiteDeCycle) && $suiteDeCycle ? 'none' : 'block' ?>">
 
 
             Nombre maximum de personnes sur cette sortie (encadrement compris) :<br />
@@ -279,7 +279,7 @@ inclure('infos-carte', 'mini');
         </div>
 
         <!-- message d'info -->
-        <div id="inscriptions-off" style="display:<?= isset($suiteDeCycle) && $suiteDeCycle ? 'block' : 'none' ?>">
+        <div id="inscriptions-off" style="display:<?php echo isset($suiteDeCycle) && $suiteDeCycle ? 'block' : 'none' ?>">
             <p class="alerte">Les inscriptions à cette sortie sont gérées sur la première sortie du cycle dont elle fait partie.</p>
         </div>
 
