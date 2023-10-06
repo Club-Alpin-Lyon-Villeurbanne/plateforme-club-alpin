@@ -1,9 +1,7 @@
-require('dotenv').config({path: __dirname + '/.env.local'});
 const webpack = require('webpack');
 const Encore = require('@symfony/webpack-encore');
 const fs = require("fs");
 const domain = process.env.WEBPACK_DOMAIN;
-const port = process.env.WEBPACK_PORT;
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -15,12 +13,10 @@ console.log(`Setting-up Encore in ${Encore.isProduction() ? '\x1b[32mproduction\
 console.log('');
 
 Encore
-    // enable Sass
-    .enableSassLoader()
     // directory where compiled assets will be stored
     .setOutputPath('public/build/')
     // public path used by the web server to access the output path
-    .setPublicPath(Encore.isProduction() ? '/build' : `http://${domain}:${port}/build`)
+    .setPublicPath(Encore.isProduction() ? '/build' : `http://${domain}:8348/static/`)
     // only needed for CDN's or sub-directory deploy
     .setManifestKeyPrefix('build/')
 
@@ -29,9 +25,6 @@ Encore
         // on CDN
         './assets/app.js',
     ])
-
-    // setup sass
-    .addEntry('app-styles', './assets/scss/index.scss')
 
     .addPlugin(new webpack.IgnorePlugin({
         resourceRegExp: /^\.\/locale$/,
