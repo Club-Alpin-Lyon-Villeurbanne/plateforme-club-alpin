@@ -42,6 +42,8 @@ services:
         environment:
             MARIADB_ROOT_PASSWORD: test
             MARIADB_DATABASE: caf
+        volumes:
+            - ./db:/var/lib/mysql
 
     mailcatcher:
         image: jderusse/mailcatcher
