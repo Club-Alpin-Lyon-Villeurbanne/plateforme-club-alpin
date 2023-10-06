@@ -41,8 +41,6 @@ RUN pecl install apcu-5.1.22 && \
     echo "extension=apcu.so" > /usr/local/etc/php/conf.d/ext-apcu.ini && \
     pecl install imagick-3.7.0 && \
     echo "extension=imagick.so" > /usr/local/etc/php/conf.d/ext-imagick.ini
-    # pecl install apcu_bc-1.0.5 && \
-    # echo "extension=apc.so" > /usr/local/etc/php/conf.d/ext-apcu_bc.ini
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite

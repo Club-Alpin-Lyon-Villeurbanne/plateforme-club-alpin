@@ -48,7 +48,7 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
         } ?>
 
 				<form action="<?php echo $versCettePage; ?>" method="post">
-					<input type="hidden" name="operation" value="<?= isset($id_article_to_update) && $id_article_to_update ? 'article_update' : 'article_create'; ?>" />
+					<input type="hidden" name="operation" value="<?php echo isset($id_article_to_update) && $id_article_to_update ? 'article_update' : 'article_create'; ?>" />
 					<input type="hidden" name="id_article_to_update" value="<?php echo (int) ($id_article_to_update ?? ''); ?>" />
 
 					<?php
