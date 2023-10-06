@@ -670,10 +670,6 @@
             {% endif %}
         {% endif %}
 
-        {% if my_status is not null and (my_status.role == 'encadrant' or my_status.role == 'coencadrant') %}
-            {% include 'sortie/expenses-reports.html.twig' %}
-        {% endif %}
-        
         {% if event.massif or event.itineraire %}
             <ul class="nice-list">
                 {% if event.massif %}
