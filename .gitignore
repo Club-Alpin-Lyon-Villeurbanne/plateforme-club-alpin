@@ -1,6 +1,7 @@
 .idea
 .vscode
 .php-cs-fixer.cache
+.DS_Store
 bin
 public/ftp/*
 *.old
@@ -8,10 +9,8 @@ legacy/config/www.clubalpinlyon.fr/ffcam/
 legacy/config/test.clubalpinlyon.fr/ffcam/
 legacy/config/config.php
 legacy/config/db_config.php
-legacy/config/params.php
 backup/*
 forum*
-.DS_Store
 public/robots.txt
 public/dev.txt
 public/robots.txt
