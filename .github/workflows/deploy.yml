@@ -81,9 +81,11 @@ jobs:
                     EXCLUDE: "assets, node_modules, .circleci, .github, docker, .env.prod, .env.test, .git, infrastructure, Makefile, .npm, docker-compose.yml, .gitignore, package.json, package-lock.json, phive.xml, README.md, tests, translations, symfony.lock, webpack.config.js, matrice-des-droits.png, .php-cs-fixer.dist.php, phpstan.neon, phpunit.xml.dist"
                     SCRIPT_AFTER: |
                         whoami
-                        chown -R ec2-user:ec2-user /var/www/clubalpinlyon.fr/deployments/${{ github.sha }}
+                        chown -R ec2-user:docker /var/www/clubalpinlyon.fr/deployments/${{ github.sha }}
+                        ln -s "/var/www/clubalpinlyon.fr/ftp" "/var/www/clubalpinlyon.fr/deployments/${{ github.sha }}/public"
+                        ln -s "/var/www/clubalpinlyon.fr/forum" "/var/www/clubalpinlyon.fr/deployments/${{ github.sha }}/public"
                         ln -s "/var/www/clubalpinlyon.fr/ffcam-ftp-folder" "/var/www/clubalpinlyon.fr/deployments/${{ github.sha }}/legacy/config/www.clubalpinlyon.fr/ffcam"
                         ln -s "/var/www/clubalpinlyon.fr/ffcam-ftp-folder" "/var/www/clubalpinlyon.fr/deployments/${{ github.sha }}/legacy/config/ffcam-ftp-folder"
-                        unlink /var/www/clubalpinlyon.fr/deployments/current
-                        ln -s/var/www/clubalpinlyon.fr/deployments/${{ github.sha }} /var/www/clubalpinlyon.fr/deployments/current
+                        # unlink /var/www/clubalpinlyon.fr/deployments/current
+                        # ln -s/var/www/clubalpinlyon.fr/deployments/${{ github.sha }} /var/www/clubalpinlyon.fr/deployments/current
                         echo $RSYNC_STDOUT
