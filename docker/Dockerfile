@@ -2,7 +2,6 @@ FROM php:8.2-apache
 
 COPY --from=composer:2.1.9 /usr/bin/composer /usr/bin/composer
 
-RUN apt update
 RUN apt install -y \
         libmagickwand-dev \
         libpcre3-dev \
