@@ -12,6 +12,7 @@ if (isset($config['sentry_dsn'])) {
 
 $scriptsDir = __DIR__.'/../scripts/';
 
+
 // _________________________________________________ FONCTIONS MAISON
 require __DIR__.'/../app/fonctions.php';
 // _________________________________________________ VARIABLES "GLOBALES" DU SITE

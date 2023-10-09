@@ -7,7 +7,7 @@
 	<div id="left1">
         <!-- // Titre. créa ou modif ? -->
         <?php
-        if (!$id_evt_to_update) {
+        if (isset($id_evt_to_update) && !$id_evt_to_update) {
             echo '<h1 class="page-h1">Proposer une <b>sortie</b></h1>';
         } else {
             echo '<h1 class="page-h1"><b>Modifier</b> cette sortie</h1>';

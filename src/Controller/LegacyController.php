@@ -21,7 +21,6 @@ class LegacyController extends AbstractController
         return new StreamedResponse(function () {
             $legacyDir = __DIR__.'/../../legacy/';
             $path = 'index.php';
-
             ob_start();
             require $legacyDir.$path;
             ob_end_flush();
@@ -124,6 +123,7 @@ class LegacyController extends AbstractController
     public function p2Action($p1, $p2, ArticleRepository $articleRepository)
     {
         return new StreamedResponse(function () use ($p1, $p2, $articleRepository) {
+            
             $legacyDir = __DIR__.'/../../legacy/';
             $path = 'index.php';
             $_GET['p1'] = $p1;

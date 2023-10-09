@@ -10,7 +10,7 @@ $id_commission = (int) $_GET['id_commission'];
 
 // CHECKIN VARS
 if (!isset($errTab) || 0 === count($errTab)) {
-    $new_groupe = $_POST['new_groupe'];
+    $new_groupe = $_POST['new_groupe'] ?? null;
     if (isset($new_groupe) && is_array($new_groupe)) {
         foreach ($new_groupe as $groupe) {
             $id_comm = (int) $groupe['id_commission'];
@@ -36,7 +36,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         }
     }
 
-    $groupes = $_POST['groupe'];
+    $groupes = $_POST['groupe'] ?? null;
     if (isset($groupes) && is_array($groupes)) {
         foreach ($groupes as $groupe) {
             $id_groupe = (int) $groupe['id'];

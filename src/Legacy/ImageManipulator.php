@@ -40,36 +40,30 @@ class ImageManipulator
 
     public static function cropImage(int $width, int $height, string $source, string $destination)
     {
-        try {
-            $image = LegacyContainer::get('legacy_imagine')->open($source);
-            $size = $image->getSize();
+        $image = LegacyContainer::get('legacy_imagine')->open($source);
+        $size = $image->getSize();
 
-            $maxWidth = $maxHeight = 0;
-            if ($size->getWidth() / $width > $size->getHeight() / $height) {
-                $maxHeight = $height;
-            } else {
-                $maxWidth = $width;
-            }
-
-            if (null !== $box = self::computeDimensions($size, $maxWidth, $maxHeight)) {
-                if ($size->getWidth() > $box->getWidth() || $size->getHeight() > $box->getHeight()) {
-                    $image = $image->resize($box);
-                }
-            }
-
-            $size = $image->getSize();
-
-            $image = $image->crop(new Point(max(0, $size->getWidth() - $width) / 2, max(0, $size->getHeight() - $height) / 2), new Box($width, $height));
-
-            $image
-                ->usePalette(new RGB())
-                ->strip()
-                ->save($destination);
-
-            return true;
-        } catch (ImagineException $e) {
-            return false;
+        $maxWidth = $maxHeight = 0;
+        if ($size->getWidth() / $width > $size->getHeight() / $height) {
+            $maxHeight = $height;
+        } else {
+            $maxWidth = $width;
         }
+
+        if (null !== $box = self::computeDimensions($size, $maxWidth, $maxHeight)) {
+            if ($size->getWidth() > $box->getWidth() || $size->getHeight() > $box->getHeight()) {
+                $image = $image->resize($box);
+            }
+        }
+
+        $size = $image->getSize();
+
+        $image = $image->crop(new Point(max(0, $size->getWidth() - $width) / 2, max(0, $size->getHeight() - $height) / 2), new Box($width, $height));
+
+        $image
+            ->usePalette(new RGB())
+            ->strip()
+            ->save($destination);
     }
 
     public static function getImageSize(string $source)

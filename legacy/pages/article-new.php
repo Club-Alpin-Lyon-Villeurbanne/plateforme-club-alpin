@@ -5,7 +5,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 // spécial : si la variable compterendu est passée à true en GT, alors les vars POST prennent quelques valeurs par défaut
 // ceci sert au bouton "Rédiger un compte rendu" présent sur la fiche de sortie ET au rappels depuis le Chron
-if ($_GET['compterendu']) {
+if (isset($_GET['compterendu']) && $_GET['compterendu']) {
     // $_POST['commission_article']=$_GET['commission_article'];
     $_POST['commission_article'] = '-1';
     $_POST['evt_article'] = $_GET['evt_article'];
@@ -23,7 +23,7 @@ if ($_GET['compterendu']) {
 
 		<!-- // Titre. créa ou modif ? -->
 		<?php
-        if (!$id_article_to_update) {
+        if (empty($id_article_to_update) || !$id_article_to_update) {
             echo '<h1 class="page-h1">Nouvel <b>article</b></h1>';
         } else {
             echo '<h1 class="page-h1"><b>Modifier</b> cet article</h1>';
@@ -43,13 +43,13 @@ if ($_GET['compterendu']) {
     // on a donné une commission pour laquelle j'ai les droits, alors go
     else {
         // modification de sortie actuellement publiée = message d'avertissement
-        if ($id_article_to_update && 1 == $update_status) {
+        if (isset($id_article_to_update) && $id_article_to_update && 1 == $update_status) {
             echo '<p class="alerte">Attention : si vous modifiez cet article, il devra à nouveau être validée par un responsable avant d\'être publié sur le site !</p>';
         } ?>
 
 				<form action="<?php echo $versCettePage; ?>" method="post">
-					<input type="hidden" name="operation" value="<?php echo $id_article_to_update ? 'article_update' : 'article_create'; ?>" />
-					<input type="hidden" name="id_article_to_update" value="<?php echo (int) $id_article_to_update; ?>" />
+					<input type="hidden" name="operation" value="<?php echo isset($id_article_to_update) && $id_article_to_update ? 'article_update' : 'article_create'; ?>" />
+					<input type="hidden" name="id_article_to_update" value="<?php echo (int) ($id_article_to_update ?? ''); ?>" />
 
 					<?php
             // message d'erreur
@@ -72,10 +72,10 @@ if ($_GET['compterendu']) {
 						<select name="commission_article" class="type1" style="width:95%">
 
 							<option value="">- Choisissez :</option>
-							<option value="0" <?php if ('0' == $_POST['commission_article']) {
+							<option value="0" <?php if (isset($_POST['commission_article']) && '0' == $_POST['commission_article']) {
 							    echo 'selected="selected"';
 							} ?>>Actualité du club : apparait dans toutes les commissions</option>
-							<option value="-1" <?php if ('-1' == $_POST['commission_article']) {
+							<option value="-1" <?php if (isset($_POST['commission_article']) && '-1' == $_POST['commission_article']) {
 							    echo 'selected="selected"';
 							} ?>>Compte rendu de sortie</option>
 
@@ -84,7 +84,7 @@ if ($_GET['compterendu']) {
 							                // articles liés aux commissions
 							                foreach ($comTab as $code => $data) {
 							                    if (allowed('article_create', 'commission:'.$code)) {
-							                        echo '<option value="'.$data['id_commission'].'" '.($_POST['commission_article'] == $data['id_commission'] ? 'selected="selected"' : '').'>Actualité &laquo; '.html_utf8($data['title_commission']).' &raquo;</option>';
+							                        echo '<option value="'.$data['id_commission'].'" '.(isset($_POST['commission_article']) && $_POST['commission_article'] == $data['id_commission'] ? 'selected="selected"' : '').'>Actualité &laquo; '.html_utf8($data['title_commission']).' &raquo;</option>';
 							                    }
 							                } ?>
 							</optgroup>
@@ -102,10 +102,10 @@ if ($_GET['compterendu']) {
 							<?php
 
                             // besoin de la liste des sorties publiées
-                $req = 'SELECT id_evt, commission_evt, tsp_evt, tsp_end_evt, titre_evt, code_evt FROM caf_evt WHERE status_evt =1 ORDER BY tsp_evt DESC LIMIT 0 , 300';
+                $req = 'SELECT id_evt, commission_evt, tsp_evt, tsp_end_evt, titre_evt, code_evt FROM caf_evt WHERE status_evt =1 ORDER BY tsp_evt DESC LIMIT 0,300';
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $handleSql->fetch_assoc()) {
-            echo '<option value="'.$row['id_evt'].'" '.($_POST['evt_article'] == $row['id_evt'] ? 'selected="selected"' : '').'>'
+            echo '<option value="'.$row['id_evt'].'" '.(isset($_POST['evt_article']) && $_POST['evt_article'] == $row['id_evt'] ? 'selected="selected"' : '').'>'
                                 // .jour(date('N', $row['tsp_evt']))
                                 .' '.date('d', $row['tsp_evt'])
                                 .' '.mois(date('m', $row['tsp_evt']))
@@ -122,7 +122,7 @@ if ($_GET['compterendu']) {
 						<br />
 						<br />
 
-						<input type="checkbox" class="custom" name="une_article" <?php if ('on' == $_POST['une_article']) {
+						<input type="checkbox" class="custom" name="une_article" <?php if (isset($_POST['une_article']) && 'on' == $_POST['une_article']) {
 						    echo 'checked="checked"';
 						} ?> />
 						Placer cet article à la Une ?
@@ -146,11 +146,11 @@ if ($_GET['compterendu']) {
 						        $found = false;
 
         // dans le cas d'une création
-        if (!$id_article_to_update) {
+        if (empty($id_article_to_update) || !$id_article_to_update) {
             $dir = 'ftp/user/'.getUser()->getId().'/transit-nouvelarticle/';
         }
         // dans le cas d'une modification
-        if ($id_evt_to_update) {
+        if (isset($id_evt_to_update) && $id_evt_to_update) {
             $dir = 'ftp/articles/'.$id_evt_to_update.'/';
         }
         if (file_exists(__DIR__.'/../../public/'.$dir.'min-figure.jpg') &&
@@ -170,7 +170,7 @@ if ($_GET['compterendu']) {
 									sizeLimit: 20 * 1024 * 1024,
 									element: document.getElementById('file-uploader-ftp'),
 									// on passe
-									action: '/valums-file-upload/server/images-nouvelarticle.php<?php if ($id_article_to_update) {
+									action: '/valums-file-upload/server/images-nouvelarticle.php<?php if (isset($id_article_to_update) && $id_article_to_update) {
 									    echo '?mode=edit&id_article='.$id_article_to_update;
 									} ?>',
 									// pour chaque image envoyée
@@ -225,7 +225,7 @@ if ($_GET['compterendu']) {
 						</p><br />
 
 						<div style="position:relative; right:0px; ">
-							<textarea name="cont_article" style="width:625px; "><?php echo stripslashes($_POST['cont_article']); ?></textarea>
+							<textarea name="cont_article" style="width:625px; "><?php echo stripslashes($_POST['cont_article'] ?? ''); ?></textarea>
 						</div>
 
 						<br />
@@ -250,7 +250,7 @@ if ($_GET['compterendu']) {
 						<?php inclure('info-topubly-checkbox', 'vide'); ?>
 						<div class="check-nice">
 							<label for="topubly_article" style="float:none; width:100%">
-								<input type="checkbox" name="topubly_article" id="topubly_article" <?php if ('on' == $_POST['topubly_article']/*  or !$_POST */) {
+								<input type="checkbox" name="topubly_article" id="topubly_article" <?php if (isset($_POST['topubly_article']) && 'on' == $_POST['topubly_article']/*  or !$_POST */) {
 								    echo 'checked="checked"';
 								} ?>>
 								Demander la publication de cet article dès que possible ?

@@ -17,12 +17,12 @@ class UserFlagsVoter extends Voter
         $this->adminDetector = $adminDetector;
     }
 
-    protected function supports($attribute, $subject)
+    protected function supports($attribute, $subject): bool
     {
         return \in_array($attribute, ['ROLE_ADMIN', 'ROLE_ALLOWED_TO_SWITCH'], true);
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 

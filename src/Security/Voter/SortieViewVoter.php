@@ -16,12 +16,12 @@ class SortieViewVoter extends Voter
         $this->userRights = $userRights;
     }
 
-    protected function supports($attribute, $subject)
+    protected function supports($attribute, $subject): bool
     {
         return \in_array($attribute, ['SORTIE_VIEW'], true);
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
         if (!$subject instanceof Evt) {
             throw new \InvalidArgumentException(sprintf('The voter "%s" requires an event subject', __CLASS__));

@@ -280,6 +280,6 @@ if (!isset($_GET['hide_blank']) || 'y' != $_GET['hide_blank']) {
 ?>
     </tbody>
 </table>
-Imprimé le <?php echo html_utf8(date('d.m.Y à H:i')); ?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>[<a href="<?php echo $_GET['hide_blank'] ? $versCettePage : $versCettePage.'?hide_blank=y'; ?>"><?php echo $_GET['hide_blank'] ? 'Afficher' : 'Masquer'; ?> les lignes vides</a>]</small>
+Imprimé le <?php echo html_utf8(date('d.m.Y à H:i')); ?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>[<a href="<?php echo isset($_GET['hide_blank']) && $_GET['hide_blank']  ? $versCettePage : $versCettePage.'?hide_blank=y'; ?>"><?php echo isset($_GET['hide_blank'] ) && $_GET['hide_blank'] ? 'Afficher' : 'Masquer'; ?> les lignes vides</a>]</small>
 </body>
 </html>

@@ -115,7 +115,7 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
 
             // _________________________________________________ CONTENU IMPRESSION FEUILLE SORTIE
             if ('feuille-de-sortie' == $p1) {
-                echo '<div id="pageAdmin" class="'.($currentPage['superadmin_page'] ? 'superadmin' : '').'">';
+                echo '<div id="pageAdmin" class="'.(isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] ? 'superadmin' : '').'">';
                 if (file_exists(__DIR__.'/pages/'.$p1.'.php')) {
                     require __DIR__.'/pages/'.$p1.'.php';
                 } else {
@@ -137,7 +137,7 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
             }
             // _________________________________________________ CONTENU PAGES ADMIN
             else {
-                echo '<div id="pageAdmin" class="'.($currentPage['superadmin_page'] ? 'superadmin' : '').'">';
+                echo '<div id="pageAdmin" class="'.(isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] ? 'superadmin' : '').'">';
                 if (file_exists(__DIR__.'/pages/'.$p1.'.php') && '404' != $p1) {
                     require __DIR__.'/pages/'.$p1.'.php';
                 } else {

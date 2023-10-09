@@ -265,26 +265,33 @@ function formatSize($bytes, $format = '%.2f')
 
     return sprintf($format.' %s', $b, $units[$e]);
 }
+
+global $container;
+$container = $this->container;
+
 function user(): bool
 {
-    if ($token = LegacyContainer::get('security.token_storage')->getToken()) {
+    global $container;
+    if ($token = LegacyContainer::get('security.token_storage', $container)->getToken()) {
         if ($token->getUser() instanceof User) {
             return true;
         }
     }
 
     return false;
-}
+};
+
 function getUser(): ?User
 {
-    if ($token = LegacyContainer::get('security.token_storage')->getToken()) {
+    global $container;
+    if ($token = LegacyContainer::get('security.token_storage', $container)->getToken()) {
         if ($token->getUser() instanceof User) {
             return $token->getUser();
         }
     }
 
     return null;
-}
+};
 function csrfToken(string $intention): ?string
 {
     return LegacyContainer::get('legacy_csrf_token_manager')->getToken($intention);
@@ -389,8 +396,8 @@ function inputVal($inputName, $defaultVal = '')
 {
     global $_POST;
     $input = explode('|', $inputName);
-    if (!$input[1]) {
-        if ($_POST[$inputName]) {
+    if (empty($input[1])) {
+        if (!empty($_POST[$inputName])) {
             return html_utf8(stripslashes($_POST[$inputName]));
         }
 
@@ -417,7 +424,7 @@ function mois($mois)
 {
     $tab = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
-    return $tab[(int) $mois - 1];
+    return isset($tab[(int) $mois - 1]) ? $tab[(int) $mois - 1] : '';
 }
 function jour($n, $mode = 'full')
 {
