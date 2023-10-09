@@ -200,7 +200,7 @@ elseif ('article' == $p1) {
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // on a le droit de voir cet article ?
         if (1 == $handle['status_article'] // publié
-            || ((allowed('article_validate_all') || allowed('article_validate')) && $_GET['forceshow']) // ou mode validateur
+            || ((allowed('article_validate_all') || allowed('article_validate')) && isset($_GET['forceshow']) && $_GET['forceshow']) // ou mode validateur
             || (user() && $handle['user_article'] == (string) getUser()->getId()) // ou j'en suis l'auteur
         ) {
             // auteur :
@@ -436,12 +436,12 @@ elseif ('accueil' == $p1) {
 // PAGE AGENDA : LISTE DES SORTIES D'UN MOIS DONNÉ
 elseif ('agenda' == $p1) {
     // mois donné
-    if (!$_GET['month']) {
+    if (isset($_GET['month']) && !$_GET['month']) {
         $year = date('Y');
         $month = date('m');
     } else {
-        $year = (int) $_GET['year'];
-        $month = (int) $_GET['month'];
+        $year = (int) ($_GET['year'] ?? null);
+        $month = (int) ($_GET['month'] ?? null);
     }
 
     // nombre de jours dans ce mois (!! réutilisé dans la page !!)
@@ -812,8 +812,8 @@ elseif ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
             // on a le droit de voir cette page ?
             if (
                 ($on_peut_voir && (1 == $handle['status_evt'])) // publiée
-                || (allowed('evt_validate') && $_GET['forceshow']) // ou mode validateur
-                || (allowed('evt_validate_all') && $_GET['forceshow']) // ou mode validateur
+                || (allowed('evt_validate') && isset($_GET['forceshow']) && $_GET['forceshow']) // ou mode validateur
+                || (allowed('evt_validate_all') && isset($_GET['forceshow']) &&  $_GET['forceshow']) // ou mode validateur
                 || (user() && $handle['user_evt'] == (string) getUser()->getId()) // ou j'en suis l'auteur ? QUID de l'encadrant ?
             ) {
                 $current_commission = $handle['code_commission'];
@@ -1221,7 +1221,7 @@ elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1
     $userTab = [];
     $show = 'valid';
     // fonctions disponibles
-    if (in_array($_GET['show'], ['all', 'manual', 'notvalid', 'nomade', 'dels', 'expired', 'valid-expired'], true)) {
+    if (isset($_GET['show']) && in_array($_GET['show'], ['all', 'manual', 'notvalid', 'nomade', 'dels', 'expired', 'valid-expired'], true)) {
         $show = $_GET['show'];
     }
     $show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
@@ -1256,7 +1256,7 @@ elseif ('admin-partenaires' == $p1 && admin()) {
     $partenairesTab = [];
     $show = 'all';
     // fonctions disponibles
-    if (in_array($_GET['show'], ['all', 'public', 'private', 'enabled', 'disabled'], true)) {
+    if (isset($_GET['show']) && in_array($_GET['show'], ['all', 'public', 'private', 'enabled', 'disabled'], true)) {
         $show = $_GET['show'];
     }
     $show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
@@ -1308,7 +1308,7 @@ elseif ('user-full' == $p1) {
 }
 
 // RECHERCHE
-elseif ('recherche' == $p1 && strlen($_GET['str'])) {
+elseif ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
     // vérification des caractères
     $safeStr = substr(html_utf8(stripslashes($_GET['str'])), 0, 80);
     $safeStrSql = LegacyContainer::get('legacy_mysqli_handler')->escapeString(substr(stripslashes($_GET['str']), 0, 80));

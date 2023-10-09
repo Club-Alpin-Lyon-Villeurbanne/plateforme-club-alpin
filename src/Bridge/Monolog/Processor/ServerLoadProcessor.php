@@ -2,6 +2,7 @@
 
 namespace App\Bridge\Monolog\Processor;
 
+use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 
 class ServerLoadProcessor implements ProcessorInterface
@@ -13,7 +14,7 @@ class ServerLoadProcessor implements ProcessorInterface
         $this->enabled = \PHP_SAPI === 'cli';
     }
 
-    public function __invoke(array $record)
+    public function __invoke(LogRecord $record)
     {
         if (!$this->enabled) {
             return $record;

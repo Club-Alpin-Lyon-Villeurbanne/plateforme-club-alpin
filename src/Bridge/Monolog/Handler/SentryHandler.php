@@ -5,6 +5,7 @@ namespace App\Bridge\Monolog\Handler;
 use App\Bridge\Monolog\SentryHandlerLogFilter\LogFilterInterface;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
+use Monolog\LogRecord;
 use Sentry\Breadcrumb;
 use Sentry\Event;
 use Sentry\EventHint;
@@ -60,7 +61,7 @@ class SentryHandler extends AbstractProcessingHandler
     /**
      * {@inheritdoc}
      */
-    protected function write(array $record): void
+    protected function write(LogRecord $record): void
     {
         if ($this->shouldSkip($record)) {
             return;

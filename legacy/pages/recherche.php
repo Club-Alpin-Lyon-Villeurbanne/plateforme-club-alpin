@@ -5,10 +5,10 @@
 	<div id="left1">
 		<div class="main-type">
 			<?php
-            if (!strlen($_GET['str'])) {
+            if (empty($_GET['str']) || !strlen($_GET['str'])) {
                 echo '<h1>Recherche</h1>';
                 inclure($p1, 'vide');
-            } else {
+            } else if(isset($safeStr)) {
                 // TITRE
                 echo '<h1>Votre recherche : &laquo;&nbsp;'.$safeStr.'&nbsp;&raquo;</h1>';
 

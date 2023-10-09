@@ -14,15 +14,15 @@ if (!user()) {
 // mise à jour infos texte
 if (!isset($errTab) || 0 === count($errTab)) {
     $id_user = getUser()->getId();
-    $tel_user = trim(stripslashes($_POST['tel_user']));
-    $tel2_user = trim(stripslashes($_POST['tel2_user']));
-    $birthday_user = trim(stripslashes($_POST['birthday_user']));
-    $adresse_user = trim(stripslashes($_POST['adresse_user']));
-    $cp_user = trim(stripslashes($_POST['cp_user']));
-    $ville_user = trim(stripslashes($_POST['ville_user']));
-    $pays_user = trim(stripslashes($_POST['pays_user']));
-    $auth_contact_user = trim(stripslashes($_POST['auth_contact_user']));
-    $email_user_mailchange = trim(stripslashes($_POST['email_user_mailchange']));
+    $tel_user = trim(stripslashes($_POST['tel_user'] ?? ''));
+    $tel2_user = trim(stripslashes($_POST['tel2_user'] ?? ''));
+    $birthday_user = trim(stripslashes($_POST['birthday_user'] ?? ''));
+    $adresse_user = trim(stripslashes($_POST['adresse_user'] ?? ''));
+    $cp_user = trim(stripslashes($_POST['cp_user'] ?? ''));
+    $ville_user = trim(stripslashes($_POST['ville_user'] ?? ''));
+    $pays_user = trim(stripslashes($_POST['pays_user'] ?? ''));
+    $auth_contact_user = trim(stripslashes($_POST['auth_contact_user'] ?? ''));
+    $email_user_mailchange = trim(stripslashes($_POST['email_user_mailchange'] ?? ''));
 
     if (!$id_user) {
         $errTab[] = 'Erreur technique : ID manquant';
@@ -65,7 +65,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
             $uploadedFile = $uploaddir.$filename;
 
             if (!file_exists($rep_Dst)) {
-                if (!mkdir($rep_Dst) && !is_dir($rep_Dst)) {
+                if (!mkdir($rep_Dst, 755, true) && !is_dir($rep_Dst)) {
                     throw new \RuntimeException(sprintf('Directory "%s" was not created', $rep_Dst));
                 }
             }

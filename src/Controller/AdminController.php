@@ -18,7 +18,7 @@ class AdminController extends AbstractController
         $this->adminPassord = $adminPassord;
     }
 
-    public static function getSubscribedServices()
+    public static function getSubscribedServices(): array
     {
         return array_merge(parent::getSubscribedServices(), [EntityManagerInterface::class]);
     }

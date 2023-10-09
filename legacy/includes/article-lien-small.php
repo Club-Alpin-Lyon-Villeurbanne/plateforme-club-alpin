@@ -1,7 +1,7 @@
 <?php
 // URL
 $url = 'article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html';
-if ($current_commission) {
+if (isset($current_commission) && $current_commission) {
     $url .= '?commission='.$current_commission;
 }
 

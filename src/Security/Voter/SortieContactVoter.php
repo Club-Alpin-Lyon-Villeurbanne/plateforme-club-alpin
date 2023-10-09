@@ -18,12 +18,12 @@ class SortieContactVoter extends Voter
         $this->userRights = $userRights;
     }
 
-    protected function supports($attribute, $subject)
+    protected function supports($attribute, $subject): bool
     {
         return \in_array($attribute, ['SORTIE_CONTACT_PARTICIPANTS'], true);
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 

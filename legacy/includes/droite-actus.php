@@ -71,7 +71,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
             <?php
         // un ID de commission est bien enregistré
-        if ($article['commission']) {
+        if (isset($article['commission']) && $article['commission']) {
             ?>
                 <a href="/accueil/<?php echo html_utf8($article['commission']['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
                     <?php echo html_utf8($article['commission']['title_commission']); ?>

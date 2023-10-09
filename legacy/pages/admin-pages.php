@@ -6,7 +6,7 @@ $MAX_ADMINS_SUB_LEVELS = LegacyContainer::getParameter('legacy_env_MAX_ADMINS_SU
 
 global $versCettePage;
 
-if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page'] && !superadmin())) {
+if ((isset($currentPage['admin_page']) && $currentPage['admin_page'] && !admin()) || (isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] && !superadmin())) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     ?>
@@ -114,7 +114,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 	<script type="text/javascript">
 	$().ready(function(){
 		<?php
-        if ('page_add' == $_GET['showmsg']) {
+        if (isset($_GET['showmsg']) && 'page_add' == $_GET['showmsg']) {
             ?>
 			lp_alert("<p>Vous venez de créer une nouvelle page. Celle-ci est <b>masquée</b> aux visiteurs du site, mais vous pouvez la visiter en tant qu'administrateur pour modifier les contenus nécessaires.</p><p>Une fois satisfait, <b>passez-là en ligne</b>.</p>");
 			<?php

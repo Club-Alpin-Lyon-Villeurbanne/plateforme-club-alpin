@@ -2,11 +2,12 @@
 
 namespace App\Bridge\Monolog\Processor;
 
+use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 
 class SAPIProcessor implements ProcessorInterface
 {
-    public function __invoke(array $record)
+    public function __invoke(LogRecord $record)
     {
         $record['extra']['SAPI'] = \PHP_SAPI;
 

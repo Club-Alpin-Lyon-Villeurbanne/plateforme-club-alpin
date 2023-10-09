@@ -5,7 +5,7 @@ use App\Legacy\LegacyContainer;
 if ('evt_create' == ($_POST['operation'] ?? null)) {
     $user_evt = getUser()->getId();
     $tsp_crea_evt = time();
-    $benevoles = is_array($_POST['benevoles']) ? $_POST['benevoles'] : [];
+    $benevoles = isset($_POST['benevoles']) && is_array($_POST['benevoles']) ? $_POST['benevoles'] : [];
 }
 if ('evt_update' == ($_POST['operation'] ?? null)) {
     $id_evt = (int) $_POST['id_evt_to_update'];
@@ -36,7 +36,7 @@ $matos_evt = trim(stripslashes($_POST['matos_evt']));
 $itineraire = trim(stripslashes($_POST['itineraire']));
 $difficulte_evt = trim(stripslashes($_POST['difficulte_evt']));
 $description_evt = trim(stripslashes($_POST['description_evt']));
-$need_benevoles_evt = 'on' == $_POST['need_benevoles_evt'] ? 1 : 0;
+$need_benevoles_evt = isset($_POST['need_benevoles_evt']) && 'on' == $_POST['need_benevoles_evt'] ? 1 : 0;
 
 // inscriptions
 if ('child' != $_POST['cycle']) {
@@ -47,9 +47,9 @@ if ('child' != $_POST['cycle']) {
 $join_max_evt = (int) $_POST['join_max_evt'];
 $ngens_max_evt = (int) $_POST['ngens_max_evt'];
 // tableaux
-$encadrants = is_array($_POST['encadrants']) ? $_POST['encadrants'] : [];
-$coencadrants = is_array($_POST['coencadrants']) ? $_POST['coencadrants'] : [];
-$stagiaires = is_array($_POST['stagiaires']) ? $_POST['stagiaires'] : [];
+$encadrants = isset($_POST['encadrants']) && is_array($_POST['encadrants']) ? $_POST['encadrants'] : [];
+$coencadrants = isset($_POST['coencadrants']) && is_array($_POST['coencadrants']) ? $_POST['coencadrants'] : [];
+$stagiaires = isset($_POST['stagiaires']) && is_array($_POST['stagiaires']) ? $_POST['stagiaires'] : [];
 
 if ('evt_create' == ($_POST['operation'] ?? null)) {
     if (!$user_evt) {
