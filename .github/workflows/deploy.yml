@@ -78,17 +78,13 @@ jobs:
                     sed -i "s/DB_NAME_TO_REPLACE/${{ secrets.AWS_PROD_DB_NAME }}/g" "legacy/config/config.php"
                     sed -i "s/DB_HOST_TO_REPLACE/${{ secrets.AWS_PROD_DB_HOST }}/g" "legacy/config/config.php"
 
-            # Install composer dependencies, and dump env
             -   name: Composer install & dump-env
                 run: |
                     composer install --no-dev --no-progress --no-scripts --prefer-dist -a --apcu-autoloader
                     composer dump-env prod
-
-            # Deploy repository onto the host provided in Github Secrets, including downloaded artifacts and files created (like vendor folder)
-            # Deploy is running thanks to "Deployator" NPM dependency (https://github.com/la-haute-societe/deployator)
-            # See "deployment-config.js" to get the config in use
+    
             -   name: Deploy on prod
                 env:
                     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
                 run: |
-                    npx --cache .npm deployator deploy --config deployment-config.js --environment=production
+                    npx deployator deploy --config deployment-config.js --environment=production
