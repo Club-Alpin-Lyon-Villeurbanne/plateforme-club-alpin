@@ -17,7 +17,7 @@ jobs:
         #     options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
         steps:
             -   name: Checkout repository
-                uses: actions/checkout@v2
+                uses: actions/checkout@v4
 
             - name: Setup PHP, extensions and composer with shivammathur/setup-php
               uses: shivammathur/setup-php@v2
@@ -28,59 +28,30 @@ jobs:
             - name: Check PHP Version
               run: php -v
 
-            # Define the right Node.js's environment
             -   name: Environment for NPM
-                uses: actions/setup-node@v2
+                uses: actions/setup-node@v3
                 with:
-                    node-version: '18'
+                    node-version: '20'
 
-            # NPM run build
-            -   name: NPM build
+            -   name: NPM install & run build
                 run: |
                     node -v
                     npm ci --cache .npm --unsafe-perm --prefer-offline
                     npm run build
 
-            # Upload artifacts (= built files) to download them in the next job
-            -   name: NPM artifacts
-                uses: actions/upload-artifact@v2
-                with:
-                    name: npm-build
-                    retention-days: 1
-                    path: public/build/
-
-    deploy:
-        # Need the "build" job to be complete before started it
-        needs: build
-        runs-on: ubuntu-latest
-        steps:
-            # Mandatory : fetch the current repository
-            -   name: Checkout repository
-                uses: actions/checkout@v2
-
-            - name: Setup PHP, extensions and composer with shivammathur/setup-php
-              uses: shivammathur/setup-php@v2
-              with:
-                php-version: 8.2
-                extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, imagick
-            
-            - name: Check PHP Version
-              run: php -v
-
-            # To be faster, use cache system for the Composer
             -   name: Get Composer Cache Directory
                 id: composer-cache
                 run: |
                     echo "::set-output name=dir::$(composer config cache-files-dir)"
+
             -   name: Cache composer (vendor)
-                uses: actions/cache@v2
+                uses: actions/cache@v3
                 with:
                     path: ${{ steps.composer-cache.outputs.dir }}
                     key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
                     restore-keys: |
                         ${{ runner.os }}-composer-
 
-            # Ensure that composer.json is valid
             -   name: Validate composer.json and composer.lock
                 run: composer validate
 
@@ -111,19 +82,6 @@ jobs:
                 run: |
                     composer install --no-dev --no-progress --no-scripts --prefer-dist -a --apcu-autoloader
                     composer dump-env prod
-
-            # Download artifacts created in the previous job
-            -   name: Download NPM artifacts
-                uses: actions/download-artifact@v2
-                with:
-                    name: npm-build
-                    path: public/build
-
-            # Define the right Node.js environment
-            -   name: Environment for deploy
-                uses: actions/setup-node@v2
-                with:
-                    node-version: '18'
 
             # Deploy repository onto the host provided in Github Secrets, including downloaded artifacts and files created (like vendor folder)
             # Deploy is running thanks to "Deployator" NPM dependency (https://github.com/la-haute-societe/deployator)
