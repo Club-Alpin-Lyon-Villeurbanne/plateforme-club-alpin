@@ -84,4 +84,4 @@ jobs:
                     REMOTE_HOST: 'clubalpinlyon.fr'
                     REMOTE_USER: 'ec2-user'
                     TARGET: '/var/www/clubalpinlyon.fr/deployments/test'
-                    EXCLUDE: "/node_modules/"
+                    EXCLUDE: "assets, node_modules, .circleci, .github, docker, .env.prod, .env.test, .git, infrastructure, Makefile, .npm, package.json, package-lock.json, phive.xml, README.md, tests, translations, symfony.lock, webpack.config.js, .php-cs-fixer.dist.php, phpstan.neon, phpunit.xml.dist"
