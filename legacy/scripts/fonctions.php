@@ -396,7 +396,7 @@ function get_encadrants($id_evt, $only_ids = false)
     if ($result) {
         while ($row = $result->fetch_assoc()) {
             if ($only_ids) {
-                $users[] = $row['id_user'];
+                $users[] = $row['id_user'] ?? [];
             } else {
                 $row['sortie'] = get_sortie($id_evt);
                 $users[] = $row;
