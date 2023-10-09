@@ -132,7 +132,7 @@ class SortieController extends AbstractController
 
         $user = $this->getUser();
 
-        foreach ($request->request->get('id_evt_join', []) as $participantId) {
+        foreach ($request->request->all('id_evt_join', []) as $participantId) {
             $status = $request->request->get('status_evt_join_'.$participantId);
             $role = $request->request->get('role_evt_join_'.$participantId);
 
