@@ -2,7 +2,9 @@ FROM php:8.2-apache
 
 COPY --from=composer:2.1.9 /usr/bin/composer /usr/bin/composer
 
-RUN apt install -y \
+RUN rm -rf /var/lib/apt/lists/* && \
+    apt update && \
+    apt install -y \
         libmagickwand-dev \
         libpcre3-dev \
         libonig-dev \
@@ -21,7 +23,8 @@ RUN apt install -y \
         jq \
         cron \
         mariadb-client && \
-    apt clean
+    apt clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN curl -Lo /usr/local/bin/gosu https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64 && chmod +x /usr/local/bin/gosu
 
