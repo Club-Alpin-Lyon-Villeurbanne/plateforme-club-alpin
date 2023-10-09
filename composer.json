@@ -1,6 +1,7 @@
 {
     "name": "caflyon/clubalpinlyon.fr",
     "type": "project",
+    "description": "Club Alpin Français de Lyon",
     "license": "proprietary",
     "minimum-stability": "stable",
     "prefer-stable": true,

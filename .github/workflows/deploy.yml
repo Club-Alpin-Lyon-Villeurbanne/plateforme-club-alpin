@@ -5,7 +5,7 @@ on:
 
 jobs:
     build:
-        name: Build with NPM
+        name: Install dependencies, build assets, deploy on production
         runs-on: ubuntu-latest
         # services:
         #   mysql:
