@@ -1,0 +1,138 @@
+name: CI/CD production
+on:
+    push:
+        branches: [ production ]
+
+jobs:
+    build:
+        name: Symfony 6 (PHP 8.2)
+        runs-on: ubuntu-latest
+        services:
+          mysql:
+            image: mysql:5.7
+            env:
+              MYSQL_ROOT_PASSWORD: root
+            ports:
+              - 3306:3306
+            options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        steps:
+            -   name: Checkout repository
+                uses: actions/checkout@v2
+
+            - name: Setup PHP, extensions and composer with shivammathur/setup-php
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: 8.2
+                extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, imagick
+            
+            - name: Check PHP Version
+              run: bin/console about
+
+            # Define the right Node.js's environment
+            -   name: Environment for NPM
+                uses: actions/setup-node@v2
+                with:
+                    node-version: '18'
+
+            # NPM run build
+            -   name: NPM build
+                run: |
+                    node -v
+                    npm ci --cache .npm --unsafe-perm --prefer-offline
+                    npm run build
+
+            # Upload artifacts (= built files) to download them in the next job
+            -   name: NPM artifacts
+                uses: actions/upload-artifact@v2
+                with:
+                    name: npm-build
+                    retention-days: 1
+                    path: public/build/
+
+    deploy:
+        # Need the "build" job to be complete before started it
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            # Mandatory : fetch the current repository
+            -   name: Checkout repository
+                uses: actions/checkout@v2
+
+            - name: Setup PHP, extensions and composer with shivammathur/setup-php
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: 8.2
+                extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, imagick
+            
+            - name: Check PHP Version
+              run: bin/console about
+
+            # To be faster, use cache system for the Composer
+            -   name: Get Composer Cache Directory
+                id: composer-cache
+                run: |
+                    echo "::set-output name=dir::$(composer config cache-files-dir)"
+            -   name: Cache composer (vendor)
+                uses: actions/cache@v2
+                with:
+                    path: ${{ steps.composer-cache.outputs.dir }}
+                    key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                    restore-keys: |
+                        ${{ runner.os }}-composer-
+
+            # Ensure that composer.json is valid
+            -   name: Validate composer.json and composer.lock
+                run: composer validate
+
+            -   name: Copy environment files for production
+                run: |
+                    cp infrastructure/confs/production/robots.txt public/robots.txt
+                    cp infrastructure/confs/production/.env.prod .
+                    cp legacy/config/www.clubalpinlyon.fr/config.php legacy/config/config.php
+
+            -   name: Replace variable for production .env file
+                run: |
+                    sed -i "s/DB_PASSWORD_TO_REPLACE/${{ secrets.AWS_PROD_DB_PASSWORD }}/g" .env.prod
+                    sed -i "s/DB_USER_TO_REPLACE/${{ secrets.AWS_PROD_DB_USER }}/g" .env.prod
+                    sed -i "s/DB_NAME_TO_REPLACE/${{ secrets.AWS_PROD_DB_NAME }}/g" .env.prod
+                    sed -i "s/DB_HOST_TO_REPLACE/${{ secrets.AWS_PROD_DB_HOST }}/g" .env.prod
+                    sed -i "s/DEBUG_PARAM_TO_REPLACE/APP_DEBUG=false/g" .env.prod
+
+            -   name: Replace variable for production config file
+                run: |
+                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/${{ secrets.MAILCHIMP_PASSWORD }}/g" "legacy/config/config.php"
+                    sed -i "s/DB_PASSWORD_TO_REPLACE/${{ secrets.AWS_PROD_DB_PASSWORD }}/g" "legacy/config/config.php"
+                    sed -i "s/DB_USER_TO_REPLACE/${{ secrets.AWS_PROD_DB_USER }}/g" "legacy/config/config.php"
+                    sed -i "s/DB_NAME_TO_REPLACE/${{ secrets.AWS_PROD_DB_NAME }}/g" "legacy/config/config.php"
+                    sed -i "s/DB_HOST_TO_REPLACE/${{ secrets.AWS_PROD_DB_HOST }}/g" "legacy/config/config.php"
+
+            # Install composer dependencies, and dump env
+            -   name: Composer install & dump-env
+                run: |
+                    composer install --no-dev --no-progress --no-scripts --prefer-dist -a --apcu-autoloader
+                    composer dump-env prod
+
+            # Download artifacts created in the previous job
+            -   name: Download NPM artifacts
+                uses: actions/download-artifact@v2
+                with:
+                    name: npm-build
+                    path: public/build
+
+            # Define the right Node.js environment
+            -   name: Environment for deploy
+                uses: actions/setup-node@v2
+                with:
+                    node-version: '18'
+
+            # Deploy repository onto the host provided in Github Secrets, including downloaded artifacts and files created (like vendor folder)
+            # Deploy is running thanks to "Deployator" NPM dependency (https://github.com/la-haute-societe/deployator)
+            # See "deployment-config.js" to get the config in use
+            -   name: Deploy on prod
+                env:
+                    SSH_HOST: ${{ secrets.SSH_HOST }}
+                    SSH_LOGIN: ${{ secrets.SSH_LOGIN }}
+                    SSH_PWD: ${{ secrets.SSH_PWD }}
+                    SSH_PATH: ${{ secrets.SSH_PATH }}
+                run: |
+                    npx --cache .npm deployator deploy --config deployment-config.js --environment=production
