@@ -60,7 +60,7 @@ class ImageManipulator
 
         $image = $image->crop(new Point(max(0, $size->getWidth() - $width) / 2, max(0, $size->getHeight() - $height) / 2), new Box($width, $height));
 
-        $image
+        return $image
             ->usePalette(new RGB())
             ->strip()
             ->save($destination);
