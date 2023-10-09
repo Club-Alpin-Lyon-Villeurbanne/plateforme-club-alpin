@@ -61,7 +61,7 @@ jobs:
 
             -   name: Replace variable for production config file
                 run: |
-                    sed -i "s/MAILCHIMP_PASSWORD_TO_REPLACE/${{ secrets.MAILCHIMP_PASSWORD }}/g" "legacy/config/config.php"
+                    sed -i "s/MAILGUN_KEY_TO_REPLACE/${{ secrets.MAILGUN_KEY }}/g" "legacy/config/config.php"
                     sed -i "s/DB_PASSWORD_TO_REPLACE/${{ secrets.AWS_DB_PASSWORD }}/g" "legacy/config/config.php"
 
             -   name: Composer install & dump-env
