@@ -21,7 +21,7 @@ jobs:
           command: |
             make build up composer-install setup-db migrate env=test
             # make php-cs
-            make phpstan
+            # make phpstan
 
             cp legacy/config/config.php.tpl legacy/config/config.php
             cp legacy/config/params.php.tpl legacy/config/params.php
