@@ -22,8 +22,7 @@ RUN apt update && \
         jq \
         cron \
         mariadb-client && \
-    apt clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    apt clean
 
 RUN curl -Lo /usr/local/bin/gosu https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64 && chmod +x /usr/local/bin/gosu
 
