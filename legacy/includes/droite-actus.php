@@ -66,7 +66,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         <p class="commission-title">
 
             <?php
-        echo strftime('%d.%m.%y - ', $article['tsp_article']); ?>
+        echo date('d.m.y - ', $article['tsp_article']); ?>
 
 
             <?php
