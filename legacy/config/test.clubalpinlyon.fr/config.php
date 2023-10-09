@@ -10,7 +10,7 @@ return [
         'port' => 465,
         'ssl' => true,
         'user' => 'postmaster@mg.clubalpinlyon.fr',
-        'pass' => 'dc23887c4a62479ee5b0a7d32932ac0a-7005f37e-b40a7863',
+        'pass' => 'MAILGUN_KEY_TO_REPLACE',
     ],
     'db' => [
         'host' => 'localhost',
