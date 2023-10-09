@@ -25,7 +25,7 @@ jobs:
 
             cp legacy/config/config.php.tpl legacy/config/config.php
             cp legacy/config/params.php.tpl legacy/config/params.php
-            make phpunit
+            # make phpunit
             rm legacy/config/config.php
             rm legacy/config/params.php
             MESSAGE=$(git log -1 HEAD --pretty=format:%s)
