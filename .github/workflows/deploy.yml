@@ -5,7 +5,7 @@ on:
 
 jobs:
     build:
-        name: Symfony 6 (PHP 8.2)
+        name: Build with NPM
         runs-on: ubuntu-latest
         # services:
         #   mysql:
@@ -62,11 +62,10 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                 php-version: 8.2
-                tools: composer:v2
                 extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, imagick
             
             - name: Check PHP Version
-              run: bin/console about
+              run: php -v
 
             # To be faster, use cache system for the Composer
             -   name: Get Composer Cache Directory
