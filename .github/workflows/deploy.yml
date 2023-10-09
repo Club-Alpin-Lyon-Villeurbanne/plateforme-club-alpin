@@ -77,11 +77,11 @@ jobs:
                     SOURCE: "./"
                     REMOTE_HOST: 'clubalpinlyon.fr'
                     REMOTE_USER: 'ec2-user'
-                    TARGET: '/var/www/clubalpinlyon.fr/deployments/${{ GITHUB_SHA }}'
+                    TARGET: '/var/www/clubalpinlyon.fr/deployments/${{ env.GITHUB_SHA }}'
                     EXCLUDE: "assets, node_modules, .circleci, .github, docker, .env.prod, .env.test, .git, infrastructure, Makefile, .npm, docker-compose.yml, .gitignore, package.json, package-lock.json, phive.xml, README.md, tests, translations, symfony.lock, webpack.config.js, matrice-des-droits.png, .php-cs-fixer.dist.php, phpstan.neon, phpunit.xml.dist"
                     SCRIPT_AFTER: |
-                        ln -s "/var/www/clubalpinlyon.fr/ffcam-ftp-folder" "/var/www/clubalpinlyon.fr/deployments/${{ GITHUB_SHA }}/legacy/config/www.clubalpinlyon.fr/ffcam"
-                        ln -s "/var/www/clubalpinlyon.fr/ffcam-ftp-folder" "/var/www/clubalpinlyon.fr/deployments/${{ GITHUB_SHA }}/legacy/config/ffcam-ftp-folder"
+                        ln -s "/var/www/clubalpinlyon.fr/ffcam-ftp-folder" "/var/www/clubalpinlyon.fr/deployments/${{ env.GITHUB_SHA }}/legacy/config/www.clubalpinlyon.fr/ffcam"
+                        ln -s "/var/www/clubalpinlyon.fr/ffcam-ftp-folder" "/var/www/clubalpinlyon.fr/deployments/${{ env.GITHUB_SHA }}/legacy/config/ffcam-ftp-folder"
                         unlink /var/www/clubalpinlyon.fr/deployments/current
-                        # ln -s/var/www/clubalpinlyon.fr/deployments/${{ GITHUB_SHA }} /var/www/clubalpinlyon.fr/deployments/current
+                        # ln -s/var/www/clubalpinlyon.fr/deployments/${{ env.GITHUB_SHA }} /var/www/clubalpinlyon.fr/deployments/current
                         echo $RSYNC_STDOUT
