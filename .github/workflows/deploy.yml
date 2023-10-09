@@ -7,14 +7,14 @@ jobs:
     build:
         name: Symfony 6 (PHP 8.2)
         runs-on: ubuntu-latest
-        services:
-          mysql:
-            image: mysql:5.7
-            env:
-              MYSQL_ROOT_PASSWORD: root
-            ports:
-              - 3306:3306
-            options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        # services:
+        #   mysql:
+        #     image: mysql:5.7
+        #     env:
+        #       MYSQL_ROOT_PASSWORD: root
+        #     ports:
+        #       - 3306:3306
+        #     options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
         steps:
             -   name: Checkout repository
                 uses: actions/checkout@v2
@@ -26,7 +26,7 @@ jobs:
                 extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, imagick
             
             - name: Check PHP Version
-              run: bin/console about
+              run: php -v
 
             # Define the right Node.js's environment
             -   name: Environment for NPM
