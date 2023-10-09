@@ -472,7 +472,7 @@ function formater($retourner, $type = 1)
 {
     // Type 1 : sans espace ni tirets, en minuscule
     if (1 == $type) {
-        $retourner = str_replace("'", '-', $retourner);
+        $retourner = str_replace("'", '-', $retourner ?? '');
         $retourner = strtolower(stripslashes(wd_remove_accents($retourner)));
         $retourner = wd_remove_accents(strtolower(stripslashes($retourner)));
         $pattern = "#[^a-z0-9\s]#";
@@ -480,7 +480,7 @@ function formater($retourner, $type = 1)
     }
     // Type 2 : sans espace ni tirets, majuscule à chaque mot
     if (2 == $type) {
-        $retourner = str_replace("'", '-', $retourner);
+        $retourner = str_replace("'", '-', $retourner ?? '');
         $retourner = strtolower(stripslashes(wd_remove_accents($retourner)));
         $pattern = "#[^a-z0-9\s]#";
         $retourner = preg_replace($pattern, '', $retourner);
@@ -492,7 +492,7 @@ function formater($retourner, $type = 1)
     }
     // Type 3 : AVEC tirets, en minuscule
     if (3 == $type) {
-        $retourner = str_replace("'", '-', $retourner);
+        $retourner = str_replace("'", '-', $retourner ?? '');
         $retourner = str_replace(' ', '-', $retourner);
         $retourner = strtolower(stripslashes(wd_remove_accents($retourner)));
         $pattern = "#[^a-z0-9\s-]#";
@@ -502,7 +502,7 @@ function formater($retourner, $type = 1)
     }
     // Type 4 : noms de fichiers (avec points et majuscules)
     if (4 == $type) {
-        $retourner = str_replace("'", '-', $retourner);
+        $retourner = str_replace("'", '-', $retourner ?? '');
         $retourner = strtolower(stripslashes(wd_remove_accents($retourner)));
         $pattern = "#[^a-zA-Z0-9.\s-]#";
         $retourner = preg_replace($pattern, '', $retourner);
