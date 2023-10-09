@@ -6,6 +6,7 @@ on:
 jobs:
     build:
         name: Install dependencies, build assets, deploy on production
+        environment: production
         runs-on: ubuntu-latest
         # services:
         #   mysql:
@@ -88,9 +89,6 @@ jobs:
             # See "deployment-config.js" to get the config in use
             -   name: Deploy on prod
                 env:
-                    SSH_HOST: ${{ secrets.SSH_HOST }}
-                    SSH_LOGIN: ${{ secrets.SSH_LOGIN }}
-                    SSH_PWD: ${{ secrets.SSH_PWD }}
-                    SSH_PATH: ${{ secrets.SSH_PATH }}
+                    SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
                 run: |
                     npx --cache .npm deployator deploy --config deployment-config.js --environment=production
