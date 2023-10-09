@@ -8,14 +8,6 @@ jobs:
         name: Install dependencies, build assets, deploy on production
         environment: production
         runs-on: ubuntu-latest
-        # services:
-        #   mysql:
-        #     image: mysql:5.7
-        #     env:
-        #       MYSQL_ROOT_PASSWORD: root
-        #     ports:
-        #       - 3306:3306
-        #     options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
         steps:
             -   name: Checkout repository
                 uses: actions/checkout@v4
@@ -83,8 +75,13 @@ jobs:
                     composer install --no-dev --no-progress --no-scripts --prefer-dist -a --apcu-autoloader
                     composer dump-env prod
     
-            -   name: Deploy on prod
-                env:
+            - name: Deploy to Server
+                uses: easingthemes/ssh-deploy@main
+                with:
                     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-                run: |
-                    npx deployator deploy --config deployment-config.js --environment=production
+                    ARGS: "-rlgoDzvc -i --delete"
+                    SOURCE: "./"
+                    REMOTE_HOST: 'clubalpinlyon.fr'
+                    REMOTE_USER: 'ec2-user'
+                    TARGET: '/var/www/clubalpinlyon.fr/deployments/test'
+                    EXCLUDE: "/node_modules/"
