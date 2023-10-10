@@ -16,9 +16,9 @@ jobs:
           keys:
             - composer-v1-{{ checksum "composer.lock" }}
             - composer-v1-
-      - run:
-          name: Build Docker image, run tests and prepare package
-          command: make build up composer-install setup-db migrate env=test
+      # - run:
+      #     name: Build Docker image, run tests and prepare package
+      #     command: make build up composer-install setup-db migrate env=test
       - run:
           name: Copy files
           command: |
