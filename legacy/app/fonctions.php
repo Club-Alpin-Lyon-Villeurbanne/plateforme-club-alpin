@@ -225,7 +225,7 @@ function bigintval($value)
         return $value;
     }
     $value = preg_replace('/[^-0-9](.*)$/', '', $value);
-    if (ctype_digit(abs($value))) {
+    if (is_numeric($value)) {
         return $value;
     }
 
