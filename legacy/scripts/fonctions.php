@@ -382,7 +382,7 @@ function get_sortie($id_evt, $type = 'full')
 
 function get_encadrants($id_evt, $only_ids = false)
 {
-    $users = false;
+    $users = [];
     $req = "SELECT id_user, civ_user,  cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user
                             , role_evt_join, is_covoiturage
                     FROM caf_evt_join, caf_user
@@ -404,7 +404,7 @@ function get_encadrants($id_evt, $only_ids = false)
         }
     }
 
-    return $users;
+    return count($users) ? $users : false;
 }
 
 function mon_inscription($id_evt)
