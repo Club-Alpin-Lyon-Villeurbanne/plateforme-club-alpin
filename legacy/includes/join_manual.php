@@ -113,8 +113,9 @@ if (user()) {
 							LIMIT 8000';
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($elt = $result->fetch_assoc()) {
+				$userId = isset($elt['id_user']) ? (int) $elt['id_user'] : 0;
                 // SELECTION : on n'affiche que les adhérents qui ne sont pas inscrit à cette sortie
-                $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join = ".(int) $elt['id_user'].' LIMIT 1';
+                $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join = ".$userId.' LIMIT 1';
 
                 $result2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 $row = $result2->fetch_row();
