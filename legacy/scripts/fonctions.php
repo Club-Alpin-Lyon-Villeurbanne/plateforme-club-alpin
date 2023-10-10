@@ -273,7 +273,7 @@ function get_groupes($id_commission, $force_valid = false)
 
 function get_groupe($id_groupe)
 {
-    if ('' === trim($id_groupe)) {
+    if ($id_groupe && '' === trim($id_groupe)) {
         return false;
     }
 
