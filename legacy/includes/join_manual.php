@@ -120,7 +120,7 @@ if (user()) {
                 $row = $result2->fetch_row();
                 // inscription inexistante
                 if (!$row[0]) {
-                    echo '<tr id="tr-'.$elt['id_user'].'" class="'.($elt['valid_user'] ? 'vis-on' : 'vis-off').'">'
+                    echo '<tr id="tr-'.$elt['id_user'].'" class="'.(isset($elt['valid_user']) && $elt['valid_user'] ? 'vis-on' : 'vis-off').'">'
 
                                     .'<td>'
                                         .'<img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />'
