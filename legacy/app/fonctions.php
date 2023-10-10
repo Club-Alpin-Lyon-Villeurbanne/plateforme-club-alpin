@@ -329,7 +329,7 @@ function mylog($code, $desc, $connectme = true)
 // htmlentities avec utf8
 function html_utf8($str)
 {
-    return htmlentities($str, \ENT_QUOTES, 'UTF-8');
+    return htmlentities($str ?? '', \ENT_QUOTES, 'UTF-8');
 }
 
 // assurer un lien http
@@ -460,7 +460,7 @@ function limiterTexte($text, $length, $html = false)
 // convention de nommage automatique
 function wd_remove_accents($str, $charset = 'UTF-8')
 {
-    $str = htmlentities($str, \ENT_QUOTES, $charset);
+    $str = htmlentities($str ?? '', \ENT_QUOTES, $charset);
     // $str = htmlentities($str);
 
     $str = preg_replace('#&([A-za-z])(?:acute|cedil|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
