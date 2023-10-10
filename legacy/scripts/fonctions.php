@@ -94,7 +94,7 @@ function display_articles($id_user, $limit = 10, $title = '')
 */
 function get_niveaux($id_user, $editable = false)
 {
-    $notes = false;
+    $notes = [];
 
     // A t'on les droits d'ecriture ?
     if (true == $editable && LegacyContainer::get('legacy_user_rights')->allowed('user_note_comm_edit')) {
@@ -172,7 +172,7 @@ function get_niveaux($id_user, $editable = false)
         }
     }
 
-    return $notes;
+    return count($notes) ? $notes : false;
 }
 
 /*
