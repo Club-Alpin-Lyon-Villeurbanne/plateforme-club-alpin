@@ -124,7 +124,7 @@ if ('profil' == $p1 && 'infos' == $p2 && getUser()) {
         }
 
         // filiation : ais-je un parent
-        if ('' !== trim($handle['cafnum_parent_user'])) {
+        if (isset($handle['cafnum_parent_user']) && '' !== trim($handle['cafnum_parent_user'])) {
             $handle['parent'] = [];
             $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_user = '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($handle['cafnum_parent_user'])."' LIMIT 1";
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
