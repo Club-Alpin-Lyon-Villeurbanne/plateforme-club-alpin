@@ -15,7 +15,7 @@ return [
     'db' => [
         'host' => 'caflv-production-aurora-mysql.cluster-cw75ek4t1pty.eu-west-3.rds.amazonaws.com',
         'port' => 3306,
-        'user' => 'root',
+        'user' => 'caflvdev',
         'password' => 'DB_PASSWORD_TO_REPLACE',
         'dbname' => 'caflvdev',
     ],
