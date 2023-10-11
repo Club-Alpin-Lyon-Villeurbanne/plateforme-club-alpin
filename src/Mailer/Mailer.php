@@ -92,7 +92,6 @@ class Mailer
         }
 
         $email = (new Email())
-            ->sender($sender ?? $this->mailEmitter)
             ->from($this->mailEmitter)
             ->subject($subject)
             ->html($htmlBody)
