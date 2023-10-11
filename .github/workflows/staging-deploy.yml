@@ -79,15 +79,15 @@ jobs:
           SOURCE: "./"
           REMOTE_HOST: ${{ env.DOMAIN }}
           REMOTE_USER: "ec2-user"
-          TARGET: "/var/www/${{ env.DOMAIN }}/deployments/${{ github.sha }}"
+          TARGET: "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}"
           EXCLUDE: "assets, node_modules, .circleci, .github, docker, .env.prod, .env.test, .git, infrastructure, Makefile, .npm, docker-compose.yml, .gitignore, package.json, package-lock.json, phive.xml, README.md, tests, translations, symfony.lock, webpack.config.js, matrice-des-droits.png, .php-cs-fixer.dist.php, phpstan.neon, phpunit.xml.dist"
           SCRIPT_AFTER: |
             whoami
-            chown -R ec2-user:apache /var/www/${{ env.DOMAIN }}/deployments/${{ github.sha }}
-            ln -s "/var/www/${{ env.DOMAIN }}/ftp" "/var/www/${{ env.DOMAIN }}/deployments/${{ github.sha }}/public"
-            ln -s "/var/www/${{ env.DOMAIN }}/forum" "/var/www/${{ env.DOMAIN }}/deployments/${{ github.sha }}/public"
-            ln -s "/var/www/${{ env.DOMAIN }}/ffcam-ftp-folder" "/var/www/${{ env.DOMAIN }}/deployments/${{ github.sha }}/legacy/config/www.${{ env.DOMAIN }}/ffcam"
-            ln -s "/var/www/${{ env.DOMAIN }}/ffcam-ftp-folder" "/var/www/${{ env.DOMAIN }}/deployments/${{ github.sha }}/legacy/config/ffcam-ftp-folder"
-            unlink /var/www/${{ env.DOMAIN }}/deployments/current
-            ln -s/var/www/${{ env.DOMAIN }}/deployments/${{ github.sha }} /var/www/clubalpinlyon.fr/deployments/current
+            chown -R ec2-user:apache /var/www/clubalpinlyon.top/deployments/${{ github.sha }}
+            ln -s "/var/www/clubalpinlyon.top/ftp" "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}/public"
+            ln -s "/var/www/clubalpinlyon.top/forum" "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}/public"
+            ln -s "/var/www/clubalpinlyon.top/ffcam-ftp-folder" "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}/legacy/config/www.clubalpinlyon.top/ffcam"
+            ln -s "/var/www/clubalpinlyon.top/ffcam-ftp-folder" "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}/legacy/config/ffcam-ftp-folder"
+            unlink /var/www/clubalpinlyon.top/deployments/current
+            ln -s/var/www/clubalpinlyon.top/deployments/${{ github.sha }} /var/www/clubalpinlyon.fr/deployments/current
             echo $RSYNC_STDOUT
