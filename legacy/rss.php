@@ -38,12 +38,12 @@ $current_commission = $rss_datas = null;
 
 // CONSTRUCTION DES REQUETES
 
-// *** ARTCLES, par defaut
+// *** ARTICLES, par defaut
 if (!array_key_exists('mode', $_GET) || preg_match('#^articles#', $_GET['mode'])) {
     $rss_datas['description'] = 'Articles du '.$p_sitename;
 
     // COMMISSION PRECISEE
-    if (preg_match('#^articles-[a-z-]*$#', $_GET['mode'])) {
+    if (array_key_exists('mode', $_GET) && preg_match('#^articles-[a-z-]*$#', $_GET['mode'])) {
         $givencom = strtolower(substr(strstr($_GET['mode'], '-'), 1));
         if ($comTab[$givencom]) {
             $current_commission = $givencom;
@@ -93,7 +93,7 @@ if (!array_key_exists('mode', $_GET) || preg_match('#^articles#', $_GET['mode'])
 }
 
 // *** SORTIES
-if (preg_match('#^sorties#', $_GET['mode'])) {
+if (array_key_exists('mode', $_GET) && preg_match('#^sorties#', $_GET['mode'])) {
     $rss_datas['description'] = 'Sorties du '.$p_sitename;
 
     // COMMISSION PRECISEE
@@ -166,9 +166,9 @@ $CafFeed = new FeedWriter(RSS2);
 
 // Setting the channel elements
 // Use wrapper functions for common channel elements
-$CafFeed->setTitle($rss_datas['title']);
+$CafFeed->setTitle(!empty($rss_datas) ? $rss_datas['title'] : '');
 $CafFeed->setLink(LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL));
-$CafFeed->setDescription($rss_datas['description']);
+$CafFeed->setDescription(!empty($rss_datas) ? $rss_datas['description'] : '');
 
 // Image title and link must match with the 'title' and 'link' channel elements for RSS 2.0
 // $CafFeed->setImage('Testing the RSS writer class','https://www.ajaxray.com/projects/rss','https://www.rightbrainsolution.com/images/logo.gif');
