@@ -1,7 +1,7 @@
 <?php
 
 if (admin()) {
-    $str = utf8_encode($_POST['str']);
+    $str = mb_convert_encoding($_POST['str'], 'UTF-8');
     $type = (int) $_POST['type'];
     $result = [];
     $result['content'] = htmlspecialchars(substr(formater($str, $type), 0, 45), \ENT_NOQUOTES);
