@@ -60,7 +60,7 @@ foreach ($fileTab as $file) {
                 ++$i;
                 $tmpErrTab = [];
                 // formatage utf8, et antislashes
-                $line = utf8_encode($line);
+                $line = mb_convert_encoding($line, 'UTF-8');
                 $line = stripslashes($line);
 
                 echo $i."\n".$line."\n";
