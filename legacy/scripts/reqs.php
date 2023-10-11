@@ -435,13 +435,18 @@ elseif ('accueil' == $p1) {
 
 // PAGE AGENDA : LISTE DES SORTIES D'UN MOIS DONNÉ
 elseif ('agenda' == $p1) {
-    // mois donné
-    if (isset($_GET['month']) && !$_GET['month']) {
-        $year = date('Y');
-        $month = date('m');
+
+    // default values if nothing provided
+    if (isset($_GET['year']) && $_GET['year'] > 2000) {
+        $year = (int) $_GET['year'];
     } else {
-        $year = (int) ($_GET['year'] ?? null);
-        $month = (int) ($_GET['month'] ?? null);
+        $year = (int) date('Y');
+    }
+
+    if (isset($_GET['month']) && $_GET['month'] > 0 && $_GET['month'] < 13) {
+        $month = (int) $_GET['month'];
+    } else {
+        $month = (int) date('m');
     }
 
     // nombre de jours dans ce mois (!! réutilisé dans la page !!)
