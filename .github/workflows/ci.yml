@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Install dependencies, build assets, run tests
-    environment: production
+    environment: staging
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
