@@ -440,8 +440,8 @@ elseif ('agenda' == $p1) {
         $year = date('Y');
         $month = date('m');
     } else {
-        $year = (int) ($_GET['year'] ?? null);
-        $month = (int) ($_GET['month'] ?? null);
+        $year = (int) ($_GET['year'] ?? date('Y'));
+        $month = (int) ($_GET['month'] ?? date('n'));
     }
 
     // nombre de jours dans ce mois (!! réutilisé dans la page !!)
