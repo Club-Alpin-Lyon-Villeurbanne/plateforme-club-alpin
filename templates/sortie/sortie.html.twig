@@ -294,7 +294,7 @@
                 {% endif %}
             {% endif %}
 
-            {% if is_granted('ROLE_ADMIN') %}
+            {% if my_status.role == 'encadrant' %}
                 {% include 'sortie/ndf_encadrant.html.twig' %}
             {% endif %}
             
