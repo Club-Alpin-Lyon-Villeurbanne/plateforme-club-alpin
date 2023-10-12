@@ -5,12 +5,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 ?>
 <form action="<?php echo $versCettePage; ?>" method="post" style="overflow:hidden">
-    <input type="hidden" name="operation" value="<?php echo $id_evt_to_update ? 'evt_update' : 'evt_create'; ?>" />
+    <input type="hidden" name="operation" value="<?php echo isset($id_evt_to_update) && $id_evt_to_update ? 'evt_update' : 'evt_create' ?>" />
     <input type="hidden" name="id_evt_to_update" value="<?php echo (int) $id_evt_to_update; ?>" />
 
     <?php
     // masque certaines option si cet evt est une suite de cycle
-    if ($_POST['cycle_parent_evt'] && 'child' == $_POST['cycle']) {
+    if (isset($_POST['cycle_parent_evt']) && $_POST['cycle_parent_evt'] && 'child' == $_POST['cycle']) {
         $suiteDeCycle = true;
     }
 
@@ -84,7 +84,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
         <h2 class="trigger-h2">Encadrant(s) :</h2>
         <div class="trigger-me check-nice">
             <?php
-        $encadrants = is_array($_POST['encadrants']) ? $_POST['encadrants'] : [];
+        $encadrants = isset($_POST['encadrants']) && is_array($_POST['encadrants']) ? $_POST['encadrants'] : [];
 if (!count($encadrantsTab)) {
     // echo '<p class="erreur">Erreur : aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission. Vous ne pourrez pas créer de sortie...</p>';
     echo '<p class="info">Aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission.</p>';
@@ -104,7 +104,7 @@ foreach ($encadrantsTab as $encadrant) {
         <h2 class="trigger-h2">Stagiaire(s) :</h2>
         <div class="trigger-me check-nice">
             <?php
-$stagiaires = is_array($_POST['stagiaires']) ? $_POST['stagiaires'] : [];
+$stagiaires = isset($_POST['stagiaires']) && is_array($_POST['stagiaires']) ? $_POST['stagiaires'] : [];
 if (!count($stagiairesTab)) {
     echo '<p class="info">Aucun adhérent n\'est déclaré <b>stagiaire</b> pour cette commission.</p>';
 }
@@ -123,7 +123,7 @@ foreach ($stagiairesTab as $stagiaire) {
         <h2 class="trigger-h2">Co-Encadrant(s) :</h2>
         <div class="trigger-me check-nice">
             <?php
-$coencadrants = is_array($_POST['coencadrants']) ? $_POST['coencadrants'] : [];
+$coencadrants = isset($_POST['coencadrants']) && is_array($_POST['coencadrants']) ? $_POST['coencadrants'] : [];
 if (!count($coencadrantsTab)) {
     // echo '<p class="info">Aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission.</p>';echo '<p class="erreur">Erreur : aucun adhérent n\'est déclaré <b>coencadrant</b> pour cette commission. Vous ne pourrez pas créer de sortie...</p>';
     echo '<p class="info">Aucun adhérent n\'est déclaré <b>co-encadrant</b> pour cette commission.</p>';
@@ -147,7 +147,7 @@ foreach ($coencadrantsTab as $coencadrant) {
             <?php
         // modification possible seulement en cas de creation d'une nouvelle sortie
         if (!$id_evt_to_update) {
-            $benevoles = is_array($_POST['benevoles']) ? $_POST['benevoles'] : [];
+            $benevoles = isset($_POST['benevoles']) && is_array($_POST['benevoles']) ? $_POST['benevoles'] : [];
             if (!count($benevolesTab)) {
                 echo '<p class="info">Aucun adhérent n\'est déclaré <b>bénévole</b> pour cette commission ou cette sortie.</p>';
             }
@@ -164,7 +164,7 @@ foreach ($coencadrantsTab as $coencadrant) {
 ?>
 
             <label for="need_benevoles_evt" style="margin-top:15px; display:block; float:none; width:93%; background-color:white; background-position:8px 5px; padding-left:10px; padding-top:5px; box-shadow:0 0 15px -8px black;">
-                <input type="checkbox" class="custom" name="need_benevoles_evt" id="need_benevoles_evt" <?php if (1 == $_POST['need_benevoles_evt'] || 'on' == $_POST['need_benevoles_evt']) {
+                <input type="checkbox" class="custom" name="need_benevoles_evt" id="need_benevoles_evt" <?php if (!empty($_POST['need_benevoles_evt']) && in_array($_POST['need_benevoles_evt'], [1, 'on', '1'])) {
                     echo 'checked="checked"';
                 }?> /> Afficher un encart &laquo;Nous aurions besoin de bénévoles&raquo; sur la page de la sortie ?
             </label>
@@ -250,7 +250,7 @@ inclure('infos-carte', 'mini');
     <div class="trigger-me" style="padding-right:20px">
 
         <!-- si on rensigne une suite de cycle, cette section est blqoquée  -->
-        <div id="inscriptions-on" style="display:<?php echo $suiteDeCycle ? 'none' : 'block'; ?>">
+        <div id="inscriptions-on" style="display:<?php echo isset($suiteDeCycle) && $suiteDeCycle ? 'none' : 'block' ?>">
 
 
             Nombre maximum de personnes sur cette sortie (encadrement compris) :<br />
@@ -279,7 +279,7 @@ inclure('infos-carte', 'mini');
         </div>
 
         <!-- message d'info -->
-        <div id="inscriptions-off" style="display:<?php echo $suiteDeCycle ? 'block' : 'none'; ?>">
+        <div id="inscriptions-off" style="display:<?php echo isset($suiteDeCycle) && $suiteDeCycle ? 'block' : 'none' ?>">
             <p class="alerte">Les inscriptions à cette sortie sont gérées sur la première sortie du cycle dont elle fait partie.</p>
         </div>
 
@@ -352,7 +352,7 @@ inclure('infos-matos', 'mini');
 
     <h2 class="trigger-h2">Itinéraire :</h2>
     <div class="trigger-me">
-        <textarea name="itineraire" class="type2" style="width:95%; min-height:80px"><?php echo stripslashes($_POST['itineraire']); ?></textarea>
+        <textarea name="itineraire" class="type2" style="width:95%; min-height:80px"><?php echo stripslashes($_POST['itineraire'] ?? ''); ?></textarea>
     </div>
 
 
@@ -363,7 +363,7 @@ inclure('infos-matos', 'mini');
             N'hésitez pas à mettre un maximum de détails, cet élément formera le corps de la page dédiée à cette sortie.
         </p>
         <?php require __DIR__.'/../../includes/help/tinymce.php'; ?>
-        <textarea name="description_evt" style="width:99%"><?php echo stripslashes($_POST['description_evt']); ?></textarea>
+        <textarea name="description_evt" style="width:99%"><?php echo stripslashes($_POST['description_evt'] ?? ''); ?></textarea>
     </div>
 
     <br />

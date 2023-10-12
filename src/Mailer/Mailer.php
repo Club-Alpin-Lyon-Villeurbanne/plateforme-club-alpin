@@ -92,7 +92,6 @@ class Mailer
         }
 
         $email = (new Email())
-            ->sender($sender ?? $this->mailEmitter)
             ->from($this->mailEmitter)
             ->subject($subject)
             ->html($htmlBody)
@@ -121,7 +120,7 @@ class Mailer
 
     private function isValid(?string $email): bool
     {
-        if ('' === trim($email)) {
+        if (!$email || '' === trim($email)) {
             return false;
         }
 

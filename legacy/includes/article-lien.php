@@ -40,7 +40,7 @@ if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) $article['id_article'].'
 
 		<?php
 
-        echo strftime('%d.%m.%y - ', $article['tsp_article']);
+        echo date('d.m.y - ', $article['tsp_article']);
 
 // une commission est bien liée
 if ($article['commission'] ?? null) {

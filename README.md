@@ -1,6 +1,7 @@
 # Code source pour le site du Club Alpin Francais de Lyon-Villeurbanne
 
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/Club-Alpin-Lyon-Villeurbanne/caflyon/tree/main.svg?style=shield&circle-token=a61cbc12b55c1591fd843db8ac6a3726204562a9)](https://dl.circleci.com/status-badge/redirect/gh/Club-Alpin-Lyon-Villeurbanne/caflyon/tree/main)
+[![CI/CD staging](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/actions/workflows/staging-deploy.yml/badge.svg)](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/actions/workflows/staging-deploy.yml)
 
 Bienvenue sur le dépôt du code source de la plateforme en ligne du Club Alpin Français de Lyon-Villeurbanne.
 Ce site est un portail dédié à notre communauté, offrant une multitude de fonctionnalités, de l'organisation d'événements à la gestion des adhésions et bien plus encore.

@@ -37,6 +37,9 @@ services:
             tags:
                 - { name: sentry_handler.log_filter }
 
+    # allows access to service container as an injected dependency
+    Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
+
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:

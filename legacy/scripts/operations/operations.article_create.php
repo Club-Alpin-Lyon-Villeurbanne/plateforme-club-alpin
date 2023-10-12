@@ -3,16 +3,16 @@
 use App\Legacy\LegacyContainer;
 
 $status_article = 0;
-$topubly_article = ('on' == $_POST['topubly_article'] ? 1 : 0);
+$topubly_article = (isset($_POST['topubly_article']) && 'on' == $_POST['topubly_article'] ? 1 : 0);
 $tsp_crea_article = time();
 $tsp_article = time();
 $user_article = getUser()->getId();
-$titre_article = stripslashes($_POST['titre_article']);
+$titre_article = stripslashes(isset($_POST['titre_article']) ? $_POST['titre_article'] : '');
 $code_article = substr(formater($titre_article, 3), 0, 30);
 $commission_article = (int) $_POST['commission_article'];
 $evt_article = (int) $_POST['evt_article'];
-$une_article = ('on' == $_POST['une_article'] ? 1 : 0);
-$cont_article = stripslashes($_POST['cont_article']);
+$une_article = (isset($_POST['une_article']) && 'on' == $_POST['une_article'] ? 1 : 0);
+$cont_article = stripslashes(isset($_POST['cont_article']) ? $_POST['cont_article'] : '');
 $id_article = null;
 
 // CHECKS
@@ -65,7 +65,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $id_article > 0) {
     // créa du repertroie destination
     $dirTo = __DIR__.'/../../../public/ftp/articles/'.$id_article;
     if (!file_exists($dirTo)) {
-        if (!mkdir($dirTo) && !is_dir($dirTo)) {
+        if (!mkdir($dirTo, 755, true) && !is_dir($dirTo)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $dirTo));
         }
     }

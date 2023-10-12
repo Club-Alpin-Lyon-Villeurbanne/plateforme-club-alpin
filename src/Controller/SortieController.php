@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class SortieController extends AbstractController
 {
-    public static function getSubscribedServices()
+    public static function getSubscribedServices(): array
     {
         return array_merge(parent::getSubscribedServices(), [
             EvtRepository::class,
@@ -195,7 +195,7 @@ class SortieController extends AbstractController
 
         $user = $this->getUser();
 
-        foreach ($request->request->get('id_evt_join', []) as $participantId) {
+        foreach ($request->request->all('id_evt_join', []) as $participantId) {
             $status = $request->request->get('status_evt_join_'.$participantId);
             $role = $request->request->get('role_evt_join_'.$participantId);
 

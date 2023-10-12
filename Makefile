@@ -30,6 +30,7 @@ override project := $(shell echo $(project) | tr -d -c '[a-z0-9]' | cut -c 1-55)
 ## Config
 ##
 
+MYSQL_BIN=mariadb
 COMPOSE=docker-compose --project-directory . --project-name $(project) $(COMPOSE_FILES)
 COMPOSE_FILES = -f docker-compose.yml
 ON_PHP=$(COMPOSE) run --rm --no-deps cafsite
@@ -109,11 +110,11 @@ setup-db: composer-install ## Migrate (env="dev")
 	    || (echo "Unable to connect to the database. Exiting..." && exit 1)
 	@echo "Database is up!"
 	@$(ON_PHP) bin/console doctrine:database:create --env $(env) --if-not-exists
-	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.sql
-	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
-	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
-	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
-	@$(COMPOSE) exec -T caf-db mysql -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
+	@$(COMPOSE) exec -T caf-db $(MYSQL_BIN) -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.sql
+	@$(COMPOSE) exec -T caf-db $(MYSQL_BIN) -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
+	@$(COMPOSE) exec -T caf-db $(MYSQL_BIN) -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
+	@$(COMPOSE) exec -T caf-db $(MYSQL_BIN) -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
+	@$(COMPOSE) exec -T caf-db $(MYSQL_BIN) -D$(dbname) -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
 .PHONY: setup-db
 
 fixtures: migrate ## Load fixtures (env="dev" email="")

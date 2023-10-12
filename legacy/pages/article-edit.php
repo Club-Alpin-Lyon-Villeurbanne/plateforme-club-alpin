@@ -41,7 +41,7 @@ elseif (!allowed('article_edit')) {
     echo '<p class="erreur">Vous n\'avez pas l\'autorisation d\'accéder à cette page car vous ne semblez pas avoir les droits de rédaction.</p>';
 }
 // je n'ai pas le droit de créer un article pour cette commission (s'il y a une commission, ce qui n'est pas obligé : CLUB=0 ou COMPTE RENDU DE SORTIE=-1 )
-elseif ($article['code_commission'] && !allowed('article_edit', 'commission:'.$article['code_commission'])) {
+elseif (isset($article['code_commission']) && $article['code_commission'] && !allowed('article_edit', 'commission:'.$article['code_commission'])) {
     echo '<p class="erreur">Vous n\'avez pas l\'autorisation d\'accéder à cette page car vous ne semblez pas avoir les droits de rédaction pour la commission '.html_utf8($article['code_commission']).'.</p>';
 }
 

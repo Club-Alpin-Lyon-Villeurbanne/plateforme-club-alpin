@@ -61,7 +61,7 @@ if (user()) {
 
 
         <!-- Infos : filiations (parent) -->
-        <?php if ($tmpUser['parent'] && count($tmpUser['parent']) > 0) { ?>
+        <?php if (!empty($tmpUser['parent']) && count($tmpUser['parent']) > 0) { ?>
             <h2><span class="bleucaf">&gt;</span> Filiation :</h2>
             <?php inclure('infos-profil-filiation-parent', 'vide'); ?>
             <ul class="nice-list">

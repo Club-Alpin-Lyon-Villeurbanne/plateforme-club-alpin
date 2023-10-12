@@ -23,7 +23,7 @@ use Symfony\Component\Security\Http\LoginLink\LoginLinkHandlerInterface;
 
 class LoginController extends AbstractController
 {
-    public static function getSubscribedServices()
+    public static function getSubscribedServices(): array
     {
         return array_merge(parent::getSubscribedServices(), [EntityManagerInterface::class]);
     }
@@ -118,7 +118,7 @@ class LoginController extends AbstractController
      *
      * @Template
      */
-    public function setPasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer)
+    public function setPasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer, EntityManagerInterface $em)
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -132,7 +132,7 @@ class LoginController extends AbstractController
                 $form->get('password')->getData()
             ));
 
-            $this->get(EntityManagerInterface::class)->flush();
+            $em->flush();
             $this->addFlash('success', 'Mot de passe mis à jour avec succès!');
             $mailer->send($user, 'transactional/set_password-account-confirmation');
 
@@ -161,7 +161,7 @@ class LoginController extends AbstractController
      *
      * @Template
      */
-    public function changePasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer)
+    public function changePasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer, EntityManagerInterface $em)
     {
         $url = $request->getSession()->get('user_password.target', $this->generateUrl('legacy_root'));
         $form = $this->createForm(ChangePasswordType::class);
@@ -175,7 +175,7 @@ class LoginController extends AbstractController
                 )
             );
 
-            $this->get(EntityManagerInterface::class)->flush();
+            $em->flush();
 
             $this->addFlash('success', 'Mot de passe mis à jour avec succès!');
             $mailer->send($user, 'transactional/set_password-account-confirmation');

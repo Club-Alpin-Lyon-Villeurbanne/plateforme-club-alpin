@@ -43,9 +43,9 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 			<form action="<?php echo $versCettePage; ?>">
 				<b>Période :</b><br />
 				du
-				<input type="text" name="dateMin" class="type2" style="" value="<?php echo $dateMin; ?>" placeholder="jj/mm/aaaa" />
+				<input type="text" name="dateMin" class="type2" style="" value="<?php echo $dateMin ?? '' ?>" placeholder="jj/mm/aaaa" />
 				au
-				<input type="text" name="dateMax" class="type2" style="" value="<?php echo $dateMax; ?>" placeholder="jj/mm/aaaa" />
+				<input type="text" name="dateMax" class="type2" style="" value="<?php echo $dateMax ?? '' ?>" placeholder="jj/mm/aaaa" />
 
 				<input type="submit" class="type1" value="Appliquer" />
 
@@ -69,10 +69,10 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
     } // fin au premier septebmre de l'année prochaine
 
     // recus :
-    if (preg_match('#[0-9]{2}/[0-9]{2}/[0-9]{4}#', $_GET['dateMin'])) {
+    if (preg_match('#[0-9]{2}/[0-9]{2}/[0-9]{4}#', $_GET['dateMin'] ?? '')) {
         $dateMin = $_GET['dateMin'];
     }
-    if (preg_match('#[0-9]{2}/[0-9]{2}/[0-9]{4}#', $_GET['dateMax'])) {
+    if (preg_match('#[0-9]{2}/[0-9]{2}/[0-9]{4}#', $_GET['dateMax'] ?? '')) {
         $dateMax = $_GET['dateMax'];
     }
 
@@ -82,7 +82,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 
     /*** USERS **/
 
-    if ('users' == $p2) {
+    if ('users' == $p2 && isset($key)) {
         $comTab[$key]['stats'] = [];
 
         foreach ($comTab as $key => $comm) {
@@ -516,11 +516,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
                 .'<td>'.userlink($article['id_user'], ucfirst(mb_strtolower($article['firstname_user'], 'UTF-8')).' '.$article['lastname_user']).'</td>'
                 .'<td>'.html_utf8($article['title_commission']).'</td>'
                 .'<td>';
-                if ($comments[$article['id_article']]) {
-                    echo $comments[$article['id_article']];
-                } else {
-                    echo '0';
-                }
+                echo $comments[$article['id_article']] ?? '0';
                 echo '</td><td';
                 if (1 == $article['une_article']) {
                     echo ' style="background:url(/img/base/star.png) no-repeat center right"';
