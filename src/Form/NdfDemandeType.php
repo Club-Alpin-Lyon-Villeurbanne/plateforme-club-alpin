@@ -26,12 +26,12 @@ class NdfDemandeType extends AbstractType
             ->add('remboursement', ChoiceType::class, [
                 'label' => 'Remboursement',
                 'choices' => [
-                    'Je renonce au remboursement de cette note de frais' => FALSE,
-                    'Je demande le remboursement de cette note de frais' => TRUE,
+                    'Je renonce au remboursement de cette note de frais' => false,
+                    'Je demande le remboursement de cette note de frais' => true,
                 ],
-                'multiple' => FALSE,
-                'expanded' => TRUE,
-                'required' => TRUE
+                'multiple' => false,
+                'expanded' => true,
+                'required' => true
             ])
             ->add('type_transport', ChoiceType::class, [
                 'label' => 'Transport utilisé',
@@ -42,57 +42,57 @@ class NdfDemandeType extends AbstractType
                     'Voiture personnelle' => 'voiture',
                     'Transport en commun' => 'commun'
                 ],
-                'multiple' => FALSE,
-                'expanded' => FALSE,
-                'required' => TRUE,
+                'multiple' => false,
+                'expanded' => false,
+                'required' => true,
             ])
             ->add('ndf_depenses_minibus_club', CollectionType::class, [
-                'label' => FALSE,
+                'label' => false,
                 'entry_type' => NdfDepenseMinibusClubType::class,
-                'allow_add' => TRUE,
-                'allow_delete' => TRUE,
-                'required' => FALSE,
-                'mapped' => TRUE,
+                'allow_add' => true,
+                'allow_delete' => false,
+                'required' => false,
+                'mapped' => true,
             ])
             ->add('ndf_depenses_minibus_loc', CollectionType::class, [
-                'label' => FALSE,
+                'label' => false,
                 'entry_type' => NdfDepenseMinibusLocType::class,
-                'allow_add' => TRUE,
-                'allow_delete' => TRUE,
-                'required' => FALSE,
-                'mapped' => TRUE,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'required' => false,
+                'mapped' => true,
             ])
             ->add('ndf_depenses_voiture', CollectionType::class, [
-                'label' => FALSE,
+                'label' => false,
                 'entry_type' => NdfDepenseVoitureType::class,
-                'allow_add' => TRUE,
-                'allow_delete' => TRUE,
-                'required' => FALSE,
-                'mapped' => TRUE,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'required' => false,
+                'mapped' => true,
             ])
             ->add('ndf_depenses_commun', CollectionType::class, [
-                'label' => FALSE,
+                'label' => false,
                 'entry_type' => NdfDepenseCommunType::class,
-                'allow_add' => TRUE,
-                'allow_delete' => TRUE,
-                'required' => FALSE,
-                'mapped' => TRUE,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'required' => false,
+                'mapped' => true,
             ])
             ->add('ndf_depenses_hebergement', CollectionType::class, [
                 'label' => 'Hébergement',
                 'entry_type' => NdfDepenseHebergementType::class,
-                'allow_add' => TRUE,
-                'allow_delete' => TRUE,
-                'required' => FALSE,
-                'mapped' => TRUE,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'required' => false,
+                'mapped' => true,
             ])
             ->add('ndf_depenses_autre', CollectionType::class, [
                 'label' => 'Autre',
                 'entry_type' => NdfDepenseAutreType::class,
-                'allow_add' => TRUE,
-                'allow_delete' => TRUE,
-                'required' => FALSE,
-                'mapped' => TRUE,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'required' => false,
+                'mapped' => true,
             ])
         ;
     }
