@@ -23,13 +23,17 @@
 			{{ form_row(depense.montant, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.ordre, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.commentaire, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{% set showRemoveBtn = true %}
 		{% elseif type == 'autre' %}
 			{{ form_row(depense.montant, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.ordre, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.commentaire, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{% set showRemoveBtn = true %}
 		{% endif %}
+		{% if showRemoveBtn is defined %}
 		<a href="#" class="text-danger remove-collection-widget" data-widget="#{{ type }}-collection-widget">
 			<i class='remove-btn'></i>
 		</a>
+		{% endif %}
 	</div>
 {% endif %}

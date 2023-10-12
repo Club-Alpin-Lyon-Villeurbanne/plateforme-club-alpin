@@ -14,21 +14,21 @@
 	  		{% endfor %}
 		{% endif %}
 		{% do depenses.setRendered %}
+		{% if type in ['minibus_club', 'minibus_loc', 'voiture', 'commun'] %}
+		<div class="add-block hidden">
+			<a href="javascript:void(0);" class="add-collection-widget {{ type }}" data-widget="#{{ type }}-collection-widget"></a>
+		</div>
+		{% else %}
 		<div class="add-block">
 			<a href="javascript:void(0);" class="add-collection-widget {{ type }}" data-widget="#{{ type }}-collection-widget">
 				<i class='add-btn'></i> Ajouter une dépense
-				{% if type == 'minibus_club' or type == 'minibus_loc' %}
-					de minibus
-				{% elseif type == 'voiture' %}
-					de voiture
-				{% elseif type == 'commun' %}
-					de transport en commun
-				{% elseif type == 'hebergement' %}
+				{% if type == 'hebergement' %}
 					d'hébergement
 				{% elseif type == 'autre' %}
 					autre
 				{% endif %}
 			</a>
 		</div>
+		{% endif %}
 	</div>
 </div>
