@@ -43,14 +43,20 @@ class SortieController extends AbstractController
      *
      * @Template
      */
-    public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository, EntityManagerInterface $em, NdfDemandeRepository $ndfDemandeRepository, Request $request)
-    {
+    public function sortie(
+        Evt $event,
+        UserRepository $repository,
+        EvtJoinRepository $participantRepository,
+        EntityManagerInterface $em,
+        NdfDemandeRepository $ndfDemandeRepository,
+        Request $request
+    ) {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
             throw new AccessDeniedHttpException('Not found');
         }
 
         $user = $this->getUser();
-
+        
         if ($user) {
             $demande = NULL;
             $form = NULL;
