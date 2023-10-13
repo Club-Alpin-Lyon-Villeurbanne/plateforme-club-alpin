@@ -99,4 +99,4 @@ jobs:
             ${{ env.DEPLOYMENT_PATH }}/current/bin/console doctrine:migrations:sync-metadata-storage --env=prod
             ${{ env.DEPLOYMENT_PATH }}/current/bin/console doctrine:migrations:migrate --env=prod --no-interaction
             ${{ env.DEPLOYMENT_PATH }}/current/bin/console messenger:setup-transports --env=prod
-            echo $RSYNC_STDOUT
+            # echo $RSYNC_STDOUT
