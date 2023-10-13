@@ -8,7 +8,7 @@ env:
 
 jobs:
   build:
-    name: Install dependencies, build assets, deploy on staging
+    name: deploy on staging
     environment: staging
     runs-on: ubuntu-latest
     steps:
@@ -82,7 +82,7 @@ jobs:
           REMOTE_HOST: ${{ env.DOMAIN }}
           REMOTE_USER: "ec2-user"
           TARGET: "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}"
-          EXCLUDE: "assets, node_modules, .circleci, .github, docker, .env.prod, .env.test, .git, infrastructure, Makefile, .npm, docker-compose.yml, .gitignore, package.json, package-lock.json, phive.xml, README.md, tests, translations, symfony.lock, webpack.config.js, matrice-des-droits.png, .php-cs-fixer.dist.php, phpstan.neon, phpunit.xml.dist"
+          EXCLUDE: "assets, node_modules, .circleci, .github, docker, .env.prod, .env.test, .git, infrastructure, Makefile, .npm, docker-compose.yml, .gitignore, package.json, package-lock.json, phive.xml, README.md, tests, symfony.lock, webpack.config.js, matrice-des-droits.png, .php-cs-fixer.dist.php, phpstan.neon, phpunit.xml.dist"
           SCRIPT_AFTER: |
             whoami
             chown -R ec2-user:apache /var/www/clubalpinlyon.top/deployments/${{ github.sha }}

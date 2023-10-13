@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    name: Install dependencies, build assets, deploy on production
+    name: Deploy on production
     environment: production
     runs-on: ubuntu-latest
     steps:
