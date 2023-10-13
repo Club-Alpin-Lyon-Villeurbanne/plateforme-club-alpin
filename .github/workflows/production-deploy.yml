@@ -89,4 +89,5 @@ jobs:
             ln -s "/var/www/clubalpinlyon.fr/ffcam-ftp-folder" "/var/www/clubalpinlyon.fr/deployments/${{ github.sha }}/legacy/config/ffcam-ftp-folder"
             # unlink /var/www/clubalpinlyon.fr/deployments/current
             # ln -s/var/www/clubalpinlyon.fr/deployments/${{ github.sha }} /var/www/clubalpinlyon.fr/deployments/current
+            /var/www/clubalpinlyon.fr/deployments/current/bin/console messenger:setup-transports --env=prod
             echo $RSYNC_STDOUT

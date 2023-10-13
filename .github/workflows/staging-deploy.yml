@@ -1,7 +1,8 @@
 name: CI/CD staging
 on:
   push:
-    branches: [main]
+    branches:
+      - debug-github-action
 env:
     DOMAIN: clubalpinlyon.top
 
@@ -70,6 +71,7 @@ jobs:
         run: |
           composer install --no-dev --no-progress --no-scripts --prefer-dist -a --apcu-autoloader
           composer dump-env prod
+          ls vendor/rollerworks/password-strength-validator/src/Resources/
 
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
