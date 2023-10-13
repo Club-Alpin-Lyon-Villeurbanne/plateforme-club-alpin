@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * A console handler that logs ONLY when console run with `-v, -vv, -vvv` option.
  */
+/** @phpstan-ignore-next-line */
 class VerboseConsoleHandler extends BaseConsoleHandler
 {
     private ?OutputInterface $output;

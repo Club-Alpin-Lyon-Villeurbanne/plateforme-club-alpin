@@ -241,7 +241,6 @@ function bigintval($value)
  *
  * @param mixed  $bytes  taille en octets
  * @param string $format formatage (http://www.php.net/manual/fr/function.sprintf.php)
- * @param string $lang   indique la langue des unités de taille
  *
  * @return string chaine de caractères formatées
  */
@@ -267,6 +266,7 @@ function formatSize($bytes, $format = '%.2f')
 }
 
 global $container;
+/** @phpstan-ignore-next-line */
 $container = $this->container;
 
 function user(): bool

@@ -38,6 +38,7 @@ class AuthenticationListener implements EventSubscriberInterface, ServiceSubscri
     {
         return [
             SecurityEvents::INTERACTIVE_LOGIN => 'onInteractiveLogin',
+            /** @phpstan-ignore-next-line */
             DeauthenticatedEvent::class => 'onLogout',
             KernelEvents::RESPONSE => 'onResponse',
         ];
@@ -48,6 +49,7 @@ class AuthenticationListener implements EventSubscriberInterface, ServiceSubscri
         $this->setCookie = true;
     }
 
+    /** @phpstan-ignore-next-line */
     public function onLogout(DeauthenticatedEvent $deauthenticatedEvent)
     {
         $this->removeCookie = true;
