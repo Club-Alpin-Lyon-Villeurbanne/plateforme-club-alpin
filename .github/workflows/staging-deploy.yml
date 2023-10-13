@@ -88,7 +88,6 @@ jobs:
             whoami
             sudo chown -R ec2-user:apache ${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}
             sudo chmod -R 775 ${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/var
-            find ${{ env.DEPLOYMENT_PATH }} -mindepth 1 ! -regex '^${{ github.sha }}\(/.*\)?'
 
             ln -s "/var/www/clubalpinlyon.top/ftp" "${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/public"
             ln -s "/var/www/clubalpinlyon.top/forum" "${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/public"
