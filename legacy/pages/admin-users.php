@@ -158,7 +158,7 @@ if (!admin()) {
                     .'<td>'.html_utf8($elt['cp_user']).'</td>'
                     .'<td>'.html_utf8($elt['ville_user']).'</td>'
                     // .'<td>'.html_utf8($elt['pays_user']).'</td>'
-                    .'<td>'.($elt['doit_renouveler_user'] ? 'expirée' : 'valide').' '.(!$elt['doit_renouveler_user'] && $elt['alerte_renouveler_user'] ? '<span style="color:red">* Doit renouveler</span>' : '').'</td>'
+                    .'<td>'.($elt['doit_renouveler_user'] ? 'expirée' : 'valide').' '.(!$elt['doit_renouveler_user'] && isset($elt['alerte_renouveler_user']) && $elt['alerte_renouveler_user'] ? '<span style="color:red">* Doit renouveler</span>' : '').'</td>'
                     // .'<td></td>'
                 .'</tr>';
     } ?>
