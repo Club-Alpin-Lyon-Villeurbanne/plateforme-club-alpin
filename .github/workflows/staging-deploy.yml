@@ -78,12 +78,16 @@ jobs:
         uses: easingthemes/ssh-deploy@main
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          ARGS: "-rlgoDzvc -i --delete"
           SOURCE: "./"
           REMOTE_HOST: ${{ env.DOMAIN }}
           REMOTE_USER: "ec2-user"
           TARGET: "${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}"
           EXCLUDE: "assets, node_modules, .circleci, .github, docker, .env.prod, .env.test, .git, infrastructure, Makefile, .npm, docker-compose.yml, .gitignore, package.json, package-lock.json, phive.xml, README.md, tests, symfony.lock, webpack.config.js, matrice-des-droits.png, .php-cs-fixer.dist.php, phpstan.neon, phpunit.xml.dist"
-          SCRIPT_AFTER: |
-            whoami
-            ls -al
+
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ env.DOMAIN }}
+          username: "ec2-user"
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: whoami
