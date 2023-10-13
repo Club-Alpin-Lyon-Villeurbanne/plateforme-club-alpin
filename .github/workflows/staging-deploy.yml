@@ -86,16 +86,4 @@ jobs:
           EXCLUDE: "assets, node_modules, .circleci, .github, docker, .env.prod, .env.test, .git, infrastructure, Makefile, .npm, docker-compose.yml, .gitignore, package.json, package-lock.json, phive.xml, README.md, tests, symfony.lock, webpack.config.js, matrice-des-droits.png, .php-cs-fixer.dist.php, phpstan.neon, phpunit.xml.dist"
           SCRIPT_AFTER: |
             whoami
-            sudo chown -R ec2-user:apache ${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}
-            sudo chmod -R 775 ${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/var
-
-            ln -s "/var/www/clubalpinlyon.top/ftp" "${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/public"
-            ln -s "/var/www/clubalpinlyon.top/forum" "${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/public"
-            ln -s "/var/www/clubalpinlyon.top/ffcam-ftp-folder" "${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/legacy/config/www.clubalpinlyon.top/ffcam"
-            ln -s "/var/www/clubalpinlyon.top/ffcam-ftp-folder" "${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/legacy/config/ffcam-ftp-folder"
-            unlink ${{ env.DEPLOYMENT_PATH }}/current
-            ln -s ${{ env.DEPLOYMENT_PATH }}/${{ github.sha }} /var/www/clubalpinlyon.fr/deployments/current
-            ${{ env.DEPLOYMENT_PATH }}/current/bin/console doctrine:migrations:sync-metadata-storage --env=prod
-            ${{ env.DEPLOYMENT_PATH }}/current/bin/console doctrine:migrations:migrate --env=prod --no-interaction
-            ${{ env.DEPLOYMENT_PATH }}/current/bin/console messenger:setup-transports --env=prod
-            # echo $RSYNC_STDOUT
+            ls -al
