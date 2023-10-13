@@ -34,6 +34,11 @@ jobs:
           npm ci --cache .npm --unsafe-perm --prefer-offline
           npm run build
 
+      - name: PHPStan Static Analysis
+        uses: php-actions/phpstan@v3
+        with:
+          configuration: ./phpstan.neon
+
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
