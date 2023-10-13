@@ -86,14 +86,17 @@ jobs:
 
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@v1.0.0
+        env:
+          SHA: ${{ github.sha }}
         with:
           host: ${{ env.DOMAIN }}
           username: "ec2-user"
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             whoami
+            echo ${{ SHA }}
             ls -al ${{ env.DEPLOYMENT_PATH }}/
-            # sudo chown -R ec2-user:apache ${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}
+            sudo chown -R ec2-user:apache ${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}
             # sudo chmod -R 775 ${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/var
             # find ${{ env.DEPLOYMENT_PATH }} -mindepth 1 ! -regex '^${{ github.sha }}\(/.*\)?'
 
