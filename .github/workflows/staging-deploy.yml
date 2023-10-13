@@ -85,7 +85,8 @@ jobs:
           EXCLUDE: "assets, node_modules, .circleci, .github, docker, .env.prod, .env.test, .git, infrastructure, Makefile, .npm, docker-compose.yml, .gitignore, package.json, package-lock.json, phive.xml, README.md, tests, symfony.lock, webpack.config.js, matrice-des-droits.png, .php-cs-fixer.dist.php, phpstan.neon, phpunit.xml.dist"
           SCRIPT_AFTER: |
             whoami
-            chown -R ec2-user:apache /var/www/clubalpinlyon.top/deployments/${{ github.sha }}
+            sudo chown -R ec2-user:apache /var/www/clubalpinlyon.top/deployments/${{ github.sha }}
+            sudo chmod -R 775 /var/www/clubalpinlyon.top/deployments/${{ github.sha }}/var
             ln -s "/var/www/clubalpinlyon.top/ftp" "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}/public"
             ln -s "/var/www/clubalpinlyon.top/forum" "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}/public"
             ln -s "/var/www/clubalpinlyon.top/ffcam-ftp-folder" "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}/legacy/config/www.clubalpinlyon.top/ffcam"
