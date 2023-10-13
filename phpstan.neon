@@ -27,7 +27,3 @@ parameters:
     - legacy/admin/ftp.php
     - var/cache
 
-  bootstrapFiles:
-    - vendor/bin/.phpunit/phpunit-9.5-0/vendor/autoload.php
-
-
