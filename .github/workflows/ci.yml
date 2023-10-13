@@ -33,9 +33,9 @@ jobs:
           node -v
           npm ci --cache .npm --unsafe-perm --prefer-offline
           npm run build
-          
+
       - name: setup PHPunit
-        run: vendor/bin/simple-phpunit --version
+        run: php vendor/bin/simple-phpunit --version
 
       - name: PHPStan Static Analysis
         uses: php-actions/phpstan@v3
