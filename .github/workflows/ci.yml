@@ -37,6 +37,7 @@ jobs:
       - name: PHPStan Static Analysis
         uses: php-actions/phpstan@v3
         with:
+          lavel: 1
           configuration: phpstan.neon
 
       - name: Get Composer Cache Directory
