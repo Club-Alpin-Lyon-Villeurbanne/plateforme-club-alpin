@@ -3,6 +3,9 @@ parameters:
   paths:
     - src
     - legacy
+    - resources
+    - tests
+
   ignoreErrors:
     - '#Function twig_escape_filter not found\.#'
     - '#Constant (ATOM|RSS1|RSS2) not found\.#'
@@ -26,4 +29,8 @@ parameters:
     - legacy/admin/retouches-ajax.php
     - legacy/admin/ftp.php
     - var/cache
+
+  bootstrapFiles:
+    - vendor/bin/.phpunit/phpunit-9.5-0/vendor/autoload.php
+
 
