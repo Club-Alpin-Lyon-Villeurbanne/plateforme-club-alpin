@@ -21,7 +21,7 @@ jobs:
     
       - name: Composer install & dump-env
         run: |
-          composer install --no-dev --no-progress --no-scripts --prefer-dist -a --apcu-autoloader
+          composer install --no-progress -a --apcu-autoloader
 
       - uses: php-actions/phpunit@v3
       
