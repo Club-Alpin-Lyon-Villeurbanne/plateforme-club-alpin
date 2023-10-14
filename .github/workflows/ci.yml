@@ -17,6 +17,12 @@ jobs:
         with:
           php-version: 8.2
           extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, imagick
+
+    
+      - name: Composer install & dump-env
+        run: |
+          composer install --no-dev --no-progress --no-scripts --prefer-dist -a --apcu-autoloader
+
       - uses: php-actions/phpunit@v3
       
       - name: PHPStan Static Analysis
