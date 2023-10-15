@@ -4,30 +4,39 @@
 			{{ form_row(depense.nbre_passager, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.nbre_km, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.cout_essence, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{% include('sortie/upload.html.twig') %}
 			{{ form_row(depense.frais_peage, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{% include('sortie/upload.html.twig') %}
 		{% elseif type == 'minibus_loc' %}
 			{{ form_row(depense.nbre_passager, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.nbre_km, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.prix_loc_km, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{% include('sortie/upload.html.twig') %}
 			{{ form_row(depense.cout_essence, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{% include('sortie/upload.html.twig') %}
 			{{ form_row(depense.frais_peage, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{% include('sortie/upload.html.twig') %}
 		{% elseif type == 'voiture' %}
 			{{ form_row(depense.nbre_km, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.frais_peage, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{% include('sortie/upload.html.twig') %}
 			{{ form_row(depense.commentaire, { 'attr': { 'class': 'collection-widget-row' }}) }}
 		{% elseif type == 'commun' %}
 			{{ form_row(depense.montant, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{% include('sortie/upload.html.twig') %}
 			{{ form_row(depense.ordre, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.commentaire, { 'attr': { 'class': 'collection-widget-row' }}) }}
 		{% elseif type == 'hebergement' %}
 			{{ form_row(depense.montant, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.ordre, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.commentaire, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{% include('sortie/upload.html.twig') %}
 			{% set showRemoveBtn = true %}
 		{% elseif type == 'autre' %}
 			{{ form_row(depense.montant, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.ordre, { 'attr': { 'class': 'collection-widget-row' }}) }}
 			{{ form_row(depense.commentaire, { 'attr': { 'class': 'collection-widget-row' }}) }}
+			{% include('sortie/upload.html.twig') %}
 			{% set showRemoveBtn = true %}
 		{% endif %}
 		{% if showRemoveBtn is defined %}

@@ -1,0 +1,46 @@
+{% set randomId = random(0,9999) %}
+<style>
+.upload-util {
+    margin-bottom: 1rem;
+}
+
+.upload-util input[type="file"] {
+    display: none;
+}
+
+.upload-util label {
+    font-weight: bold;
+    color: #1e88e5;
+    cursor: pointer;
+}
+
+.justification-filename {
+    display: none;
+}
+
+.justification-filename span {
+    color: #4b974b;
+    font-weight: bold;
+}
+
+
+.justification-filename a {
+    display: inline-block;
+    margin-right: 1rem;
+    text-decoration: underline;
+}
+</style>
+<div class="upload-util" id="upload-util-{{ randomId }}">
+    <input data-util-id="{{ randomId }}" onchange="onUploadFieldChange(this)" id="upload-field-{{ randomId }}" type="file" name="upload">
+    <div id="justification-control-{{ randomId }}">
+        <label for="upload-field-{{ randomId }}">Joindre un justificatif</label>
+        <span> à cette dépense (obligatoire)</span>
+    </div>
+    <div class="justification-filename">
+        Justificatif : <span></span>
+        <div>
+            <a class="button" href="javascript:void(0)">voir</a>
+            <a class="button" href="javascript:void(0)" onclick="clearUploadField({{ randomId }})">retirer</a>
+        </div>
+    </div>
+</div>

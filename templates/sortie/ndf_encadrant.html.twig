@@ -190,6 +190,8 @@
 
       {% include 'sortie/ndf_depenses.html.twig' with { 'depenses': ndf_form.ndf_depenses_autre, 'type': 'autre' } %}
 
+      {% include 'sortie/ndf_summary.html.twig' %}
+
       <div class="center">
         <input class="submit" type="submit" value="Envoyer les notes de frais" />
       </div>
