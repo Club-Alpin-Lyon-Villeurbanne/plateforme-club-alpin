@@ -78,7 +78,7 @@ class ApiUser implements UserInterface
     public function eraseCredentials()
     {}
 
-    public function getRoles()
+    public function getRoles(): array
     {
         return [];
     }
@@ -86,6 +86,11 @@ class ApiUser implements UserInterface
     public function getUsername()
     {
         return $this->application;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->id;
     }
 
 }
