@@ -50,12 +50,15 @@ jobs:
             fi
       - run:
           name: Create package
-          command: make package
+          command: |
+            MESSAGE=$(git log -1 HEAD --pretty=format:%s)
+            if [[ ${CIRCLE_BRANCH} == "production" || ${MESSAGE} == *push_to_dev* ]] || [[ ${CIRCLE_BRANCH} == "main" ]];; then
+              make package
+            fi
       - run:
           name: Deploy
           command: |
             MESSAGE=$(git log -1 HEAD --pretty=format:%s)
-            echo ${MESSAGE}
             if [[ ${CIRCLE_BRANCH} == "production" ]]; then
               echo "\nDeploying on clubalpinlyon.fr (production env)...\n\n"
               echo "\nTransfering package...\n\n"

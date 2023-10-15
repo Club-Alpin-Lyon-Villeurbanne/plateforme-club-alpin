@@ -26,8 +26,8 @@ class NdfDemandeType extends AbstractType
             ->add('remboursement', ChoiceType::class, [
                 'label' => 'Remboursement',
                 'choices' => [
-                    'Je renonce au remboursement de cette note de frais' => false,
-                    'Je demande le remboursement de cette note de frais' => true,
+                    'Je fais don de cette note de frais au Club et recevrai en fin d\'année un reçu fiscal.' => false,
+                    'Je demande le remboursement de cette note de frais.' => true,
                 ],
                 'multiple' => false,
                 'expanded' => true,

@@ -18,9 +18,13 @@ class NdfDepenseHebergementType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('date', TextType::class, [
+                'label' => 'Nuit du',
+                'required' => TRUE,
+            ])
             ->add('montant', MoneyType::class, [
                 'label' => 'Montant',
-                'required' => FALSE,
+                'required' => TRUE,
             ])
             ->add('commentaire', TextType::class, [
                 'label' => 'Descriptif',
