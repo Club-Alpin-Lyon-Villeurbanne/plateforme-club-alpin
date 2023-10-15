@@ -55,6 +55,7 @@ jobs:
           name: Deploy
           command: |
             MESSAGE=$(git log -1 HEAD --pretty=format:%s)
+            echo ${MESSAGE}
             if [[ ${CIRCLE_BRANCH} == "production" ]]; then
               echo "\nDeploying on clubalpinlyon.fr (production env)...\n\n"
               echo "\nTransfering package...\n\n"
