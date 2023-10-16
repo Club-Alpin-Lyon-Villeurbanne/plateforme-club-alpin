@@ -266,8 +266,6 @@ function formatSize($bytes, $format = '%.2f')
     return sprintf($format.' %s', $b, $units[$e]);
 }
 
-
-
 function user(): bool
 {
     if ($token = LegacyContainer::get('legacy_token_storage')->getToken()) {
