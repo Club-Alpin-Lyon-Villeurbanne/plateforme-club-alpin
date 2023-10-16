@@ -266,13 +266,11 @@ function formatSize($bytes, $format = '%.2f')
     return sprintf($format.' %s', $b, $units[$e]);
 }
 
-global $container;
-$container = $this->container;
+
 
 function user(): bool
 {
-    global $container;
-    if ($token = LegacyContainer::get('security.token_storage', $container)->getToken()) {
+    if ($token = LegacyContainer::get('legacy_token_storage')->getToken()) {
         if ($token->getUser() instanceof User) {
             return true;
         }
@@ -283,8 +281,7 @@ function user(): bool
 
 function getUser(): ?User
 {
-    global $container;
-    if ($token = LegacyContainer::get('security.token_storage', $container)->getToken()) {
+    if ($token = LegacyContainer::get('legacy_token_storage')->getToken()) {
         if ($token->getUser() instanceof User) {
             return $token->getUser();
         }
