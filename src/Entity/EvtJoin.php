@@ -8,10 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * EvtJoin.
  *
- * @ORM\Table(name="caf_evt_join")
  *
- * @ORM\Entity(repositoryClass=EvtJoinRepository::class)
  */
+#[ORM\Table(name: 'caf_evt_join')]
+#[ORM\Entity(repositoryClass: EvtJoinRepository::class)]
 class EvtJoin
 {
     public const STATUS_NON_CONFIRME = 0;
@@ -29,81 +29,74 @@ class EvtJoin
     /**
      * @var int
      *
-     * @ORM\Column(name="id_evt_join", type="integer", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_evt_join', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="status_evt_join", type="smallint", nullable=false, options={"comment": "0=non confirmé - 1=validé - 2=refusé"})
      */
+    #[ORM\Column(name: 'status_evt_join', type: 'smallint', nullable: false, options: ['comment' => '0=non confirmé - 1=validé - 2=refusé'])]
     private $status = self::STATUS_NON_CONFIRME;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Evt", inversedBy="joins", fetch="EAGER")
-     *
-     * @ORM\JoinColumn(name="evt_evt_join", nullable=false, referencedColumnName="id_evt", nullable=false, onDelete="CASCADE")
-     */
+    
+    #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'joins', fetch: 'EAGER')]
+    #[ORM\JoinColumn(name: 'evt_evt_join', nullable: false, referencedColumnName: 'id_evt', onDelete: 'CASCADE')]
     private $evt;
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
      *
-     * @ORM\JoinColumn(name="user_evt_join", nullable=false, referencedColumnName="id_user", onDelete="CASCADE")
      */
+    #[ORM\ManyToOne(targetEntity: 'User', fetch: 'EAGER')]
+    #[ORM\JoinColumn(name: 'user_evt_join', nullable: false, referencedColumnName: 'id_user', onDelete: 'CASCADE')]
     private $user;
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User")
      *
-     * @ORM\JoinColumn(name="affiliant_user_join", referencedColumnName="id_user", nullable=true)
      */
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\JoinColumn(name: 'affiliant_user_join', referencedColumnName: 'id_user', nullable: true)]
     private $affiliantUserJoin;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="role_evt_join", type="string", length=20, nullable=false)
      */
+    #[ORM\Column(name: 'role_evt_join', type: 'string', length: 20, nullable: false)]
     private $role;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="tsp_evt_join", type="bigint", nullable=false)
      */
+    #[ORM\Column(name: 'tsp_evt_join', type: 'bigint', nullable: false)]
     private $tsp;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="lastchange_when_evt_join", type="bigint", nullable=true, options={"comment": "Quand a été modifié cet élément"})
      */
+    #[ORM\Column(name: 'lastchange_when_evt_join', type: 'bigint', nullable: true, options: ['comment' => 'Quand a été modifié cet élément'])]
     private $lastchangeWhen;
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User")
      *
-     * @ORM\JoinColumn(name="lastchange_who_evt_join", referencedColumnName="id_user", nullable=true)
      */
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\JoinColumn(name: 'lastchange_who_evt_join', referencedColumnName: 'id_user', nullable: true)]
     private $lastchangeWho;
 
     /**
      * @var bool|null
-     *
-     * @ORM\Column(name="is_covoiturage", type="boolean", nullable=true)
      */
+    #[ORM\Column(name: 'is_covoiturage', type: 'boolean', nullable: true)]
     private $isCovoiturage;
 
     public function __construct(Evt $event, User $user, string $role, int $status)

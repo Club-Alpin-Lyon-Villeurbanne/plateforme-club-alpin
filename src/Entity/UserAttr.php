@@ -7,10 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * UserAttr.
  *
- * @ORM\Table(name="caf_user_attr")
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_user_attr')]
+#[ORM\Entity]
 class UserAttr
 {
     public const VISITEUR = 'visiteur';
@@ -30,40 +30,34 @@ class UserAttr
     /**
      * @var int
      *
-     * @ORM\Column(name="id_user_attr", type="integer", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_user_attr', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="attrs", fetch="EAGER")
-     *
-     * @ORM\JoinColumn(name="user_user_attr", referencedColumnName="id_user", nullable=false, onDelete="CASCADE")
-     */
+    
+    #[ORM\ManyToOne(targetEntity: 'User', inversedBy: 'attrs', fetch: 'EAGER')]
+    #[ORM\JoinColumn(name: 'user_user_attr', referencedColumnName: 'id_user', nullable: false, onDelete: 'CASCADE')]
     private $user;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Usertype")
-     *
-     * @ORM\JoinColumn(name="usertype_user_attr", referencedColumnName="id_usertype")
-     */
+    
+    #[ORM\ManyToOne(targetEntity: 'Usertype')]
+    #[ORM\JoinColumn(name: 'usertype_user_attr', referencedColumnName: 'id_usertype')]
     private $userType;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="params_user_attr", type="string", length=200, nullable=true)
      */
+    #[ORM\Column(name: 'params_user_attr', type: 'string', length: 200, nullable: true)]
     private $params;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="details_user_attr", type="string", length=100, nullable=false, options={"comment": "date - de qui... ?"})
      */
+    #[ORM\Column(name: 'details_user_attr', type: 'string', length: 100, nullable: false, options: ['comment' => 'date - de qui... ?'])]
     private $details;
 
     public function __construct(User $user, Usertype $userType, $params = null)

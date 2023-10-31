@@ -7,42 +7,39 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ChronOperation.
  *
- * @ORM\Table(name="caf_chron_operation")
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_chron_operation')]
+#[ORM\Entity]
 class ChronOperation
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id_chron_operation", type="integer", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_chron_operation', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="tsp_chron_operation", type="bigint", nullable=false)
      */
+    #[ORM\Column(name: 'tsp_chron_operation', type: 'bigint', nullable: false)]
     private $tsp;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="code_chron_operation", type="string", length=100, nullable=false)
      */
+    #[ORM\Column(name: 'code_chron_operation', type: 'string', length: 100, nullable: false)]
     private $code;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="parent_chron_operation", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'parent_chron_operation', type: 'integer', nullable: false)]
     private $parent;
 
     public function getId(): ?int

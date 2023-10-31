@@ -26,20 +26,9 @@ class SortieController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route(
-     *     name="sortie",
-     *     path="/sortie/{code}-{id}.html",
-     *     requirements={
-     *         "id": "\d+",
-     *         "code": "[a-z0-9-]+"
-     *     },
-     *     methods={"GET"},
-     *     priority="10"
-     * )
-     *
-     * @Template
-     */
+    
+    #[Route(name: 'sortie', path: '/sortie/{code}-{id}.html', requirements: ['id' => '\d+', 'code' => '[a-z0-9-]+'], methods: ['GET'], priority: '10')]
+    #[Template]
     public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository)
     {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
@@ -55,17 +44,7 @@ class SortieController extends AbstractController
         ];
     }
 
-    /**
-     * @Route(
-     *     name="sortie_validate",
-     *     path="/sortie/{id}/validate",
-     *     requirements={
-     *         "id": "\d+"
-     *     },
-     *     methods={"POST"},
-     *     priority="10"
-     * )
-     */
+    #[Route(name: 'sortie_validate', path: '/sortie/{id}/validate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieValidate(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
     {
         if (!$this->isCsrfTokenValid('sortie_validate', $request->request->get('csrf_token'))) {
@@ -105,17 +84,7 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    /**
-     * @Route(
-     *     name="sortie_update_inscription",
-     *     path="/sortie/{id}/update-inscriptions",
-     *     requirements={
-     *         "id": "\d+"
-     *     },
-     *     methods={"POST"},
-     *     priority="10"
-     * )
-     */
+    #[Route(name: 'sortie_update_inscription', path: '/sortie/{id}/update-inscriptions', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieUpdateInscriptions(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
     {
         if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token'))) {
@@ -233,17 +202,7 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    /**
-     * @Route(
-     *     name="sortie_refus",
-     *     path="/sortie/{id}/refus",
-     *     requirements={
-     *         "id": "\d+"
-     *     },
-     *     methods={"POST"},
-     *     priority="10"
-     * )
-     */
+    #[Route(name: 'sortie_refus', path: '/sortie/{id}/refus', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieRefus(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
     {
         if (!$this->isCsrfTokenValid('sortie_refus', $request->request->get('csrf_token'))) {
@@ -269,17 +228,7 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    /**
-     * @Route(
-     *     name="sortie_legal_validate",
-     *     path="/sortie/{id}/legal-validate",
-     *     requirements={
-     *         "id": "\d+"
-     *     },
-     *     methods={"POST"},
-     *     priority="10"
-     * )
-     */
+    #[Route(name: 'sortie_legal_validate', path: '/sortie/{id}/legal-validate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieLegalValidate(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
     {
         if (!$this->isCsrfTokenValid('sortie_legal_validate', $request->request->get('csrf_token'))) {
@@ -304,17 +253,7 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    /**
-     * @Route(
-     *     name="sortie_legal_refus",
-     *     path="/sortie/{id}/legal-refus",
-     *     requirements={
-     *         "id": "\d+"
-     *     },
-     *     methods={"POST"},
-     *     priority="10"
-     * )
-     */
+    #[Route(name: 'sortie_legal_refus', path: '/sortie/{id}/legal-refus', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieLegalRefus(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
     {
         if (!$this->isCsrfTokenValid('sortie_legal_refus', $request->request->get('csrf_token'))) {
@@ -339,17 +278,7 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    /**
-     * @Route(
-     *     name="sortie_uncancel",
-     *     path="/sortie/{id}/uncancel",
-     *     requirements={
-     *         "id": "\d+"
-     *     },
-     *     methods={"POST"},
-     *     priority="10"
-     * )
-     */
+    #[Route(name: 'sortie_uncancel', path: '/sortie/{id}/uncancel', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieUncancel(Request $request, Evt $event, EntityManagerInterface $em)
     {
         if (!$this->isCsrfTokenValid('sortie_uncancel', $request->request->get('csrf_token'))) {
@@ -371,17 +300,7 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    /**
-     * @Route(
-     *     name="contact_participants",
-     *     path="/sortie/{id}/contact-participants",
-     *     requirements={
-     *         "id": "\d+"
-     *     },
-     *     methods={"POST"},
-     *     priority="10"
-     * )
-     */
+    #[Route(name: 'contact_participants', path: '/sortie/{id}/contact-participants', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function contactParticipants(Request $request, Evt $event, Mailer $mailer)
     {
         if (!$this->isCsrfTokenValid('contact_participants', $request->request->get('csrf_token'))) {
@@ -417,17 +336,7 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    /**
-     * @Route(
-     *     name="sortie_remove_participant",
-     *     path="/sortie/remove-participant/{id}",
-     *     requirements={
-     *         "id": "\d+"
-     *     },
-     *     methods={"POST"},
-     *     priority="10"
-     * )
-     */
+    #[Route(name: 'sortie_remove_participant', path: '/sortie/remove-participant/{id}', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function removeParticipant(Request $request, EvtJoin $participant, EntityManagerInterface $em, Mailer $mailer)
     {
         $event = $participant->getEvt();
@@ -459,17 +368,7 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    /**
-     * @Route(
-     *     name="sortie_duplicate",
-     *     path="/sortie/{id}/duplicate",
-     *     requirements={
-     *         "id": "\d+"
-     *     },
-     *     methods={"POST"},
-     *     priority="10"
-     * )
-     */
+    #[Route(name: 'sortie_duplicate', path: '/sortie/{id}/duplicate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieDuplicate(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
     {
         if (!$this->isGranted('SORTIE_DUPLICATE', $event)) {

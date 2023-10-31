@@ -9,13 +9,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MinibusController extends AbstractController
 {
-    /**
-     * @Route("/minibus", name="minibus")
-     *
-     * @Template
-     *
-     * @Security("is_granted('ROLE_USER')")
-     */
+    
+    #[Route(path: '/minibus', name: 'minibus')]
+    #[Template]
+    #[Security("is_granted('ROLE_USER')")]
     public function index()
     {
         return [
