@@ -8,7 +8,7 @@ if (user()) {
     // id de la sortie, pour n'afficher que les adhérents non inscrits
     $id_evt = (int) $_GET['id_evt'];
 
-    $showAll = (int) $_GET['showAll'];
+    $showAll = isset($_GET['showAll']) ? (int) $_GET['showAll'] : 0;
 
     // if(!allowed('user_see_all')){
     if (!allowed('evt_join_notme')) {
