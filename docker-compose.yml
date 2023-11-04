@@ -1,60 +1,51 @@
-version: '3.5'
-
-networks:
-    default:
-        name: caf
+version: "3"
 
 services:
-    cafsite:
-        build:
-            context: docker
-        restart: unless-stopped
-        command: apache2-foreground
-        volumes:
-            - ./:/var/www/html
-            - ~/.phive:/var/www/.phive
-            - ~/.composer:/var/www/.composer
-        ports:
-            - "8081:80"
-            - "443:443"
-        links:
-            - caf-db:db
-        networks:
-            default: ~
-        environment:
-            APP_USER_ID: 1000
-            APP_GROUP_ID: 1000
-
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        ports:
-            - "8181:80"
-        links:
-            - caf-db:db
-        environment:
-            PMA_HOST: caf-db
-            MYSQL_ROOT_PASSWORD: test
-        networks:
-            default: ~
-
-    caf-db:
-        image: mariadb:11.1.2
+    db:
+        image: mariadb
+        container_name: db_caflyon
         environment:
             MARIADB_ROOT_PASSWORD: test
             MARIADB_DATABASE: caf
+        restart: always
         volumes:
             - ./db:/var/lib/mysql
+        networks:
+            - dev
+
+    phpmyadmin:
+        image: phpmyadmin
+        container_name: phpmyadmin_caflyon
+        depends_on:
+            - db
+        ports:
+            - 8080:80
+        environment:
+            PMA_HOST: db
+        networks:
+            - dev
+
+    www:
+        build: docker
+        container_name: www_caflyon
+        ports:
+            - "8000:80"
+        volumes:
+            - ./docker/vhosts:/etc/apache2/sites-enabled
+            - ./:/var/www
+        links:
+            - db
+        networks:
+            - dev
 
     mailcatcher:
-        image: jderusse/mailcatcher
-
-    assets:
-        build: docker/assets
+        image: schickling/mailcatcher
+        container_name: mail_caflyon
+        networks:
+        - dev
         environment:
-            WEBPACK_DOMAIN: "assets.caf"
-            WEBPACK_WATCH_USE_POLLING: "true"
-            WEBPACK_CACHE_DIRECTORY: "/tmp"
-        ports:
-            - '${WEBPACK_PORT}'
-        volumes:
-            - ./:/srv:delegated
+        - VIRTUAL_HOST=mailcatcher.caf
+        - VIRTUAL_PORT=1080
+
+networks:
+    dev:
