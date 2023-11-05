@@ -1,8 +1,10 @@
 name: Deployment on staging 🚀
 on:
-  workflow_run:
-    workflows: [Lint, Test]
-    types: [completed]
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
 
 env:
     DOMAIN: clubalpinlyon.top
@@ -10,8 +12,30 @@ env:
     DEPLOYMENT_PATH: /var/www/clubalpinlyon.top/deployments
 
 jobs:
-  build:
+  php-cs-fixer:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: docker://oskarstark/php-cs-fixer-ga
+
+  phpstan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: php-actions/composer@v6
+
+      - name: PHPStan Static Analysis
+        uses: php-actions/phpstan@v3
+        with:
+            configuration: phpstan.neon
+            memory_limit: 1G
+
+  deploy:
     name: Deploy on staging
+    if: github.ref == 'refs/heads/main'
+    needs:
+      - php-cs-fixer
+      - phpstan
     environment: staging
     runs-on: ubuntu-latest
     steps:
@@ -22,9 +46,6 @@ jobs:
         with:
           php-version: 8.2
           extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, imagick
-
-      - name: Check PHP Version
-        run: php -v
 
       - name: Setup Node and NPM
         uses: actions/setup-node@v3
@@ -69,6 +90,14 @@ jobs:
         run: |
           composer install --no-dev --no-progress --no-scripts --prefer-dist -a --apcu-autoloader
           composer dump-env prod
+
+      # - name: PHPUnit Tests
+      #   uses: php-actions/phpunit@master
+      #   with:
+      #     version: 9.6
+      #     bootstrap: vendor/autoload.php
+      #     configuration: phpunit.xml.dist
+      #     args: --coverage-text
 
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
