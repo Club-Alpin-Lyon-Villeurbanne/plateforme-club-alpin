@@ -9,14 +9,15 @@ SYMFONY_CONSOLE = $(PHP) bin/console
 MARIADB = $(DOCKER_COMPOSE) --project-directory . --project-name caflyon -f docker-compose.yml exec -T db mariadb
 
 # Colors
-GREEN = /bin/echo -e "\x1b[32m\#\# $1\x1b[0m"
-RED = /bin/echo -e "\x1b[31m\#\# $1\x1b[0m"
+GREEN = echo "\x1b[32m\#\# $1\x1b[0m"
+RED = echo "\x1b[31m\#\# $1\x1b[0m"
 
 ## —— 🔥 App ——
 init: ## Init the project
 	$(MAKE) start
 	$(MAKE) composer-install
 	$(MAKE) npm-install
+	$(MAKE) npm-build
 	@$(call GREEN,"The application is available at: http://127.0.0.1:8000/.")
 
 cache-clear: ## Clear cache
@@ -50,13 +51,9 @@ e2e-test: ## Run E2E tests
 	$(PHP) bin/phpunit --testdox tests/E2E/
 
 ## —— 🐳 Docker ——
-start: ## Start app
-	$(MAKE) docker-start 
 docker-start: 
 	$(DOCKER_COMPOSE) up -d
 
-stop: ## Stop app
-	$(MAKE) docker-stop
 docker-stop: 
 	$(DOCKER_COMPOSE) stop
 	@$(call RED,"The containers are now stopped.")
@@ -72,19 +69,16 @@ composer-update: ## Update dependencies
 npm-install: ## Install all npm dependencies
 	$(NPM) install
 
-npm-update: ## Update all npm dependencies
-	$(NPM) update
-
-npm-watch: ## Update all npm dependencies
-	$(NPM) run watch
+npm-build: ## Build the frontend files
+	$(NPM) run build
 
 ## —— 📊 Database ——
 database-init: ## Init database
 	$(MAKE) database-drop
 	$(MAKE) database-create
 	$(MAKE) database-import
-	$(MAKE) database-migrate
-	$(MAKE) database-fixtures-load
+	# $(MAKE) database-migrate
+	# $(MAKE) database-fixtures-load
 
 database-drop: ## Create database
 	$(SYMFONY_CONSOLE) d:d:d --force --if-exists
@@ -101,25 +95,15 @@ database-import: ## Make import
 	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
 	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
 	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
-## docker-compose --project-directory . --project-name caflyon -f docker-compose.yml exec -T db mariadb -Dcaf -uroot -ptest < ./legacy/config/
 
 database-migration: ## Make migration
 	$(SYMFONY_CONSOLE) make:migration
 
-migration: ## Alias : database-migration
-	$(MAKE) database-migration
-
 database-migrate: ## Migrate migrations
 	$(SYMFONY_CONSOLE) d:m:m --no-interaction
 
-migrate: ## Alias : database-migrate
-	$(MAKE) database-migrate
-
 database-fixtures-load: ## Load fixtures
 	$(SYMFONY_CONSOLE) --env=$(env) caf:fixtures:load $(email) resources/fixtures/$(env)/
-
-fixtures: ## Alias : database-fixtures-load
-	$(MAKE) database-fixtures-load
 
 ## —— 🛠️  Others ——
 help: ## List of commands

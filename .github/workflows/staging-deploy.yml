@@ -1,20 +1,23 @@
-name: CI/CD staging
+name: Deployment on staging 🚀
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: [Lint, Stan, Test]
+    types: [completed]
+
 env:
     DOMAIN: clubalpinlyon.top
+    BASE_PATH: /var/www/clubalpinlyon.top
+    DEPLOYMENT_PATH: /var/www/clubalpinlyon.top/deployments
 
 jobs:
   build:
-    name: Install dependencies, build assets, deploy on staging
+    name: Deploy on staging
     environment: staging
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup PHP, extensions and composer with shivammathur/setup-php
+      - name: Setup PHP, extensions and composer
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.2
@@ -23,14 +26,13 @@ jobs:
       - name: Check PHP Version
         run: php -v
 
-      - name: Environment for NPM
+      - name: Setup Node and NPM
         uses: actions/setup-node@v3
         with:
           node-version: "20"
 
       - name: NPM install & run build
         run: |
-          node -v
           npm ci --cache .npm --unsafe-perm --prefer-offline
           npm run build
 
@@ -47,19 +49,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
-      - name: Validate composer.json and composer.lock
-        run: composer validate
-
       - name: Copy environment files for staging
         run: |
           cp infrastructure/confs/staging/robots.txt public/robots.txt
           cp infrastructure/confs/staging/.env.prod .
-          cp legacy/config/www.clubalpinlyon.top/config.php legacy/config/config.php
+          cp legacy/config/www.${{ env.DOMAIN }}/config.php legacy/config/config.php
 
       - name: Replace variable for staging .env file
         run: |
           sed -i "s/DB_PASSWORD_TO_REPLACE/${{ secrets.AWS_DB_PASSWORD }}/g" .env.prod
-          sed -i "s/DEBUG_PARAM_TO_REPLACE/APP_DEBUG=false/g" .env.prod
+          sed -i "s/DEBUG_PARAM_TO_REPLACE/APP_DEBUG=true/g" .env.prod
 
       - name: Replace variable for staging config file
         run: |
@@ -75,19 +74,31 @@ jobs:
         uses: easingthemes/ssh-deploy@main
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          ARGS: "-rlgoDzvc -i --delete"
           SOURCE: "./"
           REMOTE_HOST: ${{ env.DOMAIN }}
           REMOTE_USER: "ec2-user"
-          TARGET: "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}"
-          EXCLUDE: "assets, node_modules, .circleci, .github, docker, .env.prod, .env.test, .git, infrastructure, Makefile, .npm, docker-compose.yml, .gitignore, package.json, package-lock.json, phive.xml, README.md, tests, translations, symfony.lock, webpack.config.js, matrice-des-droits.png, .php-cs-fixer.dist.php, phpstan.neon, phpunit.xml.dist"
-          SCRIPT_AFTER: |
-            whoami
-            chown -R ec2-user:apache /var/www/clubalpinlyon.top/deployments/${{ github.sha }}
-            ln -s "/var/www/clubalpinlyon.top/ftp" "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}/public"
-            ln -s "/var/www/clubalpinlyon.top/forum" "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}/public"
-            ln -s "/var/www/clubalpinlyon.top/ffcam-ftp-folder" "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}/legacy/config/www.clubalpinlyon.top/ffcam"
-            ln -s "/var/www/clubalpinlyon.top/ffcam-ftp-folder" "/var/www/clubalpinlyon.top/deployments/${{ github.sha }}/legacy/config/ffcam-ftp-folder"
-            unlink /var/www/clubalpinlyon.top/deployments/current
-            ln -s/var/www/clubalpinlyon.top/deployments/${{ github.sha }} /var/www/clubalpinlyon.fr/deployments/current
-            echo $RSYNC_STDOUT
+          TARGET: "${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}"
+          EXCLUDE: "assets, node_modules, .circleci, .github, docker, .env.prod, .env.test, .git, infrastructure, Makefile, .npm, docker-compose.yml, .gitignore, package.json, package-lock.json, phive.xml, README.md, tests, symfony.lock, webpack.config.js, matrice-des-droits.png, .php-cs-fixer.dist.php, phpstan.neon, phpunit.xml.dist"
+
+      - name: After Deployement = create symlinks, set permissions, run migrations and remove old releases
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ env.DOMAIN }}
+          username: "ec2-user"
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            sudo chown -R ec2-user:apache ${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}
+            mkdir -p ${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/var/cache/prod
+            mkdir -p ${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/var/log
+            sudo chmod -R 775 ${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/var
+
+            ln -s "${{ env.BASE_PATH }}/ftp" "${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/public"
+            ln -s "${{ env.BASE_PATH }}/forum" "${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/public"
+            ln -s "${{ env.BASE_PATH }}/ffcam-ftp-folder" "${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/legacy/config/www.${{ env.DOMAIN }}/ffcam"
+            ln -s "${{ env.BASE_PATH }}/ffcam-ftp-folder" "${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}/legacy/config/ffcam-ftp-folder"
+            unlink ${{ env.DEPLOYMENT_PATH }}/current
+            ln -s ${{ env.DEPLOYMENT_PATH }}/${{ github.sha }} ${{ env.DEPLOYMENT_PATH }}/current
+            ${{ env.DEPLOYMENT_PATH }}/current/bin/console doctrine:migrations:sync-metadata-storage --env=prod
+            ${{ env.DEPLOYMENT_PATH }}/current/bin/console doctrine:migrations:migrate --env=prod --no-interaction
+            ${{ env.DEPLOYMENT_PATH }}/current/bin/console messenger:setup-transports --env=prod
+            find ${{ env.DEPLOYMENT_PATH }} -mindepth 1 -maxdepth 1 ! -regex '^${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}\(/.*\)?' -type d -exec echo rm -rf '{}' \;

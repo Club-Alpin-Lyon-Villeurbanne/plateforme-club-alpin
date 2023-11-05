@@ -13,7 +13,7 @@ return [
         'pass' => null,
     ],
     'db' => [
-        'host' => 'caf-db.caf',
+        'host' => 'db_caflyon',
         'port' => 3306,
         'user' => 'root',
         'password' => 'test',
