@@ -18,7 +18,7 @@ init: ## Init the project
 	$(MAKE) composer-install
 	$(MAKE) npm-install
 	$(MAKE) npm-build
-	@$(call GREEN,"The application is available at: http://127.0.0.1:8000/.")
+	@$(call GREEN,"Le site du Club est lancé : http://127.0.0.1:8000/ 🚀")
 
 cache-clear: ## Clear cache
 	$(SYMFONY_CONSOLE) cache:clear
@@ -27,9 +27,7 @@ cache-clear: ## Clear cache
 .PHONY: tests
 tests: ## Run all tests
 	$(MAKE) database-init-test
-	$(PHP) bin/phpunit --testdox tests/Unit/
-	$(PHP) bin/phpunit --testdox tests/Functional/
-	$(PHP) bin/phpunit --testdox tests/E2E/
+	$(MAKE) unit-test
 
 database-init-test: ## Init database for test
 	$(SYMFONY_CONSOLE) d:d:d --force --if-exists --env=test
@@ -39,16 +37,7 @@ database-init-test: ## Init database for test
 
 unit-test: ## Run unit tests
 	$(MAKE) database-init-test
-	$(PHP) bin/phpunit --testdox tests/Unit/
-
-functional-test: ## Run functional tests
-	$(MAKE) database-init-test
-	$(PHP) bin/phpunit --testdox tests/Functional/
-
-# PANTHER_NO_HEADLESS=1 ./bin/phpunit --filter LikeTest --debug to debug with Chrome
-e2e-test: ## Run E2E tests
-	$(MAKE) database-init-test
-	$(PHP) bin/phpunit --testdox tests/E2E/
+	$(PHP) bin/phpunit --testdox tests
 
 ## —— 🐳 Docker ——
 docker-start: 

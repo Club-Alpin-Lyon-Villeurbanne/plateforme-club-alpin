@@ -1,7 +1,7 @@
 name: Deployment on staging 🚀
 on:
   workflow_run:
-    workflows: [Lint, Stan, Test]
+    workflows: [Lint, Test]
     types: [completed]
 
 env:
