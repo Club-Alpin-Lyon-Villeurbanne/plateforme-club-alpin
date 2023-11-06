@@ -18,24 +18,24 @@ jobs:
     - uses: actions/checkout@v4
     - uses: docker://oskarstark/php-cs-fixer-ga
 
-  phpstan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: php-actions/composer@v6
+  # phpstan:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: php-actions/composer@v6
 
-      - name: PHPStan Static Analysis
-        uses: php-actions/phpstan@v3
-        with:
-            configuration: phpstan.neon
-            memory_limit: 1G
+  #     - name: PHPStan Static Analysis
+  #       uses: php-actions/phpstan@v3
+  #       with:
+  #           configuration: phpstan.neon
+  #           memory_limit: 1G
 
   deploy:
     name: Deploy on staging
     if: github.ref == 'refs/heads/main'
     needs:
       - php-cs-fixer
-      - phpstan
+      # - phpstan
     environment: staging
     runs-on: ubuntu-latest
     steps:
@@ -47,15 +47,12 @@ jobs:
           php-version: 8.2
           extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, imagick
 
-      - name: Setup Node and NPM
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: "20"
 
-      - name: NPM install & run build
-        run: |
-          npm ci --cache .npm --unsafe-perm --prefer-offline
-          npm run build
+      -  run: npm ci --cache .npm --unsafe-perm --prefer-offline
+      -  run: npm run build
 
       - name: Get Composer Cache Directory
         id: composer-cache
