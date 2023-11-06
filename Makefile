@@ -30,8 +30,8 @@ tests: ## Run all tests
 	$(MAKE) unit-test
 
 database-init-test: ## Init database for test
-	$(SYMFONY_CONSOLE) d:d:d --force --if-exists --env=test
-	$(SYMFONY_CONSOLE) d:d:c --env=test
+	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists --env=test
+	$(SYMFONY_CONSOLE) doctrine:database:create --env=test
 	$(SYMFONY_CONSOLE) d:m:m --no-interaction --env=test
 	$(SYMFONY_CONSOLE) d:f:l --no-interaction --env=test
 
@@ -66,17 +66,14 @@ database-init: ## Init database
 	$(MAKE) database-drop
 	$(MAKE) database-create
 	$(MAKE) database-import
-	# $(MAKE) database-migrate
+	$(MAKE) database-migrate
 	# $(MAKE) database-fixtures-load
 
 database-drop: ## Create database
-	$(SYMFONY_CONSOLE) d:d:d --force --if-exists
+	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists
 
 database-create: ## Create database
-	$(SYMFONY_CONSOLE) d:d:c --if-not-exists
-
-database-remove: ## Drop database
-	$(SYMFONY_CONSOLE) d:d:d --force --if-exists
+	$(SYMFONY_CONSOLE) doctrine:database:create --if-not-exists
 
 database-import: ## Make import
 	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.sql
@@ -84,13 +81,13 @@ database-import: ## Make import
 	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
 	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
 	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
-	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.sessions.sql
+	# $(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.sessions.sql
 
 database-migration: ## Make migration
 	$(SYMFONY_CONSOLE) make:migration
 
 database-migrate: ## Migrate migrations
-	$(SYMFONY_CONSOLE) d:m:m --no-interaction
+	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction
 
 database-fixtures-load: ## Load fixtures
 	$(SYMFONY_CONSOLE) --env=$(env) caf:fixtures:load $(email) resources/fixtures/$(env)/
