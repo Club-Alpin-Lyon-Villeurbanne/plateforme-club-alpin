@@ -8,6 +8,8 @@ services:
             MARIADB_ROOT_PASSWORD: test
             MARIADB_DATABASE: caf
         restart: always
+        ports:
+            - 3306:33081
         volumes:
             - ./db:/var/lib/mysql
         networks:

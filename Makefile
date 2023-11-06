@@ -81,7 +81,6 @@ database-import: ## Make import
 	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
 	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
 	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
-	# $(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.sessions.sql
 
 database-migration: ## Make migration
 	$(SYMFONY_CONSOLE) make:migration
