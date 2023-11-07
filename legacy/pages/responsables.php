@@ -47,7 +47,7 @@ foreach ($comTab as $code => $data) {
 					AND user_user_attr = id_user
 					AND doit_renouveler_user = 0
 					AND params_user_attr LIKE 'commission:".$code."'
-					ORDER BY hierarchie_usertype DESC, lastname_user ASC
+					ORDER BY hierarchie_usertype DESC, firstname_user ASC
 					";
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
