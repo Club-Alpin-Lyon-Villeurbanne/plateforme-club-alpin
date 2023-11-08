@@ -1,7 +1,16 @@
 version: "3"
 
 services:
-    db:
+    cafsite:
+        build: docker
+        container_name: www_caflyon
+        ports:
+            - "8000:80"
+        volumes:
+            - ./docker/vhosts:/etc/apache2/sites-enabled
+            - ./:/var/www
+
+    cafdb:
         image: mariadb
         container_name: db_caflyon
         environment:
@@ -9,11 +18,7 @@ services:
             MARIADB_DATABASE: caf
         restart: always
         ports:
-            - 3306:33081
-        volumes:
-            - ./db:/var/lib/mysql
-        networks:
-            - dev
+            - 33066:3306
 
     phpmyadmin:
         image: phpmyadmin
@@ -24,30 +29,8 @@ services:
             - 8080:80
         environment:
             PMA_HOST: db
-        networks:
-            - dev
-
-    www:
-        build: docker
-        container_name: www_caflyon
-        ports:
-            - "8000:80"
-        volumes:
-            - ./docker/vhosts:/etc/apache2/sites-enabled
-            - ./:/var/www
-        links:
-            - db
-        networks:
-            - dev
+            UPLOAD_LIMIT: 64M
 
     mailcatcher:
         image: schickling/mailcatcher
         container_name: mail_caflyon
-        networks:
-        - dev
-        environment:
-        - VIRTUAL_HOST=mailcatcher.caf
-        - VIRTUAL_PORT=1080
-
-networks:
-    dev:

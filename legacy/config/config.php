@@ -6,8 +6,8 @@ return [
     'url' => 'http://cafsite.caf',
     'use_smtp' => true,
     'smtp_conf' => [
-        'host' => 'mailcatcher.caf',
-        'port' => '25',
+        'host' => 'mail_caflyon',
+        'port' => '1025',
         'ssl' => false,
         'user' => null,
         'pass' => null,
