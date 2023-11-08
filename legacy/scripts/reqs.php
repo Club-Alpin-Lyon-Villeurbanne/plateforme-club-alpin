@@ -1241,7 +1241,7 @@ elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1
         .('expired' == $show ? ' WHERE valid_user=0 AND doit_renouveler_user=1 ' : '')
         .('valid-expired' == $show ? ' WHERE valid_user=1 AND doit_renouveler_user=1 ' : '')
         .' ORDER BY lastname_user ASC, lastname_user ASC
-		LIMIT 8000';			// , pays_user
+		LIMIT 9000';			// , pays_user
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $handleSql->fetch_assoc()) {

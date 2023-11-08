@@ -110,7 +110,7 @@ if (user()) {
 							WHERE nomade_user!=1'
                             .($showAll ? '' : ' AND valid_user=1 ')
                             .' ORDER BY lastname_user ASC
-							LIMIT 8000';
+							LIMIT 9000';
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($elt = $result->fetch_assoc()) {
 				$userId = isset($elt['id_user']) ? (int) $elt['id_user'] : 0;
