@@ -566,8 +566,8 @@
                                         </td>
                                         <td>
                                             <a href="mailto:{{ participant.user.email }}">{{ participant.user.email | u.truncate(15, '...') }}</a><br />
-                                            {{ participant.user.tel }}<br />
-                                            {{ participant.user.tel2 }}
+                                            {{ participant.user.tel|split('', 2)|join(' ') }}<br />
+                                            {{ participant.user.tel2|split('', 2)|join(' ') }}
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -898,11 +898,11 @@
                             </td>
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
-                                    {{ inscrit.user.tel }}
+                                    {{ inscrit.user.tel|split('', 2)|join(' ') }}
                                 {% endif %}
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
-                                    {{ inscrit.user.tel2 }}
+                                    {{ inscrit.user.tel2|split('', 2)|join(' ') }}
                                 {% endif %}
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
@@ -928,11 +928,11 @@
                                 </td>
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}
-                                        {{ inscrit.user.tel }}
+                                        {{ inscrit.user.tel|split('', 2)|join(' ') }}
                                     {% endif %}
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}
-                                        {{ inscrit.user.tel2 }}
+                                        {{ inscrit.user.tel2|split('', 2)|join(' ') }}
                                     {% endif %}
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}
