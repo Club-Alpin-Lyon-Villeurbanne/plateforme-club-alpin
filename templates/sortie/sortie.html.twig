@@ -566,9 +566,9 @@
                                         </td>
                                         <td>
                                             <a href="mailto:{{ participant.user.email }}">{{ participant.user.email | u.truncate(15, '...') }}</a><br />
-                                            {% set formattedTel = participant.user.tel|replace({'0033': '0', '+33': '0'})|split('', 2)|join(' ') %}
+                                            {% set formattedTel = participant.user.tel|split('', 2)|join(' ') %}
                                             {{ formattedTel }}<br />
-                                            {% set formattedTel2 = participant.user.tel2|replace({'0033': '0', '+33': '0'})|split('', 2)|join(' ') %}
+                                            {% set formattedTel2 = participant.user.tel2|split('', 2)|join(' ') %}
                                             {{ formattedTel2 }}
                                         </td>
                                     </tr>
@@ -900,12 +900,12 @@
                             </td>
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
-                                    {% set formattedTel = inscrit.user.tel|replace({'0033': '0', '+33': '0'})|split('', 2)|join(' ') %}
+                                    {% set formattedTel = inscrit.user.tel|split('', 2)|join(' ') %}
                                     {{ formattedTel }}
                                 {% endif %}
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
-                                    {% set formattedTel2 = inscrit.user.tel2|replace({'0033': '0', '+33': '0'})|split('', 2)|join(' ') %}
+                                    {% set formattedTel2 = inscrit.user.tel2|split('', 2)|join(' ') %}
                                     {{ formattedTel2 }}
                                 {% endif %}
                             <td class="small">
@@ -932,12 +932,12 @@
                                 </td>
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}
-                                        {% set formattedTel = inscrit.user.tel|replace({'0033': '0', '+33': '0'})|split('', 2)|join(' ') %}
+                                        {% set formattedTel = inscrit.user.tel|split('', 2)|join(' ') %}
                                         {{ formattedTel }}
                                     {% endif %}
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}
-                                        {% set formattedTel2 = inscrit.user.tel2|replace({'0033': '0', '+33': '0'})|split('', 2)|join(' ') %}
+                                        {% set formattedTel2 = inscrit.user.tel2|split('', 2)|join(' ') %}
                                         {{ formattedTel2 }}
                                     {% endif %}
                                 <td class="small">
