@@ -6,7 +6,7 @@ PHP = $(EXEC) php
 COMPOSER = $(EXEC) composer
 NPM = $(EXEC) npm
 SYMFONY_CONSOLE = $(PHP) bin/console
-MARIADB = $(DOCKER_COMPOSE) --project-directory . --project-name caflyon -f docker-compose.yml exec -T db mariadb
+MARIADB = $(DOCKER_COMPOSE) --project-directory . --project-name caflyon -f docker-compose.yml exec -T cafdb mariadb
 
 # Colors
 GREEN = echo "\x1b[32m\#\# $1\x1b[0m"
@@ -27,17 +27,21 @@ cache-clear: ## Clear cache
 .PHONY: tests
 tests: ## Run all tests
 	$(MAKE) database-init-test
-	$(MAKE) unit-test
+	$(PHP) bin/phpunit tests
 
 database-init-test: ## Init database for test
+
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists --env=test
 	$(SYMFONY_CONSOLE) doctrine:database:create --env=test
-	$(SYMFONY_CONSOLE) d:m:m --no-interaction --env=test
-	$(SYMFONY_CONSOLE) d:f:l --no-interaction --env=test
+	# $(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.sql
+	# $(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
+	# $(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
+	# $(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
+	# $(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
+	$(SYMFONY_CONSOLE) doctrine:schema:update --force --env=test
+	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction --env=test
+	$(SYMFONY_CONSOLE) doctrine:fixtures:load --no-interaction --env=test
 
-unit-test: ## Run unit tests
-	$(MAKE) database-init-test
-	$(PHP) bin/phpunit --testdox tests
 
 ## —— 🐳 Docker ——
 docker-start: 
@@ -67,7 +71,6 @@ database-init: ## Init database
 	$(MAKE) database-create
 	$(MAKE) database-import
 	$(MAKE) database-migrate
-	# $(MAKE) database-fixtures-load
 
 database-drop: ## Create database
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists
@@ -89,7 +92,7 @@ database-migrate: ## Migrate migrations
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction
 
 database-fixtures-load: ## Load fixtures
-	$(SYMFONY_CONSOLE) --env=$(env) caf:fixtures:load $(email) resources/fixtures/$(env)/
+	$(SYMFONY_CONSOLE) --env=$(env) doctrine:fixtures:load $(email) resources/fixtures/$(env)/
 
 ## —— 🛠️  Others ——
 help: ## List of commands
