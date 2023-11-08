@@ -23,8 +23,6 @@ services:
     phpmyadmin:
         image: phpmyadmin
         container_name: phpmyadmin_caflyon
-        depends_on:
-            - db
         ports:
             - 8080:80
         environment:
@@ -34,3 +32,5 @@ services:
     mailcatcher:
         image: schickling/mailcatcher
         container_name: mail_caflyon
+        ports:
+            - 1081:1080
