@@ -566,10 +566,8 @@
                                         </td>
                                         <td>
                                             <a href="mailto:{{ participant.user.email }}">{{ participant.user.email | u.truncate(15, '...') }}</a><br />
-                                            {% set formattedTel = participant.user.tel|split('', 2)|join(' ') %}
-                                            {{ formattedTel }}<br />
-                                            {% set formattedTel2 = participant.user.tel2|split('', 2)|join(' ') %}
-                                            {{ formattedTel2 }}
+                                            {{ participant.user.tel|split('', 2)|join(' ') }}<br />
+                                            {{ participant.user.tel2|split('', 2)|join(' ') }}
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -900,13 +898,11 @@
                             </td>
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
-                                    {% set formattedTel = inscrit.user.tel|split('', 2)|join(' ') %}
-                                    {{ formattedTel }}
+                                    {{ inscrit.user.tel|split('', 2)|join(' ') }}
                                 {% endif %}
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
-                                    {% set formattedTel2 = inscrit.user.tel2|split('', 2)|join(' ') %}
-                                    {{ formattedTel2 }}
+                                    {{ inscrit.user.tel2|split('', 2)|join(' ') }}
                                 {% endif %}
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
@@ -932,13 +928,11 @@
                                 </td>
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}
-                                        {% set formattedTel = inscrit.user.tel|split('', 2)|join(' ') %}
-                                        {{ formattedTel }}
+                                        {{ inscrit.user.tel|split('', 2)|join(' ') }}
                                     {% endif %}
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}
-                                        {% set formattedTel2 = inscrit.user.tel2|split('', 2)|join(' ') %}
-                                        {{ formattedTel2 }}
+                                        {{ inscrit.user.tel2|split('', 2)|join(' ') }}
                                     {% endif %}
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}
