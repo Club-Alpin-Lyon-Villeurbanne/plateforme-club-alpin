@@ -97,7 +97,7 @@ if (!admin() && !allowed('user_edit_notme')) {
  -->
 			Numéro de licence :<br />
 			<input type="text" name="cafnum_user" class="type1" value="<?php echo $userTab['cafnum_user']; ?>" placeholder="" /> à inverser avec le nouveau numéro
-			<input type="text" name="cafnum_user_new" class="type1" value="<?php echo $userTab['cafnum_user_new']; ?>" placeholder="" />
+			<input type="text" name="cafnum_user_new" class="type1" value="<?php if( isset($userTab['cafnum_user_new'])) echo $userTab['cafnum_user_new']; ?>" placeholder="" />
 			<br />
 
 			<!--

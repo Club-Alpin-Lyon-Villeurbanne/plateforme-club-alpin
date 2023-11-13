@@ -22,7 +22,7 @@ if (!$id_user || !$id_evt) {
 }
 
 // CGUs
-if ('on' != $_POST['confirm']) {
+if (isset($_POST['confirm']) && 'on' != $_POST['confirm']) {
     $errTab[] = "Merci de cocher la case &laquo; J'ai lu les conditions...&raquo;";
 }
 

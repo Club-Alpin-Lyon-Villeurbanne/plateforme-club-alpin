@@ -52,7 +52,7 @@ if (user()) {
 					var prefilled = new Array();
 				</script>
 				<select name="id_user" class="type1" style="width:40%">
-					<option value="0" <?php if ('0' == $_POST['id_user']) {
+					<option value="0" <?php if (isset($_POST['id_user']) && '0' == $_POST['id_user']) {
 					    echo 'selected="selected"';
 					} ?>>- Non merci, créer un nouvel adhérent nomade</option>
 					<?php
@@ -93,13 +93,13 @@ if (user()) {
 			<div class="tiers clear">
 				<b>Civilité :</b><br />
 				<select name="civ_user" class="type1" style="width:30%">
-					<option value="M." <?php if ('M.' == $_POST['civ_user']) {
+					<option value="M." <?php if (isset($_POST['civ_user']) && 'M.' == $_POST['civ_user']) {
 					    echo 'selected="selected"';
 					} ?>>M.</option>
-					<option value="Mme." <?php if ('Mme.' == $_POST['civ_user']) {
+					<option value="Mme." <?php if (isset($_POST['civ_user']) && 'Mme.' == $_POST['civ_user']) {
 					    echo 'selected="selected"';
 					} ?>>Mme.</option>
-					<option value="Mlle." <?php if ('Mlle.' == $_POST['civ_user']) {
+					<option value="Mlle." <?php if (isset($_POST['civ_user']) && 'Mlle.' == $_POST['civ_user']) {
 					    echo 'selected="selected"';
 					} ?>>Mlle.</option>
 				</select>
