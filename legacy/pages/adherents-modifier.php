@@ -12,7 +12,7 @@ if (!admin() && !allowed('user_edit_notme')) {
         exit;
     }
 
-    if (null === $userTab || 0 === count($userTab)) {
+    if (empty($userTab)) {
         $req = "SELECT * FROM  `caf_user` WHERE id_user='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($id_user)."' LIMIT 1";
         $userTab = [];
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
