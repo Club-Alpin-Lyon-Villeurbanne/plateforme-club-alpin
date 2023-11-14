@@ -163,7 +163,7 @@ if (user()) {
             // print_r($_POST['id_user']);
             // rien de sélectionné
             if (!count($_POST['id_user'])) {
-                if ('success' == $_POST['result']) {
+                if (isset($_POST['result']) && 'success' == $_POST['result']) {
                     unset($_POST['result']);
                     echo '<p class="erreur">Aucune donnée reçue. <a href="'.$versCettePage.'">Retour</a></p>';
                 } else {

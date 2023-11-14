@@ -12,7 +12,7 @@ if (!admin() && !allowed('user_edit_notme')) {
         exit;
     }
 
-    if (null === $userTab || 0 === count($userTab)) {
+    if (empty($userTab)) {
         $req = "SELECT * FROM  `caf_user` WHERE id_user='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($id_user)."' LIMIT 1";
         $userTab = [];
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -97,7 +97,7 @@ if (!admin() && !allowed('user_edit_notme')) {
  -->
 			Numéro de licence :<br />
 			<input type="text" name="cafnum_user" class="type1" value="<?php echo $userTab['cafnum_user']; ?>" placeholder="" /> à inverser avec le nouveau numéro
-			<input type="text" name="cafnum_user_new" class="type1" value="<?php echo $userTab['cafnum_user_new']; ?>" placeholder="" />
+			<input type="text" name="cafnum_user_new" class="type1" value="<?php if( isset($userTab['cafnum_user_new'])) echo $userTab['cafnum_user_new']; ?>" placeholder="" />
 			<br />
 
 			<!--

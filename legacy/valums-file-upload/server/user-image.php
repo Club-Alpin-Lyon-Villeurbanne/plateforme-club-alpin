@@ -21,7 +21,7 @@ if (0 === count($errTab)) {
     $uploader = new qqFileUploader();
     $result = $uploader->handleUpload($targetDir);
 
-    if ($result['error']) {
+    if (isset($result['error'])) {
         $errTab[] = $result['error'];
     }
 }
