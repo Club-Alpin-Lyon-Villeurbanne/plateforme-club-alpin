@@ -84,14 +84,6 @@ jobs:
           composer install --no-dev --no-progress --no-scripts --prefer-dist -a --apcu-autoloader
           composer dump-env prod
 
-      # - name: PHPUnit Tests
-      #   uses: php-actions/phpunit@master
-      #   with:
-      #     version: 9.6
-      #     bootstrap: vendor/autoload.php
-      #     configuration: phpunit.xml.dist
-      #     args: --coverage-text
-
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
         with:

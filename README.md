@@ -79,7 +79,7 @@ Les identifiants sont stockés sur notre compte bitwarden.
 - vous avez désormais accès au site sur `http://127.0.0.1:8000/`
 - PHPMyAdmin sur `http://127.0.0.1:8080/`, les accès à PHPMyAdmin sont `root` - `test`
 - Mailcatcher sur `http://127.0.0.1:1080/` pour visualiser les mails envoyés
-- Un compte admin a été créé automatiquement sur le site avec les identifiants suivants: "contact@herewecom.com" et mot de passe "test"
+- Un compte admin a été créé automatiquement sur le site avec les identifiants suivants: "test@clubalpinlyon.fr" et mot de passe "test"
 
 ⚠️ le setup pour lancer les tests ne fonctionne pas encore, il est en cours de refacto 🚧
 

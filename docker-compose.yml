@@ -14,11 +14,9 @@ services:
         image: mariadb
         container_name: db_caflyon
         environment:
-            MARIADB_ROOT_PASSWORD: test
-            MARIADB_DATABASE: caf
+            MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
+            MARIADB_DATABASE: ${DB_NAME}
         restart: always
-        ports:
-            - 33066:3306
 
     phpmyadmin:
         image: phpmyadmin
@@ -26,8 +24,8 @@ services:
         ports:
             - 8080:80
         environment:
-            PMA_HOST: db_caflyon
-            UPLOAD_LIMIT: 64M
+            PMA_HOST: ${DB_HOST}
+            UPLOAD_LIMIT: ${UPLOAD_LIMIT}
 
     mailcatcher:
         image: schickling/mailcatcher
