@@ -82,6 +82,7 @@ Les identifiants sont stockés sur notre compte bitwarden.
 - Un compte admin a été créé automatiquement sur le site avec les identifiants suivants: "test@clubalpinlyon.fr" et mot de passe "test"
 
 ⚠️ le setup pour lancer les tests ne fonctionne pas encore, il est en cours de refacto 🚧
+⚠️ l'upload des images avec ce setup ne fonctionne pas encore. Nous y travaillons. 🚧
 
 
 ## 👋 Contribution au projet
