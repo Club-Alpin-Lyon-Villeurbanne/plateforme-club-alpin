@@ -41,18 +41,18 @@
         $size_compl = strlen($compl);
         $new_title = substr($title, 0, 64 - $size_compl).$compl;
 
-        if ($evt['joins']['encadrant'][0]) {
+        if (isset($evt['joins']['encadrant'][0])) {
             $encadrant_name = $evt['joins']['encadrant'][0]['firstname_user'].' '.$evt['joins']['encadrant'][0]['lastname_user'];
-        } elseif ($evt['joins']['stagiaire'][0]) {
+        } elseif (isset($evt['joins']['stagiaire'][0])) {
             $encadrant_name = $evt['joins']['stagiaire'][0]['firstname_user'].' '.$evt['joins']['stagiaire'][0]['lastname_user'];
-        } elseif ($evt['joins']['coencadrant'][0]) {
+        } elseif (isset($evt['joins']['coencadrant'][0])) {
             $encadrant_name = $evt['joins']['coencadrant'][0]['firstname_user'].' '.$evt['joins']['coencadrant'][0]['lastname_user'];
         }
-        if ($evt['joins']['encadrant'][0]) {
+        if (isset($evt['joins']['encadrant'][0])) {
             $encadrant_email = $evt['joins']['encadrant'][0]['email_user'];
-        } elseif ($evt['joins']['stagiaire'][0]) {
+        } elseif (isset($evt['joins']['stagiaire'][0])) {
             $encadrant_email = $evt['joins']['stagiaire'][0]['email_user'];
-        } elseif ($evt['joins']['coencadrant'][0]) {
+        } elseif (isset($evt['joins']['coencadrant'][0])) {
             $encadrant_email = $evt['joins']['coencadrant'][0]['email_user'];
         } ?>
 

@@ -331,7 +331,7 @@ if ('1' != $evt['cancelled_evt']) {
                 if ($droitDeModif) {
                     ?>
                     <p class="mini">
-                        <input type="checkbox" name="disablemails" <?php if ('on' == $_POST['disablemails']) {
+                        <input type="checkbox" name="disablemails" <?php if (isset($_POST['disablemails']) && 'on' == $_POST['disablemails']) {
                             echo 'checked="checked"';
                         } ?> />
                         Ne pas envoyer les e-mails lors de la mise à jour (déconseillé, sauf après l'événement).
@@ -378,16 +378,16 @@ if ('1' != $evt['cancelled_evt']) {
                         echo '<p class="info">Votre message a bien été envoyé.</p>';
                     } ?>
 
-                        <input type="radio" name="status_sendmail" id="status_sendmail_1" value="1" <?php if ('evt_user_contact' != ($_POST['operation'] ?? null) || '1' == $_POST['status_sendmail']) {
+                        <input type="radio" name="status_sendmail" id="status_sendmail_1" value="1" <?php if ('evt_user_contact' != ($_POST['operation'] ?? null) || isset($_POST['status_sendmail']) && '1' == $_POST['status_sendmail']) {
                             echo 'checked="checked"';
                         } ?> /><label for="status_sendmail_1"> Envoyer uniquement aux adhérents confirmés pour la sortie</label><br />
-                        <input type="radio" name="status_sendmail" id="status_sendmail_2" value="2" <?php if ('2' == $_POST['status_sendmail']) {
+                        <input type="radio" name="status_sendmail" id="status_sendmail_2" value="2" <?php if (isset($_POST['status_sendmail']) && '2' == $_POST['status_sendmail']) {
                             echo 'checked="checked"';
                         } ?> /><label for="status_sendmail_2"> Envoyer uniquement aux adhérents refusés/absents</label><br />
-                        <input type="radio" name="status_sendmail" id="status_sendmail_0" value="0" <?php if ('0' == $_POST['status_sendmail']) {
+                        <input type="radio" name="status_sendmail" id="status_sendmail_0" value="0" <?php if (isset($_POST['status_sendmail']) && '0' == $_POST['status_sendmail']) {
                             echo 'checked="checked"';
                         } ?> /><label for="status_sendmail_0"> Envoyer uniquement aux adhérents en attente de confirmation</label><br />
-                        <input type="radio" name="status_sendmail" id="status_sendmail_all" value="*" <?php if ('*' == $_POST['status_sendmail']) {
+                        <input type="radio" name="status_sendmail" id="status_sendmail_all" value="*" <?php if (isset($_POST['status_sendmail']) && '*' == $_POST['status_sendmail']) {
                             echo 'checked="checked"';
                         } ?> /><label for="status_sendmail_all"> Envoyer à toute la liste des inscrits, confirmés ou non</label><br />
 
