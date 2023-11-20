@@ -1,6 +1,10 @@
 # Variables
 DOCKER = docker
-DOCKER_COMPOSE = docker-compose
+ifneq ($(shell docker compose version 2>/dev/null),)
+  DOCKER_COMPOSE=docker compose
+else
+  DOCKER_COMPOSE=docker-compose
+endif
 EXEC = $(DOCKER) exec -w /var/www www_caflyon
 PHP = $(EXEC) php
 COMPOSER = $(EXEC) composer
@@ -33,12 +37,11 @@ database-init-test: ## Init database for test
 
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists --env=test
 	$(SYMFONY_CONSOLE) doctrine:database:create --env=test
-	# $(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.sql
-	# $(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
-	# $(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
-	# $(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
-	# $(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
-	$(SYMFONY_CONSOLE) doctrine:schema:update --force --env=test
+	$(MARIADB) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.sql
+	$(MARIADB) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
+	$(MARIADB) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
+	$(MARIADB) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
+	$(MARIADB) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction --env=test
 	$(SYMFONY_CONSOLE) doctrine:fixtures:load --no-interaction --env=test
 

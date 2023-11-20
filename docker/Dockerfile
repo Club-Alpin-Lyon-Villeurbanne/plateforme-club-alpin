@@ -53,8 +53,5 @@ RUN pecl install apcu && docker-php-ext-enable apcu
 RUN pecl install imagick && docker-php-ext-enable imagick
 
 COPY ./utils/docker-999-php.ini $PHP_INI_DIR/conf.d/999-php.ini
-# Use the default development configuration
-RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
-
 
 WORKDIR /var/www/

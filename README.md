@@ -80,6 +80,7 @@ Les identifiants sont stockés sur notre compte bitwarden.
 - PHPMyAdmin sur `http://127.0.0.1:8080/`, les accès à PHPMyAdmin sont `root` - `test`
 - Mailcatcher sur `http://127.0.0.1:1080/` pour visualiser les mails envoyés
 - Un compte admin a été créé automatiquement sur le site avec les identifiants suivants: "test@clubalpinlyon.fr" et mot de passe "test"
+- Les logs de symfony sont dispo avec un `tail -f var/log/dev.log`
 
 ⚠️ le setup pour lancer les tests ne fonctionne pas encore, il est en cours de refacto 🚧
 ⚠️ l'upload des images avec ce setup ne fonctionne pas encore. Nous y travaillons. 🚧
