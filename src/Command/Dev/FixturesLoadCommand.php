@@ -68,7 +68,7 @@ class FixturesLoadCommand extends Command
             ->findOneByCode('developpeur');
         $mainUser = $em
             ->getRepository(User::class)
-            ->findOneByEmail('contact@herewecom.fr')
+            ->findOneByEmail('test@clubalpinlyon.fr')
             ->addAttribute($userType);
         $em->flush();
 
