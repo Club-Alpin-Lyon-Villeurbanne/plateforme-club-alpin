@@ -92,7 +92,7 @@ jobs:
           REMOTE_HOST: ${{ env.DOMAIN }}
           REMOTE_USER: "ec2-user"
           TARGET: "${{ env.DEPLOYMENT_PATH }}/${{ github.sha }}"
-          EXCLUDE: "assets, node_modules, .circleci, .github, docker, .env.prod, .env.test, .git, infrastructure, Makefile, .npm, docker-compose.yml, .gitignore, package.json, package-lock.json, phive.xml, README.md, tests, symfony.lock, webpack.config.js, matrice-des-droits.png, .php-cs-fixer.dist.php, phpstan.neon, phpunit.xml.dist"
+          EXCLUDE: "assets, node_modules, .github, docker, .env.prod, .env.test, .git, infrastructure, Makefile, .npm, docker-compose.yml, .gitignore, package.json, package-lock.json, phive.xml, README.md, tests, symfony.lock, webpack.config.js, matrice-des-droits.png, .php-cs-fixer.dist.php, phpstan.neon, phpunit.xml.dist"
 
       - name: After Deployement = create symlinks, set permissions, run migrations and remove old releases
         uses: appleboy/ssh-action@v1.0.0
