@@ -1,60 +1,34 @@
-version: '3.5'
-
-networks:
-    default:
-        name: caf
+version: "3"
 
 services:
     cafsite:
-        build:
-            context: docker
-        restart: unless-stopped
-        command: apache2-foreground
-        volumes:
-            - ./:/var/www/html
-            - ~/.phive:/var/www/.phive
-            - ~/.composer:/var/www/.composer
+        build: docker
+        container_name: www_caflyon
         ports:
-            - "8081:80"
-            - "443:443"
-        links:
-            - caf-db:db
-        networks:
-            default: ~
+            - "8000:80"
+        volumes:
+            - ./docker/vhosts:/etc/apache2/sites-enabled
+            - ./:/var/www
+
+    cafdb:
+        image: mariadb
+        container_name: db_caflyon
         environment:
-            APP_USER_ID: 1000
-            APP_GROUP_ID: 1000
+            MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
+            MARIADB_DATABASE: ${DB_NAME}
+        restart: always
 
     phpmyadmin:
-        image: phpmyadmin/phpmyadmin
+        image: phpmyadmin
+        container_name: phpmyadmin_caflyon
         ports:
-            - "8181:80"
-        links:
-            - caf-db:db
+            - 8080:80
         environment:
-            PMA_HOST: caf-db
-            MYSQL_ROOT_PASSWORD: test
-        networks:
-            default: ~
-
-    caf-db:
-        image: mariadb:11.1.2
-        environment:
-            MARIADB_ROOT_PASSWORD: test
-            MARIADB_DATABASE: caf
-        volumes:
-            - ./db:/var/lib/mysql
+            PMA_HOST: ${DB_HOST}
+            UPLOAD_LIMIT: ${UPLOAD_LIMIT}
 
     mailcatcher:
-        image: jderusse/mailcatcher
-
-    assets:
-        build: docker/assets
-        environment:
-            WEBPACK_DOMAIN: "assets.caf"
-            WEBPACK_WATCH_USE_POLLING: "true"
-            WEBPACK_CACHE_DIRECTORY: "/tmp"
+        image: schickling/mailcatcher
+        container_name: mail_caflyon
         ports:
-            - '${WEBPACK_PORT}'
-        volumes:
-            - ./:/srv:delegated
+            - 1081:1080

@@ -8,6 +8,7 @@ Ce site est un portail dédié à notre communauté, offrant une multitude de fo
 Le site a été développé en php par l'agence HereWeCom il y a quelques années (environ 2010) et ils nous ont ensuite donné le code.
 Un refactoring important a été effectué pour y intégrer le framework symfony.
 Il utilise une base mariadb.
+Le tout est hébergé chez AWS et déploié automatiquement par Github Actions.
 
 ## organisation du projet
 
@@ -21,11 +22,11 @@ L'infrastructure de ce site est gérée par Terraform dans le repo [`infrastruct
 
 ## Deployement
 
-Le deployement se fait automatiquement par [circleci](https://circleci.com/gh/Club-Alpin-Lyon-Villeurbanne/caflyon/tree/main).  
-Pusher un commit (ou mergé une PR) sur la branche `main` lancer le deployment [sur l'env de dev](https://www.clubalpinlyon.top).  
-Pusher un commit (ou mergé une PR) sur la branche `production` lancer le deployment [sur l'env de production](https://www.clubalpinlyon.fr).  
-CircleCI va remplacer les credentials pour la DB par les vrais puis enverra en FTP les fichiers sur le server.  
-Les secrets (mot de passe de db, mot de passe ftp, etc...) sont stockés en tant [que variable d'environment dans circleci](https://app.circleci.com/settings/project/github/Club-Alpin-Lyon-Villeurbanne/caflyon/environment-variables).  
+Le deployement se fait automatiquement par [Github Actions](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/actions).  
+Pusher un commit (ou mergé une PR) sur la branche `main` lance le deployment [sur l'env de dev](https://www.clubalpinlyon.top).  
+Un bouton dans github actions permet de déclencher le deployment [sur l'env de production](https://www.clubalpinlyon.fr).  
+Github Actions va remplacer les credentials pour la DB par les vrais puis enverra en rsync les fichiers sur le serveur.  
+Les secrets (mot de passe de db, mot de passe ftp, etc...) sont stockés en tant [que variable d'environment dans github actions](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/settings/secrets/actions).  
 
 ## Cronjobs
 
@@ -52,57 +53,38 @@ La config de recaptcha (nom de domaine) se fait sur la console de recaptcha en u
 
 ## Matrice des droits des utilisateurs
 
-Un espace admin permet d'administrer différentes aspects du site.
+Un espace admin permet d'administrer différentes aspects du site:
+- [matrice des droits des utilisateurs](matrice-des-droits.png)
+- assignation des droits "responsables de commission" et président
+- modification des partenaires
+- modification des meta données du site
 https://www.clubalpinlyon.fr/admin/
 Les identifiants sont stockés sur notre compte bitwarden.
 
-[Matrice des droits des utilisateurs](matrice-des-droits.png)
-
 ## local setup
 
-⚠️ Le local setup semble ne pas fonctionner.
-
- - cp legacy/config/config.php.tpl legacy/config/config.php
- - cp legacy/config/params.php.tpl legacy/config/params.php
- - installer Docker
- - executer Docker host manager (https://github.com/iamluc/docker-hostmanager)
- - executer `make build up setup-db migrate`
- - vous avez désormais accès au site sur `http://cafsite.caf/`, PHPMyAdmin sur `http://phpmyadmin.caf/`, les accès à PHPMyAdmin sont `root` - `test`
- - L'accès à l'UI se fait avec "contact@herewecom.com" et mot de passe "test"
- - Les tests se lancent apres avoir setup l'env de test `make setup-db migrate env=test` puis `make phpunit`
-
-### Local setup sur Mac (M1)
-
-L'environnement tourne sans docker en utilisant le CLI de Symfony sur un Mac possédant un processeur Apple M1.  
-Ce setup devrait aussi fonctionner sous Windows ou Linux en remplaçant homebrew par son équivalent.
-
 #### Requirements
-- [homebrew](https://brew.sh/index_fr)
+- [Docker](https://docs.docker.com/engine/install/) & docker-compose
+- Make (disponible par défaut sous mac et Linux. [Installable](https://community.chocolatey.org/packages/make) via chocolatey sous Windows)
 
-### Étapes
+#### Steps
 
-1. Installer et Configurer la DB
-   1. Install en utilisant homebrew: `brew install mysqld`
-   2. Démarrer la DB: `brew services start php`
-   3. Configurer le compte root: `mysql_secure_installation`
-   4. Créer la DB `caflvproduction`
-   5. Importer le dump de la DB (demander à Nicolas pour le dump pseudonymisé): `mysql -u root -p caflvproduction < caflv_pseudonymised-prod-dump-20230523.sql`
-2. Installer php 7.4 (ℹ️ php7.4 n'existe plus sur le package manager homebrew, il faut ajouter un repository supplémentaire)
-   1. `brew tap shivammathur/php`
-   2. `brew install shivammathur/php/php@7.4`
-   3. `brew link php@7.4` (le flag `--overwrite` peut etre necessaire en fonction de votre config)
-   4. `php -v` pour vérifier que c'est la bonne version
-3. Installer le CLI de symfony
-   1. `curl -sS https://get.symfony.com/cli/installer | bash`
-4. Copier et configurer les fichiers de config
-   1. `cp legacy/config/config.php.tpl legacy/config/config.php`
-   2. Modifier la partie `db` pour y mettre la config locale de votre DB
-   3. `cp legacy/config/params.php.tpl legacy/config/params.php`
-   4. `cp .env .env.local`
-   5. Modifier la partie `DATABASE_URL` pour y mettre la config locale de votre DB
-5. Installer et builder les dépendances de l'interface `yarn install && yarn build`
-6. Lancer Symfony: `symfony server:start --dir=public`
-7. Et voila 🎉 le site devrait etre accessible à l'adresse `http://127.0.0.1:8000/`
+- `git clone git@github.com:Club-Alpin-Lyon-Villeurbanne/caflyon.git`
+- `cd caflyon`
+- `make init`: ceci va lancer les containers (site web, database, phpmyadmin & mailcatcher)
+- `make database-init`: ceci va initialiser et hydrater la base de données
+
+#### Résultat
+
+- vous avez désormais accès au site sur `http://127.0.0.1:8000/`
+- PHPMyAdmin sur `http://127.0.0.1:8080/`, les accès à PHPMyAdmin sont `root` - `test`
+- Mailcatcher sur `http://127.0.0.1:1080/` pour visualiser les mails envoyés
+- Un compte admin a été créé automatiquement sur le site avec les identifiants suivants: "test@clubalpinlyon.fr" et mot de passe "test"
+- Les logs de symfony sont dispo avec un `tail -f var/log/dev.log`
+
+⚠️ le setup pour lancer les tests ne fonctionne pas encore, il est en cours de refacto 🚧
+⚠️ l'upload des images avec ce setup ne fonctionne pas encore. Nous y travaillons. 🚧
+
 
 ## 👋 Contribution au projet
 

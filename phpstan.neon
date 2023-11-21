@@ -1,5 +1,9 @@
 parameters:
-  tmpDir: var/cache/phpstan
+  level: 0
+  paths:
+    - legacy
+    - src
+    - tests
 
   ignoreErrors:
     - '#Function twig_escape_filter not found\.#'
@@ -7,9 +11,6 @@ parameters:
     - '#Variable \$p_[a-z_]+ might not be defined#'
     - '#Variable \$p\d might not be defined#'
     - '#Instantiated class FeedWriter not found#'
-
-  bootstrapFiles:
-    - vendor/bin/.phpunit/phpunit-9.5-0/vendor/autoload.php
 
   excludePaths:
     - legacy/scripts/operations/operations.bus_update.php
