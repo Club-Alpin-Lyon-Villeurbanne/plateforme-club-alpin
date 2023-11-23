@@ -1,0 +1,15 @@
+{
+    "include": ["./assets/**/*"],
+    "compilerOptions": {
+      "sourceMap": true,
+      "strict": true,
+      "module": "es2015",
+      "moduleResolution": "node",
+      "target": "es5",
+      "experimentalDecorators": true
+    },
+    "files": [
+      "./assets/config/shims-vue.d.ts",
+      "./assets/config/window.d.ts",
+    ]
+}

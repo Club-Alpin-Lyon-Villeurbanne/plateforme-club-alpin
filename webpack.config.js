@@ -66,6 +66,13 @@ Encore
     // enables Sass/SCSS support
     .enableSassLoader()
 
+    // enables Vue
+    .enableVueLoader()
+    .enableTypeScriptLoader(function (tsConfig){
+        tsConfig.appendTsSuffixTo = [/\.vue$/];
+        tsConfig.appendTsxSuffixTo = [/\.vue$/];
+    })
+
     // uncomment if you use React
     //.enableReactPreset()
 
