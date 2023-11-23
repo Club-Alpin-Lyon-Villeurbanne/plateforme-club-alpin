@@ -6,11 +6,12 @@ Créer le composant dans un fichier `*.vue` dans `/assets/vue`.
 
 Par exemple : 
 
+`/assets/vue/Example/Example.vue`
 ```html
 <template>
     <div class="example-component">
         <h1>EXAMPLE</h1>
-        {{ test }}
+        {{ foo }}
     </div>
 </template>
 
@@ -19,7 +20,7 @@ Par exemple :
 
     export default defineComponent({
         name: 'example',
-        props: ['test']
+        props: ['foo'] // declare the properties you set in twig as props
     })
 </script>
 ```
@@ -48,7 +49,7 @@ Pour afficher un composant Vue au sein d'un template twig, on peut utiliser l'ex
 La fonction attend trois arguments : 
 - `selector` : l'id de l'élément `div` qui sera généré pour afficher le composant
 - `componentName` : le nom du composant à générer, tel que défini lors de la création et de son register dans `vue-components.ts` (voir section précédente)
-- `data` : les données à passer au composant (chaque propriété )
+- `data` : les données à passer au composant sous forme d'objet. Les données transmises au composant sont accessibles directement au sein de celui-ci via ses props (voir le code dans la section précédente)
 
 ```twig
 <!DOCTYPE html>
@@ -58,4 +59,6 @@ La fonction attend trois arguments :
     </body>
 </html>
 ```
+
+
 
