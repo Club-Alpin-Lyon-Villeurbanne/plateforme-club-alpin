@@ -1,7 +1,9 @@
+require('dotenv').config();
 const webpack = require('webpack');
 const Encore = require('@symfony/webpack-encore');
 const fs = require("fs");
 const domain = process.env.WEBPACK_DOMAIN;
+const port = process.env.WEBPACK_PORT;
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -16,11 +18,11 @@ Encore
     // directory where compiled assets will be stored
     .setOutputPath('public/build/')
     // public path used by the web server to access the output path
-    .setPublicPath(Encore.isProduction() ? '/build' : `http://${domain}:8348/static/`)
+    .setPublicPath(Encore.isProduction() ? '/build' : `http://${domain}:${port}/build/`)
     // only needed for CDN's or sub-directory deploy
     .setManifestKeyPrefix('build/')
 
-    .addEntry('dashboard-bundle', [
+    .addEntry('caf-assets', [
         // Necessary once you want to use webpack chunks
         // on CDN
         './assets/app.js',
@@ -62,10 +64,7 @@ Encore
     })
 
     // enables Sass/SCSS support
-    //.enableSassLoader()
-
-    // uncomment if you use TypeScript
-    //.enableTypeScriptLoader()
+    .enableSassLoader()
 
     // uncomment if you use React
     //.enableReactPreset()
@@ -79,17 +78,17 @@ Encore
 
     .configureDevServerOptions((options) => {
         options.devMiddleware = {
-            publicPath: `http://${domain}:8348/static/`,
+            publicPath: `http://${domain}:${port}/static/`,
         };
         options.hot = true;
         options.host = domain;
-        options.port = 8348;
+        options.port = port;
 
         options.allowedHosts = 'all';
         options.client = {
             webSocketURL: {
                 hostname: domain,
-                port: 8348,
+                port: port,
             },
         };
         options.headers = {
