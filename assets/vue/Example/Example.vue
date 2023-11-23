@@ -1,7 +1,7 @@
 <template>
     <div class="example-component">
         <h1>EXAMPLE</h1>
-        {{ test }}
+        {{ foo }}
     </div>
 </template>
 
@@ -10,6 +10,6 @@
 
     export default defineComponent({
         name: 'example',
-        props: ['test']
+        props: ['foo']
     })
 </script>

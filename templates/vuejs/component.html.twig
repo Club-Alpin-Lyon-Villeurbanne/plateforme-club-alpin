@@ -11,9 +11,7 @@
 
         window.vue.createApp(
             window.vue.components['{{ componentName }}'], 
-            {
-                test: {{ data|raw }}
-            }
+            {{ data|raw }}
         ).mount(container);
     });
 </script>
