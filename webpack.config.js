@@ -1,7 +1,6 @@
 require('dotenv').config();
 const webpack = require('webpack');
 const Encore = require('@symfony/webpack-encore');
-const fs = require("fs");
 const domain = process.env.WEBPACK_DOMAIN;
 const port = process.env.WEBPACK_PORT;
 
@@ -72,9 +71,6 @@ Encore
         tsConfig.appendTsSuffixTo = [/\.vue$/];
         tsConfig.appendTsxSuffixTo = [/\.vue$/];
     })
-
-    // uncomment if you use React
-    //.enableReactPreset()
 
     // uncomment to get integrity="..." attributes on your script & link tags
     // requires WebpackEncoreBundle 1.4 or higher
