@@ -64,11 +64,12 @@ Encore
     // enables Sass/SCSS support
     //.enableSassLoader()
 
-    // uncomment if you use TypeScript
-    //.enableTypeScriptLoader()
-
-    // uncomment if you use React
-    //.enableReactPreset()
+    // enables Vue
+    .enableVueLoader()
+    .enableTypeScriptLoader(function (tsConfig){
+        tsConfig.appendTsSuffixTo = [/\.vue$/];
+        tsConfig.appendTsxSuffixTo = [/\.vue$/];
+    })
 
     // uncomment to get integrity="..." attributes on your script & link tags
     // requires WebpackEncoreBundle 1.4 or higher
