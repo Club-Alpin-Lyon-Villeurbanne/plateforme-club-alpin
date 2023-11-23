@@ -22,12 +22,12 @@ if (user()) {
 
 		<?php
         // PREMIERE ETAPE : SELECTION DES ADHERENTS A AJOUTER
-        if (!is_array($_POST['id_user'])) {
+        if (!is_array(isset($_POST['id_user']))) {
             ?>
 			<p>
 				<img src="/img/base/magnifier.png" style="vertical-align:middle" />
 				Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
-				Cliquez sur le bouton "<i>Inscrire les adhérents sélectionnés</i>" pour passer à l'étape suivante et sélectionner leur rôls éventuels (simple inscrit, bénévole...).
+				Cliquez sur le bouton "<i>Inscrire les adhérents sélectionnés</i>" pour passer à l'étape suivante et sélectionner leurs rôles éventuels (simple inscrit, bénévole...).
 				<br />
 				<a href="<?php echo $versCettePage; ?>" <?php if (!$showAll) {
 				    echo 'style="background:#d3d6ff"';
@@ -127,7 +127,7 @@ if (user()) {
                                         .'<img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />'
                                         .'<img src="/img/label-down.png" class="cross" alt="OFF" title="" />'
                                         .'<input type="checkbox" name="id_user[]" value="'.(int) $elt['id_user'].'" />'
-                                        // inputs hidden disabled : activés quand le case est cliquée (jquery)
+                                        // inputs hidden disabled : activés quand la case est cliquée (jquery)
                                         .'<input type="hidden" disabled="disabled" name="civ_user[]" value="'.html_utf8($elt['civ_user']).'" />'
                                         .'<input type="hidden" disabled="disabled" name="lastname_user[]" value="'.html_utf8($elt['lastname_user']).'" />'
                                         .'<input type="hidden" disabled="disabled" name="firstname_user[]" value="'.html_utf8($elt['firstname_user']).'" />'
@@ -162,7 +162,7 @@ if (user()) {
             // print_r($_POST);
             // print_r($_POST['id_user']);
             // rien de sélectionné
-            if (!count($_POST['id_user'])) {
+            if (!count(isset($_POST['id_user']))) {
                 if (isset($_POST['result']) && 'success' == $_POST['result']) {
                     unset($_POST['result']);
                     echo '<p class="erreur">Aucune donnée reçue. <a href="'.$versCettePage.'">Retour</a></p>';

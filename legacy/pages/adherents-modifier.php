@@ -53,7 +53,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 					<td width='100px'><img src="<?php echo userImg($userTab['id_user'], 'pic'); ?>" alt="" title="" style="max-width:100%" /></td>
 					<td><h1>
 						<?php
-                            echo $userTab['civ_user'].' '.$userTab['firstname_user'].' '.$userTab['lastname_user'].'<br />(<a href="/user-full/'.$userTab['id_user'].'.html" title="Fiche profil" target="_top">'.$userTab['nickname_user'].'</a>)'; ?>
+                            echo isset($userTab['civ_user']).' '.isset($userTab['firstname_user']).' '.isset($userTab['lastname_user']).'<br />(<a href="/user-full/'.isset($userTab['id_user']).'.html" title="Fiche profil" target="_top">'.isset($userTab['nickname_user']).'</a>)'; ?>
 						</h1>
 					</td>
 				</tr>
@@ -63,21 +63,21 @@ if (!admin() && !allowed('user_edit_notme')) {
 			<?php
                 // notification d'alerte si l'user doit renouveler sa licence
 
-                if ($userTab['alerte_renouveler_user']) {
+                if (isset($userTab['alerte_renouveler_user'])) {
                     echo '<span class="alerte">';
                 }
-        if ($userTab['date_adhesion_user'] > 0) {
-            echo date('d/m/Y', $userTab['date_adhesion_user']);
+        if (isset($userTab['date_adhesion_user']) > 0) {
+            echo date('d/m/Y', isset($userTab['date_adhesion_user']));
         } else {
             echo 'auncune date connue.';
         }
-        if ($userTab['alerte_renouveler_user']) {
+        if (isset($userTab['alerte_renouveler_user'])) {
             echo '</span>';
         } ?>
 			</b><br />
 
 			<?php
-                if (1 != $userTab['valid_user']) {
+                if (isset($userTab['valid_user']) && 1 != $userTab['valid_user']) {
                     // compte non active pour le moment
                     echo '<br />URL d\'activation du compte : '.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html<br />';
                 } ?>
@@ -102,22 +102,22 @@ if (!admin() && !allowed('user_edit_notme')) {
 
 			<!--
 			Date de naissance :<br />
-			<input type="text" name="birthday_user" class="type1" value="<?php echo $userTab['birthday_user']; ?>" placeholder="jj/mm/aaaa" />
+			<input type="text" name="birthday_user" class="type1" value="<?php echo isset($userTab['birthday_user']); ?>" placeholder="jj/mm/aaaa" />
 			<br />
 
 			Numéro de téléphone personnel :<br />
-			<input type="text" name="tel_user" class="type1" value="<?php echo $userTab['tel_user']; ?>" placeholder="" />
+			<input type="text" name="tel_user" class="type1" value="<?php echo isset($userTab['tel_user']); ?>" placeholder="" />
 
 			<br />
 			Numéro de téléphone de sécurité :<br />
-			<input type="text" name="tel2_user" class="type1" value="<?php echo $userTab['tel2_user']; ?>" placeholder="" />
+			<input type="text" name="tel2_user" class="type1" value="<?php echo isset($userTab['tel2_user']); ?>" placeholder="" />
 
 			<br />
 			Adresse <br />
-			<input type="text" name="adresse_user" class="type1" value="<?php echo $userTab['adresse_user']; ?>" placeholder="Numéro, rue..." /><br />
-			<input type="text" name="cp_user" style="width:70px" class="type1" value="<?php echo $userTab['cp_user']; ?>" placeholder="Code postal" />
-			<input type="text" name="ville_user" class="type1" value="<?php echo $userTab['ville_user']; ?>" placeholder="Ville" /><br />
-			<input type="text" name="pays_user" class="type1" value="<?php echo $userTab['pays_user']; ?>" placeholder="Pays" /><br />
+			<input type="text" name="adresse_user" class="type1" value="<?php echo isset($userTab['adresse_user']); ?>" placeholder="Numéro, rue..." /><br />
+			<input type="text" name="cp_user" style="width:70px" class="type1" value="<?php echo isset($userTab['cp_user']); ?>" placeholder="Code postal" />
+			<input type="text" name="ville_user" class="type1" value="<?php echo isset($userTab['ville_user']); ?>" placeholder="Ville" /><br />
+			<input type="text" name="pays_user" class="type1" value="<?php echo isset($userTab['pays_user']); ?>" placeholder="Pays" /><br />
 
 
 
