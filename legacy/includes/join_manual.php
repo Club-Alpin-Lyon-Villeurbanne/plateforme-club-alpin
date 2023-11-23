@@ -22,7 +22,7 @@ if (user()) {
 
 		<?php
         // PREMIERE ETAPE : SELECTION DES ADHERENTS A AJOUTER
-        if (isset($_POST['id_user']) && !is_array($_POST['id_user'])) {
+        if (!isset($_POST['id_user']) || !is_array($_POST['id_user'])) {
             ?>
 			<p>
 				<img src="/img/base/magnifier.png" style="vertical-align:middle" />
