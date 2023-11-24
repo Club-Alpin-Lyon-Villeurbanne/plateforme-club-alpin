@@ -6,14 +6,15 @@ use App\Legacy\LegacyContainer;
 
 if (user()) {
     // id de la sortie, pour n'afficher que les adhérents non inscrits
-    $id_evt = (int) $_GET['id_evt'];
+    $idEvt = isset($_GET['id_evt']) ? (int) $_GET['id_evt'] : 0;
+	$idUser = $_POST['id_user'] ?? null;
 
     $showAll = isset($_GET['showAll']) ? (int) $_GET['showAll'] : 0;
 
     // if(!allowed('user_see_all')){
     if (!allowed('evt_join_notme')) {
         echo '<p class="erreur">Vous n\'avez pas les droits requis pour afficher cette page</p>';
-    } elseif (!$id_evt) {
+    } elseif (!$idEvt) {
         echo '<p class="erreur">ID de sortie non spécifié</p>';
     } else {
         // la vérification des droits de cet user à cette sortie se fait lors de l'opération finale : SCRIPTS.'operations.php'?>
@@ -22,18 +23,18 @@ if (user()) {
 
 		<?php
         // PREMIERE ETAPE : SELECTION DES ADHERENTS A AJOUTER
-        if (!is_array($_POST['id_user'])) {
+        if (!is_array($idUser)) {
             ?>
 			<p>
 				<img src="/img/base/magnifier.png" style="vertical-align:middle" />
 				Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
 				Cliquez sur le bouton "<i>Inscrire les adhérents sélectionnés</i>" pour passer à l'étape suivante et sélectionner leur rôls éventuels (simple inscrit, bénévole...).
+				echo 'style="background:#d3d6ff"';
 				<br />
 				<a href="<?php echo $versCettePage; ?>" <?php if (!$showAll) {
 				    echo 'style="background:#d3d6ff"';
 				} ?> class="boutonFancy">Voir uniquement les adhérents validés</a>
 				<a href="<?php echo $versCettePage; ?>&showAll=1" <?php if ($showAll) {
-				    echo 'style="background:#d3d6ff"';
 				} ?> class="boutonFancy">Voir tous les adhérents de la base (+long)</a>
 
 			</p>
@@ -107,7 +108,7 @@ if (user()) {
             $req = 'SELECT  id_user, email_user, cafnum_user, firstname_user, lastname_user, nickname_user
 									, created_user, birthday_user, tel_user, tel2_user, civ_user
 							FROM `caf_user`
-							WHERE nomade_user!=1'
+                            WHERE nomade_user!=1'
                             .($showAll ? '' : ' AND valid_user=1 ')
                             .' ORDER BY lastname_user ASC
 							LIMIT 9000';
@@ -115,7 +116,7 @@ if (user()) {
             while ($elt = $result->fetch_assoc()) {
 				$userId = isset($elt['id_user']) ? (int) $elt['id_user'] : 0;
                 // SELECTION : on n'affiche que les adhérents qui ne sont pas inscrit à cette sortie
-                $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join=$id_evt AND user_evt_join = ".$userId.' LIMIT 1';
+                $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join=$idEvt AND user_evt_join = ".$userId.' LIMIT 1';
 
                 $result2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 $row = $result2->fetch_row();
@@ -159,10 +160,7 @@ if (user()) {
 
         // ENSUITE, CONFIRMATION ET ENVOI :
         else {
-            // print_r($_POST);
-            // print_r($_POST['id_user']);
-            // rien de sélectionné
-            if (!count($_POST['id_user'])) {
+            if (!count($idUser)) {
                 if (isset($_POST['result']) && 'success' == $_POST['result']) {
                     unset($_POST['result']);
                     echo '<p class="erreur">Aucune donnée reçue. <a href="'.$versCettePage.'">Retour</a></p>';
@@ -171,7 +169,7 @@ if (user()) {
                 }
             } else {
                 // On récupère des informations complémentaires sur la sortie : besoin de bénévoles ?
-                $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$id_evt;
+                $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$idEvt;
                 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($sorties = $result->fetch_assoc()) {
                     $sortie = $sorties;
@@ -210,11 +208,11 @@ if (user()) {
 						<tbody>
 							<?php
                             // pour chaque user sélectionné : choix du role, puis confirmation
-                            foreach ($_POST['id_user'] as $i => $utilisateur) {
+                            foreach ($idUser as $i => $utilisateur) {
                                 echo '<tr>'
                                     .'<td>'
                                         // vars to re-post
-                                        .'<input type="hidden" name="id_user[]" value="'.(int) $_POST['id_user'][$i].'" />'
+                                        .'<input type="hidden" name="id_user[]" value="'.(int) $idUser[$i].'" />'
                                         .'<input type="hidden" name="civ_user[]" value="'.html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')).'" />'
                                         .'<input type="hidden" name="lastname_user[]" value="'.html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')).'" />'
                                         .'<input type="hidden" name="firstname_user[]" value="'.html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')).'" />'

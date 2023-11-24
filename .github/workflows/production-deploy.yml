@@ -14,24 +14,11 @@ jobs:
     - uses: actions/checkout@v4
     - uses: docker://oskarstark/php-cs-fixer-ga
 
-  # phpstan:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: php-actions/composer@v6
-
-  #     - name: PHPStan Static Analysis
-  #       uses: php-actions/phpstan@v3
-  #       with:
-  #           configuration: phpstan.neon
-  #           memory_limit: 1G
-
   deploy:
     name: Deploy on production
     if: github.ref == 'refs/heads/main'
     needs:
       - php-cs-fixer
-      # - phpstan
     environment: production
     runs-on: ubuntu-latest
     steps:
