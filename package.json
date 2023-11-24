@@ -4,6 +4,11 @@
         "@symfony/webpack-encore": "^1.0.0",
         "core-js": "^3.0.0",
         "regenerator-runtime": "^0.13.2",
+        "sass": "^1.69.5",
+        "sass-loader": "^12.6.0",
+        "ts-loader": "^9.5.1",
+        "vue": "^3.3.8",
+        "vue-loader": "^16.8.3",
         "webpack-notifier": "^1.6.0"
     },
     "license": "UNLICENSED",
