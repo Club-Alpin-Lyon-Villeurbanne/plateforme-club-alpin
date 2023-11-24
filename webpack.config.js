@@ -1,8 +1,7 @@
-require('dotenv').config();
 const webpack = require('webpack');
 const Encore = require('@symfony/webpack-encore');
+const fs = require("fs");
 const domain = process.env.WEBPACK_DOMAIN;
-const port = process.env.WEBPACK_PORT;
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -17,11 +16,11 @@ Encore
     // directory where compiled assets will be stored
     .setOutputPath('public/build/')
     // public path used by the web server to access the output path
-    .setPublicPath(Encore.isProduction() ? '/build' : `http://${domain}:${port}/build/`)
+    .setPublicPath(Encore.isProduction() ? '/build' : `http://${domain}:8348/static/`)
     // only needed for CDN's or sub-directory deploy
     .setManifestKeyPrefix('build/')
 
-    .addEntry('caf-assets', [
+    .addEntry('dashboard-bundle', [
         // Necessary once you want to use webpack chunks
         // on CDN
         './assets/app.js',
@@ -63,14 +62,13 @@ Encore
     })
 
     // enables Sass/SCSS support
-    .enableSassLoader()
+    //.enableSassLoader()
 
-    // enables Vue
-    .enableVueLoader()
-    .enableTypeScriptLoader(function (tsConfig){
-        tsConfig.appendTsSuffixTo = [/\.vue$/];
-        tsConfig.appendTsxSuffixTo = [/\.vue$/];
-    })
+    // uncomment if you use TypeScript
+    //.enableTypeScriptLoader()
+
+    // uncomment if you use React
+    //.enableReactPreset()
 
     // uncomment to get integrity="..." attributes on your script & link tags
     // requires WebpackEncoreBundle 1.4 or higher
@@ -81,17 +79,17 @@ Encore
 
     .configureDevServerOptions((options) => {
         options.devMiddleware = {
-            publicPath: `http://${domain}:${port}/static/`,
+            publicPath: `http://${domain}:8348/static/`,
         };
         options.hot = true;
         options.host = domain;
-        options.port = port;
+        options.port = 8348;
 
         options.allowedHosts = 'all';
         options.client = {
             webSocketURL: {
                 hostname: domain,
-                port: port,
+                port: 8348,
             },
         };
         options.headers = {
