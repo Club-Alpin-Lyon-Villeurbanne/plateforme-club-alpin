@@ -85,6 +85,17 @@ Les identifiants sont stockés sur notre compte bitwarden.
 ⚠️ le setup pour lancer les tests ne fonctionne pas encore, il est en cours de refacto 🚧
 ⚠️ l'upload des images avec ce setup ne fonctionne pas encore. Nous y travaillons. 🚧
 
+#### Troubleshooting
+
+Après la migration vers le nouveau setup, il est possible que le nouveau build ne supprime pas les anciennes images, il faut donc faire un:
+`docker stop cafsite && docker rm cafsite`
+
+
+#### Fixtures
+
+Actuellement, seul un utilisateur admin et quelques articles sont créés automatiquement. Afin de pouvoir rapidement tester plus de cas d'utilisation, notamment sur les sorties, ca serait intéressant de créer plusieurs utilisateurs (notamment encadrant) et plusieurs sorties (une nouvellement créée, une nouvellement validée et une nouvellement publieé).
+
+
 
 ## 👋 Contribution au projet
 
