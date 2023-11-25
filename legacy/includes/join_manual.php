@@ -29,7 +29,6 @@ if (user()) {
 				<img src="/img/base/magnifier.png" style="vertical-align:middle" />
 				Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
 				Cliquez sur le bouton "<i>Inscrire les adhérents sélectionnés</i>" pour passer à l'étape suivante et sélectionner leur rôls éventuels (simple inscrit, bénévole...).
-				echo 'style="background:#d3d6ff"';
 				<br />
 				<a href="<?php echo $versCettePage; ?>" <?php if (!$showAll) {
 				    echo 'style="background:#d3d6ff"';
