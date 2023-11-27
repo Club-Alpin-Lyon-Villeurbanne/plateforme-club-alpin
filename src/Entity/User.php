@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -643,5 +644,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUsername()
     {
         return (string) $this->getEmail();
+    }
+
+    /**
+     * Get the value of expenseReports
+     *
+     * @return Collection
+     */
+    public function getExpenseReports(): Collection
+    {
+        return $this->expenseReports;
+    }
+
+    /**
+     * Set the value of expenseReports
+     *
+     * @param Collection $expenseReports
+     *
+     * @return self
+     */
+    public function setExpenseReports(Collection $expenseReports): self
+    {
+        $this->expenseReports = $expenseReports;
+
+        return $this;
     }
 }
