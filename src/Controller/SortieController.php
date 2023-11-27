@@ -7,6 +7,8 @@ use App\Entity\EvtJoin;
 use App\Mailer\Mailer;
 use App\Repository\EvtJoinRepository;
 use App\Repository\EvtRepository;
+use App\Repository\ExpenseGroupRepository;
+use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -26,16 +28,61 @@ class SortieController extends AbstractController
         ]);
     }
 
-    
     #[Route(name: 'sortie', path: '/sortie/{code}-{id}.html', requirements: ['id' => '\d+', 'code' => '[a-z0-9-]+'], methods: ['GET'], priority: '10')]
     #[Template]
-    public function sortie(Evt $event, UserRepository $repository, EvtJoinRepository $participantRepository)
-    {
+    public function sortie(
+        Evt $event, 
+        UserRepository $repository,
+        EvtJoinRepository $participantRepository,
+        ExpenseGroupRepository $expenseGroupRepository,
+        ExpenseTypeExpenseFieldTypeRepository $expenseTypeFieldTypeRepository
+    ) {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
             throw new AccessDeniedHttpException('Not found');
         }
 
         $user = $this->getUser();
+
+
+        $expenseReportFormGroups = [];
+        $expenseGroups = $expenseGroupRepository->findAll();
+
+        // each expense group has a list of expense types
+        // each expense type has a list of fields
+        foreach ($expenseGroups as $expenseGroup) {
+            $expenseReportFormGroups[$expenseGroup->getSlug()] = [
+                'name' => $expenseGroup->getName(),
+                'slug' => $expenseGroup->getSlug(),
+                'type' => $expenseGroup->getType(),
+                'expenseTypes' => []
+            ];
+
+            foreach ($expenseGroup->getExpenseTypes() as $expenseType) {
+                $fields = $expenseType->getFieldTypes();
+
+                // add the needsJustification property to the field itself
+                // (needsJustification comes from the join table)
+                foreach ($fields as $field) {
+                    $relation = $expenseTypeFieldTypeRepository->findOneBy([
+                        'expenseType' => $expenseType,
+                        'expenseFieldType' => $field
+                    ]);
+                    
+                    $field->setNeedsJustification($relation->getNeedsJustification());
+                }
+
+                // add the field to the group
+                $expenseReportFormGroups[$expenseGroup->getSlug()]['expenseTypes'][] = [
+                    'name' => $expenseType->getName(),
+                    'slug' => $expenseType->getSlug(),
+                    'fields' => $expenseType->getFieldTypes()->map(
+                        function ($expenseFieldType) {
+                            return ExpenseFieldTypeSerializer::serialize($expenseFieldType);
+                        }
+                    )->toArray()
+                ];
+            }
+        }
 
         return [
             'event' => $event,
