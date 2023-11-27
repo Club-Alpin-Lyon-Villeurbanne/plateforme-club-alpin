@@ -21,8 +21,20 @@
                 v-for="expenseReportFormGroup in formStructure"
                 :key="expenseReportFormGroup.slug"
             >
-                <legend>{{ expenseReportFormGroup.name }}</legend>
-
+                <legend>
+                    {{ expenseReportFormGroup.name }}
+                    <a 
+                        v-if="expenseReportFormGroup.type == 'multiple'"
+                        class="add-more"
+                        href="#"
+                        @click.prevent="spawnExpenseGroup(expenseReportFormGroup)"
+                    >
+                        <span class="emoji">
+                            &#10133;
+                            Ajouter
+                        </span>
+                    </a>
+                </legend>
                 <div class="field type-select" v-if="expenseReportFormGroup.type == 'unique'">
                     <label>Choisir le type</label>
                     <select v-model="expenseReportFormGroup.selectedType">
@@ -36,37 +48,62 @@
                     </select>
                 </div>
 
-                <div v-for="(expenseType, expenseTypeIndex) in expenseReportFormGroup.expenseTypes" :key="expenseType.id">
-                    <div v-if="expenseReportFormGroup.type !== 'unique' || expenseReportFormGroup.selectedType === expenseType.slug">
-                        <h4>{{ expenseType.name }}</h4>
-                        <div v-if="expenseReportFormGroup.type == 'multiple' && expenseTypeIndex > 0">
-                            <a href="#" @click.prevent="removeExpenseGroup(expenseReportFormGroup, expenseType)">
-                                <span class="emoji">&#10060;</span>
-                            </a>
-                        </div>
-                        <div
-                            v-for="field in expenseType.fields"
-                            :key="field.slug"
-                            class="field"
-                        >
-                            <label>{{ field.name }}</label>
-                            <input 
-                                type="text"
-                                :name="field.slug"
-                                v-model="field.value"
-                            />
-    
-                            <div v-if="field.needsJustification" class="justification">
-                                <label class="uploader-label">Joindre un justificatif
-                                    <input class="hidden" type="file" name="{{ field.slug }}-justification">
-                                </label>
+                <div>
+                    <div v-for="(expenseType, expenseTypeIndex) in expenseReportFormGroup.expenseTypes" :key="expenseType.id">
+                        <div v-if="expenseReportFormGroup.type !== 'unique' || expenseReportFormGroup.selectedType === expenseType.slug">
+                            <h4>
+                                {{ expenseType.name }}
+                                <a
+                                    v-if="expenseReportFormGroup.type == 'multiple' && expenseTypeIndex > 0"
+                                    class="delete"
+                                    href="#"
+                                    @click.prevent="removeExpenseGroup(expenseReportFormGroup, expenseType)"
+                                >
+                                    <span class="emoji">
+                                        &#10060; 
+                                        Supprimer
+                                    </span>
+                                </a>
+                            </h4>
+                            <div class="field-list">
+                                <div
+                                    v-for="field in expenseType.fields"
+                                    :key="field.slug"
+                                    class="field"
+                                >
+                                    <label>{{ field.name }}</label>
+                                    <input 
+                                        type="text"
+                                        :name="field.slug"
+                                        v-model="field.value"
+                                    />
+            
+                                    <div v-if="field.needsJustification" class="justification">
+                                        <div v-if="field.justificationFile">
+                                            <div>
+                                                {{ field.justificationFile.name }}
+                                            </div>
+                                            <a href="#" @click.prevent="removeFile(field)">Supprimer</a>
+                                            <a href="#">Voir</a>
+                                        </div>
+
+                                        <label v-else class="uploader-label">
+                                            <span class="emoji">
+                                                &#128190;
+                                                Joindre un justificatif
+                                            </span>
+                                            <input 
+                                                class="hidden" 
+                                                type="file" 
+                                                name="{{ field.slug }}-justification"
+                                                @change="onFileUploadChange($event, field)"
+                                            >
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div v-if="expenseReportFormGroup.type == 'multiple'">
-                    <a href="#" @click.prevent="spawnExpenseGroup(expenseReportFormGroup)">Ajouter</a>
                 </div>
             </fieldset>
             <div class="green-box expense-report-summary" id="expense-report-summary">
@@ -123,6 +160,13 @@
                 expenseReportFormGroup.expenseTypes = expenseReportFormGroup.expenseTypes.filter((expenseTypeToFilter: any) => {
                     return expenseTypeToFilter.id !== expenseType.id;
                 });
+            },
+            onFileUploadChange(event: any, field: any) {
+                field.justificationFile = event.target.files[0];
+                console.log('onFileUploadChange', event, field);
+            },
+            removeFile(field: any) {
+                field.justificationFile = null;
             }
         },
     })
