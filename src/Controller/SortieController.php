@@ -42,8 +42,7 @@ class SortieController extends AbstractController
         }
 
         $user = $this->getUser();
-
-
+        
         $expenseReportFormGroups = [];
         $expenseGroups = $expenseGroupRepository->findAll();
 
@@ -88,6 +87,7 @@ class SortieController extends AbstractController
             'event' => $event,
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participantRepository->getEmpietements($event),
+            'expenseReportFormStructure' => $expenseReportFormGroups
         ];
     }
 

@@ -253,6 +253,9 @@
                         </p>
                         <br />
                     {% endif %}
+                    {% if my_status.role == 'encadrant' %}
+                        {{ vueComponent('expense-report-form', 'ExpenseReportForm', {formStructure: expenseReportFormStructure}) }}
+                    {% endif %}
                 {% else %}
                     {% if not event.finished %}
                         {% if allowed('evt_unjoin') %}

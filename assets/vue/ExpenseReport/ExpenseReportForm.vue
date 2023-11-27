@@ -61,10 +61,7 @@
 
     export default defineComponent({
         name: 'expense-report-form',
-        data: () => ({
-            globals: (global as any),
-            formStructure: (window as any).global.formStructure as any
-        }),
+        props: ['formStructure'],
         methods: {
             onFormSubmit() {
                 console.log('onFormSubmit');
