@@ -1,5 +1,5 @@
 <template>
-    <div class="expense-report-form">
+    <div class="expense-report-form white-box">
         <h2>Note de frais</h2>
         <form @submit.prevent="onFormSubmit">
             <fieldset>
@@ -54,7 +54,7 @@
                             <h4>
                                 {{ expenseType.name }}
                                 <a
-                                    v-if="expenseReportFormGroup.type == 'multiple' && expenseTypeIndex > 0"
+                                    v-if="expenseReportFormGroup.type == 'multiple' && expenseTypeIndex !== 0"
                                     class="delete"
                                     href="#"
                                     @click.prevent="removeExpenseGroup(expenseReportFormGroup, expenseType)"
@@ -80,14 +80,14 @@
             
                                     <div v-if="field.needsJustification" class="justification">
                                         <div v-if="field.justificationFile">
-                                            <div>
+                                            <div class="filename">
                                                 {{ field.justificationFile.name }}
                                             </div>
-                                            <a href="#" @click.prevent="removeFile(field)">Supprimer</a>
+                                            <a href="#" @click.prevent="removeFile(field)">Supprimer</a> |
                                             <a href="#">Voir</a>
                                         </div>
 
-                                        <label v-else class="uploader-label">
+                                        <label v-else class="uploader-label bleucaf">
                                             <span class="emoji">
                                                 &#128190;
                                                 Joindre un justificatif
