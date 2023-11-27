@@ -66,41 +66,12 @@
                                 </a>
                             </h4>
                             <div class="field-list">
-                                <div
+                                <ExpenseField 
                                     v-for="field in expenseType.fields"
                                     :key="field.slug"
+                                    :field="field"
                                     class="field"
-                                >
-                                    <label>{{ field.name }}</label>
-                                    <input 
-                                        type="text"
-                                        :name="field.slug"
-                                        v-model="field.value"
-                                    />
-            
-                                    <div v-if="field.needsJustification" class="justification">
-                                        <div v-if="field.justificationFile">
-                                            <div class="filename">
-                                                {{ field.justificationFile.name }}
-                                            </div>
-                                            <a href="#" @click.prevent="removeFile(field)">Supprimer</a> |
-                                            <a href="#">Voir</a>
-                                        </div>
-
-                                        <label v-else class="uploader-label bleucaf">
-                                            <span class="emoji">
-                                                &#128190;
-                                                Joindre un justificatif
-                                            </span>
-                                            <input 
-                                                class="hidden" 
-                                                type="file" 
-                                                name="{{ field.slug }}-justification"
-                                                @change="onFileUploadChange($event, field)"
-                                            >
-                                        </label>
-                                    </div>
-                                </div>
+                                ></ExpenseField>
                             </div>
                         </div>
                     </div>
@@ -127,10 +98,14 @@
 
 <script lang="ts">
     import { defineComponent } from 'vue';
+    import ExpenseField from './ExpenseField.vue';
 
     export default defineComponent({
         name: 'expense-report-form',
         props: ['formStructureProp'],
+        components: {
+            ExpenseField
+        },
         data() {
             return {
                 formStructure: this.formStructureProp
