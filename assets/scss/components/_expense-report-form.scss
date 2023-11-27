@@ -1,0 +1,87 @@
+.expense-report-form {
+
+    margin-bottom: $gutter-double;
+
+    h3 {
+        @extend h3;
+        font-size: 1.05rem;
+        margin-bottom: $gutter;
+    }
+
+    h4 {
+        font-size: 0.9rem;
+        color: $gray-dark
+    }
+
+    fieldset {
+        border: none;
+        background-color: $gray-light;
+        margin: 0;
+        margin-top: $gutter;
+        padding: 0 $gutter;
+        padding-top: calc($gutter * 3);
+        position: relative;
+
+        legend {
+            @extend h2;
+            font-size: 1.1rem;
+            position: absolute;
+            top: $gutter;
+        }
+
+        .field-list {
+            display: flex;
+            flex-wrap: wrap;
+
+            & > .field {
+                width: 33%;
+                padding: $gutter;
+                background-color: $gray-light;
+            }
+        }
+    }
+
+    .field {
+        margin-bottom: $gutter;
+
+        input, select {
+            margin-bottom: $gutter-half;
+        }
+
+        label {
+            display: block;
+            margin-bottom: $gutter-half;
+
+            &.uploader-label {
+                cursor: pointer;
+                font-weight: bold;
+            }
+        }
+    }
+
+    .type-select {
+        margin-bottom: $gutter;
+        border-bottom: 1px solid $gray-dark;
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: space-around;
+    }
+    .add-more,
+    .delete {
+        font-size: 0.8em;
+        margin-bottom: $gutter;
+        margin-left: $gutter;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    .justification {
+        .filename {
+            font-style: italic;
+        }
+    }
+}

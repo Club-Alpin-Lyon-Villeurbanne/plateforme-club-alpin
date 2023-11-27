@@ -7,35 +7,33 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * ContentInlineGroup.
  *
- * @ORM\Table(name="caf_content_inline_group")
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_content_inline_group')]
+#[ORM\Entity]
 class ContentInlineGroup
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id_content_inline_group", type="integer", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_content_inline_group', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="ordre_content_inline_group", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'ordre_content_inline_group', type: 'integer', nullable: false)]
     private $ordre;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="nom_content_inline_group", type="string", length=300, nullable=false)
      */
+    #[ORM\Column(name: 'nom_content_inline_group', type: 'string', length: 300, nullable: false)]
     private $nom;
 
     public function getId(): ?int

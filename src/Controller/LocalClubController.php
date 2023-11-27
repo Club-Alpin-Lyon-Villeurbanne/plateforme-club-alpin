@@ -9,13 +9,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class LocalClubController extends AbstractController
 {
-    /**
-     * @Route("/local-club", name="local_club")
-     *
-     * @Template
-     *
-     * @Security("is_granted('ROLE_USER')")
-     */
+    
+    #[Route(path: '/local-club', name: 'local_club')]
+    #[Template]
+    #[Security("is_granted('ROLE_USER')")]
     public function index()
     {
         return [

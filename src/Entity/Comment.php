@@ -7,79 +7,72 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Comment.
  *
- * @ORM\Table(name="caf_comment")
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_comment')]
+#[ORM\Entity]
 class Comment
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id_comment", type="integer", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_comment', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="status_comment", type="integer", nullable=false, options={"default": "1"})
      */
+    #[ORM\Column(name: 'status_comment', type: 'integer', nullable: false, options: ['default' => '1'])]
     private $status = 1;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="tsp_comment", type="bigint", nullable=false)
      */
+    #[ORM\Column(name: 'tsp_comment', type: 'bigint', nullable: false)]
     private $tsp;
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User")
      *
-     * @ORM\JoinColumn(name="user_comment", referencedColumnName="id_user", nullable=false)
      */
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\JoinColumn(name: 'user_comment', referencedColumnName: 'id_user', nullable: false)]
     private $user;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="name_comment", type="string", length=50, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'name_comment', type: 'string', length: 50, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $name;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="email_comment", type="string", length=150, nullable=false)
      */
+    #[ORM\Column(name: 'email_comment', type: 'string', length: 150, nullable: false)]
     private $email;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="cont_comment", type="text", length=65535, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'cont_comment', type: 'text', length: 65535, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $cont;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="parent_type_comment", type="string", length=20, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'parent_type_comment', type: 'string', length: 20, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $parentType;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="parent_comment", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'parent_comment', type: 'integer', nullable: false)]
     private $parent;
 
     public function getId(): ?int

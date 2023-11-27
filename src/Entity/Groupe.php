@@ -7,63 +7,57 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Groupe.
  *
- * @ORM\Table(name="caf_groupe")
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_groupe')]
+#[ORM\Entity]
 class Groupe
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer", nullable=false, options={"unsigned": true})
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false, options: ['unsigned' => true])]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="id_commission", type="integer", nullable=false, options={"unsigned": true})
      */
+    #[ORM\Column(name: 'id_commission', type: 'integer', nullable: false, options: ['unsigned' => true])]
     private $idCommission;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="nom", type="string", length=100, nullable=false)
      */
+    #[ORM\Column(name: 'nom', type: 'string', length: 100, nullable: false)]
     private $nom;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="description", type="text", length=65535, nullable=true)
      */
+    #[ORM\Column(name: 'description', type: 'text', length: 65535, nullable: true)]
     private $description;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="niveau_physique", type="integer", nullable=true, options={"unsigned": true})
      */
+    #[ORM\Column(name: 'niveau_physique', type: 'integer', nullable: true, options: ['unsigned' => true])]
     private $niveauPhysique;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="niveau_technique", type="integer", nullable=true, options={"unsigned": true})
      */
+    #[ORM\Column(name: 'niveau_technique', type: 'integer', nullable: true, options: ['unsigned' => true])]
     private $niveauTechnique;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="actif", type="boolean", nullable=false, options={"default": "1"})
      */
+    #[ORM\Column(name: 'actif', type: 'boolean', nullable: false, options: ['default' => '1'])]
     private $actif = true;
 
     public function getId(): ?int

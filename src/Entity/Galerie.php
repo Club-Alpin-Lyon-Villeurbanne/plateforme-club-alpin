@@ -7,56 +7,51 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Galerie.
  *
- * @ORM\Table(name="caf_galerie")
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_galerie')]
+#[ORM\Entity]
 class Galerie
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id_galerie", type="integer", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_galerie', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="ordre_galerie", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'ordre_galerie', type: 'integer', nullable: false)]
     private $ordre;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="titre_galerie", type="string", length=100, nullable=false)
      */
+    #[ORM\Column(name: 'titre_galerie', type: 'string', length: 100, nullable: false)]
     private $titre;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="vis_galerie", type="boolean", nullable=false, options={"default": "1"})
      */
+    #[ORM\Column(name: 'vis_galerie', type: 'boolean', nullable: false, options: ['default' => '1'])]
     private $vis = true;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="evt_galerie", type="integer", nullable=false, options={"comment": "Sortie liée (facultatif)"})
      */
+    #[ORM\Column(name: 'evt_galerie', type: 'integer', nullable: false, options: ['comment' => 'Sortie liée (facultatif)'])]
     private $evt;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="article_galerie", type="integer", nullable=false, options={"comment": "Article lié (facultatif)"})
      */
+    #[ORM\Column(name: 'article_galerie', type: 'integer', nullable: false, options: ['comment' => 'Article lié (facultatif)'])]
     private $article;
 
     public function getId(): ?int

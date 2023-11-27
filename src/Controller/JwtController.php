@@ -11,13 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class JwtController extends AbstractController
 {
-    /**
-     * @Route(
-     *     name="auth-jwt",
-     *     path="/jwt",
-     *     methods={"POST"}
-     * )
-     */
+    #[Route(name: 'auth-jwt', path: '/jwt', methods: ['POST'])]
     public function indexAction(JWTTokenManagerInterface $JWTTokenManager)
     {
         if (!$this->isGranted('ROLE_USER')) {

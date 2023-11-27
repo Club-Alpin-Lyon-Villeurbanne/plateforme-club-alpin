@@ -7,49 +7,45 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Usertype.
  *
- * @ORM\Table(name="caf_usertype")
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_usertype')]
+#[ORM\Entity]
 class Usertype
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id_usertype", type="integer", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_usertype', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="hierarchie_usertype", type="integer", nullable=false, options={"comment": "Ordre d'apparition des types"})
      */
+    #[ORM\Column(name: 'hierarchie_usertype', type: 'integer', nullable: false, options: ['comment' => "Ordre d'apparition des types"])]
     private $hierarchie;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="code_usertype", type="string", length=30, nullable=false)
      */
+    #[ORM\Column(name: 'code_usertype', type: 'string', length: 30, nullable: false)]
     private $code;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="title_usertype", type="string", length=30, nullable=false)
      */
+    #[ORM\Column(name: 'title_usertype', type: 'string', length: 30, nullable: false)]
     private $title;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="limited_to_comm_usertype", type="boolean", nullable=false, options={"comment": "bool : ce type est (ou non) limité à une commission donnée"})
      */
+    #[ORM\Column(name: 'limited_to_comm_usertype', type: 'boolean', nullable: false, options: ['comment' => 'bool : ce type est (ou non) limité à une commission donnée'])]
     private $limitedToComm;
 
     public function getId(): ?int

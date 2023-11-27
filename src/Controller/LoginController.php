@@ -28,9 +28,7 @@ class LoginController extends AbstractController
         return array_merge(parent::getSubscribedServices(), [EntityManagerInterface::class]);
     }
 
-    /**
-     * @Route("/login", name="login")
-     */
+    #[Route(path: '/login', name: 'login')]
     public function index(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
@@ -50,15 +48,9 @@ class LoginController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route(
-     *     name="session_password_lost",
-     *     path="/password-lost",
-     *     methods={"GET", "POST"}
-     * )
-     *
-     * @Template
-     */
+    
+    #[Route(name: 'session_password_lost', path: '/password-lost', methods: ['GET', 'POST'])]
+    #[Template]
     public function passwordLostAction(Request $request, UserRepository $userRepository, LoginLinkHandlerInterface $loginLinkHandler, Mailer $mailer, RecaptchaValidator $recaptchaValidator)
     {
         if ($this->isGranted('ROLE_USER')) {
@@ -108,16 +100,12 @@ class LoginController extends AbstractController
      * If the user is logged in using the remember me token, they dont pass the IS_AUTHENTICATED_FULLY
      * Therefore, this should be used only after magic link authentication.
      *
-     * @Route(
-     *     name="account_set_password",
-     *     path="/password",
-     *     methods={"GET", "POST"}
-     * )
      *
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY') and is_granted('ROLE_USER')")
      *
-     * @Template
      */
+    #[Route(name: 'account_set_password', path: '/password', methods: ['GET', 'POST'])]
+    #[Security("is_granted('IS_AUTHENTICATED_FULLY') and is_granted('ROLE_USER')")]
+    #[Template]
     public function setPasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer, EntityManagerInterface $em)
     {
         /** @var User $user */
@@ -151,16 +139,12 @@ class LoginController extends AbstractController
      * Password is changed with validating the existing password.
      * It requires any user authentication.
      *
-     * @Route(
-     *     name="account_change_password",
-     *     path="/change-password",
-     *     methods={"GET", "POST"}
-     * )
      *
-     * @Security("is_granted('ROLE_USER')")
      *
-     * @Template
      */
+    #[Route(name: 'account_change_password', path: '/change-password', methods: ['GET', 'POST'])]
+    #[Security("is_granted('ROLE_USER')")]
+    #[Template]
     public function changePasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer, EntityManagerInterface $em)
     {
         $url = $request->getSession()->get('user_password.target', $this->generateUrl('legacy_root'));
