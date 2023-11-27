@@ -56,6 +56,7 @@
                                 <a
                                     v-if="expenseReportFormGroup.type == 'multiple' && expenseTypeIndex !== 0"
                                     class="delete" 
+
                                     href="#"
                                     @click.prevent="removeExpenseGroup(expenseReportFormGroup, expenseType)"
                                 >
