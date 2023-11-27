@@ -18,7 +18,7 @@
                 <div class="filename">
                     {{ field.justificationFile.name }}
                 </div>
-                <a href="#" @click.prevent="removeFile(field)">Supprimer</a> |
+                <a href="#" @click.prevent="removeFile()">Supprimer</a> |
                 <a href="#">Voir</a>
             </div>
 
@@ -32,7 +32,7 @@
                     type="file" 
                     multiple
                     name="{{ field.slug }}-justification"
-                    @change="onFileUploadChange($event, field)"
+                    @change="onFileUploadChange($event)"
                 >
             </label>
         </div>
