@@ -70,8 +70,8 @@
                                     v-for="field in expenseType.fields"
                                     :key="field.slug"
                                     :field="field"
-                                    class="field"
-                                ></ExpenseField>
+                                    class="field">
+                                </ExpenseField>
                             </div>
                         </div>
                     </div>
@@ -113,7 +113,7 @@
         },
         methods: {
             onFormSubmit() {
-                console.log('onFormSubmit');
+                console.log('onFormSubmit', this.formStructure);
             },
             spawnExpenseGroup(expenseReportFormGroup: any) {
                 expenseReportFormGroup.expenseTypes.push({

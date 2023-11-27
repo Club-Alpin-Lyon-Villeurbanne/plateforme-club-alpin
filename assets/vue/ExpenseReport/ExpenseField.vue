@@ -5,7 +5,13 @@
             type="text"
             :name="field.slug"
             v-model="field.value"
+            v-if="field.slug !== 'description'"
         />
+        <textarea 
+            v-else
+            :name="field.slug"
+            v-model="field.value"
+        ></textarea>
 
         <div v-if="field.needsJustification" class="justification">
             <div v-if="field.justificationFile">
