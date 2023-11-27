@@ -1,5 +1,5 @@
 <template>
-    <div class="expense-report-form">
+    <div class="expense-report-form white-box">
         <h2>Note de frais</h2>
         <form @submit.prevent="onFormSubmit">
             <fieldset>
