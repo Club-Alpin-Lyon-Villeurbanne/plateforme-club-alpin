@@ -52,10 +52,10 @@
                     <div v-for="(expenseType, expenseTypeIndex) in expenseReportFormGroup.expenseTypes" :key="expenseType.id">
                         <div v-if="expenseReportFormGroup.type !== 'unique' || expenseReportFormGroup.selectedType === expenseType.slug">
                             <h4>
-                                {{ expenseType.name }}
+                                {{ expenseType.name }} {{ (expenseTypeIndex + 1).toString() }}
                                 <a
                                     v-if="expenseReportFormGroup.type == 'multiple' && expenseTypeIndex !== 0"
-                                    class="delete" {{ (expenseTypeIndex + 1).toString() }}
+                                    class="delete" 
                                     href="#"
                                     @click.prevent="removeExpenseGroup(expenseReportFormGroup, expenseType)"
                                 >
