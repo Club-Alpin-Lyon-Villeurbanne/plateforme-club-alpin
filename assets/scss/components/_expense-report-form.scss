@@ -6,6 +6,11 @@
         margin-bottom: $gutter;
     }
 
+    h4 {
+        font-size: 1rem;
+        color: $gray-dark
+    }
+
     fieldset {
         border: none;
         background-color: $gray-light;
@@ -24,7 +29,7 @@
 
     .field {
 
-        input {
+        input, select {
             margin-bottom: $gutter-half;
         }
 
@@ -37,6 +42,11 @@
                 font-weight: bold;
             }
         }
+    }
+
+    .type-select {
+        margin-bottom: $gutter;
+        border-bottom: 1px solid $gray-dark;
     }
 
     .buttons {
