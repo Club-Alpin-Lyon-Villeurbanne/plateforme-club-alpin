@@ -61,13 +61,21 @@
 
     export default defineComponent({
         name: 'expense-report-form',
-        props: ['formStructure'],
+        props: ['formStructureProp'],
+        data() {
+            return {
+                formStructure: this.formStructureProp
+            }
+        },
         methods: {
             onFormSubmit() {
                 console.log('onFormSubmit');
             },
             spawnExpenseGroup(expenseReportFormGroup: any) {
-                expenseReportFormGroup.expenseTypes.push({...expenseReportFormGroup.expenseTypes[0], id: expenseReportFormGroup.expenseTypes.length + 1});
+                expenseReportFormGroup.expenseTypes.push(
+                    {...expenseReportFormGroup.expenseTypes[0], 
+                        id: expenseReportFormGroup.expenseTypes.length + 1
+                });
             }
         },
     })

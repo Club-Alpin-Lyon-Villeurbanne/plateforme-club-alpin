@@ -54,7 +54,8 @@ class SortieController extends AbstractController
                 'name' => $expenseGroup->getName(),
                 'slug' => $expenseGroup->getSlug(),
                 'type' => $expenseGroup->getType(),
-                'expenseTypes' => []
+                'expenseTypes' => [],
+                'selectedType' => 0,
             ];
 
             foreach ($expenseGroup->getExpenseTypes() as $expenseType) {
@@ -71,7 +72,7 @@ class SortieController extends AbstractController
                     $field->setNeedsJustification($relation->getNeedsJustification());
                 }
 
-                // add the field to the group
+                // add the type to the group
                 $expenseReportFormGroups[$expenseGroup->getSlug()]['expenseTypes'][] = [
                     'name' => $expenseType->getName(),
                     'slug' => $expenseType->getSlug(),
