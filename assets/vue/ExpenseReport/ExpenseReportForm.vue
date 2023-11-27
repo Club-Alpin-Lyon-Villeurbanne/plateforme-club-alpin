@@ -80,7 +80,7 @@
             </fieldset>
             <div class="green-box expense-report-summary" id="expense-report-summary">
                 <h3>Résumé :</h3>
-                <div>Total remboursable : <span class="refund-amount">123.00€</span></div>
+                <div>Total remboursable : <span class="refund-amount">123€</span></div>
                 <div>Hébergement : 60.00€, Transport : 63.00€</div>
             </div>
             <div class="buttons">
@@ -136,13 +136,6 @@
                 expenseReportFormGroup.expenseTypes = expenseReportFormGroup.expenseTypes.filter((expenseTypeToFilter: any) => {
                     return expenseTypeToFilter.id !== expenseType.id;
                 });
-            },
-            onFileUploadChange(event: any, field: any) {
-                field.justificationFile = event.target.files[0];
-                console.log('onFileUploadChange', event, field);
-            },
-            removeFile(field: any) {
-                field.justificationFile = null;
             }
         }
     });
