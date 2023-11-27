@@ -78,6 +78,10 @@
                         </div>
                     </div>
                 </div>
+
+                <div v-if="expenseReportFormGroup.type == 'multiple'">
+                    <a href="#" @click.prevent="spawnExpenseGroup(expenseReportFormGroup)">Ajouter</a>
+                </div>
             </fieldset>
             <div class="green-box expense-report-summary" id="expense-report-summary">
                 <h3>Résumé :</h3>
