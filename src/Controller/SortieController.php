@@ -10,6 +10,7 @@ use App\Repository\EvtRepository;
 use App\Repository\ExpenseGroupRepository;
 use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\UserRepository;
+use App\Utils\Serialize\ExpenseFieldTypeSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
