@@ -253,7 +253,7 @@
                         </p>
                         <br />
                     {% endif %}
-                    {% if my_status.role == 'encadrant' %}
+                    {% if isAdmin %}
                         {{ vueComponent('expense-report-form', 'ExpenseReportForm', {formStructureProp: expenseReportFormStructure}) }}
                     {% endif %}
                 {% else %}

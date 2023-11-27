@@ -10,6 +10,7 @@ use App\Repository\EvtRepository;
 use App\Repository\ExpenseGroupRepository;
 use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\UserRepository;
+use App\Security\AdminDetector;
 use App\Utils\Serialize\ExpenseFieldTypeSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -36,7 +37,8 @@ class SortieController extends AbstractController
         UserRepository $repository,
         EvtJoinRepository $participantRepository,
         ExpenseGroupRepository $expenseGroupRepository,
-        ExpenseTypeExpenseFieldTypeRepository $expenseTypeFieldTypeRepository
+        ExpenseTypeExpenseFieldTypeRepository $expenseTypeFieldTypeRepository,
+        AdminDetector $adminDetector
     ) {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
             throw new AccessDeniedHttpException('Not found');
@@ -84,8 +86,9 @@ class SortieController extends AbstractController
                 ];
             }
         }
-
+    
         return [
+            'isAdmin' => $adminDetector->isAdmin(),
             'event' => $event,
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participantRepository->getEmpietements($event),
