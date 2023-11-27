@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -11,223 +12,197 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * User.
  *
- * @ORM\Table(name="caf_user")
  *
- * @ORM\Entity(repositoryClass=UserRepository::class)
  */
+#[ORM\Table(name: 'caf_user')]
+#[ORM\Index(name: 'id_user', columns: ['id_user'])]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id_user", type="bigint", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Id]
+    #[ORM\Column(name: 'id_user', type: 'bigint', nullable: false)]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity="UserAttr", mappedBy="user", cascade={"persist"})
-     */
+    #[ORM\OneToMany(targetEntity: 'UserAttr', mappedBy: 'user', cascade: ['persist'])]
     private $attrs;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="email_user", type="string", length=200, nullable=true, unique=true)
      */
+    #[ORM\Column(name: 'email_user', type: 'string', length: 200, nullable: true, unique: true)]
     private $email;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="mdp_user", type="string", length=1024, nullable=true, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'mdp_user', type: 'string', length: 1024, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $mdp;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="cafnum_user", type="string", length=20, nullable=true, options={"comment": "Numéro de licence"})
      */
+    #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, nullable: true, options: ['comment' => 'Numéro de licence'])]
     private $cafnum;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="cafnum_parent_user", type="string", length=20, nullable=true, options={"comment": "Filiation : numéro CAF du parent"})
      */
+    #[ORM\Column(name: 'cafnum_parent_user', type: 'string', length: 20, nullable: true, options: ['comment' => 'Filiation : numéro CAF du parent'])]
     private $cafnumParent;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="firstname_user", type="string", length=50, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'firstname_user', type: 'string', length: 50, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $firstname;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="lastname_user", type="string", length=50, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'lastname_user', type: 'string', length: 50, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $lastname;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="nickname_user", type="string", length=20, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'nickname_user', type: 'string', length: 20, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $nickname;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="created_user", type="bigint", nullable=false)
      */
+    #[ORM\Column(name: 'created_user', type: 'bigint', nullable: false)]
     private $created;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="birthday_user", type="bigint", nullable=true)
      */
+    #[ORM\Column(name: 'birthday_user', type: 'bigint', nullable: true)]
     private $birthday;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="tel_user", type="string", length=30, nullable=true)
      */
+    #[ORM\Column(name: 'tel_user', type: 'string', length: 30, nullable: true)]
     private $tel;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="tel2_user", type="string", length=30, nullable=true)
      */
+    #[ORM\Column(name: 'tel2_user', type: 'string', length: 30, nullable: true)]
     private $tel2;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="adresse_user", type="string", length=100, nullable=true)
      */
+    #[ORM\Column(name: 'adresse_user', type: 'string', length: 100, nullable: true)]
     private $adresse;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="cp_user", type="string", length=10, nullable=true)
      */
+    #[ORM\Column(name: 'cp_user', type: 'string', length: 10, nullable: true)]
     private $cp;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="ville_user", type="string", length=30, nullable=true)
      */
+    #[ORM\Column(name: 'ville_user', type: 'string', length: 30, nullable: true)]
     private $ville;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="pays_user", type="string", length=50, nullable=true)
      */
+    #[ORM\Column(name: 'pays_user', type: 'string', length: 50, nullable: true)]
     private $pays;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="civ_user", type="string", length=10, nullable=true)
      */
+    #[ORM\Column(name: 'civ_user', type: 'string', length: 10, nullable: true)]
     private $civ;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="moreinfo_user", type="string", length=500, nullable=true, options={"comment": "FORMATIONS ?", "collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'moreinfo_user', type: 'string', length: 500, nullable: true, options: ['comment' => 'FORMATIONS ?', 'collation' => 'utf8mb4_unicode_ci'])]
     private $moreinfo;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="auth_contact_user", type="string", length=10, nullable=false, options={"default": "users", "comment": "QUI peut me contacter via formulaire"})
      */
+    #[ORM\Column(name: 'auth_contact_user', type: 'string', length: 10, nullable: false, options: ['default' => 'users', 'comment' => 'QUI peut me contacter via formulaire'])]
     private $authContact = 'users';
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="valid_user", type="boolean", nullable=false, options={"comment": "0=l'user n'a pas activé son compte   1=activé    2=bloqué"})
      */
+    #[ORM\Column(name: 'valid_user', type: 'boolean', nullable: false, options: ['comment' => "0=l'user n'a pas activé son compte   1=activé    2=bloqué"])]
     private $valid = '0';
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="cookietoken_user", type="string", length=32, nullable=true)
      */
+    #[ORM\Column(name: 'cookietoken_user', type: 'string', length: 32, nullable: true)]
     private $cookietoken;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="manuel_user", type="boolean", nullable=false, options={"comment": "User créé à la mano sur le site ?"})
      */
+    #[ORM\Column(name: 'manuel_user', type: 'boolean', nullable: false, options: ['comment' => 'User créé à la mano sur le site ?'])]
     private $manuelUser = '0';
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="nomade_user", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'nomade_user', type: 'boolean', nullable: false)]
     private $nomade = '0';
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="nomade_parent_user", type="integer", nullable=true, options={"comment": "Dans le cas d'un user NOMADE, l'ID de son créateur"})
      */
+    #[ORM\Column(name: 'nomade_parent_user', type: 'integer', nullable: true, options: ['comment' => "Dans le cas d'un user NOMADE, l'ID de son créateur"])]
     private $nomadeParent;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="date_adhesion_user", type="bigint", nullable=true)
      */
+    #[ORM\Column(name: 'date_adhesion_user', type: 'bigint', nullable: true)]
     private $dateAdhesion;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="doit_renouveler_user", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'doit_renouveler_user', type: 'boolean', nullable: false)]
     private $doitRenouveler = '0';
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="alerte_renouveler_user", type="boolean", nullable=false, options={"comment": "Si sur 1 : une alerte s'affiche pour annoncer que l'adhérent doit renouveler sa licence"})
      */
+    #[ORM\Column(name: 'alerte_renouveler_user', type: 'boolean', nullable: false, options: ['comment' => "Si sur 1 : une alerte s'affiche pour annoncer que l'adhérent doit renouveler sa licence"])]
     private $alerteRenouveler = '0';
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="ts_insert_user", type="bigint", nullable=true, options={"comment": "timestamp 1ere insertion"})
      */
+    #[ORM\Column(name: 'ts_insert_user', type: 'bigint', nullable: true, options: ['comment' => 'timestamp 1ere insertion'])]
     private $tsInsert;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="ts_update_user", type="bigint", nullable=true, options={"comment": "timestamp derniere maj"})
      */
+    #[ORM\Column(name: 'ts_update_user', type: 'bigint', nullable: true, options: ['comment' => 'timestamp derniere maj'])]
     private $tsUpdate;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: ExpenseReport::class, orphanRemoval: false)]
+    private Collection $expenseReports;
 
     public function __construct()
     {
@@ -669,5 +644,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUsername()
     {
         return (string) $this->getEmail();
+    }
+
+    /**
+     * Get the value of expenseReports
+     *
+     * @return Collection
+     */
+    public function getExpenseReports(): Collection
+    {
+        return $this->expenseReports;
+    }
+
+    /**
+     * Set the value of expenseReports
+     *
+     * @param Collection $expenseReports
+     *
+     * @return self
+     */
+    public function setExpenseReports(Collection $expenseReports): self
+    {
+        $this->expenseReports = $expenseReports;
+
+        return $this;
     }
 }

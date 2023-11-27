@@ -8,77 +8,69 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Partenaire.
  *
- * @ORM\Table(name="caf_partenaires")
  *
- * @ORM\Entity(repositoryClass=PartenaireRepository::class)
  */
+#[ORM\Table(name: 'caf_partenaires')]
+#[ORM\Entity(repositoryClass: PartenaireRepository::class)]
 class Partenaire
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="part_id", type="integer", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'part_id', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="part_name", type="string", length=50, nullable=false)
      */
+    #[ORM\Column(name: 'part_name', type: 'string', length: 50, nullable: false)]
     private $name;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="part_url", type="string", length=256, nullable=false)
      */
+    #[ORM\Column(name: 'part_url', type: 'string', length: 256, nullable: false)]
     private $url;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="part_desc", type="string", length=500, nullable=false)
      */
+    #[ORM\Column(name: 'part_desc', type: 'string', length: 500, nullable: false)]
     private $desc;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="part_image", type="string", length=100, nullable=false)
      */
+    #[ORM\Column(name: 'part_image', type: 'string', length: 100, nullable: false)]
     private $image;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="part_type", type="integer", nullable=false, options={"default": "1", "comment": "1=prive,2=public"})
      */
+    #[ORM\Column(name: 'part_type', type: 'integer', nullable: false, options: ['default' => '1', 'comment' => '1=prive,2=public'])]
     private $type = 1;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="part_enable", type="integer", nullable=false, options={"default": "1", "comment": "partenaire actif =1"})
      */
+    #[ORM\Column(name: 'part_enable', type: 'integer', nullable: false, options: ['default' => '1', 'comment' => 'partenaire actif =1'])]
     private $enable = 1;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="part_order", type="integer", nullable=false, options={"default": "999999"})
      */
+    #[ORM\Column(name: 'part_order', type: 'integer', nullable: false, options: ['default' => '999999'])]
     private $order = 999999;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="part_click", type="integer", nullable=false, options={"comment": "nb de cliques"})
      */
+    #[ORM\Column(name: 'part_click', type: 'integer', nullable: false, options: ['comment' => 'nb de cliques'])]
     private $click = '0';
 
     public function getId(): ?int

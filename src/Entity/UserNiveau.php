@@ -7,58 +7,54 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * UserNiveau.
  *
- * @ORM\Table(name="caf_user_niveau")
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_user_niveau')]
+#[ORM\Entity]
 class UserNiveau
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer", nullable=false, options={"unsigned": true})
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false, options: ['unsigned' => true])]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User")
      *
-     * @ORM\JoinColumn(name="id_user", referencedColumnName="id_user", nullable=false)
      */
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\JoinColumn(name: 'id_user', referencedColumnName: 'id_user', nullable: false)]
     private $idUser;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="id_commission", type="integer", nullable=false, options={"unsigned": true})
      */
+    #[ORM\Column(name: 'id_commission', type: 'integer', nullable: false, options: ['unsigned' => true])]
     private $idCommission;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="niveau_technique", type="smallint", nullable=true, options={"unsigned": true})
      */
+    #[ORM\Column(name: 'niveau_technique', type: 'smallint', nullable: true, options: ['unsigned' => true])]
     private $niveauTechnique;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="niveau_physique", type="smallint", nullable=true, options={"unsigned": true})
      */
+    #[ORM\Column(name: 'niveau_physique', type: 'smallint', nullable: true, options: ['unsigned' => true])]
     private $niveauPhysique;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="commentaire", type="text", length=65535, nullable=true)
      */
+    #[ORM\Column(name: 'commentaire', type: 'text', length: 65535, nullable: true)]
     private $commentaire;
 
     public function getId(): ?int
