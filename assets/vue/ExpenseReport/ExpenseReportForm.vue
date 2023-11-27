@@ -77,10 +77,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div v-if="expenseReportFormGroup.type == 'multiple'">
-                    <a href="#" @click.prevent="spawnExpenseGroup(expenseReportFormGroup)">Ajouter</a>
-                </div>
             </fieldset>
             <div class="green-box expense-report-summary" id="expense-report-summary">
                 <h3>Résumé :</h3>
@@ -140,6 +136,13 @@
                 expenseReportFormGroup.expenseTypes = expenseReportFormGroup.expenseTypes.filter((expenseTypeToFilter: any) => {
                     return expenseTypeToFilter.id !== expenseType.id;
                 });
+            },
+            onFileUploadChange(event: any, field: any) {
+                field.justificationFile = event.target.files[0];
+                console.log('onFileUploadChange', event, field);
+            },
+            removeFile(field: any) {
+                field.justificationFile = null;
             }
         }
     });
