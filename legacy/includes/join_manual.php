@@ -22,7 +22,7 @@ if (user()) {
 
 		<?php
         // PREMIERE ETAPE : SELECTION DES ADHERENTS A AJOUTER
-        if (!is_array(isset($_POST['id_user']))) {
+        if (!is_array($_POST['id_user'])) {
             ?>
 			<p>
 				<img src="/img/base/magnifier.png" style="vertical-align:middle" />
@@ -162,7 +162,7 @@ if (user()) {
             // print_r($_POST);
             // print_r($_POST['id_user']);
             // rien de sélectionné
-            if (!count(isset($_POST['id_user']))) {
+            if (!count($_POST['id_user'])) {
                 if (isset($_POST['result']) && 'success' == $_POST['result']) {
                     unset($_POST['result']);
                     echo '<p class="erreur">Aucune donnée reçue. <a href="'.$versCettePage.'">Retour</a></p>';
