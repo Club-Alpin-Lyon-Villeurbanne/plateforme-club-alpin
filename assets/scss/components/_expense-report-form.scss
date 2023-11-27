@@ -1,15 +1,46 @@
 .expense-report-form {
+
     h3 {
-        font-size: 1.2rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
+        @extend h3;
+        font-size: 1.05rem;
+        margin-bottom: $gutter;
     }
 
     fieldset {
-        padding: 1rem;
+        border: none;
+        background-color: $gray-light;
+        margin: $gutter 0;
+        padding: $gutter;
+        padding-top: calc($gutter * 3);
+        position: relative;
+
+        legend {
+            @extend h2;
+            font-size: 1.1rem;
+            position: absolute;
+            top: $gutter;
+        }
     }
 
     .field {
-        margin-bottom: 1rem;
+
+        input {
+            margin-bottom: $gutter-half;
+        }
+
+        label {
+            display: block;
+            margin-bottom: $gutter-half;
+
+            &.uploader-label {
+                cursor: pointer;
+                font-weight: bold;
+            }
+        }
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: space-around;
     }
 }

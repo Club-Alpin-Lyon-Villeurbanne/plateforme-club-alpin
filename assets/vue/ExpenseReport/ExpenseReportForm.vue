@@ -1,5 +1,6 @@
 <template>
-    <div class="expense-report-form">
+    <div class="expense-report-form white-box">
+        <h2>Note de frais</h2>
         <form @submit.prevent="onFormSubmit">
             <div class="field">
                 <label for="refund_required_no">
@@ -13,7 +14,10 @@
                 Je demande le remboursement des frais
                 </label>
             </div>
-            <fieldset v-for="expenseReportFormGroup in formStructure" :key="expenseReportFormGroup.slug">
+            <fieldset
+                v-for="expenseReportFormGroup in formStructure"
+                :key="expenseReportFormGroup.slug"
+            >
                 <legend>{{ expenseReportFormGroup.name }}</legend>
 
                 <div class="field" v-if="expenseReportFormGroup.type == 'unique'">
@@ -27,30 +31,45 @@
                         </option>
                     </select>
                 </div>
-                <div v-else-if="expenseReportFormGroup.type == 'multiple'">
-                    <a href="#" @click.prevent="spawnExpenseGroup(expenseReportFormGroup)">Ajouter</a>
-                </div>
 
                 <div v-for="expenseType in expenseReportFormGroup.expenseTypes" :key="expenseType.id">
                     <div v-if="expenseReportFormGroup.type !== 'unique' || expenseReportFormGroup.selectedType === expenseType.slug">
                         <h3>{{ expenseType.name }}</h3>
-                        <div v-for="field in expenseType.fields" :key="field.slug" class="field">
+                        <div
+                            v-for="field in expenseType.fields"
+                            :key="field.slug"
+                            class="field"
+                        >
                             <label>{{ field.name }}</label>
                             <input type="text" :name="field.slug" :value="field.value" />
     
                             <div v-if="field.needsJustification" class="justification">
-                                <label>Justificatif</label>
-                                <input type="file" name="{{ field.slug }}-justification">
+                                <label class="uploader-label">Joindre un justificatif
+                                    <input class="hidden" type="file" name="{{ field.slug }}-justification">
+                                </label>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div v-if="expenseReportFormGroup.type == 'multiple'">
+                    <a href="#" @click.prevent="spawnExpenseGroup(expenseReportFormGroup)">Ajouter</a>
+                </div>
             </fieldset>
-            <div>
-                <button type="submit">Valider</button>
+            <div class="green-box expense-report-summary" id="expense-report-summary">
+                <h3>Résumé :</h3>
+                <div>Total remboursable : <span class="refund-amount">123.00€</span></div>
+                <div>Hébergement : 60.00€, Transport : 63.00€</div>
             </div>
-            <div>
-                <button type="submit">Sauvegarder le brouillon</button>
+            <div class="buttons">
+                <button type="submit" class="biglink">
+                    <span class="bleucaf">&gt;</span>
+                    Valider
+                </button> 
+                <button type="submit" class="biglink">
+                    <span class="emoji">&#128190;</span>
+                    Sauvegarder le brouillon
+            </button>
             </div>
         </form>
     </div>

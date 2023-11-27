@@ -1,0 +1,15 @@
+.white-box {
+    background: white;
+    box-shadow: $box-shadow;
+    padding: $gutter;
+    margin: 0 $gutter-double 0 0;
+}
+
+.green-box {
+    color: $black;
+    border: 1px solid $green-dark;
+    margin: $gutter 0;
+    padding: $gutter;
+    background: $green-light;
+    box-shadow: $box-shadow;
+}
