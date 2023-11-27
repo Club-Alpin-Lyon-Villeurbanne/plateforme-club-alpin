@@ -30,6 +30,7 @@
                 <input 
                     class="hidden" 
                     type="file" 
+                    multiple
                     name="{{ field.slug }}-justification"
                     @change="onFileUploadChange($event, field)"
                 >
