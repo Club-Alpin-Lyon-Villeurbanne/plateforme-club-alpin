@@ -23,9 +23,9 @@ final class Version20231128150000 extends AbstractMigration
         // on relation between expense type and field type
         $this->addSql(
             "ALTER TABLE `expense_type_expense_field_type`
-            ADD COLUMN `order` INT(2) NOT NULL DEFAULT 0
-            ADD COLUMN `mandatory` TINYINT(1) NOT NULL DEFAULT 0
-            ADD COLUMN `used_for_total` TINYINT(1) NOT NULL DEFAULT 0"
+            ADD COLUMN `order` INT(2) NOT NULL DEFAULT 0 AFTER `needs_justification`,
+            ADD COLUMN `mandatory` TINYINT NOT NULL DEFAULT 0 AFTER `needs_justification`,
+            ADD COLUMN `used_for_total` TINYINT NOT NULL DEFAULT 0 AFTER `needs_justification`;"
         );
 
         // add "input_type" column on field type
