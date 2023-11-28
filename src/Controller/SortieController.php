@@ -91,7 +91,7 @@ class SortieController extends AbstractController
                 ];
             }
         }
-    dump($expenseReportFormGroups); exit;
+        
         return [
             'isAdmin' => $adminDetector->isAdmin(),
             'event' => $event,
