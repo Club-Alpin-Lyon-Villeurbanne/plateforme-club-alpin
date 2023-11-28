@@ -25,12 +25,6 @@ class ExpenseTypeExpenseFieldType
     private ?bool $needsJustification = null;
 
     #[ORM\Column]
-    private ?bool $usedForTotal = null;
-
-    #[ORM\Column]
-    private ?bool $mandatory = null;
-
-    #[ORM\Column]
     private ?bool $isUsedForTotal = null;
 
     #[ORM\Column]
@@ -82,46 +76,22 @@ class ExpenseTypeExpenseFieldType
 
     public function isUsedForTotal(): ?bool
     {
-        return $this->usedForTotal;
+        return $this->isUsedForTotal;
     }
 
     public function setUsedForTotal(bool $usedForTotal): static
     {
-        $this->usedForTotal = $usedForTotal;
+        $this->isUsedForTotal = $usedForTotal;
 
         return $this;
     }
 
     public function isMandatory(): ?bool
     {
-        return $this->mandatory;
-    }
-
-    public function setMandatory(bool $mandatory): static
-    {
-        $this->mandatory = $mandatory;
-
-        return $this;
-    }
-
-    public function isIsUsedForTotal(): ?bool
-    {
-        return $this->isUsedForTotal;
-    }
-
-    public function setIsUsedForTotal(bool $isUsedForTotal): static
-    {
-        $this->isUsedForTotal = $isUsedForTotal;
-
-        return $this;
-    }
-
-    public function isIsMandatory(): ?bool
-    {
         return $this->isMandatory;
     }
 
-    public function setIsMandatory(bool $isMandatory): static
+    public function setMandatory(bool $isMandatory): static
     {
         $this->isMandatory = $isMandatory;
 
