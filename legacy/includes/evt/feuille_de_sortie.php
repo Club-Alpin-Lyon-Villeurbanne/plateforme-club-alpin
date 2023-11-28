@@ -216,11 +216,11 @@ presidence();
             <th style="width: fit-content">ITINERAIRE PREVU : </th>
             <td colspan="3"><?php echo html_utf8($evt['itineraire']); ?></td>
         </tr>
-        <tr>
-            <th style="width: fit-content">EN CAS D'ACCIDENT : </th>
-            <td colspan="3">Contactez notre assurance Gras-Savoye au 09 72 72 22 43. <br> Contactez le président ou vice-président (numéro ci-dessus). </td>
-        </tr>
     <?php } ?>
+    <tr>
+        <th style="width: fit-content">EN CAS D'ACCIDENT : </th>
+        <td colspan="3">Contactez notre assurance Gras-Savoye au 09 72 72 22 43. <br> Contactez le président ou vice-président (numéro ci-dessus). </td>
+    </tr>
     </tbody>
 </table>
 
