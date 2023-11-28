@@ -30,6 +30,9 @@ class ExpenseFieldType
     // defined manually in SortieController.php
     private bool $needsJustification = false;
 
+    #[ORM\Column(length: 255)]
+    private ?string $inputType = null;
+
     public function __construct()
     {
         $this->fields = new ArrayCollection();
@@ -142,6 +145,18 @@ class ExpenseFieldType
     public function setNeedsJustification(bool $needsJustification): self
     {
         $this->needsJustification = $needsJustification;
+
+        return $this;
+    }
+
+    public function getInputType(): ?string
+    {
+        return $this->inputType;
+    }
+
+    public function setInputType(string $inputType): static
+    {
+        $this->inputType = $inputType;
 
         return $this;
     }
