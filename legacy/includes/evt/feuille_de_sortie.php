@@ -186,37 +186,41 @@ presidence();
 <table>
     <tbody>
     <tr>
-        <th width='15%'>DATE :</th>
+        <th width='15%' style="width: fit-content">DATE :</th>
         <td width='25%'><?php echo date('d.m.Y', $evt['tsp_evt']); ?></td>
         <th width='20%'>COURSE, LIEU : </th>
         <td width='30%'><?php echo html_utf8($evt['titre_evt']); ?><?php if (count($evt['groupe']) > 0) {
-            echo ' - '.$evt['groupe']['nom'];
-        } ?></td>
+                echo ' - '.$evt['groupe']['nom'];
+            } ?></td>
     </tr>
     <tr>
-        <th>DISTANCE : </th>
+        <th style="width: fit-content">DISTANCE : </th>
         <td><?php echo $evt['distance_evt'] ? html_utf8($evt['distance_evt']) : '...'; ?> km</td>
         <th>DENIVELE POSITIF :</th>
         <td><?php echo $evt['denivele_evt'] ? html_utf8($evt['denivele_evt']) : '...'; ?> m</td>
     </tr>
     <tr>
-        <th>NIVEAU :</th>
+        <th style="width: fit-content">NIVEAU :</th>
         <td><?php echo $evt['difficulte_evt'] ? html_utf8($evt['difficulte_evt']) : '...'; ?></td>
         <th>NB DE PARTICIPANTS :</th>
         <td><?php echo html_utf8($nAccepteesCalc); ?></td>
     </tr>
     <?php if ($evt['matos_evt']) { ?>
         <tr>
-            <th>MATERIEL : </th>
+            <th style="width: fit-content">MATERIEL : </th>
             <td colspan="3"><?php echo html_utf8($evt['matos_evt']); ?></td>
         </tr>
     <?php } ?>
     <?php if ($evt['itineraire']) { ?>
         <tr>
-            <th>ITINERAIRE PREVU : </th>
+            <th style="width: fit-content">ITINERAIRE PREVU : </th>
             <td colspan="3"><?php echo html_utf8($evt['itineraire']); ?></td>
         </tr>
     <?php } ?>
+    <tr>
+        <th style="width: fit-content">EN CAS D'ACCIDENT : </th>
+        <td colspan="3">Contactez notre assurance Gras-Savoye au 09 72 72 22 43. <br> Contactez le président ou vice-président (numéro ci-dessus). </td>
+    </tr>
     </tbody>
 </table>
 
