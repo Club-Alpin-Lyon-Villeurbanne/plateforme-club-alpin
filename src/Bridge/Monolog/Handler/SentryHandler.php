@@ -152,7 +152,7 @@ class SentryHandler extends AbstractProcessingHandler
         });
     }
 
-    private function shouldSkip(array $record): bool
+    private function shouldSkip(LogRecord $record): bool
     {
         foreach ($this->logFilters as $logFilter) {
             if ($logFilter->shouldSkip($record)) {
@@ -163,7 +163,7 @@ class SentryHandler extends AbstractProcessingHandler
         return false;
     }
 
-    private function createBreadcrumb(array $record): Breadcrumb
+    private function createBreadcrumb(LogRecord $record): Breadcrumb
     {
         return new Breadcrumb(
             (string) $this->getSeverityFromLevel($record['level']),
