@@ -11,12 +11,14 @@ services:
             - ./:/var/www
 
     cafdb:
-        image: mariadb
+        image: mariadb:11.2
         container_name: db_caflyon
         environment:
             MARIADB_ROOT_PASSWORD: ${DB_PASSWORD}
             MARIADB_DATABASE: ${DB_NAME}
         restart: always
+        volumes:
+            - ./db:/var/lib/mysql
 
     phpmyadmin:
         image: phpmyadmin
