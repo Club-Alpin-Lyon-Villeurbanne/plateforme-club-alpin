@@ -51,8 +51,9 @@ final class Version20231128150000 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->addSql("ALTER TABLE `expense_type_expense_field_type` DROP COLUMN `order`");
-        $this->addSql("ALTER TABLE `expense_type_expense_field_type` DROP COLUMN `used_for_total`");
+        $this->addSql("ALTER TABLE `expense_type_expense_field_type` DROP COLUMN `display_order`");
+        $this->addSql("ALTER TABLE `expense_type_expense_field_type` DROP COLUMN `is_mandatory`");
+        $this->addSql("ALTER TABLE `expense_type_expense_field_type` DROP COLUMN `is_used_for_total`");
         $this->addSql("ALTER TABLE `expense_field_type` DROP COLUMN `input_type`");
     }
 }
