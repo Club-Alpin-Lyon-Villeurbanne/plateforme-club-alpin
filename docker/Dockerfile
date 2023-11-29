@@ -30,7 +30,7 @@ RUN apt-get update &&  apt-get install -y --no-install-recommends \
   apt-utils \
   git \
   g++ \
-  mariadb-client
+  mysql-client
 
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
 RUN echo "fr_FR.UTF-8 UTF-8" >> /etc/locale. &&  locale-gen

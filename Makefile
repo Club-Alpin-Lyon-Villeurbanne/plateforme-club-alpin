@@ -10,7 +10,7 @@ PHP = $(EXEC) php
 COMPOSER = $(EXEC) composer
 NPM = $(EXEC) npm
 SYMFONY_CONSOLE = $(PHP) bin/console
-MARIADB = $(DOCKER_COMPOSE) --project-directory . --project-name caflyon -f docker-compose.yml exec -T cafdb mariadb
+MYSQL = $(DOCKER_COMPOSE) --project-directory . --project-name caflyon -f docker-compose.yml exec -T cafdb mysql
 
 # Colors
 GREEN = echo "\x1b[32m\#\# $1\x1b[0m"
@@ -37,11 +37,11 @@ database-init-test: ## Init database for test
 
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists --env=test
 	$(SYMFONY_CONSOLE) doctrine:database:create --env=test
-	$(MARIADB) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.sql
-	$(MARIADB) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
-	$(MARIADB) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
-	$(MARIADB) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
-	$(MARIADB) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
+	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.sql
+	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
+	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
+	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
+	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction --env=test
 	$(SYMFONY_CONSOLE) doctrine:fixtures:load --no-interaction --env=test
 
@@ -82,11 +82,11 @@ database-create: ## Create database
 	$(SYMFONY_CONSOLE) doctrine:database:create --if-not-exists
 
 database-import: ## Make import
-	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.sql
-	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
-	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
-	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
-	$(MARIADB) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
+	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.sql
+	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
+	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
+	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
+	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
 
 database-migration: ## Make migration
 	$(SYMFONY_CONSOLE) make:migration
