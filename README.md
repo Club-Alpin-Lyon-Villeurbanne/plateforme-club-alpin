@@ -7,7 +7,7 @@ Bienvenue sur le dépôt du code source de la plateforme en ligne du Club Alpin 
 Ce site est un portail dédié à notre communauté, offrant une multitude de fonctionnalités, de l'organisation d'événements à la gestion des adhésions et bien plus encore.
 Le site a été développé en php par l'agence HereWeCom il y a quelques années (environ 2010) et ils nous ont ensuite donné le code.
 Un refactoring important a été effectué pour y intégrer le framework symfony.
-Il utilise une base mariadb.
+Il utilise une base MySQL 5.7.
 Le tout est hébergé chez AWS et déploié automatiquement par Github Actions.
 
 ## organisation du projet
@@ -17,7 +17,7 @@ Nous utilisons [clickup](https://app.clickup.com/42653954/v/l/18np82-82) pour g�
 ## Infrastructure
 
 Le site est hébergé chez [AWS](https://aws.amazon.com/fr/). L'infrastructure consiste en un serveur web classique (instance ec2), avec Apache, php et letsencrypt.
-La DB est managée par [RDS](https://aws.amazon.com/fr/rds/). Il s'agit d'une DB Aurora avec mariadb comme moteur.
+La DB est managée par [RDS](https://aws.amazon.com/fr/rds/). Il s'agit d'une DB Aurora avec Mysql comme moteur.
 L'infrastructure de ce site est gérée par Terraform dans le repo [`infrastructure-website`](https://github.com/Club-Alpin-Lyon-Villeurbanne/infrastructure-website).
 
 ## Deployement
