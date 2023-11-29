@@ -59,7 +59,7 @@ jobs:
       - name: Replace variable for production .env file
         run: |
           sed -i "s/DB_PASSWORD_TO_REPLACE/${{ secrets.AWS_DB_PASSWORD }}/g" .env.prod
-          sed -i "s/DEBUG_PARAM_TO_REPLACE/APP_DEBUG=true/g" .env.prod
+          sed -i "s/DEBUG_PARAM_TO_REPLACE/APP_DEBUG=false/g" .env.prod
 
       - name: Replace variable for production config file
         run: |
