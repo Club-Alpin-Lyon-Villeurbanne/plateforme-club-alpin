@@ -28,7 +28,10 @@ class ExpenseFieldType
     private Collection $expenseTypes;
 
     // defined manually in SortieController.php
-    private bool $needsJustification = false;
+    private array $flags = [];
+
+    #[ORM\Column(length: 255)]
+    private ?string $inputType = null;
 
     public function __construct()
     {
@@ -123,25 +126,37 @@ class ExpenseFieldType
     }
 
     /**
-     * Get the value of needsJustification
+     * Get the value of flags
      *
      * @return bool
      */
-    public function getNeedsJustification(): bool
+    public function getFlags(): array
     {
-        return $this->needsJustification;
+        return $this->flags;
     }
 
     /**
-     * Set the value of needsJustification
+     * Set the value of flags ([flagname => flagvalue])
      *
-     * @param bool $needsJustification
+     * @param array $flags
      *
      * @return self
      */
-    public function setNeedsJustification(bool $needsJustification): self
+    public function setFlags(array $flags): self
     {
-        $this->needsJustification = $needsJustification;
+        $this->flags = $flags;
+
+        return $this;
+    }
+
+    public function getInputType(): ?string
+    {
+        return $this->inputType;
+    }
+
+    public function setInputType(string $inputType): static
+    {
+        $this->inputType = $inputType;
 
         return $this;
     }

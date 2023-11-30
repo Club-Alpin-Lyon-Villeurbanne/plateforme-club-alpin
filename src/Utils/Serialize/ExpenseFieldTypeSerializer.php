@@ -12,8 +12,9 @@ class ExpenseFieldTypeSerializer {
             'id' => $expenseFieldType->getId(),
             'name' => $expenseFieldType->getName(),
             'slug' => $expenseFieldType->getSlug(),
+            'inputType' => $expenseFieldType->getInputType(),
             // property set manually in SortieController.php
-            'needsJustification' => $expenseFieldType->getNeedsJustification(),
+            'flags' => $expenseFieldType->getFlags(),
         ];
     }
 }

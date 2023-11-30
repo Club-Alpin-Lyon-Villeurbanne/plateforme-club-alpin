@@ -71,7 +71,12 @@ class SortieController extends AbstractController
                         'expenseFieldType' => $field
                     ]);
                     
-                    $field->setNeedsJustification($relation->getNeedsJustification());
+                    $field->setFlags([
+                        'needsJustification' => $relation->getNeedsJustification(),
+                        'displayOrder' => $relation->getDisplayOrder(),
+                        'isMandatory' => $relation->isMandatory(),
+                        'isUsedForTotal' => $relation->isUsedForTotal(),
+                    ]);
                 }
 
                 // add the type to the group
@@ -86,7 +91,7 @@ class SortieController extends AbstractController
                 ];
             }
         }
-    
+        
         return [
             'isAdmin' => $adminDetector->isAdmin(),
             'event' => $event,
