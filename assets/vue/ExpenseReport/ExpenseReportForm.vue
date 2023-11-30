@@ -123,8 +123,9 @@
                             id: field.id,
                             name: field.name,
                             slug: field.slug,
+                            inputType: field.inputType,
                             value: '',
-                            needsJustification: field.needsJustification
+                            flags: field.flags,
                         }
                     }),
                     name: expenseReportFormGroup.expenseTypes[0].name,
