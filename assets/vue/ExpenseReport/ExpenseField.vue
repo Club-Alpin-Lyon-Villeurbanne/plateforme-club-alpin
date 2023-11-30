@@ -1,19 +1,29 @@
 <template>
     <div class="field">
         <label>{{ field.name }}</label>
-        <input 
-            type="text"
+        
+        <input
+            :required="field.flags.isMandatory"
+            type="number"
             :name="field.slug"
             v-model="field.value"
-            v-if="field.slug !== 'description'"
+            v-if="field.inputType === 'numeric'"
         />
         <textarea 
-            v-else
+            :required="field.flags.isMandatory"
+            v-else-if="field.inputType === 'text'"
             :name="field.slug"
             v-model="field.value"
         ></textarea>
+        <input
+            :required="field.flags.isMandatory"
+            type="text"
+            :name="field.slug"
+            v-model="field.value"
+            v-else
+        />
 
-        <div v-if="field.needsJustification" class="justification">
+        <div v-if="field.flags.needsJustification" class="justification">
             <div v-if="field.justificationFile">
                 <div class="filename">
                     {{ field.justificationFile.name }}
