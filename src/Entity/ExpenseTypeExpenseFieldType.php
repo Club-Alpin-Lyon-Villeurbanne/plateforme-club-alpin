@@ -24,6 +24,15 @@ class ExpenseTypeExpenseFieldType
     #[ORM\Column]
     private ?bool $needsJustification = null;
 
+    #[ORM\Column]
+    private ?bool $isUsedForTotal = null;
+
+    #[ORM\Column]
+    private ?bool $isMandatory = null;
+
+    #[ORM\Column]
+    private ?int $displayOrder = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -61,6 +70,42 @@ class ExpenseTypeExpenseFieldType
     public function setNeedsJustification(bool $needsJustification): static
     {
         $this->needsJustification = $needsJustification;
+
+        return $this;
+    }
+
+    public function isUsedForTotal(): ?bool
+    {
+        return $this->isUsedForTotal;
+    }
+
+    public function setUsedForTotal(bool $usedForTotal): static
+    {
+        $this->isUsedForTotal = $usedForTotal;
+
+        return $this;
+    }
+
+    public function isMandatory(): ?bool
+    {
+        return $this->isMandatory;
+    }
+
+    public function setMandatory(bool $isMandatory): static
+    {
+        $this->isMandatory = $isMandatory;
+
+        return $this;
+    }
+
+    public function getDisplayOrder(): ?int
+    {
+        return $this->displayOrder;
+    }
+
+    public function setDisplayOrder(int $displayOrder): static
+    {
+        $this->displayOrder = $displayOrder;
 
         return $this;
     }
