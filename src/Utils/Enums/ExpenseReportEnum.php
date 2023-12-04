@@ -4,8 +4,8 @@ namespace App\Utils\Enums;
 
 enum ExpenseReportEnum: int
 {
-    public const STATUS_DRAFT = 0;
-    public const STATUS_PENDING = 1;
-    public const STATUS_REFUSED = 2;
-    public const STATUS_PAID = 3;
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_PENDING = 'submitted';
+    public const STATUS_REFUSED = 'rejected';
+    public const STATUS_PAID = 'approved';
 }
