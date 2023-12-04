@@ -88,7 +88,7 @@
                     <span class="bleucaf">&gt;</span>
                     Valider
                 </button> 
-                <button type="submit" class="biglink">
+                <button @click.prevent="saveDraftExpenseReport" class="biglink">
                     <span class="emoji">&#128190;</span>
                     Sauvegarder le brouillon
             </button>
@@ -114,7 +114,7 @@
         },
         methods: {
             onFormSubmit() {
-                console.log('onFormSubmit', this.formStructure);
+                this.saveExpenseReport((window as any).enums.expenseReportStatuses.SUBMITTED);
             },
             spawnExpenseGroup(expenseReportFormGroup: any) {
                 expenseReportFormGroup.expenseTypes.push({
@@ -137,6 +137,15 @@
                 expenseReportFormGroup.expenseTypes = expenseReportFormGroup.expenseTypes.filter((expenseTypeToFilter: any) => {
                     return expenseTypeToFilter.id !== expenseType.id;
                 });
+            },
+            saveDraftExpenseReport() {
+                this.saveExpenseReport((window as any).enums.expenseReportStatuses.DRAFT);
+            },
+            saveExpenseReport(status: string) {
+                console.log('save', {
+                    status,
+                    ...this.formStructure
+                })
             }
         }
     });
