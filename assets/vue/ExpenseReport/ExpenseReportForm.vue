@@ -83,6 +83,7 @@
                 <div>Total remboursable : <span class="refund-amount">123€</span></div>
                 <div>Hébergement : 60.00€, Transport : 63.00€</div>
             </div>
+            <div class="errors" v-if="errorMessages.length"></div>
             <div class="buttons">
                 <button type="submit" class="biglink">
                     <span class="bleucaf">&gt;</span>
@@ -109,12 +110,13 @@
         },
         data() {
             return {
-                formStructure: this.formStructureProp
+                formStructure: this.formStructureProp,
+                errorMessages: [] as string[]
             }
         },
         methods: {
             onFormSubmit() {
-                this.saveExpenseReport((window as any).enums.expenseReportStatuses.SUBMITTED);
+                this.saveExpenseReport((window as any).enums.expenseReportStatuses.STATUS_SUBMITTED);
             },
             spawnExpenseGroup(expenseReportFormGroup: any) {
                 expenseReportFormGroup.expenseTypes.push({
@@ -139,13 +141,26 @@
                 });
             },
             saveDraftExpenseReport() {
-                this.saveExpenseReport((window as any).enums.expenseReportStatuses.DRAFT);
+                this.saveExpenseReport((window as any).globals.enums.expenseReportStatuses.STATUS_DRAFT);
             },
-            saveExpenseReport(status: string) {
-                console.log('save', {
-                    status,
-                    ...this.formStructure
-                })
+            async saveExpenseReport(status: string) {
+                try {
+                    const response = await fetch((window as any).globals.apiBaseUrl + '/expense-report', 
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            status,
+                            ...this.formStructure
+                        })
+                    });
+                    const responseJson = await response.json();
+
+                } catch (error: any) {
+                    this.errorMessages.push(error.message);
+                }
             }
         }
     });

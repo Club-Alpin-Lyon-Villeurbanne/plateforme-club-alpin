@@ -11,6 +11,8 @@ use App\Repository\ExpenseGroupRepository;
 use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\UserRepository;
 use App\Security\AdminDetector;
+use App\Twig\JavascriptGlobalsExtension;
+use App\Utils\Enums\ExpenseReportEnum;
 use App\Utils\Serialize\ExpenseFieldTypeSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -20,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Twig\Environment;
 
 class SortieController extends AbstractController
 {
@@ -38,7 +41,7 @@ class SortieController extends AbstractController
         EvtJoinRepository $participantRepository,
         ExpenseGroupRepository $expenseGroupRepository,
         ExpenseTypeExpenseFieldTypeRepository $expenseTypeFieldTypeRepository,
-        AdminDetector $adminDetector
+        Environment $twig,
     ) {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
             throw new AccessDeniedHttpException('Not found');
@@ -91,9 +94,15 @@ class SortieController extends AbstractController
                 ];
             }
         }
+
+        $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
+            'enums', ['expenseReportStatuses' => ExpenseReportEnum::getConstants()]
+        );
+        $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
+            'apiBaseUrl', 'http://localhost:8000/api'
+        );
         
         return [
-            'isAdmin' => $adminDetector->isAdmin(),
             'event' => $event,
             'participants' => $participantRepository->getSortedParticipants($event),
             'filiations' => $user ? $repository->getFiliations($user) : null,
