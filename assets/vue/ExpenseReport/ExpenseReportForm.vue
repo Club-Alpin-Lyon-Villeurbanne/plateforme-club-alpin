@@ -93,6 +93,7 @@
             <div class="success" v-if="successMessage">
                 <p>{{ successMessage }}</p>
             </div>
+            <div class="errors" v-if="errorMessages.length"></div>
             <div class="buttons">
                 <button type="submit" class="biglink">
                     <span class="bleucaf">&gt;</span>
