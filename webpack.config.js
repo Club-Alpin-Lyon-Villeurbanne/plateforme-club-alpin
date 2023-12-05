@@ -27,6 +27,12 @@ Encore
         './assets/app.js',
     ])
 
+    // copy assets/images/* to build/images
+    .copyFiles({
+        from: './assets/images',
+        to: 'images/[path][name].[ext]',
+    })
+
     .addPlugin(new webpack.IgnorePlugin({
         resourceRegExp: /^\.\/locale$/,
         contextRegExp: /moment$/,
