@@ -12,14 +12,14 @@ $alerteRenouvelerUser = $userTab['alerte_renouveler_user'] ?? null;
 $dateAdhesionUser = $userTab['date_adhesion_user'] ?? null;
 $birthdayUser = $userTab['birthday_user'] ?? null;
 $telUser = $userTab['tel_user'] ?? null;
-$tel2User = $userTab['tel2_user'] ?? null;
+$telSecuUser = $userTab['tel2_user'] ?? null;
 $adresseUser = $userTab['adresse_user'] ?? null;
 $cpUser = $userTab['cp_user'] ?? null;
 $villeUser = $userTab['ville_user'] ?? null;
 $paysUser = $userTab['pays_user'] ?? null;
 $validUser = $userTab['valid_user'] ?? null;
 $cafnumUserNew = $userTab['cafnum_user_new'] ?? null;
-$cafnumeUser = $userTab['cafnum_user'] ?? null;
+$cafnumUser = $userTab['cafnum_user'] ?? null;
 $authContactUser = $userTab['auth_contact_user'] ?? null;
 $operation = $_POST['operation'] ?? null;
 $userEmail = $userTab['email_user'] ?? null;
@@ -120,7 +120,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 			<br />
  -->
 			Numéro de licence :<br />
-			<input type="text" name="cafnum_user" class="type1" value="<?php echo $cafnumeUser; ?>" placeholder="" /> à inverser avec le nouveau numéro
+			<input type="text" name="cafnum_user" class="type1" value="<?php echo $cafnumUser; ?>" placeholder="" /> à inverser avec le nouveau numéro
 			<input type="text" name="cafnum_user_new" class="type1" value="<?php if($cafnumUserNew) echo $cafnumUserNew; ?>" placeholder="" />
 			<br />
 
@@ -134,7 +134,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 
 			<br />
 			Numéro de téléphone de sécurité :<br />
-			<input type="text" name="tel2_user" class="type1" value="<?php echo $tel2User; ?>" placeholder="" />
+			<input type="text" name="tel2_user" class="type1" value="<?php echo $telSecuUser; ?>" placeholder="" />
 
 			<br />
 			Adresse <br />
