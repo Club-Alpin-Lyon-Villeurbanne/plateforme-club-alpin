@@ -219,7 +219,7 @@ if (!$evt) {
             : '')
             // materiel ?
             .('' != $evt['matos_evt'] ?
-                '<li class="wide"><b>MATÉRIEL :</b> '.html_utf8(str_replace([" \n", "\n"], '<br> ', trim($evt['matos_evt']))).'</li>'
+                '<li class="wide"><b>MATÉRIEL :</b> '.html_utf8(nl2br(trim($evt['matos_evt']))).'</li>'
             : '')
         .'</ul>'
         .'<br style="clear:both" />'
