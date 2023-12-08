@@ -73,7 +73,6 @@ class SortieController extends AbstractController
                         'expenseType' => $expenseType,
                         'expenseFieldType' => $field
                     ]);
-                    
                     $field->setFlags([
                         'needsJustification' => $relation->getNeedsJustification(),
                         'displayOrder' => $relation->getDisplayOrder(),

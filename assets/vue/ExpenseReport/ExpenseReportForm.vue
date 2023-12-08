@@ -116,7 +116,7 @@
         },
         methods: {
             onFormSubmit() {
-                this.saveExpenseReport((window as any).enums.expenseReportStatuses.STATUS_SUBMITTED);
+                this.saveExpenseReport((window as any).globals.enums.expenseReportStatuses.STATUS_SUBMITTED);
             },
             spawnExpenseGroup(expenseReportFormGroup: any) {
                 expenseReportFormGroup.expenseTypes.push({
@@ -145,7 +145,7 @@
             },
             async saveExpenseReport(status: string) {
                 try {
-                    const response = await fetch((window as any).globals.apiBaseUrl + '/expense-report', 
+                    const response = await fetch('http://localhost:8000/expense-report', 
                     {
                         method: 'POST',
                         headers: {
@@ -157,6 +157,7 @@
                         })
                     });
                     const responseJson = await response.json();
+                    console.log(responseJson);
 
                 } catch (error: any) {
                     this.errorMessages.push(error.message);
