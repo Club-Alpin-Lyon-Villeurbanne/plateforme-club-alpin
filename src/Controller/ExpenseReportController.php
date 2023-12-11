@@ -8,10 +8,13 @@ use App\Entity\ExpenseReport;
 use App\Repository\EvtRepository;
 use App\Repository\ExpenseFieldTypeRepository;
 use App\Repository\ExpenseTypeRepository;
+use App\Utils\FileUploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use ProxyManager\Factory\RemoteObject\Adapter\JsonRpc;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ExpenseReportController extends AbstractController
@@ -26,8 +29,10 @@ class ExpenseReportController extends AbstractController
         EntityManagerInterface $entityManager
     ): JsonResponse
     {
+
+        // TODO: vérifier ACL
+
         $data = json_decode($request->getContent(), true);
-        // return new JsonResponse($data);
 
         // créer la note de frais
         $expenseReport = new ExpenseReport();
@@ -42,7 +47,7 @@ class ExpenseReportController extends AbstractController
             if (!is_array($dataExpenseGroup)) {
                 continue;
             }
-            // pour chaque dépense
+            // pour chaque dépense dans le groupe
             foreach ($dataExpenseGroup['expenseTypes'] as $dataExpenseType) {
                 // si le groupe est de type "unique", ne pas traiter les types non selectionnés
                 if ($dataExpenseGroup['type'] === 'unique' && !$dataExpenseType['slug'] !== $dataExpenseGroup['selectedType']) {
@@ -54,10 +59,11 @@ class ExpenseReportController extends AbstractController
                 $expense->setExpenseType($expenseType);
                 $expense->setExpenseReport($expenseReport);
                 $entityManager->persist($expense);
-                // pour chaque champ
+
+                // pour chaque champ dans la dépense
                 foreach ($dataExpenseType['fields'] as $dataField) {
                     // créer le champ
-                    // todo add justification document
+                    // TODO: add justification document
                     $expenseField = new ExpenseField();
                     $fieldType = $expenseFieldTypeRepository->find($dataField['fieldTypeId']);
                     $expenseField->setFieldType($fieldType);
@@ -72,5 +78,29 @@ class ExpenseReportController extends AbstractController
 
         // rediriger vers la sortie correspondante
         return new JsonResponse($data);
+    }
+
+    #[Route('/expense-report/justification-document', name: 'app_expense_report_upload_justification_document', methods: ['POST'])]
+    public function uploadJustificationDocument(Request $request)
+    {
+        // TODO: vérifier les ACL
+        
+        $file = $request->files->get('justification_document');
+        
+        if (!$file) {
+            throw new BadRequestHttpException('No file uploaded');
+        }
+
+        $extension = $file->getClientOriginalExtension();
+        $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        // rebuild filename with hashed timestamp and extension
+        $filename = $filename . '_' . substr(md5(time()), 0, 6) . '.' . $extension;
+        $file->move(FileUploadHelper::getUserUploadPath($this->getUser()), $filename);
+
+        return new JsonResponse([
+            'success' => true,
+            'fileUrl' => FileUploadHelper::getUserUploadUrl($this->getUser()) . '/' . $filename,
+        ]);
+
     }
 }
