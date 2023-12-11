@@ -115,7 +115,7 @@ if ('1' != $evt['cancelled_evt']) {
         }
 
         // TABLEAU alertes
-        if (isset($_POST['operation']) && 'user_join_update_status' == $_POST['operation'] && $addAlert && count($addAlert) > 0) {
+        if (isset($_POST['operation']) && 'user_join_update_status' == $_POST['operation'] && isset($addAlert) && count($addAlert) > 0) {
             echo '<div class="alerte">Attention : <ul><li>'.implode('</li><li>', $addAlert).'</li></ul></div><br />';
         } ?>
 

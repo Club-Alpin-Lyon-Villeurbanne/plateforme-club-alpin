@@ -234,7 +234,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'lastname' => getUser()->getLastname(),
                 'nickname' => getUser()->getNickname(),
                 'covoiturage' => $is_covoiturage,
-                'dest_role' => $destinataire['role_evt_join'] ?: 'l\'auteur',
+                'dest_role' => $destinataire['role_evt_join'] ?? 'l\'auteur',
             ], [], null, getUser()->getEmail());
         }
     }
