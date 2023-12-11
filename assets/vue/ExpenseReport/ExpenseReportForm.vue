@@ -110,7 +110,7 @@
         },
         data() {
             return {
-                formStructure: this.formStructureProp,
+                formStructure: {refundRequired: false, ...this.formStructureProp},
                 errorMessages: [] as string[]
             }
         },

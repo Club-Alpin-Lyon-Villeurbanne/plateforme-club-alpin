@@ -7,10 +7,10 @@ use App\Entity\ExpenseField;
 use App\Entity\ExpenseReport;
 use App\Repository\EvtRepository;
 use App\Repository\ExpenseFieldTypeRepository;
+use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\ExpenseTypeRepository;
 use App\Utils\FileUploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
-use ProxyManager\Factory\RemoteObject\Adapter\JsonRpc;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +26,7 @@ class ExpenseReportController extends AbstractController
         ExpenseTypeRepository $expenseTypeRepository,
         ExpenseFieldTypeRepository $expenseFieldTypeRepository,
         EvtRepository $evtRepository,
+        ExpenseTypeExpenseFieldTypeRepository $expenseTypeExpenseFieldTypeRepository,
         EntityManagerInterface $entityManager
     ): JsonResponse
     {
@@ -69,6 +70,20 @@ class ExpenseReportController extends AbstractController
                     $expenseField->setFieldType($fieldType);
                     $expenseField->setValue($dataField['value']);
                     $expenseField->setExpense($expense);
+                    
+                    // check if this field needs a justification document in this expense type
+                    $relation = $expenseTypeExpenseFieldTypeRepository->findOneBy([
+                        'expenseType' => $expenseType,
+                        'expenseFieldType' => $fieldType
+                    ]);
+
+                    if ($relation->getNeedsJustification()) {
+                        if (empty($dataField['justificationFileUrl'])) {
+                            throw new BadRequestHttpException('Missing justification document');
+                        }
+                        $expenseField->setJustificationDocument($dataField['justificationFileUrl']);
+                    }
+
                     $entityManager->persist($expenseField);
                 }
             }

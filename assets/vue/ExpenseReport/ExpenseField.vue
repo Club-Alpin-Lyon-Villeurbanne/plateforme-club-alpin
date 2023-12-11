@@ -70,7 +70,7 @@ export default defineComponent({
             })
             .then(response => response.json())
             .then(data => {
-                this.justificationFileUrl = data.fileUrl;
+                this.field.justificationFileUrl = data.fileUrl;
             });
         },
         removeFile() {
