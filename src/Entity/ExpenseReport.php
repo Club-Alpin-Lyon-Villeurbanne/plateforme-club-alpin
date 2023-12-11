@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 
 #[ORM\Entity(repositoryClass: ExpenseReportRepository::class)]
 #[ApiResource(
@@ -20,6 +21,7 @@ use Doctrine\ORM\Mapping as ORM;
         new Post()
     ]
 )]
+#[HasLifecycleCallbacks]
 class ExpenseReport
 {
     #[ORM\Id]
@@ -27,8 +29,8 @@ class ExpenseReport
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $status = null;
+    #[ORM\Column]
+    private ?string $status = null;
 
     #[ORM\Column]
     private ?bool $refund_required = null;
@@ -55,17 +57,30 @@ class ExpenseReport
         $this->expenses = new ArrayCollection();
     }
 
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->setUpdatedAtValue();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updated_at = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getStatus(): ?int
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    public function setStatus(int $status): static
+    public function setStatus(string $status): static
     {
         $this->status = $status;
 

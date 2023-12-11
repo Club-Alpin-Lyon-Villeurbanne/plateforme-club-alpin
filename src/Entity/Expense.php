@@ -6,8 +6,10 @@ use App\Repository\ExpenseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 
 #[ORM\Entity(repositoryClass: ExpenseRepository::class)]
+#[HasLifecycleCallbacks]
 class Expense
 {
     #[ORM\Id]
@@ -16,10 +18,10 @@ class Expense
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $spent_amount = null;
+    private ?int $spent_amount = 0;
 
     #[ORM\Column(nullable: true)]
-    private ?int $refund_amount = null;
+    private ?int $refund_amount = 0;
 
     #[ORM\OneToMany(mappedBy: 'expense', targetEntity: ExpenseField::class, orphanRemoval: true)]
     private Collection $fields;
@@ -41,6 +43,19 @@ class Expense
     public function __construct()
     {
         $this->fields = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->setUpdatedAtValue();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updated_at = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
