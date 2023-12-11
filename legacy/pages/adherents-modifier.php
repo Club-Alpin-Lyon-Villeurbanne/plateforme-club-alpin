@@ -21,8 +21,9 @@ $validUser = $userTab['valid_user'] ?? null;
 $cafnumUserNew = $userTab['cafnum_user_new'] ?? null;
 $cafnumUser = $userTab['cafnum_user'] ?? null;
 $authContactUser = $userTab['auth_contact_user'] ?? null;
-$operation = $_POST['operation'] ?? null;
 $userEmail = $userTab['email_user'] ?? null;
+
+$operation = $_POST['operation'] ?? null;
 
 if (!admin() && !allowed('user_edit_notme')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
