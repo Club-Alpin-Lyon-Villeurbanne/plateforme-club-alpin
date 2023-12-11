@@ -64,7 +64,6 @@ class ExpenseReportController extends AbstractController
                 // pour chaque champ dans la dépense
                 foreach ($dataExpenseType['fields'] as $dataField) {
                     // créer le champ
-                    // TODO: add justification document
                     $expenseField = new ExpenseField();
                     $fieldType = $expenseFieldTypeRepository->find($dataField['fieldTypeId']);
                     $expenseField->setFieldType($fieldType);
