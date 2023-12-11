@@ -11,6 +11,7 @@ use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\ExpenseTypeRepository;
 use App\Utils\FileUploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use ProxyManager\Factory\RemoteObject\Adapter\JsonRpc;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,7 +35,6 @@ class ExpenseReportController extends AbstractController
         // TODO: vérifier ACL
 
         $data = json_decode($request->getContent(), true);
-        // return new JsonResponse($data);
 
         // créer la note de frais
         $expenseReport = new ExpenseReport();
