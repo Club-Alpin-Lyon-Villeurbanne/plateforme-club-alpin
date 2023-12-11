@@ -29,7 +29,7 @@
                     {{ field.justificationFile.name }}
                 </div>
                 <a href="#" @click.prevent="removeFile()">Supprimer</a> |
-                <a :href="justificationFileUrl" target="_blank">Voir</a>
+                <a :href="field.justificationFileUrl" target="_blank">Voir</a>
             </div>
 
             <label v-else class="uploader-label bleucaf">
