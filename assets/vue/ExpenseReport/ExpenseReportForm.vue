@@ -6,13 +6,13 @@
                 <legend>Remboursement</legend>
                 <div class="field">
                     <label for="refund_required_no">
-                    <input type="radio" id="refund_required_no" name="refund_required" value="0" checked>
+                    <input type="radio" id="refund_required_no" name="refund_required" value="0" checked v-model="formStructure.refundRequired">
                     Je fais don de cette note de frais au club et recevrai en fin d'année un reçu fiscal
                     </label>
                 </div>
                 <div class="field">
                     <label for="refund_required_yes">
-                    <input type="radio" id="refund_required_yes" name="refund_required" value="1">
+                    <input type="radio" id="refund_required_yes" name="refund_required" value="1" v-model="formStructure.refundRequired">
                     Je demande le remboursement de cette note de frais
                     </label>
                 </div>
@@ -128,11 +128,13 @@
                             inputType: field.inputType,
                             value: '',
                             flags: field.flags,
+                            fieldTypeId: field.fieldTypeId,
                         }
                     }),
                     name: expenseReportFormGroup.expenseTypes[0].name,
                     slug: expenseReportFormGroup.expenseTypes[0].slug,
-                    id: expenseReportFormGroup.expenseTypes.length + 1
+                    id: expenseReportFormGroup.expenseTypes.length + 1,
+                    expenseTypeId: expenseReportFormGroup.expenseTypes[0].expenseTypeId,
                 });
             },
             removeExpenseGroup(expenseReportFormGroup: any, expenseType: any) {
@@ -153,6 +155,7 @@
                         },
                         body: JSON.stringify({
                             status,
+                            eventId: (window as any).globals.currentEventId,
                             ...this.formStructure
                         })
                     });

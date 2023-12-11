@@ -83,6 +83,7 @@ class SortieController extends AbstractController
 
                 // add the type to the group
                 $expenseReportFormGroups[$expenseGroup->getSlug()]['expenseTypes'][] = [
+                    'expenseTypeId' => $expenseType->getId(),
                     'name' => $expenseType->getName(),
                     'slug' => $expenseType->getSlug(),
                     'fields' => $expenseType->getFieldTypes()->map(
@@ -98,7 +99,7 @@ class SortieController extends AbstractController
             'enums', ['expenseReportStatuses' => ExpenseReportEnum::getConstants()]
         );
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
-            'apiBaseUrl', 'http://localhost:8000/api'
+            'currentEventId', $event->getId()
         );
         
         return [
