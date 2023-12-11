@@ -34,6 +34,7 @@ class ExpenseReportController extends AbstractController
         // TODO: vérifier ACL
 
         $data = json_decode($request->getContent(), true);
+        // return new JsonResponse($data);
 
         $errors = [];
 
