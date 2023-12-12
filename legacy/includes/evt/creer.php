@@ -59,7 +59,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
     <div style="float:right;margin-right:20px;" >
         Titre :<br />
-        <input style="width:320px;" type="text" name="titre_evt" class="type1" value="<?php echo inputVal('titre_evt', ''); ?>" placeholder="ex : Escalade du Grand Som" />
+        <input style="width:320px;" type="text" name="titre_evt" id="titre_evt" class="type1" value="<?php echo inputVal('titre_evt', ''); ?>" placeholder="ex : Escalade du Grand Som" />
+        <span id="titreError" class="error" style="color: red;"></span>
     </div>
 
     <?php $groupes = get_groupes($comTab[$current_commission]['id_commission'], true); ?>
@@ -186,21 +187,18 @@ foreach ($coencadrantsTab as $coencadrant) {
         <br />
         <div style="float:left; width:45%; padding:0 20px 5px 0;">
             Ville, et lieu de rendez-vous covoiturage :<br />
-            <?php
-                inclure('infos-lieu-de-rdv', 'mini');
-?>
-            <input type="text" name="rdv_evt" class="type2" style="width:95%" value="<?php echo inputVal('rdv_evt', ''); ?>" placeholder="ex : Pralognan la Vanoise, les fontanettes" />
+            <?php inclure('infos-lieu-de-rdv', 'mini');?>
+            <input type="text" name="rdv_evt" id="rdv_evt" class="type2" style="width:95%" value="<?php echo inputVal('rdv_evt', ''); ?>" placeholder="ex : Pralognan la Vanoise, les fontanettes" />
+            <span id="rdvError" class="error" style="color: red;"></span>
         </div>
 
         <div style="float:left; width:45%; padding:0 20px 0 0;">
             Précisez sur la carte :<br />
-            <?php
-inclure('infos-carte', 'mini');
-?>
+            <?php inclure('infos-carte', 'mini');?>
             <input type="button" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le point sur la carte" />
-            <input type="hidden" name="lat_evt" value="<?php echo inputVal('lat_evt', ''); ?>" />
-            <input type="hidden" name="long_evt" value="<?php echo inputVal('long_evt', ''); ?>" />
-
+            <input type="hidden" name="lat_evt" id="lat_evt" value="<?php echo inputVal('lat_evt', ''); ?>" />
+            <input type="hidden" name="long_evt" id="long_evt" value="<?php echo inputVal('long_evt', ''); ?>" />
+            <span id="mapError" class="error" style="color: red;"></span>
         </div>
         <br style="clear:both" />
 
@@ -210,24 +208,24 @@ inclure('infos-carte', 'mini');
         <br />
         <div style="width:45%; padding-right:3%; float:left">
             Date et heure de RDV / covoiturage :<br />
-            <input type="text" name="tsp_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_evt_day', ''); ?>" placeholder="jj/mm/aaaa" />
-            <input type="text" name="tsp_evt_hour" class="type2" style="width:45%" value="<?php echo inputVal('tsp_evt_hour', ''); ?>" placeholder="hh:ii" />
+            <input type="text" name="tsp_evt_day" id="tsp_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_evt_day', ''); ?>" placeholder="jj/mm/aaaa" />
+            <input type="text" name="tsp_evt_hour" id="tsp_evt_hour" class="type2" style="width:45%" value="<?php echo inputVal('tsp_evt_hour', ''); ?>" placeholder="hh:ii" />
+            <span id="tspError" class="error" style="color: red;"></span>
         </div>
 
         <div style="width:50%; float:left">
             Date de fin de la sortie :<br />
-            <input type="text" name="tsp_end_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_end_evt_day', ''); ?>" placeholder="jj/mm/aaaa" />
+            <input type="text" name="tsp_end_evt_day" id="tsp_end_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_end_evt_day', ''); ?>" placeholder="jj/mm/aaaa" />
             <!--
 							<input type="text" name="tsp_end_evt_hour" class="type2" style="width:45%;" value="<?php echo inputVal('tsp_end_evt_hour', ''); ?>" placeholder="hh:ii" />
 							-->
             <input type="button" value="même jour ?" class="nice" onclick="$('input[name=tsp_end_evt_day]').val($('input[name=tsp_evt_day]').val())" style="margin-top:7px" />
+            <span id="tspEndError" class="error" style="color: red;"></span>
         </div>
-
 
         <br style="clear:both" />
         <br />
     </div>
-
 
     <h2 class="trigger-h2">Tarif :</h2>
     <div class="trigger-me check-nice" style="padding-right:20px">
@@ -249,7 +247,7 @@ inclure('infos-carte', 'mini');
     <h2 class="trigger-h2">Inscriptions :</h2>
     <div class="trigger-me" style="padding-right:20px">
 
-        <!-- si on rensigne une suite de cycle, cette section est blqoquée  -->
+        <!-- si on renseigne une suite de cycle, cette section est bloquée  -->
         <div id="inscriptions-on" style="display:<?php echo isset($suiteDeCycle) && $suiteDeCycle ? 'none' : 'block' ?>">
 
 
@@ -262,10 +260,9 @@ inclure('infos-carte', 'mini');
 
             <div style="width:45%; padding-right:3%; float:left">
                 Les inscriptions démarrent :<br />
-                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_start_evt_days" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_start_evt_days', ''); ?>" placeholder=" > 2" />
-								<span class="mini">
-									jours avant la sortie.
-								</span>
+                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_start_evt_days" id="join_start_evt_days" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_start_evt_days', ''); ?>" placeholder=" > 2" />
+                    <span class="mini">jours avant la sortie.</span>
+                    <span id="joinStartError" class="error" style="color: red;"></span>
             </div>
 
             <div style="width:50%; float:left">
@@ -363,13 +360,14 @@ inclure('infos-matos', 'mini');
             N'hésitez pas à mettre un maximum de détails, cet élément formera le corps de la page dédiée à cette sortie.
         </p>
         <?php require __DIR__.'/../../includes/help/tinymce.php'; ?>
-        <textarea name="description_evt" style="width:99%"><?php echo stripslashes($_POST['description_evt'] ?? ''); ?></textarea>
+        <textarea name="description_evt" id="description_evt" style="width:99%"><?php echo stripslashes($_POST['description_evt'] ?? ''); ?></textarea>
+        <span id="descriptionError" class="error" style="color: red;"></span>
     </div>
 
     <br />
     <br />
     <div style="text-align:center">
-        <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+        <a class="biglink" href="javascript:void(0)" title="Enregistrer" id="enregistrerBtn" onclick="handleFormSubmission()">
             <span class="bleucaf">&gt;</span>
             ENREGISTRER ET DEMANDER LA PUBLICATION
         </a>
@@ -502,3 +500,111 @@ inclure('infos-matos', 'mini');
    crossorigin=""></script>
 <script type="text/javascript" src="/js/osm-organiser.js"></script>
 <!-- ****************** // osm-->
+
+<!-- ******** scripts validation formulaire **********-->
+<script>
+    function handleFormSubmission() {
+        // Valide le formulaire et affiche tous les messages d'erreur
+        var validationResult = validateForm(true);
+
+        // Si la validation est réussie, le formulaire est soumis
+        if (validationResult.isValid) {
+            $(this).parents('form').submit();
+        } else {
+            // Affiche tous les messages d'erreur
+            alert(validationResult.errorMessages.join('\n'));
+        }
+    }
+
+    document.getElementById('enregistrerBtn').addEventListener('click', handleFormSubmission);
+
+    function validateForm(showAllErrors) {
+        var titre = document.getElementById('titre_evt').value;
+        var titreError = document.getElementById('titreError');
+
+        var description = document.getElementById('description_evt').value;
+        var descriptionError = document.getElementById('descriptionError');
+
+        var rdv = document.getElementById('rdv_evt').value;
+        var rdvError = document.getElementById('rdvError');
+
+        var joinStartDays = document.getElementById('join_start_evt_days').value;
+        var joinStartError = document.getElementById('joinStartError');
+
+        var lat = document.getElementById('lat_evt').value;
+        var long = document.getElementById('long_evt').value;
+        var mapError = document.getElementById('mapError');
+
+        var tspDay = document.getElementById('tsp_evt_day').value;
+        var tspHour = document.getElementById('tsp_evt_hour').value;
+        var tspError = document.getElementById('tspError');
+        var tspEndDay = document.getElementById('tsp_end_evt_day').value;
+        var tspEndError = document.getElementById('tspEndError');
+
+        var dayRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+        var hourRegex = /^\d{2}:\d{2}$/;
+
+        // Réinitialise le message d'erreur
+        titreError.innerHTML = "";
+        descriptionError.innerHTML = "";
+        rdvError.innerHTML = "";
+        joinStartError.innerHTML = "";
+        mapError.innerHTML = "";
+        tspError.innerHTML = "";
+        tspEndError.innerHTML = "";
+
+        var validationResult = {
+            isValid: true,
+            errorMessages: [] // Tableau pour stocker tous les messages d'erreur
+        };
+
+        // Validation du titre
+        if (titre.length < 10 || titre.length > 100) {
+            validationResult.errorMessages.push("Le titre est obligatoire et doit comporter de 10 à 100 caractères");
+        }
+
+        // Validation de la description
+        if (description.trim() === "") {
+            validationResult.errorMessages.push("La description de la sortie est obligatoire");
+        }
+
+        // Validation de la date de début d'inscription (doit être un nombre entier > 2)
+        var joinStartDaysInt = parseInt(joinStartDays);
+        if (isNaN(joinStartDaysInt) || joinStartDaysInt <= 2) {
+            validationResult.errorMessages.push("La date de début d'inscription doit être un nombre entier supérieur à 2");
+        }
+
+        // Validation du lieu de rendez-vous (entre 3 et 200 caractères)
+        if (rdv.length < 3 || rdv.length > 200) {
+            validationResult.errorMessages.push("Le lieu de rendez-vous doit comporter entre 3 et 200 caractères");
+        }
+
+        // Validation de la position sur la carte (lat et long ne doivent pas être vides)
+        if (lat.trim() === "" || long.trim() === "") {
+            validationResult.errorMessages.push("Coordonnées introuvables. Vérifier le positionnement du curseur sur la carte");
+        }
+
+        // Validation de la date
+        if (tspDay.trim() === "" || !dayRegex.test(tspDay)) {
+            validationResult.errorMessages.push("Veuillez spécifier une date au format jj/mm/aaaa");
+        }
+
+        // Validation de l'heure
+        if (tspHour.trim() === "" || !hourRegex.test(tspHour)) {
+            validationResult.errorMessages.push("Veuillez spécifier une heure au format hh:ii");
+        }
+
+        // Validation de la date de fin de la sortie
+        if (tspEndDay.trim() === "" || !dayRegex.test(tspEndDay)) {
+            validationResult.errorMessages.push("Veuillez spécifier une date de fin au format jj/mm/aaaa");
+        }
+
+        // Si showAllErrors est vrai et qu'il y a des erreurs, retourne isValid à false
+        if (showAllErrors && validationResult.errorMessages.length > 0) {
+            validationResult.isValid = false;
+        }
+
+        return true;
+    }
+</script>
+
