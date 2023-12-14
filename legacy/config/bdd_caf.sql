@@ -783,6 +783,7 @@ CREATE TABLE IF NOT EXISTS `caf_usertype` (
   PRIMARY KEY (`id_usertype`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=12 ;
 
+
 --
 -- Contenu de la table `caf_usertype`
 --
