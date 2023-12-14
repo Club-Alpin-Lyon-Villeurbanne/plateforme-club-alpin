@@ -398,6 +398,14 @@ CREATE TABLE IF NOT EXISTS `caf_evt` (
   PRIMARY KEY (`id_evt`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 
+INSERT INTO `caf_evt` (`id_evt`, `status_evt`, `status_who_evt`, `status_legal_evt`, `status_legal_who_evt`, `cancelled_evt`, `cancelled_who_evt`, `cancelled_when_evt`, `user_evt`,
+                        `commission_evt`, `tsp_evt`, `tsp_end_evt`, `tsp_crea_evt`, `tsp_edit_evt`, `place_evt`, `titre_evt`, `code_evt`, `massif_evt`, `rdv_evt`, `tarif_evt`,
+                        `denivele_evt`, `distance_evt`, `lat_evt`, `long_evt`, `matos_evt`, `difficulte_evt`, `description_evt`, `need_benevoles_evt`, `join_start_evt`,`join_max_evt`,
+                        `ngens_max_evt`,`cycle_master_evt`,`cycle_parent_evt`,`child_version_from_evt`,`child_version_tosubmit`) VALUES
+    (777, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1702252800, 1702252800, 1701388800, 1701388800, 'Vallée', 'Randonnée champêtre', 'randonnee-champetre', 'Matheysine', 'Parking du stade', 10, 200, 30, 45.76579120,
+     4.87923940, 'Casquette, vêtements de sport, sac à dos, eau, pique nique.', 'Niveau 1', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 0, 1701388800, 1702166400, 15, 0, 'non', 0, 0);
+
+
 -- --------------------------------------------------------
 
 --
