@@ -10,16 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MonitoringController extends AbstractController
 {
-    /**
-     * @Route(
-     *     name="monitoring_http",
-     *     path="/monitoring/{code}",
-     *     requirements={
-     *         "code": "\d+"
-     *     },
-     *     methods={"GET"}
-     * )
-     */
+    #[Route(name: 'monitoring_http', path: '/monitoring/{code}', requirements: ['code' => '\d+'], methods: ['GET'])]
     public function httpAction(int $code)
     {
         if (200 == $code) {
@@ -29,13 +20,7 @@ class MonitoringController extends AbstractController
         throw new HttpException($code, sprintf('HTTP Exception (%d) thrown by monitoring system for test purpose.', $code));
     }
 
-    /**
-     * @Route(
-     *     name="monitoring_log",
-     *     path="/monitoring/log",
-     *     methods={"GET"}
-     * )
-     */
+    #[Route(name: 'monitoring_log', path: '/monitoring/log', methods: ['GET'])]
     public function logAction(LoggerInterface $logger)
     {
         $logger->error('Test message');

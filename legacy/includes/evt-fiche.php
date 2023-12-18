@@ -404,7 +404,7 @@ if (!$evt) {
             ;
 
             // AFFICHAGE DES INSCRIPTIONS, AVEC CERTAINES INFOS SELON LES DROITS EN COURS
-            if ($nInscritsHorsEncadrement > 0 && !$droitDeModif) {
+            if ($nInscritsHorsEncadrement > 0 && (!isset($droitDeModif) || !$droitDeModif)) {
                 echo '<table class="big-lines-table" style="width:570px; margin-left:20px;">';
 
                 // inscrits en ligne via formulaire
@@ -475,7 +475,7 @@ if (!$evt) {
         inclure('info-inscription-nieme-cycle', 'vide');
     }
 
-    if ($evt['cycleparent']) {
+    if (isset($evt['cycleparent']) && $evt['cycleparent']) {
         $evt = $evt['cycleparent'];
         echo '<table id="agenda">';
         echo '<tr>'
@@ -485,7 +485,7 @@ if (!$evt) {
         echo '</td>'
             .'</tr>';
         echo '</table>';
-    } elseif ($evt['cyclechildren']) {
+    } elseif (isset($evt['cycleparent']) && $evt['cyclechildren']) {
         $evtArray = $evt['cyclechildren'];
         $nbChildren = count($evtArray);
 

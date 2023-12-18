@@ -192,7 +192,7 @@ if (user()) {
 
 			<!-- OPERATIONS -->
 			<?php
-		        if ('delete' == $_GET['operation']) {
+            if (isset($_GET['operation']) && 'delete' == $_GET['operation']) {
 		            $file = $_GET['file'];
 		            if (!file_exists($dossier.$file)) {
 		                echo '<p class="erreur"> Erreur : fichier non trouvé</p>';

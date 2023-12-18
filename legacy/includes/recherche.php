@@ -5,7 +5,7 @@ $tmpTab = ['Refuge du gouter', 'Enneigement', 'Ski de randonnée', 'Mont Blanc',
 
 <form action="recherche.html" id="recherche-form" class="right-light-in" method="get">
 	<p class="big">Recherche :</p>
-	<input type="text" class="textfield" name="str" value="<?php echo html_utf8(stripslashes($_GET['str'] ?? null)); ?>" placeholder="ex: <?php echo $tmpTab[rand(0, count($tmpTab) - 1)]; ?>">
+	<input type="text" class="textfield" name="str" value="<?php echo html_utf8(stripslashes($_GET['str'] ?? '')); ?>" placeholder="ex: <?php echo $tmpTab[rand(0, count($tmpTab) - 1)]; ?>">
 	<input type="submit" value="OK" class="submit" />
 	<?php
     // filtre à la commission

@@ -15,9 +15,9 @@ if (admin()) {
     $log .= "\n html_entity_decode :  \n".$contenu_content_inline;
     $groupe_content_inline = (int) $_POST['groupe_content_inline'];
     $log .= "\n groupe_content_inline :  \n".$groupe_content_inline;
-    $lang_content_inline = stripslashes(utf8_encode($_POST['lang_content_inline']));
+    $lang_content_inline = stripslashes(mb_convert_encoding($_POST['lang_content_inline'], 'UTF-8'));
     $log .= "\n lang_content_inline :  \n".$lang_content_inline;
-    $linkedtopage_content_inline = stripslashes(utf8_encode($_POST['linkedtopage_content_inline']));
+    $linkedtopage_content_inline = stripslashes(mb_convert_encoding($_POST['linkedtopage_content_inline'], 'UTF-8'));
     $log .= "\n linkedtopage_content_inline :  \n".$linkedtopage_content_inline;
 
     if (isset($_POST['id_content_inline']) && isset($_POST['lang_content_inline']) && isset($_POST['contenu_content_inline'])) {

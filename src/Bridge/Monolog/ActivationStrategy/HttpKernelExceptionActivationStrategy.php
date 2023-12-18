@@ -4,6 +4,7 @@ namespace App\Bridge\Monolog\ActivationStrategy;
 
 use Monolog\Handler\FingersCrossed\ActivationStrategyInterface;
 use Monolog\Logger;
+use Monolog\LogRecord;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
@@ -24,7 +25,7 @@ class HttpKernelExceptionActivationStrategy implements ActivationStrategyInterfa
     /**
      * {@inheritdoc}
      */
-    public function isHandlerActivated(array $record): bool
+    public function isHandlerActivated(LogRecord $record): bool
     {
         $default = $record['level'] >= Logger::ERROR;
 

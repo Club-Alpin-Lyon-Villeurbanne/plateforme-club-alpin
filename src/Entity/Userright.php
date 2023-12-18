@@ -7,49 +7,45 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Userright.
  *
- * @ORM\Table(name="caf_userright")
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_userright')]
+#[ORM\Entity]
 class Userright
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id_userright", type="integer", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_userright', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="code_userright", type="string", length=40, nullable=false)
      */
+    #[ORM\Column(name: 'code_userright', type: 'string', length: 40, nullable: false)]
     private $code;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="title_userright", type="string", length=100, nullable=false)
      */
+    #[ORM\Column(name: 'title_userright', type: 'string', length: 100, nullable: false)]
     private $title;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="ordre_userright", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'ordre_userright', type: 'integer', nullable: false)]
     private $ordre;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="parent_userright", type="string", length=40, nullable=false)
      */
+    #[ORM\Column(name: 'parent_userright', type: 'string', length: 40, nullable: false)]
     private $parent;
 
     public function getId(): ?int

@@ -7,49 +7,45 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Commission.
  *
- * @ORM\Table(name="caf_commission")
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_commission')]
+#[ORM\Entity]
 class Commission
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id_commission", type="integer", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_commission', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="ordre_commission", type="integer", nullable=false)
      */
+    #[ORM\Column(name: 'ordre_commission', type: 'integer', nullable: false)]
     private $ordre;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="vis_commission", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'vis_commission', type: 'boolean', nullable: false)]
     private $vis = true;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="code_commission", type="string", length=50, nullable=false, unique=true, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'code_commission', type: 'string', length: 50, nullable: false, unique: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $code;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="title_commission", type="string", length=30, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'title_commission', type: 'string', length: 30, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $title;
 
     public function __construct(string $title, string $code, int $ordre)

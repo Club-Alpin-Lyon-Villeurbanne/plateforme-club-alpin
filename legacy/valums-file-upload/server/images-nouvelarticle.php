@@ -12,8 +12,8 @@ if (!user()) {
     $errTab[] = 'User non connecté';
 }
 
-$mode = $_GET['mode'];
-$id_article = (int) $_GET['id_article'];
+$mode = $_GET['mode'] ?? '';
+$id_article = (int) ($_GET['id_article'] ?? 0);
 
 if ('edit' == $mode && !$id_article) {
     $errTab[] = 'ID sortie manquant';
@@ -44,7 +44,7 @@ if (0 === count($errTab)) {
     } // depuis la racine
 
     if (!file_exists($targetDir)) {
-        if (!mkdir($targetDir) && !is_dir($targetDir)) {
+        if (!mkdir($targetDir, 755, true) && !is_dir($targetDir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $targetDir));
         }
     }
@@ -55,7 +55,7 @@ if (0 === count($errTab)) {
     $uploader = new qqFileUploader();
     $result = $uploader->handleUpload($targetDir);
 
-    if ($result['error']) {
+    if (isset($result['error']) && $result['error']) {
         $errTab[] = $result['error'];
     }
 }

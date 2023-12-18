@@ -94,7 +94,7 @@ function display_articles($id_user, $limit = 10, $title = '')
 */
 function get_niveaux($id_user, $editable = false)
 {
-    $notes = false;
+    $notes = [];
 
     // A t'on les droits d'ecriture ?
     if (true == $editable && LegacyContainer::get('legacy_user_rights')->allowed('user_note_comm_edit')) {
@@ -172,7 +172,7 @@ function get_niveaux($id_user, $editable = false)
         }
     }
 
-    return $notes;
+    return count($notes) ? $notes : false;
 }
 
 /*
@@ -198,24 +198,24 @@ function display_niveaux($niveaux, $type = 'lecture', $deja_displayed = false)
                 </div>
                 <?php if (isset($niveau['niveau_id'])) {
                     $clef = 'niveau['.$niveau['niveau_id'].']'; ?>
-                <input type="hidden" name="<?php echo $clef; ?>[id]" value="<?php echo $niveau['niveau_id']; ?>">
+                <input type="hidden" name="<?php echo $clef; ?>[id]" value="<?php echo $niveau['niveau_id'] ?? ''; ?>">
                 <?php
                 } else {
                     $clef = 'new_niveau['.$n.']'; ?>
-                <input type="hidden" name="<?php echo $clef; ?>" value="<?php echo $niveau['niveau_id']; ?>">
-                <input type="hidden" name="<?php echo $clef; ?>[id_commission]" value="<?php echo $niveau['id_commission']; ?>">
-                <input type="hidden" name="<?php echo $clef; ?>[id_user]" value="<?php echo $niveau['id_user']; ?>">
+                <input type="hidden" name="<?php echo $clef; ?>" value="<?php echo $niveau['niveau_id'] ?? ''; ?>">
+                <input type="hidden" name="<?php echo $clef; ?>[id_commission]" value="<?php echo $niveau['id_commission'] ?? ''; ?>">
+                <input type="hidden" name="<?php echo $clef; ?>[id_user]" value="<?php echo $niveau['id_user'] ?? ''; ?>">
                 <?php
                 } ?>
                 <div class="input">
                     <label>Niveau technique</label>
-                    <input type="text" name="<?php echo $clef; ?>[niveau_technique]" value="<?php echo $niveau['niveau_technique']; ?>">
+                    <input type="text" name="<?php echo $clef; ?>[niveau_technique]" value="<?php echo $niveau['niveau_technique'] ?? ''; ?>">
                     <label>Niveau physique</label>
-                    <input type="text" name="<?php echo $clef; ?>[niveau_physique]" value="<?php echo $niveau['niveau_physique']; ?>">
+                    <input type="text" name="<?php echo $clef; ?>[niveau_physique]" value="<?php echo $niveau['niveau_physique'] ?? ''; ?>">
                 </div>
                 <div class="input textarea">
                     <label>Commentaire</label>
-                    <textarea name="<?php echo $clef; ?>[commentaire]"><?php echo $niveau['commentaire']; ?></textarea>
+                    <textarea name="<?php echo $clef; ?>[commentaire]"><?php echo $niveau['commentaire'] ?? ''; ?></textarea>
                 </div>
             </div>
             <?php ++$n;
@@ -226,8 +226,8 @@ function display_niveaux($niveaux, $type = 'lecture', $deja_displayed = false)
             ?>
             <?php foreach ($niveaux as $niveau) { ?>
             <?php if ((is_array($deja_displayed) && !isset($deja_displayed['n_'.$niveau['niveau_id']])) || !$deja_displayed) { ?>
-            <?php if ($niveau['niveau_technique'] || $niveau['niveau_physique'] || null !== $niveau['commentaire']) { ?>
-                <div class="niveau" data-commission="<?php echo $niveau['id_commission']; ?>">
+            <?php if ((isset($niveau['niveau_technique']) && $niveau['niveau_technique']) || (isset($niveau['niveau_physique']) && $niveau['niveau_physique']) || (isset($niveau['commentaire']) && null !== $niveau['commentaire'])) { ?>
+                <div class="niveau" data-commission="<?php echo $niveau['id_commission'] ?? ''; ?>">
                     <div class="picto">
                         <img src="<?php echo comPicto($niveau['id_commission'], 'medium'); ?>" alt="" title="" class="picto-medium" />
                     </div>
@@ -273,7 +273,7 @@ function get_groupes($id_commission, $force_valid = false)
 
 function get_groupe($id_groupe)
 {
-    if ('' === trim($id_groupe)) {
+    if (!$id_groupe || '' === trim($id_groupe)) {
         return false;
     }
 
@@ -382,7 +382,7 @@ function get_sortie($id_evt, $type = 'full')
 
 function get_encadrants($id_evt, $only_ids = false)
 {
-    $users = false;
+    $users = [];
     $req = "SELECT id_user, civ_user,  cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user
                             , role_evt_join, is_covoiturage
                     FROM caf_evt_join, caf_user
@@ -396,7 +396,7 @@ function get_encadrants($id_evt, $only_ids = false)
     if ($result) {
         while ($row = $result->fetch_assoc()) {
             if ($only_ids) {
-                $users[] = $row['id_user'];
+                $users[] = $row['id_user'] ?? [];
             } else {
                 $row['sortie'] = get_sortie($id_evt);
                 $users[] = $row;
@@ -404,7 +404,7 @@ function get_encadrants($id_evt, $only_ids = false)
         }
     }
 
-    return $users;
+    return count($users) ? $users : false;
 }
 
 function mon_inscription($id_evt)

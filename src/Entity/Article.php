@@ -7,132 +7,120 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Article.
  *
- * @ORM\Table(name="caf_article", indexes={@ORM\Index(name="id_article", columns={"id_article"})})
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_article')]
+#[ORM\Index(name: 'id_article', columns: ['id_article'])]
+#[ORM\Entity]
 class Article
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id_article", type="integer", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_article', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="status_article", type="integer", nullable=false, options={"comment": "0=pas vu, 1=valide, 2=refusé"})
      */
+    #[ORM\Column(name: 'status_article', type: 'integer', nullable: false, options: ['comment' => '0=pas vu, 1=valide, 2=refusé'])]
     private $status = '0';
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User")
      *
-     * @ORM\JoinColumn(name="status_who_article", referencedColumnName="id_user", nullable=true)
      */
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\JoinColumn(name: 'status_who_article', referencedColumnName: 'id_user', nullable: true)]
     private $statusWho;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="topubly_article", type="integer", nullable=false, options={"comment": "Demander la publication ? Ou laisser en standby"})
      */
+    #[ORM\Column(name: 'topubly_article', type: 'integer', nullable: false, options: ['comment' => 'Demander la publication ? Ou laisser en standby'])]
     private $topubly;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="tsp_crea_article", type="integer", nullable=false, options={"comment": "Timestamp de création de l'article"})
      */
+    #[ORM\Column(name: 'tsp_crea_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp de création de l'article"])]
     private $tspCrea;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="tsp_validate_article", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'tsp_validate_article', type: 'integer', nullable: true)]
     private $tspValidate;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="tsp_article", type="integer", nullable=false, options={"comment": "Timestamp affiché de l'article"})
      */
+    #[ORM\Column(name: 'tsp_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp affiché de l'article"])]
     private $tsp;
 
     /**
      * @var \DateTime
-     *
-     * @ORM\Column(name="tsp_lastedit", type="datetime", nullable=false, options={"default": "CURRENT_TIMESTAMP", "comment": "Date de dernière modif"})
      */
+    #[ORM\Column(name: 'tsp_lastedit', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP', 'comment' => 'Date de dernière modif'])]
     private $tspLastedit = 'CURRENT_TIMESTAMP';
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User")
      *
-     * @ORM\JoinColumn(name="user_article", referencedColumnName="id_user", nullable=false)
      */
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\JoinColumn(name: 'user_article', referencedColumnName: 'id_user', nullable: false)]
     private $user;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="titre_article", type="string", length=200, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'titre_article', type: 'string', length: 200, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $titre;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="code_article", type="string", length=50, nullable=false, options={"comment": "Pour affichage dans les URL", "collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'code_article', type: 'string', length: 50, nullable: false, options: ['comment' => 'Pour affichage dans les URL', 'collation' => 'utf8mb4_unicode_ci'])]
     private $code;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Commission")
-     *
-     * @ORM\JoinColumn(name="commission_article", referencedColumnName="id_commission", nullable=true)
-     */
+    
+    #[ORM\ManyToOne(targetEntity: 'Commission')]
+    #[ORM\JoinColumn(name: 'commission_article', referencedColumnName: 'id_commission', nullable: true)]
     private $commission;
 
     /**
      * @var Evt
      *
-     * @ORM\ManyToOne(targetEntity="Evt")
      *
-     * @ORM\JoinColumn(name="evt_article", referencedColumnName="id_evt", nullable=true)
      */
+    #[ORM\ManyToOne(targetEntity: 'Evt')]
+    #[ORM\JoinColumn(name: 'evt_article', referencedColumnName: 'id_evt', nullable: true)]
     private $evt;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="une_article", type="boolean", nullable=false, options={"comment": "A la une ?"})
      */
+    #[ORM\Column(name: 'une_article', type: 'boolean', nullable: false, options: ['comment' => 'A la une ?'])]
     private $une = false;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="cont_article", type="text", length=65535, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'cont_article', type: 'text', length: 65535, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $cont;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="nb_vues_article", type="integer", nullable=false, options={"default": 0})
      */
+    #[ORM\Column(name: 'nb_vues_article', type: 'integer', nullable: false, options: ['default' => 0])]
     private $nbVues = '0';
 
     public function getId(): ?int

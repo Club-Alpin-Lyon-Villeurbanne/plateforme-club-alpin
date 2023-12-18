@@ -23,14 +23,12 @@ use Symfony\Component\Security\Http\LoginLink\LoginLinkHandlerInterface;
 
 class LoginController extends AbstractController
 {
-    public static function getSubscribedServices()
+    public static function getSubscribedServices(): array
     {
         return array_merge(parent::getSubscribedServices(), [EntityManagerInterface::class]);
     }
 
-    /**
-     * @Route("/login", name="login")
-     */
+    #[Route(path: '/login', name: 'login')]
     public function index(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
@@ -50,15 +48,9 @@ class LoginController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route(
-     *     name="session_password_lost",
-     *     path="/password-lost",
-     *     methods={"GET", "POST"}
-     * )
-     *
-     * @Template
-     */
+    
+    #[Route(name: 'session_password_lost', path: '/password-lost', methods: ['GET', 'POST'])]
+    #[Template]
     public function passwordLostAction(Request $request, UserRepository $userRepository, LoginLinkHandlerInterface $loginLinkHandler, Mailer $mailer, RecaptchaValidator $recaptchaValidator)
     {
         if ($this->isGranted('ROLE_USER')) {
@@ -108,17 +100,13 @@ class LoginController extends AbstractController
      * If the user is logged in using the remember me token, they dont pass the IS_AUTHENTICATED_FULLY
      * Therefore, this should be used only after magic link authentication.
      *
-     * @Route(
-     *     name="account_set_password",
-     *     path="/password",
-     *     methods={"GET", "POST"}
-     * )
      *
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY') and is_granted('ROLE_USER')")
      *
-     * @Template
      */
-    public function setPasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer)
+    #[Route(name: 'account_set_password', path: '/password', methods: ['GET', 'POST'])]
+    #[Security("is_granted('IS_AUTHENTICATED_FULLY') and is_granted('ROLE_USER')")]
+    #[Template]
+    public function setPasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer, EntityManagerInterface $em)
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -132,7 +120,7 @@ class LoginController extends AbstractController
                 $form->get('password')->getData()
             ));
 
-            $this->get(EntityManagerInterface::class)->flush();
+            $em->flush();
             $this->addFlash('success', 'Mot de passe mis à jour avec succès!');
             $mailer->send($user, 'transactional/set_password-account-confirmation');
 
@@ -151,17 +139,13 @@ class LoginController extends AbstractController
      * Password is changed with validating the existing password.
      * It requires any user authentication.
      *
-     * @Route(
-     *     name="account_change_password",
-     *     path="/change-password",
-     *     methods={"GET", "POST"}
-     * )
      *
-     * @Security("is_granted('ROLE_USER')")
      *
-     * @Template
      */
-    public function changePasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer)
+    #[Route(name: 'account_change_password', path: '/change-password', methods: ['GET', 'POST'])]
+    #[Security("is_granted('ROLE_USER')")]
+    #[Template]
+    public function changePasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer, EntityManagerInterface $em)
     {
         $url = $request->getSession()->get('user_password.target', $this->generateUrl('legacy_root'));
         $form = $this->createForm(ChangePasswordType::class);
@@ -175,7 +159,7 @@ class LoginController extends AbstractController
                 )
             );
 
-            $this->get(EntityManagerInterface::class)->flush();
+            $em->flush();
 
             $this->addFlash('success', 'Mot de passe mis à jour avec succès!');
             $mailer->send($user, 'transactional/set_password-account-confirmation');

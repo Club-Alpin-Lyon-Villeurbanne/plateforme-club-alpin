@@ -66,12 +66,12 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         <p class="commission-title">
 
             <?php
-        echo strftime('%d.%m.%y - ', $article['tsp_article']); ?>
+        echo date('d.m.y - ', $article['tsp_article']); ?>
 
 
             <?php
         // un ID de commission est bien enregistré
-        if ($article['commission']) {
+        if (isset($article['commission']) && $article['commission']) {
             ?>
                 <a href="/accueil/<?php echo html_utf8($article['commission']['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
                     <?php echo html_utf8($article['commission']['title_commission']); ?>

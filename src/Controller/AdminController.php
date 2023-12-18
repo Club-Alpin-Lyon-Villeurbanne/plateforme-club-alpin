@@ -18,22 +18,15 @@ class AdminController extends AbstractController
         $this->adminPassord = $adminPassord;
     }
 
-    public static function getSubscribedServices()
+    public static function getSubscribedServices(): array
     {
         return array_merge(parent::getSubscribedServices(), [EntityManagerInterface::class]);
     }
 
-    /**
-     * @Route(
-     *     name="admin_login",
-     *     path="/admin/",
-     *     methods={"GET", "POST"}
-     * )
-     *
-     * @Security("is_granted('ROLE_USER')")
-     *
-     * @Template
-     */
+    
+    #[Route(name: 'admin_login', path: '/admin/', methods: ['GET', 'POST'])]
+    #[Security("is_granted('ROLE_USER')")]
+    #[Template]
     public function index(Request $request)
     {
         if ('POST' === $request->getMethod()) {
@@ -57,17 +50,10 @@ class AdminController extends AbstractController
         return [];
     }
 
-    /**
-     * @Route(
-     *     name="admin_logout",
-     *     path="/admin/logout",
-     *     methods={"GET"}
-     * )
-     *
-     * @Security("is_granted('ROLE_USER')")
-     *
-     * @Template
-     */
+    
+    #[Route(name: 'admin_logout', path: '/admin/logout', methods: ['GET'])]
+    #[Security("is_granted('ROLE_USER')")]
+    #[Template]
     public function adminLogout(Request $request)
     {
         $request->getSession()->remove('admin_caf');

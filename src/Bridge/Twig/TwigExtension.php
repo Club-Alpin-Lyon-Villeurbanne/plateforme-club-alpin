@@ -22,7 +22,7 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         $this->maxTimestampForLegalValidation = $maxTimestampForLegalValidation;
     }
 
-    public static function getSubscribedServices()
+    public static function getSubscribedServices(): array
     {
         return [
             SluggerInterface::class,

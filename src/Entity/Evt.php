@@ -9,10 +9,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Evt.
  *
- * @ORM\Table(name="caf_evt")
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_evt')]
+#[ORM\Entity]
 class Evt
 {
     public const STATUS_PUBLISHED_UNSEEN = 0;
@@ -26,296 +26,255 @@ class Evt
     /**
      * @var int
      *
-     * @ORM\Column(name="id_evt", type="integer", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_evt', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="status_evt", type="smallint", nullable=false, options={"comment": "0-unseen 1-ok 2-refused", "default": 0})
      */
+    #[ORM\Column(name: 'status_evt', type: 'smallint', nullable: false, options: ['comment' => '0-unseen 1-ok 2-refused', 'default' => 0])]
     private $status = 0;
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User")
      *
-     * @ORM\JoinColumn(name="status_who_evt", referencedColumnName="id_user", nullable=true)
      */
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\JoinColumn(name: 'status_who_evt', referencedColumnName: 'id_user', nullable: true)]
     private $statusWho;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="status_legal_evt", type="smallint", nullable=false, options={"comment": "0-unseen 1-ok 2-refused", "default": 0})
      */
+    #[ORM\Column(name: 'status_legal_evt', type: 'smallint', nullable: false, options: ['comment' => '0-unseen 1-ok 2-refused', 'default' => 0])]
     private $statusLegal = 0;
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User")
      *
-     * @ORM\JoinColumn(name="status_legal_who_evt", referencedColumnName="id_user", nullable=true)
      */
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\JoinColumn(name: 'status_legal_who_evt', referencedColumnName: 'id_user', nullable: true)]
     private $statusLegalWho;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="cancelled_evt", type="boolean", nullable=false, options={"default": false})
      */
+    #[ORM\Column(name: 'cancelled_evt', type: 'boolean', nullable: false, options: ['default' => false])]
     private $cancelled = '0';
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User")
      *
-     * @ORM\JoinColumn(name="cancelled_who_evt", referencedColumnName="id_user", nullable=true)
      */
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\JoinColumn(name: 'cancelled_who_evt', referencedColumnName: 'id_user', nullable: true)]
     private $cancelledWho;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="cancelled_when_evt", type="bigint", nullable=true, options={"comment": "Timestamp annulation"})
      */
+    #[ORM\Column(name: 'cancelled_when_evt', type: 'bigint', nullable: true, options: ['comment' => 'Timestamp annulation'])]
     private $cancelledWhen;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="User")
-     *
-     * @ORM\JoinColumn(name="user_evt", referencedColumnName="id_user", nullable=false)
-     */
+    
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\JoinColumn(name: 'user_evt', referencedColumnName: 'id_user', nullable: false)]
     private $user;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Commission")
-     *
-     * @ORM\JoinColumn(name="commission_evt", referencedColumnName="id_commission", nullable=false)
-     */
+    
+    #[ORM\ManyToOne(targetEntity: 'Commission')]
+    #[ORM\JoinColumn(name: 'commission_evt', referencedColumnName: 'id_commission', nullable: false)]
     private $commission;
 
     /**
      * @var Groupe|null
      *
-     * @ORM\ManyToOne(targetEntity="Groupe", fetch="EAGER")
      *
-     * @ORM\JoinColumn(name="id_groupe", referencedColumnName="id", nullable=true)
      */
+    #[ORM\ManyToOne(targetEntity: 'Groupe', fetch: 'EAGER')]
+    #[ORM\JoinColumn(name: 'id_groupe', referencedColumnName: 'id', nullable: true)]
     private $groupe;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="tsp_evt", type="bigint", nullable=true, options={"comment": "timestamp du début du event"})
      */
+    #[ORM\Column(name: 'tsp_evt', type: 'bigint', nullable: true, options: ['comment' => 'timestamp du début du event'])]
     private $tsp;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="tsp_end_evt", type="bigint", nullable=true)
      */
+    #[ORM\Column(name: 'tsp_end_evt', type: 'bigint', nullable: true)]
     private $tspEnd;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="tsp_crea_evt", type="bigint", nullable=false, options={"comment": "Création de l'entrée"})
      */
+    #[ORM\Column(name: 'tsp_crea_evt', type: 'bigint', nullable: false, options: ['comment' => "Création de l'entrée"])]
     private $tspCrea;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="tsp_edit_evt", type="bigint", nullable=true)
      */
+    #[ORM\Column(name: 'tsp_edit_evt', type: 'bigint', nullable: true)]
     private $tspEdit;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="place_evt", type="string", length=100, nullable=false, options={"comment": "Lieu de RDV covoiturage", "collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage', 'collation' => 'utf8mb4_unicode_ci'])]
     private $place;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="titre_evt", type="string", length=100, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'titre_evt', type: 'string', length: 100, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $titre;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="code_evt", type="string", length=30, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'code_evt', type: 'string', length: 30, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $code;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="massif_evt", type="string", length=100, nullable=true, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'massif_evt', type: 'string', length: 100, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $massif;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="rdv_evt", type="string", length=200, nullable=false, options={"comment": "Lieu détaillé du rdv", "collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu détaillé du rdv', 'collation' => 'utf8mb4_unicode_ci'])]
     private $rdv;
 
     /**
      * @var float|null
-     *
-     * @ORM\Column(name="tarif_evt", type="float", precision=10, scale=2, nullable=true)
      */
+    #[ORM\Column(name: 'tarif_evt', type: 'float', precision: 10, scale: 2, nullable: true)]
     private $tarif;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="tarif_detail", type="text", length=65535, nullable=true, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'tarif_detail', type: 'text', length: 65535, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $tarifDetail;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="denivele_evt", type="integer", nullable=true, options={"unsigned": true})
      */
+    #[ORM\Column(name: 'denivele_evt', type: 'integer', nullable: true, options: ['unsigned' => true])]
     private $denivele;
 
     /**
      * @var float|null
-     *
-     * @ORM\Column(name="distance_evt", type="float", precision=10, scale=2, nullable=true)
      */
+    #[ORM\Column(name: 'distance_evt', type: 'float', precision: 10, scale: 2, nullable: true)]
     private $distance;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="lat_evt", type="decimal", precision=11, scale=8, nullable=false)
      */
+    #[ORM\Column(name: 'lat_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     private $lat;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="long_evt", type="decimal", precision=11, scale=8, nullable=false)
      */
+    #[ORM\Column(name: 'long_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     private $long;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="matos_evt", type="text", length=65535, nullable=true, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'matos_evt', type: 'text', length: 65535, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $matos;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="difficulte_evt", type="string", length=50, nullable=true, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'difficulte_evt', type: 'string', length: 50, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $difficulte;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="itineraire", type="text", length=65535, nullable=true, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'itineraire', type: 'text', length: 65535, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $itineraire;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="description_evt", type="text", length=65535, nullable=false, options={"collation": "utf8mb4_unicode_ci"})
      */
+    #[ORM\Column(name: 'description_evt', type: 'text', length: 65535, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
     private $description;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="need_benevoles_evt", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'need_benevoles_evt', type: 'boolean', nullable: false)]
     private $needBenevoles = '0';
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="join_start_evt", type="integer", nullable=true, options={"comment": "Timestamp de départ des inscriptions"})
      */
+    #[ORM\Column(name: 'join_start_evt', type: 'integer', nullable: true, options: ['comment' => 'Timestamp de départ des inscriptions'])]
     private $joinStart;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="join_max_evt", type="integer", nullable=false, options={"comment": "Nombre max d'inscriptions spontanées sur le site, ET PAS d'inscrits total"})
      */
+    #[ORM\Column(name: 'join_max_evt', type: 'integer', nullable: false, options: ['comment' => "Nombre max d'inscriptions spontanées sur le site, ET PAS d'inscrits total"])]
     private $joinMax;
 
     /**
      * @var EvtJoin[]
-     *
-     * @ORM\OneToMany(targetEntity="EvtJoin", mappedBy="evt", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: 'EvtJoin', mappedBy: 'evt', cascade: ['persist'])]
     private $joins;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="ngens_max_evt", type="integer", nullable=false, options={"comment": "Nombre de gens pouvant y aller au total. Donnée ""visuelle"" uniquement, pas de calcul."})
      */
+    #[ORM\Column(name: 'ngens_max_evt', type: 'integer', nullable: false, options: ['comment' => 'Nombre de gens pouvant y aller au total. Donnée '])]
     private $ngensMax;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="cycle_master_evt", type="boolean", nullable=false, options={"comment": "Est-ce la première sortie d'un cycle de sorties liées ?"})
      */
+    #[ORM\Column(name: 'cycle_master_evt', type: 'boolean', nullable: false, options: ['comment' => "Est-ce la première sortie d'un cycle de sorties liées ?"])]
     private $cycleMaster = false;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Evt", inversedBy="cycleChildren")
-     *
-     * @ORM\JoinColumn(name="cycle_parent_evt", referencedColumnName="id_evt", nullable=true)
-     */
+    
+    #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'cycleChildren')]
+    #[ORM\JoinColumn(name: 'cycle_parent_evt', referencedColumnName: 'id_evt', nullable: true)]
     private $cycleParent;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Evt", mappedBy="cycleParent")
-     */
+    #[ORM\OneToMany(targetEntity: 'Evt', mappedBy: 'cycleParent')]
     private $cycleChildren;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="child_version_from_evt", type="integer", nullable=false, options={"comment": "Versionning : chaque modification d-evt crée une entrée ""enfant"" de l-originale. Ce champ prend l-ID de l-original"})
      */
+    #[ORM\Column(name: 'child_version_from_evt', type: 'integer', nullable: false, options: ['comment' => 'Versionning : chaque modification d-evt crée une entrée '])]
     private $childVersionFrom = '0';
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="child_version_tosubmit", type="boolean", nullable=false)
      */
+    #[ORM\Column(name: 'child_version_tosubmit', type: 'boolean', nullable: false)]
     private $childVersionTosubmit = '0';
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Article", mappedBy="evt")
-     */
+    #[ORM\OneToMany(targetEntity: 'App\Entity\Article', mappedBy: 'evt')]
     private $articles;
 
     public function __construct(

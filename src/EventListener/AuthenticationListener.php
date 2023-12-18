@@ -26,7 +26,7 @@ class AuthenticationListener implements EventSubscriberInterface, ServiceSubscri
         $this->locator = $locator;
     }
 
-    public static function getSubscribedServices()
+    public static function getSubscribedServices(): array
     {
         return [
             EntityManagerInterface::class,

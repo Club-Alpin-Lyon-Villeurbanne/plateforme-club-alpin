@@ -225,7 +225,7 @@ function bigintval($value)
         return $value;
     }
     $value = preg_replace('/[^-0-9](.*)$/', '', $value);
-    if (ctype_digit(abs($value))) {
+    if (is_numeric($value)) {
         return $value;
     }
 
@@ -265,26 +265,28 @@ function formatSize($bytes, $format = '%.2f')
 
     return sprintf($format.' %s', $b, $units[$e]);
 }
+
 function user(): bool
 {
-    if ($token = LegacyContainer::get('security.token_storage')->getToken()) {
+    if ($token = LegacyContainer::get('legacy_token_storage')->getToken()) {
         if ($token->getUser() instanceof User) {
             return true;
         }
     }
 
     return false;
-}
+};
+
 function getUser(): ?User
 {
-    if ($token = LegacyContainer::get('security.token_storage')->getToken()) {
+    if ($token = LegacyContainer::get('legacy_token_storage')->getToken()) {
         if ($token->getUser() instanceof User) {
             return $token->getUser();
         }
     }
 
     return null;
-}
+};
 function csrfToken(string $intention): ?string
 {
     return LegacyContainer::get('legacy_csrf_token_manager')->getToken($intention);
@@ -322,7 +324,7 @@ function mylog($code, $desc, $connectme = true)
 // htmlentities avec utf8
 function html_utf8($str)
 {
-    return htmlentities($str, \ENT_QUOTES, 'UTF-8');
+    return htmlentities($str ?? '', \ENT_QUOTES, 'UTF-8');
 }
 
 // assurer un lien http
@@ -389,8 +391,8 @@ function inputVal($inputName, $defaultVal = '')
 {
     global $_POST;
     $input = explode('|', $inputName);
-    if (!$input[1]) {
-        if ($_POST[$inputName]) {
+    if (empty($input[1])) {
+        if (!empty($_POST[$inputName])) {
             return html_utf8(stripslashes($_POST[$inputName]));
         }
 
@@ -417,7 +419,7 @@ function mois($mois)
 {
     $tab = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
-    return $tab[(int) $mois - 1];
+    return isset($tab[(int) $mois - 1]) ? $tab[(int) $mois - 1] : '';
 }
 function jour($n, $mode = 'full')
 {
@@ -453,7 +455,7 @@ function limiterTexte($text, $length, $html = false)
 // convention de nommage automatique
 function wd_remove_accents($str, $charset = 'UTF-8')
 {
-    $str = htmlentities($str, \ENT_QUOTES, $charset);
+    $str = htmlentities($str ?? '', \ENT_QUOTES, $charset);
     // $str = htmlentities($str);
 
     $str = preg_replace('#&([A-za-z])(?:acute|cedil|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
@@ -465,7 +467,7 @@ function formater($retourner, $type = 1)
 {
     // Type 1 : sans espace ni tirets, en minuscule
     if (1 == $type) {
-        $retourner = str_replace("'", '-', $retourner);
+        $retourner = str_replace("'", '-', $retourner ?? '');
         $retourner = strtolower(stripslashes(wd_remove_accents($retourner)));
         $retourner = wd_remove_accents(strtolower(stripslashes($retourner)));
         $pattern = "#[^a-z0-9\s]#";
@@ -473,7 +475,7 @@ function formater($retourner, $type = 1)
     }
     // Type 2 : sans espace ni tirets, majuscule à chaque mot
     if (2 == $type) {
-        $retourner = str_replace("'", '-', $retourner);
+        $retourner = str_replace("'", '-', $retourner ?? '');
         $retourner = strtolower(stripslashes(wd_remove_accents($retourner)));
         $pattern = "#[^a-z0-9\s]#";
         $retourner = preg_replace($pattern, '', $retourner);
@@ -485,7 +487,7 @@ function formater($retourner, $type = 1)
     }
     // Type 3 : AVEC tirets, en minuscule
     if (3 == $type) {
-        $retourner = str_replace("'", '-', $retourner);
+        $retourner = str_replace("'", '-', $retourner ?? '');
         $retourner = str_replace(' ', '-', $retourner);
         $retourner = strtolower(stripslashes(wd_remove_accents($retourner)));
         $pattern = "#[^a-z0-9\s-]#";
@@ -495,7 +497,7 @@ function formater($retourner, $type = 1)
     }
     // Type 4 : noms de fichiers (avec points et majuscules)
     if (4 == $type) {
-        $retourner = str_replace("'", '-', $retourner);
+        $retourner = str_replace("'", '-', $retourner ?? '');
         $retourner = strtolower(stripslashes(wd_remove_accents($retourner)));
         $pattern = "#[^a-zA-Z0-9.\s-]#";
         $retourner = preg_replace($pattern, '', $retourner);

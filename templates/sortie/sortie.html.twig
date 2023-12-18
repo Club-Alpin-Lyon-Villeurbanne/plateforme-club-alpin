@@ -218,12 +218,33 @@
                 {% if my_status.role == 'encadrant' or my_status.role == 'stagiaire' or my_status.role == 'coencadrant' or my_status.role == 'benevole' %}
                     {% if not event.finished %}
                         {% if allowed('evt_unjoin') %}
-                        <p class="info">
-                            <img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" />
-                            <br />Vous êtes inscrit à cette sortie en tant que : {{ my_status.role }}.<br />&nbsp;
-                            <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
-                        </p>
-                        <br />
+                        <div class="info info-container">
+                            <img src="/img/inscrit-check.png" alt="" title=""/>
+                            <div class="text-container">Vous êtes inscrit à cette sortie en tant que : {{ my_status.role }}.
+                                <div class="button-container">
+                                    <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" />
+                                    <input id="add-to-calendar" type="button" class="nice" value="Ajouter à mon agenda" />
+
+                                    <script>
+                                    const config = {
+                                        name: "{{ event.titre }}",
+                                        startDate: "{{ event.tsp | intldate('yyyy-MM-dd') }}",
+                                        startTime: "{{ event.tsp | date('H:i') }}",
+                                        endDate: "{{ event.tspEnd | intldate('yyyy-MM-dd') }}",
+                                        endTime: "{{ event.tspEnd | date('H:i') }}",
+                                        location: "{{ event.rdv }}",
+                                        options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
+                                        timeZone: "Europe/Paris",
+                                        language: "fr"
+                                    };
+                                    const button = document.getElementById('add-to-calendar');
+                                    if (button) {
+                                        button.addEventListener('click', () => atcb_action(config, button));
+                                    }
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
                         {% endif %}
                     {% else %}
                         <p class="info">
@@ -232,14 +253,40 @@
                         </p>
                         <br />
                     {% endif %}
+                    {% if my_status.role == 'administrateur' %}
+                        {{ vueComponent('expense-report-form', 'ExpenseReportForm', {formStructureProp: expenseReportFormStructure}) }}
+                    {% endif %}
                 {% else %}
                     {% if not event.finished %}
                         {% if allowed('evt_unjoin') %}
-                        <p class="info">
-                            <img src="/img/inscrit-check.png" alt="" title="" style="float:left" />
-                            <br />Vous êtes inscrit comme participant à cette sortie.<br />&nbsp;
-                            <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
-                        </p><br />
+                        <div class="info info-container">
+                            <img src="/img/inscrit-check.png" alt="" title=""/>
+                            <div class="text-container">Vous êtes inscrit comme participant à cette sortie.
+                                <div class="button-container">
+                                    <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" />
+
+                                    <input id="add-to-calendar" type="button" class="nice" value="Ajouter à mon agenda" />
+
+                                    <script>
+                                    const config = {
+                                        name: "{{ event.titre | e('js') }}",
+                                        startDate: "{{ event.tsp | intldate('yyyy-MM-dd') }}",
+                                        startTime: "{{ event.tsp | date('H:i') }}",
+                                        endDate: "{{ event.tspEnd | intldate('yyyy-MM-dd') }}",
+                                        endTime: "{{ event.tspEnd | date('H:i') }}",
+                                        location: "{{ event.rdv | e('js') }}",
+                                        options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
+                                        timeZone: "Europe/Paris",
+                                        language: "fr"
+                                    };
+                                    const button = document.getElementById('add-to-calendar');
+                                    if (button) {
+                                        button.addEventListener('click', () => atcb_action(config, button));
+                                    }
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
                         {% endif %}
                     {% else %}
                         <p class="info">
@@ -522,8 +569,8 @@
                                         </td>
                                         <td>
                                             <a href="mailto:{{ participant.user.email }}">{{ participant.user.email | u.truncate(15, '...') }}</a><br />
-                                            {{ participant.user.tel }}<br />
-                                            {{ participant.user.tel2 }}
+                                            {{ participant.user.tel|split('', 2)|join(' ') }}<br />
+                                            {{ participant.user.tel2|split('', 2)|join(' ') }}
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -595,7 +642,7 @@
 
                             <br />
                             Objet :<br />
-                            <input required type="text" name="objet" class="type1" style="width:95%" value="" placeholder="Note importante pour la sortie du {{ event.tsp | date('d/m') }}" /><br />
+                            <input required type="text" name="objet" class="type1" style="width:95%" value="Note importante pour la sortie du {{ event.tsp | date('d/m') }}" /><br />
                             Message :<br />
                             <textarea required name="message" class="type1" style="width:95%; height:150px"></textarea>
 
@@ -605,13 +652,17 @@
                         {% endif %}
 
                         {% if allowed('user_see_all') or allowed('evt_join_notme') or allowed('evt_join_doall') %}
-                            <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_manual.php&amp;id_evt={{ event.id }}" title="">
-                                Inscrire manuellement des adhérents du club
-                            </a>
+                            {% if not event.publicStatusUnseen %}
+                                <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_manual.php&amp;id_evt={{ event.id }}" title="">
+                                    Inscrire manuellement des adhérents du club
+                                </a>
 
-                            <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_nomad.php&amp;id_evt={{ event.id }}" title="">
-                                Ajouter un adhérent "Nomade"
-                            </a>
+                                <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_nomad.php&amp;id_evt={{ event.id }}" title="">
+                                    Ajouter un adhérent "Nomade"
+                                </a>
+                            {% else %}
+                            <i>Vous pourrez ajouter des participants quand la sortie sera publiée</i>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 <br style="clear:both"  /><br />
@@ -850,11 +901,11 @@
                             </td>
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
-                                    {{ inscrit.user.tel }}
+                                    {{ inscrit.user.tel|split('', 2)|join(' ') }}
                                 {% endif %}
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
-                                    {{ inscrit.user.tel2 }}
+                                    {{ inscrit.user.tel2|split('', 2)|join(' ') }}
                                 {% endif %}
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
@@ -880,11 +931,11 @@
                                 </td>
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}
-                                        {{ inscrit.user.tel }}
+                                        {{ inscrit.user.tel|split('', 2)|join(' ') }}
                                     {% endif %}
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}
-                                        {{ inscrit.user.tel2 }}
+                                        {{ inscrit.user.tel2|split('', 2)|join(' ') }}
                                     {% endif %}
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}

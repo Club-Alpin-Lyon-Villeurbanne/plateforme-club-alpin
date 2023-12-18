@@ -7,56 +7,51 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Lieu.
  *
- * @ORM\Table(name="caf_lieu")
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_lieu')]
+#[ORM\Entity]
 class Lieu
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer", nullable=false, options={"unsigned": true})
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false, options: ['unsigned' => true])]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="nom", type="string", length=50, nullable=false)
      */
+    #[ORM\Column(name: 'nom', type: 'string', length: 50, nullable: false)]
     private $nom;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="description", type="text", length=65535, nullable=true)
      */
+    #[ORM\Column(name: 'description', type: 'text', length: 65535, nullable: true)]
     private $description;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="ign", type="text", length=65535, nullable=true)
      */
+    #[ORM\Column(name: 'ign', type: 'text', length: 65535, nullable: true)]
     private $ign;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="lat", type="string", length=20, nullable=true)
      */
+    #[ORM\Column(name: 'lat', type: 'string', length: 20, nullable: true)]
     private $lat;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="lng", type="string", length=20, nullable=true)
      */
+    #[ORM\Column(name: 'lng', type: 'string', length: 20, nullable: true)]
     private $lng;
 
     public function getId(): ?int

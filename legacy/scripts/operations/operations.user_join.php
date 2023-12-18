@@ -6,7 +6,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 $is_covoiturage = $evtUrl = $evtName = $inscrits = null;
 
 // Filiations
-if ('on' == $_POST['filiations']) {
+if (isset($_POST['filiations']) && 'on' == $_POST['filiations']) {
     $filiations = true;
 } else {
     $filiations = false;
@@ -22,13 +22,13 @@ if (!$id_user || !$id_evt) {
 }
 
 // CGUs
-if ('on' != $_POST['confirm']) {
+if (isset($_POST['confirm']) && 'on' != $_POST['confirm']) {
     $errTab[] = "Merci de cocher la case &laquo; J'ai lu les conditions...&raquo;";
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
     // Bénévole
-    if ('on' == $_POST['jeveuxetrebenevole']) {
+    if (isset($_POST['jeveuxetrebenevole']) && 'on' == $_POST['jeveuxetrebenevole']) {
         $role_evt_join = 'benevole';
     } else {
         $role_evt_join = 'inscrit';

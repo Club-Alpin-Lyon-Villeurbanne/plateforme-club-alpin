@@ -7,49 +7,45 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * LogAdmin.
  *
- * @ORM\Table(name="caf_log_admin")
  *
- * @ORM\Entity
  */
+#[ORM\Table(name: 'caf_log_admin')]
+#[ORM\Entity]
 class LogAdmin
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id_log_admin", type="integer", nullable=false)
      *
-     * @ORM\Id
      *
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
+    #[ORM\Column(name: 'id_log_admin', type: 'integer', nullable: false)]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="code_log_admin", type="string", length=100, nullable=false)
      */
+    #[ORM\Column(name: 'code_log_admin', type: 'string', length: 100, nullable: false)]
     private $code;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="desc_log_admin", type="string", length=200, nullable=false)
      */
+    #[ORM\Column(name: 'desc_log_admin', type: 'string', length: 200, nullable: false)]
     private $desc;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="ip_log_admin", type="string", length=15, nullable=true)
      */
+    #[ORM\Column(name: 'ip_log_admin', type: 'string', length: 15, nullable: true)]
     private $ip;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="date_log_admin", type="bigint", nullable=false)
      */
+    #[ORM\Column(name: 'date_log_admin', type: 'bigint', nullable: false)]
     private $date;
 
     public function getId(): ?int
