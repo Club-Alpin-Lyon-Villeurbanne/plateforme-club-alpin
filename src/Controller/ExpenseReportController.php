@@ -67,7 +67,6 @@ class ExpenseReportController extends AbstractController
                     $expenseField = new ExpenseField();
                     $fieldType = $expenseFieldTypeRepository->find($dataField['fieldTypeId']);
                     $expenseField->setFieldType($fieldType);
-                    $expenseField->setValue($dataField['value']);
                     $expenseField->setExpense($expense);
                     
                     // check if this field needs a justification document in this expense type
@@ -75,6 +74,12 @@ class ExpenseReportController extends AbstractController
                         'expenseType' => $expenseType,
                         'expenseFieldType' => $fieldType
                     ]);
+
+                    if ($relation->isMandatory() && empty($dataField['value'])) {
+                        throw new BadRequestHttpException('Missing mandatory field ' . $fieldType->getName());
+                    } elseif (!empty($dataField['value'])) {
+                        $expenseField->setValue($dataField['value']);
+                    }
 
                     if ($relation->getNeedsJustification()) {
                         if (empty($dataField['justificationFileUrl'])) {
@@ -109,11 +114,11 @@ class ExpenseReportController extends AbstractController
         $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         // rebuild filename with hashed timestamp and extension
         $filename = $filename . '_' . substr(md5(time()), 0, 6) . '.' . $extension;
-        $file->move(FileUploadHelper::getUserUploadPath($this->getUser()), $filename);
+        $file->move(FileUploadHelper::getUserUploadPath($this->getUser(), 'expense-reports-justification'), $filename);
 
         return new JsonResponse([
             'success' => true,
-            'fileUrl' => FileUploadHelper::getUserUploadUrl($this->getUser()) . '/' . $filename,
+            'fileUrl' => FileUploadHelper::getUserUploadUrl($this->getUser(), 'expense-reports-justification') . '/' . $filename,
         ]);
 
     }

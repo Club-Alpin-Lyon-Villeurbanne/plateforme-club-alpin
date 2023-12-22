@@ -146,6 +146,12 @@
                 this.saveExpenseReport((window as any).globals.enums.expenseReportStatuses.STATUS_DRAFT);
             },
             async saveExpenseReport(status: string) {
+                const payload = {
+                    status,
+                    eventId: (window as any).globals.currentEventId,
+                    ...this.formStructure
+                };
+console.log('payload', payload);
                 try {
                     const response = await fetch('http://localhost:8000/expense-report', 
                     {
@@ -153,15 +159,8 @@
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({
-                            status,
-                            eventId: (window as any).globals.currentEventId,
-                            ...this.formStructure
-                        })
+                        body: JSON.stringify(payload)
                     });
-                    const responseJson = await response.json();
-                    console.log(responseJson);
-
                 } catch (error: any) {
                     this.errorMessages.push(error.message);
                 }
