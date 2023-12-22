@@ -184,7 +184,6 @@
                     eventId: (window as any).globals.currentEventId,
                     ...this.formStructure
                 };
-
                 try {
                     const response = await fetch('http://localhost:8000/expense-report', {
                         method: 'POST',
@@ -194,12 +193,7 @@
                         body: JSON.stringify(payload)
                     });
 
-                    console.log(await response.json());
-                } catch (error: any) {
-                    console.log(error);
                     this.errorMessages.push(error.message);
-                }
-            }
         }
     });
 </script>
