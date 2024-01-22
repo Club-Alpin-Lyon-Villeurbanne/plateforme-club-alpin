@@ -75,15 +75,27 @@ class ExpenseReportController extends AbstractController
                         'expenseFieldType' => $fieldType
                     ]);
 
+                    // gérer les champs obligatoires
                     if ($relation->isMandatory() && empty($dataField['value'])) {
-                        throw new BadRequestHttpException('Missing mandatory field ' . $fieldType->getName());
+                        return new JsonResponse([
+                            'success' => false, 
+                            'message' => 'Ce champ est obligatoire !',
+                            'field' => $fieldType->getSlug(),
+                            'expenseType' => $expenseType->getSlug(),
+                        ], 400);
                     } elseif (!empty($dataField['value'])) {
                         $expenseField->setValue($dataField['value']);
                     }
 
+                    // gérer la présence des justificatifs
                     if ($relation->getNeedsJustification()) {
                         if (empty($dataField['justificationFileUrl'])) {
-                            throw new BadRequestHttpException('Missing justification document');
+                            return new JsonResponse([
+                                'success' => false, 
+                                'message' => 'Un justificatif est obligatoire pour ce champ !',
+                                'field' => $fieldType->getSlug(),
+                                'expenseType' => $expenseType->getSlug(),
+                            ], 400);
                         }
                         $expenseField->setJustificationDocument($dataField['justificationFileUrl']);
                     }
@@ -95,7 +107,6 @@ class ExpenseReportController extends AbstractController
 
         $entityManager->flush();
 
-        // rediriger vers la sortie correspondante
         return new JsonResponse($data);
     }
 

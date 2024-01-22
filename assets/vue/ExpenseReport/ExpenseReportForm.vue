@@ -80,10 +80,15 @@
             </fieldset>
             <div class="green-box expense-report-summary" id="expense-report-summary">
                 <h3>Résumé :</h3>
-                <div>Total remboursable : <span class="refund-amount">123€</span></div>
-                <div>Hébergement : 60.00€, Transport : 63.00€</div>
+                <div>Total remboursable : <span class="refund-amount">{{ formatCurrency(autoCalculation.refundable) }}€</span></div>
+                <div>Hébergement : {{ formatCurrency(autoCalculation.accommodation) }}€, Transport : {{ formatCurrency(autoCalculation.transportation) }}€</div>
             </div>
-            <div class="errors" v-if="errorMessages.length"></div>
+            <div class="errors" v-if="errorMessages.length">
+                <h3>Erreur(s) :</h3>
+                <ul>
+                    <li v-for="errorMessage in errorMessages" :key="errorMessage">{{ errorMessage }}</li>
+                </ul>
+            </div>
             <div class="buttons">
                 <button type="submit" class="biglink">
                     <span class="bleucaf">&gt;</span>
@@ -111,6 +116,11 @@
         data() {
             return {
                 formStructure: {refundRequired: false, ...this.formStructureProp},
+                autoCalculation: {
+                    refundable: 0,
+                    transportation: 0,
+                    accommodation: 0,
+                },
                 errorMessages: [] as string[]
             }
         },
@@ -145,23 +155,28 @@
             saveDraftExpenseReport() {
                 this.saveExpenseReport((window as any).globals.enums.expenseReportStatuses.STATUS_DRAFT);
             },
+            formatCurrency(value: number) {
+                return value.toFixed(2).replace('.', ',');
+            },
             async saveExpenseReport(status: string) {
                 const payload = {
                     status,
                     eventId: (window as any).globals.currentEventId,
                     ...this.formStructure
                 };
-console.log('payload', payload);
+
                 try {
-                    const response = await fetch('http://localhost:8000/expense-report', 
-                    {
+                    const response = await fetch('http://localhost:8000/expense-report', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(payload)
                     });
+
+                    console.log(await response.json());
                 } catch (error: any) {
+                    console.log(error);
                     this.errorMessages.push(error.message);
                 }
             }
