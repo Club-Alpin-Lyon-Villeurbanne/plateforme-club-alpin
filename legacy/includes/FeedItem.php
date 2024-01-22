@@ -92,7 +92,8 @@
       */
      public function setTitle($title)
      {
-         $this->addElement('title', $title);
+         // Title does not support HTML, let's strip this using htmlentities
+         $this->addElement('title', htmlentities($title));
      }
 
      /**

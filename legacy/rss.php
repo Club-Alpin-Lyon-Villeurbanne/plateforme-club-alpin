@@ -200,4 +200,4 @@ foreach ($entryTab as $entry) {
     $CafFeed->addItem($newItem);
 }
 // OK. Everything is done. Now genarate the feed.
-$CafFeed->genarateFeed();
+$CafFeed->generateFeed();
