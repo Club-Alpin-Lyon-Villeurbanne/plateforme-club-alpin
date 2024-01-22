@@ -81,7 +81,7 @@ class FeedWriter
      *
      * @return void
      */
-    public function genarateFeed()
+    public function generateFeed()
     {
         header('Content-type: text/xml');
 
@@ -279,7 +279,7 @@ class FeedWriter
         } else {
             //			$nodeText .= (in_array($tagName, $this->CDATAEncoding))? $tagContent : htmlentities($tagContent);
             //			$nodeText .= (in_array($tagName, $this->CDATAEncoding))? $tagContent : htmlentities($tagContent, ENT_COMPAT, 'UTF-8');
-            $nodeText .= (in_array($tagName, $this->CDATAEncoding, true)) ? $tagContent : str_replace(['&', '”', "'", ''], ['&', '"', "'", '<', '>'], $tagContent);
+            $nodeText .= (in_array($tagName, $this->CDATAEncoding, true)) ? $tagContent : str_replace('”', '"', $tagContent);
         }
 
         $nodeText .= (in_array($tagName, $this->CDATAEncoding, true)) ? "]]></$tagName>" : "</$tagName>";
