@@ -90,7 +90,6 @@
                     <li v-for="errorMessage in errorMessages" :key="errorMessage">{{ errorMessage }}</li>
                 </ul>
             </div>
-            <div class="errors" v-if="errorMessages.length"></div>
             <div class="buttons">
                 <button type="submit" class="biglink">
                     <span class="bleucaf">&gt;</span>
