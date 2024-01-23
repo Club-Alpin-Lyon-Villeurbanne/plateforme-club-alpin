@@ -93,7 +93,7 @@
      public function setTitle($title)
      {
          // Title does not support HTML, let's strip this using htmlentities
-         $this->addElement('title', htmlentities($title));
+         $this->addElement('title', htmlentities($title, ENT_XML1, 'UTF-8'));
      }
 
      /**
