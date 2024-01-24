@@ -389,7 +389,8 @@
 {#                                // création du tableau "empiètement" pour chaque user#}
 {#                                $row['empietements'] = empietement_sortie($row['id_user'], $evt);#}
 
-                                {% for participant in event.participantsSortedByRoles(null, null) %}
+                                {% for participant in participants %}
+                                    {% set participant = participant['liste'] %}
                                     <tr class="status{{ participant.status }}" style="color:gray; font-size:10px;">
 
                                         <td>

@@ -95,6 +95,7 @@ class SortieController extends AbstractController
         return [
             'isAdmin' => $adminDetector->isAdmin(),
             'event' => $event,
+            'participants' => $participantRepository->getSortedParticipants($event),
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participantRepository->getEmpietements($event),
             'expenseReportFormStructure' => $expenseReportFormGroups
