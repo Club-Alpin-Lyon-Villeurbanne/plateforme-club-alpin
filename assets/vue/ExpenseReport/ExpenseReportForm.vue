@@ -20,6 +20,7 @@
             <fieldset
                 v-for="expenseReportFormGroup in formStructure"
                 :key="expenseReportFormGroup.slug"
+                :id="'expense-group-' + expenseReportFormGroup.slug"
             >
                 <legend>
                     {{ expenseReportFormGroup.name }}
@@ -80,8 +81,8 @@
             </fieldset>
             <div class="green-box expense-report-summary" id="expense-report-summary">
                 <h3>Résumé :</h3>
-                <div>Total remboursable : <span class="refund-amount">{{ formatCurrency(autoCalculation.refundable) }}€</span></div>
-                <div>Hébergement : {{ formatCurrency(autoCalculation.accommodation) }}€, Transport : {{ formatCurrency(autoCalculation.transportation) }}€</div>
+                <div>Total remboursable : <span class="refund-amount">{{ formatCurrency(refundableTotal) }}€</span></div>
+                <div>Hébergement : {{ formatCurrency(accommodationTotal) }}€, Transport : {{ formatCurrency(transportationTotal) }}€</div>
             </div>
             <div class="errors" v-if="errorMessages.length">
                 <h3>Erreur(s) :</h3>
@@ -106,12 +107,27 @@
 <script lang="ts">
     import { defineComponent } from 'vue';
     import ExpenseField from './ExpenseField.vue';
+    import expenseReportService from '../../ts/expense-report-service';
 
     export default defineComponent({
         name: 'expense-report-form',
         props: ['formStructureProp'],
         components: {
             ExpenseField
+        },
+        mounted() {
+            console.log(this.formStructureProp);
+        },
+        computed: {
+            transportationTotal() {
+                return expenseReportService.autoCalculation.transportation(this.formStructure);
+            },
+            accommodationTotal() {
+                return expenseReportService.autoCalculation.accommodation(this.formStructure);
+            },
+            refundableTotal() {
+                return this.accommodationTotal + this.transportationTotal;
+            }
         },
         data() {
             return {
