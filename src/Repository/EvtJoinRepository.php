@@ -53,4 +53,39 @@ class EvtJoinRepository extends ServiceEntityRepository
 
         return $ret;
     }
+
+    /**
+     * Retourne la liste des participants triée par rôles.
+     *
+     * @param Evt $event
+     *   La sortie.
+     * @param $roles
+     *   Les rôles à filtrer.
+     * @param $status
+     *   Les status à filtrer.
+     * @return mixed
+     */
+    public function getSortedParticipants(Evt $event, $roles = null, $status = EvtJoin::STATUS_VALIDE): mixed
+    {
+        $qb = $this->createQueryBuilder('ej')
+            ->select('ej as liste')
+            ->addSelect('(SELECT ut.hierarchie
+                                    FROM App\Entity\Usertype ut
+                                    WHERE ut.code = ej.role
+                                ) as weight')
+            ->where('ej.evt = :event')
+            ->setParameter('event', $event)
+            ->orderBy('weight', 'DESC')
+            ->addOrderBy('ej.tsp', 'ASC')
+        ;
+
+        if ($roles) {
+            $qb->andWhere($qb->expr()->in('ej.role', \is_array($roles) ? $roles : (array) $roles));
+        }
+        if ($status) {
+            $qb->andWhere($qb->expr()->in('ej.status', \is_array($status) ? $status : (array) $status));
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }
