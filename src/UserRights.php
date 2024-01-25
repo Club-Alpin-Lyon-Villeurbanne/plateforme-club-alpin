@@ -6,6 +6,7 @@ use App\Entity\Commission;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Service\ResetInterface;
@@ -24,17 +25,17 @@ class UserRights implements ResetInterface
         $this->connection = $connection;
     }
 
-    public function allowedOnCommission(string $code, Commission $commission)
+    public function allowedOnCommission(string $code, Commission $commission): bool
     {
         return $this->allowed($code, 'commission:'.$commission->getCode());
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->userAllowedToCache = null;
     }
 
-    public function allowed($code_userright, $param = '')
+    public function allowed($code_userright, $param = ''): bool
     {
         $userAllowedTo = $this->loadRights();
 
@@ -60,7 +61,7 @@ class UserRights implements ResetInterface
         return false;
     }
 
-    public function getAllCommissionCodes()
+    public function getAllCommissionCodes(): array
     {
         $sql = 'SELECT code_commission FROM caf_commission';
 
@@ -74,7 +75,10 @@ class UserRights implements ResetInterface
         return $ret;
     }
 
-    public function getCommissionListForRight($right)
+    /**
+     * @throws Exception
+     */
+    public function getCommissionListForRight($right): array
     {
         $allowed = $this->loadRights()[$right] ?? null;
 
@@ -95,7 +99,10 @@ class UserRights implements ResetInterface
         return $commissions;
     }
 
-    public function loadRights()
+    /**
+     * @throws Exception
+     */
+    public function loadRights(): ?array
     {
         if (null !== $this->userAllowedToCache) {
             return $this->userAllowedToCache;
@@ -140,7 +147,9 @@ class UserRights implements ResetInterface
             .' ORDER BY params_user_attr ASC, code_userright ASC, limited_to_comm_usertype ASC' // order by params permet d'optimiser la taille de la var globale. Si, si promis (14 lignes plus loin) !
         ;
 
-        $result = $this->connection->prepare($sql)->executeQuery(['user' => $user->getId()])->fetchAllAssociative();
+        $statement = $this->connection->prepare($sql);
+        $statement->bindValue('user', $user->getId());
+        $result = $statement->executeQuery()->fetchAllAssociative();
 
         // ajout du droit, avec ses paramètres, au tableau global des droits de cet user
         // sans paramètre, la valeur est une string 'true'
@@ -190,7 +199,7 @@ class UserRights implements ResetInterface
         return $this->userAllowedToCache = $userAllowedTo;
     }
 
-    private function isAdmin()
+    private function isAdmin(): bool
     {
         // The admin flag is set using a session property
         // it should not be taken into account while impersonating

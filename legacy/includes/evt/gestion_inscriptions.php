@@ -400,7 +400,7 @@ if ('1' != $evt['cancelled_evt']) {
                             echo "Note importante pour la sortie du ".date('d/m', $evt['tsp_evt']);
                         } ?>" placeholder="Note importante pour la sortie du <?php echo date('d/m', $evt['tsp_evt']); ?>" /><br />
                         Message :<br />
-                        <textarea name="message" class="type1" style="width:95%; height:150px"><?php echo html_utf8(stripslashes($_POST['message'])); ?></textarea>
+                        <textarea name="message" class="type1" style="width:95%; height:150px"><?php echo html_utf8(stripslashes((string)$_POST['message'])); ?></textarea>
 
                         <br /><br />
                         <input type="submit" class="nice" value="&gt; Envoyer mon message" onclick="$.fancybox.close()" />

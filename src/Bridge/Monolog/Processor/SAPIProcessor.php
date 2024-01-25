@@ -7,7 +7,7 @@ use Monolog\Processor\ProcessorInterface;
 
 class SAPIProcessor implements ProcessorInterface
 {
-    public function __invoke(LogRecord $record)
+    public function __invoke(LogRecord $record): LogRecord
     {
         $record['extra']['SAPI'] = \PHP_SAPI;
 

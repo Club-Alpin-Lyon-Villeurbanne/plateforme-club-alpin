@@ -79,7 +79,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     // Doit on faire une mise à jour ?
-    $update = false;
+    $update = [];
 
     // verification de l'existence de cette demande
     if (!$filiations) {
