@@ -53,7 +53,7 @@
                     <div v-for="(expenseType, expenseTypeIndex) in expenseReportFormGroup.expenseTypes" :key="expenseType.id">
                         <div v-if="expenseReportFormGroup.type !== 'unique' || expenseReportFormGroup.selectedType === expenseType.slug">
                             <h4>
-                                {{ expenseType.name }} {{ parseInt(expenseTypeIndex as any) + 1 }}
+                                {{ expenseType.name }} <span v-if="expenseReportFormGroup.type !== 'unique'">{{ parseInt(expenseTypeIndex as any) + 1 }}</span>
                                 <a
                                     v-if="expenseReportFormGroup.type == 'multiple' && expenseTypeIndex !== 0"
                                     class="delete" 

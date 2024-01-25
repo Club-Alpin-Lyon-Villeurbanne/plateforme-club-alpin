@@ -15,30 +15,45 @@ const expenseReportService = {
             let total = 0;
             // régles de calcul spécifiques au mode de transport
             // véhicule personnel
-            if (transportationMode.slug === 'vehicule-personnel') {
-                console.log(transportationMode.fields);
+            if (transportationMode.slug === 'vehicule_personnel') {
                 const distanceField = transportationMode.fields.find((field: any) => field.slug === 'distance');
                 const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
                 const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
-                // nb de km AR *0.12
+                // distance * 0.12
                 total += parseFloat(distanceField.value) * 0.12;
                 // peage / nombre voyageurs
                 total += parseFloat(tollField.value) / parseFloat(passengerNumberField.value);
             }
 
             // minibus location
-            else if (transportationMode.slug === 'minibus-location') {
-                // prix location / km
-                // nb km AR *0.3 / nombre voyageurs
+            else if (transportationMode.slug === 'minibus_location') {
+                const fuelField = transportationMode.fields.find((field: any) => field.slug === 'prix_carburant');
+                const rentPrice = transportationMode.fields.find((field: any) => field.slug === 'prix_loc_par_km');
+                const distanceField = transportationMode.fields.find((field: any) => field.slug === 'distance');
+                const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
+                const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
+                // prix location par km  * distance
+                total += parseFloat(rentPrice.value) * parseFloat(distanceField.value);
+                // distance * 0.3€ / nombre voyageurs
+                total += parseFloat(distanceField.value) * 0.3 / parseFloat(passengerNumberField.value);
                 // essence / nombre voyageurs
+                total += parseFloat(fuelField.value) / parseFloat(passengerNumberField.value);
                 // péage / nombre voyageurs
+                total += parseFloat(tollField.value) / parseFloat(passengerNumberField.value);
             }
 
             // minibus club
-            else if (transportationMode.slug === 'minibus-club') {
-                // nb km AR *0.3 / nombre voyageurs
+            else if (transportationMode.slug === 'minibus_club') {
+                const fuelField = transportationMode.fields.find((field: any) => field.slug === 'prix_carburant');
+                const distanceField = transportationMode.fields.find((field: any) => field.slug === 'distance');
+                const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
+                const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
+                // distance * 0.3€ / nombre voyageurs
+                total += parseFloat(distanceField.value) * 0.3 / parseFloat(passengerNumberField.value);
                 // essence / nombre voyageurs
+                total += parseFloat(fuelField.value) / parseFloat(passengerNumberField.value);
                 // péage / nombre voyageurs
+                total += parseFloat(tollField.value) / parseFloat(passengerNumberField.value);
             }
 
             // par défaut
