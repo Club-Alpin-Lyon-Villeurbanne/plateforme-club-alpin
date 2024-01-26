@@ -697,7 +697,7 @@
                     <li class="wide"><b>DIFFICULTÉ :</b> {{ event.difficulte }}</li>
                 {% endif %}
                 {% if event.matos %}
-                    <li class="wide"><b>MATÉRIEL :</b> {{ event.matos }}</li>
+                    <li class="wide"><b>MATÉRIEL :</b> {{ event.matos|nl2br }}</li>
                 {% endif %}
             </ul>
             <br style="clear:both" />
