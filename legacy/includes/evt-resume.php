@@ -31,7 +31,7 @@ if (!$evt) {
 
         // materiel ?
         .('' != $evt['matos_evt'] ?
-            '<li class="wide"><b>MATÉRIEL :</b> '.html_utf8(str_replace([" \n", "\n"], ', ', trim($evt['matos_evt']))).'</li>'
+            '<li class="wide"><b>MATÉRIEL :</b> '.nl2br(html_utf8(trim($evt['matos_evt']))).'</li>'
         : '')
 
     .'</ul>'
