@@ -172,6 +172,9 @@
                 this.saveExpenseReport((window as any).globals.enums.expenseReportStatuses.STATUS_DRAFT);
             },
             formatCurrency(value: number) {
+                if (isNaN(value) || !isFinite(value)) {
+                    return '--,--€';
+                }
                 return value.toFixed(2).replace('.', ',');
             },
             async saveExpenseReport(status: string) {
