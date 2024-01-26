@@ -408,6 +408,7 @@ form .niveau.editable:hover .input{background-image:none;}
 .small{font-size:10px; color:gray;}
 #main-pagelibre-76 table td {padding: 5px;}
 #main-pagelibre-76 table td img {max-width: 250px;}
+.pt15 { padding-top: 15px;}
 
 @media print {
     .page-break	{ display: block; page-break-before: always; }
