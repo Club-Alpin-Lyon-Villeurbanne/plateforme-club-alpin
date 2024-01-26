@@ -208,7 +208,7 @@ presidence();
     <?php if ($evt['matos_evt']) { ?>
         <tr>
             <th style="width: fit-content">MATERIEL : </th>
-            <td colspan="3"><?php echo html_utf8($evt['matos_evt']); ?></td>
+            <td colspan="3"><?php echo nl2br(html_utf8(trim($evt['matos_evt']))); ?></td>
         </tr>
     <?php } ?>
     <?php if ($evt['itineraire']) { ?>
