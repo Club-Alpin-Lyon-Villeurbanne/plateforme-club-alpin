@@ -7,6 +7,7 @@
             type="number"
             :name="field.slug"
             v-model="field.value"
+            min="0"
             v-if="field.inputType === 'numeric'"
         />
         <textarea 

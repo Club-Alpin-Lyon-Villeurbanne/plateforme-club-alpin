@@ -90,7 +90,7 @@ class ExpenseReportController extends AbstractController
                     }
 
                     // gérer la présence des justificatifs
-                    if ($relation->getNeedsJustification()) {
+                    if (!empty($dataField['value']) && $relation->getNeedsJustification()) {
                         if (empty($dataField['justificationFileUrl'])) {
                             $errors[] = [
                                 'message' => 'Un justificatif est obligatoire pour ce champ !',
