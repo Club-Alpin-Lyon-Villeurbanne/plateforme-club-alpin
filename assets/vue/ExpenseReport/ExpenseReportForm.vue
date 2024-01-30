@@ -90,6 +90,9 @@
                     <li v-for="errorMessage in errorMessages" :key="errorMessage">{{ errorMessage }}</li>
                 </ul>
             </div>
+            <div class="success" v-if="successMessage">
+                <p>{{ successMessage }}</p>
+            </div>
             <div class="buttons">
                 <button type="submit" class="biglink">
                     <span class="bleucaf">&gt;</span>
@@ -137,7 +140,8 @@
                     transportation: 0,
                     accommodation: 0,
                 },
-                errorMessages: [] as string[]
+                errorMessages: [] as string[],
+                successMessage: '',
             }
         },
         methods: {
@@ -191,6 +195,7 @@
                         },
                         body: JSON.stringify(payload)
                     });
+                    const responseJson = await response.json();
 
                     this.errorMessages.push(error.message);
         }

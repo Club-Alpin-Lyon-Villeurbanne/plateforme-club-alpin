@@ -46,6 +46,9 @@
                 >
             </label>
         </div>
+        <div class="error" v-if="field.error">
+            {{ field.error }}
+        </div>
     </div>
 </template>
 
