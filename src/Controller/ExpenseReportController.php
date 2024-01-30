@@ -118,6 +118,7 @@ class ExpenseReportController extends AbstractController
         }
 
         $entityManager->flush();
+        $data['success'] = true;
         return new JsonResponse($data);
     }
 
