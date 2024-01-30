@@ -1,6 +1,6 @@
 <template>
     <div class="field" :class="{error: field.errors}">
-        <label>{{ field.name }}</label>
+        <label>{{ field.name }} {{ field.flags.isMandatory ? '*' : '' }}</label>
         
         <input
             :required="field.flags.isMandatory"
