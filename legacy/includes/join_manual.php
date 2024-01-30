@@ -71,8 +71,8 @@ if (user()) {
 				// SÉLECTIONNER UNE LIGNE AU CLIC
 				// $('tr').bind('click', function(){
 				$('tr').live('click', function(){
-					checkbox=$(this).find('input[type=checkbox]');
-					checkbox.attr('checked', !checkbox.attr('checked'));
+                    const checkbox = $(this).find('input[type=checkbox]');
+                    checkbox.attr('checked', !checkbox.attr('checked'));
 					// remove / retrieve disabled
 					if(checkbox.attr('checked'))	$(this).find('input[type=hidden]').removeAttr('disabled');
 					else							$(this).find('input[type=hidden]').attr('disabled', 'disabled');
@@ -107,42 +107,32 @@ if (user()) {
             $req = 'SELECT  id_user, email_user, cafnum_user, firstname_user, lastname_user, nickname_user
 									, created_user, birthday_user, tel_user, tel2_user, civ_user
 							FROM `caf_user`
-                            WHERE nomade_user!=1'
+                            WHERE nomade_user!=1
+                            AND id_user NOT IN (SELECT user_evt_join FROM `caf_evt_join` WHERE evt_evt_join='.$idEvt.')'
                             .($showAll ? '' : ' AND valid_user=1 ')
                             .' ORDER BY lastname_user ASC
 							LIMIT 9000';
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($elt = $result->fetch_assoc()) {
-				$userId = isset($elt['id_user']) ? (int) $elt['id_user'] : 0;
-                // SELECTION : on n'affiche que les adhérents qui ne sont pas inscrit à cette sortie
-                $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join=$idEvt AND user_evt_join = ".$userId.' LIMIT 1';
-
-                $result2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                $row = $result2->fetch_row();
-                // inscription inexistante
-                if (!$row[0]) {
-                    echo '<tr id="tr-'.$elt['id_user'].'" class="'.(isset($elt['valid_user']) && $elt['valid_user'] ? 'vis-on' : 'vis-off').'">'
-
-                                    .'<td>'
-                                        .'<img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />'
-                                        .'<img src="/img/label-down.png" class="cross" alt="OFF" title="" />'
-                                        .'<input type="checkbox" name="id_user[]" value="'.(int) $elt['id_user'].'" />'
-                                        // inputs hidden disabled : activés quand la case est cliquée (jquery)
-                                        .'<input type="hidden" disabled="disabled" name="civ_user[]" value="'.html_utf8($elt['civ_user']).'" />'
-                                        .'<input type="hidden" disabled="disabled" name="lastname_user[]" value="'.html_utf8($elt['lastname_user']).'" />'
-                                        .'<input type="hidden" disabled="disabled" name="firstname_user[]" value="'.html_utf8($elt['firstname_user']).'" />'
-                                    .'</td>'
-                                    .'<td>'
-                                        .html_utf8($elt['cafnum_user']).'<br />'
-                                        .(int) $elt['id_user'].' '
-                                    .'</td>'
-                                    .'<td>'.html_utf8($elt['civ_user']).'</td>'
-                                    .'<td>'.html_utf8($elt['lastname_user']).'</td>'
-                                    .'<td>'.html_utf8($elt['firstname_user']).'</td>'
-                                    .'<td>'.userlink($elt['id_user'], $elt['nickname_user']).'</td>'
-
-                                .'</tr>';
-                }
+                echo '<tr id="tr-'.$elt['id_user'].'" class="'.(isset($elt['valid_user']) && $elt['valid_user'] ? 'vis-on' : 'vis-off').'">'
+                    .'<td>'
+                        .'<img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />'
+                        .'<img src="/img/label-down.png" class="cross" alt="OFF" title="" />'
+                        .'<input type="checkbox" name="id_user[]" value="'.(int) $elt['id_user'].'" />'
+                        // inputs hidden disabled : activés quand la case est cliquée (jquery)
+                        .'<input type="hidden" disabled="disabled" name="civ_user[]" value="'.html_utf8($elt['civ_user']).'" />'
+                        .'<input type="hidden" disabled="disabled" name="lastname_user[]" value="'.html_utf8($elt['lastname_user']).'" />'
+                        .'<input type="hidden" disabled="disabled" name="firstname_user[]" value="'.html_utf8($elt['firstname_user']).'" />'
+                    .'</td>'
+                    .'<td>'
+                        .html_utf8($elt['cafnum_user']).'<br />'
+                        .(int) $elt['id_user'].' '
+                    .'</td>'
+                    .'<td>'.html_utf8($elt['civ_user']).'</td>'
+                    .'<td>'.html_utf8($elt['lastname_user']).'</td>'
+                    .'<td>'.html_utf8($elt['firstname_user']).'</td>'
+                    .'<td>'.userlink($elt['id_user'], $elt['nickname_user']).'</td>'
+                .'</tr>';
             } ?>
 					</tbody>
 				</table>

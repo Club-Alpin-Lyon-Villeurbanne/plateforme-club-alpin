@@ -114,7 +114,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // suppression des inscrits si ils ont un role encadrant/coencadrant dans cette sortie
             // suppression des inscriptions précédentes encadrant/coencadrant/benevole
 
-            $req = "SELECT * FROM caf_evt_join WHERE evt_evt_join = $id_evt AND role_evt_join IN ('encadrant', 'coencadrant')";
+            $req = "SELECT * FROM caf_evt_join WHERE evt_evt_join = $id_evt AND role_evt_join IN ('encadrant', 'coencadrant', 'stagiaire')";
             $results = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             if ($results) {
                 while ($row = $results->fetch_assoc()) {
