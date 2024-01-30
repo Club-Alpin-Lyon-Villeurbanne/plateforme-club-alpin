@@ -1,5 +1,5 @@
 <template>
-    <div class="field">
+    <div class="field" :class="{error: field.errors}">
         <label>{{ field.name }}</label>
         
         <input
@@ -46,8 +46,8 @@
                 >
             </label>
         </div>
-        <div class="error" v-if="field.error">
-            {{ field.error }}
+        <div class="error" v-if="field.errors">
+            <div v-for="error in field.errors" :key="error">{{ error }}</div>
         </div>
     </div>
 </template>
