@@ -8,6 +8,7 @@ use App\Mailer\Mailer;
 use App\Repository\EvtJoinRepository;
 use App\Repository\EvtRepository;
 use App\Repository\ExpenseGroupRepository;
+use App\Repository\ExpenseReportRepository;
 use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\UserRepository;
 use App\Security\AdminDetector;
@@ -41,6 +42,7 @@ class SortieController extends AbstractController
         EvtJoinRepository $participantRepository,
         ExpenseGroupRepository $expenseGroupRepository,
         ExpenseTypeExpenseFieldTypeRepository $expenseTypeFieldTypeRepository,
+        ExpenseReportRepository $expenseReportRepository,
         Environment $twig,
     ) {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
@@ -48,7 +50,14 @@ class SortieController extends AbstractController
         }
 
         $user = $this->getUser();
-        
+
+        $currentExpenseReport = $expenseReportRepository->getExpenseReportByEventAndUser($event->getId(), $user->getId());
+        if ($currentExpenseReport 
+            && $currentExpenseReport->getStatus() === ExpenseReportEnum::STATUS_SUBMITTED
+        ) {
+
+        }
+
         $expenseReportFormGroups = [];
         $expenseGroups = $expenseGroupRepository->findAll();
 
@@ -107,7 +116,8 @@ class SortieController extends AbstractController
             'participants' => $participantRepository->getSortedParticipants($event, null, null),
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participantRepository->getEmpietements($event),
-            'expenseReportFormStructure' => $expenseReportFormGroups
+            'expenseReportFormStructure' => $expenseReportFormGroups,
+            'currentExpenseReport' => $currentExpenseReport,
         ];
     }
 

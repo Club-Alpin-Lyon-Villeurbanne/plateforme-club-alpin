@@ -21,6 +21,17 @@ class ExpenseReportRepository extends ServiceEntityRepository
         parent::__construct($registry, ExpenseReport::class);
     }
 
+    public function getExpenseReportByEventAndUser(int $eventId, int $userId): ?ExpenseReport
+    {
+        return $this->createQueryBuilder('er')
+            ->andWhere('er.event = :eventId')
+            ->andWhere('er.user = :userId')
+            ->setParameter('eventId', $eventId)
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
 //    /**
 //     * @return ExpenseReport[] Returns an array of ExpenseReport objects
 //     */
