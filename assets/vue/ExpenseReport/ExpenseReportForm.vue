@@ -6,13 +6,13 @@
                 <legend>Remboursement</legend>
                 <div class="field">
                     <label for="refund_required_no">
-                    <input type="radio" id="refund_required_no" name="refund_required" value="0" checked>
+                    <input type="radio" id="refund_required_no" name="refund_required" value="0" checked v-model="formStructure.refundRequired">
                     Je fais don de cette note de frais au club et recevrai en fin d'année un reçu fiscal
                     </label>
                 </div>
                 <div class="field">
                     <label for="refund_required_yes">
-                    <input type="radio" id="refund_required_yes" name="refund_required" value="1">
+                    <input type="radio" id="refund_required_yes" name="refund_required" value="1" v-model="formStructure.refundRequired">
                     Je demande le remboursement de cette note de frais
                     </label>
                 </div>
@@ -20,6 +20,7 @@
             <fieldset
                 v-for="expenseReportFormGroup in formStructure"
                 :key="expenseReportFormGroup.slug"
+                :id="'expense-group-' + expenseReportFormGroup.slug"
             >
                 <legend>
                     {{ expenseReportFormGroup.name }}
@@ -52,7 +53,7 @@
                     <div v-for="(expenseType, expenseTypeIndex) in expenseReportFormGroup.expenseTypes" :key="expenseType.id">
                         <div v-if="expenseReportFormGroup.type !== 'unique' || expenseReportFormGroup.selectedType === expenseType.slug">
                             <h4>
-                                {{ expenseType.name }} {{ parseInt(expenseTypeIndex as any) + 1 }}
+                                {{ expenseType.name }} <span v-if="expenseReportFormGroup.type !== 'unique'">{{ parseInt(expenseTypeIndex as any) + 1 }}</span>
                                 <a
                                     v-if="expenseReportFormGroup.type == 'multiple' && expenseTypeIndex !== 0"
                                     class="delete" 
@@ -80,15 +81,21 @@
             </fieldset>
             <div class="green-box expense-report-summary" id="expense-report-summary">
                 <h3>Résumé :</h3>
-                <div>Total remboursable : <span class="refund-amount">123€</span></div>
-                <div>Hébergement : 60.00€, Transport : 63.00€</div>
+                <div>Total remboursable : <span class="refund-amount">{{ formatCurrency(refundableTotal) }}€</span></div>
+                <div>Hébergement : {{ formatCurrency(accommodationTotal) }}€, Transport : {{ formatCurrency(transportationTotal) }}€</div>
+            </div>
+            <div class="errors" v-if="errorMessages.length">
+                <h3>Erreur(s) :</h3>
+                <ul>
+                    <li v-for="errorMessage in errorMessages" :key="errorMessage">{{ errorMessage }}</li>
+                </ul>
             </div>
             <div class="buttons">
                 <button type="submit" class="biglink">
                     <span class="bleucaf">&gt;</span>
                     Valider
                 </button> 
-                <button type="submit" class="biglink">
+                <button @click.prevent="saveDraftExpenseReport" class="biglink">
                     <span class="emoji">&#128190;</span>
                     Sauvegarder le brouillon
             </button>
@@ -100,6 +107,7 @@
 <script lang="ts">
     import { defineComponent } from 'vue';
     import ExpenseField from './ExpenseField.vue';
+    import expenseReportService from '../../ts/expense-report-service';
 
     export default defineComponent({
         name: 'expense-report-form',
@@ -107,14 +115,34 @@
         components: {
             ExpenseField
         },
+        mounted() {
+            console.log(this.formStructureProp);
+        },
+        computed: {
+            transportationTotal() {
+                return expenseReportService.autoCalculation.transportation(this.formStructure);
+            },
+            accommodationTotal() {
+                return expenseReportService.autoCalculation.accommodation(this.formStructure);
+            },
+            refundableTotal() {
+                return this.accommodationTotal + this.transportationTotal;
+            }
+        },
         data() {
             return {
-                formStructure: this.formStructureProp
+                formStructure: {refundRequired: false, ...this.formStructureProp},
+                autoCalculation: {
+                    refundable: 0,
+                    transportation: 0,
+                    accommodation: 0,
+                },
+                errorMessages: [] as string[]
             }
         },
         methods: {
             onFormSubmit() {
-                console.log('onFormSubmit', this.formStructure);
+                this.saveExpenseReport((window as any).globals.enums.expenseReportStatuses.STATUS_SUBMITTED);
             },
             spawnExpenseGroup(expenseReportFormGroup: any) {
                 expenseReportFormGroup.expenseTypes.push({
@@ -123,19 +151,53 @@
                             id: field.id,
                             name: field.name,
                             slug: field.slug,
+                            inputType: field.inputType,
                             value: '',
-                            needsJustification: field.needsJustification
+                            flags: field.flags,
+                            fieldTypeId: field.fieldTypeId,
                         }
                     }),
                     name: expenseReportFormGroup.expenseTypes[0].name,
                     slug: expenseReportFormGroup.expenseTypes[0].slug,
-                    id: expenseReportFormGroup.expenseTypes.length + 1
+                    id: expenseReportFormGroup.expenseTypes.length + 1,
+                    expenseTypeId: expenseReportFormGroup.expenseTypes[0].expenseTypeId,
                 });
             },
             removeExpenseGroup(expenseReportFormGroup: any, expenseType: any) {
                 expenseReportFormGroup.expenseTypes = expenseReportFormGroup.expenseTypes.filter((expenseTypeToFilter: any) => {
                     return expenseTypeToFilter.id !== expenseType.id;
                 });
+            },
+            saveDraftExpenseReport() {
+                this.saveExpenseReport((window as any).globals.enums.expenseReportStatuses.STATUS_DRAFT);
+            },
+            formatCurrency(value: number) {
+                if (isNaN(value) || !isFinite(value)) {
+                    return '--,--€';
+                }
+                return value.toFixed(2).replace('.', ',');
+            },
+            async saveExpenseReport(status: string) {
+                const payload = {
+                    status,
+                    eventId: (window as any).globals.currentEventId,
+                    ...this.formStructure
+                };
+
+                try {
+                    const response = await fetch('http://localhost:8000/expense-report', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    console.log(await response.json());
+                } catch (error: any) {
+                    console.log(error);
+                    this.errorMessages.push(error.message);
+                }
             }
         }
     });

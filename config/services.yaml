@@ -55,6 +55,9 @@ services:
 
     App\Twig\VueExtension:
         tags: ['twig.extension']
+
+    App\Twig\JavascriptGlobalsExtension:
+        tags: ['twig.extension']
         
     App\Legacy\LegacyRouteLoader:
         tags: ['routing.loader']

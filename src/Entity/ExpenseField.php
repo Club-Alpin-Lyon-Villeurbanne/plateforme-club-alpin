@@ -4,8 +4,10 @@ namespace App\Entity;
 
 use App\Repository\ExpenseFieldRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 
 #[ORM\Entity(repositoryClass: ExpenseFieldRepository::class)]
+#[HasLifecycleCallbacks]
 class ExpenseField
 {
     #[ORM\Id]
@@ -24,7 +26,7 @@ class ExpenseField
     private ?Expense $expense = null;
 
     #[ORM\ManyToOne(inversedBy: 'fields')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'expense_field_type_id', nullable: false)]
     private ?ExpenseFieldType $fieldType = null;
 
     #[ORM\Column]
@@ -32,6 +34,19 @@ class ExpenseField
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->setUpdatedAtValue();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updated_at = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
