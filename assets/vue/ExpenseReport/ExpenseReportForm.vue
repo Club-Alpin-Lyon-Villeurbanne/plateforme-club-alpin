@@ -90,6 +90,9 @@
                     <li v-for="errorMessage in errorMessages" :key="errorMessage">{{ errorMessage }}</li>
                 </ul>
             </div>
+            <div class="success" v-if="successMessage">
+                <p>{{ successMessage }}</p>
+            </div>
             <div class="buttons">
                 <button type="submit" class="biglink">
                     <span class="bleucaf">&gt;</span>
@@ -137,7 +140,8 @@
                     transportation: 0,
                     accommodation: 0,
                 },
-                errorMessages: [] as string[]
+                errorMessages: [] as string[],
+                successMessage: '',
             }
         },
         methods: {
@@ -183,7 +187,6 @@
                     eventId: (window as any).globals.currentEventId,
                     ...this.formStructure
                 };
-
                 try {
                     const response = await fetch('http://localhost:8000/expense-report', {
                         method: 'POST',
@@ -192,13 +195,9 @@
                         },
                         body: JSON.stringify(payload)
                     });
+                    const responseJson = await response.json();
 
-                    console.log(await response.json());
-                } catch (error: any) {
-                    console.log(error);
                     this.errorMessages.push(error.message);
-                }
-            }
         }
     });
 </script>

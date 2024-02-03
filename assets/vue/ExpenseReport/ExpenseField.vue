@@ -1,12 +1,13 @@
 <template>
-    <div class="field">
-        <label>{{ field.name }}</label>
+    <div class="field" :class="{error: field.errors}">
+        <label>{{ field.name }} {{ field.flags.isMandatory ? '*' : '' }}</label>
         
         <input
             :required="field.flags.isMandatory"
             type="number"
             :name="field.slug"
             v-model="field.value"
+            min="0"
             v-if="field.inputType === 'numeric'"
         />
         <textarea 
@@ -45,6 +46,9 @@
                     @change="onFileUploadChange($event)"
                 >
             </label>
+        </div>
+        <div class="error" v-if="field.errors">
+            <div v-for="error in field.errors" :key="error">{{ error }}</div>
         </div>
     </div>
 </template>
