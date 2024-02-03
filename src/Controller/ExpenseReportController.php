@@ -35,6 +35,8 @@ class ExpenseReportController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
+        $errors = [];
+
         // créer la note de frais
         $expenseReport = new ExpenseReport();
         $expenseReport->setStatus($data['status']);
@@ -77,36 +79,46 @@ class ExpenseReportController extends AbstractController
 
                     // gérer les champs obligatoires
                     if ($relation->isMandatory() && empty($dataField['value'])) {
-                        return new JsonResponse([
-                            'success' => false, 
+                       $errors[] = [
                             'message' => 'Ce champ est obligatoire !',
                             'field' => $fieldType->getSlug(),
-                            'expenseType' => $expenseType->getSlug(),
-                        ], 400);
+                            'expenseTypeId' => $expenseType->getId(),
+                            'expenseGroup' => $dataExpenseGroup['slug'],
+                        ];
                     } elseif (!empty($dataField['value'])) {
                         $expenseField->setValue($dataField['value']);
                     }
 
                     // gérer la présence des justificatifs
-                    if ($relation->getNeedsJustification()) {
+                    if (!empty($dataField['value']) && $relation->getNeedsJustification()) {
                         if (empty($dataField['justificationFileUrl'])) {
-                            return new JsonResponse([
-                                'success' => false, 
+                            $errors[] = [
                                 'message' => 'Un justificatif est obligatoire pour ce champ !',
                                 'field' => $fieldType->getSlug(),
-                                'expenseType' => $expenseType->getSlug(),
-                            ], 400);
+                                'expenseTypeId' => $expenseType->getId(),
+                                'expenseGroup' => $dataExpenseGroup['slug'],
+                            ];
+                        } else {
+                            $expenseField->setJustificationDocument($dataField['justificationFileUrl']);
                         }
-                        $expenseField->setJustificationDocument($dataField['justificationFileUrl']);
                     }
-
-                    $entityManager->persist($expenseField);
+                    if (!$errors) {
+                        $entityManager->persist($expenseField);
+                    }
                 }
             }
         }
 
-        $entityManager->flush();
 
+        if ($errors) {
+            return new JsonResponse([
+                'success' => false,
+                'errors' => $errors,
+            ], 400);
+        }
+
+        $entityManager->flush();
+        $data['success'] = true;
         return new JsonResponse($data);
     }
 

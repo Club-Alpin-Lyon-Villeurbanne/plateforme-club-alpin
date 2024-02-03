@@ -34,15 +34,14 @@
             flex-wrap: wrap;
 
             & > .field {
-                width: 33%;
-                padding: $gutter;
-                background-color: $gray-light;
+                
             }
         }
     }
 
     .field {
         margin-bottom: $gutter;
+        padding: $gutter-half;
 
         input, select {
             margin-bottom: $gutter-half;
@@ -56,6 +55,10 @@
                 cursor: pointer;
                 font-weight: bold;
             }
+        }
+
+        &.error {
+            background-color: $red-light!important;
         }
     }
 
@@ -83,5 +86,11 @@
         .filename {
             font-style: italic;
         }
+    }
+
+    .success {
+        color: $green-dark;
+        font-weight: bold;
+        margin: auto;
     }
 }
