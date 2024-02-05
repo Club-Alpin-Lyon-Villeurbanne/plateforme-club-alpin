@@ -28,6 +28,7 @@ class ExpenseReportRepository extends ServiceEntityRepository
             ->andWhere('er.user = :userId')
             ->setParameter('eventId', $eventId)
             ->setParameter('userId', $userId)
+            ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
     }

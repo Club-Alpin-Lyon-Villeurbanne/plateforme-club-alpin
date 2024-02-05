@@ -55,7 +55,6 @@ class SortieController extends AbstractController
         if ($currentExpenseReport 
             && $currentExpenseReport->getStatus() === ExpenseReportEnum::STATUS_SUBMITTED
         ) {
-
         }
 
         $expenseReportFormGroups = [];
