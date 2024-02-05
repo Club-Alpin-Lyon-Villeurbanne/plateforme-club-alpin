@@ -68,6 +68,9 @@ npm-install: ## Install all npm dependencies
 npm-build: ## Build the frontend files
 	$(NPM) run build
 
+npm-watch: ## Watch the frontend files
+	$(NPM) run watch
+
 ## —— 📊 Database ——
 database-init: ## Init database
 	$(MAKE) database-drop
