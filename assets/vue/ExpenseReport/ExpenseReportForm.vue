@@ -187,6 +187,8 @@
                     eventId: (window as any).globals.currentEventId,
                     ...this.formStructure
                 };
+
+                this.errorMessages = [];
                 try {
                     const response = await fetch('http://localhost:8000/expense-report', {
                         method: 'POST',
@@ -196,8 +198,26 @@
                         body: JSON.stringify(payload)
                     });
                     const responseJson = await response.json();
-
-                    this.errorMessages.push(error.message);
+                    if (!(responseJson as any).success) {
+                        for (const error of responseJson.errors) {
+                            const targetGroup = this.formStructure[error.expenseGroup];
+                            const targetField = targetGroup.expenseTypes.find((expenseType: any) => {
+                                return expenseType.expenseTypeId === error.expenseTypeId;
+                            }).fields.find((field: any) => {
+                                return field.slug === error.field;
+                            });
+                            if (!targetField.errors) {
+                                targetField.errors = [];
+                            }
+                            targetField.errors.push(error.message);
+                        }
+                    } else {
+                        this.successMessage = 'Note de frais enregistrée avec succès !';
+                    }
+                } catch (error: any) {
+                    this.errorMessages.push('Une erreur est survenue lors de l\'enregistrement de la note de frais');
+                }
+            }
         }
     });
 </script>
