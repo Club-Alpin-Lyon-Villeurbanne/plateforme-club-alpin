@@ -189,6 +189,16 @@
                 };
 
                 this.errorMessages = [];
+                for (const expenseReportFormGroup in this.formStructure) {
+                    if (typeof this.formStructure[expenseReportFormGroup] !== 'object') {
+                        continue;
+                    }
+                    for (const expenseType of this.formStructure[expenseReportFormGroup].expenseTypes) {
+                        for (const field of expenseType.fields) {
+                           field.errors = null;
+                        }
+                    }
+                }
                 try {
                     const response = await fetch('http://localhost:8000/expense-report', {
                         method: 'POST',
