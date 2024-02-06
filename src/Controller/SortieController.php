@@ -52,9 +52,14 @@ class SortieController extends AbstractController
         $user = $this->getUser();
 
         $currentExpenseReport = $expenseReportRepository->getExpenseReportByEventAndUser($event->getId(), $user->getId());
+        
+        // TODO:
+        // generate the form from the existing draft expense report if there is one
         if ($currentExpenseReport 
-            && $currentExpenseReport->getStatus() === ExpenseReportEnum::STATUS_SUBMITTED
+            && $currentExpenseReport->getStatus() === ExpenseReportEnum::STATUS_DRAFT
         ) {
+        } else {
+            // generate a new empty expense report form structure
         }
 
         $expenseReportFormGroups = [];
