@@ -593,11 +593,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        $roles = ['ROLE_USER'];
-        if ($this->hasAttribute(UserAttr::ADMINISTRATEUR)) {
-            $roles[] = 'ROLE_ADMIN';
-        }
-        return $roles;
+        return ['ROLE_USER'];
     }
 
     /**
