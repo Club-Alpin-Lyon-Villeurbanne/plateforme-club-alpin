@@ -83,7 +83,7 @@ services:
 
     App\Controller\AdminController:
       arguments:
-        $adminPassord: '%env(PASSWORD_ADMIN)%'
+        $adminPassword: '%env(PASSWORD_ADMIN)%'
 
     App\Repository\EvtRepository:
         arguments:
