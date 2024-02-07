@@ -114,7 +114,10 @@ class SortieController extends AbstractController
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
             'currentEventId', $event->getId()
         );
-        
+        $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
+            'apiBaseUrl', !empty($_ENV['DOMAIN']) ? 'https://'.$_ENV['DOMAIN'] : false
+        );
+
         return [
             'event' => $event,
             'participants' => $participantRepository->getSortedParticipants($event, null, null),
