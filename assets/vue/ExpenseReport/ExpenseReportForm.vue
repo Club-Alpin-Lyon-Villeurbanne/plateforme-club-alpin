@@ -199,8 +199,10 @@
                         }
                     }
                 }
+                const apiUrl = (window as any).globals.apiBaseUrl ? (window as any).globals.apiBaseUrl : 'http://localhost:8000';
+                console.log('apiUrl', apiUrl);
                 try {
-                    const response = await fetch('http://localhost:8000/expense-report', {
+                    const response = await fetch(apiUrl + '/expense-report', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
