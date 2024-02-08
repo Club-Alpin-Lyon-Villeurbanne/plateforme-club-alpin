@@ -18,12 +18,12 @@ function updateRight(dossier, fade){
 	chutier.html('');
 	// vidange du tableau "virtuel" datatables
 	if(oTable!=false) oTable.fnClearTable(); // clear table
-	
+	console.log(dossier);
 	$.ajax({
 		type: "GET",
 		async: false,
 		dataType: 'json',
-		url: "ftp-ajax.php?dossier="+dossier,
+		url: "ftp-ajax.php?dossier="+encodeURIComponent(dossier),
 		success: function(jsonMsg){
 			var file;
 			if(jsonMsg.success){
@@ -76,7 +76,7 @@ function updateRight(dossier, fade){
 						// classe qui indique qu'elle conteint une image : utiles pour ensuite afficher les aperçus à la place des icones
 						classList[classList.length] = 'ftp-img';
 						classList[classList.length] = 'ftp-img-'+loadList.length;
-						loadList[loadList.length]=dossier+file.name;
+						loadList[loadList.length] = file.path;
 						
 						// classe en fonction du poids
 						if(parseInt(file.filesize) < 102400){ // 100 Ko
@@ -92,12 +92,12 @@ function updateRight(dossier, fade){
 							weightInfo='<acronym title="Cette image est très volumineuse ne devrait pas être intégrée dans une page web, mais uniquement en téléchargement ou dans une galerie photo."><img src="/img/base/bullet_error.png" alt="!" title="" /></acronym>';
 						}
 					}
-					
+
 					// appends
 					chutier.append(
 						'<tr class="'+(classList.join(' '))+'">'
-							+'<td><a rel="file1" href="'+dossier+file.name+'" target="_blank" title="'+file.name+'"><img class="ftp-ico" src="'+ico+'" alt="'+ext+'" title="" /></a></td>'
-							+'<td class="filename"><a rel="file2" href="'+dossier+file.name+'" target="_blank" title="'+file.name+'">'+file.name+'</a></td>'
+							+'<td><a rel="file1" href="'+file.path+'" target="_blank" title="'+file.name+'"><img class="ftp-ico" src="'+ico+'" alt="'+ext+'" title="" /></a></td>'
+							+'<td class="filename"><a rel="file2" href="'+file.path+'" target="_blank" title="'+file.name+'">'+file.name+'</a></td>'
 							+'<td class="filesize"><span style="display:none">fichier'+pad(file.filesize, 20)+'</span>'+(bytesToSize(file.filesize))+' '+weightInfo+'</td>'
 							+'<td><span style="display:none">'+pad(file.filemtime, 13)+'</span>'+myDate(file.filemtime)+'</td>'
 							// +'<td>'+file.filetype+'</td>'
@@ -117,7 +117,7 @@ function updateRight(dossier, fade){
 				}
 				
 				// mise à jour du fil d'ariane
-				$('#ftp-ariane').html(currentDir.substr(3).replace(/\//gi, '<span>/</span>'));
+				$('#ftp-ariane').html(currentDir.replace(/\//gi, '<span>/</span>'));
 				
 				// si des images doivent être chargées, elles prennent la place de leur logo
 				// BUG : lié à l'ordonnancement de datatables : les fichiers ne snot pas affichés dans le même ordre, le temps que les 
