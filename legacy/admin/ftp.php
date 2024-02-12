@@ -128,7 +128,7 @@ if (!isset($_GET['dossier'])) {
 						var uploader = new qq.FileUploader({
 							sizeLimit: 100 * 1024 * 1024, // 100 Megz
 							element: document.getElementById('file-uploader-ftp'),
-							action: '/valums-file-upload/server/ftp.php?dossier='+currentDir.substr(3),
+							action: '/valums-file-upload/server/ftp.php?dossier='+encodeURIComponent(currentDir),
 							// pour chaque image envoyée
 							onComplete: function(id, fileName, responseJSON){
 								if(responseJSON.success){

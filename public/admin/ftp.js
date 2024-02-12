@@ -18,7 +18,6 @@ function updateRight(dossier, fade){
 	chutier.html('');
 	// vidange du tableau "virtuel" datatables
 	if(oTable!=false) oTable.fnClearTable(); // clear table
-	console.log(dossier);
 	$.ajax({
 		type: "GET",
 		async: false,
