@@ -12,7 +12,8 @@ if (!admin()) {
 }
 
 $targetRel = $_GET['target'];
-$targetAbs = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).$_GET['target']; // substr = supprimer admin/
+$targetAbs = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL)
+    .(str_starts_with($targetRel, '/') ? substr($targetRel, 1) : $targetRel); // substr = supprimer admin/
 
 ?><!doctype html>
 	<html lang="fr">

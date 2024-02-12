@@ -134,7 +134,7 @@ function updateRight(dossier, fade){
 				// outils : edit image
 				if(typeof(window.parent.retoucher)=='function'){
 					$('.ftp-img-edit').click(function(){
-						var target=$(this).parents('tr:first').find('a:first').attr('href').substr(3);
+						var target=$(this).parents('tr:first').find('a:first').attr('href');
 						window.parent.retoucher(target);
 					});
 				}
@@ -142,7 +142,7 @@ function updateRight(dossier, fade){
 				
 				// outils : URL
 				$('.ftp-url-share').click(function(){
-					var target=$(this).parents('tr:first').find('a:first').attr('href').substr(3);
+					var target=$(this).parents('tr:first').find('a:first').attr('href');
 					$('#freeFancyFrame').attr('href', 'ftp-url.php?target='+encodeURIComponent(target)).click();
 				});
 				
