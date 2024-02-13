@@ -2,7 +2,11 @@ version: "3"
 
 services:
     cafsite:
-        build: docker
+        build:
+            context: ./docker
+            args:
+                - UID=${UID:-1000}
+                - GID=${GID:-1000}
         container_name: www_caflyon
         ports:
             - "8000:80"

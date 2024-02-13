@@ -1,11 +1,12 @@
 <?php
 
 use App\Ftp\FtpFile;
+use App\Legacy\LegacyContainer;
 
 require __DIR__.'/../../app/includes.php';
 
 if (admin()) {
-    $targetDir = __DIR__.'/../../../public/'.$_GET['dossier'].'/';
+    $targetDir = LegacyContainer::getParameter('legacy_ftp_path').urldecode($_GET['dossier']);
 
     // Handle file uploads via XMLHttpRequest
     require __DIR__.'/vfu.classes.php';
