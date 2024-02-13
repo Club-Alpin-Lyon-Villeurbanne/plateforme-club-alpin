@@ -104,7 +104,7 @@ $().ready(function() {
 			type: "POST",
 			async: false,
 			dataType: 'json',
-			url: "index.php?ajx=get_content_html",
+			url: "?ajx=get_content_html",
 			data: "code="+code,
 			success: function(jsonMsg){
 				// variable retour
@@ -122,6 +122,53 @@ $().ready(function() {
 			elt.find('div:first').siblings().remove();
 			elt.append(newContent).animate({'opacity':'1'}, {duration:700, easing:'easeOutQuad'});
 		}});
+	}
+
+	// update vis of block [link=lien avec attribut REL contenant la visibilité]
+	window.document.majVisBlock = function(link, code_content_html){
+		var vis=parseInt($(link).attr('rel'));
+		$("#loading1").after('<div id="updateVisBox" class="mybox-up">Voulez-vous vraiment <b>'+(vis==1?'masquer':'afficher à nouveau')+'</b><br />cet élément aux visiteurs du site ?<br /><br /><a href="javascript:void(0)" id="updateVisSubmit" class="boutonFancy"><img src="img/base/tick2.png" alt="" title="" style="vertical-align:middle" /> Je confirme</a> <a href="javascript:void(0)" id="updateVisCancel" class="boutonFancy"><img src="img/base/cancel.png" alt="" title="" style="vertical-align:middle" /> Annuler</a></div>');
+		$("#loading1, #updateVisBox").fadeIn('fast');
+		// click cancel
+		$("#updateVisCancel").focus().bind('click', function(){
+			$("#loading1, #updateVisBox").fadeOut(250, function(){
+				$("#updateVisBox").remove();
+			});
+		});
+		// click submit
+		$("#updateVisSubmit").focus().bind('click', function(){
+			var vis_content_html=vis?0:1;
+			$(link).attr('rel', vis_content_html);
+			var elt=$('#'+code_content_html);
+			$.ajax({
+				type: "POST",
+				async: false,
+				dataType: 'json',
+				url: "?ajx=content_html_updatevis",
+				data: "code_content_html="+code_content_html+"&vis_content_html="+vis_content_html,
+				success: function(jsonMsg){
+					// variable retour
+					if(jsonMsg.success)
+						newContent=html_entity_decode(jsonMsg.content);
+					else
+						newContent='ERREUR DE CHARGEMENT : '+jsonMsg.error;
+				},
+				error : function(msg){
+					newContent="Erreur Ajax "+msg;
+				}
+			});
+
+			// maj visus page courante
+			elt.animate({'opacity':'0'}, {duration:700, easing:'easeOutQuad', complete:function(){
+					elt.find('div:first').siblings().remove();
+					elt.append(newContent).animate({'opacity':'1'}, {duration:700, easing:'easeOutQuad'});
+				}});
+
+			// on retire la promptbox
+			$("#loading1, #updateVisBox").fadeOut(250, function(){
+				$("#updateVisBox").remove();
+			});
+		});
 	}
 });
 

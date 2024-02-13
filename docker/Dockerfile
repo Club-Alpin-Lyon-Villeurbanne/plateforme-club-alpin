@@ -55,3 +55,10 @@ RUN pecl install imagick && docker-php-ext-enable imagick
 COPY ./utils/docker-999-php.ini $PHP_INI_DIR/conf.d/999-php.ini
 
 WORKDIR /var/www/
+
+ARG UID
+ARG GID
+ENV UID=${UID}
+ENV GID=${GID}
+RUN groupmod -g $GID www-data
+RUN usermod -u $UID -g $GID www-data

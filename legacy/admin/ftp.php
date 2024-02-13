@@ -1,6 +1,7 @@
 <?php
 
 use App\Ftp\FtpFile;
+use App\Legacy\LegacyContainer;
 
 global $dossier;
 
@@ -15,28 +16,22 @@ if (!admin()) {
 // Selection des fichiers a afficher ou pas
 // NOW IN PARAMS.PHP
 
-$mode = 'relatif';
-// mode, agit sur les liens
-if ('relatif' == $_GET['mode']) {
-    $mode = 'relatif';
-}
-if ('absolu' == $_GET['mode']) {
-    $mode = 'absolu';
-}
+$mode = isset($_GET['mode']) || array_key_exists('mode', $_GET) ? $_GET['mode'] : 'relatif';
 
 // recuperation du dossier
-$racine = __DIR__.'/../../public/ftp/';
+
+$racine = LegacyContainer::getParameter('legacy_ftp_path');
 if (!isset($_GET['dossier'])) {
-    $dossier = $racine;
+    $dossier = '';
 } else {
-    $dossier = __DIR__.'/../../public/ftp/'.$_GET['dossier'];
+    $dossier = $_GET['dossier'];
 }
 
 // checks :
-if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier, '../') > 1) {
-    echo '<p class="erreur">Erreur ! Le dossier demandé n\'a pas le bon format.</p>';
-    exit;
-}
+//if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier, '../') > 2) {
+//    echo '<p class="erreur">Erreur ! Le dossier demandé n\'a pas le bon format.</p>';
+//    exit;
+//}
 
 ?><!doctype html>
 <html lang="fr">
@@ -77,15 +72,15 @@ if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier,
 
 
 				<div class="level top">
-					<a href="../ftp/" title="Racine du dossier" class="dirlink <?php if ('../ftp/' == $dossier) {
+					<a href="" title="Racine du dossier" class="dirlink <?php if ('' == $dossier) {
 					    echo 'selected';
 					}?>">Dossier FTP</a>
 					<?php
-					                    function arbo_read($dir, $level)
+					                    function arbo_read($racine, $dir, $level)
 					                    {
 					                        global $dossier;
 					                        $one = false; // booleen : un dossier trouve au moins
-					                        $opendir = opendir($dir);
+					                        $opendir = opendir($racine.$dir);
 					                        $files = [];
 
 					                        $j = 0; // compte des fichiers
@@ -96,15 +91,18 @@ if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier,
 					                        sort($files);
 
 					                        foreach ($files as $file) {
-					                            // while($file=readdir($opendir)){
 					                            // c'est un dossier, non masqué
-					                            if (is_dir($dir.$file) && !FtpFile::shouldHide($file)) {
+                                                //dump('dossier : '.$dossier);
+                                                //dump('dir : '.$dir);
+                                                //dump('file : '.$file);
+					                            if (is_dir($racine.$dir.$file) && !FtpFile::shouldHide($file)) {
+                                                    //dd('$racine.$dir.$file : '.$racine.$dir.$file);
 					                                $one = true;
 					                                echo '<div class="level level'.$level.'">'
-					                                    .'<a class="dirtrigger" href="'.$dir.$file.'/" title=""></a>'
-					                                    .'<a class="dirlink '.($dossier == $dir.$file.'/' ? 'selected' : '').'" href="'.$dir.$file.'/" title="">'.$file.'</a>';
+					                                    .'<a class="dirtrigger" href="'.$file.'/'.'" title=""></a>'
+					                                    .'<a class="dirlink '.($dossier == $dir.$file.'/' ? 'selected' : '').'" href="'.$dir.$file.'/'.'" title="">'.$file.'</a>';
 					                                // if(!arbo_read($dir.$file.'/', $level+1)) echo '<div class="level level'.($level+1).'">-</div>';
-					                                if (!arbo_read($dir.$file.'/', $level + 1)) {
+					                                if (!arbo_read($racine, $dir.$file.'/', $level + 1)) {
 					                                    echo '<span class="removetrigger"></span>';
 					                                }
 					                                echo '</div>';
@@ -113,7 +111,7 @@ if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier,
 
 					                        return $one;
 					                    }
-					                    arbo_read($racine, 0);
+					                    arbo_read($racine,'', 0);
 ?>
 				</div>
 			</div>
@@ -130,7 +128,7 @@ if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier,
 						var uploader = new qq.FileUploader({
 							sizeLimit: 100 * 1024 * 1024, // 100 Megz
 							element: document.getElementById('file-uploader-ftp'),
-							action: '/valums-file-upload/server/ftp.php?dossier='+currentDir.substr(3),
+							action: '/valums-file-upload/server/ftp.php?dossier='+encodeURIComponent(currentDir),
 							// pour chaque image envoyée
 							onComplete: function(id, fileName, responseJSON){
 								if(responseJSON.success){

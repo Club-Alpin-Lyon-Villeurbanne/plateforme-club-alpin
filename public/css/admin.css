@@ -228,7 +228,4 @@ width:20px; height:18px; padding:1px; margin:0 0 0 0; text-align:center;  float:
 .page-element-separator{ float:left; width:1px; height:16px; border-right:1px dotted white; margin:0 8px 0 2px;  }
 .sortablepagelist{  min-height:1px; padding:3px 0 2px 0; clear:both;  }
 .sortablepagelist.niv1{  min-height:5px; clear:both;  }
-
-
-
-
+.input-wrapper { display: flex; gap: 10px;}

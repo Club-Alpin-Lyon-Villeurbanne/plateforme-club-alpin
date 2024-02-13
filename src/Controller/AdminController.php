@@ -11,11 +11,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AdminController extends AbstractController
 {
-    private string $adminPassord;
+    private string $adminPassword;
 
-    public function __construct(string $adminPassord)
+    public function __construct(string $adminPassword)
     {
-        $this->adminPassord = $adminPassord;
+        $this->adminPassword = $adminPassword;
     }
 
     public static function getSubscribedServices(): array
@@ -36,7 +36,7 @@ class AdminController extends AbstractController
                 ];
             }
 
-            if ('caflyon' !== $request->request->get('username') || $request->request->get('password') !== $this->adminPassord) {
+            if ('caflyon' !== $request->request->get('username') || $request->request->get('password') !== $this->adminPassword) {
                 return [
                     'error' => 'Identifiants invalides',
                 ];
