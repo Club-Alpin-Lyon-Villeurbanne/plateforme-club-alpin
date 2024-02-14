@@ -7,6 +7,7 @@ use App\Entity\ExpenseField;
 use App\Entity\ExpenseReport;
 use App\Repository\EvtRepository;
 use App\Repository\ExpenseFieldTypeRepository;
+use App\Repository\ExpenseReportRepository;
 use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\ExpenseTypeRepository;
 use App\Utils\FileUploadHelper;
@@ -20,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ExpenseReportController extends AbstractController
 {
 
-    #[Route('/expense-report', name: 'app_expense_report_post')]
+    #[Route('/expense-report', name: 'app_expense_report_post', methods: ['POST'])]
     public function post(
         Request $request, 
         ExpenseTypeRepository $expenseTypeRepository,
@@ -120,6 +121,34 @@ class ExpenseReportController extends AbstractController
         $entityManager->flush();
         $data['success'] = true;
         return new JsonResponse($data);
+    }
+
+    #[Route('/expense-report', name: 'app_expense_report_list', methods: ['GET'])]
+    public function list(
+        ExpenseReportRepository $expenseReportRepository
+    ): JsonResponse
+    {
+
+        $expenseReportList = $expenseReportRepository->findAll();
+
+        return new JsonResponse([
+            'success' => true,
+            'expenseReports' => $expenseReportList,
+        ]);
+    }
+
+    #[Route('/expense-report/{id}', name: 'app_expense_report_get', methods: ['GET'])]
+    public function get(
+        Request $request, 
+        ExpenseReportRepository $expenseReportRepository
+    ): JsonResponse
+    {
+
+        $expenseReport = $expenseReportRepository->find($request->query->get('id'));
+
+        return new JsonResponse([
+            'success' => true,
+        ]);
     }
 
     #[Route('/expense-report/justification-document', name: 'app_expense_report_upload_justification_document', methods: ['POST'])]

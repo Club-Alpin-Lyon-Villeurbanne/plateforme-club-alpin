@@ -12,6 +12,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: ExpenseReportRepository::class)]
 #[ApiResource(
@@ -22,7 +23,7 @@ use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
     ]
 )]
 #[HasLifecycleCallbacks]
-class ExpenseReport
+class ExpenseReport implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -175,5 +176,17 @@ class ExpenseReport
         $this->updated_at = $updated_at;
 
         return $this;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'owner' => $this->user->getId(),
+            'event' => $this->event->getId(),
+            'status' => $this->status,
+            'createdAt' => $this->created_at->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->updated_at->format('Y-m-d H:i:s'),
+        ];
     }
 }
