@@ -5,10 +5,11 @@ namespace App\Entity;
 use App\Repository\ExpenseFieldRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: ExpenseFieldRepository::class)]
 #[HasLifecycleCallbacks]
-class ExpenseField
+class ExpenseField implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -123,5 +124,18 @@ class ExpenseField
         $this->updated_at = $updated_at;
 
         return $this;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'justificationDocument' => $this->justification_document,
+            'value' => $this->value,
+            'expense' => $this->expense->getId(),
+            'fieldType' => $this->fieldType->getId(),
+            'createdAt' => $this->created_at->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->updated_at->format('Y-m-d H:i:s'),
+        ];
     }
 }

@@ -23,12 +23,27 @@ class ExpenseReportSerializer
 
     public function serialize(ExpenseReport $expenseReport): array
     {
-        // générer les groupes
+        // récupérer les groupes
         $expenseGroups = $this->expenseGroupRepository->findAll();
-        // pour chaque type de dépense dans les groupes, générer les champs
+        $expenseGroupsArray = [];
+        // pour chaque dépense associées aux groupes, générer les champs
         foreach ($expenseGroups as $expenseGroup) {
-            
+            foreach ($expenseGroup->getExpenseTypes() as $expenseType)
+            $expenses = $this->expenseRepository->findBy([
+                'expenseReport' => $expenseReport,
+                'expenseType' => $expenseType
+            ]);
+
+            foreach ($expenses as $expense) {
+                $fields = $this->expenseFieldRepository->findBy(['expense' => $expense]);
+                $expenseGroupsArray[$expenseGroup->getSlug()][] = [
+                    'id' => $expense->getId(),
+                    'expenseType' => $expense->getExpenseType(),
+                    'fields' => $fields,
+                ];
+            }
         }
+
         return [
             'id' => $expenseReport->getId(),
             'status' => $expenseReport->getStatus(),
@@ -37,7 +52,7 @@ class ExpenseReportSerializer
             'event' => $expenseReport->getEvent()->getId(),
             'createdAt' => $expenseReport->getCreatedAt()->format('Y-m-d H:i:s'),
             'updatedAt' => $expenseReport->getUpdatedAt()->format('Y-m-d H:i:s'),
-            'expenseGroups' => $expenseGroups,
+            'expenseGroups' => $expenseGroupsArray,
         ];
     }
 
