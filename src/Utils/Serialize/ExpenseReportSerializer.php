@@ -28,19 +28,20 @@ class ExpenseReportSerializer
         $expenseGroupsArray = [];
         // pour chaque dépense associées aux groupes, générer les champs
         foreach ($expenseGroups as $expenseGroup) {
-            foreach ($expenseGroup->getExpenseTypes() as $expenseType)
-            $expenses = $this->expenseRepository->findBy([
-                'expenseReport' => $expenseReport,
-                'expenseType' => $expenseType
-            ]);
+            foreach ($expenseGroup->getExpenseTypes() as $expenseType) {
+                $expenses = $this->expenseRepository->findBy([
+                    'expenseReport' => $expenseReport,
+                    'expenseType' => $expenseType
+                ]);
 
-            foreach ($expenses as $expense) {
-                $fields = $this->expenseFieldRepository->findBy(['expense' => $expense]);
-                $expenseGroupsArray[$expenseGroup->getSlug()][] = [
-                    'id' => $expense->getId(),
-                    'expenseType' => $expense->getExpenseType(),
-                    'fields' => $fields,
-                ];
+                foreach ($expenses as $expense) {
+                    $fields = $this->expenseFieldRepository->findBy(['expense' => $expense]);
+                    $expenseGroupsArray[$expenseGroup->getSlug()][] = [
+                        'id' => $expense->getId(),
+                        'expenseType' => $expense->getExpenseType(),
+                        'fields' => $fields,
+                    ];
+                }
             }
         }
 
