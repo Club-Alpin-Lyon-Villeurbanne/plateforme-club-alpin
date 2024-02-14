@@ -11,6 +11,7 @@ use App\Repository\ExpenseReportRepository;
 use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\ExpenseTypeRepository;
 use App\Utils\FileUploadHelper;
+use App\Utils\Serialize\ExpenseReportSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -139,15 +140,18 @@ class ExpenseReportController extends AbstractController
 
     #[Route('/expense-report/{id}', name: 'app_expense_report_get', methods: ['GET'])]
     public function get(
-        Request $request, 
-        ExpenseReportRepository $expenseReportRepository
+        int $id,
+        ExpenseReportRepository $expenseReportRepository,
+        ExpenseReportSerializer $expenseReportSerializer
     ): JsonResponse
     {
 
-        $expenseReport = $expenseReportRepository->find($request->query->get('id'));
+        $expenseReport = $expenseReportRepository->find($id);
+        $expenseReport = $expenseReportSerializer->serialize($expenseReport);
 
         return new JsonResponse([
             'success' => true,
+            'expenseReport' => $expenseReport,
         ]);
     }
 

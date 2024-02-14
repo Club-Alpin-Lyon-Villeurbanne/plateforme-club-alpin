@@ -6,9 +6,10 @@ use App\Repository\ExpenseGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: ExpenseGroupRepository::class)]
-class ExpenseGroup
+class ExpenseGroup implements JsonSerializable
 {   
     /** Expense groups types (an enum in the database) */
 
@@ -114,5 +115,16 @@ class ExpenseGroup
         $this->type = $type;
 
         return $this;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'type' => $this->type,
+            'expenseTypes' => $this->expenseTypes->toArray(),
+        ];
     }
 }

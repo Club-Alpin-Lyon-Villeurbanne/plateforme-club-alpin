@@ -185,6 +185,7 @@ class ExpenseReport implements JsonSerializable
             'owner' => $this->user->getId(),
             'event' => $this->event->getId(),
             'status' => $this->status,
+            'refundRequired' => $this->refund_required,
             'createdAt' => $this->created_at->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updated_at->format('Y-m-d H:i:s'),
         ];

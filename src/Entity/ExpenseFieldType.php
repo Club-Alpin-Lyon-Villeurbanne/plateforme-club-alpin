@@ -6,9 +6,10 @@ use App\Repository\ExpenseFieldTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: ExpenseFieldTypeRepository::class)]
-class ExpenseFieldType
+class ExpenseFieldType implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -159,5 +160,17 @@ class ExpenseFieldType
         $this->inputType = $inputType;
 
         return $this;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'slug' => $this->getSlug(),
+            'inputType' => $this->getInputType(),
+            'fieldTypeId' => $this->getId(),
+            'flags' => $this->getFlags(),
+        ];
     }
 }
