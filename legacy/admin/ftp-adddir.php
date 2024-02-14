@@ -12,7 +12,7 @@ if (!admin()) {
 
 $errTab = [];
 $target = stripslashes($_GET['target']);
-$racine = LegacyContainer::getParameter('legacy_ftp_path');
+$ftpPath = LegacyContainer::getParameter('legacy_ftp_path');
 
 // vérification,
 // ne doit pas contenir ..
@@ -20,7 +20,7 @@ if (mb_substr_count($target, '..') > 0) {
     $errTab[] = "Le chemin d'accès au fichier est incorrect : récurrence de chemin retour";
 }
 // doit être un dossier
-if (!is_dir($racine.$target)) {
+if (!is_dir($ftpPath.$target)) {
     $errTab[] = "L'élément donné ne semble pas être un dossier";
 }
 
@@ -41,13 +41,13 @@ if (count($errTab) > 0) {
         }
         if ('' === $nouveauDossier) {
             $errTab[] = 'Entrez un nom de dossier valide';
-        } elseif (file_exists($racine.$target.$nouveauDossier)) {
+        } elseif (file_exists($ftpPath.$target.$nouveauDossier)) {
             $errTab[] = "Le dossier <b>$target$nouveauDossier</b> existe déja. Merci de trouver un autre  nom";
         }
 
         // fermeture de la box/ actualissation du ftp
         if (0 === count($errTab)) {
-            if (!mkdir($concurrentDirectory = $racine.$target.$nouveauDossier) && !is_dir($concurrentDirectory)) {
+            if (!mkdir($concurrentDirectory = $ftpPath.$target.$nouveauDossier) && !is_dir($concurrentDirectory)) {
                 $errTab[] = 'Erreur PHP à la création du dossier';
             }
         }

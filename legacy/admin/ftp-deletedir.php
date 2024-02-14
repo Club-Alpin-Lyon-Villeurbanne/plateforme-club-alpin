@@ -15,7 +15,7 @@ if (!admin()) {
 }
 
 $errTab = [];
-$racine = LegacyContainer::getParameter('legacy_ftp_path');
+$ftpPath = LegacyContainer::getParameter('legacy_ftp_path');
 $target = $_GET['target'];
 $compte = 0;
 
@@ -25,12 +25,12 @@ if (0 < mb_substr_count($target, '../')) {
     $errTab[] = "Le chemin d'accès au dossier est incorrect : récurrence de chemin retour";
 }
 // doit être un dossier
-if (!is_dir($racine.$target)) {
+if (!is_dir($ftpPath.$target)) {
     $errTab[] = "L'élément donné ne semble pas être un dossier";
 }
 
 // vérification de la protection du dossier, et de chaque élément dans le dossier. target=dossier à lire
-function checkMe($racine, $target)
+function checkMe($ftpPath, $target)
 {
     global $errTab;
     global $compte;
@@ -41,16 +41,16 @@ function checkMe($racine, $target)
     }
 
     // si c'est un dossier, on l'ouvre et on verfiie ses contenus
-    if (is_dir($racine.$target)) {
-        $opendir = opendir($racine.$target);
+    if (is_dir($ftpPath.$target)) {
+        $opendir = opendir($ftpPath.$target);
         while ($file = readdir($opendir)) {
             if ('.' != $file && '..' != $file && 'index.php' != $file && '.htaccess' != $file) {
-                checkMe($racine, $target.'/'.$file);
+                checkMe($ftpPath, $target.'/'.$file);
             }
         }
     }
 }
-checkMe($racine, $target);
+checkMe($ftpPath, $target);
 
 if (count($errTab) > 0) {
     echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
@@ -61,7 +61,7 @@ if (count($errTab) > 0) {
         if ('unlocked' != $_GET['lock']) {
             $errTab[] = 'Erreur : fichier verrouillé.';
         } else {
-            if (!clearDir($racine.$target)) {
+            if (!clearDir($ftpPath.$target)) {
                 $errTab[] = "Erreur : suppression de $target echouée.";
             }
         }

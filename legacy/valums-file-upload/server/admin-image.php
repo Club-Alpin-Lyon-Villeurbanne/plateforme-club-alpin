@@ -1,24 +1,27 @@
 <?php
 
 use App\Legacy\ImageManipulator;
+use App\Legacy\LegacyContainer;
 
 require __DIR__.'/../../app/includes.php';
 
 $errTab = [];
 $result = $targetDir = $filename = null;
+$ftpPath = LegacyContainer::getParameter('legacy_ftp_path');
 
 if (!user() && !admin()) {
     $errTab[] = 'User non connecté';
 }
 
 if (0 === count($errTab)) {
-    $targetDir = __DIR__.'/../../../public/ftp/user/0/images/';
+    $dossier = isset($_GET['dossier']) || array_key_exists('dossier', $_GET) ? urldecode($_GET['dossier']).'/' : 'user/0/images/';
+    $targetDir = $ftpPath.$dossier;
     if (!is_dir($targetDir)) {
-        if (!mkdir($targetDir, 0777, true) && !is_dir($targetDir)) {
+        if (!mkdir($targetDir, 0755, true) && !is_dir($targetDir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $targetDir));
         }
     } else {
-        chmod($targetDir, 0777);
+        chmod($targetDir, 0755);
     }
 
     // Handle file uploads via XMLHttpRequest
@@ -27,7 +30,7 @@ if (0 === count($errTab)) {
     $uploader = new qqFileUploader();
     $result = $uploader->handleUpload($targetDir);
 
-    if ($result['error']) {
+    if (isset($result['error']) || array_key_exists('error', $result)) {
         $errTab[] = $result['error'];
     }
 }

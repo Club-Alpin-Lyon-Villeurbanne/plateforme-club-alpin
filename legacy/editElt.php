@@ -124,7 +124,7 @@ if (admin()) {
 						function lpbrowser(field_name, url, type, win) {
 							// alert("Field_Name: " + field_name + "nURL: " + url + "nType: " + type + "nWin: " + win); // debug/testing
 							tinyMCE.activeEditor.windowManager.open({
-								file : 'admin/lpfibr.php?dossier=../ftp'+(type=='image'?'/images-pages-libres&type=image':'&type=file'),
+								file : 'admin/lpfibr.php?dossier='+(type=='image'?'images-pages-libres&type=image':'&type=file'),
 								title : 'Mini-File Browser',
 								width : 700,  // Your dimensions may differ - toy around with them!
 								height : 400,
@@ -176,7 +176,6 @@ if (admin()) {
 						<div class="onglets-admin-nav">
 							<a href="javascript:void(0)" title="" class="">Editeur de contenu</a>
 							<a href="javascript:void(0)" title="" class="">Dossier FTP</a>
-							<a href="javascript:void(0)" title="" class="">Retouche d'images</a>
 						</div>
 
 						<div class="onglets-admin-contenu">
@@ -235,12 +234,6 @@ if (admin()) {
 							<!-- TIROIR -->
 							<div class="onglets-admin-item">
 								<iframe src="admin/ftp.php" class="resize" id="frameFtp" frameborder="0" height="600" width="100%"></iframe>
-							</div>
-
-
-							<!-- RETOUCHES D'IMAGES -->
-							<div class="onglets-admin-item">
-								<iframe src="admin/retouches.php" class="resize" id="frameRetouches" frameborder="0" height="600" width="100%"></iframe>
 							</div>
 
 						</div>

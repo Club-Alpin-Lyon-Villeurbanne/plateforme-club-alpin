@@ -15,17 +15,17 @@ if (user()) {
     $publicRoot = __DIR__.'/../../public';
     // première visite : dossier inexistant
     if (!file_exists($publicRoot.'/ftp/user/'.$id_user)) {
-        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user) && !is_dir($concurrentDirectory)) {
+        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user, 0755, true) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
     if (!file_exists($publicRoot.'/ftp/user/'.$id_user.'/images/')) {
-        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user.'/images/') && !is_dir($concurrentDirectory)) {
+        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user.'/images/', 0755, true) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
     if (!file_exists($publicRoot.'/ftp/user/'.$id_user.'/files/')) {
-        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user.'/files/') && !is_dir($concurrentDirectory)) {
+        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user.'/files/', 0755, true) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
@@ -39,10 +39,10 @@ if (user()) {
     } else {
         echo "ERREUR : type invalide ($type)";
         exit;
-    } ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-	<html xmlns="https://www.w3.org/1999/xhtml" xml:lang="fr">
+    } ?><!DOCTYPE html>
+	<html lang="fr">
 		<head>
+            <meta charset="UTF-8">
 		<title><?php if ('image' == $type) {
 		    echo 'Vos images en ligne';
 		} else {
@@ -66,8 +66,8 @@ if (user()) {
 
 		<!-- fancybox -->
 		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="/tools/fancybox/jquery.fancybox-1.3.4.pack.js" charset="utf-8"></script>
-		<script type="text/javascript" src="/tools/fancybox/jquery.mousewheel-3.0.4.pack.js" charset="utf-8"></script>
+		<script type="text/javascript" src="/tools/fancybox/jquery.fancybox.pack.js" charset="utf-8"></script>
+		<!--<script type="text/javascript" src="/tools/fancybox/jquery.mousewheel-3.0.4.pack.js" charset="utf-8"></script>-->
 
 		<!-- Datatables -->
 		<link rel="stylesheet" href="/tools/datatables/media/css/jquery.dataTables.sobre.css" type="text/css" media="screen" />
