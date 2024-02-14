@@ -2,9 +2,7 @@
 
 namespace App\Utils\Serialize;
 
-use App\Entity\Expense;
 use App\Entity\ExpenseField;
-use App\Entity\ExpenseGroup;
 use App\Entity\ExpenseReport;
 use App\Repository\ExpenseFieldRepository;
 use App\Repository\ExpenseGroupRepository;
