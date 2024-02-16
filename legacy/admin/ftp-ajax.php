@@ -8,7 +8,7 @@ use App\Legacy\LegacyContainer;
 
 require __DIR__.'/../app/includes.php';
 
-$racine = LegacyContainer::getParameter('legacy_ftp_path');
+$ftpPath = LegacyContainer::getParameter('legacy_ftp_path');
 
 $errTab = [];
 $dirTab = [];
@@ -22,7 +22,7 @@ if (!admin()) {
 // vars et checks
 if (0 === count($errTab)) {
     $dossier = !isset($_GET['dossier']) ? '' : urldecode($_GET['dossier']);
-    if (!is_dir($racine.$dossier)) {
+    if (!is_dir($ftpPath.$dossier)) {
         $errTab[] = 'Ce dossier est introuvable';
     }
 }
@@ -30,29 +30,32 @@ if (0 === count($errTab)) {
 // listage
 if (0 === count($errTab)) {
     $package = new PathPackage('/ftp', new EmptyVersionStrategy());
-    //$dirPath = substr($dossier, strlen($racine));
     $dirPath = $dossier;
     $one = false; // booleen : un dossier trouve au moins
-    $opendir = opendir($racine.$dossier);
+    $opendir = opendir($ftpPath.$dossier);
     while ($file = readdir($opendir)) {
         // c'est un dossier, non masqué
-        if (is_dir($racine.$dossier.$file) && !FtpFile::shouldHide($file)) {
+        if (is_dir($ftpPath.$dossier.$file) && !FtpFile::shouldHide($file)) {
             $one = true;
             $dirTab[] = $file;
         }
         // c'est un fichier, non masqué
-        if (!is_dir($racine.$dossier.$file) && !FtpFile::shouldHide($file)) {
+        if (!is_dir($ftpPath.$dossier.$file) && !FtpFile::shouldHide($file)) {
             $one = true;
             $tmp = [];
             $tmp['name'] = $file;
             $tmp['path'] = $package->getUrl($dirPath.$file);
-            $tmp['filesize'] = filesize($racine.$dossier.$file);
-            $tmp['filemtime'] = filemtime($racine.$dossier.$file);
-            $tmp['filetype'] = filetype($racine.$dossier.$file);
-            $tmp['ext'] = substr(strrchr($file, '.'), 1);
-            $imgDim = ImageManipulator::getImageSize($racine.$dossier.$file);
-            $tmp['imgw'] = (int) $imgDim[0];
-            $tmp['imgh'] = (int) $imgDim[1];
+            $tmp['filesize'] = filesize($ftpPath.$dossier.$file);
+            $tmp['filemtime'] = filemtime($ftpPath.$dossier.$file);
+            $tmp['filetype'] = filetype($ftpPath.$dossier.$file);
+            //$tmp['ext'] = substr(strrchr($file, '.'), 1);
+            $pathInfo = pathinfo($ftpPath.$dossier.$file);
+            $tmp['ext'] = $pathInfo['extension'];
+            if (in_array($tmp['ext'], ['jpeg', 'jpg', 'gif', 'png', 'bmp', 'webp'])) {
+                $imgDim = ImageManipulator::getImageSize($ftpPath.$dossier.$file);
+                $tmp['imgw'] = (int) $imgDim[0];
+                $tmp['imgh'] = (int) $imgDim[1];
+            }
             $fileTab[] = $tmp;
         }
     }

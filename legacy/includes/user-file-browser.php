@@ -1,6 +1,9 @@
 <?php
 
 use App\Ftp\FtpFile;
+use App\Legacy\LegacyContainer;
+use Symfony\Component\Asset\PathPackage;
+use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 
 require __DIR__.'/../app/includes.php';
 
@@ -12,20 +15,20 @@ if (user()) {
         exit;
     }
 
-    $publicRoot = __DIR__.'/../../public';
+    $ftpRoot = LegacyContainer::getParameter('legacy_ftp_path');
     // première visite : dossier inexistant
-    if (!file_exists($publicRoot.'/ftp/user/'.$id_user)) {
-        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user) && !is_dir($concurrentDirectory)) {
+    if (!file_exists($ftpRoot.'user/'.$id_user)) {
+        if (!mkdir($concurrentDirectory = $ftpRoot.'user/'.$id_user, 0755, true) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
-    if (!file_exists($publicRoot.'/ftp/user/'.$id_user.'/images/')) {
-        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user.'/images/') && !is_dir($concurrentDirectory)) {
+    if (!file_exists($ftpRoot.'user/'.$id_user.'/images/')) {
+        if (!mkdir($concurrentDirectory = $ftpRoot.'user/'.$id_user.'/images/', 0755, true) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
-    if (!file_exists($publicRoot.'/ftp/user/'.$id_user.'/files/')) {
-        if (!mkdir($concurrentDirectory = $publicRoot.'/ftp/user/'.$id_user.'/files/') && !is_dir($concurrentDirectory)) {
+    if (!file_exists($ftpRoot.'user/'.$id_user.'/files/')) {
+        if (!mkdir($concurrentDirectory = $ftpRoot.'user/'.$id_user.'/files/', 0755, true) && !is_dir($concurrentDirectory)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
@@ -33,16 +36,18 @@ if (user()) {
     // recuperation du dossier
     $type = $_GET['type'];
     if ('image' == $type) {
-        $dossier = $publicRoot.'/ftp/user/'.$id_user.'/images/';
+        $dossier = 'user/'.$id_user.'/images/';
+        $fullPath = $ftpRoot.$dossier;
     } elseif ('file' == $type) {
-        $dossier = $publicRoot.'/ftp/user/'.$id_user.'/files/';
+        $dossier = 'user/'.$id_user.'/files/';
+        $fullPath = $ftpRoot.$dossier;
     } else {
         echo "ERREUR : type invalide ($type)";
         exit;
-    } ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-	<html xmlns="https://www.w3.org/1999/xhtml" xml:lang="fr">
+    } ?><!DOCTYPE html>
+	<html lang="fr">
 		<head>
+            <meta charset="UTF-8">
 		<title><?php if ('image' == $type) {
 		    echo 'Vos images en ligne';
 		} else {
@@ -65,9 +70,9 @@ if (user()) {
 		<script type="text/javascript" src="/js/fonctionsAdmin.js"></script>
 
 		<!-- fancybox -->
-		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="/tools/fancybox/jquery.fancybox-1.3.4.pack.js" charset="utf-8"></script>
-		<script type="text/javascript" src="/tools/fancybox/jquery.mousewheel-3.0.4.pack.js" charset="utf-8"></script>
+		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
+		<script type="text/javascript" src="/tools/fancybox/jquery.fancybox.pack.js" charset="utf-8"></script>
+		<!--<script type="text/javascript" src="/tools/fancybox/jquery.mousewheel-3.0.4.pack.js" charset="utf-8"></script>-->
 
 		<!-- Datatables -->
 		<link rel="stylesheet" href="/tools/datatables/media/css/jquery.dataTables.sobre.css" type="text/css" media="screen" />
@@ -104,12 +109,12 @@ if (user()) {
 			init : function () {
 				// Here goes your code for setting your custom things onLoad.
 			},
-			mySubmit : function (URL) {
-				// var URL = document.my_form.my_field.value;
+			mySubmit : function (url) {
+				// var url = document.my_form.my_field.value;
 				var win = tinyMCEPopup.getWindowArg("window");
 
 				// insert information now
-				win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = URL;
+				win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = url;
 
 				// are we an image browser
 				if (typeof(win.ImageDialog) != "undefined") {
@@ -119,7 +124,7 @@ if (user()) {
 
 					// ... and preview if necessary
 					if (win.ImageDialog.showPreviewImage)
-						win.ImageDialog.showPreviewImage(URL);
+						win.ImageDialog.showPreviewImage(url);
 				}
 
 				// close popup window
@@ -169,7 +174,7 @@ if (user()) {
 								// remplacement du texte par défaut par ma sauce perso
 								$("li.qq-upload-success:not(.lpedited)").each(function(){
 									var file=responseJSON.filename;
-									var html='Fichier <b>'+file+'"</b> bien enregistré.';
+									var html='Fichier <b>'+file+'</b> bien enregistré.';
 									$(this).html(html).addClass('info mini').css('padding', '3px 5px');
 								}).addClass('lpedited');
 							}
@@ -194,12 +199,12 @@ if (user()) {
 			<?php
             if (isset($_GET['operation']) && 'delete' == $_GET['operation']) {
 		            $file = $_GET['file'];
-		            if (!file_exists($dossier.$file)) {
+		            if (!file_exists($fullPath.$file)) {
 		                echo '<p class="erreur"> Erreur : fichier non trouvé</p>';
 		            } elseif (strpos(' '.$file, '../')) {
 		                echo '<p class="erreur"> Erreur tentative de piratage</p>';
 		            } else {
-		                if (unlink($dossier.$file)) {
+		                if (unlink($fullPath.$file)) {
 		                    echo '<p class="info">Fichier '.$file.' supprimé</p>';
 		                } else {
 		                    echo '<p class="erreur"> Erreur technique lors de la suppression.</p>';
@@ -228,10 +233,10 @@ if (user()) {
     }
 
     // ouverture du dossier demande
-    $handle = opendir($dossier);
-
+    $handle = opendir($fullPath);
+    $package = new PathPackage('/ftp', new EmptyVersionStrategy());
     while ($fichier = readdir($handle)) {
-        $filepath = $dossier.$fichier;
+        $filepath = $fullPath.$fichier;
         $extension = strtolower(pathinfo($fichier, \PATHINFO_EXTENSION));
 
         // on ne liste pas les dossiers
@@ -244,7 +249,7 @@ if (user()) {
             continue;
         }
 
-        $url = substr($filepath, strlen($publicRoot));
+        $url = $package->getUrl($dossier.$fichier);
 
         if ('image' === $type) {
             $icon = $url;
@@ -305,14 +310,14 @@ if (user()) {
 							'.('image' == $type ?
                             '<a class="fancybox" href="'.$fichier['icon'].'" title="'.html_utf8($fichier['file']).'"><img src="'.$fichier['icon'].'" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
                             :
-                            '<a target="_blank" href="'.$fichier['filepath'].'" title="Ouvrir '.html_utf8($fichier['file']).' dans une nouvelle fenêtre"><img src="'.$fichier['icon'].'" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
+                            '<a target="_blank" href="'.$fichier['url'].'" title="Ouvrir '.html_utf8($fichier['file']).' dans une nouvelle fenêtre"><img src="'.$fichier['icon'].'" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
         ).'
 						</td>
 						<td>
 							'.('image' == $type ?
             '<a class="fancybox" href="'.$fichier['icon'].'" title="'.html_utf8($fichier['file']).'">'.substr($fichier['file'], 0, 70).'</a>'
             :
-            '<a target="_blank" href="'.$fichier['filepath'].'" title="Ouvrir '.html_utf8($fichier['file']).' dans une nouvelle fenêtre">'.substr($fichier['file'], 0, 70).'</a>'
+            '<a target="_blank" href="'.$fichier['url'].'" title="Ouvrir '.html_utf8($fichier['file']).' dans une nouvelle fenêtre">'.substr($fichier['file'], 0, 70).'</a>'
         ).'
 						</td>
 						<td>
