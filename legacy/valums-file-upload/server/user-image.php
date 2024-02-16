@@ -1,19 +1,19 @@
 <?php
 
 use App\Legacy\ImageManipulator;
+use App\Legacy\LegacyContainer;
 
 require __DIR__.'/../../app/includes.php';
 
 $errTab = [];
 $result = $targetDir = null;
 
-// $errTab[]="Test";
 if (!user()) {
     $errTab[] = 'User non connecté';
 }
 
 if (0 === count($errTab)) {
-    $targetDir = __DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/images/';
+    $targetDir = LegacyContainer::getParameter('legacy_ftp_path').'user/'.getUser()->getId().'/images/';
 
     // Handle file uploads via XMLHttpRequest
     require __DIR__.'/vfu.classes.php';

@@ -11,9 +11,10 @@ require __DIR__.'/../../config/params.php';
 
 ?>
 <!DOCTYPE html>
-<html xmlns="https://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr" dir="ltr">
+<html lang="fr" dir="ltr">
 <head>
-<title>CHRON</title>
+    <meta charset="UTF-8">
+    <title>CHRON</title>
 </head>
 <body onload="reloadTimeout()" style="font-family:Lucida Console; font-size:12px">
 

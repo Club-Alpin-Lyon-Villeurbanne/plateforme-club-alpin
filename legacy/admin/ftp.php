@@ -20,7 +20,7 @@ $mode = isset($_GET['mode']) || array_key_exists('mode', $_GET) ? $_GET['mode'] 
 
 // recuperation du dossier
 
-$racine = LegacyContainer::getParameter('legacy_ftp_path');
+$ftpPath = LegacyContainer::getParameter('legacy_ftp_path');
 if (!isset($_GET['dossier'])) {
     $dossier = '';
 } else {
@@ -28,7 +28,7 @@ if (!isset($_GET['dossier'])) {
 }
 
 // checks :
-//if (substr($dossier, 0, strlen($racine)) != $racine || mb_substr_count($dossier, '../') > 2) {
+//if (substr($dossier, 0, strlen($ftpPath)) != $ftpPath || mb_substr_count($dossier, '../') > 2) {
 //    echo '<p class="erreur">Erreur ! Le dossier demandé n\'a pas le bon format.</p>';
 //    exit;
 //}
@@ -76,11 +76,11 @@ if (!isset($_GET['dossier'])) {
 					    echo 'selected';
 					}?>">Dossier FTP</a>
 					<?php
-					                    function arbo_read($racine, $dir, $level)
+					                    function arbo_read($ftpPath, $dir, $level)
 					                    {
 					                        global $dossier;
 					                        $one = false; // booleen : un dossier trouve au moins
-					                        $opendir = opendir($racine.$dir);
+					                        $opendir = opendir($ftpPath.$dir);
 					                        $files = [];
 
 					                        $j = 0; // compte des fichiers
@@ -92,17 +92,13 @@ if (!isset($_GET['dossier'])) {
 
 					                        foreach ($files as $file) {
 					                            // c'est un dossier, non masqué
-                                                //dump('dossier : '.$dossier);
-                                                //dump('dir : '.$dir);
-                                                //dump('file : '.$file);
-					                            if (is_dir($racine.$dir.$file) && !FtpFile::shouldHide($file)) {
-                                                    //dd('$racine.$dir.$file : '.$racine.$dir.$file);
+					                            if (is_dir($ftpPath.$dir.$file) && !FtpFile::shouldHide($file)) {
 					                                $one = true;
 					                                echo '<div class="level level'.$level.'">'
 					                                    .'<a class="dirtrigger" href="'.$file.'/'.'" title=""></a>'
 					                                    .'<a class="dirlink '.($dossier == $dir.$file.'/' ? 'selected' : '').'" href="'.$dir.$file.'/'.'" title="">'.$file.'</a>';
 					                                // if(!arbo_read($dir.$file.'/', $level+1)) echo '<div class="level level'.($level+1).'">-</div>';
-					                                if (!arbo_read($racine, $dir.$file.'/', $level + 1)) {
+					                                if (!arbo_read($ftpPath, $dir.$file.'/', $level + 1)) {
 					                                    echo '<span class="removetrigger"></span>';
 					                                }
 					                                echo '</div>';
@@ -111,7 +107,7 @@ if (!isset($_GET['dossier'])) {
 
 					                        return $one;
 					                    }
-					                    arbo_read($racine,'', 0);
+					                    arbo_read($ftpPath,'', 0);
 ?>
 				</div>
 			</div>
