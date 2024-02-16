@@ -30,7 +30,6 @@ if (0 === count($errTab)) {
 // listage
 if (0 === count($errTab)) {
     $package = new PathPackage('/ftp', new EmptyVersionStrategy());
-    //$dirPath = substr($dossier, strlen($ftpPath));
     $dirPath = $dossier;
     $one = false; // booleen : un dossier trouve au moins
     $opendir = opendir($ftpPath.$dossier);
@@ -49,10 +48,14 @@ if (0 === count($errTab)) {
             $tmp['filesize'] = filesize($ftpPath.$dossier.$file);
             $tmp['filemtime'] = filemtime($ftpPath.$dossier.$file);
             $tmp['filetype'] = filetype($ftpPath.$dossier.$file);
-            $tmp['ext'] = substr(strrchr($file, '.'), 1);
-            $imgDim = ImageManipulator::getImageSize($ftpPath.$dossier.$file);
-            $tmp['imgw'] = (int) $imgDim[0];
-            $tmp['imgh'] = (int) $imgDim[1];
+            //$tmp['ext'] = substr(strrchr($file, '.'), 1);
+            $pathInfo = pathinfo($ftpPath.$dossier.$file);
+            $tmp['ext'] = $pathInfo['extension'];
+            if (in_array($tmp['ext'], ['jpeg', 'jpg', 'gif', 'png', 'bmp', 'webp'])) {
+                $imgDim = ImageManipulator::getImageSize($ftpPath.$dossier.$file);
+                $tmp['imgw'] = (int) $imgDim[0];
+                $tmp['imgh'] = (int) $imgDim[1];
+            }
             $fileTab[] = $tmp;
         }
     }

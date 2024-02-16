@@ -161,14 +161,14 @@ if (admin()) {
 
                             sizeLimit: 20 * 1024 * 1024,
                             element: document.getElementById('file-uploader-ftp'),
-                            action: '/valums-file-upload/server/admin-<?php echo $type; ?>.php?dossier=<?php echo urlencode($dossier); ?>',
+                            action: '/valums-file-upload/server/admin-upload.php?type=<?php echo $type; ?>&dossier=<?php echo urlencode($dossier); ?>',
                             // pour chaque image envoyée
                             onComplete: function(id, fileName, responseJSON){
                                 if(responseJSON.success){
                                     // remplacement du texte par défaut par ma sauce perso
                                     $("li.qq-upload-success:not(.lpedited)").each(function(){
                                         var file=responseJSON.filename;
-                                        var html='Fichier <b>'+file+'"</b> bien enregistré.';
+                                        var html='Fichier <b>'+file+'</b> bien enregistré.';
                                         $(this).html(html).addClass('info mini').css('padding', '3px 5px');
                                     }).addClass('lpedited');
                                 }
@@ -299,14 +299,14 @@ if (admin()) {
                                         '.('image' == $type ?
                                             '<a class="fancybox" href="'.$icon.'" title="'.html_utf8($fichier).'"><img src="'.$icon.'" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
                                         :
-                                            '<a target="_blank" href="'.$fullPath.$fichier.'" title="Ouvrir '.html_utf8($fichier).' dans une nouvelle fenêtre"><img src="'.$icon.'" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
+                                            '<a target="_blank" href="'.$relativeUrl.'" title="Ouvrir '.html_utf8($fichier).' dans une nouvelle fenêtre"><img src="'.$icon.'" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
                                         ).'
                                     </td>
                                     <td>
                                         '.('image' == $type ?
                                         '<a class="fancybox" href="'.$icon.'" title="'.html_utf8($fichier).'">'.substr($fichier, 0, 70).'</a>'
                                         :
-                                        '<a target="_blank" href="'.$fullPath.$fichier.'" title="Ouvrir '.html_utf8($fichier).' dans une nouvelle fenêtre">'.substr($fichier, 0, 70).'</a>'
+                                        '<a target="_blank" href="'.$relativeUrl.'" title="Ouvrir '.html_utf8($fichier).' dans une nouvelle fenêtre">'.substr($fichier, 0, 70).'</a>'
                                         ).'
                                     </td>
                                     <td>

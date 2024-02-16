@@ -2,19 +2,25 @@
 
 use App\Legacy\ImageManipulator;
 use App\Legacy\LegacyContainer;
+use App\Ftp\FtpFile;
 
 require __DIR__.'/../../app/includes.php';
 
 $errTab = [];
 $result = $targetDir = $filename = null;
 $ftpPath = LegacyContainer::getParameter('legacy_ftp_path');
+$type = htmlspecialchars($_GET['type']) ?? 'image';
 
 if (!user() && !admin()) {
     $errTab[] = 'User non connecté';
 }
 
+if (!in_array($type, ['image', 'file'])) {
+    $errTab[] = 'Type de fichier non reconnu';
+}
+
 if (0 === count($errTab)) {
-    $dossier = isset($_GET['dossier']) || array_key_exists('dossier', $_GET) ? urldecode($_GET['dossier']).'/' : 'user/0/images/';
+    $dossier = isset($_GET['dossier']) || array_key_exists('dossier', $_GET) ? urldecode($_GET['dossier']).'/' : 'user/0/'.$type.'s/';
     $targetDir = $ftpPath.$dossier;
     if (!is_dir($targetDir)) {
         if (!mkdir($targetDir, 0755, true) && !is_dir($targetDir)) {
@@ -27,7 +33,11 @@ if (0 === count($errTab)) {
     // Handle file uploads via XMLHttpRequest
     require __DIR__.'/vfu.classes.php';
 
-    $uploader = new qqFileUploader();
+    if ($type === 'file') {
+        $uploader = new qqFileUploader(FtpFile::getAllowedExtensions());
+    } else {
+        $uploader = new qqFileUploader();
+    }
     $result = $uploader->handleUpload($targetDir);
 
     if (isset($result['error']) || array_key_exists('error', $result)) {
@@ -54,7 +64,7 @@ if (0 === count($errTab)) {
                 if (is_file($targetDir.$result['filename'])) {
                     unlink($targetDir.$result['filename']);
                 }
-                // sauf erreur le nom de ficier est remplacé par sa version formatée
+                // sauf erreur le nom de fichier est remplacé par sa version formatée
                 $result['filename'] = $filename;
             } else {
                 $errTab[] = 'Erreur de copie de '.$targetDir.$result['filename']." \n vers ".$targetDir.$filename;
@@ -62,10 +72,12 @@ if (0 === count($errTab)) {
         }
     }
 
-    // redimensionnement des images
-    if (0 === count($errTab)) {
-        if (!ImageManipulator::resizeImage(600, 800, $targetDir.$filename, $targetDir.$filename, true)) {
-            $errTab[] = 'Image : Erreur de redim';
+    if ($type === 'image') {
+        // redimensionnement des images
+        if (0 === count($errTab)) {
+            if (!ImageManipulator::resizeImage(600, 800, $targetDir.$filename, $targetDir.$filename, true)) {
+                $errTab[] = 'Image : Erreur de redim';
+            }
         }
     }
 }
