@@ -131,7 +131,7 @@ class ExpenseField implements JsonSerializable
         return [
             'id' => $this->id,
             'justificationDocument' => $this->justification_document,
-            'value' => $this->value,
+            'value' => $this->value ? $this->value : '',
             'expense' => $this->expense->getId(),
             'fieldType' => $this->fieldType->getId(),
             'createdAt' => $this->created_at->format('Y-m-d H:i:s'),
