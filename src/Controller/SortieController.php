@@ -11,7 +11,6 @@ use App\Repository\ExpenseGroupRepository;
 use App\Repository\ExpenseReportRepository;
 use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\UserRepository;
-use App\Security\AdminDetector;
 use App\Twig\JavascriptGlobalsExtension;
 use App\Utils\Enums\ExpenseReportEnum;
 use App\Utils\Serialize\ExpenseFieldTypeSerializer;
