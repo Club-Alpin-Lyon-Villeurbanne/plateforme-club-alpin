@@ -88,7 +88,6 @@ export default defineComponent({
                 .then(blob => {
                     const name = this.field.justificationDocument.split('/').pop();
                     const file = new File([blob], name, { type: blob.type });
-                    console.log(file);
                     this.field.justificationFile = file;
                 });
             this.field.justificationFileUrl = this.field.justificationDocument;
