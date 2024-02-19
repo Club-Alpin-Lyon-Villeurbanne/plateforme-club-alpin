@@ -52,12 +52,14 @@ class ExpenseReportController extends AbstractController
             if (!is_array($dataExpenseGroup)) {
                 continue;
             }
+            
             // pour chaque dépense dans le groupe
             foreach ($dataExpenseGroup['expenseTypes'] as $dataExpenseType) {
                 // si le groupe est de type "unique", ne pas traiter les types non selectionnés
-                if ($dataExpenseGroup['type'] === 'unique' && !$dataExpenseType['slug'] !== $dataExpenseGroup['selectedType']) {
-                    continue;
+                if ($dataExpenseGroup['type'] === 'unique' && $dataExpenseType['slug'] !== $dataExpenseGroup['selectedType']) {
+                    continue;   
                 }
+
                 // créer la dépense
                 $expense = new Expense();
                 $expenseType = $expenseTypeRepository->find($dataExpenseType['expenseTypeId']);
@@ -110,7 +112,6 @@ class ExpenseReportController extends AbstractController
                 }
             }
         }
-
 
         if ($errors) {
             return new JsonResponse([
