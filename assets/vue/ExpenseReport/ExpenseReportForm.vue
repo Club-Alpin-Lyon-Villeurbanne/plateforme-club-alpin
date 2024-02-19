@@ -200,7 +200,7 @@
                     }
                 }
                 const apiUrl = (window as any).globals.apiBaseUrl ? (window as any).globals.apiBaseUrl : 'http://localhost:8000';
-                console.log('apiUrl', apiUrl);
+                
                 try {
                     const response = await fetch(apiUrl + '/expense-report', {
                         method: 'POST',

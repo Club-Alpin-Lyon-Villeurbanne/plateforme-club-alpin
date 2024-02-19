@@ -24,7 +24,8 @@ class ExpenseReportController extends AbstractController
 
     #[Route('/expense-report', name: 'app_expense_report_post', methods: ['POST'])]
     public function post(
-        Request $request, 
+        Request $request,
+        ExpenseReportRepository $expenseReportRepository,
         ExpenseTypeRepository $expenseTypeRepository,
         ExpenseFieldTypeRepository $expenseFieldTypeRepository,
         EvtRepository $evtRepository,
@@ -39,8 +40,11 @@ class ExpenseReportController extends AbstractController
 
         $errors = [];
 
-        // créer la note de frais
-        $expenseReport = new ExpenseReport();
+        // créer la note de frais si nouvelle, ou récupérer la note de frais existante
+        $expenseReport = $expenseReportRepository->getExpenseReportByEventAndUser($data['eventId'], $this->getUser()->getId());
+        if (!$expenseReport) {
+            $expenseReport = new ExpenseReport();
+        }
         $expenseReport->setStatus($data['status']);
         $expenseReport->setUser($this->getUser());
         $expenseReport->setRefundRequired(!!$data['refundRequired']);
