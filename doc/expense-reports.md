@@ -1,5 +1,11 @@
 # Expense Reports (notes de frais)
 
+## Routes
+
+- Lister les notes de frais : `GET` `/expense-report`
+- Récupérer une note de frais : `GET` `/expense-report/{id}`
+
+
 ## Structure des données
 
 ### Structure d'une notre de frais enregistrée
