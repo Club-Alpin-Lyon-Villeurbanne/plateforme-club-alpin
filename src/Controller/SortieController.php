@@ -111,8 +111,19 @@ class SortieController extends AbstractController
             $currentExpenseReport = $expenseReportSerializer->serialize($currentExpenseReport);
             // for each expense group
             foreach ($currentExpenseReport['expenseGroups'] as $groupSlug => $expenseGroup) {
+
+                // set the selected expense type
+                if (!empty($expenseGroup['selectedType'])) {
+                    $expenseReportFormGroups[$groupSlug]['selectedType'] = $expenseGroup['selectedType'];
+                }
+
                 // for each expense type
                 foreach ($expenseGroup as $expense) {
+                    // ignore values that are not expenses
+                    if (!is_array($expense)) {
+                        continue;
+                    }
+
                     // for each field
                     $newFields = [];
                     foreach ($expense['fields'] as $field) {
@@ -133,6 +144,7 @@ class SortieController extends AbstractController
                     }
                     $targetExpenseTypeIndex = array_search($expense['expenseType']->getId(), array_column($expenseReportFormGroups[$groupSlug]['expenseTypes'], 'expenseTypeId'));
                     $expenseReportFormGroups[$groupSlug]['expenseTypes'][$targetExpenseTypeIndex]['fields'] = $newFields;
+ 
                 }
             }
         }

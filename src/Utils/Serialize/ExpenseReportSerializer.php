@@ -40,6 +40,11 @@ class ExpenseReportSerializer
                         'fields' => $fields,
                     ];
                 }
+
+                // si le groupe est de type "unique", récupérer le type de dépense sélectionné
+                if ($expenseGroup->getType() === 'unique' && $expenses) {
+                    $expenseGroupsArray[$expenseGroup->getSlug()]['selectedType'] = $expenseType->getSlug();
+                }
             }
         }
 
