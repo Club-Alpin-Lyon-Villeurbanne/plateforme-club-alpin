@@ -134,6 +134,7 @@ class ExpenseField implements JsonSerializable
             'value' => $this->value,
             'expense' => $this->expense->getId(),
             'fieldType' => $this->fieldType->getId(),
+            'inputType' => $this->fieldType->getInputType(),
             'createdAt' => $this->created_at->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
