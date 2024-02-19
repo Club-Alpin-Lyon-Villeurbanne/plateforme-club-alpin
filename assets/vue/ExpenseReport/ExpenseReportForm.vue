@@ -119,7 +119,7 @@
             ExpenseField
         },
         mounted() {
-            console.log(this.formStructureProp);
+            console.log(this.formStructure);
         },
         computed: {
             transportationTotal() {
@@ -134,7 +134,7 @@
         },
         data() {
             return {
-                formStructure: {refundRequired: false, ...this.formStructureProp},
+                formStructure: {refundRequired: 0, ...this.formStructureProp},
                 autoCalculation: {
                     refundable: 0,
                     transportation: 0,

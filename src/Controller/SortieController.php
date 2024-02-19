@@ -109,6 +109,8 @@ class SortieController extends AbstractController
         ) {
             // serialize the current expense report
             $currentExpenseReport = $expenseReportSerializer->serialize($currentExpenseReport);
+
+            $expenseReportFormGroups['refundRequired'] = $currentExpenseReport['refundRequired'] ? 1 : 0;
             // for each expense group
             foreach ($currentExpenseReport['expenseGroups'] as $groupSlug => $expenseGroup) {
 
@@ -158,6 +160,7 @@ class SortieController extends AbstractController
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
             'apiBaseUrl', !empty($_ENV['ROUTER_CONTEXT_HOST']) ? $_ENV['ROUTER_CONTEXT_SCHEME'].'://'.$_ENV['ROUTER_CONTEXT_HOST'] : false
         );
+
 
         return [
             'event' => $event,
