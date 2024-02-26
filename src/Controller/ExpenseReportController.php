@@ -143,23 +143,6 @@ class ExpenseReportController extends AbstractController
         ]);
     }
 
-    #[Route('/expense-report/{id}', name: 'app_expense_report_get', methods: ['GET'])]
-    public function get(
-        int $id,
-        ExpenseReportRepository $expenseReportRepository,
-        ExpenseReportSerializer $expenseReportSerializer
-    ): JsonResponse
-    {
-
-        $expenseReport = $expenseReportRepository->find($id);
-        $expenseReport = $expenseReportSerializer->serialize($expenseReport);
-
-        return new JsonResponse([
-            'success' => true,
-            'expenseReport' => $expenseReport,
-        ]);
-    }
-
     #[Route('/expense-report/justification-document', name: 'app_expense_report_upload_justification_document', methods: ['POST'])]
     public function uploadJustificationDocument(Request $request)
     {

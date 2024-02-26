@@ -4,24 +4,23 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
+use App\Controller\Api\ExpenseReportGet;
 use App\Repository\ExpenseReportRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: ExpenseReportRepository::class)]
-#[ApiResource(
-    operations: [
-        new Get(),
-        new GetCollection(),
-        new Post()
-    ]
-)]
+#[ApiResource(operations: [
+    new Get(
+        name: 'expense_report_get', 
+        uriTemplate: '/expense-report/{id}',
+        controller: ExpenseReportGet::class,
+        stateless: false
+    )
+])]
 #[HasLifecycleCallbacks]
 class ExpenseReport implements JsonSerializable
 {
