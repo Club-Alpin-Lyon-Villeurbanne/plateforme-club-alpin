@@ -81,5 +81,17 @@ export default defineComponent({
             this.field.justificationFile = null;
         }
     },
+    mounted() {
+        if (this.field.justificationDocument) {
+            fetch (this.field.justificationDocument)
+                .then(response => response.blob())
+                .then(blob => {
+                    const name = this.field.justificationDocument.split('/').pop();
+                    const file = new File([blob], name, { type: blob.type });
+                    this.field.justificationFile = file;
+                });
+            this.field.justificationFileUrl = this.field.justificationDocument;
+        }
+    }
 });
 </script>

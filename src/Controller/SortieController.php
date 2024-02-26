@@ -11,10 +11,10 @@ use App\Repository\ExpenseGroupRepository;
 use App\Repository\ExpenseReportRepository;
 use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\UserRepository;
-use App\Security\AdminDetector;
 use App\Twig\JavascriptGlobalsExtension;
 use App\Utils\Enums\ExpenseReportEnum;
 use App\Utils\Serialize\ExpenseFieldTypeSerializer;
+use App\Utils\Serialize\ExpenseReportSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,6 +43,7 @@ class SortieController extends AbstractController
         ExpenseGroupRepository $expenseGroupRepository,
         ExpenseTypeExpenseFieldTypeRepository $expenseTypeFieldTypeRepository,
         ExpenseReportRepository $expenseReportRepository,
+        ExpenseReportSerializer $expenseReportSerializer,
         Environment $twig,
     ) {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
@@ -51,17 +52,8 @@ class SortieController extends AbstractController
 
         $user = $this->getUser();
 
-        $currentExpenseReport = $expenseReportRepository->getExpenseReportByEventAndUser($event->getId(), $user->getId());
-        
-        // TODO:
-        // generate the form from the existing draft expense report if there is one
-        if ($currentExpenseReport 
-            && $currentExpenseReport->getStatus() === ExpenseReportEnum::STATUS_DRAFT
-        ) {
-        } else {
-            // generate a new empty expense report form structure
-        }
-
+       
+        // generate a new empty expense report form structure
         $expenseReportFormGroups = [];
         $expenseGroups = $expenseGroupRepository->findAll();
 
@@ -108,6 +100,56 @@ class SortieController extends AbstractController
             }
         }
 
+        $currentExpenseReport = $expenseReportRepository->getExpenseReportByEventAndUser($event->getId(), $user->getId());
+        
+        // prefill the form with the current expense report data
+        if ($currentExpenseReport 
+            && $currentExpenseReport->getStatus() === ExpenseReportEnum::STATUS_DRAFT
+        ) {
+            // serialize the current expense report
+            $currentExpenseReport = $expenseReportSerializer->serialize($currentExpenseReport);
+
+            $expenseReportFormGroups['refundRequired'] = $currentExpenseReport['refundRequired'] ? 1 : 0;
+            // for each expense group
+            foreach ($currentExpenseReport['expenseGroups'] as $groupSlug => $expenseGroup) {
+
+                // set the selected expense type
+                if (!empty($expenseGroup['selectedType'])) {
+                    $expenseReportFormGroups[$groupSlug]['selectedType'] = $expenseGroup['selectedType'];
+                }
+
+                // for each expense type
+                foreach ($expenseGroup as $expense) {
+                    // ignore values that are not expenses
+                    if (!is_array($expense)) {
+                        continue;
+                    }
+
+                    // for each field
+                    $newFields = [];
+                    foreach ($expense['fields'] as $field) {
+                        // set the value from the current expense report if existing
+                        $newField = $field->jsonSerialize();
+                        // add the field type flags to this field
+                        $relation = $expenseTypeFieldTypeRepository->findOneBy([
+                            'expenseType' => $expense['expenseType']->getId(),
+                            'expenseFieldType' => $field->getFieldType()->getId()
+                        ]);
+                        $newField['fieldTypeId'] = $field->getFieldType()->getId();
+                        $newField['flags']['needsJustification'] = $relation->getNeedsJustification();
+                        $newField['flags']['isMandatory'] = $relation->isMandatory();
+                        $newField['flags']['isUsedForTotal'] = $relation->isUsedForTotal();
+                        $newField['flags']['displayOrder'] = $relation->getDisplayOrder();
+                        $newField['name'] = $field->getFieldType()->getName();
+                        $newFields[] = $newField;
+                    }
+                    $targetExpenseTypeIndex = array_search($expense['expenseType']->getId(), array_column($expenseReportFormGroups[$groupSlug]['expenseTypes'], 'expenseTypeId'));
+                    $expenseReportFormGroups[$groupSlug]['expenseTypes'][$targetExpenseTypeIndex]['fields'] = $newFields;
+ 
+                }
+            }
+        }
+
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
             'enums', ['expenseReportStatuses' => ExpenseReportEnum::getConstants()]
         );
@@ -117,6 +159,7 @@ class SortieController extends AbstractController
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
             'apiBaseUrl', !empty($_ENV['ROUTER_CONTEXT_HOST']) ? $_ENV['ROUTER_CONTEXT_SCHEME'].'://'.$_ENV['ROUTER_CONTEXT_HOST'] : false
         );
+
 
         return [
             'event' => $event,

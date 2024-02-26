@@ -119,7 +119,7 @@
             ExpenseField
         },
         mounted() {
-            console.log(this.formStructureProp);
+            console.log(this.formStructure);
         },
         computed: {
             transportationTotal() {
@@ -134,7 +134,7 @@
         },
         data() {
             return {
-                formStructure: {refundRequired: false, ...this.formStructureProp},
+                formStructure: {refundRequired: 0, ...this.formStructureProp},
                 autoCalculation: {
                     refundable: 0,
                     transportation: 0,
@@ -200,7 +200,7 @@
                     }
                 }
                 const apiUrl = (window as any).globals.apiBaseUrl ? (window as any).globals.apiBaseUrl : 'http://localhost:8000';
-                console.log('apiUrl', apiUrl);
+                
                 try {
                     const response = await fetch(apiUrl + '/expense-report', {
                         method: 'POST',
