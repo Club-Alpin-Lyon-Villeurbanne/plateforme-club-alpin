@@ -19,10 +19,12 @@ const expenseReportService = {
                 const distanceField = transportationMode.fields.find((field: any) => field.slug === 'distance');
                 const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
                 const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
-                // distance * 0.12
-                total += parseFloat(distanceField.value) * 0.12;
-                // peage / nombre voyageurs
-                total += parseFloat(tollField.value) / parseFloat(passengerNumberField.value);
+                if (distanceField && tollField && passengerNumberField) {
+                    // distance * 0.12
+                    total += parseFloat(distanceField.value) * 0.12;
+                    // peage / nombre voyageurs
+                    total += parseFloat(tollField.value) / parseFloat(passengerNumberField.value);
+                }
             }
 
             // minibus location

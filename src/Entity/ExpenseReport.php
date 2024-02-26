@@ -4,25 +4,25 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
+use App\Controller\Api\ExpenseReportGet;
 use App\Repository\ExpenseReportRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: ExpenseReportRepository::class)]
-#[ApiResource(
-    operations: [
-        new Get(),
-        new GetCollection(),
-        new Post()
-    ]
-)]
+#[ApiResource(operations: [
+    new Get(
+        name: 'expense_report_get', 
+        uriTemplate: '/expense-report/{id}',
+        controller: ExpenseReportGet::class,
+        stateless: false
+    )
+])]
 #[HasLifecycleCallbacks]
-class ExpenseReport
+class ExpenseReport implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -175,5 +175,18 @@ class ExpenseReport
         $this->updated_at = $updated_at;
 
         return $this;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'owner' => $this->user->getId(),
+            'event' => $this->event->getId(),
+            'status' => $this->status,
+            'refundRequired' => $this->refund_required,
+            'createdAt' => $this->created_at->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->updated_at->format('Y-m-d H:i:s'),
+        ];
     }
 }
