@@ -25,8 +25,8 @@ class ExpenseFieldType implements JsonSerializable
     #[ORM\OneToMany(mappedBy: 'fieldType', targetEntity: ExpenseField::class)]
     private Collection $fields;
 
-    #[ORM\ManyToMany(targetEntity: ExpenseType::class, mappedBy: 'fieldTypes')]
-    private Collection $expenseTypes;
+    #[ORM\OneToMany(mappedBy: 'expenseFieldType', targetEntity: ExpenseTypeExpenseFieldType::class)]
+    private Collection $expenseFieldTypeRelations;
 
     // defined manually in SortieController.php
     private array $flags = [];
@@ -37,7 +37,7 @@ class ExpenseFieldType implements JsonSerializable
     public function __construct()
     {
         $this->fields = new ArrayCollection();
-        $this->expenseTypes = new ArrayCollection();
+        $this->expenseFieldTypeRelations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -100,33 +100,6 @@ class ExpenseFieldType implements JsonSerializable
     }
 
     /**
-     * @return Collection<int, ExpenseType>
-     */
-    public function getExpenseTypes(): Collection
-    {
-        return $this->expenseTypes;
-    }
-
-    public function addExpenseType(ExpenseType $expenseType): static
-    {
-        if (!$this->expenseTypes->contains($expenseType)) {
-            $this->expenseTypes->add($expenseType);
-            $expenseType->addFieldType($this);
-        }
-
-        return $this;
-    }
-
-    public function removeExpenseType(ExpenseType $expenseType): static
-    {
-        if ($this->expenseTypes->removeElement($expenseType)) {
-            $expenseType->removeFieldType($this);
-        }
-
-        return $this;
-    }
-
-    /**
      * Get the value of flags
      *
      * @return bool
@@ -160,6 +133,14 @@ class ExpenseFieldType implements JsonSerializable
         $this->inputType = $inputType;
 
         return $this;
+    }
+
+    /**
+     * Get the value of expenseFieldTypeRelations
+     */ 
+    public function getexpenseFieldTypeRelations()
+    {
+        return $this->expenseFieldTypeRelations;
     }
 
     public function jsonSerialize(): array
