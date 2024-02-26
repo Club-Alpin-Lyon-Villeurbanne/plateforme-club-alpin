@@ -3,7 +3,7 @@
 ## Routes
 
 - Lister les notes de frais : `GET` `/expense-report`
-- Récupérer une note de frais : `GET` `/expense-report/{id}`
+- Récupérer une note de frais : `GET` `/api/expense-report/{id}`
 
 
 ## Structure des données
