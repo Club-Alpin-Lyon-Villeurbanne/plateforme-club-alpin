@@ -112,7 +112,7 @@ class ExpenseType implements JsonSerializable
     /**
      * Get the value of expenseFieldTypeRelations
      */ 
-    public function getexpenseFieldTypeRelations(): Collection
+    public function getExpenseFieldTypeRelations(): Collection
     {
         return $this->expenseFieldTypeRelations;
     }

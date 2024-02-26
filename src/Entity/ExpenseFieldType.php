@@ -138,7 +138,7 @@ class ExpenseFieldType implements JsonSerializable
     /**
      * Get the value of expenseFieldTypeRelations
      */ 
-    public function getexpenseFieldTypeRelations()
+    public function getExpenseFieldTypeRelations()
     {
         return $this->expenseFieldTypeRelations;
     }
