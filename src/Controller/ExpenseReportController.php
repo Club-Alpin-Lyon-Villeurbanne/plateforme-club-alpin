@@ -10,8 +10,8 @@ use App\Repository\ExpenseFieldTypeRepository;
 use App\Repository\ExpenseReportRepository;
 use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\ExpenseTypeRepository;
+use App\Utils\Error\ExpenseReportFormError;
 use App\Utils\FileUploadHelper;
-use App\Utils\Serialize\ExpenseReportSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -95,12 +95,12 @@ class ExpenseReportController extends AbstractController
 
                     // gérer les champs obligatoires
                     if ($relation->isMandatory() && empty($dataField['value'])) {
-                       $errors[] = [
-                            'message' => 'Ce champ est obligatoire !',
-                            'field' => $fieldType->getSlug(),
-                            'expenseTypeId' => $expenseType->getId(),
-                            'expenseGroup' => $dataExpenseGroup['slug'],
-                        ];
+                        $errors[] = new ExpenseReportFormError(
+                            'Ce champ est obligatoire !',
+                            $fieldType->getSlug(),
+                            $expenseType->getId(),
+                            $dataExpenseGroup['slug']
+                        );
                     } elseif (!empty($dataField['value'])) {
                         $expenseField->setValue($dataField['value']);
                     }
@@ -108,12 +108,12 @@ class ExpenseReportController extends AbstractController
                     // gérer la présence des justificatifs
                     if (!empty($dataField['value']) && $relation->getNeedsJustification()) {
                         if (empty($dataField['justificationFileUrl'])) {
-                            $errors[] = [
-                                'message' => 'Un justificatif est obligatoire pour ce champ !',
-                                'field' => $fieldType->getSlug(),
-                                'expenseTypeId' => $expenseType->getId(),
-                                'expenseGroup' => $dataExpenseGroup['slug'],
-                            ];
+                            $errors[] = $errors[] = new ExpenseReportFormError(
+                                'Un justificatif est obligatoire pour ce champ !',
+                                $fieldType->getSlug(),
+                                $expenseType->getId(),
+                                $dataExpenseGroup['slug']
+                            );
                         } else {
                             $expenseField->setJustificationDocument($dataField['justificationFileUrl']);
                         }

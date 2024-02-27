@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Utils\Error;
+
+use \JsonSerializable;
+
+class ExpenseReportFormError implements JsonSerializable {
+
+    public function __construct(
+        private string $message,
+        private string $fieldSlug,
+        private int $expenseTypeId,
+        private string $expenseGroupSlug
+    ) {
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'message' => $this->message,
+            'field' => $this->fieldSlug,
+            'expenseTypeId' => $this->expenseTypeId,
+            'expenseGroup' => $this->expenseGroupSlug,
+        ];
+    }
+}
+
