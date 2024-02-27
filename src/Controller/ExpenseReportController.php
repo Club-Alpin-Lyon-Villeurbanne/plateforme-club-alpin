@@ -10,6 +10,7 @@ use App\Repository\ExpenseFieldTypeRepository;
 use App\Repository\ExpenseReportRepository;
 use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\ExpenseTypeRepository;
+use App\Utils\Enums\ExpenseReportEnum;
 use App\Utils\Error\ExpenseReportFormError;
 use App\Utils\FileUploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -93,8 +94,11 @@ class ExpenseReportController extends AbstractController
                         'expenseFieldType' => $fieldType
                     ]);
 
-                    // gérer les champs obligatoires
-                    if ($relation->isMandatory() && empty($dataField['value'])) {
+                    // gérer les champs obligatoires si pas DRAFT
+                    if ($data['status'] !== ExpenseReportEnum::STATUS_DRAFT 
+                        && $relation->isMandatory() 
+                        && empty($dataField['value'])
+                    ) {
                         $errors[] = new ExpenseReportFormError(
                             'Ce champ est obligatoire !',
                             $fieldType->getSlug(),
@@ -105,8 +109,11 @@ class ExpenseReportController extends AbstractController
                         $expenseField->setValue($dataField['value']);
                     }
 
-                    // gérer la présence des justificatifs
-                    if (!empty($dataField['value']) && $relation->getNeedsJustification()) {
+                    // gérer la présence des justificatifs si pas DRAFT
+                    if ($data['status'] !== ExpenseReportEnum::STATUS_DRAFT 
+                        && !empty($dataField['value']) 
+                        && $relation->getNeedsJustification()
+                    ) {
                         if (empty($dataField['justificationFileUrl'])) {
                             $errors[] = $errors[] = new ExpenseReportFormError(
                                 'Un justificatif est obligatoire pour ce champ !',
