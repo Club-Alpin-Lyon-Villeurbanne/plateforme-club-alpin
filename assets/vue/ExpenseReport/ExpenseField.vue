@@ -79,6 +79,8 @@ export default defineComponent({
         },
         removeFile() {
             this.field.justificationFile = null;
+            this.field.justificationFileUrl = '';
+            this.justificationFileUrl = '';
         }
     },
     mounted() {
