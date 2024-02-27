@@ -17,68 +17,72 @@
                     </label>
                 </div>
             </fieldset>
-            <fieldset
+            <div 
                 v-for="expenseReportFormGroup in formStructure"
                 :key="expenseReportFormGroup.slug"
-                :id="'expense-group-' + expenseReportFormGroup.slug"
             >
-                <legend>
-                    {{ expenseReportFormGroup.name }}
-                    <a 
-                        v-if="expenseReportFormGroup.type == 'multiple'"
-                        class="add-more"
-                        href="#"
-                        @click.prevent="spawnExpenseGroup(expenseReportFormGroup)"
-                    >
-                        <span class="emoji">
-                            &#10133;
-                            Ajouter
-                        </span>
-                    </a>
-                </legend>
-                <div class="field type-select" v-if="expenseReportFormGroup.type == 'unique'">
-                    <label>Choisir le type</label>
-                    <select v-model="expenseReportFormGroup.selectedType">
-                        <option 
-                            v-for="expenseType in expenseReportFormGroup.expenseTypes" 
-                            :value="expenseType.slug"
-                            :key="expenseType.slug"
+                <fieldset
+                    v-if="typeof expenseReportFormGroup === 'object'"
+                    :id="'expense-group-' + expenseReportFormGroup.slug"
+                >
+                    <legend>
+                        {{ expenseReportFormGroup.name }}
+                        <a 
+                            v-if="expenseReportFormGroup.type == 'multiple'"
+                            class="add-more"
+                            href="#"
+                            @click.prevent="spawnExpenseGroup(expenseReportFormGroup)"
                         >
-                            {{ expenseType.name }}
-                        </option>
-                    </select>
-                </div>
+                            <span class="emoji">
+                                &#10133;
+                                Ajouter
+                            </span>
+                        </a>
+                    </legend>
+                    <div class="field type-select" v-if="expenseReportFormGroup.type == 'unique'">
+                        <label>Choisir le type</label>
+                        <select v-model="expenseReportFormGroup.selectedType">
+                            <option 
+                                v-for="expenseType in expenseReportFormGroup.expenseTypes" 
+                                :value="expenseType.slug"
+                                :key="expenseType.slug"
+                            >
+                                {{ expenseType.name }}
+                            </option>
+                        </select>
+                    </div>
 
-                <div>
-                    <div v-for="(expenseType, expenseTypeIndex) in expenseReportFormGroup.expenseTypes" :key="expenseType.id">
-                        <div v-if="expenseReportFormGroup.type !== 'unique' || expenseReportFormGroup.selectedType === expenseType.slug">
-                            <h4>
-                                {{ expenseType.name }} <span v-if="expenseReportFormGroup.type !== 'unique'">{{ parseInt(expenseTypeIndex as any) + 1 }}</span>
-                                <a
-                                    v-if="expenseReportFormGroup.type == 'multiple' && expenseTypeIndex !== 0"
-                                    class="delete" 
+                    <div>
+                        <div v-for="(expenseType, expenseTypeIndex) in expenseReportFormGroup.expenseTypes" :key="expenseType.id">
+                            <div v-if="expenseReportFormGroup.type !== 'unique' || expenseReportFormGroup.selectedType === expenseType.slug">
+                                <h4>
+                                    {{ expenseType.name }} <span v-if="expenseReportFormGroup.type !== 'unique'">{{ parseInt(expenseTypeIndex as any) + 1 }}</span>
+                                    <a
+                                        v-if="expenseReportFormGroup.type == 'multiple' && expenseTypeIndex !== 0"
+                                        class="delete" 
 
-                                    href="#"
-                                    @click.prevent="removeExpenseGroup(expenseReportFormGroup, expenseType)"
-                                >
-                                    <span class="emoji">
-                                        &#10060; 
-                                        Supprimer
-                                    </span>
-                                </a>
-                            </h4>
-                            <div class="field-list">
-                                <ExpenseField 
-                                    v-for="field in expenseType.fields"
-                                    :key="field.slug"
-                                    :field="field"
-                                    class="field">
-                                </ExpenseField>
+                                        href="#"
+                                        @click.prevent="removeExpenseGroup(expenseReportFormGroup, expenseType)"
+                                    >
+                                        <span class="emoji">
+                                            &#10060; 
+                                            Supprimer
+                                        </span>
+                                    </a>
+                                </h4>
+                                <div class="field-list">
+                                    <ExpenseField 
+                                        v-for="field in expenseType.fields"
+                                        :key="field.slug"
+                                        :field="field"
+                                        class="field">
+                                    </ExpenseField>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </fieldset>
+                </fieldset>
+            </div>
             <div class="green-box expense-report-summary" id="expense-report-summary">
                 <h3>Résumé :</h3>
                 <div>Total remboursable : <span class="refund-amount">{{ formatCurrency(refundableTotal) }}€</span></div>
