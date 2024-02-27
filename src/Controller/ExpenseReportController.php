@@ -44,6 +44,14 @@ class ExpenseReportController extends AbstractController
         $expenseReport = $expenseReportRepository->getExpenseReportByEventAndUser($data['eventId'], $this->getUser()->getId());
         if (!$expenseReport) {
             $expenseReport = new ExpenseReport();
+        } else {
+            // supprimer les données existantes liées à cette note de frais
+            foreach ($expenseReport->getExpenses() as $expense) {
+                foreach ($expense->getFields() as $field) {
+                    $entityManager->remove($field);
+                }
+                $entityManager->remove($expense);
+            }
         }
         $expenseReport->setStatus($data['status']);
         $expenseReport->setUser($this->getUser());
