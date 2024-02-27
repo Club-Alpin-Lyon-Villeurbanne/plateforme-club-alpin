@@ -229,9 +229,15 @@
                         }
                     } else {
                         this.successMessage = 'Note de frais enregistrée avec succès !';
+                        setTimeout(() => {
+                            this.successMessage = '';
+                        }, 5000);
                     }
                 } catch (error: any) {
                     this.errorMessages.push('Une erreur est survenue lors de l\'enregistrement de la note de frais');
+                    setTimeout(() => {
+                            this.errorMessages = [];
+                    }, 5000);
                 }
             }
         }
