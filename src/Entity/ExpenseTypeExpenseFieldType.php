@@ -13,11 +13,11 @@ class ExpenseTypeExpenseFieldType
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'expenseFieldTypeRelations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ExpenseType $expenseType = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'expenseFieldTypeRelations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ExpenseFieldType $expenseFieldType = null;
 

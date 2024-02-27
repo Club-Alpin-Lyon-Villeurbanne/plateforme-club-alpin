@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\ExpenseTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,8 +26,8 @@ class ExpenseType implements JsonSerializable
     #[ORM\OneToMany(mappedBy: 'expenseType', targetEntity: Expense::class)]
     private Collection $expenses;
 
-    #[ORM\ManyToMany(targetEntity: ExpenseFieldType::class, inversedBy: 'expenseTypes')]
-    private Collection $fieldTypes;
+    #[ORM\OneToMany(mappedBy: 'expenseType', targetEntity: ExpenseTypeExpenseFieldType::class)]
+    private Collection $expenseFieldTypeRelations;
 
     #[ORM\ManyToOne(inversedBy: 'expenseTypes')]
     private ?ExpenseGroup $expenseGroup = null;
@@ -34,7 +35,7 @@ class ExpenseType implements JsonSerializable
     public function __construct()
     {
         $this->expenses = new ArrayCollection();
-        $this->fieldTypes = new ArrayCollection();
+        $this->expenseFieldTypeRelations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -96,30 +97,6 @@ class ExpenseType implements JsonSerializable
         return $this;
     }
 
-    /**
-     * @return Collection<int, ExpenseFieldType>
-     */
-    public function getFieldTypes(): Collection
-    {
-        return $this->fieldTypes;
-    }
-
-    public function addFieldType(ExpenseFieldType $fieldType): static
-    {
-        if (!$this->fieldTypes->contains($fieldType)) {
-            $this->fieldTypes->add($fieldType);
-        }
-
-        return $this;
-    }
-
-    public function removeFieldType(ExpenseFieldType $fieldType): static
-    {
-        $this->fieldTypes->removeElement($fieldType);
-
-        return $this;
-    }
-
     public function getExpenseGroup(): ?ExpenseGroup
     {
         return $this->expenseGroup;
@@ -132,13 +109,23 @@ class ExpenseType implements JsonSerializable
         return $this;
     }
 
+    /**
+     * Get the value of expenseFieldTypeRelations
+     */ 
+    public function getExpenseFieldTypeRelations(): Collection
+    {
+        return $this->expenseFieldTypeRelations;
+    }
+    
     public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
-            'fieldTypes' => $this->fieldTypes->toArray(),
+            'fieldTypes' => array_map(function($expenseFieldTypeRelation) {
+                return $expenseFieldTypeRelation->getExpenseFieldType();
+            }, $this->expenseFieldTypeRelations->toArray()),
         ];
     }
 }
