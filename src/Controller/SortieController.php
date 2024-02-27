@@ -69,7 +69,9 @@ class SortieController extends AbstractController
             ];
 
             foreach ($expenseGroup->getExpenseTypes() as $expenseType) {
-                $fields = $expenseType->getFieldTypes();
+                $fields = array_map(function ($expenseFieldTypeRelation) {
+                    return $expenseFieldTypeRelation->getExpenseFieldType();
+                }, $expenseType->getExpenseFieldTypeRelations()->toArray());
 
                 // add the needsJustification property to the field itself
                 // (needsJustification comes from the join table)
@@ -91,11 +93,9 @@ class SortieController extends AbstractController
                     'expenseTypeId' => $expenseType->getId(),
                     'name' => $expenseType->getName(),
                     'slug' => $expenseType->getSlug(),
-                    'fields' => $expenseType->getFieldTypes()->map(
-                        function ($expenseFieldType) {
-                            return ExpenseFieldTypeSerializer::serialize($expenseFieldType);
-                        }
-                    )->toArray()
+                    'fields' => array_map(function ($expenseFieldType) {
+                        return ExpenseFieldTypeSerializer::serialize($expenseFieldType);
+                    }, $fields)
                 ];
             }
         }

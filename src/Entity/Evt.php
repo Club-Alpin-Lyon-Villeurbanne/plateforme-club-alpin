@@ -85,6 +85,12 @@ class Evt
     #[ORM\Column(name: 'cancelled_when_evt', type: 'bigint', nullable: true, options: ['comment' => 'Timestamp annulation'])]
     private $cancelledWhen;
 
+    /**
+     * @var ExpenseReport[]
+     */
+    #[ORM\OneToMany(targetEntity: ExpenseReport::class, mappedBy: 'event')]
+    private $expenseReports = [];
+
     
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'user_evt', referencedColumnName: 'id_user', nullable: false)]
