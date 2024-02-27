@@ -101,7 +101,7 @@ class Article
      *
      *
      */
-    #[ORM\ManyToOne(targetEntity: 'Evt')]
+    #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'articles')]
     #[ORM\JoinColumn(name: 'evt_article', referencedColumnName: 'id_evt', nullable: true)]
     private $evt;
 
