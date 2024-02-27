@@ -10,8 +10,9 @@ use App\Repository\ExpenseFieldTypeRepository;
 use App\Repository\ExpenseReportRepository;
 use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\ExpenseTypeRepository;
+use App\Utils\Enums\ExpenseReportEnum;
+use App\Utils\Error\ExpenseReportFormError;
 use App\Utils\FileUploadHelper;
-use App\Utils\Serialize\ExpenseReportSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -44,6 +45,14 @@ class ExpenseReportController extends AbstractController
         $expenseReport = $expenseReportRepository->getExpenseReportByEventAndUser($data['eventId'], $this->getUser()->getId());
         if (!$expenseReport) {
             $expenseReport = new ExpenseReport();
+        } else {
+            // supprimer les données existantes liées à cette note de frais
+            foreach ($expenseReport->getExpenses() as $expense) {
+                foreach ($expense->getFields() as $field) {
+                    $entityManager->remove($field);
+                }
+                $entityManager->remove($expense);
+            }
         }
         $expenseReport->setStatus($data['status']);
         $expenseReport->setUser($this->getUser());
@@ -85,27 +94,33 @@ class ExpenseReportController extends AbstractController
                         'expenseFieldType' => $fieldType
                     ]);
 
-                    // gérer les champs obligatoires
-                    if ($relation->isMandatory() && empty($dataField['value'])) {
-                       $errors[] = [
-                            'message' => 'Ce champ est obligatoire !',
-                            'field' => $fieldType->getSlug(),
-                            'expenseTypeId' => $expenseType->getId(),
-                            'expenseGroup' => $dataExpenseGroup['slug'],
-                        ];
+                    // gérer les champs obligatoires si pas DRAFT
+                    if ($data['status'] !== ExpenseReportEnum::STATUS_DRAFT 
+                        && $relation->isMandatory() 
+                        && empty($dataField['value'])
+                    ) {
+                        $errors[] = new ExpenseReportFormError(
+                            'Ce champ est obligatoire !',
+                            $fieldType->getSlug(),
+                            $expenseType->getId(),
+                            $dataExpenseGroup['slug']
+                        );
                     } elseif (!empty($dataField['value'])) {
                         $expenseField->setValue($dataField['value']);
                     }
 
-                    // gérer la présence des justificatifs
-                    if (!empty($dataField['value']) && $relation->getNeedsJustification()) {
+                    // gérer la présence des justificatifs si pas DRAFT
+                    if ($data['status'] !== ExpenseReportEnum::STATUS_DRAFT 
+                        && !empty($dataField['value']) 
+                        && $relation->getNeedsJustification()
+                    ) {
                         if (empty($dataField['justificationFileUrl'])) {
-                            $errors[] = [
-                                'message' => 'Un justificatif est obligatoire pour ce champ !',
-                                'field' => $fieldType->getSlug(),
-                                'expenseTypeId' => $expenseType->getId(),
-                                'expenseGroup' => $dataExpenseGroup['slug'],
-                            ];
+                            $errors[] = $errors[] = new ExpenseReportFormError(
+                                'Un justificatif est obligatoire pour ce champ !',
+                                $fieldType->getSlug(),
+                                $expenseType->getId(),
+                                $dataExpenseGroup['slug']
+                            );
                         } else {
                             $expenseField->setJustificationDocument($dataField['justificationFileUrl']);
                         }
