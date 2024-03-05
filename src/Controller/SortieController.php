@@ -11,6 +11,7 @@ use App\Repository\ExpenseGroupRepository;
 use App\Repository\ExpenseReportRepository;
 use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\UserRepository;
+use App\Security\AdminDetector;
 use App\Twig\JavascriptGlobalsExtension;
 use App\Utils\Enums\ExpenseReportEnum;
 use App\Utils\Serialize\ExpenseFieldTypeSerializer;
@@ -45,6 +46,7 @@ class SortieController extends AbstractController
         ExpenseReportRepository $expenseReportRepository,
         ExpenseReportSerializer $expenseReportSerializer,
         Environment $twig,
+        AdminDetector $adminDetector
     ) {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
             throw new AccessDeniedHttpException('Not found');
@@ -99,9 +101,8 @@ class SortieController extends AbstractController
                 ];
             }
         }
+        $currentExpenseReport = $event && $user ? $expenseReportRepository->getExpenseReportByEventAndUser($event->getId(), $user->getId()) : null;
 
-        $currentExpenseReport = $expenseReportRepository->getExpenseReportByEventAndUser($event->getId(), $user->getId());
-        
         // prefill the form with the current expense report data
         if ($currentExpenseReport 
             && $currentExpenseReport->getStatus() === ExpenseReportEnum::STATUS_DRAFT
@@ -162,6 +163,7 @@ class SortieController extends AbstractController
 
 
         return [
+            'isAdmin' => $adminDetector->isAdmin(),
             'event' => $event,
             'participants' => $participantRepository->getSortedParticipants($event, null, null),
             'filiations' => $user ? $repository->getFiliations($user) : null,
