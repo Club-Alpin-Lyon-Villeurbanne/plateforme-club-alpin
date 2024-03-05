@@ -142,6 +142,7 @@ class SortieController extends AbstractController
                         $newField['flags']['isUsedForTotal'] = $relation->isUsedForTotal();
                         $newField['flags']['displayOrder'] = $relation->getDisplayOrder();
                         $newField['name'] = $field->getFieldType()->getName();
+                        $newField['slug'] = $field->getFieldType()->getSlug();
                         $newFields[] = $newField;
                     }
                     $targetExpenseTypeIndex = array_search($expense['expenseType']->getId(), array_column($expenseReportFormGroups[$groupSlug]['expenseTypes'], 'expenseTypeId'));
