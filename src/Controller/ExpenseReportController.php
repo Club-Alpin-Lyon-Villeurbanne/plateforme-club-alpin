@@ -115,7 +115,7 @@ class ExpenseReportController extends AbstractController
                         && $relation->getNeedsJustification()
                     ) {
                         if (empty($dataField['justificationFileUrl'])) {
-                            $errors[] = $errors[] = new ExpenseReportFormError(
+                            $errors[] = new ExpenseReportFormError(
                                 'Un justificatif est obligatoire pour ce champ !',
                                 $fieldType->getSlug(),
                                 $expenseType->getId(),

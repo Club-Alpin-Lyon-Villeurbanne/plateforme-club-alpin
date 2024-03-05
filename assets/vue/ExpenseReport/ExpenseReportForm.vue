@@ -122,9 +122,6 @@
         components: {
             ExpenseField
         },
-        mounted() {
-            console.log(this.formStructure);
-        },
         computed: {
             transportationTotal() {
                 return expenseReportService.autoCalculation.transportation(this.formStructure);
@@ -217,11 +214,12 @@
                     if (!(responseJson as any).success) {
                         for (const error of responseJson.errors) {
                             const targetGroup = this.formStructure[error.expenseGroup];
-                            const targetField = targetGroup.expenseTypes.find((expenseType: any) => {
+                            const targetExpenseType = targetGroup.expenseTypes.find((expenseType: any) => {
                                 return expenseType.expenseTypeId === error.expenseTypeId;
-                            }).fields.find((field: any) => {
-                                return field.slug === error.field;
                             });
+
+                            const targetField = targetExpenseType.fields.find((field: any) => field.slug === error.field);
+
                             if (!targetField.errors) {
                                 targetField.errors = [];
                             }
@@ -229,9 +227,15 @@
                         }
                     } else {
                         this.successMessage = 'Note de frais enregistrée avec succès !';
+                        setTimeout(() => {
+                            this.successMessage = '';
+                        }, 5000);
                     }
                 } catch (error: any) {
                     this.errorMessages.push('Une erreur est survenue lors de l\'enregistrement de la note de frais');
+                    setTimeout(() => {
+                            this.errorMessages = [];
+                    }, 5000);
                 }
             }
         }
