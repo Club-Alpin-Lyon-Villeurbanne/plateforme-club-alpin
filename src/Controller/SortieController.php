@@ -45,8 +45,7 @@ class SortieController extends AbstractController
         ExpenseTypeExpenseFieldTypeRepository $expenseTypeFieldTypeRepository,
         ExpenseReportRepository $expenseReportRepository,
         ExpenseReportSerializer $expenseReportSerializer,
-        Environment $twig,
-        AdminDetector $adminDetector
+        Environment $twig
     ) {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
             throw new AccessDeniedHttpException('Not found');
@@ -164,7 +163,6 @@ class SortieController extends AbstractController
 
 
         return [
-            'isAdmin' => $adminDetector->isAdmin(),
             'event' => $event,
             'participants' => $participantRepository->getSortedParticipants($event, null, null),
             'filiations' => $user ? $repository->getFiliations($user) : null,
