@@ -33,31 +33,31 @@ class Message
     /**
      * @var string
      */
-    #[ORM\Column(name: 'to_message', type: 'string', length: 100, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'to_message', type: 'string', length: 100, nullable: false)]
     private $to;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'from_message', type: 'string', length: 100, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'from_message', type: 'string', length: 100, nullable: false)]
     private $from;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'headers_message', type: 'string', length: 500, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'headers_message', type: 'string', length: 500, nullable: false)]
     private $headers;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'code_message', type: 'string', length: 30, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'code_message', type: 'string', length: 30, nullable: false)]
     private $code;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'cont_message', type: 'text', length: 65535, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'cont_message', type: 'text', length: 65535, nullable: false)]
     private $cont;
 
     /**
