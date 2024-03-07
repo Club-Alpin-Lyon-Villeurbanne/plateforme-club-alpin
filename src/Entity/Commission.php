@@ -39,13 +39,13 @@ class Commission
     /**
      * @var string
      */
-    #[ORM\Column(name: 'code_commission', type: 'string', length: 50, nullable: false, unique: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'code_commission', type: 'string', length: 50, nullable: false, unique: true)]
     private $code;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'title_commission', type: 'string', length: 30, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'title_commission', type: 'string', length: 30, nullable: false)]
     private $title;
 
     public function __construct(string $title, string $code, int $ordre)

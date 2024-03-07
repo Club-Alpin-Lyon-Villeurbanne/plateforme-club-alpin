@@ -137,31 +137,31 @@ class Evt
     /**
      * @var string
      */
-    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage', 'collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage',])]
     private $place;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'titre_evt', type: 'string', length: 100, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'titre_evt', type: 'string', length: 100, nullable: false)]
     private $titre;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'code_evt', type: 'string', length: 30, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'code_evt', type: 'string', length: 30, nullable: false)]
     private $code;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'massif_evt', type: 'string', length: 100, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'massif_evt', type: 'string', length: 100, nullable: true)]
     private $massif;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu détaillé du rdv', 'collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu détaillé du rdv',])]
     private $rdv;
 
     /**
@@ -173,7 +173,7 @@ class Evt
     /**
      * @var string|null
      */
-    #[ORM\Column(name: 'tarif_detail', type: 'text', length: 65535, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'tarif_detail', type: 'text', length: 65535, nullable: true)]
     private $tarifDetail;
 
     /**
@@ -203,25 +203,25 @@ class Evt
     /**
      * @var string
      */
-    #[ORM\Column(name: 'matos_evt', type: 'text', length: 65535, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'matos_evt', type: 'text', length: 65535, nullable: true)]
     private $matos;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'difficulte_evt', type: 'string', length: 50, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'difficulte_evt', type: 'string', length: 50, nullable: true)]
     private $difficulte;
 
     /**
      * @var string|null
      */
-    #[ORM\Column(name: 'itineraire', type: 'text', length: 65535, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'itineraire', type: 'text', length: 65535, nullable: true)]
     private $itineraire;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'description_evt', type: 'text', length: 65535, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'description_evt', type: 'text', length: 65535, nullable: false)]
     private $description;
 
     /**
@@ -251,7 +251,7 @@ class Evt
     /**
      * @var int
      */
-    #[ORM\Column(name: 'ngens_max_evt', type: 'integer', nullable: false, options: ['comment' => 'Nombre de gens pouvant y aller au total. Donnée '])]
+    #[ORM\Column(name: 'ngens_max_evt', type: 'integer', nullable: false, options: ['comment' => 'Nombre de gens pouvant y aller au total. Donnée "visuelle" uniquement, pas de calcul.'])]
     private $ngensMax;
 
     /**
@@ -271,7 +271,7 @@ class Evt
     /**
      * @var int
      */
-    #[ORM\Column(name: 'child_version_from_evt', type: 'integer', nullable: false, options: ['comment' => 'Versionning : chaque modification d-evt crée une entrée '])]
+    #[ORM\Column(name: 'child_version_from_evt', type: 'integer', nullable: false, options: ['comment' => 'Versionning : chaque modification d-evt crée une entrée "enfant" de l-originale. Ce champ prend l-ID de l-original'])]
     private $childVersionFrom = '0';
 
     /**
