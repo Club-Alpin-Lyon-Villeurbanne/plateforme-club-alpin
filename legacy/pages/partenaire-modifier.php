@@ -19,7 +19,7 @@ if (!admin()) {
         echo '<h1>Modifier un partenaire</h1>';
     }
 
-    if (0 == count($partenaireTab)) {
+    if (!isset($partenaireTab) || 0 == count($partenaireTab)) {
         if ('edit' == $operation) {
             $req = "SELECT * FROM  `caf_partenaires` WHERE part_id='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($part_id)."' LIMIT 1";
             $partenaireTab = [];
