@@ -1,6 +1,7 @@
 <?php
 
 use App\Ftp\FtpFile;
+use App\Legacy\LegacyContainer;
 
 require __DIR__.'/../app/includes.php';
 
@@ -13,18 +14,20 @@ if (!admin()) {
 $errTab = [];
 $target = $_GET['target'];
 $filename = strtolower(substr(strrchr($target, '/'), 1));
+$ftpPath = LegacyContainer::getParameter('legacy_ftp_path');
+$fullPath = $ftpPath.substr($target, 5);
 
 // vérification,
-// la cible doit commencer par ../ftp/
-if ('../ftp/' != substr($target, 0, 7)) {
+// la cible doit commencer par /ftp/
+if ('/ftp/' != substr($target, 0, 5)) {
     $errTab[] = "Le chemin d'accès au fichier est incorrect";
 }
-// ne doit pas contenir ../ à part au début
-if (1 != mb_substr_count($target, '../')) {
+// ne doit pas contenir ../
+if (0 != mb_substr_count($target, '../')) {
     $errTab[] = "Le chemin d'accès au fichier est incorrect : récurrence de chemin retour";
 }
 // doit être un fichier
-if (!is_file($target)) {
+if (!is_file($fullPath)) {
     $errTab[] = "L'élément donné ne semble pas être un fichier";
 }
 // ne pas être un fichier sensible (htaccess)
@@ -44,10 +47,10 @@ if (count($errTab) > 0) {
 } else {
     // VERIFS DEJA FAITES, OPERATION OK SUR DEMANDE
     if ('delete' == $_GET['operation']) {
-        if ('unlocked' != $_GET['lock']) {
+        if (isset($_GET['lock']) && 'unlocked' != $_GET['lock']) {
             $errTab[] = 'Erreur : fichier verrouillé.';
         } else {
-            if (!unlink($target)) {
+            if (!unlink($fullPath)) {
                 $errTab[] = "Erreur : suppression de $target echouée.";
             }
         }

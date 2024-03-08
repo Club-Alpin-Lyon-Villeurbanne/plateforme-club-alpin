@@ -149,7 +149,7 @@ function updateRight(dossier, fade){
 				// outils : DELETE
 				$('.ftp-file-delete').click(function(){
 					var target=$(this).parents('tr:first').find('a:first').attr('href');
-					$('#freeFancyFrame').attr('href', 'ftp-deletefile.php?target='+encodeURIComponent(target)).click();
+					$('#freeFancyFrame').attr('href', 'ftp-deletefile.php?target='+encodeURIComponent(target)+'&operation=delete').click();
 				});
 				
 				// outils : DELETE DIR
