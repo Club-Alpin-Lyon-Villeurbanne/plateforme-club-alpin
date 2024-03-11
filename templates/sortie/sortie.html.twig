@@ -251,7 +251,7 @@
                         </p>
                         <br />
                     {% endif %}
-                    {% if app.environment != 'prod' %}
+                    {% if (my_status.role == 'encadrant' or my_status.role == 'coencadrant') and app.environment != 'prod' %}
                         {% if currentExpenseReport is null or currentExpenseReport.status == 'draft' %}
                             {{ vueComponent('expense-report-form', 'ExpenseReportForm', {formStructureProp: expenseReportFormStructure}) }}
                         {% elseif currentExpenseReport is not null and currentExpenseReport.status == 'submitted' %}
