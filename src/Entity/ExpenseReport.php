@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use App\Controller\Api\ExpenseReportGet;
+use App\Controller\Api\ExpenseReportList;
 use App\Repository\ExpenseReportRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -18,6 +19,12 @@ use JsonSerializable;
         name: 'expense_report_get', 
         uriTemplate: '/expense-report/{id}',
         controller: ExpenseReportGet::class,
+        stateless: false
+    ),
+    new Get(
+        name: 'expense_report_list', 
+        uriTemplate: '/expense-report',
+        controller: ExpenseReportList::class,
         stateless: false
     )
 ])]
