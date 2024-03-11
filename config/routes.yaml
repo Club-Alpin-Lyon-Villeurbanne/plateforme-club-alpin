@@ -10,3 +10,6 @@ app_logout:
 
 session_email_check:
     path: "/session/check/email"
+
+api_login_check:
+    path: /api/login_check
