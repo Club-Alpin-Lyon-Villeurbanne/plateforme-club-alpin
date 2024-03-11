@@ -221,7 +221,7 @@ function getYearsSinceDate($then)
 // utile ci dessus
 function bigintval($value)
 {
-    $value = trim($value);
+    $value = trim((string)$value);
     if (ctype_digit($value)) {
         return $value;
     }

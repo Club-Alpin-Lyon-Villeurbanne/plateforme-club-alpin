@@ -70,7 +70,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
             <?php
     // articles liés aux commissions
     foreach ($groupes as $code => $groupe) {
-        echo '<option value="'.$groupe['id'].'" '.($_POST['id_groupe'] == $groupe['id'] ? 'selected="selected"' : '').'>Groupe : '.html_utf8($groupe['nom']).' &raquo;</option>';
+        echo '<option value="'.$groupe['id'].'" '.(\array_key_exists('id_groupe', $_POST) && $_POST['id_groupe'] == $groupe['id'] ? 'selected="selected"' : '').'>Groupe : '.html_utf8($groupe['nom']).' &raquo;</option>';
     }
         ?>
         </select>

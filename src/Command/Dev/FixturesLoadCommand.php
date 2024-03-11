@@ -7,6 +7,7 @@ use App\Entity\Usertype;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,18 +16,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+#[AsCommand(name: 'caf:fixtures:load')]
 class FixturesLoadCommand extends Command
 {
-    private $container;
-    protected static $defaultName = 'caf:fixtures:load';
-
+    private ContainerInterface $container;
     public function __construct(ContainerInterface $container, ?string $name = null)
     {
         parent::__construct($name);
         $this->container = $container;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument('email', InputArgument::REQUIRED, 'Set user\'s email to run with the fixtures.')
