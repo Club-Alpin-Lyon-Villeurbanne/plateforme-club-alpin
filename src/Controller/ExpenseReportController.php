@@ -144,20 +144,6 @@ class ExpenseReportController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/expense-report', name: 'app_expense_report_list', methods: ['GET'])]
-    public function list(
-        ExpenseReportRepository $expenseReportRepository
-    ): JsonResponse
-    {
-
-        $expenseReportList = $expenseReportRepository->findAll();
-
-        return new JsonResponse([
-            'success' => true,
-            'expenseReports' => $expenseReportList,
-        ]);
-    }
-
     #[Route('/expense-report/justification-document', name: 'app_expense_report_upload_justification_document', methods: ['POST'])]
     public function uploadJustificationDocument(Request $request)
     {
