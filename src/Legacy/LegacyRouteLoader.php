@@ -9,12 +9,12 @@ use Symfony\Component\Routing\RouteCollection;
 
 class LegacyRouteLoader extends Loader
 {
-    public function supports($resource, string $type = null)
+    public function supports($resource, string $type = null): bool
     {
         return 'legacy' === $type;
     }
 
-    public function load($resource, $type = null)
+    public function load($resource, $type = null): mixed
     {
         $collection = new RouteCollection();
         $finder = new Finder();

@@ -7,7 +7,7 @@ $needComm = false; // besoin, ou pas de spécifier la commission liée à ce typ
 // Vérification des variables données
 $id_usertype = (int) $_POST['id_usertype'];
 $id_user = (int) $_POST['id_user'];
-$params_user_attr_tab = $_POST['commission'];
+$params_user_attr_tab = \array_key_exists('commission', $_POST) ? $_POST['commission'] : [];
 if (!$id_usertype || !$id_user) {
     $errTab[] = 'Valeurs manquantes';
 }

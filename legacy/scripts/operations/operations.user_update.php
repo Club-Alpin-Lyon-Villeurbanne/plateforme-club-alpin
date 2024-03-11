@@ -101,7 +101,7 @@ if ('' !== $email_user_mailchange) {
 
     // VERIFICATIONS
     // compte des entrées existantes avec cet e-mail
-    $req = "SELECT COUNT(id_user) FROM caf_user WHERE email_user LIKE '$email_user_mailchange' AND id_user != $id_user ";
+    $req = "SELECT COUNT(id_user) FROM caf_user WHERE email_user LIKE '$email_user_mailchange' AND id_user != $id_user;";
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     if (getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM))) {
         $errTab[] = "Votre demande de modification d'e-mail est refusée : Un compte existe déjà avec cette adresse e-mail.";

@@ -4,7 +4,9 @@ namespace App\Bridge\Twig;
 
 use App\Legacy\ContentHtml;
 use App\UserRights;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use Twig\Extension\AbstractExtension;
@@ -28,7 +30,7 @@ class EasyContentExtension extends AbstractExtension implements ServiceSubscribe
         ];
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('easy_include', [$this, 'getEasyInclude'], ['is_safe' => ['html']]),
@@ -36,11 +38,19 @@ class EasyContentExtension extends AbstractExtension implements ServiceSubscribe
         ];
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function isAllowed($code_userright, $param = '')
     {
         return $this->locator->get(UserRights::class)->allowed($code_userright, $param);
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getEasyInclude($elt, $style = 'vide')
     {
         return $this->locator->get(ContentHtml::class)->getEasyInclude($elt, $style);
