@@ -16,11 +16,11 @@ class ExpenseReportGet extends AbstractController
 
     public function __invoke(ExpenseReport $expenseReport): JsonResponse
     {
-        $expenseReportList = $this->expenseReportSerializer->serialize($expenseReport);
+        $expenseReportSerialized = $this->expenseReportSerializer->serialize($expenseReport);
 
         return new JsonResponse([
             'success' => true,
-            'expenseReports' => $expenseReportList,
+            'expenseReport' => $expenseReportSerialized,
         ]);
     }
 }
