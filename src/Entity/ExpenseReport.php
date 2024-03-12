@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Controller\Api\ExpenseReportGet;
 use App\Controller\Api\ExpenseReportList;
 use App\Repository\ExpenseReportRepository;
@@ -15,18 +16,18 @@ use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: ExpenseReportRepository::class)]
 #[ApiResource(operations: [
+    new GetCollection(
+        name: 'expense_report_list', 
+        uriTemplate: '/expense-report',
+        controller: ExpenseReportList::class,
+        stateless: false
+    ),
     new Get(
         name: 'expense_report_get', 
         uriTemplate: '/expense-report/{id}',
         controller: ExpenseReportGet::class,
         stateless: false
     ),
-    new Get(
-        name: 'expense_report_list', 
-        uriTemplate: '/expense-report',
-        controller: ExpenseReportList::class,
-        stateless: false
-    )
 ])]
 #[HasLifecycleCallbacks]
 class ExpenseReport implements JsonSerializable
