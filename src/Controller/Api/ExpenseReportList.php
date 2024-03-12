@@ -15,11 +15,11 @@ class ExpenseReportList extends AbstractController
 
     public function __invoke(): JsonResponse
     {
-        $expenseReportSerialized = $this->expenseReportRepository->findAll();;
+        $expenseReportList = $this->expenseReportRepository->findAll();
 
         return new JsonResponse([
             'success' => true,
-            'expenseReport' => $expenseReportSerialized,
+            'expenseReports' => $expenseReportList,
         ]);
     }
 }
