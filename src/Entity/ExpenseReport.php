@@ -20,13 +20,15 @@ use JsonSerializable;
         name: 'expense_report_list', 
         uriTemplate: '/expense-report',
         controller: ExpenseReportList::class,
-        stateless: false
+        stateless: false,
+        security: "is_granted('ROLE_USER')"
     ),
     new Get(
         name: 'expense_report_get', 
         uriTemplate: '/expense-report/{id}',
         controller: ExpenseReportGet::class,
-        stateless: false
+        stateless: false,
+        security: "is_granted('ROLE_USER')"
     ),
 ])]
 #[HasLifecycleCallbacks]
