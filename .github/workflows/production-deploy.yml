@@ -54,6 +54,8 @@ jobs:
         run: |
           cp infrastructure/confs/production/robots.txt public/robots.txt
           cp infrastructure/confs/production/.env.prod .
+          cp infrastructure/confs/production/jwt/private.pem config/jwt/private.pem
+          cp infrastructure/confs/production/jwt/public.pem config/jwt/public.pem
           cp legacy/config/www.${{ env.DOMAIN }}/config.php legacy/config/config.php
 
       - name: Replace variable for production .env file
