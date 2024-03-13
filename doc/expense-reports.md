@@ -13,6 +13,7 @@
 - Note de frais (`ExpenseReport`)
     - Groupe de dépenses (`ExpenseGroup`)
         - Dépenses (`Expense`)
+            - Type de dépense (`ExpenseType`)
             - Champs (`ExpenseField`)
 
 ### Structure du formulaire type
