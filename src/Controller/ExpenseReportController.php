@@ -110,19 +110,18 @@ class ExpenseReportController extends AbstractController
                         $expenseField->setValue($dataField['value']);
                     }
 
-                    // gérer la présence des justificatifs si pas DRAFT
-                    if ($data['status'] !== ExpenseReportEnum::STATUS_DRAFT 
-                        && !empty($dataField['value']) 
-                        && $relation->getNeedsJustification()
+                    if (!empty($dataField['value']) 
+                    && $relation->getNeedsJustification()
                     ) {
-                        if (empty($dataField['justificationFileUrl'])) {
+                        // gérer la présence des justificatifs si pas DRAFT
+                        if (empty($dataField['justificationFileUrl']) && $data['status'] !== ExpenseReportEnum::STATUS_DRAFT) {
                             $errors[] = new ExpenseReportFormError(
                                 'Un justificatif est obligatoire pour ce champ !',
                                 $fieldType->getSlug(),
                                 $expenseType->getId(),
                                 $dataExpenseGroup['slug']
                             );
-                        } else {
+                        } else if (!empty($dataField['justificationFileUrl'])) {
                             $expenseField->setJustificationDocument($dataField['justificationFileUrl']);
                         }
                     }
