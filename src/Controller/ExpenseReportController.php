@@ -13,6 +13,7 @@ use App\Repository\ExpenseTypeRepository;
 use App\Utils\Enums\ExpenseReportEnum;
 use App\Utils\Error\ExpenseReportFormError;
 use App\Utils\FileUploadHelper;
+use App\Utils\Json;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -147,7 +148,13 @@ class ExpenseReportController extends AbstractController
     #[Route('/expense-report/justification-document', name: 'app_expense_report_upload_justification_document', methods: ['POST'])]
     public function uploadJustificationDocument(Request $request)
     {
-        // TODO: vérifier les ACL
+        if (!$this->getUser()) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'User not found',
+            ], 400);
+        }
+
         
         $file = $request->files->get('justification_document');
         
@@ -159,7 +166,15 @@ class ExpenseReportController extends AbstractController
         $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         // rebuild filename with hashed timestamp and extension
         $filename = $filename . '_' . substr(md5(time()), 0, 6) . '.' . $extension;
-        $file->move(FileUploadHelper::getUserUploadPath($this->getUser(), 'expense-reports-justification'), $filename);
+
+        try {
+            $file->move(FileUploadHelper::getUserUploadPath($this->getUser(), 'expense-reports-justification'), $filename);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => $e->getMessage(),
+            ], 400);
+        }
 
         return new JsonResponse([
             'success' => true,
