@@ -2,7 +2,7 @@
     <div class="expense-report-form white-box">
         <h2>Note de frais</h2>
         <form @submit.prevent="onFormSubmit">
-            <fieldset>
+            <fieldset id="refund-required-group">
                 <legend>Remboursement</legend>
                 <div class="field">
                     <label for="refund_required_no">
@@ -98,12 +98,10 @@
                 <p>{{ successMessage }}</p>
             </div>
             <div class="buttons">
-                <button type="submit" class="biglink">
-                    <span class="bleucaf">&gt;</span>
+                <button type="submit" class="biglink submit">
                     Valider
                 </button> 
                 <button @click.prevent="saveDraftExpenseReport" class="biglink">
-                    <span class="emoji">&#128190;</span>
                     Sauvegarder le brouillon
             </button>
             </div>

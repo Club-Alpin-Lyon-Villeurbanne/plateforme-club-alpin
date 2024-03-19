@@ -36,8 +36,9 @@
             <label v-else class="uploader-label bleucaf">
                 <span class="emoji">
                     &#128190;
-                    Joindre un justificatif
+                    Joindre un justificatif 
                 </span>
+                <small>(max: 8 Mo)</small>
                 <input 
                     class="hidden" 
                     type="file" 
