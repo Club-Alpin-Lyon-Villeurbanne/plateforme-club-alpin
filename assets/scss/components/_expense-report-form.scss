@@ -84,7 +84,9 @@
         }
 
         &.error {
-            background-color: $red-light!important;
+            input, select, textarea {
+                background-color: $red-light!important;
+            }
         }
     }
 
@@ -96,6 +98,20 @@
     .buttons {
         display: flex;
         justify-content: space-around;
+
+        .biglink {
+            border-radius: $gutter-half;
+            padding: $gutter;
+        }
+
+        .biglink.submit {
+            background-color: $green-dark;
+            color: $white;
+
+            &:hover {
+                background-color: $green;
+            }
+        }
     }
     .add-more,
     .delete {

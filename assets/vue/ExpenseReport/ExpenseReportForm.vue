@@ -98,12 +98,10 @@
                 <p>{{ successMessage }}</p>
             </div>
             <div class="buttons">
-                <button type="submit" class="biglink">
-                    <span class="bleucaf">&gt;</span>
+                <button type="submit" class="biglink submit">
                     Valider
                 </button> 
                 <button @click.prevent="saveDraftExpenseReport" class="biglink">
-                    <span class="emoji">&#128190;</span>
                     Sauvegarder le brouillon
             </button>
             </div>
