@@ -19,7 +19,7 @@ class ExpenseField implements JsonSerializable
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $justification_document = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $value = null;
 
     #[ORM\ManyToOne(inversedBy: 'fields')]
