@@ -2,7 +2,7 @@
     <div class="expense-report-form white-box">
         <h2>Note de frais</h2>
         <form @submit.prevent="onFormSubmit">
-            <fieldset>
+            <fieldset id="refund-required-group">
                 <legend>Remboursement</legend>
                 <div class="field">
                     <label for="refund_required_no">
