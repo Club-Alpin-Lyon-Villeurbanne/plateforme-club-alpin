@@ -244,6 +244,26 @@
                             </div>
                         </div>
                         {% endif %}
+                        {% if my_status and my_status.status != constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME') %}
+                            {% if is_granted('PARTICIPANT_ANNULATION', my_status) %}
+                                <div id="inscription-annuler" style="display: none;">
+                                    {{ easy_include('formalites-inscription-suppression', 'formalites') }}
+
+                                    <form action="{{ path('sortie_remove_participant', { id: my_status.id }) }}" method="post" class="loading">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
+
+                                        <p style="text-align:center">
+                                            <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+                                                <span class="bleucaf">&gt;</span>
+                                                ANNULER MA DEMANDE D'INSCRIPTION
+                                            </a>
+                                        </p>
+                                    </form>
+
+                                </div>
+                                <br />
+                            {% endif %}
+                        {% endif %}
                     {% else %}
                         <p class="info">
                             <img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" />
@@ -251,6 +271,7 @@
                         </p>
                         <br />
                     {% endif %}
+
                     {% if (my_status.role == 'encadrant' or my_status.role == 'coencadrant') and display_banner %}
                         {% if currentExpenseReport is null or currentExpenseReport.status == 'draft' %}
                             {{ vueComponent('expense-report-form', 'ExpenseReportForm', {formStructureProp: expenseReportFormStructure}) }}
@@ -306,28 +327,6 @@
                             <br />Vous avez participé à cette sortie.<br />&nbsp;
                         </p><br />
                     {% endif %}
-                {% endif %}
-            {% endif %}
-
-            {% if my_status and my_status.status != constant('App\\Entity\\EvtJoin::STATUS_NON_CONFIRME') %}
-
-                {% if is_granted('PARTICIPANT_ANNULATION', my_status) %}
-                    <div id="inscription-annuler" style="display: none;">
-                        {{ easy_include('formalites-inscription-suppression', 'formalites') }}
-
-                        <form action="{{ path('sortie_remove_participant', { id: my_status.id }) }}" method="post" class="loading">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
-
-                            <p style="text-align:center">
-                                <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
-                                    <span class="bleucaf">&gt;</span>
-                                    ANNULER MA DEMANDE D'INSCRIPTION
-                                </a>
-                            </p>
-                        </form>
-
-                    </div>
-                    <br />
                 {% endif %}
             {% endif %}
 
