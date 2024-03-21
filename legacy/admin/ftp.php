@@ -39,8 +39,9 @@ if (!isset($_GET['dossier'])) {
 		<meta charset="utf-8">
 		<title>DOSSIER FTP</title>
 
-		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/admin.css">
-		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
+		<link rel="stylesheet" href="/build/tailwind.css" type="text/css"  media="screen" />
+		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/build/legacy-admin.css">
+		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/build/legacy-base.css">
 		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
 
 		<!-- jquery -->
@@ -52,7 +53,7 @@ if (!isset($_GET['dossier'])) {
 		<!-- <script type="text/javascript" src="/tools/fancybox/jquery.mousewheel-3.0.4.pack.js" charset="utf-8"></script> -->
 		<!-- datatables -->
 		<script type="text/javascript" src="/tools/datatables/media/js/jquery.dataTables.min.js" charset="utf-8"></script>
-		<link href="/css/datatables-ftp.css" rel="stylesheet" type="text/css">
+		<link href="/build/legacy-datatables-ftp.css" rel="stylesheet" type="text/css">
 
 
 
@@ -117,7 +118,7 @@ if (!isset($_GET['dossier'])) {
 			<div id="ftp-2-droite">
 
 				<!-- valums file upload -->
-				<link href="/css/ftp-fileuploader.css" rel="stylesheet" type="text/css">
+				<link href="/build/legacy-ftp-fileuploader.css" rel="stylesheet" type="text/css">
 				<script src="/tools/valums-file-upload/js/fileuploader.js" type="text/javascript"></script>
 				<script>
 					function createUploader(){

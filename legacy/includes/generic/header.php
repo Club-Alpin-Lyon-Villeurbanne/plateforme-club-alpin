@@ -20,13 +20,15 @@ global $ogImage;
 	<!-- css SCREEN ONLY  -->
 	<!-- media="screen" -->
 	<!-- css COMMUNS SCREEN + PRINT -->
-	<link rel="stylesheet" href="/css/style1.css" type="text/css" />
+	<link rel="stylesheet" href="/build/tailwind.css" type="text/css" >
+	<link rel="stylesheet" href="/build/legacy-style1.css" type="text/css" />
+	<link rel="stylesheet" href="/css/conflicting-legacy.css" type="text/css" />
 	<link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" />
-	<link rel="stylesheet" href="/css/base.css" type="text/css"  />
-	<link rel="stylesheet" href="/css/common.css" type="text/css"  />
+	<link rel="stylesheet" href="/build/legacy-base.css" type="text/css"  />
+	<link rel="stylesheet" href="/build/legacy-common.css" type="text/css"  />
 	<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" />
 	<!-- css PRINTS -->
-	<link rel="stylesheet" href="/css/print.css" type="text/css"  media="print" />
+	<link rel="stylesheet" href="/build/legacy-print.css" type="text/css"  media="print" />
 
 
     <!-- html5shiv -->

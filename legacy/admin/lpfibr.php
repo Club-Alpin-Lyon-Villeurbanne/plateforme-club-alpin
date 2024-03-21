@@ -48,11 +48,12 @@ if (admin()) {
                 echo 'Vos fichiers en téléchargements';
             } ?></title>
 
-            <link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/style1.css">
-            <link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
+	        <link rel="stylesheet" href="/build/tailwind.css" type="text/css"  media="screen" />
+            <link rel="stylesheet" media="screen" type="text/css" title="Design" href="/build/legacy-style1.css">
+            <link rel="stylesheet" media="screen" type="text/css" title="Design" href="/build/legacy-base.css">
 
             <!-- valums file upload -->
-            <link href="/css/ftp-fileuploader.css" rel="stylesheet" type="text/css">
+            <link href="/build/legacy-ftp-fileuploader.css" rel="stylesheet" type="text/css">
 
             <!-- commnuicate with window arbo-->
             <script type="text/javascript" src="/tools/tinymce/tiny_mce_popup.js"></script>

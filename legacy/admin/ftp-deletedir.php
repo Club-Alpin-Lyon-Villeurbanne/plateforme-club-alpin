@@ -84,8 +84,9 @@ if (count($errTab) > 0) {
                 <meta charset="utf-8">
                 <title>DOSSIER FTP</title>
 
-					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/admin.css">
-					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
+	                <link rel="stylesheet" href="/build/tailwind.css" type="text/css"  media="screen" />
+                    <link rel="stylesheet" media="screen" type="text/css" title="Design" href="/build/legacy-admin.css">
+					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/build/legacy-base.css">
 					<!-- jquery -->
 					<script type="text/javascript" src="/js/jquery-1.5.2.min.js"></script>
 

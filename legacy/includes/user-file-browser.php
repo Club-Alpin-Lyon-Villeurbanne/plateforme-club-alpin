@@ -54,8 +54,9 @@ if (user()) {
 		    echo 'Vos fichiers en ligne';
 		} ?></title>
 
-		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/style1.css">
-		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
+		<link rel="stylesheet" href="/build/tailwind.css" type="text/css"  media="screen" />
+		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/build/legacy-style1.css">
+		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/build/legacy-base.css">
 
 		<!-- valums file upload -->
 		<link href="/tools/valums-file-upload/css/fileuploader-user.css" rel="stylesheet" type="text/css">

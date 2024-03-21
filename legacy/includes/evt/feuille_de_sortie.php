@@ -55,10 +55,11 @@ presidence();
 <head>
     <meta charset="utf-8">
     <title>Feuille de sortie-<?php echo html_utf8($evt['titre_evt']); ?> - <?php echo date('d.m.Y', $evt['tsp_evt']); ?></title>
-
-    <link rel="stylesheet" href="/css/style1.css" type="text/css" />
+	
+    <link rel="stylesheet" href="/build/tailwind.css" type="text/css" />
+    <link rel="stylesheet" href="/build/legacy-style1.css" type="text/css" />
     <link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" />
-    <link rel="stylesheet" href="/css/base.css" type="text/css"  />
+    <link rel="stylesheet" href="/build/legacy-base.css" type="text/css"  />
 
 </head>
 <body id="feuille-de-sortie" <!-- onload="window.print() -->">

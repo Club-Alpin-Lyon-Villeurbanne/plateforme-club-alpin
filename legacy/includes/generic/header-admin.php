@@ -1,7 +1,8 @@
 	<!-- css -->
-	<link rel="stylesheet" href="/css/base.css" type="text/css"  media="screen" />
-	<link rel="stylesheet" href="/css/common.css" type="text/css"  media="screen" />
-	<link rel="stylesheet" href="/css/admin.css" type="text/css"  media="screen" />
+	<link rel="stylesheet" href="/build/tailwind.css" type="text/css"  media="screen" />
+	<link rel="stylesheet" href="/build/legacy-base.css" type="text/css"  media="screen" />
+	<link rel="stylesheet" href="/build/legacy-common.css" type="text/css"  media="screen" />
+	<link rel="stylesheet" href="/build/legacy-admin.css" type="text/css"  media="screen" />
 	<link rel="stylesheet" href="/css/ui-cupertino/jquery-ui-1.8.18.custom.css" type="text/css"  media="screen" />
 	<link rel="stylesheet" href="/tools/_fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 

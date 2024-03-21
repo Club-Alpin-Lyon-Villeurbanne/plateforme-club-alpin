@@ -3,7 +3,10 @@
 <head>
     <meta charset="utf-8">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="/css/loginadmin.css" type="text/css"  media="screen" />
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('tailwind') }}
+        {{ encore_entry_link_tags('legacy-loginadmin') }}
+    {% endblock %}
 </head>
 <body style="text-align:center;">
     {% if error is defined %}

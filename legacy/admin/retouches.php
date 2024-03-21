@@ -14,8 +14,9 @@ if (!admin()) {
 		<meta charset="utf-8">
 		<title>RETOUCHES D'IMAGES</title>
 
-		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
-		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/admin.css">
+		<link rel="stylesheet" href="/build/tailwind.css" type="text/css"  media="screen" />
+		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/build/legacy-base.css">
+		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/build/legacy-admin.css">
 		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
 		<link rel="stylesheet" href="/css/ui-cupertino/jquery-ui-1.8.18.custom.css" type="text/css"  media="screen" />
 

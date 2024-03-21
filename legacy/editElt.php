@@ -166,8 +166,9 @@ if (admin()) {
 
 					</script>
 					<!-- /tinyMCE -->
-					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/admin.css">
-					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
+					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/build/tailwind.css">
+					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/build/legacy-admin.css">
+					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/build/legacy-base.css">
 				</head>
 				<body style="background:white; text-align:left; border:none;">
 

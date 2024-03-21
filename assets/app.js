@@ -1,2 +1,2 @@
-import './scss/index.scss';
-import './ts/vue-components';
+import "./scss/index.scss";
+import "./ts/vue-components";
