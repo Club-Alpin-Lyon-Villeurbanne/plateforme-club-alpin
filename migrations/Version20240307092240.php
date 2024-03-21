@@ -22,7 +22,10 @@ final class Version20240307092240 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE INDEX id_user ON caf_user (id_user)');
         $this->addSql('ALTER TABLE sessions CHANGE sess_data sess_data LONGBLOB NOT NULL');
-        $this->addSql('ALTER TABLE sessions RENAME INDEX expiry TO sess_lifetime_idx');
+
+        if ($_ENV['APP_ENV'] != 'dev') {
+            $this->addSql('ALTER TABLE sessions RENAME INDEX expiry TO sess_lifetime_idx');
+        }
     }
 
     public function down(Schema $schema): void
@@ -30,6 +33,10 @@ final class Version20240307092240 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('DROP INDEX id_user ON caf_user');
         $this->addSql('ALTER TABLE sessions CHANGE sess_data sess_data BLOB NOT NULL');
-        $this->addSql('ALTER TABLE sessions RENAME INDEX sess_lifetime_idx TO EXPIRY');
+        
+        if ($_ENV['APP_ENV'] != 'dev') {
+            $this->addSql('ALTER TABLE sessions RENAME INDEX sess_lifetime_idx TO EXPIRY');
+        }
+
     }
 }
