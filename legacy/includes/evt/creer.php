@@ -59,7 +59,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
     <div style="float:right;margin-right:20px;" >
         Titre :<br />
-        <input style="width:320px;" type="text" name="titre_evt" class="type1" value="<?php echo inputVal('titre_evt', ''); ?>" placeholder="ex : Escalade du Grand Som" />
+        <input style="width:320px;" type="text" name="titre_evt" class="type1" value="<?php echo inputVal('titre_evt', ''); ?>" placeholder="ex : Escalade du Grand Som" required minlength="10" maxlength="100"/>
     </div>
 
     <?php $groupes = get_groupes($comTab[$current_commission]['id_commission'], true); ?>
@@ -189,7 +189,7 @@ foreach ($coencadrantsTab as $coencadrant) {
             <?php
                 inclure('infos-lieu-de-rdv', 'mini');
 ?>
-            <input type="text" name="rdv_evt" class="type2" style="width:95%" value="<?php echo inputVal('rdv_evt', ''); ?>" placeholder="ex : Pralognan la Vanoise, les fontanettes" />
+            <input type="text" name="rdv_evt" class="type2" style="width:95%" value="<?php echo inputVal('rdv_evt', ''); ?>" placeholder="ex : Pralognan la Vanoise, les fontanettes" required minlength="3" maxlength="200" />
         </div>
 
         <div style="float:left; width:45%; padding:0 20px 0 0;">
@@ -210,13 +210,13 @@ inclure('infos-carte', 'mini');
         <br />
         <div style="width:45%; padding-right:3%; float:left">
             Date et heure de RDV / covoiturage :<br />
-            <input type="text" name="tsp_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_evt_day', ''); ?>" placeholder="jj/mm/aaaa" />
-            <input type="text" name="tsp_evt_hour" class="type2" style="width:45%" value="<?php echo inputVal('tsp_evt_hour', ''); ?>" placeholder="hh:ii" />
+            <input type="text" name="tsp_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_evt_day', ''); ?>" placeholder="jj/mm/aaaa" required/>
+            <input type="text" name="tsp_evt_hour" class="type2" style="width:45%" value="<?php echo inputVal('tsp_evt_hour', ''); ?>" placeholder="hh:ii" required/>
         </div>
 
         <div style="width:50%; float:left">
             Date de fin de la sortie :<br />
-            <input type="text" name="tsp_end_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_end_evt_day', ''); ?>" placeholder="jj/mm/aaaa" />
+            <input type="text" name="tsp_end_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_end_evt_day', ''); ?>" placeholder="jj/mm/aaaa" required/>
             <!--
 							<input type="text" name="tsp_end_evt_hour" class="type2" style="width:45%;" value="<?php echo inputVal('tsp_end_evt_hour', ''); ?>" placeholder="hh:ii" />
 							-->
@@ -262,7 +262,7 @@ inclure('infos-carte', 'mini');
 
             <div style="width:45%; padding-right:3%; float:left">
                 Les inscriptions démarrent :<br />
-                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_start_evt_days" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_start_evt_days', ''); ?>" placeholder=" > 2" />
+                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_start_evt_days" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_start_evt_days', ''); ?>" placeholder=" > 2" required/>
 								<span class="mini">
 									jours avant la sortie.
 								</span>
@@ -369,7 +369,7 @@ inclure('infos-matos', 'mini');
     <br />
     <br />
     <div style="text-align:center">
-        <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+        <button class="biglink" href="javascript:void(0)" title="Enregistrer">
             <span class="bleucaf">&gt;</span>
             ENREGISTRER ET DEMANDER LA PUBLICATION
         </a>
