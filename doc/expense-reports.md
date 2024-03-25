@@ -271,3 +271,23 @@
 }
 ```
 </details>
+
+### Modifier le status d'une notre de frais
+
+
+`PATCH` `/api/expense-report/{id}/status`
+
+#### Payload
+
+Le champ "status" est un _enum_ en base de données : seules les valeurs listées dans la classe App\Utils\ExpenseReportEnum peuvent être utilisées.
+
+
+```json
+{
+	"status": "approved" 
+}
+```
+
+#### Response payload
+
+Retourne la note de frais serialisée.
