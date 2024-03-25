@@ -5,9 +5,12 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use App\Controller\Api\ExpenseReportGet;
 use App\Controller\Api\ExpenseReportList;
+use App\Controller\Api\ExpenseReportUpdateStatus;
 use App\Repository\ExpenseReportRepository;
+use App\Utils\Enums\ExpenseReportEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -27,6 +30,13 @@ use JsonSerializable;
         name: 'expense_report_get', 
         uriTemplate: '/expense-report/{id}',
         controller: ExpenseReportGet::class,
+        stateless: false,
+        security: "is_granted('ROLE_USER')"
+    ),
+    new Patch(
+        name: 'expense_report_validate', 
+        uriTemplate: '/expense-report/{id}/status',
+        controller: ExpenseReportUpdateStatus::class,
         stateless: false,
         security: "is_granted('ROLE_USER')"
     ),
@@ -92,6 +102,12 @@ class ExpenseReport implements JsonSerializable
 
     public function setStatus(string $status): static
     {
+        if (!in_array($status, ExpenseReportEnum::getConstants())) {
+            throw new \InvalidArgumentException(
+                'Expense report status must be one of : ' . implode(', ', ExpenseReportEnum::getConstants()) . '.'
+            );
+        }
+        
         $this->status = $status;
 
         return $this;
