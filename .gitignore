@@ -39,3 +39,4 @@ yarn-error.log
 ###< lexik/jwt-authentication-bundle ###
 
 /db
+/docker-compose.override.yml
