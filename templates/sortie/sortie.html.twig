@@ -263,9 +263,11 @@
                                 Votre note de frais a été validée pour cette sortie.
                             </p>
                         {% elseif currentExpenseReport is not null and currentExpenseReport.status == 'rejected' %}
-                            <p class="info">
-                                Votre note de frais a été refusée pour cette sortie.
-                            </p>
+                            {% if currentExpenseReport.statusComment %}
+                            <p class="info">Votre note de frais a été refusée pour cette sortie avec le commentaire suivant : <br/><strong>{{ currentExpenseReport.statusComment }}</strong></p>
+                            {% else %}
+                            <p class="info">Votre note de frais a été refusée pour cette sortie</p>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 {% else %}
