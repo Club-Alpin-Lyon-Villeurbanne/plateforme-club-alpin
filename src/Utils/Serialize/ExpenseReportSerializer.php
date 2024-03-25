@@ -51,6 +51,7 @@ class ExpenseReportSerializer
         return [
             'id' => $expenseReport->getId(),
             'status' => $expenseReport->getStatus(),
+            'statusComment' => $expenseReport->getStatusComment(),
             'refundRequired' => $expenseReport->isRefundRequired(),
             'user' => $expenseReport->getUser()->getId(),
             'event' => $expenseReport->getEvent()->getId(),

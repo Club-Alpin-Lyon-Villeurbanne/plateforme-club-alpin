@@ -73,6 +73,7 @@
 	"expenseReport": {
 		"id": 27,
 		"status": "draft",
+		"statusComment": "Commentaire ajouté par l'administrateur lors du rejet ou de la validation de la note de frais",
 		"refundRequired": false,
 		"user": 4896,
 		"event": 6087,
@@ -279,12 +280,13 @@
 
 #### Payload
 
-Le champ "status" est un _enum_ en base de données : seules les valeurs listées dans la classe App\Utils\ExpenseReportEnum peuvent être utilisées.
+_**Note** : Le champ "status" est un _enum_ en base de données : seules les valeurs listées dans la classe App\Utils\ExpenseReportEnum peuvent être utilisées._
 
 
 ```json
 {
-	"status": "approved" 
+	"status": "approved",
+	"statusComment": "..."
 }
 ```
 

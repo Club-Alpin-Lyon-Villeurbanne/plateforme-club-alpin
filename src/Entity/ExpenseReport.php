@@ -13,6 +13,7 @@ use App\Repository\ExpenseReportRepository;
 use App\Utils\Enums\ExpenseReportEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use JsonSerializable;
@@ -71,6 +72,9 @@ class ExpenseReport implements JsonSerializable
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $statusComment = null;
 
     public function __construct()
     {
@@ -214,5 +218,17 @@ class ExpenseReport implements JsonSerializable
             'createdAt' => $this->created_at->format('Y-m-d H:i:s'),
             'updatedAt' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
+    }
+
+    public function getStatusComment(): ?string
+    {
+        return $this->statusComment;
+    }
+
+    public function setStatusComment(?string $statusComment): static
+    {
+        $this->statusComment = $statusComment;
+
+        return $this;
     }
 }
