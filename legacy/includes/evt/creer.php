@@ -372,7 +372,7 @@ inclure('infos-matos', 'mini');
         <button class="biglink" href="javascript:void(0)" title="Enregistrer">
             <span class="bleucaf">&gt;</span>
             ENREGISTRER ET DEMANDER LA PUBLICATION
-        </a>
+        </button>
     </div>
 </form>
 
