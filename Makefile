@@ -38,10 +38,6 @@ database-init-test: ## Init database for test
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists --env=test
 	$(SYMFONY_CONSOLE) doctrine:database:create --env=test
 	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.sql
-	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
-	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
-	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
-	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction --env=test
 	$(SYMFONY_CONSOLE) doctrine:fixtures:load --no-interaction --env=test
 
