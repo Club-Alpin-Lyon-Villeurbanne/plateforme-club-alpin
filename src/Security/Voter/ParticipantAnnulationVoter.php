@@ -2,7 +2,7 @@
 
 namespace App\Security\Voter;
 
-use App\Entity\EvtJoin;
+use App\Entity\EventParticipation;
 use App\Entity\User;
 use App\UserRights;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -30,7 +30,7 @@ class ParticipantAnnulationVoter extends Voter
             return false;
         }
 
-        if (!$subject instanceof EvtJoin) {
+        if (!$subject instanceof EventParticipation) {
             throw new \InvalidArgumentException('The voter requires a participant subject');
         }
 

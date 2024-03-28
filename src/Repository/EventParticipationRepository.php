@@ -3,33 +3,33 @@
 namespace App\Repository;
 
 use App\Entity\Evt;
-use App\Entity\EvtJoin;
+use App\Entity\EventParticipation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method EvtJoin|null find($id, $lockMode = null, $lockVersion = null)
- * @method EvtJoin|null findOneBy(array $criteria, array $orderBy = null)
- * @method EvtJoin[]    findAll()
- * @method EvtJoin[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method EventParticipation|null find($id, $lockMode = null, $lockVersion = null)
+ * @method EventParticipation|null findOneBy(array $criteria, array $orderBy = null)
+ * @method EventParticipation[]    findAll()
+ * @method EventParticipation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class EvtJoinRepository extends ServiceEntityRepository
+class EventParticipationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, EvtJoin::class);
+        parent::__construct($registry, EventParticipation::class);
     }
 
-    /** @return EvtJoin[][] */
+    /** @return EventParticipation[][] */
     public function getEmpietements(Evt $event)
     {
         $qb = $this->createQueryBuilder('p')
             ->select('e, p')
             ->innerJoin('p.evt', 'e')
             ->where('p.status != :status_refuse')
-            ->setParameter('status_refuse', EvtJoin::STATUS_REFUSE)
+            ->setParameter('status_refuse', EventParticipation::STATUS_REFUSE)
             ->andWhere('p.status != :status_absent')
-            ->setParameter('status_absent', EvtJoin::STATUS_ABSENT)
+            ->setParameter('status_absent', EventParticipation::STATUS_ABSENT)
             ->andWhere('e.id != :id')
             ->setParameter('id', $event->getId())
             ->andWhere('e.status != :event_status')
@@ -40,22 +40,22 @@ class EvtJoinRepository extends ServiceEntityRepository
             ->orderBy('e.tsp', 'asc')
         ;
 
-        /** @var EvtJoin[] $results */
+        /** @var EventParticipation[] $results */
         $results = $qb
             ->getQuery()
             ->getResult();
 
         $ret = [];
 
-        foreach ($results as $participant) {
-            $ret[$participant->getUser()->getId()][] = $participant;
+        foreach ($results as $participation) {
+            $ret[$participation->getUser()->getId()][] = $participation;
         }
 
         return $ret;
     }
 
     /**
-     * Retourne la liste des participants triée par rôles.
+     * Retourne la liste des participations triée par rôles.
      *
      * @param Evt $event
      *   La sortie.
@@ -65,7 +65,7 @@ class EvtJoinRepository extends ServiceEntityRepository
      *   Les status à filtrer.
      * @return mixed
      */
-    public function getSortedParticipants(Evt $event, $roles = null, $status = EvtJoin::STATUS_VALIDE): mixed
+    public function getSortedParticipations(Evt $event, $roles = null, $status = EventParticipation::STATUS_VALIDE): mixed
     {
         $qb = $this->createQueryBuilder('ej')
             ->select('ej as liste')
