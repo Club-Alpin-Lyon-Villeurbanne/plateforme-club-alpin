@@ -13,10 +13,10 @@ return [
         'pass' => 'MAILGUN_KEY_TO_REPLACE',
     ],
     'db' => [
-        'host' => 'caflv-production-aurora-mysql.cluster-cw75ek4t1pty.eu-west-3.rds.amazonaws.com',
-        'port' => 3306,
-        'user' => 'caflvdev',
-        'password' => 'DB_PASSWORD_TO_REPLACE',
-        'dbname' => 'caflvdev',
+        'host' => getenv('MYSQL_ADDON_HOST'),
+        'port' => getenv('MYSQL_ADDON_PORT'),
+        'user' => getenv('MYSQL_ADDON_USER'),
+        'password' => getenv('MYSQL_ADDON_PASSWORD'),
+        'dbname' => getenv('MYSQL_ADDON_DB'),
     ],
 ];

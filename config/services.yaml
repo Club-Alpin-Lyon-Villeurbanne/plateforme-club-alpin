@@ -92,6 +92,7 @@ services:
     arguments:
       $routerContextScheme: "%env(ROUTER_CONTEXT_SCHEME)%"
       $routerContextHost: "%env(ROUTER_CONTEXT_HOST)%"
+      $appName: "%env(CC_APP_NAME)"
 
   App\Bridge\Twig\TwigExtension:
     arguments:
