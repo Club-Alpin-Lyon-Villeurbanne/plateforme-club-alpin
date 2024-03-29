@@ -2,7 +2,6 @@
 .vscode
 .php-cs-fixer.cache
 .DS_Store
-bin
 public/ftp/*
 *.old
 legacy/config/www.clubalpinlyon.fr/ffcam/
