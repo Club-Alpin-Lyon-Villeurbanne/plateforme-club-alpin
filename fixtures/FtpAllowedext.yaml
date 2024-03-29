@@ -1,0 +1,3 @@
+App\Entity\FtpAllowedExt:
+  ftp_allowed_ext_{jpg, gif, jpeg, png, doc, docx, odt, pdf, avi, mov, mp3, rar, zip, txt, xls, csv, ppt, pptx, ai, psd, fla, swf, eps}:
+    ext: "<current()>"

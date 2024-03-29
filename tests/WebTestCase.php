@@ -36,10 +36,10 @@ abstract class WebTestCase extends BaseWebTestCase
         $user->setTel('');
         $user->setTel2('');
         $user->setAdresse('');
-        $user->setCp('');
+        $user->setPostCode('');
         $user->setVille('');
         $user->setPays('');
-        $user->setCiv('');
+        $user->setCivility('');
         $user->setMoreinfo('');
         $user->setCookietoken('');
         $user->setNomadeParent(0);

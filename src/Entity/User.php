@@ -109,7 +109,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string
      */
     #[ORM\Column(name: 'cp_user', type: 'string', length: 10, nullable: true)]
-    private $cp;
+    private $postCode;
 
     /**
      * @var string
@@ -127,7 +127,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string
      */
     #[ORM\Column(name: 'civ_user', type: 'string', length: 10, nullable: true)]
-    private $civ;
+    private $civility;
 
     /**
      * @var string
@@ -399,14 +399,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCp(): ?string
+    public function getPostCode(): ?string
     {
-        return $this->cp;
+        return $this->postCode;
     }
 
-    public function setCp(string $cp): self
+    public function setPostCode(string $postCode): self
     {
-        $this->cp = $cp;
+        $this->postCode = $postCode;
 
         return $this;
     }
@@ -435,14 +435,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCiv(): ?string
+    public function getCivility(): ?string
     {
-        return $this->civ;
+        return $this->civility;
     }
 
-    public function setCiv(string $civ): self
+    public function setCivility(string $civility): self
     {
-        $this->civ = $civ;
+        $this->civility = $civility;
 
         return $this;
     }
