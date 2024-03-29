@@ -15,12 +15,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class EvtRepository extends ServiceEntityRepository
 {
-    private int $maxSortiesAccueil;
+    private int $defaultLimit = 30;
 
-    public function __construct(ManagerRegistry $registry, int $maxSortiesAccueil)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Evt::class);
-        $this->maxSortiesAccueil = $maxSortiesAccueil;
     }
 
     public function getUnvalidatedEvt(array $commissions = [])
@@ -60,8 +59,13 @@ class EvtRepository extends ServiceEntityRepository
         ]);
     }
 
-    public function getUpcomingEvents(?Commission $commission)
+    /** @return Evt[] */
+    public function getUpcomingEvents(?Commission $commission, array $options = [])
     {
+        $options = array_merge([
+            'limit' => $this->defaultLimit,
+        ], $options);
+
         $qb = $this->createQueryBuilder('e')
             ->select('e, c')
             ->leftJoin('e.commission', 'c')
@@ -70,7 +74,7 @@ class EvtRepository extends ServiceEntityRepository
             ->andWhere('e.tsp > :date')
             ->setParameter('date', time())
             ->orderBy('e.tsp', 'asc')
-            ->setMaxResults($this->maxSortiesAccueil)
+            ->setMaxResults($options['limit'])
         ;
 
         if ($commission) {

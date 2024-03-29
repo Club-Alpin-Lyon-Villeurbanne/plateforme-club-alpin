@@ -7,10 +7,8 @@ parameters:
 
   ignoreErrors:
     - '#Function twig_escape_filter not found\.#'
-    - '#Constant (ATOM|RSS1|RSS2) not found\.#'
     - '#Variable \$p_[a-z_]+ might not be defined#'
     - '#Variable \$p\d might not be defined#'
-    - '#Instantiated class FeedWriter not found#'
 
   excludePaths:
     - legacy/scripts/operations/operations.bus_update.php

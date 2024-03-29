@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Article;
+use App\Entity\Commission;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -43,5 +44,30 @@ class ArticleRepository extends ServiceEntityRepository
         }
 
         return $this->_em->getConnection()->fetchOne($sql, $params);
+    }
+
+    /** @return Article[] */
+    public function getArticles(?Commission $commission = null, array $options = [])
+    {
+        $options = array_merge([
+            'limit' => 10,
+        ], $options);
+
+        $qb = $this->createQueryBuilder('a')
+            ->select('a, c')
+            ->leftJoin('a.commission', 'c')
+            ->where('a.status > 0')
+            ->orderBy('a.tspValidate', 'DESC')
+            ->setMaxResults($options['limit'])
+        ;
+
+        if ($commission) {
+            $qb = $qb->andWhere('a.commission = :commission_id')
+                ->setParameter('commission_id', $commission->getId());
+        }
+
+        return $qb
+            ->getQuery()
+            ->getResult();
     }
 }
