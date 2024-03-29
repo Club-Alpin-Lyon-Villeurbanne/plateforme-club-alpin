@@ -3,7 +3,7 @@
 namespace App\Bridge\Twig;
 
 use App\Entity\Evt;
-use App\Entity\EvtJoin;
+use App\Entity\EventParticipation;
 use App\Entity\User;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -37,8 +37,8 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
             new TwigFilter('is_legal_validable', [$this, 'isLegalValidable']),
             new TwigFilter('paiement_title', [$this, 'getPaiementTitle']),
             new TwigFilter('intldate', [$this, 'formatDate']),
-            new TwigFilter('participant_status_name', [$this, 'getParticipantStatusName']),
-            new TwigFilter('participant_role_name', [$this, 'getParticipantRoleName']),
+            new TwigFilter('participation_status_name', [$this, 'getParticipationStatusName']),
+            new TwigFilter('participation_role_name', [$this, 'getParticipationRoleName']),
             new TwigFilter('temoin_event', [$this, 'getTemoinPlacesSortie']),
             new TwigFilter('temoin_event_title', [$this, 'getTemoinPlacesSortieTitle']),
         ];
@@ -58,7 +58,7 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         if (!$event->joinHasStarted()) {
             return '';
         }
-        if ($event->getJoinMax() <= \count($event->getParticipants())) {
+        if ($event->getJoinMax() <= \count($event->getParticipations())) {
             return 'off';
         }
 
@@ -79,47 +79,47 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         if (!$event->joinHasStarted()) {
             return sprintf('Les inscriptions pour cette sortie commenceront le %s', date('d/m/y', $event->getJoinStart()));
         }
-        if ($event->getJoinMax() <= \count($event->getParticipants())) {
+        if ($event->getJoinMax() <= \count($event->getParticipations())) {
             return sprintf('Les %d places libres ont été réservées', $event->getJoinMax());
         }
 
-        return sprintf('%d places restantes', $event->getJoinMax() - \count($event->getParticipants()));
+        return sprintf('%d places restantes', $event->getJoinMax() - \count($event->getParticipations()));
     }
 
-    public function getParticipantStatusName(?EvtJoin $participant): string
+    public function getParticipationStatusName(?EventParticipation $participation): string
     {
-        if (!$participant) {
+        if (!$participation) {
             return '';
         }
 
-        switch ($participant->getStatus()) {
-            case EvtJoin::STATUS_NON_CONFIRME:
+        switch ($participation->getStatus()) {
+            case EventParticipation::STATUS_NON_CONFIRME:
                 return 'Non confirmé';
-            case EvtJoin::STATUS_VALIDE:
+            case EventParticipation::STATUS_VALIDE:
                 return 'Validé';
-            case EvtJoin::STATUS_REFUSE:
+            case EventParticipation::STATUS_REFUSE:
                 return 'Refusé';
-            case EvtJoin::STATUS_ABSENT:
+            case EventParticipation::STATUS_ABSENT:
                 return 'Absent';
         }
 
         return '';
     }
 
-    public function getParticipantRoleName(?EvtJoin $participant): string
+    public function getParticipationRoleName(?EventParticipation $participation): string
     {
-        if (!$participant) {
+        if (!$participation) {
             return '';
         }
 
-        switch ($participant->getRole()) {
-            case EvtJoin::ROLE_BENEVOLE:
+        switch ($participation->getRole()) {
+            case EventParticipation::ROLE_BENEVOLE:
                 return 'Bénévole';
-            case EvtJoin::ROLE_STAGIAIRE:
+            case EventParticipation::ROLE_STAGIAIRE:
                 return 'Stagiaire';
-            case EvtJoin::ROLE_COENCADRANT:
+            case EventParticipation::ROLE_COENCADRANT:
                 return 'Co-encadrant(e)';
-            case EvtJoin::ROLE_ENCADRANT:
+            case EventParticipation::ROLE_ENCADRANT:
                 return 'Encadrant(e)';
             default:
                 return 'Participant(e)';

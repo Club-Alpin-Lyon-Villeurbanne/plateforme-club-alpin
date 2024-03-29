@@ -2,17 +2,17 @@
 
 namespace App\Entity;
 
-use App\Repository\EvtJoinRepository;
+use App\Repository\EventParticipationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * EvtJoin.
+ * EventParticipation.
  *
  *
  */
 #[ORM\Table(name: 'caf_evt_join')]
-#[ORM\Entity(repositoryClass: EvtJoinRepository::class)]
-class EvtJoin
+#[ORM\Entity(repositoryClass: EventParticipationRepository::class)]
+class EventParticipation
 {
     public const STATUS_NON_CONFIRME = 0;
     public const STATUS_VALIDE = 1;
@@ -44,7 +44,7 @@ class EvtJoin
     private $status = self::STATUS_NON_CONFIRME;
 
     
-    #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'joins', fetch: 'EAGER')]
+    #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'participations', fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'evt_evt_join', nullable: false, referencedColumnName: 'id_evt', onDelete: 'CASCADE')]
     private $evt;
 

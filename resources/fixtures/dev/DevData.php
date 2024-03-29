@@ -1,7 +1,7 @@
 <?php
 
 use App\Entity\Evt;
-use App\Entity\EvtJoin;
+use App\Entity\EventParticipation;
 use App\Entity\User;
 use App\Repository\CommissionRepository;
 use App\Utils\NicknameGenerator;
@@ -43,16 +43,16 @@ class DevData implements FixtureInterface, ContainerAwareInterface
         }
 
         $roles = [
-            EvtJoin::ROLE_ENCADRANT,
-            EvtJoin::ROLE_BENEVOLE,
-            EvtJoin::ROLE_COENCADRANT,
-            EvtJoin::ROLE_MANUEL,
-            EvtJoin::ROLE_BENEVOLE,
+            EventParticipation::ROLE_ENCADRANT,
+            EventParticipation::ROLE_BENEVOLE,
+            EventParticipation::ROLE_COENCADRANT,
+            EventParticipation::ROLE_MANUEL,
+            EventParticipation::ROLE_BENEVOLE,
         ];
         $status = [
-            EvtJoin::STATUS_VALIDE,
-            EvtJoin::STATUS_NON_CONFIRME,
-            EvtJoin::STATUS_REFUSE,
+            EventParticipation::STATUS_VALIDE,
+            EventParticipation::STATUS_NON_CONFIRME,
+            EventParticipation::STATUS_REFUSE,
         ];
 
         foreach ($set->getObjects() as $object) {
@@ -74,21 +74,21 @@ class DevData implements FixtureInterface, ContainerAwareInterface
                 $limit = mt_rand(4, 8);
 
                 foreach ($users as $user) {
-                    $participant = new EvtJoin($object, $user, $roles[array_rand($roles)], $status[array_rand($status)]);
-                    if (in_array($participant->getRole(), [EvtJoin::ROLE_ENCADRANT, EvtJoin::ROLE_BENEVOLE, EvtJoin::ROLE_COENCADRANT], true)) {
-                        $participant->setStatus(EvtJoin::STATUS_VALIDE);
+                    $participation = new EventParticipation($object, $user, $roles[array_rand($roles)], $status[array_rand($status)]);
+                    if (in_array($participation->getRole(), [EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_BENEVOLE, EventParticipation::ROLE_COENCADRANT], true)) {
+                        $participation->setStatus(EventParticipation::STATUS_VALIDE);
                     }
-                    $manager->persist($participant);
+                    $manager->persist($participation);
                     if (++$i > $limit) {
                         break;
                     }
                 }
 
-                if ($owner = $object->getParticipant($object->getUser())) {
-                    $owner->setRole(EvtJoin::ROLE_ENCADRANT);
+                if ($owner = $object->getParticipation($object->getUser())) {
+                    $owner->setRole(EventParticipation::ROLE_ENCADRANT);
                 } else {
-                    $participant = new EvtJoin($object, $object->getUser(), EvtJoin::ROLE_ENCADRANT, EvtJoin::STATUS_VALIDE);
-                    $manager->persist($participant);
+                    $participation = new EventParticipation($object, $object->getUser(), EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
+                    $manager->persist($participation);
                 }
             }
         }

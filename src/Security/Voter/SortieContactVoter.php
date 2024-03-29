@@ -42,8 +42,8 @@ class SortieContactVoter extends Voter
             return true;
         }
 
-        foreach ($subject->getEncadrants() as $evtJoin) {
-            if ($evtJoin->getUser() === $user) {
+        foreach ($subject->getEncadrants() as $eventParticipation) {
+            if ($eventParticipation->getUser() === $user) {
                 return true;
             }
         }

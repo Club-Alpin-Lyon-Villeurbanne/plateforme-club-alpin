@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Evt;
-use App\Entity\EvtJoin;
+use App\Entity\EventParticipation;
 use App\Mailer\Mailer;
-use App\Repository\EvtJoinRepository;
+use App\Repository\EventParticipationRepository;
 use App\Repository\EvtRepository;
 use App\Repository\ExpenseGroupRepository;
 use App\Repository\ExpenseReportRepository;
@@ -40,7 +40,7 @@ class SortieController extends AbstractController
     public function sortie(
         Evt $event, 
         UserRepository $repository,
-        EvtJoinRepository $participantRepository,
+        EventParticipationRepository $participationRepository,
         ExpenseGroupRepository $expenseGroupRepository,
         ExpenseTypeExpenseFieldTypeRepository $expenseTypeFieldTypeRepository,
         ExpenseReportRepository $expenseReportRepository,
@@ -164,9 +164,9 @@ class SortieController extends AbstractController
 
         return [
             'event' => $event,
-            'participants' => $participantRepository->getSortedParticipants($event, null, null),
+            'participations' => $participationRepository->getSortedParticipations($event, null, null),
             'filiations' => $user ? $repository->getFiliations($user) : null,
-            'empietements' => $participantRepository->getEmpietements($event),
+            'empietements' => $participationRepository->getEmpietements($event),
             'expenseReportFormStructure' => $expenseReportFormGroups,
             'currentExpenseReport' => $currentExpenseReport,
         ];
@@ -192,18 +192,18 @@ class SortieController extends AbstractController
             'event_date' => date('d/m/Y', $event->getTsp()),
         ]);
 
-        foreach ($event->getParticipants() as $participant) {
-            if ($participant->getUser() === $event->getUser()) {
+        foreach ($event->getParticipations() as $participation) {
+            if ($participation->getUser() === $event->getUser()) {
                 // mail already sent
                 continue;
             }
 
-            $mailer->send($participant->getUser(), 'transactional/sortie-publiee-inscrit', [
+            $mailer->send($participation->getUser(), 'transactional/sortie-publiee-inscrit', [
                 'author_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.$event->getUser()->getId().'.html',
                 'author_nickname' => $event->getUser()->getNickname(),
                 'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'event_name' => $event->getTitre(),
-                'role' => $participant->getRole(),
+                'role' => $participation->getRole(),
             ], [], null, $event->getUser()->getEmail());
         }
 
@@ -229,9 +229,9 @@ class SortieController extends AbstractController
 
         $user = $this->getUser();
 
-        foreach ($request->request->all('id_evt_join', []) as $participantId) {
-            $status = $request->request->get('status_evt_join_'.$participantId);
-            $role = $request->request->get('role_evt_join_'.$participantId);
+        foreach ($request->request->all('id_evt_join', []) as $participationId) {
+            $status = $request->request->get('status_evt_join_'.$participationId);
+            $role = $request->request->get('role_evt_join_'.$participationId);
 
             if (null === $status) {
                 // FIX ME Log something
@@ -240,32 +240,32 @@ class SortieController extends AbstractController
 
             $status = (int) $status;
 
-            if (null === $participant = $event->getParticipantById($participantId)) {
+            if (null === $participation = $event->getParticipationById($participationId)) {
                 continue;
             }
 
             if ($status < 0) {
-                $em->remove($participant);
+                $em->remove($participation);
 
                 continue;
             }
 
-            if ($status === $participant->getStatus() && (null === $role || $role === $participant->getRole())) {
+            if ($status === $participation->getStatus() && (null === $role || $role === $participation->getRole())) {
                 continue;
             }
 
             // there can be no role passed in the request
             if ($role) {
-                $participant->setRole($role);
+                $participation->setRole($role);
             }
 
-            $participant
+            $participation
                 ->setStatus($status)
                 ->setLastchangeWhen(time())
                 ->setLastchangeWho($user)
             ;
 
-            if (!\in_array($status, [EvtJoin::STATUS_VALIDE, EvtJoin::STATUS_REFUSE], true)) {
+            if (!\in_array($status, [EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_REFUSE], true)) {
                 continue;
             }
 
@@ -273,38 +273,38 @@ class SortieController extends AbstractController
                 continue;
             }
 
-            if ($participant->getUser()->getNomade()) {
+            if ($participation->getUser()->getNomade()) {
                 $statusName = '';
-                if (EvtJoin::STATUS_NON_CONFIRME === $status) {
+                if (EventParticipation::STATUS_NON_CONFIRME === $status) {
                     $statusName = 'En attente';
                 }
-                if (EvtJoin::STATUS_VALIDE === $status) {
+                if (EventParticipation::STATUS_VALIDE === $status) {
                     $statusName = 'Inscrit';
                 }
-                if (EvtJoin::STATUS_REFUSE === $status) {
+                if (EventParticipation::STATUS_REFUSE === $status) {
                     $statusName = 'Refusé';
                 }
 
                 $this->addFlash('warning', sprintf('%s %s est un adhérent nomade. Il n\'a pas d\'email et '.
-                    'doit être prévenu par téléphone de son nouveau statut : %s. Son téléphone: %s', $participant->getUser()->getFirstname(), $participant->getUser()->getLastname(), $statusName, $participant->getUser()->getTel()));
+                    'doit être prévenu par téléphone de son nouveau statut : %s. Son téléphone: %s', $participation->getUser()->getFirstname(), $participation->getUser()->getLastname(), $statusName, $participation->getUser()->getTel()));
 
                 continue;
             }
 
-            $toMail = null !== $participant->getAffiliantUserJoin() ? $participant->getAffiliantUserJoin() : $participant->getUser();
+            $toMail = null !== $participation->getAffiliantUserJoin() ? $participation->getAffiliantUserJoin() : $participation->getUser();
 
             if (!$toMail) {
                 continue;
             }
 
-            switch ($participant->getRole()) {
-                case EvtJoin::ROLE_ENCADRANT:
-                case EvtJoin::ROLE_COENCADRANT:
-                    $roleName = $participant->getRole().'(e)';
+            switch ($participation->getRole()) {
+                case EventParticipation::ROLE_ENCADRANT:
+                case EventParticipation::ROLE_COENCADRANT:
+                    $roleName = $participation->getRole().'(e)';
                     break;
-                case EvtJoin::ROLE_BENEVOLE:
-                case EvtJoin::ROLE_STAGIAIRE:
-                    $roleName = $participant->getRole();
+                case EventParticipation::ROLE_BENEVOLE:
+                case EventParticipation::ROLE_STAGIAIRE:
+                    $roleName = $participation->getRole();
                     break;
                 default:
                     $roleName = 'participant(e)';
@@ -317,10 +317,10 @@ class SortieController extends AbstractController
                 'event_name' => $event->getTitre(),
             ];
 
-            if (EvtJoin::STATUS_VALIDE === $status) {
+            if (EventParticipation::STATUS_VALIDE === $status) {
                 $mailer->send($toMail, 'transactional/sortie-participation-confirmee', $context);
             }
-            if (EvtJoin::STATUS_REFUSE === $status) {
+            if (EventParticipation::STATUS_REFUSE === $status) {
                 $mailer->send($toMail, 'transactional/sortie-participation-declinee', $context);
             }
         }
@@ -442,16 +442,16 @@ class SortieController extends AbstractController
         $status = $request->request->get('status_sendmail');
         $status = ctype_digit($status) ? (int) $status : $status;
 
-        if (!\in_array($status, ['*', EvtJoin::STATUS_VALIDE, EvtJoin::STATUS_ABSENT, EvtJoin::STATUS_NON_CONFIRME, EvtJoin::STATUS_REFUSE], true)) {
+        if (!\in_array($status, ['*', EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_ABSENT, EventParticipation::STATUS_NON_CONFIRME, EventParticipation::STATUS_REFUSE], true)) {
             throw new BadRequestException(sprintf('Invalid status "%s".', $status));
         }
 
-        $participants = $event
-            ->getParticipants(null, '*' === $status ? null : $status)
-            ->map(fn (EvtJoin $participant) => $participant->getUser())
+        $participations = $event
+            ->getParticipations(null, '*' === $status ? null : $status)
+            ->map(fn (EventParticipation $participation) => $participation->getUser())
             ->toArray();
 
-        $mailer->send($participants, 'transactional/message-sortie', [
+        $mailer->send($participations, 'transactional/message-sortie', [
             'objet' => $request->request->get('objet'),
             'message_author' => sprintf('%s %s', $event->getUser()->getFirstname(), $event->getUser()->getLastname()),
             'url_sortie' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
@@ -465,26 +465,26 @@ class SortieController extends AbstractController
     }
 
     #[Route(name: 'sortie_remove_participant', path: '/sortie/remove-participant/{id}', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function removeParticipant(Request $request, EvtJoin $participant, EntityManagerInterface $em, Mailer $mailer)
+    public function removeParticipant(Request $request, EventParticipation $participation, EntityManagerInterface $em, Mailer $mailer)
     {
-        $event = $participant->getEvt();
+        $event = $participation->getEvt();
 
         if (!$this->isCsrfTokenValid('remove_participant', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
         }
 
-        if (!$this->isGranted('PARTICIPANT_ANNULATION', $participant)) {
+        if (!$this->isGranted('PARTICIPANT_ANNULATION', $participation)) {
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
         }
 
-        $em->remove($participant);
+        $em->remove($participation);
         $em->flush();
 
         $user = $this->getUser();
 
-        if ($participant->isStatusValide()) {
+        if ($participation->isStatusValide()) {
             $mailer->send($event->getUser(), 'transactional/sortie-desinscription', [
-                'username' => $participant->getUser()->getFirstname().' '.$participant->getUser()->getLastname(),
+                'username' => $participation->getUser()->getFirstname().' '.$participation->getUser()->getLastname(),
                 'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'event_name' => $event->getTitre(),
                 'user' => $user,
@@ -524,12 +524,12 @@ class SortieController extends AbstractController
         );
         $em->persist($newEvent);
 
-        foreach ($event->getParticipants() as $participant) {
-            if ($participant->getUser() === $newEvent->getUser()) {
+        foreach ($event->getParticipations() as $participation) {
+            if ($participation->getUser() === $newEvent->getUser()) {
                 continue;
             }
 
-            $join = $newEvent->addParticipant($participant->getUser(), $participant->getRole(), $participant->getStatus());
+            $join = $newEvent->addParticipation($participation->getUser(), $participation->getRole(), $participation->getStatus());
             $em->persist($join);
         }
 
