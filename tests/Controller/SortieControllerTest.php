@@ -3,7 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Evt;
-use App\Entity\EvtJoin;
+use App\Entity\EventParticipation;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Tests\WebTestCase;
@@ -450,7 +450,7 @@ class SortieControllerTest extends WebTestCase
 
         $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
             'csrf_token' => $this->csrfToken('contact_participants'),
-            'status_sendmail' => EvtJoin::STATUS_REFUSE,
+            'status_sendmail' => EventParticipation::STATUS_REFUSE,
             'objet' => 'un objet de culte',
             'message' => 'tirelipimpon',
         ]);
@@ -472,7 +472,7 @@ class SortieControllerTest extends WebTestCase
 
         $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
             'csrf_token' => $this->csrfToken('contact_participants'),
-            'status_sendmail' => EvtJoin::STATUS_VALIDE,
+            'status_sendmail' => EventParticipation::STATUS_VALIDE,
             'objet' => 'un objet de culte',
             'message' => 'Prout PROUT',
         ]);

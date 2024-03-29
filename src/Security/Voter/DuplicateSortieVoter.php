@@ -38,8 +38,8 @@ class DuplicateSortieVoter extends Voter
             return false;
         }
 
-        foreach ($subject->getParticipants() as $evtJoin) {
-            if ($evtJoin->getUser() === $user) {
+        foreach ($subject->getParticipations() as $eventParticipation) {
+            if ($eventParticipation->getUser() === $user) {
                 return true;
             }
         }
