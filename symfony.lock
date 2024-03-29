@@ -117,6 +117,19 @@
     "guzzlehttp/psr7": {
         "version": "2.1.0"
     },
+    "hautelook/alice-bundle": {
+        "version": "2.12",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "2.2",
+            "ref": "c84e4f2b9d7f436d7d52e8369230b393367607ec"
+        },
+        "files": [
+            "config/packages/hautelook_alice.yaml",
+            "fixtures/.gitignore"
+        ]
+    },
     "http-interop/http-factory-guzzle": {
         "version": "1.1.1"
     },
@@ -680,6 +693,15 @@
     },
     "symfony/yaml": {
         "version": "v5.3.6"
+    },
+    "theofidry/alice-data-fixtures": {
+        "version": "1.6",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "fe5a50faf580eb58f08ada2abe8afbd2d4941e05"
+        }
     },
     "twig/extra-bundle": {
         "version": "v3.3.4"

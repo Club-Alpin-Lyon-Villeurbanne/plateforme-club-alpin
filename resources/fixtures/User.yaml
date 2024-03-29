@@ -1,0 +1,14 @@
+App\Entity\User:
+  user (template):
+    password: "098f6bcd4621d373cade4e832627b4f6"
+    firstname: "<firstname()>"
+    lastname: "<lastname()>"
+    valid: true
+
+  user{1..10} (extends user):
+    nickname: <current()>
+    email: "<email()>"
+
+  admin_user (extends user):
+    email: "admin@clubalpinlyon.fr"
+    nickname: "admin"

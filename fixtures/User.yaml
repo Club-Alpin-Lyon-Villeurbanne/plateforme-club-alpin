@@ -1,0 +1,23 @@
+App\Entity\User:
+  user (template):
+    password: "098f6bcd4621d373cade4e832627b4f6"
+    firstname: "<firstname()>"
+    lastname: "<lastname()>"
+    valid: true
+
+  user{1..10} (extends user):
+    nickname: <current()>
+    email: "<email()>"
+
+  admin_user (extends user):
+    firstname: "ADMIN"
+    lastname: "SUPER"
+    email: "admin@clubalpinlyon.fr"
+    nickname: "Admin"
+    cafnum_user: "749999999999"
+    birthday: "270687600"
+    tel: "0950985475"
+    adresse: "19 ALLEE DU LAC ST ANDRE"
+    postCode: "73375"
+    ville: "LE BOURGET DU LAC"
+    civility: "M"

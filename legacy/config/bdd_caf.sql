@@ -152,28 +152,6 @@ CREATE TABLE IF NOT EXISTS `caf_commission` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 
 --
--- Contenu de la table `caf_commission`
---
-
-INSERT INTO `caf_commission` (`id_commission`, `ordre_commission`, `vis_commission`, `code_commission`, `title_commission`) VALUES
-(1, 1, 1, 'sorties-familles', 'Sorties familles'),
-(2, 2, 1, 'alpinisme', 'Alpinisme'),
-(3, 3, 1, 'ski-alpin', 'Ski alpin / Snowboard'),
-(4, 4, 1, 'ecole-d-aventure', 'École d''aventure'),
-(5, 5, 1, 'ecole-d-escalade', 'École d''escalade'),
-(6, 6, 1, 'ecole-de-ski', 'École de ski'),
-(7, 7, 1, 'escalade', 'Escalade'),
-(8, 8, 1, 'escalade-competition', 'Escalade compétition'),
-(9, 9, 1, 'handicaf', 'Handicaf'),
-(10, 10, 1, 'randonnee-pedestre', 'Randonnée pédestre'),
-(11, 11, 1, 'randonnee-raquette', 'Randonnée raquette'),
-(12, 12, 1, 'ski-de-randonnee', 'Ski de randonnée'),
-(13, 13, 1, 'protection-de-la-montagne', 'Protection de la montagne'),
-(14, 14, 1, 'formation', 'Formation');
-
--- --------------------------------------------------------
-
---
 -- Structure de la table `caf_content_html`
 --
 
@@ -428,35 +406,6 @@ CREATE TABLE IF NOT EXISTS `caf_ftp_allowedext` (
   `ext_ftp_allowedext` varchar(6) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id_ftp_allowedext`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=24 ;
-
---
--- Contenu de la table `caf_ftp_allowedext`
---
-
-INSERT INTO `caf_ftp_allowedext` (`id_ftp_allowedext`, `ext_ftp_allowedext`) VALUES
-(1, 'jpg'),
-(2, 'gif'),
-(3, 'jpeg'),
-(4, 'png'),
-(5, 'doc'),
-(6, 'docx'),
-(7, 'odt'),
-(8, 'pdf'),
-(9, 'avi'),
-(10, 'mov'),
-(11, 'mp3'),
-(12, 'rar'),
-(13, 'zip'),
-(14, 'txt'),
-(15, 'xls'),
-(16, 'csv'),
-(17, 'ppt'),
-(18, 'pptx'),
-(19, 'ai'),
-(20, 'psd'),
-(21, 'fla'),
-(22, 'swf'),
-(23, 'eps');
 
 -- --------------------------------------------------------
 

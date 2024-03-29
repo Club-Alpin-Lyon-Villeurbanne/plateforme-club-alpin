@@ -1,0 +1,15 @@
+App\Entity\Evt:
+    sortie{1..10}:
+        __construct: ['@user1', '@commission_alpinisme', '<sentence(4)>', '<word()>', '<dateTime("+5 days")>', '<dateTime("+8 days")>', '<address()>', '<latitude()>', '<longitude()>', '<paragraph()>', 200, 10, 10]
+        user: '@user1'
+        titre: '<sentence(4)>'
+        place: '<address()>'
+        code: '<word()>'
+        rdv: '<address()>'
+        lat: '<latitude()>'
+        long: '<longitude()>'
+        description: '<paragraph()>'
+
+        massif: '<word()>'
+        matos: '<sentence(12)>'
+        difficulte: '<word()>'
