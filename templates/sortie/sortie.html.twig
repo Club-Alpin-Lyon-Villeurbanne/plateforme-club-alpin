@@ -271,8 +271,7 @@
                         </p>
                         <br />
                     {% endif %}
-
-                    {% if (my_status.role == 'encadrant' or my_status.role == 'coencadrant') and display_banner %}
+                    {% if event.finished and (my_status.role == 'encadrant' or my_status.role == 'coencadrant') and display_banner %}
                         {% if currentExpenseReport is null or currentExpenseReport.status == 'draft' %}
                             {{ vueComponent('expense-report-form', 'ExpenseReportForm', {formStructureProp: expenseReportFormStructure}) }}
                         {% elseif currentExpenseReport is not null and currentExpenseReport.status == 'submitted' %}
