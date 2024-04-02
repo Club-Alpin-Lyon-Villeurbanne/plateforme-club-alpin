@@ -216,6 +216,21 @@
                 {% if my_status.role == 'encadrant' or my_status.role == 'stagiaire' or my_status.role == 'coencadrant' or my_status.role == 'benevole' %}
                     {% if not event.finished %}
                         {% if allowed('evt_unjoin') %}
+                        <div id="inscription-annuler" style="display: none;">
+                                {{ easy_include('formalites-inscription-suppression', 'formalites') }}
+
+                                <form action="{{ path('sortie_remove_participant', { id: my_status.id }) }}" method="post" class="loading">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
+
+                                    <p style="text-align:center">
+                                        <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+                                            <span class="bleucaf">&gt;</span>
+                                            ANNULER MA DEMANDE D'INSCRIPTION
+                                        </a>
+                                    </p>
+                                </form>
+                            </div>
+                            <br />
                         <div class="info info-container">
                             <img src="/img/inscrit-check.png" alt="" title=""/>
                             <div class="text-container">Vous êtes inscrit à cette sortie en tant que : {{ my_status.role }}.
