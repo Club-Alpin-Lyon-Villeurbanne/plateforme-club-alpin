@@ -3,16 +3,13 @@
 namespace App\Controller\Api;
 
 use App\Entity\ExpenseReport;
-use App\Repository\ExpenseReportRepository;
 use App\UserRights;
-use App\Utils\Enums\ExpenseReportEnum;
 use App\Utils\Serialize\ExpenseReportSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 
-class ExpenseReportUpdateStatus extends AbstractController
+class ExpenseReportUpdate extends AbstractController
 {
     public function __construct(
         private ExpenseReportSerializer $expenseReportSerializer,

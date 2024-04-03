@@ -8,7 +8,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use App\Controller\Api\ExpenseReportGet;
 use App\Controller\Api\ExpenseReportList;
-use App\Controller\Api\ExpenseReportUpdateStatus;
+use App\Controller\Api\ExpenseReportUpdate;
 use App\Repository\ExpenseReportRepository;
 use App\Utils\Enums\ExpenseReportEnum;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -36,8 +36,8 @@ use JsonSerializable;
     ),
     new Patch(
         name: 'expense_report_validate', 
-        uriTemplate: '/expense-report/{id}/status',
-        controller: ExpenseReportUpdateStatus::class,
+        uriTemplate: '/expense-report/{id}',
+        controller: ExpenseReportUpdate::class,
         stateless: false,
         security: "is_granted('ROLE_USER')"
     ),
