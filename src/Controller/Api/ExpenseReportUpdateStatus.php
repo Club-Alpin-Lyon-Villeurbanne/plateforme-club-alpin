@@ -2,10 +2,9 @@
 
 namespace App\Controller\Api;
 
+use App\Dto\ExpenseReportStatusDto;
 use App\Entity\ExpenseReport;
-use App\Repository\ExpenseReportRepository;
 use App\UserRights;
-use App\Utils\Enums\ExpenseReportEnum;
 use App\Utils\Serialize\ExpenseReportSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,7 +21,7 @@ class ExpenseReportUpdateStatus extends AbstractController
         
     }
 
-    public function __invoke(ExpenseReport $expenseReport): JsonResponse
+    public function __invoke(ExpenseReport $expenseReport, ExpenseReportStatusDto $expenseReportStatusDto): JsonResponse
     {
         if (!$this->userRights->allowed('evt_join_doall')) {
             return new JsonResponse([
@@ -31,6 +30,8 @@ class ExpenseReportUpdateStatus extends AbstractController
             ], 403);
         }
 
+        $expenseReport->setStatus($expenseReportStatusDto->status);
+        $expenseReport->setStatusComment($expenseReportStatusDto->statusComment);
         $this->entityManager->persist($expenseReport);
         $this->entityManager->flush();
         $expenseReportSerialized = $this->expenseReportSerializer->serialize($expenseReport);
