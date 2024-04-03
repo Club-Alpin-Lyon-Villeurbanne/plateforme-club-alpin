@@ -69,6 +69,19 @@ class ExpenseReportController extends AbstractController
             
             // pour chaque dépense dans le groupe
             foreach ($dataExpenseGroup['expenseTypes'] as $dataExpenseType) {
+                // ne pas traiter si les champs sont vides
+                $filled = false;
+                foreach ($dataExpenseType['fields'] as $dataField) {
+                    if (!empty($dataField['value'])) {
+                        $filled = true;
+                        break;
+                    }
+                }
+
+                if (!$filled) {
+                    continue;
+                }
+                
                 // si le groupe est de type "unique", ne pas traiter les types non selectionnés
                 if ($dataExpenseGroup['type'] === 'unique' && $dataExpenseType['slug'] !== $dataExpenseGroup['selectedType']) {
                     continue;   
@@ -83,6 +96,8 @@ class ExpenseReportController extends AbstractController
 
                 // pour chaque champ dans la dépense
                 foreach ($dataExpenseType['fields'] as $dataField) {
+
+
                     // créer le champ
                     $expenseField = new ExpenseField();
                     $fieldType = $expenseFieldTypeRepository->find($dataField['fieldTypeId']);
