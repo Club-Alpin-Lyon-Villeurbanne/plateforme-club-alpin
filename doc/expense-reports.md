@@ -273,12 +273,14 @@
 ```
 </details>
 
-### Modifier le status d'une notre de frais
+### Modifier une notre de frais (par exemple modifier le status)
 
 
-`PATCH` `/api/expense-report/{id}/status`
+`PATCH` `/api/expense-report/{id}`
 
 #### Payload
+
+_**Note** : On peut mettre à jour tous les champs de la note de frais (comportement PATCH standard)_
 
 _**Note** : Le champ "status" est un _enum_ en base de données : seules les valeurs listées dans la classe App\Utils\ExpenseReportEnum peuvent être utilisées._
 
