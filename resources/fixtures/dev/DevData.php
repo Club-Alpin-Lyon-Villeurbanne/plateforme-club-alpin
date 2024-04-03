@@ -14,15 +14,13 @@ class DevData implements FixtureInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    private string $userEmail;
-
     /**
      * {@inheritdoc}
      */
     public function load(ObjectManager $manager)
     {
         $loader = $this->container->get('nelmio_alice.files_loader');
-        $set = $loader->loadFiles(glob(__DIR__.'/alice/dev/*.yaml'), ['userEmail' => $this->userEmail]);
+        $set = $loader->loadFiles(glob(__DIR__.'/alice/dev/*.yaml'));
 
         $commissionRepo = $this->container->get(CommissionRepository::class);
         $comm = $commissionRepo->findVisibleCommission('sorties-familles');
@@ -94,10 +92,5 @@ class DevData implements FixtureInterface, ContainerAwareInterface
         }
 
         $manager->flush();
-    }
-
-    public function setUserEmail(string $email): void
-    {
-        $this->userEmail = $email;
     }
 }
