@@ -29,7 +29,6 @@ class FixturesLoadCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('email', InputArgument::REQUIRED, 'Set user\'s email to run with the fixtures.')
             ->addArgument('paths', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'The path(s) of the fixtures')
             ->addOption('purge-with-truncate', null, InputOption::VALUE_NONE, 'Purge data by using a database-level TRUNCATE statement')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Append the data fixtures instead of deleting all data from the database first.');
@@ -53,14 +52,6 @@ class FixturesLoadCommand extends Command
             throw new \InvalidArgumentException('Could not find any fixtures to load in: '."\n\n- ".implode("\n- ", $paths));
         }
 
-        $email = $this->getUserEmail($input, $output);
-
-        if (!$this->isEmailValid($email)) {
-            throw new \RuntimeException("{$email} is not a valid email address.");
-        }
-
-        $fixtures = $this->addEmailToFixtures($fixtures, $email);
-
         $em = $this->container->get('doctrine')->getManager();
 
         $userType = $em
@@ -82,38 +73,5 @@ class FixturesLoadCommand extends Command
         $executor->execute($fixtures, true);
 
         return 0;
-    }
-
-    private function addEmailToFixtures(array $fixtures, string $email): array
-    {
-        foreach ($fixtures as $fixture) {
-            if ($fixture instanceof \DevData) {
-                $fixture->setUserEmail($email);
-            }
-        }
-
-        return $fixtures;
-    }
-
-    private function isEmailValid($email): bool
-    {
-        if (filter_var($email, \FILTER_VALIDATE_EMAIL)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    protected function getUserEmail(InputInterface $input, OutputInterface $output): string
-    {
-        $email = $input->getArgument('email');
-
-        if ('none' === $email) {
-            $helper = $this->getHelper('question');
-            $question = new Question('Please enter your email: ');
-            $email = $helper->ask($input, $output, $question);
-        }
-
-        return $email;
     }
 }

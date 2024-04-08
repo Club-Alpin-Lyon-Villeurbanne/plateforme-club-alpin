@@ -39,7 +39,7 @@ database-init-test: ## Init database for test
 	$(SYMFONY_CONSOLE) doctrine:database:create --env=test
 	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.sql
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction --env=test
-	$(SYMFONY_CONSOLE) doctrine:fixtures:load --no-interaction --env=test
+	$(MAKE) args="--env=test --no-interaction" database-fixtures-load
 
 
 ## —— 🐳 Docker ——
@@ -73,6 +73,7 @@ database-init: ## Init database
 	$(MAKE) database-create
 	$(MAKE) database-import
 	$(MAKE) database-migrate
+	$(MAKE) args="--env=dev --no-interaction" database-fixtures-load
 
 database-drop: ## Create database
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists
@@ -82,10 +83,6 @@ database-create: ## Create database
 
 database-import: ## Make import
 	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.sql
-	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.x.sql
-	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.sql
-	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.1.1.1.sql
-	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.partenaires.sql
 
 database-migration: ## Make migration
 	$(SYMFONY_CONSOLE) make:migration
@@ -94,7 +91,10 @@ database-migrate: ## Migrate migrations
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction
 
 database-fixtures-load: ## Load fixtures
-	$(SYMFONY_CONSOLE) --env=$(env) doctrine:fixtures:load $(email) resources/fixtures/$(env)/
+ifeq ($(args),)
+	$(eval args="--env=dev")
+endif
+	$(SYMFONY_CONSOLE) $(args) caf:fixtures:load resources/fixtures/
 
 ## —— 🛠️  Others ——
 help: ## List of commands
