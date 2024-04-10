@@ -27,6 +27,15 @@ init: ## Init the project
 cache-clear: ## Clear cache
 	$(SYMFONY_CONSOLE) cache:clear
 
+## —— ✅ Linting ——
+php-cs: ## Just analyze PHP code with php-cs-fixer
+	$(eval args ?= )
+	$(PHP) -dmemory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run $(args)
+
+php-cs-fix: ## Analyze and fix PHP code with php-cs-fixer
+	$(eval args ?= )
+	$(PHP) -dmemory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php $(args)
+
 ## —— ✅ Test ——
 .PHONY: tests
 tests: ## Run all tests
