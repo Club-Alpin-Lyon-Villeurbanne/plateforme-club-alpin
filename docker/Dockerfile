@@ -48,9 +48,10 @@ RUN docker-php-ext-install -j$(nproc) mysqli pdo_mysql && \
     docker-php-ext-install -j$(nproc) intl && \
     docker-php-ext-configure gd --with-jpeg && \
     docker-php-ext-install -j$(nproc) gd
-    
+
 RUN pecl install apcu && docker-php-ext-enable apcu
 RUN pecl install imagick && docker-php-ext-enable imagick
+RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 COPY ./utils/docker-999-php.ini $PHP_INI_DIR/conf.d/999-php.ini
 
