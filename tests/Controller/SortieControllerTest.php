@@ -12,22 +12,18 @@ class SortieControllerTest extends WebTestCase
 {
     public function testDisplaySortieToOwner()
     {
-        $this->client = static::createClient();
-
         $user = $this->signup();
         $this->signin($user);
 
         $event = $this->createEvent($user);
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
         $this->getContainer()->get('doctrine')->getManager()->flush();
-        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        static::$client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
         $this->assertResponseStatusCodeSame(200);
     }
 
     public function testDisplaySortieWithFiliationsAndEmpietementsToOwner()
     {
-        $this->client = static::createClient();
-
         $user = $this->signup();
         $user->setCafnum(123456789);
         $this->signin($user);
@@ -42,39 +38,33 @@ class SortieControllerTest extends WebTestCase
         $event2->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
 
         $this->getContainer()->get('doctrine')->getManager()->flush();
-        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        static::$client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
         $this->assertResponseStatusCodeSame(200);
     }
 
     public function testDisplaySortiPublishedToOwner()
     {
-        $this->client = static::createClient();
-
         $user = $this->signup();
         $this->signin($user);
 
         $event = $this->createEvent($user);
-        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        static::$client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
         $this->assertResponseStatusCodeSame(200);
     }
 
     public function testDisplayUnpublishedSortieOtherUser()
     {
-        $this->client = static::createClient();
-
         $user = $this->signup();
         $userOwner = $this->signup();
         $this->signin($user);
 
         $event = $this->createEvent($userOwner);
-        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        static::$client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
         $this->assertResponseStatusCodeSame(403);
     }
 
     public function testDisplayUnpublishedSortieAdminUser()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $commissionAdmin = $this->signup();
@@ -82,14 +72,12 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($commissionAdmin);
 
-        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        static::$client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
         $this->assertResponseStatusCodeSame(200);
     }
 
     public function testDisplayPublishedSortieOtherUser()
     {
-        $this->client = static::createClient();
-
         $user = $this->signup();
         $userOwner = $this->signup();
         $this->signin($user);
@@ -97,14 +85,12 @@ class SortieControllerTest extends WebTestCase
         $event = $this->createEvent($userOwner);
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
         $this->getContainer()->get('doctrine')->getManager()->flush();
-        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        static::$client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
         $this->assertResponseStatusCodeSame(200);
     }
 
     public function testSortieValidate()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $commissionAdmin = $this->signup();
@@ -112,8 +98,8 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($commissionAdmin);
 
-        $this->client->request('POST', sprintf('/sortie/%d/validate', $event->getId()), [
-            'csrf_token' => $this->csrfToken('sortie_validate'),
+        static::$client->request('POST', sprintf('/sortie/%d/validate', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'sortie_validate'),
         ]);
         $this->assertResponseStatusCodeSame(302);
 
@@ -129,8 +115,6 @@ class SortieControllerTest extends WebTestCase
 
     public function testSortieValidateInvalidCsrf()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $commissionAdmin = $this->signup();
@@ -138,32 +122,28 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($commissionAdmin);
 
-        $this->client->request('POST', sprintf('/sortie/%d/validate', $event->getId()), [
-            'csrf_token' => $this->csrfToken('prout'),
+        static::$client->request('POST', sprintf('/sortie/%d/validate', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'invalid_csrf'),
         ]);
         $this->assertResponseStatusCodeSame(400);
     }
 
     public function testSortieValidateNoRight()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $notCommissionAdmin = $this->signup();
 
         $this->signin($notCommissionAdmin);
 
-        $this->client->request('POST', sprintf('/sortie/%d/validate', $event->getId()), [
-            'csrf_token' => $this->csrfToken('sortie_validate'),
+        static::$client->request('POST', sprintf('/sortie/%d/validate', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'sortie_validate'),
         ]);
         $this->assertResponseStatusCodeSame(403);
     }
 
     public function testSortieRefus()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $commissionAdmin = $this->signup();
@@ -171,8 +151,8 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($commissionAdmin);
 
-        $this->client->request('POST', sprintf('/sortie/%d/refus', $event->getId()), [
-            'csrf_token' => $this->csrfToken('sortie_refus'),
+        static::$client->request('POST', sprintf('/sortie/%d/refus', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'sortie_refus'),
             'msg' => 'rien ne va plus',
         ]);
         $this->assertResponseStatusCodeSame(302);
@@ -189,8 +169,6 @@ class SortieControllerTest extends WebTestCase
 
     public function testSortieRefusInvalidCsrf()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $commissionAdmin = $this->signup();
@@ -198,8 +176,8 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($commissionAdmin);
 
-        $this->client->request('POST', sprintf('/sortie/%d/refus', $event->getId()), [
-            'csrf_token' => $this->csrfToken('blabla'),
+        static::$client->request('POST', sprintf('/sortie/%d/refus', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'invalid_csrf'),
             'msg' => 'rien ne va plus',
         ]);
         $this->assertResponseStatusCodeSame(400);
@@ -207,16 +185,14 @@ class SortieControllerTest extends WebTestCase
 
     public function testSortieRefusNoRight()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $commissionAdmin = $this->signup();
 
         $this->signin($commissionAdmin);
 
-        $this->client->request('POST', sprintf('/sortie/%d/refus', $event->getId()), [
-            'csrf_token' => $this->csrfToken('sortie_refus'),
+        static::$client->request('POST', sprintf('/sortie/%d/refus', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'sortie_refus'),
             'msg' => 'rien ne va plus',
         ]);
         $this->assertResponseStatusCodeSame(403);
@@ -224,8 +200,6 @@ class SortieControllerTest extends WebTestCase
 
     public function testSortieLegalValidate()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
@@ -234,8 +208,8 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($president);
 
-        $this->client->request('POST', sprintf('/sortie/%d/legal-validate', $event->getId()), [
-            'csrf_token' => $this->csrfToken('sortie_legal_validate'),
+        static::$client->request('POST', sprintf('/sortie/%d/legal-validate', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'sortie_legal_validate'),
         ]);
         $this->assertResponseStatusCodeSame(302);
 
@@ -250,8 +224,6 @@ class SortieControllerTest extends WebTestCase
 
     public function testSortieLegalValidateInvalidCsrf()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
@@ -260,16 +232,14 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($president);
 
-        $this->client->request('POST', sprintf('/sortie/%d/legal-validate', $event->getId()), [
-            'csrf_token' => $this->csrfToken('prout'),
+        static::$client->request('POST', sprintf('/sortie/%d/legal-validate', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'invalid_csrf'),
         ]);
         $this->assertResponseStatusCodeSame(400);
     }
 
     public function testSortieLegalValidateNoRights()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
@@ -277,16 +247,14 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($notPresident);
 
-        $this->client->request('POST', sprintf('/sortie/%d/legal-validate', $event->getId()), [
-            'csrf_token' => $this->csrfToken('sortie_legal_validate'),
+        static::$client->request('POST', sprintf('/sortie/%d/legal-validate', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'sortie_legal_validate'),
         ]);
         $this->assertResponseStatusCodeSame(403);
     }
 
     public function testSortieLegalRefus()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
@@ -295,8 +263,8 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($president);
 
-        $this->client->request('POST', sprintf('/sortie/%d/legal-refus', $event->getId()), [
-            'csrf_token' => $this->csrfToken('sortie_legal_refus'),
+        static::$client->request('POST', sprintf('/sortie/%d/legal-refus', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'sortie_legal_refus'),
         ]);
         $this->assertResponseStatusCodeSame(302);
 
@@ -311,8 +279,6 @@ class SortieControllerTest extends WebTestCase
 
     public function testSortieLegalRefusInvalidCsrf()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
@@ -321,16 +287,14 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($president);
 
-        $this->client->request('POST', sprintf('/sortie/%d/legal-refus', $event->getId()), [
-            'csrf_token' => $this->csrfToken('blablaprout'),
+        static::$client->request('POST', sprintf('/sortie/%d/legal-refus', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'invalid_csrf'),
         ]);
         $this->assertResponseStatusCodeSame(400);
     }
 
     public function testSortieLegalRefusNoRight()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
@@ -338,16 +302,14 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($notPresident);
 
-        $this->client->request('POST', sprintf('/sortie/%d/legal-refus', $event->getId()), [
-            'csrf_token' => $this->csrfToken('sortie_legal_refus'),
+        static::$client->request('POST', sprintf('/sortie/%d/legal-refus', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'sortie_legal_refus'),
         ]);
         $this->assertResponseStatusCodeSame(403);
     }
 
     public function testSortieUncancel()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setCancelled(true)
@@ -357,8 +319,8 @@ class SortieControllerTest extends WebTestCase
         $this->signin($userOwner);
         $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:'.$event->getCommission()->getCode());
 
-        $this->client->request('POST', sprintf('/sortie/%d/uncancel', $event->getId()), [
-            'csrf_token' => $this->csrfToken('sortie_uncancel'),
+        static::$client->request('POST', sprintf('/sortie/%d/uncancel', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'sortie_uncancel'),
         ]);
         $this->assertResponseStatusCodeSame(302);
 
@@ -372,8 +334,6 @@ class SortieControllerTest extends WebTestCase
 
     public function testSortieUncancelInvalidCsrf()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setCancelled(true)
@@ -383,16 +343,14 @@ class SortieControllerTest extends WebTestCase
         $this->signin($userOwner);
         $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:'.$event->getCommission()->getCode());
 
-        $this->client->request('POST', sprintf('/sortie/%d/uncancel', $event->getId()), [
-            'csrf_token' => $this->csrfToken('prout'),
+        static::$client->request('POST', sprintf('/sortie/%d/uncancel', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'invalid_csrf'),
         ]);
         $this->assertResponseStatusCodeSame(400);
     }
 
     public function testSortieUncancelNoRights()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $anotherUser = $this->signup();
         $event = $this->createEvent($userOwner);
@@ -403,24 +361,22 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($anotherUser);
 
-        $this->client->request('POST', sprintf('/sortie/%d/uncancel', $event->getId()), [
-            'csrf_token' => $this->csrfToken('sortie_uncancel'),
+        static::$client->request('POST', sprintf('/sortie/%d/uncancel', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'sortie_uncancel'),
         ]);
         $this->assertResponseStatusCodeSame(403);
     }
 
     public function testContactParticipants()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:'.$event->getCommission()->getCode());
 
         $this->signin($userOwner);
 
-        $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
-            'csrf_token' => $this->csrfToken('contact_participants'),
+        static::$client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'contact_participants'),
             'status_sendmail' => '*',
             'objet' => 'un objet de culte',
             'message' => 'tirelipimpon',
@@ -440,16 +396,14 @@ class SortieControllerTest extends WebTestCase
 
     public function testContactParticipantsNoTarget()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:'.$event->getCommission()->getCode());
 
         $this->signin($userOwner);
 
-        $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
-            'csrf_token' => $this->csrfToken('contact_participants'),
+        static::$client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'contact_participants'),
             'status_sendmail' => EventParticipation::STATUS_REFUSE,
             'objet' => 'un objet de culte',
             'message' => 'tirelipimpon',
@@ -462,16 +416,14 @@ class SortieControllerTest extends WebTestCase
 
     public function testContactParticipantsOneTarget()
     {
-        $this->client = static::createClient();
-
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:'.$event->getCommission()->getCode());
 
         $this->signin($userOwner);
 
-        $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
-            'csrf_token' => $this->csrfToken('contact_participants'),
+        static::$client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken(static::$client, 'contact_participants'),
             'status_sendmail' => EventParticipation::STATUS_VALIDE,
             'objet' => 'un objet de culte',
             'message' => 'Prout PROUT',

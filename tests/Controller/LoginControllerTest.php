@@ -9,8 +9,6 @@ class LoginControllerTest extends WebTestCase
 {
     public function testLogin()
     {
-        $this->client = static::createClient();
-
         $hasherFactory = self::getContainer()->get(PasswordHasherFactoryInterface::class);
 
         $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
@@ -18,10 +16,10 @@ class LoginControllerTest extends WebTestCase
         $em = $this->getContainer()->get('doctrine')->getManager();
         $em->flush();
 
-        $this->client->request('GET', '/login');
+        static::$client->request('GET', '/login');
         $this->assertResponseStatusCodeSame(200);
 
-        $this->client->submitForm('connect-button', [
+        static::$client->submitForm('connect-button', [
             '_username' => $user->getEmail(),
             '_password' => 'youpla',
         ]);
@@ -31,8 +29,6 @@ class LoginControllerTest extends WebTestCase
 
     public function testLoginInvalidPassword()
     {
-        $this->client = static::createClient();
-
         $hasherFactory = self::getContainer()->get(PasswordHasherFactoryInterface::class);
 
         $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
@@ -40,10 +36,10 @@ class LoginControllerTest extends WebTestCase
         $em = $this->getContainer()->get('doctrine')->getManager();
         $em->flush();
 
-        $this->client->request('GET', '/login');
+        static::$client->request('GET', '/login');
         $this->assertResponseStatusCodeSame(200);
 
-        $this->client->submitForm('connect-button', [
+        static::$client->submitForm('connect-button', [
             '_username' => $user->getEmail(),
             '_password' => 'invalid',
         ]);
@@ -53,33 +49,30 @@ class LoginControllerTest extends WebTestCase
 
     public function testLoginWhenConnected()
     {
-        $this->client = static::createClient();
         $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
         $this->signin($user);
 
-        $this->client->request('GET', '/login');
+        static::$client->request('GET', '/login');
         $this->assertResponseStatusCodeSame(302);
     }
 
     public function testPasswordLostWhenConnected()
     {
-        $this->client = static::createClient();
         $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
         $this->signin($user);
 
-        $this->client->request('GET', '/password-lost');
+        static::$client->request('GET', '/password-lost');
         $this->assertResponseStatusCodeSame(302);
     }
 
     public function testPasswordLost()
     {
-        $this->client = static::createClient();
         $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
 
-        $this->client->request('GET', '/password-lost');
+        static::$client->request('GET', '/password-lost');
         $this->assertResponseStatusCodeSame(200);
 
-        $crawler = $this->client->submitForm('reset_password[submit]', [
+        $crawler = static::$client->submitForm('reset_password[submit]', [
             'reset_password[email]' => $user->getEmail(),
         ]);
 
@@ -96,18 +89,17 @@ class LoginControllerTest extends WebTestCase
 
     public function testSetPassword()
     {
-        $this->client = static::createClient();
         $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
 
-        $this->client->request('GET', '/password');
+        static::$client->request('GET', '/password');
         $this->assertResponseStatusCodeSame(302);
 
         $this->signin($user);
 
-        $this->client->request('GET', '/password');
+        static::$client->request('GET', '/password');
         $this->assertResponseStatusCodeSame(200);
 
-        $this->client->submitForm('set_password[submit]', [
+        static::$client->submitForm('set_password[submit]', [
             'set_password[password][first]' => '!NewPassw0rd',
             'set_password[password][second]' => '!NewPassw0rd',
         ]);
@@ -125,23 +117,21 @@ class LoginControllerTest extends WebTestCase
 
     public function testChangePassword()
     {
-        $this->client = static::createClient();
-
         $hasherFactory = self::getContainer()->get(PasswordHasherFactoryInterface::class);
 
         $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
         $user->setMdp($hasherFactory->getPasswordHasher('login_form')->hash('!currentPassw0rd'));
         $this->getContainer()->get('doctrine')->getManager()->flush();
 
-        $this->client->request('GET', '/change-password');
+        static::$client->request('GET', '/change-password');
         $this->assertResponseStatusCodeSame(302);
 
         $this->signin($user);
 
-        $this->client->request('GET', '/change-password');
+        static::$client->request('GET', '/change-password');
         $this->assertResponseStatusCodeSame(200);
 
-        $this->client->submitForm('change_password[submit]', [
+        static::$client->submitForm('change_password[submit]', [
             'change_password[current_password]' => '!currentPassw0rd',
             'change_password[password][first]' => '!NewPassw0rd',
             'change_password[password][second]' => '!NewPassw0rd',
