@@ -44,7 +44,7 @@ if (0 === count($errTab)) {
     } // depuis la racine
 
     if (!file_exists($targetDir)) {
-        if (!mkdir($targetDir, 755, true) && !is_dir($targetDir)) {
+        if (!mkdir($targetDir, 0755, true) && !is_dir($targetDir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $targetDir));
         }
     }
