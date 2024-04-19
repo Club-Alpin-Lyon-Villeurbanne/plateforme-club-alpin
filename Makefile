@@ -42,8 +42,10 @@ phpstan:
 ## —— ✅ Test ——
 .PHONY: tests
 tests: ## Run all tests
+ifdef clear
 	$(MAKE) database-init-test
-	$(PHP) bin/phpunit tests
+endif
+	$(PHP) bin/phpunit ${path}
 
 database-init-test: ## Init database for test
 
