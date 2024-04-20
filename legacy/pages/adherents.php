@@ -102,6 +102,20 @@
 					<?php
 				        $total = 0;
 
+			$isAllowed_user_giveright_1 = allowed('user_giveright_1');
+			$isAllowed_user_giveright_2 = allowed('user_giveright_2');
+			$isAllowed_user_givepresidence = allowed('user_givepresidence');
+			$isAllowed_user_desactivate_any = allowed('user_desactivate_any');
+			$isAlowed_user_reactivate = allowed('user_reactivate');
+			$isAllowed_user_reset = allowed('user_reset');
+			$isAllowed_user_edit_notme = allowed('user_edit_notme');
+			$isAllowed_user_read_private = allowed('user_read_private');
+			$isGranted_role_allowed_to_switch = isGranted('ROLE_ALLOWED_TO_SWITCH');
+
+
+
+
+
             for ($i = 0; $i < count($userTab); ++$i) {
                 $elt = $userTab[$i];
 
@@ -113,30 +127,30 @@
                 //								if($elt['valid_user']){
 
                 // gestion des droits
-                if (allowed('user_giveright_1') || allowed('user_giveright_2') || allowed('user_givepresidence')) {
+                if ($isAllowed_user_giveright_1 || $isAllowed_user_giveright_2 || $isAllowed_user_givepresidence) {
                     echo '<a href="/includer.php?p=pages/adherents-droits.php&amp;id_user='.(int) $elt['id_user'].'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Voir / Attribuer des statuts à cet utilisateur"><img src="/img/base/user_star.png"></a> ';
                 }
 
                 // désactiver
-                if (allowed('user_desactivate_any') && '1' == $elt['valid_user']) {
+                if ($isAllowed_user_desactivate_any && '1' == $elt['valid_user']) {
                     echo '<a href="/includer.php?p=pages/adherents-desactiver.php&amp;id_user='.(int) $elt['id_user'].'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Désactiver le compte de cet utilisateur"><img src="/img/base/user_unvalidate.png"></a> ';
                 }
                 // réactiver
-                if (allowed('user_reactivate') && '2' == $elt['valid_user']) {
+                if ($isAlowed_user_reactivate && '2' == $elt['valid_user']) {
                     echo '<a href="/includer.php?p=pages/adherents-reactiver.php&amp;id_user='.(int) $elt['id_user'].'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Réactiver le compte de cet utilisateur"><img src="/img/base/user_revalidate.png"></a> ';
                 }
 
                 // reset user
-                if (allowed('user_reset')) {
+                if ($isAllowed_user_reset) {
                     echo '<a href="/includer.php?p=pages/adherents-reset.php&amp;id_user='.(int) $elt['id_user'].'&amp;nom='.urlencode($elt['civ_user'].' '.$elt['firstname_user'].' '.$elt['lastname_user']).'" class="fancyframe" title="Remettre à zéro, réinitialiser le compte de cet utilisateur"><img src="/img/base/user_reset.png"></a> ';
                 }
 
                 // edit user
-                if (allowed('user_edit_notme')) {
+                if ($isAllowed_user_edit_notme) {
                     echo '<a href="/includer.php?p=pages/adherents-modifier.php&amp;id_user='.(int) $elt['id_user'].'" class="fancyframe" title="Modifier cet adhérent"><img src="/img/base/user_edit.png"></a> ';
                 }
 
-                if (isGranted('ROLE_ALLOWED_TO_SWITCH')) {
+                if ($isGranted_role_allowed_to_switch) {
                     echo (1 == $elt['valid_user'] && $elt['email_user']) ? ' <a href="/profil.html?_switch_user='.urlencode($elt['email_user']).'" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png"></a> ' : ' ';
                 }
 
@@ -156,14 +170,14 @@
                             .'<td>'.html_utf8($elt['civ_user']).'</td>'
                             .'<td>'.html_utf8($elt['lastname_user']).'</td>'
                             .'<td>'.html_utf8($elt['firstname_user']).'</td>'
-                            .'<td>'.(allowed('user_read_private') ? ($elt['date_adhesion_user'] ? date('Y-m-d', $elt['date_adhesion_user']) : '-') : $img_lock).'</td>'
+                            .'<td>'.($isAllowed_user_read_private ? ($elt['date_adhesion_user'] ? date('Y-m-d', $elt['date_adhesion_user']) : '-') : $img_lock).'</td>'
                             .'<td>'.userlink($elt['id_user'], $elt['nickname_user']).'</td>'
-                            .'<td>'.(allowed('user_read_private') ? '<span style="display:none">'.$elt['birthday_user'].'</span>'.($elt['birthday_user'] ? (int) ($elt['birthday_user']).' ans' : '...') : $img_lock).'</td>'
-                            .'<td>'.(allowed('user_read_private') ? html_utf8($elt['tel_user']).'<br />'.html_utf8($elt['tel2_user']) : $img_lock).'</td>'
-                            .'<td>'.(allowed('user_read_private') ? '<a href="mailto:'.html_utf8($elt['email_user']).'" title="Contact direct">'.html_utf8($elt['email_user']).'</a>' : $img_lock).'</td>'
+                            .'<td>'.($isAllowed_user_read_private ? '<span style="display:none">'.$elt['birthday_user'].'</span>'.($elt['birthday_user'] ? (int) ($elt['birthday_user']).' ans' : '...') : $img_lock).'</td>'
+                            .'<td>'.($isAllowed_user_read_private ? html_utf8($elt['tel_user']).'<br />'.html_utf8($elt['tel2_user']) : $img_lock).'</td>'
+                            .'<td>'.($isAllowed_user_read_private ? '<a href="mailto:'.html_utf8($elt['email_user']).'" title="Contact direct">'.html_utf8($elt['email_user']).'</a>' : $img_lock).'</td>'
                             // .'<td>'.(allowed('user_read_private')?nl2br(html_utf8($elt['adresse_user'])):$img_lock).'</td>'
-                            .'<td>'.(allowed('user_read_private') ? html_utf8($elt['cp_user']) : $img_lock).'</td>'
-                            .'<td>'.(allowed('user_read_private') ? html_utf8($elt['ville_user']) : $img_lock).'</td>'
+                            .'<td>'.($isAllowed_user_read_private ? html_utf8($elt['cp_user']) : $img_lock).'</td>'
+                            .'<td>'.($isAllowed_user_read_private ? html_utf8($elt['ville_user']) : $img_lock).'</td>'
                             // .'<td>'.(allowed('user_read_private')?html_utf8($elt['pays_user']):$img_lock).'</td>'
                             // .'<td></td>'
 

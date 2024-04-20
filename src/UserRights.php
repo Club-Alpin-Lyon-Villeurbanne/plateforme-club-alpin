@@ -155,6 +155,7 @@ class UserRights implements ResetInterface
         // sans paramètre, la valeur est une string 'true'
         // Il est possible que le même droit prenne plusieurs paramètres (ex : vous avez le droit d'écrire un article dans
         // deux commissions auquel cas, ils sont concaténés via le caractère |
+        $isAdmin = $this->isAdmin();
         foreach ($result as $row) {
             if ($row['params_user_attr'] && $row['limited_to_comm_usertype']) {
                 $val = $row['params_user_attr'];
@@ -170,7 +171,7 @@ class UserRights implements ResetInterface
                 $userAllowedTo[$row['code_userright']] = (isset($userAllowedTo[$row['code_userright']]) ? $userAllowedTo[$row['code_userright']].'|' : '').$val;
             }
 
-            if ($this->isAdmin()) {
+            if ($isAdmin) {
                 $userAllowedTo[$row['code_userright']] = 'true';
             }
         }
