@@ -17,16 +17,6 @@ $notif_validerunesortie_president = 0;
 // commission courante sur cette page
 $current_commission = false;
 
-// liste des extensions autorisees dans le FTP
-if (admin()) {
-    $req = 'SELECT * FROM  caf_ftp_allowedext ORDER BY ext_ftp_allowedext';
-    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    $extTab = [];
-    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-        $extTab[] = $handle['ext_ftp_allowedext'];
-    }
-}
-
 // LISTE DES COMMISSIONS PUBLIQUES
 $req = 'SELECT * FROM caf_commission WHERE vis_commission=1 ORDER BY ordre_commission ASC';
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
