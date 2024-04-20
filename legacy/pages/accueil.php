@@ -1,3 +1,88 @@
+<?php
+
+use App\Legacy\LegacyContainer;
+
+$MAX_ARTICLES_ACCUEIL = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_ACCUEIL');
+
+$sliderTab = [];
+$articlesTab = [];
+
+// *******************
+// articles dans le slider
+$req = 'SELECT `id_article` , `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article`
+	FROM  `caf_article`
+	WHERE  `status_article` =1
+	AND  `une_article` =1
+	ORDER BY  `tsp_validate_article` DESC
+	LIMIT 0 , 5';
+$handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+	$sliderTab[] = $handle;
+}
+
+// *******************
+// articles dans la page
+$limite = $MAX_ARTICLES_ACCUEIL; // nombre d'elements affiches
+$pagenum = (int) ($_GET['pagenum'] ?? 0);
+if ($pagenum < 1) {
+	$pagenum = 1;
+} // les pages commencent à 1
+
+// premiere requete : défaut, ne considère pas les articles liés à une sortie, liée à la commission courante
+$select = 'id_article , status_article ,  status_who_article ,  tsp_article ,  user_article ,  titre_article ,  code_article ,  commission_article ,  evt_article ,  une_article ,  cont_article ';
+$req = 'SELECT SQL_CALC_FOUND_ROWS '.$select.'
+	FROM  caf_article
+	WHERE  status_article =1
+	';
+
+if ($current_commission) {
+	// .($current_commission?" AND (commission_article = ".intval($comTab[$current_commission]['id_commission'])." OR commission_article = 0) ":'')
+	$req .= ' AND ((commission_article = 0 AND DATEDIFF(NOW(), tsp_lastedit)<30)
+			OR
+			(commission_article = '.(int) $comTab[$current_commission]['id_commission'].')
+		) ';
+}
+// commission donnée : filtre (mais on inclut les actus club, commission=0)
+$req .= ' ORDER BY  tsp_validate_article DESC
+	LIMIT '.($limite * ($pagenum - 1)).", $limite";
+$handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+
+// calcul du total grâce à SQL_CALC_FOUND_ROWS
+$totalSql = LegacyContainer::get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
+$total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
+$nbrPages = ceil($total / $limite);
+
+while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+	// info de la commission liée
+	if ($handle['commission_article'] > 0) {
+		$req = 'SELECT * FROM caf_commission
+			WHERE id_commission = '.(int) $handle['commission_article'].'
+			LIMIT 1';
+		$handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+		while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
+			$handle['commission'] = $handle2;
+		}
+	}
+
+	// info de la sortie liée && de la commission liée à la sortie liée (simple ou pas ?)
+	if ($handle['evt_article'] > 0) {
+		$req = 'SELECT
+				code_evt, id_evt, titre_evt
+				, code_commission
+			FROM caf_evt, caf_commission
+			WHERE id_evt = '.(int) $handle['evt_article'].'
+			AND id_commission = commission_evt
+			LIMIT 1';
+		$handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+		while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
+			$handle['evt'] = $handle2;
+		}
+	}
+
+	$articlesTab[] = $handle;
+}
+?>
+
 <!-- MAIN -->
 <div id="main" role="main" class="bigoo" style="">
 
