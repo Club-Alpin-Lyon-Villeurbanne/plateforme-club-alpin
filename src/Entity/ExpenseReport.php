@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Controller\Api\ExpenseReportGet;
 use App\Controller\Api\ExpenseReportList;
 use App\Controller\Api\ExpenseReportUpdateStatus;
@@ -35,7 +36,7 @@ use JsonSerializable;
         stateless: false,
         security: "is_granted('ROLE_USER')"
     ),
-    new Patch(
+    new Post(
         name: 'expense_report_validate', 
         uriTemplate: '/expense-report/{id}/status',
         input: ExpenseReportStatusDto::class,
