@@ -276,7 +276,7 @@
 ### Modifier le status d'une notre de frais
 
 
-`PATCH` `/api/expense-report/{id}/status`
+`POST` `/api/expense-report/{id}/status`
 
 #### Payload
 
