@@ -104,7 +104,9 @@ class SortieController extends AbstractController
 
         // prefill the form with the current expense report data
         if ($currentExpenseReport 
-            && $currentExpenseReport->getStatus() === ExpenseReportEnum::STATUS_DRAFT
+            && in_array($currentExpenseReport->getStatus(), 
+                [ExpenseReportEnum::STATUS_DRAFT, ExpenseReportEnum::STATUS_REJECTED]
+            )
         ) {
             // serialize the current expense report
             $currentExpenseReport = $expenseReportSerializer->serialize($currentExpenseReport);
