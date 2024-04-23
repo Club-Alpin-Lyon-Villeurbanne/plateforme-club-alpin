@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Dto\ExpenseReportStatusDto;
 use App\Entity\ExpenseReport;
 use App\UserRights;
+use App\Utils\Enums\ExpenseReportEnum;
 use App\Utils\Serialize\ExpenseReportSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,6 +29,13 @@ class ExpenseReportUpdateStatus extends AbstractController
                 'success' => false,
                 'message' => 'You are not allowed to update this expense report',
             ], 403);
+        }
+
+        if (in_array($expenseReportStatusDto->status, [ExpenseReportEnum::STATUS_DRAFT, ExpenseReportEnum::STATUS_SUBMITTED])) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'You cannot set the status to draft or submitted',
+            ], 400);
         }
 
         $expenseReport->setStatus($expenseReportStatusDto->status);
