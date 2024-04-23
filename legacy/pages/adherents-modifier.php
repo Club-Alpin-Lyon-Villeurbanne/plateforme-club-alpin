@@ -26,24 +26,24 @@ if (!admin() && !allowed('user_edit_notme')) {
         }
     }
 	
-	$civUser = $userTab['civ_user'] ?? null;
-	$firstnameUser = $userTab['firstname_user'] ??  null;
-	$lastnameUser = $userTab['lastname_user'] ?? null;
-	$nicknameUser = $userTab['nickname_user'] ?? null;
-	$alerteRenouvelerUser = $userTab['alerte_renouveler_user'] ?? null;
-	$dateAdhesionUser = $userTab['date_adhesion_user'] ?? null;
-	$birthdayUser = $userTab['birthday_user'] ?? null;
-	$telUser = $userTab['tel_user'] ?? null;
-	$telSecuUser = $userTab['tel2_user'] ?? null;
-	$adresseUser = $userTab['adresse_user'] ?? null;
-	$cpUser = $userTab['cp_user'] ?? null;
-	$villeUser = $userTab['ville_user'] ?? null;
-	$paysUser = $userTab['pays_user'] ?? null;
-	$validUser = $userTab['valid_user'] ?? null;
-	$cafnumUserNew = $userTab['cafnum_user_new'] ?? null;
-	$cafnumUser = $userTab['cafnum_user'] ?? null;
-	$authContactUser = $userTab['auth_contact_user'] ?? null;
-	$userEmail = $userTab['email_user'] ?? null;
+	$civUser = $userTab['civ_user'];
+	$firstnameUser = $userTab['firstname_user'];
+	$lastnameUser = $userTab['lastname_user'];
+	$nicknameUser = $userTab['nickname_user'];
+	$alerteRenouvelerUser = $userTab['alerte_renouveler_user'];
+	$dateAdhesionUser = $userTab['date_adhesion_user'];
+	$birthdayUser = $userTab['birthday_user'];
+	$telUser = $userTab['tel_user'];
+	$telSecuUser = $userTab['tel2_user'];
+	$adresseUser = $userTab['adresse_user'];
+	$cpUser = $userTab['cp_user'];
+	$villeUser = $userTab['ville_user'];
+	$paysUser = $userTab['pays_user'];
+	$validUser = $userTab['valid_user'];
+	$cafnumUserNew = $userTab['cafnum_user_new'];
+	$cafnumUser = $userTab['cafnum_user'];
+	$authContactUser = $userTab['auth_contact_user'];
+	$userEmail = $userTab['email_user'];
 	
 	?>
 
