@@ -40,7 +40,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 	$villeUser = $userTab['ville_user'];
 	$paysUser = $userTab['pays_user'];
 	$validUser = $userTab['valid_user'];
-	$cafnumUserNew = $userTab['cafnum_user_new'];
+	$cafnumUserNew = $userTab['cafnum_user_new'] ?? null;
 	$cafnumUser = $userTab['cafnum_user'];
 	$authContactUser = $userTab['auth_contact_user'];
 	$userEmail = $userTab['email_user'];
