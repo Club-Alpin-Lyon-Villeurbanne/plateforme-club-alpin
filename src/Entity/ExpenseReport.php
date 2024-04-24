@@ -6,9 +6,11 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Controller\Api\ExpenseReportGet;
 use App\Controller\Api\ExpenseReportList;
 use App\Controller\Api\ExpenseReportUpdateStatus;
+use App\Dto\ExpenseReportStatusDto;
 use App\Repository\ExpenseReportRepository;
 use App\Utils\Enums\ExpenseReportEnum;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -34,9 +36,10 @@ use JsonSerializable;
         stateless: false,
         security: "is_granted('ROLE_USER')"
     ),
-    new Patch(
+    new Post(
         name: 'expense_report_validate', 
         uriTemplate: '/expense-report/{id}/status',
+        input: ExpenseReportStatusDto::class,
         controller: ExpenseReportUpdateStatus::class,
         stateless: false,
         security: "is_granted('ROLE_USER')"
@@ -92,6 +95,12 @@ class ExpenseReport implements JsonSerializable
     public function setUpdatedAtValue(): void
     {
         $this->updated_at = new \DateTimeImmutable();
+    }
+
+    public function setId($id): static
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getId(): ?int
