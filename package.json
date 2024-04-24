@@ -1,16 +1,16 @@
 {
     "devDependencies": {
         "@babel/plugin-proposal-class-properties": "^7.18.6",
-        "@symfony/webpack-encore": "^1.0.0",
-        "core-js": "^3.0.0",
+        "@symfony/webpack-encore": "^4.6.1",
+        "core-js": "^3.37.0",
         "file-loader": "^6.2.0",
-        "regenerator-runtime": "^0.13.2",
-        "sass": "^1.69.5",
-        "sass-loader": "^12.6.0",
+        "regenerator-runtime": "^0.14.1",
+        "sass": "^1.75.0",
+        "sass-loader": "^14.2.1",
         "ts-loader": "^9.5.1",
-        "vue": "^3.3.8",
-        "vue-loader": "^16.8.3",
-        "webpack-notifier": "^1.6.0"
+        "vue": "^3.4.25",
+        "vue-loader": "^17.4.2",
+        "webpack-notifier": "^1.15.0"
     },
     "license": "UNLICENSED",
     "private": true,
@@ -21,6 +21,6 @@
         "build": "encore production --progress"
     },
     "dependencies": {
-        "dotenv": "^16.3.1"
+        "dotenv": "^16.4.5"
     }
 }
