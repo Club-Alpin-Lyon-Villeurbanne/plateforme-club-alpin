@@ -2,8 +2,8 @@
 
 namespace App\Controller\Api;
 
+use App\Dto\ExpenseReportStatusDto;
 use App\Entity\ExpenseReport;
-use App\Repository\ExpenseReportRepository;
 use App\UserRights;
 use App\Utils\Enums\ExpenseReportEnum;
 use App\Utils\Serialize\ExpenseReportSerializer;
@@ -22,7 +22,7 @@ class ExpenseReportUpdateStatus extends AbstractController
         
     }
 
-    public function __invoke(ExpenseReport $expenseReport): JsonResponse
+    public function __invoke(ExpenseReport $expenseReport, ExpenseReportStatusDto $expenseReportStatusDto): JsonResponse
     {
         if (!$this->userRights->allowed('evt_join_doall')) {
             return new JsonResponse([
@@ -31,6 +31,15 @@ class ExpenseReportUpdateStatus extends AbstractController
             ], 403);
         }
 
+        if (in_array($expenseReportStatusDto->status, [ExpenseReportEnum::STATUS_DRAFT, ExpenseReportEnum::STATUS_SUBMITTED])) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'You cannot set the status to draft or submitted',
+            ], 400);
+        }
+
+        $expenseReport->setStatus($expenseReportStatusDto->status);
+        $expenseReport->setStatusComment($expenseReportStatusDto->statusComment);
         $this->entityManager->persist($expenseReport);
         $this->entityManager->flush();
         $expenseReportSerialized = $this->expenseReportSerializer->serialize($expenseReport);
