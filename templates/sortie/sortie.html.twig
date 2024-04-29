@@ -716,7 +716,7 @@
             <hr />
         {% endif %}
 
-        {% if event.denivele or event.distance > 0 or event.difficulte or event.matos %}
+        {% if event.denivele or event.distance > 0 or event.difficulte or matos %}
             <ul class="nice-list">
                 {% if event.denivele %}
                     <li class="wide"><b>DÉNIVELÉ :</b> {{ event.denivele }}</li>
@@ -727,8 +727,8 @@
                 {% if event.difficulte %}
                     <li class="wide"><b>DIFFICULTÉ :</b> {{ event.difficulte }}</li>
                 {% endif %}
-                {% if event.matos %}
-                    <li class="wide"><b>MATÉRIEL :</b> {{ event.matos|nl2br }}</li>
+                {% if matos %}
+                    <li class="wide"><b>MATÉRIEL :</b> {{ matos|raw }}</li>
                 {% endif %}
             </ul>
             <br style="clear:both" />

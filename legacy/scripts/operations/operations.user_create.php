@@ -17,7 +17,7 @@ $adresse_user = trim(stripslashes($_POST['adresse_user']));
 $cp_user = trim(stripslashes($_POST['cp_user']));
 $ville_user = trim(stripslashes($_POST['ville_user']));
 $pays_user = trim(stripslashes($_POST['pays_user']));
-$auth_contact_user = trim(stripslashes($_POST['auth_contact_user']));
+$auth_contact_user = trim(stripslashes($_POST['auth_contact_user'] ?? null));
 
 // vérification du format des données
 if ('' === $civ_user) {
