@@ -165,7 +165,7 @@ class SortieController extends AbstractController
 
 
         $pattern = "/\b(http|https):\/\/[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/))/";
-        $replacement = '<a href="$0">$0</a>';
+        $replacement = '<a href="$0" target="_blank" rel="noopener">$0</a>';
         $matos =  preg_replace($pattern, $replacement, $event->getMatos());
 
 
