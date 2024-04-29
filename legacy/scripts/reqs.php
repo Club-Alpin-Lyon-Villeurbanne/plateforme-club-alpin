@@ -3,7 +3,6 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION = strtotime(LegacyContainer::getParameter('legacy_env_MAX_TIMESTAMP_FOR_LEGAL_VALIDATION'));
 $MAX_ARTICLES_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_VALIDATION');
 $MAX_SORTIES_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_SORTIES_VALIDATION');
 $MAX_ARTICLES_ADHERENT = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_ADHERENT');
@@ -11,7 +10,6 @@ $MAX_ARTICLES_ADHERENT = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_
 // vars de notification
 $notif_validerunarticle = 0;
 $notif_validerunesortie = 0;
-$notif_validerunesortie_president = 0;
 
 // commission courante sur cette page
 $current_commission = false;
@@ -60,20 +58,6 @@ if (allowed('evt_validate_all')) { // pouvoir de valider toutes les sorties de t
         .'ORDER BY tsp_crea_evt ASC ';
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $notif_validerunesortie = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
-}
-
-if (allowed('evt_legal_accept')) { // pouvoir de valider "legalement" une sortie comme sortie du caf
-    // Pour chaque sortie non validee dans le timing demandé, et publiée
-    $req = 'SELECT COUNT(id_evt)
-			FROM caf_evt, caf_commission
-			WHERE status_legal_evt = 0
-			AND status_evt = 1
-			AND commission_evt = id_commission
-			AND tsp_evt > '.time().'
-			AND tsp_evt < '.$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION.'
-			ORDER BY tsp_evt ASC ';
-    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    $notif_validerunesortie_president = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
 }
 
 // NOTIFICATIONS ARTICLES
@@ -1080,45 +1064,6 @@ elseif ('gestion-des-sorties' == $p1 && (allowed('evt_validate_all') || allowed(
         .'ORDER BY tsp_crea_evt ASC
 		LIMIT '.($limite * ($pagenum - 1)).", $limite";
     }
-
-    $evtStandby = [];
-    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-        // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
-        require __DIR__.'/../includes/evt-temoin-reqs.php';
-
-        // ajout au tableau
-        $evtStandby[] = $handle;
-    }
-}
-// VALIDATION PRESIDENT DES SORTIES
-elseif ('validation-des-sorties' == $p1 && allowed('evt_legal_accept')) {
-    // sorties à valider (pagination)
-    // compte
-    $limite = $MAX_SORTIES_VALIDATION;
-    $compte = $notif_validerunesortie_president; // nombre total d'evts à valider, défini plus haut
-    // page ?
-    $pagenum = (int) $p2;
-    if ($pagenum < 1) {
-        $pagenum = 1;
-    } // les pages commencent à 1
-    $nbrPages = ceil($compte / $limite);
-
-    // requetes pour les sorties en attente de validation par le president
-    $req = 'SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
-				, join_start_evt, cycle_master_evt, cycle_parent_evt
-				, nickname_user
-				, title_commission, code_commission
-	FROM caf_evt, caf_user, caf_commission
-	WHERE status_evt=1
-	AND status_legal_evt=0
-	AND tsp_evt > '.time().'
-	AND tsp_evt < '.$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION.'
-
-	AND id_user = user_evt
-	AND commission_evt=id_commission
-	ORDER BY tsp_evt ASC
-	LIMIT '.($limite * ($pagenum - 1)).", $limite";
 
     $evtStandby = [];
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
