@@ -12,7 +12,7 @@ if (!admin() && !allowed('user_edit_notme')) {
         exit;
     }
 
-    if (isset($userTab) && 0 == count($userTab)) {
+    if (empty($userTab)) {
         $id_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($id_user);
         $req = "SELECT * FROM caf_user WHERE id_user='".$id_user."' LIMIT 1";
         $userTab = [];
@@ -47,6 +47,7 @@ if (!admin() && !allowed('user_edit_notme')) {
                     .'ORDER BY  `tsp_evt` DESC
 					LIMIT 200';
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        $userTab['sorties'] = [];
         if ($result->num_rows > 0) {
             while ($tmpArray = $result->fetch_assoc()) {
                 $userTab['sorties'][] = $tmpArray;
@@ -56,6 +57,7 @@ if (!admin() && !allowed('user_edit_notme')) {
         // NOMBRE ARTICLES
         $req = "SELECT id_article, code_article, titre_article, tsp_validate_article FROM caf_article WHERE user_article='".$id_user."' AND status_article=1 ORDER BY id_article DESC";
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        $userTab['articles'] = [];
         if ($result->num_rows > 0) {
             while ($tmpArray = $result->fetch_assoc()) {
                 $userTab['articles'][] = $tmpArray;
@@ -73,6 +75,8 @@ if (!admin() && !allowed('user_edit_notme')) {
         if ('' !== $userTab['cafnum_user']) {
             $req = "SELECT id_user, firstname_user, lastname_user FROM caf_user WHERE cafnum_parent_user='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($userTab['cafnum_user'])."'";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+            
+            $userTab['enfants'] = [];
             if ($result->num_rows > 0) {
                 while ($tmpArray = $result->fetch_assoc()) {
                     $userTab['enfants'][] = $tmpArray;
@@ -134,7 +138,7 @@ if (!admin() && !allowed('user_edit_notme')) {
         printTableRow('Parent (chef de famille) :', $rowValue);
     }
 
-    $rowValue = '';
+    $rowValue = [];
     if (is_array($userTab['enfants'])) {
         foreach ($userTab['enfants'] as $enfant) {
             $rowValue[] = '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user='.(int) $enfant['id_user'].'">'.$enfant['firstname_user'].' '.$enfant['lastname_user'].'</a>';
@@ -213,6 +217,8 @@ if (!admin() && !allowed('user_edit_notme')) {
         $rowValue = [];
         $rowRoleEvtTab = [];
         $rowRoleEvtValue = '';
+        $rowValueHeader = [];
+
         foreach ($userTab['sorties'] as $evt) {
             ++$rowValueHeader[$evt['role_evt_join']];
             $row = '<a target="_blank" href="/sortie/'.html_utf8($evt['code_evt']).'-'.(int) $evt['id_evt'].'.html?commission='.$evt['code_commission'];
