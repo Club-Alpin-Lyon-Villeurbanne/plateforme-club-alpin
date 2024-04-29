@@ -1,7 +1,41 @@
 <?php
+
+use App\Legacy\LegacyContainer;
+
 if (!admin()) {
     echo 'Votre session administrateur a expiré';
 } else {
+	$userTab = [];
+	$show = 'valid';
+	// fonctions disponibles
+	if (isset($_GET['show']) && in_array($_GET['show'], ['all', 'manual', 'notvalid', 'nomade', 'dels', 'expired', 'valid-expired'], true)) {
+		$show = $_GET['show'];
+	}
+	$show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
+
+	$req = 'SELECT id_user , email_user , cafnum_user , firstname_user , lastname_user , nickname_user , created_user , birthday_user , tel_user , tel2_user , adresse_user, cp_user ,  ville_user ,  civ_user , valid_user , manuel_user, nomade_user, date_adhesion_user, doit_renouveler_user
+		FROM  `caf_user` '
+		.('dels' == $show ? ' WHERE valid_user=2 ' : '')
+		.('manual' == $show ? ' WHERE manuel_user=1 ' : '')
+		.('nomade' == $show ? ' WHERE nomade_user=1 ' : '')
+		.('valid' == $show ? ' WHERE valid_user=1 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
+		.('notvalid' == $show ? ' WHERE valid_user=0 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
+		.('expired' == $show ? ' WHERE valid_user=0 AND doit_renouveler_user=1 ' : '')
+		.('valid-expired' == $show ? ' WHERE valid_user=1 AND doit_renouveler_user=1 ' : '')
+		.' ORDER BY lastname_user ASC, lastname_user ASC
+		LIMIT 9000';			// , pays_user
+
+	$handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+	while ($row = $handleSql->fetch_assoc()) {
+		if ('0' == $row['birthday_user'] || '1' == $row['birthday_user'] || '' == $row['birthday_user']) {
+			// dans ces cas, bug très probable
+			$row['birthday_user'] = 0;
+		} else { // la date de naissance est remplacée par l'age (avec zéros inutiles, pour tri de la colonne)
+			$row['birthday_user'] = sprintf('%03d', getYearsSinceDate($row['birthday_user']));
+		}
+
+		$userTab[] = $row;
+	}
     ?>
 	<h1>Administration des utilisateurs & adhérents</h1>
 	<p>
