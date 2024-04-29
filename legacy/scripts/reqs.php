@@ -962,61 +962,7 @@ elseif ('annuler-une-sortie' == $p1) {
         }
     }
 }
-// PAGE SUPPRIMER UNE SORTIE
-elseif ('supprimer-une-sortie' == $p1) {
-    $evt = false;
-    $errPage = false; // message d'erreur spécifique à la page courante si besoin
-    $id_evt = (int) substr(strrchr($p2, '-'), 1);
 
-    // sélection complète, non conditionnelle par rapport au status
-    $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
-				, cancelled_evt, cancelled_who_evt, cancelled_when_evt, description_evt, denivele_evt, difficulte_evt, matos_evt, need_benevoles_evt
-				, lat_evt, long_evt
-				, join_start_evt
-				, ngens_max_evt, join_max_evt
-				, nickname_user
-				, title_commission, code_commission
-		FROM caf_evt, caf_user, caf_commission
-		WHERE id_evt=$id_evt
-		AND id_user = user_evt
-		AND commission_evt=id_commission
-		LIMIT 1";
-    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-
-    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-        // on a le droit de supprimer cette page ?
-        if (allowed('evt_cancel', 'commission:'.$handle['code_commission'])) {
-            // participants:
-            $handle['joins'] = [];
-            $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
-					, role_evt_join
-				FROM caf_evt_join, caf_user
-				WHERE evt_evt_join ='.(int) $handle['id_evt'].'
-				AND user_evt_join = id_user
-				LIMIT 300';
-            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                $handle['joins'][] = $handle2;
-            }
-
-            // si la sortie est annulée, on recupère les details de "WHO" : qui l'a annulée
-            if ('1' == $handle['cancelled_evt']) {
-                $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user
-					FROM caf_user
-					WHERE id_user='.(int) $handle['cancelled_who_evt'].'
-					LIMIT 300';
-                $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                    $handle['cancelled_who_evt'] = $handle2;
-                }
-            }
-
-            $evt = $handle;
-        } else {
-            $errPage = 'Accès non autorisé';
-        }
-    }
-}
 // GESTION DES SORTIES
 elseif ('gestion-des-sorties' == $p1 && (allowed('evt_validate_all') || allowed('evt_validate'))) {
     // sorties à valider (pagination)
