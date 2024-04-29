@@ -94,9 +94,11 @@ database-drop: ## Create database
 
 database-create: ## Create database
 	$(SYMFONY_CONSOLE) doctrine:database:create --if-not-exists
+	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/schema_caf.sql
+
 
 database-import: ## Make import
-	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/bdd_caf.sql
+	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/data_caf.sql
 
 database-migration: ## Make migration
 	$(SYMFONY_CONSOLE) make:migration
