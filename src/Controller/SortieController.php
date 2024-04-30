@@ -164,6 +164,11 @@ class SortieController extends AbstractController
         );
 
 
+        $pattern = "/\b(http|https):\/\/[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/))/";
+        $replacement = '<a href="$0" target="_blank" rel="noopener">$0</a>';
+        $matos =  preg_replace($pattern, $replacement, strip_tags($event->getMatos()));
+
+
         return [
             'event' => $event,
             'participations' => $participationRepository->getSortedParticipations($event, null, null),
@@ -171,6 +176,7 @@ class SortieController extends AbstractController
             'empietements' => $participationRepository->getEmpietements($event),
             'expenseReportFormStructure' => $expenseReportFormGroups,
             'currentExpenseReport' => $currentExpenseReport,
+            'matos' => $matos,
         ];
     }
 
