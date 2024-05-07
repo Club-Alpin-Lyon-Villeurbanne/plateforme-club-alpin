@@ -65,9 +65,7 @@ class EvtRepository extends ServiceEntityRepository
         $options = array_merge([
             'limit' => $this->defaultLimit,
         ], $options);
-        $date = new \DateTime();
-        $date->modify('midnight');
-
+        $date = new \DateTime('today');
 
         $qb = $this->createQueryBuilder('e')
             ->select('e, c')
