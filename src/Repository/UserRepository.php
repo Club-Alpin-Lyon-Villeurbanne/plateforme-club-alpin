@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -20,6 +21,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
+        $this->getEntityManager()->getConfiguration()->addCustomHydrationMode('HYDRATE_LEGACY', 'App\Utils\LegacyHydrator');
     }
 
     /**
@@ -46,6 +48,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getOneOrNullResult();
     }
 
+    public function findOneByLicenseNumber(string $licenseNumber, string $hydratorMode = null) {
+        return $this->createQueryBuilder('u')
+            ->where('u.cafnum = :licenseNumber')
+            ->setParameter('licenseNumber', $licenseNumber)
+            ->getQuery()
+            ->getOneOrNullResult($hydratorMode)
+        ;
+    }
+
     public function getFiliations(User $user)
     {
         if (!$user->getCafnum()) {
@@ -58,5 +69,5 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery()
             ->getResult()
         ;
-    }
+    }    
 }

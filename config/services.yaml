@@ -157,3 +157,7 @@ services:
   legacy_content_html:
     public: true
     alias: App\Legacy\ContentHtml
+
+  legacy_user_repository:
+    public: true
+    alias: App\Repository\UserRepository
