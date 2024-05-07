@@ -71,7 +71,7 @@ class EvtRepository extends ServiceEntityRepository
             ->leftJoin('e.commission', 'c')
             ->where('e.status = :status')
             ->setParameter('status', Evt::STATUS_LEGAL_VALIDE)
-            ->andWhere('e.tsp > :date')
+            ->andWhere('e.tsp >= :date')
             ->setParameter('date', time())
             ->orderBy('e.tsp', 'asc')
             ->setMaxResults($options['limit'])
