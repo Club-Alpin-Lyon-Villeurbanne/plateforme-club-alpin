@@ -85,6 +85,12 @@ class Evt
     #[ORM\Column(name: 'cancelled_when_evt', type: 'bigint', nullable: true, options: ['comment' => 'Timestamp annulation'])]
     private $cancelledWhen;
 
+    /**
+     * @var ExpenseReport[]
+     */
+    #[ORM\OneToMany(targetEntity: ExpenseReport::class, mappedBy: 'event')]
+    private $expenseReports = [];
+
     
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'user_evt', referencedColumnName: 'id_user', nullable: false)]
@@ -131,31 +137,31 @@ class Evt
     /**
      * @var string
      */
-    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage', 'collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage',])]
     private $place;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'titre_evt', type: 'string', length: 100, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'titre_evt', type: 'string', length: 100, nullable: false)]
     private $titre;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'code_evt', type: 'string', length: 30, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'code_evt', type: 'string', length: 30, nullable: false)]
     private $code;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'massif_evt', type: 'string', length: 100, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'massif_evt', type: 'string', length: 100, nullable: true)]
     private $massif;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu détaillé du rdv', 'collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu détaillé du rdv',])]
     private $rdv;
 
     /**
@@ -167,7 +173,7 @@ class Evt
     /**
      * @var string|null
      */
-    #[ORM\Column(name: 'tarif_detail', type: 'text', length: 65535, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'tarif_detail', type: 'text', length: 65535, nullable: true)]
     private $tarifDetail;
 
     /**
@@ -197,25 +203,25 @@ class Evt
     /**
      * @var string
      */
-    #[ORM\Column(name: 'matos_evt', type: 'text', length: 65535, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'matos_evt', type: 'text', length: 65535, nullable: true)]
     private $matos;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'difficulte_evt', type: 'string', length: 50, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'difficulte_evt', type: 'string', length: 50, nullable: true)]
     private $difficulte;
 
     /**
      * @var string|null
      */
-    #[ORM\Column(name: 'itineraire', type: 'text', length: 65535, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'itineraire', type: 'text', length: 65535, nullable: true)]
     private $itineraire;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'description_evt', type: 'text', length: 65535, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'description_evt', type: 'text', length: 65535, nullable: false)]
     private $description;
 
     /**
@@ -237,15 +243,15 @@ class Evt
     private $joinMax;
 
     /**
-     * @var EvtJoin[]
+     * @var EventParticipation[]
      */
-    #[ORM\OneToMany(targetEntity: 'EvtJoin', mappedBy: 'evt', cascade: ['persist'])]
-    private $joins;
+    #[ORM\OneToMany(targetEntity: 'EventParticipation', mappedBy: 'evt', cascade: ['persist'])]
+    private $participations;
 
     /**
      * @var int
      */
-    #[ORM\Column(name: 'ngens_max_evt', type: 'integer', nullable: false, options: ['comment' => 'Nombre de gens pouvant y aller au total. Donnée '])]
+    #[ORM\Column(name: 'ngens_max_evt', type: 'integer', nullable: false, options: ['comment' => 'Nombre de gens pouvant y aller au total. Donnée "visuelle" uniquement, pas de calcul.'])]
     private $ngensMax;
 
     /**
@@ -265,7 +271,7 @@ class Evt
     /**
      * @var int
      */
-    #[ORM\Column(name: 'child_version_from_evt', type: 'integer', nullable: false, options: ['comment' => 'Versionning : chaque modification d-evt crée une entrée '])]
+    #[ORM\Column(name: 'child_version_from_evt', type: 'integer', nullable: false, options: ['comment' => 'Versionning : chaque modification d-evt crée une entrée "enfant" de l-originale. Ce champ prend l-ID de l-original'])]
     private $childVersionFrom = '0';
 
     /**
@@ -306,13 +312,13 @@ class Evt
         $this->joinMax = $maxInscriptions;
         $this->ngensMax = $maxParticipants;
         $this->commission = $commission;
-        $this->joins = new ArrayCollection();
+        $this->participations = new ArrayCollection();
         $this->articles = new ArrayCollection();
         $this->cycleChildren = new ArrayCollection();
         $this->tspCrea = time();
 
         // FIX ME fix encadrant
-        $this->joins->add(new EvtJoin($this, $user, EvtJoin::ROLE_ENCADRANT, EvtJoin::STATUS_VALIDE));
+        $this->participations->add(new EventParticipation($this, $user, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE));
     }
 
     public function getId(): ?int
@@ -421,16 +427,16 @@ class Evt
         return $this;
     }
 
-    public function addParticipant(User $user, string $role = EvtJoin::ROLE_INSCRIT, int $status = EvtJoin::STATUS_NON_CONFIRME): EvtJoin
+    public function addParticipation(User $user, string $role = EventParticipation::ROLE_INSCRIT, int $status = EventParticipation::STATUS_NON_CONFIRME): EventParticipation
     {
-        $participant = new EvtJoin($this, $user, $role, $status);
-        $this->joins->add($participant);
+        $participation = new EventParticipation($this, $user, $role, $status);
+        $this->participations->add($participation);
 
-        return $participant;
+        return $participation;
     }
 
-    /** @return EvtJoin[] */
-    public function getParticipants($roles = null, $status = EvtJoin::STATUS_VALIDE): Collection
+    /** @return EventParticipation[] */
+    public function getParticipations($roles = null, $status = EventParticipation::STATUS_VALIDE): Collection
     {
         if (null !== $roles && !\is_array($roles)) {
             $roles = (array) $roles;
@@ -439,42 +445,42 @@ class Evt
             $status = (array) $status;
         }
 
-        return $this->joins->filter(function (EvtJoin $participant) use ($roles, $status) {
-            return (null === $roles || \in_array($participant->getRole(), $roles, true))
-                && (null === $status || \in_array($participant->getStatus(), $status, true));
+        return $this->participations->filter(function (EventParticipation $participation) use ($roles, $status) {
+            return (null === $roles || \in_array($participation->getRole(), $roles, true))
+                && (null === $status || \in_array($participation->getStatus(), $status, true));
         });
     }
 
-    public function getParticipant(?User $user): ?EvtJoin
+    public function getParticipation(?User $user): ?EventParticipation
     {
         if (!$user) {
             return null;
         }
 
-        foreach ($this->joins as $join) {
-            if ($join->getUser() === $user) {
-                return $join;
+        foreach ($this->participations as $participation) {
+            if ($participation->getUser() === $user) {
+                return $participation;
             }
         }
 
         return null;
     }
 
-    public function getParticipantById(int $id): ?EvtJoin
+    public function getParticipationById(int $id): ?EventParticipation
     {
-        foreach ($this->joins as $join) {
-            if ($join->getId() === $id) {
-                return $join;
+        foreach ($this->participations as $participation) {
+            if ($participation->getId() === $id) {
+                return $participation;
             }
         }
 
         return null;
     }
 
-    /** @return EvtJoin[] */
-    public function getEncadrants($types = [EvtJoin::ROLE_ENCADRANT, EvtJoin::ROLE_STAGIAIRE, EvtJoin::ROLE_COENCADRANT]): Collection
+    /** @return EventParticipation[] */
+    public function getEncadrants($types = [EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_STAGIAIRE, EventParticipation::ROLE_COENCADRANT]): Collection
     {
-        return $this->getParticipants($types, [EvtJoin::STATUS_VALIDE]);
+        return $this->getParticipations($types, [EventParticipation::STATUS_VALIDE]);
     }
 
     public function getCommission(): Commission

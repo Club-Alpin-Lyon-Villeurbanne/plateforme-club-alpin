@@ -14,8 +14,7 @@
     }
 
     fieldset {
-        border: none;
-        background-color: $gray-light;
+        border: 1px solid $gray-light;
         margin: 0;
         margin-top: $gutter;
         padding: 0 $gutter;
@@ -34,27 +33,59 @@
             flex-wrap: wrap;
 
             & > .field {
-                width: 33%;
-                padding: $gutter;
-                background-color: $gray-light;
+                
+            }
+        }
+        
+        &#refund-required-group {
+            .field {
+                margin-bottom: 0;
+                width: 100%;
+
+                label {
+                    display: flex;
+                    align-items: center;
+                    gap: $gutter-half;
+                }
             }
         }
     }
 
     .field {
+        box-sizing: border-box;
         margin-bottom: $gutter;
+        padding: $gutter-half $gutter $gutter-half 0;
+        width: 50%;
 
-        input, select {
+        input, select, textarea {
+            background-color: $gray-light;
+            box-sizing: border-box;
+            border: none;
+            border-radius: $gutter-half;
             margin-bottom: $gutter-half;
+            padding: $gutter-half;
+            width: 100%;
+        }
+
+        input[type="radio"] {
+            margin-bottom: 0;
+            width: auto;
         }
 
         label {
             display: block;
-            margin-bottom: $gutter-half;
+            margin-bottom: calc($gutter-half / 2);
+            padding-left: 0.1rem;
 
             &.uploader-label {
                 cursor: pointer;
                 font-weight: bold;
+            }
+        }
+
+        &.error {
+            input, select, textarea {
+                background-color: $red-light!important;
             }
         }
     }
@@ -67,6 +98,20 @@
     .buttons {
         display: flex;
         justify-content: space-around;
+
+        .biglink {
+            border-radius: $gutter-half;
+            padding: $gutter;
+        }
+
+        .biglink.submit {
+            background-color: $green-dark;
+            color: $white;
+
+            &:hover {
+                background-color: $green;
+            }
+        }
     }
     .add-more,
     .delete {
@@ -83,5 +128,11 @@
         .filename {
             font-style: italic;
         }
+    }
+
+    .success {
+        color: $green-dark;
+        font-weight: bold;
+        margin: auto;
     }
 }

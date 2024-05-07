@@ -4,9 +4,12 @@ namespace App\Entity;
 
 use App\Repository\ExpenseFieldRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: ExpenseFieldRepository::class)]
-class ExpenseField
+#[HasLifecycleCallbacks]
+class ExpenseField implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -16,7 +19,7 @@ class ExpenseField
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $justification_document = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $value = null;
 
     #[ORM\ManyToOne(inversedBy: 'fields')]
@@ -24,7 +27,7 @@ class ExpenseField
     private ?Expense $expense = null;
 
     #[ORM\ManyToOne(inversedBy: 'fields')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'expense_field_type_id', nullable: false)]
     private ?ExpenseFieldType $fieldType = null;
 
     #[ORM\Column]
@@ -32,6 +35,19 @@ class ExpenseField
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->setUpdatedAtValue();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updated_at = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -108,5 +124,19 @@ class ExpenseField
         $this->updated_at = $updated_at;
 
         return $this;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'justificationDocument' => $this->justification_document,
+            'value' => $this->value,
+            'expense' => $this->expense->getId(),
+            'fieldType' => $this->fieldType->getId(),
+            'inputType' => $this->fieldType->getInputType(),
+            'createdAt' => $this->created_at->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->updated_at->format('Y-m-d H:i:s'),
+        ];
     }
 }

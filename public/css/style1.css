@@ -406,6 +406,9 @@ form .niveau.editable:hover .input{background-image:none;}
 .display_lieu, .point_ramasse, .bus {border:1px solid #ddd;margin: 0 10px 10px 0; padding:10px;overflow:hidden;}
 .bbox{box-sizing:border-box}
 .small{font-size:10px; color:gray;}
+#main-pagelibre-76 table td {padding: 5px;}
+#main-pagelibre-76 table td img {max-width: 250px;}
+.pt15 { padding-top: 15px;}
 
 @media print {
     .page-break	{ display: block; page-break-before: always; }

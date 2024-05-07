@@ -1,8 +1,6 @@
 .idea
-.vscode
 .php-cs-fixer.cache
 .DS_Store
-bin
 public/ftp/*
 *.old
 legacy/config/www.clubalpinlyon.fr/ffcam/
@@ -39,3 +37,12 @@ yarn-error.log
 ###< lexik/jwt-authentication-bundle ###
 
 /db
+/docker-compose.override.yml
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

@@ -79,7 +79,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     // Doit on faire une mise à jour ?
-    $update = false;
+    $update = [];
 
     // verification de l'existence de cette demande
     if (!$filiations) {
@@ -234,7 +234,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'lastname' => getUser()->getLastname(),
                 'nickname' => getUser()->getNickname(),
                 'covoiturage' => $is_covoiturage,
-                'dest_role' => $destinataire['role_evt_join'] ?: 'l\'auteur',
+                'dest_role' => \array_key_exists('role_evt_join', $destinataire) ? $destinataire['role_evt_join'] : 'l\'auteur',
             ], [], null, getUser()->getEmail());
         }
     }

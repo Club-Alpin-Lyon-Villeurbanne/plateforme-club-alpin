@@ -10,6 +10,7 @@ global $_POST;
 global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
 global $CONTENUS_INLINE;
 global $contLog;
+global $p_inclurelist;
 global $president;
 global $versCettePage;
 global $vicepresident;
@@ -220,7 +221,7 @@ function getYearsSinceDate($then)
 // utile ci dessus
 function bigintval($value)
 {
-    $value = trim($value);
+    $value = trim((string)$value);
     if (ctype_digit($value)) {
         return $value;
     }
@@ -381,9 +382,10 @@ function cont($code = false, $html = false)
     return '';
 }
 
-function inclure($elt, $style = 'vide')
+$p_inclurelist = [];
+function inclure($elt, $style = 'vide', $options = [])
 {
-    echo LegacyContainer::get('legacy_content_html')->getEasyInclude($elt, $style);
+    echo LegacyContainer::get('legacy_content_html')->getEasyInclude($elt, $style, $options);
 }
 
 // Affiche (ECHO !!) dans un input hidden ou text le contenu de la variable postée échappée quand elle existe, ou une valeur par défaut

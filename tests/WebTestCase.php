@@ -10,14 +10,22 @@ use App\UserRights;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+
 
 abstract class WebTestCase extends BaseWebTestCase
 {
-    protected ?KernelBrowser $client = null;
+    use SessionHelper;
+
+    protected static ?KernelBrowser $client;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        static::$client = static::createClient();
+    }
 
     protected function signup(string $email = null)
     {
@@ -52,10 +60,6 @@ abstract class WebTestCase extends BaseWebTestCase
 
     protected function signin($username = 'test@clubalpinlyon.fr', $providerKey = 'main')
     {
-        if (!$this->client) {
-            throw new \LogicException('$this->client should be initialized before calling this method');
-        }
-
         $em = $this->getContainer()->get('doctrine')->getManager();
 
         if ($username instanceof User) {
@@ -69,8 +73,11 @@ abstract class WebTestCase extends BaseWebTestCase
             throw new \LogicException(sprintf('The user "%s" does not exist.', $username));
         }
 
-        $token = new PostAuthenticationToken($user, $providerKey, $user->getRoles());
-        $token->setAuthenticated(true); // mandatory since sf2.2, without that the user is not connected
+        $tokenStorage = $this->getContainer()->get(TokenStorageInterface::class);
+        $token = new UsernamePasswordToken($user, $providerKey, $user->getRoles());
+        $tokenStorage->setToken($token);
+        
+        // $token = new PostAuthenticationToken($user, $providerKey, $user->getRoles());
 
         $session = $this->getSession();
         $session->set('_security_'.$providerKey, serialize($token));
@@ -79,36 +86,19 @@ abstract class WebTestCase extends BaseWebTestCase
         // the client must register the session cookie
         // taken from TestSessionListener
         $params = session_get_cookie_params();
-        $this->client->getCookieJar()->set(new Cookie($session->getName(), $session->getId(), 0 === $params['lifetime'] ? 0 : time() + $params['lifetime'], $params['path'], $params['domain'], $params['secure'], $params['httponly']));
+        static::$client->getCookieJar()->set(new Cookie($session->getName(), $session->getId(), 0 === $params['lifetime'] ? 0 : time() + $params['lifetime'], $params['path'], $params['domain'], $params['secure'], $params['httponly']));
 
         return $user;
     }
 
     protected function signout($providerKey = 'main')
     {
-        if (!$this->client) {
-            throw new \LogicException('$this->client should be initialized before calling this method');
-        }
-
         $session = $this->getSession();
         $session->remove('_security_'.$providerKey);
         $session->save();
 
         $this->getContainer()->get('security.token_storage')->setToken(null);
-        $this->client->getCookieJar()->clear();
-    }
-
-    protected function getSession()
-    {
-        if (!$this->client) {
-            throw new \LogicException('$this->client should be initialized before calling this method');
-        }
-
-        $request = Request::create('/');
-        $event = new RequestEvent($this->client->getKernel(), $request, HttpKernelInterface::MAIN_REQUEST);
-        static::getContainer()->get('session_listener')->onKernelRequest($event);
-
-        return $request->getSession();
+        static::$client->getCookieJar()->clear();
     }
 
     protected function createCommission(string $name = 'Alpinisme'): Commission
@@ -130,8 +120,7 @@ abstract class WebTestCase extends BaseWebTestCase
         self::getContainer()->get(UserRights::class)->reset();
     }
 
-    protected function csrfToken($csrfTokenId)
-    {
-        return $this->client->getContainer()->get('security.csrf.token_manager')->getToken($csrfTokenId)->getValue();
+    protected function getSession() : Session {
+         return $this->createSession(static::$client);
     }
 }

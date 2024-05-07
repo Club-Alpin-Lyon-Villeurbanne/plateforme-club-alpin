@@ -5,30 +5,56 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Controller\Api\ExpenseReportGet;
+use App\Controller\Api\ExpenseReportList;
+use App\Controller\Api\ExpenseReportUpdateStatus;
+use App\Dto\ExpenseReportStatusDto;
 use App\Repository\ExpenseReportRepository;
+use App\Utils\Enums\ExpenseReportEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: ExpenseReportRepository::class)]
-#[ApiResource(
-    operations: [
-        new Get(),
-        new GetCollection(),
-        new Post()
-    ]
-)]
-class ExpenseReport
+#[ApiResource(operations: [
+    new GetCollection(
+        name: 'expense_report_list', 
+        uriTemplate: '/expense-report',
+        controller: ExpenseReportList::class,
+        stateless: false,
+        security: "is_granted('ROLE_USER')"
+    ),
+    new Get(
+        name: 'expense_report_get', 
+        uriTemplate: '/expense-report/{id}',
+        controller: ExpenseReportGet::class,
+        stateless: false,
+        security: "is_granted('ROLE_USER')"
+    ),
+    new Post(
+        name: 'expense_report_validate', 
+        uriTemplate: '/expense-report/{id}/status',
+        input: ExpenseReportStatusDto::class,
+        controller: ExpenseReportUpdateStatus::class,
+        stateless: false,
+        security: "is_granted('ROLE_USER')"
+    ),
+])]
+#[HasLifecycleCallbacks]
+class ExpenseReport implements JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $status = null;
+    #[ORM\Column]
+    private ?string $status = null;
 
     #[ORM\Column]
     private ?bool $refund_required = null;
@@ -50,9 +76,31 @@ class ExpenseReport
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $statusComment = null;
+
     public function __construct()
     {
         $this->expenses = new ArrayCollection();
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->setUpdatedAtValue();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updated_at = new \DateTimeImmutable();
+    }
+
+    public function setId($id): static
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getId(): ?int
@@ -60,13 +108,19 @@ class ExpenseReport
         return $this->id;
     }
 
-    public function getStatus(): ?int
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    public function setStatus(int $status): static
+    public function setStatus(string $status): static
     {
+        if (!in_array($status, ExpenseReportEnum::getConstants())) {
+            throw new \InvalidArgumentException(
+                'Expense report status must be one of : ' . implode(', ', ExpenseReportEnum::getConstants()) . '.'
+            );
+        }
+        
         $this->status = $status;
 
         return $this;
@@ -158,6 +212,31 @@ class ExpenseReport
     public function setUpdatedAt(\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'owner' => $this->user->getId(),
+            'event' => $this->event->getId(),
+            'status' => $this->status,
+            'refundRequired' => $this->refund_required,
+            'createdAt' => $this->created_at->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->updated_at->format('Y-m-d H:i:s'),
+        ];
+    }
+
+    public function getStatusComment(): ?string
+    {
+        return $this->statusComment;
+    }
+
+    public function setStatusComment(?string $statusComment): static
+    {
+        $this->statusComment = $statusComment;
 
         return $this;
     }

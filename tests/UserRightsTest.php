@@ -12,14 +12,12 @@ class UserRightsTest extends WebTestCase
 {
     public function testHasRight()
     {
-        $this->client = static::createClient();
-
         $user = $this->signup();
         $this->signin($user);
 
         $commission = $this->createCommission();
         $tokenStorage = self::getContainer()->get(TokenStorageInterface::class);
-        $tokenStorage->setToken(new UsernamePasswordToken($user, 'credentials', 'provider-test', $user->getRoles()));
+        $tokenStorage->setToken(new UsernamePasswordToken($user, 'provider-test', $user->getRoles()));
 
         $userRights = self::getContainer()->get(UserRights::class);
 

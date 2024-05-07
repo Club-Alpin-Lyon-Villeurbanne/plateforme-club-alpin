@@ -1,8 +1,34 @@
 <?php
 
+use App\Legacy\LegacyContainer;
+
 if (!admin()) {
     echo 'Votre session administrateur a expiré';
-} else {
+	return;
+}
+
+$partenairesTab = [];
+$show = 'all';
+// fonctions disponibles
+if (isset($_GET['show']) && in_array($_GET['show'], ['all', 'public', 'private', 'enabled', 'disabled'], true)) {
+	$show = $_GET['show'];
+}
+$show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
+
+$req = 'SELECT part_id, part_name, part_url, part_desc, part_image, part_type, part_enable, part_order, part_click
+	FROM caf_partenaires '
+	.('private' == $show ? ' WHERE part_type=1 ' : '')
+	.('public' == $show ? ' WHERE part_type=2 ' : '')
+	.('enabled' == $show ? ' WHERE part_enable=1 ' : '')
+	.('disabled' == $show ? ' WHERE part_enable != 1' : '')
+	.' ORDER BY part_order, part_type, part_name ASC
+	LIMIT 1000';
+
+$handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+while ($row = $handleSql->fetch_assoc()) {
+	$partenairesTab[] = $row;
+}
+
     ?>
 	<h1>Gestion du slider partenaires de la page d'accueil&nbsp;&nbsp;<a href="/includer.php?p=pages/partenaire-modifier.php&amp;part_id=-1" class="fancyframe" title="ajouter un nouveau partenaire"><img src="/img/base/add.png" /></a></h1>
 	<p>
@@ -126,6 +152,3 @@ if (!admin()) {
 
 	<br style="clear:both" />
 	<br style="clear:both" />
-	<?php
-}
-?>

@@ -1,3 +1,108 @@
+<?php
+
+use App\Legacy\LegacyContainer;
+
+$MAX_ARTICLES_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_VALIDATION');
+$notif_validerunarticle = 0;
+
+// NOTIFICATIONS ARTICLES
+if (allowed('article_validate_all')) { // pouvoir de valider les articles
+    $req = 'SELECT COUNT(id_article) FROM caf_article WHERE status_article=0 AND topubly_article=1';
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+    $notif_validerunarticle = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
+} elseif (allowed('article_validate')) { // pouvoir de valider les articles
+    // recuperation des commissions sous notre joug
+    $tab = LegacyContainer::get('legacy_user_rights')->getCommissionListForRight('article_validate');
+
+    $req = "SELECT COUNT(id_article)
+	FROM caf_article, caf_commission
+	WHERE status_article=0
+	AND topubly_article=1
+	AND commission_article=id_commission
+	AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."')"; // condition OR pour toutes les commissions autorisées
+
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+    $notif_validerunarticle = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
+}
+
+if ((allowed('article_validate_all') || allowed('article_validate'))) {
+    // articles à valider (pagination)
+    $limite = $MAX_ARTICLES_VALIDATION;
+
+    if (allowed('article_validate_all')) {
+        // compte nb total articles
+        $req = 'SELECT COUNT(id_article) FROM caf_article WHERE status_article=0';
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        $compte = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM)); // nombre total d'evts à valider, défini plus haut
+
+        // page ?
+        $pagenum = (int) $p2;
+        if ($pagenum < 1) {
+            $pagenum = 1;
+        } // les pages commencent à 1
+        $nbrPages = ceil($compte / $limite);
+
+        // articles à valider, selon la (les) commission dont nous sommes responsables
+        $req = 'SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
+					, id_user, nickname_user, lastname_user, firstname_user, code_commission, title_commission
+		FROM caf_article
+		LEFT JOIN caf_commission ON (caf_commission.id_commission = caf_article.commission_article)
+		LEFT JOIN caf_user ON (caf_user.id_user = caf_article.user_article)
+		WHERE status_article=0
+		AND id_user = user_article
+		ORDER BY topubly_article desc,  tsp_validate_article ASC
+		LIMIT '.($limite * ($pagenum - 1)).", $limite";
+    } elseif (allowed('article_validate')) { // commission non précisée ici = autorisation passée
+        // recuperation des commissions sous notre joug
+        $tab = LegacyContainer::get('legacy_user_rights')->getCommissionListForRight('article_validate');
+
+        // compte nb total articles
+        $req = "SELECT COUNT(id_article)
+		FROM caf_article, caf_commission
+		WHERE status_article=0
+		AND commission_article=id_commission
+		AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."') "; // condition OR pour toutes les commissions autorisées
+
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        $compte = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM)); // nombre total d'evts à valider, défini plus haut
+
+        // articles à valider (pagination)
+
+        // page ?
+        $pagenum = (int) $p2;
+        if ($pagenum < 1) {
+            $pagenum = 1;
+        } // les pages commencent à 1
+        $nbrPages = ceil($compte / $limite);
+
+        // articles à valider, selon la (les) commission dont nous sommes responsables
+        $req = "SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
+					, id_user, nickname_user, lastname_user, firstname_user, code_commission, title_commission
+		FROM caf_article
+		LEFT JOIN caf_commission ON (caf_commission.id_commission = caf_article.commission_article)
+		LEFT JOIN caf_user ON (caf_user.id_user = caf_article.user_article)
+		WHERE status_article=0
+		AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."') " // condition OR pour toutes les commissions autorisées
+        .'AND id_user = user_article
+		ORDER BY topubly_article desc,  tsp_validate_article ASC
+		LIMIT '.($limite * ($pagenum - 1)).", $limite";
+    }
+    $articleStandby = $articleStandbyRedac = [];
+    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+
+    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+        // ajout au tableau
+        if (1 == $handle['topubly_article']) {
+            $articleStandby[] = $handle;
+        } else {
+            $articleStandbyRedac[] = $handle;
+        }
+    }
+}
+
+?>
+
+
 <!-- MAIN -->
 <div id="main" role="main" class="bigoo" style="">
 

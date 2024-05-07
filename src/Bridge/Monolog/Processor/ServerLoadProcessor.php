@@ -14,7 +14,7 @@ class ServerLoadProcessor implements ProcessorInterface
         $this->enabled = \PHP_SAPI === 'cli';
     }
 
-    public function __invoke(LogRecord $record)
+    public function __invoke(LogRecord $record): LogRecord
     {
         if (!$this->enabled) {
             return $record;

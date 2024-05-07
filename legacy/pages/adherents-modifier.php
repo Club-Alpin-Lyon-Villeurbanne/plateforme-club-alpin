@@ -3,39 +3,20 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$idUser = $userTab['id_user'] ?? null;
-$civUser = $userTab['civ_user'] ?? null;
-$firstnameUser = $userTab['firstname_user'] ??  null;
-$lastnameUser = $userTab['lastname_user'] ?? null;
-$nicknameUser = $userTab['nickname_user'] ?? null;
-$alerteRenouvelerUser = $userTab['alerte_renouveler_user'] ?? null;
-$dateAdhesionUser = $userTab['date_adhesion_user'] ?? null;
-$birthdayUser = $userTab['birthday_user'] ?? null;
-$telUser = $userTab['tel_user'] ?? null;
-$telSecuUser = $userTab['tel2_user'] ?? null;
-$adresseUser = $userTab['adresse_user'] ?? null;
-$cpUser = $userTab['cp_user'] ?? null;
-$villeUser = $userTab['ville_user'] ?? null;
-$paysUser = $userTab['pays_user'] ?? null;
-$validUser = $userTab['valid_user'] ?? null;
-$cafnumUserNew = $userTab['cafnum_user_new'] ?? null;
-$cafnumUser = $userTab['cafnum_user'] ?? null;
-$authContactUser = $userTab['auth_contact_user'] ?? null;
-$userEmail = $userTab['email_user'] ?? null;
 
 $operation = $_POST['operation'] ?? null;
 
 if (!admin() && !allowed('user_edit_notme')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
-    $id_user = (int) $_GET['id_user'];
-    if (!$id_user) {
+    $idUser = (int) $_GET['id_user'];
+    if (!$idUser) {
         echo 'Erreur : id invalide';
         exit;
     }
 
     if (empty($userTab)) {
-        $req = "SELECT * FROM  `caf_user` WHERE id_user='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($id_user)."' LIMIT 1";
+        $req = "SELECT * FROM  `caf_user` WHERE id_user='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($idUser)."' LIMIT 1";
         $userTab = [];
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $userTab = $result->fetch_assoc();
@@ -43,7 +24,28 @@ if (!admin() && !allowed('user_edit_notme')) {
         foreach ($userTab as $key => $val) {
             $userTab[$key] = inputVal($key, $userTab[$key]);
         }
-    } ?>
+    }
+	
+	$civUser = $userTab['civ_user'];
+	$firstnameUser = $userTab['firstname_user'];
+	$lastnameUser = $userTab['lastname_user'];
+	$nicknameUser = $userTab['nickname_user'];
+	$alerteRenouvelerUser = $userTab['alerte_renouveler_user'];
+	$dateAdhesionUser = $userTab['date_adhesion_user'];
+	$birthdayUser = $userTab['birthday_user'];
+	$telUser = $userTab['tel_user'];
+	$telSecuUser = $userTab['tel2_user'];
+	$adresseUser = $userTab['adresse_user'];
+	$cpUser = $userTab['cp_user'];
+	$villeUser = $userTab['ville_user'];
+	$paysUser = $userTab['pays_user'];
+	$validUser = $userTab['valid_user'];
+	$cafnumUserNew = $userTab['cafnum_user_new'] ?? null;
+	$cafnumUser = $userTab['cafnum_user'];
+	$authContactUser = $userTab['auth_contact_user'];
+	$userEmail = $userTab['email_user'];
+	
+	?>
 
 	<h1>Modifier un adhérent ou un salarié</h1>
 
@@ -56,7 +58,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 
 	<form action="<?php echo $versCettePage; ?>" method="post">
 		<input type="hidden" name="operation" value="user_edit" />
-		<input type="hidden" name="id_user" value="<?php echo $id_user; ?>" />
+		<input type="hidden" name="id_user" value="<?php echo $idUser; ?>" />
 		<input type="hidden" name="lastname_user" value="<?php echo $lastnameUser; ?>" />
 
 		<?php

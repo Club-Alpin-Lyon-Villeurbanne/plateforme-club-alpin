@@ -42,7 +42,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      */
-    #[ORM\Column(name: 'mdp_user', type: 'string', length: 1024, nullable: true, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'mdp_user', type: 'string', length: 1024, nullable: true)]
     private $mdp;
 
     /**
@@ -60,19 +60,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      */
-    #[ORM\Column(name: 'firstname_user', type: 'string', length: 50, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'firstname_user', type: 'string', length: 50, nullable: false)]
     private $firstname;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'lastname_user', type: 'string', length: 50, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'lastname_user', type: 'string', length: 50, nullable: false)]
     private $lastname;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'nickname_user', type: 'string', length: 20, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'nickname_user', type: 'string', length: 20, nullable: false)]
     private $nickname;
 
     /**
@@ -132,7 +132,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      */
-    #[ORM\Column(name: 'moreinfo_user', type: 'string', length: 500, nullable: true, options: ['comment' => 'FORMATIONS ?', 'collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'moreinfo_user', type: 'string', length: 500, nullable: true, options: ['comment' => 'FORMATIONS ?',])]
     private $moreinfo;
 
     /**
@@ -625,7 +625,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see UserInterface
      */
-    public function eraseCredentials()
+    public function eraseCredentials() : void
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;

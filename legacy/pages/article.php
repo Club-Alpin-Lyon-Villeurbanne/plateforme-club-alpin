@@ -1,3 +1,101 @@
+<?php
+
+use App\Legacy\LegacyContainer;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+$article = false;
+$errPage = false; // message d'erreur spécifique à la page courante si besoin
+$id_article = (int) substr(strrchr($p2, '-'), 1);
+
+// sélection complète, non conditionnelle par rapport au status
+$req = "SELECT *
+    FROM caf_article
+    WHERE id_article=$id_article
+    LIMIT 1";
+$handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+
+while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+    // on a le droit de voir cet article ?
+    if (1 == $handle['status_article'] // publié
+        || ((allowed('article_validate_all') || allowed('article_validate')) && isset($_GET['forceshow']) && $_GET['forceshow']) // ou mode validateur
+        || (user() && $handle['user_article'] == (string) getUser()->getId()) // ou j'en suis l'auteur
+    ) {
+        // auteur :
+        $req = 'SELECT id_user, nickname_user
+            FROM caf_user
+            WHERE id_user='.(int) $handle['user_article'].'
+            LIMIT 1';
+        $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
+            $handle['auteur'] = $handle2;
+        }
+
+        // info de la sortie liée
+        if ($handle['evt_article'] > 0) {
+            $req = 'SELECT code_evt, id_evt, titre_evt FROM caf_evt
+                WHERE id_evt = '.(int) $handle['evt_article'].'
+                LIMIT 1';
+            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+            while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
+                $handle['evt'] = $handle2;
+            }
+        }
+
+        // commentaires
+        $commentsTab = [];
+        $req = "SELECT SQL_CALC_FOUND_ROWS *
+            FROM caf_comment
+            WHERE parent_type_comment='article'
+            AND   parent_comment=$id_article
+            AND   status_comment=1
+            ORDER BY tsp_comment DESC
+            LIMIT 50";
+        $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+
+        // calcul du total grâce à SQL_CALC_FOUND_ROWS
+        $totalSql = LegacyContainer::get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
+        $totalComments = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
+
+        while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
+            // infos user
+            $req = 'SELECT nickname_user FROM caf_user WHERE id_user='.(int) $handle2['user_comment'].' LIMIT 1';
+            $handleSql3 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+            while ($handle3 = $handleSql3->fetch_array(\MYSQLI_ASSOC)) {
+                $handle2['nickname_user'] = $handle3['nickname_user'];
+            }
+
+            // il est possible que l'user ait été supprimé. Dans ce cas :
+            if ($handle2['user_comment'] > 0 && !$handle2['nickname_user']) {
+                // on le traite comme un etranger
+                $handle2['user_comment'] = 0;
+            }
+
+            $commentsTab[] = $handle2;
+        }
+
+        // MOdification des METAS de la page
+        $meta_title = $handle['titre_article'].' | '.$p_sitename;
+        $meta_description = limiterTexte(strip_tags($handle['cont_article']), 200).'...';
+        // opengraphe : image pour les partages
+        if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) $handle['id_article'].'/wide-figure.jpg')) {
+            $ogImage = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/articles/'.(int) $handle['id_article'].'/wide-figure.jpg';
+        }
+
+        // maj nb vues
+        if (!admin()) {
+            $req = "UPDATE caf_article SET nb_vues_article=nb_vues_article+1 WHERE id_article=$id_article AND status_article=1 LIMIT 1";
+            LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        }
+
+        // go
+        $article = $handle;
+    } else {
+        $errPage = 'Accès non autorisé';
+    }
+}
+
+?>
+
 <!-- MAIN -->
 <div id="main" role="main" class="bigoo" style="">
 

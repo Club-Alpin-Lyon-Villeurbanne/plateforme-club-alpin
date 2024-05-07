@@ -1,3 +1,99 @@
+<?php
+
+use App\Legacy\LegacyContainer;
+
+if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
+    // vérification des caractères
+    $safeStr = substr(html_utf8(stripslashes($_GET['str'])), 0, 80);
+    $safeStrSql = LegacyContainer::get('legacy_mysqli_handler')->escapeString(substr(stripslashes($_GET['str']), 0, 80));
+
+    if (strlen($safeStr) < 3) {
+        $errTab[] = 'Votre recherche doit comporter au moins 3 caractères.';
+    }
+
+    if (!isset($errTab) || 0 === count($errTab)) {
+        // *******
+        // RECH ARTICLES - permet la recherche par pseudo de l'auteur
+        $articlesTab = [];
+        $req = 'SELECT
+                SQL_CALC_FOUND_ROWS
+                `id_article` ,  `tsp_article` ,  `user_article` ,  `status_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `une_article` ,  `cont_article`
+                , nickname_user, id_user
+            FROM caf_article, caf_user
+            WHERE  `status_article` =1
+            AND user_article = id_user
+            AND status_article = 1
+            '
+            // commission donnée : filtre (mais on inclut les actus club, commission=0)
+            .($current_commission ? ' AND (commission_article = '.(int) $comTab[$current_commission]['id_commission'].' OR commission_article = 0) ' : '')
+            // RECHERCHE
+            ." AND (
+                        titre_article LIKE  '%$safeStrSql%'
+                    OR	cont_article LIKE  '%$safeStrSql%'
+                    OR	nickname_user LIKE  '%$safeStrSql%'
+            ) "
+
+            .' ORDER BY  `tsp_validate_article` DESC
+            LIMIT 10';
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+
+        // calcul du total grâce à SQL_CALC_FOUND_ROWS
+        $totalSql = LegacyContainer::get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
+        $totalArticles = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
+
+        while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+            // info de la commission liée
+            if ($handle['commission_article'] > 0) {
+                $req = 'SELECT * FROM caf_commission
+                    WHERE id_commission = '.(int) $handle['commission_article'].'
+                    LIMIT 1';
+                $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+                while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
+                    $handle['commission'] = $handle2;
+                }
+            }
+            $articlesTab[] = $handle;
+        }
+
+        // *******
+        // RECH SORTIES
+        $evtTab = [];
+
+        $req = 'SELECT
+                SQL_CALC_FOUND_ROWS
+                id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
+                , title_commission, code_commission
+            FROM caf_evt, caf_commission, caf_user
+            WHERE id_commission = commission_evt
+            AND id_user = user_evt
+            AND status_evt = 1
+            '
+            // si une comm est sélectionnée, filtre
+            .($current_commission ? " AND code_commission LIKE '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($current_commission)."' " : '')
+            // RECHERCHE
+            ." AND (
+                        titre_evt LIKE '%$safeStrSql%'
+                    OR	massif_evt LIKE '%$safeStrSql%'
+                    OR	rdv_evt LIKE '%$safeStrSql%'
+                    OR	description_evt LIKE '%$safeStrSql%'
+                    OR	nickname_user LIKE '%$safeStrSql%'
+            ) "
+            .' ORDER BY tsp_evt DESC
+            LIMIT 10';
+
+        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+
+        // calcul du total grâce à SQL_CALC_FOUND_ROWS
+        $totalSql = LegacyContainer::get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
+        $totalEvt = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
+
+        while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+            $evtTab[] = $handle;
+        }
+    }
+}
+?>
+
 <!-- MAIN -->
 <div id="main" role="main" class="bigoo" style="">
 

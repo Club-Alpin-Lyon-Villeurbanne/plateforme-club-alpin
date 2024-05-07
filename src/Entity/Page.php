@@ -39,7 +39,7 @@ class Page
     /**
      * @var bool
      */
-    #[ORM\Column(name: 'superadmin_page', type: 'boolean', nullable: false, options: ['comment' => 'Page réservée au super-administrateur. '])]
+    #[ORM\Column(name: 'superadmin_page', type: 'boolean', nullable: false, options: ['comment' => 'Page réservée au super-administrateur. "Contenu" dans le niveau administrateur dans la hiérarchie des filtres sur le site : admin_page doit donc aussi etre activé'])]
     private $superadmin = '0';
 
     /**

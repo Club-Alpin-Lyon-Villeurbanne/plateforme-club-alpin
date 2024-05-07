@@ -58,6 +58,8 @@ jobs:
         run: |
           cp infrastructure/confs/staging/robots.txt public/robots.txt
           cp infrastructure/confs/staging/.env.prod .
+          cp infrastructure/confs/staging/jwt/private.pem config/jwt/private.pem
+          cp infrastructure/confs/staging/jwt/public.pem config/jwt/public.pem
           cp legacy/config/www.${{ env.DOMAIN }}/config.php legacy/config/config.php
 
       - name: Replace variable for staging .env file

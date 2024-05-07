@@ -1,5 +1,7 @@
 <?php
 
+use App\Legacy\LegacyContainer;
+
 require __DIR__.'/../app/includes.php';
 
 if (!admin()) {
@@ -10,18 +12,15 @@ if (!admin()) {
 
 $errTab = [];
 $target = stripslashes($_GET['target']);
+$ftpPath = LegacyContainer::getParameter('legacy_ftp_path');
 
 // vérification,
-// la cible doit commencer par ../ftp/
-if ('../ftp/' != substr($target, 0, 7)) {
-    $errTab[] = "Le chemin d'accès au fichier est incorrect";
-}
-// ne doit pas contenir ../ à part au début
-if (1 != mb_substr_count($target, '../')) {
+// ne doit pas contenir ..
+if (mb_substr_count($target, '..') > 0) {
     $errTab[] = "Le chemin d'accès au fichier est incorrect : récurrence de chemin retour";
 }
 // doit être un dossier
-if (!is_dir($target)) {
+if (!is_dir($ftpPath.$target)) {
     $errTab[] = "L'élément donné ne semble pas être un dossier";
 }
 
@@ -29,7 +28,8 @@ if (count($errTab) > 0) {
     echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
 } else {
     // VERIFS DEJA FAITES, OPERATION OK SUR DEMANDE
-    if ('create' == $_GET['operation']) {
+    $operation = $_GET['operation'] ?? null;
+    if ('create' == $operation) {
         if ('unlocked' != $_GET['lock']) {
             $errTab[] = 'Erreur : request locked.';
         }
@@ -41,13 +41,13 @@ if (count($errTab) > 0) {
         }
         if ('' === $nouveauDossier) {
             $errTab[] = 'Entrez un nom de dossier valide';
-        } elseif (file_exists($target.$nouveauDossier)) {
+        } elseif (file_exists($ftpPath.$target.$nouveauDossier)) {
             $errTab[] = "Le dossier <b>$target$nouveauDossier</b> existe déja. Merci de trouver un autre  nom";
         }
 
         // fermeture de la box/ actualissation du ftp
         if (0 === count($errTab)) {
-            if (!mkdir($concurrentDirectory = $target.$nouveauDossier) && !is_dir($concurrentDirectory)) {
+            if (!mkdir($concurrentDirectory = $ftpPath.$target.$nouveauDossier) && !is_dir($concurrentDirectory)) {
                 $errTab[] = 'Erreur PHP à la création du dossier';
             }
         }

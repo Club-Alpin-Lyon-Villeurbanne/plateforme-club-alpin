@@ -26,7 +26,6 @@ final class Version20211121133517 extends AbstractMigration
         $this->addSql('ALTER TABLE caf_page ENGINE = InnoDB');
         $this->addSql('ALTER TABLE caf_usertype ENGINE = InnoDB');
         $this->addSql('ALTER TABLE caf_message ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE caf_ftp_allowedext ENGINE = InnoDB');
         $this->addSql('ALTER TABLE caf_token ENGINE = InnoDB');
         $this->addSql('ALTER TABLE caf_evt_join ENGINE = InnoDB');
         $this->addSql('ALTER TABLE caf_img ENGINE = InnoDB');
@@ -51,7 +50,6 @@ final class Version20211121133517 extends AbstractMigration
         $this->addSql('ALTER TABLE caf_page ENGINE = MyISAM');
         $this->addSql('ALTER TABLE caf_usertype ENGINE = MyISAM');
         $this->addSql('ALTER TABLE caf_message ENGINE = MyISAM');
-        $this->addSql('ALTER TABLE caf_ftp_allowedext ENGINE = MyISAM');
         $this->addSql('ALTER TABLE caf_token ENGINE = MyISAM');
         $this->addSql('ALTER TABLE caf_evt_join ENGINE = MyISAM');
         $this->addSql('ALTER TABLE caf_img ENGINE = MyISAM');

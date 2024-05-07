@@ -59,7 +59,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
     <div style="float:right;margin-right:20px;" >
         Titre :<br />
-        <input style="width:320px;" type="text" name="titre_evt" class="type1" value="<?php echo inputVal('titre_evt', ''); ?>" placeholder="ex : Escalade du Grand Som" />
+        <input style="width:320px;" type="text" name="titre_evt" class="type1" value="<?php echo inputVal('titre_evt', ''); ?>" placeholder="ex : Escalade du Grand Som" required minlength="10" maxlength="100"/>
     </div>
 
     <?php $groupes = get_groupes($comTab[$current_commission]['id_commission'], true); ?>
@@ -70,7 +70,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
             <?php
     // articles liés aux commissions
     foreach ($groupes as $code => $groupe) {
-        echo '<option value="'.$groupe['id'].'" '.($_POST['id_groupe'] == $groupe['id'] ? 'selected="selected"' : '').'>Groupe : '.html_utf8($groupe['nom']).' &raquo;</option>';
+        echo '<option value="'.$groupe['id'].'" '.(\array_key_exists('id_groupe', $_POST) && $_POST['id_groupe'] == $groupe['id'] ? 'selected="selected"' : '').'>Groupe : '.html_utf8($groupe['nom']).' &raquo;</option>';
     }
         ?>
         </select>
@@ -189,7 +189,7 @@ foreach ($coencadrantsTab as $coencadrant) {
             <?php
                 inclure('infos-lieu-de-rdv', 'mini');
 ?>
-            <input type="text" name="rdv_evt" class="type2" style="width:95%" value="<?php echo inputVal('rdv_evt', ''); ?>" placeholder="ex : Pralognan la Vanoise, les fontanettes" />
+            <input type="text" name="rdv_evt" class="type2" style="width:95%" value="<?php echo inputVal('rdv_evt', ''); ?>" placeholder="ex : Pralognan la Vanoise, les fontanettes" required minlength="3" maxlength="200" />
         </div>
 
         <div style="float:left; width:45%; padding:0 20px 0 0;">
@@ -210,13 +210,13 @@ inclure('infos-carte', 'mini');
         <br />
         <div style="width:45%; padding-right:3%; float:left">
             Date et heure de RDV / covoiturage :<br />
-            <input type="text" name="tsp_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_evt_day', ''); ?>" placeholder="jj/mm/aaaa" />
-            <input type="text" name="tsp_evt_hour" class="type2" style="width:45%" value="<?php echo inputVal('tsp_evt_hour', ''); ?>" placeholder="hh:ii" />
+            <input type="text" name="tsp_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_evt_day', ''); ?>" placeholder="jj/mm/aaaa" required/>
+            <input type="text" name="tsp_evt_hour" class="type2" style="width:45%" value="<?php echo inputVal('tsp_evt_hour', ''); ?>" placeholder="hh:ii" required/>
         </div>
 
         <div style="width:50%; float:left">
             Date de fin de la sortie :<br />
-            <input type="text" name="tsp_end_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_end_evt_day', ''); ?>" placeholder="jj/mm/aaaa" />
+            <input type="text" name="tsp_end_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_end_evt_day', ''); ?>" placeholder="jj/mm/aaaa" required/>
             <!--
 							<input type="text" name="tsp_end_evt_hour" class="type2" style="width:45%;" value="<?php echo inputVal('tsp_end_evt_hour', ''); ?>" placeholder="hh:ii" />
 							-->
@@ -262,7 +262,7 @@ inclure('infos-carte', 'mini');
 
             <div style="width:45%; padding-right:3%; float:left">
                 Les inscriptions démarrent :<br />
-                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_start_evt_days" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_start_evt_days', ''); ?>" placeholder=" > 2" />
+                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_start_evt_days" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_start_evt_days', ''); ?>" placeholder=" > 2" required/>
 								<span class="mini">
 									jours avant la sortie.
 								</span>
@@ -305,23 +305,9 @@ inclure('infos-carte', 'mini');
         <div style="float:right; padding-right:20px;">
             <select>
                 <option value="">- Listes prédéfinies </option>
-                <option value="Carte CAF, vêtements pour activité extérieure, fourrure polaire, coupe-vent, casquette, lunettes de soleil, crème solaire, appareil photos.  SANS OUBLIER : DVA, sonde, pelle qui peuvent être prêtés par le CAF contre participation aux frais, skis, bâtons, peaux, couteaux. Casque conseillé">Ski alpinisme</option>
-                <option value="Carte vitale, Mutuelle, assurance et CAF. Sac à dos adapté à la randonnée raquettes et suffisamment grand pour contenir les vêtements de l’activité extérieure : fourrure polaire, goretex ou équivalent, bonnet, gants, lunettes de soleil, crème solaire, guêtres. Pique-nique et boisson (thermos ou gourde ou autre). Raquettes adaptées à vos chaussures et réglées au préalable / Bâtons / Kit de sécurité : DVA, pelle et sonde qui peut être prêté par le CAF contre participation aux frais et un chèque de caution de 350 €. Prévoir un jeu de piles de rechange pour le DVA. Chaussures de rechange pour la voiture (avec sac plastique). Pour le covoiturage : espèces ou chèque ou autre moyen comme Lydia.">Rando raquettes</option>
-                <option value="Cartes vitale, Mutuelle, assurance et CAF. Sac à dos adapté à la randonnée et suffisamment grand pour contenir les vêtements de l’activité extérieure : fourrure polaire, goretex ou équivalent, cape de pluie, sur-sac, gants, bonnet ou chapeau, pique-nique,  boisson, lunettes de soleil et crème solaire. Chaussures de montagne avec une semelle crantée, bâtons, chaussures de rechange pour la voiture (avec sac plastique). Espèces ou chèque pour les frais de covoiturage.">Randonnée Montagne</option>
-                <option value="Sac de couchage, tapis de sol, lampe de poche, briquet, gamelles, repas, tente">Bivouac</option>
-                <option value="Chaussures avec des semelles adhérentes, casque, baudrier, chaussons, longe de 8mm, 2 mousquetons à vis, un tube d'assurage, 2 machards, sac  dos petit ou moyen, coupe vent, 2l d'eau, vivres de courses, lampe de poche, téléphone portable chargé et allumé, lunettes de soleil. En hiver : gants, bonnet.">Grandes voies </option>
-                <option value="Casque, baudrier, longe de via ferrata, gants de jardinage, vêtements de sport, petit sac à dos, 1-2 litres d'eau, pique nique">Via ferrata </option>
-                <option value="Vêtements de sport sales, pull en laine, bottes ou chaussures de marche, gants Mappa, 1 litre d'eau, pique nique, 4 piles rondes type LR 6 (vous les récupérez à la fin de la sortie)">Spéléo </option>
-                <option value="Sac de couchage (avec sac à viande), tapis de sol, popote (assiette + bol), gourde, couverts, lampe de poche (frontale c'est mieux), petit nécessaire de toilette">Camping </option>
-                <option value="Baudrier, assureur et mousqueton de sécurité, chaussons d&#39;escalade, licence CAF à jour, gourde d’eau, vêtements adaptés à l’escalade, haut chaud (il peut faire froid quand on assure), chaussures fermées propres pour assurer, élastique pour attacher les cheveux, pharmacie personnelle et du chocolat pour les encadrant.e.s ! Note : pour le baudrier, attention à ne pas dépasser la durée d’usage indiquée sur la notice constructeur. Dans tous les cas, cet équipement doit être mis au rebut au plus tard 10 ans après leur fabrication.">Escalade SAE </option>
-                <option value="Casque normé EN12492, baudrier, assureur avec son mousqueton de sécurité, longe cousue par le fabricant avec son mousqueton de sécurité, un jeu de minimum 7 dégaines, un machard avec son mousqueton de sécurité, chaussons d&#39;escalade, licence CAF à jour, gourde d’eau et/ou thermos, encas, vêtements adaptés à l’escalade, haut chaud (il peut faire froid quand on assure), une membrane coupe-vent, chaussures fermées pour assurer, lunettes de soleil, crème solaire, pharmacie personnelle et du chocolat pour les encadrant.e.s ! Note : pour les éléments textiles de vos équipements de sécurité (baudrier, longes, sangles de dégaines, machard, etc.), attention à ne pas dépasser la durée d’usage indiquée sur la notice constructeur. Dans tous les cas, ces équipements doivent être mis au rebut au plus tard 10 ans après leur fabrication.">Escalade SNE </option>
-                <option value="Casque normé EN12492, baudrier, assureur double gorges avec son mousqueton de sécurité, longe double cousue par le fabricant avec deux mousquetons de sécurité, un jeu de minimum 7 dégaines, un machard avec son mousqueton de sécurité, un anneau de corde dynamique cousu de 1,2m pour trianguler le relais avec 3 mousquetons de sécurité, chaussons d&#39;escalade, licence CAF à jour, petit sac à dos (20L max), gourde d’eau ou thermos, encas, vêtements adaptés à l’escalade, haut chaud (il peut faire froid quand on assure), une membrane coupe-vent, lunettes de soleil, crème solaire, frontale avec batterie, pharmacie personnelle et du chocolat pour les encadrant.e.s ! Note : pour les éléments textiles de vos équipements de sécurité (baudrier, longes, sangles de dégaines, machard, etc.), attention à ne pas dépasser la durée d’usage indiquée sur la notice constructeur. Dans tous les cas, ces équipements doivent être mis au rebut au plus tard 10 ans après leur fabrication.">Escalade GV </option>
-                <option value="Carte CAF, vêtements pour activité extérieure, fourrure polaire, coupe-vent, casquette, lunettes de soleil, crème solaire, appareil photos">Affaires personnelles </option>
-                <option value="Piolet, casque, baudrier, crampons, 3 mousquetons à vis, longe en corde dynamique (pas de sangle pour se vacher), une sangle de 120, 2 anneaux de cordelette pour machard, gourde, sac à dos (30 litres), chaussures à semelles rigides, lampe frontale, lunettes de soleil cat 4. Vetements : système 3 couches : veste, et pantalon gore-tex ou équivalent, t-shirt merinos, polaire, guêtres, gants (prévoir une paire de rechange), bonnet. ">Alpinisme</option>
-                <option value="Une paire de piolets techniques, une paire de crampons techniques, grosses chaussures à tiges rigides, 2 voire 3 paires de gants (dont imperméables), veste imperméable, vêtements chauds, bonnet, thé chaud...">Cascade de glace </option>
-                <option value="Casque, gants et protections, chaussures, eau et nourriture de course, une chambre à air, une pompe, démonte-pneus, un multi-tool, une attache rapide de chaine, une patte de dérailleur, et un VTT en bon état de fonctionnement: freins, pneus, transmission, serrages... Et savoir réparer les petites pannes!">Vélo de Montagne</option>
-                <option value="Carte CAF, doudoune, frontale, gants rechange, bonnet rechange, lunettes de soleil, crème solaire, appareil photos. SANS OUBLIER : DVA, sonde, pelle qui peuvent être prêtés par le CAF contre participation aux frais, boots, splitboard, bâtons, peaux, couteaux, visserie de rechange. Casque recommandé">Snowboard rando</option>
-            </select>
+                <?php foreach ($listeEquipementsRecommande as $nomActivite => $listeEquipement) : ?>
+                    <option value="<?= htmlspecialchars($listeEquipement); ?>"><?= htmlspecialchars($nomActivite); ?></option>
+                <?php endforeach; ?> </select>
             <input type="button" value="appliquer" class="nice" id="predefinitions-matos-submit" />
 
             <!-- ****************** Listes de matériel -->
@@ -369,10 +355,10 @@ inclure('infos-matos', 'mini');
     <br />
     <br />
     <div style="text-align:center">
-        <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+        <button class="biglink" href="javascript:void(0)" title="Enregistrer">
             <span class="bleucaf">&gt;</span>
             ENREGISTRER ET DEMANDER LA PUBLICATION
-        </a>
+        </button>
     </div>
 </form>
 

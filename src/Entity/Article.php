@@ -82,13 +82,13 @@ class Article
     /**
      * @var string
      */
-    #[ORM\Column(name: 'titre_article', type: 'string', length: 200, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'titre_article', type: 'string', length: 200, nullable: false)]
     private $titre;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'code_article', type: 'string', length: 50, nullable: false, options: ['comment' => 'Pour affichage dans les URL', 'collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'code_article', type: 'string', length: 50, nullable: false, options: ['comment' => 'Pour affichage dans les URL',])]
     private $code;
 
     
@@ -101,7 +101,7 @@ class Article
      *
      *
      */
-    #[ORM\ManyToOne(targetEntity: 'Evt')]
+    #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'articles')]
     #[ORM\JoinColumn(name: 'evt_article', referencedColumnName: 'id_evt', nullable: true)]
     private $evt;
 
@@ -114,7 +114,7 @@ class Article
     /**
      * @var string
      */
-    #[ORM\Column(name: 'cont_article', type: 'text', length: 65535, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'cont_article', type: 'text', length: 65535, nullable: false)]
     private $cont;
 
     /**

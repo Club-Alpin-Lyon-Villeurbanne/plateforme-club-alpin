@@ -51,8 +51,8 @@ class SortieInscriptionsModificationVoter extends Voter
         if ($user->hasAttribute(UserAttr::SALARIE)) {
             return true;
         }
-        foreach ($subject->getEncadrants() as $evtJoin) {
-            if ($evtJoin->getUser() === $user) {
+        foreach ($subject->getEncadrants() as $eventParticipation) {
+            if ($eventParticipation->getUser() === $user) {
                 return true;
             }
         }

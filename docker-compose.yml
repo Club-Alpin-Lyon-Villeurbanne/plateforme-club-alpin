@@ -1,36 +1,39 @@
-version: "3"
-
 services:
-    cafsite:
-        build: docker
-        container_name: www_caflyon
-        ports:
-            - "8000:80"
-        volumes:
-            - ./docker/vhosts:/etc/apache2/sites-enabled
-            - ./:/var/www
+  cafsite:
+    build:
+      context: ./docker
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+    container_name: www_caflyon
+    ports:
+      - "8000:80"
+    volumes:
+      - ./docker/vhosts:/etc/apache2/sites-enabled
+      - ./docker/utils/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./:/var/www
 
-    cafdb:
-        image: mysql:5.7
-        container_name: db_caflyon
-        environment:
-            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-            MYSQL_DATABASE: ${DB_NAME}
-        restart: always
-        volumes:
-            - ./db:/var/lib/mysql
+  cafdb:
+    image: mysql:5.7
+    container_name: db_caflyon
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    restart: always
+    volumes:
+      - ./db:/var/lib/mysql
 
-    phpmyadmin:
-        image: phpmyadmin
-        container_name: phpmyadmin_caflyon
-        ports:
-            - 8080:80
-        environment:
-            PMA_HOST: ${DB_HOST}
-            UPLOAD_LIMIT: ${UPLOAD_LIMIT}
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin_caflyon
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: ${DB_HOST}
+      UPLOAD_LIMIT: ${UPLOAD_LIMIT}
 
-    mailcatcher:
-        image: schickling/mailcatcher
-        container_name: mail_caflyon
-        ports:
-            - 1081:1080
+  mailcatcher:
+    image: schickling/mailcatcher
+    container_name: mail_caflyon
+    ports:
+      - 1081:1080

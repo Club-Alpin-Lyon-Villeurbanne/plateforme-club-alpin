@@ -20,64 +20,7 @@ SET time_zone = "+00:00";
 -- Base de données :  `caf`
 --
 
-DELIMITER $$
---
--- Procédures
---
-CREATE DEFINER=`root`@`localhost` PROCEDURE `caf_article_maj_une`()
-    MODIFIES SQL DATA
-BEGIN
-
--- compte le nombre d'article en une, enleve 5
-SELECT @LimitRowsCount:=(SELECT COUNT(`id_article`)-5
-FROM  `caf_article`
-WHERE  `status_article` =1
-AND  `une_article` =1)
-;
-
--- retrograde les vieux articles de la une en article normaux
-PREPARE STMT FROM "UPDATE `caf_article`
-SET `une_article` =0
-WHERE `status_article` =1
-AND  `une_article` =1
-ORDER BY `tsp_article` ASC
-LIMIT ?";
-
-EXECUTE STMT USING @LimitRowsCount; 
-
-COMMIT;
-
-
-END$$
-
-DELIMITER ;
-
 -- --------------------------------------------------------
-
---
--- Structure de la table `caf_article`
---
-
-CREATE TABLE IF NOT EXISTS `caf_article` (
-  `id_article` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `status_article` int(11) NOT NULL DEFAULT '0' COMMENT '0=pas vu, 1=valide, 2=refusé',
-  `status_who_article` int(11) NOT NULL COMMENT 'ID du membre qui change le statut',
-  `topubly_article` int(11) NOT NULL COMMENT 'Demander la publication ? Ou laisser en standby',
-  `tsp_crea_article` int(11) NOT NULL COMMENT 'Timestamp de création de l''article',
-  `tsp_validate_article` int(11) NOT NULL,
-  `tsp_article` int(11) NOT NULL COMMENT 'Timestamp affiché de l''article',
-  `tsp_lastedit` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Date de dernière modif',
-  `user_article` int(11) NOT NULL COMMENT 'ID du créateur',
-  `titre_article` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
-  `code_article` varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Pour affichage dans les URL',
-  `commission_article` int(11) NOT NULL COMMENT 'ID Commission liée (facultativ)',
-  `evt_article` int(11) NOT NULL COMMENT 'ID sortie liée',
-  `une_article` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'A la une ?',
-  `cont_article` text COLLATE utf8_unicode_ci NOT NULL,
-  `nb_vues_article` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id_article`),
-  KEY `id_article` (`id_article`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 
 --
 -- Contenu de la table `caf_article`
@@ -90,66 +33,6 @@ INSERT INTO `caf_article` (`id_article`, `status_article`, `status_who_article`,
 (4, 1, 1, 1, 1395308726, 1395308799, 1395308726, '2014-03-20 09:45:26', 1, 'Sed aliquam dapibus placerat', 'sed-aliquam-dapibus-placerat', 0, 0, 0, '<p>Quisque venenatis condimentum lorem, in blandit diam mattis vitae. Praesent ac nunc massa. Nunc rhoncus condimentum sodales. Nam sit amet ipsum est. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse mattis massa lobortis volutpat volutpat. Duis urna neque, tincidunt id eleifend sit amet, rhoncus sit amet lorem. In ut massa leo. Phasellus egestas congue ullamcorper. Integer et justo a justo gravida interdum.</p>', 0),
 (5, 1, 1, 1, 1395308761, 1395308801, 1395308761, '2014-03-20 09:46:01', 1, 'In non ultricies diam', 'in-non-ultricies-diam', 0, 0, 0, '<p>Curabitur ornare mi felis, sit amet malesuada tellus feugiat a. Maecenas nunc enim, tincidunt eu nibh sed, viverra viverra libero. Maecenas sed ante quis turpis ultricies dapibus. Praesent id pretium dolor. Duis et facilisis mauris, cursus adipiscing nibh. Vestibulum eleifend, neque vitae suscipit venenatis, eros libero facilisis erat, eget dictum dui mi sit amet nisi. Sed scelerisque lorem erat, ut viverra dolor porta et. Sed nec feugiat tellus. In enim elit, hendrerit at bibendum sit amet, faucibus eu orci.</p>', 0),
 (6, 1, 1, 1, 1395308793, 1395308803, 1395308793, '2014-03-20 09:46:33', 1, 'Pellentesque urna neque', 'pellentesque-urna-neque', 0, 0, 0, '<p>Fusce condimentum sagittis ante, id laoreet sapien porta vel. Vestibulum consectetur blandit laoreet. Cras placerat nisi quis arcu pellentesque, eget iaculis ipsum fermentum. Aliquam eget mollis lacus, sit amet porttitor odio. Sed sit amet tellus ullamcorper nulla tempor adipiscing. Quisque porta, urna sed faucibus ultrices, lacus nisi bibendum ipsum, malesuada mollis libero nibh quis odio. Proin dui turpis, luctus ut nisi ac, ultrices bibendum odio.</p>', 0);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_chron_launch`
---
-
-CREATE TABLE IF NOT EXISTS `caf_chron_launch` (
-  `id_chron_launch` int(11) NOT NULL AUTO_INCREMENT,
-  `tsp_chron_launch` bigint(20) NOT NULL,
-  PRIMARY KEY (`id_chron_launch`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_chron_operation`
---
-
-CREATE TABLE IF NOT EXISTS `caf_chron_operation` (
-  `id_chron_operation` int(11) NOT NULL AUTO_INCREMENT,
-  `tsp_chron_operation` bigint(20) NOT NULL,
-  `code_chron_operation` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `parent_chron_operation` int(11) NOT NULL,
-  PRIMARY KEY (`id_chron_operation`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_comment`
---
-
-CREATE TABLE IF NOT EXISTS `caf_comment` (
-  `id_comment` int(11) NOT NULL AUTO_INCREMENT,
-  `status_comment` int(11) NOT NULL DEFAULT '1',
-  `tsp_comment` bigint(20) NOT NULL,
-  `user_comment` int(11) NOT NULL,
-  `name_comment` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `email_comment` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
-  `cont_comment` text COLLATE utf8_unicode_ci NOT NULL,
-  `parent_type_comment` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `parent_comment` int(11) NOT NULL,
-  PRIMARY KEY (`id_comment`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_commission`
---
-
-CREATE TABLE IF NOT EXISTS `caf_commission` (
-  `id_commission` int(11) NOT NULL AUTO_INCREMENT,
-  `ordre_commission` int(11) NOT NULL,
-  `vis_commission` tinyint(1) NOT NULL,
-  `code_commission` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `title_commission` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id_commission`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 
 --
 -- Contenu de la table `caf_commission`
@@ -172,24 +55,6 @@ INSERT INTO `caf_commission` (`id_commission`, `ordre_commission`, `vis_commissi
 (14, 14, 1, 'formation', 'Formation');
 
 -- --------------------------------------------------------
-
---
--- Structure de la table `caf_content_html`
---
-
-CREATE TABLE IF NOT EXISTS `caf_content_html` (
-  `id_content_html` int(11) NOT NULL AUTO_INCREMENT,
-  `code_content_html` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `lang_content_html` varchar(2) COLLATE utf8_unicode_ci NOT NULL,
-  `contenu_content_html` text COLLATE utf8_unicode_ci NOT NULL,
-  `date_content_html` bigint(20) NOT NULL,
-  `linkedtopage_content_html` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT 'URL relative de la page liée par défaut à cet élément, pour coupler à un moteur de recherche',
-  `current_content_html` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Définit le dernier élément en date, pour simplifier les requêtes de recherche',
-  `vis_content_html` tinyint(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id_content_html`),
-  FULLTEXT KEY `contenu_content_html` (`contenu_content_html`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=63 ;
-
 --
 -- Contenu de la table `caf_content_html`
 --
@@ -265,22 +130,6 @@ INSERT INTO `caf_content_html` (`id_content_html`, `code_content_html`, `lang_co
 -- --------------------------------------------------------
 
 --
--- Structure de la table `caf_content_inline`
---
-
-CREATE TABLE IF NOT EXISTS `caf_content_inline` (
-  `id_content_inline` int(11) NOT NULL AUTO_INCREMENT,
-  `groupe_content_inline` int(11) NOT NULL COMMENT 'Le parent de ce contenu, dans l''organisation pour l''administrateur',
-  `code_content_inline` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `lang_content_inline` varchar(2) COLLATE utf8_unicode_ci NOT NULL,
-  `contenu_content_inline` text COLLATE utf8_unicode_ci NOT NULL,
-  `date_content_inline` bigint(20) NOT NULL,
-  `linkedtopage_content_inline` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT 'URL relative de la page liée par défaut à cet élément, pour coupler à un moteur de recherche',
-  PRIMARY KEY (`id_content_inline`),
-  FULLTEXT KEY `contenu_content_inline` (`contenu_content_inline`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=45 ;
-
---
 -- Contenu de la table `caf_content_inline`
 --
 
@@ -333,17 +182,6 @@ INSERT INTO `caf_content_inline` (`id_content_inline`, `groupe_content_inline`, 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `caf_content_inline_group`
---
-
-CREATE TABLE IF NOT EXISTS `caf_content_inline_group` (
-  `id_content_inline_group` int(11) NOT NULL AUTO_INCREMENT,
-  `ordre_content_inline_group` int(11) NOT NULL,
-  `nom_content_inline_group` varchar(300) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id_content_inline_group`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=5 ;
-
---
 -- Contenu de la table `caf_content_inline_group`
 --
 
@@ -352,210 +190,6 @@ INSERT INTO `caf_content_inline_group` (`id_content_inline_group`, `ordre_conten
 (2, 2, 'Titre des pages'),
 (3, 3, 'Navigation'),
 (4, 4, 'Descriptions des pages');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_evt`
---
-
-CREATE TABLE IF NOT EXISTS `caf_evt` (
-  `id_evt` int(11) NOT NULL AUTO_INCREMENT,
-  `status_evt` smallint(6) NOT NULL COMMENT '0-unseen 1-ok 2-refused',
-  `status_who_evt` int(11) NOT NULL COMMENT 'ID de l''user qui a changé le statut en dernier',
-  `status_legal_evt` smallint(6) NOT NULL COMMENT '0-unseen 1-ok 2-refused',
-  `status_legal_who_evt` int(11) NOT NULL DEFAULT '0' COMMENT 'ID du validateur légal',
-  `cancelled_evt` tinyint(4) NOT NULL DEFAULT '0',
-  `cancelled_who_evt` int(11) NOT NULL COMMENT 'ID user qui a  annulé l''evt',
-  `cancelled_when_evt` bigint(20) NOT NULL COMMENT 'Timestamp annulation',
-  `user_evt` int(11) NOT NULL COMMENT 'id user createur',
-  `commission_evt` int(11) NOT NULL,
-  `tsp_evt` bigint(20) NOT NULL COMMENT 'timestamp du début du event',
-  `tsp_end_evt` bigint(20) NOT NULL,
-  `tsp_crea_evt` bigint(20) NOT NULL COMMENT 'Création de l''entrée',
-  `tsp_edit_evt` bigint(20) NOT NULL,
-  `place_evt` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Lieu de RDV covoiturage',
-  `titre_evt` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `code_evt` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `massif_evt` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `rdv_evt` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Lieu détaillé du rdv',
-  `tarif_evt` float(10,2) NOT NULL DEFAULT '0.00',
-  `denivele_evt` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `distance_evt` int(11) NOT NULL,
-  `lat_evt` decimal(11,8) NOT NULL,
-  `long_evt` decimal(11,8) NOT NULL,
-  `matos_evt` text COLLATE utf8_unicode_ci NOT NULL,
-  `difficulte_evt` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `description_evt` text COLLATE utf8_unicode_ci NOT NULL,
-  `need_benevoles_evt` tinyint(1) NOT NULL DEFAULT '0',
-  `join_start_evt` int(11) NOT NULL COMMENT 'Timestamp de départ des inscriptions',
-  `join_max_evt` int(11) NOT NULL COMMENT 'Nombre max d''inscriptions spontanées sur le site, ET PAS d''inscrits total',
-  `ngens_max_evt` int(11) NOT NULL COMMENT 'Nombre de gens pouvant y aller au total. Donnée "visuelle" uniquement, pas de calcul.',
-  `cycle_master_evt` tinyint(1) NOT NULL COMMENT 'Est-ce la première sortie d''un cycle de sorties liées ?',
-  `cycle_parent_evt` int(11) NOT NULL COMMENT 'Si cette sortie est l''enfant d''un cycle, l''id du parent est ici',
-  `child_version_from_evt` int(11) NOT NULL DEFAULT '0' COMMENT 'Versionning : chaque modification d-evt crée une entrée "enfant" de l-originale. Ce champ prend l-ID de l-original',
-  `child_version_tosubmit` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id_evt`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_evt_join`
---
-
-CREATE TABLE IF NOT EXISTS `caf_evt_join` (
-  `id_evt_join` int(11) NOT NULL AUTO_INCREMENT,
-  `status_evt_join` smallint(6) NOT NULL DEFAULT '0' COMMENT '0=non confirmé - 1=validé - 2=refusé',
-  `evt_evt_join` int(11) NOT NULL,
-  `user_evt_join` int(11) NOT NULL,
-  `affiliant_user_join` int(11) NOT NULL COMMENT 'Si non nulle, cette valeur cible l''utilisateur qui a joint cet user via la fonction d''affiliation. C''est donc lui qui doit recevoir les emails informatifs.',
-  `role_evt_join` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `tsp_evt_join` bigint(20) NOT NULL,
-  `lastchange_when_evt_join` bigint(20) NOT NULL COMMENT 'Quand a été modifié cet élément',
-  `lastchange_who_evt_join` int(11) NOT NULL COMMENT 'Qui a modifié cet élément',
-  PRIMARY KEY (`id_evt_join`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_ftp_allowedext`
---
-
-CREATE TABLE IF NOT EXISTS `caf_ftp_allowedext` (
-  `id_ftp_allowedext` int(11) NOT NULL AUTO_INCREMENT,
-  `ext_ftp_allowedext` varchar(6) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id_ftp_allowedext`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=24 ;
-
---
--- Contenu de la table `caf_ftp_allowedext`
---
-
-INSERT INTO `caf_ftp_allowedext` (`id_ftp_allowedext`, `ext_ftp_allowedext`) VALUES
-(1, 'jpg'),
-(2, 'gif'),
-(3, 'jpeg'),
-(4, 'png'),
-(5, 'doc'),
-(6, 'docx'),
-(7, 'odt'),
-(8, 'pdf'),
-(9, 'avi'),
-(10, 'mov'),
-(11, 'mp3'),
-(12, 'rar'),
-(13, 'zip'),
-(14, 'txt'),
-(15, 'xls'),
-(16, 'csv'),
-(17, 'ppt'),
-(18, 'pptx'),
-(19, 'ai'),
-(20, 'psd'),
-(21, 'fla'),
-(22, 'swf'),
-(23, 'eps');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_galerie`
---
-
-CREATE TABLE IF NOT EXISTS `caf_galerie` (
-  `id_galerie` int(11) NOT NULL AUTO_INCREMENT,
-  `ordre_galerie` int(11) NOT NULL,
-  `titre_galerie` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `vis_galerie` tinyint(1) NOT NULL DEFAULT '1',
-  `evt_galerie` int(11) NOT NULL COMMENT 'Sortie liée (facultatif)',
-  `article_galerie` int(11) NOT NULL COMMENT 'Article lié (facultatif)',
-  PRIMARY KEY (`id_galerie`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_img`
---
-
-CREATE TABLE IF NOT EXISTS `caf_img` (
-  `id_img` int(11) NOT NULL AUTO_INCREMENT,
-  `ordre_img` int(11) NOT NULL,
-  `galerie_img` int(11) NOT NULL,
-  `evt_img` int(11) NOT NULL COMMENT 'Une photo peut être directement liée à une sortie et non une galerie (ex : creéation d''evt)',
-  `user_img` int(11) NOT NULL,
-  `titre_img` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `legende_img` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
-  `fichier_img` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
-  `vis_img` tinyint(1) NOT NULL DEFAULT '1',
-  `status_img` int(11) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id_img`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_log_admin`
---
-
-CREATE TABLE IF NOT EXISTS `caf_log_admin` (
-  `id_log_admin` int(11) NOT NULL AUTO_INCREMENT,
-  `code_log_admin` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `desc_log_admin` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
-  `ip_log_admin` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `date_log_admin` bigint(20) NOT NULL,
-  PRIMARY KEY (`id_log_admin`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_message`
---
-
-CREATE TABLE IF NOT EXISTS `caf_message` (
-  `id_message` int(11) NOT NULL AUTO_INCREMENT,
-  `date_message` bigint(20) NOT NULL,
-  `to_message` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `from_message` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `headers_message` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
-  `code_message` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `cont_message` text COLLATE utf8_unicode_ci NOT NULL,
-  `success_message` tinyint(1) NOT NULL,
-  PRIMARY KEY (`id_message`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_page`
---
-
-CREATE TABLE IF NOT EXISTS `caf_page` (
-  `id_page` int(11) NOT NULL AUTO_INCREMENT,
-  `parent_page` int(11) NOT NULL,
-  `admin_page` tinyint(1) NOT NULL COMMENT 'Protection et mise en page de page admin (!=public)',
-  `superadmin_page` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Page réservée au super-administrateur. "Contenu" dans le niveau administrateur dans la hiérarchie des filtres sur le site : admin_page doit donc aussi etre activé',
-  `vis_page` tinyint(4) NOT NULL DEFAULT '1' COMMENT 'On / Off',
-  `ordre_page` int(11) NOT NULL,
-  `menu_page` tinyint(1) NOT NULL COMMENT 'Apparait dans le menu principal ?',
-  `ordre_menu_page` int(11) NOT NULL COMMENT 'Position dans le menu ppal',
-  `menuadmin_page` tinyint(1) NOT NULL COMMENT 'Apparait dans le menu admin ?',
-  `ordre_menuadmin_page` int(11) NOT NULL COMMENT 'Position dans le menu admin',
-  `code_page` varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT 'ID lié au nom des fichiers et des variables',
-  `default_name_page` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Pour les pages admin notamment',
-  `meta_title_page` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Booléen : utiliser un titre sur mesure ou pas',
-  `meta_description_page` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Booléen : utiliser une description sur mesure ou pas',
-  `priority_page` decimal(1,1) NOT NULL COMMENT 'Priorité de sitemap',
-  `add_css_page` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Liste de fichiers css à ajouter, séparés par ;',
-  `add_js_page` varchar(200) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Liste de fichiers js à ajouter, séparés par ;',
-  `lock_page` tinyint(1) NOT NULL COMMENT 'Bloquer l-édition même au superadmin',
-  `pagelibre_page` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Pour le module de créatino de pages libres. Pour les pages standarts, comme des articles Wordpress',
-  `created_page` bigint(20) NOT NULL,
-  PRIMARY KEY (`id_page`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=43 ;
 
 --
 -- Contenu de la table `caf_page`
@@ -610,75 +244,11 @@ INSERT INTO `caf_page` (`id_page`, `parent_page`, `admin_page`, `superadmin_page
 -- --------------------------------------------------------
 
 --
--- Structure de la table `caf_token`
---
-
-CREATE TABLE IF NOT EXISTS `caf_token` (
-  `id_token` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `time_token` bigint(20) NOT NULL,
-  PRIMARY KEY (`id_token`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_user`
---
-
-CREATE TABLE IF NOT EXISTS `caf_user` (
-  `id_user` bigint(20) NOT NULL AUTO_INCREMENT,
-  `email_user` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
-  `mdp_user` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `cafnum_user` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Numéro de licence',
-  `cafnum_parent_user` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Filiation : numéro CAF du parent',
-  `firstname_user` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `lastname_user` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `nickname_user` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `created_user` bigint(20) NOT NULL,
-  `birthday_user` bigint(20) NOT NULL,
-  `tel_user` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `tel2_user` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `adresse_user` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `cp_user` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
-  `ville_user` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `pays_user` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `civ_user` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
-  `moreinfo_user` varchar(500) COLLATE utf8_unicode_ci NOT NULL COMMENT 'FORMATIONS ?',
-  `auth_contact_user` varchar(10) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'users' COMMENT 'QUI peut me contacter via formulaire',
-  `valid_user` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0=l''user n''a pas activé son compte   1=activé    2=bloqué',
-  `cookietoken_user` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `manuel_user` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'User créé à la mano sur le site ?',
-  `nomade_user` tinyint(1) NOT NULL DEFAULT '0',
-  `nomade_parent_user` int(11) NOT NULL COMMENT 'Dans le cas d''un user NOMADE, l''ID de son créateur',
-  `date_adhesion_user` bigint(20) DEFAULT NULL,
-  `doit_renouveler_user` tinyint(1) NOT NULL DEFAULT '0',
-  `alerte_renouveler_user` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Si sur 1 : une alerte s''affiche pour annoncer que l''adhérent doit renouveler sa licence',
-  `ts_insert_user` bigint(20) DEFAULT NULL COMMENT 'timestamp 1ere insertion',
-  `ts_update_user` bigint(20) DEFAULT NULL COMMENT 'timestamp derniere maj',
-  PRIMARY KEY (`id_user`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
-
---
 -- Contenu de la table `caf_user`
 --
 
 INSERT INTO `caf_user` (`id_user`, `email_user`, `mdp_user`, `cafnum_user`, `cafnum_parent_user`, `firstname_user`, `lastname_user`, `nickname_user`, `created_user`, `birthday_user`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `civ_user`, `moreinfo_user`, `auth_contact_user`, `valid_user`, `cookietoken_user`, `manuel_user`, `nomade_user`, `nomade_parent_user`, `date_adhesion_user`, `doit_renouveler_user`, `alerte_renouveler_user`, `ts_insert_user`, `ts_update_user`) VALUES
 (1, 'test@clubalpinlyon.fr', '098f6bcd4621d373cade4e832627b4f6', '749999999999', '', 'ADMIN', 'SUPER', 'Admin', 1375216633, 270687600, '0950985475', '', '19 ALLEE DU LAC ST ANDRE', '73375', 'LE BOURGET DU LAC', '', 'M', '', 'users', 1, '8f7d807e1f53eff5f9efbe5cb81090fb', 0, 0, 0, 1379977200, 0, 0, 1372629601, 1395098083);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `caf_userright`
---
-
-CREATE TABLE IF NOT EXISTS `caf_userright` (
-  `id_userright` int(11) NOT NULL AUTO_INCREMENT,
-  `code_userright` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
-  `title_userright` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `ordre_userright` int(11) NOT NULL,
-  `parent_userright` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id_userright`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=73 ;
 
 --
 -- Contenu de la table `caf_userright`
@@ -760,19 +330,6 @@ INSERT INTO `caf_userright` (`id_userright`, `code_userright`, `title_userright`
 -- --------------------------------------------------------
 
 --
--- Structure de la table `caf_usertype`
---
-
-CREATE TABLE IF NOT EXISTS `caf_usertype` (
-  `id_usertype` int(11) NOT NULL AUTO_INCREMENT,
-  `hierarchie_usertype` tinyint(4) NOT NULL COMMENT 'Ordre d''apparition des types',
-  `code_usertype` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `title_usertype` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `limited_to_comm_usertype` tinyint(1) NOT NULL COMMENT 'bool : ce type est (ou non) limité à une commission donnée',
-  PRIMARY KEY (`id_usertype`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=12 ;
-
---
 -- Contenu de la table `caf_usertype`
 --
 
@@ -792,390 +349,9 @@ INSERT INTO `caf_usertype` (`id_usertype`, `hierarchie_usertype`, `code_usertype
 
 -- --------------------------------------------------------
 
---
--- Structure de la table `caf_usertype_attr`
---
 
-CREATE TABLE IF NOT EXISTS `caf_usertype_attr` (
-  `id_usertype_attr` int(11) NOT NULL AUTO_INCREMENT,
-  `type_usertype_attr` int(11) NOT NULL COMMENT 'ID du type d''user (admin, modéro etc...)',
-  `right_usertype_attr` int(11) NOT NULL COMMENT 'ID du droit dans la table userright',
-  `details_usertype_attr` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id_usertype_attr`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=352 ;
-
---
--- Contenu de la table `caf_usertype_attr`
---
-
-INSERT INTO `caf_usertype_attr` (`id_usertype_attr`, `type_usertype_attr`, `right_usertype_attr`, `details_usertype_attr`) VALUES
-(1, 1, 49, '1394046177'),
-(2, 2, 49, '1394046177'),
-(3, 9, 49, '1394046177'),
-(4, 10, 49, '1394046177'),
-(5, 3, 49, '1394046177'),
-(6, 11, 49, '1394046177'),
-(7, 4, 49, '1394046177'),
-(8, 5, 49, '1394046177'),
-(9, 7, 49, '1394046177'),
-(10, 6, 49, '1394046177'),
-(11, 8, 49, '1394046177'),
-(12, 7, 50, '1394046177'),
-(13, 6, 50, '1394046177'),
-(14, 8, 50, '1394046177'),
-(15, 7, 51, '1394046177'),
-(16, 6, 51, '1394046177'),
-(17, 8, 51, '1394046177'),
-(18, 7, 52, '1394046177'),
-(19, 6, 52, '1394046177'),
-(20, 8, 52, '1394046177'),
-(21, 8, 53, '1394046177'),
-(22, 9, 54, '1394046177'),
-(23, 5, 54, '1394046177'),
-(24, 7, 54, '1394046177'),
-(25, 6, 54, '1394046177'),
-(26, 8, 54, '1394046177'),
-(27, 9, 55, '1394046177'),
-(28, 5, 55, '1394046177'),
-(29, 7, 55, '1394046177'),
-(30, 6, 55, '1394046177'),
-(31, 8, 55, '1394046177'),
-(32, 7, 58, '1394046177'),
-(33, 6, 58, '1394046177'),
-(34, 8, 58, '1394046177'),
-(35, 7, 59, '1394046177'),
-(36, 6, 59, '1394046177'),
-(37, 8, 59, '1394046177'),
-(38, 5, 60, '1394046177'),
-(39, 7, 60, '1394046177'),
-(40, 6, 60, '1394046177'),
-(41, 8, 60, '1394046177'),
-(42, 5, 61, '1394046177'),
-(43, 7, 61, '1394046177'),
-(44, 6, 61, '1394046177'),
-(45, 8, 61, '1394046177'),
-(46, 1, 1, '1394046177'),
-(47, 2, 1, '1394046177'),
-(48, 9, 1, '1394046177'),
-(49, 10, 1, '1394046177'),
-(50, 3, 1, '1394046177'),
-(51, 11, 1, '1394046177'),
-(52, 4, 1, '1394046177'),
-(53, 5, 1, '1394046177'),
-(54, 7, 1, '1394046177'),
-(55, 6, 1, '1394046177'),
-(56, 8, 1, '1394046177'),
-(57, 1, 56, '1394046177'),
-(58, 2, 56, '1394046177'),
-(59, 9, 56, '1394046177'),
-(60, 10, 56, '1394046177'),
-(61, 3, 56, '1394046177'),
-(62, 11, 56, '1394046177'),
-(63, 4, 56, '1394046177'),
-(64, 5, 56, '1394046177'),
-(65, 7, 56, '1394046177'),
-(66, 6, 56, '1394046177'),
-(67, 8, 56, '1394046177'),
-(68, 9, 2, '1394046177'),
-(69, 10, 2, '1394046177'),
-(70, 3, 2, '1394046177'),
-(71, 11, 2, '1394046177'),
-(72, 4, 2, '1394046177'),
-(73, 5, 2, '1394046177'),
-(74, 7, 2, '1394046177'),
-(75, 6, 2, '1394046177'),
-(76, 8, 2, '1394046177'),
-(77, 9, 3, '1394046177'),
-(78, 10, 3, '1394046177'),
-(79, 3, 3, '1394046177'),
-(80, 11, 3, '1394046177'),
-(81, 4, 3, '1394046177'),
-(82, 5, 3, '1394046177'),
-(83, 7, 3, '1394046177'),
-(84, 6, 3, '1394046177'),
-(85, 8, 3, '1394046177'),
-(86, 5, 4, '1394046177'),
-(87, 7, 4, '1394046177'),
-(88, 6, 4, '1394046177'),
-(89, 8, 4, '1394046177'),
-(90, 9, 5, '1394046177'),
-(91, 10, 5, '1394046177'),
-(92, 3, 5, '1394046177'),
-(93, 11, 5, '1394046177'),
-(94, 4, 5, '1394046177'),
-(95, 5, 5, '1394046177'),
-(96, 7, 5, '1394046177'),
-(97, 6, 5, '1394046177'),
-(98, 8, 5, '1394046177'),
-(99, 5, 6, '1394046177'),
-(100, 7, 6, '1394046177'),
-(101, 6, 6, '1394046177'),
-(102, 8, 6, '1394046177'),
-(103, 7, 57, '1394046177'),
-(104, 6, 57, '1394046177'),
-(105, 8, 57, '1394046177'),
-(106, 7, 72, '1394046177'),
-(107, 6, 72, '1394046177'),
-(108, 8, 72, '1394046177'),
-(109, 3, 7, '1394046177'),
-(110, 11, 7, '1394046177'),
-(111, 4, 7, '1394046177'),
-(112, 5, 7, '1394046177'),
-(113, 7, 7, '1394046177'),
-(114, 6, 7, '1394046177'),
-(115, 8, 7, '1394046177'),
-(116, 5, 8, '1394046177'),
-(117, 7, 8, '1394046177'),
-(118, 6, 8, '1394046177'),
-(119, 8, 8, '1394046177'),
-(120, 2, 9, '1394046177'),
-(121, 10, 9, '1394046177'),
-(122, 3, 9, '1394046177'),
-(123, 11, 9, '1394046177'),
-(124, 4, 9, '1394046177'),
-(125, 5, 9, '1394046177'),
-(126, 7, 9, '1394046177'),
-(127, 6, 9, '1394046177'),
-(128, 8, 9, '1394046177'),
-(129, 9, 68, '1394046177'),
-(130, 3, 68, '1394046177'),
-(131, 7, 68, '1394046177'),
-(132, 6, 68, '1394046177'),
-(133, 8, 68, '1394046177'),
-(134, 7, 71, '1394046177'),
-(135, 6, 71, '1394046177'),
-(136, 8, 71, '1394046177'),
-(137, 1, 28, '1394046177'),
-(138, 2, 28, '1394046177'),
-(139, 9, 28, '1394046177'),
-(140, 10, 28, '1394046177'),
-(141, 3, 28, '1394046177'),
-(142, 11, 28, '1394046177'),
-(143, 4, 28, '1394046177'),
-(144, 5, 28, '1394046177'),
-(145, 7, 28, '1394046177'),
-(146, 6, 28, '1394046177'),
-(147, 8, 28, '1394046177'),
-(148, 2, 29, '1394046177'),
-(149, 9, 29, '1394046177'),
-(150, 10, 29, '1394046177'),
-(151, 3, 29, '1394046177'),
-(152, 11, 29, '1394046177'),
-(153, 4, 29, '1394046177'),
-(154, 5, 29, '1394046177'),
-(155, 7, 29, '1394046177'),
-(156, 6, 29, '1394046177'),
-(157, 8, 29, '1394046177'),
-(158, 11, 30, '1394046177'),
-(159, 4, 30, '1394046177'),
-(160, 5, 30, '1394046177'),
-(161, 7, 30, '1394046177'),
-(162, 6, 30, '1394046177'),
-(163, 8, 30, '1394046177'),
-(164, 7, 31, '1394046177'),
-(165, 6, 31, '1394046177'),
-(166, 8, 31, '1394046177'),
-(167, 8, 32, '1394046177'),
-(168, 6, 33, '1394046177'),
-(169, 8, 33, '1394046177'),
-(170, 9, 64, '1394046177'),
-(171, 5, 64, '1394046177'),
-(172, 7, 64, '1394046177'),
-(173, 6, 64, '1394046177'),
-(174, 8, 64, '1394046177'),
-(175, 7, 65, '1394046177'),
-(176, 6, 65, '1394046177'),
-(177, 8, 65, '1394046177'),
-(178, 7, 67, '1394046177'),
-(179, 6, 67, '1394046177'),
-(180, 8, 67, '1394046177'),
-(181, 7, 34, '1394046177'),
-(182, 6, 34, '1394046177'),
-(183, 8, 34, '1394046177'),
-(184, 7, 35, '1394046177'),
-(185, 6, 35, '1394046177'),
-(186, 8, 35, '1394046177'),
-(187, 7, 70, '1394046177'),
-(188, 6, 70, '1394046177'),
-(189, 8, 70, '1394046177'),
-(190, 8, 36, '1394046177'),
-(191, 9, 37, '1394046177'),
-(192, 10, 37, '1394046177'),
-(193, 11, 37, '1394046177'),
-(194, 4, 37, '1394046177'),
-(195, 5, 37, '1394046177'),
-(196, 7, 37, '1394046177'),
-(197, 6, 37, '1394046177'),
-(198, 8, 37, '1394046177'),
-(199, 2, 38, '1394046177'),
-(200, 9, 38, '1394046177'),
-(201, 10, 38, '1394046177'),
-(202, 3, 38, '1394046177'),
-(203, 11, 38, '1394046177'),
-(204, 4, 38, '1394046177'),
-(205, 5, 38, '1394046177'),
-(206, 7, 38, '1394046177'),
-(207, 6, 38, '1394046177'),
-(208, 8, 38, '1394046177'),
-(209, 1, 39, '1394046177'),
-(210, 2, 39, '1394046177'),
-(211, 9, 39, '1394046177'),
-(212, 10, 39, '1394046177'),
-(213, 3, 39, '1394046177'),
-(214, 11, 39, '1394046177'),
-(215, 4, 39, '1394046177'),
-(216, 5, 39, '1394046177'),
-(217, 7, 39, '1394046177'),
-(218, 6, 39, '1394046177'),
-(219, 8, 39, '1394046177'),
-(220, 1, 40, '1394046177'),
-(221, 2, 41, '1394046177'),
-(222, 2, 42, '1394046177'),
-(223, 2, 43, '1394046177'),
-(224, 2, 44, '1394046177'),
-(225, 9, 44, '1394046177'),
-(226, 10, 44, '1394046177'),
-(227, 3, 44, '1394046177'),
-(228, 11, 44, '1394046177'),
-(229, 4, 44, '1394046177'),
-(230, 5, 44, '1394046177'),
-(231, 7, 44, '1394046177'),
-(232, 6, 44, '1394046177'),
-(233, 8, 44, '1394046177'),
-(234, 1, 10, '1394046177'),
-(235, 2, 10, '1394046177'),
-(236, 9, 10, '1394046177'),
-(237, 10, 10, '1394046177'),
-(238, 3, 10, '1394046177'),
-(239, 11, 10, '1394046177'),
-(240, 4, 10, '1394046177'),
-(241, 5, 10, '1394046177'),
-(242, 7, 10, '1394046177'),
-(243, 6, 10, '1394046177'),
-(244, 8, 10, '1394046177'),
-(245, 11, 11, '1394046177'),
-(246, 4, 11, '1394046177'),
-(247, 5, 11, '1394046177'),
-(248, 7, 11, '1394046177'),
-(249, 6, 11, '1394046177'),
-(250, 8, 11, '1394046177'),
-(251, 11, 12, '1394046177'),
-(252, 4, 12, '1394046177'),
-(253, 5, 12, '1394046177'),
-(254, 7, 12, '1394046177'),
-(255, 6, 12, '1394046177'),
-(256, 8, 12, '1394046177'),
-(257, 5, 13, '1394046177'),
-(258, 7, 13, '1394046177'),
-(259, 6, 13, '1394046177'),
-(260, 8, 13, '1394046177'),
-(261, 7, 62, '1394046177'),
-(262, 6, 62, '1394046177'),
-(263, 8, 62, '1394046177'),
-(264, 7, 14, '1394046177'),
-(265, 6, 14, '1394046177'),
-(266, 8, 14, '1394046177'),
-(267, 7, 15, '1394046177'),
-(268, 6, 15, '1394046177'),
-(269, 8, 15, '1394046177'),
-(270, 4, 63, '1394046177'),
-(271, 5, 63, '1394046177'),
-(272, 7, 63, '1394046177'),
-(273, 6, 63, '1394046177'),
-(274, 8, 63, '1394046177'),
-(275, 4, 16, '1394046177'),
-(276, 5, 16, '1394046177'),
-(277, 7, 16, '1394046177'),
-(278, 6, 16, '1394046177'),
-(279, 8, 16, '1394046177'),
-(280, 4, 17, '1394046177'),
-(281, 5, 17, '1394046177'),
-(282, 7, 17, '1394046177'),
-(283, 6, 17, '1394046177'),
-(284, 8, 17, '1394046177'),
-(285, 2, 18, '1394046177'),
-(286, 4, 18, '1394046177'),
-(287, 5, 18, '1394046177'),
-(288, 7, 18, '1394046177'),
-(289, 6, 18, '1394046177'),
-(290, 8, 18, '1394046177'),
-(291, 2, 19, '1394046177'),
-(292, 4, 19, '1394046177'),
-(293, 5, 19, '1394046177'),
-(294, 7, 19, '1394046177'),
-(295, 6, 19, '1394046177'),
-(296, 8, 19, '1394046177'),
-(297, 9, 20, '1394046177'),
-(298, 4, 20, '1394046177'),
-(299, 5, 20, '1394046177'),
-(300, 7, 20, '1394046177'),
-(301, 6, 20, '1394046177'),
-(302, 8, 20, '1394046177'),
-(303, 9, 21, '1394046177'),
-(304, 4, 21, '1394046177'),
-(305, 5, 21, '1394046177'),
-(306, 7, 21, '1394046177'),
-(307, 6, 21, '1394046177'),
-(308, 8, 21, '1394046177'),
-(309, 4, 22, '1394046177'),
-(310, 5, 22, '1394046177'),
-(311, 7, 22, '1394046177'),
-(312, 6, 22, '1394046177'),
-(313, 8, 22, '1394046177'),
-(314, 4, 23, '1394046177'),
-(315, 5, 23, '1394046177'),
-(316, 7, 23, '1394046177'),
-(317, 6, 23, '1394046177'),
-(318, 8, 23, '1394046177'),
-(319, 7, 69, '1394046177'),
-(320, 6, 69, '1394046177'),
-(321, 8, 69, '1394046177'),
-(322, 2, 24, '1394046177'),
-(323, 9, 24, '1394046177'),
-(324, 4, 24, '1394046177'),
-(325, 5, 24, '1394046177'),
-(326, 7, 24, '1394046177'),
-(327, 6, 24, '1394046177'),
-(328, 8, 24, '1394046177'),
-(329, 4, 25, '1394046177'),
-(330, 5, 25, '1394046177'),
-(331, 7, 25, '1394046177'),
-(332, 6, 25, '1394046177'),
-(333, 8, 25, '1394046177'),
-(334, 7, 26, '1394046177'),
-(335, 6, 26, '1394046177'),
-(336, 7, 27, '1394046177'),
-(337, 6, 27, '1394046177'),
-(338, 7, 45, '1394046177'),
-(339, 6, 45, '1394046177'),
-(340, 8, 45, '1394046177'),
-(341, 5, 46, '1394046177'),
-(342, 7, 46, '1394046177'),
-(343, 6, 46, '1394046177'),
-(344, 8, 46, '1394046177'),
-(345, 5, 47, '1394046177'),
-(346, 7, 47, '1394046177'),
-(347, 6, 47, '1394046177'),
-(348, 8, 47, '1394046177'),
-(349, 7, 48, '1394046177'),
-(350, 6, 48, '1394046177'),
-(351, 8, 48, '1394046177');
 
 -- --------------------------------------------------------
-
---
--- Structure de la table `caf_user_attr`
---
-
-CREATE TABLE IF NOT EXISTS `caf_user_attr` (
-  `id_user_attr` int(11) NOT NULL AUTO_INCREMENT,
-  `user_user_attr` int(11) NOT NULL COMMENT 'ID user possédant le type ',
-  `usertype_user_attr` int(11) NOT NULL COMMENT 'ID du type (admin, modero etc...)',
-  `params_user_attr` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
-  `details_user_attr` varchar(100) COLLATE utf8_unicode_ci NOT NULL COMMENT 'date - de qui... ?',
-  PRIMARY KEY (`id_user_attr`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=4 ;
-
 --
 -- Contenu de la table `caf_user_attr`
 --
@@ -1187,33 +363,477 @@ INSERT INTO `caf_user_attr` (`id_user_attr`, `user_user_attr`, `usertype_user_at
 
 -- --------------------------------------------------------
 
+
 --
--- Structure de la table `caf_user_mailchange`
+-- Modification dans la table `caf_content_html`
+-- Précision : besoin d'être inscrit au CAF Lyon-Villeurbanne
 --
 
-CREATE TABLE IF NOT EXISTS `caf_user_mailchange` (
-  `id_user_mailchange` int(11) NOT NULL AUTO_INCREMENT,
-  `user_user_mailchange` int(11) NOT NULL,
-  `token_user_mailchange` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `email_user_mailchange` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
-  `time_user_mailchange` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id_user_mailchange`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
+UPDATE `caf_content_html` SET `contenu_content_html` = '<p class="menutitle">Activer mon compte</p> <p>Pour rejoindre le site, vous devez être inscrit au Club Alpin Français de Lyon-Villeurbanne ou sa section Ouest Lyonnais.<br />Munissez-vous de votre numéro d''adhérent et de votre adresse e-mail, choisissez un peudonyme et un mot de passe, et laissez-vous guider.</p>' WHERE `id_content_html` = 2;
+
+
+INSERT INTO `caf_page` VALUES(NULL, 0, 0, 0, 1, 0, 0, 0, 0, 0, 'feuille-de-sortie', 'Feuille de sortie', 0, 0, '0.0', '', '', 0, 0, 0);
+INSERT INTO `caf_userright` (`id_userright`, `code_userright`, `title_userright`, `ordre_userright`, `parent_userright`)
+VALUES
+(NULL, 'user_note_comm_edit', 'Définir le niveau d''un adhérent  dans une commission', '600', 'GESTION DES COMPTES ADHERENTS'),
+(NULL, 'user_note_comm_read', 'Consulter le niveau d''un adhérent dans une commission', '610', 'GESTION DES COMPTES ADHERENTS');
+
+
+INSERT INTO `caf_userright` (`id_userright`, `code_userright`, `title_userright`, `ordre_userright`, `parent_userright`)
+VALUES
+(NULL, 'comm_groupe_edit', 'Créer un groupe de niveau au sein d''une commission', '600', 'COMMISSIONS'),
+(NULL, 'comm_groupe_delete', 'Supprimer un groupe de niveau au sein d''une commission', '610', 'COMMISSIONS'),
+(NULL, 'comm_groupe_activer_desactiver', 'Activer et désactiver un groupe au sein d''une commission', '620', 'COMMISSIONS');
+
+INSERT INTO `caf_page` (`id_page`, `parent_page`, `admin_page`, `superadmin_page`, `vis_page`, `ordre_page`, `menu_page`, `ordre_menu_page`, `menuadmin_page`, `ordre_menuadmin_page`, `code_page`, `default_name_page`, `meta_title_page`, `meta_description_page`, `priority_page`, `add_css_page`, `add_js_page`, `lock_page`, `pagelibre_page`, `created_page`)
+VALUES (48, 0, 0, 0, 1, 0, 0, 0, 0, 0, 'destination', '', 0, 0, '0.0', '', '', 0, 0, 0);
+
+INSERT INTO `caf_userright` (`id_userright`, `code_userright`, `title_userright`, `ordre_userright`, `parent_userright`)
+VALUES
+  (NULL, 'destination_consulter', 'Consulter une destination', '10', 'GESTION DES DESTINATIONS'),
+  (NULL, 'destination_leader', 'Etre (co)responsable d''une destination', '15', 'GESTION DES DESTINATIONS'),
+  (NULL, 'destination_creer', 'Créer une destination', '20', 'GESTION DES DESTINATIONS'),
+  (NULL, 'destination_modifier', 'Modifier une destination', '30', 'GESTION DES DESTINATIONS'),
+  (NULL, 'destination_supprimer', 'Supprimer une destination', '40', 'GESTION DES DESTINATIONS'),
+  (NULL, 'destination_print', 'Imprimer les bilans de destination', '50', 'GESTION DES DESTINATIONS'),
+  (NULL, 'destination_mailer', 'Envoyer les emails de cloture', '60', 'GESTION DES DESTINATIONS'),
+  (NULL, 'destination_activer_desactiver', '(Dé)bloquer une destination', '70', 'GESTION DES DESTINATIONS');
+  
+INSERT INTO `caf_usertype_attr` (`id_usertype_attr`, `type_usertype_attr`, `right_usertype_attr`, `details_usertype_attr`) VALUES
+(1, 1, 49, '1425469831'),
+(2, 2, 49, '1425469831'),
+(3, 9, 49, '1425469831'),
+(4, 10, 49, '1425469831'),
+(5, 3, 49, '1425469831'),
+(6, 11, 49, '1425469831'),
+(7, 4, 49, '1425469831'),
+(8, 5, 49, '1425469831'),
+(9, 7, 49, '1425469831'),
+(10, 6, 49, '1425469831'),
+(11, 8, 49, '1425469831'),
+(12, 7, 50, '1425469831'),
+(13, 6, 50, '1425469831'),
+(14, 8, 50, '1425469831'),
+(15, 7, 51, '1425469831'),
+(16, 6, 51, '1425469831'),
+(17, 8, 51, '1425469831'),
+(18, 7, 52, '1425469831'),
+(19, 6, 52, '1425469831'),
+(20, 8, 52, '1425469831'),
+(21, 8, 53, '1425469831'),
+(22, 9, 54, '1425469831'),
+(23, 5, 54, '1425469831'),
+(24, 7, 54, '1425469831'),
+(25, 6, 54, '1425469831'),
+(26, 8, 54, '1425469831'),
+(27, 9, 55, '1425469831'),
+(28, 5, 55, '1425469831'),
+(29, 7, 55, '1425469831'),
+(30, 6, 55, '1425469831'),
+(31, 8, 55, '1425469831'),
+(32, 7, 58, '1425469831'),
+(33, 6, 58, '1425469831'),
+(34, 8, 58, '1425469831'),
+(35, 7, 59, '1425469831'),
+(36, 6, 59, '1425469831'),
+(37, 8, 59, '1425469831'),
+(38, 5, 60, '1425469831'),
+(39, 7, 60, '1425469831'),
+(40, 6, 60, '1425469831'),
+(41, 8, 60, '1425469831'),
+(42, 5, 61, '1425469831'),
+(43, 7, 61, '1425469831'),
+(44, 6, 61, '1425469831'),
+(45, 8, 61, '1425469831'),
+(46, 5, 75, '1425469831'),
+(47, 7, 75, '1425469831'),
+(48, 6, 75, '1425469831'),
+(49, 8, 75, '1425469831'),
+(50, 5, 76, '1425469831'),
+(51, 7, 76, '1425469831'),
+(52, 6, 76, '1425469831'),
+(53, 8, 76, '1425469831'),
+(54, 5, 77, '1425469831'),
+(55, 7, 77, '1425469831'),
+(56, 6, 77, '1425469831'),
+(57, 8, 77, '1425469831'),
+(58, 1, 1, '1425469831'),
+(59, 2, 1, '1425469831'),
+(60, 9, 1, '1425469831'),
+(61, 10, 1, '1425469831'),
+(62, 3, 1, '1425469831'),
+(63, 11, 1, '1425469831'),
+(64, 4, 1, '1425469831'),
+(65, 5, 1, '1425469831'),
+(66, 7, 1, '1425469831'),
+(67, 6, 1, '1425469831'),
+(68, 8, 1, '1425469831'),
+(69, 1, 56, '1425469831'),
+(70, 2, 56, '1425469831'),
+(71, 9, 56, '1425469831'),
+(72, 10, 56, '1425469831'),
+(73, 3, 56, '1425469831'),
+(74, 11, 56, '1425469831'),
+(75, 4, 56, '1425469831'),
+(76, 5, 56, '1425469831'),
+(77, 7, 56, '1425469831'),
+(78, 6, 56, '1425469831'),
+(79, 8, 56, '1425469831'),
+(80, 9, 2, '1425469831'),
+(81, 10, 2, '1425469831'),
+(82, 3, 2, '1425469831'),
+(83, 11, 2, '1425469831'),
+(84, 4, 2, '1425469831'),
+(85, 5, 2, '1425469831'),
+(86, 7, 2, '1425469831'),
+(87, 6, 2, '1425469831'),
+(88, 8, 2, '1425469831'),
+(89, 9, 3, '1425469831'),
+(90, 10, 3, '1425469831'),
+(91, 3, 3, '1425469831'),
+(92, 11, 3, '1425469831'),
+(93, 4, 3, '1425469831'),
+(94, 5, 3, '1425469831'),
+(95, 7, 3, '1425469831'),
+(96, 6, 3, '1425469831'),
+(97, 8, 3, '1425469831'),
+(98, 5, 4, '1425469831'),
+(99, 7, 4, '1425469831'),
+(100, 6, 4, '1425469831'),
+(101, 8, 4, '1425469831'),
+(102, 9, 5, '1425469831'),
+(103, 10, 5, '1425469831'),
+(104, 3, 5, '1425469831'),
+(105, 11, 5, '1425469831'),
+(106, 4, 5, '1425469831'),
+(107, 5, 5, '1425469831'),
+(108, 7, 5, '1425469831'),
+(109, 6, 5, '1425469831'),
+(110, 8, 5, '1425469831'),
+(111, 5, 6, '1425469831'),
+(112, 7, 6, '1425469831'),
+(113, 6, 6, '1425469831'),
+(114, 8, 6, '1425469831'),
+(115, 7, 57, '1425469831'),
+(116, 6, 57, '1425469831'),
+(117, 8, 57, '1425469831'),
+(118, 7, 72, '1425469831'),
+(119, 6, 72, '1425469831'),
+(120, 8, 72, '1425469831'),
+(121, 3, 7, '1425469831'),
+(122, 11, 7, '1425469831'),
+(123, 4, 7, '1425469831'),
+(124, 5, 7, '1425469831'),
+(125, 7, 7, '1425469831'),
+(126, 6, 7, '1425469831'),
+(127, 8, 7, '1425469831'),
+(128, 5, 8, '1425469831'),
+(129, 7, 8, '1425469831'),
+(130, 6, 8, '1425469831'),
+(131, 8, 8, '1425469831'),
+(132, 2, 9, '1425469831'),
+(133, 10, 9, '1425469831'),
+(134, 3, 9, '1425469831'),
+(135, 11, 9, '1425469831'),
+(136, 4, 9, '1425469831'),
+(137, 5, 9, '1425469831'),
+(138, 7, 9, '1425469831'),
+(139, 6, 9, '1425469831'),
+(140, 8, 9, '1425469831'),
+(141, 9, 68, '1425469831'),
+(142, 3, 68, '1425469831'),
+(143, 7, 68, '1425469831'),
+(144, 6, 68, '1425469831'),
+(145, 8, 68, '1425469831'),
+(146, 7, 71, '1425469831'),
+(147, 6, 71, '1425469831'),
+(148, 8, 71, '1425469831'),
+(149, 1, 28, '1425469831'),
+(150, 2, 28, '1425469831'),
+(151, 9, 28, '1425469831'),
+(152, 10, 28, '1425469831'),
+(153, 3, 28, '1425469831'),
+(154, 11, 28, '1425469831'),
+(155, 4, 28, '1425469831'),
+(156, 5, 28, '1425469831'),
+(157, 7, 28, '1425469831'),
+(158, 6, 28, '1425469831'),
+(159, 8, 28, '1425469831'),
+(160, 2, 29, '1425469831'),
+(161, 9, 29, '1425469831'),
+(162, 10, 29, '1425469831'),
+(163, 3, 29, '1425469831'),
+(164, 11, 29, '1425469831'),
+(165, 4, 29, '1425469831'),
+(166, 5, 29, '1425469831'),
+(167, 7, 29, '1425469831'),
+(168, 6, 29, '1425469831'),
+(169, 8, 29, '1425469831'),
+(170, 11, 30, '1425469831'),
+(171, 4, 30, '1425469831'),
+(172, 5, 30, '1425469831'),
+(173, 7, 30, '1425469831'),
+(174, 6, 30, '1425469831'),
+(175, 8, 30, '1425469831'),
+(176, 7, 31, '1425469831'),
+(177, 6, 31, '1425469831'),
+(178, 8, 31, '1425469831'),
+(179, 8, 32, '1425469831'),
+(180, 6, 33, '1425469831'),
+(181, 8, 33, '1425469831'),
+(182, 9, 64, '1425469831'),
+(183, 5, 64, '1425469831'),
+(184, 7, 64, '1425469831'),
+(185, 6, 64, '1425469831'),
+(186, 8, 64, '1425469831'),
+(187, 7, 65, '1425469831'),
+(188, 6, 65, '1425469831'),
+(189, 8, 65, '1425469831'),
+(190, 7, 67, '1425469831'),
+(191, 6, 67, '1425469831'),
+(192, 8, 67, '1425469831'),
+(193, 7, 34, '1425469831'),
+(194, 6, 34, '1425469831'),
+(195, 8, 34, '1425469831'),
+(196, 7, 35, '1425469831'),
+(197, 6, 35, '1425469831'),
+(198, 8, 35, '1425469831'),
+(199, 7, 70, '1425469831'),
+(200, 6, 70, '1425469831'),
+(201, 8, 70, '1425469831'),
+(202, 8, 36, '1425469831'),
+(203, 9, 37, '1425469831'),
+(204, 10, 37, '1425469831'),
+(205, 11, 37, '1425469831'),
+(206, 4, 37, '1425469831'),
+(207, 5, 37, '1425469831'),
+(208, 7, 37, '1425469831'),
+(209, 6, 37, '1425469831'),
+(210, 8, 37, '1425469831'),
+(211, 2, 38, '1425469831'),
+(212, 9, 38, '1425469831'),
+(213, 10, 38, '1425469831'),
+(214, 3, 38, '1425469831'),
+(215, 11, 38, '1425469831'),
+(216, 4, 38, '1425469831'),
+(217, 5, 38, '1425469831'),
+(218, 7, 38, '1425469831'),
+(219, 6, 38, '1425469831'),
+(220, 8, 38, '1425469831'),
+(221, 1, 39, '1425469831'),
+(222, 2, 39, '1425469831'),
+(223, 9, 39, '1425469831'),
+(224, 10, 39, '1425469831'),
+(225, 3, 39, '1425469831'),
+(226, 11, 39, '1425469831'),
+(227, 4, 39, '1425469831'),
+(228, 5, 39, '1425469831'),
+(229, 7, 39, '1425469831'),
+(230, 6, 39, '1425469831'),
+(231, 8, 39, '1425469831'),
+(232, 1, 40, '1425469831'),
+(233, 2, 41, '1425469831'),
+(234, 2, 42, '1425469831'),
+(235, 2, 43, '1425469831'),
+(236, 2, 44, '1425469831'),
+(237, 9, 44, '1425469831'),
+(238, 10, 44, '1425469831'),
+(239, 3, 44, '1425469831'),
+(240, 11, 44, '1425469831'),
+(241, 4, 44, '1425469831'),
+(242, 5, 44, '1425469831'),
+(243, 7, 44, '1425469831'),
+(244, 6, 44, '1425469831'),
+(245, 8, 44, '1425469831'),
+(246, 4, 73, '1425469831'),
+(247, 5, 73, '1425469831'),
+(248, 8, 73, '1425469831'),
+(249, 11, 74, '1425469831'),
+(250, 7, 74, '1425469831'),
+(251, 6, 74, '1425469831'),
+(252, 8, 74, '1425469831'),
+(253, 1, 78, '1425469831'),
+(254, 2, 78, '1425469831'),
+(255, 9, 78, '1425469831'),
+(256, 10, 78, '1425469831'),
+(257, 3, 78, '1425469831'),
+(258, 11, 78, '1425469831'),
+(259, 4, 78, '1425469831'),
+(260, 5, 78, '1425469831'),
+(261, 7, 78, '1425469831'),
+(262, 6, 78, '1425469831'),
+(263, 8, 78, '1425469831'),
+(264, 5, 79, '1425469831'),
+(265, 7, 80, '1425469831'),
+(266, 6, 80, '1425469831'),
+(267, 8, 80, '1425469831'),
+(268, 7, 81, '1425469831'),
+(269, 6, 81, '1425469831'),
+(270, 8, 81, '1425469831'),
+(271, 7, 82, '1425469831'),
+(272, 6, 82, '1425469831'),
+(273, 8, 82, '1425469831'),
+(274, 9, 83, '1425469831'),
+(275, 7, 83, '1425469831'),
+(276, 6, 83, '1425469831'),
+(277, 8, 83, '1425469831'),
+(278, 9, 84, '1425469831'),
+(279, 7, 84, '1425469831'),
+(280, 6, 84, '1425469831'),
+(281, 8, 84, '1425469831'),
+(282, 7, 85, '1425469831'),
+(283, 6, 85, '1425469831'),
+(284, 8, 85, '1425469831'),
+(285, 1, 10, '1425469831'),
+(286, 2, 10, '1425469831'),
+(287, 9, 10, '1425469831'),
+(288, 10, 10, '1425469831'),
+(289, 3, 10, '1425469831'),
+(290, 11, 10, '1425469831'),
+(291, 4, 10, '1425469831'),
+(292, 5, 10, '1425469831'),
+(293, 7, 10, '1425469831'),
+(294, 6, 10, '1425469831'),
+(295, 8, 10, '1425469831'),
+(296, 11, 11, '1425469831'),
+(297, 4, 11, '1425469831'),
+(298, 5, 11, '1425469831'),
+(299, 7, 11, '1425469831'),
+(300, 6, 11, '1425469831'),
+(301, 8, 11, '1425469831'),
+(302, 11, 12, '1425469831'),
+(303, 4, 12, '1425469831'),
+(304, 5, 12, '1425469831'),
+(305, 7, 12, '1425469831'),
+(306, 6, 12, '1425469831'),
+(307, 8, 12, '1425469831'),
+(308, 5, 13, '1425469831'),
+(309, 7, 13, '1425469831'),
+(310, 6, 13, '1425469831'),
+(311, 8, 13, '1425469831'),
+(312, 7, 62, '1425469831'),
+(313, 6, 62, '1425469831'),
+(314, 8, 62, '1425469831'),
+(315, 7, 14, '1425469831'),
+(316, 6, 14, '1425469831'),
+(317, 8, 14, '1425469831'),
+(318, 7, 15, '1425469831'),
+(319, 6, 15, '1425469831'),
+(320, 8, 15, '1425469831'),
+(321, 4, 63, '1425469831'),
+(322, 5, 63, '1425469831'),
+(323, 7, 63, '1425469831'),
+(324, 6, 63, '1425469831'),
+(325, 8, 63, '1425469831'),
+(326, 4, 16, '1425469831'),
+(327, 5, 16, '1425469831'),
+(328, 7, 16, '1425469831'),
+(329, 6, 16, '1425469831'),
+(330, 8, 16, '1425469831'),
+(331, 4, 17, '1425469831'),
+(332, 5, 17, '1425469831'),
+(333, 7, 17, '1425469831'),
+(334, 6, 17, '1425469831'),
+(335, 8, 17, '1425469831'),
+(336, 2, 18, '1425469831'),
+(337, 4, 18, '1425469831'),
+(338, 5, 18, '1425469831'),
+(339, 7, 18, '1425469831'),
+(340, 6, 18, '1425469831'),
+(341, 8, 18, '1425469831'),
+(342, 2, 19, '1425469831'),
+(343, 4, 19, '1425469831'),
+(344, 5, 19, '1425469831'),
+(345, 7, 19, '1425469831'),
+(346, 6, 19, '1425469831'),
+(347, 8, 19, '1425469831'),
+(348, 9, 20, '1425469831'),
+(349, 4, 20, '1425469831'),
+(350, 5, 20, '1425469831'),
+(351, 7, 20, '1425469831'),
+(352, 6, 20, '1425469831'),
+(353, 8, 20, '1425469831'),
+(354, 9, 21, '1425469831'),
+(355, 4, 21, '1425469831'),
+(356, 5, 21, '1425469831'),
+(357, 7, 21, '1425469831'),
+(358, 6, 21, '1425469831'),
+(359, 8, 21, '1425469831'),
+(360, 4, 22, '1425469831'),
+(361, 5, 22, '1425469831'),
+(362, 7, 22, '1425469831'),
+(363, 6, 22, '1425469831'),
+(364, 8, 22, '1425469831'),
+(365, 4, 23, '1425469831'),
+(366, 5, 23, '1425469831'),
+(367, 7, 23, '1425469831'),
+(368, 6, 23, '1425469831'),
+(369, 8, 23, '1425469831'),
+(370, 7, 69, '1425469831'),
+(371, 6, 69, '1425469831'),
+(372, 8, 69, '1425469831'),
+(373, 2, 24, '1425469831'),
+(374, 9, 24, '1425469831'),
+(375, 4, 24, '1425469831'),
+(376, 5, 24, '1425469831'),
+(377, 7, 24, '1425469831'),
+(378, 6, 24, '1425469831'),
+(379, 8, 24, '1425469831'),
+(380, 4, 25, '1425469831'),
+(381, 5, 25, '1425469831'),
+(382, 7, 25, '1425469831'),
+(383, 6, 25, '1425469831'),
+(384, 8, 25, '1425469831'),
+(385, 7, 26, '1425469831'),
+(386, 6, 26, '1425469831'),
+(387, 7, 27, '1425469831'),
+(388, 6, 27, '1425469831'),
+(389, 7, 45, '1425469831'),
+(390, 6, 45, '1425469831'),
+(391, 8, 45, '1425469831'),
+(392, 5, 46, '1425469831'),
+(393, 7, 46, '1425469831'),
+(394, 6, 46, '1425469831'),
+(395, 8, 46, '1425469831'),
+(396, 5, 47, '1425469831'),
+(397, 7, 47, '1425469831'),
+(398, 6, 47, '1425469831'),
+(399, 8, 47, '1425469831'),
+(400, 7, 48, '1425469831'),
+(401, 6, 48, '1425469831'),
+(402, 8, 48, '1425469831');
+
+--
+-- Contenu de la table `caf_content_inline`
+--
+
+INSERT INTO `caf_content_inline` (`id_content_inline`, `groupe_content_inline`, `code_content_inline`, `lang_content_inline`, `contenu_content_inline`, `date_content_inline`, `linkedtopage_content_inline`) VALUES
+(NULL, 2, 'meta-title-partenaires-club', 'fr', 'Partenaires du club', 1371041597, ''),
+(NULL, 2, 'meta-description-partenaires-caf', 'fr', 'partenaires_caf', 1371041597, ''),
+(NULL, 2, 'meta-title-nos-partenaires-publics', 'fr', 'Nos partenaires publics', 1375653068, ''),
+(NULL, 2, 'meta-title-nos-partenaires-prives', 'fr', 'Nos partenaires privés', 1375653085, '');
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `caf_user_mdpchange`
+-- Contenu de la table `caf_page`
 --
 
-CREATE TABLE IF NOT EXISTS `caf_user_mdpchange` (
-  `id_user_mdpchange` int(11) NOT NULL AUTO_INCREMENT,
-  `user_user_mdpchange` int(11) NOT NULL,
-  `token_user_mdpchange` varchar(32) COLLATE latin1_general_ci NOT NULL,
-  `pwd_user_mdpchange` varchar(32) COLLATE latin1_general_ci NOT NULL,
-  `time_user_mdpchange` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id_user_mdpchange`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci ;
+INSERT INTO `caf_page` (`id_page`, `parent_page`, `admin_page`, `superadmin_page`, `vis_page`, `ordre_page`, `menu_page`, `ordre_menu_page`, `menuadmin_page`, `ordre_menuadmin_page`, `code_page`, `default_name_page`, `meta_title_page`, `meta_description_page`, `priority_page`, `add_css_page`, `add_js_page`, `lock_page`, `pagelibre_page`, `created_page`) VALUES
+(NULL, 54, 0, 0, 0, 86, 0, 86, 0, 0, 'partenaires-caf', 'Partenaires du club', 0, 1, '0.9', '', '', 0, 1, 1371041597),
+(NULL, 54, 0, 0, 1, 107, 0, 107, 0, 0, 'nos-partenaires-publics', 'Nos partenaires publics', 0, 0, '0.9', '', '', 0, 1, 1375653068),
+(NULL, 54, 0, 0, 1, 108, 0, 108, 0, 0, 'nos-partenaires-prives', 'Nos partenaires privés', 0, 0, '0.9', '', '', 0, 1, 1375653085),
+(NULL, 0, 1, 0, 1, 0, 0, 0, 1, 5, 'admin-partenaires', 'Gestion des partenaires', 1, 0, '0.0', '', '', 0, 0, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Contenu de la table `caf_partenaires`
+--
+
+INSERT INTO `caf_partenaires` (`part_id`, `part_name`, `part_url`, `part_desc`, `part_image`, `part_type`, `part_enable`, `part_order`, `part_click`) VALUES
+(1, 'PARTENAIRE1', 'https://www.cafchambery.com/', 'PARTENAIRE1', 'partenaire1.png', 1, 1, 999, 1),
+(2, 'FFCAM', 'https://www.ffcam.fr/', 'FFCAM', 'ffcam.png', 1, 1, 999, 1);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

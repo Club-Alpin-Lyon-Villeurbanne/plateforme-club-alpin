@@ -9,7 +9,9 @@ use App\Repository\CommissionRepository;
 use App\Repository\ContentInlineRepository;
 use App\Repository\EvtRepository;
 use App\Repository\PartenaireRepository;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -34,7 +36,7 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         ];
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('db_content', [$this, 'getDbContent']),
@@ -53,7 +55,7 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         ];
     }
 
-    public function getFondCommission(?string $code)
+    public function getFondCommission(?string $code): string
     {
         if ($code && $commission = $this->locator->get(CommissionRepository::class)->findVisibleCommission($code)) {
             $id = $commission->getId();
@@ -70,36 +72,64 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         return $rel;
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getPartenaires(): iterable
     {
         return $this->locator->get(PartenaireRepository::class)->findEnabled();
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getEvents(?Commission $commission): iterable
     {
         return $this->locator->get(EvtRepository::class)->getUpcomingEvents($commission);
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getNotificationsCounter(): int
     {
         return $this->locator->get(Notifications::class)->getAll();
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getNotificationsValidationArticle(): int
     {
         return $this->locator->get(Notifications::class)->getValidationArticle();
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getNotificationsValidationSortie(): int
     {
         return $this->locator->get(Notifications::class)->getValidationSortie();
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getNotificationsValidationSortiePresident(): int
     {
         return $this->locator->get(Notifications::class)->getValidationSortiePresident();
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getDbContent(string $type): ?string
     {
         foreach ($this->locator->get(ContentInlineRepository::class)->findAll() as $cafContentInline) {
@@ -111,6 +141,10 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         return null;
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getCommissionTitle(?string $code): ?string
     {
         if (!$code) {
@@ -124,16 +158,28 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         return null;
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getCommissions(): iterable
     {
         return iterator_to_array($this->locator->get(CommissionRepository::class)->findVisible());
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getCommission(?string $code): ?Commission
     {
         return $this->locator->get(CommissionRepository::class)->findVisibleCommission($code);
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function getCommissionPicto(string $code = null, string $style = null): string
     {
         if ($code && $commission = $this->locator->get(CommissionRepository::class)->findVisibleCommission($code)) {
@@ -161,7 +207,7 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         return $rel;
     }
 
-    public function getUserPicto(User $user, $style = '')
+    public function getUserPicto(User $user, $style = ''): string
     {
         switch ($style) {
             case 'pic':

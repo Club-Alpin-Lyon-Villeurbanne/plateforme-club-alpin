@@ -48,7 +48,7 @@ class Comment
     /**
      * @var string
      */
-    #[ORM\Column(name: 'name_comment', type: 'string', length: 50, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'name_comment', type: 'string', length: 50, nullable: false)]
     private $name;
 
     /**
@@ -60,13 +60,13 @@ class Comment
     /**
      * @var string
      */
-    #[ORM\Column(name: 'cont_comment', type: 'text', length: 65535, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'cont_comment', type: 'text', length: 65535, nullable: false)]
     private $cont;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'parent_type_comment', type: 'string', length: 20, nullable: false, options: ['collation' => 'utf8mb4_unicode_ci'])]
+    #[ORM\Column(name: 'parent_type_comment', type: 'string', length: 20, nullable: false)]
     private $parentType;
 
     /**

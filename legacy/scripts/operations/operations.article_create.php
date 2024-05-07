@@ -65,7 +65,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $id_article > 0) {
     // créa du repertroie destination
     $dirTo = __DIR__.'/../../../public/ftp/articles/'.$id_article;
     if (!file_exists($dirTo)) {
-        if (!mkdir($dirTo, 755, true) && !is_dir($dirTo)) {
+        if (!mkdir($dirTo, 0755, true) && !is_dir($dirTo)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $dirTo));
         }
     }

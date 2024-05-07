@@ -84,12 +84,13 @@ if (!admin()) {
 				</tr>
 				<tr>
 					<td>
-						<input type="text" name="code_content_inline" value="<?php echo $_POST['code_content_inline'] ? trim(html_utf8(stripslashes(utf8_decode($_POST['code_content_inline'])))) : 'Copiez le code ici'; ?>"
+                        (isset($context["token"]) || array_key_exists("token", $context) ?
+						<input type="text" name="code_content_inline" value="<?php echo isset($_POST['code_content_inline']) || array_key_exists('code_content_inline', $_POST) ? trim(html_utf8(stripslashes(mb_convert_encoding($_POST['code_content_inline'], 'ISO-8859-1', 'UTF-8')))) : 'Copiez le code ici'; ?>"
 							onfocus="if($(this).val()=='Copiez le code ici') $(this).val('');"
 							onblur="if($(this).val()=='') $(this).val('Copiez le code ici');" />
 					</td>
 					<td>
-						<input type="text" name="contenu_content_inline" value="<?php echo $_POST['contenu_content_inline'] ? trim(html_utf8(stripslashes(utf8_decode($_POST['contenu_content_inline'])))) : ''; ?>" style="width:500px;" placeholder="Contenu..." />
+						<input type="text" name="contenu_content_inline" value="<?php echo isset($_POST['contenu_content_inline']) || array_key_exists('contenu_content_inline', $_POST) ? trim(html_utf8(stripslashes(mb_convert_encoding($_POST['contenu_content_inline'], 'ISO-8859-1', 'UTF-8')))) : ''; ?>" style="width:500px;" placeholder="Contenu..." />
 					</td>
 					<td>
 						<select name="groupe_content_inline" style="min-width:150px;">

@@ -4,96 +4,94 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    legacy_env_ANALYTICS_ACCOUNT: "%env(string:ANALYTICS_ACCOUNT)%"
-    legacy_env_GOOGLE_SITE_VERIFICATION: "%env(string:GOOGLE_SITE_VERIFICATION)%"
-    legacy_env_MAIL_EMITTER_EMAIL: "%env(string:MAIL_EMITTER_EMAIL)%"
-    legacy_env_MAIL_EMITTER_NAME: "%env(string:MAIL_EMITTER_NAME)%"
-    legacy_env_CONTENT_MAX_VERSIONS: "%env(int:CONTENT_MAX_VERSIONS)%"
-    legacy_env_CRON_DATE_BUTOIRES: "%env(json:CRON_DATE_BUTOIRES)%"
-    legacy_env_MAX_TIMESTAMP_FOR_LEGAL_VALIDATION: "%env(string:MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%"
-    legacy_env_MAX_SORTIES_ACCUEIL: "%env(int:MAX_SORTIES_ACCUEIL)%"
-    legacy_env_MAX_ADMINS_SUB_LEVELS: "%env(int:MAX_ADMINS_SUB_LEVELS)%"
-    legacy_env_MAX_ARTICLES_VALIDATION: "%env(int:MAX_ARTICLES_VALIDATION)%"
-    legacy_env_MAX_SORTIES_VALIDATION: "%env(int:MAX_SORTIES_VALIDATION)%"
-    legacy_env_MAX_ARTICLES_ADHERENT: "%env(int:MAX_ARTICLES_ADHERENT)%"
-    legacy_env_MAX_ARTICLES_ACCUEIL: "%env(int:MAX_ARTICLES_ACCUEIL)%"
-    legacy_env_MAX_IMAGE_SIZE: "%env(int:MAX_IMAGE_SIZE)%"
-    legacy_env_DISPLAY_BANNER: "%env(bool:DISPLAY_BANNER)%"
+  legacy_env_ANALYTICS_ACCOUNT: "%env(string:ANALYTICS_ACCOUNT)%"
+  legacy_env_GOOGLE_SITE_VERIFICATION: "%env(string:GOOGLE_SITE_VERIFICATION)%"
+  legacy_env_MAIL_EMITTER_EMAIL: "%env(string:MAIL_EMITTER_EMAIL)%"
+  legacy_env_MAIL_EMITTER_NAME: "%env(string:MAIL_EMITTER_NAME)%"
+  legacy_env_CONTENT_MAX_VERSIONS: "%env(int:CONTENT_MAX_VERSIONS)%"
+  legacy_env_CRON_DATE_BUTOIRES: "%env(json:CRON_DATE_BUTOIRES)%"
+  legacy_env_MAX_TIMESTAMP_FOR_LEGAL_VALIDATION: "%env(string:MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%"
+  legacy_env_MAX_ADMINS_SUB_LEVELS: "%env(int:MAX_ADMINS_SUB_LEVELS)%"
+  legacy_env_MAX_ARTICLES_VALIDATION: "%env(int:MAX_ARTICLES_VALIDATION)%"
+  legacy_env_MAX_SORTIES_VALIDATION: "%env(int:MAX_SORTIES_VALIDATION)%"
+  legacy_env_MAX_ARTICLES_ADHERENT: "%env(int:MAX_ARTICLES_ADHERENT)%"
+  legacy_env_MAX_ARTICLES_ACCUEIL: "%env(int:MAX_ARTICLES_ACCUEIL)%"
+  legacy_env_MAX_IMAGE_SIZE: "%env(int:MAX_IMAGE_SIZE)%"
+  legacy_env_DISPLAY_BANNER: "%env(bool:DISPLAY_BANNER)%"
+  legacy_ftp_path: "%kernel.project_dir%/public/ftp/"
 
 services:
-    # default configuration for services in *this* file
-    _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-        bind:
-            $kernelProjectDir: '%kernel.project_dir%'
-            $kernelCacheDir: '%kernel.cache_dir%'
-            $kernelEnvironment: '%kernel.environment%'
-            $recaptchaSecret: '%env(RECAPTCHA_SECRET)%'
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    bind:
+      $kernelProjectDir: "%kernel.project_dir%"
+      $kernelCacheDir: "%kernel.cache_dir%"
+      $kernelEnvironment: "%kernel.environment%"
+      $recaptchaSecret: "%env(RECAPTCHA_SECRET)%"
 
-    _instanceof:
+  _instanceof:
+    App\Bridge\Monolog\SentryHandlerLogFilter\LogFilterInterface:
+      tags:
+        - { name: sentry_handler.log_filter }
 
-        App\Bridge\Monolog\SentryHandlerLogFilter\LogFilterInterface:
-            tags:
-                - { name: sentry_handler.log_filter }
+  # allows access to service container as an injected dependency
+  Symfony\Component\DependencyInjection\ContainerInterface: "@service_container"
 
-    # allows access to service container as an injected dependency
-    Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
+  # makes classes in src/ available to be used as services
+  # this creates a service per class whose id is the fully-qualified class name
+  App\:
+    resource: "../src/"
+    exclude:
+      - "../src/DependencyInjection/"
+      - "../src/Entity/"
+      - "../src/Kernel.php"
+      - "../src/Tests/"
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
-            - '../src/Tests/'
+  # add more service definitions when explicit configuration is needed
+  # please note that last definitions always *replace* previous ones
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+  App\Twig\VueExtension:
+    tags: ["twig.extension"]
 
-    App\Twig\VueExtension:
-        tags: ['twig.extension']
-        
-    App\Legacy\LegacyRouteLoader:
-        tags: ['routing.loader']
+  App\Twig\JavascriptGlobalsExtension:
+    tags: ["twig.extension"]
 
-    App\Bridge\Monolog\Handler\SentryHandler:
-        arguments:
-            $logFilters: !tagged_iterator sentry_handler.log_filter
+  App\Legacy\LegacyRouteLoader:
+    tags: ["routing.loader"]
 
-    Egulias\EmailValidator\EmailValidator: ~
+  App\Bridge\Monolog\Handler\SentryHandler:
+    arguments:
+      $logFilters: !tagged_iterator sentry_handler.log_filter
 
-    App\Repository\CommissionRepository:
-        public: true
+  Egulias\EmailValidator\EmailValidator: ~
 
-    App\Mailer\Mailer:
-        arguments:
-            $replyTo: '%env(MAIL_EMITTER_EMAIL)%'
-            $nameEmitter: '%env(MAIL_EMITTER_NAME)%'
+  App\Repository\CommissionRepository:
+    public: true
 
-    Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
-        public: true
-        arguments:
-            - '%env(DATABASE_URL)%'
+  App\Mailer\Mailer:
+    arguments:
+      $replyTo: "%env(MAIL_EMITTER_EMAIL)%"
+      $nameEmitter: "%env(MAIL_EMITTER_NAME)%"
 
-    App\Controller\AdminController:
-      arguments:
-        $adminPassord: '%env(PASSWORD_ADMIN)%'
+  Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
+    public: true
+    arguments:
+      - "%env(DATABASE_URL)%"
 
-    App\Repository\EvtRepository:
-        arguments:
-            $maxSortiesAccueil: '%env(int:MAX_SORTIES_ACCUEIL)%'
+  App\Controller\AdminController:
+    arguments:
+      $adminPassword: "%env(PASSWORD_ADMIN)%"
 
-    App\EventListener\ForceHttpsListener:
-      arguments:
-        $routerContextScheme: '%env(ROUTER_CONTEXT_SCHEME)%'
-        $routerContextHost: '%env(ROUTER_CONTEXT_HOST)%'
+  App\Controller\RssController:
+    arguments:
+      $sitename: "%env(SITENAME)%"
 
-    App\Bridge\Twig\TwigExtension:
-      arguments:
-          $maxTimestampForLegalValidation: '%env(MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%'
+  App\EventListener\ForceHttpsListener:
+    arguments:
+      $routerContextScheme: "%env(ROUTER_CONTEXT_SCHEME)%"
+      $routerContextHost: "%env(ROUTER_CONTEXT_HOST)%"
 
     App\MailingListSync:
       arguments:
@@ -102,60 +100,67 @@ services:
     Symfony\Component\String\Slugger\SluggerInterface:
         class: Symfony\Component\String\Slugger\AsciiSlugger
 
-    # services used in legacy
-    legacy_router:
-        public: true
-        alias: 'router'
+  App\Bridge\Twig\TwigExtension:
+    arguments:
+      $maxTimestampForLegalValidation: "%env(MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%"
 
-    # services used in legacy
-    legacy_token_storage:
-        public: true
-        alias: 'security.token_storage'
+  Symfony\Component\String\Slugger\SluggerInterface:
+    class: Symfony\Component\String\Slugger\AsciiSlugger
 
-    legacy_csrf_token_manager:
-        public: true
-        alias: Symfony\Component\Security\Csrf\CsrfTokenManagerInterface
+  # services used in legacy
+  legacy_router:
+    public: true
+    alias: "router"
 
-    legacy_twig:
-        public: true
-        alias: Twig\Environment
+  # services used in legacy
+  legacy_token_storage:
+    public: true
+    alias: "security.token_storage"
 
-    legacy_fs:
-        public: true
-        alias: Symfony\Component\Filesystem\Filesystem
+  legacy_csrf_token_manager:
+    public: true
+    alias: Symfony\Component\Security\Csrf\CsrfTokenManagerInterface
 
-    legacy_request_stack:
-        public: true
-        alias: Symfony\Component\HttpFoundation\RequestStack
+  legacy_twig:
+    public: true
+    alias: Twig\Environment
 
-    legacy_hasher_factory:
-        public: true
-        alias: Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface
+  legacy_fs:
+    public: true
+    alias: Symfony\Component\Filesystem\Filesystem
 
-    legacy_logger:
-        public: true
-        alias: 'logger'
+  legacy_request_stack:
+    public: true
+    alias: Symfony\Component\HttpFoundation\RequestStack
 
-    legacy_user_rights:
-        public: true
-        class: App\UserRights
+  legacy_hasher_factory:
+    public: true
+    alias: Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface
 
-    legacy_mysqli_handler:
-        public: true
-        class: App\Utils\MysqliHandler
+  legacy_logger:
+    public: true
+    alias: "logger"
 
-    legacy_imagine:
-        public: true
-        class: Imagine\Imagick\Imagine
+  legacy_user_rights:
+    public: true
+    class: App\UserRights
 
-    legacy_authorization_checker:
-        public: true
-        alias: Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface
+  legacy_mysqli_handler:
+    public: true
+    class: App\Utils\MysqliHandler
 
-    legacy_mailer:
-        public: true
-        alias: App\Mailer\Mailer
+  legacy_imagine:
+    public: true
+    class: Imagine\Imagick\Imagine
 
-    legacy_content_html:
-        public: true
-        alias: App\Legacy\ContentHtml
+  legacy_authorization_checker:
+    public: true
+    alias: Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface
+
+  legacy_mailer:
+    public: true
+    alias: App\Mailer\Mailer
+
+  legacy_content_html:
+    public: true
+    alias: App\Legacy\ContentHtml
