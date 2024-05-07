@@ -65,14 +65,15 @@ class EvtRepository extends ServiceEntityRepository
         $options = array_merge([
             'limit' => $this->defaultLimit,
         ], $options);
+        $date = new \DateTime('today');
 
         $qb = $this->createQueryBuilder('e')
             ->select('e, c')
             ->leftJoin('e.commission', 'c')
             ->where('e.status = :status')
             ->setParameter('status', Evt::STATUS_LEGAL_VALIDE)
-            ->andWhere('e.tsp > :date')
-            ->setParameter('date', time())
+            ->andWhere('e.tsp >= :date')
+            ->setParameter('date', $date->getTimestamp())
             ->orderBy('e.tsp', 'asc')
             ->setMaxResults($options['limit'])
         ;
