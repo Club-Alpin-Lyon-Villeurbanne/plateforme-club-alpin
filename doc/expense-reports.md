@@ -1,5 +1,9 @@
 # Expense Reports (notes de frais)
 
+## Configuration
+
+Le formulaire affiche une estimation du montant remboursable lors de la saisie d'une note de frais. Les règles de calcul sont gérées par le service `assets/ts/expense-report-service.ts` qui utilise les variables de configuration définies dans `assets/config/expense-reports.json`.
+
 ## Routes
 
 - Lister les notes de frais : `GET` `/expense-report`
