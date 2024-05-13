@@ -1,4 +1,4 @@
-import expenseReportConfig from '../etc/expense-report-config.json';
+import expenseReportConfig from '../config/expense-report-config.json';
 
 const expenseReportService = {
     getExpenseReport: () => {
