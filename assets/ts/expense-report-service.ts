@@ -50,8 +50,7 @@ const expenseReportService = {
                 const distanceField = transportationMode.fields.find((field: any) => field.slug === 'distance');
                 const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
                 const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
-                // distance * 0.3€ / nombre voyageurs
-                total += parseFloat(distanceField.value) * 0.3 / parseFloat(passengerNumberField.value);
+               
                 // essence / nombre voyageurs
                 total += parseFloat(fuelField.value) / parseFloat(passengerNumberField.value);
                 // péage / nombre voyageurs
