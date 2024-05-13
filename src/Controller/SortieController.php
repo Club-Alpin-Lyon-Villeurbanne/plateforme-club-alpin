@@ -162,13 +162,6 @@ class SortieController extends AbstractController
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
             'apiBaseUrl', !empty($_ENV['ROUTER_CONTEXT_HOST']) ? $_ENV['ROUTER_CONTEXT_SCHEME'].'://'.$_ENV['ROUTER_CONTEXT_HOST'] : false
         );
-
-
-        $pattern = "/\b(http|https):\/\/[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/))/";
-        $replacement = '<a href="$0" target="_blank" rel="noopener">$0</a>';
-        $matos =  preg_replace($pattern, $replacement, strip_tags($event->getMatos()));
-
-
         return [
             'event' => $event,
             'participations' => $participationRepository->getSortedParticipations($event, null, null),
@@ -176,7 +169,6 @@ class SortieController extends AbstractController
             'empietements' => $participationRepository->getEmpietements($event),
             'expenseReportFormStructure' => $expenseReportFormGroups,
             'currentExpenseReport' => $currentExpenseReport,
-            'matos' => $matos,
         ];
     }
 
