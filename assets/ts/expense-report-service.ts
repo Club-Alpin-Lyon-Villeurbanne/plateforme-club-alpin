@@ -1,3 +1,5 @@
+import expenseReportConfig from '../config/expense-reports.json';
+
 const expenseReportService = {
     getExpenseReport: () => {
        
@@ -20,8 +22,8 @@ const expenseReportService = {
                 const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
                 const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
                 if (distanceField && tollField && passengerNumberField) {
-                    // distance * 0.12
-                    total += parseFloat(distanceField.value) * 0.12;
+                    // distance * taux kilometrique
+                    total += parseFloat(distanceField.value) * expenseReportConfig.tauxKilometrique;
                     // peage / nombre voyageurs
                     total += parseFloat(tollField.value) / parseFloat(passengerNumberField.value);
                 }
@@ -36,8 +38,6 @@ const expenseReportService = {
                 const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
                 // prix location par km  * distance
                 total += parseFloat(rentPrice.value) * parseFloat(distanceField.value);
-                // distance * 0.3€ / nombre voyageurs
-                total += parseFloat(distanceField.value) * 0.3 / parseFloat(passengerNumberField.value);
                 // essence / nombre voyageurs
                 total += parseFloat(fuelField.value) / parseFloat(passengerNumberField.value);
                 // péage / nombre voyageurs
@@ -50,8 +50,7 @@ const expenseReportService = {
                 const distanceField = transportationMode.fields.find((field: any) => field.slug === 'distance');
                 const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
                 const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
-                // distance * 0.3€ / nombre voyageurs
-                total += parseFloat(distanceField.value) * 0.3 / parseFloat(passengerNumberField.value);
+               
                 // essence / nombre voyageurs
                 total += parseFloat(fuelField.value) / parseFloat(passengerNumberField.value);
                 // péage / nombre voyageurs
@@ -71,7 +70,7 @@ const expenseReportService = {
             return formStructure.hebergement.expenseTypes.reduce((total: number, expenseType: any) => {
                 return total + expenseType.fields.reduce((fieldTotal: number, field: any) => {
                     const newTotal = fieldTotal + (field.flags.isUsedForTotal ? parseFloat(field.value) : 0);
-                    return newTotal >= 45 ? 45 : newTotal;
+                    return newTotal >= expenseReportConfig.nuiteeMaxRemboursable ? expenseReportConfig.nuiteeMaxRemboursable : newTotal;
                 }, 0);
             }, 0);
         }
