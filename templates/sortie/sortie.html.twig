@@ -727,8 +727,8 @@
                 {% if event.difficulte %}
                     <li class="wide"><b>DIFFICULTÉ :</b> {{ event.difficulte }}</li>
                 {% endif %}
-                {% if matos %}
-                    <li class="wide"><b>MATÉRIEL :</b> {{ matos|raw }}</li>
+                {% if event.matos %}
+                    <li class="wide"><b>MATÉRIEL :</b> {{ event.matos | converturls | nl2br }}</li>
                 {% endif %}
             </ul>
             <br style="clear:both" />
@@ -745,7 +745,7 @@
                         <li class="wide"><b>TARIF :</b> {{ event.tarif }} Euros</li>
                     {% endif %}
                     {% if event.tarifDetail %}
-                        <li class="wide"><b>DÉTAIL :</b> {{ event.tarifDetail }}</li>
+                        <li class="wide"><b>DÉTAIL :</b> {{ event.tarifDetail | converturls | nl2br }}</li>
                     {% endif %}
                 </ul>
                 <br style="clear:both" />
