@@ -15,12 +15,14 @@ class ForceHttpsListener implements EventSubscriberInterface, ServiceSubscriberI
     private ContainerInterface $locator;
     private string $routerContextScheme;
     private string $routerContextHost;
+    private string $deployedOnCleverCloud;
 
-    public function __construct(ContainerInterface $locator, string $routerContextScheme, string $routerContextHost)
+    public function __construct(ContainerInterface $locator, string $routerContextScheme, string $routerContextHost, string $appName)
     {
         $this->locator = $locator;
         $this->routerContextScheme = $routerContextScheme;
         $this->routerContextHost = $routerContextHost;
+        $this->deployedOnCleverCloud = !empty($appName);
     }
 
     public static function getSubscribedEvents(): array
@@ -32,6 +34,12 @@ class ForceHttpsListener implements EventSubscriberInterface, ServiceSubscriberI
 
     public function onRequest(RequestEvent $event): void
     {
+        // If deployed on CleverCloud we want to ignore this listener as Clevercloud 
+        // already does that
+        if ($this->deployedOnCleverCloud) {
+            return;
+        }
+
         if ('https' !== $this->routerContextScheme) {
             return;
         }
