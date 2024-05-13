@@ -1,3 +1,5 @@
+import expenseReportConfig from '../etc/expense-report-config.json';
+
 const expenseReportService = {
     getExpenseReport: () => {
        
@@ -20,8 +22,8 @@ const expenseReportService = {
                 const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
                 const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
                 if (distanceField && tollField && passengerNumberField) {
-                    // distance * 0.2
-                    total += parseFloat(distanceField.value) * 0.2;
+                    // distance * taux kilometrique
+                    total += parseFloat(distanceField.value) * expenseReportConfig.tauxKilometrique;
                     // peage / nombre voyageurs
                     total += parseFloat(tollField.value) / parseFloat(passengerNumberField.value);
                 }
@@ -69,7 +71,7 @@ const expenseReportService = {
             return formStructure.hebergement.expenseTypes.reduce((total: number, expenseType: any) => {
                 return total + expenseType.fields.reduce((fieldTotal: number, field: any) => {
                     const newTotal = fieldTotal + (field.flags.isUsedForTotal ? parseFloat(field.value) : 0);
-                    return newTotal >= 60 ? 60 : newTotal;
+                    return newTotal >= expenseReportConfig.nuiteeMaxRemboursable ? expenseReportConfig.nuiteeMaxRemboursable : newTotal;
                 }, 0);
             }, 0);
         }
