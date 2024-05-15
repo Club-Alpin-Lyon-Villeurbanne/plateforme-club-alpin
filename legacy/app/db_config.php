@@ -1,9 +1,9 @@
 <?php
 
-$config = __DIR__.'/../config/config.php';
+use App\Legacy\LegacyContainer;
 
-if (!file_exists($config)) {
+if (!LegacyContainer::getParameter('legacy_env_SENTRY_DSN')) { 
     throw new \RuntimeException('Missing DB conf.');
 }
 
-return (require $config)['db'];
+return LegacyContainer::getParameter('legacy_env_SENTRY_DSN');

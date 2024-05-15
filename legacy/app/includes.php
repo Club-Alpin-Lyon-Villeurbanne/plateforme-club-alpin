@@ -1,12 +1,12 @@
 <?php
 
+use App\Legacy\LegacyContainer;
+
 require_once __DIR__.'/../../vendor/autoload.php';
 
-$config = require __DIR__.'/../config/config.php';
-
-if (isset($config['sentry_dsn'])) {
+if (LegacyContainer::getParameter('legacy_env_SENTRY_DSN')) { 
     Sentry\init([
-        'dsn' => $config['sentry_dsn'],
+        'dsn' => LegacyContainer::getParameter('legacy_env_SENTRY_DSN'),
     ]);
 }
 
