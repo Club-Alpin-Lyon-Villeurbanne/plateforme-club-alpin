@@ -102,17 +102,23 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
 							<?php
 
                             // besoin de la liste des sorties publiées
-                $req = 'SELECT id_evt, commission_evt, tsp_evt, tsp_end_evt, titre_evt, code_evt FROM caf_evt WHERE status_evt =1 ORDER BY tsp_evt DESC LIMIT 0,300';
-        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-        while ($row = $handleSql->fetch_assoc()) {
-            echo '<option value="'.$row['id_evt'].'" '.(isset($_POST['evt_article']) && $_POST['evt_article'] == $row['id_evt'] ? 'selected="selected"' : '').'>'
-                                // .jour(date('N', $row['tsp_evt']))
+							$currentTimestamp = time();
+							$req = 'SELECT id_evt, commission_evt, tsp_evt, tsp_end_evt, titre_evt, code_evt 
+									FROM caf_evt 
+									WHERE status_evt = 1 AND tsp_evt < ' . $currentTimestamp . '
+									ORDER BY tsp_evt DESC 
+									LIMIT 0,300';
+
+							$result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+							
+							while ($row = $result->fetch_assoc()) {
+            					echo '<option value="'.$row['id_evt'].'" '.(isset($_POST['evt_article']) && $_POST['evt_article'] == $row['id_evt'] ? 'selected="selected"' : '').'>'
                                 .' '.date('d', $row['tsp_evt'])
                                 .' '.mois(date('m', $row['tsp_evt']))
                                 .' '.date('Y', $row['tsp_evt'])
                                 .' | '.html_utf8($row['titre_evt'])
-                            .'</option>';
-        } ?>
+                            	.'</option>';
+        					} ?>
 						</select>
 						<br />
 						<br />
