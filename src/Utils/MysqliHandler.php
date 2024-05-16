@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use App\Entity\User;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -22,13 +23,13 @@ class MysqliHandler
         $this->logger = $logger;
         $this->requestStack = $requestStack;
         $this->kernelEnvironment = $kernelEnvironment;
-        $this->initializeConnection();
         $this->params = $params;
+        $this->initializeConnection();
     }
 
     private function initializeConnection()
     {
-        $dbname = $this->params->get('legacy_env_DB_DBNAME');
+        $dbname = $this->params->get('legacy_env_DB_NAME');
 
         if ('test' === $this->kernelEnvironment) {
             $dbname .= '_test';

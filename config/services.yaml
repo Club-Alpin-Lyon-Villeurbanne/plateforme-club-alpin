@@ -25,7 +25,7 @@ parameters:
   legacy_env_DB_PORT: "%env(int:DB_PORT)%"
   legacy_env_DB_USER: "%env(string:DB_USER)%"
   legacy_env_DB_PASSWORD: "%env(string:DB_PASSWORD)%"
-  legacy_env_DB_DBNAME: "%env(string:DB_DBNAME)%"
+  legacy_env_DB_NAME: "%env(string:DB_NAME)%"
 
 services:
   # default configuration for services in *this* file
