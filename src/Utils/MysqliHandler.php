@@ -26,7 +26,7 @@ class MysqliHandler
 
     private function initializeConnection()
     {
-        $conf = include __DIR__.'/../../legacy/app/db_config.php';
+        $conf = include __DIR__ . '/../../legacy/app/db_config.php';
 
         $dbname = $conf['dbname'];
 
@@ -62,7 +62,7 @@ class MysqliHandler
             $user = null;
             if ($token = $this->tokenStorage->getToken()) {
                 if (($u = $token->getUser()) instanceof User) {
-                    $user = $u->getEmail().' ('.$u->getId().')';
+                    $user = $u->getEmail() . ' (' . $u->getId() . ')';
                 }
             }
 
@@ -77,6 +77,11 @@ class MysqliHandler
         }
 
         return $result;
+    }
+
+    public function prepare($query)
+    {
+        return $this->mysqli->prepare($query);
     }
 
     public function escapeString($value)
