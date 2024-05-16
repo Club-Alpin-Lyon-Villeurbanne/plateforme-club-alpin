@@ -6,7 +6,6 @@ use App\Entity\User;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use App\Legacy\LegacyContainer;
 
 class MysqliHandler
 {
@@ -15,39 +14,27 @@ class MysqliHandler
     private RequestStack $requestStack;
     private string $kernelEnvironment;
     private TokenStorageInterface $tokenStorage;
+    private ContainerBagInterface $params;
 
-    public function __construct(TokenStorageInterface $tokenStorage, LoggerInterface $logger, RequestStack $requestStack, string $kernelEnvironment)
+    public function __construct(TokenStorageInterface $tokenStorage, LoggerInterface $logger, RequestStack $requestStack, string $kernelEnvironment, ContainerBagInterface $params)
     {
         $this->tokenStorage = $tokenStorage;
         $this->logger = $logger;
         $this->requestStack = $requestStack;
         $this->kernelEnvironment = $kernelEnvironment;
         $this->initializeConnection();
+        $this->params = $params;
     }
 
     private function initializeConnection()
     {
-
-        $dbconfname = array('legacy_env_DB_DBNAME', 'legacy_env_DB_HOST', 'legacy_env_DB_USER', 'legacy_env_DB_PASSWORD', 'legacy_env_DB_PORT');
-        $dbconf = array();
-
-        foreach($dbconfname as $param) {
-            if(LegacyContainer::getParameter($param)) {
-                $dbconf[$param] = LegacyContainer::getParameter($param);
-            }
-            // Si l'un des paramètres est vide, l'appel à la base de données ne passe pas, retourner donc une exception
-            else {
-                throw new \RuntimeException('Missing DB conf.');
-            }
-        }
-
-        $dbname = $dbconf['legacy_env_DB_DBNAME'];
+        $dbname = $this->params->get('legacy_env_DB_DBNAME');
 
         if ('test' === $this->kernelEnvironment) {
             $dbname .= '_test';
         }
 
-        $this->mysqli = new \mysqli($dbconf['legacy_env_DB_HOST'], $dbconf['legacy_env_DB_USER'], $dbconf['legacy_env_DB_PASSWORD'], $dbname, $dbconf['legacy_env_DB_PORT']);
+        $this->mysqli = new \mysqli($this->params->get('legacy_env_DB_HOST'), $this->params->get('legacy_env_DB_USER'), $this->params->get('legacy_env_DB_PASSWORD'), $dbname, $this->params->get('legacy_env_DB_PORT'));
 
         if ($this->mysqli->connect_errno) {
             throw new \RuntimeException('Error while connecting to database');
