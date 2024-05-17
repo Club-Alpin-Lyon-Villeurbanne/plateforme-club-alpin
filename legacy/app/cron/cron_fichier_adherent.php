@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use App\Utils\NicknameGenerator;
 
-require __DIR__.'/../../app/includes.php';
+require __DIR__ . '/../../app/includes.php';
 
 function mysqli_result($res, $row = 0, $col = 0)
 {
@@ -31,9 +31,10 @@ set_time_limit(0);
 
 // *******************************
 // MISE A JOUR DE LA BASE DE DONNEE DES USERS DEPUIS LE FICHIER
-echo '---------------------------- update_users '.date('Y-m-d H:i:s')." ----------------------------\n";
+echo '---------------------------- update_users ' . date('Y-m-d H:i:s') . " ----------------------------\n";
 
-$fileTab = [__DIR__.'/../../config/ffcam-ftp-folder/6900.txt'];
+$projectDir = LegacyContainer::getParameter('legacy_project_dir');
+$fileTab = [$projectDir . '/ffcam/6900.txt'];
 
 // pour chaque fichier...
 
@@ -63,29 +64,29 @@ foreach ($fileTab as $file) {
                 $line = mb_convert_encoding($line, 'UTF-8');
                 $line = stripslashes($line);
 
-                echo $i."\n".$line."\n";
+                echo $i . "\n" . $line . "\n";
                 // pour chaque ligne, séparation des données
                 $line = explode(';', $line);
 
-                echo $i."\nligne ".__LINE__."\n";
+                echo $i . "\nligne " . __LINE__ . "\n";
                 // vérification du format. Si cette vérif échoue, on laisse même tomber les suivantes
                 if (count($line) < 33) {
-                    $messg = 'Format invalide : la ligne ne contient pas 33 valeurs mais '.count($line)."\n";
+                    $messg = 'Format invalide : la ligne ne contient pas 33 valeurs mais ' . count($line) . "\n";
                     echo $messg;
                     $tmpErrTab[] = $messg;
                 } else {
-                    echo $i."\nligne ".__LINE__."\n";
+                    echo $i . "\nligne " . __LINE__ . "\n";
                     if (!is_numeric($line[0])) {
                         $tmpErrTab[] = "Numéro d'adhérent complet invalide";
                     } // numéro d'adhérent
                     if (!is_numeric($line[1])) {
                         $tmpErrTab[] = 'Numéro de club invalide';
                     }
-                    echo $i."\nligne ".__LINE__."\n";
+                    echo $i . "\nligne " . __LINE__ . "\n";
                     if (!is_numeric($line[2])) {
                         $tmpErrTab[] = "Numéro d'adhérent invalide";
                     }
-                    echo $i."\nligne ".__LINE__."\n";
+                    echo $i . "\nligne " . __LINE__ . "\n";
                     if (!preg_match('#[0-9]{4}-[0-9]{2}-[0-9]{2}#', $line[6])) {
                         $tmpErrTab[] = 'Date de naissance invalide';
                     }
@@ -94,7 +95,7 @@ foreach ($fileTab as $file) {
 
                 // si erreur, affichée dans le log
                 if (count($tmpErrTab) > 0) {
-                    echo "!!! Erreurs ligne $i :\n !!! - ".implode('\n -- ', $tmpErrTab)."\n";
+                    echo "!!! Erreurs ligne $i :\n !!! - " . implode('\n -- ', $tmpErrTab) . "\n";
                     print_r($line);
                 }
 
@@ -102,7 +103,7 @@ foreach ($fileTab as $file) {
                 else {
                     // CREATION / MAJ DE CET ADHERENT
                     echo 'formatage des variables';
-                    echo $i."\nligne ".__LINE__."\n";
+                    echo $i . "\nligne " . __LINE__ . "\n";
 
                     // formatage des variables
                     $tel_user_old = $line[26];
@@ -116,7 +117,7 @@ foreach ($fileTab as $file) {
 
                     $line[26] = preg_replace('/[^\d]+/', '', $line[26]); // suppression des espaces dans les tel
                     $line[27] = preg_replace('/[^\d]+/', '', $line[27]); // suppression des espaces dans les tel
-// echo $i."\nligne ".__LINE__."\n";
+                    // echo $i."\nligne ".__LINE__."\n";
                     if (10 != strlen($line[26])) {
                         // la mise en forme du numero a echouee
                         // retablissement du numero original du fichier
@@ -130,7 +131,7 @@ foreach ($fileTab as $file) {
                     // echo $i."\nligne ".__LINE__."\n";
                     $line[26] = preg_replace('/[^\d]+/', '', $line[26]); // suppression des espaces dans les tel
                     $line[27] = preg_replace('/[^\d]+/', '', $line[27]); // suppression des espaces dans les tel
-// echo $i."\nligne ".__LINE__."\n";
+                    // echo $i."\nligne ".__LINE__."\n";
                     $cafnum_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[0]);
                     $firstname_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[10]);
                     $lastname_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[9]);
@@ -138,7 +139,7 @@ foreach ($fileTab as $file) {
                     $birthday_user = mktime(1, 0, 0, $tab[1], $tab[2], $tab[0]);
                     $tel_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[27]);
                     $tel2_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[26]);
-                    $adresse_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim($line[11]." \n".$line[12]." \n".$line[13]." \n".$line[14]));
+                    $adresse_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim($line[11] . " \n" . $line[12] . " \n" . $line[13] . " \n" . $line[14]));
                     $cp_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[15]);
                     $ville_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[16]);
                     $civ_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[8]);
@@ -157,14 +158,14 @@ foreach ($fileTab as $file) {
                         // print_r($tmpTab);
                         $line[$indice] = '';
                         foreach ($tmpTab as $str) {
-                            $line[$indice] .= ($line[$indice] ? ' ' : '').mb_strtoupper(substr($str, 0, 1), 'UTF-8').mb_strtolower(substr($str, 1), 'UTF-8');
+                            $line[$indice] .= ($line[$indice] ? ' ' : '') . mb_strtoupper(substr($str, 0, 1), 'UTF-8') . mb_strtolower(substr($str, 1), 'UTF-8');
                         }
                     }
                     // echo $i."\nligne ".__LINE__."\n";
                     // FILIATION : MISE À JOUR DE LA VALEUR
                     if ((int) $line[5] > 0) {
                         // filiation existante
-                        $cafnum_parent_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[1].$line[5]); // concaténation ligne 1 (club) pour obtenir un numéro d'adhérent complet
+                        $cafnum_parent_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($line[1] . $line[5]); // concaténation ligne 1 (club) pour obtenir un numéro d'adhérent complet
                     } else {
                         // filiation inexistante
                         $cafnum_parent_user = null;
@@ -185,7 +186,7 @@ foreach ($fileTab as $file) {
                         }
                     } else {
                         $tab = explode('-', $line[7]);
-                        $date_adhesion_user = ", date_adhesion_user='".mktime(1, 0, 0, $tab[1], $tab[2], $tab[0])."'";
+                        $date_adhesion_user = ", date_adhesion_user='" . mktime(1, 0, 0, $tab[1], $tab[2], $tab[0]) . "'";
                         $doit_renouveler_user = '0';
                         $alerte_renouveler_user = '0';
                     }
@@ -205,7 +206,7 @@ foreach ($fileTab as $file) {
 
                         // insertion
                         $req = "INSERT INTO caf_user(cafnum_user , firstname_user , lastname_user , created_user , birthday_user , tel_user , tel2_user , adresse_user , cp_user , ville_user , civ_user , cafnum_parent_user, valid_user, doit_renouveler_user, alerte_renouveler_user, ts_insert_user, nickname_user)
-						VALUES ('$cafnum_user', '$firstname_user', '$lastname_user',  '".time()."', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$civ_user', ".(null === $cafnum_parent_user ? 'null' : "'".$cafnum_parent_user."'").", 0, $doit_renouveler_user, $alerte_renouveler_user, ".time()." , '$nickname_user');";
+						VALUES ('$cafnum_user', '$firstname_user', '$lastname_user',  '" . time() . "', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$civ_user', " . (null === $cafnum_parent_user ? 'null' : "'" . $cafnum_parent_user . "'") . ", 0, $doit_renouveler_user, $alerte_renouveler_user, " . time() . " , '$nickname_user');";
                         ++$nb_insert;
                     } elseif ($idUser = mysqli_result($handleSql, 0)) {
                         // adherent existant : mise a jour
@@ -215,18 +216,18 @@ foreach ($fileTab as $file) {
                         // si l'adhérent n'a pas encore ré-adhéré, on ne met pas à jour la date d'adhésion
                         if ('0000-00-00' == $line[7]) {
                             $req = 'UPDATE caf_user SET
-                                        ts_update_user='.time().",
+                                        ts_update_user=' . time() . ",
                                         firstname_user='$firstname_user',
                                         lastname_user='$lastname_user',
                                         doit_renouveler_user='$doit_renouveler_user',
                                         birthday_user='$birthday_user',
                                         civ_user='$civ_user',
-                                        cafnum_parent_user=".(null === $cafnum_parent_user ? 'null' : "'".$cafnum_parent_user."'").',
-                                        tel_user='.(null === $tel_user ? 'null' : "'".$tel_user."'").',
-                                        tel2_user='.(null === $tel2_user ? 'null' : "'".$tel2_user."'").',
-                                        adresse_user='.(null === $adresse_user ? 'null' : "'".$adresse_user."'").',
-                                        cp_user='.(null === $cp_user ? 'null' : "'".$cp_user."'").',
-                                        ville_user='.(null === $ville_user ? 'null' : "'".$ville_user."'").",
+                                        cafnum_parent_user=" . (null === $cafnum_parent_user ? 'null' : "'" . $cafnum_parent_user . "'") . ',
+                                        tel_user=' . (null === $tel_user ? 'null' : "'" . $tel_user . "'") . ',
+                                        tel2_user=' . (null === $tel2_user ? 'null' : "'" . $tel2_user . "'") . ',
+                                        adresse_user=' . (null === $adresse_user ? 'null' : "'" . $adresse_user . "'") . ',
+                                        cp_user=' . (null === $cp_user ? 'null' : "'" . $cp_user . "'") . ',
+                                        ville_user=' . (null === $ville_user ? 'null' : "'" . $ville_user . "'") . ",
                                         alerte_renouveler_user='$alerte_renouveler_user',
                                         nickname_user='$nickname_user',
                                         manuel_user=0,
@@ -235,24 +236,24 @@ foreach ($fileTab as $file) {
                             ++$nb_update;
                         } else {
                             $req = 'UPDATE caf_user SET
-                                        ts_update_user='.time().",
+                                        ts_update_user=' . time() . ",
                                         firstname_user='$firstname_user',
                                         lastname_user='$lastname_user',
                                         doit_renouveler_user='$doit_renouveler_user',
                                         birthday_user='$birthday_user',
                                         civ_user='$civ_user',
-                                        cafnum_parent_user=".(null === $cafnum_parent_user ? 'null' : "'".$cafnum_parent_user."'").',
-                                        tel_user='.(null === $tel_user ? 'null' : "'".$tel_user."'").',
-                                        tel2_user='.(null === $tel2_user ? 'null' : "'".$tel2_user."'").',
-                                        adresse_user='.(null === $adresse_user ? 'null' : "'".$adresse_user."'").',
-                                        cp_user='.(null === $cp_user ? 'null' : "'".$cp_user."'").',
-                                        ville_user='.(null === $ville_user ? 'null' : "'".$ville_user."'").",
+                                        cafnum_parent_user=" . (null === $cafnum_parent_user ? 'null' : "'" . $cafnum_parent_user . "'") . ',
+                                        tel_user=' . (null === $tel_user ? 'null' : "'" . $tel_user . "'") . ',
+                                        tel2_user=' . (null === $tel2_user ? 'null' : "'" . $tel2_user . "'") . ',
+                                        adresse_user=' . (null === $adresse_user ? 'null' : "'" . $adresse_user . "'") . ',
+                                        cp_user=' . (null === $cp_user ? 'null' : "'" . $cp_user . "'") . ',
+                                        ville_user=' . (null === $ville_user ? 'null' : "'" . $ville_user . "'") . ",
                                         alerte_renouveler_user='$alerte_renouveler_user',
                                         nickname_user='$nickname_user',
                                         manuel_user=0,
-                                        nomade_user=0".
-                            $date_adhesion_user
-                            ." WHERE id_user=$idUser AND cafnum_user = '$cafnum_user'";
+                                        nomade_user=0" .
+                                $date_adhesion_user
+                                . " WHERE id_user=$idUser AND cafnum_user = '$cafnum_user'";
                             ++$nb_update;
                         }
                     } else {
@@ -260,27 +261,27 @@ foreach ($fileTab as $file) {
                     }
 
                     if (!($handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req))) {
-                        echo wordwrap("!!! Erreur SQL lors de l'integration de la ligne $i : ".LegacyContainer::get('legacy_mysqli_handler')->lastError()." ($req)\n");
+                        echo wordwrap("!!! Erreur SQL lors de l'integration de la ligne $i : " . LegacyContainer::get('legacy_mysqli_handler')->lastError() . " ($req)\n");
                     }
                 }
 
                 if (count($tmpErrTab) > 0) {
-                    echo "!!! Erreurs ligne $i :\n !!! - ".implode('\n -- ', $tmpErrTab)."\n";
+                    echo "!!! Erreurs ligne $i :\n !!! - " . implode('\n -- ', $tmpErrTab) . "\n";
                     print_r($line);
                 }
             }
             fclose($handle);
         }
         if ($nb_insert > 0 || $nb_update > 0) {
-            rename($file, $file.'.'.date('Y-m-d'));
+            rename($file, $file . '.' . date('Y-m-d'));
             echo "after rename\n";
-            exec('gzip '.$file.'.'.date('Y-m-d'));
+            exec('gzip ' . $file . '.' . date('Y-m-d'));
         }
 
         echo "INSERT: $nb_insert, UPDATE:$nb_update\n";
 
         $req = "INSERT INTO  `caf_log_admin` (`code_log_admin` ,`desc_log_admin` ,`ip_log_admin`,`date_log_admin`)
-			VALUES ('import-ffcam',  'INSERT: $nb_insert, UPDATE:$nb_update, fichier ".basename($file)."', '127.0.0.1', '".time()."');";
+			VALUES ('import-ffcam',  'INSERT: $nb_insert, UPDATE:$nb_update, fichier " . basename($file) . "', '127.0.0.1', '" . time() . "');";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL lors du log';
         }
@@ -288,7 +289,7 @@ foreach ($fileTab as $file) {
         echo "!!! Erreur : le fichier n'existe pas : $file\n";
 
         $req = "INSERT INTO  `caf_log_admin` (`code_log_admin` ,`desc_log_admin` ,`ip_log_admin`,`date_log_admin`)
-			VALUES ('import-ffcam',  'fichier inexistant : $file', '127.0.0.1', '".time()."');";
+			VALUES ('import-ffcam',  'fichier inexistant : $file', '127.0.0.1', '" . time() . "');";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL lors du log';
         }
@@ -297,12 +298,12 @@ foreach ($fileTab as $file) {
 
 // blocage des comptes expires ( inscription < 31/08/Y-1 ) ou non mis ŕ jour depuis + de 10j
 $req = 'UPDATE caf_user SET doit_renouveler_user=1 WHERE id_user!=1 AND nomade_user=0 AND manuel_user=0 AND (
-    FROM_UNIXTIME( date_adhesion_user ) < MAKEDATE('.(date('Y') - 1).', 240 )
+    FROM_UNIXTIME( date_adhesion_user ) < MAKEDATE(' . (date('Y') - 1) . ', 240 )
     OR ts_update_user < (UNIX_TIMESTAMP( ) - ( 86400 *10 ))
 )';
 
 if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-    echo 'Erreur SQL lors du log:'.LegacyContainer::get('legacy_mysqli_handler')->lastError();
+    echo 'Erreur SQL lors du log:' . LegacyContainer::get('legacy_mysqli_handler')->lastError();
 }
 
 // suppression des filiations sur comptes non mis ŕ jour depuis + de 200j
@@ -311,5 +312,5 @@ $req = 'UPDATE caf_user SET cafnum_parent_user = null WHERE
 ';
 
 if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-    echo 'Erreur SQL lors du log:'.LegacyContainer::get('legacy_mysqli_handler')->lastError();
+    echo 'Erreur SQL lors du log:' . LegacyContainer::get('legacy_mysqli_handler')->lastError();
 }
