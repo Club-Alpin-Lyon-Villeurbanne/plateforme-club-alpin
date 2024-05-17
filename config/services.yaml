@@ -19,6 +19,13 @@ parameters:
   legacy_env_MAX_IMAGE_SIZE: "%env(int:MAX_IMAGE_SIZE)%"
   legacy_env_DISPLAY_BANNER: "%env(bool:DISPLAY_BANNER)%"
   legacy_ftp_path: "%kernel.project_dir%/public/ftp/"
+  #configuration extraite de: legacy/config/config.php
+  legacy_env_SENTRY_DSN: "%env(bool:SENTRY_DSN)%"
+  legacy_env_DB_HOST: "%env(string:DB_HOST)%"
+  legacy_env_DB_PORT: "%env(int:DB_PORT)%"
+  legacy_env_DB_USER: "%env(string:DB_USER)%"
+  legacy_env_DB_PASSWORD: "%env(string:DB_PASSWORD)%"
+  legacy_env_DB_NAME: "%env(string:DB_NAME)%"
 
 services:
   # default configuration for services in *this* file
