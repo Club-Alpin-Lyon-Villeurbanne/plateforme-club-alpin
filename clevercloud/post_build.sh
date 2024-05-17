@@ -21,8 +21,6 @@ mkdir -p ${JWT_CONF_DIR}
 echo "${JWT_SECRET_KEY}" > ${JWT_CONF_DIR}/private.pem
 echo "${JWT_PUBLIC_KEY}" > ${JWT_CONF_DIR}/public.pem
 
-cat legacy/config/${DEPLOY_ENV}/config.php > legacy/config/config.php
-
 /usr/bin/composer.phar dump-env ${APP_ENV}
 
 bin/console doctrine:migrations:migrate --env=${APP_ENV} --no-interaction
