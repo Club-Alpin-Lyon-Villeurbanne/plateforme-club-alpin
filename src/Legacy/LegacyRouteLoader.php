@@ -34,7 +34,6 @@ class LegacyRouteLoader extends Loader
             ->notPath('app/includes')
             ->notPath('app/fonctions')
             ->notPath('app/params')
-            ->notPath('app/custom_image')
             ->notPath('app/usercookies')
             ->notPath('app/langs')
             ->notPath('app/pages')
