@@ -21,34 +21,6 @@ class LegacyController extends AbstractController
         });
     }
 
-    #[Route(path: '/img/adresse-website.png', name: 'legacy_img_adresse', methods: ['GET'])]
-    public function adresseWebsiteAction(): StreamedResponse
-    {
-        return new StreamedResponse(function () {
-            $legacyDir = __DIR__.'/../../legacy/';
-            $path = 'index.php';
-            $_GET['cstImg'] = 'adresse-website.png';
-
-            ob_start();
-            require $legacyDir.$path;
-            ob_end_flush();
-        });
-    }
-
-    #[Route(path: '/img/logo.png', name: 'legacy_img_logo', methods: ['GET'])]
-    public function logoAction(): StreamedResponse
-    {
-        return new StreamedResponse(function () {
-            $legacyDir = __DIR__.'/../../legacy/';
-            $path = 'index.php';
-            $_GET['cstImg'] = 'logo.png';
-
-            ob_start();
-            require $legacyDir.$path;
-            ob_end_flush();
-        });
-    }
-
     #[Route(path: '/{p1}.html', name: 'legacy_p1', requirements: ['p1' => '[a-zA-Z0-9-]+'], methods: ['GET', 'POST'])]
     public function p1Action($p1): StreamedResponse
     {

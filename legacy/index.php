@@ -11,12 +11,6 @@ if (isset($_GET['ajx'])) {
     exit;
 }
 
-// Géré par .htaccess
-if (isset($_GET['cstImg'])) {
-    require __DIR__.'/app/custom_image.php';
-    exit;
-}
-
 // lien vers cette page (pour formulaires, ou ancres)
 $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : '').'.html';			// multilangue / une langue
 
