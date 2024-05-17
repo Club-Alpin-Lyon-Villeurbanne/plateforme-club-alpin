@@ -63,7 +63,7 @@ class MysqliHandler
             $user = null;
             if ($token = $this->tokenStorage->getToken()) {
                 if (($u = $token->getUser()) instanceof User) {
-                    $user = $u->getEmail().' ('.$u->getId().')';
+                    $user = $u->getEmail() . ' (' . $u->getId() . ')';
                 }
             }
 
@@ -78,6 +78,11 @@ class MysqliHandler
         }
 
         return $result;
+    }
+
+    public function prepare($query)
+    {
+        return $this->mysqli->prepare($query);
     }
 
     public function escapeString($value)
