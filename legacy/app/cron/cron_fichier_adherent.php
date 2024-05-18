@@ -33,8 +33,13 @@ set_time_limit(0);
 // MISE A JOUR DE LA BASE DE DONNEE DES USERS DEPUIS LE FICHIER
 echo '---------------------------- update_users ' . date('Y-m-d H:i:s') . " ----------------------------\n";
 
-$projectDir = LegacyContainer::getParameter('legacy_project_dir');
-$fileTab = [$projectDir . '/ffcam/6900.txt'];
+if (LegacyContainer::getParameter('legacy_deploy_env') === 'staging') {
+    $projectDir = LegacyContainer::getParameter('legacy_project_dir');
+    $fileTab = [$projectDir . '/ffcam/6900.txt'];
+} else {
+    // production is currently on aws and has a different path
+    $fileTab = [__DIR__.'/../../config/ffcam-ftp-folder/6900.txt'];
+}
 
 // pour chaque fichier...
 
