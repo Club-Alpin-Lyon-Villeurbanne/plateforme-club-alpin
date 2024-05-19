@@ -21,6 +21,7 @@ parameters:
   legacy_ftp_path: "%kernel.project_dir%/public/ftp/"
   legacy_project_dir: "%kernel.project_dir%"
   legacy_deploy_env: "%env(string:DEPLOY_ENV)%"
+  legacy_is_on_clever_cloud: "%env(defined:CC_PHP_VERSION)%"
   #configuration extraite de: legacy/config/config.php
   legacy_env_SENTRY_DSN: "%env(bool:SENTRY_DSN)%"
   legacy_env_DB_HOST: "%env(string:DB_HOST)%"
