@@ -230,7 +230,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
             'moreinfo' => $this->getMoreinfo(),
             'authContact' => $this->getAuthContact(),
             'valid' => $this->getValid(),
-            'cookietoken' => $this->getCookietoken(),
             'manuel' => $this->getManuel(),
             'nomade' => $this->getNomade(),
             'nomadeParent' => $this->getNomadeParent(),
