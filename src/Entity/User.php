@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-
+use JsonSerializable;
 /**
  * User.
  *
@@ -17,7 +17,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: 'caf_user')]
 #[ORM\Index(name: 'id_user', columns: ['id_user'])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSerializable
 {
     /**
      * @var int
@@ -208,6 +208,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->attrs = new ArrayCollection();
         $this->created = time();
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->getId(),
+            'email' => $this->getEmail(),
+            'firstname' => $this->getFirstname(),
+            'lastname' => $this->getLastname(),
+            'nickname' => $this->getNickname(),
+            'created' => $this->getCreated(),
+            'birthday' => $this->getBirthday(),
+            'tel' => $this->getTel(),
+            'tel2' => $this->getTel2(),
+            'adresse' => $this->getAdresse(),
+            'cp' => $this->getCp(),
+            'ville' => $this->getVille(),
+            'pays' => $this->getPays(),
+            'civ' => $this->getCiv(),
+            'moreinfo' => $this->getMoreinfo(),
+            'authContact' => $this->getAuthContact(),
+            'valid' => $this->getValid(),
+            'cookietoken' => $this->getCookietoken(),
+            'manuel' => $this->getManuel(),
+            'nomade' => $this->getNomade(),
+            'nomadeParent' => $this->getNomadeParent(),
+            'dateAdhesion' => $this->getDateAdhesion(),
+            'doitRenouveler' => $this->getDoitRenouveler(),
+            'alerteRenouveler' => $this->getAlerteRenouveler(),
+            'tsInsert' => $this->getTsInsert(),
+            'tsUpdate' => $this->getTsUpdate(),
+        ];
     }
 
     /** @return UserAttr[] */
