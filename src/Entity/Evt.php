@@ -325,6 +325,7 @@ class Evt implements JsonSerializable
     public function jsonSerialize(): mixed
     {
         return [
+            'id' => $this->id,
             'user' => $this->user->getId(),
             'titre' => $this->titre,
             'code' => $this->code,
