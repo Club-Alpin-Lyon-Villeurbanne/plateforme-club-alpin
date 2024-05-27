@@ -285,8 +285,11 @@ function run() {
     }
     
     if ($nb_insert > 0 || $nb_update > 0) {
-        rename($file, $file.'.'.date('Y-m-d'));
-        exec('gzip '.$file.'.'.date('Y-m-d'));
+        $zip = new ZipArchive();
+        $filename = $file.'_'.date('Y-m-d').'.zip';
+        $zip->open($filename, ZipArchive::CREATE);
+        $zip->addFile($file, basename($file));
+        $zip->close();
     }
     
     $logger->info("Members synchronization finished. New members : $nb_insert, Updated members :$nb_update");
