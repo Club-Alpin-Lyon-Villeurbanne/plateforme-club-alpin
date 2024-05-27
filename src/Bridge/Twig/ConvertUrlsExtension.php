@@ -4,10 +4,16 @@ namespace App\Bridge\Twig;
 
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
+use Twig\Runtime\EscaperRuntime;
 use Twig\TwigFilter;
 
 class ConvertUrlsExtension extends AbstractExtension
 {
+    private $twig;
+
+    public function __construct(Environment $twig) {
+        $this->twig = $twig;
+    }
     public function getFilters(): array
     {
         return [
@@ -29,10 +35,10 @@ class ConvertUrlsExtension extends AbstractExtension
 
         return sprintf(
             '<a class="mailthisanchor"></a><script type="text/javascript" class="mailthis">mailThis(\'%s\', \'%s\', \'%s\', undefined, %s)</script>',
-            twig_escape_filter($environment, $user, 'js'),
-            twig_escape_filter($environment, $domain, 'js'),
-            twig_escape_filter($environment, $tld, 'js'),
-            $placeholder ? sprintf('\'%s\'', twig_escape_filter($environment, $placeholder, 'js')) : 'undefined',
+            $this->twig->getRuntime(EscaperRuntime::class)->escape($user, 'js'),
+            $this->twig->getRuntime(EscaperRuntime::class)->escape($domain, 'js'),
+            $this->twig->getRuntime(EscaperRuntime::class)->escape($tld, 'js'),
+            $placeholder ? sprintf('\'%s\'', $this->twig->getRuntime(EscaperRuntime::class)->escape($placeholder, 'js')) : 'undefined',
         );
     }
 

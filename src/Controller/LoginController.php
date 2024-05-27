@@ -10,16 +10,17 @@ use App\Mailer\Mailer;
 use App\Repository\UserRepository;
 use App\Security\RecaptchaValidator;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Http\LoginLink\LoginLinkHandlerInterface;
+use Symfony\Bridge\Twig\Attribute\Template;
+use Symfony\Component\ExpressionLanguage\Expression;
 
 class LoginController extends AbstractController
 {
@@ -50,7 +51,7 @@ class LoginController extends AbstractController
 
     
     #[Route(name: 'session_password_lost', path: '/password-lost', methods: ['GET', 'POST'])]
-    #[Template]
+    #[Template('login/password_lost.html.twig')]
     public function passwordLostAction(Request $request, UserRepository $userRepository, LoginLinkHandlerInterface $loginLinkHandler, Mailer $mailer, RecaptchaValidator $recaptchaValidator)
     {
         if ($this->isGranted('ROLE_USER')) {
@@ -104,8 +105,10 @@ class LoginController extends AbstractController
      *
      */
     #[Route(name: 'account_set_password', path: '/password', methods: ['GET', 'POST'])]
-    #[Security("is_granted('IS_AUTHENTICATED_FULLY') and is_granted('ROLE_USER')")]
-    #[Template]
+    #[IsGranted(attribute: new Expression(
+        'is_granted("IS_AUTHENTICATED_FULLY") and is_granted("ROLE_USER")'
+    ))]
+    #[Template('login/set_password.html.twig')]
     public function setPasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer, EntityManagerInterface $em)
     {
         /** @var User $user */
@@ -143,8 +146,8 @@ class LoginController extends AbstractController
      *
      */
     #[Route(name: 'account_change_password', path: '/change-password', methods: ['GET', 'POST'])]
-    #[Security("is_granted('ROLE_USER')")]
-    #[Template]
+    #[IsGranted('ROLE_USER')]
+    #[Template('login/change_password.html.twig')]
     public function changePasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer, EntityManagerInterface $em)
     {
         $url = $request->getSession()->get('user_password.target', $this->generateUrl('legacy_root'));

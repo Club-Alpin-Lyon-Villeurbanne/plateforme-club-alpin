@@ -24,3 +24,6 @@ doctrine:
                 prefix: 'App\Entity'
                 alias: App
                 type: attribute
+        controller_resolver:
+            auto_mapping: true
+        enable_lazy_ghost_objects: true

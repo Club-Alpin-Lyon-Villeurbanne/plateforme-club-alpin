@@ -31,14 +31,9 @@ class RssController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route(
-     *     name="rss",
-     *     path="/rss.xml",
-     *     methods={"GET"}
-     * )
-     */
-    public function rssAction(Request $request)
+    #[Route(name: 'rss', path: '/rss.xml', methods: ['GET'])]
+
+     public function rssAction(Request $request)
     {
         $comTab = [];
 
