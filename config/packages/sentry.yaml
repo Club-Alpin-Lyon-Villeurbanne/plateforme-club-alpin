@@ -1,11 +1,11 @@
-sentry:
-    # Avoid having duplicate events in Sentry
-    register_error_listener: false
-    dsn: '%env(SENTRY_DSN)%'
-    tracing: false
+when@prod:
+    sentry:
+        dsn: '%env(SENTRY_DSN)%'
+        options:
+            ignore_exceptions:
+                - 'Symfony\Component\ErrorHandler\Error\FatalError'
+                - 'Symfony\Component\Debug\Exception\FatalErrorException'
 
-    options:
-#        server_name: "%env(NODE)%"
-#        release: "%env(COMMIT)%"
-        error_types: E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED
-        send_default_pii: true
+
+        register_error_listener: false
+        register_error_handler: false

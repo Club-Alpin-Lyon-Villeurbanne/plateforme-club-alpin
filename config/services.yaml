@@ -40,11 +40,6 @@ services:
       $kernelEnvironment: "%kernel.environment%"
       $recaptchaSecret: "%env(RECAPTCHA_SECRET)%"
 
-  _instanceof:
-    App\Bridge\Monolog\SentryHandlerLogFilter\LogFilterInterface:
-      tags:
-        - { name: sentry_handler.log_filter }
-
   # allows access to service container as an injected dependency
   Symfony\Component\DependencyInjection\ContainerInterface: "@service_container"
 
@@ -69,10 +64,6 @@ services:
 
   App\Legacy\LegacyRouteLoader:
     tags: ["routing.loader"]
-
-  App\Bridge\Monolog\Handler\SentryHandler:
-    arguments:
-      $logFilters: !tagged_iterator sentry_handler.log_filter
 
   Egulias\EmailValidator\EmailValidator: ~
 
