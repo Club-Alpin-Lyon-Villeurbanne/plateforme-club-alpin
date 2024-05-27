@@ -1,7 +1,0 @@
-# num@period  delay(unused) name script...
-#
-# uncomment to purge files older than 7days in TMP
-#1@daily 0 purgetmp find /srv/data/tmp -type f -mtime +7 -delete > /dev/null
-1@hourly 0 send_mail php /srv/data/web/vhosts/www.caflarochebonneville.fr/htdocs/chron.php
-1@daily 0 update_adherent php /srv/data/web/vhosts/www.caflarochebonneville.fr/htdocs/cron_fichier_adherent.php
-1@daily 0 save_images php /srv/data/web/vhosts/www.caflarochebonneville.fr/htdocs/chron.save_images.php
