@@ -4,10 +4,12 @@ namespace App\Utils\Serialize;
 
 use App\Entity\ExpenseField;
 use App\Entity\ExpenseReport;
+use App\Repository\EvtRepository;
 use App\Repository\ExpenseFieldRepository;
 use App\Repository\ExpenseGroupRepository;
 use App\Repository\ExpenseReportRepository;
 use App\Repository\ExpenseRepository;
+use App\Repository\UserRepository;
 
 class ExpenseReportSerializer
 {
@@ -16,6 +18,8 @@ class ExpenseReportSerializer
         private ExpenseGroupRepository $expenseGroupRepository,
         private ExpenseFieldRepository $expenseFieldRepository,
         private ExpenseRepository $expenseRepository,
+        private UserRepository $userRepository,
+        private EvtRepository $evtRepository,
     ) {
     }
 
@@ -53,8 +57,8 @@ class ExpenseReportSerializer
             'status' => $expenseReport->getStatus(),
             'statusComment' => $expenseReport->getStatusComment(),
             'refundRequired' => $expenseReport->isRefundRequired(),
-            'user' => $expenseReport->getUser()->getId(),
-            'event' => $expenseReport->getEvent()->getId(),
+            'user' => $expenseReport->getUser(),
+            'event' => $expenseReport->getEvent(),
             'createdAt' => $expenseReport->getCreatedAt()->format('Y-m-d H:i:s'),
             'updatedAt' => $expenseReport->getUpdatedAt()->format('Y-m-d H:i:s'),
             'expenseGroups' => $expenseGroupsArray,

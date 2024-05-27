@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 
 /**
  * Evt.
@@ -13,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table(name: 'caf_evt')]
 #[ORM\Entity]
-class Evt
+class Evt implements JsonSerializable
 {
     public const STATUS_PUBLISHED_UNSEEN = 0;
     public const STATUS_PUBLISHED_VALIDE = 1;
@@ -319,6 +320,31 @@ class Evt
 
         // FIX ME fix encadrant
         $this->participations->add(new EventParticipation($this, $user, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE));
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'user' => $this->user->getId(),
+            'titre' => $this->titre,
+            'code' => $this->code,
+            'tsp' => $this->tsp,
+            'tspEnd' => $this->tspEnd,
+            'place' => $this->place,
+            'rdv' => $this->rdv,
+            'lat' => $this->lat,
+            'long' => $this->long,
+            'description' => $this->description,
+            'joinStart' => $this->joinStart,
+            'joinMax' => $this->joinMax,
+            'ngensMax' => $this->ngensMax,
+            'commission' => $this->commission->getId(),
+            'participations' => $this->participations,
+            'articles' => $this->articles,
+            'cycleChildren' => $this->cycleChildren,
+            'tspCrea' => $this->tspCrea,
+        ];
     }
 
     public function getId(): ?int
