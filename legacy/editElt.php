@@ -151,13 +151,6 @@ if (admin()) {
 							};
 						}
 
-						// appelé depuis ftp.php
-						function retoucher(src){
-							$('.onglets-admin-nav a:eq(2)').addClass('up').siblings().removeClass('up');
-							$('.onglets-admin-item:eq(2)').show().siblings().hide();
-							$('#frameRetouches').attr('src', 'admin/retouches.php?src='+src);
-						}
-
 						// ONREADY
 						$().ready(function(){
 							// chargement de versions précédentes
