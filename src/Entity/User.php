@@ -204,10 +204,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ExpenseReport::class, orphanRemoval: false)]
     private Collection $expenseReports;
 
-    public function __construct()
+    public function __construct(int $id = null)
     {
         $this->attrs = new ArrayCollection();
         $this->created = time();
+        if ($id) {
+            $this->id = $id;
+        }
     }
 
     public function jsonSerialize(): mixed
