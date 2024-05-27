@@ -131,15 +131,6 @@ function updateRight(dossier, fade){
 				// les liens vers des images sont remplacés par des liens fancybox
 				$('.ftp-img a').fancybox();
 				
-				// outils : edit image
-				if(typeof(window.parent.retoucher)=='function'){
-					$('.ftp-img-edit').click(function(){
-						var target=$(this).parents('tr:first').find('a:first').attr('href');
-						window.parent.retoucher(target);
-					});
-				}
-				else alert('Cette option n\est pas disponible.');
-				
 				// outils : URL
 				$('.ftp-url-share').click(function(){
 					var target=$(this).parents('tr:first').find('a:first').attr('href');
