@@ -1,6 +1,6 @@
 monolog:
     handlers:
-        # Finger cross + buffer to output in File + Sentry
+        # Finger cross + buffer to output in File
         main:
             # Fingers crossed will hold logs until the "action_level" is reached.
             # When this action level occurs, logs are forwarded to file + test handlers
