@@ -90,9 +90,7 @@
             </div>
             <div class="errors" v-if="errorMessages.length">
                 <h3>Erreur(s) :</h3>
-                <ul>
-                    <li v-for="errorMessage in errorMessages" :key="errorMessage">{{ errorMessage }}</li>
-                </ul>
+                <p v-for="errorMessage in errorMessages" :key="errorMessage">{{ errorMessage }}</p>
             </div>
             <div class="success" v-if="successMessage">
                 <p>{{ successMessage }}</p>
@@ -212,6 +210,12 @@
                     if (!(responseJson as any).success) {
                         for (const error of responseJson.errors) {
                             const targetGroup = this.formStructure[error.expenseGroup];
+
+                            if (!targetGroup) {
+                                this.errorMessages.push(error.message);
+                                continue;
+                            }
+
                             const targetExpenseType = targetGroup.expenseTypes.find((expenseType: any) => {
                                 return expenseType.expenseTypeId === error.expenseTypeId;
                             });

@@ -61,6 +61,7 @@ class ExpenseReportController extends AbstractController
         $expenseReport->setEvent($evtRepository->find($data['eventId']));
         $entityManager->persist($expenseReport);
 
+        $isFormPristine = true;
         // pour chaque groupe de dépense
         foreach ($data as $dataExpenseGroup) {
             if (!is_array($dataExpenseGroup)) {
@@ -81,6 +82,8 @@ class ExpenseReportController extends AbstractController
                 if (!$filled) {
                     continue;
                 }
+
+                $isFormPristine = false;
                 
                 // si le groupe est de type "unique", ne pas traiter les types non selectionnés
                 if ($dataExpenseGroup['type'] === 'unique' && $dataExpenseType['slug'] !== $dataExpenseGroup['selectedType']) {
@@ -145,6 +148,12 @@ class ExpenseReportController extends AbstractController
                     }
                 }
             }
+        }
+
+        if ($isFormPristine) {
+            $errors[] = new ExpenseReportFormError(
+                'Veuillez remplir au moins un champ pour soumettre la note de frais.'
+            );
         }
 
         if ($errors) {
