@@ -150,12 +150,9 @@ class ExpenseReportController extends AbstractController
             }
         }
 
-        if (!$isFormPristine) {
+        if ($isFormPristine) {
             $errors[] = new ExpenseReportFormError(
-                'Veuillez remplir au moins un champ pour soumettre la note de frais.',
-                null,
-                null,
-                null
+                'Veuillez remplir au moins un champ pour soumettre la note de frais.'
             );
         }
 

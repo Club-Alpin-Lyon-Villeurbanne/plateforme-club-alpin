@@ -135,4 +135,10 @@
         font-weight: bold;
         margin: auto;
     }
+
+    .errors {
+        color: $red-dark;
+        font-weight: bold;
+        margin-bottom: $gutter;
+    }
 }
