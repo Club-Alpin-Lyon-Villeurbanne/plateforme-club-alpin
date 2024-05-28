@@ -166,15 +166,15 @@
         {% endif %}
 
         {% if is_granted('SORTIE_DUPLICATE', event) %}
-        <form action="{{ path('sortie_duplicate', { id: event.id }) }}" method="post" class="loading">
+         <form action="{{ path('sortie_duplicate', { id: event.id }) }}" method="post" class="loading">
             <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
 
-            <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants" class="nice2">
-                Créer une nouvelle sortie avec ce groupe
+            <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants et les mêmes paramètres" class="nice2">
+                Dupliquer cet événement avec ce groupe
             </a>
         </form>
         {% endif %}
-
+ 
         <br />
         <br />
 

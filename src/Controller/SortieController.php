@@ -507,21 +507,36 @@ class SortieController extends AbstractController
             throw new BadRequestException('Jeton de validation invalide.');
         }
 
+        $dateStart = new \DateTime();
+        $dateStart->setTimestamp($event->getTsp());
+        $dateEnd = new \DateTime();
+        $dateEnd->setTimestamp($event->getTspEnd());
+
         $newEvent = new Evt(
             $this->getUser(),
             $event->getCommission(),
-            '',
-            '',
-            null,
-            null,
+            $event->getTitre(),
+            $event->getCode(),
+            $dateStart,
+            $dateEnd,
             $event->getRdv(),
             $event->getLat(),
             $event->getLong(),
-            '',
-            null,
+            $event->getDescription(),
+            $event->getJoinStart(),
             $event->getJoinMax(),
             $event->getNgensMax()
         );
+        $newEvent->setMassif($event->getMassif());
+        $newEvent->setTarif($event->getTarif());
+        $newEvent->setTarifDetail($event->getTarifDetail());
+        $newEvent->setDenivele($event->getDenivele());
+        $newEvent->setDistance($event->getDistance());
+        $newEvent->setMatos($event->getMatos());
+        $newEvent->setDifficulte($event->getDifficulte());
+        $newEvent->setItineraire($event->getItineraire());
+        $newEvent->setNeedBenevoles($event->getNeedBenevoles());
+
         $em->persist($newEvent);
 
         foreach ($event->getParticipations() as $participation) {
