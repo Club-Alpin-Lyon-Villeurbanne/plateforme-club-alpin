@@ -1,9 +1,11 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Twig\JwtExtension;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 global $ogImage;
+$jwt = LegacyContainer::get(JwtExtension::class)->generateJwtToken();
 ?>
 	<!-- vars php passées au js -->
     <script type="text/javascript">
@@ -16,6 +18,9 @@ global $ogImage;
 
 	<!-- icon -->
 	<link rel="shortcut icon" href="/favicon.ico" />
+<script>
+	localStorage.setItem('jwt', "<?= $jwt ?>")
+</script>
 
 	<!-- css SCREEN ONLY  -->
 	<!-- media="screen" -->
