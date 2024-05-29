@@ -2,7 +2,11 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\PartenaireRepository;
+use App\State\PartnerStateProcessor;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -12,6 +16,20 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table(name: 'caf_partenaires')]
 #[ORM\Entity(repositoryClass: PartenaireRepository::class)]
+#[ApiResource(
+    processor: PartnerStateProcessor::class,
+    operations: [
+        new GetCollection(
+            uriTemplate: '/partners',
+            security: "is_granted('ROLE_ADMIN')"
+        ),
+        new Delete(
+            uriTemplate: '/partners/{id}',
+            requirements: ['id' => '\d+'],
+            security: "is_granted('ROLE_ADMIN')"
+        )
+    ]
+)]
 class Partenaire
 {
     /**
