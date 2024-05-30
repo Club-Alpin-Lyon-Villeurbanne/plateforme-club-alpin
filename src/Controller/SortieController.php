@@ -507,18 +507,13 @@ class SortieController extends AbstractController
             throw new BadRequestException('Jeton de validation invalide.');
         }
 
-        $dateStart = new \DateTime();
-        $dateStart->setTimestamp($event->getTsp());
-        $dateEnd = new \DateTime();
-        $dateEnd->setTimestamp($event->getTspEnd());
-
         $newEvent = new Evt(
             $this->getUser(),
             $event->getCommission(),
             $event->getTitre(),
             $event->getCode(),
-            $dateStart,
-            $dateEnd,
+            null,
+            null,
             $event->getRdv(),
             $event->getLat(),
             $event->getLong(),
