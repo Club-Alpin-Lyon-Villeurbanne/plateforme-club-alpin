@@ -177,15 +177,15 @@ class Evt
     private $tarifDetail;
 
     /**
-     * @var int|null
+     * @var string|null
      */
-    #[ORM\Column(name: 'denivele_evt', type: 'integer', nullable: true, options: ['unsigned' => true])]
+    #[ORM\Column(name: 'denivele_evt', type: 'text', length: 65535, nullable: true, options: ['unsigned' => true])]
     private $denivele;
 
     /**
-     * @var float|null
+     * @var string|null
      */
-    #[ORM\Column(name: 'distance_evt', type: 'float', precision: 10, scale: 2, nullable: true)]
+    #[ORM\Column(name: 'distance_evt', type: 'text', length: 65535, nullable: true)]
     private $distance;
 
     /**
