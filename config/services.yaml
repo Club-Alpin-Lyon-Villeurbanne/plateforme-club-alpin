@@ -162,3 +162,7 @@ services:
   legacy_user_repository:
     public: true
     alias: App\Repository\UserRepository
+
+  legacy_member_merger:
+    public: true
+    alias: App\Utils\MemberMerger
