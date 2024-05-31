@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use JsonSerializable;
+
 /**
  * User.
  *
@@ -48,7 +49,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     /**
      * @var string
      */
-    #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, nullable: true, options: ['comment' => 'Numéro de licence'])]
+    #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, nullable: true, unique: true, options: ['comment' => 'Numéro de licence'])]
     private $cafnum;
 
     /**
@@ -203,6 +204,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ExpenseReport::class, orphanRemoval: false)]
     private Collection $expenseReports;
+
+    #[ORM\Column(name: 'is_deleted', type: 'boolean', nullable: false, options: ["default" => 0])]
+    private bool $isDeleted = false;
 
     public function __construct(int $id = null)
     {
@@ -659,7 +663,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     /**
      * @see UserInterface
      */
-    public function eraseCredentials() : void
+    public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
@@ -701,6 +705,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     {
         $this->expenseReports = $expenseReports;
 
+        return $this;
+    }
+
+    public function setIsDeleted(bool $isDeleted)
+    {
+        $this->isDeleted = $isDeleted;
         return $this;
     }
 }
