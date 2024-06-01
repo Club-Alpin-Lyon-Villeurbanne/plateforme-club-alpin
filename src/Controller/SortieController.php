@@ -510,18 +510,28 @@ class SortieController extends AbstractController
         $newEvent = new Evt(
             $this->getUser(),
             $event->getCommission(),
-            '',
-            '',
+            $event->getTitre(),
+            $event->getCode(),
             null,
             null,
             $event->getRdv(),
             $event->getLat(),
             $event->getLong(),
-            '',
-            null,
+            $event->getDescription(),
+            $event->getJoinStart(),
             $event->getJoinMax(),
             $event->getNgensMax()
         );
+        $newEvent->setMassif($event->getMassif());
+        $newEvent->setTarif($event->getTarif());
+        $newEvent->setTarifDetail($event->getTarifDetail());
+        $newEvent->setDenivele($event->getDenivele());
+        $newEvent->setDistance($event->getDistance());
+        $newEvent->setMatos($event->getMatos());
+        $newEvent->setDifficulte($event->getDifficulte());
+        $newEvent->setItineraire($event->getItineraire());
+        $newEvent->setNeedBenevoles($event->getNeedBenevoles());
+
         $em->persist($newEvent);
 
         foreach ($event->getParticipations() as $participation) {
