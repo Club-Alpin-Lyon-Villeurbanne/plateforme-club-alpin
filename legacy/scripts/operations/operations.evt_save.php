@@ -36,14 +36,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if ('0.00' == $tarif_evt || empty($tarif_evt)) {
         $tarif_evt = 'NULL';
     }
-    if (!empty($distance_evt) && !is_numeric($distance_evt)) {
-        $errTab[] = "Erreur dans le champ 'Distance' : ".$distance_evt." n'est pas une valeur numérique";
-    }
     if ('0.00' == $distance_evt || empty($distance_evt)) {
         $distance_evt = 'NULL';
-    }
-    if (!empty($denivele_evt) && !is_numeric($denivele_evt)) {
-        $errTab[] = "Erreur dans le champ 'Dénivellé' : ".$denivele_evt." n'est pas une valeur numérique";
     }
     if ('0' == $denivele_evt || empty($denivele_evt)) {
         $denivele_evt = 'NULL';
@@ -54,7 +48,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     if ('evt_create' == $_POST['operation']) {
         $req = "INSERT INTO caf_evt(status_evt ,status_legal_evt ,user_evt ,commission_evt ,tsp_evt ,tsp_end_evt ,tsp_crea_evt ,place_evt ,titre_evt ,code_evt ,massif_evt ,rdv_evt ,tarif_evt, tarif_detail, denivele_evt ,distance_evt ,lat_evt ,long_evt ,matos_evt ,itineraire, difficulte_evt ,description_evt , need_benevoles_evt , join_start_evt, join_max_evt, ngens_max_evt, cycle_master_evt ,cycle_parent_evt ,child_version_from_evt ,child_version_tosubmit, id_groupe, cancelled_evt)
-					VALUES ('0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '". ($place_evt ?? '') ."', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$tarif_detail', $denivele_evt, $distance_evt, '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', '$cycle_master_evt', ".($cycle_parent_evt ? "'$cycle_parent_evt'" : 'null').", '0', '0', ".($id_groupe ?: 'null').", '0');";
+					VALUES ('0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '". ($place_evt ?? '') ."', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$tarif_detail', '$denivele_evt', '$distance_evt', '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', '$cycle_master_evt', ".($cycle_parent_evt ? "'$cycle_parent_evt'" : 'null').", '0', '0', ".($id_groupe ?: 'null').", '0');";
     } elseif (isset($_POST['operation']) && 'evt_update' == $_POST['operation']) {
         // MISE A JOUR de l'éléments existant // IMPORTANT : le status repasse à 0
         $req = "UPDATE caf_evt SET `status_evt`=0,
@@ -67,8 +61,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 				`rdv_evt` =  '$rdv_evt',
 				`tarif_evt` =  $tarif_evt,
 				`tarif_detail` =  '$tarif_detail',
-				`denivele_evt` =  $denivele_evt,
-				`distance_evt` =  $distance_evt,
+				`denivele_evt` =  '$denivele_evt',
+				`distance_evt` =  '$distance_evt',
 				`lat_evt` =  '$lat_evt',
 				`long_evt` =  '$long_evt',
 				`matos_evt` =  '$matos_evt',

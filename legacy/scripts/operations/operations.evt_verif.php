@@ -29,8 +29,8 @@ $tsp_evt_hour = trim(stripslashes($_POST['tsp_evt_hour']));
 $tsp_end_evt_day = trim(stripslashes($_POST['tsp_end_evt_day']));
 $tsp_end_evt_hour = '23:59';
 
-$denivele_evt = (int) $_POST['denivele_evt'];
-$distance_evt = (float) $_POST['distance_evt'];
+$denivele_evt = trim(stripslashes($_POST['denivele_evt']));
+$distance_evt = trim(stripslashes($_POST['distance_evt']));
 $distance_evt = str_replace(',', '.', $distance_evt);
 $matos_evt = trim(stripslashes($_POST['matos_evt']));
 $itineraire = trim(stripslashes($_POST['itineraire']));
