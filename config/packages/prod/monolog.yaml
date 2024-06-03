@@ -27,10 +27,6 @@ monolog:
             level: !php/const Monolog\Logger::ERROR
             hub_id: Sentry\State\HubInterface
             fill_extra_context: true
-        console:
-            type: service
-            process_psr_3_messages: true
-            channels: ["!event", "!doctrine"]
 
 services:
     app.monolog.formatter.json:

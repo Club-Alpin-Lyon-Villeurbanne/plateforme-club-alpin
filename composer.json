@@ -94,9 +94,6 @@
         }
     },
     "autoload-dev": {
-        "files": [
-            "resources/fixtures/dev/DevData.php"
-        ],
         "psr-4": {
             "App\\Tests\\": "tests/"
         }
