@@ -29,7 +29,6 @@ monolog:
             fill_extra_context: true
         console:
             type: service
-            id: App\Bridge\Monolog\Handler\VerboseConsoleHandler
             process_psr_3_messages: true
             channels: ["!event", "!doctrine"]
 

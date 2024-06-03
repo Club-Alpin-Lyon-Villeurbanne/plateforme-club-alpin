@@ -2,17 +2,18 @@
 
 namespace App\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bridge\Twig\Attribute\Template;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
 
 class LocalClubController extends AbstractController
 {
     
     #[Route(path: '/local-club', name: 'local_club')]
-    #[Template]
-    #[Security("is_granted('ROLE_USER')")]
+    #[IsGranted('ROLE_USER')]
+    #[Template('local_club/index.html.twig')]
     public function index()
     {
         return [

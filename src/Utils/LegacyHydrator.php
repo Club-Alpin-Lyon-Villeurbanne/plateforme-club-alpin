@@ -6,7 +6,7 @@ use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 
 class LegacyHydrator extends AbstractHydrator
 {
-    protected function hydrateAllData()
+    protected function hydrateAllData() : array
     {
         $result =  $this->_stmt->fetchAllAssociative();
 
