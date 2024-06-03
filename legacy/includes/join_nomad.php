@@ -58,7 +58,7 @@ if (user()) {
 					<?php
 					            // liste des adhérents (table user) créés par moi
 					$req = 'SELECT  id_user, cafnum_user, firstname_user, lastname_user, civ_user
-								, created_user, tel_user, tel2_user
+								, created_user, tel_user, tel2_user, email_user
 						FROM  caf_user
 						WHERE valid_user=1
 						AND nomade_user=1
@@ -76,7 +76,8 @@ if (user()) {
 								"firstname_user": "'.addslashes($row['firstname_user']).'",
 								"lastname_user": "'.addslashes($row['lastname_user']).'",
 								"tel_user": "'.addslashes($row['tel_user']).'",
-								"tel2_user": "'.addslashes($row['tel2_user']).'"
+								"tel2_user": "'.addslashes($row['tel2_user']).'",
+								"email_user": "'.addslashes($row['email_user']).'"
 							};
 						</script>';
         } ?>
@@ -132,6 +133,11 @@ if (user()) {
 				<input type="text" name="tel2_user" class="type1" value="<?php echo inputVal('tel2_user', ''); ?>" placeholder="Facultatif" style="width:90%" />
 			</div>
 
+			<div class="tiers">
+				<b>Adresse email :</b><br />
+				<input type="email" name="email_user" class="type1" value="<?php echo inputVal('email_user', ''); ?>" placeholder="Facultatif" style="width:90%" />
+			</div>
+
 			<br style="clear:both" />
 			<br />
 			<a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
@@ -160,6 +166,7 @@ if (user()) {
 					$('input[name=lastname_user]').val(		tmpPrefilled.lastname_user 		)		.attr('readonly', 'readonly');
 					$('input[name=tel_user]').val(			tmpPrefilled.tel_user 		)			.attr('readonly', 'readonly');
 					$('input[name=tel2_user]').val(			tmpPrefilled.tel2_user 		)			.attr('readonly', 'readonly');
+					$('input[name=email_user]').val(		tmpPrefilled.email_user 		)		.attr('readonly', 'readonly');
 				}
 				// sinon : raz
 				else{
