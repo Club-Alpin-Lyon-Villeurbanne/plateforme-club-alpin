@@ -62,6 +62,9 @@ services:
   App\Twig\JavascriptGlobalsExtension:
     tags: ["twig.extension"]
 
+  App\Twig\ExpenseAuthorizationExtension:
+    tags: ["twig.extension"]
+
   App\Legacy\LegacyRouteLoader:
     tags: ["routing.loader"]
 
@@ -97,6 +100,10 @@ services:
   App\Bridge\Twig\TwigExtension:
     arguments:
       $maxTimestampForLegalValidation: "%env(MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%"
+
+  App\Security\ExpenseAuthorization:
+    arguments:
+      $gistUrl: 'https://api.github.com/gists/afd2610540d579186a94af4cf5d98b5f'
 
   Symfony\Component\String\Slugger\SluggerInterface:
     class: Symfony\Component\String\Slugger\AsciiSlugger
