@@ -1,5 +1,7 @@
 <?php
 
+namespace App\DataFixtures;
+
 use App\Entity\Evt;
 use App\Entity\EventParticipation;
 use App\Entity\User;
@@ -7,23 +9,25 @@ use App\Repository\CommissionRepository;
 use App\Utils\NicknameGenerator;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Nelmio\Alice\Loader\NativeLoader;
 
-class DevData implements FixtureInterface, ContainerAwareInterface
+class DevData implements FixtureInterface
 {
-    use ContainerAwareTrait;
+    private CommissionRepository $commissionRepository;
+    public function __construct(CommissionRepository $commissionRepository)
+    {
+        $this->commissionRepository = $commissionRepository;
+    }
 
     /**
      * {@inheritdoc}
      */
     public function load(ObjectManager $manager)
     {
-        $loader = $this->container->get('nelmio_alice.files_loader');
-        $set = $loader->loadFiles(glob(__DIR__.'/alice/dev/*.yaml'));
+        $filesLoader = new NativeLoader();
 
-        $commissionRepo = $this->container->get(CommissionRepository::class);
-        $comm = $commissionRepo->findVisibleCommission('sorties-familles');
+        $set = $filesLoader->loadFiles(glob(__DIR__ . '/alice/dev/*.yaml'));
+        $comm = $this->commissionRepository->findVisibleCommission('sorties-familles');
 
         $licenceNum = 749999999990;
         $start = time() + 86400 * 10;

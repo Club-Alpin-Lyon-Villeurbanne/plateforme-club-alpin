@@ -51,7 +51,8 @@ database-init-test: ## Init database for test
 
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists --env=test
 	$(SYMFONY_CONSOLE) doctrine:database:create --env=test
-	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/bdd_caf.sql
+	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/schema_caf.sql
+	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/data_caf.sql
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction --env=test
 	$(MAKE) args="--env=test --no-interaction" database-fixtures-load
 
@@ -110,7 +111,7 @@ database-fixtures-load: ## Load fixtures
 ifeq ($(args),)
 	$(eval args="--env=dev")
 endif
-	$(SYMFONY_CONSOLE) $(args) caf:fixtures:load resources/fixtures/
+	$(SYMFONY_CONSOLE) $(args) caf:fixtures:load
 
 ## —— 🛠️  Others ——
 help: ## List of commands
