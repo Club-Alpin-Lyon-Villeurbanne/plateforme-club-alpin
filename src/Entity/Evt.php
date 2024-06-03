@@ -698,24 +698,24 @@ class Evt implements \JsonSerializable
         return $this;
     }
 
-    public function getDenivele(): ?int
+    public function getDenivele(): ?string
     {
         return $this->denivele;
     }
 
-    public function setDenivele(?int $denivele): self
+    public function setDenivele(?string $denivele): self
     {
         $this->denivele = $denivele;
 
         return $this;
     }
 
-    public function getDistance(): ?float
+    public function getDistance(): ?string
     {
         return $this->distance;
     }
 
-    public function setDistance(?float $distance): self
+    public function setDistance(?string $distance): self
     {
         $this->distance = $distance;
 
