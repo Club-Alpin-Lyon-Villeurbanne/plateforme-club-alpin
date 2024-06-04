@@ -1,12 +1,16 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
+
+$htmlSanitizer = new HtmlSanitizer(
+    (new HtmlSanitizerConfig())->allowSafeElements()
+);
 
 // continuons... Création de l'evt en lui meme
 if (!isset($errTab) || 0 === count($errTab)) {
-    // formatage des vars : la description héritée du RTE necessite un petit nettoyage de sécurité (javascript / WINcode...)
-    require_once __DIR__.'/../../htmLawed/htmLawed.php';
-    $description_evt = htmLawed($description_evt);
+    $description_evt = $htmlSanitizer->sanitize($description_evt);
 
     // sécurisation BDD
     $titre_evt = LegacyContainer::get('legacy_mysqli_handler')->escapeString($titre_evt);
@@ -31,19 +35,19 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $id_groupe = LegacyContainer::get('legacy_mysqli_handler')->escapeString($id_groupe);
     }
     if (!empty($tarif_evt) && !is_numeric($tarif_evt)) {
-        $errTab[] = "Erreur dans le champ 'Tarif' : ".$tarif_evt." n'est pas une valeur numérique";
+        $errTab[] = "Erreur dans le champ 'Tarif' : " . $tarif_evt . " n'est pas une valeur numérique";
     }
     if ('0.00' == $tarif_evt || empty($tarif_evt)) {
         $tarif_evt = 'NULL';
     }
     if (!empty($distance_evt) && !is_numeric($distance_evt)) {
-        $errTab[] = "Erreur dans le champ 'Distance' : ".$distance_evt." n'est pas une valeur numérique";
+        $errTab[] = "Erreur dans le champ 'Distance' : " . $distance_evt . " n'est pas une valeur numérique";
     }
     if ('0.00' == $distance_evt || empty($distance_evt)) {
         $distance_evt = 'NULL';
     }
     if (!empty($denivele_evt) && !is_numeric($denivele_evt)) {
-        $errTab[] = "Erreur dans le champ 'Dénivellé' : ".$denivele_evt." n'est pas une valeur numérique";
+        $errTab[] = "Erreur dans le champ 'Dénivellé' : " . $denivele_evt . " n'est pas une valeur numérique";
     }
     if ('0' == $denivele_evt || empty($denivele_evt)) {
         $denivele_evt = 'NULL';
@@ -54,13 +58,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     if ('evt_create' == $_POST['operation']) {
         $req = "INSERT INTO caf_evt(status_evt ,status_legal_evt ,user_evt ,commission_evt ,tsp_evt ,tsp_end_evt ,tsp_crea_evt ,place_evt ,titre_evt ,code_evt ,massif_evt ,rdv_evt ,tarif_evt, tarif_detail, denivele_evt ,distance_evt ,lat_evt ,long_evt ,matos_evt ,itineraire, difficulte_evt ,description_evt , need_benevoles_evt , join_start_evt, join_max_evt, ngens_max_evt, cycle_master_evt ,cycle_parent_evt ,child_version_from_evt ,child_version_tosubmit, id_groupe, cancelled_evt)
-					VALUES ('0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '". ($place_evt ?? '') ."', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$tarif_detail', $denivele_evt, $distance_evt, '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', '$cycle_master_evt', ".($cycle_parent_evt ? "'$cycle_parent_evt'" : 'null').", '0', '0', ".($id_groupe ?: 'null').", '0');";
+					VALUES ('0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '" . ($place_evt ?? '') . "', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$tarif_detail', $denivele_evt, $distance_evt, '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', '$cycle_master_evt', " . ($cycle_parent_evt ? "'$cycle_parent_evt'" : 'null') . ", '0', '0', " . ($id_groupe ?: 'null') . ", '0');";
     } elseif (isset($_POST['operation']) && 'evt_update' == $_POST['operation']) {
         // MISE A JOUR de l'éléments existant // IMPORTANT : le status repasse à 0
         $req = "UPDATE caf_evt SET `status_evt`=0,
 				`tsp_evt`='$tsp_evt',
 				`tsp_end_evt` =  '$tsp_end_evt',
-				`tsp_edit_evt` =  '".time()."',
+				`tsp_edit_evt` =  '" . time() . "',
 				`titre_evt` =  '$titre_evt',
 				`code_evt` =  '$code_evt',
 				`massif_evt` =  '$massif_evt',
@@ -100,7 +104,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // on enregistre la sortie
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-        $errTab[] = 'Erreur SQL creation/update : '.LegacyContainer::get('legacy_mysqli_handler')->lastError();
+        $errTab[] = 'Erreur SQL creation/update : ' . LegacyContainer::get('legacy_mysqli_handler')->lastError();
     } else {
         // jointures de l'ev avec les users spécifiés (encadrant, coenc' benev')
 
@@ -141,27 +145,27 @@ if (!isset($errTab) || 0 === count($errTab)) {
             foreach ($encadrants as $id_user) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
                     $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
-                                                        VALUES(1,               '$id_evt',  '$id_user',  'encadrant', ".time().');';
+                                                        VALUES(1,               '$id_evt',  '$id_user',  'encadrant', " . time() . ');';
                     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-                        $errTab[] = 'Erreur SQL: '.LegacyContainer::get('legacy_mysqli_handler')->lastError();
+                        $errTab[] = 'Erreur SQL: ' . LegacyContainer::get('legacy_mysqli_handler')->lastError();
                     }
                 }
             }
             foreach ($stagiaires as $id_user) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
                     $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
-                                                        VALUES(1,               '$id_evt',  '$id_user',  'stagiaire', ".time().');';
+                                                        VALUES(1,               '$id_evt',  '$id_user',  'stagiaire', " . time() . ');';
                     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-                        $errTab[] = 'Erreur SQL: '.LegacyContainer::get('legacy_mysqli_handler')->lastError();
+                        $errTab[] = 'Erreur SQL: ' . LegacyContainer::get('legacy_mysqli_handler')->lastError();
                     }
                 }
             }
             foreach ($coencadrants as $id_user) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
                     $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
-                                                        VALUES(1, '$id_evt',  '$id_user',  'coencadrant', ".time().');';
+                                                        VALUES(1, '$id_evt',  '$id_user',  'coencadrant', " . time() . ');';
                     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-                        $errTab[] = 'Erreur SQL: '.LegacyContainer::get('legacy_mysqli_handler')->lastError();
+                        $errTab[] = 'Erreur SQL: ' . LegacyContainer::get('legacy_mysqli_handler')->lastError();
                     }
                 }
             }
@@ -170,9 +174,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 foreach ($benevoles as $id_user) {
                     $id_user = (int) $id_user;
                     $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
-                                                        VALUES(1, '$id_evt',  '$id_user',  'benevole', ".time().');';
+                                                        VALUES(1, '$id_evt',  '$id_user',  'benevole', " . time() . ');';
                     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-                        $errTab[] = 'Erreur SQL: '.LegacyContainer::get('legacy_mysqli_handler')->lastError();
+                        $errTab[] = 'Erreur SQL: ' . LegacyContainer::get('legacy_mysqli_handler')->lastError();
                     }
                 }
             }
@@ -209,7 +213,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $_POST['tsp_end_evt_hour'] = '';
             // modification du titre
             if ('SUITE DE : ' != substr(strtoupper($_POST['titre_evt']), 0, 11)) {
-                $_POST['titre_evt'] = 'SUITE DE : '.$_POST['titre_evt'];
+                $_POST['titre_evt'] = 'SUITE DE : ' . $_POST['titre_evt'];
             }
         }
         // si cet evt est le N-ième d'un cycle, on reste sur la même page pour inciter à la création d'un nouvel événement dans ce cycle
@@ -227,6 +231,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $_POST['tsp_end_evt_hour'] = '';
         }
 
-        header('Location: /creer-une-sortie/'.html_utf8($code_commission).'.html?lbxMsg='.$lbxMsg);
+        header('Location: /creer-une-sortie/' . html_utf8($code_commission) . '.html?lbxMsg=' . $lbxMsg);
     }
 }
