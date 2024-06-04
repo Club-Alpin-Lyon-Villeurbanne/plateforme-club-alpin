@@ -34,6 +34,10 @@ class UserFlagsVoter extends Voter
             return true;
         }
 
+        if ($token->hasAttribute('is_admin') && $token->getAttribute('is_admin')) {
+            return true;
+        }
+
         return $this->adminDetector->isAdmin();
     }
 }

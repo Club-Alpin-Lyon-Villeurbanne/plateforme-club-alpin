@@ -59,6 +59,11 @@ services:
   App\Twig\VueExtension:
     tags: ["twig.extension"]
 
+  App\Twig\JwtExtension:
+    public: true
+    tags:
+        - { name: 'twig.extension' }
+
   App\Twig\JavascriptGlobalsExtension:
     tags: ["twig.extension"]
 
