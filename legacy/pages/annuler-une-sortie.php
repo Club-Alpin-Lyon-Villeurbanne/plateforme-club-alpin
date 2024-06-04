@@ -26,7 +26,7 @@ $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // on a le droit de supprimer cette page ?
-    if (allowed('evt_cancel', 'commission:'.$handle['code_commission'])) {
+    if (allowed('evt_cancel', 'commission:' . $handle['code_commission'])) {
         // participants:
         // si la sortie est enfant d'un cycle, on cherche les participants à la sortie parente
         if ($handle['cycle_parent_evt']) {
@@ -51,7 +51,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         if ('1' == $handle['cancelled_evt']) {
             $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user
                 FROM caf_user
-                WHERE id_user='.(int) $handle['cancelled_who_evt'].'
+                WHERE id_user=' . (int) $handle['cancelled_who_evt'] . '
                 LIMIT 300';
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -85,7 +85,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 }
                 // sortie non trouvée, avec message d'erreur, tentative d'accès mesquine ou sortié dévalidée
                 if (!$evt && $errPage) {
-                    echo '<div class="erreur">'.$errPage.'</div>';
+                    echo '<div class="erreur">' . $errPage . '</div>';
                 }
 
                 // sortie trouvée, pas d'erreur, affichage normal :
@@ -96,8 +96,8 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     <?php
                     inclure($p1, 'vide');
                     if (isset($_POST['operation']) && 'evt_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div><br /><br />';
-                        echo '<a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$evt['code_evt'].'-'.$evt['id_evt'].'.html">Retourner vers la fiche de sortie</a>';
+                        echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div><br /><br />';
+                        echo '<a href="' . LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $evt['code_evt'] . '-' . $evt['id_evt'] . '.html">Retourner vers la fiche de sortie</a>';
                     } else {
                         if ('1' != $evt['cancelled_evt']) {
                             ?>
@@ -108,7 +108,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                                 <?php
                                 // TABLEAU
                                 if (isset($_POST['operation']) && 'evt_cancel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                                    echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                                    echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                                 }
                             if (isset($_POST['operation']) && 'evt_cancel' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                                 echo '<p class="info">Cette sortie a été annulée.</p>';
@@ -175,11 +175,11 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 foreach ($joins as $tmpUser) {
                     echo '<tr>
                                         <td>
-                                            '.userlink($tmpUser['id_user'], $tmpUser['nickname_user'])
-                        .(allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">'.strtoupper(html_utf8($tmpUser['lastname_user'])).' '.html_utf8($tmpUser['firstname_user']).'</p>' : '')
-                        .'</td>'
-                        .'<td class="small">'.(allowed('user_read_private', $evt['code_commission']) ? $tmpUser['tel_user'] : '').'</td>'
-                        .($tmpUser['nomade_user'] ?
+                                            ' . userlink($tmpUser['id_user'], $tmpUser['nickname_user'])
+                        . (allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">' . strtoupper(html_utf8($tmpUser['lastname_user'])) . ' ' . html_utf8($tmpUser['firstname_user']) . '</p>' : '')
+                        . '</td>'
+                        . '<td class="small">' . (allowed('user_read_private', $evt['code_commission']) ? $tmpUser['tel_user'] : '') . '</td>'
+                        . ($tmpUser['nomade_user'] ?
                             '<td class="small" colspan="3">
                                                 <p class="alerte">
                                                     Attention ! Cet adhérent &laquo;nomade&raquo; ne recevra pas de message d\'annulation ! Vous devez
@@ -187,12 +187,12 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                                                 </p>
                                             </td>'
                             :
-                            '<td class="small">'.(allowed('user_read_private', $evt['code_commission']) ? $tmpUser['tel2_user'] : '').'</td>
-                                            <td class="small">'.(allowed('user_read_private', $evt['code_commission']) ? '<a href="mailto:'.$tmpUser['email_user'].'">'.$tmpUser['email_user'].'</a>' : '').'</td>
-                                            <td class="small">'.$tmpUser['role_evt_join'].'</td>
+                            '<td class="small">' . (allowed('user_read_private', $evt['code_commission']) ? $tmpUser['tel2_user'] : '') . '</td>
+                                            <td class="small">' . (allowed('user_read_private', $evt['code_commission']) ? '<a href="mailto:' . $tmpUser['email_user'] . '">' . $tmpUser['email_user'] . '</a>' : '') . '</td>
+                                            <td class="small">' . $tmpUser['role_evt_join'] . '</td>
                                             '
                         )
-                        .'</tr>';
+                        . '</tr>';
                 }
                 echo '</table>'; ?>
 
@@ -203,7 +203,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 <?php
                 // RESUME DE LA SORTIE
                 if ($evt) {
-                    require __DIR__.'/../includes/evt-resume.php';
+                    require __DIR__ . '/../includes/evt-resume.php';
                 } ?>
 
             <?php
@@ -215,7 +215,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
 	<!-- partie droite -->
 	<?php
-    require __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__ . '/../includes/right-type-agenda.php';
 ?>
 
 

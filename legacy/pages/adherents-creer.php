@@ -27,10 +27,10 @@
 				<?php
                 // TABLEAU
                 if (isset($_POST['operation']) && 'user_create' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                    echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                    echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                 }
             if (isset($_POST['operation']) && 'user_create' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                echo '<p class="info">Nouvel adhérent bien créé à '.date('H:i:s', time()).'.<br />
+                echo '<p class="info">Nouvel adhérent bien créé à ' . date('H:i:s', time()) . '.<br />
 					Rendez-vous sur la <a href="/adherents.html" title="" target="_top">page adhérents</a> pour lui attribuer les
 					status désirés (exemple : <i>salarié</i>) en cliquant sur le bouton <img src="/img/base/user_star.png" alt="" title="" />.</p>';
             } else {
@@ -97,7 +97,7 @@
 					Qui peut le / la contacter sur le site, via un formulaire de contact (adresse e-mail jamais dévoilée) ?<br />
                     <?php $whocan_selected = $tmpUser['auth_contact_user'] ?? null; ?>
                     <?php $whocan_table = true; ?>
-                    <?php require __DIR__.'/../includes/user/whocan_contact.php'; ?>
+                    <?php require __DIR__ . '/../includes/user/whocan_contact.php'; ?>
 
 					<a href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
 						<img src="/img/base/save.png" alt="Enregistrer" title="Enregistrer" style="height:35px;" />

@@ -37,6 +37,5 @@ class PartenaireRepository extends ServiceEntityRepository implements PasswordUp
 
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
-        
     }
 }

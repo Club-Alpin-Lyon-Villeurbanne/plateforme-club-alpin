@@ -13,23 +13,23 @@ $DATE_BUTOIRES = LegacyContainer::getParameter('legacy_env_CRON_DATE_BUTOIRES');
  * - CONTACT DES RESPONSABLES DE COMMISSION POUR VALIDER LES SORTIES EN ATTENTE
  * - CONTACT DES PRESIDENTS - VICE-PRES POUR VALIDER LEGALEMENT LES SORTIES EN ATTENTE.
  */
-require __DIR__.'/../../app/includes.php';
+require __DIR__ . '/../../app/includes.php';
 
 function cron_email($datas)
 {
     if (!$datas['parent']) {
-        throw new \InvalidArgumentException('Missing parent');
+        throw new InvalidArgumentException('Missing parent');
     }
     if (!$datas['code']) {
-        throw new \InvalidArgumentException('Missing code');
+        throw new InvalidArgumentException('Missing code');
     }
 
     // Verification que ce code n'existe pas deja :
     // Chaque operation ne doit être effectuee qu'une fois (un seul e-mail envoye)
-    $req = "SELECT COUNT(id_chron_operation) FROM caf_chron_operation WHERE code_chron_operation LIKE '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($datas['code'])."'";
+    $req = "SELECT COUNT(id_chron_operation) FROM caf_chron_operation WHERE code_chron_operation LIKE '" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($datas['code']) . "'";
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     if (getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM))) {
-        error_log('Envoi de mail ignore car deja envoye : '.$datas['code'].'');
+        error_log('Envoi de mail ignore car deja envoye : ' . $datas['code'] . '');
 
         return;
     }
@@ -37,7 +37,7 @@ function cron_email($datas)
     LegacyContainer::get('legacy_mailer')->send($datas['to'], $datas['template'], $datas['context']);
 
     $req = "INSERT INTO caf_chron_operation(tsp_chron_operation, code_chron_operation, parent_chron_operation)
-                                VALUES ('".time()."',  '".$datas['code']."',  '".$datas['parent']."');";
+                                VALUES ('" . time() . "',  '" . $datas['code'] . "',  '" . $datas['parent'] . "');";
 
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         error_log('Erreur sauvegarde SQL ');
@@ -68,8 +68,8 @@ if ($lastTsp >= $minTsp) {
 }
 // sauvegarde de ce launch
 error_log('Envoi necessaire ! Enregistrement de la nouvelle date en BDD');
-if (!LegacyContainer::get('legacy_mysqli_handler')->query("INSERT INTO caf_chron_launch(tsp_chron_launch) VALUES('".time()."');")) {
-    throw new \RuntimeException("Erreur d'enregistrement du launch");
+if (!LegacyContainer::get('legacy_mysqli_handler')->query("INSERT INTO caf_chron_launch(tsp_chron_launch) VALUES('" . time() . "');")) {
+    throw new RuntimeException("Erreur d'enregistrement du launch");
 }
 $id_chron_launch = LegacyContainer::get('legacy_mysqli_handler')->insertId();
 
@@ -88,7 +88,7 @@ $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt
         WHERE status_evt = 0
         AND tsp_evt IS NOT NULL
         AND commission_evt = id_commission '
-        .'ORDER BY tsp_crea_evt ASC ';
+        . 'ORDER BY tsp_crea_evt ASC ';
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($evt = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     ++$nEltsToValidate;
@@ -103,7 +103,7 @@ while ($evt = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         WHERE code_usertype LIKE 'responsable-commission'
         AND usertype_user_attr = id_usertype
         AND user_user_attr = id_user
-        AND params_user_attr LIKE 'commission:".$evt['code_commission']."'
+        AND params_user_attr LIKE 'commission:" . $evt['code_commission'] . "'
         ;
         ";
 
@@ -115,37 +115,37 @@ while ($evt = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $datasTab[$user['email_user']][] = array_merge($evt, $user);
     }
     if (!$found) {
-        error_log('<hr />>>>>>>>>>>>>ERREUR<<<<<<<<<<< il ne semble pas y avoir de responsable de commission '.$evt['code_commission'].'<hr />');
+        error_log('<hr />>>>>>>>>>>>>ERREUR<<<<<<<<<<< il ne semble pas y avoir de responsable de commission ' . $evt['code_commission'] . '<hr />');
     }
 }
-error_log(''.$nEltsToValidate.' evenements a valider, '.count($datasTab).' responsables a contacter.');
+error_log('' . $nEltsToValidate . ' evenements a valider, ' . count($datasTab) . ' responsables a contacter.');
 
 // chaque var datas contient toutes les infos des sorties
 foreach ($datasTab as $email => $evtdatas) {
     // echo '<pre>'; echo '********'.$email."\n"; print_r($datas); echo '</pre>';
 
-    error_log('- Envoi necessaire : '.$email);
+    error_log('- Envoi necessaire : ' . $email);
 
     // liste des ID des evenements / pour generer un code d'email unqiue
     $ids_evt = '';
     foreach ($evtdatas as $tmp) {
-        $ids_evt .= ($ids_evt ? '-' : '').$tmp['id_evt'];
+        $ids_evt .= ($ids_evt ? '-' : '') . $tmp['id_evt'];
     }
 
     // liste des evts
     $evtList = [];
     foreach ($evtdatas as $tmp) {
         $evtList[] = [
-            'name' => date('d/m/Y', $tmp['tsp_evt']).' - '.$tmp['titre_evt'],
-            'url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html?forceshow=true',
+            'name' => date('d/m/Y', $tmp['tsp_evt']) . ' - ' . $tmp['titre_evt'],
+            'url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $tmp['code_evt'] . '-' . $tmp['id_evt'] . '.html?forceshow=true',
         ];
     }
 
     // vars d'envoi
     $datas = [];
     $datas['parent'] = $id_chron_launch;
-    $datas['code'] = 'please_validate_evt;id_user='.$evtdatas[0]['id_user'].';ids_evt='.$ids_evt; // ce code, unique, evite de renvoyer ce mail a chaque appel du chron
-    $datas['to'] = [$email => $evtdatas[0]['firstname_user'].' '.$evtdatas[0]['lastname_user']];
+    $datas['code'] = 'please_validate_evt;id_user=' . $evtdatas[0]['id_user'] . ';ids_evt=' . $ids_evt; // ce code, unique, evite de renvoyer ce mail a chaque appel du chron
+    $datas['to'] = [$email => $evtdatas[0]['firstname_user'] . ' ' . $evtdatas[0]['lastname_user']];
     $datas['template'] = 'transactional/rappel-sortie-a-valider-resp-commission';
     $datas['context'] = [
         'sorties' => $evtList,
@@ -167,8 +167,8 @@ $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt
         FROM caf_evt, caf_commission
         WHERE status_legal_evt = 0
         AND commission_evt = id_commission
-        AND tsp_evt > '.time().'
-        AND tsp_evt < '.$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION.'
+        AND tsp_evt > ' . time() . '
+        AND tsp_evt < ' . $MAX_TIMESTAMP_FOR_LEGAL_VALIDATION . '
         AND status_evt = 1
         ORDER BY tsp_evt ASC ';
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -200,34 +200,34 @@ while ($evt = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         error_log('<hr />>>>>>>>>>>>>ERREUR<<<<<<<<<<< il ne semble pas y avoir de president ou vice president<hr />');
     }
 }
-error_log(''.$nEltsToValidate.' evenements a valider, '.count($datasTab).' responsables a contacter.');
+error_log('' . $nEltsToValidate . ' evenements a valider, ' . count($datasTab) . ' responsables a contacter.');
 
 // chaque var datas contient toutes les infos des sorties
 foreach ($datasTab as $email => $evtdatas) {
     // echo '<pre>'; echo '********'.$email."\n"; print_r($datas); echo '</pre>';
 
-    error_log('- Envoi necessaire : '.$email);
+    error_log('- Envoi necessaire : ' . $email);
 
     // liste des ID des evenements / pour generer un code d'email unqiue
     $ids_evt = '';
     foreach ($evtdatas as $tmp) {
-        $ids_evt .= ($ids_evt ? '-' : '').$tmp['id_evt'];
+        $ids_evt .= ($ids_evt ? '-' : '') . $tmp['id_evt'];
     }
 
     // liste des evts
     $evtList = [];
     foreach ($evtdatas as $tmp) {
         $evtList[] = [
-            'name' => date('d/m/Y', $tmp['tsp_evt']).' - '.$tmp['titre_evt'],
-            'url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$tmp['code_evt'].'-'.$tmp['id_evt'].'.html',
+            'name' => date('d/m/Y', $tmp['tsp_evt']) . ' - ' . $tmp['titre_evt'],
+            'url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $tmp['code_evt'] . '-' . $tmp['id_evt'] . '.html',
         ];
     }
 
     // vars d'envoi
     $datas = [];
     $datas['parent'] = $id_chron_launch;
-    $datas['code'] = 'please_validate_evt;id_user='.$evtdatas[0]['id_user'].';ids_evt='.$ids_evt; // ce code, unique, evite de renvoyer ce mail a chaque appel du chron
-    $datas['to'] = [$email => $evtdatas[0]['firstname_user'].' '.$evtdatas[0]['lastname_user']];
+    $datas['code'] = 'please_validate_evt;id_user=' . $evtdatas[0]['id_user'] . ';ids_evt=' . $ids_evt; // ce code, unique, evite de renvoyer ce mail a chaque appel du chron
+    $datas['to'] = [$email => $evtdatas[0]['firstname_user'] . ' ' . $evtdatas[0]['lastname_user']];
     $datas['template'] = 'transactional/rappel-sortie-a-valider-president';
     $datas['context'] = [
         'sorties' => $evtList,

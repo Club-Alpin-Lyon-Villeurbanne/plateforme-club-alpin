@@ -14,16 +14,16 @@
                 echo '<p class="info" style="position:relative; top:35px;">Cette page n\'est pas accessible aux visiteurs du site. Pour la rendre visible, prenez le temps de modifier les contenus ci-dessous, puis rendez-vous dans <a href="/admin-pages-libres.html" title="">l\'espace d\'administration des pages</a>.</p><br />';
             }
 
-            echo '<h1 class="page-h1">'.$meta_title.'</h1>';
+            echo '<h1 class="page-h1">' . $meta_title . '</h1>';
 
-            inclure('main-pagelibre-'.$currentPage2['id_page'], 'main-type');
+            inclure('main-pagelibre-' . $currentPage2['id_page'], 'main-type');
         }
 		?>
 	</div>
 
 	<!-- partie droite -->
 	<?php
-    require __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__ . '/../includes/right-type-agenda.php';
 		?>
 
 	<br style="clear:both" />

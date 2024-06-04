@@ -5,13 +5,12 @@ namespace App\Utils;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
-/** 
- * This class is used to swap members IDs to keep user history 
+/**
+ * This class is used to swap members IDs to keep user history
  * in the application. We have to do that because the FFCAM sometimes attributes
  * a totally new CAF number even if the user is a known user in our DB.
- * 
+ *
  * We temporarily disable the foreign key checks during the swapping process
  * to avoid constraint on children tables.
  */
@@ -37,11 +36,11 @@ class MemberMerger
             $newCafUser = $this->userRepository->findOneByLicenseNumber($newCafNum);
 
             if (!$oldCafUser) {
-                throw new Exception('Unable to find an user with this cafnum ' . $oldCafNum);
+                throw new \Exception('Unable to find an user with this cafnum ' . $oldCafNum);
             }
 
             if (!$newCafUser) {
-                throw new Exception('Unable to find an user with this cafnum ' . $newCafNum);
+                throw new \Exception('Unable to find an user with this cafnum ' . $newCafNum);
             }
 
             $email = $newCafUser->getEmail();
@@ -68,7 +67,7 @@ class MemberMerger
             $this->entityManager->flush();
 
             $this->entityManager->commit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->entityManager->rollback();
             throw $e;
         }

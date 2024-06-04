@@ -49,7 +49,7 @@ if (user()) {
 					<?php
                     // MESSAGES A LA SOUMISSION
                     if ('commission_majvis' == ($_POST['operation'] ?? null) && isset($errTab) && count($errTab) > 0) {
-                        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                        echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                     } ?>
 					<br />
 					<br />
@@ -75,7 +75,7 @@ if (user()) {
 					<?php
                     // MESSAGES A LA SOUMISSION
                     if ('commission_majvis' == ($_POST['operation'] ?? null) && isset($errTab) && count($errTab) > 0) {
-                        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                        echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                     } ?>
 					<br />
 					<br />

@@ -28,13 +28,13 @@ $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
 if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // on a le droit d'annuler ?
-    if (!allowed('evt_cancel', 'commission:'.$handle['code_commission'])) {
+    if (!allowed('evt_cancel', 'commission:' . $handle['code_commission'])) {
         $errTab[] = 'Accès non autorisé';
     }
 
     // Mise à jour : annulation
     if (!isset($errTab) || 0 === count($errTab)) {
-        $req = "UPDATE caf_evt SET cancelled_evt='1', cancelled_who_evt='".getUser()->getId()."', cancelled_when_evt='".time()."'  WHERE caf_evt.id_evt =$id_evt";
+        $req = "UPDATE caf_evt SET cancelled_evt='1', cancelled_who_evt='" . getUser()->getId() . "', cancelled_when_evt='" . time() . "'  WHERE caf_evt.id_evt =$id_evt";
         // annulation de toutes les sorties du cycle
         if (true || $_POST['del_cycle_master_evt']) {
             $req .= " OR caf_evt.cycle_parent_evt=$id_evt";
@@ -79,17 +79,17 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
             if (!isMail($handle2['email_user'])) {
-                $nomadMsg[] = $handle2['civ_user'].' '.$handle2['firstname_user'].' '.$handle2['lastname_user'].' - '.$handle2['tel_user'].' - '.$handle2['tel2_user'];
+                $nomadMsg[] = $handle2['civ_user'] . ' ' . $handle2['firstname_user'] . ' ' . $handle2['lastname_user'] . ' - ' . $handle2['tel_user'] . ' - ' . $handle2['tel2_user'];
 
                 continue;
             }
 
             LegacyContainer::get('legacy_mailer')->send($handle2['email_user'], 'transactional/sortie-annulation', [
                 'event_name' => $handle['titre_evt'],
-                'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.(int) $handle['id_evt'].'.html',
+                'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $handle['code_evt'] . '-' . (int) $handle['id_evt'] . '.html',
                 'event_date' => date('d/m/Y', $handle['tsp_evt']),
                 'cancel_user_name' => getUser()->getNickname(),
-                'cancel_user_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.getUser()->getId().'.html',
+                'cancel_user_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'voir-profil/' . getUser()->getId() . '.html',
                 'message' => $msg,
             ]);
         }
@@ -98,10 +98,10 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     if (!isset($errTab) || 0 === count($errTab)) {
         // sans message d'avertissement nomades
         if (!count($nomadMsg)) {
-            header('Location: /sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html');
+            header('Location: /sortie/' . $handle['code_evt'] . '-' . $handle['id_evt'] . '.html');
         // echo 'nop';
         } else {
-            header('Location: /sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html?lbxMsg=nomadMsg&nomadMsg='.implode('****', $nomadMsg));
+            header('Location: /sortie/' . $handle['code_evt'] . '-' . $handle['id_evt'] . '.html?lbxMsg=nomadMsg&nomadMsg=' . implode('****', $nomadMsg));
         }
     }
 }

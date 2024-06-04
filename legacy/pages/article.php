@@ -23,7 +23,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // auteur :
         $req = 'SELECT id_user, nickname_user
             FROM caf_user
-            WHERE id_user='.(int) $handle['user_article'].'
+            WHERE id_user=' . (int) $handle['user_article'] . '
             LIMIT 1';
         $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -33,7 +33,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // info de la sortie liée
         if ($handle['evt_article'] > 0) {
             $req = 'SELECT code_evt, id_evt, titre_evt FROM caf_evt
-                WHERE id_evt = '.(int) $handle['evt_article'].'
+                WHERE id_evt = ' . (int) $handle['evt_article'] . '
                 LIMIT 1';
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -58,7 +58,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
             // infos user
-            $req = 'SELECT nickname_user FROM caf_user WHERE id_user='.(int) $handle2['user_comment'].' LIMIT 1';
+            $req = 'SELECT nickname_user FROM caf_user WHERE id_user=' . (int) $handle2['user_comment'] . ' LIMIT 1';
             $handleSql3 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle3 = $handleSql3->fetch_array(\MYSQLI_ASSOC)) {
                 $handle2['nickname_user'] = $handle3['nickname_user'];
@@ -74,11 +74,11 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         }
 
         // MOdification des METAS de la page
-        $meta_title = $handle['titre_article'].' | '.$p_sitename;
-        $meta_description = limiterTexte(strip_tags($handle['cont_article']), 200).'...';
+        $meta_title = $handle['titre_article'] . ' | ' . $p_sitename;
+        $meta_description = limiterTexte(strip_tags($handle['cont_article']), 200) . '...';
         // opengraphe : image pour les partages
-        if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) $handle['id_article'].'/wide-figure.jpg')) {
-            $ogImage = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'ftp/articles/'.(int) $handle['id_article'].'/wide-figure.jpg';
+        if (is_file(__DIR__ . '/../../public/ftp/articles/' . (int) $handle['id_article'] . '/wide-figure.jpg')) {
+            $ogImage = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'ftp/articles/' . (int) $handle['id_article'] . '/wide-figure.jpg';
         }
 
         // maj nb vues
@@ -106,24 +106,24 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         if (!$article && !$errPage) {
             echo '<br /><br /><br /><p class="erreur" style="margin:50px 20px 20px 20px">Hmmm... C\'est ennuyeux : nous n\'arrivons pas à trouver l\'article correspondant à cette URL.</p>';
         }
-        // article non trouvée, avec message d'erreur, tentative d'accès mesquine ou sortié dévalidée
-        if (!$article && $errPage) {
-            echo '<br /><br /><br /><div class="erreur" style="margin:50px 20px 20px 20px">Erreur : Vous n\'avez pas accès à cette page. L\'article a peut-être été retiré par un responsable du site.</div>';
-        }
+// article non trouvée, avec message d'erreur, tentative d'accès mesquine ou sortié dévalidée
+if (!$article && $errPage) {
+    echo '<br /><br /><br /><div class="erreur" style="margin:50px 20px 20px 20px">Erreur : Vous n\'avez pas accès à cette page. L\'article a peut-être été retiré par un responsable du site.</div>';
+}
 
-        // article trouvée, pas d'erreur, affichage normal :
-        if ($article && !$errPage) {
-            // FICHE DE LA article
-            require __DIR__.'/../includes/article-fiche.php';
-        }
-		?>
+// article trouvée, pas d'erreur, affichage normal :
+if ($article && !$errPage) {
+    // FICHE DE LA article
+    require __DIR__ . '/../includes/article-fiche.php';
+}
+?>
 		<br style="clear:both" />
 	</div>
 
 	<!-- partie droite -->
 	<?php
-    require __DIR__.'/../includes/right-type-agenda.php';
-		?>
+    require __DIR__ . '/../includes/right-type-agenda.php';
+?>
 
 
 	<br style="clear:both" />

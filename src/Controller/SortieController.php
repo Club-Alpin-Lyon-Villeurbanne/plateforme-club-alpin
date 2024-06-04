@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Evt;
 use App\Entity\EventParticipation;
+use App\Entity\Evt;
 use App\Mailer\Mailer;
 use App\Repository\EventParticipationRepository;
 use App\Repository\EvtRepository;
@@ -11,12 +11,12 @@ use App\Repository\ExpenseGroupRepository;
 use App\Repository\ExpenseReportRepository;
 use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\UserRepository;
-use App\Security\AdminDetector;
 use App\Twig\JavascriptGlobalsExtension;
 use App\Utils\Enums\ExpenseReportEnum;
 use App\Utils\Serialize\ExpenseFieldTypeSerializer;
 use App\Utils\Serialize\ExpenseReportSerializer;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +24,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
-use Symfony\Bridge\Twig\Attribute\Template;
 
 class SortieController extends AbstractController
 {
@@ -38,7 +37,7 @@ class SortieController extends AbstractController
     #[Route(name: 'sortie', path: '/sortie/{code}-{id}.html', requirements: ['id' => '\d+', 'code' => '[a-z0-9-]+'], methods: ['GET'], priority: '10')]
     #[Template('sortie/sortie.html.twig')]
     public function sortie(
-        Evt $event, 
+        Evt $event,
         UserRepository $repository,
         EventParticipationRepository $participationRepository,
         ExpenseGroupRepository $expenseGroupRepository,
@@ -53,7 +52,6 @@ class SortieController extends AbstractController
 
         $user = $this->getUser();
 
-       
         // generate a new empty expense report form structure
         $expenseReportFormGroups = [];
         $expenseGroups = $expenseGroupRepository->findAll();
@@ -79,7 +77,7 @@ class SortieController extends AbstractController
                 foreach ($fields as $field) {
                     $relation = $expenseTypeFieldTypeRepository->findOneBy([
                         'expenseType' => $expenseType,
-                        'expenseFieldType' => $field
+                        'expenseFieldType' => $field,
                     ]);
                     $field->setFlags([
                         'needsJustification' => $relation->getNeedsJustification(),
@@ -96,16 +94,16 @@ class SortieController extends AbstractController
                     'slug' => $expenseType->getSlug(),
                     'fields' => array_map(function ($expenseFieldType) {
                         return ExpenseFieldTypeSerializer::serialize($expenseFieldType);
-                    }, $fields)
+                    }, $fields),
                 ];
             }
         }
         $currentExpenseReport = $event && $user ? $expenseReportRepository->getExpenseReportByEventAndUser($event->getId(), $user->getId()) : null;
 
         // prefill the form with the current expense report data
-        if ($currentExpenseReport 
-            && in_array($currentExpenseReport->getStatus(), 
-                [ExpenseReportEnum::STATUS_DRAFT, ExpenseReportEnum::STATUS_REJECTED]
+        if ($currentExpenseReport
+            && \in_array($currentExpenseReport->getStatus(),
+                [ExpenseReportEnum::STATUS_DRAFT, ExpenseReportEnum::STATUS_REJECTED], true
             )
         ) {
             // serialize the current expense report
@@ -114,7 +112,6 @@ class SortieController extends AbstractController
             $expenseReportFormGroups['refundRequired'] = $currentExpenseReport['refundRequired'] ? 1 : 0;
             // for each expense group
             foreach ($currentExpenseReport['expenseGroups'] as $groupSlug => $expenseGroup) {
-
                 // set the selected expense type
                 if (!empty($expenseGroup['selectedType'])) {
                     $expenseReportFormGroups[$groupSlug]['selectedType'] = $expenseGroup['selectedType'];
@@ -123,7 +120,7 @@ class SortieController extends AbstractController
                 // for each expense type
                 foreach ($expenseGroup as $expense) {
                     // ignore values that are not expenses
-                    if (!is_array($expense)) {
+                    if (!\is_array($expense)) {
                         continue;
                     }
 
@@ -135,7 +132,7 @@ class SortieController extends AbstractController
                         // add the field type flags to this field
                         $relation = $expenseTypeFieldTypeRepository->findOneBy([
                             'expenseType' => $expense['expenseType']->getId(),
-                            'expenseFieldType' => $field->getFieldType()->getId()
+                            'expenseFieldType' => $field->getFieldType()->getId(),
                         ]);
                         $newField['fieldTypeId'] = $field->getFieldType()->getId();
                         $newField['flags']['needsJustification'] = $relation->getNeedsJustification();
@@ -146,9 +143,8 @@ class SortieController extends AbstractController
                         $newField['slug'] = $field->getFieldType()->getSlug();
                         $newFields[] = $newField;
                     }
-                    $targetExpenseTypeIndex = array_search($expense['expenseType']->getId(), array_column($expenseReportFormGroups[$groupSlug]['expenseTypes'], 'expenseTypeId'));
+                    $targetExpenseTypeIndex = array_search($expense['expenseType']->getId(), array_column($expenseReportFormGroups[$groupSlug]['expenseTypes'], 'expenseTypeId'), true);
                     $expenseReportFormGroups[$groupSlug]['expenseTypes'][$targetExpenseTypeIndex]['fields'] = $newFields;
- 
                 }
             }
         }
@@ -160,8 +156,9 @@ class SortieController extends AbstractController
             'currentEventId', $event->getId()
         );
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
-            'apiBaseUrl', !empty($_ENV['ROUTER_CONTEXT_HOST']) ? $_ENV['ROUTER_CONTEXT_SCHEME'].'://'.$_ENV['ROUTER_CONTEXT_HOST'] : false
+            'apiBaseUrl', !empty($_ENV['ROUTER_CONTEXT_HOST']) ? $_ENV['ROUTER_CONTEXT_SCHEME'] . '://' . $_ENV['ROUTER_CONTEXT_HOST'] : false
         );
+
         return [
             'event' => $event,
             'participations' => $participationRepository->getSortedParticipations($event, null, null),
@@ -199,7 +196,7 @@ class SortieController extends AbstractController
             }
 
             $mailer->send($participation->getUser(), 'transactional/sortie-publiee-inscrit', [
-                'author_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'voir-profil/'.$event->getUser()->getId().'.html',
+                'author_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'voir-profil/' . $event->getUser()->getId() . '.html',
                 'author_nickname' => $event->getUser()->getNickname(),
                 'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'event_name' => $event->getTitre(),
@@ -230,8 +227,8 @@ class SortieController extends AbstractController
         $user = $this->getUser();
 
         foreach ($request->request->all('id_evt_join', []) as $participationId) {
-            $status = $request->request->get('status_evt_join_'.$participationId);
-            $role = $request->request->get('role_evt_join_'.$participationId);
+            $status = $request->request->get('status_evt_join_' . $participationId);
+            $role = $request->request->get('role_evt_join_' . $participationId);
 
             if (null === $status) {
                 // FIX ME Log something
@@ -285,7 +282,7 @@ class SortieController extends AbstractController
                     $statusName = 'Refusé';
                 }
 
-                $this->addFlash('warning', sprintf('%s %s est un adhérent nomade. Il n\'a pas d\'email et '.
+                $this->addFlash('warning', sprintf('%s %s est un adhérent nomade. Il n\'a pas d\'email et ' .
                     'doit être prévenu par téléphone de son nouveau statut : %s. Son téléphone: %s', $participation->getUser()->getFirstname(), $participation->getUser()->getLastname(), $statusName, $participation->getUser()->getTel()));
 
                 continue;
@@ -300,7 +297,7 @@ class SortieController extends AbstractController
             switch ($participation->getRole()) {
                 case EventParticipation::ROLE_ENCADRANT:
                 case EventParticipation::ROLE_COENCADRANT:
-                    $roleName = $participation->getRole().'(e)';
+                    $roleName = $participation->getRole() . '(e)';
                     break;
                 case EventParticipation::ROLE_BENEVOLE:
                 case EventParticipation::ROLE_STAGIAIRE:
@@ -484,7 +481,7 @@ class SortieController extends AbstractController
 
         if ($participation->isStatusValide()) {
             $mailer->send($event->getUser(), 'transactional/sortie-desinscription', [
-                'username' => $participation->getUser()->getFirstname().' '.$participation->getUser()->getLastname(),
+                'username' => $participation->getUser()->getFirstname() . ' ' . $participation->getUser()->getLastname(),
                 'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'event_name' => $event->getTitre(),
                 'user' => $user,

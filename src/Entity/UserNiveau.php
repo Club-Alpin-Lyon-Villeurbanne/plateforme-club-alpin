@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * UserNiveau.
- *
- *
  */
 #[ORM\Table(name: 'caf_user_niveau')]
 #[ORM\Entity]
@@ -15,9 +13,6 @@ class UserNiveau
 {
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Column(name: 'id', type: 'integer', nullable: false, options: ['unsigned' => true])]
     #[ORM\Id]
@@ -26,8 +21,6 @@ class UserNiveau
 
     /**
      * @var User
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'id_user', referencedColumnName: 'id_user', nullable: false)]

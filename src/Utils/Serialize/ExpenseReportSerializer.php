@@ -33,7 +33,7 @@ class ExpenseReportSerializer
             foreach ($expenseGroup->getExpenseTypes() as $expenseType) {
                 $expenses = $this->expenseRepository->findBy([
                     'expenseReport' => $expenseReport,
-                    'expenseType' => $expenseType
+                    'expenseType' => $expenseType,
                 ]);
 
                 foreach ($expenses as $expense) {
@@ -46,7 +46,7 @@ class ExpenseReportSerializer
                 }
 
                 // si le groupe est de type "unique", récupérer le type de dépense sélectionné
-                if ($expenseGroup->getType() === 'unique' && $expenses) {
+                if ('unique' === $expenseGroup->getType() && $expenses) {
                     $expenseGroupsArray[$expenseGroup->getSlug()]['selectedType'] = $expenseType->getSlug();
                 }
             }
@@ -67,7 +67,8 @@ class ExpenseReportSerializer
 
     /**
      * Used to create an ExpenseReport from an array of data (e.g. from a JSON payload)
-     * (do not use this method to handle an existing ExpenseReport) 
+     * (do not use this method to handle an existing ExpenseReport).
+     *
      * @param array<string, mixed> $data
      */
     public function unserialize(array $data): ExpenseReport
@@ -85,13 +86,14 @@ class ExpenseReportSerializer
                     // todo add justification document
                     $expenseField->setFieldType($dataField['fieldTypeId']);
                     $expenseField->setValue($dataField['value']);
-    
+
                     $fields[] = $expenseField;
                 }
             }
         }
-        
+
         $expenseReport->setStatus($data['status']);
+
         return $expenseReport;
     }
 }

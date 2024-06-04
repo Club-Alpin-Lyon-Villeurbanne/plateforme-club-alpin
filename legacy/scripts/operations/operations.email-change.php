@@ -17,12 +17,12 @@ if ($id_user_mailchange) {
         // req trouvé, verif : le lien doit avoir été cliqué dans l'heure...
         if ((int) $handle['timestamp'] > time() - (60 * 60)) {
             // maj du compte visé avec le nouveau email
-            $req = "UPDATE `caf_user` SET `email_user` = '".$handle['email_user_mailchange']."' WHERE `id_user` =".$handle['user_user_mailchange'].' LIMIT 1 ;';
+            $req = "UPDATE `caf_user` SET `email_user` = '" . $handle['email_user_mailchange'] . "' WHERE `id_user` =" . $handle['user_user_mailchange'] . ' LIMIT 1 ;';
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL : updating user';
             }
             // suppression de la req
-            $req = 'DELETE FROM `caf_user_mailchange` WHERE `id_user_mailchange` = '.$handle['id_user_mailchange'].' LIMIT 1;';
+            $req = 'DELETE FROM `caf_user_mailchange` WHERE `id_user_mailchange` = ' . $handle['id_user_mailchange'] . ' LIMIT 1;';
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL : deleting request';
             }

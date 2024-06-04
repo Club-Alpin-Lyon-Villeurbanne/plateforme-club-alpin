@@ -14,12 +14,12 @@ if ('SUPPRIMER' != $_POST['confirm']) {
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "DELETE FROM caf_page WHERE id_page=$id_page LIMIT 1";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-        $erreur = 'Erreur BDD<br />'.$req;
+        $erreur = 'Erreur BDD<br />' . $req;
     }
 
     $req = "DELETE FROM caf_content_html WHERE code_content_html LIKE 'pagelibre-$id_page'";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-        $erreur = 'Erreur BDD2<br />'.$req;
+        $erreur = 'Erreur BDD2<br />' . $req;
     }
 }
 

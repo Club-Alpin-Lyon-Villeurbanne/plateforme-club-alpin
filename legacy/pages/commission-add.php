@@ -18,16 +18,16 @@
 					<?php
                     // MESSAGES A LA SOUMISSION
                     if (isset($_POST['operation']) && 'commission_add' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                        echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                     }
                 if (isset($_POST['operation']) && 'commission_add' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                    echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'.</p>';
+                    echo '<p class="info">Mise à jour effectuée à ' . date('H:i:s', time()) . '.</p>';
                 } ?>
 
 					<hr />
 					<h2>La grande image de fond</h2>
 					<div id="select-bigfond" style="padding:0 0 10px 0;">
-						<?php inclure($p1.'-bigimg', 'vide'); ?>
+						<?php inclure($p1 . '-bigimg', 'vide'); ?>
 						<input type="file" name="bigfond" /><br />
 					</div>
 					<p>
@@ -41,7 +41,7 @@
 					<hr />
 					<h2>Les trois pictos</h2>
 					<div id="select-pictos" style="padding:0 0 10px 0;">
-						<?php inclure($p1.'-pictos', 'vide'); ?>
+						<?php inclure($p1 . '-pictos', 'vide'); ?>
 						<br />
 						<table style="line-height:20px;">
 							<tr>
@@ -81,7 +81,7 @@
 					<hr />
 
 					<h2>Nom de la commission :</h2>
-					<?php inclure($p1.'-nom', 'vide'); ?>
+					<?php inclure($p1 . '-nom', 'vide'); ?>
 					<input type="text" name="title_commission" class="type1" value="<?php echo inputVal('title_commission', ''); ?>" placeholder="< 25 caractères" />
 
                     <?php if (allowed('comm_groupe_edit')) { ?>
@@ -110,7 +110,7 @@
 
 	<!-- partie droite -->
 	<?php
-    require __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__ . '/../includes/right-type-agenda.php';
 			?>
 
 	<br style="clear:both" />

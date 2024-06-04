@@ -60,7 +60,7 @@ if (!admin()) {
 		<input type="hidden" name="lang_content_inline" value="<?php echo $lang_content_inline; ?>" />
 		<?php
 	    if (isset($_POST['operation']) && 'addContentInline' == $_POST['operation'] && count($errTab)) {
-	        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+	        echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
 	    } ?>
 		<h4>Ajouter un contenu</h4>
 		<?php
@@ -96,11 +96,11 @@ if (!admin()) {
 						<select name="groupe_content_inline" style="min-width:150px;">
 							<!--<option value="0">- Aucun, en désordre</option>-->
 							<?php
-                            // liste des groupes dans le tableau dessous
+	                        // liste des groupes dans le tableau dessous
 	                        $tempGroup = 0; // id groupe
 	        for ($i = 0; $i < count($contGroupTab); ++$i) {
 	            if ($tempGroup != $contGroupTab[$i]['id_content_inline_group'] && $contGroupTab[$i]['id_content_inline_group']) {
-	                echo '<option value="'.$contGroupTab[$i]['id_content_inline_group'].'">'.$contGroupTab[$i]['nom_content_inline_group'].'</option>';
+	                echo '<option value="' . $contGroupTab[$i]['id_content_inline_group'] . '">' . $contGroupTab[$i]['nom_content_inline_group'] . '</option>';
 	            }
 	            $tempGroup = $contGroupTab[$i]['id_content_inline_group'];
 	        } ?>
@@ -126,7 +126,7 @@ if (!admin()) {
 	    echo '<div class="info">Nouveau groupe créé, et disponible dans la liste.</div>';
 	}
     if (isset($_POST['operation']) && 'addContentGroup' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+        echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
     } ?>
 		<h4>Ajouter un groupe de contenu</h4>
 
@@ -167,7 +167,7 @@ if (!admin()) {
             // GROUPES
             // dev : a l'avenir, sortable grace à TBODY
             if ($tempGroup != $contTab[$i]['id_content_inline_group'] && $contTab[$i]['id_content_inline_group']) {
-                echo '<tr><th colspan="3">'.$contTab[$i]['nom_content_inline_group'].'</th></tr>';
+                echo '<tr><th colspan="3">' . $contTab[$i]['nom_content_inline_group'] . '</th></tr>';
             }
 
             if ($tempElt == $contTab[$i]['code_content_inline']) {
@@ -176,15 +176,15 @@ if (!admin()) {
                 $dejaVus = 0;
             }
 
-            echo '<tr style="'.($dejaVus ? 'display:none' : '').'" id="ligne-'.(int) $contTab[$i]['id_content_inline'].'">';
-            echo '<td class="cont-indice">'.$contTab[$i]['code_content_inline'].'&nbsp;</td>';
+            echo '<tr style="' . ($dejaVus ? 'display:none' : '') . '" id="ligne-' . (int) $contTab[$i]['id_content_inline'] . '">';
+            echo '<td class="cont-indice">' . $contTab[$i]['code_content_inline'] . '&nbsp;</td>';
             echo '<td class="cont-edit">
-						<input type="hidden" class="jId" value="'.(int) $contTab[$i]['id_content_inline'].'" />
-						<input type="text" style="display:none" class="jBase" id="base-'.(int) $contTab[$i]['id_content_inline'].'" value="'.html_utf8($contTab[$i]['contenu_content_inline']).'" />
-						<input type="text"   class="jVal" name="contenu-'.$contTab[$i]['code_content_inline'].'-'.$dejaVus.'" value="'.html_utf8($contTab[$i]['contenu_content_inline']).'" />
+						<input type="hidden" class="jId" value="' . (int) $contTab[$i]['id_content_inline'] . '" />
+						<input type="text" style="display:none" class="jBase" id="base-' . (int) $contTab[$i]['id_content_inline'] . '" value="' . html_utf8($contTab[$i]['contenu_content_inline']) . '" />
+						<input type="text"   class="jVal" name="contenu-' . $contTab[$i]['code_content_inline'] . '-' . $dejaVus . '" value="' . html_utf8($contTab[$i]['contenu_content_inline']) . '" />
 					</td>';
-            echo '<td class="cont-save"><a href="javascript:void(0)" title="Sauvegarder cette ligne" rel="'.(int) $contTab[$i]['id_content_inline'].'"><img src="/img/base/save.png" alt="Sauvegarder cette ligne" title="Sauvegarder cette ligne" class="upimage" style="height:20px; " /></a></td>';
-            echo '<td class="cont-versions">'.jour(date('N', $contTab[$i]['date_content_inline'])).' '.date('d/m/y - H:i:s', $contTab[$i]['date_content_inline']).'</td>';
+            echo '<td class="cont-save"><a href="javascript:void(0)" title="Sauvegarder cette ligne" rel="' . (int) $contTab[$i]['id_content_inline'] . '"><img src="/img/base/save.png" alt="Sauvegarder cette ligne" title="Sauvegarder cette ligne" class="upimage" style="height:20px; " /></a></td>';
+            echo '<td class="cont-versions">' . jour(date('N', $contTab[$i]['date_content_inline'])) . ' ' . date('d/m/y - H:i:s', $contTab[$i]['date_content_inline']) . '</td>';
             echo '</tr>';
 
             $tempGroup = $contTab[$i]['id_content_inline_group'];

@@ -45,7 +45,7 @@ if ($id_evt) {
         if (
             ($on_peut_voir && (1 == $handle['status_evt'])) // publiée
             || (allowed('evt_validate') && isset($_GET['forceshow']) && $_GET['forceshow']) // ou mode validateur
-            || (allowed('evt_validate_all') && isset($_GET['forceshow']) &&  $_GET['forceshow']) // ou mode validateur
+            || (allowed('evt_validate_all') && isset($_GET['forceshow']) && $_GET['forceshow']) // ou mode validateur
             || (user() && $handle['user_evt'] == (string) getUser()->getId()) // ou j'en suis l'auteur ? QUID de l'encadrant ?
         ) {
             $current_commission = $handle['code_commission'];
@@ -53,7 +53,7 @@ if ($id_evt) {
             // Groupe de niveau
             $handle['groupe'] = [];
             if (null != $handle['id_groupe']) {
-                $req = 'SELECT * FROM `caf_groupe` WHERE `id` = '.$handle['id_groupe'];
+                $req = 'SELECT * FROM `caf_groupe` WHERE `id` = ' . $handle['id_groupe'];
                 $handleGroupe = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($groupe = $handleGroupe->fetch_array(\MYSQLI_ASSOC)) {
                     $handle['groupe'] = $groupe;
@@ -73,7 +73,7 @@ if ($id_evt) {
                         , caf_user
                         , caf_commission
                     WHERE id_user = user_evt
-                    AND id_evt='.(int) $handle['cycle_parent_evt'].'
+                    AND id_evt=' . (int) $handle['cycle_parent_evt'] . '
                     AND id_commission = commission_evt
                     ORDER BY  `tsp_crea_evt` DESC
                     LIMIT 1';
@@ -88,7 +88,7 @@ if ($id_evt) {
                     SELECT id_evt, code_evt, status_evt, status_legal_evt, cancelled_evt, user_evt, commission_evt, title_commission, code_commission, tsp_evt, titre_evt, cycle_parent_evt
                     FROM caf_evt
                         , caf_commission
-                    WHERE cycle_parent_evt='.(int) $id_evt.'
+                    WHERE cycle_parent_evt=' . (int) $id_evt . '
                     AND id_commission = commission_evt
                     ORDER BY `tsp_crea_evt` ASC
                     LIMIT 30';
@@ -117,7 +117,7 @@ if ($id_evt) {
             $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                         , role_evt_join , is_covoiturage
                 FROM caf_evt_join, caf_user
-                WHERE evt_evt_join  = '.(int) ($handle['cycle_parent_evt'] ?: $id_evt).'
+                WHERE evt_evt_join  = ' . (int) ($handle['cycle_parent_evt'] ?: $id_evt) . '
                 AND user_evt_join = id_user
                 AND status_evt_join = 0
                 LIMIT 300';
@@ -131,7 +131,7 @@ if ($id_evt) {
             $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                         , role_evt_join, is_covoiturage
                 FROM caf_evt_join, caf_user
-                WHERE evt_evt_join  = '.(int) ($handle['cycle_parent_evt'] ?: $id_evt)."
+                WHERE evt_evt_join  = ' . (int) ($handle['cycle_parent_evt'] ?: $id_evt) . "
                 AND user_evt_join = id_user
                 AND role_evt_join LIKE 'inscrit'
                 AND status_evt_join = 1
@@ -145,7 +145,7 @@ if ($id_evt) {
             $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                         , role_evt_join, is_covoiturage
                 FROM caf_evt_join, caf_user
-                WHERE evt_evt_join  = '.(int) ($handle['cycle_parent_evt'] ?: $id_evt)."
+                WHERE evt_evt_join  = ' . (int) ($handle['cycle_parent_evt'] ?: $id_evt) . "
                 AND user_evt_join = id_user
                 AND role_evt_join LIKE 'manuel'
                 AND status_evt_join = 1
@@ -161,7 +161,7 @@ if ($id_evt) {
             if (user()) {
                 $req = "SELECT * FROM caf_evt_join
                     WHERE evt_evt_join=$id_evt
-                    AND user_evt_join=".getUser()->getId().'
+                    AND user_evt_join=" . getUser()->getId() . '
                     ORDER BY tsp_evt_join DESC
                     LIMIT 1';
                 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -188,7 +188,7 @@ if ($id_evt) {
                 if ('1' == $handle['cancelled_evt']) {
                     $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, nomade_user, civ_user
                         FROM caf_user
-                        WHERE id_user='.(int) $handle['cancelled_who_evt'].'
+                        WHERE id_user=' . (int) $handle['cancelled_who_evt'] . '
                         LIMIT 300';
                     $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -210,13 +210,13 @@ if ($id_evt) {
                 }
 
                 // Modification des METAS de la page
-                $meta_title = $handle['titre_evt'].' | '.$p_sitename;
-                $meta_description = limiterTexte(strip_tags($handle['description_evt']), 200).'...';
+                $meta_title = $handle['titre_evt'] . ' | ' . $p_sitename;
+                $meta_description = limiterTexte(strip_tags($handle['description_evt']), 200) . '...';
 
                 // si je suis chef de famille (filiations) je rajoute la liste de mes "enfants" pour les inscrire
                 $filiations = [];
                 if (user() && getUser()->getCafnum()) {
-                    $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, civ_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_parent_user LIKE '".LegacyContainer::get('legacy_mysqli_handler')->escapeString(getUser()->getCafnum())."' LIMIT 15";
+                    $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, civ_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_parent_user LIKE '" . LegacyContainer::get('legacy_mysqli_handler')->escapeString(getUser()->getCafnum()) . "' LIMIT 15";
                     $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                     while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
                         $filiations[] = $handle2;
@@ -231,4 +231,3 @@ if ($id_evt) {
         }
     }
 }
-

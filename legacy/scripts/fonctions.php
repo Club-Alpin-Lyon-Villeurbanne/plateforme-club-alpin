@@ -22,12 +22,12 @@ function display_sorties($id_user, $limit = 10, $title = '')
         AND id_user = user_evt
         AND id_commission = commission_evt '
         // jointure avec la table participation
-        .'AND evt_evt_join = id_evt
+        . 'AND evt_evt_join = id_evt
         AND status_evt_join = 1
-        AND user_evt_join = '.$id_user
+        AND user_evt_join = ' . $id_user
         // de la plus récente a la plus ancienne
-        .' ORDER BY  `tsp_evt` DESC
-        LIMIT '.$limit;
+        . ' ORDER BY  `tsp_evt` DESC
+        LIMIT ' . $limit;
     // echo $req;
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     // calcul du total grace à SQL_CALC_FOUND_ROWS
@@ -36,8 +36,8 @@ function display_sorties($id_user, $limit = 10, $title = '')
 
     // compte :
     if ($total > 0) {
-        echo '<h2 id="user-sorties">'.$title.' :</h2>';
-        echo '<p class="mini">'.$total.' sortie(s) en tout</p>';
+        echo '<h2 id="user-sorties">' . $title . ' :</h2>';
+        echo '<p class="mini">' . $total . ' sortie(s) en tout</p>';
         echo '<div style="width:620px">';
         // liste
         echo '<table id="agenda">';
@@ -45,11 +45,11 @@ function display_sorties($id_user, $limit = 10, $title = '')
             $evt = $handle;
 
             echo '<tr>'
-                    .'<td class="agenda-gauche">'.date('d/m/Y', $evt['tsp_evt']).'</td>'
-                    .'<td>';
-            require __DIR__.'/../includes/agenda-evt-debut.php';
+                    . '<td class="agenda-gauche">' . date('d/m/Y', $evt['tsp_evt']) . '</td>'
+                    . '<td>';
+            require __DIR__ . '/../includes/agenda-evt-debut.php';
             echo '</td>'
-                .'</tr>';
+                . '</tr>';
         }
         echo '</table>';
         echo '</div><br style="clear:both" />';
@@ -66,9 +66,9 @@ function display_articles($id_user, $limit = 10, $title = '')
         SELECT SQL_CALC_FOUND_ROWS *
         FROM caf_article
         WHERE status_article=1
-        AND user_article = '.$id_user
-        .' ORDER BY  `tsp_article` DESC
-        LIMIT '.$limit;
+        AND user_article = ' . $id_user
+        . ' ORDER BY  `tsp_article` DESC
+        LIMIT ' . $limit;
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     // calcul tu total gr�ce � SQL_CALC_FOUND_ROWS
@@ -77,13 +77,13 @@ function display_articles($id_user, $limit = 10, $title = '')
 
     // compte :
     if ($total > 0) {
-        echo '<h2 id="user-articles">'.$title.' :</h2>';
-        echo '<p class="mini">'.$total.' articles en tout</p>';
+        echo '<h2 id="user-articles">' . $title . ' :</h2>';
+        echo '<p class="mini">' . $total . ' articles en tout</p>';
         echo '<div style="width:490px">';
         // liste
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             $article = $handle;
-            require __DIR__.'/../includes/article-lien-small.php';
+            require __DIR__ . '/../includes/article-lien-small.php';
         }
         echo '</div>';
     }
@@ -121,12 +121,12 @@ function get_niveaux($id_user, $editable = false)
             // On r�cup�re les notes saisies
             $req = 'SELECT N.id as niveau_id, N.id_commission, C.title_commission, niveau_technique, niveau_physique, commentaire
             FROM `caf_user_niveau` AS N, `caf_commission` AS C
-            WHERE id_user = '.$id_user.' AND N.id_commission IN ('.implode(',', $ids_comms).') AND N.id_commission = C.id_commission;';
+            WHERE id_user = ' . $id_user . ' AND N.id_commission IN (' . implode(',', $ids_comms) . ') AND N.id_commission = C.id_commission;';
 
             $results = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
             while ($note = $results->fetch_assoc()) {
-                $notes['n_'.$note['niveau_id']] = $note;
+                $notes['n_' . $note['niveau_id']] = $note;
                 // On vide le tableau des commissions � traiter si on avait une note
                 if (($key = array_search($note['id_commission'], $ids_comms, true)) !== false) {
                     unset($ids_comms[$key]);
@@ -163,11 +163,11 @@ function get_niveaux($id_user, $editable = false)
         }
 
         if (!empty($ids_comms)) {
-            $req = 'SELECT N.id as niveau_id, N.id_commission, C.title_commission, niveau_technique, niveau_physique, commentaire FROM `caf_user_niveau` AS N, `caf_commission` AS C WHERE id_user = '.$id_user.' AND N.id_commission IN ('.implode(',', $ids_comms).') AND N.id_commission = C.id_commission;';
+            $req = 'SELECT N.id as niveau_id, N.id_commission, C.title_commission, niveau_technique, niveau_physique, commentaire FROM `caf_user_niveau` AS N, `caf_commission` AS C WHERE id_user = ' . $id_user . ' AND N.id_commission IN (' . implode(',', $ids_comms) . ') AND N.id_commission = C.id_commission;';
 
             $results = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($note = $results->fetch_assoc()) {
-                $notes['n_'.$note['niveau_id']] = $note;
+                $notes['n_' . $note['niveau_id']] = $note;
             }
         }
     }
@@ -197,11 +197,11 @@ function display_niveaux($niveaux, $type = 'lecture', $deja_displayed = false)
                     <b><?php echo $niveau['title_commission']; ?></b>
                 </div>
                 <?php if (isset($niveau['niveau_id'])) {
-                    $clef = 'niveau['.$niveau['niveau_id'].']'; ?>
+                    $clef = 'niveau[' . $niveau['niveau_id'] . ']'; ?>
                 <input type="hidden" name="<?php echo $clef; ?>[id]" value="<?php echo $niveau['niveau_id'] ?? ''; ?>">
                 <?php
                 } else {
-                    $clef = 'new_niveau['.$n.']'; ?>
+                    $clef = 'new_niveau[' . $n . ']'; ?>
                 <input type="hidden" name="<?php echo $clef; ?>" value="<?php echo $niveau['niveau_id'] ?? ''; ?>">
                 <input type="hidden" name="<?php echo $clef; ?>[id_commission]" value="<?php echo $niveau['id_commission'] ?? ''; ?>">
                 <input type="hidden" name="<?php echo $clef; ?>[id_user]" value="<?php echo $niveau['id_user'] ?? ''; ?>">
@@ -225,7 +225,7 @@ function display_niveaux($niveaux, $type = 'lecture', $deja_displayed = false)
         case 'lecture':
             ?>
             <?php foreach ($niveaux as $niveau) { ?>
-            <?php if ((is_array($deja_displayed) && !isset($deja_displayed['n_'.$niveau['niveau_id']])) || !$deja_displayed) { ?>
+            <?php if ((is_array($deja_displayed) && !isset($deja_displayed['n_' . $niveau['niveau_id']])) || !$deja_displayed) { ?>
             <?php if ((isset($niveau['niveau_technique']) && $niveau['niveau_technique']) || (isset($niveau['niveau_physique']) && $niveau['niveau_physique']) || (isset($niveau['commentaire']) && null !== $niveau['commentaire'])) { ?>
                 <div class="niveau" data-commission="<?php echo $niveau['id_commission'] ?? ''; ?>">
                     <div class="picto">
@@ -258,7 +258,7 @@ function get_groupes($id_commission, $force_valid = false)
         return $groupes;
     }
 
-    $req = 'SELECT * FROM `caf_groupe` WHERE `id_commission` = '.$id_commission;
+    $req = 'SELECT * FROM `caf_groupe` WHERE `id_commission` = ' . $id_commission;
     if ($force_valid) {
         $req .= ' AND actif = 1 ';
     }
@@ -279,7 +279,7 @@ function get_groupe($id_groupe)
 
     $groupe = false;
 
-    $req = 'SELECT * FROM `caf_groupe` WHERE `id` = '.$id_groupe;
+    $req = 'SELECT * FROM `caf_groupe` WHERE `id` = ' . $id_groupe;
     $results = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     if ($results) {
         while ($row = $results->fetch_assoc()) {
@@ -294,7 +294,7 @@ function get_evt($id_evt)
 {
     $evt = false;
 
-    $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$id_evt;
+    $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = ' . $id_evt;
     $results = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $results->fetch_assoc()) {
         $evt = $row;
@@ -318,18 +318,18 @@ function empietement_sortie($id_user, $evt)
     $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt, status_evt_join, role_evt_join
             FROM caf_evt, caf_evt_join
             WHERE evt_evt_join = id_evt
-            AND id_evt != '.(int) $evt['id_evt'].'
-            AND user_evt_join = '.(int) $id_user
-            .' AND status_evt != 2 '
+            AND id_evt != ' . (int) $evt['id_evt'] . '
+            AND user_evt_join = ' . (int) $id_user
+            . ' AND status_evt != 2 '
             // timing :
-            .' AND ( '
+            . ' AND ( '
                 // commence pendant l'evt en cours
-                .' (tsp_evt >= '.$evt['tsp_evt'].' AND tsp_evt <= '.$evt['tsp_end_evt'].') '
+                . ' (tsp_evt >= ' . $evt['tsp_evt'] . ' AND tsp_evt <= ' . $evt['tsp_end_evt'] . ') '
                 // ou finit pendant l'evt en cours
-                .' OR (tsp_end_evt >= '.$evt['tsp_evt'].' AND tsp_end_evt <= '.$evt['tsp_end_evt'].') '
+                . ' OR (tsp_end_evt >= ' . $evt['tsp_evt'] . ' AND tsp_end_evt <= ' . $evt['tsp_end_evt'] . ') '
                 // ou "encadre" l'evt en cours
-                .' OR (tsp_evt <= '.$evt['tsp_evt'].' AND tsp_end_evt >= '.$evt['tsp_end_evt'].') '
-            .' )
+                . ' OR (tsp_evt <= ' . $evt['tsp_evt'] . ' AND tsp_end_evt >= ' . $evt['tsp_end_evt'] . ') '
+            . ' )
             ORDER BY tsp_evt ASC
             LIMIT 1000';
 
@@ -412,7 +412,7 @@ function mon_inscription($id_evt)
     $my_choices = false;
 
     if (user()) {
-        $req = "SELECT * FROM `caf_evt_join` WHERE `evt_evt_join` = $id_evt AND `user_evt_join` = ".getUser()->getId().' LIMIT 1;';
+        $req = "SELECT * FROM `caf_evt_join` WHERE `evt_evt_join` = $id_evt AND `user_evt_join` = " . getUser()->getId() . ' LIMIT 1;';
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $my_choices = $row;
@@ -450,7 +450,7 @@ function get_lieu($id_lieu)
 {
     $lieu = null;
     $id_lieu = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $id_lieu);
-    $req = 'SELECT * FROM `caf_lieu` WHERE id = '.$id_lieu.' LIMIT 1';
+    $req = 'SELECT * FROM `caf_lieu` WHERE id = ' . $id_lieu . ' LIMIT 1';
 
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $result->fetch_assoc()) {
@@ -477,7 +477,7 @@ function get_iframe_src($field = null)
 function display_frame_geoportail($src, $w = 620, $h = 350)
 {
     if (!empty($src)) {
-        return '<iframe width="'.$w.'" height="'.$h.'" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"  src="'.$src.'" allowfullscreen></iframe>';
+        return '<iframe width="' . $w . '" height="' . $h . '" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"  src="' . $src . '" allowfullscreen></iframe>';
     }
 
     return null;
@@ -487,19 +487,19 @@ function display_new_lieu()
 {
     global $_POST;
 
-    return '<div style="float:left; width:50%" class="lieu_map">'.
-            '<label for="lieu">Lieu :</label>'.
-            '<input type="text" name="lieu[nom]"  id="lieu" class="type2" style="width:95%" value="'.inputVal('lieu|nom', '').'" placeholder="ex: La dent du chat, Parking de Casino, 15 route de la soie, ...">'.
-            '</div>'.
-            '<div style="float:left; width:45%; padding:0 20px 0 0;">'.
-            'Précisez sur la carte :<br />'.
-            '<input type="button" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Positionner" />'.
-            '<input type="hidden" name="lieu[lat]" id="lieuLat" value="'.inputVal('lieu|lat', '').'" />'.
-            '<input type="hidden" name="lieu[lng]" id="lieuLng" value="'.inputVal('lieu|lng', '').'" />'.
-            '</div>'.
-            '<br style="clear:both" />'.
-            '<div id="place_finder_error" class="erreur" style="display:none"></div>'.
-            '<div id="map-creersortie"></div>'.
+    return '<div style="float:left; width:50%" class="lieu_map">' .
+            '<label for="lieu">Lieu :</label>' .
+            '<input type="text" name="lieu[nom]"  id="lieu" class="type2" style="width:95%" value="' . inputVal('lieu|nom', '') . '" placeholder="ex: La dent du chat, Parking de Casino, 15 route de la soie, ...">' .
+            '</div>' .
+            '<div style="float:left; width:45%; padding:0 20px 0 0;">' .
+            'Précisez sur la carte :<br />' .
+            '<input type="button" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Positionner" />' .
+            '<input type="hidden" name="lieu[lat]" id="lieuLat" value="' . inputVal('lieu|lat', '') . '" />' .
+            '<input type="hidden" name="lieu[lng]" id="lieuLng" value="' . inputVal('lieu|lng', '') . '" />' .
+            '</div>' .
+            '<br style="clear:both" />' .
+            '<div id="place_finder_error" class="erreur" style="display:none"></div>' .
+            '<div id="map-creersortie"></div>' .
             '<br>'/*.
             '<label for="ign">Extrait IGN : <small>Insérez le code de partage fourni par <a href="https://www.geoportail.gouv.fr/" target="_blank">GeoPortail</a>.</small></label>'.
             '<textarea name="lieu[ign]" id="ign" style="width:95%;height:80px;" class="type2">'.inputVal('lieu|ign', '').'</textarea>'*/;
@@ -514,32 +514,32 @@ function display_new_lieu_complexe($name = null, $reset = false)
     if ($reset) {
         $val = '|custom';
     } else {
-        $val = '|'.$name;
+        $val = '|' . $name;
     }
 
-    return '<div class="lieu_map" id="lieu_'.$name.'"><div>'.
-    '<label for="lieu'.$name.'">Lieu :</label>'.
-    '<input type="text" name="lieu'.$arg.'[nom]"  id="lieu-lieu_'.$name.'" class="type2" style="width:95%" value="'.inputVal('lieu'.$val.'|nom', '').'" placeholder="ex: La dent du chat, Parking de Casino, 15 route de la soie, ...">'.
-    '</div>'.
-    '<div>'.
-    'Précisez sur la carte :<br />'.
-    '<input type="button" name="codeAddress-lieu_'.$name.'" class="type2" style="border-radius:5px; cursor:pointer;" value="Positionner" />'.
-    '<input type="hidden" name="lieu'.$arg.'[lat]" class="lieuLat" value="'.inputVal('lieu'.$val.'|lat', '').'" />'.
-    '<input type="hidden" name="lieu'.$arg.'[lng]" class="lieuLng" value="'.inputVal('lieu'.$val.'|lng', '').'" />'.
-    '</div>'.
-    '<br style="clear:both" />'.
-    '<div class="place_finder_error" class="erreur" style="display:none"></div>'.
-    '<div class="map-creersortie" id="map-creersortie-lieu_'.$name.'"></div>'.
+    return '<div class="lieu_map" id="lieu_' . $name . '"><div>' .
+    '<label for="lieu' . $name . '">Lieu :</label>' .
+    '<input type="text" name="lieu' . $arg . '[nom]"  id="lieu-lieu_' . $name . '" class="type2" style="width:95%" value="' . inputVal('lieu' . $val . '|nom', '') . '" placeholder="ex: La dent du chat, Parking de Casino, 15 route de la soie, ...">' .
+    '</div>' .
+    '<div>' .
+    'Précisez sur la carte :<br />' .
+    '<input type="button" name="codeAddress-lieu_' . $name . '" class="type2" style="border-radius:5px; cursor:pointer;" value="Positionner" />' .
+    '<input type="hidden" name="lieu' . $arg . '[lat]" class="lieuLat" value="' . inputVal('lieu' . $val . '|lat', '') . '" />' .
+    '<input type="hidden" name="lieu' . $arg . '[lng]" class="lieuLng" value="' . inputVal('lieu' . $val . '|lng', '') . '" />' .
+    '</div>' .
+    '<br style="clear:both" />' .
+    '<div class="place_finder_error" class="erreur" style="display:none"></div>' .
+    '<div class="map-creersortie" id="map-creersortie-lieu_' . $name . '"></div>' .
     '<br>'/*.
     '<label for="ign'.$name.'">Extrait IGN : <small>Insérez le code de partage fourni par <a href="https://www.geoportail.gouv.fr/" target="_blank">GeoPortail</a>.</small></label>'.
-    '<textarea name="lieu'.$arg.'[ign]" id="ign'.$name.'" style="width:95%;height:80px;" class="type2">'.inputVal('lieu'.$val.'|ign', '').'</textarea>'*/.'</div>';
+    '<textarea name="lieu'.$arg.'[ign]" id="ign'.$name.'" style="width:95%;height:80px;" class="type2">'.inputVal('lieu'.$val.'|ign', '').'</textarea>'*/ . '</div>';
 }
 
 function display_edit_lieu_link($id_lieu, $nom)
 {
     return false;
 
-    return '<a href="" class="todo edit rght mr10" title="Modifier le lieu : '.$nom.'"></a>';
+    return '<a href="" class="todo edit rght mr10" title="Modifier le lieu : ' . $nom . '"></a>';
 }
 
 function display_dateTime($datetime)
@@ -551,7 +551,7 @@ function display_dateTime($datetime)
     $sDate = $oDate->format('d/m/Y');
     $sHeure = $oDate->format("H\hi");
 
-    return 'le '.$sDate.' à '.$sHeure;
+    return 'le ' . $sDate . ' à ' . $sHeure;
 }
 function display_date($datetime)
 {
@@ -578,5 +578,5 @@ function display_jour($datetime)
     }
     $oDate = new DateTime($datetime);
 
-    return jour($oDate->format('N'), 'short').$oDate->format(' d ').mois($oDate->format('m')).$oDate->format(' Y ');
+    return jour($oDate->format('N'), 'short') . $oDate->format(' d ') . mois($oDate->format('m')) . $oDate->format(' Y ');
 }

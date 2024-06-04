@@ -11,10 +11,10 @@ if (!admin()) {
 		<?php
         // TABLEAU
         if (isset($_POST['operation']) && 'pagelibre_add' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-            echo '<div class="erreur">Erreur : <ul><li>- '.implode('</li><li>- ', $errTab).'</li></ul></div>';
+            echo '<div class="erreur">Erreur : <ul><li>- ' . implode('</li><li>- ', $errTab) . '</li></ul></div>';
         }
     if (isset($_POST['operation']) && 'pagelibre_add' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'. Vous pouvez actualiser cette page</p>';
+        echo '<p class="info">Mise à jour effectuée à ' . date('H:i:s', time()) . '. Vous pouvez actualiser cette page</p>';
         echo '<script stype="text/javascript">parent.location.href="/admin-pages-libres.html?showmsg=pagelibre_add";</script>';
     } ?>
 

@@ -24,7 +24,6 @@ class MemberMergerTest extends KernelTestCase
         $oldLicense = '749999999985';
         $newLicense = '749999999986';
 
-
         $user1 = $this->entityManager->getRepository(User::class)->findOneByLicenseNumber($oldLicense);
         $user2 = $this->entityManager->getRepository(User::class)->findOneByLicenseNumber($newLicense);
 

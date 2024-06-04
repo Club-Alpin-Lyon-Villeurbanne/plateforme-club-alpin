@@ -8,23 +8,17 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use JsonSerializable;
 
 /**
  * User.
- *
- *
  */
 #[ORM\Table(name: 'caf_user')]
 #[ORM\Index(name: 'id_user', columns: ['id_user'])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSerializable
+class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSerializable
 {
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Id]
     #[ORM\Column(name: 'id_user', type: 'bigint', nullable: false)]
@@ -133,7 +127,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     /**
      * @var string
      */
-    #[ORM\Column(name: 'moreinfo_user', type: 'string', length: 500, nullable: true, options: ['comment' => 'FORMATIONS ?',])]
+    #[ORM\Column(name: 'moreinfo_user', type: 'string', length: 500, nullable: true, options: ['comment' => 'FORMATIONS ?'])]
     private $moreinfo;
 
     /**
@@ -205,10 +199,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ExpenseReport::class, orphanRemoval: false)]
     private Collection $expenseReports;
 
-    #[ORM\Column(name: 'is_deleted', type: 'boolean', nullable: false, options: ["default" => 0])]
+    #[ORM\Column(name: 'is_deleted', type: 'boolean', nullable: false, options: ['default' => 0])]
     private bool $isDeleted = false;
 
-    public function __construct(int $id = null)
+    public function __construct(?int $id = null)
     {
         $this->attrs = new ArrayCollection();
         $this->created = time();
@@ -685,9 +679,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     }
 
     /**
-     * Get the value of expenseReports
-     *
-     * @return Collection
+     * Get the value of expenseReports.
      */
     public function getExpenseReports(): Collection
     {
@@ -695,11 +687,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     }
 
     /**
-     * Set the value of expenseReports
-     *
-     * @param Collection $expenseReports
-     *
-     * @return self
+     * Set the value of expenseReports.
      */
     public function setExpenseReports(Collection $expenseReports): self
     {
@@ -711,6 +699,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JsonSer
     public function setIsDeleted(bool $isDeleted)
     {
         $this->isDeleted = $isDeleted;
+
         return $this;
     }
 }

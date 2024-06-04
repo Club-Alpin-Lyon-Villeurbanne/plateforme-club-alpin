@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Article.
- *
- *
  */
 #[ORM\Table(name: 'caf_article')]
 #[ORM\Index(name: 'id_article', columns: ['id_article'])]
@@ -16,9 +14,6 @@ class Article
 {
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Column(name: 'id_article', type: 'integer', nullable: false)]
     #[ORM\Id]
@@ -33,8 +28,6 @@ class Article
 
     /**
      * @var User
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'status_who_article', referencedColumnName: 'id_user', nullable: true)]
@@ -72,8 +65,6 @@ class Article
 
     /**
      * @var User
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'user_article', referencedColumnName: 'id_user', nullable: false)]
@@ -88,18 +79,15 @@ class Article
     /**
      * @var string
      */
-    #[ORM\Column(name: 'code_article', type: 'string', length: 50, nullable: false, options: ['comment' => 'Pour affichage dans les URL',])]
+    #[ORM\Column(name: 'code_article', type: 'string', length: 50, nullable: false, options: ['comment' => 'Pour affichage dans les URL'])]
     private $code;
 
-    
     #[ORM\ManyToOne(targetEntity: 'Commission')]
     #[ORM\JoinColumn(name: 'commission_article', referencedColumnName: 'id_commission', nullable: true)]
     private $commission;
 
     /**
      * @var Evt
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'articles')]
     #[ORM\JoinColumn(name: 'evt_article', referencedColumnName: 'id_evt', nullable: true)]

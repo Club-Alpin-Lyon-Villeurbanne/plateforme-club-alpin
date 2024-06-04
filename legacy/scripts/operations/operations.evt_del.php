@@ -21,7 +21,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // on a le droit d'annuler ?
-        if (!allowed('evt_delete', 'commission:'.$handle['code_commission'])) {
+        if (!allowed('evt_delete', 'commission:' . $handle['code_commission'])) {
             $errTab[] = 'Accès non autorisé';
         }
 

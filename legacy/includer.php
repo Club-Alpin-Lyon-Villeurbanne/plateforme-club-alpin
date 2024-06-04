@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__.'/app/includes.php';
+require __DIR__ . '/app/includes.php';
 
 $p = $_GET['p'];
 $pageAdmin = $_GET['admin'] ?? null;
@@ -16,21 +16,21 @@ if ('pages/' != substr($p, 0, 6) && 'includes/' != substr($p, 0, 9)) {
     // lien vers cette page (pour formulaires, ou ancres)
     $versCettePage = 'includer.php?null=0';
     foreach ($_GET as $key => $val) {
-        $versCettePage .= '&'.$key.'='.$val;
+        $versCettePage .= '&' . $key . '=' . $val;
     }
 
     // _________________________________________________ HEADER AU CHOIX (inclut le doctype)
     if ($pageAdmin) {
-        require __DIR__.'/includes/generic/header-admin.php';
+        require __DIR__ . '/includes/generic/header-admin.php';
     } else {
-        require __DIR__.'/includes/generic/header.php';
+        require __DIR__ . '/includes/generic/header.php';
     }
 
     echo '<div id="includer-stuff">';
-    if (file_exists(__DIR__.'/'.$p)) {
-        require __DIR__.'/'.$p;
+    if (file_exists(__DIR__ . '/' . $p)) {
+        require __DIR__ . '/' . $p;
     } else {
-        echo 'Fichier introuvable : '.__DIR__.'/'.$p;
+        echo 'Fichier introuvable : ' . __DIR__ . '/' . $p;
     }
     echo '</div>
 	<!-- Waiters -->

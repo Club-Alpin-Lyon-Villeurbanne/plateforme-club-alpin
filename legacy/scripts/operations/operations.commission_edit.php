@@ -7,7 +7,7 @@ if (!allowed('comm_edit')) {
 }
 $title_commission = stripslashes($_POST['title_commission']);
 $id_commission = (int) $_GET['id_commission'];
-$uploads_dir = __DIR__.'/../../../public/ftp/commission/'.$id_commission;
+$uploads_dir = __DIR__ . '/../../../public/ftp/commission/' . $id_commission;
 
 // CHECKIN VARS
 if (!isset($errTab) || 0 === count($errTab)) {
@@ -23,24 +23,24 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // if(!file_exists($uploads_dir)) 												$errTab[]='Dossier introuvable';
     if (!file_exists($uploads_dir)) {
         if (!mkdir($uploads_dir) && !is_dir($uploads_dir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $uploads_dir));
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $uploads_dir));
         }
     }
 }
 
 // VIDAGE DU DOSSIER TRANSIT (evite les erreurs)
 if (!isset($errTab) || 0 === count($errTab)) {
-    if (file_exists($uploads_dir.'/bigfond.jpg')) {
-        unlink($uploads_dir.'/bigfond.jpg');
+    if (file_exists($uploads_dir . '/bigfond.jpg')) {
+        unlink($uploads_dir . '/bigfond.jpg');
     }
-    if (file_exists($uploads_dir.'/picto.png')) {
-        unlink($uploads_dir.'/picto.png');
+    if (file_exists($uploads_dir . '/picto.png')) {
+        unlink($uploads_dir . '/picto.png');
     }
-    if (file_exists($uploads_dir.'/picto-dark.png')) {
-        unlink($uploads_dir.'/picto-dark.png');
+    if (file_exists($uploads_dir . '/picto-dark.png')) {
+        unlink($uploads_dir . '/picto-dark.png');
     }
-    if (file_exists($uploads_dir.'/picto-light.png')) {
-        unlink($uploads_dir.'/picto-light.png');
+    if (file_exists($uploads_dir . '/picto-light.png')) {
+        unlink($uploads_dir . '/picto-light.png');
     }
 }
 

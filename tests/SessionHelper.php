@@ -45,6 +45,7 @@ trait SessionHelper
         $csrfToken = $tokenGenerator->generateToken();
         $session->set(SessionTokenStorage::SESSION_NAMESPACE . "/{$tokenId}", $csrfToken);
         $session->save();
+
         return $csrfToken;
     }
 }

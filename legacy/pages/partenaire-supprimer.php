@@ -12,7 +12,7 @@ if (!admin()) {
     }
 
     if ($part_id > 0) {
-        $req = "SELECT * FROM  `caf_partenaires` WHERE part_id='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($part_id)."' LIMIT 1";
+        $req = "SELECT * FROM  `caf_partenaires` WHERE part_id='" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($part_id) . "' LIMIT 1";
         $partenaireTab = [];
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $partenaireTab = $result->fetch_assoc();
@@ -32,8 +32,8 @@ if (!admin()) {
 
 		<p>
 		<?php
-            if (file_exists(__DIR__.'/../../public/ftp/partenaires/'.$partenaireTab['part_image'])) {
-                echo "<img src='/ftp/partenaires/".$partenaireTab['part_image']."' width='250px'>";
+            if (file_exists(__DIR__ . '/../../public/ftp/partenaires/' . $partenaireTab['part_image'])) {
+                echo "<img src='/ftp/partenaires/" . $partenaireTab['part_image'] . "' width='250px'>";
             } else {
                 echo '<img src="/img/base/cross.png" width="25" height="25" alt="non trouvée" />';
             } ?>
@@ -51,7 +51,7 @@ if (!admin()) {
 			<?php
             // TABLEAU
             if (isset($_POST['operation']) && 'partenaire_delete' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
             }
     if (isset($_POST['operation']) && 'partenaire_delete' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info">Partenaire supprimé ! (Vous devrez <a href="javascript:top.$.fancybox.close();top.parent.location.reload(false);">Recharger la page</a> pour voir le changement)</p>';

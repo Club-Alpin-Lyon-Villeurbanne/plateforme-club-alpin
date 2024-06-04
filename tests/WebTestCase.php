@@ -14,25 +14,24 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
-
 abstract class WebTestCase extends BaseWebTestCase
 {
     use SessionHelper;
 
     protected static ?KernelBrowser $client;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         static::$client = static::createClient();
     }
 
-    protected function signup(string $email = null)
+    protected function signup(?string $email = null)
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
 
         if (null === $email) {
-            $email = 'test-'.bin2hex(random_bytes(12)).'@clubalpinlyon.fr';
+            $email = 'test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr';
         }
 
         $user = new User();
@@ -76,11 +75,11 @@ abstract class WebTestCase extends BaseWebTestCase
         $tokenStorage = $this->getContainer()->get(TokenStorageInterface::class);
         $token = new UsernamePasswordToken($user, $providerKey, $user->getRoles());
         $tokenStorage->setToken($token);
-        
+
         // $token = new PostAuthenticationToken($user, $providerKey, $user->getRoles());
 
         $session = $this->getSession();
-        $session->set('_security_'.$providerKey, serialize($token));
+        $session->set('_security_' . $providerKey, serialize($token));
         $session->save();
 
         // the client must register the session cookie
@@ -94,7 +93,7 @@ abstract class WebTestCase extends BaseWebTestCase
     protected function signout($providerKey = 'main')
     {
         $session = $this->getSession();
-        $session->remove('_security_'.$providerKey);
+        $session->remove('_security_' . $providerKey);
         $session->save();
 
         $this->getContainer()->get('security.token_storage')->setToken(null);
@@ -120,7 +119,8 @@ abstract class WebTestCase extends BaseWebTestCase
         self::getContainer()->get(UserRights::class)->reset();
     }
 
-    protected function getSession() : Session {
-         return $this->createSession(static::$client);
+    protected function getSession(): Session
+    {
+        return $this->createSession(static::$client);
     }
 }

@@ -33,7 +33,7 @@ else {
     // ce user autorise t-il le contact
     $req = 'SELECT id_user, civ_user, firstname_user, lastname_user, email_user, nickname_user
         FROM caf_user
-        WHERE id_user = '.getUser()->getId();
+        WHERE id_user = ' . getUser()->getId();
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -44,7 +44,7 @@ else {
     }
 
     // dans ce cas, les valeurs sont réécrites
-    $nom = $expediteur['civ_user'].' '.$expediteur['firstname_user'].' '.$expediteur['lastname_user'].' ('.$expediteur['nickname_user'].')';
+    $nom = $expediteur['civ_user'] . ' ' . $expediteur['firstname_user'] . ' ' . $expediteur['lastname_user'] . ' (' . $expediteur['nickname_user'] . ')';
     $email = $expediteur['email_user'];
 }
 
@@ -84,7 +84,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     LegacyContainer::get('legacy_mailer')->send($destinataire['email_user'], 'transactional/contact-form', [
         'contact_name' => $nom,
         'contact_email' => $email,
-        'contact_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-full/'.$expediteur['id_user'].'.html',
+        'contact_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $expediteur['id_user'] . '.html',
         'contact_objet' => $objet,
         'message' => $message,
     ], [], null, $email);

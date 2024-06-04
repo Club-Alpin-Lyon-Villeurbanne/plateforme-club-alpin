@@ -27,8 +27,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $contenu_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString($contenu_content_inline);
 
     $req = "INSERT INTO `caf_content_inline` (`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
-                                                        VALUES ('$groupe_content_inline', '$code_content_inline', '$lang_content_inline', '$contenu_content_inline', '".time()."', '$linkedtopage_content_inline');";
+                                                        VALUES ('$groupe_content_inline', '$code_content_inline', '$lang_content_inline', '$contenu_content_inline', '" . time() . "', '$linkedtopage_content_inline');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-        $erreur = 'Erreur BDD<br />'.$req;
+        $erreur = 'Erreur BDD<br />' . $req;
     }
 }

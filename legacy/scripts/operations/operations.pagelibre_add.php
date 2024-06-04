@@ -34,7 +34,7 @@ if (getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM))) {
 // save page
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "INSERT INTO caf_page (parent_page ,admin_page ,superadmin_page ,vis_page ,ordre_page ,menu_page ,ordre_menu_page ,menuadmin_page ,ordre_menuadmin_page ,code_page ,default_name_page ,meta_title_page ,meta_description_page ,priority_page ,add_css_page ,add_js_page ,lock_page ,pagelibre_page ,created_page)
-                        VALUES ('$parent_page', '0', '0', '0', '', '', '', '', '', '$code_page', '$default_name_page', '0', '$meta_description_page', '$priority_page', '', '', '', '1', '".time()."');";
+                        VALUES ('$parent_page', '0', '0', '0', '', '', '', '', '', '$code_page', '$default_name_page', '0', '$meta_description_page', '$priority_page', '', '', '', '1', '" . time() . "');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur BDD 1';
     } else {
@@ -50,7 +50,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $lang_content_inline = 'fr';
     $contenu_content_inline = $default_name_page;
     $req = "INSERT INTO `caf_content_inline` (`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
-                                        VALUES ('2', 'meta-title-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
+                                        VALUES ('2', 'meta-title-$code_page', '$lang_content_inline', '$contenu_content_inline', '" . time() . "', '');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur BDD title';
     }
@@ -60,7 +60,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $default_description_page) {
     $lang_content_inline = 'fr';
     $contenu_content_inline = $default_description_page;
     $req = "INSERT INTO `caf_content_inline` (`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
-                                        VALUES ('2', 'meta-description-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
+                                        VALUES ('2', 'meta-description-$code_page', '$lang_content_inline', '$contenu_content_inline', '" . time() . "', '');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur BDD title';
     }

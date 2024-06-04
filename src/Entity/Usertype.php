@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Usertype.
- *
- *
  */
 #[ORM\Table(name: 'caf_usertype')]
 #[ORM\Entity]
@@ -15,9 +13,6 @@ class Usertype
 {
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Column(name: 'id_usertype', type: 'integer', nullable: false)]
     #[ORM\Id]

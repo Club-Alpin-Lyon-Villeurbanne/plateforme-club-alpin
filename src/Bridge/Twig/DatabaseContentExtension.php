@@ -63,9 +63,9 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
             $id = 0;
         }
 
-        $rel = '/ftp/commission/'.$id.'/bigfond.jpg';
+        $rel = '/ftp/commission/' . $id . '/bigfond.jpg';
 
-        if (!file_exists(__DIR__.'/../../../public/'.$rel)) {
+        if (!file_exists(__DIR__ . '/../../../public/' . $rel)) {
             $rel = '/ftp/commission/0/bigfond.jpg';
         }
 
@@ -180,7 +180,7 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function getCommissionPicto(string $code = null, string $style = null): string
+    public function getCommissionPicto(?string $code = null, ?string $style = null): string
     {
         if ($code && $commission = $this->locator->get(CommissionRepository::class)->findVisibleCommission($code)) {
             $id = $commission->getId();
@@ -191,17 +191,17 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         switch ($style) {
             case 'light':
             case 'dark':
-                $style = '-'.$style;
+                $style = '-' . $style;
                 break;
             default:
                 $style = '';
                 break;
         }
 
-        $rel = '/ftp/commission/'.$id.'/picto'.$style.'.png';
+        $rel = '/ftp/commission/' . $id . '/picto' . $style . '.png';
 
-        if (!file_exists(__DIR__.'/../../../public/'.$rel)) {
-            $rel = '/ftp/commission/0/picto'.$style.'.png';
+        if (!file_exists(__DIR__ . '/../../../public/' . $rel)) {
+            $rel = '/ftp/commission/0/picto' . $style . '.png';
         }
 
         return $rel;
@@ -212,19 +212,19 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         switch ($style) {
             case 'pic':
             case 'min':
-                $style = $style.'-';
+                $style .= '-';
                 break;
             default:
                 $style = '';
                 break;
         }
 
-        $rel = '/ftp/user/'.$user->getId().'/'.$style.'profil.jpg';
+        $rel = '/ftp/user/' . $user->getId() . '/' . $style . 'profil.jpg';
 
-        if (!file_exists(__DIR__.'/../../../public'.$rel)) {
-            $rel = '/ftp/user/0/'.$style.'profil.jpg';
+        if (!file_exists(__DIR__ . '/../../../public' . $rel)) {
+            $rel = '/ftp/user/0/' . $style . 'profil.jpg';
         }
 
-        return $rel.'?ct='.time();
+        return $rel . '?ct=' . time();
     }
 }

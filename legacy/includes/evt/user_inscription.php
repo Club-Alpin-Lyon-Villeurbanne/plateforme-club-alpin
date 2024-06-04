@@ -12,7 +12,7 @@ if (user() && allowed('evt_join')) {
             if ($evt['join_start_evt'] < time()) {
                 // Je ne suis pas déja inscrit (ou bien je dispose de filiations à inscrire)
                 if ('neutre' == $monStatut || count($filiations)) {
-                    require __DIR__.'/../../includes/evt/user_inscription_button.php'; ?>
+                    require __DIR__ . '/../../includes/evt/user_inscription_button.php'; ?>
 
                     <div id="inscription" style="display:<?php if (isset($_POST['operation']) && 'user_join' == $_POST['operation']) {
                         echo 'block';
@@ -25,10 +25,10 @@ if (user() && allowed('evt_join')) {
                         <?php
                             // TABLEAU d'erreurs
                             if (isset($_POST['operation']) && 'user_join' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                                echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                                echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                             }
                     if (isset($_POST['operation']) && 'user_join' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                        echo '<div class="info">Opération effectuée avec succès : '.count($inscrits).' personnes pré-inscrite(s)</div>';
+                        echo '<div class="info">Opération effectuée avec succès : ' . count($inscrits) . ' personnes pré-inscrite(s)</div>';
                     } ?>
 
                         <form action="<?php echo $versCettePage; ?>#inscription" method="post" class="loading">
@@ -38,11 +38,11 @@ if (user() && allowed('evt_join')) {
 
                             <div class="check-nice ">
 
-                                <?php require __DIR__.'/../../includes/evt/user_inscription_options.php'; ?>
+                                <?php require __DIR__ . '/../../includes/evt/user_inscription_options.php'; ?>
 
                             </div>
 
-                            <?php require __DIR__.'/../../includes/evt/user_inscription_submit.php'; ?>
+                            <?php require __DIR__ . '/../../includes/evt/user_inscription_submit.php'; ?>
 
                         </form>
 
@@ -50,7 +50,7 @@ if (user() && allowed('evt_join')) {
                     <?php
                 }
             } else {
-                echo '<hr /><h2>Inscriptions :</h2><p>Les inscriptions pour cette sortie commenceront le '.date('d/m/y', $evt['join_start_evt']).'.</p>';
+                echo '<hr /><h2>Inscriptions :</h2><p>Les inscriptions pour cette sortie commenceront le ' . date('d/m/y', $evt['join_start_evt']) . '.</p>';
             }
         } else {
             inclure('info-inscription-passee', 'vide');

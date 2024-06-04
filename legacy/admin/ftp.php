@@ -5,7 +5,7 @@ use App\Legacy\LegacyContainer;
 
 global $dossier;
 
-require __DIR__.'/../app/includes.php';
+require __DIR__ . '/../app/includes.php';
 
 if (!admin()) {
     header('HTTP/1.0 401 Authorization Required');
@@ -28,10 +28,10 @@ if (!isset($_GET['dossier'])) {
 }
 
 // checks :
-//if (substr($dossier, 0, strlen($ftpPath)) != $ftpPath || mb_substr_count($dossier, '../') > 2) {
+// if (substr($dossier, 0, strlen($ftpPath)) != $ftpPath || mb_substr_count($dossier, '../') > 2) {
 //    echo '<p class="erreur">Erreur ! Le dossier demandé n\'a pas le bon format.</p>';
 //    exit;
-//}
+// }
 
 ?><!doctype html>
 <html lang="fr">
@@ -80,7 +80,7 @@ if (!isset($_GET['dossier'])) {
 					                    {
 					                        global $dossier;
 					                        $one = false; // booleen : un dossier trouve au moins
-					                        $opendir = opendir($ftpPath.$dir);
+					                        $opendir = opendir($ftpPath . $dir);
 					                        $files = [];
 
 					                        $j = 0; // compte des fichiers
@@ -92,13 +92,13 @@ if (!isset($_GET['dossier'])) {
 
 					                        foreach ($files as $file) {
 					                            // c'est un dossier, non masqué
-					                            if (is_dir($ftpPath.$dir.$file) && !FtpFile::shouldHide($file)) {
+					                            if (is_dir($ftpPath . $dir . $file) && !FtpFile::shouldHide($file)) {
 					                                $one = true;
-					                                echo '<div class="level level'.$level.'">'
-					                                    .'<a class="dirtrigger" href="'.$file.'/'.'" title=""></a>'
-					                                    .'<a class="dirlink '.($dossier == $dir.$file.'/' ? 'selected' : '').'" href="'.$dir.$file.'/'.'" title="">'.$file.'</a>';
+					                                echo '<div class="level level' . $level . '">'
+					                                    . '<a class="dirtrigger" href="' . $file . '/" title=""></a>'
+					                                    . '<a class="dirlink ' . ($dossier == $dir . $file . '/' ? 'selected' : '') . '" href="' . $dir . $file . '/" title="">' . $file . '</a>';
 					                                // if(!arbo_read($dir.$file.'/', $level+1)) echo '<div class="level level'.($level+1).'">-</div>';
-					                                if (!arbo_read($ftpPath, $dir.$file.'/', $level + 1)) {
+					                                if (!arbo_read($ftpPath, $dir . $file . '/', $level + 1)) {
 					                                    echo '<span class="removetrigger"></span>';
 					                                }
 					                                echo '</div>';
@@ -107,7 +107,7 @@ if (!isset($_GET['dossier'])) {
 
 					                        return $one;
 					                    }
-					                    arbo_read($ftpPath,'', 0);
+arbo_read($ftpPath, '', 0);
 ?>
 				</div>
 			</div>

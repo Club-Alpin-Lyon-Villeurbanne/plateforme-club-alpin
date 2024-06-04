@@ -23,13 +23,13 @@ $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // on a le droit de supprimer cette page ?
-    if (allowed('evt_cancel', 'commission:'.$handle['code_commission'])) {
+    if (allowed('evt_cancel', 'commission:' . $handle['code_commission'])) {
         // participants:
         $handle['joins'] = [];
         $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
                 , role_evt_join
             FROM caf_evt_join, caf_user
-            WHERE evt_evt_join ='.(int) $handle['id_evt'].'
+            WHERE evt_evt_join =' . (int) $handle['id_evt'] . '
             AND user_evt_join = id_user
             LIMIT 300';
         $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -41,7 +41,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         if ('1' == $handle['cancelled_evt']) {
             $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user
                 FROM caf_user
-                WHERE id_user='.(int) $handle['cancelled_who_evt'].'
+                WHERE id_user=' . (int) $handle['cancelled_who_evt'] . '
                 LIMIT 300';
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -77,7 +77,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 }
                 // sortie non trouvée, avec message d'erreur, tentative d'accès mesquine ou sortié dévalidée
                 if (!$evt && $errPage) {
-                    echo '<div class="erreur">'.$errPage.'</div>';
+                    echo '<div class="erreur">' . $errPage . '</div>';
                 }
                 // sortie trouvée, mais pas encore annulée
 
@@ -95,7 +95,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 						<?php
                         // TABLEAU
                         if (isset($_POST['operation']) && 'evt_del' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                            echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                            echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                         }
                     if (isset($_POST['operation']) && 'evt_del' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                         echo '<p class="info">Cette sortie a été annulée.</p>';
@@ -146,22 +146,22 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 					<h2 style="text-align:center; background:white; padding:10px">APERÇU :</h2>
 					<?php
                     // RESUME DE LA SORTIE
-                    require __DIR__.'/../includes/evt-resume.php'; ?>
+                    require __DIR__ . '/../includes/evt-resume.php'; ?>
 
 
 
 					<?php
                 }
             }
-			?>
+?>
 			<br style="clear:both" />
 		</div>
 	</div>
 
 	<!-- partie droite -->
 	<?php
-    require __DIR__.'/../includes/right-type-agenda.php';
-			?>
+    require __DIR__ . '/../includes/right-type-agenda.php';
+?>
 
 	<br style="clear:both" />
 </div>

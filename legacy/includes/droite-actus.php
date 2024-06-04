@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 
 if ($current_commission) {
-    echo '<h1 class="actus-h1"><a href="/accueil/'.$current_commission.'.html" title="Afficher tous les articles pour cette commission">actus</a></h1>';
+    echo '<h1 class="actus-h1"><a href="/accueil/' . $current_commission . '.html" title="Afficher tous les articles pour cette commission">actus</a></h1>';
 } else {
     echo '<h1 class="actus-h1"><a href="/accueil.html" title="Afficher tous les articles">actus</a></h1>';
 }
@@ -19,8 +19,8 @@ if ($current_commission) {
         WHERE  `status_article` =1
         AND  `une_article` =0 '
         // commission donnée : filtre (mais on inclut les actus club, commission=0)
-        .($current_commission ? ' AND (commission_article = '.(int) $comTab[$current_commission]['id_commission'].' OR commission_article = 0) ' : '')
-        .'ORDER BY  `tsp_article` DESC
+        . ($current_commission ? ' AND (commission_article = ' . (int) $comTab[$current_commission]['id_commission'] . ' OR commission_article = 0) ' : '')
+        . 'ORDER BY  `tsp_article` DESC
         LIMIT 16';
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
@@ -28,7 +28,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // info de la commission liée
     if ($handle['commission_article'] > 0) {
         $req = 'SELECT * FROM caf_commission
-                WHERE id_commission = '.(int) $handle['commission_article'].'
+                WHERE id_commission = ' . (int) $handle['commission_article'] . '
                 LIMIT 1';
         $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -39,7 +39,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // info de la sortie liée
     if ($handle['evt_article'] > 0) {
         $req = 'SELECT code_evt, id_evt, titre_evt FROM caf_evt
-                WHERE id_evt = '.(int) $handle['evt_article'].'
+                WHERE id_evt = ' . (int) $handle['evt_article'] . '
                 LIMIT 1';
         $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -50,9 +50,9 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // AFFICHAGE
     $article = $handle;
 
-    $url = 'article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html';
+    $url = 'article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html';
     if ($current_commission) {
-        $url .= '?commission='.$current_commission;
+        $url .= '?commission=' . $current_commission;
     } ?>
 
         <!-- titre + lien article -->
@@ -88,7 +88,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     }
     // -1 = compte rendu de sortie
     elseif (-1 == $article['commission_article']) {
-        $urlEvt = 'sortie/'.$article['evt']['code_evt'].'-'.$article['evt']['id_evt'].'.html'; ?>
+        $urlEvt = 'sortie/' . $article['evt']['code_evt'] . '-' . $article['evt']['id_evt'] . '.html'; ?>
                 <a href="<?php echo $urlEvt; ?>" title="Voir la sortie liée à cet article : &laquo; <?php echo html_utf8($article['evt']['titre_evt']); ?> &raquo;">
                     compte rendu de sortie
                 </a>
@@ -114,7 +114,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 <!-- lien vers la page actus -->
 <?php
 if ($current_commission) {
-    echo '<a href="/accueil/'.$current_commission.'.html" title="Afficher tous les articles pour cette commission" class="lien-big">&gt; Voir tous les articles '.$comTab[$current_commission]['title_commission'].'</a>';
+    echo '<a href="/accueil/' . $current_commission . '.html" title="Afficher tous les articles pour cette commission" class="lien-big">&gt; Voir tous les articles ' . $comTab[$current_commission]['title_commission'] . '</a>';
 } else {
     echo '<a href="/accueil.html" title="Afficher tous les articles" class="lien-big">&gt; Voir tous les articles</a>';
 }

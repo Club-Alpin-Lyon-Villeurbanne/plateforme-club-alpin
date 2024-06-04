@@ -23,7 +23,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $evtName = html_utf8($row[1]);
         $evtDate = html_utf8(date('d-m-Y', $row[2]));
         $evtTarif = html_utf8($row[3]);
-        $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($evtCode).'-'.$evtId.'.html';
+        $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . stripslashes($evtCode) . '-' . $evtId . '.html';
     }
 
     // Informations sur l'encadrant
@@ -37,7 +37,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if ($row) {
-        $encName = html_utf8($row[0].' '.$row[1]);
+        $encName = html_utf8($row[0] . ' ' . $row[1]);
         $encEmail = html_utf8($row[2]);
     }
 
@@ -58,7 +58,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $toMail = $row['email_user'];
-            $toName = $row['firstname_user'].' '.$row['lastname_user'];
+            $toName = $row['firstname_user'] . ' ' . $row['lastname_user'];
         }
         if (!isMail($toMail)) {
             $errTab[] = 'Les coordonnées du contact sont erronées';
@@ -71,9 +71,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $errTab[] = 'Erreur SQL';
             }
 
-            $tmpUserName = (getUser()->getFirstname().' '.getUser()->getLastname());
+            $tmpUserName = (getUser()->getFirstname() . ' ' . getUser()->getLastname());
             $evtName = $_POST['titre_evt'];
-            $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.stripslashes($_POST['code_evt']).'-'.$_POST['id_evt'].'.html';
+            $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . stripslashes($_POST['code_evt']) . '-' . $_POST['id_evt'] . '.html';
 
             LegacyContainer::get('legacy_mailer')->send($toMail, 'transactional/sortie-desinscription', [
                 'username' => $tmpUserName,

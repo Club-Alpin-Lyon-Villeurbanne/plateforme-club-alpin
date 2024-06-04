@@ -46,9 +46,9 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 
                 echo '
 				<tr>
-					<td><img src="/img/base/'.$img.'" alt="" title="" style="vertical-align:middle" /> '.html_utf8($item['code_log_admin']).'</td>
-					<td>'.$item['desc_log_admin'].'</td>
-					<td><span style="display:none">'.$item['date_log_admin'].'</span>'.date('d/m/y H:i', $item['date_log_admin']).'</td>
+					<td><img src="/img/base/' . $img . '" alt="" title="" style="vertical-align:middle" /> ' . html_utf8($item['code_log_admin']) . '</td>
+					<td>' . $item['desc_log_admin'] . '</td>
+					<td><span style="display:none">' . $item['date_log_admin'] . '</span>' . date('d/m/y H:i', $item['date_log_admin']) . '</td>
 				</tr>';
             } ?>
 		</tbody>

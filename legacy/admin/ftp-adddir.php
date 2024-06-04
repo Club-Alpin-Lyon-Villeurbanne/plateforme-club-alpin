@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-require __DIR__.'/../app/includes.php';
+require __DIR__ . '/../app/includes.php';
 
 if (!admin()) {
     header('HTTP/1.0 401 Authorization Required');
@@ -20,12 +20,12 @@ if (mb_substr_count($target, '..') > 0) {
     $errTab[] = "Le chemin d'accès au fichier est incorrect : récurrence de chemin retour";
 }
 // doit être un dossier
-if (!is_dir($ftpPath.$target)) {
+if (!is_dir($ftpPath . $target)) {
     $errTab[] = "L'élément donné ne semble pas être un dossier";
 }
 
 if (count($errTab) > 0) {
-    echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+    echo '<div class="erreur"><ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
 } else {
     // VERIFS DEJA FAITES, OPERATION OK SUR DEMANDE
     $operation = $_GET['operation'] ?? null;
@@ -37,17 +37,17 @@ if (count($errTab) > 0) {
         // traitement du nom de dossier
         $nouveauDossier = formater(stripslashes($_GET['nouveauDossier']), 3);
         if (strlen($nouveauDossier) > 40) {
-            $errTab[] = 'Le nom de dossier ne peut pas dépasser 40 caractères : <b>'.html_utf8($nouveauDossier).'</b>';
+            $errTab[] = 'Le nom de dossier ne peut pas dépasser 40 caractères : <b>' . html_utf8($nouveauDossier) . '</b>';
         }
         if ('' === $nouveauDossier) {
             $errTab[] = 'Entrez un nom de dossier valide';
-        } elseif (file_exists($ftpPath.$target.$nouveauDossier)) {
+        } elseif (file_exists($ftpPath . $target . $nouveauDossier)) {
             $errTab[] = "Le dossier <b>$target$nouveauDossier</b> existe déja. Merci de trouver un autre  nom";
         }
 
         // fermeture de la box/ actualissation du ftp
         if (0 === count($errTab)) {
-            if (!mkdir($concurrentDirectory = $ftpPath.$target.$nouveauDossier) && !is_dir($concurrentDirectory)) {
+            if (!mkdir($concurrentDirectory = $ftpPath . $target . $nouveauDossier) && !is_dir($concurrentDirectory)) {
                 $errTab[] = 'Erreur PHP à la création du dossier';
             }
         }
@@ -81,7 +81,7 @@ if (count($errTab) > 0) {
                 <?php
                 // msg d'erreur ?
                 if (count($errTab) > 0) {
-                    echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                    echo '<div class="erreur"><ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                 } ?>
 
                 <h3>Nouveau dossier</h3>

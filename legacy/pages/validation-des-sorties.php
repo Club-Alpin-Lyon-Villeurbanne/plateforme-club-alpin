@@ -14,8 +14,8 @@ if (allowed('evt_legal_accept')) {
 			WHERE status_legal_evt = 0
 			AND status_evt = 1
 			AND commission_evt = id_commission
-			AND tsp_evt > '.time().'
-			AND tsp_evt < '.$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION.'
+			AND tsp_evt > ' . time() . '
+			AND tsp_evt < ' . $MAX_TIMESTAMP_FOR_LEGAL_VALIDATION . '
 			ORDER BY tsp_evt ASC ';
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $notif_validerunesortie_president = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
@@ -39,19 +39,19 @@ if (allowed('evt_legal_accept')) {
 	FROM caf_evt, caf_user, caf_commission
 	WHERE status_evt=1
 	AND status_legal_evt=0
-	AND tsp_evt > '.time().'
-	AND tsp_evt < '.$MAX_TIMESTAMP_FOR_LEGAL_VALIDATION.'
+	AND tsp_evt > ' . time() . '
+	AND tsp_evt < ' . $MAX_TIMESTAMP_FOR_LEGAL_VALIDATION . '
 
 	AND id_user = user_evt
 	AND commission_evt=id_commission
 	ORDER BY tsp_evt ASC
-	LIMIT '.($limite * ($pagenum - 1)).", $limite";
+	LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
 
     $evtStandby = [];
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
-        require __DIR__.'/../includes/evt-temoin-reqs.php';
+        require __DIR__ . '/../includes/evt-temoin-reqs.php';
 
         // ajout au tableau
         $evtStandby[] = $handle;
@@ -72,9 +72,9 @@ if (allowed('evt_legal_accept')) {
             if (!allowed('evt_legal_accept')) {
                 echo '<p class="erreur">Droits insuffisants pour afficher cette page.</p>';
             } else {
-                inclure($p1.'-main', 'vide');
+                inclure($p1 . '-main', 'vide');
 
-                echo '<h2>'.$notif_validerunesortie_president.' Sortie'.($notif_validerunesortie_president > 1 ? 's' : '').' non validée'.($notif_validerunesortie_president > 1 ? 's' : '').', en attente de validation :</h2>';
+                echo '<h2>' . $notif_validerunesortie_president . ' Sortie' . ($notif_validerunesortie_president > 1 ? 's' : '') . ' non validée' . ($notif_validerunesortie_president > 1 ? 's' : '') . ', en attente de validation :</h2>';
 
                 // liste :
                 if (!$notif_validerunesortie_president) {
@@ -89,20 +89,20 @@ if (allowed('evt_legal_accept')) {
                             $evt = $evtStandby[$i];
 
                             echo '<tr>'
-                                    .'<td class="agenda-gauche">'.jour(date('N', $evt['tsp_evt']), 'short').' '.date('d', $evt['tsp_evt']).' '.mois(date('m', $evt['tsp_evt'])).'</td>'
-                                    .'<td>'
+                                    . '<td class="agenda-gauche">' . jour(date('N', $evt['tsp_evt']), 'short') . ' ' . date('d', $evt['tsp_evt']) . ' ' . mois(date('m', $evt['tsp_evt'])) . '</td>'
+                                    . '<td>'
 
                                         // Boutons
-                                        .'<div class="evt-tools">'
+                                        . '<div class="evt-tools">'
 
                                             // apercu
-                                            .'<a class="nice2" href="/sortie/'.html_utf8($evt['code_evt']).'-'.(int) $evt['id_evt'].'.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant validation" target="_blank">Aperçu / validation de la page</a> '
+                                            . '<a class="nice2" href="/sortie/' . html_utf8($evt['code_evt']) . '-' . (int) $evt['id_evt'] . '.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant validation" target="_blank">Aperçu / validation de la page</a> '
 
-                                        .'</div>';
+                                        . '</div>';
 
-                            require __DIR__.'/../includes/agenda-evt-debut.php';
+                            require __DIR__ . '/../includes/agenda-evt-debut.php';
                             echo '</td>'
-                                .'</tr>';
+                                . '</tr>';
                         } ?>
 					</table>
 
@@ -125,20 +125,20 @@ if (allowed('evt_legal_accept')) {
                 if ($nbrPages > 1) {
                     echo '<nav class="pageSelect"><hr />';
                     for ($i = 1; $i <= $nbrPages; ++$i) {
-                        echo '<a href="'.$p1.'/'.$i.'.html" title="" class="'.($pagenum == $i ? 'up' : '').'">P'.$i.'</a> '.($i < $nbrPages ? '  ' : '');
+                        echo '<a href="' . $p1 . '/' . $i . '.html" title="" class="' . ($pagenum == $i ? 'up' : '') . '">P' . $i . '</a> ' . ($i < $nbrPages ? '  ' : '');
                     }
                     echo '</nav>';
                 }
             }
-			?>
+?>
 			<br style="clear:both" />
 		</div>
 	</div>
 
 	<!-- partie droite -->
 	<?php
-    require __DIR__.'/../includes/right-type-agenda.php';
-			?>
+    require __DIR__ . '/../includes/right-type-agenda.php';
+?>
 
 
 	<br style="clear:both" />

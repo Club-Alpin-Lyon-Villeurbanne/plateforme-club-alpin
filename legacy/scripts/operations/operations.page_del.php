@@ -23,13 +23,13 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // del page
         $req = "DELETE FROM `caf_page` WHERE `caf_page`.`id_page` = $id_page LIMIT 1;";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur BDD<br />'.$req;
+            $errTab[] = 'Erreur BDD<br />' . $req;
         }
 
         // del contenus liés
-        $req = "DELETE FROM `caf_content_inline` WHERE `code_content_inline` LIKE 'meta-title-".$code_page."' OR `code_content_inline` LIKE 'mainmenu-".$code_page."'";
+        $req = "DELETE FROM `caf_content_inline` WHERE `code_content_inline` LIKE 'meta-title-" . $code_page . "' OR `code_content_inline` LIKE 'mainmenu-" . $code_page . "'";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur BDD<br />'.$req;
+            $errTab[] = 'Erreur BDD<br />' . $req;
         }
     }
     echo '<hr />';

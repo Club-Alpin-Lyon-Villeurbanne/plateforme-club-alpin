@@ -48,25 +48,25 @@ if (!isset($errTab) || 0 === count($errTab)) {
 // mise à jour de la photo si transmise
 if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
     if ($_FILES['photo']['error'] > 0) {
-        $errTab[] = "Erreur dans l'image : ".$_FILES['photo']['error'];
+        $errTab[] = "Erreur dans l'image : " . $_FILES['photo']['error'];
     } else {
         // déplacement du fichier dans le dossier transit
-        $uploaddir = __DIR__.'/../../../public/ftp/transit/profil/';
+        $uploaddir = __DIR__ . '/../../../public/ftp/transit/profil/';
         LegacyContainer::get('legacy_fs')->mkdir($uploaddir);
         $i = 1;
-        while (file_exists($uploaddir.$i.'-profil.jpg')) {
+        while (file_exists($uploaddir . $i . '-profil.jpg')) {
             ++$i;
         }
-        $filename = $i.'-profil.jpg';
-        if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploaddir.$filename)) {
-            $rep_Dst = __DIR__.'/../../../public/ftp/user/'.$id_user.'/';
+        $filename = $i . '-profil.jpg';
+        if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploaddir . $filename)) {
+            $rep_Dst = __DIR__ . '/../../../public/ftp/user/' . $id_user . '/';
 
-            $profilePic = $rep_Dst.'profil.jpg';
-            $uploadedFile = $uploaddir.$filename;
+            $profilePic = $rep_Dst . 'profil.jpg';
+            $uploadedFile = $uploaddir . $filename;
 
             if (!file_exists($rep_Dst)) {
                 if (!mkdir($rep_Dst, 0755, true) && !is_dir($rep_Dst)) {
-                    throw new \RuntimeException(sprintf('Directory "%s" was not created', $rep_Dst));
+                    throw new RuntimeException(sprintf('Directory "%s" was not created', $rep_Dst));
                 }
             }
 
@@ -74,8 +74,8 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
                 $errTab[] = 'Impossible de redimensionner la grande image';
             }
 
-            $profilePicMin = $rep_Dst.'min-profil.jpg';
-            $profilePicPic = $rep_Dst.'pic-profil.jpg';
+            $profilePicMin = $rep_Dst . 'min-profil.jpg';
+            $profilePicPic = $rep_Dst . 'pic-profil.jpg';
 
             if (!ImageManipulator::resizeImage(150, 150, $uploadedFile, $profilePicMin)) {
                 $errTab[] = 'Impossible de redimensionner la miniature';
@@ -85,8 +85,8 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
                 $errTab[] = 'Impossible de croper l\'image (picto)';
             }
 
-            if (file_exists($uploaddir.$filename)) {
-                unlink($uploaddir.$filename);
+            if (file_exists($uploaddir . $filename)) {
+                unlink($uploaddir . $filename);
             }
         } else {
             $errTab[] = 'Erreur lors du déplacement du fichier';
@@ -122,7 +122,7 @@ if ('' !== $email_user_mailchange) {
     if (!isset($errTab) || 0 === count($errTab)) {
         LegacyContainer::get('legacy_mailer')->send($email_user_mailchange, 'transactional/email-update', [
             'email' => $email_user_mailchange,
-            'url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'email-change/'.$token.'-'.$id_user_mailchange.'.html',
+            'url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'email-change/' . $token . '-' . $id_user_mailchange . '.html',
         ]);
     }
 }
