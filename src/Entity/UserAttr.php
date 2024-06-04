@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * UserAttr.
- *
- *
  */
 #[ORM\Table(name: 'caf_user_attr')]
 #[ORM\Entity]
@@ -29,21 +27,16 @@ class UserAttr
 
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Column(name: 'id_user_attr', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
-    
     #[ORM\ManyToOne(targetEntity: 'User', inversedBy: 'attrs', fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'user_user_attr', referencedColumnName: 'id_user', nullable: false, onDelete: 'CASCADE')]
     private $user;
 
-    
     #[ORM\ManyToOne(targetEntity: 'Usertype')]
     #[ORM\JoinColumn(name: 'usertype_user_attr', referencedColumnName: 'id_usertype')]
     private $userType;

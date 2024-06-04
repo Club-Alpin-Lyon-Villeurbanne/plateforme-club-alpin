@@ -11,10 +11,10 @@ if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
     $errTab[] = 'Erreur SQL';
 } else {
     while ($row = $result->fetch_array(\MYSQLI_ASSOC)) {
-        if (file_exists(__DIR__.'/../../public/ftp/partenaires/'.$row['part_image'])) {
+        if (file_exists(__DIR__ . '/../../public/ftp/partenaires/' . $row['part_image'])) {
             $partenairesTab[] = $row;
         } else {
-            error_log("l'image partenaire n'existe pas : ".'ftp/partenaires/'.$row['part_image']);
+            error_log("l'image partenaire n'existe pas : " . 'ftp/partenaires/' . $row['part_image']);
             // mylog("partenaires", "l'image partenaire n'existe pas : ".'ftp/partenaires/'.$row['part_image'], false);
         }
     }
@@ -33,8 +33,8 @@ if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     <div id="slides">
                         <?php
                             foreach ($partenairesTab as $partenaire) {
-                                echo '<a target="_blank" href="/goto/partenaire/'.$partenaire['part_id'].'/'.formater($partenaire['part_name'], 3).'.html">
-                                <img src="/ftp/partenaires/'.$partenaire['part_image'].'" alt="'.$partenaire['part_name'].'">
+                                echo '<a target="_blank" href="/goto/partenaire/' . $partenaire['part_id'] . '/' . formater($partenaire['part_name'], 3) . '.html">
+                                <img src="/ftp/partenaires/' . $partenaire['part_image'] . '" alt="' . $partenaire['part_name'] . '">
                                 </a>';
                             } ?>
                     </div>

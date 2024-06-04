@@ -25,7 +25,7 @@ if (!allowed('user_reset')) {
 			<?php
             // TABLEAU
             if (isset($_POST['operation']) && 'user_reset' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
             }
     if (isset($_POST['operation']) && 'user_reset' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
         echo '<p class="info">Utilisateur réinitialisé (Vous devrez <a href="/adherents.html" title="" target="_top">actualiser la page</a> pour voir le changement)</p>';

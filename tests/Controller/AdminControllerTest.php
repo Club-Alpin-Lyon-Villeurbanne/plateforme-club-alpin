@@ -12,7 +12,7 @@ class AdminControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(302);
         $this->assertResponseRedirects('http://localhost/login');
 
-        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+        $user = $this->signup(mt_rand() . 'test@clubalpinlyon.fr');
         $this->signin($user);
 
         $this->assertFalse($this->getSession()->has('admin_caf'));

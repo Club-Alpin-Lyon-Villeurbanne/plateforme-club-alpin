@@ -1,24 +1,24 @@
 <?php
 // URL
-$url = 'article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html';
+$url = 'article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html';
 // if($current_commission) $url.='?commission='.$current_commission; // v1 : commission courante sur la page
 if ($article['commission']['code_commission'] ?? null) {
-    $url .= '?commission='.$article['commission']['code_commission'];
+    $url .= '?commission=' . $article['commission']['code_commission'];
 } // V2 commission de cet article
 elseif ($article['evt']['code_commission'] ?? null) {
-    $url .= '?commission='.$article['evt']['code_commission'];
+    $url .= '?commission=' . $article['evt']['code_commission'];
 } // commission de la sortie associée
 
 // disabling links :
 if (1 != $article['status_article']) {
-    if (!allowed('article_edit', 'commission:'.$article['commission_article'])) {
+    if (!allowed('article_edit', 'commission:' . $article['commission_article'])) {
         $url = "javascript:$.fancybox('<p class=\'info\'>Désolé, vous ne pouvez pas ouvrir cette page <br />car cet article n\'est pas publié sur le site.</p>')";
     }
 }
 
 // check image
-if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) $article['id_article'].'/min-figure.jpg')) {
-    $img = '/ftp/articles/'.(int) $article['id_article'].'/min-figure.jpg';
+if (is_file(__DIR__ . '/../../public/ftp/articles/' . (int) $article['id_article'] . '/min-figure.jpg')) {
+    $img = '/ftp/articles/' . (int) $article['id_article'] . '/min-figure.jpg';
 } else {
     $img = '/ftp/articles/0/min-figure.jpg';
 }
@@ -60,7 +60,7 @@ elseif (0 == $article['commission_article']) {
 }
 // -1 = compte rendu de sortie (code_commission compris dans evt)
 elseif (-1 == $article['commission_article']) {
-    $urlEvt = 'sortie/'.$article['evt']['code_evt'].'-'.$article['evt']['id_evt'].'.html?commission='.html_utf8($article['evt']['code_commission']); ?>
+    $urlEvt = 'sortie/' . $article['evt']['code_evt'] . '-' . $article['evt']['id_evt'] . '.html?commission=' . html_utf8($article['evt']['code_commission']); ?>
 			<a href="<?php echo $urlEvt; ?>" title="Voir la sortie liée à cet article : &laquo; <?php echo html_utf8($article['evt']['titre_evt']); ?> &raquo;">
 				compte rendu de sortie
 			</a>

@@ -21,7 +21,7 @@ if (!admin()) {
 
     if (!isset($partenaireTab) || 0 == count($partenaireTab)) {
         if ('edit' == $operation) {
-            $req = "SELECT * FROM  `caf_partenaires` WHERE part_id='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($part_id)."' LIMIT 1";
+            $req = "SELECT * FROM  `caf_partenaires` WHERE part_id='" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($part_id) . "' LIMIT 1";
             $partenaireTab = [];
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $partenaireTab = $result->fetch_assoc();
@@ -55,13 +55,13 @@ if (!admin()) {
 		<?php
         // TABLEAU
         if (isset($errTab) && count($errTab) > 0) {
-            echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+            echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
         }
     if (isset($_POST['operation']) && 'partenaire_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<div class="info"><b>Partenaire modifié avec succès :</b> <ul><li>'.implode('</li><li>', $okTab).'</li></ul></div>';
+        echo '<div class="info"><b>Partenaire modifié avec succès :</b> <ul><li>' . implode('</li><li>', $okTab) . '</li></ul></div>';
     }
     if (isset($_POST['operation']) && 'partenaire_add' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<div class="info"><b>Partenaire ajouté avec succès :</b> <ul><li>'.implode('</li><li>', $okTab).'</li></ul></div>';
+        echo '<div class="info"><b>Partenaire ajouté avec succès :</b> <ul><li>' . implode('</li><li>', $okTab) . '</li></ul></div>';
     } else {
         ?>
 
@@ -98,8 +98,8 @@ if (!admin()) {
 								<td valign='top'>
 									<?php
                                         if ('edit' == $operation) {
-                                            if (file_exists(__DIR__.'/../../public/ftp/partenaires/'.$partenaireTab['part_image'])) {
-                                                echo "<img src='/ftp/partenaires/".$partenaireTab['part_image']."' style='max-width:150px;max-height:60px'>";
+                                            if (file_exists(__DIR__ . '/../../public/ftp/partenaires/' . $partenaireTab['part_image'])) {
+                                                echo "<img src='/ftp/partenaires/" . $partenaireTab['part_image'] . "' style='max-width:150px;max-height:60px'>";
                                             } else {
                                                 echo '<img src="/img/base/cross.png" width="25" height="25" alt="non trouvée" />';
                                             }

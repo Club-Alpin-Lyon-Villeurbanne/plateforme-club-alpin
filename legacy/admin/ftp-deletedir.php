@@ -6,7 +6,7 @@ use App\Legacy\LegacyContainer;
 global $errTab;
 global $compte;
 
-require __DIR__.'/../app/includes.php';
+require __DIR__ . '/../app/includes.php';
 
 if (!admin()) {
     header('HTTP/1.0 401 Authorization Required');
@@ -25,7 +25,7 @@ if (0 < mb_substr_count($target, '../')) {
     $errTab[] = "Le chemin d'accès au dossier est incorrect : récurrence de chemin retour";
 }
 // doit être un dossier
-if (!is_dir($ftpPath.$target)) {
+if (!is_dir($ftpPath . $target)) {
     $errTab[] = "L'élément donné ne semble pas être un dossier";
 }
 
@@ -37,15 +37,15 @@ function checkMe($ftpPath, $target)
     ++$compte;
 
     if (FtpFile::isProtected($target)) {
-        $errTab[] = "L'élément ".($compte > 1 ? 'contenu dans ce dossier' : '').' : <b>'.$target.'</b> est protégé contre la suppression';
+        $errTab[] = "L'élément " . ($compte > 1 ? 'contenu dans ce dossier' : '') . ' : <b>' . $target . '</b> est protégé contre la suppression';
     }
 
     // si c'est un dossier, on l'ouvre et on verfiie ses contenus
-    if (is_dir($ftpPath.$target)) {
-        $opendir = opendir($ftpPath.$target);
+    if (is_dir($ftpPath . $target)) {
+        $opendir = opendir($ftpPath . $target);
         while ($file = readdir($opendir)) {
             if ('.' != $file && '..' != $file && 'index.php' != $file && '.htaccess' != $file) {
-                checkMe($ftpPath, $target.'/'.$file);
+                checkMe($ftpPath, $target . '/' . $file);
             }
         }
     }
@@ -53,7 +53,7 @@ function checkMe($ftpPath, $target)
 checkMe($ftpPath, $target);
 
 if (count($errTab) > 0) {
-    echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+    echo '<div class="erreur"><ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
 } else {
     // VERIFS DEJA FAITES, OPERATION OK SUR DEMANDE
     $operation = isset($_GET['operation']) || array_key_exists('operation', $_GET) ? $_GET['operation'] : null;
@@ -61,7 +61,7 @@ if (count($errTab) > 0) {
         if ('unlocked' != $_GET['lock']) {
             $errTab[] = 'Erreur : fichier verrouillé.';
         } else {
-            if (!clearDir($ftpPath.$target)) {
+            if (!clearDir($ftpPath . $target)) {
                 $errTab[] = "Erreur : suppression de $target echouée.";
             }
         }
@@ -94,7 +94,7 @@ if (count($errTab) > 0) {
                 <?php
                 // msg d'erreur ?
                 if (count($errTab) > 0) {
-                    echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                    echo '<div class="erreur"><ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                 } ?>
 
                 <h3>Suppression du dossier</h3>

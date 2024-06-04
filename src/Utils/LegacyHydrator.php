@@ -6,9 +6,9 @@ use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 
 class LegacyHydrator extends AbstractHydrator
 {
-    protected function hydrateAllData() : array
+    protected function hydrateAllData(): array
     {
-        $result =  $this->_stmt->fetchAllAssociative();
+        $result = $this->_stmt->fetchAllAssociative();
 
         // Remove suffixes put by Doctrine on field names
         foreach ($result as $row) {
@@ -19,8 +19,7 @@ class LegacyHydrator extends AbstractHydrator
             }
             $hydratedResult[] = $hydratedRow;
         }
-        
+
         return $hydratedResult;
     }
-
 }

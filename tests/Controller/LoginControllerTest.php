@@ -11,7 +11,7 @@ class LoginControllerTest extends WebTestCase
     {
         $hasherFactory = self::getContainer()->get(PasswordHasherFactoryInterface::class);
 
-        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+        $user = $this->signup(mt_rand() . 'test@clubalpinlyon.fr');
         $user->setPassword($hasherFactory->getPasswordHasher('login_form')->hash('youpla'));
         $em = $this->getContainer()->get('doctrine')->getManager();
         $em->flush();
@@ -31,7 +31,7 @@ class LoginControllerTest extends WebTestCase
     {
         $hasherFactory = self::getContainer()->get(PasswordHasherFactoryInterface::class);
 
-        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+        $user = $this->signup(mt_rand() . 'test@clubalpinlyon.fr');
         $user->setPassword($hasherFactory->getPasswordHasher('login_form')->hash('youpla'));
         $em = $this->getContainer()->get('doctrine')->getManager();
         $em->flush();
@@ -49,7 +49,7 @@ class LoginControllerTest extends WebTestCase
 
     public function testLoginWhenConnected()
     {
-        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+        $user = $this->signup(mt_rand() . 'test@clubalpinlyon.fr');
         $this->signin($user);
 
         static::$client->request('GET', '/login');
@@ -58,7 +58,7 @@ class LoginControllerTest extends WebTestCase
 
     public function testPasswordLostWhenConnected()
     {
-        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+        $user = $this->signup(mt_rand() . 'test@clubalpinlyon.fr');
         $this->signin($user);
 
         static::$client->request('GET', '/password-lost');
@@ -67,7 +67,7 @@ class LoginControllerTest extends WebTestCase
 
     public function testPasswordLost()
     {
-        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+        $user = $this->signup(mt_rand() . 'test@clubalpinlyon.fr');
 
         static::$client->request('GET', '/password-lost');
         $this->assertResponseStatusCodeSame(200);
@@ -89,7 +89,7 @@ class LoginControllerTest extends WebTestCase
 
     public function testSetPassword()
     {
-        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+        $user = $this->signup(mt_rand() . 'test@clubalpinlyon.fr');
 
         static::$client->request('GET', '/password');
         $this->assertResponseStatusCodeSame(302);
@@ -119,7 +119,7 @@ class LoginControllerTest extends WebTestCase
     {
         $hasherFactory = self::getContainer()->get(PasswordHasherFactoryInterface::class);
 
-        $user = $this->signup(mt_rand().'test@clubalpinlyon.fr');
+        $user = $this->signup(mt_rand() . 'test@clubalpinlyon.fr');
         $user->setMdp($hasherFactory->getPasswordHasher('login_form')->hash('!currentPassw0rd'));
         $this->getContainer()->get('doctrine')->getManager()->flush();
 

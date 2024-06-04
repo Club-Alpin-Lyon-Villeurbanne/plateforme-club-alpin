@@ -2,7 +2,7 @@
 
 use App\Legacy\ImageManipulator;
 
-require __DIR__.'/../../app/includes.php';
+require __DIR__ . '/../../app/includes.php';
 
 $errTab = [];
 $result = $targetDir = $filename = null;
@@ -21,36 +21,36 @@ if ('edit' == $mode && !$id_article) {
 
 if (0 === count($errTab)) {
     // creation des dossiers utiles pour l'user s'ils n'existnent pas
-    $dir = __DIR__.'/../../../public/ftp/user/'.getUser()->getId();
+    $dir = __DIR__ . '/../../../public/ftp/user/' . getUser()->getId();
     if (!file_exists($dir)) {
         if (!mkdir($dir) && !is_dir($dir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $dir));
         }
     }
-    $dir = __DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle';
+    $dir = __DIR__ . '/../../../public/ftp/user/' . getUser()->getId() . '/transit-nouvelarticle';
     if (!file_exists($dir)) {
         if (!mkdir($dir) && !is_dir($dir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $dir));
         }
     }
 
     // modification de sortie
     if ('edit' == $mode) {
-        $targetDir = __DIR__.'/../../../public/ftp/articles/'.$id_article.'/';
+        $targetDir = __DIR__ . '/../../../public/ftp/articles/' . $id_article . '/';
     } // depuis la racine
     // création de sortie
     else {
-        $targetDir = __DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/';
+        $targetDir = __DIR__ . '/../../../public/ftp/user/' . getUser()->getId() . '/transit-nouvelarticle/';
     } // depuis la racine
 
     if (!file_exists($targetDir)) {
         if (!mkdir($targetDir, 0755, true) && !is_dir($targetDir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $targetDir));
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $targetDir));
         }
     }
 
     // Handle file uploads via XMLHttpRequest
-    require __DIR__.'/vfu.classes.php';
+    require __DIR__ . '/vfu.classes.php';
 
     $uploader = new qqFileUploader();
     $result = $uploader->handleUpload($targetDir);
@@ -69,34 +69,34 @@ if (0 === count($errTab)) {
         // debug : copie impossible si le nom de fichier est juste une variante de CASSE
         // donc dans ce cas on le RENOMME
         if ($filename === strtolower($tmpfilename)) {
-            if (!rename($targetDir.$tmpfilename, $targetDir.$filename)) {
-                $errTab[] = 'Erreur de renommage de '.$targetDir.$tmpfilename." \n vers ".$targetDir.$filename;
+            if (!rename($targetDir . $tmpfilename, $targetDir . $filename)) {
+                $errTab[] = 'Erreur de renommage de ' . $targetDir . $tmpfilename . " \n vers " . $targetDir . $filename;
             }
         } else {
             // copie du fichier avec nvx nom
-            if (copy($targetDir.$tmpfilename, $targetDir.$filename)) {
+            if (copy($targetDir . $tmpfilename, $targetDir . $filename)) {
                 // suppression de l'originale
-                if (is_file($targetDir.$result['filename'])) {
-                    unlink($targetDir.$result['filename']);
+                if (is_file($targetDir . $result['filename'])) {
+                    unlink($targetDir . $result['filename']);
                 }
                 // sauf erreur le nom de ficier est remplacé par sa version formatée
                 $result['filename'] = $filename;
             } else {
-                $errTab[] = 'Erreur de copie de '.$targetDir.$result['filename']." \n vers ".$targetDir.$filename;
+                $errTab[] = 'Erreur de copie de ' . $targetDir . $result['filename'] . " \n vers " . $targetDir . $filename;
             }
         }
     }
 
     if (0 === count($errTab)) {
-        $img_Dst = 'wide-'.$filename;
+        $img_Dst = 'wide-' . $filename;
 
-        if (!ImageManipulator::cropImage(665, 365, $targetDir.$filename, $targetDir.$img_Dst)) {
+        if (!ImageManipulator::cropImage(665, 365, $targetDir . $filename, $targetDir . $img_Dst)) {
             $errTab[] = 'Image : Erreur de crop wide';
         }
 
-        $img_Dst = 'min-'.$filename;
+        $img_Dst = 'min-' . $filename;
 
-        if (!ImageManipulator::cropImage(198, 138, $targetDir.$filename, $targetDir.$img_Dst)) {
+        if (!ImageManipulator::cropImage(198, 138, $targetDir . $filename, $targetDir . $img_Dst)) {
             $errTab[] = 'Image : Erreur de crop wide';
         }
     }

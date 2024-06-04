@@ -22,19 +22,19 @@ class UserRightsTest extends WebTestCase
         $userRights = self::getContainer()->get(UserRights::class);
 
         $this->assertFalse($userRights->allowed('evt_validate'));
-        $this->assertFalse($userRights->allowed('evt_validate', 'commission:'.$commission->getCode()));
+        $this->assertFalse($userRights->allowed('evt_validate', 'commission:' . $commission->getCode()));
         $this->assertFalse($userRights->allowed('evt_validate_all'));
 
-        $this->addAttribute($user, UserAttr::RESPONSABLE_COMMISSION, 'commission:'.$commission->getCode());
+        $this->addAttribute($user, UserAttr::RESPONSABLE_COMMISSION, 'commission:' . $commission->getCode());
 
         $this->assertTrue($userRights->allowed('evt_validate'));
-        $this->assertTrue($userRights->allowed('evt_validate', 'commission:'.$commission->getCode()));
+        $this->assertTrue($userRights->allowed('evt_validate', 'commission:' . $commission->getCode()));
         $this->assertFalse($userRights->allowed('evt_validate_all'));
 
         $this->addAttribute($user, UserAttr::ADMINISTRATEUR);
 
         $this->assertTrue($userRights->allowed('evt_validate'));
-        $this->assertTrue($userRights->allowed('evt_validate', 'commission:'.$commission->getCode()));
+        $this->assertTrue($userRights->allowed('evt_validate', 'commission:' . $commission->getCode()));
         $this->assertTrue($userRights->allowed('evt_validate_all'));
     }
 }

@@ -46,15 +46,15 @@ if (!isset($errTab) || 0 === count($errTab)) {
     SET status_article = $status_article
     , topubly_article = $topubly_article
     , titre_article = '$titre_article'
-    , commission_article = ".($commission_article > 0 ? "'$commission_article'" : 'null').'
-    , evt_article = '.($evt_article ? "'".$evt_article."'" : 'null')."
+    , commission_article = " . ($commission_article > 0 ? "'$commission_article'" : 'null') . '
+    , evt_article = ' . ($evt_article ? "'" . $evt_article . "'" : 'null') . "
     , une_article = $une_article
     , cont_article = '$cont_article'
-    , tsp_article=".time()."
+    , tsp_article=" . time() . "
     WHERE id_article = $id_article
     "
     // on verifie si on est l'auteur que si on a pas le droit de modifier TOUS les articles
-    .(allowed('article_edit_notmine') ? '' : ' AND user_article = '.getUser()->getId())
+    . (allowed('article_edit_notmine') ? '' : ' AND user_article = ' . getUser()->getId())
     ;
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';

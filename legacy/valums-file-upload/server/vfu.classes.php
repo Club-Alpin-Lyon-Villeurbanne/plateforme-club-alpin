@@ -121,24 +121,24 @@ class qqFileUploader
         if ($this->allowedExtensions && !in_array(strtolower($ext), $this->allowedExtensions, true)) {
             $these = implode(', ', $this->allowedExtensions);
 
-            return ['error' => 'Le fichier '.$filename.' n\'a pas la bonne extension. Les extensions autorisées sont '.$these.'.'];
+            return ['error' => 'Le fichier ' . $filename . ' n\'a pas la bonne extension. Les extensions autorisées sont ' . $these . '.'];
         }
 
         if (!$replaceOldFile) {
             // / don't overwrite previous files that were uploaded
             $suffixe = '';
-            while (file_exists($uploadDirectory.$filename.$suffixe.'.'.$ext)) {
+            while (file_exists($uploadDirectory . $filename . $suffixe . '.' . $ext)) {
                 // $filename .= rand(10, 99);
                 $suffixe = (int) $suffixe + 1;
             }
             $filename .= $suffixe;
         }
 
-        if ($this->file->save($uploadDirectory.$filename.'.'.$ext)) {
-            return ['success' => true, 'filename' => ($filename.'.'.$ext)];
+        if ($this->file->save($uploadDirectory . $filename . '.' . $ext)) {
+            return ['success' => true, 'filename' => ($filename . '.' . $ext)];
         }
 
-        return ['error' => 'Could not save uploaded file.'.
+        return ['error' => 'Could not save uploaded file.' .
                 'The upload was cancelled, or server error encountered', ];
     }
 }

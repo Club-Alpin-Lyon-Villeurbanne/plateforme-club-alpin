@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Galerie.
- *
- *
  */
 #[ORM\Table(name: 'caf_galerie')]
 #[ORM\Entity]
@@ -15,9 +13,6 @@ class Galerie
 {
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Column(name: 'id_galerie', type: 'integer', nullable: false)]
     #[ORM\Id]

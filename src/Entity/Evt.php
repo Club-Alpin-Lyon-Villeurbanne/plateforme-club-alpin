@@ -5,16 +5,13 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JsonSerializable;
 
 /**
  * Evt.
- *
- *
  */
 #[ORM\Table(name: 'caf_evt')]
 #[ORM\Entity]
-class Evt implements JsonSerializable
+class Evt implements \JsonSerializable
 {
     public const STATUS_PUBLISHED_UNSEEN = 0;
     public const STATUS_PUBLISHED_VALIDE = 1;
@@ -26,9 +23,6 @@ class Evt implements JsonSerializable
 
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Column(name: 'id_evt', type: 'integer', nullable: false)]
     #[ORM\Id]
@@ -43,8 +37,6 @@ class Evt implements JsonSerializable
 
     /**
      * @var User
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'status_who_evt', referencedColumnName: 'id_user', nullable: true)]
@@ -58,8 +50,6 @@ class Evt implements JsonSerializable
 
     /**
      * @var User
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'status_legal_who_evt', referencedColumnName: 'id_user', nullable: true)]
@@ -73,8 +63,6 @@ class Evt implements JsonSerializable
 
     /**
      * @var User
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'cancelled_who_evt', referencedColumnName: 'id_user', nullable: true)]
@@ -92,20 +80,16 @@ class Evt implements JsonSerializable
     #[ORM\OneToMany(targetEntity: ExpenseReport::class, mappedBy: 'event')]
     private $expenseReports = [];
 
-    
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'user_evt', referencedColumnName: 'id_user', nullable: false)]
     private $user;
 
-    
     #[ORM\ManyToOne(targetEntity: 'Commission')]
     #[ORM\JoinColumn(name: 'commission_evt', referencedColumnName: 'id_commission', nullable: false)]
     private $commission;
 
     /**
      * @var Groupe|null
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'Groupe', fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'id_groupe', referencedColumnName: 'id', nullable: true)]
@@ -138,7 +122,7 @@ class Evt implements JsonSerializable
     /**
      * @var string
      */
-    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage',])]
+    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage'])]
     private $place;
 
     /**
@@ -162,7 +146,7 @@ class Evt implements JsonSerializable
     /**
      * @var string
      */
-    #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu détaillé du rdv',])]
+    #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu détaillé du rdv'])]
     private $rdv;
 
     /**
@@ -261,7 +245,6 @@ class Evt implements JsonSerializable
     #[ORM\Column(name: 'cycle_master_evt', type: 'boolean', nullable: false, options: ['comment' => "Est-ce la première sortie d'un cycle de sorties liées ?"])]
     private $cycleMaster = false;
 
-    
     #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'cycleChildren')]
     #[ORM\JoinColumn(name: 'cycle_parent_evt', referencedColumnName: 'id_evt', nullable: true)]
     private $cycleParent;

@@ -36,9 +36,9 @@ if (strlen($cont_article) < 10) {
 }
 // image
 if (
-    !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/figure.jpg')
-    || !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/wide-figure.jpg')
-    || !file_exists(__DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/min-figure.jpg')
+    !file_exists(__DIR__ . '/../../../public/ftp/user/' . getUser()->getId() . '/transit-nouvelarticle/figure.jpg')
+    || !file_exists(__DIR__ . '/../../../public/ftp/user/' . getUser()->getId() . '/transit-nouvelarticle/wide-figure.jpg')
+    || !file_exists(__DIR__ . '/../../../public/ftp/user/' . getUser()->getId() . '/transit-nouvelarticle/min-figure.jpg')
 ) {
     $errTab[] = 'Merci de rajouter une photo à l\'article';
 }
@@ -50,7 +50,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $cont_article = LegacyContainer::get('legacy_mysqli_handler')->escapeString($cont_article);
 
     $req = "INSERT INTO caf_article(`status_article` ,`topubly_article` ,`tsp_crea_article` ,`tsp_article` ,`user_article` ,`titre_article` ,`code_article` ,`commission_article` ,`evt_article` ,`une_article` ,`cont_article`)
-                        VALUES ('$status_article',  '$topubly_article',  '$tsp_crea_article',  '$tsp_article',  '$user_article',  '$titre_article',  '$code_article', ".($commission_article > 0 ? "'$commission_article'" : 'null').',  '.($evt_article ? "'".$evt_article."'" : 'null')." ,  '$une_article',  '$cont_article');";
+                        VALUES ('$status_article',  '$topubly_article',  '$tsp_crea_article',  '$tsp_article',  '$user_article',  '$titre_article',  '$code_article', " . ($commission_article > 0 ? "'$commission_article'" : 'null') . ',  ' . ($evt_article ? "'" . $evt_article . "'" : 'null') . " ,  '$une_article',  '$cont_article');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     } else {
@@ -61,25 +61,25 @@ if (!isset($errTab) || 0 === count($errTab)) {
 // déplacement des fichiers
 if ((!isset($errTab) || 0 === count($errTab)) && $id_article > 0) {
     // repertoire de l'image a recuperer
-    $dirFrom = __DIR__.'/../../../public/ftp/user/'.getUser()->getId().'/transit-nouvelarticle/';
+    $dirFrom = __DIR__ . '/../../../public/ftp/user/' . getUser()->getId() . '/transit-nouvelarticle/';
     // créa du repertroie destination
-    $dirTo = __DIR__.'/../../../public/ftp/articles/'.$id_article;
+    $dirTo = __DIR__ . '/../../../public/ftp/articles/' . $id_article;
     if (!file_exists($dirTo)) {
         if (!mkdir($dirTo, 0755, true) && !is_dir($dirTo)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $dirTo));
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $dirTo));
         }
     }
     $dirTo .= '/';
 
     // copie & suppression
-    if (copy($dirFrom.'figure.jpg', $dirTo.'figure.jpg')) {
-        unlink($dirFrom.'figure.jpg');
+    if (copy($dirFrom . 'figure.jpg', $dirTo . 'figure.jpg')) {
+        unlink($dirFrom . 'figure.jpg');
     }
-    if (copy($dirFrom.'min-figure.jpg', $dirTo.'min-figure.jpg')) {
-        unlink($dirFrom.'min-figure.jpg');
+    if (copy($dirFrom . 'min-figure.jpg', $dirTo . 'min-figure.jpg')) {
+        unlink($dirFrom . 'min-figure.jpg');
     }
-    if (copy($dirFrom.'wide-figure.jpg', $dirTo.'wide-figure.jpg')) {
-        unlink($dirFrom.'wide-figure.jpg');
+    if (copy($dirFrom . 'wide-figure.jpg', $dirTo . 'wide-figure.jpg')) {
+        unlink($dirFrom . 'wide-figure.jpg');
     }
 }
 

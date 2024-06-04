@@ -18,11 +18,11 @@ class FeedWriter
     public const ATOM = 'ATOM';
 
     private $channels = [];  // Collection of channel elements
-     private $items = [];  // Collection of items as object of FeedItem class.
-     private $data = [];  // Store some other version wise data
-     private $CDATAEncoding = [];  // The tag names which have to encoded as CDATA
+    private $items = [];  // Collection of items as object of FeedItem class.
+    private $data = [];  // Store some other version wise data
+    private $CDATAEncoding = [];  // The tag names which have to encoded as CDATA
 
-     private $version = null;
+    private $version;
 
     /**
      * Constructor.
@@ -34,10 +34,10 @@ class FeedWriter
         $this->version = $version;
 
         // Setting default value for assential channel elements
-        $this->channels['title'] = $version.' Feed';
+        $this->channels['title'] = $version . ' Feed';
         $this->channels['link'] = 'https://www.ajaxray.com/blog';
 
-        //Tag names to encode in CDATA
+        // Tag names to encode in CDATA
         $this->CDATAEncoding = ['description', 'content:encoded', 'summary'];
     }
 
@@ -171,13 +171,13 @@ class FeedWriter
     {
         $key = (null == $key) ? uniqid(rand(), true) : $key;
         $chars = md5($key);
-        $uuid = substr($chars, 0, 8).'-';
-        $uuid .= substr($chars, 8, 4).'-';
-        $uuid .= substr($chars, 12, 4).'-';
-        $uuid .= substr($chars, 16, 4).'-';
+        $uuid = substr($chars, 0, 8) . '-';
+        $uuid .= substr($chars, 8, 4) . '-';
+        $uuid .= substr($chars, 12, 4) . '-';
+        $uuid .= substr($chars, 16, 4) . '-';
         $uuid .= substr($chars, 20, 12);
 
-        return $prefix.$uuid;
+        return $prefix . $uuid;
     }
 
     // End # public functions ----------------------------------------------
@@ -189,21 +189,21 @@ class FeedWriter
      */
     private function printHead()
     {
-        $out = '<?xml version="1.0" encoding="utf-8"?>'."\n";
+        $out = '<?xml version="1.0" encoding="utf-8"?>' . "\n";
 
         if (self::RSS2 == $this->version) {
             $out .= '<rss version="2.0"
 					xmlns:content="https://purl.org/rss/1.0/modules/content/"
 					xmlns:wfw="https://wellformedweb.org/CommentAPI/"
-				  >'.\PHP_EOL;
+				  >' . \PHP_EOL;
         } elseif (self::RSS1 == $this->version) {
             $out .= '<rdf:RDF
 					 xmlns:rdf="https://www.w3.org/1999/02/22-rdf-syntax-ns#"
 					 xmlns="https://purl.org/rss/1.0/"
 					 xmlns:dc="https://purl.org/dc/elements/1.1/"
-					>'.\PHP_EOL;
+					>' . \PHP_EOL;
         } elseif (self::ATOM == $this->version) {
-            $out .= '<feed xmlns="https://www.w3.org/2005/Atom">'.\PHP_EOL;
+            $out .= '<feed xmlns="https://www.w3.org/2005/Atom">' . \PHP_EOL;
         }
 
         return $out;
@@ -217,7 +217,7 @@ class FeedWriter
         $out = '';
 
         if (self::RSS2 == $this->version) {
-            $out .= '</channel>'.\PHP_EOL.'</rss>';
+            $out .= '</channel>' . \PHP_EOL . '</rss>';
         } elseif (self::RSS1 == $this->version) {
             $out .= '</rdf:RDF>';
         } elseif (self::ATOM == $this->version) {
@@ -266,7 +266,7 @@ class FeedWriter
 
         $nodeText .= (\in_array($tagName, $this->CDATAEncoding, true)) ? "]]></$tagName>" : "</$tagName>";
 
-        return $nodeText.\PHP_EOL;
+        return $nodeText . \PHP_EOL;
     }
 
     /**
@@ -276,36 +276,36 @@ class FeedWriter
     {
         $out = '';
 
-        //Start channel tag
+        // Start channel tag
         switch ($this->version) {
-             case self::RSS2:
-                 $out .= '<channel>'.\PHP_EOL;
-                 break;
-             case self::RSS1:
-                 $out .= (isset($this->data['ChannelAbout'])) ? "<channel rdf:about=\"{$this->data['ChannelAbout']}\">" : "<channel rdf:about=\"{$this->channels['link']}\">";
-                 break;
-         }
+            case self::RSS2:
+                $out .= '<channel>' . \PHP_EOL;
+                break;
+            case self::RSS1:
+                $out .= (isset($this->data['ChannelAbout'])) ? "<channel rdf:about=\"{$this->data['ChannelAbout']}\">" : "<channel rdf:about=\"{$this->channels['link']}\">";
+                break;
+        }
 
-        //Print Items of channel
+        // Print Items of channel
         foreach ($this->channels as $key => $value) {
             if (self::ATOM == $this->version && 'link' == $key) {
                 // ATOM prints link element as href attribute
                 $out .= $this->makeNode($key, '', ['href' => $value]);
-                //Add the id for ATOM
+                // Add the id for ATOM
                 $out .= $this->makeNode('id', $this->uuid($value, 'urn:uuid:'));
             } else {
                 $out .= $this->makeNode($key, $value);
             }
         }
 
-        //RSS 1.0 have special tag <rdf:Seq> with channel
+        // RSS 1.0 have special tag <rdf:Seq> with channel
         if (self::RSS1 == $this->version) {
-            $out .= '<items>'.\PHP_EOL.'<rdf:Seq>'.\PHP_EOL;
+            $out .= '<items>' . \PHP_EOL . '<rdf:Seq>' . \PHP_EOL;
             foreach ($this->items as $item) {
                 $thisItems = $item->getElements();
-                $out .= "<rdf:li resource=\"{$thisItems['link']['content']}\"/>".\PHP_EOL;
+                $out .= "<rdf:li resource=\"{$thisItems['link']['content']}\"/>" . \PHP_EOL;
             }
-            $out .= '</rdf:Seq>'.\PHP_EOL.'</items>'.\PHP_EOL.'</channel>'.\PHP_EOL;
+            $out .= '</rdf:Seq>' . \PHP_EOL . '</items>' . \PHP_EOL . '</channel>' . \PHP_EOL;
         }
 
         return $out;
@@ -321,7 +321,7 @@ class FeedWriter
         foreach ($this->items as $item) {
             $thisItems = $item->getElements();
 
-            //the argument is printed as rdf:about attribute of item in rss 1.0
+            // the argument is printed as rdf:about attribute of item in rss 1.0
             $out .= $this->startItem($thisItems['link']['content']);
 
             foreach ($thisItems as $feedItem) {
@@ -343,15 +343,15 @@ class FeedWriter
         $out = '';
 
         if (self::RSS2 == $this->version) {
-            $out .= '<item>'.\PHP_EOL;
+            $out .= '<item>' . \PHP_EOL;
         } elseif (self::RSS1 == $this->version) {
             if ($about) {
-                $out .= "<item rdf:about=\"$about\">".\PHP_EOL;
+                $out .= "<item rdf:about=\"$about\">" . \PHP_EOL;
             } else {
                 throw new \RuntimeException('link element is not set .\n It\'s required for RSS 1.0 to be used as about attribute of item');
             }
         } elseif (self::ATOM == $this->version) {
-            $out .= '<entry>'.\PHP_EOL;
+            $out .= '<entry>' . \PHP_EOL;
         }
 
         return $out;
@@ -365,9 +365,9 @@ class FeedWriter
         $out = '';
 
         if (self::RSS2 == $this->version || self::RSS1 == $this->version) {
-            $out .= '</item>'.\PHP_EOL;
+            $out .= '</item>' . \PHP_EOL;
         } elseif (self::ATOM == $this->version) {
-            $out .= '</entry>'.\PHP_EOL;
+            $out .= '</entry>' . \PHP_EOL;
         }
 
         return $out;

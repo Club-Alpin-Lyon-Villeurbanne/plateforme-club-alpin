@@ -5,7 +5,7 @@ use App\Legacy\LegacyContainer;
 use Symfony\Component\Asset\PathPackage;
 use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 
-require __DIR__.'/../app/includes.php';
+require __DIR__ . '/../app/includes.php';
 
 if (admin()) {
     // bien connecté ?
@@ -21,11 +21,11 @@ if (admin()) {
     $dossier = null;
     $ftpPath = LegacyContainer::getParameter('legacy_ftp_path');
     if ('image' == $type) {
-        $dossier = isset($_GET['dossier']) || array_key_exists('dossier', $_GET) ? urldecode($_GET['dossier']).'/' : 'images/';
-        $fullPath = $ftpPath.$dossier;
+        $dossier = isset($_GET['dossier']) || array_key_exists('dossier', $_GET) ? urldecode($_GET['dossier']) . '/' : 'images/';
+        $fullPath = $ftpPath . $dossier;
     } elseif ('file' == $type) {
         $dossier = 'telechargements/';
-        $fullPath = $ftpPath.$dossier;
+        $fullPath = $ftpPath . $dossier;
     } else {
         echo "ERREUR : type invalide ($type / $dossier)";
         exit;
@@ -34,7 +34,7 @@ if (admin()) {
     // première visite : dossier inexistant
     if (!file_exists($fullPath)) {
         if (!mkdir($concurrentDirectory = $fullPath) && !is_dir($concurrentDirectory)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
 
@@ -144,12 +144,12 @@ if (admin()) {
                         La plupart des formats d\'images sont supportés, poids maximum : 20Mo.
                         ';
                         }
-                        if ('file' == $type) {
-                            echo "
+    if ('file' == $type) {
+        echo "
                                     Déposez ici les fichiers que vous souhaitez proposer en téléchargement.<br />
-                                    Ext. autorisées : <span style='font-size:9px'>".implode(', ', FtpFile::getAllowedExtensions()).'</span>
+                                    Ext. autorisées : <span style='font-size:9px'>" . implode(', ', FtpFile::getAllowedExtensions()) . '</span>
                                     ';
-                        } ?>
+    } ?>
                 </p>
 
                 <!-- valums file upload -->
@@ -192,20 +192,20 @@ if (admin()) {
                 <!-- OPERATIONS -->
                 <?php
                     $operation = isset($_GET['operation']) || array_key_exists('operation', $_GET) ? $_GET['operation'] : null;
-                    if ('delete' == $operation) {
-                        $file = $_GET['file'];
-                        if (!file_exists($fullPath.$file)) {
-                            echo '<p class="erreur"> Erreur : fichier non trouvé</p>';
-                        } elseif (strpos(' '.$file, '../')) {
-                            echo '<p class="erreur"> Erreur tentative de piratage</p>';
-                        } else {
-                            if (unlink($fullPath.$file)) {
-                                echo '<p class="info">Fichier '.$file.' supprimé</p>';
-                            } else {
-                                echo '<p class="erreur"> Erreur technique lors de la suppression.</p>';
-                            }
-                        }
-                    } ?>
+    if ('delete' == $operation) {
+        $file = $_GET['file'];
+        if (!file_exists($fullPath . $file)) {
+            echo '<p class="erreur"> Erreur : fichier non trouvé</p>';
+        } elseif (strpos(' ' . $file, '../')) {
+            echo '<p class="erreur"> Erreur tentative de piratage</p>';
+        } else {
+            if (unlink($fullPath . $file)) {
+                echo '<p class="info">Fichier ' . $file . ' supprimé</p>';
+            } else {
+                echo '<p class="erreur"> Erreur technique lors de la suppression.</p>';
+            }
+        }
+    } ?>
 
                 <table>
                     <thead>
@@ -217,117 +217,117 @@ if (admin()) {
                         <!--<th>Créé le</th>-->
                     </thead>
                     <?php
-                        // tableau des fichiers
-                        $tabFichiers = [];
+        // tableau des fichiers
+        $tabFichiers = [];
 
-                        $extTab = [];
-                        // extensions autorisées ici en fonction du type demandé
-                        if ('image' == $type) {
-                            $extTab = FtpFile::getAllowedImagesExtension();
-                        } elseif ('file' == $type) {
-                            $extTab = FtpFile::getAllowedExtensions();
-                        }
+    $extTab = [];
+    // extensions autorisées ici en fonction du type demandé
+    if ('image' == $type) {
+        $extTab = FtpFile::getAllowedImagesExtension();
+    } elseif ('file' == $type) {
+        $extTab = FtpFile::getAllowedExtensions();
+    }
 
-                        // ouverture du dossier demande
-                        $handle = opendir($fullPath);
-                        $j = 0; // compte des fichiers
-                        while ($fichier = readdir($handle)) {
-                            // ext
-                            $ext = strtolower(pathinfo($fichier, \PATHINFO_EXTENSION));
-                            // Selection des fichiers a afficher ou pas
-                            if (in_array($ext, $extTab, true)) {
-                                // est-ce bien un fichier
-                                if (!is_dir($fullPath.$fichier)) {
-                                    $tabFichiers[$j] = $fichier;
-                                    ++$j;
-                                }
-                            }
-                        }
-                        closedir($handle);
-                        // AFFICHAGE DU FICHIER
-                        $k = 0;
-                        $package = new PathPackage('/ftp', new EmptyVersionStrategy());
-                        foreach ($tabFichiers as $fichier) {
-                            ++$k;
+    // ouverture du dossier demande
+    $handle = opendir($fullPath);
+    $j = 0; // compte des fichiers
+    while ($fichier = readdir($handle)) {
+        // ext
+        $ext = strtolower(pathinfo($fichier, \PATHINFO_EXTENSION));
+        // Selection des fichiers a afficher ou pas
+        if (in_array($ext, $extTab, true)) {
+            // est-ce bien un fichier
+            if (!is_dir($fullPath . $fichier)) {
+                $tabFichiers[$j] = $fichier;
+                ++$j;
+            }
+        }
+    }
+    closedir($handle);
+    // AFFICHAGE DU FICHIER
+    $k = 0;
+    $package = new PathPackage('/ftp', new EmptyVersionStrategy());
+    foreach ($tabFichiers as $fichier) {
+        ++$k;
 
-                            // affichage URL
-                            $relativeUrl = $package->getUrl($dossier.$fichier);
+        // affichage URL
+        $relativeUrl = $package->getUrl($dossier . $fichier);
 
-                            // icone du fichier ou miniature de l'image
-                            if ('image' == $type) {
-                                $icon = $relativeUrl;
-                            } else {
-                                $ext = strtolower(substr(strrchr($fichier, '.'), 1));
-                                switch ($ext) { // on indique sur quelle variable on travaille
-                                    // IMAGES
-                                    case 'jpg':
-                                    case 'png':
-                                    case 'gif':
-                                    case 'bmp':
-                                    case 'webp':
-                                    case 'jpeg': $icon = '/img/base/image.png';
-                                    break;
-                                        // TTT DE TEXTES
-                                    case 'odt': $icon = '/img/base/OOffice.jpg';
-                                    break;
-                                    case 'doc': $icon = '/img/base/iconeDoc.gif';
-                                    break;
-                                    case 'pdf': $icon = '/img/base/pdf.png';
-                                    break;
-                                        // DEFAUT
-                                    default: $icon = '/img/base/fichier.png';
-                                }
-                            }
+        // icone du fichier ou miniature de l'image
+        if ('image' == $type) {
+            $icon = $relativeUrl;
+        } else {
+            $ext = strtolower(substr(strrchr($fichier, '.'), 1));
+            switch ($ext) { // on indique sur quelle variable on travaille
+                // IMAGES
+                case 'jpg':
+                case 'png':
+                case 'gif':
+                case 'bmp':
+                case 'webp':
+                case 'jpeg': $icon = '/img/base/image.png';
+                    break;
+                    // TTT DE TEXTES
+                case 'odt': $icon = '/img/base/OOffice.jpg';
+                    break;
+                case 'doc': $icon = '/img/base/iconeDoc.gif';
+                    break;
+                case 'pdf': $icon = '/img/base/pdf.png';
+                    break;
+                    // DEFAUT
+                default: $icon = '/img/base/fichier.png';
+            }
+        }
 
-                            // taille (octets)
-                            $fsize = filesize($fullPath.$fichier);
+        // taille (octets)
+        $fsize = filesize($fullPath . $fichier);
 
-                            // date (tsp) de modif
-                            $mtime = filemtime($fullPath.$fichier);
+        // date (tsp) de modif
+        $mtime = filemtime($fullPath . $fichier);
 
-                            // date (tsp) de crea
-                            $ctime = filemtime($fullPath.$fichier);
+        // date (tsp) de crea
+        $ctime = filemtime($fullPath . $fichier);
 
-                            // ///////////////////////
-                            // AFFICHAGE DE LA LIGNE
-                            echo '
+        // ///////////////////////
+        // AFFICHAGE DE LA LIGNE
+        echo '
                                 <tr>
                                     <td style="width:30px; text-align:center">
-                                        <img src="/img/base/add.png" alt="Insérer" title="Insérer ce fichier" style="cursor:pointer" onclick="inserer(\''.$relativeUrl.'\')" />
+                                        <img src="/img/base/add.png" alt="Insérer" title="Insérer ce fichier" style="cursor:pointer" onclick="inserer(\'' . $relativeUrl . '\')" />
                                     </td>
                                     <td>
-                                        '.('image' == $type ?
-                                            '<a class="fancybox" href="'.$icon.'" title="'.html_utf8($fichier).'"><img src="'.$icon.'" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
-                                        :
-                                            '<a target="_blank" href="'.$relativeUrl.'" title="Ouvrir '.html_utf8($fichier).' dans une nouvelle fenêtre"><img src="'.$icon.'" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
-                                        ).'
+                                        ' . ('image' == $type ?
+                        '<a class="fancybox" href="' . $icon . '" title="' . html_utf8($fichier) . '"><img src="' . $icon . '" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
+                    :
+                        '<a target="_blank" href="' . $relativeUrl . '" title="Ouvrir ' . html_utf8($fichier) . ' dans une nouvelle fenêtre"><img src="' . $icon . '" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
+        ) . '
                                     </td>
                                     <td>
-                                        '.('image' == $type ?
-                                        '<a class="fancybox" href="'.$icon.'" title="'.html_utf8($fichier).'">'.substr($fichier, 0, 70).'</a>'
-                                        :
-                                        '<a target="_blank" href="'.$relativeUrl.'" title="Ouvrir '.html_utf8($fichier).' dans une nouvelle fenêtre">'.substr($fichier, 0, 70).'</a>'
-                                        ).'
+                                        ' . ('image' == $type ?
+        '<a class="fancybox" href="' . $icon . '" title="' . html_utf8($fichier) . '">' . substr($fichier, 0, 70) . '</a>'
+        :
+        '<a target="_blank" href="' . $relativeUrl . '" title="Ouvrir ' . html_utf8($fichier) . ' dans une nouvelle fenêtre">' . substr($fichier, 0, 70) . '</a>'
+        ) . '
                                     </td>
                                     <td>
-                                        <span style="display:none">'.$fsize.'</span>
-                                        '.formatSize($fsize).'
+                                        <span style="display:none">' . $fsize . '</span>
+                                        ' . formatSize($fsize) . '
                                     </td>
                                     <td>
-                                        <span style="display:none">'.$mtime.'</span>'
-                                        // Supprimer : le lien est intégré ici pour raison graphique
-                                        .'<img class="file-delete" src="/img/base/bullet_delete.png" title="Supprimer" alt="" style="float:right; cursor:pointer;" />'
-                                        .date('d/m/y H:i', $mtime).'
+                                        <span style="display:none">' . $mtime . '</span>'
+                    // Supprimer : le lien est intégré ici pour raison graphique
+                    . '<img class="file-delete" src="/img/base/bullet_delete.png" title="Supprimer" alt="" style="float:right; cursor:pointer;" />'
+                    . date('d/m/y H:i', $mtime) . '
                                     </td>'
-                                    /*
+                /*
                                     <td>
-                                        <span style="display:none">'.$ctime.'</span>
-                                        '.date('d/m/y H:i', $ctime).'
+        <span style="display:none">'.$ctime.'</span>
+        '.date('d/m/y H:i', $ctime).'
                                     </td>
                                     */
-                                .'
+            . '
                                 </tr>';
-                        } ?>
+    } ?>
                 </table>
             </div>
         </body>

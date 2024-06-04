@@ -2,6 +2,7 @@
 
 namespace App\Command\Dev;
 
+use App\DataFixtures\DevData;
 use App\Entity\User;
 use App\Entity\Usertype;
 use App\Repository\CommissionRepository;
@@ -10,12 +11,12 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use App\DataFixtures\DevData;
 
 #[AsCommand(name: 'caf:fixtures:load')]
 class FixturesLoadCommand extends Command
 {
     private ContainerInterface $container;
+
     public function __construct(ContainerInterface $container, ?string $name = null)
     {
         parent::__construct($name);

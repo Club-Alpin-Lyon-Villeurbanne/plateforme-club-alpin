@@ -2,15 +2,15 @@
 
 use App\Legacy\LegacyContainer;
 
-$log = (isset($log) ? $log : '')."\n accès à ".date('H:i:s');
+$log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 $result['success'] = false;
 
 if (admin()) {
     $code_content_html = stripslashes($_POST['code_content_html']);
-    $vis_content_html = (int) ($_POST['vis_content_html']);
+    $vis_content_html = (int) $_POST['vis_content_html'];
 
     $code_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($code_content_html);
-    $log .= "\n code_content_html :  ".$code_content_html;
+    $log .= "\n code_content_html :  " . $code_content_html;
 
     if ($code_content_html) {
         // update VIS
@@ -18,7 +18,7 @@ if (admin()) {
         if (LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $result['success'] = true;
         }
-        $log .= "\n req :  ".$req;
+        $log .= "\n req :  " . $req;
         // retour contenu si visible
         if ($vis_content_html) {
             $req = "SELECT `contenu_content_html` FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  'fr' ORDER BY  `date_content_html` DESC  LIMIT 1";
@@ -29,7 +29,7 @@ if (admin()) {
         } else {
             $result['content'] = '<div class="blocdesactive"><img src="/img/base/bullet_key.png" alt="" title="" /> Bloc de contenu désactivé</div>';
         }
-        $log .= "\n retour : ".$result['content'];
+        $log .= "\n retour : " . $result['content'];
     } else {
         $result['error'] = 'code_content_html missing';
     }

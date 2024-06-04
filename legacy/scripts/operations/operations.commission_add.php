@@ -6,7 +6,7 @@ if (!allowed('comm_create')) {
     $errTab[] = 'Vous n\'avez pas les droits nécessaires pour cette operation';
 }
 $title_commission = stripslashes($_POST['title_commission']);
-$uploads_dir = __DIR__.'/../../../public/ftp/transit/nouvellecommission';
+$uploads_dir = __DIR__ . '/../../../public/ftp/transit/nouvellecommission';
 
 // CHECKIN VARS
 if (!isset($errTab) || 0 === count($errTab)) {
@@ -26,23 +26,23 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $errTab[] = 'Titre de commission trop court';
     }
     if (strlen($title_commission) > 25) {
-        $errTab[] = 'Titre de commission trop long ('.strlen($title_commission).')';
+        $errTab[] = 'Titre de commission trop long (' . strlen($title_commission) . ')';
     }
 }
 
 // VIDAGE DU DOSSIER TRANSIT (evite les erreurs)
 if (!isset($errTab) || 0 === count($errTab)) {
-    if (file_exists($uploads_dir.'/bigfond.jpg')) {
-        unlink($uploads_dir.'/bigfond.jpg');
+    if (file_exists($uploads_dir . '/bigfond.jpg')) {
+        unlink($uploads_dir . '/bigfond.jpg');
     }
-    if (file_exists($uploads_dir.'/picto.png')) {
-        unlink($uploads_dir.'/picto.png');
+    if (file_exists($uploads_dir . '/picto.png')) {
+        unlink($uploads_dir . '/picto.png');
     }
-    if (file_exists($uploads_dir.'/picto-dark.png')) {
-        unlink($uploads_dir.'/picto-dark.png');
+    if (file_exists($uploads_dir . '/picto-dark.png')) {
+        unlink($uploads_dir . '/picto-dark.png');
     }
-    if (file_exists($uploads_dir.'/picto-light.png')) {
-        unlink($uploads_dir.'/picto-light.png');
+    if (file_exists($uploads_dir . '/picto-light.png')) {
+        unlink($uploads_dir . '/picto-light.png');
     }
 }
 
@@ -208,12 +208,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
 // DÉPLACEMENT DES FICHIERS DANS LE DOSSIER FINAL
 if (!isset($errTab) || 0 === count($errTab)) {
-    $newDir = __DIR__.'/../../../public/ftp/commission/'.$id_commission;
+    $newDir = __DIR__ . '/../../../public/ftp/commission/' . $id_commission;
 
     // création du dossier
     if (!file_exists($newDir)) {
         if (!mkdir($newDir, 0755, true) && !is_dir($newDir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $newDir));
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $newDir));
         }
     }
 

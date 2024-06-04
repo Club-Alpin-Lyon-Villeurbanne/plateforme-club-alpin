@@ -3,8 +3,8 @@
 namespace App\Validator;
 
 use App\Entity\User;
-use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -24,9 +24,6 @@ class UserPasswordValidator extends ConstraintValidator
         $this->hasherFactory = $hasherFactory;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function validate($password, Constraint $constraint): void
     {
         if (!$constraint instanceof UserPassword) {

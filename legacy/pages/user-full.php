@@ -16,14 +16,14 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
     $req = 'SELECT title_usertype, params_user_attr
         FROM caf_user_attr, caf_usertype
-        WHERE user_user_attr='.$id_user.'
+        WHERE user_user_attr=' . $id_user . '
         AND id_usertype=usertype_user_attr
         ORDER BY hierarchie_usertype DESC
         LIMIT 50';
     $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row2 = $handleSql2->fetch_assoc()) {
         $commission = substr(strrchr($row2['params_user_attr'], ':'), 1);
-        $row['statuts'][] = $row2['title_usertype'].($commission ? ', '.$commission : '');
+        $row['statuts'][] = $row2['title_usertype'] . ($commission ? ', ' . $commission : '');
     }
 
     $tmpUser = $row;
@@ -66,21 +66,21 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
 					<!-- nick -->
 					<h1 style="padding:13px 0 0 0">
-						<?php require __DIR__.'/../includes/user/display_name.php'; ?>
+						<?php require __DIR__ . '/../includes/user/display_name.php'; ?>
 					</h1>
 
 					<!-- formulaire de contact -->
 					<?php
                     if ($auth_contact_user) {
                         $contact_form_width = '95%';
-                        require __DIR__.'/../includes/user/contact_form.php';
+                        require __DIR__ . '/../includes/user/contact_form.php';
                     } ?>
 
 					<!-- statuts -->
 					<ul class="nice-list">
 						<?php
                         foreach ($tmpUser['statuts'] as $status) {
-                            echo '<li style="">'.$status.'</li>';
+                            echo '<li style="">' . $status . '</li>';
                         } ?>
 						<li><a href="<?php echo $versCettePage; ?>#user-sorties" title="">Voir ses sorties</a></li>
 						<li><a href="<?php echo $versCettePage; ?>#user-articles" title="">Voir ses articles</a></li>
@@ -88,7 +88,7 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 					<br style="clear:left;" />
 
 					<!-- infos persos-->
-					<?php require __DIR__.'/../includes/user/infos_privees.php'; ?>
+					<?php require __DIR__ . '/../includes/user/infos_privees.php'; ?>
 
 					<br />
 				</div>
@@ -100,7 +100,7 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     echo '<br style="clear:both" /><hr /><h2>Son niveau</h2>';
                 }
                 if ($ecriture) {
-                    echo '<form method="post" action="'.$versCettePage.'" class="hover">';
+                    echo '<form method="post" action="' . $versCettePage . '" class="hover">';
                     echo '<input type="hidden" name="operation" value="niveau_update" >';
                     display_niveaux($ecriture, 'ecriture');
                     echo '<div style="text-align:center"><a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents(\'form\').submit()"><span class="bleucaf">&gt;</span>ENREGISTRER LES NIVEAUX</a></div>';
@@ -119,12 +119,12 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 // REQUETES SQL POUR LES ARTICLES :
                 display_articles($id_user, 200, 'Ses articles');
             }
-			?>
+?>
 			<br style="clear:both" />
 		</div>
 	</div>
 
-    <?php require __DIR__.'/../includes/right-type-agenda.php'; ?>
+    <?php require __DIR__ . '/../includes/right-type-agenda.php'; ?>
 
 
 	<br style="clear:both" />

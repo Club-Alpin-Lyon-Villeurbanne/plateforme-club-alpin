@@ -21,7 +21,7 @@ class RecaptchaValidator
         $this->httpClient = $httpClient;
     }
 
-    public function isValid(string $recaptchaToken, string $clientIp, string $action = null): bool
+    public function isValid(string $recaptchaToken, string $clientIp, ?string $action = null): bool
     {
         if ('test' === $this->kernelEnvironment) {
             return true;

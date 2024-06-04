@@ -26,7 +26,7 @@ if ($lbxMsg) {
             // annulation de sortie, alertes nomades
         case 'nomadMsg':
             $tab = explode('****', stripslashes($_GET['nomadMsg']));
-            $msg = '<div class="alerte">Attention, ces adhérents nomades n\'ont pas été automatiquement avertis de l\'annulation : <ul><li>'.implode('</li><li>', $tab).'</div>';
+            $msg = '<div class="alerte">Attention, ces adhérents nomades n\'ont pas été automatiquement avertis de l\'annulation : <ul><li>' . implode('</li><li>', $tab) . '</div>';
             break;
 
             // articles

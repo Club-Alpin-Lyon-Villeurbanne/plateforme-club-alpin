@@ -13,7 +13,6 @@ class ExpenseReportList extends AbstractController
         private ExpenseReportRepository $expenseReportRepository,
         private UserRights $userRights
     ) {
-        
     }
 
     public function __invoke(): JsonResponse

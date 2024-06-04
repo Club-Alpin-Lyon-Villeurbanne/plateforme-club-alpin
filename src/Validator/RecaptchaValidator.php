@@ -22,7 +22,7 @@ class RecaptchaValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof Recaptcha) {
-            throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Recaptcha');
+            throw new UnexpectedTypeException($constraint, __NAMESPACE__ . '\Recaptcha');
         }
 
         if (!$this->client->isValid($value ?? '', $this->requestStack->getCurrentRequest()->getClientIp(), $constraint->action)) {

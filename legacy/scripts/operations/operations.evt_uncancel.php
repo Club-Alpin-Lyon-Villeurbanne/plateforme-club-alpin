@@ -23,7 +23,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // on a le droit d'annuler ?
-        if (!(allowed('evt_cancel', 'commission:'.$handle['code_commission']) || allowed('evt_cancel_any'))) {
+        if (!(allowed('evt_cancel', 'commission:' . $handle['code_commission']) || allowed('evt_cancel_any'))) {
             $errTab[] = 'Accès non autorisé';
         } else {
             // mise à jour
@@ -39,13 +39,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     }
                 }
 
-                $req = "UPDATE caf_evt SET cancelled_evt='0', cancelled_who_evt=null, cancelled_when_evt='0', status_evt='0',cycle_parent_evt=".($cycle_parent_evt ? "'$cycle_parent_evt'" : 'null')." WHERE caf_evt.id_evt =$id_evt";
+                $req = "UPDATE caf_evt SET cancelled_evt='0', cancelled_who_evt=null, cancelled_when_evt='0', status_evt='0',cycle_parent_evt=" . ($cycle_parent_evt ? "'$cycle_parent_evt'" : 'null') . " WHERE caf_evt.id_evt =$id_evt";
                 if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL';
                 }
 
                 LegacyContainer::get('legacy_mailer')->send($handle['email_user'], 'transactional/sortie-reactivee', [
-                    'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html',
+                    'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $handle['code_evt'] . '-' . $handle['id_evt'] . '.html',
                     'event_name' => $handle['titre_evt'],
                     'is_cycle' => $handle['cycle_master_evt'],
                 ]);
@@ -53,7 +53,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
             // redirection vers la page de la sortie
             if (!isset($errTab) || 0 === count($errTab)) {
-                header('Location: /sortie/'.$handle['code_evt'].'-'.$handle['id_evt'].'.html');
+                header('Location: /sortie/' . $handle['code_evt'] . '-' . $handle['id_evt'] . '.html');
                 exit;
             }
         }

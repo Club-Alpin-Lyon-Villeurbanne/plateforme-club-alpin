@@ -34,7 +34,7 @@ class ForceHttpsListener implements EventSubscriberInterface, ServiceSubscriberI
 
     public function onRequest(RequestEvent $event): void
     {
-        // If deployed on CleverCloud we want to ignore this listener as Clevercloud 
+        // If deployed on CleverCloud we want to ignore this listener as Clevercloud
         // already does that
         if ($this->deployedOnCleverCloud) {
             return;

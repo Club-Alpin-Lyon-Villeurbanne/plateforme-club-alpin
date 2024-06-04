@@ -22,9 +22,6 @@ class HttpKernelExceptionActivationStrategy implements ActivationStrategyInterfa
         423, // Locked
     ];
 
-    /**
-     * {@inheritdoc}
-     */
     public function isHandlerActivated(LogRecord $record): bool
     {
         $default = $record['level'] >= Level::Error;

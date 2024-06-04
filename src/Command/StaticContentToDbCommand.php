@@ -21,17 +21,14 @@ use Twig\Environment;
 )]
 class StaticContentToDbCommand extends Command
 {
-
     private const MAX_BATCH_FILES = 20;
 
     public function __construct(
-        private readonly Environment            $environment,
+        private readonly Environment $environment,
         private readonly EntityManagerInterface $entityManager,
-        private readonly LoggerInterface        $logger,
-        private readonly string                 $kernelProjectDir,
-
-    )
-    {
+        private readonly LoggerInterface $logger,
+        private readonly string $kernelProjectDir,
+    ) {
         parent::__construct();
     }
 
@@ -59,13 +56,13 @@ class StaticContentToDbCommand extends Command
         $exclusions = array_map(function ($filename) {
             return $filename . '.html.twig';
         }, $input->getArgument('exclusions'));
-        $excluded = count($exclusions);
+        $excluded = \count($exclusions);
 
         // rechercher tous les fichiers .html.twig du dossier templates/content_html
         $finder = new Finder();
         $finder
             ->files()
-            ->in($this->kernelProjectDir.'/templates/content_html/')
+            ->in($this->kernelProjectDir . '/templates/content_html/')
             ->name('*.html.twig')
             ->notName($exclusions)
             ->sortByName(true)
@@ -76,7 +73,7 @@ class StaticContentToDbCommand extends Command
         foreach ($finder as $file) {
             // rendu html du contenu twig
             try {
-                $content = $this->environment->render('content_html/'.$file->getFilename());
+                $content = $this->environment->render('content_html/' . $file->getFilename());
             } catch (\Throwable $e) {
                 $this->logger->error($e->getMessage());
                 $io->error(sprintf('Erreur dans le rendu du template %s', $file->getRelativePathname()));
@@ -84,7 +81,7 @@ class StaticContentToDbCommand extends Command
             }
 
             // récupération du code contenu à partir du nom du fichier
-            $filename = substr($file->getFilename(), 0, -strlen('.html.twig'));
+            $filename = substr($file->getFilename(), 0, -\strlen('.html.twig'));
 
             // recherche du contenu en bdd
             /** @var ContentHtml $contentHtml */

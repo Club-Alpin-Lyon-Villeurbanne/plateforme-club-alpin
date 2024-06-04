@@ -22,8 +22,8 @@ if (admin()) {
 	            if ($datas['menuadmin_page']) {
 	                // cas particulier : la page traductions seulement en cas de langues multiples
 	                if ('admin-traductions' != $code) {
-	                    echo '<a href="'.$code.'.html" title="" class="'.($datas['superadmin_page'] ? 'superadmin ' : '').' adminmenulink '.($p1 == $code ? 'up' : '').'">
-                            '.($datas['superadmin_page'] ? '<img src="/img/base/bullet_star.png" alt="" title="Option super-admin" />' : '').$datas['default_name_page'].'</a>';
+	                    echo '<a href="' . $code . '.html" title="" class="' . ($datas['superadmin_page'] ? 'superadmin ' : '') . ' adminmenulink ' . ($p1 == $code ? 'up' : '') . '">
+                            ' . ($datas['superadmin_page'] ? '<img src="/img/base/bullet_star.png" alt="" title="Option super-admin" />' : '') . $datas['default_name_page'] . '</a>';
 	                }
 	            }
 	        } ?>

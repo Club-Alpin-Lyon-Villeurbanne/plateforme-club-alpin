@@ -1,7 +1,6 @@
 <?php
 
 use App\Legacy\LegacyContainer;
-use App\Repository\UserRepository;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 if (!admin() && !allowed('user_edit_notme')) {
@@ -15,7 +14,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 
     if (empty($userTab)) {
         $id_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($id_user);
-        $req = "SELECT * FROM caf_user WHERE id_user='".$id_user."' LIMIT 1";
+        $req = "SELECT * FROM caf_user WHERE id_user='" . $id_user . "' LIMIT 1";
         $userTab = [];
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $userTab = $result->fetch_assoc();
@@ -45,7 +44,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 					AND status_evt_join = 1
 					AND user_evt_join = $id_user "
                     // de la plus récente a la plus ancienne
-                    .'ORDER BY  `tsp_evt` DESC
+                    . 'ORDER BY  `tsp_evt` DESC
 					LIMIT 200';
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $userTab['sorties'] = [];
@@ -56,7 +55,7 @@ if (!admin() && !allowed('user_edit_notme')) {
         }
 
         // NOMBRE ARTICLES
-        $req = "SELECT id_article, code_article, titre_article, tsp_validate_article FROM caf_article WHERE user_article='".$id_user."' AND status_article=1 ORDER BY id_article DESC";
+        $req = "SELECT id_article, code_article, titre_article, tsp_validate_article FROM caf_article WHERE user_article='" . $id_user . "' AND status_article=1 ORDER BY id_article DESC";
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $userTab['articles'] = [];
         if ($result->num_rows > 0) {
@@ -73,9 +72,9 @@ if (!admin() && !allowed('user_edit_notme')) {
 
         // FILIATION ENFANTS ?
         if ('' !== $userTab['cafnum_user']) {
-            $req = "SELECT id_user, firstname_user, lastname_user FROM caf_user WHERE cafnum_parent_user='".LegacyContainer::get('legacy_mysqli_handler')->escapeString($userTab['cafnum_user'])."'";
+            $req = "SELECT id_user, firstname_user, lastname_user FROM caf_user WHERE cafnum_parent_user='" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($userTab['cafnum_user']) . "'";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            
+
             $userTab['enfants'] = [];
             if ($result->num_rows > 0) {
                 while ($tmpArray = $result->fetch_assoc()) {
@@ -89,8 +88,8 @@ if (!admin() && !allowed('user_edit_notme')) {
     {
         echo "
 			<tr>
-				<td width='35%' valign='top'>".$header.'</td>
-				<td>'.$value.'</td>
+				<td width='35%' valign='top'>" . $header . '</td>
+				<td>' . $value . '</td>
 			</tr>
 			<tr>
 				<td colspan=2><hr /></td>
@@ -98,7 +97,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 		';
     } ?>
 
-	<h1>Fiche adhérent : <?php echo $userTab['firstname_user'].' '.$userTab['lastname_user']; ?></h1>
+	<h1>Fiche adhérent : <?php echo $userTab['firstname_user'] . ' ' . $userTab['lastname_user']; ?></h1>
 
 	<hr />
 
@@ -109,12 +108,12 @@ if (!admin() && !allowed('user_edit_notme')) {
 		<table width='100%'>
 
 			<?php
-                printTableRow('<img src="'.userImg($userTab['id_user'], 'pic').'" alt="" title="" style="max-width:100%" />', '<h1>'.$userTab['civ_user'].' '.$userTab['firstname_user'].' '.$userTab['lastname_user'].'</h1>');
+                printTableRow('<img src="' . userImg($userTab['id_user'], 'pic') . '" alt="" title="" style="max-width:100%" />', '<h1>' . $userTab['civ_user'] . ' ' . $userTab['firstname_user'] . ' ' . $userTab['lastname_user'] . '</h1>');
 
-    $rowValue = '<a href="/user-full/'.$userTab['id_user'].'.html" title="Fiche profil" target="_top">'.$userTab['nickname_user'].'</a>';
+    $rowValue = '<a href="/user-full/' . $userTab['id_user'] . '.html" title="Fiche profil" target="_top">' . $userTab['nickname_user'] . '</a>';
     // possibilite de supprimer le user si pas de sortie ni articles
     if (admin() && !is_array($userTab['sorties']) && !is_array($userTab['articles'])) {
-        $rowValue .= '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/adherents-supprimer.php&amp;id_user='.(int) $userTab['id_user'].'&amp;nom='.urlencode($userTab['civ_user'].' '.$elt['firstname_user'].' '.$userTab['lastname_user']).'" title="Supprimer le compte de cet utilisateur"><img src="/img/base/user_delete.png" alt="SUPPRIMER" title=""></a> ';
+        $rowValue .= '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/adherents-supprimer.php&amp;id_user=' . (int) $userTab['id_user'] . '&amp;nom=' . urlencode($userTab['civ_user'] . ' ' . $elt['firstname_user'] . ' ' . $userTab['lastname_user']) . '" title="Supprimer le compte de cet utilisateur"><img src="/img/base/user_delete.png" alt="SUPPRIMER" title=""></a> ';
     }
     printTableRow('Pseudo :', $rowValue);
 
@@ -122,9 +121,9 @@ if (!admin() && !allowed('user_edit_notme')) {
     if (0 == $userTab['valid_user'] && '' !== $userTab['cookietoken_user']) {
         $rowValue .= '<br />URL d\'activation du compte : ';
         if (admin()) {
-            $rowValue .= '<a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html">';
+            $rowValue .= '<a href="' . LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-confirm/' . $userTab['cookietoken_user'] . '-' . $userTab['id_user'] . '.html">';
         }
-        $rowValue .= LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$userTab['cookietoken_user'].'-'.$userTab['id_user'].'.html';
+        $rowValue .= LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-confirm/' . $userTab['cookietoken_user'] . '-' . $userTab['id_user'] . '.html';
         if (admin()) {
             $rowValue .= '</a>';
         }
@@ -134,14 +133,14 @@ if (!admin() && !allowed('user_edit_notme')) {
 
     $rowValue = '';
     if ($userTab['cafnum_parent_user']) {
-        $rowValue = '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user='.(int) $userTab['cafnum_parent_user']['id_user'].'">'.$userTab['cafnum_parent_user']['firstname_user'].' '.$userTab['cafnum_parent_user']['lastname_user'].'</a>';
+        $rowValue = '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user=' . (int) $userTab['cafnum_parent_user']['id_user'] . '">' . $userTab['cafnum_parent_user']['firstname_user'] . ' ' . $userTab['cafnum_parent_user']['lastname_user'] . '</a>';
         printTableRow('Parent (chef de famille) :', $rowValue);
     }
 
     $rowValue = [];
     if (is_array($userTab['enfants'])) {
         foreach ($userTab['enfants'] as $enfant) {
-            $rowValue[] = '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user='.(int) $enfant['id_user'].'">'.$enfant['firstname_user'].' '.$enfant['lastname_user'].'</a>';
+            $rowValue[] = '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user=' . (int) $enfant['id_user'] . '">' . $enfant['firstname_user'] . ' ' . $enfant['lastname_user'] . '</a>';
         }
 
         printTableRow('Adhérents affiliés : ', implode('<br />', $rowValue));
@@ -166,10 +165,10 @@ if (!admin() && !allowed('user_edit_notme')) {
     printTableRow('Date d\'adhésion (renouvellement) :', $rowValue);
 
     if ($userTab['birthday_user']) {
-        printTableRow('Date de naissance :', date('d/m/Y', $userTab['birthday_user']).'&nbsp;&nbsp;&nbsp;('.getYearsSinceDate($userTab['birthday_user']).' ans)');
+        printTableRow('Date de naissance :', date('d/m/Y', $userTab['birthday_user']) . '&nbsp;&nbsp;&nbsp;(' . getYearsSinceDate($userTab['birthday_user']) . ' ans)');
     }
     if ($userTab['email_user']) {
-        printTableRow('E-mail :', '<a href="mailto:'.$userTab['email_user'].'">'.$userTab['email_user'].'</a>');
+        printTableRow('E-mail :', '<a href="mailto:' . $userTab['email_user'] . '">' . $userTab['email_user'] . '</a>');
     }
     if ($userTab['tel_user']) {
         printTableRow('Numéro de téléphone personnel :', $userTab['tel_user']);
@@ -177,7 +176,7 @@ if (!admin() && !allowed('user_edit_notme')) {
     if ($userTab['tel2_user']) {
         printTableRow('Numéro de téléphone de sécurité :', $userTab['tel2_user']);
     }
-    printTableRow('Adresse :', $userTab['adresse_user'].'<br />'.$userTab['cp_user'].' '.$userTab['ville_user'].' '.$userTab['pays_user']);
+    printTableRow('Adresse :', $userTab['adresse_user'] . '<br />' . $userTab['cp_user'] . ' ' . $userTab['ville_user'] . ' ' . $userTab['pays_user']);
 
     $rowValue = '';
     switch ($userTab['auth_contact_user']) {
@@ -208,9 +207,9 @@ if (!admin() && !allowed('user_edit_notme')) {
     if (is_array($userTab['articles'])) {
         $rowValue = [];
         foreach ($userTab['articles'] as $article) {
-            $rowValue[] = '<a href="/article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html?forceshow=true" target="_blank">'.date('d.m.Y', $article['tsp_validate_article']).' - '.$article['titre_article'].'</a>';
+            $rowValue[] = '<a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">' . date('d.m.Y', $article['tsp_validate_article']) . ' - ' . $article['titre_article'] . '</a>';
         }
-        printTableRow('Articles :', '<font size="-1" >'.implode('<br />', $rowValue).'</font>');
+        printTableRow('Articles :', '<font size="-1" >' . implode('<br />', $rowValue) . '</font>');
     }
 
     if (is_array($userTab['sorties'])) {
@@ -221,18 +220,18 @@ if (!admin() && !allowed('user_edit_notme')) {
 
         foreach ($userTab['sorties'] as $evt) {
             ++$rowValueHeader[$evt['role_evt_join']];
-            $row = '<a target="_blank" href="/sortie/'.html_utf8($evt['code_evt']).'-'.(int) $evt['id_evt'].'.html?commission='.$evt['code_commission'];
+            $row = '<a target="_blank" href="/sortie/' . html_utf8($evt['code_evt']) . '-' . (int) $evt['id_evt'] . '.html?commission=' . $evt['code_commission'];
             if (allowed('evt_validate') && 1 != $evt['status_evt']) {
                 $row .= '&forceshow=true';
             }
-            $row .= '" title="">'.date('d.m.Y', $evt['tsp_evt']).' - '.html_utf8($evt['title_commission']).' - '.html_utf8($evt['titre_evt']).'</a>';
+            $row .= '" title="">' . date('d.m.Y', $evt['tsp_evt']) . ' - ' . html_utf8($evt['title_commission']) . ' - ' . html_utf8($evt['titre_evt']) . '</a>';
             $rowValue[] = $row;
         }
         arsort($rowValueHeader);
         foreach ($rowValueHeader as $role => $nbRole) {
             $rowRoleEvtValue .= "&nbsp;&nbsp;&nbsp;- $role : $nbRole<br />";
         }
-        printTableRow('Sorties :<br /><font size="-1" >'.$rowRoleEvtValue.'</font>', '<font size="-1" >'.implode('<br />', $rowValue).'</font>');
+        printTableRow('Sorties :<br /><font size="-1" >' . $rowRoleEvtValue . '</font>', '<font size="-1" >' . implode('<br />', $rowValue) . '</font>');
     }
     printTableRow('N° ID en base :', $userTab['id_user']); ?>
 

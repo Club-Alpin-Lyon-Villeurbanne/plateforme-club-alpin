@@ -5,7 +5,7 @@ use App\Legacy\LegacyContainer;
 use Symfony\Component\Asset\PathPackage;
 use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 
-require __DIR__.'/../app/includes.php';
+require __DIR__ . '/../app/includes.php';
 
 if (user()) {
     // bien connecté ?
@@ -17,30 +17,30 @@ if (user()) {
 
     $ftpRoot = LegacyContainer::getParameter('legacy_ftp_path');
     // première visite : dossier inexistant
-    if (!file_exists($ftpRoot.'user/'.$id_user)) {
-        if (!mkdir($concurrentDirectory = $ftpRoot.'user/'.$id_user, 0755, true) && !is_dir($concurrentDirectory)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+    if (!file_exists($ftpRoot . 'user/' . $id_user)) {
+        if (!mkdir($concurrentDirectory = $ftpRoot . 'user/' . $id_user, 0755, true) && !is_dir($concurrentDirectory)) {
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
-    if (!file_exists($ftpRoot.'user/'.$id_user.'/images/')) {
-        if (!mkdir($concurrentDirectory = $ftpRoot.'user/'.$id_user.'/images/', 0755, true) && !is_dir($concurrentDirectory)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+    if (!file_exists($ftpRoot . 'user/' . $id_user . '/images/')) {
+        if (!mkdir($concurrentDirectory = $ftpRoot . 'user/' . $id_user . '/images/', 0755, true) && !is_dir($concurrentDirectory)) {
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
-    if (!file_exists($ftpRoot.'user/'.$id_user.'/files/')) {
-        if (!mkdir($concurrentDirectory = $ftpRoot.'user/'.$id_user.'/files/', 0755, true) && !is_dir($concurrentDirectory)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+    if (!file_exists($ftpRoot . 'user/' . $id_user . '/files/')) {
+        if (!mkdir($concurrentDirectory = $ftpRoot . 'user/' . $id_user . '/files/', 0755, true) && !is_dir($concurrentDirectory)) {
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
         }
     }
 
     // recuperation du dossier
     $type = $_GET['type'];
     if ('image' == $type) {
-        $dossier = 'user/'.$id_user.'/images/';
-        $fullPath = $ftpRoot.$dossier;
+        $dossier = 'user/' . $id_user . '/images/';
+        $fullPath = $ftpRoot . $dossier;
     } elseif ('file' == $type) {
-        $dossier = 'user/'.$id_user.'/files/';
-        $fullPath = $ftpRoot.$dossier;
+        $dossier = 'user/' . $id_user . '/files/';
+        $fullPath = $ftpRoot . $dossier;
     } else {
         echo "ERREUR : type invalide ($type)";
         exit;
@@ -150,12 +150,12 @@ if (user()) {
 					pour correspondre au format du site. La plupart des formats d\'images sont supportés, poids maximum : 20Mo.
 					';
 		            }
-		if ('file' == $type) {
-		    echo "
+    if ('file' == $type) {
+        echo "
 					Déposez ici les fichiers que vous souhaitez proposer en téléchargement. Poid maximum : 5Mo.<br />
-					Ext. autorisées : <span style='font-size:9px'>".implode(', ', FtpFile::getAllowedExtensions()).'</span>
+					Ext. autorisées : <span style='font-size:9px'>" . implode(', ', FtpFile::getAllowedExtensions()) . '</span>
 					';
-		} ?>
+    } ?>
 			</p>
 
 			<!-- valums file upload -->
@@ -197,20 +197,20 @@ if (user()) {
 
 			<!-- OPERATIONS -->
 			<?php
-            if (isset($_GET['operation']) && 'delete' == $_GET['operation']) {
-		            $file = $_GET['file'];
-		            if (!file_exists($fullPath.$file)) {
-		                echo '<p class="erreur"> Erreur : fichier non trouvé</p>';
-		            } elseif (strpos(' '.$file, '../')) {
-		                echo '<p class="erreur"> Erreur tentative de piratage</p>';
-		            } else {
-		                if (unlink($fullPath.$file)) {
-		                    echo '<p class="info">Fichier '.$file.' supprimé</p>';
-		                } else {
-		                    echo '<p class="erreur"> Erreur technique lors de la suppression.</p>';
-		                }
-		            }
-		        } ?>
+        if (isset($_GET['operation']) && 'delete' == $_GET['operation']) {
+            $file = $_GET['file'];
+            if (!file_exists($fullPath . $file)) {
+                echo '<p class="erreur"> Erreur : fichier non trouvé</p>';
+            } elseif (strpos(' ' . $file, '../')) {
+                echo '<p class="erreur"> Erreur tentative de piratage</p>';
+            } else {
+                if (unlink($fullPath . $file)) {
+                    echo '<p class="info">Fichier ' . $file . ' supprimé</p>';
+                } else {
+                    echo '<p class="erreur"> Erreur technique lors de la suppression.</p>';
+                }
+            }
+        } ?>
 
 			<table>
 				<thead>
@@ -222,8 +222,8 @@ if (user()) {
 					<!--<th>Créé le</th>-->
 				</thead>
 				<?php
-		            // tableau des fichiers
-		            $tabFichiers = [];
+            // tableau des fichiers
+            $tabFichiers = [];
 
     // restrion au type image
     if ('image' === $type) {
@@ -236,7 +236,7 @@ if (user()) {
     $handle = opendir($fullPath);
     $package = new PathPackage('/ftp', new EmptyVersionStrategy());
     while ($fichier = readdir($handle)) {
-        $filepath = $fullPath.$fichier;
+        $filepath = $fullPath . $fichier;
         $extension = strtolower(pathinfo($fichier, \PATHINFO_EXTENSION));
 
         // on ne liste pas les dossiers
@@ -249,7 +249,7 @@ if (user()) {
             continue;
         }
 
-        $url = $package->getUrl($dossier.$fichier);
+        $url = $package->getUrl($dossier . $fichier);
 
         if ('image' === $type) {
             $icon = $url;
@@ -304,31 +304,31 @@ if (user()) {
         echo '
 					<tr>
 						<td style="width:30px; text-align:center">
-							<img src="/img/base/add.png" alt="Insérer" title="Insérer ce fichier" style="cursor:pointer" onclick="inserer(\''.$fichier['url'].'\')" />
+							<img src="/img/base/add.png" alt="Insérer" title="Insérer ce fichier" style="cursor:pointer" onclick="inserer(\'' . $fichier['url'] . '\')" />
 						</td>
 						<td>
-							'.('image' == $type ?
-                            '<a class="fancybox" href="'.$fichier['icon'].'" title="'.html_utf8($fichier['file']).'"><img src="'.$fichier['icon'].'" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
+							' . ('image' == $type ?
+                            '<a class="fancybox" href="' . $fichier['icon'] . '" title="' . html_utf8($fichier['file']) . '"><img src="' . $fichier['icon'] . '" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
                             :
-                            '<a target="_blank" href="'.$fichier['url'].'" title="Ouvrir '.html_utf8($fichier['file']).' dans une nouvelle fenêtre"><img src="'.$fichier['icon'].'" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
-        ).'
+                            '<a target="_blank" href="' . $fichier['url'] . '" title="Ouvrir ' . html_utf8($fichier['file']) . ' dans une nouvelle fenêtre"><img src="' . $fichier['icon'] . '" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
+        ) . '
 						</td>
 						<td>
-							'.('image' == $type ?
-            '<a class="fancybox" href="'.$fichier['icon'].'" title="'.html_utf8($fichier['file']).'">'.substr($fichier['file'], 0, 70).'</a>'
+							' . ('image' == $type ?
+            '<a class="fancybox" href="' . $fichier['icon'] . '" title="' . html_utf8($fichier['file']) . '">' . substr($fichier['file'], 0, 70) . '</a>'
             :
-            '<a target="_blank" href="'.$fichier['url'].'" title="Ouvrir '.html_utf8($fichier['file']).' dans une nouvelle fenêtre">'.substr($fichier['file'], 0, 70).'</a>'
-        ).'
+            '<a target="_blank" href="' . $fichier['url'] . '" title="Ouvrir ' . html_utf8($fichier['file']) . ' dans une nouvelle fenêtre">' . substr($fichier['file'], 0, 70) . '</a>'
+        ) . '
 						</td>
 						<td>
-							<span style="display:none">'.$fichier['size'].'</span>
-							'.formatSize($fichier['size']).'
+							<span style="display:none">' . $fichier['size'] . '</span>
+							' . formatSize($fichier['size']) . '
 						</td>
 						<td>
-							<span style="display:none">'.$fichier['mtime'].'</span>'
+							<span style="display:none">' . $fichier['mtime'] . '</span>'
                         // Supprimer : le lien est intégré ici pour raison graphique
-                        .'<img class="file-delete" src="/img/base/bullet_delete.png" title="Supprimer" alt="" style="float:right; cursor:pointer;" />'
-                        .date('d/m/y H:i', $fichier['mtime']).'
+                        . '<img class="file-delete" src="/img/base/bullet_delete.png" title="Supprimer" alt="" style="float:right; cursor:pointer;" />'
+                        . date('d/m/y H:i', $fichier['mtime']) . '
 						</td>
 					</tr>';
     } ?>

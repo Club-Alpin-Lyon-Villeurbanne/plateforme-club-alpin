@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Bridge\Twig\Attribute\Template;
 
 class AdminController extends AbstractController
 {
@@ -23,7 +23,6 @@ class AdminController extends AbstractController
         return array_merge(parent::getSubscribedServices(), [EntityManagerInterface::class]);
     }
 
-    
     #[Route(name: 'admin_login', path: '/admin/', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
     #[Template('admin/index.html.twig')]
@@ -50,7 +49,6 @@ class AdminController extends AbstractController
         return [];
     }
 
-    
     #[Route(name: 'admin_logout', path: '/admin/logout', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
     public function adminLogout(Request $request)

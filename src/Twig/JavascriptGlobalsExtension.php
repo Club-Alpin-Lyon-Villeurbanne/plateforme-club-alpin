@@ -2,15 +2,17 @@
 
 namespace App\Twig;
 
+use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
-use Twig\Environment;
 
 class JavascriptGlobalsExtension extends AbstractExtension
 {
     private $variables = [];
 
-    public function __construct(private Environment $twig) {}
+    public function __construct(private Environment $twig)
+    {
+    }
 
     public function getFunctions(): array
     {

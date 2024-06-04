@@ -2,7 +2,7 @@
 
 // Envoi et redimensionnement des réas
 
-$log = (isset($log) ? $log : '')."\n accès à ".date('H:i:s');
+$log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 
 // if(admin()){
 
@@ -19,7 +19,7 @@ foreach ($_POST as $key => $val) {
     $result[$key] = $val;
 }
 
-require __DIR__.'/../../scripts/operations.php';
+require __DIR__ . '/../../scripts/operations.php';
 
 if (count($errTab) > 0) {
     $result['error'] = $errTab;

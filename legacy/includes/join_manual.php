@@ -7,7 +7,7 @@ use App\Legacy\LegacyContainer;
 if (user()) {
     // id de la sortie, pour n'afficher que les adhérents non inscrits
     $idEvt = isset($_GET['id_evt']) ? (int) $_GET['id_evt'] : 0;
-	$idUser = $_POST['id_user'] ?? null;
+    $idUser = $_POST['id_user'] ?? null;
 
     $showAll = isset($_GET['showAll']) ? (int) $_GET['showAll'] : 0;
 
@@ -108,31 +108,31 @@ if (user()) {
 									, created_user, birthday_user, tel_user, tel2_user, civ_user
 							FROM `caf_user`
                             WHERE nomade_user!=1
-                            AND id_user NOT IN (SELECT user_evt_join FROM `caf_evt_join` WHERE evt_evt_join='.$idEvt.')'
-                            .($showAll ? '' : ' AND valid_user=1 ')
-                            .' ORDER BY lastname_user ASC
+                            AND id_user NOT IN (SELECT user_evt_join FROM `caf_evt_join` WHERE evt_evt_join=' . $idEvt . ')'
+                            . ($showAll ? '' : ' AND valid_user=1 ')
+                            . ' ORDER BY lastname_user ASC
 							LIMIT 9000';
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($elt = $result->fetch_assoc()) {
-                echo '<tr id="tr-'.$elt['id_user'].'" class="'.(isset($elt['valid_user']) && $elt['valid_user'] ? 'vis-on' : 'vis-off').'">'
-                    .'<td>'
-                        .'<img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />'
-                        .'<img src="/img/label-down.png" class="cross" alt="OFF" title="" />'
-                        .'<input type="checkbox" name="id_user[]" value="'.(int) $elt['id_user'].'" />'
+                echo '<tr id="tr-' . $elt['id_user'] . '" class="' . (isset($elt['valid_user']) && $elt['valid_user'] ? 'vis-on' : 'vis-off') . '">'
+                    . '<td>'
+                        . '<img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />'
+                        . '<img src="/img/label-down.png" class="cross" alt="OFF" title="" />'
+                        . '<input type="checkbox" name="id_user[]" value="' . (int) $elt['id_user'] . '" />'
                         // inputs hidden disabled : activés quand la case est cliquée (jquery)
-                        .'<input type="hidden" disabled="disabled" name="civ_user[]" value="'.html_utf8($elt['civ_user']).'" />'
-                        .'<input type="hidden" disabled="disabled" name="lastname_user[]" value="'.html_utf8($elt['lastname_user']).'" />'
-                        .'<input type="hidden" disabled="disabled" name="firstname_user[]" value="'.html_utf8($elt['firstname_user']).'" />'
-                    .'</td>'
-                    .'<td>'
-                        .html_utf8($elt['cafnum_user']).'<br />'
-                        .(int) $elt['id_user'].' '
-                    .'</td>'
-                    .'<td>'.html_utf8($elt['civ_user']).'</td>'
-                    .'<td>'.html_utf8($elt['lastname_user']).'</td>'
-                    .'<td>'.html_utf8($elt['firstname_user']).'</td>'
-                    .'<td>'.userlink($elt['id_user'], $elt['nickname_user']).'</td>'
-                .'</tr>';
+                        . '<input type="hidden" disabled="disabled" name="civ_user[]" value="' . html_utf8($elt['civ_user']) . '" />'
+                        . '<input type="hidden" disabled="disabled" name="lastname_user[]" value="' . html_utf8($elt['lastname_user']) . '" />'
+                        . '<input type="hidden" disabled="disabled" name="firstname_user[]" value="' . html_utf8($elt['firstname_user']) . '" />'
+                    . '</td>'
+                    . '<td>'
+                        . html_utf8($elt['cafnum_user']) . '<br />'
+                        . (int) $elt['id_user'] . ' '
+                    . '</td>'
+                    . '<td>' . html_utf8($elt['civ_user']) . '</td>'
+                    . '<td>' . html_utf8($elt['lastname_user']) . '</td>'
+                    . '<td>' . html_utf8($elt['firstname_user']) . '</td>'
+                    . '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
+                . '</tr>';
             } ?>
 					</tbody>
 				</table>
@@ -152,13 +152,13 @@ if (user()) {
             if (!count($idUser)) {
                 if (isset($_POST['result']) && 'success' == $_POST['result']) {
                     unset($_POST['result']);
-                    echo '<p class="erreur">Aucune donnée reçue. <a href="'.$versCettePage.'">Retour</a></p>';
+                    echo '<p class="erreur">Aucune donnée reçue. <a href="' . $versCettePage . '">Retour</a></p>';
                 } else {
-                    echo '<p class="info">Inscription effectuée. <a href="'.$versCettePage.'">Retour</a></p>';
+                    echo '<p class="info">Inscription effectuée. <a href="' . $versCettePage . '">Retour</a></p>';
                 }
             } else {
                 // On récupère des informations complémentaires sur la sortie : besoin de bénévoles ?
-                $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = '.$idEvt;
+                $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = ' . $idEvt;
                 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($sorties = $result->fetch_assoc()) {
                     $sortie = $sorties;
@@ -175,7 +175,7 @@ if (user()) {
 					<?php
                     // MESSAGES A LA SOUMISSION
                     if (isset($_POST['operation']) && 'user_join_manuel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                        echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                     }
                 // redirection en cas de réussite
                 if (isset($_POST['operation']) && 'user_join_manuel' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
@@ -199,28 +199,28 @@ if (user()) {
                             // pour chaque user sélectionné : choix du role, puis confirmation
                             foreach ($idUser as $i => $utilisateur) {
                                 echo '<tr>'
-                                    .'<td>'
+                                    . '<td>'
                                         // vars to re-post
-                                        .'<input type="hidden" name="id_user[]" value="'.(int) $idUser[$i].'" />'
-                                        .'<input type="hidden" name="civ_user[]" value="'.html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')).'" />'
-                                        .'<input type="hidden" name="lastname_user[]" value="'.html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')).'" />'
-                                        .'<input type="hidden" name="firstname_user[]" value="'.html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')).'" />'
+                                        . '<input type="hidden" name="id_user[]" value="' . (int) $idUser[$i] . '" />'
+                                        . '<input type="hidden" name="civ_user[]" value="' . html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')) . '" />'
+                                        . '<input type="hidden" name="lastname_user[]" value="' . html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')) . '" />'
+                                        . '<input type="hidden" name="firstname_user[]" value="' . html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')) . '" />'
                                         // afficher
-                                        .html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')).' '
-                                        .html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')).' '
-                                        .html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')).' '
-                                    .'</td>'
-                                    .'<td>'
-                                        .html_utf8(stripslashes($_POST['nickname_user'][$i] ?? ''))
-                                    .'</td>'
-                                    .'<td>'
-                                        .'<select name="role_evt_join[]">'
-                                            .'<option value="manuel">Inscrit (par défaut)</option>'
-                                            .(1 == $sortie['need_benevoles_evt'] ? '<option value="benevole">Bénévole</option>' : '')
+                                        . html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')) . ' '
+                                        . html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')) . ' '
+                                        . html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')) . ' '
+                                    . '</td>'
+                                    . '<td>'
+                                        . html_utf8(stripslashes($_POST['nickname_user'][$i] ?? ''))
+                                    . '</td>'
+                                    . '<td>'
+                                        . '<select name="role_evt_join[]">'
+                                            . '<option value="manuel">Inscrit (par défaut)</option>'
+                                            . (1 == $sortie['need_benevoles_evt'] ? '<option value="benevole">Bénévole</option>' : '')
                                             // .'<option value="coencadrant">Co-encadrant</option>'
                                             // .'<option value="encadrant">Encadrant</option>'
-                                        .'</select>'
-                                    .'</td>';
+                                        . '</select>'
+                                    . '</td>';
                                 echo '</tr>';
                             } ?>
 						</tbody>

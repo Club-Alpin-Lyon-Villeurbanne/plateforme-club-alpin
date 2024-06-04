@@ -11,9 +11,11 @@ class ConvertUrlsExtension extends AbstractExtension
 {
     private $twig;
 
-    public function __construct(Environment $twig) {
+    public function __construct(Environment $twig)
+    {
         $this->twig = $twig;
     }
+
     public function getFilters(): array
     {
         return [
@@ -65,12 +67,12 @@ class ConvertUrlsExtension extends AbstractExtension
         $url = $matches[2];
         $urlWithPrefix = $matches[2];
 
-        if (false !== strpos($url, '@')) {
-            $urlWithPrefix = 'mailto:'.$url;
-        } elseif (0 === strpos($url, 'https://')) {
+        if (str_contains($url, '@')) {
+            $urlWithPrefix = 'mailto:' . $url;
+        } elseif (str_starts_with($url, 'https://')) {
             $urlWithPrefix = $url;
-        } elseif (0 !== strpos($url, 'http://')) {
-            $urlWithPrefix = 'http://'.$url;
+        } elseif (!str_starts_with($url, 'http://')) {
+            $urlWithPrefix = 'http://' . $url;
         }
 
         // ignore tailing special characters
@@ -83,6 +85,6 @@ class ConvertUrlsExtension extends AbstractExtension
             $punctuation = '';
         }
 
-        return '<a href="'.$urlWithPrefix.'" target="_blank">'.$url.'</a>'.$punctuation;
+        return '<a href="' . $urlWithPrefix . '" target="_blank">' . $url . '</a>' . $punctuation;
     }
 }
