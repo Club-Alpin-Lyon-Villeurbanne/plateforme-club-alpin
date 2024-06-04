@@ -5,7 +5,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 ?>
 <form action="<?php echo $versCettePage; ?>" method="post" style="overflow:hidden">
-    <input type="hidden" name="operation" value="<?php echo isset($id_evt_to_update) && $id_evt_to_update ? 'evt_update' : 'evt_create' ?>" />
+    <input type="hidden" name="operation" value="<?php echo isset($id_evt_to_update) && $id_evt_to_update ? 'evt_update' : 'evt_create'; ?>" />
     <input type="hidden" name="id_evt_to_update" value="<?php echo (int) $id_evt_to_update; ?>" />
 
     <?php
@@ -14,16 +14,16 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
         $suiteDeCycle = true;
     }
 
-    // message d'erreur
-    if (isset($_POST['operation']) && isset($errTab) && count($errTab) > 0) {
-        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul>';
-        echo '<b>Attention :</b> Le marqueur rouge sur la carte a peut-être été déplacé !';
-        echo '</div>';
-    }
-    // message d'info : si c'est une modification de sortie
-    if (isset($_POST['operation']) && 'evt_update' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<p class="info"><img src="/img/base/tick.png" alt="" title="" /> Mise à jour effectuée à '.date('H:i:s', time()).'. <b>Important :</b> cette sortie doit à présent être validée par un responsable pour être publiée sur le site.<a href="/profil/sorties/self.html" title="">&gt; Retourner à la liste de mes sorties</a></p>';
-    }
+// message d'erreur
+if (isset($_POST['operation']) && isset($errTab) && count($errTab) > 0) {
+    echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul>';
+    echo '<b>Attention :</b> Le marqueur rouge sur la carte a peut-être été déplacé !';
+    echo '</div>';
+}
+// message d'info : si c'est une modification de sortie
+if (isset($_POST['operation']) && 'evt_update' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+    echo '<p class="info"><img src="/img/base/tick.png" alt="" title="" /> Mise à jour effectuée à ' . date('H:i:s', time()) . '. <b>Important :</b> cette sortie doit à présent être validée par un responsable pour être publiée sur le site.<a href="/profil/sorties/self.html" title="">&gt; Retourner à la liste de mes sorties</a></p>';
+}
 ?>
 
     <br class="clear">
@@ -41,18 +41,18 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
                 <div class="faux-select">
                     <?php
                 foreach ($comTab as $code => $data) {
-                    if (allowed('evt_create', 'commission:'.$code)) {
-                        echo '<a href="/creer-une-sortie/'.html_utf8($code).'.html" title="" class="'.($code == $current_commission ? 'up' : '').'">'.html_utf8($data['title_commission']).'</a> ';
+                    if (allowed('evt_create', 'commission:' . $code)) {
+                        echo '<a href="/creer-une-sortie/' . html_utf8($code) . '.html" title="" class="' . ($code == $current_commission ? 'up' : '') . '">' . html_utf8($data['title_commission']) . '</a> ';
                     }
                 } ?>
                 </div>
             </div>
             <?php
-            echo '<input type="hidden" name="commission_evt" value="'.(int) $comTab[$current_commission]['id_commission'].'" />';
+            echo '<input type="hidden" name="commission_evt" value="' . (int) $comTab[$current_commission]['id_commission'] . '" />';
     }
     // juste l'info  et la variable dans le cas d'une modification de sortie existante
     else {
-        echo '<b>'.$comTab[$current_commission]['title_commission'].'</b><input type="hidden" name="commission_evt" value="'.(int) $_POST['commission_evt'].'" />';
+        echo '<b>' . $comTab[$current_commission]['title_commission'] . '</b><input type="hidden" name="commission_evt" value="' . (int) $_POST['commission_evt'] . '" />';
     }
 ?>
     </div>
@@ -70,7 +70,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
             <?php
     // articles liés aux commissions
     foreach ($groupes as $code => $groupe) {
-        echo '<option value="'.$groupe['id'].'" '.(\array_key_exists('id_groupe', $_POST) && $_POST['id_groupe'] == $groupe['id'] ? 'selected="selected"' : '').'>Groupe : '.html_utf8($groupe['nom']).' &raquo;</option>';
+        echo '<option value="' . $groupe['id'] . '" ' . (array_key_exists('id_groupe', $_POST) && $_POST['id_groupe'] == $groupe['id'] ? 'selected="selected"' : '') . '>Groupe : ' . html_utf8($groupe['nom']) . ' &raquo;</option>';
     }
         ?>
         </select>
@@ -90,11 +90,11 @@ if (!count($encadrantsTab)) {
     echo '<p class="info">Aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission.</p>';
 }
 foreach ($encadrantsTab as $encadrant) {
-    echo '<label for="encadrant-'.$encadrant['id_user'].'">
-									<input type="checkbox" '.(in_array($encadrant['id_user'], $encadrants, true) ? 'checked="checked"' : '').' name="encadrants[]" value="'.$encadrant['id_user'].'" id="encadrant-'.$encadrant['id_user'].'" />
-									'.$encadrant['firstname_user'].'
-									'.$encadrant['lastname_user'].'
-									<a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user='.$encadrant['id_user'].'" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
+    echo '<label for="encadrant-' . $encadrant['id_user'] . '">
+									<input type="checkbox" ' . (in_array($encadrant['id_user'], $encadrants, true) ? 'checked="checked"' : '') . ' name="encadrants[]" value="' . $encadrant['id_user'] . '" id="encadrant-' . $encadrant['id_user'] . '" />
+									' . $encadrant['firstname_user'] . '
+									' . $encadrant['lastname_user'] . '
+									<a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . $encadrant['id_user'] . '" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
 								</label>';
 }
 ?>
@@ -109,11 +109,11 @@ if (!count($stagiairesTab)) {
     echo '<p class="info">Aucun adhérent n\'est déclaré <b>stagiaire</b> pour cette commission.</p>';
 }
 foreach ($stagiairesTab as $stagiaire) {
-    echo '<label for="stagiaire-'.$stagiaire['id_user'].'">
-                    <input type="checkbox" '.(in_array($stagiaire['id_user'], $stagiaires, true) ? 'checked="checked"' : '').' name="stagiaires[]" value="'.$stagiaire['id_user'].'" id="encadrant-'.$stagiaire['id_user'].'" />
-                    '.$stagiaire['firstname_user'].'
-                    '.$stagiaire['lastname_user'].'
-                    <a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user='.$stagiaire['id_user'].'" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
+    echo '<label for="stagiaire-' . $stagiaire['id_user'] . '">
+                    <input type="checkbox" ' . (in_array($stagiaire['id_user'], $stagiaires, true) ? 'checked="checked"' : '') . ' name="stagiaires[]" value="' . $stagiaire['id_user'] . '" id="encadrant-' . $stagiaire['id_user'] . '" />
+                    ' . $stagiaire['firstname_user'] . '
+                    ' . $stagiaire['lastname_user'] . '
+                    <a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . $stagiaire['id_user'] . '" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
                 </label>';
 }
 ?>
@@ -129,11 +129,11 @@ if (!count($coencadrantsTab)) {
     echo '<p class="info">Aucun adhérent n\'est déclaré <b>co-encadrant</b> pour cette commission.</p>';
 }
 foreach ($coencadrantsTab as $coencadrant) {
-    echo '<label for="coencadrant-'.$coencadrant['id_user'].'">
-									<input type="checkbox" '.(in_array($coencadrant['id_user'], $coencadrants, true) ? 'checked="checked"' : '').' name="coencadrants[]" value="'.$coencadrant['id_user'].'" id="coencadrant-'.$coencadrant['id_user'].'" />
-									'.$coencadrant['firstname_user'].'
-									'.$coencadrant['lastname_user'].'
-									<a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user='.$coencadrant['id_user'].'" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
+    echo '<label for="coencadrant-' . $coencadrant['id_user'] . '">
+									<input type="checkbox" ' . (in_array($coencadrant['id_user'], $coencadrants, true) ? 'checked="checked"' : '') . ' name="coencadrants[]" value="' . $coencadrant['id_user'] . '" id="coencadrant-' . $coencadrant['id_user'] . '" />
+									' . $coencadrant['firstname_user'] . '
+									' . $coencadrant['lastname_user'] . '
+									<a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . $coencadrant['id_user'] . '" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
 								</label>';
 }
 ?>
@@ -152,11 +152,11 @@ foreach ($coencadrantsTab as $coencadrant) {
                 echo '<p class="info">Aucun adhérent n\'est déclaré <b>bénévole</b> pour cette commission ou cette sortie.</p>';
             }
             foreach ($benevolesTab as $benevole) {
-                echo '<label for="benevole-'.$benevole['id_user'].'">
-									<input '.($id_evt_to_update ? 'disabled' : '').' type="checkbox" '.(in_array($benevole['id_user'], $benevoles, true) ? 'checked="checked"' : '').' name="benevoles[]" value="'.$benevole['id_user'].'" id="benevole-'.$benevole['id_user'].'" />
-									'.$benevole['firstname_user'].'
-									'.$benevole['lastname_user'].'
-									<a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user='.$benevole['id_user'].'" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
+                echo '<label for="benevole-' . $benevole['id_user'] . '">
+									<input ' . ($id_evt_to_update ? 'disabled' : '') . ' type="checkbox" ' . (in_array($benevole['id_user'], $benevoles, true) ? 'checked="checked"' : '') . ' name="benevoles[]" value="' . $benevole['id_user'] . '" id="benevole-' . $benevole['id_user'] . '" />
+									' . $benevole['firstname_user'] . '
+									' . $benevole['lastname_user'] . '
+									<a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . $benevole['id_user'] . '" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
 								</label>';
             }
             echo '<br style="clear:both" />';
@@ -164,7 +164,7 @@ foreach ($coencadrantsTab as $coencadrant) {
 ?>
 
             <label for="need_benevoles_evt" style="margin-top:15px; display:block; float:none; width:93%; background-color:white; background-position:8px 5px; padding-left:10px; padding-top:5px; box-shadow:0 0 15px -8px black;">
-                <input type="checkbox" class="custom" name="need_benevoles_evt" id="need_benevoles_evt" <?php if (!empty($_POST['need_benevoles_evt']) && in_array($_POST['need_benevoles_evt'], [1, 'on', '1'])) {
+                <input type="checkbox" class="custom" name="need_benevoles_evt" id="need_benevoles_evt" <?php if (!empty($_POST['need_benevoles_evt']) && in_array($_POST['need_benevoles_evt'], [1, 'on', '1'], true)) {
                     echo 'checked="checked"';
                 }?> /> Afficher un encart &laquo;Nous aurions besoin de bénévoles&raquo; sur la page de la sortie ?
             </label>
@@ -250,7 +250,7 @@ inclure('infos-carte', 'mini');
     <div class="trigger-me" style="padding-right:20px">
 
         <!-- si on rensigne une suite de cycle, cette section est blqoquée  -->
-        <div id="inscriptions-on" style="display:<?php echo isset($suiteDeCycle) && $suiteDeCycle ? 'none' : 'block' ?>">
+        <div id="inscriptions-on" style="display:<?php echo isset($suiteDeCycle) && $suiteDeCycle ? 'none' : 'block'; ?>">
 
 
             Nombre maximum de personnes sur cette sortie (encadrement compris) :<br />
@@ -279,7 +279,7 @@ inclure('infos-carte', 'mini');
         </div>
 
         <!-- message d'info -->
-        <div id="inscriptions-off" style="display:<?php echo isset($suiteDeCycle) && $suiteDeCycle ? 'block' : 'none' ?>">
+        <div id="inscriptions-off" style="display:<?php echo isset($suiteDeCycle) && $suiteDeCycle ? 'block' : 'none'; ?>">
             <p class="alerte">Les inscriptions à cette sortie sont gérées sur la première sortie du cycle dont elle fait partie.</p>
         </div>
 
@@ -305,9 +305,9 @@ inclure('infos-carte', 'mini');
         <div style="float:right; padding-right:20px;">
             <select>
                 <option value="">- Listes prédéfinies </option>
-                <?php foreach ($listeEquipementsRecommande as $nomActivite => $listeEquipement) : ?>
-                    <option value="<?= htmlspecialchars($listeEquipement); ?>"><?= htmlspecialchars($nomActivite); ?></option>
-                <?php endforeach; ?> </select>
+                <?php foreach ($listeEquipementsRecommande as $nomActivite => $listeEquipement) { ?>
+                    <option value="<?php echo htmlspecialchars($listeEquipement); ?>"><?php echo htmlspecialchars($nomActivite); ?></option>
+                <?php } ?> </select>
             <input type="button" value="appliquer" class="nice" id="predefinitions-matos-submit" />
 
             <!-- ****************** Listes de matériel -->
@@ -348,7 +348,7 @@ inclure('infos-matos', 'mini');
             Entrez ci-dessous toutes les informations qui ne figurent pas dans le formulaire.
             N'hésitez pas à mettre un maximum de détails, cet élément formera le corps de la page dédiée à cette sortie.
         </p>
-        <?php require __DIR__.'/../../includes/help/tinymce.php'; ?>
+        <?php require __DIR__ . '/../../includes/help/tinymce.php'; ?>
         <textarea name="description_evt" style="width:99%"><?php echo stripslashes($_POST['description_evt'] ?? ''); ?></textarea>
     </div>
 

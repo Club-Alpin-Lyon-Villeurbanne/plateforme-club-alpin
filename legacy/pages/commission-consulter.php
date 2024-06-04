@@ -35,7 +35,7 @@ if (!(admin() || allowed('comm_edit') || (user() && getUser()->hasAttribute(User
     if (!$commissionTmp) {
         echo '<p class="erreur"> ID invalide</p>';
     } else {
-        echo "<h1>Fiche de la commission '".$commissionTmp['title_commission']."'</h1><hr />";
+        echo "<h1>Fiche de la commission '" . $commissionTmp['title_commission'] . "'</h1><hr />";
 
         // print_r ($commissionTmp);
 
@@ -56,7 +56,7 @@ if (!(admin() || allowed('comm_edit') || (user() && getUser()->hasAttribute(User
 							)
 						AND usertype_user_attr = id_usertype
 						AND user_user_attr = id_user
-						AND params_user_attr LIKE 'commission:".$commissionTmp['code_commission']."'
+						AND params_user_attr LIKE 'commission:" . $commissionTmp['code_commission'] . "'
 						ORDER BY code_usertype DESC, lastname_user, firstname_user
 						";
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -65,21 +65,21 @@ if (!(admin() || allowed('comm_edit') || (user() && getUser()->hasAttribute(User
         echo '<table class="big-lines-table"><tbody>';
         while ($row = $result->fetch_assoc()) {
             echo '<tr>
-								<td style="text-align:center; width:60px;"><img src="'.userImg($row['id_user'], 'pic').'" alt="" title="" style="max-height:40px; max-width:60px;" /></td>
-								<td>'.userlink($row['id_user'], $row['firstname_user'].' '.$row['lastname_user']);
+								<td style="text-align:center; width:60px;"><img src="' . userImg($row['id_user'], 'pic') . '" alt="" title="" style="max-height:40px; max-width:60px;" /></td>
+								<td>' . userlink($row['id_user'], $row['firstname_user'] . ' ' . $row['lastname_user']);
             if ($row['doit_renouveler_user'] > 0) {
                 echo '&nbsp;<img src="/img/base/delete.png" title="licence expirée" style="margin-bottom:-4px">';
             }
             echo '</td>
-								<td><a href="mailto:'.$row['email_user'].'">'.$row['email_user'].'</a></td>
-								<td>'.$row['title_usertype'].'</td>
+								<td><a href="mailto:' . $row['email_user'] . '">' . $row['email_user'] . '</a></td>
+								<td>' . $row['title_usertype'] . '</td>
 							</tr>';
             $benvoles_emails[] = $row['email_user'];
         }
         echo '</tbody></table>';
 
         echo '<h1>LISTE DES E-MAILS</h1>';
-        echo '<textarea id="emailsaddresses" rows="10" cols="70">'.implode(',', $benvoles_emails).'</textarea>';
+        echo '<textarea id="emailsaddresses" rows="10" cols="70">' . implode(',', $benvoles_emails) . '</textarea>';
     }
 }
 ?>
@@ -88,7 +88,7 @@ if (!(admin() || allowed('comm_edit') || (user() && getUser()->hasAttribute(User
 
 	<!-- partie droite -->
 	<?php
-    require __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__ . '/../includes/right-type-agenda.php';
 ?>
 
 	<br style="clear:both" />

@@ -34,12 +34,12 @@ class EvtRepository extends ServiceEntityRepository
         $sqlPart = [];
 
         foreach ($commissions as $key => $commission) {
-            $params['com_'.$key] = $commission;
-            $sqlPart[] = ' c.code_commission = :com_'.$key;
+            $params['com_' . $key] = $commission;
+            $sqlPart[] = ' c.code_commission = :com_' . $key;
         }
 
         if (!empty($sqlPart)) {
-            $sql .= ' AND ('.implode(' OR ', $sqlPart).')';
+            $sql .= ' AND (' . implode(' OR ', $sqlPart) . ')';
         }
 
         return $this->_em->getConnection()->fetchOne($sql, $params);

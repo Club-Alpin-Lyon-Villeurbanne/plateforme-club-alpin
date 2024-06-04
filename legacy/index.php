@@ -3,16 +3,16 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-require __DIR__.'/app/includes.php';
+require __DIR__ . '/app/includes.php';
 
 // ________________________________________________ TRAITEMENT AJAX
 if (isset($_GET['ajx'])) {
-    require __DIR__.'/app/ajax/'.$_GET['ajx'].'.php';
+    require __DIR__ . '/app/ajax/' . $_GET['ajx'] . '.php';
     exit;
 }
 
 // lien vers cette page (pour formulaires, ou ancres)
-$versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : '').'.html';			// multilangue / une langue
+$versCettePage = $p1 . ($p2 ? '/' . $p2 : '') . ($p3 ? '/' . $p3 : '') . ($p4 ? '/' . $p4 : '') . '.html';			// multilangue / une langue
 
 ?><!doctype html>
 <html lang="fr">
@@ -39,26 +39,26 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
 
     // _________________________________________________ HEADER AU CHOIX (inclut le doctype)
     if ($p_pageadmin) {
-        require __DIR__.'/includes/generic/header-admin.php';
+        require __DIR__ . '/includes/generic/header-admin.php';
     } else {
-        require __DIR__.'/includes/generic/header.php';
+        require __DIR__ . '/includes/generic/header.php';
     }
-    // _________________________________________________ Ajout des CSS par page
-    if (is_array($p_addCss)) {
-        foreach ($p_addCss as $handle) {
-            if ($handle) {
-                echo '<link rel="stylesheet" href="'.$handle.'" type="text/css"  media="screen" />'."\n";
-            }
+// _________________________________________________ Ajout des CSS par page
+if (is_array($p_addCss)) {
+    foreach ($p_addCss as $handle) {
+        if ($handle) {
+            echo '<link rel="stylesheet" href="' . $handle . '" type="text/css"  media="screen" />' . "\n";
         }
     }
-    // _________________________________________________ Ajout des JS par page
-    if (is_array($p_addJs)) {
-        foreach ($p_addJs as $handle) {
-            if ($handle) {
-                echo '<script type="text/javascript" charset="utf-8" src="'.$handle.'"></script>'."\n";
-            }
+}
+// _________________________________________________ Ajout des JS par page
+if (is_array($p_addJs)) {
+    foreach ($p_addJs as $handle) {
+        if ($handle) {
+            echo '<script type="text/javascript" charset="utf-8" src="' . $handle . '"></script>' . "\n";
         }
     }
+}
 
 ?>
     <!--[if lt IE 9]>
@@ -66,7 +66,7 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
     <![endif]-->
     <?php
         if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
-    ?>
+            ?>
         <style>
             body {
                 padding-top: 30px;
@@ -87,58 +87,58 @@ $versCettePage = $p1.($p2 ? '/'.$p2 : '').($p3 ? '/'.$p3 : '').($p4 ? '/'.$p4 : 
         </style>
     <?php
         }
-    ?>
+?>
 </head>
 <body>
     <?php
-        if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
-    ?>
+    if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
+        ?>
         <div id="test-banner">
             <p>Attention, vous vous trouvez sur un site de test. Veuillez <a href="https://clubalpinlyon.fr">cliquer ici pour accéder au site de production</a>.</p>
         </div>
     <?php
-        }
-    ?>
+    }
+?>
     <div id="container">
         <div id="siteHeight">
             <?php
-            // _________________________________________________ MENU ADMINISTRATEUR
-            if (admin()) {
-                require __DIR__.'/admin/menuAdmin.php';
-            }
+        // _________________________________________________ MENU ADMINISTRATEUR
+        if (admin()) {
+            require __DIR__ . '/admin/menuAdmin.php';
+        }
 
-            // _________________________________________________ CONTENU IMPRESSION FEUILLE SORTIE
-            if ('feuille-de-sortie' == $p1) {
-                echo '<div id="pageAdmin" class="'.(isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] ? 'superadmin' : '').'">';
-                if (file_exists(__DIR__.'/pages/'.$p1.'.php')) {
-                    require __DIR__.'/pages/'.$p1.'.php';
-                } else {
-                    require __DIR__.'/pages/404.php';
-                }
-                echo '</div>';
-            }
-            // _________________________________________________ CONTENU COMMUN AUX PAGES PUBLIQUES
-            elseif (!$p_pageadmin || !admin()) {
-                // include page
-                require __DIR__.'/includes/generic/top.php';
-                require __DIR__.'/includes/bigfond.php';
-                if (file_exists(__DIR__.'/pages/'.$p1.'.php')) {
-                    require __DIR__.'/pages/'.$p1.'.php';
-                } else {
-                    echo '<p class="erreur">Erreur d\'inclusion. Merci de contacter le webmaster.</p>';
-                }
-                require __DIR__.'/includes/generic/footer.php';
-            }
-            // _________________________________________________ CONTENU PAGES ADMIN
-            else {
-                echo '<div id="pageAdmin" class="'.(isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] ? 'superadmin' : '').'">';
-                if (file_exists(__DIR__.'/pages/'.$p1.'.php') && '404' != $p1) {
-                    require __DIR__.'/pages/'.$p1.'.php';
-                } else {
-                    require __DIR__.'/pages/404.php';
-                }
-                echo '</div>';
-            }
+// _________________________________________________ CONTENU IMPRESSION FEUILLE SORTIE
+if ('feuille-de-sortie' == $p1) {
+    echo '<div id="pageAdmin" class="' . (isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] ? 'superadmin' : '') . '">';
+    if (file_exists(__DIR__ . '/pages/' . $p1 . '.php')) {
+        require __DIR__ . '/pages/' . $p1 . '.php';
+    } else {
+        require __DIR__ . '/pages/404.php';
+    }
+    echo '</div>';
+}
+// _________________________________________________ CONTENU COMMUN AUX PAGES PUBLIQUES
+elseif (!$p_pageadmin || !admin()) {
+    // include page
+    require __DIR__ . '/includes/generic/top.php';
+    require __DIR__ . '/includes/bigfond.php';
+    if (file_exists(__DIR__ . '/pages/' . $p1 . '.php')) {
+        require __DIR__ . '/pages/' . $p1 . '.php';
+    } else {
+        echo '<p class="erreur">Erreur d\'inclusion. Merci de contacter le webmaster.</p>';
+    }
+    require __DIR__ . '/includes/generic/footer.php';
+}
+// _________________________________________________ CONTENU PAGES ADMIN
+else {
+    echo '<div id="pageAdmin" class="' . (isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] ? 'superadmin' : '') . '">';
+    if (file_exists(__DIR__ . '/pages/' . $p1 . '.php') && '404' != $p1) {
+        require __DIR__ . '/pages/' . $p1 . '.php';
+    } else {
+        require __DIR__ . '/pages/404.php';
+    }
+    echo '</div>';
+}
 ?>
 
             <!-- Waiters -->
@@ -159,7 +159,7 @@ if (admin() && count($contLog) && !$p_pageadmin) {
         $tmp = $contLog[$i];
         echo '<form style="display:inline" method="post" action="admin-contenus/fr.html">
                             <input type="hidden" name="operation" value="forceAddContent" />
-                            <input type="text" readonly="readonly" name="code_content_inline" value="'.$tmp.'" onclick="$(this).parent().submit();" />
+                            <input type="text" readonly="readonly" name="code_content_inline" value="' . $tmp . '" onclick="$(this).parent().submit();" />
                         </form>';
     }
 
@@ -169,7 +169,7 @@ if (admin() && count($contLog) && !$p_pageadmin) {
 
 
             <!-- lbxMsg : popup d'information -->
-            <?php require __DIR__.'/includes/generic/lbxMsg.php'; ?>
+            <?php require __DIR__ . '/includes/generic/lbxMsg.php'; ?>
 
             <?php if (LegacyContainer::getParameter('legacy_env_ANALYTICS_ACCOUNT')) { ?>
             <!-- Google tag (gtag.js) -->

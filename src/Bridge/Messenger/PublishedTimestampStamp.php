@@ -8,7 +8,7 @@ class PublishedTimestampStamp implements StampInterface
 {
     private float $timestamp;
 
-    public function __construct(float $timestamp = null)
+    public function __construct(?float $timestamp = null)
     {
         $this->timestamp = $timestamp ?: microtime(true);
     }

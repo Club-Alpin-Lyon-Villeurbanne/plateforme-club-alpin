@@ -5,11 +5,10 @@ namespace App\Entity;
 use App\Repository\ExpenseFieldRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
-use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: ExpenseFieldRepository::class)]
 #[HasLifecycleCallbacks]
-class ExpenseField implements JsonSerializable
+class ExpenseField implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

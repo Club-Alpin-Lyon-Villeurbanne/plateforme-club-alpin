@@ -91,16 +91,16 @@ if ($p2) {
     $req = 'SELECT  id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
                 , title_commission, code_commission
         FROM caf_evt, caf_commission
-        WHERE user_evt = '.getUser()->getId()."
+        WHERE user_evt = ' . getUser()->getId() . "
         AND cycle_master_evt=1
         AND id_commission = commission_evt
-        AND code_commission = '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2)."'
+        AND code_commission = '" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2) . "'
         ORDER BY tsp_evt DESC
         LIMIT 200";
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // compte de sorties enfant
-        $req = 'SELECT COUNT(id_evt) FROM caf_evt WHERE cycle_parent_evt='.$handle['id_evt'];
+        $req = 'SELECT COUNT(id_evt) FROM caf_evt WHERE cycle_parent_evt=' . $handle['id_evt'];
         $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $handle['nchildren'] = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
 
@@ -159,7 +159,7 @@ if ($p2) {
             if (count($benevoles) > 0) {
                 $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
         FROM caf_user
-        WHERE id_user IN ('.implode(',', $benevoles).')
+        WHERE id_user IN (' . implode(',', $benevoles) . ')
         ORDER BY  lastname_user ASC
         LIMIT 0 , 50';
                 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -206,8 +206,8 @@ if ($p2) {
 
                 $req = 'SELECT id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
         FROM caf_evt, caf_commission
-        WHERE id_evt='.$handle['cycle_parent_evt'].'
-        AND user_evt != '.getUser()->getId().'
+        WHERE id_evt=' . $handle['cycle_parent_evt'] . '
+        AND user_evt != ' . getUser()->getId() . '
         AND cycle_master_evt=1
         ORDER BY tsp_evt DESC
         LIMIT 1';
@@ -235,50 +235,50 @@ if ($p2) {
         } else {
             echo '<h1 class="page-h1"><b>Modifier</b> cette sortie</h1>';
         }
-        ?>
+?>
 
         <div style="padding:10px 0 0 30px; line-height:18px; ">
             <?php
-            // je n'ai pas le droit de créer une sortie (peu importe quelle commission)
-            if (!allowed('evt_create')) {
-                echo '<p class="erreur">Vous n\'avez pas l\'autorisation d\'accéder à cette page car vous ne semblez pas avoir les droits de création de sortie.</p>';
-            }
+    // je n'ai pas le droit de créer une sortie (peu importe quelle commission)
+    if (!allowed('evt_create')) {
+        echo '<p class="erreur">Vous n\'avez pas l\'autorisation d\'accéder à cette page car vous ne semblez pas avoir les droits de création de sortie.</p>';
+    }
 
-            // j'ai le droit, mais aucune commission n'est donnée
-            elseif (!$p2) {
-                echo '<p>Merci de sélectionner la commission visée pour cette sortie :</p>';
-                // pour chaque comm que je peux modifier, lien
-                foreach ($comTab as $tmp) {
-                    if (allowed('evt_create', 'commission:'.$tmp['code_commission'])) {
-                        echo '<a class="lien-big" style="color:black;" href="/creer-une-sortie/'.html_utf8($tmp['code_commission']).'.html" title="">&gt; Créer une sortie <b>'.html_utf8($tmp['title_commission']).'</b></a><br />';
-                    }
-                }
+    // j'ai le droit, mais aucune commission n'est donnée
+    elseif (!$p2) {
+        echo '<p>Merci de sélectionner la commission visée pour cette sortie :</p>';
+        // pour chaque comm que je peux modifier, lien
+        foreach ($comTab as $tmp) {
+            if (allowed('evt_create', 'commission:' . $tmp['code_commission'])) {
+                echo '<a class="lien-big" style="color:black;" href="/creer-une-sortie/' . html_utf8($tmp['code_commission']) . '.html" title="">&gt; Créer une sortie <b>' . html_utf8($tmp['title_commission']) . '</b></a><br />';
             }
+        }
+    }
 
-            // je n'ai pas le droit de créer une sortie pour cette commission
-            elseif (!allowed('evt_create', 'commission:'.$p2)) {
-                echo '<p class="erreur">Vous n\'avez pas l\'autorisation d\'accéder à cette page car vous ne semblez pas avoir les droits de création de sortie pour la commission '.html_utf8($p2).'.</p>';
-            } elseif (getUser()->getDoitRenouveler()) {
-                inclure('info-encadrant-licence-obsolete', 'vide');
-            }
+    // je n'ai pas le droit de créer une sortie pour cette commission
+    elseif (!allowed('evt_create', 'commission:' . $p2)) {
+        echo '<p class="erreur">Vous n\'avez pas l\'autorisation d\'accéder à cette page car vous ne semblez pas avoir les droits de création de sortie pour la commission ' . html_utf8($p2) . '.</p>';
+    } elseif (getUser()->getDoitRenouveler()) {
+        inclure('info-encadrant-licence-obsolete', 'vide');
+    }
 
-            // on a donné une commission pour laquelle j'ai les droits, alors go
-            else {
-                // modification de sortie actuellement publiée = message d'avertissement
-                if ($id_evt_to_update && 1 == $update_status) {
-                    echo '<p class="alerte">Attention : si vous modifiez cette sortie, elle devra à nouveau être validée par un responsable avant d\'être affichée sur le site !</p>';
-                }
-                require __DIR__.'/../includes/evt/creer.php';
-            }
-        ?>
+    // on a donné une commission pour laquelle j'ai les droits, alors go
+    else {
+        // modification de sortie actuellement publiée = message d'avertissement
+        if ($id_evt_to_update && 1 == $update_status) {
+            echo '<p class="alerte">Attention : si vous modifiez cette sortie, elle devra à nouveau être validée par un responsable avant d\'être affichée sur le site !</p>';
+        }
+        require __DIR__ . '/../includes/evt/creer.php';
+    }
+?>
         </div><br>
 
 	</div><!-- fin left -->
 
 	<!-- partie droite -->
 	<?php
-    require __DIR__.'/../includes/right-type-agenda.php';
-        ?>
+    require __DIR__ . '/../includes/right-type-agenda.php';
+?>
 
 	<br style="clear:both" />
 </div>

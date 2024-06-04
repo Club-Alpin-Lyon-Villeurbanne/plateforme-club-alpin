@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ChronOperation.
- *
- *
  */
 #[ORM\Table(name: 'caf_chron_operation')]
 #[ORM\Entity]
@@ -15,9 +13,6 @@ class ChronOperation
 {
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Column(name: 'id_chron_operation', type: 'integer', nullable: false)]
     #[ORM\Id]

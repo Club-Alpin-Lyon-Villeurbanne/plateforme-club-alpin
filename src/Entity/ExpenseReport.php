@@ -5,7 +5,6 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Controller\Api\ExpenseReportGet;
 use App\Controller\Api\ExpenseReportList;
@@ -18,26 +17,25 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
-use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: ExpenseReportRepository::class)]
 #[ApiResource(operations: [
     new GetCollection(
-        name: 'expense_report_list', 
+        name: 'expense_report_list',
         uriTemplate: '/expense-report',
         controller: ExpenseReportList::class,
         stateless: false,
         security: "is_granted('ROLE_USER')"
     ),
     new Get(
-        name: 'expense_report_get', 
+        name: 'expense_report_get',
         uriTemplate: '/expense-report/{id}',
         controller: ExpenseReportGet::class,
         stateless: false,
         security: "is_granted('ROLE_USER')"
     ),
     new Post(
-        name: 'expense_report_validate', 
+        name: 'expense_report_validate',
         uriTemplate: '/expense-report/{id}/status',
         input: ExpenseReportStatusDto::class,
         controller: ExpenseReportUpdateStatus::class,
@@ -46,7 +44,7 @@ use JsonSerializable;
     ),
 ])]
 #[HasLifecycleCallbacks]
-class ExpenseReport implements JsonSerializable
+class ExpenseReport implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -100,6 +98,7 @@ class ExpenseReport implements JsonSerializable
     public function setId($id): static
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -115,12 +114,10 @@ class ExpenseReport implements JsonSerializable
 
     public function setStatus(string $status): static
     {
-        if (!in_array($status, ExpenseReportEnum::getConstants())) {
-            throw new \InvalidArgumentException(
-                'Expense report status must be one of : ' . implode(', ', ExpenseReportEnum::getConstants()) . '.'
-            );
+        if (!\in_array($status, ExpenseReportEnum::getConstants(), true)) {
+            throw new \InvalidArgumentException('Expense report status must be one of : ' . implode(', ', ExpenseReportEnum::getConstants()) . '.');
         }
-        
+
         $this->status = $status;
 
         return $this;

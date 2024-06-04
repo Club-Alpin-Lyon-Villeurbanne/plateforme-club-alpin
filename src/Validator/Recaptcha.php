@@ -9,7 +9,7 @@ class Recaptcha extends Constraint
     public $message = 'Captcha invalide';
     public $action;
 
-    public function __construct($action = null, string $message = null, array $groups = null, $payload = null, array $options = [])
+    public function __construct($action = null, ?string $message = null, ?array $groups = null, $payload = null, array $options = [])
     {
         if (\is_array($action)) {
             $options = array_merge($action, $options);

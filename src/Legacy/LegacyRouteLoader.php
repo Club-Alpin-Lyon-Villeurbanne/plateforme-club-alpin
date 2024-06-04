@@ -9,7 +9,7 @@ use Symfony\Component\Routing\RouteCollection;
 
 class LegacyRouteLoader extends Loader
 {
-    public function supports($resource, string $type = null): bool
+    public function supports($resource, ?string $type = null): bool
     {
         return 'legacy' === $type;
     }

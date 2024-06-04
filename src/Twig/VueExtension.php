@@ -2,13 +2,15 @@
 
 namespace App\Twig;
 
+use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
-use Twig\Environment;
 
 class VueExtension extends AbstractExtension
 {
-    public function __construct(private Environment $twig) {}
+    public function __construct(private Environment $twig)
+    {
+    }
 
     public function getFunctions(): array
     {
@@ -17,13 +19,12 @@ class VueExtension extends AbstractExtension
         ];
     }
 
-    public function vueComponent(string $selector, string $componentName = null, $data = null): string
+    public function vueComponent(string $selector, ?string $componentName = null, $data = null): string
     {
-        $script = $this->twig->render('vuejs/component.html.twig', [
+        return $this->twig->render('vuejs/component.html.twig', [
             'selector' => $selector,
             'componentName' => $componentName,
             'data' => json_encode($data),
         ]);
-        return $script;
     }
 }

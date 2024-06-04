@@ -41,17 +41,17 @@ $req = 'SELECT  id_evt, cancelled_evt, code_evt, tsp_evt, tsp_end_evt, tsp_crea_
     WHERE id_commission = commission_evt
     AND status_evt = 1 '
     //  " AND cancelled_evt != 1 " // les sorties annulées y figurent ausssi
-    .($p2 ? " AND code_commission = '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2)."' " : '')
+    . ($p2 ? " AND code_commission = '" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2) . "' " : '')
     // truc des dates :
-    .' AND ( '
+    . ' AND ( '
         // la fin de l'événement est comprise dans ce mois
-        ." ( tsp_end_evt > $start_tsp AND tsp_end_evt < $end_tsp ) "
+        . " ( tsp_end_evt > $start_tsp AND tsp_end_evt < $end_tsp ) "
         // OU le début de l'événement est compris dans ce mois
-        ." OR ( tsp_evt > $start_tsp AND tsp_evt < $end_tsp ) "
+        . " OR ( tsp_evt > $start_tsp AND tsp_evt < $end_tsp ) "
         // OU l'événement comprend l'intégralité du mois
-        ." OR ( tsp_evt < $start_tsp AND tsp_end_evt > $end_tsp ) "
-    .' ) '
-    .' ORDER BY cancelled_evt ASC , tsp_evt ASC';
+        . " OR ( tsp_evt < $start_tsp AND tsp_end_evt > $end_tsp ) "
+    . ' ) '
+    . ' ORDER BY cancelled_evt ASC , tsp_evt ASC';
 
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
@@ -70,7 +70,7 @@ while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     $handle['jourN'] = false; // compte des jours à afficher ?
 
     // s'il court sur plusieurs jours on initialise le compte des jours
-    if ($tmpStartD.$tmpStartM != $tmpEndD.$tmpEndM) {
+    if ($tmpStartD . $tmpStartM != $tmpEndD . $tmpEndM) {
         $handle['jourN'] = 1;
     }
 
@@ -81,13 +81,13 @@ while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         ++$nEvts;
 
         // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
-        require __DIR__.'/../includes/evt-temoin-reqs.php';
+        require __DIR__ . '/../includes/evt-temoin-reqs.php';
 
         // on l'ajoute au bon jour, colonne 'debut'
         $agendaTab[(int) $tmpStartD]['debut'][] = $handle;
     }
     // s'il court sur plusieurs jours (on inclut les evts qui commencent avant ce mois)
-    if ($tmpStartD.$tmpStartM != $tmpEndD.$tmpEndM) {
+    if ($tmpStartD . $tmpStartM != $tmpEndD . $tmpEndM) {
         // on l'ajoute sur chaque jour ou il court sauf le premier, deja inqiqué colonne 'courant'
         $bool = true;
         // jour auquel commencer
@@ -141,7 +141,7 @@ $min_year = (int) date('Y') - 3;
 				Agenda
 				<?php
                 if ($current_commission) {
-                    echo ' : '.$comTab[$current_commission]['title_commission'];
+                    echo ' : ' . $comTab[$current_commission]['title_commission'];
                 }
 ?>
 				<span style="font-size:12px; color:silver">
@@ -156,11 +156,11 @@ $min_year = (int) date('Y') - 3;
 				<div class="faux-select faux-select-wide">
 					<?php
                     // première ligne : tjrs toutes les comms
-echo '<a href="/agenda.html?month='.(int) $month.'&amp;year='.(int) $year.'" title="" class="'.($current_commission ? '' : 'up').'">Toutes les sorties</a> ';
+echo '<a href="/agenda.html?month=' . (int) $month . '&amp;year=' . (int) $year . '" title="" class="' . ($current_commission ? '' : 'up') . '">Toutes les sorties</a> ';
 // choix de la commission
 ksort($comTab);
 foreach ($comTab as $code => $data) {
-    echo '<a href="/agenda/'.html_utf8($code).'.html?month='.(int) $month.'&amp;year='.(int) $year.'" title="" class="'.($code == $current_commission ? 'up' : '').'">'.html_utf8($data['title_commission']).'</a> ';
+    echo '<a href="/agenda/' . html_utf8($code) . '.html?month=' . (int) $month . '&amp;year=' . (int) $year . '" title="" class="' . ($code == $current_commission ? 'up' : '') . '">' . html_utf8($data['title_commission']) . '</a> ';
 }
 ?>
 				</div>
@@ -185,8 +185,8 @@ for ($i = $month - $ampl; $i <= $month + $ampl; ++$i) {
         $tmpMonth = $i;
     }
     if ($tmpYear <= $max_year && $tmpYear >= $min_year) {
-        echo '<a href="/agenda'.($current_commission ? '/'.$current_commission : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" class="'.($month == $tmpMonth ? 'up' : '').'">'
-            .mois($tmpMonth).' '.$tmpYear.'</a>';
+        echo '<a href="/agenda' . ($current_commission ? '/' . $current_commission : '') . '.html?month=' . $tmpMonth . '&amp;year=' . $tmpYear . '" class="' . ($month == $tmpMonth ? 'up' : '') . '">'
+            . mois($tmpMonth) . ' ' . $tmpYear . '</a>';
     }
 }
 ?>
@@ -194,7 +194,7 @@ for ($i = $month - $ampl; $i <= $month + $ampl; ++$i) {
 			</div>
 
 			<!-- date en gris -->
-			<p class="agenda-date"><?php echo mois($month).' '.$year; ?></p>
+			<p class="agenda-date"><?php echo mois($month) . ' ' . $year; ?></p>
 
 			<br style="clear:both" />
 
@@ -207,7 +207,7 @@ if ($tmpMonth <= 0) {
     --$tmpYear;
 }
 if ($tmpYear >= $min_year) {
-    echo '<a style="float:left" href="/agenda'.($p2 ? '/'.$p2 : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" title="" class="fader2"><img src="/img/arrow-left.png" alt="&lt;" title="Mois précédent" style="height:30px" /></a>';
+    echo '<a style="float:left" href="/agenda' . ($p2 ? '/' . $p2 : '') . '.html?month=' . $tmpMonth . '&amp;year=' . $tmpYear . '" title="" class="fader2"><img src="/img/arrow-left.png" alt="&lt;" title="Mois précédent" style="height:30px" /></a>';
 }
 
 $tmpMonth = $month + 1;
@@ -217,12 +217,12 @@ if ($tmpMonth > 12) {
     ++$tmpYear;
 }
 if ($tmpYear <= $max_year) {
-    echo '<a style="float:right" href="/agenda'.($p2 ? '/'.$p2 : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" title="" class="fader2"><img src="/img/arrow-right.png" alt="&gt;" title="Mois suivant" style="height:30px" /></a>';
+    echo '<a style="float:right" href="/agenda' . ($p2 ? '/' . $p2 : '') . '.html?month=' . $tmpMonth . '&amp;year=' . $tmpYear . '" title="" class="fader2"><img src="/img/arrow-right.png" alt="&gt;" title="Mois suivant" style="height:30px" /></a>';
 }
 ?>
 
 			<!-- Stat -->
-			<p class="agenda-stat"><?php echo $nEvts.' sortie'.($nEvts > 2 ? 's' : '').' ce mois-ci :'; ?></p>
+			<p class="agenda-stat"><?php echo $nEvts . ' sortie' . ($nEvts > 2 ? 's' : '') . ' ce mois-ci :'; ?></p>
 
 			<!-- Tableau des dates du mois courant -->
 			<table id="agenda">
@@ -242,9 +242,9 @@ for ($i = 1; $i <= $nDays; ++$i) {
         $bgwe = 'weekendday';
     }
 
-    echo '<tr class="'.(count($agendaTab[$i]['debut']) ? 'up' : 'off').' '.$bgwe.'">' // ligne UP ou OFF si sortie démarre ou pas
-            .'<td class="agenda-gauche '.$bgwe.'">'.$weekTab[$iWeek].' '.$i.' '.mois($month).'</td>'
-            .'<td>'
+    echo '<tr class="' . (count($agendaTab[$i]['debut']) ? 'up' : 'off') . ' ' . $bgwe . '">' // ligne UP ou OFF si sortie démarre ou pas
+            . '<td class="agenda-gauche ' . $bgwe . '">' . $weekTab[$iWeek] . ' ' . $i . ' ' . mois($month) . '</td>'
+            . '<td>'
     ;
 
     // affichage des sorties commençantes
@@ -254,7 +254,7 @@ for ($i = 1; $i <= $nDays; ++$i) {
         }
         $first = false;
         $evt = $agendaTab[$i]['debut'][$j];
-        require __DIR__.'/../includes/agenda-evt-debut.php';
+        require __DIR__ . '/../includes/agenda-evt-debut.php';
     }
 
     // affichage des sorties courantes
@@ -264,7 +264,7 @@ for ($i = 1; $i <= $nDays; ++$i) {
         }
         $first = false;
         $evt = $agendaTab[$i]['courant'][$j];
-        require __DIR__.'/../includes/agenda-evt-courant.php';
+        require __DIR__ . '/../includes/agenda-evt-courant.php';
     }
 
     echo '</td>';
@@ -287,7 +287,7 @@ if ($tmpMonth <= 0) {
     --$tmpYear;
 }
 if ($tmpYear >= $min_year) {
-    echo '<a style="float:left" href="/agenda'.($p2 ? '/'.$p2 : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" title="" class="fader2"><img src="/img/arrow-left.png" alt="&lt;" title="Mois précédent" /></a>';
+    echo '<a style="float:left" href="/agenda' . ($p2 ? '/' . $p2 : '') . '.html?month=' . $tmpMonth . '&amp;year=' . $tmpYear . '" title="" class="fader2"><img src="/img/arrow-left.png" alt="&lt;" title="Mois précédent" /></a>';
 }
 
 $tmpMonth = $month + 1;
@@ -297,7 +297,7 @@ if ($tmpMonth > 12) {
     ++$tmpYear;
 }
 if ($tmpYear <= $max_year) {
-    echo '<a style="float:right" href="/agenda'.($p2 ? '/'.$p2 : '').'.html?month='.$tmpMonth.'&amp;year='.$tmpYear.'" title="" class="fader2"><img src="/img/arrow-right.png" alt="&gt;" title="Mois suivant" /></a>';
+    echo '<a style="float:right" href="/agenda' . ($p2 ? '/' . $p2 : '') . '.html?month=' . $tmpMonth . '&amp;year=' . $tmpYear . '" title="" class="fader2"><img src="/img/arrow-right.png" alt="&gt;" title="Mois suivant" /></a>';
 }
 ?>
 
@@ -310,9 +310,9 @@ if ($tmpYear <= $max_year) {
 			</a>
 			<?php
 if ($current_commission) {
-    echo '<a href="/rss.xml?mode=sorties-'.$current_commission.'" title="Flux RSS des sorties «'.$current_commission.'» uniquement" class="nice2">
+    echo '<a href="/rss.xml?mode=sorties-' . $current_commission . '" title="Flux RSS des sorties «' . $current_commission . '» uniquement" class="nice2">
 						<img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
-						sorties «'.$current_commission.'»
+						sorties «' . $current_commission . '»
 					</a>';
 }
 ?>
@@ -327,13 +327,13 @@ if ($current_commission) {
 			&nbsp; <!-- important -->
 			<?php
 // PRESENTATION DE LA COMMISSINO
-inclure('presentation-'.($current_commission ?: 'general'), 'right-light-in');
+inclure('presentation-' . ($current_commission ?: 'general'), 'right-light-in');
 
 // SLIDER PARTENAIRES
-require __DIR__.'/../includes/droite-partenaires.php';
+require __DIR__ . '/../includes/droite-partenaires.php';
 
 // RECHERCHE
-require __DIR__.'/../includes/recherche.php';
+require __DIR__ . '/../includes/recherche.php';
 ?>
 		</div>
 
@@ -343,7 +343,7 @@ require __DIR__.'/../includes/recherche.php';
 
 				<?php
     // ACTUS sur fond vert
-    require __DIR__.'/../includes/droite-actus.php';
+    require __DIR__ . '/../includes/droite-actus.php';
 ?>
 
 			</div>

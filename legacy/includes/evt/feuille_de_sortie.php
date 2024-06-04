@@ -4,22 +4,22 @@ use App\Entity\UserAttr;
 
 // GESTION DES DROITS D'AFFICHAGE
 $display = false;
-if (admin() ||
-    (
-        user() &&
-        (
-            (user() && $evt['user_evt'] == (string) getUser()->getId()) ||
-            allowed('evt_validate_all') ||
-            allowed('evt_join_doall') ||
-            'encadrant' == $monStatut ||
-            'stagiaire' == $monStatut || 'coencadrant' == $monStatut ||
-            allowed('evt_validate', 'commission:'.$evt['code_commission'])
+if (admin()
+    || (
+        user()
+        && (
+            (user() && $evt['user_evt'] == (string) getUser()->getId())
+            || allowed('evt_validate_all')
+            || allowed('evt_join_doall')
+            || 'encadrant' == $monStatut
+            || 'stagiaire' == $monStatut || 'coencadrant' == $monStatut
+            || allowed('evt_validate', 'commission:' . $evt['code_commission'])
         )
-        || (user() && getUser()->hasAttribute(UserAttr::SALARIE)) ||
-        (
+        || (user() && getUser()->hasAttribute(UserAttr::SALARIE))
+        || (
             (
-                allowed('evt_join_notme') || allowed('evt_unjoin_notme') ||
-                allowed('evt_joining_accept') || allowed('evt_joining_refuse')
+                allowed('evt_join_notme') || allowed('evt_unjoin_notme')
+                || allowed('evt_joining_accept') || allowed('evt_joining_refuse')
             ) && (
                 user() && getUser()->hasAttribute(UserAttr::RESPONSABLE_COMMISSION, $evt['code_commission'])
             )
@@ -30,7 +30,7 @@ if (admin() ||
 }
 
 if (!$display) {
-    require __DIR__.'/../../pages/404.php';
+    require __DIR__ . '/../../pages/404.php';
     exit;
 }
 
@@ -42,7 +42,7 @@ if ('0' == $evt['status_evt']) {
     $messageDiv = true;
     echo '<div class="alerte"><b>Note : Cette sortie a été refusée</b>. Si vous voyez ce message apparaître, c\'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n\'ont pas accès aux informations ci-dessous.<br /><br /></div>';
 } elseif ('1' == $evt['cancelled_evt']) {
-    echo '<div class="erreur"><img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Sortie annulée :</b><br /> Cette sortie a été annulée le '.date('d/m/Y à H:i').', par '.userlink($evt['cancelled_who_evt']['id_user'], $evt['cancelled_who_evt']['nickname_user']).'.<br /></div>';
+    echo '<div class="erreur"><img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Sortie annulée :</b><br /> Cette sortie a été annulée le ' . date('d/m/Y à H:i') . ', par ' . userlink($evt['cancelled_who_evt']['id_user'], $evt['cancelled_who_evt']['nickname_user']) . '.<br /></div>';
 }
 
 $nAccepteesCalc = count($evt['joins']['encadrant']) + count($evt['joins']['stagiaire']) + count($evt['joins']['coencadrant']) + count($evt['joins']['benevole']) + count($evt['joins']['inscrit']) + count($evt['joins']['manuel']);
@@ -93,11 +93,11 @@ presidence();
                         </tr>
                         <?php foreach ($president as $p) { ?>
                             <tr>
-                                <td><?php echo html_utf8(strtoupper($p['lastname_user']).', '.ucfirst(strtolower($p['firstname_user']))); ?></td>
+                                <td><?php echo html_utf8(strtoupper($p['lastname_user']) . ', ' . ucfirst(strtolower($p['firstname_user']))); ?></td>
                                 <th>TEL</th>
                                 <td><?php
                                 if (!empty($p['tel_user'])) {
-                                    echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $p['tel_user'])).'<br>';
+                                    echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $p['tel_user'])) . '<br>';
                                 } else {
                                     if (!empty($p['tel2_user'])) {
                                         echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $p['tel2_user']));
@@ -113,11 +113,11 @@ presidence();
                         </tr>
                         <?php foreach ($vicepresident as $vp) { ?>
                             <tr>
-                                <td><?php echo html_utf8(strtoupper($vp['lastname_user']).', '.ucfirst(strtolower($vp['firstname_user']))); ?></td>
+                                <td><?php echo html_utf8(strtoupper($vp['lastname_user']) . ', ' . ucfirst(strtolower($vp['firstname_user']))); ?></td>
                                 <th>TEL</th>
                                 <td><?php
                             if (!empty($vp['tel_user'])) {
-                                echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $vp['tel_user'])).'<br>';
+                                echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $vp['tel_user'])) . '<br>';
                             } else {
                                 if (!empty($vp['tel2_user'])) {
                                     echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $vp['tel2_user']));
@@ -136,7 +136,7 @@ presidence();
                     <th colspan="3">ORGANISATEUR : </th>
                 </tr>
                 <tr>
-                    <td><?php echo html_utf8(strtoupper($evt['lastname_user']).', '.ucfirst(strtolower($evt['firstname_user']))); ?></td>
+                    <td><?php echo html_utf8(strtoupper($evt['lastname_user']) . ', ' . ucfirst(strtolower($evt['firstname_user']))); ?></td>
                     <th>TEL</th>
                     <td><?php echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $evt['tel_user'])); ?></td>
                 </tr>
@@ -147,30 +147,30 @@ presidence();
                 foreach ($evt['joins']['encadrant'] as $tmp) {
                     ?>
                     <tr>
-                        <td><b><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></b></td>
+                        <td><b><?php echo html_utf8($tmp['civ_user'] . ' ' . strtoupper($tmp['lastname_user']) . ', ' . ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></b></td>
                         <th>TEL</th>
                         <td><?php echo preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user']); ?></td>
                     </tr>
                 <?php
                 }
-                foreach ($evt['joins']['stagiaire'] as $tmp) {
-                    ?>
+foreach ($evt['joins']['stagiaire'] as $tmp) {
+    ?>
                     <tr>
-                        <td><b><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></b></td>
+                        <td><b><?php echo html_utf8($tmp['civ_user'] . ' ' . strtoupper($tmp['lastname_user']) . ', ' . ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></b></td>
                         <th>TEL</th>
                         <td><?php echo preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user']); ?></td>
                     </tr>
                 <?php
-                }
-                foreach ($evt['joins']['coencadrant'] as $tmp) {
-                    ?>
+}
+foreach ($evt['joins']['coencadrant'] as $tmp) {
+    ?>
                     <tr>
-                        <td><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></td>
+                        <td><?php echo html_utf8($tmp['civ_user'] . ' ' . strtoupper($tmp['lastname_user']) . ', ' . ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></td>
                         <th>TEL</th>
                         <td><?php echo preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user']); ?></td>
                     </tr>
                 <?php
-                }
+}
 ?>
                 </tbody>
             </table>
@@ -190,8 +190,8 @@ presidence();
         <td width='25%'><?php echo date('d.m.Y', $evt['tsp_evt']); ?></td>
         <th width='20%'>COURSE, LIEU : </th>
         <td width='30%'><?php echo html_utf8($evt['titre_evt']); ?><?php if (count($evt['groupe']) > 0) {
-                echo ' - '.$evt['groupe']['nom'];
-            } ?></td>
+            echo ' - ' . $evt['groupe']['nom'];
+        } ?></td>
     </tr>
     <tr>
         <th style="width: fit-content">DISTANCE : </th>
@@ -249,7 +249,7 @@ $joinsParticipants = array_merge(
 
 if (is_array($joinsParticipants)) {
     foreach ($joinsParticipants as $it => $tmpUser) {
-        $joinsParticipants[$tmpUser['lastname_user'].$tmpUser['firstname_user'].$tmpUser['id_user']] = $tmpUser;
+        $joinsParticipants[$tmpUser['lastname_user'] . $tmpUser['firstname_user'] . $tmpUser['id_user']] = $tmpUser;
         unset($joinsParticipants[$it]);
     }
     ksort($joinsParticipants);
@@ -257,7 +257,7 @@ if (is_array($joinsParticipants)) {
         ?>
             <tr>
                 <td><?php echo $number++; ?></td>
-                <td><?php echo html_utf8($tmp['civ_user'].' '.strtoupper($tmp['lastname_user']).', '.ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></td>
+                <td><?php echo html_utf8($tmp['civ_user'] . ' ' . strtoupper($tmp['lastname_user']) . ', ' . ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></td>
                 <td><?php echo html_utf8($tmp['cafnum_user']); ?></td>
                 <td><?php echo getYearsSinceDate($tmp['birthday_user']); ?></td>
                 <td><?php echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user'])); ?></td>
@@ -284,6 +284,6 @@ if (!isset($_GET['hide_blank']) || 'y' != $_GET['hide_blank']) {
 ?>
     </tbody>
 </table>
-Imprimé le <?php echo html_utf8(date('d.m.Y à H:i')); ?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>[<a href="<?php echo isset($_GET['hide_blank']) && $_GET['hide_blank']  ? $versCettePage : $versCettePage.'?hide_blank=y'; ?>"><?php echo isset($_GET['hide_blank'] ) && $_GET['hide_blank'] ? 'Afficher' : 'Masquer'; ?> les lignes vides</a>]</small>
+Imprimé le <?php echo html_utf8(date('d.m.Y à H:i')); ?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>[<a href="<?php echo isset($_GET['hide_blank']) && $_GET['hide_blank'] ? $versCettePage : $versCettePage . '?hide_blank=y'; ?>"><?php echo isset($_GET['hide_blank']) && $_GET['hide_blank'] ? 'Afficher' : 'Masquer'; ?> les lignes vides</a>]</small>
 </body>
 </html>

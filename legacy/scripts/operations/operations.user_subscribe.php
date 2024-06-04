@@ -98,7 +98,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $req = "SELECT id_user
             FROM caf_user
             WHERE cafnum_user = '$cafnum_user'
-            AND upper(lastname_user) LIKE '".strtoupper($lastname_user)."'
+            AND upper(lastname_user) LIKE '" . strtoupper($lastname_user) . "'
             ORDER BY id_user DESC
             LIMIT 1";
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -122,7 +122,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $firstname_user = ucfirst(mb_strtolower($row['firstname_user'], 'UTF-8'));
-            $nickname_user = str_replace([' ', '-', '\''], '', $firstname_user.substr(strtoupper($row['lastname_user']), 0, 1));
+            $nickname_user = str_replace([' ', '-', '\''], '', $firstname_user . substr(strtoupper($row['lastname_user']), 0, 1));
         }
         $nickname_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($nickname_user);
 
@@ -138,7 +138,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $req = "UPDATE caf_user SET email_user = '$email_user',
             mdp_user = '$mdp_user',
             nickname_user = '$nickname_user',
-            created_user = ".time().",
+            created_user = " . time() . ",
             cookietoken_user = '$cookietoken_user'
             WHERE id_user =$id_user LIMIT 1 ;";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
@@ -149,10 +149,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // envoi de l'e-mail
     if (!isset($errTab) || 0 === count($errTab)) {
         // check-in vars : string à retourner lors de la confirmation= md5 de la concaténation id-email
-        $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$cookietoken_user.'-'.$id_user.'.html';
+        $url = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-confirm/' . $cookietoken_user . '-' . $id_user . '.html';
 
         LegacyContainer::get('legacy_mailer')->send(stripslashes($email_user), 'transactional/compte-validation', [
-            'url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'user-confirm/'.$cookietoken_user.'-'.$id_user.'.html',
+            'url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-confirm/' . $cookietoken_user . '-' . $id_user . '.html',
         ]);
     }
 }

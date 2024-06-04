@@ -2,8 +2,8 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Evt;
 use App\Entity\EventParticipation;
+use App\Entity\Evt;
 use App\Entity\User;
 use App\Repository\CommissionRepository;
 use App\Utils\NicknameGenerator;
@@ -14,14 +14,12 @@ use Nelmio\Alice\Loader\NativeLoader;
 class DevData implements FixtureInterface
 {
     private CommissionRepository $commissionRepository;
+
     public function __construct(CommissionRepository $commissionRepository)
     {
         $this->commissionRepository = $commissionRepository;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function load(ObjectManager $manager)
     {
         $filesLoader = new NativeLoader();
@@ -77,7 +75,7 @@ class DevData implements FixtureInterface
 
                 foreach ($users as $user) {
                     $participation = new EventParticipation($object, $user, $roles[array_rand($roles)], $status[array_rand($status)]);
-                    if (in_array($participation->getRole(), [EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_BENEVOLE, EventParticipation::ROLE_COENCADRANT], true)) {
+                    if (\in_array($participation->getRole(), [EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_BENEVOLE, EventParticipation::ROLE_COENCADRANT], true)) {
                         $participation->setStatus(EventParticipation::STATUS_VALIDE);
                     }
                     $manager->persist($participation);

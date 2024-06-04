@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Groupe.
- *
- *
  */
 #[ORM\Table(name: 'caf_groupe')]
 #[ORM\Entity]
@@ -15,9 +13,6 @@ class Groupe
 {
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Column(name: 'id', type: 'integer', nullable: false, options: ['unsigned' => true])]
     #[ORM\Id]

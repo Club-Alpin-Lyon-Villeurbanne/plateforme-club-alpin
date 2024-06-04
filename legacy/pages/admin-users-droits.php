@@ -17,7 +17,7 @@ if (!admin()) {
     $req = 'SELECT title_usertype, code_usertype, params_user_attr, id_user_attr
 	FROM caf_usertype, caf_user_attr
 	WHERE usertype_user_attr = id_usertype
-	AND user_user_attr = '.$id_user.'
+	AND user_user_attr = ' . $id_user . '
 	ORDER BY hierarchie_usertype DESC';
 
     $statsTab = [];
@@ -28,18 +28,18 @@ if (!admin()) {
 
     if (count($statsTab)) {
         echo '<h3>Statuts actuels :</h3>'
-            .'<ul>';
+            . '<ul>';
         foreach ($statsTab as $row) {
             echo '<li>'
-                    .'- <b>'.html_utf8($row['title_usertype']).'</b>'.($row['params_user_attr'] ? ', '.str_replace(':', ' ', $row['params_user_attr']) : '')
-                    .('adherent' != $row['code_usertype'] ?
-                        '<form action="'.$versCettePage.'" method="post" onsubmit="return(confirm(\'Vraiment supprimer cet attribut ?\n Cet utilisateur ne sera plus '.addslashes(html_utf8($row['title_usertype'])).'\'))" style="display:inline;">
+                    . '- <b>' . html_utf8($row['title_usertype']) . '</b>' . ($row['params_user_attr'] ? ', ' . str_replace(':', ' ', $row['params_user_attr']) : '')
+                    . ('adherent' != $row['code_usertype'] ?
+                        '<form action="' . $versCettePage . '" method="post" onsubmit="return(confirm(\'Vraiment supprimer cet attribut ?\n Cet utilisateur ne sera plus ' . addslashes(html_utf8($row['title_usertype'])) . '\'))" style="display:inline;">
 							<input type="hidden" name="operation" value="user_attr_del_admin" />
-							<input type="hidden" name="id_user_attr" value="'.$row['id_user_attr'].'" />
+							<input type="hidden" name="id_user_attr" value="' . $row['id_user_attr'] . '" />
 							<input type="image" src="/img/base/x.png" alt="DEL" title="Supprimer cet attribut" class="upfade" />
 						</form>'
                     : '')
-                .'</li>';
+                . '</li>';
         }
         echo '</ul><br /><br />';
     }
@@ -54,10 +54,10 @@ if (!admin()) {
 		<?php
         // message
         if (isset($_POST['operation']) && 'user_attr_add_admin' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-            echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+            echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
         }
     if (isset($_POST['operation']) && 'user_attr_add_admin' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<div class="info">Mise à jour effectuée à '.date('H:i:s', time()).'.</div>';
+        echo '<div class="info">Mise à jour effectuée à ' . date('H:i:s', time()) . '.</div>';
     }
 
     // liste des types :
@@ -65,7 +65,7 @@ if (!admin()) {
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     echo '<select name="id_usertype"><option></option>';
     while ($row = $result->fetch_assoc()) {
-        echo '<option value="'.(int) $row['id_usertype'].'" class="precise-comm-'.(int) $row['limited_to_comm_usertype'].'">'.html_utf8($row['title_usertype']).'</option>';
+        echo '<option value="' . (int) $row['id_usertype'] . '" class="precise-comm-' . (int) $row['limited_to_comm_usertype'] . '">' . html_utf8($row['title_usertype']) . '</option>';
     }
     echo '</select>';
 
@@ -75,7 +75,7 @@ if (!admin()) {
 
     echo '<div id="commissions-pick" class="nice-checkboxes">';
     while ($row = $result->fetch_assoc()) {
-        echo '<label for="commissions-pick-'.$row['id_commission'].'"><input type="checkbox" name="commission[]" value="commission:'.html_utf8($row['code_commission']).'" id="commissions-pick-'.$row['id_commission'].'" /> '.$row['title_commission'].' </label> ';
+        echo '<label for="commissions-pick-' . $row['id_commission'] . '"><input type="checkbox" name="commission[]" value="commission:' . html_utf8($row['code_commission']) . '" id="commissions-pick-' . $row['id_commission'] . '" /> ' . $row['title_commission'] . ' </label> ';
     }
     echo '</div>'; ?>
 		<br />

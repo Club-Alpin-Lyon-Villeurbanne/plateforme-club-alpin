@@ -108,15 +108,15 @@ if ('1' != $evt['cancelled_evt']) {
                 <?php
                 // TABLEAU erreurs
                 if (isset($_POST['operation']) && 'user_join_update_status' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                    echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                    echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                 }
         if (isset($_POST['operation']) && 'user_join_update_status' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-            echo '<p class="info">Mise à jour effectuée à '.date('H:i', time()).'.</p><br />';
+            echo '<p class="info">Mise à jour effectuée à ' . date('H:i', time()) . '.</p><br />';
         }
 
         // TABLEAU alertes
         if (isset($_POST['operation']) && 'user_join_update_status' == $_POST['operation'] && $addAlert && count($addAlert) > 0) {
-            echo '<div class="alerte">Attention : <ul><li>'.implode('</li><li>', $addAlert).'</li></ul></div><br />';
+            echo '<div class="alerte">Attention : <ul><li>' . implode('</li><li>', $addAlert) . '</li></ul></div><br />';
         } ?>
 
                 <table class="datatable">
@@ -161,19 +161,19 @@ if ('1' != $evt['cancelled_evt']) {
             $row['empietements'] = empietement_sortie($row['id_user'], $evt);
 
             // AFFICHAGE DE LA LIGNE DE CET INSCRIT
-            echo '<tr class="status'.$row['status_evt_join'].'" style="color:gray; font-size:10px;">';
+            echo '<tr class="status' . $row['status_evt_join'] . '" style="color:gray; font-size:10px;">';
 
             echo '<td>'
-                                        .html_utf8(strtoupper($row['lastname_user'])).', '
-                                        .html_utf8(ucfirst(strtolower($row['firstname_user']))).'<br />'
-                                        .userlink($row['id_user'], $row['nickname_user']);
+                                        . html_utf8(strtoupper($row['lastname_user'])) . ', '
+                                        . html_utf8(ucfirst(strtolower($row['firstname_user']))) . '<br />'
+                                        . userlink($row['id_user'], $row['nickname_user']);
             // expiré
             if ($row['doit_renouveler_user']) {
                 echo '&nbsp;&nbsp;&nbsp;<img src="/img/base/delete.png" title="licence expirée" style="margin-bottom:-4px;">';
             }
             echo '</td>';
 
-            echo '<td class="mini joinlabels status'.$row['status_evt_join'].'">
+            echo '<td class="mini joinlabels status' . $row['status_evt_join'] . '">
                                         ';
 
             $disable0 = true; // attente
@@ -201,11 +201,11 @@ if ('1' != $evt['cancelled_evt']) {
                 foreach ($row['empietements'] as $tmpJoin) {
                     // préinscrit
                     if (0 == $tmpJoin['status_evt_join']) {
-                        echo '<br />- Adhérent pré-inscrit sur <br /><a href="/sortie/'.$tmpJoin['code_evt'].'-'.$tmpJoin['id_evt'].'.html" title="">'.html_utf8($tmpJoin['titre_evt']).'</a> ';
+                        echo '<br />- Adhérent pré-inscrit sur <br /><a href="/sortie/' . $tmpJoin['code_evt'] . '-' . $tmpJoin['id_evt'] . '.html" title="">' . html_utf8($tmpJoin['titre_evt']) . '</a> ';
                     }
                     // inscrit confirmé
                     if (1 == $tmpJoin['status_evt_join']) {
-                        echo '<br />- Adhérent <span style="color:red">confirmé</span> sur <br /> <a href="/sortie/'.$tmpJoin['code_evt'].'-'.$tmpJoin['id_evt'].'.html" title="">'.html_utf8($tmpJoin['titre_evt']).'</a><br />';
+                        echo '<br />- Adhérent <span style="color:red">confirmé</span> sur <br /> <a href="/sortie/' . $tmpJoin['code_evt'] . '-' . $tmpJoin['id_evt'] . '.html" title="">' . html_utf8($tmpJoin['titre_evt']) . '</a><br />';
                     }
 
                     // s'il est confirmé ailleurs, on bride l'outil de mise à jour
@@ -218,51 +218,51 @@ if ('1' != $evt['cancelled_evt']) {
 
             if ('encadrant' != $row['role_evt_join'] && 'stagiaire' != $row['role_evt_join']) {// && $row['role_evt_join'] != 'coencadrant'
                 if ($droitDeModif) {
-                    echo '<span style="display:none">'.(int) $row['status_evt_join'].'</span>
-                                                <input type="hidden" name="id_evt_join[]" value="'.(int) $row['id_evt_join'].'" />';
+                    echo '<span style="display:none">' . (int) $row['status_evt_join'] . '</span>
+                                                <input type="hidden" name="id_evt_join[]" value="' . (int) $row['id_evt_join'] . '" />';
 
                     if (0 == $row['status_evt_join']) {
                         // EN ATTENTE
-                        echo '<label for="join_'.(int) $row['id_evt_join'].'_0">
-                                                        <input '.(0 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable0 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) $row['id_evt_join'].'" id="join_'.(int) $row['id_evt_join'].'_0" value="0" />
+                        echo '<label for="join_' . (int) $row['id_evt_join'] . '_0">
+                                                        <input ' . (0 == $row['status_evt_join'] ? 'checked="checked"' : '') . ' ' . ($disable0 ? 'disabled="disabled"' : '') . ' type="radio" name="status_evt_join_' . (int) $row['id_evt_join'] . '" id="join_' . (int) $row['id_evt_join'] . '_0" value="0" />
                                                         En attente
                                                     </label>';
                     }
 
                     if ((time() >= $evt['tsp_end_evt'] && 1 == $row['status_evt_join']) || time() < $evt['tsp_end_evt']) {
-                        echo '<label for="join_'.(int) $row['id_evt_join'].'_1">
-                                                <input '.(1 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable1 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) $row['id_evt_join'].'" id="join_'.(int) $row['id_evt_join'].'_1" value="1" />
+                        echo '<label for="join_' . (int) $row['id_evt_join'] . '_1">
+                                                <input ' . (1 == $row['status_evt_join'] ? 'checked="checked"' : '') . ' ' . ($disable1 ? 'disabled="disabled"' : '') . ' type="radio" name="status_evt_join_' . (int) $row['id_evt_join'] . '" id="join_' . (int) $row['id_evt_join'] . '_1" value="1" />
                                                 Accepté
                                                 </label>';
                     }
 
                     if (time() >= $evt['tsp_end_evt'] && 2 != $row['status_evt_join']) {
-                        echo '<label for="join_'.(int) $row['id_evt_join'].'_3">
-                                                        <input '.(3 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable3 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) $row['id_evt_join'].'" id="join_'.(int) $row['id_evt_join'].'_3" value="3" />
+                        echo '<label for="join_' . (int) $row['id_evt_join'] . '_3">
+                                                        <input ' . (3 == $row['status_evt_join'] ? 'checked="checked"' : '') . ' ' . ($disable3 ? 'disabled="disabled"' : '') . ' type="radio" name="status_evt_join_' . (int) $row['id_evt_join'] . '" id="join_' . (int) $row['id_evt_join'] . '_3" value="3" />
                                                         Absent
                                                     </label>';
                     }
 
                     if ((time() >= $evt['tsp_end_evt'] && 2 == $row['status_evt_join']) || time() < $evt['tsp_end_evt']) {
-                        echo '<label for="join_'.(int) $row['id_evt_join'].'_2">
-                                                <input '.(2 == $row['status_evt_join'] ? 'checked="checked"' : '').' '.($disable2 ? 'disabled="disabled"' : '').' type="radio" name="status_evt_join_'.(int) $row['id_evt_join'].'" id="join_'.(int) $row['id_evt_join'].'_2" value="2" />
+                        echo '<label for="join_' . (int) $row['id_evt_join'] . '_2">
+                                                <input ' . (2 == $row['status_evt_join'] ? 'checked="checked"' : '') . ' ' . ($disable2 ? 'disabled="disabled"' : '') . ' type="radio" name="status_evt_join_' . (int) $row['id_evt_join'] . '" id="join_' . (int) $row['id_evt_join'] . '_2" value="2" />
                                                 Refusé
                                                 </label>';
                     }
 
                     if (time() < $evt['tsp_end_evt']) {
-                        echo '<label for="join_'.(int) $row['id_evt_join'].'_-1">
-                                                <input name="status_evt_join_'.(int) $row['id_evt_join'].'" '.($disable_1 ? 'disabled="disabled"' : '').' type="radio" id="join_'.(int) $row['id_evt_join'].'_-1" value="-1" />
+                        echo '<label for="join_' . (int) $row['id_evt_join'] . '_-1">
+                                                <input name="status_evt_join_' . (int) $row['id_evt_join'] . '" ' . ($disable_1 ? 'disabled="disabled"' : '') . ' type="radio" id="join_' . (int) $row['id_evt_join'] . '_-1" value="-1" />
                                                 Désinscrire
                                                 </label>';
                     }
                 } else {
                     // echo '<input type="hidden" name="status_evt_join_'.intval($row['id_evt_join']).'" value="'.intval($row['status_evt_join']).'" />';
-                    echo ''.(0 == $row['status_evt_join'] ? 'En attente' : '')
-                                                .(1 == $row['status_evt_join'] ? 'Accepté' : '')
-                                                .(2 == $row['status_evt_join'] ? 'Refusé' : '')
-                                                .(3 == $row['status_evt_join'] ? 'Absent' : '')
-                                                .(-1 == $row['status_evt_join'] ? 'Désinscrire' : '');
+                    echo '' . (0 == $row['status_evt_join'] ? 'En attente' : '')
+                                                . (1 == $row['status_evt_join'] ? 'Accepté' : '')
+                                                . (2 == $row['status_evt_join'] ? 'Refusé' : '')
+                                                . (3 == $row['status_evt_join'] ? 'Absent' : '')
+                                                . (-1 == $row['status_evt_join'] ? 'Désinscrire' : '');
                 }
             }
 
@@ -274,17 +274,17 @@ if ('1' != $evt['cancelled_evt']) {
             } elseif ($droitDeModif && (0 == strcmp($row['role_evt_join'], 'manuel') || 0 == strcmp($row['role_evt_join'], 'inscrit') || 0 == strcmp($row['role_evt_join'], 'benevole'))) {
                 if (0 == strcmp($row['role_evt_join'], 'manuel')) {
                     // manuel
-                    echo '<label style="display:block; white-space:nowrap;" for="role_join_'.(int) $row['id_evt_join'].'_m">
-                                                    <input  '.(0 == strcmp($row['role_evt_join'], 'manuel') ? 'checked="checked"' : '').' name="role_evt_join_'.(int) $row['id_evt_join'].'" type="radio" id="role_join_'.(int) $row['id_evt_join'].'_m" value="manuel" />
+                    echo '<label style="display:block; white-space:nowrap;" for="role_join_' . (int) $row['id_evt_join'] . '_m">
+                                                    <input  ' . (0 == strcmp($row['role_evt_join'], 'manuel') ? 'checked="checked"' : '') . ' name="role_evt_join_' . (int) $row['id_evt_join'] . '" type="radio" id="role_join_' . (int) $row['id_evt_join'] . '_m" value="manuel" />
                                                     Manuel
                                                     </label>';
                 }
-                echo '<label style="display:block; white-space:nowrap;" for="role_join_'.(int) $row['id_evt_join'].'_i">
-                                                <input  '.(0 == strcmp($row['role_evt_join'], 'inscrit') ? 'checked="checked"' : '').' name="role_evt_join_'.(int) $row['id_evt_join'].'" type="radio" id="role_join_'.(int) $row['id_evt_join'].'_i" value="inscrit" />
+                echo '<label style="display:block; white-space:nowrap;" for="role_join_' . (int) $row['id_evt_join'] . '_i">
+                                                <input  ' . (0 == strcmp($row['role_evt_join'], 'inscrit') ? 'checked="checked"' : '') . ' name="role_evt_join_' . (int) $row['id_evt_join'] . '" type="radio" id="role_join_' . (int) $row['id_evt_join'] . '_i" value="inscrit" />
                                                 Inscrit
                                                 </label>';
-                echo '<label style="display:block; white-space:nowrap;" for="role_join_'.(int) $row['id_evt_join'].'_b">
-                                                <input '.(0 == strcmp($row['role_evt_join'], 'benevole') ? 'checked="checked"' : '').' name="role_evt_join_'.(int) $row['id_evt_join'].'" type="radio" id="role_join_'.(int) $row['id_evt_join'].'_b" value="benevole" />
+                echo '<label style="display:block; white-space:nowrap;" for="role_join_' . (int) $row['id_evt_join'] . '_b">
+                                                <input ' . (0 == strcmp($row['role_evt_join'], 'benevole') ? 'checked="checked"' : '') . ' name="role_evt_join_' . (int) $row['id_evt_join'] . '" type="radio" id="role_join_' . (int) $row['id_evt_join'] . '_b" value="benevole" />
                                                 Bénévole
                                                 </label>';
                 // echo '<select name="role_evt_join_'.intval($row['id_evt_join']).'">';
@@ -299,14 +299,14 @@ if ('1' != $evt['cancelled_evt']) {
 
             echo '</td>
                                     <td style="white-space:nowrap">
-                                        <span style="display:none">'.html_utf8($row['tsp_evt_join']).'</span>
-                                        '.date('d/m', $row['tsp_evt_join']).'<br />
-                                        '.date('à H:i', $row['tsp_evt_join']).'
+                                        <span style="display:none">' . html_utf8($row['tsp_evt_join']) . '</span>
+                                        ' . date('d/m', $row['tsp_evt_join']) . '<br />
+                                        ' . date('à H:i', $row['tsp_evt_join']) . '
                                     </td>
                                     <td>
-                                        <a href="mailto:'.html_utf8($row['email_user']).'">'.substr(html_utf8($row['email_user']), 0, 15).'...</a><br />
-                                        '.html_utf8($row['tel_user']).'<br />
-                                        '.html_utf8($row['tel2_user']).'
+                                        <a href="mailto:' . html_utf8($row['email_user']) . '">' . substr(html_utf8($row['email_user']), 0, 15) . '...</a><br />
+                                        ' . html_utf8($row['tel_user']) . '<br />
+                                        ' . html_utf8($row['tel2_user']) . '
                                     </td>';
 
             echo '</tr>';
@@ -346,7 +346,7 @@ if ('1' != $evt['cancelled_evt']) {
                     </div>
                     <?php
                 } else {
-                    echo '<p class="mini">'.$monStatut.' : Vous ne pouvez pas modifier les inscriptions</p>';
+                    echo '<p class="mini">' . $monStatut . ' : Vous ne pouvez pas modifier les inscriptions</p>';
                 } ?>
                 <br />
                 <br />
@@ -372,7 +372,7 @@ if ('1' != $evt['cancelled_evt']) {
                         <?php
                         // MESSAGES A LA SOUMISSION
                         if (isset($_POST['operation']) && 'evt_user_contact' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                            echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                            echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                         }
                     if (isset($_POST['operation']) && 'evt_user_contact' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                         echo '<p class="info">Votre message a bien été envoyé.</p>';
@@ -393,14 +393,14 @@ if ('1' != $evt['cancelled_evt']) {
 
                         <br />
                         Objet :<br />
-                        <input type="text" name="objet" class="type1" style="width:95%" value="<?php 
+                        <input type="text" name="objet" class="type1" style="width:95%" value="<?php
                         if (isset($_POST['objet']) && '' !== $_POST['objet']) {
                             echo html_utf8(stripslashes($_POST['objet']));
                         } else {
-                            echo "Note importante pour la sortie du ".date('d/m', $evt['tsp_evt']);
+                            echo 'Note importante pour la sortie du ' . date('d/m', $evt['tsp_evt']);
                         } ?>" placeholder="Note importante pour la sortie du <?php echo date('d/m', $evt['tsp_evt']); ?>" /><br />
                         Message :<br />
-                        <textarea name="message" class="type1" style="width:95%; height:150px"><?php echo html_utf8(stripslashes((string)$_POST['message'])); ?></textarea>
+                        <textarea name="message" class="type1" style="width:95%; height:150px"><?php echo html_utf8(stripslashes((string) $_POST['message'])); ?></textarea>
 
                         <br /><br />
                         <input type="submit" class="nice" value="&gt; Envoyer mon message" onclick="$.fancybox.close()" />
@@ -410,10 +410,10 @@ if ('1' != $evt['cancelled_evt']) {
 
                 if (allowed('user_see_all') || allowed('evt_join_notme') || allowed('evt_join_doall')) {
                     // Ajout de adhérents manuellement
-                    echo '<a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_manual.php&amp;id_evt='.$id_evt.'" title="">Inscrire manuellement des adhérents du club</a>';
+                    echo '<a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_manual.php&amp;id_evt=' . $id_evt . '" title="">Inscrire manuellement des adhérents du club</a>';
 
                     // Ajout de adhérents nomades
-                    echo '<a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_nomad.php&amp;id_evt='.$id_evt.'" title="">Ajouter un adhérent "Nomade"</a>';
+                    echo '<a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_nomad.php&amp;id_evt=' . $id_evt . '" title="">Ajouter un adhérent "Nomade"</a>';
                 }
             } ?>
             <br style="clear:both"  /><br />

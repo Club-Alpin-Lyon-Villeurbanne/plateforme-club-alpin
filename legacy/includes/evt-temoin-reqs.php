@@ -15,7 +15,7 @@ $req = "SELECT COUNT(id_evt_join) FROM caf_evt_join
             AND role_evt_join NOT LIKE 'encadrant'
             AND role_evt_join NOT LIKE 'stagiaire'
             AND role_evt_join NOT LIKE 'coencadrant'
-            AND evt_evt_join =".(int) $handle['id_evt'].'
+            AND evt_evt_join =" . (int) $handle['id_evt'] . '
             ORDER BY caf_evt_join.id_evt_join ASC';
 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $count = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
@@ -41,14 +41,14 @@ elseif (time() > $handle['tsp_evt'] - (24 * 60 * 60)) { // date max d'inscri. 24
 // inscriptions pas encore commencées
 elseif (time() < $handle['join_start_evt']) {
     $handle['temoin'] = '';
-    $handle['temoin-title'] = 'Les inscriptions pour cette sortie commenceront le '.date('d/m/y', $handle['join_start_evt']);
+    $handle['temoin-title'] = 'Les inscriptions pour cette sortie commenceront le ' . date('d/m/y', $handle['join_start_evt']);
 } else {
     // inscriptions pleines
     if (isset($handle['join_max_evt']) && $count >= $handle['join_max_evt']) {// inscriptions max
         $handle['temoin'] = 'off';
-        $handle['temoin-title'] = 'Les '.$handle['join_max_evt'] ?? ''.' places libres ont été réservées';
+        $handle['temoin-title'] = 'Les ' . $handle['join_max_evt'] ?? ' places libres ont été réservées';
     } else {
         $handle['temoin'] = 'on';
-        $handle['temoin-title'] = ($handle['join_max_evt'] ?? 0 - $count).' places restantes';
+        $handle['temoin-title'] = ($handle['join_max_evt'] ?? 0 - $count) . ' places restantes';
     }
 }

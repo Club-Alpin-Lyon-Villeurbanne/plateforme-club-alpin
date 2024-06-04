@@ -10,7 +10,6 @@ use App\Utils\Serialize\ExpenseReportSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 
 class ExpenseReportUpdateStatus extends AbstractController
 {
@@ -19,7 +18,6 @@ class ExpenseReportUpdateStatus extends AbstractController
         private EntityManagerInterface $entityManager,
         private UserRights $userRights
     ) {
-        
     }
 
     public function __invoke(ExpenseReport $expenseReport, ExpenseReportStatusDto $expenseReportStatusDto): JsonResponse
@@ -31,7 +29,7 @@ class ExpenseReportUpdateStatus extends AbstractController
             ], 403);
         }
 
-        if (in_array($expenseReportStatusDto->status, [ExpenseReportEnum::STATUS_DRAFT, ExpenseReportEnum::STATUS_SUBMITTED])) {
+        if (\in_array($expenseReportStatusDto->status, [ExpenseReportEnum::STATUS_DRAFT, ExpenseReportEnum::STATUS_SUBMITTED], true)) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'You cannot set the status to draft or submitted',

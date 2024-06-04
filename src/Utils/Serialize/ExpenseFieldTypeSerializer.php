@@ -4,8 +4,8 @@ namespace App\Utils\Serialize;
 
 use App\Entity\ExpenseFieldType;
 
-class ExpenseFieldTypeSerializer {
-
+class ExpenseFieldTypeSerializer
+{
     public static function serialize(ExpenseFieldType $expenseFieldType): ?array
     {
         return [
@@ -14,7 +14,7 @@ class ExpenseFieldTypeSerializer {
             'slug' => $expenseFieldType->getSlug(),
             'inputType' => $expenseFieldType->getInputType(),
             'fieldTypeId' => $expenseFieldType->getId(),
-            'value' => $expenseFieldType->getInputType() === 'numeric' ? 0 : null,
+            'value' => 'numeric' === $expenseFieldType->getInputType() ? 0 : null,
             // property set manually in SortieController.php
             'flags' => $expenseFieldType->getFlags(),
         ];

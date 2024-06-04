@@ -1,7 +1,7 @@
 <div id="main" role="main" class="contenu">
 	<div style="float:left">
 		<?php
-        inclure($p1.($p2 ? '-'.$p2 : ''), 'type-gauche');
+        inclure($p1 . ($p2 ? '-' . $p2 : ''), 'type-gauche');
 		?>
 		<br />
 		<form action="<?php echo $versCettePage; ?>#main" method="post" id="contactform" class="type-gauche">
@@ -10,12 +10,12 @@
 			<?php
 		    // TABLEAU
 		    if (isset($_POST['operation']) && 'contact' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-		        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+		        echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
 		    }
-		    if (isset($_POST['operation']) && 'contact' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-		        echo '<div class="info">Votre message a bien été envoyé. Nous vous répondrons dès que possible.</div>';
-		    } else {
-		        ?>
+		if (isset($_POST['operation']) && 'contact' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+		    echo '<div class="info">Votre message a bien été envoyé. Nous vous répondrons dès que possible.</div>';
+		} else {
+		    ?>
 
 			<div style="float:left; clear:both;">
 				Votre nom<br />
@@ -49,7 +49,7 @@
 				<input type="hidden" name="lock" value="locked" />
 			</div>
 			<?php
-		    }
+		}
 		?>
 
 		</form>

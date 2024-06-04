@@ -6,19 +6,18 @@ use App\Repository\ExpenseGroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: ExpenseGroupRepository::class)]
-class ExpenseGroup implements JsonSerializable
-{   
+class ExpenseGroup implements \JsonSerializable
+{
     /** Expense groups types (an enum in the database) */
 
     // will display a dropdown to choose the expense type
-    const TYPE_UNIQUE = 'unique';
+    public const TYPE_UNIQUE = 'unique';
     // will display a button to add a new expense with all the fields of the expense type
-    const TYPE_MULTIPLE = 'multiple';
+    public const TYPE_MULTIPLE = 'multiple';
     // will display all the expenses of the group one time only
-    const TYPE_RAW = 'raw';
+    public const TYPE_RAW = 'raw';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -108,8 +107,8 @@ class ExpenseGroup implements JsonSerializable
 
     public function setType(string $type): static
     {
-        if (!in_array($type, array(self::TYPE_UNIQUE, self::TYPE_MULTIPLE, self::TYPE_RAW))) {
-            throw new \InvalidArgumentException("Invalid expense group type");
+        if (!\in_array($type, [self::TYPE_UNIQUE, self::TYPE_MULTIPLE, self::TYPE_RAW], true)) {
+            throw new \InvalidArgumentException('Invalid expense group type');
         }
 
         $this->type = $type;

@@ -97,23 +97,23 @@ if (!admin()) {
     for ($i = 0; $i < count($tab); ++$i) {
         $elt = $tab[$i];
 
-        echo '<tr id="tr-'.$elt['id_page'].'" class="'.($elt['vis_page'] ? 'vis-on' : 'vis-off').'">'
-                    .'<td style="width:120px">'
-                        .'<a class="delete" href="javascript:void(0)" rel="'.(int) $elt['id_page'].'|'.$elt['code_page'].'" title="Supprimer définitivement cette page"><img src="/img/base/delete.png" alt="DEL" title="Supprimer" /></a> &nbsp;'
-                        .'<a href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'pages/'.html_utf8($elt['code_page']).'.html" title="Modifier cette page"><img src="/img/base/page_edit.png" alt="EDIT" title="Modifier cette page" /></a> &nbsp;'
-                        .'<a class="fancyframe" href="/includer.php?admin=true&p=pages/admin-pages-libres-edit.php&amp;id_page='.(int) $elt['id_page'].'" title="Modifier les METAS"><img src="/img/base/application_form_edit.png" alt="EDIT METAS" title="Modifier les metas" /></a> &nbsp;'
-                        .'<a class="majVis" href="javascript:void(0)" rel="'.(int) $elt['id_page'].'|'.$elt['lastedit_page'].'" title="Afficher/masquer cette page aux visiteurs du site"><img src="/img/base/vis-'.($elt['vis_page'] ? 'on' : 'off').'.png" alt="VIS" title="Afficher/masquer" /></a> &nbsp;'
-                    .'</td>'
-                    .'<td>'.(int) $elt['id_page'].'</td>'
+        echo '<tr id="tr-' . $elt['id_page'] . '" class="' . ($elt['vis_page'] ? 'vis-on' : 'vis-off') . '">'
+                    . '<td style="width:120px">'
+                        . '<a class="delete" href="javascript:void(0)" rel="' . (int) $elt['id_page'] . '|' . $elt['code_page'] . '" title="Supprimer définitivement cette page"><img src="/img/base/delete.png" alt="DEL" title="Supprimer" /></a> &nbsp;'
+                        . '<a href="' . LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'pages/' . html_utf8($elt['code_page']) . '.html" title="Modifier cette page"><img src="/img/base/page_edit.png" alt="EDIT" title="Modifier cette page" /></a> &nbsp;'
+                        . '<a class="fancyframe" href="/includer.php?admin=true&p=pages/admin-pages-libres-edit.php&amp;id_page=' . (int) $elt['id_page'] . '" title="Modifier les METAS"><img src="/img/base/application_form_edit.png" alt="EDIT METAS" title="Modifier les metas" /></a> &nbsp;'
+                        . '<a class="majVis" href="javascript:void(0)" rel="' . (int) $elt['id_page'] . '|' . $elt['lastedit_page'] . '" title="Afficher/masquer cette page aux visiteurs du site"><img src="/img/base/vis-' . ($elt['vis_page'] ? 'on' : 'off') . '.png" alt="VIS" title="Afficher/masquer" /></a> &nbsp;'
+                    . '</td>'
+                    . '<td>' . (int) $elt['id_page'] . '</td>'
                     // .'<td>'.intval($elt['vis_page']).'</td>'
-                    .'<td>'.html_utf8($elt['code_page']).'</td>'
-                    .'<td>'.html_utf8($elt['default_name_page']).'</td>'
-                    .'<td><a href="/pages/'.html_utf8($elt['code_page']).'.html" title="">/pages/'.html_utf8($elt['code_page']).'.html</a></td>'
-                    .'<td>'.substr(html_utf8($elt['default_name_page']), 0, 200).'</td>'
-                    .'<td>'.((int) $elt['priority_page'] * 10).'%</td>'
-                    .'<td><span style="display:none">'.$elt['created_page'].'</span> '.date('d/m/Y H:i', $elt['created_page']).'</td>'
-                    .'<td><span style="display:none">'.$elt['lastedit_page'].'</span> '.(!$elt['lastedit_page'] ? 'Jamais' : date('d/m/Y H:i', $elt['lastedit_page'])).'</td>'
-                .'</tr>'."\n";
+                    . '<td>' . html_utf8($elt['code_page']) . '</td>'
+                    . '<td>' . html_utf8($elt['default_name_page']) . '</td>'
+                    . '<td><a href="/pages/' . html_utf8($elt['code_page']) . '.html" title="">/pages/' . html_utf8($elt['code_page']) . '.html</a></td>'
+                    . '<td>' . substr(html_utf8($elt['default_name_page']), 0, 200) . '</td>'
+                    . '<td>' . ((int) $elt['priority_page'] * 10) . '%</td>'
+                    . '<td><span style="display:none">' . $elt['created_page'] . '</span> ' . date('d/m/Y H:i', $elt['created_page']) . '</td>'
+                    . '<td><span style="display:none">' . $elt['lastedit_page'] . '</span> ' . (!$elt['lastedit_page'] ? 'Jamais' : date('d/m/Y H:i', $elt['lastedit_page'])) . '</td>'
+                . '</tr>' . "\n";
     } ?>
         </tbody>
     </table>

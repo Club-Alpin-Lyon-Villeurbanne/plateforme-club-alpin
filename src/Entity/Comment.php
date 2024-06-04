@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Comment.
- *
- *
  */
 #[ORM\Table(name: 'caf_comment')]
 #[ORM\Entity]
@@ -15,9 +13,6 @@ class Comment
 {
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Column(name: 'id_comment', type: 'integer', nullable: false)]
     #[ORM\Id]
@@ -38,8 +33,6 @@ class Comment
 
     /**
      * @var User
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'user_comment', referencedColumnName: 'id_user', nullable: false)]

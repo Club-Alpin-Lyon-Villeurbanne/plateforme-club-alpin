@@ -6,10 +6,9 @@ use App\Repository\ExpenseFieldTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JsonSerializable;
 
 #[ORM\Entity(repositoryClass: ExpenseFieldTypeRepository::class)]
-class ExpenseFieldType implements JsonSerializable
+class ExpenseFieldType implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -100,7 +99,7 @@ class ExpenseFieldType implements JsonSerializable
     }
 
     /**
-     * Get the value of flags
+     * Get the value of flags.
      *
      * @return bool
      */
@@ -110,11 +109,7 @@ class ExpenseFieldType implements JsonSerializable
     }
 
     /**
-     * Set the value of flags ([flagname => flagvalue])
-     *
-     * @param array $flags
-     *
-     * @return self
+     * Set the value of flags ([flagname => flagvalue]).
      */
     public function setFlags(array $flags): self
     {
@@ -136,8 +131,8 @@ class ExpenseFieldType implements JsonSerializable
     }
 
     /**
-     * Get the value of expenseFieldTypeRelations
-     */ 
+     * Get the value of expenseFieldTypeRelations.
+     */
     public function getExpenseFieldTypeRelations()
     {
         return $this->expenseFieldTypeRelations;

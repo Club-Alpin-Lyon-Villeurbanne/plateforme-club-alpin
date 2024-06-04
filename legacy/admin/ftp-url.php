@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-require __DIR__.'/../app/includes.php';
+require __DIR__ . '/../app/includes.php';
 
 if (!admin()) {
     header('HTTP/1.0 401 Authorization Required');
@@ -13,7 +13,7 @@ if (!admin()) {
 
 $targetRel = $_GET['target'];
 $targetAbs = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL)
-    .(str_starts_with($targetRel, '/') ? substr($targetRel, 1) : $targetRel); // substr = supprimer admin/
+    . (str_starts_with($targetRel, '/') ? substr($targetRel, 1) : $targetRel); // substr = supprimer admin/
 
 ?><!doctype html>
 	<html lang="fr">

@@ -18,11 +18,11 @@ $authorDatas = null;
 
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
-    $req = "UPDATE caf_article SET status_article='$status_article', status_who_article=".getUser()->getId()." WHERE caf_article.id_article =$id_article";
+    $req = "UPDATE caf_article SET status_article='$status_article', status_who_article=" . getUser()->getId() . " WHERE caf_article.id_article =$id_article";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
-    $req = 'UPDATE caf_article SET tsp_validate_article='.time()." WHERE caf_article.id_article=$id_article AND (tsp_validate_article=0 OR tsp_validate_article IS NULL)"; // premiere validation
+    $req = 'UPDATE caf_article SET tsp_validate_article=' . time() . " WHERE caf_article.id_article=$id_article AND (tsp_validate_article=0 OR tsp_validate_article IS NULL)"; // premiere validation
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
@@ -43,7 +43,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if ($result && $row = $result->fetch_assoc()) {
         $limit = max(0, $row['total']);
 
-        $sql = 'UPDATE caf_article SET une_article = 0 WHERE status_article = 1 AND une_article = 1 ORDER BY tsp_article ASC LIMIT '.$limit;
+        $sql = 'UPDATE caf_article SET une_article = 0 WHERE status_article = 1 AND une_article = 1 ORDER BY tsp_article ASC LIMIT ' . $limit;
         LegacyContainer::get('legacy_mysqli_handler')->query($sql);
     }
 }
@@ -52,13 +52,13 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_article || 2 == $
     if (1 == $status_article) {
         LegacyContainer::get('legacy_mailer')->send($authorDatas['email_user'], 'transactional/article-valide', [
             'article_name' => $authorDatas['titre_article'],
-            'article_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].'.html',
+            'article_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'article/' . $authorDatas['code_article'] . '-' . $authorDatas['id_article'] . '.html',
         ]);
     }
     if (2 == $status_article) {
         LegacyContainer::get('legacy_mailer')->send($authorDatas['email_user'], 'transactional/article-refuse', [
             'article_name' => $authorDatas['titre_article'],
-            'article_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$authorDatas['code_article'].'-'.$authorDatas['id_article'].'.html',
+            'article_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'article/' . $authorDatas['code_article'] . '-' . $authorDatas['id_article'] . '.html',
             'message' => stripslashes($_POST['msg'] ?: '...'),
         ]);
     }

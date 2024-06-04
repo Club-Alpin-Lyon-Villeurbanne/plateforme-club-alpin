@@ -158,12 +158,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
         foreach ($encadrants as $id_user) {
             $id_user = (int) $id_user;
             $req = ''
-                .'SELECT COUNT(id_user_attr) ' // le résultat est >1 si l'user a les droits
-                .'FROM caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
-                ."WHERE user_user_attr=$id_user " // de user à user_attr
-                ."AND code_usertype LIKE 'encadrant' " // droit
-                ."AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
-                .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
+                . 'SELECT COUNT(id_user_attr) ' // le résultat est >1 si l'user a les droits
+                . 'FROM caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
+                . "WHERE user_user_attr=$id_user " // de user à user_attr
+                . "AND code_usertype LIKE 'encadrant' " // droit
+                . "AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
+                . 'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
             ;
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -175,12 +175,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
         foreach ($stagiaires as $id_user) {
             $id_user = (int) $id_user;
             $req = ''
-                .'SELECT COUNT(id_user_attr) ' // le résultat est >1 si l'user a les droits
-                .'FROM caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
-                ."WHERE user_user_attr=$id_user " // de user à user_attr
-                ."AND code_usertype LIKE 'stagiaire'" // droit
-                ."AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
-                .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
+                . 'SELECT COUNT(id_user_attr) ' // le résultat est >1 si l'user a les droits
+                . 'FROM caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
+                . "WHERE user_user_attr=$id_user " // de user à user_attr
+                . "AND code_usertype LIKE 'stagiaire'" // droit
+                . "AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
+                . 'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
             ;
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -192,12 +192,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
         foreach ($coencadrants as $id_user) {
             $id_user = (int) $id_user;
             $req = ''
-                .'SELECT COUNT(id_user_attr) ' // le résultat est >1 si l'user a les droits
-                .'FROM caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
-                ."WHERE user_user_attr=$id_user " // de user à user_attr
-                ."AND code_usertype LIKE 'coencadrant' " // droit
-                ."AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
-                .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
+                . 'SELECT COUNT(id_user_attr) ' // le résultat est >1 si l'user a les droits
+                . 'FROM caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
+                . "WHERE user_user_attr=$id_user " // de user à user_attr
+                . "AND code_usertype LIKE 'coencadrant' " // droit
+                . "AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
+                . 'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
             ;
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -210,12 +210,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
             foreach ($benevoles as $id_user) {
                 $id_user = (int) $id_user;
                 $req = ''
-                    .'SELECT COUNT(id_user_attr) ' // le résultat est >1 si l'user a les droits
-                    .'FROM caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
-                    ."WHERE user_user_attr=$id_user " // de user à user_attr
-                    ."AND code_usertype LIKE 'benevole' " // droit
-                    ."AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
-                    .'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
+                    . 'SELECT COUNT(id_user_attr) ' // le résultat est >1 si l'user a les droits
+                    . 'FROM caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
+                    . "WHERE user_user_attr=$id_user " // de user à user_attr
+                    . "AND code_usertype LIKE 'benevole' " // droit
+                    . "AND params_user_attr LIKE 'commission:$code_commission' " // droit donné pour cette commission unqiuement
+                    . 'AND usertype_user_attr=id_usertype ' // de user_attr à usertype
                 ;
                 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 $row = $result->fetch_row();

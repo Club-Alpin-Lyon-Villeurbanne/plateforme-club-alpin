@@ -60,15 +60,15 @@ function getUrlFriendlyString($text)
     // puncuation = ? , ; . : !
     // if punctuation is at the end, then don't include it
 
-    $URL_FORMAT = '~(?<!\w)((?:'.implode('|',
-        $SCHEMES).'):' // protocol + :
-    .'/*(?!/)(?:' // get any starting /'s
-    .'[\w$\+\*@&=\-/]' // reserved | unreserved
-    .'|%%[a-fA-F0-9]{2}' // escape
-    .'|[\?\.:\(\),;!\'](?!(?:\s|$))' // punctuation
-    .'|(?:(?<=[^/:]{2})#)' // fragment id
-    .'){2,}' // at least two characters in the main url part
-    .')~';
+    $URL_FORMAT = '~(?<!\w)((?:' . implode('|',
+        $SCHEMES) . '):' // protocol + :
+    . '/*(?!/)(?:' // get any starting /'s
+    . '[\w$\+\*@&=\-/]' // reserved | unreserved
+    . '|%%[a-fA-F0-9]{2}' // escape
+    . '|[\?\.:\(\),;!\'](?!(?:\s|$))' // punctuation
+    . '|(?:(?<=[^/:]{2})#)' // fragment id
+    . '){2,}' // at least two characters in the main url part
+    . ')~';
 
     preg_match_all($URL_FORMAT, $text, $matches, \PREG_SPLIT_DELIM_CAPTURE);
 
@@ -77,7 +77,7 @@ function getUrlFriendlyString($text)
         $pattern = $patterns[0];
         if (!array_key_exists($pattern, $usedPatterns)) {
             $usedPatterns[$pattern] = true;
-            $text = str_replace($pattern, "<a href='".$pattern."' rel='nofollow'>".$pattern.'</a> ', $text);
+            $text = str_replace($pattern, "<a href='" . $pattern . "' rel='nofollow'>" . $pattern . '</a> ', $text);
         }
     }
 
@@ -91,15 +91,15 @@ function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user =
 {
     switch ($style) {
         case 'public': 	$return = html_utf8($nickname_user);
-        break;
-        case 'short': 	$return = html_utf8($civ_user).' '.html_utf8($firstname_user).' '.strtoupper(substr(trim($lastname_user), 0, 1));
-        break;
-        case 'full': 	$return = html_utf8($civ_user).' '.html_utf8($firstname_user).' '.html_utf8($lastname_user);
-        break;
+            break;
+        case 'short': 	$return = html_utf8($civ_user) . ' ' . html_utf8($firstname_user) . ' ' . strtoupper(substr(trim($lastname_user), 0, 1));
+            break;
+        case 'full': 	$return = html_utf8($civ_user) . ' ' . html_utf8($firstname_user) . ' ' . html_utf8($lastname_user);
+            break;
         default:		return;
     }
 
-    return '<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user='.(int) $id_user.'" class="fancyframe userlink" title="'.cont('userlink-title').'">'.$return.'</a>';
+    return '<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . (int) $id_user . '" class="fancyframe userlink" title="' . cont('userlink-title') . '">' . $return . '</a>';
 }
 
 /*
@@ -110,19 +110,19 @@ function userImg($id_user, $style = '')
 {
     switch ($style) {
         case 'pic':
-            $style = $style.'-';
+            $style .= '-';
             break;
         case 'min':
-            $style = $style.'-';
+            $style .= '-';
             break;
         default:
             $style = '';
             break;
     }
 
-    $rel = '/ftp/user/'.$id_user.'/'.$style.'profil.jpg';
-    if (!file_exists(__DIR__.'/../../public'.$rel)) {
-        $rel = '/ftp/user/0/'.$style.'profil.jpg';
+    $rel = '/ftp/user/' . $id_user . '/' . $style . 'profil.jpg';
+    if (!file_exists(__DIR__ . '/../../public' . $rel)) {
+        $rel = '/ftp/user/0/' . $style . 'profil.jpg';
     }
 
     return $rel;
@@ -134,8 +134,8 @@ liée à cette commission, ou bien de celle par défaut
 */
 function comFd($id_commission)
 {
-    $rel = '/ftp/commission/'.(int) $id_commission.'/bigfond.jpg';
-    if (!file_exists(__DIR__.'/../../public'.$rel)) {
+    $rel = '/ftp/commission/' . (int) $id_commission . '/bigfond.jpg';
+    if (!file_exists(__DIR__ . '/../../public' . $rel)) {
         $rel = '/ftp/commission/0/bigfond.jpg';
     }
 
@@ -149,16 +149,16 @@ de la commission désirée ou bien le picto par défaut si celui-ci n'existe pas
 function comPicto($id_commission, $style = '')
 {
     switch ($style) {
-        case 'light': 	$style = '-'.$style;
-        break;
-        case 'dark': 	$style = '-'.$style;
-        break;
+        case 'light': 	$style = '-' . $style;
+            break;
+        case 'dark': 	$style = '-' . $style;
+            break;
         default:		$style = '';
     }
 
-    $rel = '/ftp/commission/'.(int) $id_commission.'/picto'.$style.'.png';
-    if (!file_exists(__DIR__.'/../../public'.$rel)) {
-        $rel = '/ftp/commission/0/picto'.$style.'.png';
+    $rel = '/ftp/commission/' . (int) $id_commission . '/picto' . $style . '.png';
+    if (!file_exists(__DIR__ . '/../../public' . $rel)) {
+        $rel = '/ftp/commission/0/picto' . $style . '.png';
     }
 
     return $rel;
@@ -221,7 +221,7 @@ function getYearsSinceDate($then)
 // utile ci dessus
 function bigintval($value)
 {
-    $value = trim((string)$value);
+    $value = trim((string) $value);
     if (ctype_digit($value)) {
         return $value;
     }
@@ -242,7 +242,6 @@ function bigintval($value)
  *
  * @param mixed  $bytes  taille en octets
  * @param string $format formatage (http://www.php.net/manual/fr/function.sprintf.php)
- * @param string $lang   indique la langue des unités de taille
  *
  * @return string chaine de caractères formatées
  */
@@ -264,7 +263,7 @@ function formatSize($bytes, $format = '%.2f')
         $e = 0;
     }
 
-    return sprintf($format.' %s', $b, $units[$e]);
+    return sprintf($format . ' %s', $b, $units[$e]);
 }
 
 function user(): bool
@@ -333,7 +332,7 @@ function linker($link)
 {
     $link = trim($link);
     if ('http://' != substr($link, 0, 7) && 'https://' != substr($link, 0, 8)) {
-        $link = 'https://'.$link;
+        $link = 'https://' . $link;
     }
 
     return $link;
@@ -378,6 +377,7 @@ function cont($code = false, $html = false)
     if (!in_array($code, $contLog, true) && $code) {
         $contLog[] = $code;
     }
+
     // afficher rien
     return '';
 }
@@ -483,7 +483,7 @@ function formater($retourner, $type = 1)
         $retourner = preg_replace($pattern, '', $retourner);
         $handle = explode(' ', $retourner);
         for ($i = 0; $i < count($handle); ++$i) {
-            $handle[$i] = strtoupper(substr($handle[$i], 0, 1)).strtolower(substr($handle[$i], 1, strlen($handle[$i])));
+            $handle[$i] = strtoupper(substr($handle[$i], 0, 1)) . strtolower(substr($handle[$i], 1, strlen($handle[$i])));
         }
         $retourner = implode('', $handle);
     }
@@ -548,13 +548,13 @@ function clearDir($dossierSupp)
                 continue;
             }
 
-            if (is_dir($dossierSupp.'/'.$fichierSupp)) {
-                $r = clearDir($dossierSupp.'/'.$fichierSupp);
+            if (is_dir($dossierSupp . '/' . $fichierSupp)) {
+                $r = clearDir($dossierSupp . '/' . $fichierSupp);
                 if (!$r) {
                     return false;
                 }
             } else {
-                $r = @unlink($dossierSupp.'/'.$fichierSupp);
+                $r = @unlink($dossierSupp . '/' . $fichierSupp);
                 if (!$r) {
                     return false;
                 }

@@ -25,8 +25,8 @@ if (!admin()) {
         // recuperation de la version en lagnue etrangere
         $req2 = "SELECT contenu_content_inline , id_content_inline
 					FROM caf_content_inline
-					WHERE code_content_inline LIKE '".$handle['code_content_inline']."'
-					AND lang_content_inline LIKE '".$lang_content_inline."'
+					WHERE code_content_inline LIKE '" . $handle['code_content_inline'] . "'
+					AND lang_content_inline LIKE '" . $lang_content_inline . "'
 					ORDER BY date_content_inline DESC LIMIT 1
 					";
         $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req2);
@@ -81,7 +81,7 @@ if (!admin()) {
             // GROUPES
             // dev : a l'avenir, sortable grace à TBODY
             if ($tempGroup != $contTab[$i]['id_content_inline_group'] && $contTab[$i]['id_content_inline_group']) {
-                echo '<tr><th colspan="3">'.$contTab[$i]['nom_content_inline_group'].'</th></tr>';
+                echo '<tr><th colspan="3">' . $contTab[$i]['nom_content_inline_group'] . '</th></tr>';
             }
 
             if ($tempElt == $contTab[$i]['code_content_inline']) {
@@ -90,20 +90,20 @@ if (!admin()) {
                 $dejaVus = 0;
             }
 
-            echo '<tr class="saveAble" style="'.($dejaVus ? 'display:none' : '').'" id="ligne-'.(int) $contTab[$i]['id_content_inline'].'">';
-            echo '<td class="cont-indice">'.$contTab[$i]['code_content_inline'].'&nbsp;</td>';
-            echo '<td class="cont-original">'.$contTab[$i]['original'].'&nbsp;</td>';
+            echo '<tr class="saveAble" style="' . ($dejaVus ? 'display:none' : '') . '" id="ligne-' . (int) $contTab[$i]['id_content_inline'] . '">';
+            echo '<td class="cont-indice">' . $contTab[$i]['code_content_inline'] . '&nbsp;</td>';
+            echo '<td class="cont-original">' . $contTab[$i]['original'] . '&nbsp;</td>';
             echo '<td class="cont-edit">
-						<input type="hidden" class="jId" value="'.(int) $contTab[$i]['id_content_inline'].'" />
-						<input type="hidden" class="jGroupe" value="'.(int) $contTab[$i]['groupe_content_inline'].'" />
-						<input type="text" style="display:none" class="jBase" id="base-'.(int) $contTab[$i]['id_content_inline'].'" value="'.html_utf8($contTab[$i]['contenu_content_inline']).'" />
-						<input type="hidden" class="jCode" value="'.html_utf8($contTab[$i]['code_content_inline']).'" />
-						<input type="hidden" class="jLinkedtopage" value="'.html_utf8($contTab[$i]['linkedtopage_content_inline']).'" />
+						<input type="hidden" class="jId" value="' . (int) $contTab[$i]['id_content_inline'] . '" />
+						<input type="hidden" class="jGroupe" value="' . (int) $contTab[$i]['groupe_content_inline'] . '" />
+						<input type="text" style="display:none" class="jBase" id="base-' . (int) $contTab[$i]['id_content_inline'] . '" value="' . html_utf8($contTab[$i]['contenu_content_inline']) . '" />
+						<input type="hidden" class="jCode" value="' . html_utf8($contTab[$i]['code_content_inline']) . '" />
+						<input type="hidden" class="jLinkedtopage" value="' . html_utf8($contTab[$i]['linkedtopage_content_inline']) . '" />
 
-						<input type="text" style="min-width:300px;" class="jVal" name="contenu-'.$contTab[$i]['code_content_inline'].'-'.$dejaVus.'" value="'.html_utf8($contTab[$i]['contenu_content_inline']).'" />
+						<input type="text" style="min-width:300px;" class="jVal" name="contenu-' . $contTab[$i]['code_content_inline'] . '-' . $dejaVus . '" value="' . html_utf8($contTab[$i]['contenu_content_inline']) . '" />
 					</td>';
-            echo '<td class="cont-save"><a href="javascript:void(0)" title="Sauvegarder cette ligne" rel="'.(int) $contTab[$i]['id_content_inline'].'"><img src="/img/base/save.png" alt="Sauvegarder cette ligne" title="Sauvegarder cette ligne" class="upimage" style="height:20px; " /></a></td>';
-            echo '<td class="cont-versions">'.jour(date('N', $contTab[$i]['date_content_inline'])).' '.date('d/m/y - H:i:s', $contTab[$i]['date_content_inline']).'</td>';
+            echo '<td class="cont-save"><a href="javascript:void(0)" title="Sauvegarder cette ligne" rel="' . (int) $contTab[$i]['id_content_inline'] . '"><img src="/img/base/save.png" alt="Sauvegarder cette ligne" title="Sauvegarder cette ligne" class="upimage" style="height:20px; " /></a></td>';
+            echo '<td class="cont-versions">' . jour(date('N', $contTab[$i]['date_content_inline'])) . ' ' . date('d/m/y - H:i:s', $contTab[$i]['date_content_inline']) . '</td>';
             echo '</tr>';
 
             $tempGroup = $contTab[$i]['id_content_inline_group'];

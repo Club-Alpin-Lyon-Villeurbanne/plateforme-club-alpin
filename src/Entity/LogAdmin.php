@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * LogAdmin.
- *
- *
  */
 #[ORM\Table(name: 'caf_log_admin')]
 #[ORM\Entity]
@@ -15,9 +13,6 @@ class LogAdmin
 {
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Column(name: 'id_log_admin', type: 'integer', nullable: false)]
     #[ORM\Id]

@@ -25,15 +25,15 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             AND status_article = 1
             '
             // commission donnée : filtre (mais on inclut les actus club, commission=0)
-            .($current_commission ? ' AND (commission_article = '.(int) $comTab[$current_commission]['id_commission'].' OR commission_article = 0) ' : '')
+            . ($current_commission ? ' AND (commission_article = ' . (int) $comTab[$current_commission]['id_commission'] . ' OR commission_article = 0) ' : '')
             // RECHERCHE
-            ." AND (
+            . " AND (
                         titre_article LIKE  '%$safeStrSql%'
                     OR	cont_article LIKE  '%$safeStrSql%'
                     OR	nickname_user LIKE  '%$safeStrSql%'
             ) "
 
-            .' ORDER BY  `tsp_validate_article` DESC
+            . ' ORDER BY  `tsp_validate_article` DESC
             LIMIT 10';
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
@@ -45,7 +45,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             // info de la commission liée
             if ($handle['commission_article'] > 0) {
                 $req = 'SELECT * FROM caf_commission
-                    WHERE id_commission = '.(int) $handle['commission_article'].'
+                    WHERE id_commission = ' . (int) $handle['commission_article'] . '
                     LIMIT 1';
                 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -69,16 +69,16 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             AND status_evt = 1
             '
             // si une comm est sélectionnée, filtre
-            .($current_commission ? " AND code_commission LIKE '".LegacyContainer::get('legacy_mysqli_handler')->escapeString($current_commission)."' " : '')
+            . ($current_commission ? " AND code_commission LIKE '" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($current_commission) . "' " : '')
             // RECHERCHE
-            ." AND (
+            . " AND (
                         titre_evt LIKE '%$safeStrSql%'
                     OR	massif_evt LIKE '%$safeStrSql%'
                     OR	rdv_evt LIKE '%$safeStrSql%'
                     OR	description_evt LIKE '%$safeStrSql%'
                     OR	nickname_user LIKE '%$safeStrSql%'
             ) "
-            .' ORDER BY tsp_evt DESC
+            . ' ORDER BY tsp_evt DESC
             LIMIT 10';
 
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -104,13 +104,13 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             if (empty($_GET['str']) || !strlen($_GET['str'])) {
                 echo '<h1>Recherche</h1>';
                 inclure($p1, 'vide');
-            } else if(isset($safeStr)) {
+            } elseif (isset($safeStr)) {
                 // TITRE
-                echo '<h1>Votre recherche : &laquo;&nbsp;'.$safeStr.'&nbsp;&raquo;</h1>';
+                echo '<h1>Votre recherche : &laquo;&nbsp;' . $safeStr . '&nbsp;&raquo;</h1>';
 
                 // ERREURS
                 if (isset($errTab) && count($errTab) > 0) {
-                    echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                    echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                 } else {
                     // RECHERCHE - ARTICLES
                     echo '<hr /><h2>Articles</h2>';
@@ -119,12 +119,12 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
                     if (!count($articlesTab)) {
                         echo '<p class="alerte">Aucun article trouvé</p>';
                     } else {
-                        echo '<p class="mini">'.$totalArticles.' article'.($totalArticles > 1 ? 's' : '').' trouvé'.($totalArticles > 1 ? 's' : '').'. '.($totalArticles != count($articlesTab) ? 'Voici les '.count($articlesTab).' plus récents :' : '').'</p>';
+                        echo '<p class="mini">' . $totalArticles . ' article' . ($totalArticles > 1 ? 's' : '') . ' trouvé' . ($totalArticles > 1 ? 's' : '') . '. ' . ($totalArticles != count($articlesTab) ? 'Voici les ' . count($articlesTab) . ' plus récents :' : '') . '</p>';
                     }
 
                     for ($i = 0; $i < count($articlesTab); ++$i) {
                         $article = $articlesTab[$i];
-                        require __DIR__.'/../includes/article-lien.php';
+                        require __DIR__ . '/../includes/article-lien.php';
                     }
 
                     // RECHERCHE - SORTIES
@@ -134,7 +134,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
                     if (!count($evtTab)) {
                         echo '<p class="alerte">Aucune sortie trouvée</p>';
                     } else {
-                        echo '<p class="mini">'.$totalEvt.' sortie'.($totalEvt > 1 ? 's' : '').' trouvée'.($totalEvt > 1 ? 's' : '').'. '.($totalEvt != count($evtTab) ? 'Voici les '.count($evtTab).' plus récentes :' : '').'</p>';
+                        echo '<p class="mini">' . $totalEvt . ' sortie' . ($totalEvt > 1 ? 's' : '') . ' trouvée' . ($totalEvt > 1 ? 's' : '') . '. ' . ($totalEvt != count($evtTab) ? 'Voici les ' . count($evtTab) . ' plus récentes :' : '') . '</p>';
                     }
 
                     echo '<br /><table id="agenda">';
@@ -142,26 +142,26 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
                         $evt = $evtTab[$i];
 
                         echo '<tr>'
-                                .'<td class="agenda-gauche">'.date('d/m/Y', $evt['tsp_evt']).'</td>'
-                                .'<td>';
-                        require __DIR__.'/../includes/agenda-evt-debut.php';
+                                . '<td class="agenda-gauche">' . date('d/m/Y', $evt['tsp_evt']) . '</td>'
+                                . '<td>';
+                        require __DIR__ . '/../includes/agenda-evt-debut.php';
                         echo '</td>'
-                            .'</tr>';
+                            . '</tr>';
                     }
                     echo '</table>';
                 }
             }
-            // - Sorties
+// - Sorties
 
-			?>
+?>
 			<br style="clear:both" />
 		</div>
 	</div>
 
 	<!-- partie droite -->
 	<?php
-    require __DIR__.'/../includes/right-type-agenda.php';
-			?>
+    require __DIR__ . '/../includes/right-type-agenda.php';
+?>
 
 	<br style="clear:both" />
 </div>

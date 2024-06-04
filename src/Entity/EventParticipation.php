@@ -7,8 +7,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * EventParticipation.
- *
- *
  */
 #[ORM\Table(name: 'caf_evt_join')]
 #[ORM\Entity(repositoryClass: EventParticipationRepository::class)]
@@ -28,9 +26,6 @@ class EventParticipation
 
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Column(name: 'id_evt_join', type: 'integer', nullable: false)]
     #[ORM\Id]
@@ -43,15 +38,12 @@ class EventParticipation
     #[ORM\Column(name: 'status_evt_join', type: 'smallint', nullable: false, options: ['comment' => '0=non confirmé - 1=validé - 2=refusé'])]
     private $status = self::STATUS_NON_CONFIRME;
 
-    
     #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'participations', fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'evt_evt_join', nullable: false, referencedColumnName: 'id_evt', onDelete: 'CASCADE')]
     private $evt;
 
     /**
      * @var User
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'User', fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'user_evt_join', nullable: false, referencedColumnName: 'id_user', onDelete: 'CASCADE')]
@@ -59,8 +51,6 @@ class EventParticipation
 
     /**
      * @var User
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'affiliant_user_join', referencedColumnName: 'id_user', nullable: true)]
@@ -86,8 +76,6 @@ class EventParticipation
 
     /**
      * @var User
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'lastchange_who_evt_join', referencedColumnName: 'id_user', nullable: true)]

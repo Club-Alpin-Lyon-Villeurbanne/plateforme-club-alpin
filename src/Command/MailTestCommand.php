@@ -15,7 +15,7 @@ class MailTestCommand extends Command
 {
     private Mailer $mailer;
 
-    public function __construct(Mailer $mailer, string $name = null)
+    public function __construct(Mailer $mailer, ?string $name = null)
     {
         $this->mailer = $mailer;
         parent::__construct($name);

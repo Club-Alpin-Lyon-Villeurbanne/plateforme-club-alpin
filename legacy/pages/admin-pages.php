@@ -24,10 +24,10 @@ if ((isset($currentPage['admin_page']) && $currentPage['admin_page'] && !admin()
 	<?php
     // TABLEAU D'ERREURS
     if (isset($_POST['operation']) && isset($errTab) && count($errTab) > 0) {
-        echo '<div class="erreur">Erreur : <ul><li>- '.implode('</li><li>- ', $errTab).'</li></ul></div>';
+        echo '<div class="erreur">Erreur : <ul><li>- ' . implode('</li><li>- ', $errTab) . '</li></ul></div>';
     }
     if (isset($_POST['operation']) && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'.</p>';
+        echo '<p class="info">Mise à jour effectuée à ' . date('H:i:s', time()) . '.</p>';
     } ?>
 
 	<div class="sortablepagelist niv0">
@@ -40,14 +40,14 @@ if ((isset($currentPage['admin_page']) && $currentPage['admin_page'] && !admin()
         // Nom de la page dans chaque langue
         $handle['nom'] = [];
 
-        $req = "SELECT contenu_content_inline FROM  `caf_content_inline` WHERE  `code_content_inline` LIKE 'meta-title-".$handle['code_page']."' AND lang_content_inline LIKE 'fr' ORDER BY  `date_content_inline` DESC LIMIT 1";
+        $req = "SELECT contenu_content_inline FROM  `caf_content_inline` WHERE  `code_content_inline` LIKE 'meta-title-" . $handle['code_page'] . "' AND lang_content_inline LIKE 'fr' ORDER BY  `date_content_inline` DESC LIMIT 1";
         $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $tmp = '<i style="font-size:9px; color:red;">non défini</i>';
 
         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
             $tmp = $handle2['contenu_content_inline'];
         }
-        $tmp = '<img src="/img/base/flag-fr.png" alt="fr" title="fr" style="height:17px; opacity:0.7; vertical-align:middle" /> '.$tmp;
+        $tmp = '<img src="/img/base/flag-fr.png" alt="fr" title="fr" style="height:17px; opacity:0.7; vertical-align:middle" /> ' . $tmp;
         $handle['nom'][] = $tmp;
 
         // ok, save
@@ -58,43 +58,43 @@ if ((isset($currentPage['admin_page']) && $currentPage['admin_page'] && !admin()
     function listPages($tab, $parent, $level)
     {
         global $versCettePage;
-        echo '<div class="sortablepagelist niv'.$level.'">';
+        echo '<div class="sortablepagelist niv' . $level . '">';
         for ($i = 0; $i < count($tab); ++$i) {
             $page = $tab[$i];
             if ($page['parent_page'] == $parent) {
-                echo '<div id="page_id_'.$page['id_page'].'"" class="page-element niv'.$level.' '.($page['vis_page'] ? '' : 'invisible').'" style="'.($parent ? 'margin-left:10px;' : '').'">'
+                echo '<div id="page_id_' . $page['id_page'] . '"" class="page-element niv' . $level . ' ' . ($page['vis_page'] ? '' : 'invisible') . '" style="' . ($parent ? 'margin-left:10px;' : '') . '">'
                         // Suppriemr
-                        .($page['lock_page'] ? '' : '<form action="'.$versCettePage.'" method="post" style="float:right"
-							onsubmit="return(confirm(\'Voulez-vous vraiment supprimer définitivement cette page ? \n\n '.addslashes($page['default_name_page']).' \'))">
+                        . ($page['lock_page'] ? '' : '<form action="' . $versCettePage . '" method="post" style="float:right"
+							onsubmit="return(confirm(\'Voulez-vous vraiment supprimer définitivement cette page ? \n\n ' . addslashes($page['default_name_page']) . ' \'))">
 							<input type="hidden" name="operation" value="page_del" />
-							<input type="hidden" name="id_page" value="'.$page['id_page'].'" />
-							<input type="hidden" name="default_name_page" value="'.html_utf8($page['default_name_page']).'" />
-							<input type="hidden" name="code_page" value="'.html_utf8($page['code_page']).'" />
+							<input type="hidden" name="id_page" value="' . $page['id_page'] . '" />
+							<input type="hidden" name="default_name_page" value="' . html_utf8($page['default_name_page']) . '" />
+							<input type="hidden" name="code_page" value="' . html_utf8($page['code_page']) . '" />
 							<input type="image" src="/img/base/x.png" class="upimage" alt="Supprimer" title="Supprimer" />
 						</form>')
                         // deplacer
-                        .'<div class="page-element-info-3"><img src="/img/base/move.png" alt="" title="Déplacer" style="height:16px" class="handle" /></div>'
-                        .'<div class="page-element-separator"></div>'
+                        . '<div class="page-element-info-3"><img src="/img/base/move.png" alt="" title="Déplacer" style="height:16px" class="handle" /></div>'
+                        . '<div class="page-element-separator"></div>'
                         // picto d'état vis
-                        .($page['vis_page']
+                        . ($page['vis_page']
                             ? '<div class="page-element-info-2 on"><img src="/img/base/vis-on.png" alt="MENU" title="Cette page est visible sur le site" /></div>'
                             : '<div class="page-element-info-2 off"><img src="/img/base/vis-off.png" alt="MENU" title="Cette page n\'apparaît PAS sur le site" /></div>'
                         )
                         // picto d'état menu
-                        .($page['menu_page']
+                        . ($page['menu_page']
                         ? '<div class="page-element-info-2 on"><img src="/img/base/chart_organisation.png" alt="MENU" title="Cette page apparaît dans le menu principal" /></div>'
                         : '<div class="page-element-info-2 off"><img src="/img/base/chart_organisation_delete.png" alt="MENU" title="Cette page n\'apparaît PAS dans le menu principal" /></div>'
                         )
                         // picto d'état priorité
-                        .($page['priority_page'] > 0
-                        ? '<div class="page-element-info-2 on">'.round($page['priority_page'] * 10).'<sub>/10</sub></div>'
+                        . ($page['priority_page'] > 0
+                        ? '<div class="page-element-info-2 on">' . round($page['priority_page'] * 10) . '<sub>/10</sub></div>'
                         : '<div class="page-element-info-2 off">Ø</div>'
                         )
                         // nifos texte
-                        .'<div class="page-element-separator"></div>'
-                        .'<div class="page-element-info-1">'.$page['code_page'].'</div>'
+                        . '<div class="page-element-separator"></div>'
+                        . '<div class="page-element-info-1">' . $page['code_page'] . '</div>'
                         // .'<div class="page-element-info-1">'.$page['default_name_page'].'</div>'
-                        .'<div class="page-element-info-1">'.implode('<br />', $page['nom']).'</div>'
+                        . '<div class="page-element-info-1">' . implode('<br />', $page['nom']) . '</div>'
                 ;
 
                 listPages($tab, $page['id_page'], $level + 1);

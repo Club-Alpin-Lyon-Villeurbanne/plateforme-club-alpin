@@ -19,13 +19,13 @@ if (allowed('article_validate_all')) { // pouvoir de valider les articles
 	WHERE status_article=0
 	AND topubly_article=1
 	AND commission_article=id_commission
-	AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."')"; // condition OR pour toutes les commissions autorisées
+	AND (code_commission LIKE '" . implode("' OR code_commission LIKE '", $tab) . "')"; // condition OR pour toutes les commissions autorisées
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $notif_validerunarticle = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
 }
 
-if ((allowed('article_validate_all') || allowed('article_validate'))) {
+if (allowed('article_validate_all') || allowed('article_validate')) {
     // articles à valider (pagination)
     $limite = $MAX_ARTICLES_VALIDATION;
 
@@ -51,7 +51,7 @@ if ((allowed('article_validate_all') || allowed('article_validate'))) {
 		WHERE status_article=0
 		AND id_user = user_article
 		ORDER BY topubly_article desc,  tsp_validate_article ASC
-		LIMIT '.($limite * ($pagenum - 1)).", $limite";
+		LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
     } elseif (allowed('article_validate')) { // commission non précisée ici = autorisation passée
         // recuperation des commissions sous notre joug
         $tab = LegacyContainer::get('legacy_user_rights')->getCommissionListForRight('article_validate');
@@ -61,7 +61,7 @@ if ((allowed('article_validate_all') || allowed('article_validate'))) {
 		FROM caf_article, caf_commission
 		WHERE status_article=0
 		AND commission_article=id_commission
-		AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."') "; // condition OR pour toutes les commissions autorisées
+		AND (code_commission LIKE '" . implode("' OR code_commission LIKE '", $tab) . "') "; // condition OR pour toutes les commissions autorisées
 
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $compte = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM)); // nombre total d'evts à valider, défini plus haut
@@ -82,10 +82,10 @@ if ((allowed('article_validate_all') || allowed('article_validate'))) {
 		LEFT JOIN caf_commission ON (caf_commission.id_commission = caf_article.commission_article)
 		LEFT JOIN caf_user ON (caf_user.id_user = caf_article.user_article)
 		WHERE status_article=0
-		AND (code_commission LIKE '".implode("' OR code_commission LIKE '", $tab)."') " // condition OR pour toutes les commissions autorisées
-        .'AND id_user = user_article
+		AND (code_commission LIKE '" . implode("' OR code_commission LIKE '", $tab) . "') " // condition OR pour toutes les commissions autorisées
+        . 'AND id_user = user_article
 		ORDER BY topubly_article desc,  tsp_validate_article ASC
-		LIMIT '.($limite * ($pagenum - 1)).", $limite";
+		LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
     }
     $articleStandby = $articleStandbyRedac = [];
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -115,10 +115,10 @@ if ((allowed('article_validate_all') || allowed('article_validate'))) {
             if (!allowed('article_validate') && !allowed('article_validate_all')) {
                 echo '<p class="erreur">Droits insuffisants pour afficher cette page.</p>';
             } else {
-                inclure($p1.'-main', 'vide');
+                inclure($p1 . '-main', 'vide');
 
                 if ($notif_validerunarticle > 0) {
-                    echo '<br /><h2>'.$notif_validerunarticle.' article'.($notif_validerunarticle > 1 ? 's' : '').' proposé'.($notif_validerunarticle > 1 ? 's' : '').' en attente de publication :</h2>';
+                    echo '<br /><h2>' . $notif_validerunarticle . ' article' . ($notif_validerunarticle > 1 ? 's' : '') . ' proposé' . ($notif_validerunarticle > 1 ? 's' : '') . ' en attente de publication :</h2>';
                 }
 
                 // liste articles en attente de publication :
@@ -131,8 +131,8 @@ if ((allowed('article_validate_all') || allowed('article_validate'))) {
                         $article = $articleStandby[$i];
 
                         // check image
-                        if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) $article['id_article'].'/wide-figure.jpg')) {
-                            $img = '/ftp/articles/'.(int) $article['id_article'].'/wide-figure.jpg';
+                        if (is_file(__DIR__ . '/../../public/ftp/articles/' . (int) $article['id_article'] . '/wide-figure.jpg')) {
+                            $img = '/ftp/articles/' . (int) $article['id_article'] . '/wide-figure.jpg';
                         } else {
                             $img = '/ftp/articles/0/wide-figure.jpg';
                         }
@@ -143,32 +143,32 @@ if ((allowed('article_validate_all') || allowed('article_validate'))) {
                         } elseif (-1 == $article['commission_article']) {
                             $type = 'Compte rendu de sortie';
                         } else {
-                            $type = 'Actualité « '.$article['title_commission'].' »';
+                            $type = 'Actualité « ' . $article['title_commission'] . ' »';
                         }
 
                         // Aff
                         echo '<hr />'
                         // Boutons
-                        .'<div class="article-tools-valid">'
+                        . '<div class="article-tools-valid">'
 
                             // apercu
-                            .'<a class="nice2" href="/article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
+                            . '<a class="nice2" href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
 
                         // Moderation
                         echo '
-							<form action="'.$versCettePage.'" method="post" style="display:inline" class="loading">
+							<form action="' . $versCettePage . '" method="post" style="display:inline" class="loading">
 								<input type="hidden" name="operation" value="article_validate" />
 								<input type="hidden" name="status_article" value="1" />
-								<input type="hidden" name="id_article" value="'.((int) $article['id_article']).'" />
+								<input type="hidden" name="id_article" value="' . ((int) $article['id_article']) . '" />
 								<input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
 							</form>
 
 							<input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
-							<div style="display:none" id="refuser-'.(int) $article['id_article'].'">
-								<form action="'.$versCettePage.'" method="post" class="loading">
+							<div style="display:none" id="refuser-' . (int) $article['id_article'] . '">
+								<form action="' . $versCettePage . '" method="post" class="loading">
 									<input type="hidden" name="operation" value="article_validate" />
 									<input type="hidden" name="status_article" value="2" />
-									<input type="hidden" name="id_article" value="'.((int) $article['id_article']).'" />
+									<input type="hidden" name="id_article" value="' . ((int) $article['id_article']) . '" />
 
 									<p>Laissez un message à l\'auteur pour lui expliquer la raison du refus :</p>
 									<input type="text" name="msg" class="type1" placeholder="ex : Décocher &laquo;A la Une&raquo;" />
@@ -178,23 +178,23 @@ if ((allowed('article_validate_all') || allowed('article_validate'))) {
 							</div>';
                         echo '</div>'
 
-                            .'<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="/article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html?forceshow=true" target="_blank">'
+                            . '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">'
                                 // image liee
-                                .'<img src="'.$img.'" alt="" title="" style="width:100%; " />'
-                            .'</a></div>'
-                            .'<div style="float:right; width:510px">'
+                                . '<img src="' . $img . '" alt="" title="" style="width:100%; " />'
+                            . '</a></div>'
+                            . '<div style="float:right; width:510px">'
 
                             // INFOS
-                            .'<p style="padding:5px 5px; line-height:18px;">'
-                                .'<b><a href="/article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html?forceshow=true" target="_blank">'.html_utf8($article['titre_article']).'</a></b><br />'
-                                .'<b>Type d\'article :</b> '.$type.'<br />'
-                                .'<span class="mini">Par '.userlink($article['id_user'], $article['nickname_user']).'</span> - '
-                                .'<span class="mini">Le '.jour(date('N', $article['tsp_article']), 'short').' '.date('d', $article['tsp_article']).' '.mois(date('m', $article['tsp_article'])).' '.date('Y', $article['tsp_article']).' à '.date('H:i', $article['tsp_article']).'<br />'
-                                .($article['une_article'] ? '<span class="mini"><b><img src="/img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d\'accueil !</span>' : '')
-                            .'</ul>'
+                            . '<p style="padding:5px 5px; line-height:18px;">'
+                                . '<b><a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
+                                . '<b>Type d\'article :</b> ' . $type . '<br />'
+                                . '<span class="mini">Par ' . userlink($article['id_user'], $article['nickname_user']) . '</span> - '
+                                . '<span class="mini">Le ' . jour(date('N', $article['tsp_article']), 'short') . ' ' . date('d', $article['tsp_article']) . ' ' . mois(date('m', $article['tsp_article'])) . ' ' . date('Y', $article['tsp_article']) . ' à ' . date('H:i', $article['tsp_article']) . '<br />'
+                                . ($article['une_article'] ? '<span class="mini"><b><img src="/img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d\'accueil !</span>' : '')
+                            . '</ul>'
 
-                        .'</div>'
-                        .'<br style="clear:both" />';
+                        . '</div>'
+                        . '<br style="clear:both" />';
                     }
                 }
 
@@ -203,7 +203,7 @@ if ((allowed('article_validate_all') || allowed('article_validate'))) {
                 if (0 == $notif_validerunarticle) {
                     echo '<p class="info">Aucun article n\'est en cours de rédaction pour l\'instant.</p>';
                 } else {
-                    echo '<br /><br /><h2>'.$notif_validerunarticle.' article'.($notif_validerunarticle > 1 ? 's' : '').' en cours de rédaction dont la publication n\'a pas été demandée :</h2>';
+                    echo '<br /><br /><h2>' . $notif_validerunarticle . ' article' . ($notif_validerunarticle > 1 ? 's' : '') . ' en cours de rédaction dont la publication n\'a pas été demandée :</h2>';
 
                     // ************
                     // ** AFFICHAGE, on recupere le design de l'agenda
@@ -211,8 +211,8 @@ if ((allowed('article_validate_all') || allowed('article_validate'))) {
                         $article = $articleStandbyRedac[$i];
 
                         // check image
-                        if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) $article['id_article'].'/wide-figure.jpg')) {
-                            $img = '/ftp/articles/'.(int) $article['id_article'].'/wide-figure.jpg';
+                        if (is_file(__DIR__ . '/../../public/ftp/articles/' . (int) $article['id_article'] . '/wide-figure.jpg')) {
+                            $img = '/ftp/articles/' . (int) $article['id_article'] . '/wide-figure.jpg';
                         } else {
                             $img = '/ftp/articles/0/wide-figure.jpg';
                         }
@@ -223,33 +223,33 @@ if ((allowed('article_validate_all') || allowed('article_validate'))) {
                         } elseif (-1 == $article['commission_article']) {
                             $type = 'Compte rendu de sortie';
                         } else {
-                            $type = 'Actualité « '.$article['title_commission'].' »';
+                            $type = 'Actualité « ' . $article['title_commission'] . ' »';
                         }
 
                         // Aff
                         echo '<hr />'
                         // Boutons
-                        .'<div class="article-tools-valid">'
+                        . '<div class="article-tools-valid">'
 
                             // apercu
-                            .'<a class="nice2" href="/article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
+                            . '<a class="nice2" href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
 
                         // edition
-                        if (allowed('article_edit_notmine') || allowed('article_edit', 'commission:'.$article['commission_article'])) {
-                            echo '<a href="/article-edit/'.(int) $article['id_article'].'.html" title="" class="nice2 orange">
+                        if (allowed('article_edit_notmine') || allowed('article_edit', 'commission:' . $article['commission_article'])) {
+                            echo '<a href="/article-edit/' . (int) $article['id_article'] . '.html" title="" class="nice2 orange">
 									Modifier
 								</a>';
                         }
 
                         // Suppression
-                        if (allowed('article_delete_notmine') || allowed('article_delete', 'commission:'.$article['commission_article'])) {
-                            echo '<a href="javascript:$.fancybox($(\'#supprimer-form-'.$article['id_article'].'\').html());" title="" class="nice2 red">
+                        if (allowed('article_delete_notmine') || allowed('article_delete', 'commission:' . $article['commission_article'])) {
+                            echo '<a href="javascript:$.fancybox($(\'#supprimer-form-' . $article['id_article'] . '\').html());" title="" class="nice2 red">
 										Supprimer
 									</a>';
-                            echo '<div id="supprimer-form-'.(int) $article['id_article'].'" style="display:none">
-										<form action="'.$versCettePage.'" method="post" style="width:600px; text-align:left">
+                            echo '<div id="supprimer-form-' . (int) $article['id_article'] . '" style="display:none">
+										<form action="' . $versCettePage . '" method="post" style="width:600px; text-align:left">
 											<input type="hidden" name="operation" value="article_del" />
-											<input type="hidden" name="id_article" value="'.$article['id_article'].'" />
+											<input type="hidden" name="id_article" value="' . $article['id_article'] . '" />
 											<p>Voulez-vous vraiment supprimer définitivement cet article ? <br />Cette action est irréversible.</p>
 											<input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
 											<input type="submit" class="nice2 red" value="Supprimer cet article" />
@@ -259,43 +259,43 @@ if ((allowed('article_validate_all') || allowed('article_validate'))) {
 
                         echo '</div>';
 
-                        echo '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="/article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html?forceshow=true" target="_blank">'
+                        echo '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">'
                                 // image liee
-                                .'<img src="'.$img.'" alt="" title="" style="width:100%; " />'
-                            .'</a></div>'
-                            .'<div style="float:right; width:510px">'
+                                . '<img src="' . $img . '" alt="" title="" style="width:100%; " />'
+                            . '</a></div>'
+                            . '<div style="float:right; width:510px">'
 
                             // INFOS
-                            .'<p style="padding:5px 5px; line-height:18px;">'
-                                .'<b><a href="/article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html?forceshow=true" target="_blank">'.html_utf8($article['titre_article']).'</a></b><br />'
-                                .'<b>Type d\'article :</b> '.$type.'<br />'
-                                .'<span class="mini">Par '.userlink($article['id_user'], $article['nickname_user']).'</span> - '
-                                .'<span class="mini">Le '.jour(date('N', $article['tsp_article']), 'short').' '.date('d', $article['tsp_article']).' '.mois(date('m', $article['tsp_article'])).' '.date('Y', $article['tsp_article']).' à '.date('H:i', $article['tsp_article']).'<br />'
-                                .($article['une_article'] ? '<span class="mini"><b><img src="/img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d\'accueil !</span>' : '')
-                            .'</ul>'
+                            . '<p style="padding:5px 5px; line-height:18px;">'
+                                . '<b><a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
+                                . '<b>Type d\'article :</b> ' . $type . '<br />'
+                                . '<span class="mini">Par ' . userlink($article['id_user'], $article['nickname_user']) . '</span> - '
+                                . '<span class="mini">Le ' . jour(date('N', $article['tsp_article']), 'short') . ' ' . date('d', $article['tsp_article']) . ' ' . mois(date('m', $article['tsp_article'])) . ' ' . date('Y', $article['tsp_article']) . ' à ' . date('H:i', $article['tsp_article']) . '<br />'
+                                . ($article['une_article'] ? '<span class="mini"><b><img src="/img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d\'accueil !</span>' : '')
+                            . '</ul>'
 
-                        .'</div>'
-                        .'<br style="clear:both" />';
+                        . '</div>'
+                        . '<br style="clear:both" />';
                     }
                 }
                 // PAGES
                 if ($nbrPages > 1) {
                     echo '<nav class="pageSelect"><hr />';
                     for ($i = 1; $i <= $nbrPages; ++$i) {
-                        echo '<a href="'.$p1.'/'.$i.'.html" title="" class="'.($pagenum == $i ? 'up' : '').'">P'.$i.'</a> '.($i < $nbrPages ? '  ' : '');
+                        echo '<a href="' . $p1 . '/' . $i . '.html" title="" class="' . ($pagenum == $i ? 'up' : '') . '">P' . $i . '</a> ' . ($i < $nbrPages ? '  ' : '');
                     }
                     echo '</nav>';
                 }
             }
-			?>
+?>
 			<br style="clear:both" />
 		</div>
 	</div>
 
 	<!-- partie droite -->
 	<?php
-    require __DIR__.'/../includes/right-type-agenda.php';
-			?>
+    require __DIR__ . '/../includes/right-type-agenda.php';
+?>
 
 
 	<br style="clear:both" />
