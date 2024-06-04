@@ -17,8 +17,8 @@ jobs:
   deploy:
     name: Deploy on production
     if: github.ref == 'refs/heads/main'
-    needs:
-      - php-cs-fixer
+    # needs:
+    #   - php-cs-fixer
     environment: production
     runs-on: ubuntu-latest
     steps:
