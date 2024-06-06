@@ -137,8 +137,8 @@ if ('infos' == $p2 && getUser()) {
 						</div>
 
 						<div style="float:left; width:45%; padding:5px 20px 5px 0;">
-							<b>Votre numéro d'adhérent au CAF</b>
-							<p class="mini">Inscrit sur votre carte CAF, sans espace</p>
+							<b>Votre numéro de licence FFCAM</b>
+							<p class="mini">Numéro reçu par mail lors de votre adhésion</p>
 							<input type="text" name="cafnum_user" class="type1" value="<?php echo inputVal('cafnum_user', ''); ?>" placeholder="" maxlength="12" /><br />
 						</div>
 
