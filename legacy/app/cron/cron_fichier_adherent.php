@@ -121,8 +121,8 @@ function transformLineIntoMember($line, $lineNumber): Member
     $member->birthday = mktime(1, 0, 0, $datePart[1], $datePart[2], $datePart[0]);
     $member->address = $mysqliHandler->escapeString(trim($line[11] . " \n" . $line[12] . " \n" . $line[13] . " \n" . $line[14]));
 
-    $member->phoneNumber1 = $mysqliHandler->escapeString(normalizePhoneNumber($line[26]));
-    $member->phoneNumber2 = $mysqliHandler->escapeString(normalizePhoneNumber($line[27]));
+    $member->phoneNumber1 = $mysqliHandler->escapeString(normalizePhoneNumber($line[27]));
+    $member->phoneNumber2 = $mysqliHandler->escapeString(normalizePhoneNumber($line[26]));
 
     $member->postCode = $mysqliHandler->escapeString(normalizeNames($line[15]));
     $member->city = $mysqliHandler->escapeString(normalizeNames($line[16]));
