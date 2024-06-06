@@ -72,7 +72,7 @@
             {% else %}
                 <div class="connected-name">
 
-                    {% if app.user.getDoitRenouveler or app.user.getAlerteRenouveler %}
+                    {% if app.user.getDoitRenouveler or app.user.getAlerteRenouveler or is_user_profile_incomplete() %}
                         <div class="notification-user-alerte"><span>!</span></div>
                     {% endif %}
 
@@ -119,6 +119,13 @@
                         {# MESSAGE D'ALERTE SI CET USER DOIT RENOUVELER SA LICENCE AVANT BIENTOT #}
                         <div style="padding:5px 0 30px 100px">
                             {{ easy_include('alerte-licence-renouveler', 'alerte')}}
+                        </div>
+                    {% elseif is_user_profile_incomplete() %}
+                        <div style="padding:5px 0 30px 100px">
+                            <div id="incomplete-profile-warning" class="alerte">
+                                <h1>Attention, votre compte est incomplet.</h1>
+                                <p class="mt20">{{ display_user_profile_warning() }}</p>
+                            </div>
                         </div>
                     {% endif %}
 

@@ -9,9 +9,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final readonly class UserProfileValidator
 {
-    public const DISPLAY_LABELS = [
+
+    private const DISPLAY_LABELS = [
         'tel' => 'votre numéro de téléphone',
-        'tel2' => 'votre numéro de téléphone n°2',
+        'tel2' => 'votre numéro de téléphone de secours',
         'photo' => 'votre photo de profil',
     ];
 
@@ -25,11 +26,9 @@ final readonly class UserProfileValidator
      * Validates that a logged-in User has completed his profile (no missing properties). Checks by default 'tel', 'tel2' and
      * 'photo'.
      *
-     * @param array $context the list of additional property names to check
-     *
      * @return array the list of incomplete properties (by name, associated with its label)
      */
-    public function validateUserProfile(array $context = []): array
+    public function validateUserProfile(): array
     {
         $user = $this->security->getUser();
 
@@ -37,23 +36,24 @@ final readonly class UserProfileValidator
             return [];
         }
 
-        $defaultProperties = ['tel', 'tel2'];
-        $properties = array_merge($defaultProperties, $context);
+        $properties = ['tel', 'tel2'];
 
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
-        $missingProperties = [];
+        $missingProperties = ['internal' => [], 'external' => []];
 
         foreach ($properties as $property) {
             $value = $propertyAccessor->getValue($user, $property);
             if (empty($value)) {
-                $missingProperties[$property] = self::DISPLAY_LABELS[$property];
+                $missingProperties['external'][] = self::DISPLAY_LABELS[$property];
             }
         }
 
         if (!$this->photoExists($user)) {
-            $missingProperties['photo'] = self::DISPLAY_LABELS['photo'];
+            $missingProperties['internal'][] = self::DISPLAY_LABELS['photo'];
         }
+
+        $missingProperties['message'] = self::getErrorsAsString($missingProperties);
 
         return $missingProperties;
     }
@@ -61,9 +61,9 @@ final readonly class UserProfileValidator
     /**
      * Returns true if the User profile is not missing any properties.
      */
-    public function isUserProfileComplete(): bool
+    public function isUserProfileIncomplete(): bool
     {
-        return 0 !== \count($this->validateUserProfile());
+        return 0 < count($this->validateUserProfile()['internal']) || 0 < count($this->validateUserProfile()['external']);
     }
 
     /**
@@ -75,11 +75,29 @@ final readonly class UserProfileValidator
      */
     public static function getErrorsAsString(array $errors): string
     {
-        if (1 === \count($errors)) {
-            return $errors[0];
+        $internalError = $errors['internal'];
+        $externalErrors = $errors['external'];
+
+        $error = "Merci de renseigner ";
+
+        if ($internalError) {
+            $error .= sprintf('%s dans votre <a href="/profil/infos.html">espace personnel</a>', $internalError[0]);
+            if ($externalErrors) {
+                $error .= ', ';
+            }
         }
 
-        return implode(', ', \array_slice($errors, 0, -1)).' et '.$errors[\count($errors) - 1];
+        if ($externalErrors) {
+            if (1 === count($externalErrors)) {
+                $error .= $externalErrors[0];
+            } else {
+                $error .= implode(', ', array_slice($externalErrors, 0, -1)).' et '.$externalErrors[count($externalErrors) - 1];
+            }
+            $error .= ' dans votre <a href="https://extranet-clubalpin.com/monespace/" target="_blank">espace licencié FFCAM</a>';
+        }
+
+        $error .= '.';
+        return $error;
     }
 
     /**

@@ -19,11 +19,23 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFunction('validate_user_profile', [$this, 'validateUserProfile']),
+            new TwigFunction('is_user_profile_incomplete', [$this, 'isUserProfileIncomplete']),
+            new TwigFunction('display_user_profile_warning', [$this, 'displayUserProfileWarning'], ['is_safe' => ['html']]),
         ];
     }
 
     public function validateUserProfile(): array
     {
         return $this->userProfileValidator->validateUserProfile();
+    }
+
+    public function isUserProfileIncomplete(): bool
+    {
+        return $this->userProfileValidator->isUserProfileIncomplete();
+    }
+
+    public function displayUserProfileWarning(): string
+    {
+        return $this->validateUserProfile()['message'];
     }
 }

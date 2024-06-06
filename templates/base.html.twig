@@ -67,8 +67,7 @@
             {{ encore_entry_script_tags('caf-assets') }}
             {{ javascriptGlobals() }}
         {% endblock %}
-        {% set user_validation_errors = validate_user_profile() %}
-        {% if display_banner or user_validation_errors|length > 0 %}
+        {% if display_banner %}
 			<style>
 				body {
 					padding-top: 30px;
@@ -91,14 +90,10 @@
 
     </head>
     <body>
-    	{% if display_banner or user_validation_errors|length > 0 %}
+    	{% if display_banner %}
 			<div id="env-banner">
 				<p>Attention, vous vous trouvez sur un site de test. Veuillez
 					<a href="https://clubalpinlyon.fr">cliquer ici pour accéder au site de production</a>.</p>
-                {% if user_validation_errors|length > 0 %}
-                    <p>Votre compte n'est pas complet, merci de rajouter {{ user_validation_errors|join(', ', ' et ') }} dans votre
-                        <a href="/profil/infos.html">espace personnel</a>.</p>
-                {% endif %}
 			</div>
 		{% endif %}
         <div id="container">

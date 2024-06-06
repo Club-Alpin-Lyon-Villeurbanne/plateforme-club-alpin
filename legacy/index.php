@@ -1,7 +1,6 @@
 <?php
 
 use App\Legacy\LegacyContainer;
-use App\Utils\User\UserProfileValidator;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 require __DIR__ . '/app/includes.php';
@@ -66,10 +65,7 @@ if (is_array($p_addJs)) {
         <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <?php
-        if (
-            LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')
-            || 0 !== count(LegacyContainer::get(UserProfileValidator::class)->validateUserProfile())
-        ) {
+        if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
             ?>
         <style>
             body {
@@ -99,11 +95,6 @@ if (is_array($p_addJs)) {
         ?>
         <div id="test-banner">
             <p>Attention, vous vous trouvez sur un site de test. Veuillez <a href="https://clubalpinlyon.fr">cliquer ici pour accéder au site de production</a>.</p>
-            <?php
-                if (0 !== count($missingProperties = array_values(LegacyContainer::get(UserProfileValidator::class)->validateUserProfile()))) {
-                    printf('<p>Votre compte n\'est pas complet, merci de rajouter %s dans votre <a href="/profil/infos.html">espace personnel</a>.</p>', UserProfileValidator::getErrorsAsString($missingProperties));
-                }
-        ?>
         </div>
     <?php
     }
