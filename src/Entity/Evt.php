@@ -162,15 +162,15 @@ class Evt implements \JsonSerializable
     private $tarifDetail;
 
     /**
-     * @var int|null
+     * @var string|null
      */
-    #[ORM\Column(name: 'denivele_evt', type: 'integer', nullable: true, options: ['unsigned' => true])]
+    #[ORM\Column(name: 'denivele_evt', type: 'text', length: 50, nullable: true)]
     private $denivele;
 
     /**
-     * @var float|null
+     * @var string|null
      */
-    #[ORM\Column(name: 'distance_evt', type: 'float', precision: 10, scale: 2, nullable: true)]
+    #[ORM\Column(name: 'distance_evt', type: 'text', length: 50, nullable: true)]
     private $distance;
 
     /**
@@ -698,24 +698,24 @@ class Evt implements \JsonSerializable
         return $this;
     }
 
-    public function getDenivele(): ?int
+    public function getDenivele(): ?string
     {
         return $this->denivele;
     }
 
-    public function setDenivele(?int $denivele): self
+    public function setDenivele(?string $denivele): self
     {
         $this->denivele = $denivele;
 
         return $this;
     }
 
-    public function getDistance(): ?float
+    public function getDistance(): ?string
     {
         return $this->distance;
     }
 
-    public function setDistance(?float $distance): self
+    public function setDistance(?string $distance): self
     {
         $this->distance = $distance;
 
