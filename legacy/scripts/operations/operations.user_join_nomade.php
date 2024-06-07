@@ -59,7 +59,7 @@ if (!$firstname_user) {
 if (!$lastname_user) {
     $errTab[] = 'Merci de renseigner le champ nom';
 }
-if (!filter_var($email_user, \FILTER_VALIDATE_EMAIL)) {
+if ($email_user && !filter_var($email_user, \FILTER_VALIDATE_EMAIL)) {
     $errTab[] = "L'adresse email est invalide";
 } else {
     $reqmail = "SELECT COUNT(*)
