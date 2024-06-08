@@ -1,6 +1,6 @@
 [
-  "* * * * * $ROOT/bin/console messenger:consume mails --time-limit=55 --quiet --no-interaction",
-  "3 7 * * * $ROOT/bin/console fichier-adherent",
-  "57 * * * * $ROOT/bin/console save-images",
-  "54 5 * * * $ROOT/bin/console rappels"
+  "* * * * * $ROOT/clevercloud/crons/consume-emails.sh",
+  "3 7 * * * $ROOT/clevercloud/crons/sync-members.sh",
+  "57 * * * * $ROOT/clevercloud/crons/save-images.sh",
+  "54 5 * * * $ROOT/clevercloud/crons/send-reminders.sh"
 ]
