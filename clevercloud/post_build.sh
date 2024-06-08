@@ -21,7 +21,15 @@ mkdir -p ${JWT_CONF_DIR}
 echo "${JWT_SECRET_KEY}" > ${JWT_CONF_DIR}/private.pem
 echo "${JWT_PUBLIC_KEY}" > ${JWT_CONF_DIR}/public.pem
 
-/usr/bin/composer.phar dump-env prod
+mv composer.json.old composer.json
+mv composer.lock.old composer.lock
+
+composer.phar install --no-ansi --no-progress --no-interaction --no-dev --no-scripts
+composer.phar dump-env prod
+
+bin/console cache:clear
+bin/console assets:install public
+
 bin/console doctrine:migrations:migrate --no-interaction
 
 # Frontend build
