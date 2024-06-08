@@ -1,5 +1,5 @@
 framework:
-  trusted_proxies: "%env(CC_REVERSE_PROXY_IPS)%"
+  trusted_proxies: "%env(TRUSTED_PROXIES)%"
   trusted_headers:
     [
       "x-forwarded-for",
