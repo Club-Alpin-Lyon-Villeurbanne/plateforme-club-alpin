@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-set -ex 
+set -e
 
 required_vars=("APP_ENV" "DEPLOY_ENV" "JWT_SECRET_KEY" "JWT_PUBLIC_KEY")
 
@@ -14,16 +14,15 @@ done
 JWT_CONF_DIR=config/jwt
 
 cat public/.htaccess.clever > public/.htaccess
-mv clevercloud/framework.yaml config/packages/prod/framework.yaml
-mv infrastructure/confs/${DEPLOY_ENV}/.env.${APP_ENV} .
+mv infrastructure/confs/.env.prod .
+mv infrastructure/confs/${DEPLOY_ENV}/robots.txt public/robots.txt
 
 mkdir -p ${JWT_CONF_DIR}
 echo "${JWT_SECRET_KEY}" > ${JWT_CONF_DIR}/private.pem
 echo "${JWT_PUBLIC_KEY}" > ${JWT_CONF_DIR}/public.pem
 
-/usr/bin/composer.phar dump-env ${APP_ENV}
-
-bin/console doctrine:migrations:migrate --env=${APP_ENV} --no-interaction
+/usr/bin/composer.phar dump-env prod
+bin/console doctrine:migrations:migrate --no-interaction
 
 # Frontend build
  npm install && npm run build
