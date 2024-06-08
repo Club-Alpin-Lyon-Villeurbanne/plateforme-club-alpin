@@ -1,5 +1,5 @@
 framework:
-  trusted_proxies: "%env(TRUSTED_PROXIES)%"
+  trusted_proxies: "%env(CC_REVERSE_PROXY_IPS)%"
   trusted_headers:
     [
       "x-forwarded-for",
@@ -8,3 +8,5 @@ framework:
       "x-forwarded-port",
       "x-forwarded-prefix",
     ]
+  router:
+        default_uri: 'https://%env(ROUTER_CONTEXT_HOST)%'
