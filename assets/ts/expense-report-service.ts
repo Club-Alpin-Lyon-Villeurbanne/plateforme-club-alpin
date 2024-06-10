@@ -32,12 +32,11 @@ const expenseReportService = {
             // minibus location
             else if (transportationMode.slug === 'minibus_location') {
                 const fuelField = transportationMode.fields.find((field: any) => field.slug === 'prix_carburant');
-                const rentPrice = transportationMode.fields.find((field: any) => field.slug === 'prix_loc_par_km');
-                const distanceField = transportationMode.fields.find((field: any) => field.slug === 'distance');
+                const rentPrice = transportationMode.fields.find((field: any) => field.slug === 'prix_location');
                 const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
                 const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
-                // prix location par km  * distance
-                total += parseFloat(rentPrice.value) * parseFloat(distanceField.value);
+                // prix location
+                total += parseFloat(rentPrice.value);
                 // essence / nombre voyageurs
                 total += parseFloat(fuelField.value) / parseFloat(passengerNumberField.value);
                 // péage / nombre voyageurs
