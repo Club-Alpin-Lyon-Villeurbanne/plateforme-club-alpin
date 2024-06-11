@@ -5,7 +5,7 @@ use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 
 $htmlSanitizer = new HtmlSanitizer(
-    (new HtmlSanitizerConfig())->allowSafeElements()
+    (new HtmlSanitizerConfig())->allowSafeElements()->allowRelativeMedias()
 );
 
 // continuons... Création de l'evt en lui meme
