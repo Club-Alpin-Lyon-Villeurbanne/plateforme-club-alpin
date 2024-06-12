@@ -281,6 +281,13 @@ class SortieController extends AbstractController
                 if (EventParticipation::STATUS_REFUSE === $status) {
                     $statusName = 'Refusé';
                 }
+
+                if (!$participation->getUser()->getEmail()) {
+                    $this->addFlash('warning', sprintf('%s %s est un adhérent nomade. Il n\'a pas d\'email et ' .
+                    'doit être prévenu par téléphone de son nouveau statut : %s. Son téléphone: %s', $participation->getUser()->getFirstname(), $participation->getUser()->getLastname(), $statusName, $participation->getUser()->getTel()));
+
+                    continue;
+                }
             }
 
             $toMail = null !== $participation->getAffiliantUserJoin() ? $participation->getAffiliantUserJoin() : $participation->getUser();
