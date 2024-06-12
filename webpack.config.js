@@ -38,11 +38,6 @@ Encore
         contextRegExp: /moment$/,
     }))
 
-    .addPlugin(new webpack.DefinePlugin({
-        __VUE_OPTIONS_API__: true,
-        __VUE_PROD_DEVTOOLS__: false,
-    }))
-
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
 

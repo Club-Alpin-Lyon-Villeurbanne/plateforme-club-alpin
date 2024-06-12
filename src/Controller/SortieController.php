@@ -155,16 +155,8 @@ class SortieController extends AbstractController
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
             'currentEventId', $event->getId()
         );
-
-        $apiBaseUrl = false;
-        if ($this->getParameter('router_context_host')) {
-            $apiBaseUrl = $this->getParameter('router_context_scheme')
-                . '://' . $this->getParameter('router_context_host')
-                . ($this->getParameter('router_context_port') ? ':' . $this->getParameter('router_context_port') : '');
-        }
-
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
-            'apiBaseUrl', $apiBaseUrl
+            'apiBaseUrl', !empty($_ENV['ROUTER_CONTEXT_HOST']) ? $_ENV['ROUTER_CONTEXT_SCHEME'] . '://' . $_ENV['ROUTER_CONTEXT_HOST'] : false
         );
 
         return [

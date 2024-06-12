@@ -28,9 +28,6 @@ parameters:
   legacy_env_DB_USER: "%env(string:DB_USER)%"
   legacy_env_DB_PASSWORD: "%env(string:DB_PASSWORD)%"
   legacy_env_DB_NAME: "%env(string:DB_NAME)%"
-  router_context_host: "%env(string:ROUTER_CONTEXT_HOST)%"
-  router_context_scheme: "%env(string:ROUTER_CONTEXT_SCHEME)%"
-  router_context_port: "%env(default::string:ROUTER_CONTEXT_PORT)%"
 
 services:
   # default configuration for services in *this* file
