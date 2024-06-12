@@ -549,12 +549,14 @@
                                         <td class="mini" >
                                             {% if participation.user.nomade %}
                                                 <br />
-                                                <img
-                                                    src="/img/base/bullet_error.png"
-                                                    alt="!"
-                                                    title="Attention. Ne reçoit pas d'e-mail"
-                                                    style="vertical-align:top"
-                                                />
+                                                {% if not participation.user.email %}
+                                                    <img
+                                                        src="/img/base/bullet_error.png"
+                                                        alt="!"
+                                                        title="Attention. Ne reçoit pas d'e-mail"
+                                                        style="vertical-align:top"
+                                                    />
+                                                {% endif %}
                                                 <br />
                                             {% elseif participation.isRoleManuel or participation.isRoleInscrit or participation.isRoleBenevole %}
                                                 {% if participation.isRoleManuel %}
