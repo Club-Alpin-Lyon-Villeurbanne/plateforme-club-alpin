@@ -28,18 +28,28 @@
                     <legend>
                         {{ expenseReportFormGroup.name }}
                         <a 
-                            v-if="expenseReportFormGroup.type == 'multiple'"
+                            v-if="expenseReportFormGroup.type === 'multiple'"
                             class="add-more"
                             href="#"
                             @click.prevent="spawnExpenseGroup(expenseReportFormGroup)"
                         >
-                            <span class="emoji">
+                            <span
+                                v-if="expenseReportFormGroup.slug === 'hebergement'"
+                                class="emoji"
+                            >
+                                &#10133;
+                                Ajouter une nuitée
+                            </span>
+                            <span
+                                v-else
+                                class="emoji"
+                            >
                                 &#10133;
                                 Ajouter
                             </span>
                         </a>
                     </legend>
-                    <div class="field type-select" v-if="expenseReportFormGroup.type == 'unique'">
+                    <div class="field type-select" v-if="expenseReportFormGroup.type === 'unique'">
                         <label>Choisir le type</label>
                         <select v-model="expenseReportFormGroup.selectedType">
                             <option 
@@ -56,9 +66,11 @@
                         <div v-for="(expenseType, expenseTypeIndex) in expenseReportFormGroup.expenseTypes" :key="expenseType.id">
                             <div v-if="expenseReportFormGroup.type !== 'unique' || expenseReportFormGroup.selectedType === expenseType.slug">
                                 <h4>
-                                    {{ expenseType.name }} <span v-if="expenseReportFormGroup.type !== 'unique'">{{ parseInt(expenseTypeIndex as any) + 1 }}</span>
+                                  <span v-if="expenseReportFormGroup.type !== 'unique' && expenseType.slug === 'nuitee'">{{ parseInt(expenseTypeIndex as any) + 1 }}° </span>
+                                    {{ expenseType.name }}
+                                  <span v-if="expenseReportFormGroup.type !== 'unique'  && expenseType.slug !== 'nuitee'">{{ parseInt(expenseTypeIndex as any) + 1 }}</span>
                                     <a
-                                        v-if="expenseReportFormGroup.type == 'multiple' && expenseTypeIndex !== 0"
+                                        v-if="expenseReportFormGroup.type === 'multiple' && expenseTypeIndex !== 0"
                                         class="delete" 
 
                                         href="#"
