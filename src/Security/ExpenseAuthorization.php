@@ -28,7 +28,7 @@ class ExpenseAuthorization
         if (false !== $response) {
             $jsonResponse = json_decode($response, true);
 
-            $this->authorizedIds = array_map('trim', explode(',', array_values($jsonResponse['files'])[0]['content']));
+            $this->authorizedIds = array_map('intval', explode(',', array_values($jsonResponse['files'])[0]['content']));
         } else {
             $this->authorizedIds = [];
         }
