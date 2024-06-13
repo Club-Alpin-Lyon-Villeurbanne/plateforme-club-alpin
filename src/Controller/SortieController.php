@@ -44,7 +44,8 @@ class SortieController extends AbstractController
         ExpenseTypeExpenseFieldTypeRepository $expenseTypeFieldTypeRepository,
         ExpenseReportRepository $expenseReportRepository,
         ExpenseReportSerializer $expenseReportSerializer,
-        Environment $twig
+        Environment $twig,
+        $baseUrl = '/',
     ) {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
             throw new AccessDeniedHttpException('Not found');
@@ -156,7 +157,7 @@ class SortieController extends AbstractController
             'currentEventId', $event->getId()
         );
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
-            'apiBaseUrl', !empty($_ENV['ROUTER_CONTEXT_HOST']) ? $_ENV['ROUTER_CONTEXT_SCHEME'] . '://' . $_ENV['ROUTER_CONTEXT_HOST'] : false
+            'apiBaseUrl', $baseUrl
         );
 
         return [
