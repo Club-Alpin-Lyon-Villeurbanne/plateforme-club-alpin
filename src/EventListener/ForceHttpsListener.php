@@ -13,15 +13,15 @@ use Symfony\Contracts\Service\ServiceSubscriberInterface;
 class ForceHttpsListener implements EventSubscriberInterface, ServiceSubscriberInterface
 {
     private ContainerInterface $locator;
-    private string $routerContextScheme;
-    private string $routerContextHost;
+    private string $baseUrl;
+    private string $appEnv;
     private string $deployedOnCleverCloud;
 
-    public function __construct(ContainerInterface $locator, string $routerContextScheme, string $routerContextHost, string $appName)
+    public function __construct(ContainerInterface $locator, string $baseUrl, string $appName, string $appEnv)
     {
         $this->locator = $locator;
-        $this->routerContextScheme = $routerContextScheme;
-        $this->routerContextHost = $routerContextHost;
+        $this->baseUrl = $baseUrl;
+        $this->appEnv = $appEnv;
         $this->deployedOnCleverCloud = !empty($appName);
     }
 
@@ -40,17 +40,16 @@ class ForceHttpsListener implements EventSubscriberInterface, ServiceSubscriberI
             return;
         }
 
-        if ('https' !== $this->routerContextScheme) {
+        if ('dev' === $this->appEnv) {
             return;
         }
 
-        if ($event->getRequest()->isSecure() && $event->getRequest()->getHttpHost() === $this->routerContextHost) {
+        if ($event->getRequest()->isSecure() && $event->getRequest()->getHttpHost() === parse_url($this->baseUrl, \PHP_URL_SCHEME)) {
             return;
         }
 
         $urlGenerator = $this->locator->get(UrlGeneratorInterface::class);
-        $urlGenerator->getContext()->setScheme($this->routerContextScheme);
-        $urlGenerator->getContext()->setHost($this->routerContextHost);
+        $urlGenerator->getContext()->setBaseUrl($this->baseUrl);
 
         $url = $this->locator->get(UrlGeneratorInterface::class)->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL);
 

@@ -8,5 +8,3 @@ framework:
       "x-forwarded-port",
       "x-forwarded-prefix",
     ]
-  router:
-        default_uri: 'https://%env(ROUTER_CONTEXT_HOST)%'

@@ -28,6 +28,8 @@ parameters:
   legacy_env_DB_USER: "%env(string:DB_USER)%"
   legacy_env_DB_PASSWORD: "%env(string:DB_PASSWORD)%"
   legacy_env_DB_NAME: "%env(string:DB_NAME)%"
+  router.request_context.scheme: "%env(string:ROUTER_REQUEST_CONTEXT_SCHEME)%"
+  asset.request_context.secure: "%env(bool:ASSET_REQUEST_CONTEXT_SECURE)%"
 
 services:
   # default configuration for services in *this* file
@@ -39,6 +41,7 @@ services:
       $kernelCacheDir: "%kernel.cache_dir%"
       $kernelEnvironment: "%kernel.environment%"
       $recaptchaSecret: "%env(RECAPTCHA_SECRET)%"
+      $baseUrl: "%env(BACKEND_URL)%"
 
   # allows access to service container as an injected dependency
   Symfony\Component\DependencyInjection\ContainerInterface: "@service_container"
@@ -98,8 +101,7 @@ services:
 
   App\EventListener\ForceHttpsListener:
     arguments:
-      $routerContextScheme: "%env(ROUTER_CONTEXT_SCHEME)%"
-      $routerContextHost: "%env(ROUTER_CONTEXT_HOST)%"
+      $appEnv: "%kernel.environment%"
       $appName: "%env(CC_APP_NAME)"
 
   App\Bridge\Twig\TwigExtension:

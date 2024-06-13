@@ -24,7 +24,7 @@ framework:
         log: true
 
     router:
-        default_uri: '%env(ROUTER_CONTEXT_SCHEME)%://%env(ROUTER_CONTEXT_HOST)%'
+        default_uri: '%env(BACKEND_URL)%'
 
 when@test:
     framework:

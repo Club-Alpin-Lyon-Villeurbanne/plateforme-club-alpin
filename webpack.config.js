@@ -1,8 +1,10 @@
 require('dotenv').config();
 const webpack = require('webpack');
 const Encore = require('@symfony/webpack-encore');
-const domain = process.env.WEBPACK_DOMAIN;
-const port = process.env.WEBPACK_PORT;
+const publicPath = process.env.BACKEND_URL + '/build/';
+const url = new URL(publicPath);
+const host = url.hostname;
+const port = url.port || '80';
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -17,7 +19,7 @@ Encore
     // directory where compiled assets will be stored
     .setOutputPath('public/build/')
     // public path used by the web server to access the output path
-    .setPublicPath(Encore.isProduction() ? '/build' : `http://${domain}:${port}/build/`)
+    .setPublicPath(Encore.isProduction() ? '/build' : publicPath)
     // only needed for CDN's or sub-directory deploy
     .setManifestKeyPrefix('build/')
 
@@ -87,16 +89,16 @@ Encore
 
     .configureDevServerOptions((options) => {
         options.devMiddleware = {
-            publicPath: `http://${domain}:${port}/static/`,
+            publicPath: publicPath,
         };
         options.hot = true;
-        options.host = domain;
+        options.host = host;
         options.port = port;
 
         options.allowedHosts = 'all';
         options.client = {
             webSocketURL: {
-                hostname: domain,
+                hostname: host,
                 port: port,
             },
         };
