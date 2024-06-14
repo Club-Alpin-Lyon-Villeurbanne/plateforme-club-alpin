@@ -19,6 +19,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Constraints\File as AssertFile;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ExpenseReportController extends AbstractController
 {
@@ -164,7 +167,7 @@ class ExpenseReportController extends AbstractController
     }
 
     #[Route('/expense-report/justification-document', name: 'app_expense_report_upload_justification_document', methods: ['POST'])]
-    public function uploadJustificationDocument(Request $request)
+    public function uploadJustificationDocument(Request $request, SluggerInterface $slugger, ValidatorInterface $validator)
     {
         if (!$this->getUser()) {
             return new JsonResponse([
@@ -179,13 +182,28 @@ class ExpenseReportController extends AbstractController
             throw new BadRequestHttpException('No file uploaded');
         }
 
-        $extension = $file->getClientOriginalExtension();
+        $fileConstraint = new AssertFile([
+            'maxSize' => '8M',
+            'extensions' => [
+                'jpg',
+                'png',
+                'pdf' => 'application/pdf',
+            ],
+        ]);
+
+        $errors = $validator->validate($file, $fileConstraint);
+
+        if ($errors->count() > 0) {
+            throw new BadRequestHttpException('File requirements not met');
+        }
+
         $filename = pathinfo($file->getClientOriginalName(), \PATHINFO_FILENAME);
+        $safeFilename = $slugger->slug($filename);
         // rebuild filename with hashed timestamp and extension
-        $filename = md5(time() . $filename) . '.' . $extension;
+        $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
 
         try {
-            $file->move(FileUploadHelper::getUserUploadPath($this->getUser(), 'expense-reports-justification'), $filename);
+            $file->move(FileUploadHelper::getUserUploadPath($this->getUser(), 'expense-reports-justification'), $newFilename);
         } catch (\Exception $e) {
             return new JsonResponse([
                 'success' => false,
@@ -195,7 +213,7 @@ class ExpenseReportController extends AbstractController
 
         return new JsonResponse([
             'success' => true,
-            'fileUrl' => FileUploadHelper::getUserUploadUrl($this->getUser(), 'expense-reports-justification') . '/' . $filename,
+            'fileUrl' => FileUploadHelper::getUserUploadUrl($this->getUser(), 'expense-reports-justification') . '/' . $newFilename,
         ]);
     }
 }
