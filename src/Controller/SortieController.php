@@ -518,7 +518,7 @@ class SortieController extends AbstractController
             $event->getLat(),
             $event->getLong(),
             $event->getDescription(),
-            $event->getJoinStart(),
+            null,
             $event->getJoinMax(),
             $event->getNgensMax()
         );
