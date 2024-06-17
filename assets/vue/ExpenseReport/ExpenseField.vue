@@ -62,7 +62,7 @@
                     class="hidden" 
                     type="file" 
                     multiple
-                    accept=".jpg, .png, .pdf"
+                    accept=".jpg, .jpeg, .png, .pdf"
                     name="{{ field.slug }}-justification"
                     @change="onFileUploadChange($event)"
                 >

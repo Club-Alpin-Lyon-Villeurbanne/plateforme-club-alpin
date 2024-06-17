@@ -186,6 +186,7 @@ class ExpenseReportController extends AbstractController
             'maxSize' => '8M',
             'extensions' => [
                 'jpg',
+                'jpeg',
                 'png',
                 'pdf' => 'application/pdf',
             ],
@@ -194,7 +195,7 @@ class ExpenseReportController extends AbstractController
         $errors = $validator->validate($file, $fileConstraint);
 
         if ($errors->count() > 0) {
-            throw new BadRequestHttpException('File requirements not met');
+            throw new BadRequestHttpException((string) $errors);
         }
 
         $filename = pathinfo($file->getClientOriginalName(), \PATHINFO_FILENAME);
