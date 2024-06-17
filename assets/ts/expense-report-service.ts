@@ -15,17 +15,17 @@ const expenseReportService = {
             }
 
             let total = 0;
-            // régles de calcul spécifiques au mode de transport
+            // règles de calcul spécifiques au mode de transport
             // véhicule personnel
-            if (transportationMode.slug === 'vehicule_personnel') {
+            if (transportationMode.slug === 'vehicule-personnel') {
                 const distanceField = transportationMode.fields.find((field: any) => field.slug === 'distance');
                 const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
                 const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
                 if (distanceField && tollField && passengerNumberField) {
-                    // distance * taux kilometrique
-                    total += parseFloat(distanceField.value) * expenseReportConfig.tauxKilometrique;
-                    // peage / nombre voyageurs
-                    total += parseFloat(tollField.value) / parseFloat(passengerNumberField.value);
+                    // distance * taux kilométrique
+                    total += parseFloat(distanceField.value) * expenseReportConfig.tauxKilometriqueVoiture;
+                    // péage / nombre voyageurs
+                    total += parseFloat(tollField.value) / parseInt(passengerNumberField.value);
                 }
             }
 
@@ -38,9 +38,9 @@ const expenseReportService = {
                 // prix location
                 total += parseFloat(rentPrice.value);
                 // essence / nombre voyageurs
-                total += parseFloat(fuelField.value) / parseFloat(passengerNumberField.value);
+                total += parseFloat(fuelField.value) / parseInt(passengerNumberField.value);
                 // péage / nombre voyageurs
-                total += parseFloat(tollField.value) / parseFloat(passengerNumberField.value);
+                total += parseFloat(tollField.value) / parseInt(passengerNumberField.value);
             }
 
             // minibus club
@@ -49,11 +49,13 @@ const expenseReportService = {
                 const distanceField = transportationMode.fields.find((field: any) => field.slug === 'distance');
                 const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
                 const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
-               
+
+                // distance * taux kilométrique
+                total += parseFloat(distanceField.value) * expenseReportConfig.tauxKilometriqueMinibus;
                 // essence / nombre voyageurs
-                total += parseFloat(fuelField.value) / parseFloat(passengerNumberField.value);
+                total += parseFloat(fuelField.value) / parseInt(passengerNumberField.value);
                 // péage / nombre voyageurs
-                total += parseFloat(tollField.value) / parseFloat(passengerNumberField.value);
+                total += parseFloat(tollField.value) / parseInt(passengerNumberField.value);
             }
 
             // par défaut

@@ -87,6 +87,8 @@
                                         v-for="field in expenseType.fields"
                                         :key="field.slug"
                                         :field="field"
+                                        :config="expenseReportConfig"
+                                        :expenseType="expenseType.slug"
                                         class="field">
                                     </ExpenseField>
                                 </div>
@@ -123,6 +125,7 @@
     import { defineComponent } from 'vue';
     import ExpenseField from './ExpenseField.vue';
     import expenseReportService from '../../ts/expense-report-service';
+    import expenseReportConfig from '../../config/expense-reports.json';
 
     export default defineComponent({
         name: 'expense-report-form',
@@ -151,6 +154,7 @@
                 },
                 errorMessages: [] as string[],
                 successMessage: '',
+                expenseReportConfig: expenseReportConfig
             }
         },
         methods: {
