@@ -42,7 +42,5 @@ class UsertypeRepository extends ServiceEntityRepository implements PasswordUpgr
 
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
-        
     }
-
 }

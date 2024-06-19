@@ -20,18 +20,18 @@ $p_pages = [];
 
 // On ne recquiert que les pages necessaires en fonction du mode admin et superadmin
 $req = 'SELECT * FROM  `caf_page` '
-        .'WHERE vis_page=1 '
-        .(admin() ? ' OR vis_page=0 ' : '') // les admins ont le droit de voir les pages cachées
-        .(admin() ? ' OR admin_page=1 ' : ' AND admin_page=0 ') // seuls les admin peuvent voir les pages admin
-        .(superadmin() ? ' OR superadmin_page=1 ' : ' AND superadmin_page=0 ') // seuls les superadmin peuvent voir les pages superadmin
-        .'ORDER BY ordre_menu_page ASC, ordre_menuadmin_page ASC' // on sort tout de suite dans l'ordre des menus
+        . 'WHERE vis_page=1 '
+        . (admin() ? ' OR vis_page=0 ' : '') // les admins ont le droit de voir les pages cachées
+        . (admin() ? ' OR admin_page=1 ' : ' AND admin_page=0 ') // seuls les admin peuvent voir les pages admin
+        . (superadmin() ? ' OR superadmin_page=1 ' : ' AND superadmin_page=0 ') // seuls les superadmin peuvent voir les pages superadmin
+        . 'ORDER BY ordre_menu_page ASC, ordre_menuadmin_page ASC' // on sort tout de suite dans l'ordre des menus
 ;
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     $p_pages[$handle['code_page']] = [
         // 'meta_title_page'=>$handle['meta_title_page']?cont('meta-title-'.$handle['code_page']):cont('meta-title-site'),
-        'meta_title_page' => $handle['meta_title_page'] ? $handle['default_name_page'] : cont('meta-title-'.$handle['code_page']),
-        'meta_description_page' => $handle['meta_description_page'] ? cont('meta-description-'.$handle['code_page']) : cont('site-meta-description'),
+        'meta_title_page' => $handle['meta_title_page'] ? $handle['default_name_page'] : cont('meta-title-' . $handle['code_page']),
+        'meta_description_page' => $handle['meta_description_page'] ? cont('meta-description-' . $handle['code_page']) : cont('site-meta-description'),
         'vis_page' => $handle['vis_page'],
         'menu_page' => $handle['menu_page'],
         'menuadmin_page' => $handle['menuadmin_page'],
@@ -69,7 +69,7 @@ if ($p_pages[$codePrioritaire] ?? null) {
     if (!$p2) {
         foreach ($p_pages as $code => $page) {
             if ($page['parent_page'] == $p_pages[$p1]['id_page']) {
-                header('Location: '.$p1.'/'.$code.'.html');
+                header('Location: ' . $p1 . '/' . $code . '.html');
                 exit;
             }
         }

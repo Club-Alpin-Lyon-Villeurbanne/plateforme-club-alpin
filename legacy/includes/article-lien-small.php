@@ -1,13 +1,13 @@
 <?php
 // URL
-$url = 'article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html';
+$url = 'article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html';
 if (isset($current_commission) && $current_commission) {
-    $url .= '?commission='.$current_commission;
+    $url .= '?commission=' . $current_commission;
 }
 
 // check image
-if (is_file(__DIR__.'/../../public/ftp/articles/'.(int) $article['id_article'].'/min-figure.jpg')) {
-    $img = '/ftp/articles/'.(int) $article['id_article'].'/min-figure.jpg';
+if (is_file(__DIR__ . '/../../public/ftp/articles/' . (int) $article['id_article'] . '/min-figure.jpg')) {
+    $img = '/ftp/articles/' . (int) $article['id_article'] . '/min-figure.jpg';
 } else {
     $img = '/ftp/articles/0/min-figure.jpg';
 }

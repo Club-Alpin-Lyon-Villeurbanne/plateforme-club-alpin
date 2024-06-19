@@ -14,7 +14,6 @@ class ExpenseReportGet extends AbstractController
         private ExpenseReportSerializer $expenseReportSerializer,
         private UserRights $userRights
     ) {
-        
     }
 
     public function __invoke(ExpenseReport $expenseReport): JsonResponse
@@ -25,7 +24,7 @@ class ExpenseReportGet extends AbstractController
                 'message' => 'You are not allowed to view this expense report',
             ], 403);
         }
-        
+
         $expenseReportSerialized = $this->expenseReportSerializer->serialize($expenseReport);
 
         return new JsonResponse([

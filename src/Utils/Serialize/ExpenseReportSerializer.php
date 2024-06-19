@@ -4,10 +4,12 @@ namespace App\Utils\Serialize;
 
 use App\Entity\ExpenseField;
 use App\Entity\ExpenseReport;
+use App\Repository\EvtRepository;
 use App\Repository\ExpenseFieldRepository;
 use App\Repository\ExpenseGroupRepository;
 use App\Repository\ExpenseReportRepository;
 use App\Repository\ExpenseRepository;
+use App\Repository\UserRepository;
 
 class ExpenseReportSerializer
 {
@@ -16,6 +18,8 @@ class ExpenseReportSerializer
         private ExpenseGroupRepository $expenseGroupRepository,
         private ExpenseFieldRepository $expenseFieldRepository,
         private ExpenseRepository $expenseRepository,
+        private UserRepository $userRepository,
+        private EvtRepository $evtRepository,
     ) {
     }
 
@@ -29,7 +33,7 @@ class ExpenseReportSerializer
             foreach ($expenseGroup->getExpenseTypes() as $expenseType) {
                 $expenses = $this->expenseRepository->findBy([
                     'expenseReport' => $expenseReport,
-                    'expenseType' => $expenseType
+                    'expenseType' => $expenseType,
                 ]);
 
                 foreach ($expenses as $expense) {
@@ -42,7 +46,7 @@ class ExpenseReportSerializer
                 }
 
                 // si le groupe est de type "unique", récupérer le type de dépense sélectionné
-                if ($expenseGroup->getType() === 'unique' && $expenses) {
+                if ('unique' === $expenseGroup->getType() && $expenses) {
                     $expenseGroupsArray[$expenseGroup->getSlug()]['selectedType'] = $expenseType->getSlug();
                 }
             }
@@ -53,8 +57,8 @@ class ExpenseReportSerializer
             'status' => $expenseReport->getStatus(),
             'statusComment' => $expenseReport->getStatusComment(),
             'refundRequired' => $expenseReport->isRefundRequired(),
-            'user' => $expenseReport->getUser()->getId(),
-            'event' => $expenseReport->getEvent()->getId(),
+            'user' => $expenseReport->getUser(),
+            'event' => $expenseReport->getEvent(),
             'createdAt' => $expenseReport->getCreatedAt()->format('Y-m-d H:i:s'),
             'updatedAt' => $expenseReport->getUpdatedAt()->format('Y-m-d H:i:s'),
             'expenseGroups' => $expenseGroupsArray,
@@ -63,7 +67,8 @@ class ExpenseReportSerializer
 
     /**
      * Used to create an ExpenseReport from an array of data (e.g. from a JSON payload)
-     * (do not use this method to handle an existing ExpenseReport) 
+     * (do not use this method to handle an existing ExpenseReport).
+     *
      * @param array<string, mixed> $data
      */
     public function unserialize(array $data): ExpenseReport
@@ -81,13 +86,14 @@ class ExpenseReportSerializer
                     // todo add justification document
                     $expenseField->setFieldType($dataField['fieldTypeId']);
                     $expenseField->setValue($dataField['value']);
-    
+
                     $fields[] = $expenseField;
                 }
             }
         }
-        
+
         $expenseReport->setStatus($data['status']);
+
         return $expenseReport;
     }
 }

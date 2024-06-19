@@ -21,11 +21,11 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
         for ($i = 0; $i < count($tab); ++$i) {
             $page = $tab[$i];
             if ($page['parent_page'] == $parent) {
-                echo '<option value="'.$page['id_page'].'" '.($_POST['parent_page'] == $page['id_page'] ? 'selected="selected"' : '').'>';
+                echo '<option value="' . $page['id_page'] . '" ' . ($_POST['parent_page'] == $page['id_page'] ? 'selected="selected"' : '') . '>';
                 for ($j = 0; $j < $level; ++$j) {
                     echo '&nbsp; &nbsp; ';
                 }
-                echo '→ '.$page['default_name_page'].' ['.$page['code_page'].']
+                echo '→ ' . $page['default_name_page'] . ' [' . $page['code_page'] . ']
 				</option>';
                 if ($MAX_ADMINS_SUB_LEVELS > $level + 1) {
                     listPages($tab, $page['id_page'], $level + 1);
@@ -42,10 +42,10 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 		<?php
         // TABLEAU
         if (isset($_POST['operation']) && 'page_add' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-            echo '<div class="erreur">Erreur : <ul><li>- '.implode('</li><li>- ', $errTab).'</li></ul></div>';
+            echo '<div class="erreur">Erreur : <ul><li>- ' . implode('</li><li>- ', $errTab) . '</li></ul></div>';
         }
     if (isset($_POST['operation']) && 'page_add' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'. Vous pouvez actualiser cette page</p>';
+        echo '<p class="info">Mise à jour effectuée à ' . date('H:i:s', time()) . '. Vous pouvez actualiser cette page</p>';
         echo '<script stype="text/javascript">parent.location.href="/admin-pages.html?showmsg=page_add";</script>';
     } ?>
 

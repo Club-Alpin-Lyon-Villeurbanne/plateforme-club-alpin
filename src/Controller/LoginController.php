@@ -10,14 +10,15 @@ use App\Mailer\Mailer;
 use App\Repository\UserRepository;
 use App\Security\RecaptchaValidator;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Http\LoginLink\LoginLinkHandlerInterface;
 
@@ -48,9 +49,8 @@ class LoginController extends AbstractController
         ]);
     }
 
-    
     #[Route(name: 'session_password_lost', path: '/password-lost', methods: ['GET', 'POST'])]
-    #[Template]
+    #[Template('login/password_lost.html.twig')]
     public function passwordLostAction(Request $request, UserRepository $userRepository, LoginLinkHandlerInterface $loginLinkHandler, Mailer $mailer, RecaptchaValidator $recaptchaValidator)
     {
         if ($this->isGranted('ROLE_USER')) {
@@ -99,13 +99,12 @@ class LoginController extends AbstractController
      * Password is changed without validating the existing password (for instance the magic link).
      * If the user is logged in using the remember me token, they dont pass the IS_AUTHENTICATED_FULLY
      * Therefore, this should be used only after magic link authentication.
-     *
-     *
-     *
      */
     #[Route(name: 'account_set_password', path: '/password', methods: ['GET', 'POST'])]
-    #[Security("is_granted('IS_AUTHENTICATED_FULLY') and is_granted('ROLE_USER')")]
-    #[Template]
+    #[IsGranted(attribute: new Expression(
+        'is_granted("IS_AUTHENTICATED_FULLY") and is_granted("ROLE_USER")'
+    ))]
+    #[Template('login/set_password.html.twig')]
     public function setPasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer, EntityManagerInterface $em)
     {
         /** @var User $user */
@@ -138,13 +137,10 @@ class LoginController extends AbstractController
     /**
      * Password is changed with validating the existing password.
      * It requires any user authentication.
-     *
-     *
-     *
      */
     #[Route(name: 'account_change_password', path: '/change-password', methods: ['GET', 'POST'])]
-    #[Security("is_granted('ROLE_USER')")]
-    #[Template]
+    #[IsGranted('ROLE_USER')]
+    #[Template('login/change_password.html.twig')]
     public function changePasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer, EntityManagerInterface $em)
     {
         $url = $request->getSession()->get('user_password.target', $this->generateUrl('legacy_root'));
@@ -174,14 +170,14 @@ class LoginController extends AbstractController
 
     private function isValidRedirect($redirection)
     {
-        return 0 === strpos($redirection, '/')
+        return str_starts_with($redirection, '/')
             && !\in_array($redirection, [
                 $this->generateUrl('legacy_root'),
                 $this->generateUrl('login'),
                 $this->generateUrl('session_logout'),
                 $this->generateUrl('session_password_lost'),
-//                $this->generateUrl('2fa_login'),
-//                $this->generateUrl('2fa_login_check'),
+                //                $this->generateUrl('2fa_login'),
+                //                $this->generateUrl('2fa_login_check'),
             ], true);
     }
 }

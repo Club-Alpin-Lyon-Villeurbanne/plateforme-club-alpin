@@ -27,10 +27,10 @@
 				<?php
                 // MESSAGES A LA SOUMISSION
                 if (isset($_POST['operation']) && 'fichier_adherents_maj' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                    echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                    echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                 }
             if (isset($_POST['operation']) && 'fichier_adherents_maj' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'.</p>';
+                echo '<p class="info">Mise à jour effectuée à ' . date('H:i:s', time()) . '.</p>';
             } ?>
 
 				<input type="file" name="file[]" multiple />
@@ -43,7 +43,7 @@
 			<hr />
 			<?php
             // $fileTab=array('ftp/fichiers-proteges/7300.txt','ftp/fichiers-proteges/7380.txt');
-            $fileTab = [__DIR__.'/../../public/ftp/fichiers-proteges/74800.txt'];
+            $fileTab = [__DIR__ . '/../../public/ftp/fichiers-proteges/74800.txt'];
             foreach ($fileTab as $file) {
                 ?>
 				<h2>Fichier <?php echo strtolower(substr(strrchr($file, '/'), 1)); ?></h2>
@@ -65,7 +65,7 @@
 					<p>
 						<img src="/img/base/fichier.png" alt="" title="" style="float:left; padding:0 15px 0 0" /> Dernière modification le
 						<?php
-                        echo '<b>'.jour(date('N', $tsp)).' '.date('d', $tsp).' '.mois(date('m', $tsp)).' '.date('Y', $tsp).'</b> à '.date('H:i', $tsp); ?>
+                        echo '<b>' . jour(date('N', $tsp)) . ' ' . date('d', $tsp) . ' ' . mois(date('m', $tsp)) . ' ' . date('Y', $tsp) . '</b> à ' . date('H:i', $tsp); ?>
 						<br />
 						<b><?php echo $linecount; ?></b> adhérents (lignes).
 					</p>

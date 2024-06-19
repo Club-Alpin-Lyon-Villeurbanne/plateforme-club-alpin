@@ -3,7 +3,7 @@
 <?php
 // MESSAGES
 if (isset($errTab) && count($errTab) > 0) {
-    echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+    echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
 } else {
     ?>
 	<h3>Votre compte est validé</h3>

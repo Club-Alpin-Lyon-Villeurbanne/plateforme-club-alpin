@@ -60,7 +60,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $lang_content_inline = 'fr';
     $contenu_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($titreTab[0]));
     $req = "INSERT INTO `caf_content_inline` (`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
-                                        VALUES ('2', 'meta-title-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
+                                        VALUES ('2', 'meta-title-$code_page', '$lang_content_inline', '$contenu_content_inline', '" . time() . "', '');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur BDD titles';
     }
@@ -70,7 +70,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && $menu_page) {
     $lang_content_inline = 'fr';
     $contenu_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString(stripslashes($titreTab[0]));
     $req = "INSERT INTO `caf_content_inline` (`groupe_content_inline` ,`code_content_inline` ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
-                                        VALUES ('4', 'mainmenu-$code_page', '$lang_content_inline', '$contenu_content_inline', '".time()."', '');";
+                                        VALUES ('4', 'mainmenu-$code_page', '$lang_content_inline', '$contenu_content_inline', '" . time() . "', '');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur BDD titles';
     }

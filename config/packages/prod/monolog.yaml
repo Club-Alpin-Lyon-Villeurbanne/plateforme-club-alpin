@@ -14,7 +14,7 @@ monolog:
 
         nested:
             type:    group
-            members: [ file, sentry ]
+            members: [ file ]
             process_psr_3_messages: true
         file:
             type:  stream
@@ -22,18 +22,17 @@ monolog:
             level: debug
             bubble: false # Do not stop propagation of the record for next handler.
             formatter: app.monolog.formatter.json
-        # Sentry handler requires fingers-crossed handle before to group messages into a single event.
         sentry:
-            type: service
-            id: App\Bridge\Monolog\Handler\SentryHandler
-        console:
-            type: service
-            id: App\Bridge\Monolog\Handler\VerboseConsoleHandler
-            process_psr_3_messages: true
-            channels: ["!event", "!doctrine"]
+            type: sentry
+            level: !php/const Monolog\Logger::ERROR
+            hub_id: Sentry\State\HubInterface
+            fill_extra_context: true
 
 services:
     app.monolog.formatter.json:
         class: Monolog\Formatter\JsonFormatter
         calls:
             - [includeStacktraces]
+
+    Monolog\Processor\PsrLogMessageProcessor:
+        tags: { name: monolog.processor, handler: sentry }

@@ -4,7 +4,7 @@ if (user()) {
 	<div class="main-type">
 		<h1>Profil : mes articles</h1>
 
-		<?php inclure('profil-sorties-'.$p3, 'vide'); ?>
+		<?php inclure('profil-sorties-' . $p3, 'vide'); ?>
 		<br />
 
 		<?php
@@ -12,24 +12,24 @@ if (user()) {
 
         // MESSAGES d'arreurs
         if (isset($_POST['operation']) && 'article_depublier' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-            echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+            echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
         }
     if (isset($_POST['operation']) && 'article_depublier' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<p class="info">Article dépublié à '.date('H:i:s', time()).'.</p>';
+        echo '<p class="info">Article dépublié à ' . date('H:i:s', time()) . '.</p>';
     }
 
     if (isset($_POST['operation']) && 'article_del' == $_POST['operation'] && count($errTab)) {
-        echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+        echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
     }
     if (isset($_POST['operation']) && 'article_del' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<p class="info">Article supprimé à '.date('H:i:s', time()).'.</p>';
+        echo '<p class="info">Article supprimé à ' . date('H:i:s', time()) . '.</p>';
     }
 
     // Rien ?
     if (!count($articleTab)) {
         echo '<p class="info">Vous n\'avez pas encore d\'articles à afficher ici.</p>';
     } else {
-        echo '<p class="mini">'.$total.' article'.($total > 1 ? 's' : '').'</p>';
+        echo '<p class="mini">' . $total . ' article' . ($total > 1 ? 's' : '') . '</p>';
     }
 
     // Si trouvé
@@ -40,8 +40,8 @@ if (user()) {
             if ($i) {
                 echo '<br /><br />';
             }
-            require __DIR__.'/../includes/article-tools.php';
-            require __DIR__.'/../includes/article-lien.php';
+            require __DIR__ . '/../includes/article-tools.php';
+            require __DIR__ . '/../includes/article-lien.php';
         }
     }
 
@@ -49,7 +49,7 @@ if (user()) {
     if ($total > $limite) {
         echo '<hr /><nav class="pageSelect">';
         for ($i = 1; $i <= $nbrPages; ++$i) {
-            echo '<a href="'.$p1.'/'.$p2.'.html?pagenum='.$i.'" title="" class="'.($pagenum == $i ? 'up' : '').'">p'.$i.'</a> '.($i < $nbrPages ? '  ' : '');
+            echo '<a href="' . $p1 . '/' . $p2 . '.html?pagenum=' . $i . '" title="" class="' . ($pagenum == $i ? 'up' : '') . '">p' . $i . '</a> ' . ($i < $nbrPages ? '  ' : '');
         }
         echo '</nav>';
     } ?>

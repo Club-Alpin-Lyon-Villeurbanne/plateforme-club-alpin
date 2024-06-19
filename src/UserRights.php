@@ -27,7 +27,7 @@ class UserRights implements ResetInterface
 
     public function allowedOnCommission(string $code, Commission $commission): bool
     {
-        return $this->allowed($code, 'commission:'.$commission->getCode());
+        return $this->allowed($code, 'commission:' . $commission->getCode());
     }
 
     public function reset(): void
@@ -113,10 +113,10 @@ class UserRights implements ResetInterface
 
         if (!$user instanceof User || $user->getDoitRenouveler()) {
             $sql = 'SELECT DISTINCT code_userright '
-                .'  FROM caf_userright, caf_usertype_attr, caf_usertype ' // des droits au type
-                ."  WHERE code_usertype = 'visiteur' " // type visiteur
-                .'      AND id_usertype = type_usertype_attr ' // du type visiteur à ses attributions
-                .'      AND id_userright = right_usertype_attr ' // de ses attributions a ses droits
+                . '  FROM caf_userright, caf_usertype_attr, caf_usertype ' // des droits au type
+                . "  WHERE code_usertype = 'visiteur' " // type visiteur
+                . '      AND id_usertype = type_usertype_attr ' // du type visiteur à ses attributions
+                . '      AND id_userright = right_usertype_attr ' // de ses attributions a ses droits
             ;
 
             $result = $this->connection->prepare($sql)->executeQuery()->fetchAllAssociative();
@@ -139,12 +139,12 @@ class UserRights implements ResetInterface
         $userAllowedTo = ['default' => '1']; // minimum une valeur
 
         $sql = 'SELECT DISTINCT code_userright, params_user_attr, limited_to_comm_usertype ' // on veut le code, et les paramètres de chaque droit, et savoir si ce droit est limité à une commission ou non
-            .'  FROM caf_userright, caf_usertype_attr, caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
-            .'  WHERE user_user_attr = :user ' // de user à user_attr
-            .'     AND usertype_user_attr = id_usertype ' // de user_attr à usertype
-            .'     AND id_usertype = type_usertype_attr ' // de usertype à usertype_attr
-            .'     AND right_usertype_attr = id_userright ' // de usertype_attr à userright
-            .' ORDER BY params_user_attr ASC, code_userright ASC, limited_to_comm_usertype ASC' // order by params permet d'optimiser la taille de la var globale. Si, si promis (14 lignes plus loin) !
+            . '  FROM caf_userright, caf_usertype_attr, caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
+            . '  WHERE user_user_attr = :user ' // de user à user_attr
+            . '     AND usertype_user_attr = id_usertype ' // de user_attr à usertype
+            . '     AND id_usertype = type_usertype_attr ' // de usertype à usertype_attr
+            . '     AND right_usertype_attr = id_userright ' // de usertype_attr à userright
+            . ' ORDER BY params_user_attr ASC, code_userright ASC, limited_to_comm_usertype ASC' // order by params permet d'optimiser la taille de la var globale. Si, si promis (14 lignes plus loin) !
         ;
 
         $statement = $this->connection->prepare($sql);
@@ -168,7 +168,7 @@ class UserRights implements ResetInterface
                 $userAllowedTo[$row['code_userright']] = $val;
             } elseif (!isset($userAllowedTo[$row['code_userright']]) || 'true' !== $userAllowedTo[$row['code_userright']]) {
                 // écriture, ou concaténation des paramètres existant
-                $userAllowedTo[$row['code_userright']] = (isset($userAllowedTo[$row['code_userright']]) ? $userAllowedTo[$row['code_userright']].'|' : '').$val;
+                $userAllowedTo[$row['code_userright']] = (isset($userAllowedTo[$row['code_userright']]) ? $userAllowedTo[$row['code_userright']] . '|' : '') . $val;
             }
 
             if ($isAdmin) {
@@ -179,11 +179,11 @@ class UserRights implements ResetInterface
         // Tous les utilisateurs connectés non salariés ont le statut "adhérent"
         if (!$user->hasAttribute(UserAttr::SALARIE)) {
             $sql = 'SELECT DISTINCT code_userright, limited_to_comm_usertype '
-                .'FROM caf_userright, caf_usertype_attr, caf_usertype '
-                ."WHERE code_usertype LIKE 'adherent' " // usertype adherent
-                .'AND id_usertype=type_usertype_attr '
-                .'AND right_usertype_attr=id_userright '
-                .'ORDER BY  code_userright ASC, limited_to_comm_usertype ASC'
+                . 'FROM caf_userright, caf_usertype_attr, caf_usertype '
+                . "WHERE code_usertype LIKE 'adherent' " // usertype adherent
+                . 'AND id_usertype=type_usertype_attr '
+                . 'AND right_usertype_attr=id_userright '
+                . 'ORDER BY  code_userright ASC, limited_to_comm_usertype ASC'
             ;
 
             $result = $this->connection->prepare($sql)->executeQuery()->fetchAllAssociative();

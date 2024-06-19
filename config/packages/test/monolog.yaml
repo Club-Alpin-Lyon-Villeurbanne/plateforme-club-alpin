@@ -1,6 +1,6 @@
 monolog:
     handlers:
-        # Finger cross + buffer to output in File + Sentry
+        # Finger cross + buffer to output in File
         main:
             # Fingers crossed will hold logs until the "action_level" is reached.
             # When this action level occurs, logs are forwarded to file + test handlers
@@ -10,7 +10,6 @@ monolog:
             stop_buffering: false # Re-buffer after the action level was reached.
             passthru_level: error # When flushing, discard logs below this level.
             buffer_size:  50 # How many messages should be saved? Prevent memory leaks
-            activation_strategy: App\Bridge\Monolog\ActivationStrategy\HttpKernelExceptionActivationStrategy
             channels: ["!event"]
 
         nested:

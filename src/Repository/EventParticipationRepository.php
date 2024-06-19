@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
-use App\Entity\Evt;
 use App\Entity\EventParticipation;
+use App\Entity\Evt;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -58,12 +58,11 @@ class EventParticipationRepository extends ServiceEntityRepository
      * Retourne la liste des participations triée par rôles.
      *
      * @param Evt $event
-     *   La sortie.
-     * @param $roles
-     *   Les rôles à filtrer.
-     * @param $status
-     *   Les status à filtrer.
-     * @return mixed
+     *                    La sortie
+     * @param     $roles
+     *                   Les rôles à filtrer
+     * @param     $status
+     *                   Les status à filtrer
      */
     public function getSortedParticipations(Evt $event, $roles = null, $status = EventParticipation::STATUS_VALIDE): mixed
     {

@@ -13,7 +13,6 @@ use App\Repository\ExpenseTypeRepository;
 use App\Utils\Enums\ExpenseReportEnum;
 use App\Utils\Error\ExpenseReportFormError;
 use App\Utils\FileUploadHelper;
-use App\Utils\Json;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,7 +22,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ExpenseReportController extends AbstractController
 {
-
     #[Route('/expense-report', name: 'app_expense_report_post', methods: ['POST'])]
     public function post(
         Request $request,
@@ -33,9 +31,7 @@ class ExpenseReportController extends AbstractController
         EvtRepository $evtRepository,
         ExpenseTypeExpenseFieldTypeRepository $expenseTypeExpenseFieldTypeRepository,
         EntityManagerInterface $entityManager
-    ): JsonResponse
-    {
-
+    ): JsonResponse {
         // TODO: vérifier ACL
 
         $data = json_decode($request->getContent(), true);
@@ -57,16 +53,17 @@ class ExpenseReportController extends AbstractController
         }
         $expenseReport->setStatus($data['status']);
         $expenseReport->setUser($this->getUser());
-        $expenseReport->setRefundRequired(!!$data['refundRequired']);
+        $expenseReport->setRefundRequired((bool) $data['refundRequired']);
         $expenseReport->setEvent($evtRepository->find($data['eventId']));
         $entityManager->persist($expenseReport);
 
+        $isFormPristine = true;
         // pour chaque groupe de dépense
         foreach ($data as $dataExpenseGroup) {
-            if (!is_array($dataExpenseGroup)) {
+            if (!\is_array($dataExpenseGroup)) {
                 continue;
             }
-            
+
             // pour chaque dépense dans le groupe
             foreach ($dataExpenseGroup['expenseTypes'] as $dataExpenseType) {
                 // ne pas traiter si les champs sont vides
@@ -81,10 +78,12 @@ class ExpenseReportController extends AbstractController
                 if (!$filled) {
                     continue;
                 }
-                
+
+                $isFormPristine = false;
+
                 // si le groupe est de type "unique", ne pas traiter les types non selectionnés
-                if ($dataExpenseGroup['type'] === 'unique' && $dataExpenseType['slug'] !== $dataExpenseGroup['selectedType']) {
-                    continue;   
+                if ('unique' === $dataExpenseGroup['type'] && $dataExpenseType['slug'] !== $dataExpenseGroup['selectedType']) {
+                    continue;
                 }
 
                 // créer la dépense
@@ -96,23 +95,21 @@ class ExpenseReportController extends AbstractController
 
                 // pour chaque champ dans la dépense
                 foreach ($dataExpenseType['fields'] as $dataField) {
-
-
                     // créer le champ
                     $expenseField = new ExpenseField();
                     $fieldType = $expenseFieldTypeRepository->find($dataField['fieldTypeId']);
                     $expenseField->setFieldType($fieldType);
                     $expenseField->setExpense($expense);
-                    
+
                     // check if this field needs a justification document in this expense type
                     $relation = $expenseTypeExpenseFieldTypeRepository->findOneBy([
                         'expenseType' => $expenseType,
-                        'expenseFieldType' => $fieldType
+                        'expenseFieldType' => $fieldType,
                     ]);
 
                     // gérer les champs obligatoires si pas DRAFT
-                    if ($data['status'] !== ExpenseReportEnum::STATUS_DRAFT 
-                        && $relation->isMandatory() 
+                    if (ExpenseReportEnum::STATUS_DRAFT !== $data['status']
+                        && $relation->isMandatory()
                         && empty($dataField['value'])
                     ) {
                         $errors[] = new ExpenseReportFormError(
@@ -125,18 +122,18 @@ class ExpenseReportController extends AbstractController
                         $expenseField->setValue($dataField['value']);
                     }
 
-                    if (!empty($dataField['value']) 
+                    if (!empty($dataField['value'])
                     && $relation->getNeedsJustification()
                     ) {
                         // gérer la présence des justificatifs si pas DRAFT
-                        if (empty($dataField['justificationFileUrl']) && $data['status'] !== ExpenseReportEnum::STATUS_DRAFT) {
+                        if (empty($dataField['justificationFileUrl']) && ExpenseReportEnum::STATUS_DRAFT !== $data['status']) {
                             $errors[] = new ExpenseReportFormError(
                                 'Un justificatif est obligatoire pour ce champ !',
                                 $fieldType->getSlug(),
                                 $expenseType->getId(),
                                 $dataExpenseGroup['slug']
                             );
-                        } else if (!empty($dataField['justificationFileUrl'])) {
+                        } elseif (!empty($dataField['justificationFileUrl'])) {
                             $expenseField->setJustificationDocument($dataField['justificationFileUrl']);
                         }
                     }
@@ -145,6 +142,12 @@ class ExpenseReportController extends AbstractController
                     }
                 }
             }
+        }
+
+        if ($isFormPristine) {
+            $errors[] = new ExpenseReportFormError(
+                'Veuillez remplir au moins un champ pour soumettre la note de frais.'
+            );
         }
 
         if ($errors) {
@@ -156,6 +159,7 @@ class ExpenseReportController extends AbstractController
 
         $entityManager->flush();
         $data['success'] = true;
+
         return new JsonResponse($data);
     }
 
@@ -169,15 +173,14 @@ class ExpenseReportController extends AbstractController
             ], 400);
         }
 
-        
         $file = $request->files->get('justification_document');
-        
+
         if (!$file) {
             throw new BadRequestHttpException('No file uploaded');
         }
 
         $extension = $file->getClientOriginalExtension();
-        $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $filename = pathinfo($file->getClientOriginalName(), \PATHINFO_FILENAME);
         // rebuild filename with hashed timestamp and extension
         $filename = $filename . '_' . substr(md5(time()), 0, 6) . '.' . $extension;
 
@@ -194,6 +197,5 @@ class ExpenseReportController extends AbstractController
             'success' => true,
             'fileUrl' => FileUploadHelper::getUserUploadUrl($this->getUser(), 'expense-reports-justification') . '/' . $filename,
         ]);
-
     }
 }

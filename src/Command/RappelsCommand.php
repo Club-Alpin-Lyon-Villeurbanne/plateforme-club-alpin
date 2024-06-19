@@ -10,10 +10,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'rappels')]
 class RappelsCommand extends Command
 {
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        require __DIR__.'/../../legacy/app/cron/cron_rappel.php';
+        require __DIR__ . '/../../legacy/app/cron/cron_rappel.php';
 
         return Command::SUCCESS;
     }

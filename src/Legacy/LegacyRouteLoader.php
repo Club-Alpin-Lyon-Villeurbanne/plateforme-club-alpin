@@ -9,7 +9,7 @@ use Symfony\Component\Routing\RouteCollection;
 
 class LegacyRouteLoader extends Loader
 {
-    public function supports($resource, string $type = null): bool
+    public function supports($resource, ?string $type = null): bool
     {
         return 'legacy' === $type;
     }
@@ -27,22 +27,19 @@ class LegacyRouteLoader extends Loader
             ->notPath('app/versions')
             ->notPath('config')
             ->notPath('doc')
-            ->notPath('htmLawed')
             ->notPath('scripts')
             ->notPath('app/redims')
             ->notPath('app/sessions')
             ->notPath('app/includes')
             ->notPath('app/fonctions')
             ->notPath('app/params')
-            ->notPath('app/custom_image')
             ->notPath('app/usercookies')
             ->notPath('app/langs')
             ->notPath('app/pages')
-            ->notPath('dev.php')
-        ;
+            ->notPath('dev.php');
 
         /** @var SplFileInfo $legacyScriptFile */
-        foreach ($finder->in(__DIR__.'/../../legacy') as $legacyScriptFile) {
+        foreach ($finder->in(__DIR__ . '/../../legacy') as $legacyScriptFile) {
             if ('index.php' === $legacyScriptFile->getRelativePathname()) {
                 continue;
             }
@@ -52,8 +49,8 @@ class LegacyRouteLoader extends Loader
 
             $collection->add($routeName, new Route($legacyScriptFile->getRelativePathname(), [
                 '_controller' => 'App\Controller\LegacyController::loadLegacyScript',
-                'requestPath' => '/'.$legacyScriptFile->getRelativePathname(),
-                'legacyScript' => '/legacy/'.$legacyScriptFile->getRelativePathname(),
+                'requestPath' => '/' . $legacyScriptFile->getRelativePathname(),
+                'legacyScript' => '/legacy/' . $legacyScriptFile->getRelativePathname(),
             ]), -10);
         }
 

@@ -19,6 +19,17 @@ parameters:
   legacy_env_MAX_IMAGE_SIZE: "%env(int:MAX_IMAGE_SIZE)%"
   legacy_env_DISPLAY_BANNER: "%env(bool:DISPLAY_BANNER)%"
   legacy_ftp_path: "%kernel.project_dir%/public/ftp/"
+  legacy_project_dir: "%kernel.project_dir%"
+  legacy_is_on_clever_cloud: "%env(defined:CC_APP_NAME)%"
+  #configuration extraite de: legacy/config/config.php
+  legacy_env_SENTRY_DSN: "%env(bool:SENTRY_DSN)%"
+  legacy_env_DB_HOST: "%env(string:DB_HOST)%"
+  legacy_env_DB_PORT: "%env(int:DB_PORT)%"
+  legacy_env_DB_USER: "%env(string:DB_USER)%"
+  legacy_env_DB_PASSWORD: "%env(string:DB_PASSWORD)%"
+  legacy_env_DB_NAME: "%env(string:DB_NAME)%"
+  router.request_context.scheme: "%env(string:ROUTER_REQUEST_CONTEXT_SCHEME)%"
+  asset.request_context.secure: "%env(bool:ASSET_REQUEST_CONTEXT_SECURE)%"
 
 services:
   # default configuration for services in *this* file
@@ -30,11 +41,7 @@ services:
       $kernelCacheDir: "%kernel.cache_dir%"
       $kernelEnvironment: "%kernel.environment%"
       $recaptchaSecret: "%env(RECAPTCHA_SECRET)%"
-
-  _instanceof:
-    App\Bridge\Monolog\SentryHandlerLogFilter\LogFilterInterface:
-      tags:
-        - { name: sentry_handler.log_filter }
+      $baseUrl: "%env(BACKEND_URL)%"
 
   # allows access to service container as an injected dependency
   Symfony\Component\DependencyInjection\ContainerInterface: "@service_container"
@@ -55,15 +62,19 @@ services:
   App\Twig\VueExtension:
     tags: ["twig.extension"]
 
+  App\Twig\JwtExtension:
+    public: true
+    tags:
+        - { name: 'twig.extension' }
+
   App\Twig\JavascriptGlobalsExtension:
+    tags: ["twig.extension"]
+
+  App\Twig\ExpenseAuthorizationExtension:
     tags: ["twig.extension"]
 
   App\Legacy\LegacyRouteLoader:
     tags: ["routing.loader"]
-
-  App\Bridge\Monolog\Handler\SentryHandler:
-    arguments:
-      $logFilters: !tagged_iterator sentry_handler.log_filter
 
   Egulias\EmailValidator\EmailValidator: ~
 
@@ -90,12 +101,16 @@ services:
 
   App\EventListener\ForceHttpsListener:
     arguments:
-      $routerContextScheme: "%env(ROUTER_CONTEXT_SCHEME)%"
-      $routerContextHost: "%env(ROUTER_CONTEXT_HOST)%"
+      $appEnv: "%kernel.environment%"
+      $appName: "%env(CC_APP_NAME)"
 
   App\Bridge\Twig\TwigExtension:
     arguments:
       $maxTimestampForLegalValidation: "%env(MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%"
+
+  App\Security\ExpenseAuthorization:
+    arguments:
+      $gistUrl: 'https://api.github.com/gists/afd2610540d579186a94af4cf5d98b5f'
 
   Symfony\Component\String\Slugger\SluggerInterface:
     class: Symfony\Component\String\Slugger\AsciiSlugger
@@ -157,3 +172,11 @@ services:
   legacy_content_html:
     public: true
     alias: App\Legacy\ContentHtml
+
+  legacy_user_repository:
+    public: true
+    alias: App\Repository\UserRepository
+
+  legacy_member_merger:
+    public: true
+    alias: App\Utils\MemberMerger

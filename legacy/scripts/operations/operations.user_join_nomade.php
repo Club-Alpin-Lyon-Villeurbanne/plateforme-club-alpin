@@ -12,6 +12,7 @@ $firstname_user = stripslashes($_POST['firstname_user']);
 $lastname_user = stripslashes($_POST['lastname_user']);
 $tel_user = stripslashes($_POST['tel_user']);
 $tel2_user = stripslashes($_POST['tel2_user']);
+$email_user = stripslashes($_POST['email_user']);
 $role_evt_join = stripslashes($_POST['role_evt_join']);
 
 // suis-je encadrant sur cette sortie ?
@@ -19,7 +20,7 @@ $suis_encadrant = false;
 $req = "SELECT COUNT(id_evt_join)
 FROM caf_evt_join
 WHERE evt_evt_join=$id_evt
-AND user_evt_join = ".getUser()->getId()."
+AND user_evt_join = " . getUser()->getId() . "
 AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant')
 LIMIT 1";
 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -30,7 +31,7 @@ if ($row[0] > 0) {
 
 // suis-je l'auteur de cette sortie ?
 $suis_auteur = false;
-$req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND user_evt = ".getUser()->getId().' LIMIT 1';
+$req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND user_evt = " . getUser()->getId() . ' LIMIT 1';
 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $row = $result->fetch_row();
 if ($row[0] > 0) {
@@ -58,6 +59,18 @@ if (!$firstname_user) {
 if (!$lastname_user) {
     $errTab[] = 'Merci de renseigner le champ nom';
 }
+if ($email_user && !filter_var($email_user, \FILTER_VALIDATE_EMAIL)) {
+    $errTab[] = "L'adresse email est invalide";
+} else {
+    $reqmail = "SELECT COUNT(*)
+    FROM caf_user
+    WHERE email_user='$email_user'";
+    $resultmail = LegacyContainer::get('legacy_mysqli_handler')->query($reqmail);
+    $rowmail = $resultmail->fetch_row();
+    if ($rowmail[0] > 0) {
+        $errTab[] = "L'adresse email existe déja sur le site";
+    }
+}
 if (!$role_evt_join) {
     $errTab[] = 'Merci de renseigner le champ <i>rôle</i>';
 }
@@ -73,9 +86,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $nickname_user = NicknameGenerator::generateNickname($firstname_user, $lastname_user);
         $tel_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($tel_user);
         $tel2_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($tel2_user);
+        $email_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($email_user);
 
-        $req = "INSERT INTO caf_user(mdp_user, cafnum_user, firstname_user, lastname_user, nickname_user, created_user, birthday_user, tel_user, tel2_user, adresse_user, cp_user, ville_user, pays_user, civ_user, moreinfo_user, auth_contact_user, valid_user ,cookietoken_user, manuel_user, nomade_user, nomade_parent_user, cafnum_parent_user, doit_renouveler_user, alerte_renouveler_user)
-                        VALUES ('',  'N_$cafnum_user',  '$firstname_user',  '$lastname_user',  '$nickname_user',  '".time()."',  NULL,  '$tel_user',  '$tel2_user',  '',  '',  '',  '',  '$civ_user',  '',  'none',  '1',  '',  '0',  '1',  '".getUser()->getId()."', null, 0, 0)";
+        $req = "INSERT INTO caf_user(email_user, mdp_user, cafnum_user, firstname_user, lastname_user, nickname_user, created_user, birthday_user, tel_user, tel2_user, adresse_user, cp_user, ville_user, pays_user, civ_user, moreinfo_user, auth_contact_user, valid_user ,cookietoken_user, manuel_user, nomade_user, nomade_parent_user, cafnum_parent_user, doit_renouveler_user, alerte_renouveler_user)
+                        VALUES (" . ($email_user ? "'$email_user'" : "NULL") . ", '',  'N_$cafnum_user',  '$firstname_user',  '$lastname_user',  '$nickname_user',  '" . time() . "',  NULL,  '$tel_user',  '$tel2_user',  '',  '',  '',  '',  '$civ_user',  '',  'none',  '1',  '',  '0',  '1',  '" . getUser()->getId() . "', null, 0, 0)";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         } else {
@@ -104,7 +118,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
 
             $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_covoiturage, affiliant_user_join)
-                                    VALUES($status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().', 		'.time().', 			'.getUser()->getId().",
+                                    VALUES($status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', " . time() . ', 		' . time() . ', 			' . getUser()->getId() . ",
                         $is_covoiturage, null);";
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';

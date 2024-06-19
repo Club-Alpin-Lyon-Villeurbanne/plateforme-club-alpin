@@ -34,12 +34,12 @@ class EvtRepository extends ServiceEntityRepository
         $sqlPart = [];
 
         foreach ($commissions as $key => $commission) {
-            $params['com_'.$key] = $commission;
-            $sqlPart[] = ' c.code_commission = :com_'.$key;
+            $params['com_' . $key] = $commission;
+            $sqlPart[] = ' c.code_commission = :com_' . $key;
         }
 
         if (!empty($sqlPart)) {
-            $sql .= ' AND ('.implode(' OR ', $sqlPart).')';
+            $sql .= ' AND (' . implode(' OR ', $sqlPart) . ')';
         }
 
         return $this->_em->getConnection()->fetchOne($sql, $params);
@@ -65,14 +65,15 @@ class EvtRepository extends ServiceEntityRepository
         $options = array_merge([
             'limit' => $this->defaultLimit,
         ], $options);
+        $date = new \DateTime('today');
 
         $qb = $this->createQueryBuilder('e')
             ->select('e, c')
             ->leftJoin('e.commission', 'c')
             ->where('e.status = :status')
             ->setParameter('status', Evt::STATUS_LEGAL_VALIDE)
-            ->andWhere('e.tsp > :date')
-            ->setParameter('date', time())
+            ->andWhere('e.tsp >= :date')
+            ->setParameter('date', $date->getTimestamp())
             ->orderBy('e.tsp', 'asc')
             ->setMaxResults($options['limit'])
         ;

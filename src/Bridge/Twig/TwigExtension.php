@@ -2,8 +2,8 @@
 
 namespace App\Bridge\Twig;
 
-use App\Entity\Evt;
 use App\Entity\EventParticipation;
+use App\Entity\Evt;
 use App\Entity\User;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -164,9 +164,9 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
     public function getPaiementTitle(Evt $event, User $user)
     {
         $title = $this->locator->get(SluggerInterface::class)->slug($event->getTitre());
-        $compl = ' du '.date('d-m-Y', $event->getTsp()).' '.$user->getFirstname().' '.$user->getLastname();
+        $compl = ' du ' . date('d-m-Y', $event->getTsp()) . ' ' . $user->getFirstname() . ' ' . $user->getLastname();
         $size_compl = \strlen($compl);
 
-        return substr($title, 0, 64 - $size_compl).$compl;
+        return substr($title, 0, 64 - $size_compl) . $compl;
     }
 }

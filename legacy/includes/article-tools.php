@@ -10,7 +10,7 @@ if (user()) {
         } elseif (0 == $article['status_article']) {
             echo "<p class='alerte'>En attente : cet article n'a pas encore été publié par un responsable.</p>";
         } elseif (1 == $article['status_article']) {
-            echo "<p class='info'>Publié : cet article est en ligne, ".$article['nb_vues_article'].' vues</p>';
+            echo "<p class='info'>Publié : cet article est en ligne, " . $article['nb_vues_article'] . ' vues</p>';
         } elseif (2 == $article['status_article']) {
             echo "<p class='erreur'>Désactivé : cet article a été refusé par un responsable</p>";
         }
@@ -19,7 +19,7 @@ if (user()) {
     // publié ? voir
     if (1 == $article['status_article']) {
         ?>
-			<a href="/article/<?php echo html_utf8($article['code_article'].'-'.$article['id_article']); ?>.html" title="" class="nice2">
+			<a href="/article/<?php echo html_utf8($article['code_article'] . '-' . $article['id_article']); ?>.html" title="" class="nice2">
 				Voir
 			</a>
 			<?php
@@ -28,7 +28,7 @@ if (user()) {
     // Sinon : apercu
     else {
         ?>
-			<a href="/article/<?php echo html_utf8($article['code_article'].'-'.$article['id_article']); ?>.html?forceshow=true" title="" class="nice2">
+			<a href="/article/<?php echo html_utf8($article['code_article'] . '-' . $article['id_article']); ?>.html?forceshow=true" title="" class="nice2">
 				Aperçu
 			</a>
 			<?php

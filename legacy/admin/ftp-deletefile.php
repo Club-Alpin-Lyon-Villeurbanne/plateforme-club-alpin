@@ -3,7 +3,7 @@
 use App\Ftp\FtpFile;
 use App\Legacy\LegacyContainer;
 
-require __DIR__.'/../app/includes.php';
+require __DIR__ . '/../app/includes.php';
 
 if (!admin()) {
     header('HTTP/1.0 401 Authorization Required');
@@ -15,7 +15,7 @@ $errTab = [];
 $target = $_GET['target'];
 $filename = strtolower(substr(strrchr($target, '/'), 1));
 $ftpPath = LegacyContainer::getParameter('legacy_ftp_path');
-$fullPath = $ftpPath.substr($target, 5);
+$fullPath = $ftpPath . substr($target, 5);
 
 // vérification,
 // la cible doit commencer par /ftp/
@@ -43,7 +43,7 @@ if (FtpFile::isProtected(substr($target, 7))) {
 }
 
 if (count($errTab) > 0) {
-    echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+    echo '<div class="erreur"><ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
 } else {
     // VERIFS DEJA FAITES, OPERATION OK SUR DEMANDE
     if ('delete' == $_GET['operation']) {
@@ -84,7 +84,7 @@ if (count($errTab) > 0) {
                 <?php
                 // msg d'erreur ?
                 if (count($errTab) > 0) {
-                    echo '<div class="erreur"><ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                    echo '<div class="erreur"><ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                 } ?>
 
                 <h3>Suppression du fichier</h3>

@@ -23,15 +23,15 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
 
             if ((!isset($errTab) || 0 === count($errTab)) && (null !== $commentaire || $niveau_technique > 0 || $niveau_physique > 0)) {
-                $req = "INSERT INTO `caf_user_niveau` (`id_user`, `id_commission`, `niveau_technique`, `niveau_physique`, `commentaire`) VALUES ('".$id_user."', '".$id_commission."', '".$niveau_technique."', '".$niveau_physique."', ";
+                $req = "INSERT INTO `caf_user_niveau` (`id_user`, `id_commission`, `niveau_technique`, `niveau_physique`, `commentaire`) VALUES ('" . $id_user . "', '" . $id_commission . "', '" . $niveau_technique . "', '" . $niveau_physique . "', ";
                 if (null === $commentaire) {
                     $req .= 'NULL';
                 } else {
-                    $req .= "'".$commentaire."' ";
+                    $req .= "'" . $commentaire . "' ";
                 }
                 $req .= ');';
                 if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-                    $errTab[] = 'Erreur SQL lors Insertion note pour commission '.$id_commission.' et utilisateur '.$id_user;
+                    $errTab[] = 'Erreur SQL lors Insertion note pour commission ' . $id_commission . ' et utilisateur ' . $id_user;
                 }
             }
         }
@@ -52,13 +52,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
 
             if (!isset($errTab) || 0 === count($errTab)) {
-                $req = "UPDATE `caf_user_niveau` SET `niveau_technique` = '".$niveau_technique."', `niveau_physique` = '".$niveau_physique."', `commentaire` = ";
+                $req = "UPDATE `caf_user_niveau` SET `niveau_technique` = '" . $niveau_technique . "', `niveau_physique` = '" . $niveau_physique . "', `commentaire` = ";
                 if (null === $commentaire) {
                     $req .= 'NULL';
                 } else {
-                    $req .= "'".$commentaire."' ";
+                    $req .= "'" . $commentaire . "' ";
                 }
-                $req .= ' WHERE `caf_user_niveau`.`id` = '.$id.';';
+                $req .= ' WHERE `caf_user_niveau`.`id` = ' . $id . ';';
                 if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL';
                 }

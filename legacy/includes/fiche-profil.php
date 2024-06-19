@@ -24,7 +24,7 @@ while ($row = $result->fetch_assoc()) {
 
     $req = 'SELECT title_usertype, params_user_attr
 		FROM caf_user_attr, caf_usertype
-		WHERE user_user_attr='.$id_user.'
+		WHERE user_user_attr=' . $id_user . '
 		AND id_usertype=usertype_user_attr
 		ORDER BY hierarchie_usertype DESC
 		LIMIT 50';
@@ -32,7 +32,7 @@ while ($row = $result->fetch_assoc()) {
     $result2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row2 = $result2->fetch_assoc()) {
         $commission = substr(strrchr($row2['params_user_attr'], ':'), 1);
-        $row['statuts'][] = $row2['title_usertype'].($commission ? ', '.$commission : '');
+        $row['statuts'][] = $row2['title_usertype'] . ($commission ? ', ' . $commission : '');
     }
 
     $tmpUser = $row;
@@ -86,7 +86,7 @@ elseif (!allowed('user_read_public')) {
 	<!-- nick -->
 	<div style="float:right; width:740px">
 		<h1>
-		<?php require __DIR__.'/../includes/user/display_name.php'; ?>
+		<?php require __DIR__ . '/../includes/user/display_name.php'; ?>
 		</h1>
 
 		<!-- statuts -->
@@ -94,7 +94,7 @@ elseif (!allowed('user_read_public')) {
 			<?php
             // if(allowed('user_read_limited')){
                 foreach ($tmpUser['statuts'] as $status) {
-                    echo '<li style="">'.$status.'</li>';
+                    echo '<li style="">' . $status . '</li>';
                 }
     // } else {
     // echo '<li style="">Adhérent du club</li>';
@@ -106,7 +106,7 @@ elseif (!allowed('user_read_public')) {
 		<?php
         if ($auth_contact_user) {
             $contact_form_width = '50%';
-            require __DIR__.'/../includes/user/contact_form.php';
+            require __DIR__ . '/../includes/user/contact_form.php';
         } ?>
 
 		<div id="trigger-userinfo" style="display:<?php if (isset($_POST['operation']) && 'user_contact' == $_POST['operation']) {
@@ -117,7 +117,7 @@ elseif (!allowed('user_read_public')) {
 
 
 			<!-- infos persos-->
-			<?php require __DIR__.'/../includes/user/infos_privees.php'; ?>
+			<?php require __DIR__ . '/../includes/user/infos_privees.php'; ?>
 
 			<br style="clear:both" />
 

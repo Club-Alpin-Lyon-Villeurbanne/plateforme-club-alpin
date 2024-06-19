@@ -26,7 +26,7 @@ if ($comment) {
 					&nbsp;&nbsp;&nbsp;
 					le
 					<?php
-                    echo date('d', $comment['tsp_comment']).' '.mois(date('m', $comment['tsp_comment'])).' '.date('Y', $comment['tsp_comment']); ?>
+                    echo date('d', $comment['tsp_comment']) . ' ' . mois(date('m', $comment['tsp_comment'])) . ' ' . date('Y', $comment['tsp_comment']); ?>
 				</span>
 			</p>
 			<p class="cont_comment">

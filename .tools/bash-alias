@@ -1,0 +1,14 @@
+# This file is used to provide easy aliases to mimic a standard
+# Symfony development environment. 
+#
+# Use : `source ./.tools/bash-alias` to get the aliases in your current
+# session.
+#
+# Then enjoy `sf cache:clear`, `composer install` like before and stop
+# worrying about Dockerish things
+
+php_container=www_caflyon
+
+alias sf="docker exec -it ${php_container} php bin/console"
+alias composer="docker exec -it ${php_container} composer"
+alias test="docker exec -it ${php_container} bin/phpunit"

@@ -48,7 +48,7 @@ if (!admin()) {
 	';
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-        $attrTab[] = $handle['type_usertype_attr'].'-'.$handle['right_usertype_attr'];
+        $attrTab[] = $handle['type_usertype_attr'] . '-' . $handle['right_usertype_attr'];
     } ?>
 	<h1>Matrice des droits</h1>
 	<p>
@@ -70,10 +70,10 @@ if (!admin()) {
 		<?php
 
         if (isset($_POST['operation']) && 'usertype_attr_edit' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-            echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+            echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
         }
     if (isset($_POST['operation']) && 'usertype_attr_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<div class="info">Mise à jour effectuée à '.date('H:i:s', time()).'.</div>';
+        echo '<div class="info">Mise à jour effectuée à ' . date('H:i:s', time()) . '.</div>';
     }
 
     // on fait courir le tableau
@@ -82,7 +82,7 @@ if (!admin()) {
         echo '<th>';
         echo html_utf8($usertype['title_usertype']);
         if ($isDev) {
-            echo '<br/><code>'.$usertype['code_usertype'].'</code>';
+            echo '<br/><code>' . $usertype['code_usertype'] . '</code>';
         }
         echo '</th>';
     } // types (abscisses)
@@ -91,23 +91,23 @@ if (!admin()) {
     foreach ($rightTab as $userright) { // types (ordonnées)
         if ($tmp != $userright['parent_userright']) {
             $tmp = $userright['parent_userright'];
-            echo '<tr><td colspan="'.(count($typeTab) + 1).'"><b>'.html_utf8($userright['parent_userright']).'</b></td></tr>';
+            echo '<tr><td colspan="' . (count($typeTab) + 1) . '"><b>' . html_utf8($userright['parent_userright']) . '</b></td></tr>';
         }
         echo '<tr class="rightline">
                 <td class="left">';
-        echo '<span>'.html_utf8($userright['title_userright']).'</span>';
+        echo '<span>' . html_utf8($userright['title_userright']) . '</span>';
         if ($isDev) {
-            echo '<br/><code>'.$userright['code_userright'].'</code>';
+            echo '<br/><code>' . $userright['code_userright'] . '</code>';
         }
-        echo '<input type="text" value="'.html_utf8($userright['code_userright']).'" />';
+        echo '<input type="text" value="' . html_utf8($userright['code_userright']) . '" />';
         echo '</td>';
         for ($i = 0; $i < count($typeTab); ++$i) {
             // right>type : autorisé ou pas ? valeur true || false
-            $on = (in_array($typeTab[$i]['id_usertype'].'-'.$userright['id_userright'], $attrTab, true) ? true : false);
-            echo '<td class="toggle '.($on ? 'true' : 'false').'">'
-                    .'<input '.($on ? '' : 'disabled="disabled"').' type="hidden" name="usertype_attr[]" value="'.$typeTab[$i]['id_usertype'].'-'.$userright['id_userright'].'" />' // Paire d'ID
-                    .'<span class="clair">'.html_utf8($typeTab[$i]['title_usertype']).'</span>'
-                    .'</td>';
+            $on = (in_array($typeTab[$i]['id_usertype'] . '-' . $userright['id_userright'], $attrTab, true) ? true : false);
+            echo '<td class="toggle ' . ($on ? 'true' : 'false') . '">'
+                    . '<input ' . ($on ? '' : 'disabled="disabled"') . ' type="hidden" name="usertype_attr[]" value="' . $typeTab[$i]['id_usertype'] . '-' . $userright['id_userright'] . '" />' // Paire d'ID
+                    . '<span class="clair">' . html_utf8($typeTab[$i]['title_usertype']) . '</span>'
+                    . '</td>';
         }
         echo '</tr>';
     }

@@ -5,34 +5,34 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 echo '<div id="fiche-sortie">';
 if (isset($errTab) && count($errTab) > 0 && (!in_array($_POST['operation'] ?? null, ['user_join_del', 'user_join_update_status', 'evt_user_contact', 'user_join'], true))) {
-    echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+    echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
 }
 if (!$evt) {
     echo '<p class="erreur">Erreur : événement non défini</p>';
 } else {
-    require __DIR__.'/../includes/evt/admin_status.php';
+    require __DIR__ . '/../includes/evt/admin_status.php';
 
     // compte rendu ?
     if ($evt['cr']) {
-        echo '<a style="float:right; font-family:DIN, Arial; font-weight:normal; display:block; padding:5px 20px 0 0;" href="'.LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$evt['cr']['code_article'].'-'.$evt['cr']['id_article'].'.html" title="'.html_utf8($evt['cr']['titre_article']).'">
+        echo '<a style="float:right; font-family:DIN, Arial; font-weight:normal; display:block; padding:5px 20px 0 0;" href="' . LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'article/' . $evt['cr']['code_article'] . '-' . $evt['cr']['id_article'] . '.html" title="' . html_utf8($evt['cr']['titre_article']) . '">
 			<span class="bleucaf">&gt;</span> Voir le compte rendu de sortie
 		</a>';
     }
 
     // titre
     echo '<h1>
-			<span class="commission">'.html_utf8($evt['title_commission']).'</span>
-			<span class="bleucaf">&gt;</span> '.html_utf8($evt['titre_evt']);
+			<span class="commission">' . html_utf8($evt['title_commission']) . '</span>
+			<span class="bleucaf">&gt;</span> ' . html_utf8($evt['titre_evt']);
     if (!empty($evt['id_groupe'])) {
-        echo '<small> ('.html_utf8($evt['groupe']['nom']).') </small>';
+        echo '<small> (' . html_utf8($evt['groupe']['nom']) . ') </small>';
     }
-    echo '<span class="date"> / '.jour(date('N', $evt['tsp_evt'])).' '.date('d', $evt['tsp_evt']).' '.mois(date('m', $evt['tsp_evt'])).'</span>
+    echo '<span class="date"> / ' . jour(date('N', $evt['tsp_evt'])) . ' ' . date('d', $evt['tsp_evt']) . ' ' . mois(date('m', $evt['tsp_evt'])) . '</span>
 		</h1>';
 
     // j'en suis l'auteur mais elle est passée ? Rédiger un compte rendu
     if (user() && $evt['user_evt'] == (string) getUser()->getId() && $evt['tsp_end_evt'] < time()) {
         ?>
-		<a href="/article-new.html?compterendu=true&amp;commission_article=-1&amp;evt_article=<?php echo $evt['id_evt']; ?>&amp;titre_article=<?php echo urlencode('Compte rendu de sortie : '.$evt['titre_evt']); ?>" title="Vous êtes l'auteur de cette sortie ? Rédigez un petit compte rendu !" class="nice2 noprint">
+		<a href="/article-new.html?compterendu=true&amp;commission_article=-1&amp;evt_article=<?php echo $evt['id_evt']; ?>&amp;titre_article=<?php echo urlencode('Compte rendu de sortie : ' . $evt['titre_evt']); ?>" title="Vous êtes l'auteur de cette sortie ? Rédigez un petit compte rendu !" class="nice2 noprint">
 			<img src="/img/base/pencil_add.png" alt="" title="" style="" />
 			Compte rendu
 		</a>
@@ -46,7 +46,7 @@ if (!$evt) {
     // Car affichage warning sur certaines sorties car personne consultant la page pas encadrant
     if (
         (
-            allowed('evt_print', 'commission:'.$current_commission)
+            allowed('evt_print', 'commission:' . $current_commission)
             || (user() && is_array($ids_encadrants) && in_array((string) getUser()->getId(), $ids_encadrants, true))
         ) && '1' != $evt['cancelled_evt']
     ) {
@@ -58,7 +58,7 @@ if (!$evt) {
 		</a>
 		-->
 
-			<a href="<?php echo 'feuille-de-sortie/evt-'.(int) $evt['id_evt'].'.html'; ?>" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
+			<a href="<?php echo 'feuille-de-sortie/evt-' . (int) $evt['id_evt'] . '.html'; ?>" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
 				<img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
 				Imprimer la fiche de sortie
 			</a>
@@ -73,7 +73,7 @@ if (!$evt) {
     if (!$evt['cycle_parent_evt']) {
         // message d'erreur d'inscription, à priori rare sauf tentative de piratage
         if (isset($_POST['operation']) && 'user_join' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-            echo '<div class="erreur">Erreur lors de l\'inscription : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+            echo '<div class="erreur">Erreur lors de l\'inscription : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
         }
 
         // ***
@@ -108,7 +108,7 @@ if (!$evt) {
             if ($evt['tsp_end_evt'] > time()) {
                 echo '<p class="info">
 						<img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" />
-						<br />Vous êtes inscrit à cette sortie en tant que : &laquo; '.$monStatut.' &raquo;.<br />&nbsp;
+						<br />Vous êtes inscrit à cette sortie en tant que : &laquo; ' . $monStatut . ' &raquo;.<br />&nbsp;
 						<input type="button" class="nice" value="Annuler mon inscription" onclick="$(\'#inscription-annuler\').slideToggle(200)" style="margin-top:6px;" />
 					</p><br />';
             }
@@ -116,7 +116,7 @@ if (!$evt) {
             else {
                 echo '<p class="info">
 						<img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" />
-						<br />Vous avez participé à cette sortie en tant que : &laquo; '.$monStatut.' &raquo;.<br />&nbsp;
+						<br />Vous avez participé à cette sortie en tant que : &laquo; ' . $monStatut . ' &raquo;.<br />&nbsp;
 					</p><br />';
             }
         }
@@ -156,7 +156,7 @@ if (!$evt) {
 
                 // TABLEAU d'erreurs
                 if (isset($_POST['operation']) && 'user_join_del' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                    echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                    echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                 } ?>
 
 				<form action="<?php echo $versCettePage; ?>#inscription-annuler" method="post" class="loading">
@@ -184,90 +184,90 @@ if (!$evt) {
         }
 
         // GESTION DES INSCRIPTIONS
-        require __DIR__.'/../includes/evt/gestion_inscriptions.php';
+        require __DIR__ . '/../includes/evt/gestion_inscriptions.php';
     }
 
     // LISTE D'INFOS DIFFICULTE ETC...
     if ($evt['massif_evt'] || '' != $evt['itineraire']) {
         echo '<ul class="nice-list">'
             // massif ?
-            .($evt['massif_evt'] ?
-                '<li class="wide"><b>MASSIF :</b> '.html_utf8($evt['massif_evt']).'</li>'
+            . ($evt['massif_evt'] ?
+                '<li class="wide"><b>MASSIF :</b> ' . html_utf8($evt['massif_evt']) . '</li>'
             : '')
             // itineraire ?
-            .('' != $evt['itineraire'] ?
-                '<li class="wide"><b>ITINÉRAIRE :</b> '.html_utf8(str_replace([" \n", "\n"], ', ', trim($evt['itineraire']))).'</li>'
+            . ('' != $evt['itineraire'] ?
+                '<li class="wide"><b>ITINÉRAIRE :</b> ' . html_utf8(str_replace([" \n", "\n"], ', ', trim($evt['itineraire']))) . '</li>'
             : '')
-        .'</ul>'
-        .'<br style="clear:both" />'
-        .'<hr />';
+        . '</ul>'
+        . '<br style="clear:both" />'
+        . '<hr />';
     }
 
     if ($evt['denivele_evt'] || $evt['distance_evt'] > 0 || $evt['difficulte_evt'] || '' != $evt['matos_evt']) {
         echo '<ul class="nice-list">'
             // denivele ?
-            .($evt['denivele_evt'] ?
-                '<li><b>DÉNIVELÉ :</b> '.html_utf8($evt['denivele_evt']).'</li>'
+            . ($evt['denivele_evt'] ?
+                '<li><b>DÉNIVELÉ :</b> ' . html_utf8($evt['denivele_evt']) . '</li>'
             : '')
             // distance_evt ?
-            .($evt['distance_evt'] > 0 ?
-                '<li><b>DISTANCE :</b> '.html_utf8($evt['distance_evt']).' km</li>'
+            . ($evt['distance_evt'] > 0 ?
+                '<li><b>DISTANCE :</b> ' . html_utf8($evt['distance_evt']) . ' km</li>'
             : '')
             // difficulte ?
-            .($evt['difficulte_evt'] ?
-                '<li class="wide"><b>DIFFICULTÉ :</b> '.html_utf8($evt['difficulte_evt']).'</li>'
+            . ($evt['difficulte_evt'] ?
+                '<li class="wide"><b>DIFFICULTÉ :</b> ' . html_utf8($evt['difficulte_evt']) . '</li>'
             : '')
             // materiel ?
-            .('' != $evt['matos_evt'] ?
-                '<li class="wide"><b>MATÉRIEL :</b> '.nl2br(html_utf8(trim($evt['matos_evt']))).'</li>'
+            . ('' != $evt['matos_evt'] ?
+                '<li class="wide"><b>MATÉRIEL :</b> ' . nl2br(html_utf8(trim($evt['matos_evt']))) . '</li>'
             : '')
-        .'</ul>'
-        .'<br style="clear:both" />'
-        .'<hr />';
+        . '</ul>'
+        . '<br style="clear:both" />'
+        . '<hr />';
     }
 
     // CONTENU LIBRE
     if ('1' != $evt['cancelled_evt']) {
         echo ''
-        .'<div class="description_evt">'.$evt['description_evt'].'</div>'
-        .'<hr style="clear:both" />';
+        . '<div class="description_evt">' . $evt['description_evt'] . '</div>'
+        . '<hr style="clear:both" />';
 
         // TARIFICATIONS DE LA SORTIE (réservé aux membres)
         if (allowed('user_read_limited') && ($evt['tarif_evt'] > 0 || $evt['tarif_detail'] > 0)) {
             echo '<ul class="nice-list">'
                 // tarif ?
-                .($evt['tarif_evt'] > 0 ?
-                    '<li class="wide"><b>TARIF :</b> '.str_replace(',', '.', (float) $evt['tarif_evt']).'&nbsp;Euros</li>'
+                . ($evt['tarif_evt'] > 0 ?
+                    '<li class="wide"><b>TARIF :</b> ' . str_replace(',', '.', (float) $evt['tarif_evt']) . '&nbsp;Euros</li>'
                 : '')
                 // Détail du tarif
-                .($evt['tarif_detail'] ?
-                    '<li class="wide"><b>DÉTAIL :</b> '.html_utf8($evt['tarif_detail']).'</li>'
+                . ($evt['tarif_detail'] ?
+                    '<li class="wide"><b>DÉTAIL :</b> ' . html_utf8($evt['tarif_detail']) . '</li>'
                 : '')
-            .'</ul><hr style="clear:both" />';
+            . '</ul><hr style="clear:both" />';
         }
 
         // DATES
         echo '<ul class="nice-list">';
 
         // rdv : heure
-        echo '<li><b>DÉPART :</b> Le '.date('d', $evt['tsp_evt']).' '.mois(date('m', $evt['tsp_evt'])).' '.date('Y', $evt['tsp_evt']);
+        echo '<li><b>DÉPART :</b> Le ' . date('d', $evt['tsp_evt']) . ' ' . mois(date('m', $evt['tsp_evt'])) . ' ' . date('Y', $evt['tsp_evt']);
         if (allowed('user_read_limited')) {
-            echo ', '.date('H:i', $evt['tsp_evt']);
+            echo ', ' . date('H:i', $evt['tsp_evt']);
         }
         echo '</li>';
 
         // retour : le meme jour ou un autre jour
-        echo '<li><b>RETOUR :</b> '.(date('dmy', $evt['tsp_evt']) == date('dmy', $evt['tsp_end_evt']) ? 'Le même jour' : 'Le '.date('d', $evt['tsp_end_evt']).' '.mois(date('m', $evt['tsp_end_evt']))).'.</li>';
+        echo '<li><b>RETOUR :</b> ' . (date('dmy', $evt['tsp_evt']) == date('dmy', $evt['tsp_end_evt']) ? 'Le même jour' : 'Le ' . date('d', $evt['tsp_end_evt']) . ' ' . mois(date('m', $evt['tsp_end_evt']))) . '.</li>';
         echo '</ul>';
 
         // LIEUX et TRANSPORTS (réservé aux membres)
         if (allowed('user_read_limited')) {
             echo '<ul class="nice-list">'
                 // rdv : lieu
-                .'<li><b>RDV :</b> '.html_utf8($evt['rdv_evt']).'</li>'
+                . '<li><b>RDV :</b> ' . html_utf8($evt['rdv_evt']) . '</li>'
                 // titre carte
-                .'<li class="wide"><b>POINT DE RENDEZ-VOUS SUR LA CARTE :</b> </li>'
-            .'</ul><br style="clear:both" />';
+                . '<li class="wide"><b>POINT DE RENDEZ-VOUS SUR LA CARTE :</b> </li>'
+            . '</ul><br style="clear:both" />';
 
             // MAP TRANSPORT?>
             <div id="map-fichesortie"></div>
@@ -293,12 +293,12 @@ if (!$evt) {
     echo '<ul class="nice-list">'
 
         // auteur
-        .'<li class="wide">
-			<b>SORTIE DÉPOSÉE PAR :</b> '.userlink($evt['user_evt'], $evt['nickname_user'])
-            .' <span class="mini">'
-                .'- le '.date('d/m/y', $evt['tsp_crea_evt'])
-                .($evt['tsp_edit_evt'] ? ', modifiée le '.date('d/m/y à H:i', $evt['tsp_edit_evt']) : '')
-            .'</span>
+        . '<li class="wide">
+			<b>SORTIE DÉPOSÉE PAR :</b> ' . userlink($evt['user_evt'], $evt['nickname_user'])
+            . ' <span class="mini">'
+                . '- le ' . date('d/m/y', $evt['tsp_crea_evt'])
+                . ($evt['tsp_edit_evt'] ? ', modifiée le ' . date('d/m/y à H:i', $evt['tsp_edit_evt']) : '')
+            . '</span>
 		</li>';
 
     // dev
@@ -363,7 +363,7 @@ if (!$evt) {
     echo '
 	</ul><br style="clear:both" />';
 
-    require __DIR__.'/../includes/evt/validation_legale.php';
+    require __DIR__ . '/../includes/evt/validation_legale.php';
 
     // NOMBRE DE PLACES
     // les messages et options liées aux inscriptions ne s'appliquent pas sur les suites de cycles
@@ -383,23 +383,23 @@ if (!$evt) {
             }
 
             echo '<hr />'
-            .'<ul class="nice-list">'
-                .'<li><b>NOMBRE TOTAL DE PLACES :</b> '.$evt['ngens_max_evt']
-                .'<li><b>DISPONIBLES VIA INTERNET :</b> '.$nPlacesRestantesOnline
-            .'</ul>'
+            . '<ul class="nice-list">'
+                . '<li><b>NOMBRE TOTAL DE PLACES :</b> ' . $evt['ngens_max_evt']
+                . '<li><b>DISPONIBLES VIA INTERNET :</b> ' . $nPlacesRestantesOnline
+            . '</ul>'
 
-            .'<br style="clear:both" /><hr />'
+            . '<br style="clear:both" /><hr />'
 
-            .'<p>
+            . '<p>
                 <span style="padding: 10px 10px 5px 5px;float:left;">
-                    <span class="temoin-places-dispos '.($nPlacesRestantesOnline > 0 ? 'on' : 'off').'"></span>
+                    <span class="temoin-places-dispos ' . ($nPlacesRestantesOnline > 0 ? 'on' : 'off') . '"></span>
                 </span>
 				<span  style="font-size:14px; font-family:DINBold; color:#666666">
-					'.$nInscritsTotal.' PARTICIPANT'.($nInscritsTotal > 1 ? 'S' : '').' INSCRIT'.($nInscritsTotal > 1 ? 'S' : '').'
-					SUR  '.$evt['ngens_max_evt'].' PLACE'.($evt['ngens_max_evt'] > 1 ? 'S' : '').' AU TOTAL ('.($evt['ngens_max_evt'] > 0 ? sprintf('%2d%%', 100 * $nInscritsTotal / $evt['ngens_max_evt']) : '0').')
+					' . $nInscritsTotal . ' PARTICIPANT' . ($nInscritsTotal > 1 ? 'S' : '') . ' INSCRIT' . ($nInscritsTotal > 1 ? 'S' : '') . '
+					SUR  ' . $evt['ngens_max_evt'] . ' PLACE' . ($evt['ngens_max_evt'] > 1 ? 'S' : '') . ' AU TOTAL (' . ($evt['ngens_max_evt'] > 0 ? sprintf('%2d%%', 100 * $nInscritsTotal / $evt['ngens_max_evt']) : '0') . ')
 				</span><br />
-				'.$nPlacesRestantesOnline.' place'.($nPlacesRestantesOnline > 1 ? 's' : '').' restante'.($nPlacesRestantesOnline > 1 ? 's' : '').' pour les inscriptions en ligne
-				'.($nEnAttente ? ' - '.$nEnAttente.' inscriptions en attente de confirmation' : '').'
+				' . $nPlacesRestantesOnline . ' place' . ($nPlacesRestantesOnline > 1 ? 's' : '') . ' restante' . ($nPlacesRestantesOnline > 1 ? 's' : '') . ' pour les inscriptions en ligne
+				' . ($nEnAttente ? ' - ' . $nEnAttente . ' inscriptions en attente de confirmation' : '') . '
 			</p>'
             ;
 
@@ -412,28 +412,28 @@ if (!$evt) {
                     echo '<tr>
 							<td>
 								'
-                        .(allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">'.html_utf8(strtoupper($tmpUser['lastname_user'])).', '.html_utf8(ucfirst(strtolower($tmpUser['firstname_user']))).'</p>' : '')
-                        .userlink($tmpUser['id_user'], $tmpUser['nickname_user'])
+                        . (allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">' . html_utf8(strtoupper($tmpUser['lastname_user'])) . ', ' . html_utf8(ucfirst(strtolower($tmpUser['firstname_user']))) . '</p>' : '')
+                        . userlink($tmpUser['id_user'], $tmpUser['nickname_user'])
 
-                        .'</td>
-							<td class="small">'.(allowed('user_read_private', 'commission:'.$evt['code_commission']) ? $tmpUser['tel_user'] : '').'</td>
-							<td class="small">'.(allowed('user_read_private', 'commission:'.$evt['code_commission']) ? $tmpUser['tel2_user'] : '').'</td>
-							<td class="small">'.(allowed('user_read_private', 'commission:'.$evt['code_commission']) ? '<a href="mailto:'.$tmpUser['email_user'].'">'.$tmpUser['email_user'].'</a>' : '').'</td>'.
-                        (allowed('user_read_limited') ? '<td class="small">'.($tmpUser['is_covoiturage'] ? '<img src="/img/voiture.png" title="Covoiturage" width="16px">' : '').'</td>' : '')
-                        .'</tr>';
+                        . '</td>
+							<td class="small">' . (allowed('user_read_private', 'commission:' . $evt['code_commission']) ? $tmpUser['tel_user'] : '') . '</td>
+							<td class="small">' . (allowed('user_read_private', 'commission:' . $evt['code_commission']) ? $tmpUser['tel2_user'] : '') . '</td>
+							<td class="small">' . (allowed('user_read_private', 'commission:' . $evt['code_commission']) ? '<a href="mailto:' . $tmpUser['email_user'] . '">' . $tmpUser['email_user'] . '</a>' : '') . '</td>' .
+                        (allowed('user_read_limited') ? '<td class="small">' . ($tmpUser['is_covoiturage'] ? '<img src="/img/voiture.png" title="Covoiturage" width="16px">' : '') . '</td>' : '')
+                        . '</tr>';
                 }
                 // inscrits manuellement
                 foreach ($evt['joins']['manuel'] as $tmpUser) {
                     echo '<tr>
 							<td>
-								'.userlink($tmpUser['id_user'], $tmpUser['nickname_user'])
-                                .(allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">'.html_utf8(strtoupper($tmpUser['lastname_user'])).', '.html_utf8(ucfirst(strtolower($tmpUser['firstname_user']))).'</p>' : '')
-                            .'</td>
-							<td class="small">'.(allowed('user_read_private', 'commission:'.$evt['code_commission']) ? $tmpUser['tel_user'] : '').'</td>
-							<td class="small">'.(allowed('user_read_private', 'commission:'.$evt['code_commission']) ? $tmpUser['tel2_user'] : '').'</td>
-							<td class="small">'.(allowed('user_read_private', 'commission:'.$evt['code_commission']) ? '<a href="mailto:'.$tmpUser['email_user'].'">'.$tmpUser['email_user'].'</a>' : '').'</td>'.
-                        (allowed('user_read_limited') ? '<td class="small">'.($tmpUser['is_covoiturage'] ? '<img src="/img/voiture.png" title="Covoiturage" width="16px">' : '').'</td>' : '')
-                        .'</tr>';
+								' . userlink($tmpUser['id_user'], $tmpUser['nickname_user'])
+                                . (allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">' . html_utf8(strtoupper($tmpUser['lastname_user'])) . ', ' . html_utf8(ucfirst(strtolower($tmpUser['firstname_user']))) . '</p>' : '')
+                            . '</td>
+							<td class="small">' . (allowed('user_read_private', 'commission:' . $evt['code_commission']) ? $tmpUser['tel_user'] : '') . '</td>
+							<td class="small">' . (allowed('user_read_private', 'commission:' . $evt['code_commission']) ? $tmpUser['tel2_user'] : '') . '</td>
+							<td class="small">' . (allowed('user_read_private', 'commission:' . $evt['code_commission']) ? '<a href="mailto:' . $tmpUser['email_user'] . '">' . $tmpUser['email_user'] . '</a>' : '') . '</td>' .
+                        (allowed('user_read_limited') ? '<td class="small">' . ($tmpUser['is_covoiturage'] ? '<img src="/img/voiture.png" title="Covoiturage" width="16px">' : '') . '</td>' : '')
+                        . '</tr>';
                 }
 
                 echo '</table>';
@@ -463,7 +463,7 @@ if (!$evt) {
                 $nPlacesRestantesOnline > 0
                     || (user() && in_array((string) getUser()->getId(), $acces_au_module, true))
             ) {
-                require __DIR__.'/../includes/evt/user_inscription.php';
+                require __DIR__ . '/../includes/evt/user_inscription.php';
             } else {
                 echo '<p>Le nombre de places disponibles à la réservation depuis internet est atteint.</p>';
             }
@@ -479,34 +479,33 @@ if (!$evt) {
         $evt = $evt['cycleparent'];
         echo '<table id="agenda">';
         echo '<tr>'
-                .'<td class="agenda-gauche">'.date('d/m/Y', $evt['tsp_evt']).'</td>'
-                .'<td>';
-        require __DIR__.'/../includes/agenda-evt-debut.php';
+                . '<td class="agenda-gauche">' . date('d/m/Y', $evt['tsp_evt']) . '</td>'
+                . '<td>';
+        require __DIR__ . '/../includes/agenda-evt-debut.php';
         echo '</td>'
-            .'</tr>';
+            . '</tr>';
         echo '</table>';
     } elseif (isset($evt['cycleparent']) && $evt['cyclechildren']) {
         $evtArray = $evt['cyclechildren'];
         $nbChildren = count($evtArray);
 
         echo '<br style="clear:both" /><hr /><ul class="nice-list">'
-                .'<li class="wide"><b>SORTIE'.($nbChildren > 1 ? 'S' : '').' SUIVANTE'.($nbChildren > 1 ? 'S' : '').' DE CE CYCLE :</b> '
-            .'</ul>'
-            .'';
+                . '<li class="wide"><b>SORTIE' . ($nbChildren > 1 ? 'S' : '') . ' SUIVANTE' . ($nbChildren > 1 ? 'S' : '') . ' DE CE CYCLE :</b> '
+            . '</ul>'
+            . '';
 
         echo '<table id="agenda">';
         foreach ($evtArray as $evt) {
             echo '<tr>'
-                    .'<td class="agenda-gauche">'.date('d/m/Y', $evt['tsp_evt']).'</td>'
-                    .'<td>';
-            require __DIR__.'/../includes/agenda-evt-debut.php';
+                    . '<td class="agenda-gauche">' . date('d/m/Y', $evt['tsp_evt']) . '</td>'
+                    . '<td>';
+            require __DIR__ . '/../includes/agenda-evt-debut.php';
             echo '</td>'
-                .'</tr>';
+                . '</tr>';
         }
         echo '</table>';
     }
 }
 echo '</div>';
 ?>
-
 

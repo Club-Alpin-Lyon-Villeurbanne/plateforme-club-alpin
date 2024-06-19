@@ -7,7 +7,7 @@ $needComm = false; // besoin, ou pas de spécifier la commission liée à ce typ
 // Vérification des variables données
 $id_usertype = (int) $_POST['id_usertype'];
 $id_user = (int) $_POST['id_user'];
-$params_user_attr_tab = $_POST['commission'];
+$params_user_attr_tab = $_POST['commission'] ?? null;
 if (!$id_usertype || !$id_user) {
     $errTab[] = 'Valeurs manquantes';
 }
@@ -55,7 +55,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if (!$row[0]) {
             // ajout
             $req = "INSERT INTO caf_user_attr(user_user_attr ,usertype_user_attr ,params_user_attr ,details_user_attr)
-                                        VALUES ('$id_user', '$id_usertype', '$params_user_attr', '".time()."');";
+                                        VALUES ('$id_user', '$id_usertype', '$params_user_attr', '" . time() . "');";
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }

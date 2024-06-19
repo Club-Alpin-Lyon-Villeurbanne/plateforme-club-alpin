@@ -17,7 +17,7 @@ $adresse_user = trim(stripslashes($_POST['adresse_user']));
 $cp_user = trim(stripslashes($_POST['cp_user']));
 $ville_user = trim(stripslashes($_POST['ville_user']));
 $pays_user = trim(stripslashes($_POST['pays_user']));
-$auth_contact_user = trim(stripslashes($_POST['auth_contact_user']));
+$auth_contact_user = trim(stripslashes($_POST['auth_contact_user'] ?? null));
 
 // vérification du format des données
 if ('' === $civ_user) {
@@ -72,10 +72,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if ($row[0]) {
-        $errTab[] = 'Un compte validé existe déjà avec cette adresse e-mail. Avez-vous <a href="'.generateRoute('session_password_lost').'" class="fancyframe" title="">oublié le mot de passe ?</a>';
+        $errTab[] = 'Un compte validé existe déjà avec cette adresse e-mail. Avez-vous <a href="' . generateRoute('session_password_lost') . '" class="fancyframe" title="">oublié le mot de passe ?</a>';
     } else {
         $req = "INSERT INTO `caf_user` (`email_user`, `mdp_user`, `cafnum_user`, `firstname_user`, `lastname_user`, `nickname_user`, `created_user`, `birthday_user`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `civ_user`, `moreinfo_user`, `auth_contact_user`, `valid_user`, `cookietoken_user`, `manuel_user`, cafnum_parent_user, nomade_user, nomade_parent_user, doit_renouveler_user, alerte_renouveler_user)
-                            VALUES ('$email_user', '$mdp_user', '$cafnum_user', '$firstname_user', '$lastname_user', '$nickname_user', '".time()."', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$pays_user', '$civ_user', '', '$auth_contact_user', '1', '', '1', null, '0', '0', '0', '0');";
+                            VALUES ('$email_user', '$mdp_user', '$cafnum_user', '$firstname_user', '$lastname_user', '$nickname_user', '" . time() . "', '$birthday_user', '$tel_user', '$tel2_user', '$adresse_user', '$cp_user', '$ville_user', '$pays_user', '$civ_user', '', '$auth_contact_user', '1', '', '1', null, '0', '0', '0', '0');";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }

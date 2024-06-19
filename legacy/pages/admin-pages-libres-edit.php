@@ -28,17 +28,17 @@ if (!admin()) {
 		<?php
         // TABLEAU
         if (isset($_POST['operation']) && 'pagelibre_edit' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-            echo '<div class="erreur">Erreur : <ul><li>- '.implode('</li><li>- ', $errTab).'</li></ul></div>';
+            echo '<div class="erreur">Erreur : <ul><li>- ' . implode('</li><li>- ', $errTab) . '</li></ul></div>';
         }
     if (isset($_POST['operation']) && 'pagelibre_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'. Vous pouvez actualiser cette page</p>';
+        echo '<p class="info">Mise à jour effectuée à ' . date('H:i:s', time()) . '. Vous pouvez actualiser cette page</p>';
         echo '<script stype="text/javascript">parent.location.href="/admin-pages-libres.html?showmsg=pagelibre_edit";</script>';
     } ?>
 
 		<div style="float:left; width:430px; padding-right:20px;">
 			<b>Titre de la page :</b><br />
 			<p style="width:350px; font-size:10px; line-height:9px;">META titles : ce titre apparaît dans le menu supérieur du navigateur, et dans les résultats de recherche Google</p>
-			<input type="text" name="default_name_page" class="type1 getcodefrom" value="<?php echo cont('meta-title-'.$page['code_page']); ?>" placeholder="" />
+			<input type="text" name="default_name_page" class="type1 getcodefrom" value="<?php echo cont('meta-title-' . $page['code_page']); ?>" placeholder="" />
 			<br />
 			<br />
 			<br />
@@ -63,7 +63,7 @@ if (!admin()) {
 			Ce texte de 160 caractères maximum apparaît dans les résultats des moteurs de recherche et résume le contenu de la page.
 			Par défaut, la description du site est utilisée.
 		</p>
-		<input type="text" name="default_description_page" class="type1" style="width:750px" value="<?php echo cont('meta-description-'.$page['code_page']); ?>" placeholder="" />
+		<input type="text" name="default_description_page" class="type1" style="width:750px" value="<?php echo cont('meta-description-' . $page['code_page']); ?>" placeholder="" />
 		<br />
 		<br />
 

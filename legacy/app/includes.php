@@ -1,27 +1,30 @@
 <?php
 
-require_once __DIR__.'/../../vendor/autoload.php';
+use App\Legacy\LegacyContainer;
 
-$config = require __DIR__.'/../config/config.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
-if (isset($config['sentry_dsn'])) {
+if (LegacyContainer::getParameter('legacy_env_SENTRY_DSN')) {
     Sentry\init([
-        'dsn' => $config['sentry_dsn'],
+        'dsn' => LegacyContainer::getParameter('legacy_env_SENTRY_DSN'),
     ]);
 }
 
-$scriptsDir = __DIR__.'/../scripts/';
-
+$scriptsDir = __DIR__ . '/../scripts/';
 
 // _________________________________________________ FONCTIONS MAISON
-require __DIR__.'/../app/fonctions.php';
+require __DIR__ . '/../app/fonctions.php';
 // _________________________________________________ VARIABLES "GLOBALES" DU SITE
-require __DIR__.'/../config/params.php';
+require __DIR__ . '/../config/params.php';
 // _________________________________________________ FONCTIONS PARTAGEES
-require __DIR__.'/../scripts/fonctions.php';
+require __DIR__ . '/../scripts/fonctions.php';
 // _________________________________________________ OPERATIONS ADMIN & CLIENT
-require __DIR__.'/../scripts/operations.php';
+require __DIR__ . '/../scripts/operations.php';
 // _________________________________________________ PARAMS PAGE EN COURS (META/TITRES/EXIST.)
-require __DIR__.'/../app/pages.php';
+require __DIR__ . '/../app/pages.php';
 // _________________________________________________ REQUETES INHERENTES A LA PAGE
-require __DIR__.'/../scripts/reqs.php';
+require __DIR__ . '/../scripts/get_commissions.php';
+
+if ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
+    require __DIR__ . '/../scripts/get_sortie_params.php';
+}

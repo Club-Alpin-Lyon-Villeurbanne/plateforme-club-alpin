@@ -44,7 +44,7 @@ if (!$id_comment) {
 
         // MESSAGES A LA SOUMISSION
         if ('comment_hide' == ($_POST['operation'] ?? null) && isset($errTab) && count($errTab) > 0) {
-            echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+            echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
         } ?>
 			<br />
 			<input type="button" class="nice2" value="Annuler" onclick="top.$.fancybox.close()" />

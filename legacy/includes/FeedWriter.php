@@ -24,7 +24,7 @@ class FeedWriter
     private $data = [];  // Store some other version wise data
     private $CDATAEncoding = [];  // The tag names which have to encoded as CDATA
 
-    private $version = null;
+    private $version;
 
     /**
      * Constructor.
@@ -36,7 +36,7 @@ class FeedWriter
         $this->version = $version;
 
         // Setting default value for assential channel elements
-        $this->channels['title'] = $version.' Feed';
+        $this->channels['title'] = $version . ' Feed';
         $this->channels['link'] = 'https://www.ajaxray.com/blog';
 
         // Tag names to encode in CDATA
@@ -190,13 +190,13 @@ class FeedWriter
     {
         $key = (null == $key) ? uniqid(rand()) : $key;
         $chars = md5($key);
-        $uuid = substr($chars, 0, 8).'-';
-        $uuid .= substr($chars, 8, 4).'-';
-        $uuid .= substr($chars, 12, 4).'-';
-        $uuid .= substr($chars, 16, 4).'-';
+        $uuid = substr($chars, 0, 8) . '-';
+        $uuid .= substr($chars, 8, 4) . '-';
+        $uuid .= substr($chars, 12, 4) . '-';
+        $uuid .= substr($chars, 16, 4) . '-';
         $uuid .= substr($chars, 20, 12);
 
-        return $prefix.$uuid;
+        return $prefix . $uuid;
     }
 
     // End # public functions ----------------------------------------------
@@ -210,21 +210,21 @@ class FeedWriter
      */
     private function printHead()
     {
-        $out = '<?xml version="1.0" encoding="utf-8"?>'."\n";
+        $out = '<?xml version="1.0" encoding="utf-8"?>' . "\n";
 
         if (RSS2 == $this->version) {
             $out .= '<rss version="2.0"
 					xmlns:content="https://purl.org/rss/1.0/modules/content/"
 					xmlns:wfw="https://wellformedweb.org/CommentAPI/"
-				  >'.\PHP_EOL;
+				  >' . \PHP_EOL;
         } elseif (RSS1 == $this->version) {
             $out .= '<rdf:RDF
 					 xmlns:rdf="https://www.w3.org/1999/02/22-rdf-syntax-ns#"
 					 xmlns="https://purl.org/rss/1.0/"
 					 xmlns:dc="https://purl.org/dc/elements/1.1/"
-					>'.\PHP_EOL;
+					>' . \PHP_EOL;
         } elseif (ATOM == $this->version) {
-            $out .= '<feed xmlns="https://www.w3.org/2005/Atom">'.\PHP_EOL;
+            $out .= '<feed xmlns="https://www.w3.org/2005/Atom">' . \PHP_EOL;
         }
         echo $out;
     }
@@ -237,7 +237,7 @@ class FeedWriter
     private function printTale()
     {
         if (RSS2 == $this->version) {
-            echo '</channel>'.\PHP_EOL.'</rss>';
+            echo '</channel>' . \PHP_EOL . '</rss>';
         } elseif (RSS1 == $this->version) {
             echo '</rdf:RDF>';
         } elseif (ATOM == $this->version) {
@@ -284,7 +284,7 @@ class FeedWriter
 
         $nodeText .= (in_array($tagName, $this->CDATAEncoding, true)) ? "]]></$tagName>" : "</$tagName>";
 
-        return $nodeText.\PHP_EOL;
+        return $nodeText . \PHP_EOL;
     }
 
     /**
@@ -297,7 +297,7 @@ class FeedWriter
         // Start channel tag
         switch ($this->version) {
             case RSS2:
-                echo '<channel>'.\PHP_EOL;
+                echo '<channel>' . \PHP_EOL;
                 break;
             case RSS1:
                 echo (isset($this->data['ChannelAbout'])) ? "<channel rdf:about=\"{$this->data['ChannelAbout']}\">" : "<channel rdf:about=\"{$this->channels['link']}\">";
@@ -318,12 +318,12 @@ class FeedWriter
 
         // RSS 1.0 have special tag <rdf:Seq> with channel
         if (RSS1 == $this->version) {
-            echo '<items>'.\PHP_EOL.'<rdf:Seq>'.\PHP_EOL;
+            echo '<items>' . \PHP_EOL . '<rdf:Seq>' . \PHP_EOL;
             foreach ($this->items as $item) {
                 $thisItems = $item->getElements();
-                echo "<rdf:li resource=\"{$thisItems['link']['content']}\"/>".\PHP_EOL;
+                echo "<rdf:li resource=\"{$thisItems['link']['content']}\"/>" . \PHP_EOL;
             }
-            echo '</rdf:Seq>'.\PHP_EOL.'</items>'.\PHP_EOL.'</channel>'.\PHP_EOL;
+            echo '</rdf:Seq>' . \PHP_EOL . '</items>' . \PHP_EOL . '</channel>' . \PHP_EOL;
         }
     }
 
@@ -357,15 +357,15 @@ class FeedWriter
     private function startItem($about = false)
     {
         if (RSS2 == $this->version) {
-            echo '<item>'.\PHP_EOL;
+            echo '<item>' . \PHP_EOL;
         } elseif (RSS1 == $this->version) {
             if ($about) {
-                echo "<item rdf:about=\"$about\">".\PHP_EOL;
+                echo "<item rdf:about=\"$about\">" . \PHP_EOL;
             } else {
                 exit('link element is not set .\n It\'s required for RSS 1.0 to be used as about attribute of item');
             }
         } elseif (ATOM == $this->version) {
-            echo '<entry>'.\PHP_EOL;
+            echo '<entry>' . \PHP_EOL;
         }
     }
 
@@ -377,9 +377,9 @@ class FeedWriter
     private function endItem()
     {
         if (RSS2 == $this->version || RSS1 == $this->version) {
-            echo '</item>'.\PHP_EOL;
+            echo '</item>' . \PHP_EOL;
         } elseif (ATOM == $this->version) {
-            echo '</entry>'.\PHP_EOL;
+            echo '</entry>' . \PHP_EOL;
         }
     }
 }

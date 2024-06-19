@@ -25,29 +25,29 @@ use App\Legacy\LegacyContainer;
                 if (!$commissionTmp) {
                     echo '<p class="erreur"> ID invalide</p>';
                 } else {
-                    if (!allowed('comm_edit', 'commission:'.$commissionTmp['code_commission'])) {
+                    if (!allowed('comm_edit', 'commission:' . $commissionTmp['code_commission'])) {
                         echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour afficher cette page</p>';
                     } else {
                         ?>
 					<h1>Modifier une commission</h1>
 					<?php inclure($p1, 'vide'); ?>
 
-					<form action="<?php echo $versCettePage.'?id_commission='.$id_commission; ?>" method="post" enctype="multipart/form-data" class="loading">
+					<form action="<?php echo $versCettePage . '?id_commission=' . $id_commission; ?>" method="post" enctype="multipart/form-data" class="loading">
 						<input type="hidden" name="operation" value="commission_edit" />
 
 						<?php
                         // MESSAGES A LA SOUMISSION
                         if (isset($_POST['operation']) && 'commission_edit' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                            echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                            echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                         }
                         if (isset($_POST['operation']) && 'commission_edit' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                            echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'.</p>';
+                            echo '<p class="info">Mise à jour effectuée à ' . date('H:i:s', time()) . '.</p>';
                         } ?>
 
 						<hr />
 						<div style="float:left; background:white; padding:7px;">
 							<a href="<?php echo comFd((int) $commissionTmp['id_commission']); ?>" class="fancybox" title="Image actuelle">
-								<img src="<?php echo comFd((int) $commissionTmp['id_commission']).'?ac='.time(); ?>" alt="" title="Image actuelle" style="width:150px" />
+								<img src="<?php echo comFd((int) $commissionTmp['id_commission']) . '?ac=' . time(); ?>" alt="" title="Image actuelle" style="width:150px" />
 							</a>
 						</div>
 						<div style="float:right; width:440px">
@@ -67,7 +67,7 @@ use App\Legacy\LegacyContainer;
 								<tr>
 									<td rowspan="2">
 										<div style="float:left; background:white; padding:5px; margin-right:10px">
-											<img src="<?php echo comPicto((int) $commissionTmp['id_commission']).'?ac='.time(); ?>" alt="" title="Image actuelle" />
+											<img src="<?php echo comPicto((int) $commissionTmp['id_commission']) . '?ac=' . time(); ?>" alt="" title="Image actuelle" />
 										</div>
 									</td>
 									<td> Pictogramme bleu CAF : <strong>#50b5e1</strong></td>
@@ -80,7 +80,7 @@ use App\Legacy\LegacyContainer;
 								<tr>
 									<td rowspan="2">
 										<div style="float:left; background:#eaeaea; padding:5px; margin-right:10px">
-											<img src="<?php echo comPicto((int) $commissionTmp['id_commission'], 'light').'?ac='.time(); ?>" alt="" title="Image actuelle" />
+											<img src="<?php echo comPicto((int) $commissionTmp['id_commission'], 'light') . '?ac=' . time(); ?>" alt="" title="Image actuelle" />
 										</div>
 									</td>
 									<td> Pictogramme blanc : <strong>#ffffff</strong></td>
@@ -93,7 +93,7 @@ use App\Legacy\LegacyContainer;
 								<tr>
 									<td rowspan="2">
 										<div style="float:left; background:white; padding:5px; margin-right:10px">
-											<img src="<?php echo comPicto((int) $commissionTmp['id_commission'], 'dark').'?ac='.time(); ?>" alt="" title="Image actuelle" />
+											<img src="<?php echo comPicto((int) $commissionTmp['id_commission'], 'dark') . '?ac=' . time(); ?>" alt="" title="Image actuelle" />
 										</div>
 									</td>
 									<td> Pictogramme sombre : <strong>#044e68</strong></td>
@@ -205,7 +205,7 @@ use App\Legacy\LegacyContainer;
 
 	<!-- partie droite -->
 	<?php
-    require __DIR__.'/../includes/right-type-agenda.php';
+    require __DIR__ . '/../includes/right-type-agenda.php';
 ?>
 
 	<br style="clear:both" />

@@ -20,6 +20,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
+        $this->getEntityManager()->getConfiguration()->addCustomHydrationMode('HYDRATE_LEGACY', 'App\Utils\LegacyHydrator');
     }
 
     /**
@@ -28,7 +29,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
         if (!$user instanceof User) {
-            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', \get_class($user)));
+            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
         }
 
         $user->setPassword($newHashedPassword);
@@ -44,6 +45,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->setParameter('email', trim($email))
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function findOneByLicenseNumber(string $licenseNumber, ?string $hydratorMode = null)
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.cafnum = :licenseNumber')
+            ->setParameter('licenseNumber', $licenseNumber)
+            ->getQuery()
+            ->getOneOrNullResult($hydratorMode)
+        ;
     }
 
     public function getFiliations(User $user)

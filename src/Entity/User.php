@@ -11,19 +11,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * User.
- *
- *
  */
 #[ORM\Table(name: 'caf_user')]
 #[ORM\Index(name: 'id_user', columns: ['id_user'])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSerializable
 {
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Id]
     #[ORM\Column(name: 'id_user', type: 'bigint', nullable: false)]
@@ -48,7 +43,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      */
-    #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, nullable: true, options: ['comment' => 'Numéro de licence'])]
+    #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, nullable: true, unique: true, options: ['comment' => 'Numéro de licence'])]
     private $cafnum;
 
     /**
@@ -132,7 +127,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string
      */
-    #[ORM\Column(name: 'moreinfo_user', type: 'string', length: 500, nullable: true, options: ['comment' => 'FORMATIONS ?',])]
+    #[ORM\Column(name: 'moreinfo_user', type: 'string', length: 500, nullable: true, options: ['comment' => 'FORMATIONS ?'])]
     private $moreinfo;
 
     /**
@@ -204,10 +199,47 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ExpenseReport::class, orphanRemoval: false)]
     private Collection $expenseReports;
 
-    public function __construct()
+    #[ORM\Column(name: 'is_deleted', type: 'boolean', nullable: false, options: ['default' => 0])]
+    private bool $isDeleted = false;
+
+    public function __construct(?int $id = null)
     {
         $this->attrs = new ArrayCollection();
         $this->created = time();
+        if ($id) {
+            $this->id = $id;
+        }
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->getId(),
+            'email' => $this->getEmail(),
+            'firstname' => $this->getFirstname(),
+            'lastname' => $this->getLastname(),
+            'nickname' => $this->getNickname(),
+            'created' => $this->getCreated(),
+            'birthday' => $this->getBirthday(),
+            'tel' => $this->getTel(),
+            'tel2' => $this->getTel2(),
+            'adresse' => $this->getAdresse(),
+            'cp' => $this->getCp(),
+            'ville' => $this->getVille(),
+            'pays' => $this->getPays(),
+            'civ' => $this->getCiv(),
+            'moreinfo' => $this->getMoreinfo(),
+            'authContact' => $this->getAuthContact(),
+            'valid' => $this->getValid(),
+            'manuel' => $this->getManuel(),
+            'nomade' => $this->getNomade(),
+            'nomadeParent' => $this->getNomadeParent(),
+            'dateAdhesion' => $this->getDateAdhesion(),
+            'doitRenouveler' => $this->getDoitRenouveler(),
+            'alerteRenouveler' => $this->getAlerteRenouveler(),
+            'tsInsert' => $this->getTsInsert(),
+            'tsUpdate' => $this->getTsUpdate(),
+        ];
     }
 
     /** @return UserAttr[] */
@@ -625,7 +657,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see UserInterface
      */
-    public function eraseCredentials() : void
+    public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
@@ -647,9 +679,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * Get the value of expenseReports
-     *
-     * @return Collection
+     * Get the value of expenseReports.
      */
     public function getExpenseReports(): Collection
     {
@@ -657,15 +687,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * Set the value of expenseReports
-     *
-     * @param Collection $expenseReports
-     *
-     * @return self
+     * Set the value of expenseReports.
      */
     public function setExpenseReports(Collection $expenseReports): self
     {
         $this->expenseReports = $expenseReports;
+
+        return $this;
+    }
+
+    public function setIsDeleted(bool $isDeleted)
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

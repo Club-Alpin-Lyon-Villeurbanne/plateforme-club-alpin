@@ -13,38 +13,10 @@ class LegacyController extends AbstractController
     public function rootAction(): StreamedResponse
     {
         return new StreamedResponse(function () {
-            $legacyDir = __DIR__.'/../../legacy/';
+            $legacyDir = __DIR__ . '/../../legacy/';
             $path = 'index.php';
             ob_start();
-            require $legacyDir.$path;
-            ob_end_flush();
-        });
-    }
-
-    #[Route(path: '/img/adresse-website.png', name: 'legacy_img_adresse', methods: ['GET'])]
-    public function adresseWebsiteAction(): StreamedResponse
-    {
-        return new StreamedResponse(function () {
-            $legacyDir = __DIR__.'/../../legacy/';
-            $path = 'index.php';
-            $_GET['cstImg'] = 'adresse-website.png';
-
-            ob_start();
-            require $legacyDir.$path;
-            ob_end_flush();
-        });
-    }
-
-    #[Route(path: '/img/logo.png', name: 'legacy_img_logo', methods: ['GET'])]
-    public function logoAction(): StreamedResponse
-    {
-        return new StreamedResponse(function () {
-            $legacyDir = __DIR__.'/../../legacy/';
-            $path = 'index.php';
-            $_GET['cstImg'] = 'logo.png';
-
-            ob_start();
-            require $legacyDir.$path;
+            require $legacyDir . $path;
             ob_end_flush();
         });
     }
@@ -53,12 +25,12 @@ class LegacyController extends AbstractController
     public function p1Action($p1): StreamedResponse
     {
         return new StreamedResponse(function () use ($p1) {
-            $legacyDir = __DIR__.'/../../legacy/';
+            $legacyDir = __DIR__ . '/../../legacy/';
             $path = 'index.php';
             $_GET['p1'] = $p1;
 
             ob_start();
-            require $legacyDir.$path;
+            require $legacyDir . $path;
             ob_end_flush();
         });
     }
@@ -67,8 +39,7 @@ class LegacyController extends AbstractController
     public function p2Action($p1, $p2, ArticleRepository $articleRepository): StreamedResponse
     {
         return new StreamedResponse(function () use ($p1, $p2, $articleRepository) {
-            
-            $legacyDir = __DIR__.'/../../legacy/';
+            $legacyDir = __DIR__ . '/../../legacy/';
             $path = 'index.php';
             $_GET['p1'] = $p1;
             $_GET['p2'] = $current_commission = $p2;
@@ -83,7 +54,7 @@ class LegacyController extends AbstractController
             }
 
             ob_start();
-            require $legacyDir.$path;
+            require $legacyDir . $path;
             ob_end_flush();
         });
     }
@@ -92,14 +63,14 @@ class LegacyController extends AbstractController
     public function p3Action($p1, $p2, $p3): StreamedResponse
     {
         return new StreamedResponse(function () use ($p1, $p2, $p3) {
-            $legacyDir = __DIR__.'/../../legacy/';
+            $legacyDir = __DIR__ . '/../../legacy/';
             $path = 'index.php';
             $_GET['p1'] = $p1;
             $_GET['p2'] = $current_commission = $p2;
             $_GET['p3'] = $p3;
 
             ob_start();
-            require $legacyDir.$path;
+            require $legacyDir . $path;
             ob_end_flush();
         });
     }
@@ -108,7 +79,7 @@ class LegacyController extends AbstractController
     public function p4Action($p1, $p2, $p3, $p4): StreamedResponse
     {
         return new StreamedResponse(function () use ($p1, $p2, $p3, $p4) {
-            $legacyDir = __DIR__.'/../../legacy/';
+            $legacyDir = __DIR__ . '/../../legacy/';
             $path = 'index.php';
             $_GET['p1'] = $p1;
             $_GET['p2'] = $current_commission = $p2;
@@ -116,7 +87,7 @@ class LegacyController extends AbstractController
             $_GET['p4'] = $p4;
 
             ob_start();
-            require $legacyDir.$path;
+            require $legacyDir . $path;
             ob_end_flush();
         });
     }
@@ -125,7 +96,7 @@ class LegacyController extends AbstractController
     {
         return new StreamedResponse(
             function () use ($requestPath, $legacyScript) {
-                $legacyScript = __DIR__.'/../..'.$legacyScript;
+                $legacyScript = __DIR__ . '/../..' . $legacyScript;
                 $_SERVER['PHP_SELF'] = $requestPath;
                 $_SERVER['SCRIPT_NAME'] = $requestPath;
                 $_SERVER['SCRIPT_FILENAME'] = $legacyScript;

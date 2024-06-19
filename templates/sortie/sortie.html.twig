@@ -166,15 +166,15 @@
         {% endif %}
 
         {% if is_granted('SORTIE_DUPLICATE', event) %}
-        <form action="{{ path('sortie_duplicate', { id: event.id }) }}" method="post" class="loading">
+         <form action="{{ path('sortie_duplicate', { id: event.id }) }}" method="post" class="loading">
             <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
 
-            <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants" class="nice2">
-                Créer une nouvelle sortie avec ce groupe
+            <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants et les mêmes paramètres" class="nice2">
+                Dupliquer cette sortie avec ce groupe
             </a>
         </form>
         {% endif %}
-
+ 
         <br />
         <br />
 
@@ -268,28 +268,30 @@
                     {% endif %}
 
                     {# expense report form #}
-                    {% if event.finished and (my_status.role == 'encadrant' or my_status.role == 'coencadrant') and display_banner %}
-                        {% if currentExpenseReport is null or currentExpenseReport.status == 'draft' %}
-                            {{ vueComponent('expense-report-form', 'ExpenseReportForm', {formStructureProp: expenseReportFormStructure}) }}
-                        {% elseif currentExpenseReport is not null and currentExpenseReport.status == 'submitted' %}
-                            <p class="info">
-                                Vous avez déjà déclaré votre note de frais pour cette sortie. La validation est en attente.
-                            </p>
-                        {% elseif currentExpenseReport is not null and currentExpenseReport.status == 'approved' %}
-                            <p class="info">
-                                Votre note de frais a été validée pour cette sortie.
-                            </p>
-                        {% elseif currentExpenseReport is not null and currentExpenseReport.status == 'rejected' %}
-                            {% if currentExpenseReport.statusComment %}
-                            <p class="info">
-                                Votre note de frais a été refusée pour cette sortie avec le commentaire suivant : <br/>
-                                <strong>{{ currentExpenseReport.statusComment }}</strong>
-                            </p>
-                            {% else %}
-                            <p class="info">Votre note de frais a été refusée pour cette sortie</p>
-                            {% endif %}
+                    {% if is_authorized_to_view_expenses() or display_banner %}
+                        {% if event.finished and (my_status.role == 'encadrant' or my_status.role == 'coencadrant') %}
+                            {% if currentExpenseReport is null or currentExpenseReport.status == 'draft' %}
+                                {{ vueComponent('expense-report-form', 'ExpenseReportForm', {formStructureProp: expenseReportFormStructure}) }}
+                            {% elseif currentExpenseReport is not null and currentExpenseReport.status == 'submitted' %}
+                                <p class="info">
+                                    Vous avez déjà déclaré votre note de frais pour cette sortie. La validation est en attente.
+                                </p>
+                            {% elseif currentExpenseReport is not null and currentExpenseReport.status == 'approved' %}
+                                <p class="info">
+                                    Votre note de frais a été validée pour cette sortie.
+                                </p>
+                            {% elseif currentExpenseReport is not null and currentExpenseReport.status == 'rejected' %}
+                                {% if currentExpenseReport.statusComment %}
+                                <p class="info">
+                                    Votre note de frais a été refusée pour cette sortie avec le commentaire suivant : <br/>
+                                    <strong>{{ currentExpenseReport.statusComment }}</strong>
+                                </p>
+                                {% else %}
+                                <p class="info">Votre note de frais a été refusée pour cette sortie</p>
+                                {% endif %}
 
-                            {{ vueComponent('expense-report-form', 'ExpenseReportForm', {formStructureProp: expenseReportFormStructure}) }}
+                                {{ vueComponent('expense-report-form', 'ExpenseReportForm', {formStructureProp: expenseReportFormStructure}) }}
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 {% else %}
@@ -547,12 +549,14 @@
                                         <td class="mini" >
                                             {% if participation.user.nomade %}
                                                 <br />
-                                                <img
-                                                    src="/img/base/bullet_error.png"
-                                                    alt="!"
-                                                    title="Attention. Ne reçoit pas d'e-mail"
-                                                    style="vertical-align:top"
-                                                />
+                                                {% if not participation.user.email %}
+                                                    <img
+                                                        src="/img/base/bullet_error.png"
+                                                        alt="!"
+                                                        title="Attention. Ne reçoit pas d'e-mail"
+                                                        style="vertical-align:top"
+                                                    />
+                                                {% endif %}
                                                 <br />
                                             {% elseif participation.isRoleManuel or participation.isRoleInscrit or participation.isRoleBenevole %}
                                                 {% if participation.isRoleManuel %}
@@ -716,19 +720,19 @@
             <hr />
         {% endif %}
 
-        {% if event.denivele or event.distance > 0 or event.difficulte or event.matos %}
+        {% if event.denivele or event.distance or event.difficulte or event.matos %}
             <ul class="nice-list">
                 {% if event.denivele %}
                     <li class="wide"><b>DÉNIVELÉ :</b> {{ event.denivele }}</li>
                 {% endif %}
-                {% if event.distance > 0 %}
+                {% if event.distance %}
                     <li class="wide"><b>DISTANCE :</b> {{ event.distance }} km</li>
                 {% endif %}
                 {% if event.difficulte %}
                     <li class="wide"><b>DIFFICULTÉ :</b> {{ event.difficulte }}</li>
                 {% endif %}
                 {% if event.matos %}
-                    <li class="wide"><b>MATÉRIEL :</b> {{ event.matos|nl2br }}</li>
+                    <li class="wide"><b>MATÉRIEL :</b> {{ event.matos | converturls | nl2br }}</li>
                 {% endif %}
             </ul>
             <br style="clear:both" />
@@ -745,7 +749,7 @@
                         <li class="wide"><b>TARIF :</b> {{ event.tarif }} Euros</li>
                     {% endif %}
                     {% if event.tarifDetail %}
-                        <li class="wide"><b>DÉTAIL :</b> {{ event.tarifDetail }}</li>
+                        <li class="wide"><b>DÉTAIL :</b> {{ event.tarifDetail | converturls | nl2br }}</li>
                     {% endif %}
                 </ul>
                 <br style="clear:both" />

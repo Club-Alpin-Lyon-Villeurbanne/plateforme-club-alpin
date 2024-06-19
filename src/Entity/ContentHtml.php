@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -48,13 +47,13 @@ class ContentHtml
     /**
      * @var string
      */
-    #[ORM\Column(name: 'linkedtopage_content_html', type: 'string', length: 200, nullable: false, options: ['comment' => "URL relative de la page liée par défaut à cet élément, pour coupler à un moteur de recherche"])]
+    #[ORM\Column(name: 'linkedtopage_content_html', type: 'string', length: 200, nullable: false, options: ['comment' => 'URL relative de la page liée par défaut à cet élément, pour coupler à un moteur de recherche'])]
     private $linkedtopage;
 
     /**
      * @var bool
      */
-    #[ORM\Column(name: 'current_content_html', type: 'boolean', nullable: false, options: ['comment' => "Définit le dernier élément en date, pour simplifier les requêtes de recherche"])]
+    #[ORM\Column(name: 'current_content_html', type: 'boolean', nullable: false, options: ['comment' => 'Définit le dernier élément en date, pour simplifier les requêtes de recherche'])]
     private $current = '0';
 
     /**

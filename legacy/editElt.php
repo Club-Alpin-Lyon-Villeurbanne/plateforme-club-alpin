@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 
 $MAX_VERSIONS = LegacyContainer::getParameter('legacy_env_CONTENT_MAX_VERSIONS');
 
-require __DIR__.'/app/includes.php';
+require __DIR__ . '/app/includes.php';
 
 // _________________________________________________
 // _____________________________ PAGE
@@ -15,7 +15,7 @@ if (admin()) {
     if ((!isset($_POST['etape'])) || ('enregistrement' != $_POST['etape'])) {
         // récupération du contenu
         $code_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_GET['p']);
-        $id_content_html = isset($_GET['id_content_html']) || array_key_exists('id_content_html', $_GET) ? (int)htmlspecialchars($_GET['id_content_html']) : null;
+        $id_content_html = isset($_GET['id_content_html']) || array_key_exists('id_content_html', $_GET) ? (int) htmlspecialchars($_GET['id_content_html']) : null;
 
         if (!$code_content_html) {
             header('HTTP/1.0 404 Not Found');
@@ -34,10 +34,10 @@ if (admin()) {
                 $regex,
                 function ($matches) {
                     if (!$matches[5]) {
-                        $matches[5] = $matches[1].'@'.$matches[2].'.'.$matches[3];
+                        $matches[5] = $matches[1] . '@' . $matches[2] . '.' . $matches[3];
                     }
 
-                    return '<a href="mailto:'.$matches[1].'@'.$matches[2].'.'.$matches[3].'" '.$matches[4].'>'.$matches[5].'</a>';
+                    return '<a href="mailto:' . $matches[1] . '@' . $matches[2] . '.' . $matches[3] . '" ' . $matches[4] . '>' . $matches[5] . '</a>';
                 },
                 $handle['contenu_content_html']
             );
@@ -151,13 +151,6 @@ if (admin()) {
 							};
 						}
 
-						// appelé depuis ftp.php
-						function retoucher(src){
-							$('.onglets-admin-nav a:eq(2)').addClass('up').siblings().removeClass('up');
-							$('.onglets-admin-item:eq(2)').show().siblings().hide();
-							$('#frameRetouches').attr('src', 'admin/retouches.php?src='+src);
-						}
-
 						// ONREADY
 						$().ready(function(){
 							// chargement de versions précédentes
@@ -203,7 +196,7 @@ if (admin()) {
 										<select name="versions" style="font-size:11px; ">
 											<?php
                                             foreach ($contentVersionsTab as $version) {
-                                                echo '<option value="'.$version['id_content_html'].'" '.($version['id_content_html'] == $id_content_html ? 'selected="selected"' : '').'>'.jour(date('N', $version['date_content_html'])).' '.date('d/m/y à H:i:s', $version['date_content_html']).'</option>';
+                                                echo '<option value="' . $version['id_content_html'] . '" ' . ($version['id_content_html'] == $id_content_html ? 'selected="selected"' : '') . '>' . jour(date('N', $version['date_content_html'])) . ' ' . date('d/m/y à H:i:s', $version['date_content_html']) . '</option>';
                                             } ?>
 										</select>
 										<input type="button" name="loadVersion" value="Charger" class="boutonfancy" />
@@ -266,7 +259,7 @@ if (admin()) {
 
         // sécurisation des adresses e-mail :
         $regexMail = '((?:[a-z0-9!\#$%&\'*+/=?^_`{|}~-]+\.?)*[a-z0-9!\#$%&\'*+/=?^_`{|}~-]+)@((?:[a-z0-9-_]+\.?)*[a-z0-9-_]+)\.([a-z]{2,})';
-        $regex = '#<a ((?:.)*)href="mailto:'.$regexMail.'"((?:.)*)>(.*)</a>#i';
+        $regex = '#<a ((?:.)*)href="mailto:' . $regexMail . '"((?:.)*)>(.*)</a>#i';
         // remplacement de lien mailto par une fonction .js
         $contenu_content_html = preg_replace_callback(
             $regex,
@@ -278,11 +271,12 @@ if (admin()) {
                 // $5 = attributs en rab
                 // $6 = ancre (peut être email en clair)
                 $ancre = trim($matches[6]);
-                if ($matches[2].'@'.$matches[3].'.'.$matches[4] == $ancre) {
+                if ($matches[2] . '@' . $matches[3] . '.' . $matches[4] == $ancre) {
                     $ancre = false;
                 }
+
                 // intégration du script
-                return '<a class="mailthisanchor"></a><script type="text/javascript" class="mailthis">mailThis("'.htmlentities($matches[2], \ENT_QUOTES, 'UTF-8').'", "'.htmlentities($matches[3], \ENT_QUOTES, 'UTF-8').'", "'.htmlentities($matches[4], \ENT_QUOTES, 'UTF-8').'", "'.htmlentities($matches[1].$matches[5], \ENT_QUOTES, 'UTF-8').'", "'.htmlentities($ancre, \ENT_QUOTES, 'UTF-8').'");</script>';
+                return '<a class="mailthisanchor"></a><script type="text/javascript" class="mailthis">mailThis("' . htmlentities($matches[2], \ENT_QUOTES, 'UTF-8') . '", "' . htmlentities($matches[3], \ENT_QUOTES, 'UTF-8') . '", "' . htmlentities($matches[4], \ENT_QUOTES, 'UTF-8') . '", "' . htmlentities($matches[1] . $matches[5], \ENT_QUOTES, 'UTF-8') . '", "' . htmlentities($ancre, \ENT_QUOTES, 'UTF-8') . '");</script>';
             },
             $contenu_content_html
         );
@@ -318,7 +312,7 @@ if (admin()) {
 
         // Enregistrement
         $req = "INSERT INTO  `caf_content_html` (code_content_html ,`lang_content_html` ,`contenu_content_html` ,`date_content_html` ,`linkedtopage_content_html`, `current_content_html`, `vis_content_html`)
-															VALUES ('$code_content_html',  'fr',  '$contenu_content_html',  '".time()."',  '$linkedtopage_content_html', 1, $vis_content_html);";
+															VALUES ('$code_content_html',  'fr',  '$contenu_content_html',  '" . time() . "',  '$linkedtopage_content_html', 1, $vis_content_html);";
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             header('HTTP/1.0 400 Bad request');
             echo 'Erreur SQL';
@@ -326,7 +320,7 @@ if (admin()) {
         }
 
         // log
-        mylog('edit-html', 'Modif élément : <i>'.$code_content_html.'</i>', false); ?>
+        mylog('edit-html', 'Modif élément : <i>' . $code_content_html . '</i>', false); ?>
 		<script>
 			parent.$.fancybox.close();
 			parent.window.document.contUpdate('<?php echo $code_content_html; ?>');

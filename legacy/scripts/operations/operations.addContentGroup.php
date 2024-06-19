@@ -20,11 +20,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $req = "INSERT INTO `caf_content_inline_group` (`ordre_content_inline_group` ,`nom_content_inline_group`)
                                                     VALUES ('', '$nom_content_inline_group');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-        $erreur = 'Erreur BDD<br />'.$req;
+        $erreur = 'Erreur BDD<br />' . $req;
     }
     $id_content_inline_group = LegacyContainer::get('legacy_mysqli_handler')->insertId();
     $req = "UPDATE `caf_content_inline_group` SET `ordre_content_inline_group` = '$id_content_inline_group' WHERE `caf_content_inline_group`.`id_content_inline_group` =$id_content_inline_group LIMIT 1 ;";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-        $erreur = 'Erreur BDD<br />'.$req;
+        $erreur = 'Erreur BDD<br />' . $req;
     }
 }

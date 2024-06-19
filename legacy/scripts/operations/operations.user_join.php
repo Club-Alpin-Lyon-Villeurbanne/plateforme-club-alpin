@@ -44,11 +44,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // vérification que c'est bien mon affilié
             // sauf moi-meme
             if ($id_user_tmp != getUser()->getId()) {
-                $req = "SELECT COUNT(id_user) FROM caf_user WHERE cafnum_parent_user LIKE '".LegacyContainer::get('legacy_mysqli_handler')->escapeString(getUser()->getCafnum())."' AND id_user=".(int) $id_user_tmp;
+                $req = "SELECT COUNT(id_user) FROM caf_user WHERE cafnum_parent_user LIKE '" . LegacyContainer::get('legacy_mysqli_handler')->escapeString(getUser()->getCafnum()) . "' AND id_user=" . (int) $id_user_tmp;
                 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 $row = $result->fetch_row();
                 if (!$row[0]) {
-                    $errTab[] = "ID '".(int) $id_user_tmp."' invalide pour l'inscription d'un adhérent affilié";
+                    $errTab[] = "ID '" . (int) $id_user_tmp . "' invalide pour l'inscription d'un adhérent affilié";
                 }
             }
         }
@@ -63,7 +63,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     // verification du timing de la sortie
-    $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND tsp_evt < ".time().' LIMIT 1';
+    $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND tsp_evt < " . time() . ' LIMIT 1';
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if ($row[0]) {
@@ -71,7 +71,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     // verification du timing de la sortie : inscriptions
-    $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND join_start_evt > ".time().' LIMIT 1';
+    $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND join_start_evt > " . time() . ' LIMIT 1';
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if ($row[0]) {
@@ -125,7 +125,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
             if (!$update) {
                 $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_covoiturage, affiliant_user_join, lastchange_when_evt_join, lastchange_who_evt_join)
-                          VALUES($status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', ".time().", $is_covoiturage, null, null, null);";
+                          VALUES($status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', " . time() . ", $is_covoiturage, null, null, null);";
             } elseif (in_array($id_user, $update, true)) {
                 $req = "UPDATE `caf_evt_join`
                             SET
@@ -146,7 +146,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 } else { */
                 if (!$update || !in_array($id_user_tmp, $update, true)) {
                     $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, affiliant_user_join, role_evt_join, tsp_evt_join, is_covoiturage)
-                              VALUES($status_evt_join, 		'$id_evt',  '$id_user_tmp',  '$id_user',  	'$role_evt_join', ".time().", $is_covoiturage);";
+                              VALUES($status_evt_join, 		'$id_evt',  '$id_user_tmp',  '$id_user',  	'$role_evt_join', " . time() . ", $is_covoiturage);";
                 } elseif (in_array($id_user_tmp, $update, true)) {
                     $req = "UPDATE `caf_evt_join`
                             SET
@@ -167,51 +167,51 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         // créateur de sortie (on utilise les ID comme clé pour éviter le doublon d'email créateur de sortie + encadreant de sortie)
         $req = 'SELECT id_user, email_user, nickname_user, firstname_user, lastname_user, civ_user '
-        .'FROM caf_user, caf_evt '
-        .'WHERE id_user = user_evt '
-        ."AND id_evt = $id_evt "
-        .'LIMIT 1; ';
+        . 'FROM caf_user, caf_evt '
+        . 'WHERE id_user = user_evt '
+        . "AND id_evt = $id_evt "
+        . 'LIMIT 1; ';
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
-            $destinataires[''.$row['id_user']] = $row;
+            $destinataires['' . $row['id_user']] = $row;
         }
 
         // encadrants (on utilise les ID comme clé pour éviter le doublon d'email créateur de sortie + encadreant de sortie)
         $req = 'SELECT id_user, email_user, nickname_user, firstname_user, lastname_user, civ_user, role_evt_join '
-        .'FROM caf_user, caf_evt_join '
-        .'WHERE id_user = user_evt_join '
-        ."AND evt_evt_join = $id_evt "
-        .'AND status_evt_join = 1 '
-        ."AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant') ";
+        . 'FROM caf_user, caf_evt_join '
+        . 'WHERE id_user = user_evt_join '
+        . "AND evt_evt_join = $id_evt "
+        . 'AND status_evt_join = 1 '
+        . "AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant') ";
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
-            $destinataires[''.$row['id_user']] = $row;
+            $destinataires['' . $row['id_user']] = $row;
         }
 
         // infos sur la sortie
         $evt = [];
         $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt '
-        .'FROM caf_evt '
-        ."WHERE id_evt = $id_evt "
-        .'LIMIT 1 ';
+        . 'FROM caf_evt '
+        . "WHERE id_evt = $id_evt "
+        . 'LIMIT 1 ';
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $evt = $row;
         }
 
-        $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'sortie/'.$evt['code_evt'].'-'.$evt['id_evt'].'.html';
+        $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $evt['code_evt'] . '-' . $evt['id_evt'] . '.html';
         $evtName = $evt['titre_evt'];
 
         // infos sur ce nouvel inscrit
         $inscrits = [];
         $req = 'SELECT email_user, nickname_user, firstname_user, lastname_user, civ_user, birthday_user '
-        .'FROM caf_user '
-        .($filiations ?
-            'WHERE id_user = '.implode(' OR id_user = ', $idUsersFiliations).' ' // filiation : liste d'ids
+        . 'FROM caf_user '
+        . ($filiations ?
+            'WHERE id_user = ' . implode(' OR id_user = ', $idUsersFiliations) . ' ' // filiation : liste d'ids
             :
             "WHERE id_user = $id_user "
         )
-        .'LIMIT 100 ';
+        . 'LIMIT 100 ';
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
             $inscrits[] = $row;
@@ -234,7 +234,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'lastname' => getUser()->getLastname(),
                 'nickname' => getUser()->getNickname(),
                 'covoiturage' => $is_covoiturage,
-                'dest_role' => \array_key_exists('role_evt_join', $destinataire) ? $destinataire['role_evt_join'] : 'l\'auteur',
+                'dest_role' => array_key_exists('role_evt_join', $destinataire) ? $destinataire['role_evt_join'] : 'l\'auteur',
             ], [], null, getUser()->getEmail());
         }
     }

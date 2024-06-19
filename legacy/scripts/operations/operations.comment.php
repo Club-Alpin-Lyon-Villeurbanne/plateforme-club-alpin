@@ -38,10 +38,10 @@ $comment_article = null;
 if (!isset($errTab) || 0 === count($errTab)) {
     // article publié et commentable ?
     $req = 'SELECT a.id_article, a.user_article, u.email_user, a.titre_article, a.code_article
-            FROM caf_'.$parent_type_comment.' a, caf_user u
+            FROM caf_' . $parent_type_comment . ' a, caf_user u
             WHERE u.id_user=a.user_article
-            AND a.id_'.$parent_type_comment." = $parent_comment
-            AND a.status_".$parent_type_comment.' = 1
+            AND a.id_' . $parent_type_comment . " = $parent_comment
+            AND a.status_" . $parent_type_comment . ' = 1
             LIMIT 1';
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
@@ -59,7 +59,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // article publié et commentable ?
     $req = "INSERT INTO caf_comment(status_comment, tsp_comment, user_comment, name_comment, email_comment, cont_comment, parent_type_comment, parent_comment)
-                            VALUES ('1', 			 '".time()."',  '".getUser()->getId()."',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
+                            VALUES ('1', 			 '" . time() . "',  '" . getUser()->getId() . "',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
@@ -67,7 +67,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if ('' !== $comment_article[2]) {
         LegacyContainer::get('legacy_mailer')->send($comment_article[2], 'transactional/article-comment', [
             'article_name' => $comment_article[3],
-            'article_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL).'article/'.$comment_article[4].'-'.$comment_article[0].'.html#comments',
+            'article_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'article/' . $comment_article[4] . '-' . $comment_article[0] . '.html#comments',
             'message' => $cont_comment,
         ], [], null, getUser()->getEmail());
     }

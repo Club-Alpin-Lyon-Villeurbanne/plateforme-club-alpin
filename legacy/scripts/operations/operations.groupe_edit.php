@@ -28,7 +28,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             if (!isset($errTab) || 0 === count($errTab)) {
                 $req =
                 "INSERT INTO `caf_groupe` (`id_commission`, `nom`, `description`, `niveau_physique`, `niveau_technique`, `actif`)
-                    VALUES ('".$id_comm."', '".$nom."', '".$description."', '".$niveau_physique."', '".$niveau_technique."', '1');";
+                    VALUES ('" . $id_comm . "', '" . $nom . "', '" . $description . "', '" . $niveau_physique . "', '" . $niveau_technique . "', '1');";
                 if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL insertion groupe';
                 }
@@ -53,33 +53,33 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $need_comma = false;
                 $req = 'UPDATE `caf_groupe` SET ';
                 if ($groupe['nom']) {
-                    $req .= "`nom` = '".$nom."' ";
+                    $req .= "`nom` = '" . $nom . "' ";
                     $need_comma = true;
                 }
                 if ($groupe['description']) {
                     $req .= $need_comma ? ' , ' : '';
-                    $req .= " `description` = '".$description."' ";
+                    $req .= " `description` = '" . $description . "' ";
                     $need_comma = true;
                 }
                 if (isset($groupe['niveau_technique'])) {
                     $req .= $need_comma ? ' , ' : '';
-                    $req .= "  `niveau_technique` = '".$niveau_technique."' ";
+                    $req .= "  `niveau_technique` = '" . $niveau_technique . "' ";
                     $need_comma = true;
                 }
                 if (isset($groupe['niveau_physique'])) {
                     $req .= $need_comma ? ' , ' : '';
-                    $req .= "  `niveau_physique` = '".$niveau_physique."' ";
+                    $req .= "  `niveau_physique` = '" . $niveau_physique . "' ";
                     $need_comma = true;
                 }
                 if (isset($groupe['actif'])) {
                     $req .= $need_comma ? ' , ' : '';
-                    $req .= "  `actif` = '".$actif."' ";
+                    $req .= "  `actif` = '" . $actif . "' ";
                     $need_comma = true;
                 }
-                $req .= 'WHERE `id` = '.$id_groupe;
+                $req .= 'WHERE `id` = ' . $id_groupe;
 
                 if (isset($groupe['delete']) && 'on' == $groupe['delete']) {
-                    $req = 'DELETE FROM `caf_groupe` WHERE `id` = '.$id_groupe;
+                    $req = 'DELETE FROM `caf_groupe` WHERE `id` = ' . $id_groupe;
                 }
 
                 if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {

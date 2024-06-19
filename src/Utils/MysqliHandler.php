@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use App\Entity\User;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -14,27 +15,27 @@ class MysqliHandler
     private RequestStack $requestStack;
     private string $kernelEnvironment;
     private TokenStorageInterface $tokenStorage;
+    private ContainerBagInterface $params;
 
-    public function __construct(TokenStorageInterface $tokenStorage, LoggerInterface $logger, RequestStack $requestStack, string $kernelEnvironment)
+    public function __construct(TokenStorageInterface $tokenStorage, LoggerInterface $logger, RequestStack $requestStack, string $kernelEnvironment, ContainerBagInterface $params)
     {
         $this->tokenStorage = $tokenStorage;
         $this->logger = $logger;
         $this->requestStack = $requestStack;
         $this->kernelEnvironment = $kernelEnvironment;
+        $this->params = $params;
         $this->initializeConnection();
     }
 
     private function initializeConnection()
     {
-        $conf = include __DIR__.'/../../legacy/app/db_config.php';
-
-        $dbname = $conf['dbname'];
+        $dbname = $this->params->get('legacy_env_DB_NAME');
 
         if ('test' === $this->kernelEnvironment) {
             $dbname .= '_test';
         }
 
-        $this->mysqli = new \mysqli($conf['host'], $conf['user'], $conf['password'], $dbname, $conf['port']);
+        $this->mysqli = new \mysqli($this->params->get('legacy_env_DB_HOST'), $this->params->get('legacy_env_DB_USER'), $this->params->get('legacy_env_DB_PASSWORD'), $dbname, $this->params->get('legacy_env_DB_PORT'));
 
         if ($this->mysqli->connect_errno) {
             throw new \RuntimeException('Error while connecting to database');
@@ -62,7 +63,7 @@ class MysqliHandler
             $user = null;
             if ($token = $this->tokenStorage->getToken()) {
                 if (($u = $token->getUser()) instanceof User) {
-                    $user = $u->getEmail().' ('.$u->getId().')';
+                    $user = $u->getEmail() . ' (' . $u->getId() . ')';
                 }
             }
 
@@ -77,6 +78,11 @@ class MysqliHandler
         }
 
         return $result;
+    }
+
+    public function prepare($query)
+    {
+        return $this->mysqli->prepare($query);
     }
 
     public function escapeString($value)

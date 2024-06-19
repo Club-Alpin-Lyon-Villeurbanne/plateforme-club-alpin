@@ -22,13 +22,13 @@ use App\Legacy\LegacyContainer;
 
         echo '<p>';
 if (allowed('stats_commissions_read')) {
-    echo '<a href="/stats/commissions.html" '.('commissions' == $p2 ? 'style="background:#d3d6ff"' : '').' class="boutonFancy">Statistiques par sorties</a> ';
+    echo '<a href="/stats/commissions.html" ' . ('commissions' == $p2 ? 'style="background:#d3d6ff"' : '') . ' class="boutonFancy">Statistiques par sorties</a> ';
 }
 if (allowed('stats_users_read')) {
-    echo '<a href="/stats/users.html" '.('users' == $p2 ? 'style="background:#d3d6ff"' : '').' class="boutonFancy">Statistiques par adhérents</a> ';
+    echo '<a href="/stats/users.html" ' . ('users' == $p2 ? 'style="background:#d3d6ff"' : '') . ' class="boutonFancy">Statistiques par adhérents</a> ';
 }
 if (allowed('article_create')) {
-    echo '<a href="/stats/nbvues.html" '.('nbvues' == $p2 ? 'style="background:#d3d6ff"' : '').' class="boutonFancy">Statistiques articles</a> ';
+    echo '<a href="/stats/nbvues.html" ' . ('nbvues' == $p2 ? 'style="background:#d3d6ff"' : '') . ' class="boutonFancy">Statistiques articles</a> ';
 }
 echo '</p>';
 
@@ -43,9 +43,9 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 			<form action="<?php echo $versCettePage; ?>">
 				<b>Période :</b><br />
 				du
-				<input type="text" name="dateMin" class="type2" style="" value="<?php echo $dateMin ?? '' ?>" placeholder="jj/mm/aaaa" />
+				<input type="text" name="dateMin" class="type2" style="" value="<?php echo $dateMin ?? ''; ?>" placeholder="jj/mm/aaaa" />
 				au
-				<input type="text" name="dateMax" class="type2" style="" value="<?php echo $dateMax ?? '' ?>" placeholder="jj/mm/aaaa" />
+				<input type="text" name="dateMax" class="type2" style="" value="<?php echo $dateMax ?? ''; ?>" placeholder="jj/mm/aaaa" />
 
 				<input type="submit" class="type1" value="Appliquer" />
 
@@ -78,7 +78,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 
     // conversion tsp
     $tspMin = strtotime(str_replace('/', '-', $dateMin));
-    $tspMax = strtotime(str_replace('/', '-', $dateMax).' 23:59');
+    $tspMax = strtotime(str_replace('/', '-', $dateMax) . ' 23:59');
 
     /*** USERS **/
 
@@ -92,7 +92,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					FROM caf_evt, caf_evt_join
 					WHERE evt_evt_join = id_evt
 					AND cancelled_evt = 0
-					AND commission_evt ='.(int) $comm['id_commission']."
+					AND commission_evt =' . (int) $comm['id_commission'] . "
 
 					AND tsp_evt > $tspMin
 					AND tsp_evt < $tspMax
@@ -107,7 +107,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
                     WHERE evt_evt_join = id_evt
                     AND cancelled_evt = 0
                     AND status_evt_join = 1
-                    AND commission_evt ='.(int) $comm['id_commission']."
+                    AND commission_evt =' . (int) $comm['id_commission'] . "
 
                     AND tsp_evt > $tspMin
                     AND tsp_evt < $tspMax
@@ -125,7 +125,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
                     WHERE evt_evt_join = id_evt
                     AND cancelled_evt = 0
                     AND status_evt_join = 1
-                    AND commission_evt ='.(int) $comm['id_commission']."
+                    AND commission_evt =' . (int) $comm['id_commission'] . "
 
                     AND tsp_evt > $tspMin
                     AND tsp_evt < $tspMax
@@ -143,13 +143,13 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
                     WHERE evt_evt_join = id_evt
                     AND cancelled_evt = 0
                     AND status_evt_join = 1
-                    AND commission_evt ='.(int) $comm['id_commission']."
+                    AND commission_evt =' . (int) $comm['id_commission'] . "
 
                     AND tsp_evt > $tspMin
                     AND tsp_evt < $tspMax
 
                     AND id_user = user_evt_join
-                    AND birthday_user > (tsp_evt - ".(18 * 365 * 24 * 60 * 60).')
+                    AND birthday_user > (tsp_evt - " . (18 * 365 * 24 * 60 * 60) . ')
                     ';
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -161,7 +161,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					FROM caf_evt, caf_evt_join
 					WHERE evt_evt_join = id_evt
 					AND status_evt_join = 1
-					AND commission_evt ='.(int) $comm['id_commission']."
+					AND commission_evt =' . (int) $comm['id_commission'] . "
 					AND cancelled_evt = 0
 
 					AND tsp_evt > $tspMin
@@ -177,7 +177,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					FROM caf_evt, caf_evt_join
 					WHERE evt_evt_join = id_evt
 					AND status_evt_join = 2
-					AND commission_evt ='.(int) $comm['id_commission']."
+					AND commission_evt =' . (int) $comm['id_commission'] . "
 					AND cancelled_evt = 0
 
 					AND tsp_evt > $tspMin
@@ -193,7 +193,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					FROM caf_evt, caf_evt_join
 					WHERE evt_evt_join = id_evt
 					AND status_evt_join = 3
-					AND commission_evt ='.(int) $comm['id_commission']."
+					AND commission_evt =' . (int) $comm['id_commission'] . "
 					AND cancelled_evt = 0
 
 					AND tsp_evt > $tspMin
@@ -252,21 +252,21 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					<tbody>
 						<?php
                 foreach ($comTab as $key => $comm) {
-                    echo '<tr id="tr-'.$comm['id_commission'].'" class="'.($comm['vis_commission'] ? 'vis-on' : 'vis-off').'">'
-                        .'<td>'.html_utf8($comm['title_commission']).'</td>'
+                    echo '<tr id="tr-' . $comm['id_commission'] . '" class="' . ($comm['vis_commission'] ? 'vis-on' : 'vis-off') . '">'
+                        . '<td>' . html_utf8($comm['title_commission']) . '</td>'
 
-                        .'<td>'.(int) $comm['stats']['join_total'].'</td>'
-                        .'<td>'.(int) $comm['stats']['join_1'].'</td>'
-                        .'<td>'.(int) $comm['stats']['join_2'].'</td>'
-                        .'<td>'.(int) $comm['stats']['join_total_hommes'].'</td>'
-                        .'<td>'.(int) $comm['stats']['join_total_femmes'].'</td>'
-                        .'<td>'.($comm['stats']['join_total'] > 0 ? (int) ($comm['stats']['join_total_hommes'] * 100 / $comm['stats']['join_1']) : '0').'</td>'
+                        . '<td>' . (int) $comm['stats']['join_total'] . '</td>'
+                        . '<td>' . (int) $comm['stats']['join_1'] . '</td>'
+                        . '<td>' . (int) $comm['stats']['join_2'] . '</td>'
+                        . '<td>' . (int) $comm['stats']['join_total_hommes'] . '</td>'
+                        . '<td>' . (int) $comm['stats']['join_total_femmes'] . '</td>'
+                        . '<td>' . ($comm['stats']['join_total'] > 0 ? (int) ($comm['stats']['join_total_hommes'] * 100 / $comm['stats']['join_1']) : '0') . '</td>'
 
-                        .'<td>'.(int) $comm['stats']['join_total_mineurs'].'</td>'
-                        .'<td>'.($comm['stats']['join_total'] > 0 ? (int) ($comm['stats']['join_total_mineurs'] * 100 / $comm['stats']['join_1']) : '0').'</td>'
+                        . '<td>' . (int) $comm['stats']['join_total_mineurs'] . '</td>'
+                        . '<td>' . ($comm['stats']['join_total'] > 0 ? (int) ($comm['stats']['join_total_mineurs'] * 100 / $comm['stats']['join_1']) : '0') . '</td>'
 
-                        .'<td>'.(int) $comm['stats']['join_3'].'</td>'
-                    .'</tr>'."\n";
+                        . '<td>' . (int) $comm['stats']['join_3'] . '</td>'
+                    . '</tr>' . "\n";
                 } ?>
 					</tbody>
 				</table>
@@ -283,7 +283,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
             // SORTIES
             $req = 'SELECT COUNT(id_evt)
 						FROM caf_evt
-						WHERE commission_evt='.$comm['id_commission']."
+						WHERE commission_evt=' . $comm['id_commission'] . "
 						AND tsp_evt > $tspMin
 						AND tsp_evt < $tspMax
 						";
@@ -295,7 +295,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
             // SORTIES VALIDEES
             $req = 'SELECT COUNT(id_evt)
 						FROM caf_evt
-						WHERE commission_evt='.$comm['id_commission']."
+						WHERE commission_evt=' . $comm['id_commission'] . "
 						AND status_evt = 1
 						AND tsp_evt > $tspMin
 						AND tsp_evt < $tspMax
@@ -307,7 +307,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
             // SORTIES REFUSÉES
             $req = 'SELECT COUNT(id_evt)
 						FROM caf_evt
-						WHERE commission_evt='.$comm['id_commission']."
+						WHERE commission_evt=' . $comm['id_commission'] . "
 						AND status_evt = 2
 						AND tsp_evt > $tspMin
 						AND tsp_evt < $tspMax
@@ -319,7 +319,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
             // SORTIES VALIDEES
             $req = 'SELECT COUNT(id_evt)
 						FROM caf_evt
-						WHERE commission_evt='.$comm['id_commission']."
+						WHERE commission_evt=' . $comm['id_commission'] . "
 						AND status_legal_evt = 1
 						AND tsp_evt > $tspMin
 						AND tsp_evt < $tspMax
@@ -331,7 +331,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
             // SORTIES NON VALIDEES
             $req = 'SELECT COUNT(id_evt)
 						FROM caf_evt
-						WHERE commission_evt='.$comm['id_commission']."
+						WHERE commission_evt=' . $comm['id_commission'] . "
 						AND status_legal_evt = 0
 						AND tsp_evt > $tspMin
 						AND tsp_evt < $tspMax
@@ -344,7 +344,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
             $req = "SELECT COUNT(id_user )
 						FROM caf_user, caf_usertype, caf_user_attr
 						WHERE id_user = user_user_attr
-						AND params_user_attr LIKE 'commission:".$key."'
+						AND params_user_attr LIKE 'commission:" . $key . "'
 						AND usertype_user_attr LIKE id_usertype
 						AND code_usertype LIKE 'responsable-commission'
 						";
@@ -356,7 +356,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
             $req = "SELECT COUNT( id_user )
 						FROM caf_user, caf_usertype, caf_user_attr
 						WHERE id_user = user_user_attr
-						AND params_user_attr LIKE 'commission:".$key."'
+						AND params_user_attr LIKE 'commission:" . $key . "'
 						AND usertype_user_attr LIKE id_usertype
 						AND (code_usertype LIKE 'encadrant' OR code_usertype LIKE 'stagiaire')
 						";
@@ -368,7 +368,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
             $req = "SELECT COUNT( id_user )
 						FROM caf_user, caf_usertype, caf_user_attr
 						WHERE id_user = user_user_attr
-						AND params_user_attr LIKE 'commission:".$key."'
+						AND params_user_attr LIKE 'commission:" . $key . "'
 						AND usertype_user_attr LIKE id_usertype
 						AND code_usertype LIKE 'coencadrant'
 						";
@@ -424,17 +424,17 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					<tbody>
 						<?php
                 foreach ($comTab as $key => $comm) {
-                    echo '<tr id="tr-'.$comm['id_commission'].'" class="'.($comm['vis_commission'] ? 'vis-on' : 'vis-off').'">'
-                        .'<td>'.html_utf8($comm['title_commission']).'</td>'
-                        .'<td>'.(int) $comm['stats']['evt_total'].'</td>'
-                        .'<td>'.(int) $comm['stats']['evt_1'].'</td>'
-                        .'<td>'.(int) $comm['stats']['evt_2'].'</td>'
-                        .'<td>'.(int) $comm['stats']['evt_legal_1'].'</td>'
-                        .'<td>'.(int) $comm['stats']['evt_legal_0'].'</td>'
-                        .'<td>'.(int) $comm['stats']['respcomm'].'</td>'
-                        .'<td>'.(int) $comm['stats']['encadrants'].'</td>'
-                        .'<td>'.(int) $comm['stats']['coencadrants'].'</td>'
-                    .'</tr>'."\n";
+                    echo '<tr id="tr-' . $comm['id_commission'] . '" class="' . ($comm['vis_commission'] ? 'vis-on' : 'vis-off') . '">'
+                        . '<td>' . html_utf8($comm['title_commission']) . '</td>'
+                        . '<td>' . (int) $comm['stats']['evt_total'] . '</td>'
+                        . '<td>' . (int) $comm['stats']['evt_1'] . '</td>'
+                        . '<td>' . (int) $comm['stats']['evt_2'] . '</td>'
+                        . '<td>' . (int) $comm['stats']['evt_legal_1'] . '</td>'
+                        . '<td>' . (int) $comm['stats']['evt_legal_0'] . '</td>'
+                        . '<td>' . (int) $comm['stats']['respcomm'] . '</td>'
+                        . '<td>' . (int) $comm['stats']['encadrants'] . '</td>'
+                        . '<td>' . (int) $comm['stats']['coencadrants'] . '</td>'
+                    . '</tr>' . "\n";
                 } ?>
 					</tbody>
 				</table>
@@ -510,19 +510,19 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					<tbody>
 			<?php
             while ($article = $result->fetch_assoc()) {
-                echo '<tr id="tr-'.$article['id_article'].'" class="vis-on">'
-                .'<td>'.date('d.m.Y', $article['tsp_validate_article']).'</td>'
-                .'<td><a href="/article/'.html_utf8($article['code_article']).'-'.(int) $article['id_article'].'.html" target="_blank">'.$article['titre_article'].'</a></td>'
-                .'<td>'.userlink($article['id_user'], ucfirst(mb_strtolower($article['firstname_user'], 'UTF-8')).' '.$article['lastname_user']).'</td>'
-                .'<td>'.html_utf8($article['title_commission']).'</td>'
-                .'<td>';
+                echo '<tr id="tr-' . $article['id_article'] . '" class="vis-on">'
+                . '<td>' . date('d.m.Y', $article['tsp_validate_article']) . '</td>'
+                . '<td><a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html" target="_blank">' . $article['titre_article'] . '</a></td>'
+                . '<td>' . userlink($article['id_user'], ucfirst(mb_strtolower($article['firstname_user'], 'UTF-8')) . ' ' . $article['lastname_user']) . '</td>'
+                . '<td>' . html_utf8($article['title_commission']) . '</td>'
+                . '<td>';
                 echo $comments[$article['id_article']] ?? '0';
                 echo '</td><td';
                 if (1 == $article['une_article']) {
                     echo ' style="background:url(/img/base/star.png) no-repeat center right"';
                 }
-                echo '>'.(int) $article['nb_vues_article'].'</td>'
-                .'</tr>';
+                echo '>' . (int) $article['nb_vues_article'] . '</td>'
+                . '</tr>';
             } ?>
 					</tbody>
 					</table>

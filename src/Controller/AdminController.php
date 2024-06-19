@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class AdminController extends AbstractController
 {
@@ -23,10 +23,9 @@ class AdminController extends AbstractController
         return array_merge(parent::getSubscribedServices(), [EntityManagerInterface::class]);
     }
 
-    
     #[Route(name: 'admin_login', path: '/admin/', methods: ['GET', 'POST'])]
-    #[Security("is_granted('ROLE_USER')")]
-    #[Template]
+    #[IsGranted('ROLE_USER')]
+    #[Template('admin/index.html.twig')]
     public function index(Request $request)
     {
         if ('POST' === $request->getMethod()) {
@@ -50,10 +49,8 @@ class AdminController extends AbstractController
         return [];
     }
 
-    
     #[Route(name: 'admin_logout', path: '/admin/logout', methods: ['GET'])]
-    #[Security("is_granted('ROLE_USER')")]
-    #[Template]
+    #[IsGranted('ROLE_USER')]
     public function adminLogout(Request $request)
     {
         $request->getSession()->remove('admin_caf');

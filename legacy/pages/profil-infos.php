@@ -30,11 +30,11 @@ if (user()) {
                 <?php
                 foreach (getUser()->getAttributes() as $attr) {
                     if (UserAttr::RESPONSABLE_COMMISSION === $attr->getCode()) {
-                        echo '<li><a href="/commission-consulter.html?code_commission='.$attr->getCommission().'" title="Fiche commission">'.$attr->getTitle().', '.$attr->getCommission().'</a></li>';
+                        echo '<li><a href="/commission-consulter.html?code_commission=' . $attr->getCommission() . '" title="Fiche commission">' . $attr->getTitle() . ', ' . $attr->getCommission() . '</a></li>';
                     } elseif (in_array($attr->getCode(), [UserAttr::ENCADRANT, UserAttr::COENCADRANT], true)) {
-                        echo '<li>'.$attr->getTitle().', '.$attr->getCommission().'</li>';
+                        echo '<li>' . $attr->getTitle() . ', ' . $attr->getCommission() . '</li>';
                     } else {
-                        echo '<li>'.$attr->getTitle().'</li>';
+                        echo '<li>' . $attr->getTitle() . '</li>';
                     }
                 }
             ?>
@@ -51,7 +51,7 @@ if (user()) {
                 <?php
             foreach ($tmpUser['enfants'] as $enfant) {
                 // echo '<li>'.$enfant['firstname_user'].' '.$enfant['lastname_user'].'</li>';
-                echo '<li>'.userlink($enfant['id_user'], $enfant['nickname_user'], '', $enfant['firstname_user'], $enfant['lastname_user'], $style = 'full').'</li>';
+                echo '<li>' . userlink($enfant['id_user'], $enfant['nickname_user'], '', $enfant['firstname_user'], $enfant['lastname_user'], $style = 'full') . '</li>';
             }
             ?>
             </ul>
@@ -67,7 +67,7 @@ if (user()) {
             <ul class="nice-list">
                 <?php
             $parent = $tmpUser['parent'];
-            echo '<li>'.userlink($parent['id_user'], $parent['nickname_user'], '', $parent['firstname_user'], $parent['lastname_user'], $style = 'full').'</li>';
+            echo '<li>' . userlink($parent['id_user'], $parent['nickname_user'], '', $parent['firstname_user'], $parent['lastname_user'], $style = 'full') . '</li>';
             ?>
             </ul>
             <br style="clear:both" />
@@ -82,10 +82,10 @@ if (user()) {
             <?php
             // TABLEAU
             if (isset($_POST['operation']) && 'user_update' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                echo '<div class="erreur">Erreur : <ul><li>'.implode('</li><li>', $errTab).'</li></ul></div>';
+                echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
             }
     if (isset($_POST['operation']) && 'user_update' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<p class="info">Mise à jour effectuée à '.date('H:i:s', time()).'.</p>';
+        echo '<p class="info">Mise à jour effectuée à ' . date('H:i:s', time()) . '.</p>';
     } ?>
             &nbsp;
 
@@ -93,9 +93,9 @@ if (user()) {
             <br />
             <div id="edit_profil_image">
                 <?php
-                $image = '/ftp/user/'.$tmpUser['id_user'].'/min-profil.jpg';
+                $image = '/ftp/user/' . $tmpUser['id_user'] . '/min-profil.jpg';
     // pas d'image
-    if (!is_file(__DIR__.'/../../public'.$image)) {
+    if (!is_file(__DIR__ . '/../../public' . $image)) {
         $image = '/ftp/user/0/min-profil.jpg';
     }
     // image custom
@@ -103,7 +103,7 @@ if (user()) {
         // bouton de suppression
         echo '<span class="delete"><img src="/img/base/delete.png" alt="DELETE" title="Supprimer cette image" /></span>';
     }
-    echo '<img class="imgprofil" src="'.$image.'?ac='.time().'" alt="Photo de profil" title="Envoyez votre propre photo" />'; ?>
+    echo '<img class="imgprofil" src="' . $image . '?ac=' . time() . '" alt="Photo de profil" title="Envoyez votre propre photo" />'; ?>
             </div>
 
             <b>Votre pseudonyme :</b>
@@ -172,14 +172,14 @@ if (user()) {
                                 if ($tmpUser['alerte_renouveler_user']) {
                                     echo '<span class="alerte">';
                                 }
-                if ($tmpUser['date_adhesion_user'] > 0) {
-                    echo date('d/m/Y', $tmpUser['date_adhesion_user']);
-                } else {
-                    echo 'aucune date connue.';
-                }
-                if ($tmpUser['alerte_renouveler_user']) {
-                    echo '</span>';
-                } ?>
+    if ($tmpUser['date_adhesion_user'] > 0) {
+        echo date('d/m/Y', $tmpUser['date_adhesion_user']);
+    } else {
+        echo 'aucune date connue.';
+    }
+    if ($tmpUser['alerte_renouveler_user']) {
+        echo '</span>';
+    } ?>
                 </b>
             </div>
 
@@ -206,7 +206,7 @@ if (user()) {
             <br style="clear:both" /><br style="clear:both" />
             Adresse <span class="mini">- N° &amp; rue - code postal - ville - pays</span><br />
             <b><?php
-                            echo html_utf8($tmpUser['adresse_user']);
+                echo html_utf8($tmpUser['adresse_user']);
     echo '<br style="clear:both" />';
     echo html_utf8($tmpUser['cp_user']);
     echo '&nbsp;&nbsp;&nbsp;';
@@ -239,7 +239,7 @@ if (user()) {
 
             <?php $whocan_selected = $tmpUser['auth_contact_user']; ?>
             <?php $whocan_table = true; ?>
-            <?php require __DIR__.'/../includes/user/whocan_contact.php'; ?>
+            <?php require __DIR__ . '/../includes/user/whocan_contact.php'; ?>
 
             <hr />
             <br />

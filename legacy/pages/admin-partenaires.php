@@ -1,9 +1,36 @@
 <?php
 
+use App\Legacy\LegacyContainer;
+
 if (!admin()) {
     echo 'Votre session administrateur a expiré';
-} else {
-    ?>
+
+    return;
+}
+
+$partenairesTab = [];
+$show = 'all';
+// fonctions disponibles
+if (isset($_GET['show']) && in_array($_GET['show'], ['all', 'public', 'private', 'enabled', 'disabled'], true)) {
+    $show = $_GET['show'];
+}
+$show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
+
+$req = 'SELECT part_id, part_name, part_url, part_desc, part_image, part_type, part_enable, part_order, part_click
+	FROM caf_partenaires '
+    . ('private' == $show ? ' WHERE part_type=1 ' : '')
+    . ('public' == $show ? ' WHERE part_type=2 ' : '')
+    . ('enabled' == $show ? ' WHERE part_enable=1 ' : '')
+    . ('disabled' == $show ? ' WHERE part_enable != 1' : '')
+    . ' ORDER BY part_order, part_type, part_name ASC
+	LIMIT 1000';
+
+$handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+while ($row = $handleSql->fetch_assoc()) {
+    $partenairesTab[] = $row;
+}
+
+?>
 	<h1>Gestion du slider partenaires de la page d'accueil&nbsp;&nbsp;<a href="/includer.php?p=pages/partenaire-modifier.php&amp;part_id=-1" class="fancyframe" title="ajouter un nouveau partenaire"><img src="/img/base/add.png" /></a></h1>
 	<p>
 		<img src="/img/base/magnifier.png" style="vertical-align:middle" />
@@ -85,47 +112,44 @@ if (!admin()) {
 
 		        $total = 0;
 
-    for ($i = 0; $i < count($partenairesTab); ++$i) {
-        $elt = $partenairesTab[$i];
+for ($i = 0; $i < count($partenairesTab); ++$i) {
+    $elt = $partenairesTab[$i];
 
-        echo '<tr id="tr-'.$elt['part_id'].'" class="'.($elt['part_enable'] ? 'vis-on' : 'vis-off').'">'
-                    .'<td style="white-space:nowrap;">';
-        // edit
-        echo '<a href="/includer.php?p=pages/partenaire-modifier.php&amp;part_id='.(int) $elt['part_id'].'" class="fancyframe" title="Modifier ce partenaire"><img src="/img/base/application_form_edit.png" alt="MODIFIER" title=""></a> ';
-        echo '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/partenaire-supprimer.php&amp;part_id='.(int) $elt['part_id'].'" class="fancyframe" title="Supprimer"><img src="/img/base/delete.png" alt="SUPPRIMER" title="SUPPRIMER"  style="margin-bottom:-2px;"></a> ';
+    echo '<tr id="tr-' . $elt['part_id'] . '" class="' . ($elt['part_enable'] ? 'vis-on' : 'vis-off') . '">'
+                . '<td style="white-space:nowrap;">';
+    // edit
+    echo '<a href="/includer.php?p=pages/partenaire-modifier.php&amp;part_id=' . (int) $elt['part_id'] . '" class="fancyframe" title="Modifier ce partenaire"><img src="/img/base/application_form_edit.png" alt="MODIFIER" title=""></a> ';
+    echo '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/partenaire-supprimer.php&amp;part_id=' . (int) $elt['part_id'] . '" class="fancyframe" title="Supprimer"><img src="/img/base/delete.png" alt="SUPPRIMER" title="SUPPRIMER"  style="margin-bottom:-2px;"></a> ';
 
-        if (1 == $elt['part_enable']) {
-            // desactiver
-            //						echo '<a href="/includer.php?p=pages/partenaire-disable.php&amp;part_id='.intval($elt['part_id']).'" class="fancyframe" title="Désactiver ce partenaire"><img src="/img/base/delete.png" alt="DESACTIVER" title=""></a> ';
-        }
-        // activer
-        //						echo '<a href="/includer.php?p=pages/partenaire-enable.php&amp;part_id='.intval($elt['part_id']).'" class="fancyframe" title="Activer ce partenaire"><img src="/img/base/add.png" alt="ACTIVER" title=""></a> ';
+    if (1 == $elt['part_enable']) {
+        // desactiver
+        //						echo '<a href="/includer.php?p=pages/partenaire-disable.php&amp;part_id='.intval($elt['part_id']).'" class="fancyframe" title="Désactiver ce partenaire"><img src="/img/base/delete.png" alt="DESACTIVER" title=""></a> ';
+    }
+    // activer
+    //						echo '<a href="/includer.php?p=pages/partenaire-enable.php&amp;part_id='.intval($elt['part_id']).'" class="fancyframe" title="Activer ce partenaire"><img src="/img/base/add.png" alt="ACTIVER" title=""></a> ';
 
-        echo '</td>'
-                    .'<td>'.html_utf8($elt['part_name']).'</td>'
-                    .'<td>'.html_utf8($elt['part_desc']).'</td>'
-                    .'<td>'.(1 == $elt['part_enable'] ? 'ACTIF' : 'INACTIF').'</td>'
-                    .'<td><a target="_blank" href="'.html_utf8($elt['part_url']).'">'.html_utf8($elt['part_url']).'</a></td>'
-                    .'<td>'.html_utf8($elt['part_desc']).'</td>'
-                    .'<td align="center">';
-        echo '<a target="_blank" href="/goto/partenaire/'.$elt['part_id'].'/'.formater($elt['part_name'], 3).'.html">';
-        if (file_exists(__DIR__.'/../../public/ftp/partenaires/'.$elt['part_image'])) {
-            echo '<img src="/ftp/partenaires/'.$elt['part_image'].'" style="max-width:150px;max-height:60px">';
-        } else {
-            echo '<img src="/img/base/cross.png" width="25" height="25" alt="non trouvée" />';
-        }
-        echo '</a></td>'
-                    .'<td>'.(1 == $elt['part_type'] ? 'PRIVÉ' : 'PUBLIC').'</td>'
-                    .'<td>'.html_utf8($elt['part_click']).'</td>'
-                    .'<td>'.html_utf8($elt['part_order']).'</td>'
-                .'</tr>';
-    } ?>
+    echo '</td>'
+                . '<td>' . html_utf8($elt['part_name']) . '</td>'
+                . '<td>' . html_utf8($elt['part_desc']) . '</td>'
+                . '<td>' . (1 == $elt['part_enable'] ? 'ACTIF' : 'INACTIF') . '</td>'
+                . '<td><a target="_blank" href="' . html_utf8($elt['part_url']) . '">' . html_utf8($elt['part_url']) . '</a></td>'
+                . '<td>' . html_utf8($elt['part_desc']) . '</td>'
+                . '<td align="center">';
+    echo '<a target="_blank" href="/goto/partenaire/' . $elt['part_id'] . '/' . formater($elt['part_name'], 3) . '.html">';
+    if (file_exists(__DIR__ . '/../../public/ftp/partenaires/' . $elt['part_image'])) {
+        echo '<img src="/ftp/partenaires/' . $elt['part_image'] . '" style="max-width:150px;max-height:60px">';
+    } else {
+        echo '<img src="/img/base/cross.png" width="25" height="25" alt="non trouvée" />';
+    }
+    echo '</a></td>'
+                . '<td>' . (1 == $elt['part_type'] ? 'PRIVÉ' : 'PUBLIC') . '</td>'
+                . '<td>' . html_utf8($elt['part_click']) . '</td>'
+                . '<td>' . html_utf8($elt['part_order']) . '</td>'
+            . '</tr>';
+} ?>
 		</tbody>
 	</table>
 
 
 	<br style="clear:both" />
 	<br style="clear:both" />
-	<?php
-}
-?>

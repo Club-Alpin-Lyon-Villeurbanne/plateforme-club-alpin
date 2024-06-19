@@ -2,15 +2,13 @@
 
 namespace App\Utils\Error;
 
-use \JsonSerializable;
-
-class ExpenseReportFormError implements JsonSerializable {
-
+class ExpenseReportFormError implements \JsonSerializable
+{
     public function __construct(
         private string $message,
-        private string $fieldSlug,
-        private int $expenseTypeId,
-        private string $expenseGroupSlug
+        private ?string $fieldSlug = null,
+        private ?int $expenseTypeId = null,
+        private ?string $expenseGroupSlug = null
     ) {
     }
 
@@ -24,4 +22,3 @@ class ExpenseReportFormError implements JsonSerializable {
         ];
     }
 }
-

@@ -2,8 +2,8 @@
 
 namespace App\Tests\Controller;
 
-use App\Entity\Evt;
 use App\Entity\EventParticipation;
+use App\Entity\Evt;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Tests\WebTestCase;
@@ -68,7 +68,7 @@ class SortieControllerTest extends WebTestCase
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $commissionAdmin = $this->signup();
-        $this->addAttribute($commissionAdmin, UserAttr::RESPONSABLE_COMMISSION, 'commission:'.$event->getCommission()->getCode());
+        $this->addAttribute($commissionAdmin, UserAttr::RESPONSABLE_COMMISSION, 'commission:' . $event->getCommission()->getCode());
 
         $this->signin($commissionAdmin);
 
@@ -94,7 +94,7 @@ class SortieControllerTest extends WebTestCase
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $commissionAdmin = $this->signup();
-        $this->addAttribute($commissionAdmin, UserAttr::RESPONSABLE_COMMISSION, 'commission:'.$event->getCommission()->getCode());
+        $this->addAttribute($commissionAdmin, UserAttr::RESPONSABLE_COMMISSION, 'commission:' . $event->getCommission()->getCode());
 
         $this->signin($commissionAdmin);
 
@@ -118,7 +118,7 @@ class SortieControllerTest extends WebTestCase
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $commissionAdmin = $this->signup();
-        $this->addAttribute($commissionAdmin, UserAttr::RESPONSABLE_COMMISSION, 'commission:'.$event->getCommission()->getCode());
+        $this->addAttribute($commissionAdmin, UserAttr::RESPONSABLE_COMMISSION, 'commission:' . $event->getCommission()->getCode());
 
         $this->signin($commissionAdmin);
 
@@ -147,7 +147,7 @@ class SortieControllerTest extends WebTestCase
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $commissionAdmin = $this->signup();
-        $this->addAttribute($commissionAdmin, UserAttr::RESPONSABLE_COMMISSION, 'commission:'.$event->getCommission()->getCode());
+        $this->addAttribute($commissionAdmin, UserAttr::RESPONSABLE_COMMISSION, 'commission:' . $event->getCommission()->getCode());
 
         $this->signin($commissionAdmin);
 
@@ -172,7 +172,7 @@ class SortieControllerTest extends WebTestCase
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $commissionAdmin = $this->signup();
-        $this->addAttribute($commissionAdmin, UserAttr::RESPONSABLE_COMMISSION, 'commission:'.$event->getCommission()->getCode());
+        $this->addAttribute($commissionAdmin, UserAttr::RESPONSABLE_COMMISSION, 'commission:' . $event->getCommission()->getCode());
 
         $this->signin($commissionAdmin);
 
@@ -317,7 +317,7 @@ class SortieControllerTest extends WebTestCase
             ->setCancelledWho($userOwner);
 
         $this->signin($userOwner);
-        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:'.$event->getCommission()->getCode());
+        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
 
         static::$client->request('POST', sprintf('/sortie/%d/uncancel', $event->getId()), [
             'csrf_token' => $this->generateCsrfToken(static::$client, 'sortie_uncancel'),
@@ -341,7 +341,7 @@ class SortieControllerTest extends WebTestCase
             ->setCancelledWho($userOwner);
 
         $this->signin($userOwner);
-        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:'.$event->getCommission()->getCode());
+        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
 
         static::$client->request('POST', sprintf('/sortie/%d/uncancel', $event->getId()), [
             'csrf_token' => $this->generateCsrfToken(static::$client, 'invalid_csrf'),
@@ -357,7 +357,7 @@ class SortieControllerTest extends WebTestCase
         $event->setCancelled(true)
             ->setCancelledWhen(time())
             ->setCancelledWho($userOwner);
-        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:'.$event->getCommission()->getCode());
+        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
 
         $this->signin($anotherUser);
 
@@ -371,7 +371,7 @@ class SortieControllerTest extends WebTestCase
     {
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
-        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:'.$event->getCommission()->getCode());
+        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
 
         $this->signin($userOwner);
 
@@ -398,7 +398,7 @@ class SortieControllerTest extends WebTestCase
     {
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
-        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:'.$event->getCommission()->getCode());
+        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
 
         $this->signin($userOwner);
 
@@ -418,7 +418,7 @@ class SortieControllerTest extends WebTestCase
     {
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
-        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:'.$event->getCommission()->getCode());
+        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
 
         $this->signin($userOwner);
 

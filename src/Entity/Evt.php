@@ -8,12 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Evt.
- *
- *
  */
 #[ORM\Table(name: 'caf_evt')]
 #[ORM\Entity]
-class Evt
+class Evt implements \JsonSerializable
 {
     public const STATUS_PUBLISHED_UNSEEN = 0;
     public const STATUS_PUBLISHED_VALIDE = 1;
@@ -25,9 +23,6 @@ class Evt
 
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Column(name: 'id_evt', type: 'integer', nullable: false)]
     #[ORM\Id]
@@ -42,8 +37,6 @@ class Evt
 
     /**
      * @var User
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'status_who_evt', referencedColumnName: 'id_user', nullable: true)]
@@ -57,8 +50,6 @@ class Evt
 
     /**
      * @var User
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'status_legal_who_evt', referencedColumnName: 'id_user', nullable: true)]
@@ -72,8 +63,6 @@ class Evt
 
     /**
      * @var User
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'cancelled_who_evt', referencedColumnName: 'id_user', nullable: true)]
@@ -91,20 +80,16 @@ class Evt
     #[ORM\OneToMany(targetEntity: ExpenseReport::class, mappedBy: 'event')]
     private $expenseReports = [];
 
-    
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'user_evt', referencedColumnName: 'id_user', nullable: false)]
     private $user;
 
-    
     #[ORM\ManyToOne(targetEntity: 'Commission')]
     #[ORM\JoinColumn(name: 'commission_evt', referencedColumnName: 'id_commission', nullable: false)]
     private $commission;
 
     /**
      * @var Groupe|null
-     *
-     *
      */
     #[ORM\ManyToOne(targetEntity: 'Groupe', fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'id_groupe', referencedColumnName: 'id', nullable: true)]
@@ -137,7 +122,7 @@ class Evt
     /**
      * @var string
      */
-    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage',])]
+    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage'])]
     private $place;
 
     /**
@@ -161,7 +146,7 @@ class Evt
     /**
      * @var string
      */
-    #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu détaillé du rdv',])]
+    #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu détaillé du rdv'])]
     private $rdv;
 
     /**
@@ -177,15 +162,15 @@ class Evt
     private $tarifDetail;
 
     /**
-     * @var int|null
+     * @var string|null
      */
-    #[ORM\Column(name: 'denivele_evt', type: 'integer', nullable: true, options: ['unsigned' => true])]
+    #[ORM\Column(name: 'denivele_evt', type: 'text', length: 50, nullable: true)]
     private $denivele;
 
     /**
-     * @var float|null
+     * @var string|null
      */
-    #[ORM\Column(name: 'distance_evt', type: 'float', precision: 10, scale: 2, nullable: true)]
+    #[ORM\Column(name: 'distance_evt', type: 'text', length: 50, nullable: true)]
     private $distance;
 
     /**
@@ -260,7 +245,6 @@ class Evt
     #[ORM\Column(name: 'cycle_master_evt', type: 'boolean', nullable: false, options: ['comment' => "Est-ce la première sortie d'un cycle de sorties liées ?"])]
     private $cycleMaster = false;
 
-    
     #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'cycleChildren')]
     #[ORM\JoinColumn(name: 'cycle_parent_evt', referencedColumnName: 'id_evt', nullable: true)]
     private $cycleParent;
@@ -319,6 +303,31 @@ class Evt
 
         // FIX ME fix encadrant
         $this->participations->add(new EventParticipation($this, $user, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE));
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'user' => $this->user->getId(),
+            'titre' => $this->titre,
+            'code' => $this->code,
+            'tsp' => $this->tsp,
+            'tspEnd' => $this->tspEnd,
+            'place' => $this->place,
+            'rdv' => $this->rdv,
+            'lat' => $this->lat,
+            'long' => $this->long,
+            'description' => $this->description,
+            'joinStart' => $this->joinStart,
+            'joinMax' => $this->joinMax,
+            'ngensMax' => $this->ngensMax,
+            'commission' => $this->commission->getId(),
+            'participations' => $this->participations,
+            'articles' => $this->articles,
+            'cycleChildren' => $this->cycleChildren,
+            'tspCrea' => $this->tspCrea,
+        ];
     }
 
     public function getId(): ?int
@@ -689,24 +698,24 @@ class Evt
         return $this;
     }
 
-    public function getDenivele(): ?int
+    public function getDenivele(): ?string
     {
         return $this->denivele;
     }
 
-    public function setDenivele(?int $denivele): self
+    public function setDenivele(?string $denivele): self
     {
         $this->denivele = $denivele;
 
         return $this;
     }
 
-    public function getDistance(): ?float
+    public function getDistance(): ?string
     {
         return $this->distance;
     }
 
-    public function setDistance(?float $distance): self
+    public function setDistance(?string $distance): self
     {
         $this->distance = $distance;
 

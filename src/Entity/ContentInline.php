@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ContentInline.
- *
- *
  */
 #[ORM\Table(name: 'caf_content_inline')]
 #[ORM\Index(name: 'contenu_content_inline', columns: ['contenu_content_inline'])]
@@ -16,9 +14,6 @@ class ContentInline
 {
     /**
      * @var int
-     *
-     *
-     *
      */
     #[ORM\Column(name: 'id_content_inline', type: 'integer', nullable: false)]
     #[ORM\Id]

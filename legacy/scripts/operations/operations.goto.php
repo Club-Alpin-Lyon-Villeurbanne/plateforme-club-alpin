@@ -36,7 +36,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
 
             if ('' !== $partenaire['part_url']) {
-                header('Location:'.$partenaire['part_url']);
+                header('Location:' . $partenaire['part_url']);
                 exit;
             }
             break;
