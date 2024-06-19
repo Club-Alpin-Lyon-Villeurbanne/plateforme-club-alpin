@@ -98,7 +98,7 @@
             <div class="green-box expense-report-summary" id="expense-report-summary">
                 <h3>Résumé :</h3>
                 <div>Total remboursable : <span class="refund-amount">{{ formatCurrency(refundableTotal) }}€</span></div>
-                <div>Hébergement : {{ formatCurrency(accommodationTotal) }}€, Transport : {{ formatCurrency(transportationTotal) }}€</div>
+                <div>Hébergement : {{ formatCurrency(accommodationTotal) }}€, Transport : {{ formatCurrency(transportationTotal) }}€, Autres : {{ formatCurrency(autresTotal) }}€</div>
             </div>
             <div class="errors" v-if="errorMessages.length">
                 <h3>Erreur(s) :</h3>
@@ -137,8 +137,11 @@
             accommodationTotal() {
                 return expenseReportService.autoCalculation.accommodation(this.formStructure);
             },
+            autresTotal() {
+                return expenseReportService.autoCalculation.autres(this.formStructure);
+            },
             refundableTotal() {
-                return this.accommodationTotal + this.transportationTotal;
+                return this.accommodationTotal + this.transportationTotal + this.autresTotal;
             }
         },
         data() {
