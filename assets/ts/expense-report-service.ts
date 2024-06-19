@@ -5,7 +5,7 @@ const expenseReportService = {
        
     },
     autoCalculation: {
-        transportation(formStructure: any) {
+        transportation(formStructure: any) : number {
             const transportationMode = formStructure.transport.expenseTypes.find((expenseType: any) => {
                 return expenseType.slug === formStructure.transport.selectedType;
             });
@@ -14,54 +14,53 @@ const expenseReportService = {
                 return 0;
             }
 
-            let total = 0;
+            let total: number = 0;
             // règles de calcul spécifiques au mode de transport
             // véhicule personnel
             if (transportationMode.slug === 'vehicule-personnel') {
-                const distanceField = transportationMode.fields.find((field: any) => field.slug === 'distance');
-                const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
-                const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
-                if (distanceField && tollField && passengerNumberField) {
-                    // distance * taux kilométrique
-                    total += parseFloat(distanceField.value) * expenseReportConfig.tauxKilometriqueVoiture;
-                    // péage / nombre voyageurs
-                    total += parseFloat(tollField.value) / parseInt(passengerNumberField.value);
-                }
+                const distance : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'distance').value) || 0.0;
+                const toll : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'peage').value) || 0.0;
+                const passengers : number = parseInt(transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs').value) || 0;
+                // distance * taux kilométrique
+                total += distance * expenseReportConfig.tauxKilometriqueVoiture;
+                // péage / nombre voyageurs
+                total += passengers !== 0 ? toll / passengers : 0.0;
             }
 
             // minibus location
             else if (transportationMode.slug === 'minibus_location') {
-                const fuelField = transportationMode.fields.find((field: any) => field.slug === 'prix_carburant');
-                const rentPrice = transportationMode.fields.find((field: any) => field.slug === 'prix_location');
-                const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
-                const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
+                const fuel : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'prix_carburant').value) || 0.0;
+                const rent : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'prix_location').value) || 0.0;
+                const toll : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'peage').value) || 0.0;
+                const passengers : number = parseInt(transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs').value) || 0;
                 // prix location
-                total += parseFloat(rentPrice.value);
+                total += rent;
                 // essence / nombre voyageurs
-                total += parseFloat(fuelField.value) / parseInt(passengerNumberField.value);
+                total += passengers !== 0 ? fuel / passengers : 0.0;
                 // péage / nombre voyageurs
-                total += parseFloat(tollField.value) / parseInt(passengerNumberField.value);
+                total += passengers !== 0 ? toll / passengers : 0.0;
             }
 
             // minibus club
             else if (transportationMode.slug === 'minibus_club') {
-                const fuelField = transportationMode.fields.find((field: any) => field.slug === 'prix_carburant');
-                const distanceField = transportationMode.fields.find((field: any) => field.slug === 'distance');
-                const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
-                const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
+                const fuel : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'prix_carburant').value) || 0.0;
+                const distance : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'distance').value) || 0.0;
+                const toll : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'peage').value) || 0.0;
+                const passengers : number = parseInt(transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs').value) || 0;
 
                 // distance * taux kilométrique
-                total += parseFloat(distanceField.value) * expenseReportConfig.tauxKilometriqueMinibus;
+                total += distance * expenseReportConfig.tauxKilometriqueMinibus;
                 // essence / nombre voyageurs
-                total += parseFloat(fuelField.value) / parseInt(passengerNumberField.value);
+                total += passengers !== 0 ? fuel / passengers : 0.0;
                 // péage / nombre voyageurs
-                total += parseFloat(tollField.value) / parseInt(passengerNumberField.value);
+                total += passengers !== 0 ? toll / passengers : 0;
             }
 
             // par défaut
             else {
                 total =  transportationMode.fields.reduce((total: number, field: any) => {
-                    return total + (field.flags.isUsedForTotal ? parseFloat(field.value) : 0);
+                    const value : number = parseFloat(field.value) || 0.0
+                    return total + (field.flags.isUsedForTotal ? value : 0.0);
                 }, 0)
             }
 
@@ -70,7 +69,8 @@ const expenseReportService = {
         accommodation(formStructure: any) {
             return formStructure.hebergement.expenseTypes.reduce((total: number, expenseType: any) => {
                 return total + expenseType.fields.reduce((fieldTotal: number, field: any) => {
-                    const newTotal = fieldTotal + (field.flags.isUsedForTotal ? parseFloat(field.value) : 0);
+                    const value : number = parseFloat(field.value) || 0.0;
+                    const newTotal = fieldTotal + (field.flags.isUsedForTotal ? value : 0);
                     return newTotal >= expenseReportConfig.nuiteeMaxRemboursable ? expenseReportConfig.nuiteeMaxRemboursable : newTotal;
                 }, 0);
             }, 0);

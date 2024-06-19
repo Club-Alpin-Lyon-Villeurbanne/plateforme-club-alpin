@@ -108,7 +108,11 @@ export default defineComponent({
                 ? parseFloat(this.config.tauxKilometriqueVoiture)
                 : parseFloat(this.config.tauxKilometriqueMinibus);
             const cost = distance * rate;
-            this.costByDistanceLabel = `(Montant: ${cost.toFixed(2)} €)`;
+            if (cost) {
+                this.costByDistanceLabel = `(Montant: ${cost.toFixed(2)} €)`;
+            } else {
+                this.costByDistanceLabel = '';
+            }
         }
     },
     mounted() {
