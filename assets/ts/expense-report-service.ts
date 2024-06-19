@@ -17,7 +17,7 @@ const expenseReportService = {
             let total = 0;
             // régles de calcul spécifiques au mode de transport
             // véhicule personnel
-            if (transportationMode.slug === 'vehicule_personnel') {
+            if (transportationMode.slug === 'vehicule-personnel') {
                 const distanceField = transportationMode.fields.find((field: any) => field.slug === 'distance');
                 const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
                 const passengerNumberField = transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs');
@@ -44,7 +44,7 @@ const expenseReportService = {
             }
 
             // minibus club
-            else if (transportationMode.slug === 'minibus_club') {
+            else if (transportationMode.slug === 'minibus-club') {
                 const fuelField = transportationMode.fields.find((field: any) => field.slug === 'prix_carburant');
                 const distanceField = transportationMode.fields.find((field: any) => field.slug === 'distance');
                 const tollField = transportationMode.fields.find((field: any) => field.slug === 'peage');
