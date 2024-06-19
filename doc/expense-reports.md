@@ -227,7 +227,7 @@ Le formulaire affiche une estimation du montant remboursable lors de la saisie d
 					"expenseType": {
 						"id": 4,
 						"name": "Autre",
-						"slug": "autre-depense",
+						"slug": "autre_depense",
 						"fieldTypes": [
 							{
 								"id": 2,
