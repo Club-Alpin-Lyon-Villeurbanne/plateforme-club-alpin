@@ -74,7 +74,14 @@ const expenseReportService = {
                     return newTotal >= expenseReportConfig.nuiteeMaxRemboursable ? expenseReportConfig.nuiteeMaxRemboursable : newTotal;
                 }, 0);
             }, 0);
-        }
+        },
+        autres(formStructure: any) {
+            return formStructure.autres.expenseTypes.reduce((total: number, expenseType: any) => {
+                return total + expenseType.fields.reduce((fieldTotal: number, field: any) => {
+                    return fieldTotal + (field.flags.isUsedForTotal ? parseFloat(field.value) : 0);
+                }, 0);
+            }, 0);
+        },
     }
 };
 

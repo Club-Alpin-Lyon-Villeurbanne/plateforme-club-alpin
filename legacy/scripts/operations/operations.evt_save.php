@@ -41,10 +41,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $tarif_evt = 'NULL';
     }
     if ('0.00' == $distance_evt || empty($distance_evt)) {
-        $distance_evt = 'NULL';
+        $distance_evt = '';
     }
     if ('0' == $denivele_evt || empty($denivele_evt)) {
-        $denivele_evt = 'NULL';
+        $denivele_evt = '';
     }
 
     // code : juste pour un formatage explicite des URL vers les sorties
