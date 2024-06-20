@@ -15,7 +15,7 @@
             :required="field.flags.isMandatory"
             type="number"
             :name="field.slug"
-            v-model="field.value"
+            v-model.number="field.value"
             min="0"
             step="0.01"
             v-else-if="field.inputType === 'numeric' && field.slug !== 'nombre_voyageurs'"
@@ -24,9 +24,11 @@
             :required="field.flags.isMandatory"
             type="number"
             :name="field.slug"
-            v-model="field.value"
+            v-model.number="field.value"
             min="0"
+            pattern="\d+"
             v-else-if="field.inputType === 'numeric' && field.slug === 'nombre_voyageurs'"
+            @keydown="isNumber($event)"
         />
         <textarea 
             :required="field.flags.isMandatory"
@@ -112,6 +114,13 @@ export default defineComponent({
                 this.costByDistanceLabel = `(Montant: ${cost.toFixed(2)} €)`;
             } else {
                 this.costByDistanceLabel = '';
+            }
+        },
+        isNumber(event: KeyboardEvent) {
+            const disallowed : string[] = ['.', ',', 'e', 'E'];
+            let key : string = event.key;
+            if (disallowed.includes(key)) {
+                event.preventDefault();
             }
         }
     },
