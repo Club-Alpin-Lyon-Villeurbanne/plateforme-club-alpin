@@ -24,7 +24,7 @@
                 <fieldset
                     v-if="typeof expenseReportFormGroup === 'object'"
                     :id="'expense-group-' + expenseReportFormGroup.slug"
-                    class="tw-border-slate-300 tw-rounded"
+                    class="tw-border-slate-300 tw-rounded tw-shadow-md"
                 >
                     <legend>
                         {{ expenseReportFormGroup.name }}
@@ -96,7 +96,7 @@
                     </div>
                 </fieldset>
             </div>
-            <div class="green-box expense-report-summary tw-mr-0" id="expense-report-summary">
+            <div class="green-box expense-report-summary tw-mr-0 tw-shadow-md" id="expense-report-summary">
                 <h3>Résumé :</h3>
                 <div>Total remboursable : <span class="refund-amount">{{ formatCurrency(refundableTotal) }}€</span></div>
                 <div>Hébergement : {{ formatCurrency(accommodationTotal) }}€, Transport : {{ formatCurrency(transportationTotal) }}€</div>
