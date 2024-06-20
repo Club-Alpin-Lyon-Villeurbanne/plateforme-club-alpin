@@ -17,7 +17,7 @@ const expenseReportService = {
             let total: number = 0;
             // règles de calcul spécifiques au mode de transport
             // véhicule personnel
-            if (transportationMode.slug === 'vehicule-personnel') {
+            if (transportationMode.slug === 'vehicule_personnel') {
                 const distance : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'distance').value) || 0.0;
                 const toll : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'peage').value) || 0.0;
                 const passengers : number = parseInt(transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs').value) || 0;
