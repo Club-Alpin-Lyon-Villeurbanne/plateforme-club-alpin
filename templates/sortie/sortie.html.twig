@@ -231,7 +231,7 @@
                                 </form>
                             </div>
                             <br />
-                        <div class="info info-container">
+                        <div class="info info-container" style="margin-right:2rem !important">
                             <img src="/img/inscrit-check.png" alt="" title=""/>
                             <div class="text-container">Vous êtes inscrit à cette sortie en tant que : {{ my_status.role }}.
                                 <div class="button-container">
@@ -260,7 +260,7 @@
                         </div>
                         {% endif %}
                     {% else %}
-                        <p class="info">
+                        <p class="info" style="margin-right:2rem !important">
                             <img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" />
                             <br />Vous avez participé à cette sortie en tant que : {{ my_status.role }}.<br />&nbsp;
                         </p>
@@ -273,21 +273,21 @@
                             {% if currentExpenseReport is null or currentExpenseReport.status == 'draft' %}
                                 {{ vueComponent('expense-report-form', 'ExpenseReportForm', {formStructureProp: expenseReportFormStructure}) }}
                             {% elseif currentExpenseReport is not null and currentExpenseReport.status == 'submitted' %}
-                                <p class="info">
+                                <p class="info" style="margin-right:2rem !important">
                                     Vous avez déjà déclaré votre note de frais pour cette sortie. La validation est en attente.
                                 </p>
                             {% elseif currentExpenseReport is not null and currentExpenseReport.status == 'approved' %}
-                                <p class="info">
+                                <p class="info" style="margin-right:2rem !important">
                                     Votre note de frais a été validée pour cette sortie.
                                 </p>
                             {% elseif currentExpenseReport is not null and currentExpenseReport.status == 'rejected' %}
                                 {% if currentExpenseReport.statusComment %}
-                                <p class="info">
+                                <p class="info" style="margin-right:2rem !important">
                                     Votre note de frais a été refusée pour cette sortie avec le commentaire suivant : <br/>
                                     <strong>{{ currentExpenseReport.statusComment }}</strong>
                                 </p>
                                 {% else %}
-                                <p class="info">Votre note de frais a été refusée pour cette sortie</p>
+                                <p class="info" style="margin-right:2rem !important">Votre note de frais a été refusée pour cette sortie</p>
                                 {% endif %}
 
                                 {{ vueComponent('expense-report-form', 'ExpenseReportForm', {formStructureProp: expenseReportFormStructure}) }}
@@ -312,7 +312,7 @@
                                 </form>
                             </div>
                             <br />
-                            <div class="info info-container">
+                            <div class="info info-container" style="margin-right:2rem !important">
                                 <img src="/img/inscrit-check.png" alt="" title=""/>
                                 <div class="text-container">Vous êtes inscrit comme participant à cette sortie.
                                     <div class="button-container">
@@ -342,7 +342,7 @@
                             </div>
                         {% endif %}
                     {% else %}
-                        <p class="info">
+                        <p class="info" style="margin-right:2rem !important">
                             <img src="/img/inscrit-check.png" alt="" title="" style="float:left" />
                             <br />Vous avez participé à cette sortie.<br />&nbsp;
                         </p><br />
