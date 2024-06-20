@@ -104,7 +104,7 @@ export default defineComponent({
         },
         calculateDistanceCost(event: any) {
             const distance = parseFloat((event.target as HTMLInputElement).value);
-            const rate = this.expenseType === 'vehicule-personnel'
+            const rate = this.expenseType === 'vehicule_personnel'
                 ? parseFloat(this.config.tauxKilometriqueVoiture)
                 : parseFloat(this.config.tauxKilometriqueMinibus);
             const cost = distance * rate;
