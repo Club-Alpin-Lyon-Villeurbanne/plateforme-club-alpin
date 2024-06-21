@@ -8,7 +8,7 @@ backup/*
 forum*
 public/robots.txt
 public/dev.txt
-public/robots.txt
+/.npm/
 
 ###> symfony/framework-bundle ###
 /.env.local

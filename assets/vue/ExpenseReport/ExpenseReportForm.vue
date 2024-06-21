@@ -88,6 +88,8 @@
                                         v-for="field in expenseType.fields"
                                         :key="field.slug"
                                         :field="field"
+                                        :config="expenseReportConfig"
+                                        :expenseType="expenseType.slug"
                                         class="field">
                                     </ExpenseField>
                                 </div>
@@ -98,8 +100,11 @@
             </div>
             <div class="green-box expense-report-summary tw-mr-0 tw-shadow-md" id="expense-report-summary">
                 <h3>Résumé :</h3>
-                <div>Total remboursable : <span class="refund-amount">{{ formatCurrency(refundableTotal) }}€</span></div>
-                <div>Hébergement : {{ formatCurrency(accommodationTotal) }}€, Transport : {{ formatCurrency(transportationTotal) }}€, Autres : {{ formatCurrency(autresTotal) }}€</div>
+                <p>Total remboursable : <span class="refund-amount">{{ formatCurrency(refundableTotal) }}€</span></p>
+                <p>Dont :</p>
+                <p>Hébergement : {{ formatCurrency(accommodationTotal) }}€ (sur la base de {{ expenseReportConfig.nuiteeMaxRemboursable }}€ maximum par nuitée)</p>
+                <p>Transport : {{ formatCurrency(transportationTotal) }}€ {{ summaryTransportationRateLabel }}</p>
+                <p>Autres dépenses : {{ formatCurrency(autresTotal) }}€</p>
             </div>
             <div class="errors" v-if="errorMessages.length">
                 <h3>Erreur(s) :</h3>
@@ -124,6 +129,7 @@
     import { defineComponent } from 'vue';
     import ExpenseField from './ExpenseField.vue';
     import expenseReportService from '../../ts/expense-report-service';
+    import expenseReportConfig from '../../config/expense-reports.json';
 
     export default defineComponent({
         name: 'expense-report-form',
@@ -143,18 +149,23 @@
             },
             refundableTotal() {
                 return this.accommodationTotal + this.transportationTotal + this.autresTotal;
-            }
+            },
+            summaryTransportationRateLabel() {
+                let label : string = '';
+                if (this.formStructure.transport.selectedType === 'vehicule_personnel') {
+                    label = `(sur la base d’un taux d’indemnité kilométrique à ${expenseReportConfig.tauxKilometriqueVoiture}€/km)`;
+                } else if (this.formStructure.transport.selectedType === 'minibus_club') {
+                    label = `(sur la base d’un taux d’indemnité kilométrique à ${expenseReportConfig.tauxKilometriqueMinibus}€/km)`;
+                }
+                return label;
+            },
         },
         data() {
             return {
                 formStructure: {refundRequired: 0, ...this.formStructureProp},
-                autoCalculation: {
-                    refundable: 0,
-                    transportation: 0,
-                    accommodation: 0,
-                },
                 errorMessages: [] as string[],
                 successMessage: '',
+                expenseReportConfig: expenseReportConfig
             }
         },
         methods: {
