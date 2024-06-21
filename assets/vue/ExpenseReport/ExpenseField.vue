@@ -1,6 +1,6 @@
 <template>
     <div class="field" :class="{error: field.errors}">
-        <label>{{ field.name }} {{ tauxKilometrique }} {{ field.flags.isMandatory ? '*' : '' }}</label>
+        <label>{{ field.name }} {{ field.flags.isMandatory ? '*' : '' }}</label>
 
         <input
             :required="field.flags.isMandatory"
@@ -82,17 +82,6 @@ export default defineComponent({
     data: () => ({
         justificationFileUrl: '',
     }),
-    computed: {
-       tauxKilometrique: function() {
-            if (this.expenseType === 'vehicule_personnel' && this.field.slug === 'distance') {
-                return '(Taux kilométrique: ' + parseFloat(this.config.tauxKilometriqueVoiture) + '€/km)';
-            } else if (this.expenseType === 'minibus_club' && this.field.slug === 'distance') {
-                return '(Taux kilométrique: ' + parseFloat(this.config.tauxKilometriqueMinibus) + '€/km)';
-            } else {
-                return '';
-            }
-       }
-    },
     methods: {
         onFileUploadChange(event: any) {
             this.field.justificationFile = event.target.files[0];
