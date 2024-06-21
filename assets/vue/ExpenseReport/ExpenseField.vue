@@ -1,6 +1,8 @@
 <template>
     <div class="field" :class="{error: field.errors}">
-        <label>{{ field.name }} {{ tauxKilometriqueLabel }} {{ field.flags.isMandatory ? '*' : '' }}</label>
+        <label>{{ field.name }} {{ this.expenseType === 'vehicule_personnel'
+                ? parseFloat(this.config.tauxKilometriqueVoiture)
+                : parseFloat(this.config.tauxKilometriqueMinibus) }} {{ field.flags.isMandatory ? '*' : '' }}</label>
 
         <input
             :required="field.flags.isMandatory"
@@ -9,7 +11,6 @@
             v-model="field.value"
             min="0"
             v-if="field.slug === 'distance'"
-            @blur="calculateTauxKilometriqueCost"
         />
         <input
             :required="field.flags.isMandatory"
@@ -82,7 +83,6 @@ export default defineComponent({
     props: ['field', 'config', 'expenseType'],
     data: () => ({
         justificationFileUrl: '',
-        tauxKilometriqueLabel: '',
     }),
     methods: {
         onFileUploadChange(event: any) {
@@ -103,11 +103,6 @@ export default defineComponent({
             this.field.justificationFile = null;
             this.field.justificationFileUrl = '';
             this.justificationFileUrl = '';
-        },
-        calculateTauxKilometrique(event: any) {
-            this.tauxKilometriqueLabel = this.expenseType === 'vehicule_personnel'
-                ? parseFloat(this.config.tauxKilometriqueVoiture)
-                : parseFloat(this.config.tauxKilometriqueMinibus);
         },
         isNumber(event: KeyboardEvent) {
             const disallowed : string[] = ['.', ',', 'e', 'E'];
