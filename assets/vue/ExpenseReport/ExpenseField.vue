@@ -1,6 +1,6 @@
 <template>
     <div class="field" :class="{error: field.errors}">
-        <label>{{ field.name }} {{ costByDistanceLabel }} {{ field.flags.isMandatory ? '*' : '' }}</label>
+        <label>{{ field.name }} {{ field.flags.isMandatory ? '*' : '' }}</label>
 
         <input
             :required="field.flags.isMandatory"
@@ -9,7 +9,6 @@
             v-model="field.value"
             min="0"
             v-if="field.slug === 'distance'"
-            @blur="calculateDistanceCost"
         />
         <input
             :required="field.flags.isMandatory"
@@ -82,7 +81,6 @@ export default defineComponent({
     props: ['field', 'config', 'expenseType'],
     data: () => ({
         justificationFileUrl: '',
-        costByDistanceLabel: '',
     }),
     methods: {
         onFileUploadChange(event: any) {
@@ -103,18 +101,6 @@ export default defineComponent({
             this.field.justificationFile = null;
             this.field.justificationFileUrl = '';
             this.justificationFileUrl = '';
-        },
-        calculateDistanceCost(event: any) {
-            const distance = parseFloat((event.target as HTMLInputElement).value);
-            const rate = this.expenseType === 'vehicule_personnel'
-                ? parseFloat(this.config.tauxKilometriqueVoiture)
-                : parseFloat(this.config.tauxKilometriqueMinibus);
-            const cost = distance * rate;
-            if (cost) {
-                this.costByDistanceLabel = `(Montant: ${cost.toFixed(2)} €)`;
-            } else {
-                this.costByDistanceLabel = '';
-            }
         },
         isNumber(event: KeyboardEvent) {
             const disallowed : string[] = ['.', ',', 'e', 'E'];
