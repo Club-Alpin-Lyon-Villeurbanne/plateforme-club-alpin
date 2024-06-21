@@ -9,7 +9,7 @@
             v-model="field.value"
             min="0"
             v-if="field.slug === 'distance'"
-            @blur="calculateDistanceCost"
+            @blur="calculateTauxKilometriqueCost"
         />
         <input
             :required="field.flags.isMandatory"
@@ -104,14 +104,12 @@ export default defineComponent({
             this.field.justificationFileUrl = '';
             this.justificationFileUrl = '';
         },
-        calculateDistanceCost(event: any) {
-            const distance = parseFloat((event.target as HTMLInputElement).value);
+        calculateTauxKilometriqueCost(event: any) {
             const rate = this.expenseType === 'vehicule_personnel'
                 ? parseFloat(this.config.tauxKilometriqueVoiture)
                 : parseFloat(this.config.tauxKilometriqueMinibus);
-            const cost = distance * rate;
             if (cost) {
-                this.costByDistanceLabel = `(Montant: ${cost.toFixed(2)} €)`;
+                this.costByDistanceLabel = `(Taux kilométrique: ${rate}€/km)`;
             } else {
                 this.costByDistanceLabel = '';
             }
