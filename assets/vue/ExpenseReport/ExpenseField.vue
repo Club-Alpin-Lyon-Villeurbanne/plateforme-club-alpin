@@ -1,15 +1,34 @@
 <template>
     <div class="field" :class="{error: field.errors}">
-        <label>{{ field.name }} {{ field.flags.isMandatory ? '*' : '' }}</label>
-        
+        <label>{{ field.name }} {{ costByDistanceLabel }} {{ field.flags.isMandatory ? '*' : '' }}</label>
+
         <input
             :required="field.flags.isMandatory"
             type="number"
             :name="field.slug"
             v-model="field.value"
             min="0"
+            v-if="field.slug === 'distance'"
+            @blur="calculateDistanceCost"
+        />
+        <input
+            :required="field.flags.isMandatory"
+            type="number"
+            :name="field.slug"
+            v-model.number="field.value"
+            min="0"
             step="0.01"
-            v-if="field.inputType === 'numeric'"
+            v-else-if="field.inputType === 'numeric' && field.slug !== 'nombre_voyageurs'"
+        />
+        <input
+            :required="field.flags.isMandatory"
+            type="number"
+            :name="field.slug"
+            v-model.number="field.value"
+            min="0"
+            pattern="\d+"
+            v-else-if="field.inputType === 'numeric' && field.slug === 'nombre_voyageurs'"
+            @keydown="isNumber($event)"
         />
         <textarea 
             :required="field.flags.isMandatory"
@@ -60,9 +79,10 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
     name: 'expense-field',
-    props: ['field'],
+    props: ['field', 'config', 'expenseType'],
     data: () => ({
         justificationFileUrl: '',
+        costByDistanceLabel: '',
     }),
     methods: {
         onFileUploadChange(event: any) {
@@ -83,6 +103,25 @@ export default defineComponent({
             this.field.justificationFile = null;
             this.field.justificationFileUrl = '';
             this.justificationFileUrl = '';
+        },
+        calculateDistanceCost(event: any) {
+            const distance = parseFloat((event.target as HTMLInputElement).value);
+            const rate = this.expenseType === 'vehicule_personnel'
+                ? parseFloat(this.config.tauxKilometriqueVoiture)
+                : parseFloat(this.config.tauxKilometriqueMinibus);
+            const cost = distance * rate;
+            if (cost) {
+                this.costByDistanceLabel = `(Montant: ${cost.toFixed(2)} €)`;
+            } else {
+                this.costByDistanceLabel = '';
+            }
+        },
+        isNumber(event: KeyboardEvent) {
+            const disallowed : string[] = ['.', ',', 'e', 'E'];
+            let key : string = event.key;
+            if (disallowed.includes(key)) {
+                event.preventDefault();
+            }
         }
     },
     mounted() {
