@@ -49,7 +49,7 @@ const expenseReportService = {
                 const passengers : number = parseInt(transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs').value) || 0;
 
                 // distance * taux kilométrique
-                total += passengers !== 0 ? distance * expenseReportConfig.tauxKilometriqueMinibus : 0.0;
+                total += passengers !== 0 ? distance * expenseReportConfig.tauxKilometriqueMinibus / passengers : 0.0;
                 // essence / nombre voyageurs
                 total += passengers !== 0 ? fuel / passengers : 0.0;
                 // péage / nombre voyageurs
