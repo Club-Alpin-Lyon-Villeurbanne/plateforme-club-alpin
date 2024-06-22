@@ -22,7 +22,7 @@ const expenseReportService = {
                 const toll : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'peage').value) || 0.0;
                 const passengers : number = parseInt(transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs').value) || 0;
                 // distance * taux kilométrique
-                total += passengers !== 0 ? distance * expenseReportConfig.tauxKilometriqueVoiture : 0.0;
+                total += passengers !== 0 ? distance * expenseReportConfig.tauxKilometriqueVoiture / passengers : 0.0;
                 // péage / nombre voyageurs
                 total += passengers !== 0 ? toll / passengers : 0.0;
             }
