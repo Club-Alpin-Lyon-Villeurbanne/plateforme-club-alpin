@@ -22,7 +22,7 @@ const expenseReportService = {
                 const toll : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'peage').value) || 0.0;
                 const passengers : number = parseInt(transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs').value) || 0;
                 // distance * taux kilométrique
-                total += distance * expenseReportConfig.tauxKilometriqueVoiture;
+                total += passengers !== 0 ? distance * expenseReportConfig.tauxKilometriqueVoiture : 0.0;
                 // péage / nombre voyageurs
                 total += passengers !== 0 ? toll / passengers : 0.0;
             }
@@ -34,7 +34,7 @@ const expenseReportService = {
                 const toll : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'peage').value) || 0.0;
                 const passengers : number = parseInt(transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs').value) || 0;
                 // prix location
-                total += rent;
+                total += passengers !== 0 ? rent / passengers : 0.0;
                 // essence / nombre voyageurs
                 total += passengers !== 0 ? fuel / passengers : 0.0;
                 // péage / nombre voyageurs
@@ -49,7 +49,7 @@ const expenseReportService = {
                 const passengers : number = parseInt(transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs').value) || 0;
 
                 // distance * taux kilométrique
-                total += distance * expenseReportConfig.tauxKilometriqueMinibus;
+                total += passengers !== 0 ? distance * expenseReportConfig.tauxKilometriqueMinibus : 0.0;
                 // essence / nombre voyageurs
                 total += passengers !== 0 ? fuel / passengers : 0.0;
                 // péage / nombre voyageurs
