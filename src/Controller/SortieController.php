@@ -118,6 +118,7 @@ class SortieController extends AbstractController
                     $expenseReportFormGroups[$groupSlug]['selectedType'] = $expenseGroup['selectedType'];
                 }
 
+                $index = 0;
                 // for each expense type
                 foreach ($expenseGroup as $expense) {
                     // ignore values that are not expenses
@@ -144,8 +145,22 @@ class SortieController extends AbstractController
                         $newField['slug'] = $field->getFieldType()->getSlug();
                         $newFields[] = $newField;
                     }
-                    $targetExpenseTypeIndex = array_search($expense['expenseType']->getId(), array_column($expenseReportFormGroups[$groupSlug]['expenseTypes'], 'expenseTypeId'), true);
-                    $expenseReportFormGroups[$groupSlug]['expenseTypes'][$targetExpenseTypeIndex]['fields'] = $newFields;
+
+                    if ('unique' === $expense['expenseType']->getExpenseGroup()->getType()) {
+                        $targetExpenseTypeIndex = array_search($expense['expenseType']->getId(), array_column($expenseReportFormGroups[$groupSlug]['expenseTypes'], 'expenseTypeId'), true);
+                        $expenseReportFormGroups[$groupSlug]['expenseTypes'][$targetExpenseTypeIndex]['fields'] = $newFields;
+                    } else {
+                        if (0 === $index) {
+                            $expenseReportFormGroups[$groupSlug]['expenseTypes'][0]['fields'] = $newFields;
+                            ++$index;
+                        } else {
+                            // Duplicate the preceding expenseType
+                            $expenseReportFormGroups[$groupSlug]['expenseTypes'][$index] = $expenseReportFormGroups[$groupSlug]['expenseTypes'][0];
+                            // Override preceding expenseType fields
+                            $expenseReportFormGroups[$groupSlug]['expenseTypes'][$index++]['fields'] = $newFields;
+                        }
+
+                    }
                 }
             }
         }
