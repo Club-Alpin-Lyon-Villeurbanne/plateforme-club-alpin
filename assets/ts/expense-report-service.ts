@@ -24,7 +24,7 @@ const expenseReportService = {
                 // distance * taux kilométrique
                 total += passengers !== 0 ? distance * expenseReportConfig.tauxKilometriqueVoiture / passengers : 0.0;
                 // péage / nombre voyageurs
-                total += passengers !== 0 ? toll / passengers : 0.0;
+                total += passengers !== 0 ? toll / expenseReportConfig.divisionPeage : 0.0;
             }
 
             // minibus location
