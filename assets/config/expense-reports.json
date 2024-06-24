@@ -1,5 +1,6 @@
 {
     "nuiteeMaxRemboursable": 60,
     "tauxKilometriqueVoiture": 0.2,
-    "tauxKilometriqueMinibus": 0.3
+    "tauxKilometriqueMinibus": 0.3,
+    "divisionPeage": 3
 }
