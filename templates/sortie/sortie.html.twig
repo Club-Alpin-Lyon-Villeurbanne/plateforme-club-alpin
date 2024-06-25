@@ -175,7 +175,9 @@
         </form>
         {% endif %}
 
-        {% if not event.isFinished %}
+        {% set my_status = event.participation(app.user) %}
+
+        {% if my_status and not event.isFinished %}
             <input id="add-to-calendar" type="button" class="nice2" value="Ajouter à mon agenda" />
 
             <script>
@@ -199,8 +201,6 @@
  
         <br />
         <br />
-
-        {% set my_status = event.participation(app.user) %}
 
         {% if not event.cycleParent %}
         {# les messages et options liées aux inscriptions ne s'appliquent pas sur les suites de cycles #}
