@@ -182,7 +182,7 @@ class ExpenseReportController extends AbstractController
         $extension = $file->getClientOriginalExtension();
         $filename = pathinfo($file->getClientOriginalName(), \PATHINFO_FILENAME);
         // rebuild filename with hashed timestamp and extension
-        $filename = $filename . '_' . substr(md5(time()), 0, 6) . '.' . $extension;
+        $filename = md5(time() . $filename) . '.' . $extension;
 
         try {
             $file->move(FileUploadHelper::getUserUploadPath($this->getUser(), 'expense-reports-justification'), $filename);
