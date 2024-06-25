@@ -25,7 +25,7 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
                 for ($j = 0; $j < $level; ++$j) {
                     echo '&nbsp; &nbsp; ';
                 }
-                echo '→ ' . $page['default_name_page'] . ' [' . $page['code_page'] . ']
+                echo '→ ' . $page['default_name_page'] ?? '' . ' [' . $page['code_page'] . ']
 				</option>';
                 if ($MAX_ADMINS_SUB_LEVELS > $level + 1) {
                     listPages($tab, $page['id_page'], $level + 1);
@@ -58,18 +58,6 @@ if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page']
 		<br />
 		<hr style="margin:10px 0; clear:both" />
 		<?php
-        /*
-        <b>Nom par défaut de la page :</b><br />
-        <input type="text" name="default_name_page" class="type1" value="<?php echo inputVal('default_name_page', '');?>" placeholder="" />
-        <br />
-        <input type="radio" name="meta_title_page" id="meta_title_page_0" value="0" <?php if($_POST['meta_title_page']=='0' or !isset($_POST['meta_title_page'])) echo 'checked="checked"';?> />
-            <label for="meta_title_page_0"> Utiliser la gestion de contenus textes pour le titre de la page : permet le multi-langue et ignore le titre ci-dessus.</label>
-            <br />
-        <input type="radio" name="meta_title_page" id="meta_title_page_1" value="1" <?php if($_POST['meta_title_page']=='1') echo 'checked="checked"';?> />
-            <label for="meta_title_page_1"> Toujours utiliser le titre ci-dessus quelque soit la langue du site</label>
-        <br />
-        <br />
-        */
     ?>
 		<div style="float:left; width:430px; padding-right:20px;">
 			<b>Titre de la page pour chaque langue :</b><br />
