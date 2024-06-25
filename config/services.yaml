@@ -22,7 +22,7 @@ parameters:
   legacy_project_dir: "%kernel.project_dir%"
   legacy_is_on_clever_cloud: "%env(defined:CC_APP_NAME)%"
   #configuration extraite de: legacy/config/config.php
-  legacy_env_SENTRY_DSN: "%env(bool:SENTRY_DSN)%"
+  legacy_env_SENTRY_DSN: "%env(string:SENTRY_DSN)%"
   legacy_env_DB_HOST: "%env(string:DB_HOST)%"
   legacy_env_DB_PORT: "%env(int:DB_PORT)%"
   legacy_env_DB_USER: "%env(string:DB_USER)%"
