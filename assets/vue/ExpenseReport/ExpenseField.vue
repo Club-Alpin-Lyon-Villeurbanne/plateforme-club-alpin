@@ -52,7 +52,7 @@
                 <a :href="field.justificationFileUrl" target="_blank">Voir</a>
             </div>
 
-            <label v-else class="uploader-label bleucaf">
+            <label v-else class="uploader-label">
                 <span class="emoji">
                     &#128190;
                     Joindre un justificatif 
@@ -62,6 +62,7 @@
                     class="hidden" 
                     type="file" 
                     multiple
+                    accept=".jpg, .jpeg, .png, .pdf"
                     name="{{ field.slug }}-justification"
                     @change="onFileUploadChange($event)"
                 >
