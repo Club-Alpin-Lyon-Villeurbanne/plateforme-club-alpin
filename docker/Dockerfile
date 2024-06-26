@@ -63,3 +63,4 @@ ENV UID=${UID}
 ENV GID=${GID}
 RUN groupmod -g $GID www-data
 RUN usermod -u $UID -g $GID www-data
+USER www-data

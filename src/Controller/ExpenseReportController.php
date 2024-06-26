@@ -19,6 +19,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\File as AssertFile;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ExpenseReportController extends AbstractController
 {
@@ -164,7 +166,7 @@ class ExpenseReportController extends AbstractController
     }
 
     #[Route('/expense-report/justification-document', name: 'app_expense_report_upload_justification_document', methods: ['POST'])]
-    public function uploadJustificationDocument(Request $request)
+    public function uploadJustificationDocument(Request $request, ValidatorInterface $validator)
     {
         if (!$this->getUser()) {
             return new JsonResponse([
@@ -177,6 +179,22 @@ class ExpenseReportController extends AbstractController
 
         if (!$file) {
             throw new BadRequestHttpException('No file uploaded');
+        }
+
+        $fileConstraint = new AssertFile([
+            'maxSize' => '8M',
+            'extensions' => [
+                'jpg',
+                'jpeg',
+                'png',
+                'pdf' => 'application/pdf',
+            ],
+        ]);
+
+        $errors = $validator->validate($file, $fileConstraint);
+
+        if ($errors->count() > 0) {
+            throw new BadRequestHttpException((string) $errors);
         }
 
         $extension = $file->getClientOriginalExtension();
