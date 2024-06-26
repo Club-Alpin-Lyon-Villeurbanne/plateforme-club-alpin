@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\File as AssertFile;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -167,7 +166,7 @@ class ExpenseReportController extends AbstractController
     }
 
     #[Route('/expense-report/justification-document', name: 'app_expense_report_upload_justification_document', methods: ['POST'])]
-    public function uploadJustificationDocument(Request $request, SluggerInterface $slugger, ValidatorInterface $validator)
+    public function uploadJustificationDocument(Request $request, ValidatorInterface $validator)
     {
         if (!$this->getUser()) {
             return new JsonResponse([
@@ -198,13 +197,13 @@ class ExpenseReportController extends AbstractController
             throw new BadRequestHttpException((string) $errors);
         }
 
+        $extension = $file->getClientOriginalExtension();
         $filename = pathinfo($file->getClientOriginalName(), \PATHINFO_FILENAME);
-        $safeFilename = $slugger->slug($filename);
         // rebuild filename with hashed timestamp and extension
-        $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
+        $filename = md5(time() . $filename) . '.' . $extension;
 
         try {
-            $file->move(FileUploadHelper::getUserUploadPath($this->getUser(), 'expense-reports-justification'), $newFilename);
+            $file->move(FileUploadHelper::getUserUploadPath($this->getUser(), 'expense-reports-justification'), $filename);
         } catch (\Exception $e) {
             return new JsonResponse([
                 'success' => false,
@@ -214,7 +213,7 @@ class ExpenseReportController extends AbstractController
 
         return new JsonResponse([
             'success' => true,
-            'fileUrl' => FileUploadHelper::getUserUploadUrl($this->getUser(), 'expense-reports-justification') . '/' . $newFilename,
+            'fileUrl' => FileUploadHelper::getUserUploadUrl($this->getUser(), 'expense-reports-justification') . '/' . $filename,
         ]);
     }
 }
