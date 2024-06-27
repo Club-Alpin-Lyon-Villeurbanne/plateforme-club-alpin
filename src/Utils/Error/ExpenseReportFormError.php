@@ -8,7 +8,8 @@ class ExpenseReportFormError implements \JsonSerializable
         private string $message,
         private ?string $fieldSlug = null,
         private ?int $expenseTypeId = null,
-        private ?string $expenseGroupSlug = null
+        private ?string $expenseGroupSlug = null,
+        private ?int $fieldId = null,
     ) {
     }
 
@@ -19,6 +20,7 @@ class ExpenseReportFormError implements \JsonSerializable
             'field' => $this->fieldSlug,
             'expenseTypeId' => $this->expenseTypeId,
             'expenseGroup' => $this->expenseGroupSlug,
+            'fieldId' => $this->fieldId,
         ];
     }
 }

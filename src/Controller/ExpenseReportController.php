@@ -133,7 +133,8 @@ class ExpenseReportController extends AbstractController
                                 'Un justificatif est obligatoire pour ce champ !',
                                 $fieldType->getSlug(),
                                 $expenseType->getId(),
-                                $dataExpenseGroup['slug']
+                                $dataExpenseGroup['slug'],
+                                $dataField['id'],
                             );
                         } elseif (!empty($dataField['justificationFileUrl'])) {
                             $expenseField->setJustificationDocument($dataField['justificationFileUrl']);
