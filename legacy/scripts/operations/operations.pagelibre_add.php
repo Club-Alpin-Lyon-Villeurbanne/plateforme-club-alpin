@@ -34,7 +34,7 @@ if (getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM))) {
 // save page
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "INSERT INTO caf_page (parent_page ,admin_page ,superadmin_page ,vis_page ,ordre_page ,menu_page ,ordre_menu_page ,menuadmin_page ,ordre_menuadmin_page ,code_page ,default_name_page ,meta_title_page ,meta_description_page ,priority_page ,add_css_page ,add_js_page ,lock_page ,pagelibre_page ,created_page)
-                        VALUES ('$parent_page', '0', '0', '0', '', '', '', '', '', '$code_page', '$default_name_page', '0', '$meta_description_page', '$priority_page', '', '', '', '1', '" . time() . "');";
+                        VALUES ('$parent_page', '0', '0', '0', 0, 0, 0, 0, 0, '$code_page', '$default_name_page', '0', '$meta_description_page', 0, '', '', 0, '1', '" . time() . "');";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur BDD 1';
     } else {
