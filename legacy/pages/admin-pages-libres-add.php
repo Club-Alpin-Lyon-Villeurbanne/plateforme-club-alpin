@@ -21,7 +21,7 @@ if (!admin()) {
 		<div style="float:left; width:430px; padding-right:20px;">
 			<b>Titre de la page :</b><br />
 			<p style="width:350px; font-size:10px; line-height:9px;">META titles : ce titre apparaît dans le menu supérieur du navigateur, et dans les résultats de recherche Google</p>
-			<input type="text" name="default_name_page" class="type1 getcodefrom" value="<?php echo html_utf8(stripslashes($_POST['default_name_page'])); ?>" placeholder="" />
+			<input type="text" name="default_name_page" class="type1 getcodefrom" value="<?php echo html_utf8(stripslashes($_POST['default_name_page'] ?? '')); ?>" placeholder="" />
 			<br />
 			<br />
 			<br />
