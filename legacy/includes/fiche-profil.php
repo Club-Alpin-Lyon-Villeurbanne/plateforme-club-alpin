@@ -119,6 +119,25 @@ elseif (!allowed('user_read_public')) {
 			<!-- infos persos-->
 			<?php require __DIR__ . '/../includes/user/infos_privees.php'; ?>
 
+            <?php
+                if (allowed('user_read_private')) {
+                    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare(
+                        'SELECT COUNT(CASE WHEN status_evt_join = 1 THEN 1 END) AS presences,
+                        COUNT(CASE WHEN status_evt_join = 3 THEN 1 END) AS absences
+                        FROM `caf_evt_join`
+                        WHERE user_evt_join = ?
+                        GROUP BY user_evt_join'
+                    );
+                    $stmt->bind_param('i', $id_user);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $row = $result->fetch_assoc();
+                    echo '<p><b>';
+                    printf('noté absent / validé à une sortie : %d / %d', $row['absences'], $row['presences']);
+                    echo '</b></p>';
+                }
+            ?>
+
 			<br style="clear:both" />
 
             <?php $ecriture = get_niveaux($tmpUser['id_user'], true);
