@@ -97,10 +97,14 @@ class EventParticipationRepository extends ServiceEntityRepository
         $presences = $absences = 0;
         $query = $this->createQueryBuilder('ep')
             ->select('(ep.user)')
-            ->addSelect('COUNT(CASE WHEN ep.status = 1 THEN 1 ELSE NULLIF(1,1) END) as presences')
-            ->addSelect('COUNT(CASE WHEN ep.status = 3 THEN 1 ELSE NULLIF(1,1) END) as absences')
+            ->addSelect('COUNT(CASE WHEN ep.status = :present THEN 1 ELSE NULLIF(1,1) END) as presences')
+            ->addSelect('COUNT(CASE WHEN ep.status = :absent THEN 1 ELSE NULLIF(1,1) END) as absences')
             ->where('IDENTITY(ep.user) = :id')
-            ->setParameter('id', $userId)
+            ->setParameters([
+                'id' => $userId,
+                'present' => EventParticipation::STATUS_VALIDE,
+                'absent' => EventParticipation::STATUS_ABSENT,
+            ])
             ->groupBy('ep.user')
             ->getQuery()
         ;
