@@ -96,6 +96,9 @@ export default defineComponent({
             .then(response => response.json())
             .then(data => {
                 this.field.justificationFileUrl = data.fileUrl;
+                if (this.field.errors) {
+                    this.field.errors = null;
+                }
             });
         },
         removeFile() {
