@@ -205,7 +205,53 @@
                 }
                 return value.toFixed(2).replace('.', ',');
             },
+            validateExpenseReport(): boolean {
+                let valid: boolean = true;
+                for (const expenseReportFormGroup in this.formStructure) {
+                    if (typeof this.formStructure[expenseReportFormGroup] !== 'object') {
+                        continue;
+                    }
+                    let type: string = this.formStructure[expenseReportFormGroup].type as string;
+                    if ('unique' === type) {
+                        const selected: string = this.formStructure[expenseReportFormGroup].selectedType as string;
+                        const expenseType = this.formStructure[expenseReportFormGroup].expenseTypes.find((expenseType: any) => {
+                            return expenseType.slug === selected;
+                        });
+                        valid &= this.validateExpenseType(expenseType);
+                    } else {
+                        for (const expenseType of this.formStructure[expenseReportFormGroup].expenseTypes) {
+                            valid &= this.validateExpenseType(expenseType);
+                        }
+                    }
+                }
+                return valid;
+            },
+            validateExpenseType(expenseType: any): boolean {
+                let valid: boolean = true;
+                for (const field of expenseType.fields) {
+                    field.errors = null;
+                    if (field.flags.isMandatory && !field.value) {
+                        field.errors = [];
+                        field.errors.push('Ce champ est obligatoire !');
+                        valid = false;
+                    }
+
+                    if (field.flags.needsJustification && field.value && !field.justificationFileUrl) {
+                        if (!field.errors) {
+                            field.errors = [];
+                        }
+                        field.errors.push('Un justificatif est obligatoire pour ce champ !');
+                        valid = false;
+                    }
+                }
+                return valid;
+            },
             async saveExpenseReport(status: string) {
+
+                if ('submitted' === status && !this.validateExpenseReport()) {
+                    return;
+                }
+
                 const payload = {
                     status,
                     eventId: (window as any).globals.currentEventId,
@@ -243,11 +289,17 @@
                                 continue;
                             }
 
-                            const targetExpenseType = targetGroup.expenseTypes.find((expenseType: any) => {
+                            const targetExpenseTypes = targetGroup.expenseTypes.filter((expenseType: any) => {
                                 return expenseType.expenseTypeId === error.expenseTypeId;
                             });
 
-                            const targetField = targetExpenseType.fields.find((field: any) => field.slug === error.field);
+                            let targetField;
+                            for (const targetExpenseType of targetExpenseTypes) {
+                                targetField = targetExpenseType.fields.find((field: any) => field.id === error.fieldId);
+                                if (targetField) {
+                                    break;
+                                }
+                            }
 
                             if (!targetField.errors) {
                                 targetField.errors = [];
