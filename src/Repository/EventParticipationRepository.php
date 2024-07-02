@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\Exception;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -90,20 +90,26 @@ class EventParticipationRepository extends ServiceEntityRepository
     }
 
     /**
-     * @throws Exception
+     * @throws NonUniqueResultException
      */
     public function getEventPresencesAndAbsencesOfUser(int $userId): mixed
     {
-        $conn = $this->getEntityManager()->getConnection();
-        $sql = '
-            SELECT COUNT(CASE WHEN status_evt_join = 1 THEN 1 END) AS presences,
-            COUNT(CASE WHEN status_evt_join = 3 THEN 1 END) AS absences
-            FROM caf_evt_join cej
-            WHERE cej.user_evt_join = :id
-            GROUP BY cej.user_evt_join
-            ';
-        $result = $conn->executeQuery($sql, ['id' => $userId]);
+        $presences = $absences = 0;
+        $query = $this->createQueryBuilder('ep')
+            ->select('(ep.user)')
+            ->addSelect('COUNT(CASE WHEN ep.status = 1 THEN 1 ELSE NULLIF(1,1) END) as presences')
+            ->addSelect('COUNT(CASE WHEN ep.status = 3 THEN 1 ELSE NULLIF(1,1) END) as absences')
+            ->where('IDENTITY(ep.user) = :id')
+            ->setParameter('id', $userId)
+            ->groupBy('ep.user')
+            ->getQuery()
+        ;
 
-        return $result->fetchAssociative();
+        $result = $query->getOneOrNullResult();
+        if ($result) {
+            list('absences' => $absences, 'presences' => $presences) = $result;
+        }
+
+        return ['absences' => $absences, 'presences' => $presences];
     }
 }
