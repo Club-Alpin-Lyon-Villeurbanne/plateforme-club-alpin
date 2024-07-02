@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Exception;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -86,5 +87,23 @@ class EventParticipationRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getEventPresencesAndAbsencesOfUser(int $userId): mixed
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+            SELECT COUNT(CASE WHEN status_evt_join = 1 THEN 1 END) AS presences,
+            COUNT(CASE WHEN status_evt_join = 3 THEN 1 END) AS absences
+            FROM caf_evt_join cej
+            WHERE cej.user_evt_join = :id
+            GROUP BY cej.user_evt_join
+            ';
+        $result = $conn->executeQuery($sql, ['id' => $userId]);
+
+        return $result->fetchAssociative();
     }
 }

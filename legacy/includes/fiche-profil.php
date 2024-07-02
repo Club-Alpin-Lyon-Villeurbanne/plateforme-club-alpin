@@ -1,6 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Entity\EventParticipation;
 
 // id du profil
 $id_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $_GET['id_user']);
@@ -121,19 +122,11 @@ elseif (!allowed('user_read_public')) {
 
             <?php
                 if (allowed('user_read_private')) {
-                    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare(
-                        'SELECT COUNT(CASE WHEN status_evt_join = 1 THEN 1 END) AS presences,
-                        COUNT(CASE WHEN status_evt_join = 3 THEN 1 END) AS absences
-                        FROM `caf_evt_join`
-                        WHERE user_evt_join = ?
-                        GROUP BY user_evt_join'
-                    );
-                    $stmt->bind_param('i', $id_user);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    $row = $result->fetch_assoc();
+                    list('absences' => $absences, 'presences' => $presences) = LegacyContainer::get('doctrine.orm.entity_manager')
+                        ->getRepository(EventParticipation::class)
+                        ->getEventPresencesAndAbsencesOfUser($id_user);
                     echo '<p><b>';
-                    printf('noté absent / validé à une sortie : %d / %d', $row['absences'], $row['presences']);
+                    printf('noté absent / validé à une sortie : %d / %d', $absences, $presences);
                     echo '</b></p>';
                 }
             ?>
