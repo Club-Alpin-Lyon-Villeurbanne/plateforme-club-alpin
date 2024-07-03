@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -86,5 +87,33 @@ class EventParticipationRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function getEventPresencesAndAbsencesOfUser(int $userId): mixed
+    {
+        $presences = $absences = 0;
+        $query = $this->createQueryBuilder('ep')
+            ->select('(ep.user)')
+            ->addSelect('COUNT(CASE WHEN ep.status = :present THEN 1 ELSE NULLIF(1,1) END) as presences')
+            ->addSelect('COUNT(CASE WHEN ep.status = :absent THEN 1 ELSE NULLIF(1,1) END) as absences')
+            ->where('IDENTITY(ep.user) = :id')
+            ->setParameters([
+                'id' => $userId,
+                'present' => EventParticipation::STATUS_VALIDE,
+                'absent' => EventParticipation::STATUS_ABSENT,
+            ])
+            ->groupBy('ep.user')
+            ->getQuery()
+        ;
+
+        $result = $query->getOneOrNullResult();
+        if ($result) {
+            list('absences' => $absences, 'presences' => $presences) = $result;
+        }
+
+        return ['absences' => $absences, 'presences' => $presences];
     }
 }
