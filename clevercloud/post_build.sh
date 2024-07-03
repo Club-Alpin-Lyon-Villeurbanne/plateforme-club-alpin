@@ -30,7 +30,7 @@ composer.phar dump-env prod
 bin/console cache:clear
 bin/console assets:install public
 
-bin/console doctrine:migrations:migrate --no-interaction
+#bin/console doctrine:migrations:migrate --no-interaction
 
 # Frontend build
  npm install && npm run build
