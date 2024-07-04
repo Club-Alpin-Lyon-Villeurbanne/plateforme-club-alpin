@@ -24,46 +24,11 @@
     </div>
 
     <div class="tiers-footer">
-        <div id="mainfooter-2" class="tiers-footer"><h2>Pour nous contacter</h2>
-            <p>Nos locaux sont situés :</p>
-            <p>
-                56 rue du 4 août 1789
-                <br>69100 Villeurbanne
-                <br>Tel : (33) 04-78-42-09-17
-            </p>
-            <p>
-                Par E-mail :<br/>
-                {{ 'accueil@clubalpinlyon.fr' | mail_this }}<br/>
-                {{ 'comptabilite@clubalpinlyon.fr' | mail_this }}<br/>
-                Pour toute question liée au site: {{ 'numerique@clubalpinlyon.fr' | mail_this }}
-            </p>
-            <p><strong>PERMANENCE :</strong><br>Nous vous accueillons :</p>
-            <h4><strong>&gt; le mardi de 14h à 18h</strong></h4>
-            <h4><strong>&gt; le jeudi de 15h à 20h </strong></h4>
-            <p>Pour les périodes de fermeture, consulter les actualités.</p>
-        </div>
+        {{ easy_include('mainfooter-2', 'tiers-footer') }}
     </div>
 
     <div class="tiers-footer" style="float:right">
-        <div id="mainfooter-3" class="tiers-footer">
-            <h2><a href="/pages/mentions-legales.html">Mentions légales</a></h2>
-            <p>
-                ©Les contenus de ce site, images et textes, appartiennent au Club Alpin Français et ne peuvent être réutilisés
-                sans l'accord de leurs auteurs respectifs.<br>
-                <a href="/pages/mentions-legales.html">[en savoir plus]</a>
-            </p>
-            <hr>
-            <p>
-                <span style="font-size: small;">Retrouvez-nous sur les réseaux sociaux<br>
-                    <a href="https://fr-fr.facebook.com/pages/Club-Alpin-Fran%C3%A7ais-de-Lyon-Villeurbanne/118851941629324" target="_blank">
-                        <img src="/img/social/facebook.png" alt="Facebook" width="30" height="30">
-                    </a>
-                    <a href="https://www.instagram.com/clubalpinlyonvilleurbanne/" target="_blank">
-                        <img src="/img/social/instagram.png" alt="Instagram" width="30" height="30">
-                    </a>
-                </span>
-            </p>
-        </div>
+        {{ easy_include('mainfooter-3', 'tiers-footer') }}
     </div>
 
     <br style="clear:both" />
