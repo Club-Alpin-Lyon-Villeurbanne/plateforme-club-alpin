@@ -20,6 +20,7 @@ class Evt implements \JsonSerializable
     public const STATUS_LEGAL_UNSEEN = 0;
     public const STATUS_LEGAL_VALIDE = 1;
     public const STATUS_LEGAL_REFUSE = 2;
+    public const UNSUBSCRIBE_LIMIT_PERIOD = 4;
 
     /**
      * @var int
@@ -894,5 +895,16 @@ class Evt implements \JsonSerializable
         $this->childVersionTosubmit = $childVersionTosubmit;
 
         return $this;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function canBeUnsubscribedFrom(): bool
+    {
+        $startDate = (new \DateTime())->setTimestamp($this->getTsp())->setTime(0, 0);
+        $startDate->modify(sprintf('- %d day', self::UNSUBSCRIBE_LIMIT_PERIOD));
+        $today = (new \DateTime())->setTime(0, 0);
+        return $startDate > $today;
     }
 }
