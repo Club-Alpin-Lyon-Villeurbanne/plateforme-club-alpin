@@ -20,11 +20,8 @@ const expenseReportService = {
             if (transportationMode.slug === 'vehicule_personnel') {
                 const distance : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'distance').value) || 0.0;
                 const toll : number = parseFloat(transportationMode.fields.find((field: any) => field.slug === 'peage').value) || 0.0;
-                const passengers : number = parseInt(transportationMode.fields.find((field: any) => field.slug === 'nombre_voyageurs').value) || 0;
-                // distance * taux kilométrique
-                total += passengers !== 0 ? distance * expenseReportConfig.tauxKilometriqueVoiture / passengers : 0.0;
-                // péage / nombre voyageurs
-                total += passengers !== 0 ? toll / expenseReportConfig.divisionPeage : 0.0;
+                total += distance * expenseReportConfig.tauxKilometriqueVoiture;
+                total += toll / expenseReportConfig.divisionPeage;
             }
 
             // minibus location
