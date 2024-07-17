@@ -110,7 +110,7 @@ services:
 
   App\Security\ExpenseAuthorization:
     arguments:
-      $gistUrl: 'https://api.github.com/gists/afd2610540d579186a94af4cf5d98b5f'
+      $authorizedIds: "%env(string:AUTHORIZED_IDS_FOR_EXPENSES)%"
 
   Symfony\Component\String\Slugger\SluggerInterface:
     class: Symfony\Component\String\Slugger\AsciiSlugger
