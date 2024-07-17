@@ -6,7 +6,7 @@ if (!admin()) {
     echo 'Votre session administrateur a expiré';
 } else {
     $lang_content_inline = 'fr';
-
+    $operation = $_POST['operation'] ?? null;
     // contenus
     $req = "SELECT *
 					FROM caf_content_inline, caf_content_inline_group
@@ -53,7 +53,7 @@ if (!admin()) {
 
 	<br />
 	<!-- nouvel elt -->
-	<form class="toggleForm add" action="<?php echo $versCettePage; ?>" method="post" style="display:<?php if ((isset($_POST['operation']) && 'addContentInline' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) || 'forceAddContent' == $_POST['operation']) {
+	<form class="toggleForm add" action="<?php echo $versCettePage; ?>" method="post" style="display:<?php if (('addContentInline' === $operation && isset($errTab) && count($errTab) > 0) || 'forceAddContent' === $operation) {
 	    echo 'block';
 	} ?>">
 		<input type="hidden" name="operation" value="addContentInline" />
@@ -98,12 +98,12 @@ if (!admin()) {
 							<?php
 	                        // liste des groupes dans le tableau dessous
 	                        $tempGroup = 0; // id groupe
-	        for ($i = 0; $i < count($contGroupTab); ++$i) {
-	            if ($tempGroup != $contGroupTab[$i]['id_content_inline_group'] && $contGroupTab[$i]['id_content_inline_group']) {
-	                echo '<option value="' . $contGroupTab[$i]['id_content_inline_group'] . '">' . $contGroupTab[$i]['nom_content_inline_group'] . '</option>';
-	            }
-	            $tempGroup = $contGroupTab[$i]['id_content_inline_group'];
-	        } ?>
+                            for ($i = 0; $i < count($contGroupTab); ++$i) {
+                                if ($tempGroup != $contGroupTab[$i]['id_content_inline_group'] && $contGroupTab[$i]['id_content_inline_group']) {
+                                    echo '<option value="' . $contGroupTab[$i]['id_content_inline_group'] . '">' . $contGroupTab[$i]['nom_content_inline_group'] . '</option>';
+                                }
+                                $tempGroup = $contGroupTab[$i]['id_content_inline_group'];
+                            } ?>
 						</select>
 					</td>
 					<td>
@@ -138,7 +138,7 @@ if (!admin()) {
 			</tr>
 			<tr>
 				<td>
-					<input type="text" name="nom_content_inline_group" value="<?php echo trim(html_utf8(stripslashes(utf8_decode($_POST['nom_content_inline_group'])))); ?>" />
+					<input type="text" name="nom_content_inline_group" value="<?php echo trim(html_utf8(stripslashes(mb_convert_encoding($_POST['nom_content_inline_group'] ?? null, 'ISO-8859-1', 'UTF-8')))); ?>" />
 				</td>
 				<td>
 					<input type="submit" value="OK" class="boutonFancy" />
