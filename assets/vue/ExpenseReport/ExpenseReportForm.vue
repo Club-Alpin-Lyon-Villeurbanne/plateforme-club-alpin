@@ -217,10 +217,10 @@
                         const expenseType = this.formStructure[expenseReportFormGroup].expenseTypes.find((expenseType: any) => {
                             return expenseType.slug === selected;
                         });
-                        valid &= this.validateExpenseType(expenseType);
+                        valid &&= this.validateExpenseType(expenseType);
                     } else {
                         for (const expenseType of this.formStructure[expenseReportFormGroup].expenseTypes) {
-                            valid &= this.validateExpenseType(expenseType);
+                            valid &&= this.validateExpenseType(expenseType);
                         }
                     }
                 }
