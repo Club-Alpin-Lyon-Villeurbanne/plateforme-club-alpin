@@ -138,7 +138,7 @@ a#toolbar-commission.toptrigger b{white-space:normal;}
 #toolbar-user .connected-name img{float:left; width:55px; height:55px; padding:0 10px 10px 0;}
 #toolbar-user .notification-user{height:0px; width:62px; position:relative; z-index:50; bottom:11px; text-align:right}
 #toolbar-user .notification-user span{display:inline-block; height:15px; width:15px; text-align:center; font-size:12px; line-height:15px; font-family:DINBold; font-weight:100; color:white; padding:3px; border-radius:15px; background:#8dc540; box-shadow:0 0 7px -2px black;}
-#toolbar-user .notification-user-alerte{height:0px; width:62px; position:relative; z-index:50; bottom:11px; text-align:right}
+#toolbar-user .notification-user-alerte{height:0px; width:62px; position:relative; z-index:51; bottom:11px; text-align:right}
 #toolbar-user .notification-user-alerte span{display:inline-block; height:15px; width:15px; text-align:center; font-size:12px; line-height:15px; font-family:DINBold; font-weight:100; color:white; padding:3px; border-radius:15px; background:#f15a24; box-shadow:0 0 7px -2px black;}
  #toolbar-user-hidden .nav-user{float:left; width:160px; line-height:18px; padding:0 11px 0 0; font-family:DIN; color:white; font-size:14px;}
 #toolbar-user-hidden .nav-user a{display:inline-block; line-height:15px; font-weight:100; color:white;}
@@ -401,6 +401,7 @@ form .niveau.editable:hover .input{background-image:none;}
 .full {width:95%;}
 .mr10{margin-right:10px;}
 .mr20{margin-right:20px;}
+.mt20{margin-top:20px;}
 .text-alert {color:red}
 .text-inform {color:orange}
 .ign {padding:10px;}
@@ -431,4 +432,4 @@ form .niveau.editable:hover .input{background-image:none;}
     margin-top: 6px;
     margin-left: 10px;
 }
-
+#incomplete-profile-warning.alerte a {font-weight:normal;text-decoration:underline;}

@@ -42,6 +42,7 @@ services:
       $kernelEnvironment: "%kernel.environment%"
       $recaptchaSecret: "%env(RECAPTCHA_SECRET)%"
       $baseUrl: "%env(BACKEND_URL)%"
+      $legacyFtpPath: "%legacy_ftp_path%"
 
   # allows access to service container as an injected dependency
   Symfony\Component\DependencyInjection\ContainerInterface: "@service_container"
@@ -69,6 +70,9 @@ services:
 
   App\Twig\JavascriptGlobalsExtension:
     tags: ["twig.extension"]
+
+  App\Twig\AppExtension:
+    tags: ['twig.extension']
 
   App\Twig\ExpenseAuthorizationExtension:
     tags: ["twig.extension"]
@@ -180,6 +184,9 @@ services:
   legacy_member_merger:
     public: true
     alias: App\Utils\MemberMerger
+
+  App\Utils\User\UserProfileValidator:
+    public: true
 
   legacy_content_inline:
     public: true
