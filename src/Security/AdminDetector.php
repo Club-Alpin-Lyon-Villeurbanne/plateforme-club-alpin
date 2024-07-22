@@ -17,7 +17,7 @@ class AdminDetector
     {
         $request = $this->requestStack->getMainRequest();
 
-        if (!$request || !$request->hasSession()) {
+        if (!$request || !$request->hasSession() || $request->attributes->getBoolean('_stateless')) {
             return false;
         }
 

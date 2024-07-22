@@ -1,0 +1,5 @@
+gesdinet_jwt_refresh_token:
+    path: /api/token/refresh
+
+api_token_onvalidate:
+    path: /api/token/invalidate
