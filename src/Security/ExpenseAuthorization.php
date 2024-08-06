@@ -23,6 +23,6 @@ class ExpenseAuthorization
             return false;
         }
 
-        return \in_array($user->getId(), $this->authorizedIds, true);
+        return \in_array((string)$user->getId(), $this->authorizedIds, true);
     }
 }
