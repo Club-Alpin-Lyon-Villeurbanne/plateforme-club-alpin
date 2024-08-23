@@ -24,10 +24,16 @@ class JWTCreatedListener implements EventSubscriberInterface
     public function onJWTCreated(JWTCreatedEvent $event)
     {
         $payload = $event->getData();
+        $user = $event->getUser();
         $isAdmin = $this->adminDetector->isAdmin();
         if ($isAdmin) {
             $payload['is_admin'] = $isAdmin;
         }
+        $payload = array_merge($payload, [
+            'id' => $user->getId(),
+            'nickname' => $user->getNickname(),
+            'email' => $user->getEmail(),
+        ]);
 
         $event->setData($payload);
     }
