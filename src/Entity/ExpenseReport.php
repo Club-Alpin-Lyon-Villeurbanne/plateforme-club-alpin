@@ -5,7 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
 use App\Controller\Api\ExpenseReportGet;
 use App\Controller\Api\ExpenseReportList;
 use App\Controller\Api\ExpenseReportUpdateStatus;
@@ -21,26 +21,26 @@ use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 #[ORM\Entity(repositoryClass: ExpenseReportRepository::class)]
 #[ApiResource(operations: [
     new GetCollection(
-        name: 'expense_report_list',
         uriTemplate: '/expense-report',
-        controller: ExpenseReportList::class,
         stateless: false,
-        security: "is_granted('ROLE_USER')"
+        controller: ExpenseReportList::class,
+        security: "is_granted('ROLE_USER')",
+        name: 'expense_report_list'
     ),
     new Get(
-        name: 'expense_report_get',
         uriTemplate: '/expense-report/{id}',
+        stateless: false,
         controller: ExpenseReportGet::class,
-        stateless: false,
-        security: "is_granted('ROLE_USER')"
+        security: "is_granted('ROLE_USER')",
+        name: 'expense_report_get'
     ),
-    new Post(
-        name: 'expense_report_validate',
+    new Patch(
         uriTemplate: '/expense-report/{id}/status',
-        input: ExpenseReportStatusDto::class,
-        controller: ExpenseReportUpdateStatus::class,
         stateless: false,
-        security: "is_granted('ROLE_USER')"
+        controller: ExpenseReportUpdateStatus::class,
+        security: "is_granted('ROLE_USER')",
+        input: ExpenseReportStatusDto::class,
+        name: 'expense_report_validate'
     ),
 ])]
 #[HasLifecycleCallbacks]

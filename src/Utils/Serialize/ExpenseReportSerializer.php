@@ -59,6 +59,7 @@ class ExpenseReportSerializer
             'refundRequired' => $expenseReport->isRefundRequired(),
             'user' => $expenseReport->getUser(),
             'event' => $expenseReport->getEvent(),
+            'participations' => $expenseReport->getEvent()->getParticipations()->toArray(),
             'createdAt' => $expenseReport->getCreatedAt()->format('Y-m-d H:i:s'),
             'updatedAt' => $expenseReport->getUpdatedAt()->format('Y-m-d H:i:s'),
             'expenseGroups' => $expenseGroupsArray,

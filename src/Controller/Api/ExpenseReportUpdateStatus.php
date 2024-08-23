@@ -10,6 +10,7 @@ use App\Utils\Serialize\ExpenseReportSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class ExpenseReportUpdateStatus extends AbstractController
 {
@@ -26,14 +27,14 @@ class ExpenseReportUpdateStatus extends AbstractController
             return new JsonResponse([
                 'success' => false,
                 'message' => 'You are not allowed to update this expense report',
-            ], 403);
+            ], Response::HTTP_FORBIDDEN);
         }
 
         if (\in_array($expenseReportStatusDto->status, [ExpenseReportEnum::STATUS_DRAFT, ExpenseReportEnum::STATUS_SUBMITTED], true)) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'You cannot set the status to draft or submitted',
-            ], 400);
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         $expenseReport->setStatus($expenseReportStatusDto->status);

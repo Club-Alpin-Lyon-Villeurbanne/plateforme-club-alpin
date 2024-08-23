@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table(name: 'caf_evt_join')]
 #[ORM\Entity(repositoryClass: EventParticipationRepository::class)]
-class EventParticipation
+class EventParticipation implements \JsonSerializable
 {
     public const STATUS_NON_CONFIRME = 0;
     public const STATUS_VALIDE = 1;
@@ -262,5 +262,17 @@ class EventParticipation
         $this->isCovoiturage = $isCovoiturage;
 
         return $this;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->id,
+            'evt' => $this->evt->getId(),
+            'user' => $this->user->getId(),
+            'role' => $this->role,
+            'status' => $this->status,
+            'isCovoiturage' => $this->isCovoiturage,
+        ];
     }
 }
