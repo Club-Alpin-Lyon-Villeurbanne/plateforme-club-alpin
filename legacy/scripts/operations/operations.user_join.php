@@ -12,7 +12,7 @@ if (isset($_POST['filiations']) && 'on' == $_POST['filiations']) {
     $filiations = false;
 }
 
-$idUsersFiliations = $_POST['id_user_filiation'] ?? [];
+$idUsersFiliations = $_POST['id_user_filiation'] ? array_map('intval', $_POST['id_user_filiation']) : [];
 
 // Evenement défini et utilisateur aussi
 $id_evt = (int) $_POST['id_evt'];
