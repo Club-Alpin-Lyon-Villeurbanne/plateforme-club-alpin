@@ -1,26 +1,20 @@
-{%- macro get_class(level) -%}
-    {% if level == 'danger' or level == 'error' or level == 'warning' %}
-        erreur
-    {% else %}
-        info
-    {% endif %}
-{%- endmacro -%}
-
-{% macro get_flash_box() %}
-    {% for level in app.session.flashbag.keys() %}
-        <div class="{{ _self.get_class(level) }}" style="text-align:left; max-width:600px; line-height:17px;">
-            {% for message in app.session.flashbag.get(level) %}
-                <span>{{ message }}</span>
-            {% endfor %}
-        </div>
-    {% endfor %}
-{% endmacro %}
-
 {% if app.session.flashbag.keys | length > 0 %}
-<script>
-    $(function () {
-        $.fancybox('{{ _self.get_flash_box() | e('js') }}');
-    })
-</script>
+    <script type="text/javascript">
+        {% for message in app.session.flashbag.get('error') %}
+            toastr.error('{{message}}')
+        {% endfor %}
+
+        {% for message in app.session.flashbag.get('warning') %}
+            toastr.warning('{{message}}')
+        {% endfor %}
+
+        {% for message in app.session.flashbag.get('info') %}
+            toastr.info('{{message}}')
+        {% endfor %}
+
+        {% for message in app.session.flashbag.get('success') %}
+            toastr.success('{{message}}')
+        {% endfor %}
+    </script>
 {% endif %}
 
