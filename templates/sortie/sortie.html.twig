@@ -208,6 +208,20 @@
             {% if my_status and my_status.status == constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME') %}
                 {% if not event.finished %}
                     {% if allowed('evt_unjoin') %}
+                    <div id="inscription-annuler" style="display: none;">
+                        {{ easy_include('formalites-inscription-suppression', 'formalites') }}
+
+                        <form action="{{ path('sortie_remove_participant', { id: my_status.id }) }}" method="post" class="loading">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
+
+                            <p style="text-align:center">
+                                <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+                                    <span class="bleucaf">&gt;</span>
+                                    ANNULER MA DEMANDE D'INSCRIPTION
+                                </a>
+                            </p>
+                        </form>
+                    </div>
                     <p class="alerte">
                         <img src="/img/inscrit-standby.png" alt="" title="" style="float:left" />
                         <br />Vous avez demandé à participer à cette sortie, et votre demande est en attente de validation.<br />
