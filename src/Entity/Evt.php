@@ -2,16 +2,20 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Evt.
  */
 #[ORM\Table(name: 'caf_evt')]
 #[ORM\Entity]
-class Evt implements \JsonSerializable
+#[ApiResource]
+
+class Evt
 {
     public const STATUS_PUBLISHED_UNSEEN = 0;
     public const STATUS_PUBLISHED_VALIDE = 1;
@@ -28,6 +32,7 @@ class Evt implements \JsonSerializable
     #[ORM\Column(name: 'id_evt', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[Groups('event:read')]
     private $id;
 
     /**
@@ -87,6 +92,8 @@ class Evt implements \JsonSerializable
 
     #[ORM\ManyToOne(targetEntity: 'Commission')]
     #[ORM\JoinColumn(name: 'commission_evt', referencedColumnName: 'id_commission', nullable: false)]
+    #[Groups('event:read')]
+
     private $commission;
 
     /**
@@ -100,12 +107,16 @@ class Evt implements \JsonSerializable
      * @var int
      */
     #[ORM\Column(name: 'tsp_evt', type: 'bigint', nullable: true, options: ['comment' => 'timestamp du début du event'])]
+    #[Groups('event:read')]
+
     private $tsp;
 
     /**
      * @var int
      */
     #[ORM\Column(name: 'tsp_end_evt', type: 'bigint', nullable: true)]
+    #[Groups('event:read')]
+
     private $tspEnd;
 
     /**
@@ -130,12 +141,16 @@ class Evt implements \JsonSerializable
      * @var string
      */
     #[ORM\Column(name: 'titre_evt', type: 'string', length: 100, nullable: false)]
+    #[Groups('event:read')]
+
     private $titre;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'code_evt', type: 'string', length: 30, nullable: false)]
+    #[Groups('event:read')]
+
     private $code;
 
     /**
@@ -148,6 +163,8 @@ class Evt implements \JsonSerializable
      * @var string
      */
     #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu détaillé du rdv'])]
+    #[Groups('event:read')]
+
     private $rdv;
 
     /**
@@ -905,6 +922,7 @@ class Evt implements \JsonSerializable
         $startDate = (new \DateTime())->setTimestamp($this->getTsp())->setTime(0, 0);
         $startDate->modify(sprintf('- %d day', self::UNSUBSCRIBE_LIMIT_PERIOD));
         $today = (new \DateTime())->setTime(0, 0);
+
         return $startDate > $today;
     }
 }
