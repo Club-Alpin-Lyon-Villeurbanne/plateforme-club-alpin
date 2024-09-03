@@ -7,15 +7,10 @@ use App\Entity\Evt;
 use App\Mailer\Mailer;
 use App\Repository\EventParticipationRepository;
 use App\Repository\EvtRepository;
-use App\Repository\ExpenseGroupRepository;
-use App\Repository\ExpenseReportRepository;
-use App\Repository\ExpenseTypeExpenseFieldTypeRepository;
 use App\Repository\UserRepository;
-use App\Security\ExpenseAuthorization;
 use App\Twig\JavascriptGlobalsExtension;
 use App\Utils\Enums\ExpenseReportEnum;
 use App\Utils\Serialize\ExpenseFieldTypeSerializer;
-use App\Utils\Serialize\ExpenseReportSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,12 +36,7 @@ class SortieController extends AbstractController
         Evt $event,
         UserRepository $repository,
         EventParticipationRepository $participationRepository,
-        ExpenseGroupRepository $expenseGroupRepository,
-        ExpenseTypeExpenseFieldTypeRepository $expenseTypeFieldTypeRepository,
-        ExpenseReportRepository $expenseReportRepository,
-        ExpenseReportSerializer $expenseReportSerializer,
         Environment $twig,
-        ExpenseAuthorization $expenseAuthorization,
         $baseUrl = '/',
     ) {
         if (!$this->isGranted('SORTIE_VIEW', $event)) {
@@ -59,120 +49,117 @@ class SortieController extends AbstractController
         $expenseReportFormGroups = [];
         $currentExpenseReport = null;
 
-        if ($expenseAuthorization->isAuthorized()) {
-            $expenseGroups = $expenseGroupRepository->findAll();
+        // if ($expenseAuthorization->isAuthorized()) {
+        //     $expenseGroups = $expenseGroupRepository->findAll();
 
-            // each expense group has a list of expense types
-            // each expense type has a list of fields
-            foreach ($expenseGroups as $expenseGroup) {
-                $expenseReportFormGroups[$expenseGroup->getSlug()] = [
-                    'name' => $expenseGroup->getName(),
-                    'slug' => $expenseGroup->getSlug(),
-                    'type' => $expenseGroup->getType(),
-                    'expenseTypes' => [],
-                    'selectedType' => 0,
-                ];
+        //     // each expense group has a list of expense types
+        //     // each expense type has a list of fields
+        //     foreach ($expenseGroups as $expenseGroup) {
+        //         $expenseReportFormGroups[$expenseGroup->getSlug()] = [
+        //             'name' => $expenseGroup->getName(),
+        //             'slug' => $expenseGroup->getSlug(),
+        //             'type' => $expenseGroup->getType(),
+        //             'expenseTypes' => [],
+        //             'selectedType' => 0,
+        //         ];
 
-                foreach ($expenseGroup->getExpenseTypes() as $expenseType) {
-                    $fields = array_map(function ($expenseFieldTypeRelation) {
-                        return $expenseFieldTypeRelation->getExpenseFieldType();
-                    }, $expenseType->getExpenseFieldTypeRelations()->toArray());
+        //         foreach ($expenseGroup->getExpenseTypes() as $expenseType) {
+        //             $fields = array_map(function ($expenseFieldTypeRelation) {
+        //                 return $expenseFieldTypeRelation->getExpenseFieldType();
+        //             }, $expenseType->getExpenseFieldTypeRelations()->toArray());
 
-                    // add the needsJustification property to the field itself
-                    // (needsJustification comes from the join table)
-                    foreach ($fields as $field) {
-                        $relation = $expenseTypeFieldTypeRepository->findOneBy([
-                            'expenseType' => $expenseType,
-                            'expenseFieldType' => $field,
-                        ]);
-                        $field->setFlags([
-                            'needsJustification' => $relation->getNeedsJustification(),
-                            'displayOrder' => $relation->getDisplayOrder(),
-                            'isMandatory' => $relation->isMandatory(),
-                            'isUsedForTotal' => $relation->isUsedForTotal(),
-                        ]);
-                    }
+        //             // add the needsJustification property to the field itself
+        //             // (needsJustification comes from the join table)
+        //             foreach ($fields as $field) {
+        //                 $relation = $expenseTypeFieldTypeRepository->findOneBy([
+        //                     'expenseType' => $expenseType,
+        //                     'expenseFieldType' => $field,
+        //                 ]);
+        //                 $field->setFlags([
+        //                     'needsJustification' => $relation->getNeedsJustification(),
+        //                     'displayOrder' => $relation->getDisplayOrder(),
+        //                     'isMandatory' => $relation->isMandatory(),
+        //                     'isUsedForTotal' => $relation->isUsedForTotal(),
+        //                 ]);
+        //             }
 
-                    // add the type to the group
-                    $expenseReportFormGroups[$expenseGroup->getSlug()]['expenseTypes'][] = [
-                        'expenseTypeId' => $expenseType->getId(),
-                        'name' => $expenseType->getName(),
-                        'slug' => $expenseType->getSlug(),
-                        'fields' => array_map(function ($expenseFieldType) {
-                            return ExpenseFieldTypeSerializer::serialize($expenseFieldType);
-                        }, $fields),
-                    ];
-                }
-            }
-            $currentExpenseReport = $event && $user ? $expenseReportRepository->getExpenseReportByEventAndUser($event->getId(), $user->getId()) : null;
+        //             // add the type to the group
+        //             $expenseReportFormGroups[$expenseGroup->getSlug()]['expenseTypes'][] = [
+        //                 'expenseTypeId' => $expenseType->getId(),
+        //                 'name' => $expenseType->getName(),
+        //                 'slug' => $expenseType->getSlug(),
+        //                 'fields' => array_map(function ($expenseFieldType) {
+        //                     return ExpenseFieldTypeSerializer::serialize($expenseFieldType);
+        //                 }, $fields),
+        //             ];
+        //         }
+        //     }
+        //     $currentExpenseReport = $event && $user ? $expenseReportRepository->getExpenseReportByEventAndUser($event->getId(), $user->getId()) : null;
 
-            // prefill the form with the current expense report data
-            if ($currentExpenseReport
-                && \in_array($currentExpenseReport->getStatus(),
-                    [ExpenseReportEnum::STATUS_DRAFT, ExpenseReportEnum::STATUS_REJECTED], true
-                )
-            ) {
-                // serialize the current expense report
-                $currentExpenseReport = $expenseReportSerializer->serialize($currentExpenseReport);
+        //     // prefill the form with the current expense report data
+        //     if ($currentExpenseReport
+        //         && \in_array($currentExpenseReport->getStatus(),
+        //             [ExpenseReportEnum::STATUS_DRAFT, ExpenseReportEnum::STATUS_REJECTED], true
+        //         )
+        //     ) {
+        //         // serialize the current expense report
+        //         $currentExpenseReport = $expenseReportSerializer->serialize($currentExpenseReport);
 
-                $expenseReportFormGroups['refundRequired'] = $currentExpenseReport['refundRequired'] ? 1 : 0;
-                // for each expense group
-                foreach ($currentExpenseReport['expenseGroups'] as $groupSlug => $expenseGroup) {
-                    // set the selected expense type
-                    if (!empty($expenseGroup['selectedType'])) {
-                        $expenseReportFormGroups[$groupSlug]['selectedType'] = $expenseGroup['selectedType'];
-                    }
+        //         $expenseReportFormGroups['refundRequired'] = $currentExpenseReport['refundRequired'] ? 1 : 0;
+        //         // for each expense group
+        //         foreach ($currentExpenseReport['expenseGroups'] as $groupSlug => $expenseGroup) {
+        //             // set the selected expense type
+        //             if (!empty($expenseGroup['selectedType'])) {
+        //                 $expenseReportFormGroups[$groupSlug]['selectedType'] = $expenseGroup['selectedType'];
+        //             }
 
-                    $index = 0;
-                    // for each expense type
-                    foreach ($expenseGroup as $expense) {
-                        // ignore values that are not expenses
-                        if (!\is_array($expense)) {
-                            continue;
-                        }
+        //             $index = 0;
+        //             // for each expense type
+        //             foreach ($expenseGroup as $expense) {
+        //                 // ignore values that are not expenses
+        //                 if (!\is_array($expense)) {
+        //                     continue;
+        //                 }
 
-                        // for each field
-                        $newFields = [];
-                        foreach ($expense['fields'] as $field) {
-                            // set the value from the current expense report if existing
-                            $newField = $field->jsonSerialize();
-                            // add the field type flags to this field
-                            $relation = $expenseTypeFieldTypeRepository->findOneBy([
-                                'expenseType' => $expense['expenseType']->getId(),
-                                'expenseFieldType' => $field->getFieldType()->getId(),
-                            ]);
-                            $newField['fieldTypeId'] = $field->getFieldType()->getId();
-                            $newField['flags']['needsJustification'] = $relation->getNeedsJustification();
-                            $newField['flags']['isMandatory'] = $relation->isMandatory();
-                            $newField['flags']['isUsedForTotal'] = $relation->isUsedForTotal();
-                            $newField['flags']['displayOrder'] = $relation->getDisplayOrder();
-                            $newField['name'] = $field->getFieldType()->getName();
-                            $newField['slug'] = $field->getFieldType()->getSlug();
-                            $newFields[] = $newField;
-                        }
+        //                 // for each field
+        //                 $newFields = [];
+        //                 foreach ($expense['fields'] as $field) {
+        //                     // set the value from the current expense report if existing
+        //                     $newField = $field->jsonSerialize();
+        //                     // add the field type flags to this field
+        //                     $relation = $expenseTypeFieldTypeRepository->findOneBy([
+        //                         'expenseType' => $expense['expenseType']->getId(),
+        //                         'expenseFieldType' => $field->getFieldType()->getId(),
+        //                     ]);
+        //                     $newField['fieldTypeId'] = $field->getFieldType()->getId();
+        //                     $newField['flags']['needsJustification'] = $relation->getNeedsJustification();
+        //                     $newField['flags']['isMandatory'] = $relation->isMandatory();
+        //                     $newField['flags']['isUsedForTotal'] = $relation->isUsedForTotal();
+        //                     $newField['flags']['displayOrder'] = $relation->getDisplayOrder();
+        //                     $newField['name'] = $field->getFieldType()->getName();
+        //                     $newField['slug'] = $field->getFieldType()->getSlug();
+        //                     $newFields[] = $newField;
+        //                 }
 
-                        if ('unique' === $expense['expenseType']->getExpenseGroup()->getType()) {
-                            $targetExpenseTypeIndex = array_search($expense['expenseType']->getId(), array_column($expenseReportFormGroups[$groupSlug]['expenseTypes'], 'expenseTypeId'), true);
-                            $expenseReportFormGroups[$groupSlug]['expenseTypes'][$targetExpenseTypeIndex]['fields'] = $newFields;
-                        } else {
-                            if (0 === $index) {
-                                $expenseReportFormGroups[$groupSlug]['expenseTypes'][0]['fields'] = $newFields;
-                                ++$index;
-                            } else {
-                                // Duplicate the preceding expenseType
-                                $expenseReportFormGroups[$groupSlug]['expenseTypes'][$index] = $expenseReportFormGroups[$groupSlug]['expenseTypes'][0];
-                                // Override preceding expenseType fields
-                                $expenseReportFormGroups[$groupSlug]['expenseTypes'][$index++]['fields'] = $newFields;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //                 if ('unique' === $expense['expenseType']->getExpenseGroup()->getType()) {
+        //                     $targetExpenseTypeIndex = array_search($expense['expenseType']->getId(), array_column($expenseReportFormGroups[$groupSlug]['expenseTypes'], 'expenseTypeId'), true);
+        //                     $expenseReportFormGroups[$groupSlug]['expenseTypes'][$targetExpenseTypeIndex]['fields'] = $newFields;
+        //                 } else {
+        //                     if (0 === $index) {
+        //                         $expenseReportFormGroups[$groupSlug]['expenseTypes'][0]['fields'] = $newFields;
+        //                         ++$index;
+        //                     } else {
+        //                         // Duplicate the preceding expenseType
+        //                         $expenseReportFormGroups[$groupSlug]['expenseTypes'][$index] = $expenseReportFormGroups[$groupSlug]['expenseTypes'][0];
+        //                         // Override preceding expenseType fields
+        //                         $expenseReportFormGroups[$groupSlug]['expenseTypes'][$index++]['fields'] = $newFields;
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
-        $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
-            'enums', ['expenseReportStatuses' => ExpenseReportEnum::getConstants()]
-        );
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
             'currentEventId', $event->getId()
         );
@@ -185,8 +172,8 @@ class SortieController extends AbstractController
             'participations' => $participationRepository->getSortedParticipations($event, null, null),
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participationRepository->getEmpietements($event),
-            'expenseReportFormStructure' => $expenseReportFormGroups,
-            'currentExpenseReport' => $currentExpenseReport,
+            // 'expenseReportFormStructure' => $expenseReportFormGroups,
+            // 'currentExpenseReport' => $currentExpenseReport,
         ];
     }
 
