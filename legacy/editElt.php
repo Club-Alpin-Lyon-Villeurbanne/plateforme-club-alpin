@@ -28,19 +28,6 @@ if (admin()) {
         $contentVersionsTab = [];
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-            // nettoyage des fonctions JS mailto : conversion en donnée brute
-            $regex = '#<script type="text/javascript" class="mailthis">mailThis\(\'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\', \'((?:.)*)\'\);</script>#i';
-            $handle['contenu_content_html'] = preg_replace_callback(
-                $regex,
-                function ($matches) {
-                    if (!$matches[5]) {
-                        $matches[5] = $matches[1] . '@' . $matches[2] . '.' . $matches[3];
-                    }
-
-                    return '<a href="mailto:' . $matches[1] . '@' . $matches[2] . '.' . $matches[3] . '" ' . $matches[4] . '>' . $matches[5] . '</a>';
-                },
-                $handle['contenu_content_html']
-            );
 
             $contentVersionsTab[] = $handle;
         }
@@ -256,32 +243,6 @@ if (admin()) {
         if ('' == $contenu_content_html) {
             $contenu_content_html = '&nbsp;';
         }
-
-        // sécurisation des adresses e-mail :
-        $regexMail = '((?:[a-z0-9!\#$%&\'*+/=?^_`{|}~-]+\.?)*[a-z0-9!\#$%&\'*+/=?^_`{|}~-]+)@((?:[a-z0-9-_]+\.?)*[a-z0-9-_]+)\.([a-z]{2,})';
-        $regex = '#<a ((?:.)*)href="mailto:' . $regexMail . '"((?:.)*)>(.*)</a>#i';
-        // remplacement de lien mailto par une fonction .js
-        $contenu_content_html = preg_replace_callback(
-            $regex,
-            function ($matches) {
-                // $1 = attributs en rab
-                // $2 = avant @
-                // $3 = apres @
-                // $4 = domaine
-                // $5 = attributs en rab
-                // $6 = ancre (peut être email en clair)
-                $ancre = trim($matches[6]);
-                if ($matches[2] . '@' . $matches[3] . '.' . $matches[4] == $ancre) {
-                    $ancre = false;
-                }
-
-                // intégration du script
-                return '<a class="mailthisanchor"></a><script type="text/javascript" class="mailthis">mailThis("' . htmlentities($matches[2], \ENT_QUOTES, 'UTF-8') . '", "' . htmlentities($matches[3], \ENT_QUOTES, 'UTF-8') . '", "' . htmlentities($matches[4], \ENT_QUOTES, 'UTF-8') . '", "' . htmlentities($matches[1] . $matches[5], \ENT_QUOTES, 'UTF-8') . '", "' . htmlentities($ancre, \ENT_QUOTES, 'UTF-8') . '");</script>';
-            },
-            $contenu_content_html
-        );
-
-        // echo html_utf8($contenu_content_html);
 
         // Nettoyage
         $contenu_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($contenu_content_html);
