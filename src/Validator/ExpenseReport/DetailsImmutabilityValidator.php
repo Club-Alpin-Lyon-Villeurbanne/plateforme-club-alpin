@@ -20,7 +20,7 @@ class DetailsImmutabilityValidator
     {
         $oldStatus = $this->getOldStatus($expenseReport);
 
-        if (ExpenseReportStatusEnum::DRAFT !== $oldStatus && $this->detailsHaveChanged($expenseReport)) {
+        if (!\in_array($oldStatus, [ExpenseReportStatusEnum::DRAFT, ExpenseReportStatusEnum::REJECTED], true) && $this->detailsHaveChanged($expenseReport)) {
             $context->buildViolation('Details cannot be modified once the expense report is submitted.')
                 ->atPath('details')
                 ->addViolation();

@@ -8,6 +8,14 @@
       "pathMappings": {
         "/var/www/": "${workspaceFolder}"
       }
+    },
+
+    {
+      "type": "node-terminal",
+      "name": "Run Script: dev-server",
+      "request": "launch",
+      "command": "npm run dev-server",
+      "cwd": "${workspaceFolder}"
     }
   ]
 }

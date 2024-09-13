@@ -1,17 +1,21 @@
 {
-    "include": ["./assets/**/*"],
-    "compilerOptions": {
-      "sourceMap": true,
-      "strict": true,
-      "module": "es2015",
-      "moduleResolution": "node",
-      "resolveJsonModule": true,
-      "esModuleInterop": true,
-      "target": "es5",
-      "experimentalDecorators": true
-    },
-    "files": [
-      "./assets/config/shims-vue.d.ts",
-      "./assets/config/window.d.ts",
-    ]
+  "include": ["./assets/**/*"],
+  "compilerOptions": {
+    "sourceMap": true,
+    "strict": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "target": "es5",
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "files": [
+    "./assets/expense-report-form/config/shims-vue.d.ts",
+    "./assets/expense-report-form/config/window.d.ts"
+  ]
 }
