@@ -29,7 +29,7 @@ class StatusTransitionValidator
             ExpenseReportStatusEnum::DRAFT->value => [ExpenseReportStatusEnum::SUBMITTED->value],
             ExpenseReportStatusEnum::SUBMITTED->value => [ExpenseReportStatusEnum::APPROVED->value, ExpenseReportStatusEnum::REJECTED->value],
             ExpenseReportStatusEnum::APPROVED->value => [],
-            ExpenseReportStatusEnum::REJECTED->value => [],
+            ExpenseReportStatusEnum::REJECTED->value => [ExpenseReportStatusEnum::SUBMITTED->value],
         ];
 
         if (!isset($validTransitions[$oldStatus->value]) || !\in_array($newStatus->value, $validTransitions[$oldStatus->value], true)) {

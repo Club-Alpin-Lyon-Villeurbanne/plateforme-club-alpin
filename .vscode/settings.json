@@ -1,10 +1,14 @@
 {
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
 
   "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
   "php-cs-fixer.onsave": true,
   "php-cs-fixer.rules": "@PSR12",
   "php-cs-fixer.config": ".php-cs-fixer.php;.php-cs-fixer.dist.php;.php_cs;.php_cs.dist",
   "php-cs-fixer.pathMode": "override",
-  "php-cs-fixer.documentFormattingProvider": true
+  "php-cs-fixer.documentFormattingProvider": true,
+
+  "[php]": {
+    "editor.defaultFormatter": "junstyle.php-cs-fixer"
+  }
 }
