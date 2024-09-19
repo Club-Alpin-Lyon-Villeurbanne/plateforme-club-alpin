@@ -287,7 +287,7 @@
                     {# expense report form #}
                     {% if is_authorized_to_view_expenses() or display_banner %}
                         {% if event.finished and (my_status.role == 'encadrant' or my_status.role == 'coencadrant') %}
-                            {# TODO PUT THE FORM BACK #}
+                            {% include 'vuejs/expense-report-form.twig' %}
                         {% endif %}
                     {% endif %}
                 {% else %}
