@@ -37,5 +37,8 @@
     "vee-validate": "^4.13.2",
     "vue-tsc": "^2.1.6",
     "zod": "^3.23.8"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "*"
   }
 }
