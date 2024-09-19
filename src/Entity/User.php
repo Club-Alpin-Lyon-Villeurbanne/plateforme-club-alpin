@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * User.
@@ -15,6 +17,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: 'caf_user')]
 #[ORM\Index(name: 'id_user', columns: ['id_user'])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ApiResource(normalizationContext: ['groups' => ['user:read']])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSerializable
 {
     /**
@@ -23,6 +26,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Id]
     #[ORM\Column(name: 'id_user', type: 'bigint', nullable: false)]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[Groups('user:read')]
     private $id;
 
     #[ORM\OneToMany(targetEntity: 'UserAttr', mappedBy: 'user', cascade: ['persist'])]
@@ -44,6 +48,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      * @var string
      */
     #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, nullable: true, unique: true, options: ['comment' => 'Numéro de licence'])]
+
     private $cafnum;
 
     /**
@@ -56,12 +61,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      * @var string
      */
     #[ORM\Column(name: 'firstname_user', type: 'string', length: 50, nullable: false)]
+    #[Groups('user:read')]
+
     private $firstname;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'lastname_user', type: 'string', length: 50, nullable: false)]
+    #[Groups('user:read')]
+
     private $lastname;
 
     /**
