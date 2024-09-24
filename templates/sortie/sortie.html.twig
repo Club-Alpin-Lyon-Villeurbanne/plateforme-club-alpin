@@ -285,7 +285,8 @@
                     {% endif %}
 
                     {# expense report form #}
-                    {% if is_authorized_to_view_expenses() or display_banner %}
+
+                    {% if is_granted('fill_expense_report') or display_banner %}
                         {% if event.finished and (my_status.role == 'encadrant' or my_status.role == 'coencadrant') %}
                             {% include 'vuejs/expense-report-form.twig' %}
                         {% endif %}
