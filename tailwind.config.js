@@ -4,7 +4,7 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
   prefix: "tw-", // Important during transition to avoid namespace conflict
-  content: ["./assets/**/*.{vue,js,ts,jsx,tsx}"],
+  content: ["./assets/**/*.{vue,js,ts,jsx,tsx}", "./templates/**/*.twig"],
   important: true, // Important during transition
   theme: {
     extend: {
