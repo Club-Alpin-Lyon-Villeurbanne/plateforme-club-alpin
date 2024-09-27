@@ -25,13 +25,31 @@ $jwt = LegacyContainer::get(JwtExtension::class)->generateJwtToken();
 	<!-- css SCREEN ONLY  -->
 	<!-- media="screen" -->
 	<!-- css COMMUNS SCREEN + PRINT -->
-	<link rel="stylesheet" href="/css/style1.css" type="text/css" />
-	<link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" />
-	<link rel="stylesheet" href="/css/base.css" type="text/css"  />
-	<link rel="stylesheet" href="/css/common.css" type="text/css"  />
-	<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" />
-	<!-- css PRINTS -->
-	<link rel="stylesheet" href="/css/print.css" type="text/css"  media="print" />
+	 <?php 
+		if ('feuille-de-sortie' == $p1) { 
+	?>
+		<style type="text/css">
+		<?php
+			include(dirname(__FILE__) . '/../../../public/css/style1.css');
+			include(dirname(__FILE__) . '/../../../public/fonts/stylesheet.css');
+			include(dirname(__FILE__) . '/../../../public/css/base.css');
+			include(dirname(__FILE__) . '/../../../public/css/common.css');
+			include(dirname(__FILE__) . '/../../../public/css/print.css');
+			?>
+		</style>
+		<?php
+		} else {
+		?>
+		<link rel="stylesheet" href="/css/style1.css" type="text/css" />
+		<link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" />
+		<link rel="stylesheet" href="/css/base.css" type="text/css"  />
+		<link rel="stylesheet" href="/css/common.css" type="text/css"  />
+		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" />
+		<!-- css PRINTS -->
+		<link rel="stylesheet" href="/css/print.css" type="text/css"  media="print" />
+	<?php
+		}
+	 ?>
 
 
     <!-- html5shiv -->
