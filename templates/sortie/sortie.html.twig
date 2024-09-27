@@ -177,7 +177,7 @@
 
         {% set my_status = event.participation(app.user) %}
 
-        {% if my_status and not event.isFinished %}
+        {% if not event.isFinished %}
             <input id="add-to-calendar" type="button" class="nice2" value="Ajouter à mon agenda" />
 
             <script>
