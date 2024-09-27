@@ -250,7 +250,7 @@ if ('1' != $evt['cancelled_evt']) {
                                                 </label>';
                     }
 
-                    if (time() < $evt['tsp_end_evt']) {
+                    if (time() < ($evt['tsp_end_evt'] + 7 * 24 * 60 * 60)) {
                         echo '<label for="join_' . (int) $row['id_evt_join'] . '_-1">
                                                 <input name="status_evt_join_' . (int) $row['id_evt_join'] . '" ' . ($disable_1 ? 'disabled="disabled"' : '') . ' type="radio" id="join_' . (int) $row['id_evt_join'] . '_-1" value="-1" />
                                                 Désinscrire
