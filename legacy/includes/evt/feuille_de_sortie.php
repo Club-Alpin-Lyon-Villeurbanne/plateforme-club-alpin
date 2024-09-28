@@ -53,19 +53,6 @@ presidence();
 $logo = LegacyContainer::get('legacy_content_inline')->getLogo();
 ?>
 
-<!doctype html>
-<html lang="fr">
-<head>
-    <meta charset="utf-8">
-    <title>Feuille de sortie-<?php echo html_utf8($evt['titre_evt']); ?> - <?php echo date('d.m.Y', $evt['tsp_evt']); ?></title>
-
-    <link rel="stylesheet" href="/css/style1.css" type="text/css" />
-    <link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" />
-    <link rel="stylesheet" href="/css/base.css" type="text/css"  />
-
-</head>
-<body id="feuille-de-sortie" <!-- onload="window.print() -->">
-
 <table style="border:0; padding:0; margin:0;">
     <tbody>
     <tr>
@@ -288,5 +275,3 @@ if (!isset($_GET['hide_blank']) || 'y' != $_GET['hide_blank']) {
     </tbody>
 </table>
 Imprimé le <?php echo html_utf8(date('d.m.Y à H:i')); ?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>[<a href="<?php echo isset($_GET['hide_blank']) && $_GET['hide_blank'] ? $versCettePage : $versCettePage . '?hide_blank=y'; ?>"><?php echo isset($_GET['hide_blank']) && $_GET['hide_blank'] ? 'Afficher' : 'Masquer'; ?> les lignes vides</a>]</small>
-</body>
-</html>
