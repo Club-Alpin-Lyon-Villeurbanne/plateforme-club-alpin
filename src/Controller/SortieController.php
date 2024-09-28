@@ -8,12 +8,15 @@ use App\Mailer\Mailer;
 use App\Repository\EventParticipationRepository;
 use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
+use App\Utils\PdfGenerator;
 use App\Twig\JavascriptGlobalsExtension;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -434,5 +437,21 @@ class SortieController extends AbstractController
         $em->flush();
 
         return $this->redirect(sprintf('/creer-une-sortie/%s/update-%d.html', $newEvent->getCommission()->getCode(), $newEvent->getId()));
+    }
+
+    #[Route(name: 'sortie_pdf', path: '/sortie/{id}/printPDF', requirements: ['id' => '\d+'] )]
+    public function generatePdf(PdfGenerator $pdfGenerator, Evt $event): Response
+    {
+
+        $legacyDir = __DIR__ . '/../../legacy/';
+        $path = 'index.php';
+        $_GET['p1'] = 'feuille-de-sortie';
+        $_GET['p2'] = 'evt-' . $event->getId();
+
+        ob_start();
+        require $this->getParameter('kernel.project_dir') . '/legacy/' . $path;
+        $html = ob_get_clean();
+
+        return $pdfGenerator->generatePdf($html, $event->getTitre() . '.pdf');
     }
 }

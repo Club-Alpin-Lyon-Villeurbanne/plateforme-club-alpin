@@ -89,7 +89,7 @@ if (is_array($p_addJs)) {
         }
 ?>
 </head>
-<body>
+<body <?php if ('feuille-de-sortie' == $p1) { ?>id="feuille-de-sortie"<?php } ?>>
     <?php
     if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
         ?>
