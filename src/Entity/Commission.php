@@ -2,13 +2,16 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
  * Commission.
  */
 #[ORM\Table(name: 'caf_commission')]
 #[ORM\Entity]
+#[ApiResource]
 class Commission
 {
     /**
@@ -17,6 +20,8 @@ class Commission
     #[ORM\Column(name: 'id_commission', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[Groups('event:read')]
+
     private $id;
 
     /**
