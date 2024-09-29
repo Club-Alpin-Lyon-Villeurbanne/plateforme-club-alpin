@@ -17,10 +17,12 @@ class ExpenseReportProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
+        $canValidateReport = $this->security->isGranted('validate_expense_report');
+
         if ($operation instanceof \ApiPlatform\Metadata\CollectionOperationInterface) {
             $qb = $this->expenseReportRepository->createQueryBuilder('er');
 
-            if (!$this->security->isGranted('ROLE_ADMIN')) {
+            if (!$canValidateReport) {
                 $qb->andWhere('er.user = :user')
                    ->setParameter('user', $this->security->getUser());
             }
@@ -32,7 +34,7 @@ class ExpenseReportProvider implements ProviderInterface
             'id' => $uriVariables['id'] ?? null,
         ];
 
-        if (!$this->security->isGranted('ROLE_ADMIN')) {
+        if (!$canValidateReport) {
             $criterias['user'] = $this->security->getUser();
         }
 

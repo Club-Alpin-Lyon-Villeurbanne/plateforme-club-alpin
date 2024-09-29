@@ -71,9 +71,6 @@ services:
   App\Twig\AppExtension:
     tags: ["twig.extension"]
 
-  App\Twig\ExpenseAuthorizationExtension:
-    tags: ["twig.extension"]
-
   App\Legacy\LegacyRouteLoader:
     tags: ["routing.loader"]
 
@@ -109,9 +106,10 @@ services:
     arguments:
       $maxTimestampForLegalValidation: "%env(MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%"
 
-  App\Security\ExpenseAuthorization:
+  App\Security\Voter\ExpenseReportVoter:
     arguments:
-      $authorizedIds: "%env(string:AUTHORIZED_IDS_FOR_EXPENSES)%"
+      $authorizedToFillIds: "%env(string:AUTHORIZED_IDS_FOR_EXPENSES_FILLING)%"
+      $authorizedToValidateIds: "%env(string:AUTHORIZED_IDS_FOR_EXPENSES_VALIDATION)%"
 
   Symfony\Component\String\Slugger\SluggerInterface:
     class: Symfony\Component\String\Slugger\AsciiSlugger
