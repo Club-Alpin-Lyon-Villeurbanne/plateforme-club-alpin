@@ -19,8 +19,14 @@ class ExpenseReportProvider implements ProviderInterface
     {
         $canValidateReport = $this->security->isGranted('validate_expense_report');
 
+        $filters = $context['filters'] ?? [];
+
         if ($operation instanceof \ApiPlatform\Metadata\CollectionOperationInterface) {
             $qb = $this->expenseReportRepository->createQueryBuilder('er');
+            if (isset($filters['event'])) {
+                $qb->andWhere('er.event = :event')
+                   ->setParameter('event', $filters['event']);
+            }
 
             if (!$canValidateReport) {
                 $qb->andWhere('er.user = :user')
@@ -36,6 +42,10 @@ class ExpenseReportProvider implements ProviderInterface
 
         if (!$canValidateReport) {
             $criterias['user'] = $this->security->getUser();
+        }
+
+        if (isset($filters['event'])) {
+            $criterias['event'] = $filters['event'];
         }
 
         // For single item operations
