@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\Post;
 use App\Dto\ExpenseReportCreateDto;
 use App\Repository\ExpenseReportRepository;
 use App\State\ExpenseReportCreateProcessor;
+use App\State\ExpenseReportProvider;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Validator\ValidExpenseReport;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -47,6 +48,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             // normalizationContext: ['groups' => ['report:read', 'attachment:read', 'user:read', 'event:read']]
         ),
     ],
+    provider: ExpenseReportProvider::class,
     security: "is_granted('ROLE_USER')",
     normalizationContext: ['groups' => ['report:read', 'attachment:read', 'user:read', 'event:read'], 'skip_null_values' => false])]
 #[ApiFilter(SearchFilter::class, properties: ['event' => 'exact'])]
