@@ -21,16 +21,13 @@
           :requires-attachment="true"
         />
         <div class="tw-flex tw-flex-col">
-          <label
-            class="tw-text-sm tw-leading-6 tw-text-gray-900"
-            :for="`accommodations[${idx}].comment`"
-            >Commentaire</label
-          >
           <div class="tw-flex tw-min-w-full">
-            <input
+            <Input
+              label="Commentaire"
               :name="`accommodations[${idx}].comment`"
               type="text"
-              class="block tw-focus:ring-2 tw-mt-0.5 tw-h-7 tw-w-64 tw-grow tw-rounded-md tw-py-1.5 tw-pl-2.5 tw-text-gray-900 tw-shadow-sm tw-ring-1 tw-ring-inset tw-ring-gray-300 focus:tw-outline-none focus:tw-ring-inset focus:tw-ring-indigo-600"
+              :input-width="`tw-w-fit`"
+              :class="`block tw-focus:ring-2 tw-h-7 tw-w-64 tw-grow tw-rounded-md tw-py-1.5 tw-pl-2.5 tw-text-gray-900 tw-shadow-sm tw-ring-1 tw-ring-inset tw-ring-gray-300 focus:tw-outline-none focus:tw-ring-inset focus:tw-ring-indigo-600`"
             />
             <div
               @click="removeAccommodation(idx)"
@@ -58,6 +55,7 @@ import { Accommodation } from "../types/api";
 import expenseReportConfig from "../config/expense-reports.json";
 import trashIcon from "../assets/svg/trash.svg?raw";
 import { useFieldArray } from "vee-validate";
+import Input from "./Input.vue";
 
 const {
   remove,
