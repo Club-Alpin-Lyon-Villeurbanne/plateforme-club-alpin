@@ -72,6 +72,7 @@
             name="transport.passengerCount"
             label="Passagers"
             type="number"
+            :default-value="9"
           />
         </div>
         <div
@@ -103,6 +104,7 @@
             name="transport.passengerCount"
             label="Passagers"
             type="number"
+            :default-value="9"
           />
         </div>
         <div
@@ -115,6 +117,11 @@
             label="Prix du ticket (€)"
             :requires-attachment="true"
           />
+          <Input
+              :name="`transport.comment`"
+              label="Commentaire"
+              type="text"
+            />
         </div>
       </div>
     </div>

@@ -10,7 +10,6 @@ use App\Entity\ExpenseReport;
 use App\Repository\EvtRepository;
 use App\Repository\ExpenseReportRepository;
 use App\Utils\Enums\ExpenseReportStatusEnum;
-use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
@@ -47,7 +46,6 @@ class ExpenseReportCreateProcessor implements ProcessorInterface
             throw new NotFoundHttpException('Event not found');
         }
 
-        // Vérifier si un ExpenseReport existe déjà pour cet utilisateur et cet événement
         $existingReport = $this->expenseReportRepository->findOneBy([
             'user' => $user,
             'event' => $event,
@@ -58,13 +56,10 @@ class ExpenseReportCreateProcessor implements ProcessorInterface
         }
 
         $expenseReport = new ExpenseReport();
-        // $expenseReport->setId(Uuid::uuid4()->toString());
         $expenseReport->setUser($user);
         $expenseReport->setEvent($event);
         $expenseReport->setStatus(ExpenseReportStatusEnum::DRAFT);
-        $expenseReport->setRefundRequired(true);
-        // $expenseReport->setCreatedAt(new \DateTime());
-        // $expenseReport->setUpdatedAt(new \DateTime());
+        $expenseReport->setRefundRequired(false);
 
         $this->validator->validate($expenseReport);
 
