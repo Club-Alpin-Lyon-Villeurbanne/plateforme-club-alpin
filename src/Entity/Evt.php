@@ -253,6 +253,7 @@ class Evt
      * @var EventParticipation[]
      */
     #[ORM\OneToMany(targetEntity: 'EventParticipation', mappedBy: 'evt', cascade: ['persist'])]
+
     private $participations;
 
     /**
@@ -480,6 +481,14 @@ class Evt
             return (null === $roles || \in_array($participation->getRole(), $roles, true))
                 && (null === $status || \in_array($participation->getStatus(), $status, true));
         });
+    }
+
+    #[Groups('event:read')]
+
+    public function getParticipationsCount(): int
+    {
+        $participations = $this->getParticipations();
+        return count($participations);
     }
 
     public function getParticipation(?User $user): ?EventParticipation
