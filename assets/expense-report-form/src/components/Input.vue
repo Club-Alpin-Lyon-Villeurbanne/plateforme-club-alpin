@@ -34,6 +34,7 @@ const props = defineProps<{
   label: string;
   type: string;
   name: string;
+  defaultValue?: number;
 }>();
 
 const { value, errorMessage, meta, resetField } = useField(() => props.name);
@@ -52,7 +53,11 @@ watch(
 );
 
 onMounted(() => {
-  if (!value.value) {
+  if (value.value) return
+
+  if (props.defaultValue) {
+    resetField({ value: props.defaultValue });
+  } else {
     resetField({ value: 0 });
   }
 });

@@ -72,6 +72,7 @@
             name="transport.passengerCount"
             label="Passagers"
             type="number"
+            :default-value="9"
           />
         </div>
         <div
@@ -103,6 +104,7 @@
             name="transport.passengerCount"
             label="Passagers"
             type="number"
+            :default-value="9"
           />
         </div>
         <div
