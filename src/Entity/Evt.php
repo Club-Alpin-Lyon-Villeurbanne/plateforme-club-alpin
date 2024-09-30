@@ -39,6 +39,8 @@ class Evt
      * @var int
      */
     #[ORM\Column(name: 'status_evt', type: 'smallint', nullable: false, options: ['comment' => '0-unseen 1-ok 2-refused', 'default' => 0])]
+    #[Groups('event:read')]
+    
     private $status = 0;
 
     /**
@@ -52,6 +54,8 @@ class Evt
      * @var int
      */
     #[ORM\Column(name: 'status_legal_evt', type: 'smallint', nullable: false, options: ['comment' => '0-unseen 1-ok 2-refused', 'default' => 0])]
+    #[Groups('event:read')]
+    
     private $statusLegal = 0;
 
     /**
@@ -249,6 +253,7 @@ class Evt
      * @var EventParticipation[]
      */
     #[ORM\OneToMany(targetEntity: 'EventParticipation', mappedBy: 'evt', cascade: ['persist'])]
+
     private $participations;
 
     /**
@@ -476,6 +481,14 @@ class Evt
             return (null === $roles || \in_array($participation->getRole(), $roles, true))
                 && (null === $status || \in_array($participation->getStatus(), $status, true));
         });
+    }
+
+    #[Groups('event:read')]
+
+    public function getParticipationsCount(): int
+    {
+        $participations = $this->getParticipations();
+        return count($participations);
     }
 
     public function getParticipation(?User $user): ?EventParticipation
