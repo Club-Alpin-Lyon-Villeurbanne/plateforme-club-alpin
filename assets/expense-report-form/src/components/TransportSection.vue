@@ -117,6 +117,11 @@
             label="Prix du ticket (€)"
             :requires-attachment="true"
           />
+          <Input
+              :name="`transport.comment`"
+              label="Commentaire"
+              type="text"
+            />
         </div>
       </div>
     </div>
