@@ -163,12 +163,13 @@
             <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
             Imprimer la fiche de sortie
         </a>
+        <a href="{{ path('sortie_pdf', { id: event.id }) }}" title="Imprimer la fiche de sortie en PDF" class="nice2">
+            <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
+            Imprimer la fiche de sortie en PDF
+        </a>
         {% endif %}
 
-        <a href="{{ path('sortie_pdf', { id: event.id }) }}" title="Imprimer la fiche en PDF" class="nice2">
-            <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
-            Imprimer la fiche en PDF
-        </a>
+ 
 
         {% if is_granted('SORTIE_DUPLICATE', event) %}
          <form action="{{ path('sortie_duplicate', { id: event.id }) }}" method="post" class="loading">
