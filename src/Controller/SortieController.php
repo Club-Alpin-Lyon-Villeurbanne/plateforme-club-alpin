@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Twig\Environment;
 
 class SortieController extends AbstractController
@@ -440,7 +441,7 @@ class SortieController extends AbstractController
     }
 
     #[Route(name: 'sortie_pdf', path: '/sortie/{id}/printPDF', requirements: ['id' => '\d+'] )]
-    public function generatePdf(PdfGenerator $pdfGenerator, Evt $event): Response
+    public function generatePdf(PdfGenerator $pdfGenerator, SluggerInterface $slugger, Evt $event): Response
     {
 
         $legacyDir = __DIR__ . '/../../legacy/';
@@ -452,6 +453,6 @@ class SortieController extends AbstractController
         require $this->getParameter('kernel.project_dir') . '/legacy/' . $path;
         $html = ob_get_clean();
 
-        return $pdfGenerator->generatePdf($html, $event->getTitre() . '.pdf');
+        return $pdfGenerator->generatePdf($html, $slugger->slug($event->getTitre()) . '.pdf');
     }
 }
