@@ -44,7 +44,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new Patch(
             uriTemplate: '/expense-reports/{id}',
-            security: 'object.getUser() == user',
+            security: 'object.getUser() == user or is_granted("validate_expense_report")',
             // normalizationContext: ['groups' => ['report:read', 'attachment:read', 'user:read', 'event:read']]
         ),
     ],
