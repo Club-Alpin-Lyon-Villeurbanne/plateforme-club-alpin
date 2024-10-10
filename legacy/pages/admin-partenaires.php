@@ -119,7 +119,7 @@ for ($i = 0; $i < count($partenairesTab); ++$i) {
                 . '<td style="white-space:nowrap;">';
     // edit
     echo '<a href="/includer.php?p=pages/partenaire-modifier.php&amp;part_id=' . (int) $elt['part_id'] . '" class="fancyframe" title="Modifier ce partenaire"><img src="/img/base/application_form_edit.png" alt="MODIFIER" title=""></a> ';
-    echo '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/partenaire-supprimer.php&amp;part_id=' . (int) $elt['part_id'] . '" class="fancyframe" title="Supprimer"><img src="/img/base/delete.png" alt="SUPPRIMER" title="SUPPRIMER"  style="margin-bottom:-2px;"></a> ';
+    echo '&nbsp;&nbsp;&nbsp;<a href="' . LegacyContainer::get('router')->generate('partner_confirm_delete', ['id' => $elt['part_id']]) . '" class="fancyframe" title="Supprimer"><img src="/img/base/delete.png" alt="SUPPRIMER" title="SUPPRIMER"  style="margin-bottom:-2px;"></a> ';
 
     if (1 == $elt['part_enable']) {
         // desactiver
