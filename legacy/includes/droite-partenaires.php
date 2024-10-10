@@ -33,9 +33,9 @@ if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     <div id="slides">
                         <?php
                             foreach ($partenairesTab as $partenaire) {
-                                echo '<a target="_blank" href="/goto/partenaire/' . $partenaire['part_id'] . '/' . formater($partenaire['part_name'], 3) . '.html">
-                                <img src="/ftp/partenaires/' . $partenaire['part_image'] . '" alt="' . $partenaire['part_name'] . '">
-                                </a>';
+                                echo '<a target="_blank" href="' . $partenaire['part_url'] . '">';
+                                echo '<img src="/ftp/partenaires/' . $partenaire['part_image'] . '" alt="' . $partenaire['part_name'] . '">';
+                                echo '</a>';
                             } ?>
                     </div>
 

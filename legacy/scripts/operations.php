@@ -124,11 +124,6 @@ elseif ('user-confirm' == $p1) {
     require $operationsDir . 'operations.user-confirm.php';
 }
 
-// GOTO
-elseif ('goto' == $p1 && $p2 && $p3) {
-    require $operationsDir . 'operations.goto.php';
-}
-
 // ARTICLES : COMMENTER
 elseif ('comment' == $operation) {
     require $operationsDir . 'operations.comment.php';
