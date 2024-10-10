@@ -15,8 +15,6 @@ if ('feuille-de-sortie' == $p1) {
         default:
             break;
     }
-} elseif ('sortie' == $p1) {
-    $id_evt = (int) substr(strrchr($p2, '-'), 1);
 }
 
 if ($id_evt) {
@@ -181,50 +179,6 @@ if ($id_evt) {
                 }
             }
 
-            if ('sortie' == $p1) {
-                // AUTRES INFOS, PAS NECESSAIRE POUR LA FICHE DE SORTIE
-
-                // si la sortie est annulée, on recupère les details de "WHO" : qui l'a annulée
-                if ('1' == $handle['cancelled_evt']) {
-                    $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user, nomade_user, civ_user
-                        FROM caf_user
-                        WHERE id_user=' . (int) $handle['cancelled_who_evt'] . '
-                        LIMIT 300';
-                    $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                    while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                        $handle['cancelled_who_evt'] = $handle2;
-                    }
-                }
-
-                // si un compte rendu existe ?
-                $handle['cr'] = false;
-                $req = "SELECT id_article, titre_article, code_article
-                    FROM caf_article
-                    WHERE evt_article = $id_evt
-                    AND status_article = 1
-                    ORDER BY tsp_validate_article DESC
-                    LIMIT 1";
-                $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                    $handle['cr'] = $handle2;
-                }
-
-                // Modification des METAS de la page
-                $meta_title = $handle['titre_evt'] . ' | ' . $p_sitename;
-                $meta_description = limiterTexte(strip_tags($handle['description_evt']), 200) . '...';
-
-                // si je suis chef de famille (filiations) je rajoute la liste de mes "enfants" pour les inscrire
-                $filiations = [];
-                if (user() && getUser()->getCafnum()) {
-                    $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, birthday_user, civ_user, email_user, tel_user, cafnum_user FROM caf_user WHERE cafnum_parent_user LIKE '" . LegacyContainer::get('legacy_mysqli_handler')->escapeString(getUser()->getCafnum()) . "' LIMIT 15";
-                    $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                    while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                        $filiations[] = $handle2;
-                    }
-                }
-            }
-
-            // go
             $evt = $handle;
         } else {
             $errPage = 'Accès non autorisé';

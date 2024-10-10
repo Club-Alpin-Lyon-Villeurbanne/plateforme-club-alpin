@@ -380,48 +380,6 @@ function get_sortie($id_evt, $type = 'full')
     return $sortie;
 }
 
-function get_encadrants($id_evt, $only_ids = false)
-{
-    $users = [];
-    $req = "SELECT id_user, civ_user,  cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user
-                            , role_evt_join, is_covoiturage
-                    FROM caf_evt_join, caf_user
-                    WHERE evt_evt_join = $id_evt
-                    AND user_evt_join = id_user
-                    AND status_evt_join = 1
-                    AND
-                        (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant')
-                    LIMIT 300";
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            if ($only_ids) {
-                $users[] = $row['id_user'] ?? [];
-            } else {
-                $row['sortie'] = get_sortie($id_evt);
-                $users[] = $row;
-            }
-        }
-    }
-
-    return count($users) ? $users : false;
-}
-
-function mon_inscription($id_evt)
-{
-    $my_choices = false;
-
-    if (user()) {
-        $req = "SELECT * FROM `caf_evt_join` WHERE `evt_evt_join` = $id_evt AND `user_evt_join` = " . getUser()->getId() . ' LIMIT 1;';
-        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-        while ($row = $result->fetch_assoc()) {
-            $my_choices = $row;
-        }
-    }
-
-    return $my_choices;
-}
-
 function get_user($id_user, $valid = true, $simple = true)
 {
     $user = null;

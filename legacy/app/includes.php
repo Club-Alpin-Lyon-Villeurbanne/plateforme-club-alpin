@@ -25,6 +25,6 @@ require __DIR__ . '/../app/pages.php';
 // _________________________________________________ REQUETES INHERENTES A LA PAGE
 require __DIR__ . '/../scripts/get_commissions.php';
 
-if ('sortie' == $p1 || 'feuille-de-sortie' == $p1) {
+if ('feuille-de-sortie' == $p1) {
     require __DIR__ . '/../scripts/get_sortie_params.php';
 }
