@@ -519,18 +519,17 @@
                                                 </label>
                                             {% endif %}
 
-                                            {% if not event.finished %}
-                                                <label for="join_{{ participation.id }}_-1">
-                                                    <input
-                                                        name="status_evt_join_{{ participation.id }}"
-                                                        {{ disable_unsubscribe ? 'disabled="disabled"' : '' }}
-                                                        type="radio"
-                                                        id="join_{{ participation.id }}_-1"
-                                                        value="-1"
-                                                    />
-                                                    Désinscrire
-                                                </label>
-                                            {% endif %}
+                                            <label for="join_{{ participation.id }}_-1">
+                                                <input
+                                                    name="status_evt_join_{{ participation.id }}"
+                                                    {{ disable_unsubscribe ? 'disabled="disabled"' : '' }}
+                                                    type="radio"
+                                                    id="join_{{ participation.id }}_-1"
+                                                    value="-1"
+                                                />
+                                                Désinscrire
+                                            </label>
+
 
                                         {% endif %}
 
