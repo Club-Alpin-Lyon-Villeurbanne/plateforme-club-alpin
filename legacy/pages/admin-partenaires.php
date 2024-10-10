@@ -16,7 +16,7 @@ if (isset($_GET['show']) && in_array($_GET['show'], ['all', 'public', 'private',
 }
 $show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
 
-$req = 'SELECT part_id, part_name, part_url, part_desc, part_image, part_type, part_enable, part_order, part_click
+$req = 'SELECT part_id, part_name, part_url, part_desc, part_image, part_type, part_enable, part_order
 	FROM caf_partenaires '
     . ('private' == $show ? ' WHERE part_type=1 ' : '')
     . ('public' == $show ? ' WHERE part_type=2 ' : '')
@@ -103,7 +103,6 @@ while ($row = $handleSql->fetch_assoc()) {
 				<th>Nom image</th>
 				<th>Image</th>
 				<th>Type</th>
-				<th>Nb-cliques</th>
 				<th>Ordre affichage</th>
 			</tr>
 		</thead>
@@ -135,7 +134,7 @@ for ($i = 0; $i < count($partenairesTab); ++$i) {
                 . '<td><a target="_blank" href="' . html_utf8($elt['part_url']) . '">' . html_utf8($elt['part_url']) . '</a></td>'
                 . '<td>' . html_utf8($elt['part_desc']) . '</td>'
                 . '<td align="center">';
-    echo '<a target="_blank" href="/goto/partenaire/' . $elt['part_id'] . '/' . formater($elt['part_name'], 3) . '.html">';
+	echo '<a target="_blank" href="' . $elt['part_url'] . '">';
     if (file_exists(__DIR__ . '/../../public/ftp/partenaires/' . $elt['part_image'])) {
         echo '<img src="/ftp/partenaires/' . $elt['part_image'] . '" style="max-width:150px;max-height:60px">';
     } else {
@@ -143,7 +142,6 @@ for ($i = 0; $i < count($partenairesTab); ++$i) {
     }
     echo '</a></td>'
                 . '<td>' . (1 == $elt['part_type'] ? 'PRIVÉ' : 'PUBLIC') . '</td>'
-                . '<td>' . html_utf8($elt['part_click']) . '</td>'
                 . '<td>' . html_utf8($elt['part_order']) . '</td>'
             . '</tr>';
 } ?>

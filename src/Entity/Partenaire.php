@@ -62,12 +62,6 @@ class Partenaire
     #[ORM\Column(name: 'part_order', type: 'integer', nullable: false, options: ['default' => '999999'])]
     private $order = 999999;
 
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'part_click', type: 'integer', nullable: false, options: ['comment' => 'nb de cliques'])]
-    private $click = '0';
-
     public function getId(): ?int
     {
         return $this->id;
@@ -153,18 +147,6 @@ class Partenaire
     public function setOrder(int $order): self
     {
         $this->order = $order;
-
-        return $this;
-    }
-
-    public function getClick(): ?int
-    {
-        return $this->click;
-    }
-
-    public function setClick(int $click): self
-    {
-        $this->click = $click;
 
         return $this;
     }
