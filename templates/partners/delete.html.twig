@@ -1,0 +1,72 @@
+{% extends 'base-fancyframe.html.twig' %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('deletePartenaireForm');
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    if (confirm('Êtes-vous sûr de vouloir supprimer ce partenaire ?')) {
+                        // Soumettre le formulaire de manière asynchrone
+                        fetch(form.action, {
+                            method: 'POST',
+                            body: new FormData(form)
+                        }).then(response => {
+                            if (response.ok) {
+                                closeFancybox();
+                                if (window.parent) {
+                                    window.parent.location.reload();
+                                }
+                            } else {
+                                alert('Une erreur est survenue lors de la suppression.');
+                            }
+                        }).catch(error => {
+                            console.error('Erreur:', error);
+                            alert('Une erreur est survenue lors de la suppression.');
+                        });
+                    }
+                });
+            }
+
+            var cancelButton = document.getElementById('cancelButton');
+            if (cancelButton) {
+                cancelButton.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    closeFancybox();
+                });
+            }
+
+            function closeFancybox() {
+                if (window.parent && window.parent.$.fancybox) {
+                    window.parent.$.fancybox.close();
+                }
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div style="text-align:left;">
+        <h1>Supprimer le partenaire : {{ partner.name }}</h1><br />
+
+        <p>
+            {% if partner.image %}
+                <img src="/ftp/partenaires/{{ partner.image }}" width="250px">
+            {% else %}
+                <img src="img/base/cross.png" width="25" height="25" alt="non trouvée" />
+            {% endif %}
+        </p>
+
+        <p>
+            <h2>Voulez-vous vraiment supprimer ce partenaire (le fichier du logo sera effacé) ?</h2>
+        </p>
+
+        <form id="deletePartenaireForm" method="post" action="{{ path('partner_delete', {'id': partner.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ partner.id) }}">
+            <button type="submit" class="nice2 orange">Supprimer</button>
+            <a href="#" id="cancelButton" class="nice2">Annuler</a>
+        </form>
+    </div>
+{% endblock %}
