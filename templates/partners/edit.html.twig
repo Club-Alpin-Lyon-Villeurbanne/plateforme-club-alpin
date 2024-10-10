@@ -1,0 +1,135 @@
+{% extends 'base-fancyframe.html.twig' %}
+
+{% block title %}{{ partner.id ? 'Modifier' : 'Ajouter' }} un partenaire{% endblock %}
+
+{% block body %}
+    <div class="tw-flex tw-flex-col tw-a tw-w-2/3 tw-p-4">
+        <h1 class="tw-text-2xl tw-font-bold tw-mb-4">{{ partner.id ? 'Modifier' : 'Ajouter' }} un partenaire</h1>
+
+        <p class="tw-mb-4">
+            Depuis cette page, vous pouvez {{ partner.id ? 'modifier' : 'ajouter' }} une entrée dans la base de données des partenaires du site.
+        </p>
+
+        <hr class="tw-w-full tw-my-4" />
+
+        {{ form_start(form, {'attr': {'class': 'tw-w-full', 'enctype': 'multipart/form-data', 'id': 'partner-form'}}) }}
+        {{ form_errors(form) }}
+
+        <div class="tw-flex tw-mb-4">
+            <div class="tw-w-4/5 tw-md:w-1/2 tw-pr-8 tw-mb-4 tw-text-left">
+                <label class="tw-block tw-mb-2">Nom :</label>
+                {{ form_widget(form.name, {'attr': {'class': 'type1 tw-w-full'}}) }}
+            </div>
+            <div class="tw-md:w-1/2 tw-pl-2 tw-mb-4 tw-text-left">
+                <label class="tw-block tw-mb-2">Ordre affichage :</label>
+                {{ form_widget(form.order, {'attr': {'class': 'type1 tw-w-full'}}) }}
+            </div>
+        </div>
+
+        <div class="tw-w-full tw-mb-4  tw-text-left">
+            <label class="tw-block tw-mb-2">Description :</label>
+            {{ form_widget(form.description, {'attr': {'rows': '3', 'class': 'tw-w-full'}}) }}
+        </div>
+
+        <div class="tw-w-full tw-mb-4  tw-text-left">
+            <label class="tw-block tw-mb-2">URL de redirection du logo :</label>
+            {{ form_widget(form.url, {'attr': {'class': 'type1 tw-w-full'}}) }}
+        </div>
+
+        <div class="tw-w-full tw-mb-4  tw-text-left">
+            <label class="tw-block tw-mb-2">Image PNG (250 x 100, transparente):</label>
+            <div class="tw-flex tw-items-center">
+                <div class="tw-mr-4">
+                    {{ form_widget(form.imageFile) }}
+                </div>
+                <div>
+                    {% if partner.image %}
+                        <img src="/ftp/partenaires/{{ partner.image }}" class="tw-max-w-[150px] tw-max-h-[60px]" alt="{{ partner.name }}">
+                    {% else %}
+                        <img src="/img/base/cross.png" width="25" height="25" alt="non trouvée" />
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="tw-w-full tw-mb-4  tw-text-left">
+            <label class="tw-block tw-mb-2">Type de partenaire :</label>
+            <div class="nice-checkboxes">
+                {% for child in form.type %}
+                    <label for="{{ child.vars.id }}">
+                        {{ form_widget(child, {'attr': {'class': 'hidden-input'}}) }}
+                        {{ child.vars.label }}
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="tw-w-full tw-mb-4  tw-text-left">
+            <label class="tw-block tw-mb-2">Statut :</label>
+            <div class="nice-checkboxes">
+                {% for child in form.enabled %}
+                    <label for="{{ child.vars.id }}">
+                        {{ form_widget(child, {'attr': {'class': 'hidden-input'}}) }}
+                        {{ child.vars.label }}
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" title="Enregistrer" class="biglink tw-inline-flex tw-items-center tw-mt-4">
+            <span class="bleucaf tw-mr-2">&gt;</span>
+            ENREGISTRER LES MODIFICATIONS
+        </button>
+
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('partner-form');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                fetch(form.action, {
+                    method: form.method,
+                    body: new FormData(form),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(JSON.stringify(data));
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (window.parent && window.parent.$.fancybox) {
+                        window.parent.$.fancybox.close();
+                    }
+                    if (window.parent) {
+                        window.parent.location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    let errorMessage = 'Une erreur est survenue lors de la modification du partenaire.';
+                    try {
+                        const errorData = JSON.parse(error.message);
+                        if (errorData.errors) {
+                            // Get the first error message
+                            errorMessage = errorData.errors[0] || Object.values(errorData.errors)[0];
+                            if (Array.isArray(errorMessage)) {
+                                errorMessage = errorMessage[0];
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Erreur lors du parsing des erreurs:', e);
+                    }
+                    alert(errorMessage);
+                });
+            });
+        });
+    </script>
+{% endblock %}

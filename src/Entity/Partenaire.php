@@ -54,7 +54,7 @@ class Partenaire
      * @var int
      */
     #[ORM\Column(name: 'part_enable', type: 'integer', nullable: false, options: ['default' => '1', 'comment' => 'partenaire actif =1'])]
-    private $enable = 1;
+    private $enabled = true;
 
     /**
      * @var int
@@ -127,14 +127,14 @@ class Partenaire
         return $this;
     }
 
-    public function getEnable(): ?int
+    public function getEnabled(): ?bool
     {
-        return $this->enable;
+        return $this->enabled;
     }
 
-    public function setEnable(int $enable): self
+    public function setEnabled(bool $enabled): self
     {
-        $this->enable = $enable;
+        $this->enabled = $enabled;
 
         return $this;
     }
@@ -147,6 +147,18 @@ class Partenaire
     public function setOrder(int $order): self
     {
         $this->order = $order;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->desc;
+    }
+
+    public function setDescription(string $desc): self
+    {
+        $this->desc = $desc;
 
         return $this;
     }

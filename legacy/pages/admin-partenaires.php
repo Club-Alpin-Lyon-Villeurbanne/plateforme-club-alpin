@@ -31,7 +31,7 @@ while ($row = $handleSql->fetch_assoc()) {
 }
 
 ?>
-	<h1>Gestion du slider partenaires de la page d'accueil&nbsp;&nbsp;<a href="/includer.php?p=pages/partenaire-modifier.php&amp;part_id=-1" class="fancyframe" title="ajouter un nouveau partenaire"><img src="/img/base/add.png" /></a></h1>
+	<h1>Gestion du slider partenaires de la page d'accueil&nbsp;&nbsp;<a href="<?php echo LegacyContainer::get('router')->generate('partner_edit', ['id' => -1]); ?>" class="fancyframe" title="ajouter un nouveau partenaire"><img src="/img/base/add.png" /></a></h1>
 	<p>
 		<img src="/img/base/magnifier.png" style="vertical-align:middle" />
 		Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
@@ -117,7 +117,7 @@ for ($i = 0; $i < count($partenairesTab); ++$i) {
     echo '<tr id="tr-' . $elt['part_id'] . '" class="' . ($elt['part_enable'] ? 'vis-on' : 'vis-off') . '">'
                 . '<td style="white-space:nowrap;">';
     // edit
-    echo '<a href="/includer.php?p=pages/partenaire-modifier.php&amp;part_id=' . (int) $elt['part_id'] . '" class="fancyframe" title="Modifier ce partenaire"><img src="/img/base/application_form_edit.png" alt="MODIFIER" title=""></a> ';
+    echo '<a href="' . LegacyContainer::get('router')->generate('partner_edit', ['id' => $elt['part_id']]) . '" class="fancyframe" title="Modifier ce partenaire"><img src="/img/base/application_form_edit.png" alt="MODIFIER" title=""></a> ';
     echo '&nbsp;&nbsp;&nbsp;<a href="' . LegacyContainer::get('router')->generate('partner_confirm_delete', ['id' => $elt['part_id']]) . '" class="fancyframe" title="Supprimer"><img src="/img/base/delete.png" alt="SUPPRIMER" title="SUPPRIMER"  style="margin-bottom:-2px;"></a> ';
 
     if (1 == $elt['part_enable']) {
