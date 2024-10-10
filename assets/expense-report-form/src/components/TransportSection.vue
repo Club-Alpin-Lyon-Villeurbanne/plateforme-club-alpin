@@ -141,7 +141,7 @@ const { value: valueType } = useField<TransportType>("transport.type");
 const transportOptions = [
   { value: TransportType.PERSONAL_VEHICLE, label: "Véhicule personnel" },
   { value: TransportType.CLUB_MINIBUS, label: "Minibus du club" },
-  { value: TransportType.RENTAL_MINIBUS, label: "Minubus de location" },
+  { value: TransportType.RENTAL_MINIBUS, label: "Minibus de location" },
   { value: TransportType.PUBLIC_TRANSPORT, label: "Transport en commun" },
 ];
 
