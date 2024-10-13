@@ -5,7 +5,6 @@ public/ftp/*
 *.old
 legacy/config/www.clubalpinlyon.fr/ffcam/
 backup/*
-forum*
 public/robots.txt
 public/dev.txt
 /.npm/
@@ -30,6 +29,7 @@ public/dev.txt
 
 /db
 /docker-compose.override.yml
+.composer
 ###> friendsofphp/php-cs-fixer ###
 /.php-cs-fixer.php
 /.php-cs-fixer.cache
