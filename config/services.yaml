@@ -56,7 +56,9 @@ services:
       - "../src/Entity/"
       - "../src/Kernel.php"
       - "../src/Tests/"
-
+  App\Repository\UserRightRepository:
+    arguments:
+      $connection: '@doctrine.dbal.default_connection'
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
 
@@ -92,6 +94,7 @@ services:
   App\Controller\AdminController:
     arguments:
       $adminPassword: "%env(PASSWORD_ADMIN)%"
+      $contentManagerPassword: "%env(PASSWORD_CONTENT_MANAGER)%"
 
   App\Controller\RssController:
     arguments:
@@ -176,6 +179,10 @@ services:
     public: true
     alias: App\Repository\UserRepository
 
+  legacy_user_right_repository:
+    public: true
+    alias: App\Repository\UserRightRepository
+
   legacy_member_merger:
     public: true
     alias: App\Utils\MemberMerger
@@ -186,3 +193,8 @@ services:
   legacy_content_inline:
     public: true
     alias: App\Legacy\ContentInline
+    
+  App\Security\SecurityHelpers:
+    public: true
+    arguments:
+      $authorizationChecker: '@security.authorization_checker'

@@ -1,5 +1,5 @@
 <?php
-if (!admin()) {
+if (!$securityHelpers->isAdmin()) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     ?>

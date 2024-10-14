@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-if (!admin()) {
+if (!$securityHelpers->isAdmin()) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     $operation = 'edit';

@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 
 $MAX_ADMINS_SUB_LEVELS = LegacyContainer::getParameter('legacy_env_MAX_ADMINS_SUB_LEVELS');
 
-if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page'] && !superadmin())) {
+if (($currentPage['admin_page'] && !$securityHelpers->isAdmin()) || ($currentPage['superadmin_page'] && !super$securityHelpers->isAdmin())) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     // reqs toutes pages de l'arbo

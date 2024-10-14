@@ -6,7 +6,7 @@ $MAX_ADMINS_SUB_LEVELS = LegacyContainer::getParameter('legacy_env_MAX_ADMINS_SU
 
 global $versCettePage;
 
-if ((isset($currentPage['admin_page']) && $currentPage['admin_page'] && !admin()) || (isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] && !superadmin())) {
+if ((isset($currentPage['admin_page']) && $currentPage['admin_page'] && !$securityHelpers->isAdmin()) || (isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] && !super$securityHelpers->isAdmin())) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     ?>

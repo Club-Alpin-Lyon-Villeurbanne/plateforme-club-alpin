@@ -5,7 +5,7 @@ use App\Legacy\LegacyContainer;
 
 require __DIR__ . '/../../app/includes.php';
 
-if (admin()) {
+if ($securityHelpers->isAdmin()) {
     $targetDir = LegacyContainer::getParameter('legacy_ftp_path') . urldecode($_GET['dossier']);
 
     // Handle file uploads via XMLHttpRequest

@@ -4,65 +4,50 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * UsertypeAttr.
- */
 #[ORM\Table(name: 'caf_usertype_attr')]
 #[ORM\Entity]
 class UsertypeAttr
 {
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'id_usertype_attr', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    private $id;
+    private ?int $id = null;
 
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'type_usertype_attr', type: 'integer', nullable: false, options: ['comment' => "ID du type d'user (admin, modéro etc...)"])]
-    private $type;
+    #[ORM\ManyToOne(targetEntity: UserType::class, inversedBy: 'usertypeAttrs')]
+    #[ORM\JoinColumn(name: 'type_usertype_attr', referencedColumnName: 'id_usertype', nullable: false)]
+    private ?UserType $type = null;
 
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'right_usertype_attr', type: 'integer', nullable: false, options: ['comment' => 'ID du droit dans la table userright'])]
-    private $right;
+    #[ORM\ManyToOne(targetEntity: UserRight::class, inversedBy: 'usertypeAttrs')]
+    #[ORM\JoinColumn(name: 'right_usertype_attr', referencedColumnName: 'id_userright', nullable: false)]
+    private ?UserRight $right = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'details_usertype_attr', type: 'string', length: 100, nullable: false)]
-    private $details;
+    private ?string $details = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getType(): ?int
+    public function getType(): ?UserType
     {
         return $this->type;
     }
 
-    public function setType(int $type): self
+    public function setType(?UserType $type): self
     {
         $this->type = $type;
-
         return $this;
     }
 
-    public function getRight(): ?int
+    public function getRight(): ?UserRight
     {
         return $this->right;
     }
 
-    public function setRight(int $right): self
+    public function setRight(?UserRight $right): self
     {
         $this->right = $right;
-
         return $this;
     }
 
@@ -74,7 +59,6 @@ class UsertypeAttr
     public function setDetails(string $details): self
     {
         $this->details = $details;
-
         return $this;
     }
 }

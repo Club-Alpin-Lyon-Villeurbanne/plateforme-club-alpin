@@ -11,7 +11,7 @@ $result = $targetDir = $filename = null;
 $ftpPath = LegacyContainer::getParameter('legacy_ftp_path');
 $type = htmlspecialchars($_GET['type']) ?? 'image';
 
-if (!user() && !admin()) {
+if (!user() && !$securityHelpers->isAdmin()) {
     $errTab[] = 'User non connecté';
 }
 

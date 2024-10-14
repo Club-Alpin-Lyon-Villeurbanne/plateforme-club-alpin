@@ -2,7 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 
-if (!admin()) {
+if (!$securityHelpers->isAdmin()) {
     echo 'Votre session administrateur a expiré';
 } else {
     $lang_content_inline = 'fr';

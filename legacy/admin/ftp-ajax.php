@@ -15,7 +15,7 @@ $dirTab = [];
 $fileTab = [];
 $dossier = null;
 
-if (!admin()) {
+if (!$securityHelpers->isAdmin()) {
     $errTab[] = 'Votre session administrateur a expiré';
 }
 

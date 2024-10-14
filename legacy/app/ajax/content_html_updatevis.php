@@ -5,7 +5,7 @@ use App\Legacy\LegacyContainer;
 $log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 $result['success'] = false;
 
-if (admin()) {
+if ($securityHelpers->isAdmin()) {
     $code_content_html = stripslashes($_POST['code_content_html']);
     $vis_content_html = (int) $_POST['vis_content_html'];
 

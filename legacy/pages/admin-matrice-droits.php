@@ -3,7 +3,7 @@
 use App\Entity\UserAttr;
 use App\Legacy\LegacyContainer;
 
-if (!admin()) {
+if (!$securityHelpers->isAdmin()) {
     echo 'Session expirée';
 } else {
     // LISTAGE DES DROITS

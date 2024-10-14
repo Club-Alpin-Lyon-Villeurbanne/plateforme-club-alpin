@@ -6,7 +6,7 @@ else
   DOCKER_COMPOSE=docker-compose
 endif
 EXEC = $(DOCKER) exec -w /var/www www_caflyon
-PHP = $(EXEC) php
+PHP = $(EXEC) yarn
 COMPOSER = $(EXEC) composer
 NPM = $(EXEC) npm
 SYMFONY_CONSOLE = $(PHP) bin/console

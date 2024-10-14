@@ -3,12 +3,12 @@
 namespace App\Security\Voter;
 
 use App\Entity\User;
-use App\Entity\UserAttr;
 use App\Security\AdminDetector;
+use App\Security\SecurityConstants;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
-class UserFlagsVoter extends Voter
+class ContentManagerVoter extends Voter
 {
     private AdminDetector $adminDetector;
 
@@ -17,12 +17,12 @@ class UserFlagsVoter extends Voter
         $this->adminDetector = $adminDetector;
     }
 
-    protected function supports($attribute, $subject): bool
+    protected function supports(string $attribute, mixed $subject): bool
     {
-        return \in_array($attribute, ['ROLE_ADMIN', 'ROLE_ALLOWED_TO_SWITCH'], true);
+        return $attribute === SecurityConstants::ROLE_CONTENT_MANAGER;
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 
@@ -30,14 +30,11 @@ class UserFlagsVoter extends Voter
             return false;
         }
 
-        if ('ROLE_ALLOWED_TO_SWITCH' === $attribute && $user->hasAttribute(UserAttr::DEVELOPPEUR)) {
+        // Les admins ont automatiquement les droits de gestionnaire de contenu
+        if ($this->adminDetector->isAdmin()) {
             return true;
         }
 
-        if ($token->hasAttribute('is_admin') && $token->getAttribute('is_admin')) {
-            return true;
-        }
-
-        return $this->adminDetector->isAdmin();
+        return $this->adminDetector->isContentManager();
     }
 }

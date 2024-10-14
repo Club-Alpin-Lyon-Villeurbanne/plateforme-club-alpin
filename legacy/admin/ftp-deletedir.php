@@ -8,7 +8,7 @@ global $compte;
 
 require __DIR__ . '/../app/includes.php';
 
-if (!admin()) {
+if (!$securityHelpers->isAdmin()) {
     header('HTTP/1.0 401 Authorization Required');
     echo 'Votre session administrateur a expiré';
     exit;

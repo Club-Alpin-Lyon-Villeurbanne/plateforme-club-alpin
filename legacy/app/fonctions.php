@@ -510,20 +510,6 @@ function formater($retourner, $type = 1)
     return $retourner;
 }
 
-function isGranted($attribute, $subject = null)
-{
-    return LegacyContainer::get('legacy_authorization_checker')->isGranted($attribute, $subject);
-}
-
-function admin()
-{
-    return LegacyContainer::get('legacy_authorization_checker')->isGranted('ROLE_ADMIN');
-}
-function superadmin()
-{
-    return admin();
-}
-
 // check mail
 function isMail($mail)
 {
@@ -535,7 +521,7 @@ function isMail($mail)
 }
 
 // function de supp de dossier (dangerous)
-// if(admin()){
+// if($securityHelpers->isAdmin()){
 function clearDir($dossierSupp)
 {
     $ouverture = @opendir($dossierSupp);

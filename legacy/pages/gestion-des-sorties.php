@@ -91,7 +91,7 @@ if (allowed('evt_validate_all') || allowed('evt_validate')) {
     }
 }
 // LISTE DES USERS / ADHERENTS
-elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1 && admin())) {
+elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1 && $securityHelpers->isAdmin())) {
     $userTab = [];
     $show = 'valid';
     // fonctions disponibles

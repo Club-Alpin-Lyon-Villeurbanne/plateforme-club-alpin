@@ -1,6 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Security\SecurityHelpers;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -10,10 +11,18 @@ if (LegacyContainer::getParameter('legacy_env_SENTRY_DSN')) {
     ]);
 }
 
+// Récupérer le conteneur Symfony
+$container = LegacyContainer::get('service_container');
+
+// Récupérer SecurityHelpers à partir du conteneur Symfony
+$securityHelpers = $container->get(SecurityHelpers::class);
+
 $scriptsDir = __DIR__ . '/../scripts/';
 
 // _________________________________________________ FONCTIONS MAISON
 require __DIR__ . '/../app/fonctions.php';
+// _________________________________________________ FONCTIONS SECURITY
+// require __DIR__ . '/../../src/Security/SecurityHelpers.php';
 // _________________________________________________ VARIABLES "GLOBALES" DU SITE
 require __DIR__ . '/../config/params.php';
 // _________________________________________________ FONCTIONS PARTAGEES

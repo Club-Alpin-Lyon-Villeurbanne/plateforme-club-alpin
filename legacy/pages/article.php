@@ -82,7 +82,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         }
 
         // maj nb vues
-        if (!admin()) {
+        if (!$securityHelpers->isAdmin()) {
             $req = "UPDATE caf_article SET nb_vues_article=nb_vues_article+1 WHERE id_article=$id_article AND status_article=1 LIMIT 1";
             LegacyContainer::get('legacy_mysqli_handler')->query($req);
         }

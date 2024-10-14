@@ -20,7 +20,7 @@
 
 	<!-- script persos -->
     <script src="/js/fonctions.js" type="text/javascript"></script>
-	<?php if (admin()) { ?>
+	<?php if ($securityHelpers->isAdmin()) { ?>
 		<!-- script admin -->
 		<script src="/js/fonctionsAdmin.js" type="text/javascript"></script>
 	<?php } ?>

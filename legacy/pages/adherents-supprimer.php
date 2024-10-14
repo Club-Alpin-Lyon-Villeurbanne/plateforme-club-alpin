@@ -1,6 +1,6 @@
 <?php
 
-if (!admin()) {
+if (!$securityHelpers->isAdmin()) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     $id_user = (int) $_GET['id_user'];

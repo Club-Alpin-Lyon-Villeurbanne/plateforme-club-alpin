@@ -10,7 +10,7 @@ require __DIR__ . '/app/includes.php';
 // _____________________________ PAGE
 // _________________________________________________
 
-if (admin()) {
+if ($securityHelpers->isAdmin()) {
     // affichage normal : pas de donnees recues
     if ((!isset($_POST['etape'])) || ('enregistrement' != $_POST['etape'])) {
         // récupération du contenu

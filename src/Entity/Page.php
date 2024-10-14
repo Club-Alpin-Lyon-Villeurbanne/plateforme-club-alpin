@@ -150,7 +150,7 @@ class Page
         return $this;
     }
 
-    public function getAdmin(): ?bool
+    public function get$securityHelpers->isAdmin(): ?bool
     {
         return $this->admin;
     }
@@ -162,7 +162,7 @@ class Page
         return $this;
     }
 
-    public function getSuperadmin(): ?bool
+    public function getSuper$securityHelpers->isAdmin(): ?bool
     {
         return $this->superadmin;
     }
@@ -222,7 +222,7 @@ class Page
         return $this;
     }
 
-    public function getMenuadmin(): ?bool
+    public function getMenu$securityHelpers->isAdmin(): ?bool
     {
         return $this->menuadmin;
     }
@@ -234,7 +234,7 @@ class Page
         return $this;
     }
 
-    public function getOrdreMenuadmin(): ?int
+    public function getOrdreMenu$securityHelpers->isAdmin(): ?int
     {
         return $this->ordreMenuadmin;
     }

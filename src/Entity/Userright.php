@@ -2,46 +2,39 @@
 
 namespace App\Entity;
 
+use App\Repository\UserRightRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * Userright.
- */
+#[ORM\Entity(repositoryClass: UserRightRepository::class)]
 #[ORM\Table(name: 'caf_userright')]
-#[ORM\Entity]
-class Userright
+class UserRight
 {
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'id_userright', type: 'integer', nullable: false)]
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    private $id;
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'id_userright', type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @var string
-     */
-    #[ORM\Column(name: 'code_userright', type: 'string', length: 40, nullable: false)]
-    private $code;
+    #[ORM\Column(name: 'code_userright', type: 'string', length: 40)]
+    private ?string $code = null;
 
-    /**
-     * @var string
-     */
-    #[ORM\Column(name: 'title_userright', type: 'string', length: 100, nullable: false)]
-    private $title;
+    #[ORM\Column(name: 'title_userright', type: 'string', length: 100)]
+    private ?string $title = null;
 
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'ordre_userright', type: 'integer', nullable: false)]
-    private $ordre;
+    #[ORM\Column(name: 'ordre_userright', type: 'integer')]
+    private ?int $order = null;
 
-    /**
-     * @var string
-     */
-    #[ORM\Column(name: 'parent_userright', type: 'string', length: 40, nullable: false)]
-    private $parent;
+    #[ORM\Column(name: 'parent_userright', type: 'string', length: 40)]
+    private ?string $parent = null;
+
+    #[ORM\OneToMany(targetEntity: UsertypeAttr::class, mappedBy: 'right')]
+    private Collection $usertypeAttrs;
+
+    public function __construct()
+    {
+        $this->usertypeAttrs = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -56,7 +49,6 @@ class Userright
     public function setCode(string $code): self
     {
         $this->code = $code;
-
         return $this;
     }
 
@@ -68,19 +60,17 @@ class Userright
     public function setTitle(string $title): self
     {
         $this->title = $title;
-
         return $this;
     }
 
-    public function getOrdre(): ?int
+    public function getOrder(): ?int
     {
-        return $this->ordre;
+        return $this->order;
     }
 
-    public function setOrdre(int $ordre): self
+    public function setOrder(int $order): self
     {
-        $this->ordre = $ordre;
-
+        $this->order = $order;
         return $this;
     }
 
@@ -92,7 +82,34 @@ class Userright
     public function setParent(string $parent): self
     {
         $this->parent = $parent;
+        return $this;
+    }
 
+    /**
+     * @return Collection<int, UsertypeAttr>
+     */
+    public function getUsertypeAttrs(): Collection
+    {
+        return $this->usertypeAttrs;
+    }
+
+    public function addUsertypeAttr(UsertypeAttr $usertypeAttr): self
+    {
+        if (!$this->usertypeAttrs->contains($usertypeAttr)) {
+            $this->usertypeAttrs->add($usertypeAttr);
+            $usertypeAttr->setRight($this);
+        }
+        return $this;
+    }
+
+    public function removeUsertypeAttr(UsertypeAttr $usertypeAttr): self
+    {
+        if ($this->usertypeAttrs->removeElement($usertypeAttr)) {
+            // set the owning side to null (unless already changed)
+            if ($usertypeAttr->getRight() === $this) {
+                $usertypeAttr->setRight(null);
+            }
+        }
         return $this;
     }
 }

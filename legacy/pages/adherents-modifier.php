@@ -5,7 +5,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 $operation = $_POST['operation'] ?? null;
 
-if (!admin() && !allowed('user_edit_notme')) {
+if (!$securityHelpers->isAdmin() && !allowed('user_edit_notme')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     $idUser = (int) $_GET['id_user'];

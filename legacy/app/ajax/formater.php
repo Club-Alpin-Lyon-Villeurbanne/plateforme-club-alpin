@@ -1,6 +1,6 @@
 <?php
 
-if (admin()) {
+if ($securityHelpers->isAdmin()) {
     $str = mb_convert_encoding($_POST['str'], 'UTF-8');
     $type = (int) $_POST['type'];
     $result = [];

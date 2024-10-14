@@ -4,7 +4,7 @@
 
 $log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 
-// if(admin()){
+// if($securityHelpers->isAdmin()){
 
 $errTab = [];
 $result = ['success' => false, 'error' => false];

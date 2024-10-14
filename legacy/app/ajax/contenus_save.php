@@ -5,7 +5,7 @@ use App\Legacy\LegacyContainer;
 $log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 $log .= "\n TEST utf 8 : Смотрите эту страницу в России";
 
-if (admin()) {
+if ($securityHelpers->isAdmin()) {
     $result = [];
 
     $id_content_inline = (int) $_POST['id'];

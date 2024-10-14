@@ -5,7 +5,7 @@ use App\Legacy\LegacyContainer;
 
 // GESTION DES DROITS D'AFFICHAGE
 $display = false;
-if (admin()
+if ($securityHelpers->isAdmin()
     || (
         user()
         && (

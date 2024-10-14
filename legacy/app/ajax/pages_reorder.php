@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 
 $log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 
-if (admin()) {
+if ($securityHelpers->isAdmin()) {
     $i = 1;
     foreach ($_GET['id'] as $id_page) {
         $log .= "\n GET id_page = $id_page";
