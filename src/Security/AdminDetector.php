@@ -33,6 +33,6 @@ class AdminDetector
         }
 
         $userRole = $request->getSession()->get(SecurityConstants::SESSION_USER_ROLE_KEY);
-        return $userRole === SecurityConstants::ROLE_CONTENT_MANAGER || $userRole === SecurityConstants::ROLE_ADMIN;
+        return $userRole === SecurityConstants::ROLE_CONTENT_MANAGER;
     }
 }

@@ -52,7 +52,6 @@ RUN docker-php-ext-install -j$(nproc) mysqli pdo_mysql && \
 RUN pecl install apcu && docker-php-ext-enable apcu
 RUN pecl install imagick && docker-php-ext-enable imagick
 RUN pecl install xdebug && docker-php-ext-enable xdebug
-RUN npm install -g yarn
 
 COPY ./utils/docker-999-php.ini $PHP_INI_DIR/conf.d/999-php.ini
 
