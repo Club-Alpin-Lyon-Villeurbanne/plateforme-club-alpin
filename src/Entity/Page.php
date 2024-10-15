@@ -150,7 +150,7 @@ class Page
         return $this;
     }
 
-    public function get$securityHelpers->isAdmin(): ?bool
+    public function getAdmin(): ?bool
     {
         return $this->admin;
     }
@@ -162,7 +162,7 @@ class Page
         return $this;
     }
 
-    public function getSuper$securityHelpers->isAdmin(): ?bool
+    public function getSuperAdmin(): ?bool
     {
         return $this->superadmin;
     }
