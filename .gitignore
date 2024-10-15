@@ -9,6 +9,8 @@ forum*
 public/robots.txt
 public/dev.txt
 /.npm/
+yarn.lock
+.cache
 
 ###> symfony/framework-bundle ###
 /.env.local
