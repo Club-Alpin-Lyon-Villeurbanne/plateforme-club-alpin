@@ -5,7 +5,7 @@ namespace App\Security\Voter;
 use App\Entity\Evt;
 use App\Entity\User;
 use App\Entity\UserAttr;
-use App\Security\AdminDetector;
+use App\Security\RoleChecker;
 use App\UserRights;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -13,12 +13,12 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 class SortieInscriptionsModificationVoter extends Voter
 {
     private UserRights $userRights;
-    private AdminDetector $adminDetector;
+    private RoleChecker $roleChecker;
 
-    public function __construct(UserRights $userRights, AdminDetector $adminDetector)
+    public function __construct(UserRights $userRights, RoleChecker $roleChecker)
     {
         $this->userRights = $userRights;
-        $this->adminDetector = $adminDetector;
+        $this->roleChecker = $roleChecker;
     }
 
     protected function supports($attribute, $subject): bool
@@ -45,7 +45,7 @@ class SortieInscriptionsModificationVoter extends Voter
         if ($user === $subject->getUser()) {
             return true;
         }
-        if ($this->adminDetector->isAdmin()) {
+        if ($this->roleChecker->isAdmin()) {
             return true;
         }
         if ($user->hasAttribute(UserAttr::SALARIE)) {

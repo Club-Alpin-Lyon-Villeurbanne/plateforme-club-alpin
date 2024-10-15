@@ -2,18 +2,18 @@
 
 namespace App\EventListener;
 
-use App\Security\AdminDetector;
+use App\Security\RoleChecker;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 use Lexik\Bundle\JWTAuthenticationBundle\Events;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class JWTCreatedListener implements EventSubscriberInterface
 {
-    private $adminDetector;
+    private $roleChecker;
 
-    public function __construct(AdminDetector $adminDetector)
+    public function __construct(RoleChecker $roleChecker)
     {
-        $this->adminDetector = $adminDetector;
+        $this->roleChecker = $roleChecker;
     }
 
     /**
@@ -25,7 +25,7 @@ class JWTCreatedListener implements EventSubscriberInterface
     {
         $payload = $event->getData();
         $user = $event->getUser();
-        $isAdmin = $this->adminDetector->isAdmin();
+        $isAdmin = $this->roleChecker->isAdmin();
         if ($isAdmin) {
             $payload['is_admin'] = $isAdmin;
         }

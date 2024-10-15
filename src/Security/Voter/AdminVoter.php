@@ -4,18 +4,18 @@ namespace App\Security\Voter;
 
 use App\Entity\User;
 use App\Entity\UserAttr;
-use App\Security\AdminDetector;
+use App\Security\RoleChecker;
 use App\Security\SecurityConstants;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class AdminVoter extends Voter
 {
-    private AdminDetector $adminDetector;
+    private RoleChecker $roleChecker;
 
-    public function __construct(AdminDetector $adminDetector)
+    public function __construct(RoleChecker $roleChecker)
     {
-        $this->adminDetector = $adminDetector;
+        $this->roleChecker = $roleChecker;
     }
 
     protected function supports(string $attribute, mixed $subject): bool
@@ -40,6 +40,6 @@ class AdminVoter extends Voter
             return true;
         }
 
-        return $this->adminDetector->isAdmin();
+        return $this->roleChecker->isAdmin();
     }
 }
