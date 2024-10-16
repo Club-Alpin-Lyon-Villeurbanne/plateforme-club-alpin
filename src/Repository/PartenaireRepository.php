@@ -25,7 +25,7 @@ class PartenaireRepository extends ServiceEntityRepository implements PasswordUp
     {
         return $this->createQueryBuilder('p')
             ->select('p')
-            ->where('p.enable = 1')
+            ->where('p.enabled = 1')
             ->andWhere('p.name IS NOT NULL')
             ->andWhere('p.name != \'\'')
             ->andWhere('p.image IS NOT NULL')
