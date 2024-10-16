@@ -122,10 +122,13 @@ Docker version X.X.X, build xxxxxxx
 ```
 
 Des erreurs peuvent apparaitre au moment de lancer les containers Docker avec `make init`:
+
 - `permission denied while trying to connect to the Docker daemon socket`: Il faut ajouter son utilisateur dans le groupe `docker`: `$ sudo usermod -a -G docker $USER`, puis quitter et revenir dans WSL ([voir SO](https://stackoverflow.com/a/48450294)).
+
 - Le container `db_caflyon` (database) peut ne pas démarrer: vérifier qu'il tourne avec `$ docker compose ps` (son statut doit etre `Up X minutes`).
 Si il ne tourne pas: vérifier les logs avec `$ docker compose logs cafdb`, vous devriez avoir l'erreur `Could not set file permission for ca-key.pem` au début du log. Dans ce cas, sortir de WSL et lancer les containers depuis Powershell (`> docker compose up`), puis retourner dans WSL, les arrêter (`$ make docker-stop`) et relancer l'initialisation (`$ make init`) ([voir SO](https://stackoverflow.com/a/78768559)).
 Si non résolue, cette erreur pourra se manifester à l'étape `make database-init` avec l'erreur `getaddrinfo for db_caflyon failed: Name or service not known`.
+
 - Pour corriger l'erreur `--initialize specified but the data directory has files in it` dans les logs du container `db_caflyon`: supprimer le contenu du dossier `./db`.
 
 #### Fixtures
