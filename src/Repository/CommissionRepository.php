@@ -44,4 +44,12 @@ class CommissionRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }
+
+    public function findAllCommissionCodes(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.code')
+            ->getQuery()
+            ->getResult();
+    }
 }
