@@ -98,6 +98,10 @@ class Mailer
             ->text($txtBody)
         ;
 
+        if (isset($context['i_cal_attachment'])) {
+            $email->attach($context['i_cal_attachment'], 'sortie.ics', 'text/calendar');
+        }
+
         if (\count($toFlat) > 1) {
             $email->bcc(...$toFlat);
         } else {
