@@ -19,9 +19,10 @@ if ('' !== $userTab['mdp_user'] && (strlen($userTab['mdp_user']) < 6 || strlen($
     $errTab[] = 'Le mot de passe doit faire de 6 à 12 caractères';
 }
 
-if (is_numeric(1 != $userTab['cafnum_user']) || 12 != strlen($userTab['cafnum_user'])) {
+if (!preg_match('/^(N_D)?\d{12}$/', $userTab['cafnum_user'])) {
     $errTab[] = "Numéro d'adhérent invalide : " . $userTab['cafnum_user'];
 }
+
 if (0 != strlen($userTab['cafnum_user_new']) && ((!is_numeric($userTab['cafnum_user_new'])) || 12 != strlen($userTab['cafnum_user_new']))) {
     $errTab[] = "Nouveau numéro d'adhérent invalide : " . $userTab['cafnum_user_new'];
 }
