@@ -5,24 +5,22 @@ namespace App;
 use App\Entity\Commission;
 use App\Entity\User;
 use App\Entity\UserAttr;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception;
+use App\Repository\CommissionRepository;
+use App\Repository\UserRightRepository;
+use App\Security\SecurityConstants;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
 class UserRights implements ResetInterface
 {
-    private AuthorizationCheckerInterface $checker;
-    private TokenStorageInterface $tokenStorage;
-    private Connection $connection;
-    private ?array $userAllowedToCache = null;
-
-    public function __construct(AuthorizationCheckerInterface $checker, TokenStorageInterface $tokenStorage, Connection $connection)
-    {
-        $this->checker = $checker;
-        $this->tokenStorage = $tokenStorage;
-        $this->connection = $connection;
+    public function __construct(
+        private AuthorizationCheckerInterface $authChecker,
+        private TokenStorageInterface $tokenStorage,
+        private UserRightRepository $userRightRepository,
+        private CommissionRepository $commissionRepository,
+        private ?array $cachedUserRights = null
+    ) {
     }
 
     public function allowedOnCommission(string $code, Commission $commission): bool
@@ -32,178 +30,87 @@ class UserRights implements ResetInterface
 
     public function reset(): void
     {
-        $this->userAllowedToCache = null;
+        $this->cachedUserRights = null;
     }
 
-    public function allowed($code_userright, $param = ''): bool
+    public function allowed(string $codeUserright, string $param = ''): bool
     {
-        $userAllowedTo = $this->loadRights();
+        $userRights = $this->loadRights();
 
-        if (!isset($userAllowedTo[$code_userright])) {
+        if (!isset($userRights[$codeUserright])) {
             return false;
         }
 
-        if ('true' === $userAllowedTo[$code_userright]) {
+        if ($userRights[$codeUserright] === true) {
             return true;
-        }
-        if (!$param) {
-            return true;
-        }
-        foreach (explode('|', $userAllowedTo[$code_userright]) as $tmpParam) {
-            if ($param === $tmpParam) {
-                return true;
-            }
-            if (\array_slice(explode(':', $tmpParam), -1)[0] === $param) {
-                return true;
-            }
         }
 
-        return false;
+        if (empty($param)) {
+            return true;
+        }
+
+        $allowedParams = explode('|', $userRights[$codeUserright]);
+        return in_array($param, $allowedParams) || in_array(basename($param), $allowedParams);
     }
 
     public function getAllCommissionCodes(): array
     {
-        $sql = 'SELECT code_commission FROM caf_commission';
-
-        $result = $this->connection->prepare($sql)->executeQuery()->fetchAllAssociative();
-        $ret = [];
-
-        foreach ($result as $row) {
-            $ret[] = $row['code_commission'];
-        }
-
-        return $ret;
+        return $this->commissionRepository->findAllCommissionCodes();
     }
 
-    /**
-     * @throws Exception
-     */
-    public function getCommissionListForRight($right): array
+    public function getCommissionListForRight(string $right): array
     {
-        $allowed = $this->loadRights()[$right] ?? null;
+        $userRights = $this->loadRights();
 
-        if (!$allowed) {
+        if (!isset($userRights[$right])) {
             return [];
         }
 
-        if ('true' === $allowed) {
+        if ($userRights[$right] === true) {
             return $this->getAllCommissionCodes();
         }
 
-        $commissions = [];
-
-        foreach (explode('|', $allowed) as $a) {
-            $commissions[] = \array_slice(explode(':', $a), -1)[0];
-        }
-
-        return $commissions;
+        return array_map('basename', explode('|', $userRights[$right]));
     }
 
-    /**
-     * @throws Exception
-     */
-    public function loadRights(): ?array
+    private function loadRights(): array
     {
-        if (null !== $this->userAllowedToCache) {
-            return $this->userAllowedToCache;
+        if (null !== $this->cachedUserRights) {
+            return $this->cachedUserRights;
         }
 
-        $userAllowedTo = [];
         $user = $this->tokenStorage->getToken() ? $this->tokenStorage->getToken()->getUser() : null;
 
         if (!$user instanceof User || $user->getDoitRenouveler()) {
-            $sql = 'SELECT DISTINCT code_userright '
-                . '  FROM caf_userright, caf_usertype_attr, caf_usertype ' // des droits au type
-                . "  WHERE code_usertype = 'visiteur' " // type visiteur
-                . '      AND id_usertype = type_usertype_attr ' // du type visiteur à ses attributions
-                . '      AND id_userright = right_usertype_attr ' // de ses attributions a ses droits
-            ;
-
-            $result = $this->connection->prepare($sql)->executeQuery()->fetchAllAssociative();
-
-            // ajout du droit au tableau global
-            // sans paramètre, la valeur est une string 'true'
-            foreach ($result as $row) {
-                // les droits visteurs sont tous à true, et ne dependent jamais de parametres
-                $val = 'true';
-                $userAllowedTo[$row['code_userright']] = $val;
-
-                if ($this->isAdmin()) {
-                    $userAllowedTo[$row['code_userright']] = 'true';
-                }
-            }
-
-            return $userAllowedTo;
+            return $this->getVisitorRights();
         }
 
-        $userAllowedTo = ['default' => '1']; // minimum une valeur
+        $userRights = $this->userRightRepository->findRightsByUser($user->getId());
 
-        $sql = 'SELECT DISTINCT code_userright, params_user_attr, limited_to_comm_usertype ' // on veut le code, et les paramètres de chaque droit, et savoir si ce droit est limité à une commission ou non
-            . '  FROM caf_userright, caf_usertype_attr, caf_usertype, caf_user_attr ' // dans la liste des droits > attr_droit_type > type > attr_type_user
-            . '  WHERE user_user_attr = :user ' // de user à user_attr
-            . '     AND usertype_user_attr = id_usertype ' // de user_attr à usertype
-            . '     AND id_usertype = type_usertype_attr ' // de usertype à usertype_attr
-            . '     AND right_usertype_attr = id_userright ' // de usertype_attr à userright
-            . ' ORDER BY params_user_attr ASC, code_userright ASC, limited_to_comm_usertype ASC' // order by params permet d'optimiser la taille de la var globale. Si, si promis (14 lignes plus loin) !
-        ;
-
-        $statement = $this->connection->prepare($sql);
-        $statement->bindValue('user', $user->getId());
-        $result = $statement->executeQuery()->fetchAllAssociative();
-
-        // ajout du droit, avec ses paramètres, au tableau global des droits de cet user
-        // sans paramètre, la valeur est une string 'true'
-        // Il est possible que le même droit prenne plusieurs paramètres (ex : vous avez le droit d'écrire un article dans
-        // deux commissions auquel cas, ils sont concaténés via le caractère |
-        $isAdmin = $this->isAdmin();
-        foreach ($result as $row) {
-            if ($row['params_user_attr'] && $row['limited_to_comm_usertype']) {
-                $val = $row['params_user_attr'];
-            } else {
-                $val = 'true';
-            }
-
-            // si la valeur est true, pas besoin d'ajouter des parametres par la suite car true = "ok pour tout sans params"
-            if ('true' == $val) {
-                $userAllowedTo[$row['code_userright']] = $val;
-            } elseif (!isset($userAllowedTo[$row['code_userright']]) || 'true' !== $userAllowedTo[$row['code_userright']]) {
-                // écriture, ou concaténation des paramètres existant
-                $userAllowedTo[$row['code_userright']] = (isset($userAllowedTo[$row['code_userright']]) ? $userAllowedTo[$row['code_userright']] . '|' : '') . $val;
-            }
-
-            if ($isAdmin) {
-                $userAllowedTo[$row['code_userright']] = 'true';
-            }
-        }
-
-        // Tous les utilisateurs connectés non salariés ont le statut "adhérent"
         if (!$user->hasAttribute(UserAttr::SALARIE)) {
-            $sql = 'SELECT DISTINCT code_userright, limited_to_comm_usertype '
-                . 'FROM caf_userright, caf_usertype_attr, caf_usertype '
-                . "WHERE code_usertype LIKE 'adherent' " // usertype adherent
-                . 'AND id_usertype=type_usertype_attr '
-                . 'AND right_usertype_attr=id_userright '
-                . 'ORDER BY  code_userright ASC, limited_to_comm_usertype ASC'
-            ;
-
-            $result = $this->connection->prepare($sql)->executeQuery()->fetchAllAssociative();
-
-            // ajout du droit, avec ses paramètres, au tableau global des droits de cet user
-            // sans paramètre, la valeur est une string 'true'
-            // Il est possible que le même droit prenne plusieurs paramètres (ex : vous avez le droit d'écrire un article dans
-            // deux commissions auquel cas, ils sont concaténés via le caractère
-            foreach ($result as $row) {
-                $userAllowedTo[$row['code_userright']] = 'true';
+            $rightsByUserType = $this->userRightRepository->getRightsByUserType('adherent');
+            foreach ($rightsByUserType as $row) {
+                $userRights[$row['code_userright']] = 'true';
             }
         }
 
-        return $this->userAllowedToCache = $userAllowedTo;
+        if ($this->isAdmin()) {
+            return array_fill_keys(array_keys($userRights), true);
+        }
+
+        return $this->cachedUserRights = $userRights;
+    }
+
+    private function getVisitorRights(): array
+    {
+
+        $visitorRights = $this->userRightRepository->getRightsByUserType('visiteur');
+        $visitorRightCodes = array_column($visitorRights, 'code_userright');
+        return array_fill_keys($visitorRightCodes, true);
     }
 
     private function isAdmin(): bool
     {
-        // The admin flag is set using a session property
-        // it should not be taken into account while impersonating
-        return !$this->checker->isGranted('IS_IMPERSONATOR') && $this->checker->isGranted('ROLE_ADMIN');
+        return !$this->authChecker->isGranted('IS_IMPERSONATOR') && $this->authChecker->isGranted(SecurityConstants::ROLE_ADMIN);
     }
 }
