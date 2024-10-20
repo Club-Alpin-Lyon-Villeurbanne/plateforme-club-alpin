@@ -1,12 +1,13 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Security\SecurityConstants;
 
 $MAX_ADMINS_SUB_LEVELS = LegacyContainer::getParameter('legacy_env_MAX_ADMINS_SUB_LEVELS');
 
 global $versCettePage;
 
-if ((isset($currentPage['admin_page']) && $currentPage['admin_page'] && !admin()) || (isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] && !superadmin())) {
+if ((isset($currentPage['admin_page']) && $currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_ADMIN)) || (isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'])) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     ?>

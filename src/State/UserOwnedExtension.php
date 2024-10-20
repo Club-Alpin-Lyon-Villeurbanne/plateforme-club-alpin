@@ -22,7 +22,7 @@ final class UserOwnedExtension implements QueryCollectionExtensionInterface
         }
 
         $user = $this->security->getUser();
-        if (null === $user || $this->security->isGranted('ROLE_ADMIN')) {
+        if (null === $user || $this->security->isGranted(SecurityConstants::ROLE_ADMIN)) {
             return;
         }
 

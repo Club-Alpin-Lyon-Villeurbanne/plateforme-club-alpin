@@ -1,11 +1,11 @@
 <?php
 
 use App\Legacy\LegacyContainer;
-
+use App\Security\SecurityConstants;
 $log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 $result = null;
 
-if (admin()) {
+if (isGranted(SecurityConstants::ROLE_ADMIN)) {
     $id_content_inline = (int) $_POST['id'];
     $log .= "\n id_content_inline :  " . $id_content_inline;
     $code_content_inline = $_POST['code_content_inline'];

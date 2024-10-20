@@ -74,7 +74,10 @@ $jwt = LegacyContainer::get(JwtExtension::class)->generateJwtToken();
 	<!-- script scroll up -->
     <script src="/js/scrollup.js" type="text/javascript"></script>
 
-	<?php if (admin()) { ?>
+	<?php 
+	use App\Security\SecurityConstants;
+	
+	if (isGranted(SecurityConstants::ROLE_ADMIN)) { ?>
 		<!-- script admin -->
 		<script src="/js/fonctionsAdmin.js" type="text/javascript"></script>
 	<?php } ?>

@@ -2,6 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Security\SecurityConstants;
 
 require __DIR__ . '/app/includes.php';
 
@@ -103,7 +104,7 @@ if (is_array($p_addJs)) {
         <div id="siteHeight">
             <?php
         // _________________________________________________ MENU ADMINISTRATEUR
-        if (admin()) {
+        if (isGranted(SecurityConstants::ROLE_ADMIN)) {
             require __DIR__ . '/admin/menuAdmin.php';
         }
 
@@ -118,7 +119,7 @@ if ('feuille-de-sortie' == $p1) {
     echo '</div>';
 }
 // _________________________________________________ CONTENU COMMUN AUX PAGES PUBLIQUES
-elseif (!$p_pageadmin || !admin()) {
+elseif (!$p_pageadmin || !isGranted(SecurityConstants::ROLE_ADMIN)) {
     // include page
     require __DIR__ . '/includes/generic/top.php';
     require __DIR__ . '/includes/bigfond.php';
@@ -149,7 +150,7 @@ else {
 
             <!-- affichage des manques de contenus en admin -->
             <?php
-if (admin() && count($contLog) && !$p_pageadmin) {
+if (isGranted(SecurityConstants::ROLE_ADMIN) && count($contLog) && !$p_pageadmin) {
     echo '<div id="adminmissing">
                     <img src="/img/base/x.png" alt="" title="Fermer" style="float:right; cursor:pointer; padding:5px;" onclick="$(this).parent().fadeOut();" />
                     <div style="float:left; padding:12px 10px 3px 35px">Admin : champs non remplis dans cette page</div>';
