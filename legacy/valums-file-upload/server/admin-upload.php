@@ -3,7 +3,7 @@
 use App\Ftp\FtpFile;
 use App\Legacy\ImageManipulator;
 use App\Legacy\LegacyContainer;
-
+use App\Security\SecurityConstants;
 require __DIR__ . '/../../app/includes.php';
 
 $errTab = [];
@@ -11,7 +11,7 @@ $result = $targetDir = $filename = null;
 $ftpPath = LegacyContainer::getParameter('legacy_ftp_path');
 $type = htmlspecialchars($_GET['type']) ?? 'image';
 
-if (!user() && !admin()) {
+if (!user() && !isGranted(SecurityConstants::ROLE_ADMIN)) {
     $errTab[] = 'User non connecté';
 }
 

@@ -1,7 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
-
+use App\Security\SecurityConstants;
 $errTab = [];
 $operationsDir = __DIR__ . '/operations/';
 
@@ -192,7 +192,7 @@ elseif ('user_delete' == $operation) {
     $id_user = (int) $_POST['id_user'];
     if (!$id_user) {
         $errTab[] = 'No id';
-    } elseif (!admin() || !allowed('user_delete')) {
+    } elseif (!isGranted(SecurityConstants::ROLE_ADMIN) || !allowed('user_delete')) {
         $errTab[] = "Vous n'avez pas les droits necessaires";
     } else {
         // suppression participations aux sorties
@@ -312,7 +312,7 @@ elseif ('fichier_adherents_maj' == $operation) {
     }
 }
 
-if (admin()) {
+if (isGranted(SecurityConstants::ROLE_ADMIN)) {
     // ADMIN : ajout de l'attribut à l'user (type admin, rédacteur etc...)
     if ('user_attr_add_admin' == $operation) {
         require $operationsDir . 'operations.user_attr_add_admin.php';
@@ -452,7 +452,7 @@ if (admin()) {
     }
 }
 
-if (superadmin()) {
+if (isGranted(SecurityConstants::ROLE_ADMIN)) {
     // BASE: page add
     if ('page_add' == $operation) {
         require $operationsDir . 'operations.page_add.php';

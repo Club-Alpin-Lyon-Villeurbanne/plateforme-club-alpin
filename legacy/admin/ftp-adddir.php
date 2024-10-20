@@ -1,10 +1,11 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Security\SecurityConstants;
 
 require __DIR__ . '/../app/includes.php';
 
-if (!admin()) {
+if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     header('HTTP/1.0 401 Authorization Required');
     echo 'Votre session administrateur a expiré';
     exit;

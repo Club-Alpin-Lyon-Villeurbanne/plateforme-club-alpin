@@ -2,8 +2,9 @@
 
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Security\SecurityConstants;
 
-if (!admin() && !allowed('user_edit_notme')) {
+if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     $id_user = (int) $_GET['id_user'];
@@ -112,7 +113,7 @@ if (!admin() && !allowed('user_edit_notme')) {
 
     $rowValue = '<a href="/user-full/' . $userTab['id_user'] . '.html" title="Fiche profil" target="_top">' . $userTab['nickname_user'] . '</a>';
     // possibilite de supprimer le user si pas de sortie ni articles
-    if (admin() && !is_array($userTab['sorties']) && !is_array($userTab['articles'])) {
+    if (isGranted(SecurityConstants::ROLE_ADMIN) && !is_array($userTab['sorties']) && !is_array($userTab['articles'])) {
         $rowValue .= '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/adherents-supprimer.php&amp;id_user=' . (int) $userTab['id_user'] . '&amp;nom=' . urlencode($userTab['civ_user'] . ' ' . $elt['firstname_user'] . ' ' . $userTab['lastname_user']) . '" title="Supprimer le compte de cet utilisateur"><img src="/img/base/user_delete.png" alt="SUPPRIMER" title=""></a> ';
     }
     printTableRow('Pseudo :', $rowValue);
@@ -120,11 +121,11 @@ if (!admin() && !allowed('user_edit_notme')) {
     $rowValue = $userTab['cafnum_user'];
     if (0 == $userTab['valid_user'] && '' !== $userTab['cookietoken_user']) {
         $rowValue .= '<br />URL d\'activation du compte : ';
-        if (admin()) {
+        if (isGranted(SecurityConstants::ROLE_ADMIN)) {
             $rowValue .= '<a href="' . LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-confirm/' . $userTab['cookietoken_user'] . '-' . $userTab['id_user'] . '.html">';
         }
         $rowValue .= LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-confirm/' . $userTab['cookietoken_user'] . '-' . $userTab['id_user'] . '.html';
-        if (admin()) {
+        if (isGranted(SecurityConstants::ROLE_ADMIN)) {
             $rowValue .= '</a>';
         }
         $rowValue .= '<br />';

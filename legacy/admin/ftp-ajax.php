@@ -3,6 +3,7 @@
 use App\Ftp\FtpFile;
 use App\Legacy\ImageManipulator;
 use App\Legacy\LegacyContainer;
+use App\Security\SecurityConstants;
 use Symfony\Component\Asset\PathPackage;
 use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 
@@ -15,7 +16,7 @@ $dirTab = [];
 $fileTab = [];
 $dossier = null;
 
-if (!admin()) {
+if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     $errTab[] = 'Votre session administrateur a expiré';
 }
 

@@ -2,8 +2,9 @@
 
 use App\Entity\UserAttr;
 use App\Legacy\LegacyContainer;
+use App\Security\SecurityConstants;
 
-if (!admin()) {
+if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     echo 'Session expirée';
 } else {
     // LISTAGE DES DROITS

@@ -2,12 +2,12 @@
 
 use App\Legacy\ImageManipulator;
 use App\Legacy\LegacyContainer;
-
+use App\Security\SecurityConstants;
 require __DIR__ . '/../../app/includes.php';
 
 $MAX_DIMS = LegacyContainer::getParameter('legacy_env_MAX_IMAGE_SIZE');
 
-if (admin()) {
+if (isGranted(SecurityConstants::ROLE_ADMIN)) {
     $targetDir = __DIR__ . '/../../../public/' . $_GET['dossier'] . '/';
 
     // Handle file uploads via XMLHttpRequest

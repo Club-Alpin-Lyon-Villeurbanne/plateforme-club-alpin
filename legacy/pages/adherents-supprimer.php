@@ -1,6 +1,8 @@
 <?php
 
-if (!admin()) {
+use App\Security\SecurityConstants;
+
+if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     $id_user = (int) $_GET['id_user'];

@@ -1,11 +1,12 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Security\SecurityConstants;
 
 $log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 $result['success'] = false;
 
-if (admin()) {
+if (isGranted(SecurityConstants::ROLE_ADMIN)) {
     if (!isset($code_content_html)) {
         $code_content_html = stripslashes($_POST['code']);
     }

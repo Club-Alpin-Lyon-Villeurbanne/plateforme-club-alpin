@@ -2,10 +2,10 @@
 
 use App\Entity\UserAttr;
 use App\Legacy\LegacyContainer;
-
+use App\Security\SecurityConstants;
 // GESTION DES DROITS D'AFFICHAGE
 $display = false;
-if (admin()
+if (isGranted(SecurityConstants::ROLE_ADMIN)
     || (
         user()
         && (

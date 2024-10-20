@@ -1,5 +1,6 @@
 <?php
 
+use App\Security\SecurityConstants;
 use App\Legacy\LegacyContainer;
 
 $MAX_VERSIONS = LegacyContainer::getParameter('legacy_env_CONTENT_MAX_VERSIONS');
@@ -10,7 +11,7 @@ require __DIR__ . '/app/includes.php';
 // _____________________________ PAGE
 // _________________________________________________
 
-if (admin()) {
+if (isGranted(SecurityConstants::ROLE_ADMIN)) {
     // affichage normal : pas de donnees recues
     if ((!isset($_POST['etape'])) || ('enregistrement' != $_POST['etape'])) {
         // récupération du contenu

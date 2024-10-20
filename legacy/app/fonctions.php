@@ -515,15 +515,6 @@ function isGranted($attribute, $subject = null)
     return LegacyContainer::get('legacy_authorization_checker')->isGranted($attribute, $subject);
 }
 
-function admin()
-{
-    return LegacyContainer::get('legacy_authorization_checker')->isGranted('ROLE_ADMIN');
-}
-function superadmin()
-{
-    return admin();
-}
-
 // check mail
 function isMail($mail)
 {
@@ -534,8 +525,7 @@ function isMail($mail)
     return (new EmailValidator())->isValid($mail, new NoRFCWarningsValidation());
 }
 
-// function de supp de dossier (dangerous)
-// if(admin()){
+
 function clearDir($dossierSupp)
 {
     $ouverture = @opendir($dossierSupp);
@@ -569,7 +559,6 @@ function clearDir($dossierSupp)
         return true;
     }
 }
-// }
 
 function getArrayFirstValue($array)
 {

@@ -2,7 +2,6 @@
 
 namespace App\EventListener;
 
-use App\Security\AdminDetector;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTAuthenticatedEvent;
 use Lexik\Bundle\JWTAuthenticationBundle\Events;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

@@ -2,6 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Security\SecurityConstants;
 
 // ___________________ CONFIGURATION DES PAGES
 // ___________________ Cette version déclare une variable contenant toutes les specs de toutes
@@ -21,9 +22,9 @@ $p_pages = [];
 // On ne recquiert que les pages necessaires en fonction du mode admin et superadmin
 $req = 'SELECT * FROM  `caf_page` '
         . 'WHERE vis_page=1 '
-        . (admin() ? ' OR vis_page=0 ' : '') // les admins ont le droit de voir les pages cachées
-        . (admin() ? ' OR admin_page=1 ' : ' AND admin_page=0 ') // seuls les admin peuvent voir les pages admin
-        . (superadmin() ? ' OR superadmin_page=1 ' : ' AND superadmin_page=0 ') // seuls les superadmin peuvent voir les pages superadmin
+        . (isGranted(SecurityConstants::ROLE_ADMIN) ? ' OR vis_page=0 ' : '') // les admins ont le droit de voir les pages cachées
+        . (isGranted(SecurityConstants::ROLE_ADMIN) ? ' OR admin_page=1 ' : ' AND admin_page=0 ') // seuls les admin peuvent voir les pages admin
+        . (isGranted(SecurityConstants::ROLE_ADMIN) ? ' OR superadmin_page=1 ' : ' AND superadmin_page=0 ') // seuls les superadmin peuvent voir les pages superadmin
         . 'ORDER BY ordre_menu_page ASC, ordre_menuadmin_page ASC' // on sort tout de suite dans l'ordre des menus
 ;
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
