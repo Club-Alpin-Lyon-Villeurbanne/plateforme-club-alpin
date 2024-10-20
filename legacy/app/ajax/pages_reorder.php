@@ -1,10 +1,10 @@
 <?php
 
 use App\Legacy\LegacyContainer;
-
+use App\Security\SecurityConstants;
 $log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 
-if (admin()) {
+if (isGranted(SecurityConstants::ROLE_ADMIN)) {
     $i = 1;
     foreach ($_GET['id'] as $id_page) {
         $log .= "\n GET id_page = $id_page";

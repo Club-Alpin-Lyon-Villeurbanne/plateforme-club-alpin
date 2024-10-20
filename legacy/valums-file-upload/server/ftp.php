@@ -2,10 +2,10 @@
 
 use App\Ftp\FtpFile;
 use App\Legacy\LegacyContainer;
-
+use App\Security\SecurityConstants;
 require __DIR__ . '/../../app/includes.php';
 
-if (admin()) {
+if (isGranted(SecurityConstants::ROLE_ADMIN)) {
     $targetDir = LegacyContainer::getParameter('legacy_ftp_path') . urldecode($_GET['dossier']);
 
     // Handle file uploads via XMLHttpRequest

@@ -2,8 +2,9 @@
 
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Security\SecurityConstants;
 
-if (!admin()) {
+if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     echo 'Votre session administrateur a expiré';
 } else {
     $tab = [];

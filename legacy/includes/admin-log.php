@@ -1,8 +1,9 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Security\SecurityConstants;
 
-if (($currentPage['admin_page'] && !admin()) || ($currentPage['superadmin_page'] && !superadmin())) {
+if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_ADMIN)) || ($currentPage['superadmin_page'])) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     $req = 'SELECT * FROM  `caf_log_admin` ORDER BY date_log_admin DESC LIMIT 0 , 5000';

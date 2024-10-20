@@ -4,7 +4,7 @@
 
 $log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 
-// if(admin()){
+// if(isGranted(SecurityConstants::ROLE_ADMIN)){
 
 $errTab = [];
 $result = ['success' => false, 'error' => false];

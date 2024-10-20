@@ -5,25 +5,32 @@ namespace App\Security\Voter;
 use App\Entity\Evt;
 use App\Entity\User;
 use App\Entity\UserAttr;
-use App\Security\AdminDetector;
+use App\Security\RoleChecker;
+use App\Security\SecurityConstants;
 use App\UserRights;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class SortieInscriptionsModificationVoter extends Voter
 {
-    private UserRights $userRights;
-    private AdminDetector $adminDetector;
-
-    public function __construct(UserRights $userRights, AdminDetector $adminDetector)
-    {
-        $this->userRights = $userRights;
-        $this->adminDetector = $adminDetector;
+    public function __construct(
+        private UserRights $userRights,
+        private Security $security
+    ) {
     }
 
-    protected function supports($attribute, $subject): bool
+    protected function supports(string $attribute, $subject): bool
     {
-        return \in_array($attribute, ['SORTIE_INSCRIPTIONS_MODIFICATION'], true);
+        if ($attribute !== 'SORTIE_INSCRIPTIONS_MODIFICATION') {
+            return false;
+        }
+
+        if (!$subject instanceof Evt) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
@@ -34,10 +41,10 @@ class SortieInscriptionsModificationVoter extends Voter
             return false;
         }
 
-        if (!$subject instanceof Evt) {
-            throw new \InvalidArgumentException('SORTIE_INSCRIPTIONS_MODIFICATION requires an event subject');
+        if ($this->security->isGranted(SecurityConstants::ROLE_ADMIN)) {
+            return true;
         }
-
+        
         if ($subject->getCancelled()) {
             return false;
         }
@@ -45,9 +52,7 @@ class SortieInscriptionsModificationVoter extends Voter
         if ($user === $subject->getUser()) {
             return true;
         }
-        if ($this->adminDetector->isAdmin()) {
-            return true;
-        }
+
         if ($user->hasAttribute(UserAttr::SALARIE)) {
             return true;
         }

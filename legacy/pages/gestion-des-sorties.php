@@ -1,7 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
-
+use App\Security\SecurityConstants;
 $MAX_SORTIES_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_SORTIES_VALIDATION');
 $notif_validerunesortie = 0;
 
@@ -91,7 +91,7 @@ if (allowed('evt_validate_all') || allowed('evt_validate')) {
     }
 }
 // LISTE DES USERS / ADHERENTS
-elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1 && admin())) {
+elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1 && isGranted(SecurityConstants::ROLE_ADMIN))) {
     $userTab = [];
     $show = 'valid';
     // fonctions disponibles
