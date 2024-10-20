@@ -31,8 +31,8 @@ class AdminController extends AbstractController
     #[Template('admin/index.html.twig')]
     public function index(Request $request)
     {
-        if ('POST' === $request->getMethod()) {
-            if (!$this->isCsrfTokenValid('admin_authenticate', $request->request->get('_csrf_token'))) {
+        if  ('POST' === $request->getMethod()) {
+            if (!$this->isCsrfTokenValid(SecurityConstants::CSRF_ADMIN_TOKEN_ID, $request->request->get('_csrf_token'))) {
                 return [
                     'error' => 'CSRF token invalide',
                 ];

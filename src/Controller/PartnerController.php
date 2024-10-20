@@ -21,7 +21,7 @@ class PartnerController extends AbstractController
     #[Route('/partner/delete/{id}', name: 'partner_delete', methods: ['POST'])]
     public function delete(Request $request, Partenaire $partner, EntityManagerInterface $entityManager): Response
     {
-        if (!$this->isGranted('SecurityConstants::SecurityConstants::ROLE_ADMIN')) {
+        if (!$this->isGranted(SecurityConstants::ROLE_ADMIN)) {
             throw new AccessDeniedException('Vos droits ne sont pas assez élevés pour accéder à cette page');
         }
 
