@@ -4,7 +4,6 @@ namespace App\Security\Voter;
 
 use App\Entity\User;
 use App\Entity\UserAttr;
-use App\Security\RoleChecker;
 use App\Security\SecurityConstants;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;

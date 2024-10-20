@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Security\SecurityConstants;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,13 +13,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class AdminController extends AbstractController
 {
-    private string $adminPassword;
-    private string $contentManagerPassword;
-
-    public function __construct(string $adminPassword, string $contentManagerPassword)
+    public function __construct(
+        private string $adminPassword,
+     private string $contentManagerPassword,
+        private readonly LoggerInterface $logger)
     {
-        $this->adminPassword = $adminPassword;
-        $this->contentManagerPassword = $contentManagerPassword;
     }
 
     public static function getSubscribedServices(): array
@@ -41,6 +40,10 @@ class AdminController extends AbstractController
             $username = $request->request->get('username');
             $password = $request->request->get('password');
 
+            $this->logger->info('about to check credentials');
+            $this->logger->info('username: ' . $username);
+            $this->logger->info('password: ' . $password);
+            $this->logger->info('contentManagerPassword: ' . $this->contentManagerPassword);
             if (SecurityConstants::ADMIN_USERNAME === $username && $password === $this->adminPassword) {
                 $request->getSession()->set(SecurityConstants::SESSION_USER_ROLE_KEY, SecurityConstants::ROLE_ADMIN);
             } elseif (SecurityConstants::CONTENT_MANAGER_USERNAME === $username && $password === $this->contentManagerPassword) {

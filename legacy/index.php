@@ -107,10 +107,15 @@ if (is_array($p_addJs)) {
         if (isGranted(SecurityConstants::ROLE_ADMIN)) {
             require __DIR__ . '/admin/menuAdmin.php';
         }
+        
+        // _________________________________________________ MENU Gestionnaire contenu
+        if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) && !isGranted(SecurityConstants::ROLE_ADMIN)) {
+            require __DIR__ . '/admin/menuContent.php';
+        }
 
 // _________________________________________________ CONTENU IMPRESSION FEUILLE SORTIE
 if ('feuille-de-sortie' == $p1) {
-    echo '<div id="pageAdmin" class="' . (isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] ? 'superadmin' : '') . '">';
+    echo '<div id="pageAdmin" class="' . '">';
     if (file_exists(__DIR__ . '/pages/' . $p1 . '.php')) {
         require __DIR__ . '/pages/' . $p1 . '.php';
     } else {
@@ -132,7 +137,7 @@ elseif (!$p_pageadmin || !isGranted(SecurityConstants::ROLE_ADMIN)) {
 }
 // _________________________________________________ CONTENU PAGES ADMIN
 else {
-    echo '<div id="pageAdmin" class="' . (isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] ? 'superadmin' : '') . '">';
+    echo '<div id="pageAdmin" class="' . '">';
     if (file_exists(__DIR__ . '/pages/' . $p1 . '.php') && '404' != $p1) {
         require __DIR__ . '/pages/' . $p1 . '.php';
     } else {

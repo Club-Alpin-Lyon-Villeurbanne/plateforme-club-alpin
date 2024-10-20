@@ -20,11 +20,11 @@ if (isGranted(SecurityConstants::ROLE_ADMIN)) {
             <?php
 	        foreach ($p_pages as $code => $datas) {
 	            // pour chaque page admin seulement
-	            if ($datas['menuadmin_page']) {// && !isContentManager()
+	            if ($datas['menuadmin_page']) {
 	                // cas particulier : la page traductions seulement en cas de langues multiples
 	                if ('admin-traductions' != $code) {
-	                    echo '<a href="' . $code . '.html" title="" class="' . ($datas['superadmin_page'] ? 'superadmin ' : '') . ' adminmenulink ' . ($p1 == $code ? 'up' : '') . '">
-                            ' . ($datas['superadmin_page'] ? '<img src="/img/base/bullet_star.png" alt="" title="Option super-admin" />' : '') . $datas['default_name_page'] . '</a>';
+	                    echo '<a href="' . $code . '.html" title="" class="' . ' adminmenulink ' . ($p1 == $code ? 'up' : '') . '">
+                            ' . $datas['default_name_page'] . '</a>';
 	                }
 	            }
 	        } ?>

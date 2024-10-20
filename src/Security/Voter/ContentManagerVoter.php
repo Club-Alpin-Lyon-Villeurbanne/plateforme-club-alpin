@@ -4,6 +4,7 @@ namespace App\Security\Voter;
 
 use App\Entity\User;
 use App\Security\SecurityConstants;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -14,7 +15,7 @@ class ContentManagerVoter extends Voter
     public function __construct(
         private Security $security,
         private RequestStack $requestStack
-    ){}
+    ) {}
 
     protected function supports(string $attribute, mixed $subject): bool
     {
@@ -34,11 +35,18 @@ class ContentManagerVoter extends Voter
             return true;
         }
 
-        if ($token->hasAttribute(SecurityConstants::SESSION_USER_ROLE_KEY) && 
-            $token->getAttribute(SecurityConstants::SESSION_USER_ROLE_KEY) === SecurityConstants::ROLE_CONTENT_MANAGER) {
+        if (
+            $token->hasAttribute(SecurityConstants::SESSION_USER_ROLE_KEY) &&
+            $token->getAttribute(SecurityConstants::SESSION_USER_ROLE_KEY) === SecurityConstants::ROLE_CONTENT_MANAGER
+        ) {
             return true;
         }
+        // Not sure if having this code is really necessary as we don't use the admin role for the API
+        $request = $this->requestStack->getMainRequest();
+        if (!$request || !$request->hasSession() || $request->attributes->getBoolean('_stateless')) {
+            return false;
+        }
 
-        return false;
+        return $request->getSession()->get(SecurityConstants::SESSION_USER_ROLE_KEY) === SecurityConstants::ROLE_CONTENT_MANAGER;
     }
 }
