@@ -92,6 +92,7 @@ services:
   App\Controller\AdminController:
     arguments:
       $adminPassword: "%env(PASSWORD_ADMIN)%"
+      $contentManagerPassword: "%env(PASSWORD_CONTENT_MANAGER)%"
 
   App\Controller\RssController:
     arguments:

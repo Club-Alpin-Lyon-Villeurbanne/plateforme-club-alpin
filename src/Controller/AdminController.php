@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Security\SecurityConstants;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,10 +13,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class AdminController extends AbstractController
 {
     private string $adminPassword;
+    private string $contentManagerPassword;
 
-    public function __construct(string $adminPassword)
+    public function __construct(string $adminPassword, string $contentManagerPassword)
     {
         $this->adminPassword = $adminPassword;
+        $this->contentManagerPassword = $contentManagerPassword;
     }
 
     public static function getSubscribedServices(): array
@@ -24,7 +27,7 @@ class AdminController extends AbstractController
     }
 
     #[Route(name: 'admin_login', path: '/admin/', methods: ['GET', 'POST'])]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted(SecurityConstants::ROLE_USER)]
     #[Template('admin/index.html.twig')]
     public function index(Request $request)
     {
@@ -35,13 +38,18 @@ class AdminController extends AbstractController
                 ];
             }
 
-            if ('caflyon' !== $request->request->get('username') || $request->request->get('password') !== $this->adminPassword) {
+            $username = $request->request->get('username');
+            $password = $request->request->get('password');
+
+            if (SecurityConstants::ADMIN_USERNAME === $username && $password === $this->adminPassword) {
+                $request->getSession()->set(SecurityConstants::SESSION_USER_ROLE_KEY, SecurityConstants::ROLE_ADMIN);
+            } elseif (SecurityConstants::CONTENT_MANAGER_USERNAME === $username && $password === $this->contentManagerPassword) {
+                $request->getSession()->set(SecurityConstants::SESSION_USER_ROLE_KEY, SecurityConstants::ROLE_CONTENT_MANAGER);
+            } else {
                 return [
                     'error' => 'Identifiants invalides',
                 ];
             }
-
-            $request->getSession()->set('admin_caf', true);
 
             return $this->redirect($this->generateUrl('legacy_root'));
         }
@@ -50,10 +58,10 @@ class AdminController extends AbstractController
     }
 
     #[Route(name: 'admin_logout', path: '/admin/logout', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted(SecurityConstants::ROLE_USER)]
     public function adminLogout(Request $request)
     {
-        $request->getSession()->remove('admin_caf');
+        $request->getSession()->remove(SecurityConstants::SESSION_USER_ROLE_KEY);
 
         return $this->redirect($this->generateUrl('legacy_root'));
     }

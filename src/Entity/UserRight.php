@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 #[ORM\Table(name: 'caf_userright')]
 #[ORM\Entity]
-class Userright
+class UserRight
 {
     /**
      * @var int
