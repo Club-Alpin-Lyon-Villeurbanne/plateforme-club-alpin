@@ -15,7 +15,7 @@ class AdminController extends AbstractController
 {
     public function __construct(
         private string $adminPassword,
-     private string $contentManagerPassword,
+        private string $contentManagerPassword,
         private readonly LoggerInterface $logger)
     {
     }

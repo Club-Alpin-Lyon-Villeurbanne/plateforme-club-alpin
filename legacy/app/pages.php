@@ -22,8 +22,8 @@ $p_pages = [];
 // On ne requiert que les pages necessaires en fonction du mode admin et superadmin
 $req = 'SELECT * FROM  `caf_page` '
         . 'WHERE vis_page=1 '
-        . (isGranted(SecurityConstants::ROLE_ADMIN) ? ' OR vis_page=0 ' : '') // les admins ont le droit de voir les pages cachées
-        . (isGranted(SecurityConstants::ROLE_ADMIN) || isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) ? ' OR admin_page=1 ' : ' AND admin_page=0 ') // seuls les admin peuvent voir les pages admin
+        . (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) ? ' OR vis_page=0 ' : '') // les admins ont le droit de voir les pages cachées
+        . (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) ? ' OR admin_page=1 ' : ' AND admin_page=0 ') // seuls les admin peuvent voir les pages admin
         . (isGranted(SecurityConstants::ROLE_ADMIN) ? ' OR superadmin_page=1 ' : ' AND superadmin_page=0 ') // seuls les superadmin peuvent voir les pages superadmin
         . 'ORDER BY ordre_menu_page ASC, ordre_menuadmin_page ASC' // on sort tout de suite dans l'ordre des menus
 ;
@@ -76,9 +76,9 @@ if ($p_pages[$codePrioritaire] ?? null) {
         }
     }
     // sinon, récup infos
-    $currentPage1 = $p_pages[$p1] ?? null; // totues les infos de la page courante
-    $currentPage2 = $p_pages[$p2] ?? null; // totues les infos de la page courante
-    $currentPage3 = $p_pages[$p3] ?? null; // totues les infos de la page courante
+    $currentPage1 = $p_pages[$p1] ?? null; // toutes les infos de la page courante
+    $currentPage2 = $p_pages[$p2] ?? null; // toutes les infos de la page courante
+    $currentPage3 = $p_pages[$p3] ?? null; // toutes les infos de la page courante
     $meta_title = $p_pages[$codePrioritaire]['meta_title_page'] ?: cont('site-meta-title');
     $meta_description = $p_pages[$codePrioritaire]['meta_description_page'] ?: cont('site-meta-description');
     $p_pageadmin = $p_pages[$codePrioritaire]['admin_page'] ? true : false; // gère le style de la page

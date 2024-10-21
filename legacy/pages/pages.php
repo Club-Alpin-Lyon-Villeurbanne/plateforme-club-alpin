@@ -1,5 +1,5 @@
 <!-- MAIN -->
-<div id="main" role="main" class="bigoo" style="">
+<div id="main" role="main" class="bigoo">
 
 	<!-- partie gauche -->
 	<div id="left1">

@@ -312,7 +312,7 @@ elseif ('fichier_adherents_maj' == $operation) {
     }
 }
 
-if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     // ADMIN : ajout de l'attribut à l'user (type admin, rédacteur etc...)
     if ('user_attr_add_admin' == $operation) {
         require $operationsDir . 'operations.user_attr_add_admin.php';
