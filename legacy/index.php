@@ -66,7 +66,7 @@ if (is_array($p_addJs)) {
         <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <?php
-        if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER') && false) {
+        if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
             ?>
         <style>
             body {
@@ -92,7 +92,7 @@ if (is_array($p_addJs)) {
 </head>
 <body <?php if ('feuille-de-sortie' == $p1) { ?>id="feuille-de-sortie"<?php } ?>>
     <?php
-    if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER') && false) {
+    if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
         ?>
         <div id="test-banner">
             <p>Attention, vous vous trouvez sur un site de test. Veuillez <a href="https://clubalpinlyon.fr">cliquer ici pour accéder au site de production</a>.</p>
