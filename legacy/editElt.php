@@ -11,7 +11,7 @@ require __DIR__ . '/app/includes.php';
 // _____________________________ PAGE
 // _________________________________________________
 
-if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     // affichage normal : pas de donnees recues
     if ((!isset($_POST['etape'])) || ('enregistrement' != $_POST['etape'])) {
         // récupération du contenu

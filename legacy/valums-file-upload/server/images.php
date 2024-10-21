@@ -7,7 +7,7 @@ require __DIR__ . '/../../app/includes.php';
 
 $MAX_DIMS = LegacyContainer::getParameter('legacy_env_MAX_IMAGE_SIZE');
 
-if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     $targetDir = __DIR__ . '/../../../public/' . $_GET['dossier'] . '/';
 
     // Handle file uploads via XMLHttpRequest

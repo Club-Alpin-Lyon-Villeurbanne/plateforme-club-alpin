@@ -21,7 +21,7 @@ class PartnerController extends AbstractController
     #[Route('/partner/delete/{id}', name: 'partner_delete', methods: ['POST'])]
     public function delete(Request $request, Partenaire $partner, EntityManagerInterface $entityManager): Response
     {
-        if (!$this->isGranted(SecurityConstants::ROLE_ADMIN)) {
+        if (!$this->isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             throw new AccessDeniedException('Vos droits ne sont pas assez élevés pour accéder à cette page');
         }
 
@@ -43,7 +43,7 @@ class PartnerController extends AbstractController
     #[Route('/partner/{id}/confirm-delete', name: 'partner_confirm_delete', methods: ['GET'])]
     public function confirmDelete(Partenaire $partner): Response
     {
-        if (!$this->isGranted(SecurityConstants::ROLE_ADMIN)) {
+        if (!$this->isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             throw new AccessDeniedException('Vos droits ne sont pas assez élevés pour accéder à cette page');
         }
 
@@ -55,7 +55,7 @@ class PartnerController extends AbstractController
     #[Route('/partner/edit/{id}', name: 'partner_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, ?int $id, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
-        if (!$this->isGranted(SecurityConstants::ROLE_ADMIN)) {
+        if (!$this->isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             throw new AccessDeniedException('Vos droits ne sont pas assez élevés pour accéder à cette page');
         }
 

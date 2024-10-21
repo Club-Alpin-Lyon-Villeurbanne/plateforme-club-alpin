@@ -452,7 +452,7 @@ if (isGranted(SecurityConstants::ROLE_ADMIN)) {
     }
 }
 
-if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     // BASE: page add
     if ('page_add' == $operation) {
         require $operationsDir . 'operations.page_add.php';

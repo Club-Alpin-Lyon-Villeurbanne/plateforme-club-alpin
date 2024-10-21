@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 
-if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
+if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     echo 'Votre session administrateur a expiré';
 } else {
     $lang_content_inline = 'fr';
