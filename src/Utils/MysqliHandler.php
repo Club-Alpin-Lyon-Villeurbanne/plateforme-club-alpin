@@ -10,20 +10,13 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class MysqliHandler
 {
-    private LoggerInterface $logger;
-    private ?\mysqli $mysqli;
-    private RequestStack $requestStack;
-    private string $kernelEnvironment;
-    private TokenStorageInterface $tokenStorage;
-    private ContainerBagInterface $params;
-
-    public function __construct(TokenStorageInterface $tokenStorage, LoggerInterface $logger, RequestStack $requestStack, string $kernelEnvironment, ContainerBagInterface $params)
-    {
-        $this->tokenStorage = $tokenStorage;
-        $this->logger = $logger;
-        $this->requestStack = $requestStack;
-        $this->kernelEnvironment = $kernelEnvironment;
-        $this->params = $params;
+    public function __construct(
+        private TokenStorageInterface $tokenStorage,
+        private RequestStack $requestStack,
+        private string $kernelEnvironment,
+        private ContainerBagInterface $params,
+        private ?\mysqli $mysqli = null
+    ) {
         $this->initializeConnection();
     }
 

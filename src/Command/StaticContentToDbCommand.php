@@ -26,7 +26,6 @@ class StaticContentToDbCommand extends Command
     public function __construct(
         private readonly Environment $environment,
         private readonly EntityManagerInterface $entityManager,
-        private readonly LoggerInterface $logger,
         private readonly string $kernelProjectDir,
     ) {
         parent::__construct();
