@@ -8,6 +8,7 @@ twig:
         analytics_account: "%env(ANALYTICS_ACCOUNT)%"
         google_site_verification: "%env(GOOGLE_SITE_VERIFICATION)%"
         display_banner:  "%env(bool:DISPLAY_BANNER)%"
+        whatsapp_commu_link: "%env(WHATSAPP_COMMU_LINK)%"
 
 when@test:
     twig:
