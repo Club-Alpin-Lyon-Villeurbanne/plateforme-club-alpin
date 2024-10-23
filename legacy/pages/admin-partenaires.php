@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 
 if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
-    echo 'Votre session administrateur a expiré';
+    echo 'Vous n\'êtes pas autorisé à accéder à cette page. Pour toute question, rapprochez-vous du service informatique de votre club.';
 
     return;
 }

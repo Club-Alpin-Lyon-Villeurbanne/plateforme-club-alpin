@@ -5,7 +5,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Security\SecurityConstants;
 
 if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
-    echo 'Votre session administrateur a expiré';
+    echo 'Vous n\'êtes pas autorisé à accéder à cette page. Pour toute question, rapprochez-vous du service informatique de votre club.';
 } else {
     $tab = [];
     $req = 'SELECT * FROM `caf_page` WHERE `pagelibre_page` =1 ORDER BY `ordre_page` DESC LIMIT 1000';
