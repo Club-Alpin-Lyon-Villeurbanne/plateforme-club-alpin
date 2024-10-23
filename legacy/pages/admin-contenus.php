@@ -3,8 +3,8 @@
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 
-if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
-    echo 'Votre session administrateur a expiré';
+if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
+    echo 'Vous n\'êtes pas autorisé à accéder à cette page. Pour toute question, rapprochez-vous du service informatique de votre club.';
 } else {
     $lang_content_inline = 'fr';
     $operation = $_POST['operation'] ?? null;

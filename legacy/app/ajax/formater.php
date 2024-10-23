@@ -2,7 +2,7 @@
 
 use App\Security\SecurityConstants;
 
-if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     $str = mb_convert_encoding($_POST['str'], 'UTF-8');
     $type = (int) $_POST['type'];
     $result = [];

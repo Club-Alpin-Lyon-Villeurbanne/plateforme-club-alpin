@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 
-if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
+if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     $id_page = (int) $_GET['id_page'];

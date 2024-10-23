@@ -15,7 +15,7 @@ use App\Security\SecurityConstants;
             $id_commission = (int) $_GET['id_commission'];
 $code_commission = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_GET['code_commission']);
 
-if (!(isGranted(SecurityConstants::ROLE_ADMIN) || allowed('comm_edit') || (user() && getUser()->hasAttribute(UserAttr::RESPONSABLE_COMMISSION, $code_commission)))) {
+if (!(isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) || allowed('comm_edit') || (user() && getUser()->hasAttribute(UserAttr::RESPONSABLE_COMMISSION, $code_commission)))) {
     echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour afficher cette page</p>';
 } else {
     $commissionTmp = false;

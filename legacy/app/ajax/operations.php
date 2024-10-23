@@ -4,15 +4,8 @@
 
 $log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 
-// if(isGranted(SecurityConstants::ROLE_ADMIN)){
-
 $errTab = [];
 $result = ['success' => false, 'error' => false];
-
-/*
-foreach($_POST as $key=>$val)
-    $log .= "\n key=$key et val= $val ";
-*/
 
 // retourne les post vars
 foreach ($_POST as $key => $val) {

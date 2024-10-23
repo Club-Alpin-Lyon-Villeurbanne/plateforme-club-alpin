@@ -77,18 +77,10 @@ $jwt = LegacyContainer::get(JwtExtension::class)->generateJwtToken();
 	<?php 
 	use App\Security\SecurityConstants;
 	
-	if (isGranted(SecurityConstants::ROLE_ADMIN)) { ?>
+	if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) { ?>
 		<!-- script admin -->
 		<script src="/js/fonctionsAdmin.js" type="text/javascript"></script>
 	<?php } ?>
-
-	<!-- cufon
-    <script type="text/javascript">
-		// CUFON
-		Cufon.replace('h1:not(.nocufon)', { fontFamily: 'Myriad Pro' });
-		Cufon.replace('.cufon');
-    </script>
-	-->
 
     <script src="/js/onready.js" type="text/javascript"></script>
     <script src="/js/onready-site.js" type="text/javascript"></script>

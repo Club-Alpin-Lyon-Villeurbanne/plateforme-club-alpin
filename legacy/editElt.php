@@ -1,7 +1,7 @@
 <?php
 
-use App\Security\SecurityConstants;
 use App\Legacy\LegacyContainer;
+use App\Security\SecurityConstants;
 
 $MAX_VERSIONS = LegacyContainer::getParameter('legacy_env_CONTENT_MAX_VERSIONS');
 
@@ -11,12 +11,12 @@ require __DIR__ . '/app/includes.php';
 // _____________________________ PAGE
 // _________________________________________________
 
-if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     // affichage normal : pas de donnees recues
     if ((!isset($_POST['etape'])) || ('enregistrement' != $_POST['etape'])) {
         // récupération du contenu
         $code_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_GET['p']);
-        $id_content_html = isset($_GET['id_content_html']) || array_key_exists('id_content_html', $_GET) ? (int) htmlspecialchars($_GET['id_content_html']) : null;
+        $id_content_html = !empty($_GET['id_content_html']) ? (int) htmlspecialchars($_GET['id_content_html']) : null;
 
         if (!$code_content_html) {
             header('HTTP/1.0 404 Not Found');
@@ -29,14 +29,13 @@ if (isGranted(SecurityConstants::ROLE_ADMIN)) {
         $contentVersionsTab = [];
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-
             $contentVersionsTab[] = $handle;
         }
 
         // version courante
         $runningVersion = []; // def : empty array
         if (!$id_content_html) {
-            if ($contentVersionsTab[0]) {
+            if (!empty($contentVersionsTab[0])) {
                 $runningVersion = $contentVersionsTab[0];
             }
         }
@@ -170,7 +169,7 @@ if (isGranted(SecurityConstants::ROLE_ADMIN)) {
 									<input type="hidden" name="vis_content_html" value="<?php echo $runningVersion ? (int) ($runningVersion['vis_content_html']) : 1; ?>" />
 
 									<p class="miniNote" style="margin-bottom:5px; ">
-										<?php if (!$runningVersion['vis_content_html']) { ?>
+										<?php if (empty($runningVersion['vis_content_html'])) { ?>
 											<span style="color:#974e00">[<img src="/img/base/bullet_key.png" alt="MASQUÉ" title="Cet élément est actuellement masqué aux visiteurs du site" style="vertical-align:middle; position:relative; bottom:2px " />]</span>&nbsp;
 										<?php } ?>
 										Vous modifiez l'élément <strong style="font-size:13px;"><?php echo $_GET['p']; ?></strong>
@@ -205,7 +204,7 @@ if (isGranted(SecurityConstants::ROLE_ADMIN)) {
 									<div style="background:#c0c0c0; ">
 										<textarea id="edition1" class="<?php echo $_GET['class']; ?>" name="contenu_content_html" style="width:100%; "><?php
                                             // affichage contenu courant
-                                            echo $runningVersion['contenu_content_html']; ?>
+                                            echo !empty($runningVersion['contenu_content_html']) ? $runningVersion['contenu_content_html'] : ''; ?>
 										</textarea>
 									</div>
 								</form>
