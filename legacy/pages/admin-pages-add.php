@@ -5,7 +5,7 @@ use App\Security\SecurityConstants;
 
 $MAX_ADMINS_SUB_LEVELS = LegacyContainer::getParameter('legacy_env_MAX_ADMINS_SUB_LEVELS');
 
-if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_ADMIN)) || ($currentPage['superadmin_page'])) {
+if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) || ($currentPage['superadmin_page'])) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     // reqs toutes pages de l'arbo

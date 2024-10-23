@@ -23,7 +23,7 @@
 	<?php 
 	
 	use App\Security\SecurityConstants;
-	if (isGranted(SecurityConstants::ROLE_ADMIN)) { ?>
+	if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) { ?>
 		<!-- script admin -->
 		<script src="/js/fonctionsAdmin.js" type="text/javascript"></script>
 	<?php } ?>

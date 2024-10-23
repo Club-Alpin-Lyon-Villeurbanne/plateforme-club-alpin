@@ -40,7 +40,7 @@ class ContentHtml implements ServiceSubscriberInterface
         $content = $this->locator->get(ContentHtmlRepository::class)->findByCodeContent($elt);
         $ret = '';
 
-        if ($this->locator->get(AuthorizationCheckerInterface::class)->isGranted(SecurityConstants::ROLE_ADMIN)) {
+        if ($this->locator->get(AuthorizationCheckerInterface::class)->isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             $ret .= '<div id="' . $elt . '" class="contenuEditable ' . $style . '">' .
                 '<div class="editHtmlTools" style="text-align:left;">' .
                 '<a href="editElt.php?p=' . $elt . '&amp;class=' . $style . '" title="Modifier l\'élément ' . $elt . '" class="edit fancyframeadmin" style="color:white; font-weight:100; padding:2px 3px 2px 1px; font-size:11px; font-family:Arial;">' .
@@ -61,7 +61,7 @@ class ContentHtml implements ServiceSubscriberInterface
         if ($content) {
             $ret .= $content->getContenu();
         } else {
-            if ($this->locator->get(AuthorizationCheckerInterface::class)->isGranted(SecurityConstants::ROLE_ADMIN)) {
+            if ($this->locator->get(AuthorizationCheckerInterface::class)->isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
                 $ret .= '<div class="blocdesactive"><img src="/img/base/bullet_key.png" alt="" title="" /> Bloc de contenu désactivé</div>';
             }
         }

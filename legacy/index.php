@@ -103,14 +103,14 @@ if (is_array($p_addJs)) {
     <div id="container">
         <div id="siteHeight">
             <?php
-        // _________________________________________________ MENU ADMINISTRATEUR
-        if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+        // _________________________________________________ MENU ADMINISTRATEUR & gestionnaire de contenu
+        if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             require __DIR__ . '/admin/menuAdmin.php';
         }
 
 // _________________________________________________ CONTENU IMPRESSION FEUILLE SORTIE
 if ('feuille-de-sortie' == $p1) {
-    echo '<div id="pageAdmin" class="' . (isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] ? 'superadmin' : '') . '">';
+    echo '<div id="pageAdmin" class="' . '">';
     if (file_exists(__DIR__ . '/pages/' . $p1 . '.php')) {
         require __DIR__ . '/pages/' . $p1 . '.php';
     } else {
@@ -119,7 +119,7 @@ if ('feuille-de-sortie' == $p1) {
     echo '</div>';
 }
 // _________________________________________________ CONTENU COMMUN AUX PAGES PUBLIQUES
-elseif (!$p_pageadmin || !isGranted(SecurityConstants::ROLE_ADMIN)) {
+elseif (!$p_pageadmin || !isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     // include page
     require __DIR__ . '/includes/generic/top.php';
     require __DIR__ . '/includes/bigfond.php';
@@ -132,7 +132,7 @@ elseif (!$p_pageadmin || !isGranted(SecurityConstants::ROLE_ADMIN)) {
 }
 // _________________________________________________ CONTENU PAGES ADMIN
 else {
-    echo '<div id="pageAdmin" class="' . (isset($currentPage['superadmin_page']) && $currentPage['superadmin_page'] ? 'superadmin' : '') . '">';
+    echo '<div id="pageAdmin" class="' . '">';
     if (file_exists(__DIR__ . '/pages/' . $p1 . '.php') && '404' != $p1) {
         require __DIR__ . '/pages/' . $p1 . '.php';
     } else {
@@ -150,7 +150,7 @@ else {
 
             <!-- affichage des manques de contenus en admin -->
             <?php
-if (isGranted(SecurityConstants::ROLE_ADMIN) && count($contLog) && !$p_pageadmin) {
+if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) && count($contLog) && !$p_pageadmin) {
     echo '<div id="adminmissing">
                     <img src="/img/base/x.png" alt="" title="Fermer" style="float:right; cursor:pointer; padding:5px;" onclick="$(this).parent().fadeOut();" />
                     <div style="float:left; padding:12px 10px 3px 35px">Admin : champs non remplis dans cette page</div>';

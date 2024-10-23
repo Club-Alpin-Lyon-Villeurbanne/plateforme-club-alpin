@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 $log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 
-if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     $i = 1;
     foreach ($_GET['id'] as $id_page) {
         $log .= "\n GET id_page = $id_page";

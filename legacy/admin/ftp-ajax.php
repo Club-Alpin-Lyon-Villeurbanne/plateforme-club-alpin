@@ -17,7 +17,7 @@ $fileTab = [];
 $dossier = null;
 
 if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
-    $errTab[] = 'Votre session administrateur a expiré';
+    $errTab[] = 'Vous n\'êtes pas autorisé à accéder à cette page. Pour toute question, rapprochez-vous du service informatique de votre club.';
 }
 
 // vars et checks

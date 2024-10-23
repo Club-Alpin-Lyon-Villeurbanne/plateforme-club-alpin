@@ -6,7 +6,7 @@ use App\Security\SecurityConstants;
 $log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 $log .= "\n TEST utf 8 : Смотрите эту страницу в России";
 
-if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     $result = [];
 
     $id_content_inline = (int) $_POST['id'];

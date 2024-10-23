@@ -6,7 +6,7 @@ use App\Security\SecurityConstants;
 $log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 $result['success'] = false;
 
-if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     if (!isset($code_content_html)) {
         $code_content_html = stripslashes($_POST['code']);
     }
