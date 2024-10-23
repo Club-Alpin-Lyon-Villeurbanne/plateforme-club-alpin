@@ -1,0 +1,19 @@
+on: [pull_request]
+name: Test
+
+jobs:
+  make-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the environment
+        run: |
+          export UID_OVERRIDE="$UID"
+          export GID_OVERRIDE="$GID"
+          make init
+      - name: Initialise the database
+        run: |
+          make database-init-test
+      - name: Run the unit tests
+        run: |
+          make tests
