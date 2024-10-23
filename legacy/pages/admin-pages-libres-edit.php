@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 
 if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
-    echo 'Vous n\'êtes pas autorisé à accéder à cette page. Pour toute question, rapprochez-vous du service informatique de votre club. ou vos droits ne sont pas assez élevés pour accéder à cette page';
+    echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
     $id_page = (int) $_GET['id_page'];
     $req = "SELECT * FROM caf_page WHERE id_page=$id_page LIMIT 1";
