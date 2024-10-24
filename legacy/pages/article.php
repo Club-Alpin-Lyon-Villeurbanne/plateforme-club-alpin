@@ -1,8 +1,9 @@
 <?php
 
 use App\Legacy\LegacyContainer;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Security\SecurityConstants;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 $article = false;
 $errPage = false; // message d'erreur spécifique à la page courante si besoin
 $id_article = (int) substr(strrchr($p2, '-'), 1);

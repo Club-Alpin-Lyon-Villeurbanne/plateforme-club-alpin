@@ -1,16 +1,14 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
-    ->in([
-        __DIR__ . '/bin',
-        __DIR__ . '/legacy',
-        __DIR__ . '/public',
-        __DIR__ . '/src',
-        __DIR__ . '/tests',
+    ->in(__DIR__)
+    ->exclude([
+        'vendor',
+        'var',
     ])
-    ->notPath([
-        __DIR__ . './legacy/app/cron/cron_fichier_adherent.php',
-    ]);
+    ->name('console')
+    ->notPath('cron_fichier_adherent.php')
+;
 
 return (new PhpCsFixer\Config())
     ->setFinder($finder)

@@ -12,12 +12,12 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20240717142903 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return 'Change charset to utf8mb4, repair and optimize tables';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // Tables to be modified
         $tables = [
@@ -67,8 +67,6 @@ final class Version20240717142903 extends AbstractMigration
             $this->addSql("OPTIMIZE TABLE `$table`;");
         }
     }
-
-   
 
     public function down(Schema $schema): void
     {

@@ -2,9 +2,7 @@
 
 namespace App\Utils;
 
-use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\UrlHelper;
@@ -16,20 +14,22 @@ class FileUploader
         private Security $security,
         private UrlHelper $urlHelper,
         private SluggerInterface $slugger,
-    ) {}
+    ) {
+    }
 
-    public function upload(UploadedFile $file, string $subDirectory) : File {
-        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+    public function upload(UploadedFile $file, string $subDirectory): File
+    {
+        $originalFilename = pathinfo($file->getClientOriginalName(), \PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
-        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
- 
+        $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
+
         return $file->move($this->getUploadPath($subDirectory), $newFilename);
     }
 
     public function getUploadPath(string $subDirectory): string
     {
         $user = $this->security->getUser();
-        if (!$user) { 
+        if (!$user) {
             throw new \RuntimeException('Unable to upload a file as anonymous user');
         }
 
@@ -41,7 +41,7 @@ class FileUploader
     public function getUploadUrl(string $filename, string $subDirectory): string
     {
         $user = $this->security->getUser();
-        if (!$user) { 
+        if (!$user) {
             throw new \RuntimeException('Unable to upload a file as anonymous user');
         }
 

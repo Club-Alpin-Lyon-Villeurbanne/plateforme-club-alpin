@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Entity\Attachment;
 use App\Entity\ExpenseAttachment;
 use App\Entity\ExpenseReport;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

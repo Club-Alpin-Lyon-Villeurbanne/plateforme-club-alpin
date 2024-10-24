@@ -8,12 +8,11 @@ use App\Mailer\Mailer;
 use App\Repository\EventParticipationRepository;
 use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
-use App\Utils\PdfGenerator;
 use App\Twig\JavascriptGlobalsExtension;
+use App\Utils\PdfGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -440,10 +439,9 @@ class SortieController extends AbstractController
         return $this->redirect(sprintf('/creer-une-sortie/%s/update-%d.html', $newEvent->getCommission()->getCode(), $newEvent->getId()));
     }
 
-    #[Route(name: 'sortie_pdf', path: '/sortie/{id}/printPDF', requirements: ['id' => '\d+'] )]
+    #[Route(name: 'sortie_pdf', path: '/sortie/{id}/printPDF', requirements: ['id' => '\d+'])]
     public function generatePdf(PdfGenerator $pdfGenerator, SluggerInterface $slugger, Evt $event): Response
     {
-
         $legacyDir = __DIR__ . '/../../legacy/';
         $path = 'index.php';
         $_GET['p1'] = 'feuille-de-sortie';

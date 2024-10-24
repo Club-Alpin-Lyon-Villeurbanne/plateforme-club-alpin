@@ -1,8 +1,8 @@
 <?php
 
 use App\Legacy\LegacyContainer;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Security\SecurityConstants;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';

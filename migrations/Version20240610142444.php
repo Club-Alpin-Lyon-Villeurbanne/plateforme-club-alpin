@@ -27,7 +27,6 @@ final class Version20240610142444 extends AbstractMigration
         $this->addSql(
             "UPDATE `expense_field_type` SET `name` = 'Dépense carburant' WHERE `slug` = 'prix_carburant';"
         );
-
     }
 
     public function down(Schema $schema): void

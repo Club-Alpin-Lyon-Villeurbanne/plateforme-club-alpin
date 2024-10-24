@@ -20,9 +20,10 @@
 
 	<!-- script persos -->
     <script src="/js/fonctions.js" type="text/javascript"></script>
-	<?php 
-	
-	use App\Security\SecurityConstants;
+	<?php
+
+    use App\Security\SecurityConstants;
+
 	if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) { ?>
 		<!-- script admin -->
 		<script src="/js/fonctionsAdmin.js" type="text/javascript"></script>

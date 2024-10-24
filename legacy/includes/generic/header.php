@@ -19,27 +19,27 @@ $jwt = LegacyContainer::get(JwtExtension::class)->generateJwtToken();
 	<!-- icon -->
 	<link rel="shortcut icon" href="/favicon.ico" />
 <script>
-	localStorage.setItem('jwt', "<?= $jwt ?>")
+	localStorage.setItem('jwt', "<?php echo $jwt; ?>")
 </script>
 
 	<!-- css SCREEN ONLY  -->
 	<!-- media="screen" -->
 	<!-- css COMMUNS SCREEN + PRINT -->
-	 <?php 
-		if ('feuille-de-sortie' == $p1) { 
-	?>
+	 <?php
+        if ('feuille-de-sortie' == $p1) {
+            ?>
 		<style type="text/css">
 		<?php
-			include(dirname(__FILE__) . '/../../../public/css/style1.css');
-			include(dirname(__FILE__) . '/../../../public/fonts/stylesheet.css');
-			include(dirname(__FILE__) . '/../../../public/css/base.css');
-			include(dirname(__FILE__) . '/../../../public/css/common.css');
-			include(dirname(__FILE__) . '/../../../public/css/print.css');
-			?>
+                    include __DIR__ . '/../../../public/css/style1.css';
+            include __DIR__ . '/../../../public/fonts/stylesheet.css';
+            include __DIR__ . '/../../../public/css/base.css';
+            include __DIR__ . '/../../../public/css/common.css';
+            include __DIR__ . '/../../../public/css/print.css';
+            ?>
 		</style>
 		<?php
-		} else {
-		?>
+        } else {
+            ?>
 		<link rel="stylesheet" href="/css/style1.css" type="text/css" />
 		<link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" />
 		<link rel="stylesheet" href="/css/base.css" type="text/css"  />
@@ -48,8 +48,8 @@ $jwt = LegacyContainer::get(JwtExtension::class)->generateJwtToken();
 		<!-- css PRINTS -->
 		<link rel="stylesheet" href="/css/print.css" type="text/css"  media="print" />
 	<?php
-		}
-	 ?>
+        }
+?>
 
 
     <!-- html5shiv -->
@@ -74,10 +74,10 @@ $jwt = LegacyContainer::get(JwtExtension::class)->generateJwtToken();
 	<!-- script scroll up -->
     <script src="/js/scrollup.js" type="text/javascript"></script>
 
-	<?php 
-	use App\Security\SecurityConstants;
-	
-	if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) { ?>
+	<?php
+    use App\Security\SecurityConstants;
+
+if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) { ?>
 		<!-- script admin -->
 		<script src="/js/fonctionsAdmin.js" type="text/javascript"></script>
 	<?php } ?>
