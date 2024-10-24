@@ -6,6 +6,7 @@ use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
 use App\Mailer\Mailer;
+use App\Messenger\Message\SortiePubliee;
 use App\Repository\EventParticipationRepository;
 use App\Repository\UserRepository;
 use App\Twig\JavascriptGlobalsExtension;
@@ -17,6 +18,7 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
@@ -56,8 +58,13 @@ class SortieController extends AbstractController
     }
 
     #[Route(name: 'sortie_validate', path: '/sortie/{id}/validate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function sortieValidate(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
-    {
+    public function sortieValidate(
+        Request $request,
+        Evt $event,
+        EntityManagerInterface $em,
+        Mailer $mailer,
+        MessageBusInterface $messageBus,
+    ) {
         if (!$this->isCsrfTokenValid('sortie_validate', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
         }
@@ -68,6 +75,8 @@ class SortieController extends AbstractController
 
         $event->setStatus(Evt::STATUS_LEGAL_VALIDE)->setStatusWho($this->getUser());
         $em->flush();
+
+        $messageBus->dispatch(new SortiePubliee($event->getId()));
 
         $mailer->send($event->getUser(), 'transactional/sortie-publiee', [
             'event_name' => $event->getTitre(),

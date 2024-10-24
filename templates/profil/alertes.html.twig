@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes alertes{% endblock %}
+
+{% block body %}
+	<div id="left1">
+		<h1 class="page-h1">Mes alertes</h1>
+		<div class="main-type">
+			<p style="margin: 20px 0">
+				Chaque fois qu'un article ou une sortie est publiée sur le site du club, vous pouvez recevoir
+				une alerte par email.<br/><br/>
+				Configurez ici ce que vous souhaitez recevoir.
+			</p>
+
+
+			<form action="{{ path('profil_alertes_update') }}" method="post">
+				<table style="width: 100%;">
+					<thead>
+						<tr>
+							<th style="text-align: left;"></th>
+							<th style="text-align: center;width: 120px;"></th>
+							<th style="text-align: center;width: 120px;"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr style="height:30px;">
+							<td style="text-align: left;">
+								Être alerté lors de la publication d'articles d'actualités du club
+							</td>
+							<td style="text-align: center;">
+								<input value="1" name="articles[{{ constant('App\\Messenger\\Message\\ArticlePublie::ACTU_CLUB_RUBRIQUE') }}]" type="checkbox" {{ user_has_articles_alerts(app.user, constant('App\\Messenger\\Message\\ArticlePublie::ACTU_CLUB_RUBRIQUE')) ? 'checked="checked"' }}/>
+							</td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+				<table style="width: 100%;margin-top: 20px;">
+					<thead>
+					<tr style="height:30px;">
+						<th style="text-align: left;">Être alerté pour la commission</th>
+						<th style="text-align: center;width: 120px;">Articles</th>
+						<th style="text-align: center;width: 120px;">Sorties</th>
+					</tr>
+					</thead>
+					<tbody>
+						{% for commission in list_commissions()|sort((a, b) => a.code <=> b.code) %}
+							<tr style="height:30px;">
+								<td style="text-align: left;">
+									{{ commission.title }}
+								</td>
+								<td style="text-align: center;">
+									<input value="1" name="articles[{{ commission.code }}]" type="checkbox" {{ user_has_articles_alerts(app.user, commission.code) ? 'checked="checked"' }}/>
+								</td>
+								<td style="text-align: center;">
+									<input value="1" name="sorties[{{ commission.code }}]" type="checkbox" {{ user_has_sorties_alerts(app.user, commission.code) ? 'checked="checked"' }} />
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+
+
+				<table style="width: 100%;margin-top: 20px;">
+					<thead>
+						<tr style="height:30px;">
+							<th colspan="2" style="text-align: left;">Prefixe du sujet des emails d'alerte</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr style="height:30px;">
+							<td>
+								<label for="article-prefix-input">Prefixe du sujet des emails d'alerte de nouveaux articles</label>
+							</td>
+							<td style="text-align: right">
+								<input class="type1" id="article-prefix-input" type="text" value="{{ app.user.alertArticlePrefix }}" name="article-prefix-input" />
+							</td>
+						</tr>
+						<tr style="height:30px;">
+							<td>
+								<label for="sortie-prefix-input">Prefixe du sujet des emails d'alerte de nouvelles sorties</label>
+							</td>
+							<td style="text-align: right">
+								<input class="type1" id="sortie-prefix-input" type="text" value="{{ app.user.alertSortiePrefix }}" name="sortie-prefix-input" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<p style="text-align: center;margin-top: 20px;">
+					<button type="submit" style="cursor: pointer; border: none;" class="biglink" title="Enregistrer">
+						<span class="bleucaf">&gt;</span>
+						ENREGISTRER MES ALERTES
+					</button>
+				</p>
+				<input type="hidden" name="csrf_token" value="{{ csrf_token('profil_alertes_update') }}" />
+			</form>
+		</div>
+	</div>
+{% endblock %}

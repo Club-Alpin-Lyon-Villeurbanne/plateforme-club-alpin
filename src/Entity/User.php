@@ -211,6 +211,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'is_deleted', type: 'boolean', nullable: false, options: ['default' => 0])]
     private bool $isDeleted = false;
 
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $alerts = [];
+
+    #[ORM\Column(type: 'string', nullable: false, options: ['default' => '[CAF-Lyon-Sortie]'])]
+    private string $alertSortiePrefix = '[CAF-Lyon-Sortie]';
+
+    #[ORM\Column(type: 'string', nullable: false, options: ['default' => '[CAF-Lyon-Article]'])]
+    private string $alertArticlePrefix = '[CAF-Lyon-Article]';
+
     public function __construct(?int $id = null)
     {
         $this->attrs = new ArrayCollection();
@@ -710,5 +719,47 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         $this->isDeleted = $isDeleted;
 
         return $this;
+    }
+
+    public function getAlerts(): ?array
+    {
+        return $this->alerts;
+    }
+
+    public function setAlerts(?array $alerts): void
+    {
+        $this->alerts = $alerts;
+    }
+
+    public function hasAlertEnabledOn(AlertType $type, string $commissionCode): bool
+    {
+        return $this->alerts[$commissionCode][$type->name] ?? false;
+    }
+
+    public function setAlertStatus(AlertType $type, string $commissionCode, bool $status): self
+    {
+        $this->alerts[$commissionCode][$type->name] = $status;
+
+        return $this;
+    }
+
+    public function getAlertSortiePrefix(): string
+    {
+        return $this->alertSortiePrefix;
+    }
+
+    public function setAlertSortiePrefix(string $alertSortiePrefix): void
+    {
+        $this->alertSortiePrefix = $alertSortiePrefix;
+    }
+
+    public function getAlertArticlePrefix(): string
+    {
+        return $this->alertArticlePrefix;
+    }
+
+    public function setAlertArticlePrefix(string $alertArticlePrefix): void
+    {
+        $this->alertArticlePrefix = $alertArticlePrefix;
     }
 }
