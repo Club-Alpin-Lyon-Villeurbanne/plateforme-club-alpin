@@ -2,10 +2,10 @@
 
 namespace App\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 class JwtExtension extends AbstractExtension
 {

@@ -525,7 +525,6 @@ function isMail($mail)
     return (new EmailValidator())->isValid($mail, new NoRFCWarningsValidation());
 }
 
-
 function clearDir($dossierSupp)
 {
     $ouverture = @opendir($dossierSupp);

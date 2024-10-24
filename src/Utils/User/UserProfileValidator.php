@@ -9,7 +9,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final readonly class UserProfileValidator
 {
-
     private const DISPLAY_LABELS = [
         'tel' => 'votre numéro de téléphone',
         'tel2' => 'votre numéro de téléphone de secours',
@@ -63,7 +62,7 @@ final readonly class UserProfileValidator
      */
     public function isUserProfileIncomplete(): bool
     {
-        return 0 < count($this->validateUserProfile()['internal']) || 0 < count($this->validateUserProfile()['external']);
+        return 0 < \count($this->validateUserProfile()['internal']) || 0 < \count($this->validateUserProfile()['external']);
     }
 
     /**
@@ -78,7 +77,7 @@ final readonly class UserProfileValidator
         $internalError = $errors['internal'];
         $externalErrors = $errors['external'];
 
-        $error = "Merci de renseigner ";
+        $error = 'Merci de renseigner ';
 
         if ($internalError) {
             $error .= sprintf('%s dans votre <a href="/profil/infos.html">espace personnel</a>', $internalError[0]);
@@ -88,15 +87,16 @@ final readonly class UserProfileValidator
         }
 
         if ($externalErrors) {
-            if (1 === count($externalErrors)) {
+            if (1 === \count($externalErrors)) {
                 $error .= $externalErrors[0];
             } else {
-                $error .= implode(', ', array_slice($externalErrors, 0, -1)).' et '.$externalErrors[count($externalErrors) - 1];
+                $error .= implode(', ', \array_slice($externalErrors, 0, -1)) . ' et ' . $externalErrors[\count($externalErrors) - 1];
             }
             $error .= ' dans votre <a href="https://extranet-clubalpin.com/monespace/" target="_blank">espace licencié FFCAM</a>';
         }
 
         $error .= '.';
+
         return $error;
     }
 
@@ -109,7 +109,7 @@ final readonly class UserProfileValidator
     {
         /* $legacyFtpPath = "%kernel.project_dir%/public/ftp/" */
         /** @var User $user */
-        $photoPath = $this->legacyFtpPath.'user/'.$user->getId().'/min-profil.jpg';
+        $photoPath = $this->legacyFtpPath . 'user/' . $user->getId() . '/min-profil.jpg';
 
         return file_exists($photoPath);
     }

@@ -21,12 +21,10 @@ final class Version20231222100542 extends AbstractMigration
     {
         // set the justification_document to nullable in ExpenseField
         $this->addSql('ALTER TABLE expense_field CHANGE justification_document justification_document VARCHAR(255) DEFAULT NULL');
-
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-
     }
 }

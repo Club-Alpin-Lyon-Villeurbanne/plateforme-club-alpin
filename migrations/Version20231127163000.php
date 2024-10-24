@@ -48,7 +48,7 @@ final class Version20231127163000 extends AbstractMigration
         );
 
         $this->addSql(
-            "INSERT INTO `expense_type_expense_field_type` (`id`, `expense_field_type_id`, `expense_type_id`, `needs_justification`) VALUES
+            'INSERT INTO `expense_type_expense_field_type` (`id`, `expense_field_type_id`, `expense_type_id`, `needs_justification`) VALUES
             (3, 1, 2, 0),
             (4, 2, 3, 1),
             (5, 2, 4, 1),
@@ -66,15 +66,15 @@ final class Version20231127163000 extends AbstractMigration
             (17, 2, 5, 1),
             (18, 3, 5, 0),
             (19, 3, 3, 0),
-            (20, 3, 4, 0);"
+            (20, 3, 4, 0);'
         );
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql("TRUNCATE TABLE `expense_field_type`");
-        $this->addSql("TRUNCATE TABLE `expense_group`");
-        $this->addSql("TRUNCATE TABLE `expense_type`");
-        $this->addSql("TRUNCATE TABLE `expense_type_expense_field_type`");
+        $this->addSql('TRUNCATE TABLE `expense_field_type`');
+        $this->addSql('TRUNCATE TABLE `expense_group`');
+        $this->addSql('TRUNCATE TABLE `expense_type`');
+        $this->addSql('TRUNCATE TABLE `expense_type_expense_field_type`');
     }
 }

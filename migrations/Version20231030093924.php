@@ -33,7 +33,7 @@ final class Version20231030093924 extends AbstractMigration
         );
 
         $this->addSql(
-            "CREATE TABLE `expense_field` (
+            'CREATE TABLE `expense_field` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
                 `justification_document` varchar(255) NOT NULL,
                 `expense_field_type_id` int(11) NOT NULL,
@@ -42,30 +42,30 @@ final class Version20231030093924 extends AbstractMigration
                 `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`)
-            )"
+            )'
         );
 
         $this->addSql(
-            "CREATE TABLE `expense_type_expense_field_type` (
+            'CREATE TABLE `expense_type_expense_field_type` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
                 `expense_field_type_id` int(14) NOT NULL,
                 `expense_type_id` int(14) NOT NULL,
                 `needs_justification` tinyint(1) NOT NULL DEFAULT 0,
                 PRIMARY KEY (`id`)
-            )"
+            )'
         );
 
         $this->addSql(
-            "CREATE TABLE `expense_field_type` (
+            'CREATE TABLE `expense_field_type` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
                 `slug` varchar(255) NOT NULL,
                 `name` varchar(255) NOT NULL,
                 PRIMARY KEY (`id`)
-            )"
+            )'
         );
 
         $this->addSql(
-            "CREATE TABLE `expense_report` (
+            'CREATE TABLE `expense_report` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
                 `status` tinyint(1) NOT NULL DEFAULT 0,
                 `refund_required` tinyint(1) NOT NULL DEFAULT 0,
@@ -74,19 +74,19 @@ final class Version20231030093924 extends AbstractMigration
                 `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`)
-            )"
+            )'
         );
 
         $this->addSql(
-            "CREATE TABLE `expense_type` (
+            'CREATE TABLE `expense_type` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
                 `name` varchar(255) NOT NULL,
                 `slug` varchar(255) NOT NULL,
                 `expense_group_id` int(11) NOT NULL,
                 PRIMARY KEY (`id`)
-            )"
+            )'
         );
-        
+
         $this->addSql(
             "CREATE TABLE `expense_group` (
                 `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -95,7 +95,7 @@ final class Version20231030093924 extends AbstractMigration
                 `type` ENUM('unique', 'multiple', 'raw') NOT NULL DEFAULT 'raw',
                 PRIMARY KEY (`id`)
             )"
-        );  
+        );
     }
 
     public function down(Schema $schema): void

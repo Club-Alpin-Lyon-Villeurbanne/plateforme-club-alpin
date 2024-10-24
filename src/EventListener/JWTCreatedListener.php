@@ -12,11 +12,10 @@ class JWTCreatedListener implements EventSubscriberInterface
 {
     public function __construct(
         private AuthorizationCheckerInterface $authorizationChecker
-    ){}
+    ) {
+    }
 
     /**
-     * @param JWTCreatedEvent $event
-     *
      * @return void
      */
     public function onJWTCreated(JWTCreatedEvent $event)
@@ -24,7 +23,7 @@ class JWTCreatedListener implements EventSubscriberInterface
         $payload = $event->getData();
         $user = $event->getUser();
         $isAdmin = $this->authorizationChecker->isGranted(SecurityConstants::ROLE_ADMIN);
-        
+
         if ($isAdmin) {
             $payload['is_admin'] = $isAdmin;
         }

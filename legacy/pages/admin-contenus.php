@@ -99,12 +99,12 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 							<?php
 	                        // liste des groupes dans le tableau dessous
 	                        $tempGroup = 0; // id groupe
-                            for ($i = 0; $i < count($contGroupTab); ++$i) {
-                                if ($tempGroup != $contGroupTab[$i]['id_content_inline_group'] && $contGroupTab[$i]['id_content_inline_group']) {
-                                    echo '<option value="' . $contGroupTab[$i]['id_content_inline_group'] . '">' . $contGroupTab[$i]['nom_content_inline_group'] . '</option>';
-                                }
-                                $tempGroup = $contGroupTab[$i]['id_content_inline_group'];
-                            } ?>
+	        for ($i = 0; $i < count($contGroupTab); ++$i) {
+	            if ($tempGroup != $contGroupTab[$i]['id_content_inline_group'] && $contGroupTab[$i]['id_content_inline_group']) {
+	                echo '<option value="' . $contGroupTab[$i]['id_content_inline_group'] . '">' . $contGroupTab[$i]['nom_content_inline_group'] . '</option>';
+	            }
+	            $tempGroup = $contGroupTab[$i]['id_content_inline_group'];
+	        } ?>
 						</select>
 					</td>
 					<td>
