@@ -4,9 +4,11 @@ namespace App\Tests\Controller;
 
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
-use App\Entity\User;
 use App\Entity\UserAttr;
+use App\Messenger\Message\SortiePubliee;
 use App\Tests\WebTestCase;
+use Symfony\Component\Mailer\Messenger\SendEmailMessage;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class SortieControllerTest extends WebTestCase
 {
@@ -103,6 +105,15 @@ class SortieControllerTest extends WebTestCase
         ]);
         $this->assertResponseStatusCodeSame(302);
 
+        $messages = self::getContainer()->get(MessageBusInterface::class)->getDispatchedMessages();
+        $this->assertCount(2, $messages);
+        $messagesTypes = array_map(static fn ($message) => \get_class($message['message']), $messages);
+        sort($messagesTypes);
+        $this->assertSame([
+            'App\Messenger\Message\SortiePubliee',
+            'Symfony\Component\Mailer\Messenger\SendEmailMessage',
+        ], $messagesTypes);
+
         $emails = $this->getMailerMessages();
         $this->assertCount(1, $emails);
 
@@ -111,6 +122,11 @@ class SortieControllerTest extends WebTestCase
         $this->assertEmailTextBodyContains($emails[0], 'a été publiée par les responsables.');
         $this->assertEmailHtmlBodyContains($emails[0], 'Félicitations, votre sortie');
         $this->assertEmailHtmlBodyContains($emails[0], 'a été publiée par les responsables.');
+
+        $messages = self::getContainer()->get(MessageBusInterface::class)->getDispatchedMessages();
+        $this->assertCount(2, $messages);
+        $this->assertInstanceOf(SortiePubliee::class, $messages[0]['message']);
+        $this->assertInstanceOf(SendEmailMessage::class, $messages[1]['message']);
     }
 
     public function testSortieValidateInvalidCsrf()
@@ -439,17 +455,5 @@ class SortieControllerTest extends WebTestCase
         $this->assertEmailTextBodyContains($emails[0], 'Prout PROUT');
         $this->assertEmailHtmlBodyContains($emails[0], 'Vous avez reçu un message de');
         $this->assertEmailHtmlBodyContains($emails[0], 'Prout PROUT');
-    }
-
-    private function createEvent(User $user): Evt
-    {
-        $em = $this->getContainer()->get('doctrine')->getManager();
-        $commission = $this->createCommission();
-
-        $event = new Evt($user, $commission, 'Titre !', 'code', new \DateTime('+7 days'), new \DateTime('+8 days'), 'Hotel de ville', 12, 2, 'Une chtite sortie', time(), 12, 12);
-        $em->persist($event);
-        $em->flush();
-
-        return $event;
     }
 }

@@ -15,7 +15,7 @@ $projectDir = LegacyContainer::getParameter('legacy_is_on_clever_cloud')
 
 $file = "$projectDir/6900.txt";
 
-class cron_fichier_adherent
+class Member
 {
     public $cafNumber;
     public $clubNumber;
