@@ -29,7 +29,7 @@ class MemberMergerTest extends KernelTestCase
 
         $this->memberMerger->mergeMembers($oldLicense, $newLicense);
 
-        $userOldLicense = $this->entityManager->getRepository(User::class)->findOneByLicenseNumber('ligne_obsolete');
+        $userOldLicense = $this->entityManager->getRepository(User::class)->findOneByLicenseNumber("obs_{$newLicense}");
         $userNewLicense = $this->entityManager->getRepository(User::class)->findOneByLicenseNumber($newLicense);
 
         $this->assertSame($userNewLicense->getId(), $user1->getId());

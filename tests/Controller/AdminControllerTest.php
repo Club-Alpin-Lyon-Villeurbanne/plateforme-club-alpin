@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Security\SecurityConstants;
 use App\Tests\WebTestCase;
 
 class AdminControllerTest extends WebTestCase
@@ -15,7 +16,7 @@ class AdminControllerTest extends WebTestCase
         $user = $this->signup(mt_rand() . 'test@clubalpinlyon.fr');
         $this->signin($user);
 
-        $this->assertFalse($this->getSession()->has('admin_caf'));
+        $this->assertEquals($this->getSession()->has(SecurityConstants::SESSION_USER_ROLE_KEY), null);
 
         static::$client->request('GET', '/admin/');
         $this->assertResponseStatusCodeSame(200);
@@ -26,7 +27,7 @@ class AdminControllerTest extends WebTestCase
         ]);
         $this->assertResponseStatusCodeSame(200);
 
-        $this->assertFalse($this->getSession()->has('admin_caf'));
+        $this->assertEquals($this->getSession()->has(SecurityConstants::SESSION_USER_ROLE_KEY), null);
 
         static::$client->submitForm('admin_connect', [
             'username' => 'caflyon',
@@ -35,6 +36,6 @@ class AdminControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(302);
         $this->assertResponseRedirects('/');
 
-        $this->assertTrue($this->getSession()->get('admin_caf'));
+        $this->assertEquals($this->getSession()->get(SecurityConstants::SESSION_USER_ROLE_KEY), SecurityConstants::ROLE_ADMIN);
     }
 }

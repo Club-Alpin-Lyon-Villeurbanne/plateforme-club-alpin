@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\UserRight;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\Connection;
 use Doctrine\Persistence\ManagerRegistry;
 
 class UserRightRepository extends ServiceEntityRepository
@@ -16,21 +15,20 @@ class UserRightRepository extends ServiceEntityRepository
 
     public function findRightsByUser(int $userId): array
     {
-
-        $sql = "
-            SELECT DISTINCT ur.code_userright AS code, 
-                            ua.params_user_attr AS params, 
+        $sql = '
+            SELECT DISTINCT ur.code_userright AS code,
+                            ua.params_user_attr AS params,
                             ut.limited_to_comm_usertype AS limitedToComm
             FROM caf_userright ur
-            INNER JOIN caf_usertype_attr uta 
+            INNER JOIN caf_usertype_attr uta
                 ON ur.id_userright = uta.right_usertype_attr
-            INNER JOIN caf_usertype ut 
+            INNER JOIN caf_usertype ut
                 ON uta.type_usertype_attr = ut.id_usertype
-            INNER JOIN caf_user_attr ua 
+            INNER JOIN caf_user_attr ua
                 ON ua.usertype_user_attr = ut.id_usertype
             WHERE ua.user_user_attr = :userId
             ORDER BY ua.params_user_attr ASC, ur.code_userright ASC, ut.limited_to_comm_usertype ASC
-        ";
+        ';
 
         $statement = $this->getEntityManager()->getConnection()->prepare($sql);
         $statement->bindValue('userId', $userId);
@@ -42,24 +40,24 @@ class UserRightRepository extends ServiceEntityRepository
 
     public function getRightsByUserType(string $userType): array
     {
-        $sql = "
+        $sql = '
             SELECT DISTINCT ur.code_userright
             FROM caf_userright ur
             INNER JOIN caf_usertype_attr uta ON ur.id_userright = uta.right_usertype_attr
             INNER JOIN caf_usertype ut ON uta.type_usertype_attr = ut.id_usertype
             WHERE ut.code_usertype = :userType
             ORDER BY ur.code_userright ASC
-        ";
+        ';
         $statement = $this->getEntityManager()->getConnection()->prepare($sql);
         $statement->bindValue('userType', $userType);
+
         return $statement->executeQuery()->fetchAllAssociative();
     }
 
     private function processRightsResults(array $results): array
     {
-
         $userRights = [];
-        
+
         foreach ($results as $result) {
             $code = $result['code'];
             $params = $result['params'] ?? null;
@@ -67,8 +65,16 @@ class UserRightRepository extends ServiceEntityRepository
 
             $value = ($params && $limitedToComm) ? $params : true;
 
-            if (!isset($userRights[$code]) || $userRights[$code] !== true) {
-                $userRights[$code] = $value === true ? true : ($userRights[$code] ?? '') . ($userRights[$code] ? '|' : '') . $value;
+            if (!isset($userRights[$code])) {
+                $userRights[$code] = $value;
+            } elseif (true !== $userRights[$code]) {
+                if (true === $value) {
+                    $userRights[$code] = true;
+                } else {
+                    $existingValue = $userRights[$code];
+                    $separator = !empty($existingValue) ? '|' : '';
+                    $userRights[$code] = $existingValue . $separator . $value;
+                }
             }
         }
 
