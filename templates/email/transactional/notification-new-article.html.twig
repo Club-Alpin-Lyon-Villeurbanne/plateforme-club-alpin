@@ -1,0 +1,24 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    {{ prefix }}{% if entity.commission %}[{{ entity.commission.title }}]{% elseif entity.evt %}[Compte Rendu]{% endif %} {{ entity.titre }}
+{%- endblock %}
+
+{% block rappel_objet '' %}
+
+{% block inner_html %}
+    <p>
+        Un {% if entity.evt %}nouveau compte-rendu{% else %}nouvel article{% endif %} "{{ entity.titre }}" vient d'être publié sur le site du Club Alpin Français Lyon-Villeurbanne{% if entity.commission %} dans la commission {{ entity.commission.title }}{% endif %}.
+        <a href="{{ url_site }}/article/{{ entity.code }}-{{ entity.id }}.html">Lire l'article</a>.
+    </p>
+    <p>
+        Vous pouvez gérer vos alertes depuis <a href="{{ url('profil_alertes') }}">votre espace alertes</a>.
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+    Un {% if entity.evt %}nouveau compte-rendu{% else %}nouvel article{% endif %} "{{ entity.titre }}" vient d'être publié sur le site du Club Alpin Français Lyon-Villeurbanne{% if entity.commission %} dans la commission {{ entity.commission.title }}{% endif %}.
+    Lire l'article ({{ url_site }}/article/{{ entity.code }}-{{ entity.id }}.html)
+
+    Vous pouvez gérer vos alertes depuis votre espace alertes ({{ url('profil_alertes') }}).
+{% endblock %}
