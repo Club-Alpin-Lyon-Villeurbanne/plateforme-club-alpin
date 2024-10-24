@@ -107,14 +107,22 @@ database-migration: ## Make migration
 database-migrate: ## Migrate migrations
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction
 
+database-diff: ## Create doctrine migrations
+	$(SYMFONY_CONSOLE) doctrine:migrations:diff --no-interaction
+
 database-fixtures-load: ## Load fixtures
 ifeq ($(args),)
 	$(eval args="--env=dev")
 endif
 	$(SYMFONY_CONSOLE) $(args) caf:fixtures:load
 
+exec: ## Execute a command in a container (container="cafsite", cmd="bash", user="www-data")
+	$(eval container ?= cafsite)
+	$(eval cmd ?= bash)
+	$(eval user ?= www-data)
+	@$(DOCKER_COMPOSE) exec --user=$(user) $(container) $(cmd)
+.PHONY: exec
+
 ## —— 🛠️  Others ——
 help: ## List of commands
 	@grep -E '(^[a-zA-Z0-9_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
-
-
