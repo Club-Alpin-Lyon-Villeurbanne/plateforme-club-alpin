@@ -1,6 +1,11 @@
 services:
   cafsite:
     build:
+      cache_from:
+        - type=registry,ref=quay.io/caf/php:build_composer
+        - type=registry,ref=quay.io/caf/php:build_installer
+        - type=registry,ref=quay.io/caf/php:build_phive
+        - type=registry,ref=quay.io/caf/php:latest
       context: ./docker
       args:
         - UID=${UID_OVERRIDE:-${UID:-1000}}

@@ -1,0 +1,25 @@
+name: Container image cache
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docker/**'
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - uses: actions/checkout@v4
+      - run: |
+          docker login -u="$CONTAINER_REGISTRY_USERNAME" -p="$CONTAINER_REGISTRY_TOKEN" "$CONTAINER_REGISTRY_HOST"
+          docker image build -t "${PHP_IMAGE_NAME}" --build-arg UID="$(id -u)" --build-arg GID="$(id -g)" ./docker
+          docker image push "${PHP_IMAGE_NAME}"
+        env:
+          CONTAINER_REGISTRY_HOST: ${{ vars.CONTAINER_REGISTRY_HOST }}
+          CONTAINER_REGISTRY_USERNAME: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
+          CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+          PHP_IMAGE_NAME: ${{ vars.PHP_IMAGE_NAME }}
