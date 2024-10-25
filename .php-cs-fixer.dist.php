@@ -5,6 +5,7 @@ $finder = PhpCsFixer\Finder::create()
     ->exclude([
         'vendor',
         'var',
+        'db',
     ])
     ->name('console')
     ->notPath('cron_fichier_adherent.php')
