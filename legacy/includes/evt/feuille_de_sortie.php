@@ -3,6 +3,7 @@
 use App\Entity\UserAttr;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
+
 // GESTION DES DROITS D'AFFICHAGE
 $display = false;
 if (isGranted(SecurityConstants::ROLE_ADMIN)
@@ -58,7 +59,7 @@ $logo = LegacyContainer::get('legacy_content_inline')->getLogo();
     <tr>
         <td style="border:0">
             <?php if (1 == $evt['status_legal_evt']) { ?>
-                <img src="/img/<?php echo $logo ?>" alt="" title="" style="float:left;max-width:100%; max-height:100%; object-fit:contain;" /><br><br><br><br><br>
+                <img src="/img/<?php echo $logo; ?>" alt="" title="" style="float:left;max-width:100%; max-height:100%; object-fit:contain;" /><br><br><br><br><br>
                 <div style="padding-left:45px;">
                     <?php
                     inclure('adresse-fiche-sortie', '');

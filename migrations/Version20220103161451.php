@@ -18,13 +18,13 @@ final class Version20220103161451 extends AbstractMigration
         $this->addSql('ALTER TABLE caf_evt ADD CONSTRAINT FK_197AA7EDA305AEC FOREIGN KEY (cancelled_who_evt) REFERENCES caf_user (id_user)');
         $this->addSql('CREATE INDEX IDX_197AA7EB0C9569F ON caf_evt (status_who_evt)');
         $this->addSql('CREATE INDEX IDX_197AA7EDA305AEC ON caf_evt (cancelled_who_evt)');
-        $this->addSql('ALTER TABLE caf_user 
-                        CHANGE cafnum_parent_user cafnum_parent_user VARCHAR(20) DEFAULT NULL COMMENT \'Filiation : numéro CAF du parent\', 
-                        CHANGE tel_user tel_user VARCHAR(30) DEFAULT NULL, CHANGE tel2_user tel2_user VARCHAR(30) DEFAULT NULL, 
-                        CHANGE adresse_user adresse_user VARCHAR(100) DEFAULT NULL, CHANGE cp_user cp_user VARCHAR(10) DEFAULT NULL, 
-                        CHANGE ville_user ville_user VARCHAR(30) DEFAULT NULL, CHANGE civ_user civ_user VARCHAR(10) DEFAULT NULL, 
-                        CHANGE moreinfo_user moreinfo_user VARCHAR(500) DEFAULT NULL COMMENT \'FORMATIONS ?\', 
-                        CHANGE cookietoken_user cookietoken_user VARCHAR(32) DEFAULT NULL, 
+        $this->addSql('ALTER TABLE caf_user
+                        CHANGE cafnum_parent_user cafnum_parent_user VARCHAR(20) DEFAULT NULL COMMENT \'Filiation : numéro CAF du parent\',
+                        CHANGE tel_user tel_user VARCHAR(30) DEFAULT NULL, CHANGE tel2_user tel2_user VARCHAR(30) DEFAULT NULL,
+                        CHANGE adresse_user adresse_user VARCHAR(100) DEFAULT NULL, CHANGE cp_user cp_user VARCHAR(10) DEFAULT NULL,
+                        CHANGE ville_user ville_user VARCHAR(30) DEFAULT NULL, CHANGE civ_user civ_user VARCHAR(10) DEFAULT NULL,
+                        CHANGE moreinfo_user moreinfo_user VARCHAR(500) DEFAULT NULL COMMENT \'FORMATIONS ?\',
+                        CHANGE cookietoken_user cookietoken_user VARCHAR(32) DEFAULT NULL,
                         CHANGE nomade_parent_user nomade_parent_user INT DEFAULT NULL COMMENT \'Dans le cas d\'\'un user NOMADE, l\'\'ID de son créateur\'');
         $this->addSql('ALTER TABLE caf_user_attr CHANGE params_user_attr params_user_attr VARCHAR(200) DEFAULT NULL');
     }

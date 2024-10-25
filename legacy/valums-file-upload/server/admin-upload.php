@@ -4,6 +4,7 @@ use App\Ftp\FtpFile;
 use App\Legacy\ImageManipulator;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
+
 require __DIR__ . '/../../app/includes.php';
 
 $errTab = [];

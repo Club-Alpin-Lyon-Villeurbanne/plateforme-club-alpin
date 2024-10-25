@@ -19,14 +19,12 @@ final class Version20240130103346 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-       // set the value column to nullable in ExpenseField
-       $this->addSql('ALTER TABLE expense_field CHANGE `value` `value` VARCHAR(255) DEFAULT NULL');
-
+        // set the value column to nullable in ExpenseField
+        $this->addSql('ALTER TABLE expense_field CHANGE `value` `value` VARCHAR(255) DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-
     }
 }

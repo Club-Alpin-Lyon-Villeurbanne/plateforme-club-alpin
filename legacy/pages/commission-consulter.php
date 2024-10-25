@@ -3,6 +3,7 @@
 use App\Entity\UserAttr;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
+
 ?>
 <!-- MAIN -->
 <div id="main" role="main" class="bigoo" style="">

@@ -4,7 +4,6 @@ use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-
 $isAdmin = isGranted(SecurityConstants::ROLE_ADMIN);
 $isContentManager = isGranted(SecurityConstants::ROLE_CONTENT_MANAGER);
 $allowedContentManagerPages = ['admin-partenaires', 'admin-contenus', 'admin-pages-libres'];
@@ -23,15 +22,15 @@ $allowedContentManagerPages = ['admin-partenaires', 'admin-contenus', 'admin-pag
 	<div style="margin-left:160px">
 		<?php
 
-		foreach ($p_pages as $codePage => $datas) {
-			if ($datas['menuadmin_page'] && 'admin-traductions' != $codePage) {
-				if ($isAdmin || in_array($codePage, $allowedContentManagerPages)) {
-					echo '<a href="' . $codePage . '.html" title="" class="adminmenulink ' . ($p1 == $codePage ? 'up' : '') . '">
+        foreach ($p_pages as $codePage => $datas) {
+            if ($datas['menuadmin_page'] && 'admin-traductions' != $codePage) {
+                if ($isAdmin || in_array($codePage, $allowedContentManagerPages, true)) {
+                    echo '<a href="' . $codePage . '.html" title="" class="adminmenulink ' . ($p1 == $codePage ? 'up' : '') . '">
 						' . $datas['default_name_page'] . '</a>';
-				}
-			}
-		}
-		?>
+                }
+            }
+        }
+?>
 	</div>
 	<div style="clear:both"></div>
 </div>

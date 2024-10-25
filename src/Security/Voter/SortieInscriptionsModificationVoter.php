@@ -5,7 +5,6 @@ namespace App\Security\Voter;
 use App\Entity\Evt;
 use App\Entity\User;
 use App\Entity\UserAttr;
-use App\Security\RoleChecker;
 use App\Security\SecurityConstants;
 use App\UserRights;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -22,7 +21,7 @@ class SortieInscriptionsModificationVoter extends Voter
 
     protected function supports(string $attribute, $subject): bool
     {
-        if ($attribute !== 'SORTIE_INSCRIPTIONS_MODIFICATION') {
+        if ('SORTIE_INSCRIPTIONS_MODIFICATION' !== $attribute) {
             return false;
         }
 
@@ -44,7 +43,7 @@ class SortieInscriptionsModificationVoter extends Voter
         if ($this->security->isGranted(SecurityConstants::ROLE_ADMIN)) {
             return true;
         }
-        
+
         if ($subject->getCancelled()) {
             return false;
         }

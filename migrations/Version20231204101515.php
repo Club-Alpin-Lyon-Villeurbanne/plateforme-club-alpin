@@ -21,7 +21,6 @@ final class Version20231204101515 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE expense_report CHANGE status status ENUM(\'submitted\', \'approved\', \'rejected\', \'draft\') NOT NULL');
-
     }
 
     public function down(Schema $schema): void

@@ -8,13 +8,13 @@ use App\Security\SecurityConstants;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PartnerController extends AbstractController
 {
@@ -25,7 +25,7 @@ class PartnerController extends AbstractController
             throw new AccessDeniedException('Vos droits ne sont pas assez élevés pour accéder à cette page');
         }
 
-        if ($this->isCsrfTokenValid('delete'.$partner->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $partner->getId(), $request->request->get('_token'))) {
             $uploaddir = $this->getParameter('kernel.project_dir') . '/public/ftp/partenaires/';
             $imagePath = $uploaddir . $partner->getImage();
 
@@ -59,7 +59,7 @@ class PartnerController extends AbstractController
             throw new AccessDeniedException('Vos droits ne sont pas assez élevés pour accéder à cette page');
         }
 
-        if ($id === -1 || $id === null) {
+        if (-1 === $id || null === $id) {
             $partner = new Partenaire();
         } else {
             $partner = $entityManager->getRepository(Partenaire::class)->find($id);
@@ -76,13 +76,13 @@ class PartnerController extends AbstractController
                 $imageFile = $form->get('imageFile')->getData();
 
                 if ($imageFile) {
-                    $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                    $originalFilename = pathinfo($imageFile->getClientOriginalName(), \PATHINFO_FILENAME);
                     $safeFilename = $slugger->slug($originalFilename);
-                    $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                    $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
 
                     try {
                         $imageFile->move(
-                            $this->getParameter('kernel.project_dir').'/public/ftp/partenaires/',
+                            $this->getParameter('kernel.project_dir') . '/public/ftp/partenaires/',
                             $newFilename
                         );
                     } catch (FileException $e) {
@@ -92,18 +92,19 @@ class PartnerController extends AbstractController
                     $partner->setImage($newFilename);
                 }
 
-                if ($id === -1 || $id === null) {
+                if (-1 === $id || null === $id) {
                     $entityManager->persist($partner);
                 }
                 $entityManager->flush();
 
-                $message = $id === -1 || $id === null ? 'Partenaire ajouté avec succès' : 'Partenaire modifié avec succès';
+                $message = -1 === $id || null === $id ? 'Partenaire ajouté avec succès' : 'Partenaire modifié avec succès';
+
                 return new JsonResponse(['message' => $message], Response::HTTP_OK);
-            } else {
-                // Form is not valid, return errors
-                $errors = $this->getFormErrors($form);
-                return new JsonResponse(['errors' => $errors], Response::HTTP_BAD_REQUEST);
             }
+            // Form is not valid, return errors
+            $errors = $this->getFormErrors($form);
+
+            return new JsonResponse(['errors' => $errors], Response::HTTP_BAD_REQUEST);
         }
 
         // If the form is not submitted, render the form view
@@ -124,6 +125,7 @@ class PartnerController extends AbstractController
                 $errors[$childForm->getName()] = $this->getFormErrors($childForm);
             }
         }
+
         return $errors;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
-use App\Legacy\LegacyContainer;
 use App\Entity\EventParticipation;
+use App\Legacy\LegacyContainer;
 
 // id du profil
 $id_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $_GET['id_user']);
@@ -121,15 +121,15 @@ elseif (!allowed('user_read_public')) {
 			<?php require __DIR__ . '/../includes/user/infos_privees.php'; ?>
 
             <?php
-                if (allowed('user_read_private')) {
-                    list('absences' => $absences, 'presences' => $presences) = LegacyContainer::get('doctrine.orm.entity_manager')
-                        ->getRepository(EventParticipation::class)
-                        ->getEventPresencesAndAbsencesOfUser($id_user);
-                    echo '<p><b>';
-                    printf('noté absent / validé à une sortie : %d / %d', $absences, $presences);
-                    echo '</b></p>';
-                }
-            ?>
+		        if (allowed('user_read_private')) {
+		            list('absences' => $absences, 'presences' => $presences) = LegacyContainer::get('doctrine.orm.entity_manager')
+		                ->getRepository(EventParticipation::class)
+		                ->getEventPresencesAndAbsencesOfUser($id_user);
+		            echo '<p><b>';
+		            printf('noté absent / validé à une sortie : %d / %d', $absences, $presences);
+		            echo '</b></p>';
+		        }
+    ?>
 
 			<br style="clear:both" />
 

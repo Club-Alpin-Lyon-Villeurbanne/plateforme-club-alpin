@@ -12,9 +12,9 @@ final class Version20211229214030 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE caf_evt CHANGE cycle_parent_evt cycle_parent_evt INT DEFAULT NULL');
-        $this->addSql('UPDATE caf_evt 
+        $this->addSql('UPDATE caf_evt
                    LEFT JOIN caf_evt parent_evt ON caf_evt.cycle_parent_evt = parent_evt.id_evt
-                   SET caf_evt.cycle_parent_evt = null 
+                   SET caf_evt.cycle_parent_evt = null
                    WHERE parent_evt.id_evt IS NULL');
         $this->addSql('ALTER TABLE caf_evt ADD CONSTRAINT FK_197AA7EF427F4D1 FOREIGN KEY (cycle_parent_evt) REFERENCES caf_evt (id_evt)');
         $this->addSql('CREATE INDEX IDX_197AA7EF427F4D1 ON caf_evt (cycle_parent_evt)');
