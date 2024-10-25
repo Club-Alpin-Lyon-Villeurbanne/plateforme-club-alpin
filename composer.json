@@ -104,6 +104,11 @@
     "replace": {
         "symfony/polyfill-ctype": "*",
         "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-intl-grapheme": "*",
+        "symfony/polyfill-intl-icu": "*",
+        "symfony/polyfill-intl-idn": "*",
+        "symfony/polyfill-intl-normalizer": "*",
+        "symfony/polyfill-mbstring": "*",
         "symfony/polyfill-php74": "*",
         "symfony/polyfill-php73": "*",
         "symfony/polyfill-php72": "*",
