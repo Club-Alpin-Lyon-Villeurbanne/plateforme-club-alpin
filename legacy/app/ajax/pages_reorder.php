@@ -2,6 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
+
 $log = (isset($log) ? $log : '') . "\n accès à " . date('H:i:s');
 
 if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {

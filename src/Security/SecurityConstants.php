@@ -12,6 +12,6 @@ class SecurityConstants
     public const ROLE_ADMIN = 'ROLE_ADMIN';
     public const ROLE_CONTENT_MANAGER = 'ROLE_CONTENT_MANAGER';
     public const ROLE_USER = 'ROLE_USER';
-    
+
     public const SESSION_USER_ROLE_KEY = 'user_role';
 }

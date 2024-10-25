@@ -8,10 +8,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class JWTAuthenticatedListener implements EventSubscriberInterface
 {
-
     /**
-     * @param JWTAuthenticatedEvent $event
-     *
      * @return void
      */
     public function onJWTAuthenticated(JWTAuthenticatedEvent $event)

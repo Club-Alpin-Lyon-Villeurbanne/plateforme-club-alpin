@@ -1,8 +1,8 @@
 <?php
 
 use App\Legacy\LegacyContainer;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Security\SecurityConstants;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // ___________________ CONFIGURATION DES PAGES
 // ___________________ Cette version déclare une variable contenant toutes les specs de toutes

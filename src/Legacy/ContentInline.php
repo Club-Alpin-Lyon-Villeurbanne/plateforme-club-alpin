@@ -35,7 +35,8 @@ readonly class ContentInline implements ServiceSubscriberInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function getLogo() {
+    public function getLogo()
+    {
         return $this->getContent('logo-img-name');
     }
 }

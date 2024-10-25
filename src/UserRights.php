@@ -41,7 +41,7 @@ class UserRights implements ResetInterface
             return false;
         }
 
-        if ($userRights[$codeUserright] === true) {
+        if (true === $userRights[$codeUserright]) {
             return true;
         }
 
@@ -50,7 +50,8 @@ class UserRights implements ResetInterface
         }
 
         $allowedParams = explode('|', $userRights[$codeUserright]);
-        return in_array($param, $allowedParams) || in_array(basename($param), $allowedParams);
+
+        return \in_array($param, $allowedParams, true) || \in_array(basename($param), $allowedParams, true);
     }
 
     public function getAllCommissionCodes(): array
@@ -66,7 +67,7 @@ class UserRights implements ResetInterface
             return [];
         }
 
-        if ($userRights[$right] === true) {
+        if (true === $userRights[$right]) {
             return $this->getAllCommissionCodes();
         }
 
@@ -103,9 +104,9 @@ class UserRights implements ResetInterface
 
     private function getVisitorRights(): array
     {
-
         $visitorRights = $this->userRightRepository->getRightsByUserType('visiteur');
         $visitorRightCodes = array_column($visitorRights, 'code_userright');
+
         return array_fill_keys($visitorRightCodes, true);
     }
 

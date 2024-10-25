@@ -135,7 +135,7 @@ for ($i = 0; $i < count($partenairesTab); ++$i) {
                 . '<td><a target="_blank" href="' . html_utf8($elt['part_url']) . '">' . html_utf8($elt['part_url']) . '</a></td>'
                 . '<td>' . html_utf8($elt['part_desc']) . '</td>'
                 . '<td align="center">';
-	echo '<a target="_blank" href="' . $elt['part_url'] . '">';
+    echo '<a target="_blank" href="' . $elt['part_url'] . '">';
     if (file_exists(__DIR__ . '/../../public/ftp/partenaires/' . $elt['part_image'])) {
         echo '<img src="/ftp/partenaires/' . $elt['part_image'] . '" style="max-width:150px;max-height:60px">';
     } else {

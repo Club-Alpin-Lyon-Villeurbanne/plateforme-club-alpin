@@ -2,6 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
+
 $errTab = [];
 $operationsDir = __DIR__ . '/operations/';
 
@@ -462,9 +463,3 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
         require $operationsDir . 'operations.page_del.php';
     }
 }
-
-
-
-
-
-

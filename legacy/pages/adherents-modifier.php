@@ -1,8 +1,9 @@
 <?php
 
 use App\Legacy\LegacyContainer;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Security\SecurityConstants;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 $operation = $_POST['operation'] ?? null;
 
 if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {

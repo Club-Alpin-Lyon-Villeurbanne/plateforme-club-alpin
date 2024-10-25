@@ -13,11 +13,12 @@ class AdminVoter extends Voter
 {
     public function __construct(
         private RequestStack $requestStack
-    ){}
+    ) {
+    }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [SecurityConstants::ROLE_ADMIN, 'ROLE_ALLOWED_TO_SWITCH'], true);
+        return \in_array($attribute, [SecurityConstants::ROLE_ADMIN, 'ROLE_ALLOWED_TO_SWITCH'], true);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -32,8 +33,8 @@ class AdminVoter extends Voter
             return true;
         }
 
-        if ($token->hasAttribute(SecurityConstants::SESSION_USER_ROLE_KEY) && 
-            $token->getAttribute(SecurityConstants::SESSION_USER_ROLE_KEY) === SecurityConstants::ROLE_ADMIN) {
+        if ($token->hasAttribute(SecurityConstants::SESSION_USER_ROLE_KEY)
+            && SecurityConstants::ROLE_ADMIN === $token->getAttribute(SecurityConstants::SESSION_USER_ROLE_KEY)) {
             return true;
         }
 
@@ -43,6 +44,6 @@ class AdminVoter extends Voter
             return false;
         }
 
-        return $request->getSession()->get(SecurityConstants::SESSION_USER_ROLE_KEY) === SecurityConstants::ROLE_ADMIN;
+        return SecurityConstants::ROLE_ADMIN === $request->getSession()->get(SecurityConstants::SESSION_USER_ROLE_KEY);
     }
 }
