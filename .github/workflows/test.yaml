@@ -11,6 +11,7 @@ jobs:
         run: |
           export UID_OVERRIDE="$UID"
           export GID_OVERRIDE="$GID"
+          docker pull quay.io/caf/php
           make init
       - name: Run the linter
         run: |

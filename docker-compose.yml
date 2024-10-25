@@ -1,6 +1,8 @@
 services:
   cafsite:
     build:
+      cache_from:
+        - quay.io/caf/php
       context: ./docker
       args:
         - UID=${UID_OVERRIDE:-${UID:-1000}}

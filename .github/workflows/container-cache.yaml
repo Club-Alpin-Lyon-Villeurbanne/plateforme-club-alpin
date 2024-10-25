@@ -1,0 +1,24 @@
+name: Container image cache
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docker/**'
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          docker login -u="$CONTAINER_REGISTRY_USERNAME" -p="$CONTAINER_REGISTRY_TOKEN" "$CONTAINER_REGISTRY_HOST"
+          docker build -t "$PHP_IMAGE_NAME" ./docker
+          docker push "$PHP_IMAGE_NAME"
+        env:
+          CONTAINER_REGISTRY_HOST: ${{ vars.CONTAINER_REGISTRY_HOST }}
+          CONTAINER_REGISTRY_USERNAME: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
+          CONTAINER_REGISTRY_TOKEN: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+          PHP_IMAGE_NAME: ${{ vars.PHP_IMAGE_NAME }}
+          DOCKER_BUILDKIT: 1
