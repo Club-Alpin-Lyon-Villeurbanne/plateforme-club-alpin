@@ -9,6 +9,8 @@ public/robots.txt
 public/dev.txt
 /.npm/
 
+/.php-cs-fixer.cache
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -30,14 +32,6 @@ public/dev.txt
 /db
 /docker-compose.override.yml
 .composer
-###> friendsofphp/php-cs-fixer ###
-/.php-cs-fixer.php
-/.php-cs-fixer.cache
-###< friendsofphp/php-cs-fixer ###
-
-###> phpstan/phpstan ###
-phpstan.neon
-###< phpstan/phpstan ###
 /.bash_history
 
 ###> pentatrion/vite-bundle ###

@@ -28,16 +28,16 @@ cache-clear: ## Clear cache
 	$(SYMFONY_CONSOLE) cache:clear
 
 ## —— ✅ Linting ——
-php-cs: ## Just analyze PHP code with php-cs-fixer
+php-cs: bin/tools/php-cs-fixer ## Just analyze PHP code with php-cs-fixer
 	$(eval args ?= )
-	$(PHP) -dmemory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run $(args)
+	@$(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run $(args)
 
-php-cs-fix: ## Analyze and fix PHP code with php-cs-fixer
+php-cs-fix: bin/tools/php-cs-fixer ## Analyze and fix PHP code with php-cs-fixer
 	$(eval args ?= )
-	$(PHP) -dmemory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php $(args)
+	@$(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php $(args)
 
-phpstan:
-	$(PHP) -dmemory_limit=-1 vendor/bin/phpstan analyse legacy public src tests -c phpstan.neon -l 1
+phpstan: bin/tools/phpstan ## Analyze PHP code with phpstan
+	$(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse legacy public src tests -c phpstan.neon -l 1
 
 ## —— ✅ Test ——
 .PHONY: tests
@@ -66,7 +66,11 @@ database-init-test: ## Init database for test
 docker-start: 
 	$(DOCKER_COMPOSE) up -d
 
-docker-stop: 
+docker-build: ## Build images
+	@$(DOCKER_COMPOSE) pull --parallel
+	@$(DOCKER_COMPOSE) build --pull --parallel
+
+docker-stop:
 	$(DOCKER_COMPOSE) stop
 	@$(call RED,"The containers are now stopped.")
 
@@ -131,6 +135,13 @@ exec: ## Execute a command in a container (container="cafsite", cmd="bash", user
 	$(eval user ?= www-data)
 	@$(DOCKER_COMPOSE) exec --user=$(user) $(container) $(cmd)
 .PHONY: exec
+
+phive: bin/tools/phpstan bin/tools/php-cs-fixer
+bin/tools/phpstan bin/tools/php-cs-fixer: phive.xml
+	@$(PHP) -d memory_limit=1G /usr/local/bin/phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E,CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
+
+phive-update:
+	$(PHP) -d memory_limit=1G /usr/local/bin/phive update
 
 ## —— 🛠️  Others ——
 help: ## List of commands
