@@ -6,7 +6,6 @@ use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Mailer\Mailer;
 use App\Repository\EventParticipationRepository;
-use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
 use App\Twig\JavascriptGlobalsExtension;
 use App\Utils\PdfGenerator;
@@ -24,13 +23,6 @@ use Twig\Environment;
 
 class SortieController extends AbstractController
 {
-    public static function getSubscribedServices(): array
-    {
-        return array_merge(parent::getSubscribedServices(), [
-            EvtRepository::class,
-        ]);
-    }
-
     #[Route(name: 'sortie', path: '/sortie/{code}-{id}.html', requirements: ['id' => '\d+', 'code' => '[a-z0-9-]+'], methods: ['GET'], priority: '10')]
     #[Template('sortie/sortie.html.twig')]
     public function sortie(
