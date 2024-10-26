@@ -52,6 +52,7 @@ database-init-test: ## Init database for test
 
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists --env=test
 	$(SYMFONY_CONSOLE) doctrine:database:create --env=test
+	$(SYMFONY_CONSOLE) messenger:setup-transports --env=test
 	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/schema_caf.sql
 	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/data_caf.sql
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction --env=test
@@ -97,6 +98,8 @@ database-drop: ## Create database
 database-create: ## Create database
 	$(SYMFONY_CONSOLE) doctrine:database:create --if-not-exists
 	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/schema_caf.sql
+	$(SYMFONY_CONSOLE) messenger:setup-transports
+	$(SYMFONY_CONSOLE) doctrine:migrations:sync-metadata-storage
 
 
 database-import: ## Make import
@@ -107,6 +110,8 @@ database-migration: ## Make migration
 
 database-migrate: ## Migrate migrations
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction
+	$(SYMFONY_CONSOLE) messenger:setup-transports
+	$(SYMFONY_CONSOLE) doctrine:migrations:sync-metadata-storage
 
 database-diff: ## Create doctrine migrations
 	$(SYMFONY_CONSOLE) doctrine:migrations:diff --no-interaction

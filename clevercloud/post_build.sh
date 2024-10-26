@@ -24,13 +24,15 @@ echo "${JWT_PUBLIC_KEY}" > ${JWT_CONF_DIR}/public.pem
 mv composer.json.old composer.json
 mv composer.lock.old composer.lock
 
-composer.phar install --no-ansi --no-progress --no-interaction --no-dev --no-scripts
+composer.phar install --no-ansi --no-progress --no-interaction --optimize-autoloader --apcu-autoloader --no-dev --no-scripts
 composer.phar dump-env prod
 
 bin/console cache:clear
 bin/console assets:install public
 
 bin/console doctrine:migrations:migrate --no-interaction
+bin/console doctrine:migrations:sync-metadata-storage
+bin/console messenger:setup-transports
 
 # Frontend build
- npm install && npm run build
+npm install && npm run build
