@@ -26,6 +26,9 @@ jobs:
           export UID_OVERRIDE="$UID"
           export GID_OVERRIDE="$GID"
           make init
+      - name: Setup PHPUnit
+        run: |
+          make phpunit-setup
       - name: Run phpstan
         run: |
           make phpstan
