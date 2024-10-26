@@ -50,6 +50,6 @@ class CommissionRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('c')
             ->select('c.code')
             ->getQuery()
-            ->getResult();
+            ->getSingleColumnResult();
     }
 }
