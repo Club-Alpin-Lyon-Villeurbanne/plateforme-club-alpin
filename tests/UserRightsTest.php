@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace App\Tests;
 
 use App\Entity\UserAttr;
-use App\Tests\WebTestCase;
 use App\UserRights;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
