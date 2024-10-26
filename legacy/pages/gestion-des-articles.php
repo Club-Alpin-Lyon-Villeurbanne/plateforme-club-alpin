@@ -15,11 +15,16 @@ if (allowed('article_validate_all')) { // pouvoir de valider les articles
     $tab = LegacyContainer::get('legacy_user_rights')->getCommissionListForRight('article_validate');
 
     $req = "SELECT COUNT(id_article)
-	FROM caf_article, caf_commission
-	WHERE status_article=0
-	AND topubly_article=1
-	AND commission_article=id_commission
-	AND (code_commission LIKE '" . implode("' OR code_commission LIKE '", $tab) . "')"; // condition OR pour toutes les commissions autorisées
+	FROM caf_commission c, caf_article a
+        LEFT JOIN caf_evt e ON (a.evt_article = e.id_evt)
+        LEFT JOIN caf_commission ce ON e.commission_evt = ce.id_commission
+	WHERE a.status_article=0
+	AND a.topubly_article=1
+	AND a.commission_article=c.id_commission
+	AND (
+	    c.code_commission IN ('" . implode("','", $tab) . "')
+	    OR (a.commission_article = -1 AND e.id_evt IS NOT NULL AND ce.code_commission IN ('" . implode("','", $tab) . "'))
+    )"; // condition OR pour toutes les commissions autorisées, et les compte-rendus de sorties (commission à -1) sur une commission ou j'ai acces
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $notif_validerunarticle = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM));
