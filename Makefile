@@ -48,6 +48,9 @@ ifdef clear
 endif
 	$(PHP) bin/phpunit ${path} $(args)
 
+phpunit-setup: ## Setup phpunit
+	@$(PHP) bin/phpunit --version
+
 database-init-test: ## Init database for test
 
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists --env=test
