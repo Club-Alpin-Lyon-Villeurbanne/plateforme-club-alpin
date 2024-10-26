@@ -10,8 +10,8 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Http\Event\DeauthenticatedEvent;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+use Symfony\Component\Security\Http\Event\LogoutEvent;
 use Symfony\Component\Security\Http\SecurityEvents;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 
@@ -38,7 +38,7 @@ class AuthenticationListener implements EventSubscriberInterface, ServiceSubscri
     {
         return [
             SecurityEvents::INTERACTIVE_LOGIN => 'onInteractiveLogin',
-            DeauthenticatedEvent::class => 'onLogout',
+            LogoutEvent::class => 'onLogout',
             KernelEvents::RESPONSE => 'onResponse',
         ];
     }
@@ -48,7 +48,7 @@ class AuthenticationListener implements EventSubscriberInterface, ServiceSubscri
         $this->setCookie = true;
     }
 
-    public function onLogout(DeauthenticatedEvent $deauthenticatedEvent)
+    public function onLogout(LogoutEvent $deauthenticatedEvent)
     {
         $this->removeCookie = true;
     }

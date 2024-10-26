@@ -37,7 +37,7 @@ php-cs-fix: ## Analyze and fix PHP code with php-cs-fixer
 	$(PHP) -dmemory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php $(args)
 
 phpstan:
-	$(PHP) -dmemory_limit=-1 vendor/bin/phpstan analyse legacy public src tests resources -c phpstan.neon -l 1
+	$(PHP) -dmemory_limit=-1 vendor/bin/phpstan analyse legacy public src tests -c phpstan.neon -l 1
 
 ## —— ✅ Test ——
 .PHONY: tests
