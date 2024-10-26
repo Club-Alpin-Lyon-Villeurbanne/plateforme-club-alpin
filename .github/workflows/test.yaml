@@ -2,25 +2,21 @@ on: [pull_request]
 name: Test
 
 jobs:
-  make-php-cs:
-    name: php-cs-fixer
+  test-suite:
+    name: Test suite
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build the environment
-        run: |
-          export UID_OVERRIDE="$UID"
-          export GID_OVERRIDE="$GID"
-          make init
-      - name: Run the linter
-        run: |
-          make php-cs
-
-  make-phpstan:
-    name: phpstan
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+      - name: Set up Docker CLI
+        uses: docker/setup-buildx-action@v3
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v5
+        with:
+          context: docker
+          push: true
+          tags: caf/website:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max`
       - name: Build the environment
         run: |
           export UID_OVERRIDE="$UID"
@@ -32,20 +28,12 @@ jobs:
       - name: Run phpstan
         run: |
           make phpstan
-
-  make-test:
-    name: phpunit
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build the environment
-        run: |
-          export UID_OVERRIDE="$UID"
-          export GID_OVERRIDE="$GID"
-          make init
       - name: Initialise the database
         run: |
           make database-init-test
-      - name: Run the unit tests
+      - name: Run PHPUnit test suite
         run: |
           make tests
+      - name: Run php-cs-fixer
+        run: |
+          make php-cs
