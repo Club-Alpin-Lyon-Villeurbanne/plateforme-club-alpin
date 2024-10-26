@@ -3,6 +3,7 @@ name: Test
 
 jobs:
   make-php-cs:
+    name: php-cs-fixer
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,7 +16,22 @@ jobs:
         run: |
           make php-cs
 
+  make-phpstan:
+    name: phpstan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the environment
+        run: |
+          export UID_OVERRIDE="$UID"
+          export GID_OVERRIDE="$GID"
+          make init
+      - name: Run phpstan
+        run: |
+          make phpstan
+
   make-test:
+    name: phpunit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

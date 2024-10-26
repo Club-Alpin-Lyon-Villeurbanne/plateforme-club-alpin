@@ -10,6 +10,8 @@ class LegacyHydrator extends AbstractHydrator
     {
         $result = $this->_stmt->fetchAllAssociative();
 
+        $hydratedResult = [];
+
         // Remove suffixes put by Doctrine on field names
         foreach ($result as $row) {
             $hydratedRow = [];
