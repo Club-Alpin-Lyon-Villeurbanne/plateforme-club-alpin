@@ -22,18 +22,13 @@ class RssController extends AbstractController
         $this->sitename = $sitename;
     }
 
-    public static function getSubscribedServices(): array
-    {
-        return array_merge(parent::getSubscribedServices(), [
-            CommissionRepository::class,
-            ArticleRepository::class,
-            EvtRepository::class,
-        ]);
-    }
-
     #[Route(name: 'rss', path: '/rss.xml', methods: ['GET'])]
-    public function rssAction(Request $request)
-    {
+    public function rssAction(
+        Request $request,
+        CommissionRepository $commissionRepository,
+        ArticleRepository $articleRepository,
+        EvtRepository $evtRepository,
+    ) {
         $comTab = [];
 
         $rssLimit = 30;
@@ -48,7 +43,7 @@ class RssController extends AbstractController
 
             if (preg_match('#^articles-[a-zA-Z-]+$#', $mode)) {
                 $commissionCode = strtolower(substr(strstr($mode, '-'), 1));
-                $commission = $this->container->get(CommissionRepository::class)->findVisibleCommission($commissionCode);
+                $commission = $commissionRepository->findVisibleCommission($commissionCode);
                 if ($commission) {
                     $rssData['title'] = $this->sitename . ', articles «' . $commission->getTitle() . '»';
                 }
@@ -58,7 +53,7 @@ class RssController extends AbstractController
                 $rssData['title'] = 'Articles du ' . $this->sitename;
             }
 
-            foreach ($this->container->get(ArticleRepository::class)->getArticles($commission, ['limit' => $rssLimit]) as $article) {
+            foreach ($articleRepository->getArticles($commission, ['limit' => $rssLimit]) as $article) {
                 $entry['title'] = $article->getTitre();
                 $entry['link'] = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'article/' . $article->getCode() . '-' . $article->getId() . '.html';
                 $entry['description'] = $article->getCont();
@@ -76,7 +71,7 @@ class RssController extends AbstractController
 
             if (preg_match('#^sorties-[a-zA-Z-]+$#', $mode)) {
                 $commissionCode = strtolower(substr(strstr($mode, '-'), 1));
-                $commission = $this->container->get(CommissionRepository::class)->findVisibleCommission($commissionCode);
+                $commission = $commissionRepository->findVisibleCommission($commissionCode);
                 if ($commission) {
                     $rssData['title'] = $this->sitename . ', sorties «' . $commission->getTitle() . '»';
                 }
@@ -86,7 +81,7 @@ class RssController extends AbstractController
                 $rssData['title'] = sprintf('Sorties du %s', $this->sitename);
             }
 
-            foreach ($this->container->get(EvtRepository::class)->getUpcomingEvents($commission, ['limit' => $rssLimit]) as $event) {
+            foreach ($evtRepository->getUpcomingEvents($commission, ['limit' => $rssLimit]) as $event) {
                 $entry['title'] = $event->getTitre();
                 $entry['link'] = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $event->getCode() . '-' . $event->getId() . '.html';
                 $entry['description'] = '';

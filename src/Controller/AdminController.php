@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Security\SecurityConstants;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,11 +15,6 @@ class AdminController extends AbstractController
         private string $adminPassword,
         private string $contentManagerPassword)
     {
-    }
-
-    public static function getSubscribedServices(): array
-    {
-        return array_merge(parent::getSubscribedServices(), [EntityManagerInterface::class]);
     }
 
     #[Route(name: 'admin_login', path: '/admin/', methods: ['GET', 'POST'])]
