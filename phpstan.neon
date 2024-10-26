@@ -6,7 +6,6 @@ parameters:
     - tests
 
   ignoreErrors:
-    - '#Function twig_escape_filter not found\.#'
     - '#Variable \$p_[a-z_]+ might not be defined#'
     - '#Variable \$p\d might not be defined#'
 
