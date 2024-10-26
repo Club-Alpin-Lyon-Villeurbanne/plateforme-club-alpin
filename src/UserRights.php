@@ -71,7 +71,7 @@ class UserRights implements ResetInterface
             return $this->getAllCommissionCodes();
         }
 
-        return array_map('basename', explode('|', $userRights[$right]));
+        return array_map(static fn ($comm) => \array_slice(explode(':', $comm), -1)[0], explode('|', $userRights[$right]));
     }
 
     private function loadRights(): array
