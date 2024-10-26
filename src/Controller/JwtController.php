@@ -31,11 +31,4 @@ class JwtController extends AbstractController
             'token' => $JWTTokenManager->create($user),
         ]);
     }
-
-    public static function getSubscribedServices(): array
-    {
-        return array_merge(parent::getSubscribedServices(), [
-            JWTTokenManagerInterface::class,
-        ]);
-    }
 }
