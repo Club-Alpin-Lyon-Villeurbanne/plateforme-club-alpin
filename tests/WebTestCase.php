@@ -7,7 +7,6 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Repository\UsertypeRepository;
 use App\UserRights;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseWebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -18,12 +17,12 @@ abstract class WebTestCase extends BaseWebTestCase
 {
     use SessionHelper;
 
-    protected static ?KernelBrowser $client;
+    protected $client;
 
     protected function setUp(): void
     {
         parent::setUp();
-        static::$client = static::createClient();
+        $this->client = static::createClient();
     }
 
     protected function signup(?string $email = null)
@@ -85,7 +84,7 @@ abstract class WebTestCase extends BaseWebTestCase
         // the client must register the session cookie
         // taken from TestSessionListener
         $params = session_get_cookie_params();
-        static::$client->getCookieJar()->set(new Cookie($session->getName(), $session->getId(), 0 === $params['lifetime'] ? 0 : time() + $params['lifetime'], $params['path'], $params['domain'], $params['secure'], $params['httponly']));
+        $this->client->getCookieJar()->set(new Cookie($session->getName(), $session->getId(), 0 === $params['lifetime'] ? 0 : time() + $params['lifetime'], $params['path'], $params['domain'], $params['secure'], $params['httponly']));
 
         return $user;
     }
@@ -97,7 +96,7 @@ abstract class WebTestCase extends BaseWebTestCase
         $session->save();
 
         $this->getContainer()->get('security.token_storage')->setToken(null);
-        static::$client->getCookieJar()->clear();
+        $this->client->getCookieJar()->clear();
     }
 
     protected function createCommission(string $name = 'Alpinisme'): Commission
@@ -121,6 +120,6 @@ abstract class WebTestCase extends BaseWebTestCase
 
     protected function getSession(): Session
     {
-        return $this->createSession(static::$client);
+        return $this->createSession($this->client);
     }
 }

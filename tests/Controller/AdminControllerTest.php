@@ -9,7 +9,7 @@ class AdminControllerTest extends WebTestCase
 {
     public function testLogin()
     {
-        static::$client->request('GET', '/admin/');
+        $this->client->request('GET', '/admin/');
         $this->assertResponseStatusCodeSame(302);
         $this->assertResponseRedirects('http://localhost/login');
 
@@ -18,10 +18,10 @@ class AdminControllerTest extends WebTestCase
 
         $this->assertEquals($this->getSession()->has(SecurityConstants::SESSION_USER_ROLE_KEY), null);
 
-        static::$client->request('GET', '/admin/');
+        $this->client->request('GET', '/admin/');
         $this->assertResponseStatusCodeSame(200);
 
-        static::$client->submitForm('admin_connect', [
+        $this->client->submitForm('admin_connect', [
             'username' => 'caflyon',
             'password' => 'prout',
         ]);
@@ -29,7 +29,7 @@ class AdminControllerTest extends WebTestCase
 
         $this->assertEquals($this->getSession()->has(SecurityConstants::SESSION_USER_ROLE_KEY), null);
 
-        static::$client->submitForm('admin_connect', [
+        $this->client->submitForm('admin_connect', [
             'username' => 'caflyon',
             'password' => 'admin',
         ]);
