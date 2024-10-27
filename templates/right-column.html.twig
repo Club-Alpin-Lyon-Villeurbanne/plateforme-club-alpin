@@ -29,7 +29,7 @@
 
                     <div id="slides">
                         {% for partenaire in partenaires %}
-                            <a target="_blank" href="/goto/partenaire/{{ partenaire.getId }}/{{ partenaire.getName | slugify }}.html">
+                            <a target="_blank" href="{{ partenaire.getUrl }}">
                                 <img src="/ftp/partenaires/{{ partenaire.getImage }}" alt="{{ partenaire.getName }}">
                             </a>
                         {% endfor %}
