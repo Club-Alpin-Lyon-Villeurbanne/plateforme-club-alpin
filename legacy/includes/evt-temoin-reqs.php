@@ -10,9 +10,9 @@ $handle['temoin'] = '';
 $handle['temoin-title'] = '';
 
 // compter tous les participants, y compris les encadrants
-$req = "SELECT COUNT(id_evt_join) FROM caf_evt_join
+$req = 'SELECT COUNT(id_evt_join) FROM caf_evt_join
             WHERE status_evt_join =1
-            AND evt_evt_join =" . (int) $handle['id_evt'] . '
+            AND evt_evt_join =' . (int) $handle['id_evt'] . '
             ORDER BY caf_evt_join.id_evt_join ASC';
 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $count = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
