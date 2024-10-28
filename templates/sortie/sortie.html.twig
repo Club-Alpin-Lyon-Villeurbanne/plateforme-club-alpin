@@ -910,7 +910,7 @@
                     {{ nEnAttente > 0 ? ' et '~nEnAttente~' inscription'~ (nEnAttente > 1 ? 's' : '' ) ~' en attente de confirmation' : '' }}
                 </p>
 
-                {% if nInscritsHorsEncadrement > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
+                {% if nInscritsTotal > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
                     <table class="big-lines-table" style="width:570px; margin-left:20px;">
 
                         {% for inscrit in event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) %}
