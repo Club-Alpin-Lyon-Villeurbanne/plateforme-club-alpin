@@ -63,10 +63,15 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
         // compte nb total articles
         $req = "SELECT COUNT(id_article)
-		FROM caf_article, caf_commission
-		WHERE status_article=0
-		AND commission_article=id_commission
-		AND (code_commission LIKE '" . implode("' OR code_commission LIKE '", $tab) . "') "; // condition OR pour toutes les commissions autorisées
+        FROM caf_commission c, caf_article a
+            LEFT JOIN caf_evt e ON (a.evt_article = e.id_evt)
+            LEFT JOIN caf_commission ce ON e.commission_evt = ce.id_commission
+		WHERE a.status_article=0
+		AND a.commission_article = c.id_commission
+		AND (
+            c.code_commission IN ('" . implode("','", $tab) . "')
+            OR (a.commission_article = -1 AND e.id_evt IS NOT NULL AND ce.code_commission IN ('" . implode("','", $tab) . "'))
+        ) "; // condition OR pour toutes les commissions autorisées
 
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $compte = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM)); // nombre total d'evts à valider, défini plus haut
@@ -82,13 +87,18 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
         // articles à valider, selon la (les) commission dont nous sommes responsables
         $req = "SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
-					, id_user, nickname_user, lastname_user, firstname_user, code_commission, title_commission
-		FROM caf_article
-		LEFT JOIN caf_commission ON (caf_commission.id_commission = caf_article.commission_article)
-		LEFT JOIN caf_user ON (caf_user.id_user = caf_article.user_article)
+					, id_user, nickname_user, lastname_user, firstname_user, c.code_commission, c.title_commission
+        FROM caf_commission c, caf_article a
+		    LEFT JOIN caf_user u ON (u.id_user = a.user_article)
+            LEFT JOIN caf_evt e ON (a.evt_article = e.id_evt)
+            LEFT JOIN caf_commission ce ON e.commission_evt = ce.id_commission
 		WHERE status_article=0
-		AND (code_commission LIKE '" . implode("' OR code_commission LIKE '", $tab) . "') " // condition OR pour toutes les commissions autorisées
-        . 'AND id_user = user_article
+		AND a.commission_article = c.id_commission
+		AND (
+            c.code_commission IN ('" . implode("','", $tab) . "')
+            OR (a.commission_article = -1 AND e.id_evt IS NOT NULL AND ce.code_commission IN ('" . implode("','", $tab) . "'))
+        ) " // condition OR pour toutes les commissions autorisées
+        . 'AND u.id_user = a.user_article
 		ORDER BY topubly_article desc,  tsp_validate_article ASC
 		LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
     }
