@@ -1,5 +1,6 @@
 ARG PHP_VERSION=8.2.25           # https://hub.docker.com/_/php/tags?page=1&name=8.2
 ARG COMPOSER_VERSION=2.8.1       # https://hub.docker.com/_/composer/tags
+ARG NODE_VERSION=23              # https://hub.docker.com/_/node/tags
 
 ARG PHIVE_VERSION=0.15.3         # https://github.com/phar-io/phive/releases
 ARG PHPEXTINST_VERSION=2.6.1     # https://github.com/mlocati/docker-php-extension-installer/releases
@@ -11,17 +12,19 @@ ARG XDEBUG_VERSION=3.3.2         # https://pecl.php.net/package/xdebug
 ARG UID
 ARG GID
 
-FROM composer:${COMPOSER_VERSION} as build_composer
+FROM docker.io/library/node:${NODE_VERSION} AS build_node
+
+FROM docker.io/library/composer:${COMPOSER_VERSION} AS build_composer
 
 WORKDIR /build
 
-FROM php:${PHP_VERSION}-apache as build_installer
+FROM docker.io/library/php:${PHP_VERSION}-apache AS build_installer
 ARG PHPEXTINST_VERSION
 
 RUN curl -fsLo /usr/local/bin/install-php-extensions https://github.com/mlocati/docker-php-extension-installer/releases/download/${PHPEXTINST_VERSION}/install-php-extensions && \
     chmod +x /usr/local/bin/install-php-extensions
 
-FROM php:${PHP_VERSION}-apache as build_phive
+FROM docker.io/library/php:${PHP_VERSION}-apache AS build_phive
 ARG PHIVE_VERSION
 
 RUN apt-get update && \
@@ -36,7 +39,7 @@ RUN curl -fsLo phive.phar "https://github.com/phar-io/phive/releases/download/${
     chmod +x phive.phar && \
     mv phive.phar /usr/local/bin/phive
 
-FROM php:${PHP_VERSION}-apache
+FROM docker.io/library/php:${PHP_VERSION}-apache
 
 RUN apt-get update &&  apt-get install -y --no-install-recommends \
     libicu-dev \
@@ -91,8 +94,8 @@ RUN install-php-extensions \
         gd \
         xdebug-${XDEBUG_VERSION}
 
-COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
-COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=build_node /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=build_node /usr/local/bin/node /usr/local/bin/node
 RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
