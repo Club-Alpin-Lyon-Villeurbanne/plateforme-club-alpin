@@ -95,8 +95,7 @@ COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=node /usr/local/bin/node /usr/local/bin/node
 RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
-RUN echo "fr_FR.UTF-8 UTF-8" >> /etc/locale. &&  locale-gen
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
 
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 ENV APACHE_DOC_ROOT=/var/www/html/public
