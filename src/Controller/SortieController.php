@@ -103,7 +103,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_INSCRIPTIONS_MODIFICATION', $event)) {
-            $this->addFlash('error', 'Vous n\'êtes pas autorisé à celà.');
+            $this->addFlash('error', 'Vous n\'êtes pas autorisé.e à cela.');
 
             return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
         }
