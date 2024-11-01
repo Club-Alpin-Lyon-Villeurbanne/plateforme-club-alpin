@@ -34,7 +34,7 @@ $distance_evt = trim(stripslashes($_POST['distance_evt']));
 $distance_evt = str_replace(',', '.', $distance_evt);
 $matos_evt = trim(stripslashes($_POST['matos_evt']));
 $itineraire = trim(stripslashes($_POST['itineraire']));
-$difficulte_evt = trim(stripslashes($_POST['difficulte_evt']));
+$difficulte_evt = substr(trim(stripslashes($_POST['difficulte_evt'])), 0, 50);
 $description_evt = trim(stripslashes($_POST['description_evt']));
 $need_benevoles_evt = isset($_POST['need_benevoles_evt']) && 'on' == $_POST['need_benevoles_evt'] ? 1 : 0;
 
