@@ -1,0 +1,19 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    Vous avez été déclaré absent
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        Vous avez été déclaré absent à la sortie <a href="{{ event_url }}">{{ event_name }}</a>.
+        Il se peut que vous ayez oublié de signaler votre absence ou qu'elle ait été signalée trop tard.
+        S'il s'agit d'une erreur, vous pouvez répondre à cet email pour en faire part à l'encadrant de la sortie.
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+Vous avez été déclaré absent à la sortie {{ event_name }} ({{ event_url }}).
+Il se peut que vous ayez oublié de signaler votre absence ou qu'elle ait été signalée trop tard.
+S'il s'agit d'une erreur, vous pouvez répondre à cet email pour en faire part à l'encadrant de la sortie.
+{% endblock %}

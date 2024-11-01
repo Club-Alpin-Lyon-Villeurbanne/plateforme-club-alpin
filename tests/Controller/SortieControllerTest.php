@@ -7,6 +7,7 @@ use App\Entity\Evt;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Tests\WebTestCase;
+use Doctrine\ORM\EntityManagerInterface;
 
 class SortieControllerTest extends WebTestCase
 {
@@ -439,6 +440,109 @@ class SortieControllerTest extends WebTestCase
         $this->assertEmailTextBodyContains($emails[0], 'Prout PROUT');
         $this->assertEmailHtmlBodyContains($emails[0], 'Vous avez reçu un message de');
         $this->assertEmailHtmlBodyContains($emails[0], 'Prout PROUT');
+    }
+
+    public function testSortieUpdateInscriptionsAccepte()
+    {
+        $userOwner = $this->signup();
+        $event = $this->createEvent($userOwner);
+        $participant = $this->signup();
+
+        $participation = new EventParticipation($event, $participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_NON_CONFIRME);
+        self::getContainer()->get(EntityManagerInterface::class)->persist($participation);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        self::getContainer()->get(EntityManagerInterface::class)->refresh($event);
+
+        $this->signin($userOwner);
+        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+
+        // Update status to valide
+        $this->client->request('POST', sprintf('/sortie/%d/update-inscriptions', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'sortie_update_inscriptions'),
+            'id_evt_join' => [$participation->getId()],
+            'status_evt_join_' . $participation->getId() => EventParticipation::STATUS_VALIDE,
+            'role_evt_join_' . $participation->getId() => EventParticipation::ROLE_INSCRIT,
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+
+        // Check email
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+
+        $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $participant->getNickname(), $participant->getEmail()));
+        $this->assertEmailSubjectContains($emails[0], 'Votre inscription est confirmée');
+        $this->assertEmailTextBodyContains($emails[0], 'confirmé(e)');
+        $this->assertEmailHtmlBodyContains($emails[0], 'confirmé(e)');
+    }
+
+    public function testSortieUpdateInscriptionsRefuse()
+    {
+        $userOwner = $this->signup();
+        $event = $this->createEvent($userOwner);
+        $participant = $this->signup();
+
+        $participation = new EventParticipation($event, $participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_NON_CONFIRME);
+        self::getContainer()->get(EntityManagerInterface::class)->persist($participation);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        self::getContainer()->get(EntityManagerInterface::class)->refresh($event);
+
+        $this->signin($userOwner);
+        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+
+        // Update status to refuse
+        $this->client->request('POST', sprintf('/sortie/%d/update-inscriptions', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'sortie_update_inscriptions'),
+            'id_evt_join' => [$participation->getId()],
+            'status_evt_join_' . $participation->getId() => EventParticipation::STATUS_REFUSE,
+            'role_evt_join_' . $participation->getId() => EventParticipation::ROLE_INSCRIT,
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+
+        // Check email
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+
+        $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $participant->getNickname(), $participant->getEmail()));
+        $this->assertEmailSubjectContains($emails[0], 'Votre inscription est déclinée');
+        $this->assertEmailTextBodyContains($emails[0], 'déclinée');
+        $this->assertEmailHtmlBodyContains($emails[0], 'déclinée');
+    }
+
+    public function testSortieUpdateInscriptionsAbsent()
+    {
+        $userOwner = $this->signup();
+        $event = $this->createEvent($userOwner);
+        $participant = $this->signup();
+
+        $participation = new EventParticipation($event, $participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        self::getContainer()->get(EntityManagerInterface::class)->persist($participation);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        self::getContainer()->get(EntityManagerInterface::class)->refresh($event);
+
+        $this->signin($userOwner);
+        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+
+        // Update status to absent
+        $this->client->request('POST', sprintf('/sortie/%d/update-inscriptions', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'sortie_update_inscriptions'),
+            'id_evt_join' => [$participation->getId()],
+            'status_evt_join_' . $participation->getId() => EventParticipation::STATUS_ABSENT,
+            'role_evt_join_' . $participation->getId() => EventParticipation::ROLE_INSCRIT,
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+
+        // Check email
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+
+        $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $participant->getNickname(), $participant->getEmail()));
+        $this->assertEmailHeaderSame($emails[0], 'Reply-To', sprintf('"%s" <%s>', $userOwner->getEmail(), $userOwner->getEmail()));
+        $this->assertEmailSubjectContains($emails[0], 'Vous avez été déclaré absent');
+        $this->assertEmailTextBodyContains($emails[0], 'absent à la sortie');
+        $this->assertEmailHtmlBodyContains($emails[0], 'absent à la sortie');
     }
 
     private function createEvent(User $user): Evt
