@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
+use App\Entity\User;
 use App\Mailer\Mailer;
 use App\Repository\EventParticipationRepository;
 use App\Repository\UserRepository;
@@ -18,6 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Twig\Environment;
 
@@ -94,7 +96,7 @@ class SortieController extends AbstractController
     }
 
     #[Route(name: 'sortie_update_inscription', path: '/sortie/{id}/update-inscriptions', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function sortieUpdateInscriptions(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
+    public function sortieUpdateInscriptions(#[CurrentUser] User $user, Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
     {
         if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token'))) {
             $this->addFlash('error', 'Jeton de validation invalide.');
@@ -107,8 +109,6 @@ class SortieController extends AbstractController
 
             return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
         }
-
-        $user = $this->getUser();
 
         foreach ($request->request->all('id_evt_join', []) as $participationId) {
             $status = $request->request->get('status_evt_join_' . $participationId);
@@ -146,11 +146,11 @@ class SortieController extends AbstractController
                 ->setLastchangeWho($user)
             ;
 
-            if (!\in_array($status, [EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_REFUSE], true)) {
+            if (!\in_array($status, [EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_REFUSE, EventParticipation::STATUS_ABSENT], true)) {
                 continue;
             }
 
-            if ($event->isFinished() || 'on' === $request->request->get('disablemails')) {
+            if (($event->isFinished() && !\in_array($status, [EventParticipation::STATUS_ABSENT], true)) || 'on' === $request->request->get('disablemails')) {
                 continue;
             }
 
@@ -200,12 +200,14 @@ class SortieController extends AbstractController
                 'event_name' => $event->getTitre(),
             ];
 
-            if (EventParticipation::STATUS_VALIDE === $status) {
-                $mailer->send($toMail, 'transactional/sortie-participation-confirmee', $context);
-            }
-            if (EventParticipation::STATUS_REFUSE === $status) {
-                $mailer->send($toMail, 'transactional/sortie-participation-declinee', $context);
-            }
+            $template = match ($status) {
+                EventParticipation::STATUS_VALIDE => 'transactional/sortie-participation-confirmee',
+                EventParticipation::STATUS_REFUSE => 'transactional/sortie-participation-declinee',
+                EventParticipation::STATUS_ABSENT => 'transactional/sortie-participation-absent',
+            };
+
+            $replyTo = EventParticipation::STATUS_ABSENT === $status ? $user->getEmail() : null;
+            $mailer->send($toMail, $template, $context, replyTo: $replyTo);
         }
 
         $em->flush();
