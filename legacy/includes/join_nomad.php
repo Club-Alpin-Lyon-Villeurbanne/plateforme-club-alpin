@@ -71,13 +71,13 @@ if (user()) {
             echo '
 						<script type="text/javascript">
 							prefilled[prefilled.length] = {
-								"civ_user": "' . addslashes($row['civ_user']) . '",
-								"cafnum_user": "' . addslashes($row['cafnum_user']) . '",
-								"firstname_user": "' . addslashes($row['firstname_user']) . '",
-								"lastname_user": "' . addslashes($row['lastname_user']) . '",
-								"tel_user": "' . addslashes($row['tel_user']) . '",
-								"tel2_user": "' . addslashes($row['tel2_user']) . '",
-								"email_user": "' . addslashes($row['email_user']) . '"
+								"civ_user": ' . json_encode($row['civ_user'], \JSON_THROW_ON_ERROR) . ',
+								"cafnum_user": ' . json_encode($row['cafnum_user'], \JSON_THROW_ON_ERROR) . ',
+								"firstname_user": ' . json_encode($row['firstname_user'], \JSON_THROW_ON_ERROR) . ',
+								"lastname_user": ' . json_encode($row['lastname_user'], \JSON_THROW_ON_ERROR) . ',
+								"tel_user": ' . json_encode($row['tel_user'], \JSON_THROW_ON_ERROR) . ',
+								"tel2_user": ' . json_encode($row['tel2_user'], \JSON_THROW_ON_ERROR) . ',
+								"email_user": ' . json_encode($row['email_user'], \JSON_THROW_ON_ERROR) . '
 							};
 						</script>';
         } ?>
