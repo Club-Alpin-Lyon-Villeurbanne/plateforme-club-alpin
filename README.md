@@ -1,4 +1,4 @@
-# Code source pour le site du Club Alpin Français de Lyon-Villeurbanne
+# Code source pour l'appli web du Club Alpin Français de Lyon-Villeurbanne
 
 [![Static Badge](https://img.shields.io/badge/Automatisation-github_actions-orange)](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/actions)
 [![Clever Cloud](https://img.shields.io/badge/Hébergement-Clever_cloud-yellow)](https://console.clever-cloud.com/)
@@ -9,36 +9,40 @@
 
 Bienvenue sur le dépôt du code source de la plateforme en ligne du Club Alpin Français de Lyon-Villeurbanne.
 Ce site est un portail dédié à notre communauté, offrant des fonctionnalités variées, de l'organisation d'événements à la gestion des adhésions et bien plus encore.
-Le site a été développé en PHP par l'agence HereWeCom vers 2010, puis ils nous ont cédé le code. Un refactoring a ensuite intégré le framework Symfony.
-Il utilise une base MySQL 5.7.
-Le déploiement est hébergé sur Clever Cloud, avec un CI/CD via Github Actions.
+Le site a été développé en PHP par l'agence HereWeCom vers 2010, puis ils nous ont cédé le code. Un refactoring a ensuite permis d'intégrer le framework Symfony.
 
-## Organisation du projet
+## 🛠️ Outils & Environnements
+### Outils
+- 📋 Tickets : [Clickup](https://app.clickup.com/)
+- 🐛 Report de bugs : [sentry](https://club-alpin-lyon.sentry.io/issues/?project=6021900&statsPeriod=14d)
+- ⚙️ Build : [Github Actions](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/actions)
 
-Nous utilisons [ClickUp](https://app.clickup.com/42653954/v/l/18np82-82) pour gérer les tâches de développement. Pour y accéder, envoyez une demande au [groupe informatique](mailto:numerique@clubalpinlyon.fr).
+### Environnements
+- 🧪 Test : [www.clubalpinlyon.top](https://www.clubalpinlyon.top)
+- 🚀 Production : [www.clubalpinlyon.fr](https://www.clubalpinlyon.fr)
 
 ## Infrastructure
 
-Le site est hébergé sur [Clever Cloud](https://www.clever-cloud.com/). L’infrastructure consiste en un serveur web et une base de données MySQL 5.7. Cette base est hébergée et managée par Clever Cloud, sans accès SSH. Les identifiants sont stockés directement dans l’interface de Clever Cloud ; pour y accéder, adressez-vous au groupe informatique.
+Nous disposons de deux environnements hébergés sur [Clever Cloud](https://www.clever-cloud.com/):
+
+La [staging](https://www.clubalpinlyon.top) pour réaliser nos tests une fois les développements intégrés
+La [production](https://www.clubalpinlyon.fr), l'environnement final de nos utilisateurs.
+Un déploiement continu via une Github Action est en place pour la staging, ce qui signifie que chaque Pull Request mergée devient rapidement disponible à tester sur cet environnement.
+
+Pour la production, les déploiements se font manuellement par une Github Action.
+
+L’infrastructure consiste en un serveur web et une base de données MySQL 8.0. Cette base est hébergée et managée par Clever Cloud.
 
 ## Cronjobs
 
-Les cronjobs sont maintenant gérés via l'interface de Clever Cloud et non plus directement sur le serveur. Ils incluent des tâches comme :
+Les taches récurrentes sont gérées directement depuis le code en s'appuyant sur le module de cronjobs fourni par Clever Cloud.
+Elles sont stockées dans le répertoire clevercloud/crons. Il faut se référer à cette documentation si besoin : https://developers.clever-cloud.com/doc/administrate/cron/
 
-- envoi de mails
 - vérification de la validité des adhésions via des fichiers FFCAM
 - sauvegarde des images
-- rappels de validation des sorties (tâches nocturnes)
-- renouvellement du certificat SSL
+- rappels de validation des sorties
 
-## Rôles
-
-Le site comporte deux rôles principaux :
-
-1. **Admin** : ce rôle dispose de tous les droits, y compris la possibilité de modifier les permissions importantes, comme les rôles de président ou de responsables de commission.
-2. **Gestionnaire de contenu** : ce rôle permet de modifier les pages et les blocs de contenu du site sans disposer des droits d'administration complets.
-
-## Local setup
+## Installation de l'environnement local
 
 #### Prérequis
 
@@ -52,14 +56,12 @@ Le site comporte deux rôles principaux :
 - `make init` : lance les conteneurs (site web, base de données, phpMyAdmin & mailcatcher)
 - `make database-init` : initialise et hydrate la base de données
 
-#### Résultat
-
 - Accès au site : `http://127.0.0.1:8000/`
+- Compte admin par défaut : `test@clubalpinlyon.fr` / `test`
 - PHPMyAdmin : `http://127.0.0.1:8080/`, accès : `root` / `test`
 - Mailcatcher : `http://127.0.0.1:1080/`
-- Compte admin par défaut : `test@clubalpinlyon.fr` / `test`
 
-⚠️ Les tests et l'upload d'images sont encore en cours de configuration. 🚧
+⚠️ L'upload d'images est encore en cours de configuration. 🚧
 
 #### Troubleshooting
 
@@ -103,15 +105,23 @@ Nous encourageons les contributions ! Que vous soyez un développeur expériment
 
 ### Processus de contribution
 
-1. **Forker le répertoire** : Forker le répertoire sur votre compte GitHub.
-2. **Cloner le répertoire** : Clonez le répertoire forké sur votre machine locale pour y apporter des modifications.
-3. **Création d'une nouvelle branche** : Créez une nouvelle branche sur votre clone, nommée en fonction de la fonctionnalité ou du bug sur lequel vous travaillez.
-4. **Effectuez vos modifications** : Effectuez les modifications nécessaires sur cette branche en respectant les conventions de codage.
-5. **Commit** : Une fois satisfait, faites un commit en décrivant clairement les modifications apportées.
-6. **Push** : Faites un push de votre branche sur GitHub.
-7. **Pull Request (PR)** : Créez une PR et décrivez-la en français. Pour toute modification visuelle, incluez une capture d’écran. Seule l'équipe informatique peut merger une PR.
+1. **Cloner le répertoire** : Clonez le répertoire sur votre machine locale pour y apporter des modifications.
+2. **Création d'une nouvelle branche** : Créez une nouvelle branche, nommée en fonction de la fonctionnalité ou du bug sur lequel vous travaillez.
+3. **Effectuez vos modifications** : Effectuez les modifications nécessaires sur cette branche en respectant les conventions de codage.
+4. **Commit** : Une fois satisfait, faites un commit en décrivant clairement les modifications apportées.
+5. **Push** : Faites un push de votre branche sur GitHub.
+6. **Pull Request (PR)** : Créez une PR et décrivez-la en français. Pour toute modification visuelle, incluez une capture d’écran. Seule l'équipe informatique peut merger une PR.
 
 Nous attendons avec impatience vos contributions et vous remercions pour votre temps et votre effort ! 🙏🏼
+
+## Rôles
+
+Le site comporte deux rôles annexes :
+
+1. **Admin** : ce rôle dispose de tous les droits, y compris la possibilité de modifier les permissions importantes, comme les rôles de président ou de responsables de commission.
+2. **Gestionnaire de contenu** : ce rôle permet de modifier les pages et les blocs de contenu du site sans disposer des droits d'administration complets.
+
+On y accède via l'url https://clubalpinlyon.fr/admin/ et avec des identifiants spécifiques.
 
 ### FAQ
 
