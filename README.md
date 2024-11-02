@@ -1,15 +1,15 @@
 # Code source pour l'appli web du Club Alpin Français de Lyon-Villeurbanne
 
-[![Static Badge](https://img.shields.io/badge/Automatisation-github_actions-orange)](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/actions)
+[![CI/CD](https://img.shields.io/badge/Automatisation-github_actions-orange)](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/actions)
 [![Clever Cloud](https://img.shields.io/badge/Hébergement-Clever_cloud-yellow)](https://console.clever-cloud.com/)
 ![PHP Version](https://img.shields.io/badge/PHP-8.2-blue?logo=php)
 ![Symfony](https://img.shields.io/badge/Symfony-6.4-6d6dff?logo=symfony)
 ![Database](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql)
 
 
-Bienvenue sur le dépôt du code source de la plateforme en ligne du Club Alpin Français de Lyon-Villeurbanne.
-Ce site est un portail dédié à notre communauté, offrant des fonctionnalités variées, de l'organisation d'événements à la gestion des adhésions et bien plus encore.
-Le site a été développé en PHP par l'agence HereWeCom vers 2010, puis ils nous ont cédé le code. Un refactoring a ensuite permis d'intégrer le framework Symfony.
+Bienvenue sur le dépôt du code source de l'application web utilisée du Club Alpin Français de Lyon-Villeurbanne pour la gestion des adhérents, du contenu du site (pages & articles), de la gestion des sorties et des participants à ces sorties.
+Le développement de ce site en php a commencé vers 2010. Vers 2019, un groupe de bénévole a entrepris de réduire la dette technique afin de faciliter la maintenance et l'évolution de cet outil vital pour le Club Alpin de Lyon.
+Cette phase d'amélioration a permis de migrer vers Symfony, d'améliorer l'infrastructure, la sécurité et de rajouter des fonctionnalités.
 
 ## 🛠️ Outils & Environnements
 ### Outils
