@@ -9,6 +9,8 @@ ARG IGBINARY_VERSION=3.2.16      # https://pecl.php.net/package/igbinary
 ARG APCU_VERSION=5.1.24          # https://pecl.php.net/package/apcu
 ARG IMAGICK_VERSION=3.7.0        # https://pecl.php.net/package/imagick
 ARG XDEBUG_VERSION=3.3.2         # https://pecl.php.net/package/xdebug
+ARG UOPZ_VERSION=7.1.1           # https://pecl.php.net/package/uopz
+
 ARG UID
 ARG GID
 
@@ -92,7 +94,8 @@ RUN install-php-extensions \
         sockets-stable \
         intl-stable \
         gd \
-        xdebug-${XDEBUG_VERSION}
+        xdebug-${XDEBUG_VERSION} \
+        uopz-${UOPZ_VERSION}
 
 COPY --from=build_node /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=build_node /usr/local/bin/node /usr/local/bin/node

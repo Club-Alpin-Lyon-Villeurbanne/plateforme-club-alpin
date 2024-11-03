@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Tests\TestHelpers;
+
+class FfcamTestHelper
+{
+    private const TEMPLATE = '%s;6900;%s;99;A1;;1986-02-24;%s;M;%s;%s;;LE BELVEDERE;12 RUE DES LILAS;;69001;LYON;0;0;0000-00-00;0;;0;;0;;0472000001 0630000001;0687000001;;04.72.00.00.01;0000-00-00;;contact;RANDONNEE,SKI ALPIN,SKI NORDIQUE;;0;;;;;;;;;;;;;;;;;;;;;;;;;A;0;3;;;O;,';
+
+    public static function generateFile(array $members): string
+    {
+        $filePath = tempnam(sys_get_temp_dir(), 'ffcam_');
+        $content = '';
+
+        foreach ($members as $member) {
+            $cafnum = $member['cafnum'] ?? '690099990001';
+            $shortCafnum = substr($cafnum, 4);
+            $lastname = $member['lastname'] ?? 'DUPONT';
+            $firstname = $member['firstname'] ?? 'JEAN';
+            $adhesionDate = $member['adhesionDate'] ?? '0000-00-00';
+
+            $content .= sprintf(
+                self::TEMPLATE,
+                $cafnum,
+                $shortCafnum,
+                $adhesionDate,
+                $lastname,
+                $firstname
+            ) . "\n";
+        }
+
+        file_put_contents($filePath, $content);
+
+        return $filePath;
+    }
+}

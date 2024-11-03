@@ -97,4 +97,52 @@ SQL;
             ->getResult()
         ;
     }
+
+    public function blockExpiredAccounts(): void
+    {
+        $lastYear = (new \DateTime())->modify('-1 year')->format('Y');
+        $expiryDate = strtotime("$lastYear-08-31");
+        $tenDaysAgo = strtotime('-10 days');
+
+        $qb = $this->createQueryBuilder('u');
+
+        $qb->update()
+            ->set('u.doitRenouveler', ':shouldRenew')
+            ->where('u.id != :adminId')
+            ->andWhere('u.nomade = :isNomade')
+            ->andWhere('u.manuelUser = :isManual')
+            ->andWhere(
+                $qb->expr()->orX(
+                    'u.dateAdhesion <= :expiryDate',
+                    'u.tsUpdate <= :tenDaysAgo'
+                )
+            )
+            ->setParameters([
+                'shouldRenew' => true,
+                'adminId' => 1,
+                'isNomade' => false,
+                'isManual' => false,
+                'expiryDate' => $expiryDate,
+                'tenDaysAgo' => $tenDaysAgo,
+            ])
+            ->getQuery()
+            ->execute();
+    }
+
+    public function removeExpiredFiliations(): void
+    {
+        $expiryDate = new \DateTime('-200 days');
+
+        $qb = $this->createQueryBuilder('u')
+            ->update()
+            ->set('u.cafnumParent', 'NULL')
+            ->where('u.tsUpdate < :expiryDate')
+            ->setParameter('expiryDate', $expiryDate->getTimestamp());
+
+        try {
+            $qb->getQuery()->execute();
+        } catch (\Exception $exc) {
+            \Sentry\captureException($exc);
+        }
+    }
 }
