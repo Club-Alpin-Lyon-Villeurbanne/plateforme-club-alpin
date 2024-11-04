@@ -121,7 +121,7 @@ Le site comporte deux rôles annexes :
 1. **Admin** : ce rôle dispose de tous les droits, y compris la possibilité de modifier les permissions importantes, comme les rôles de président ou de responsables de commission.
 2. **Gestionnaire de contenu** : ce rôle permet de modifier les pages et les blocs de contenu du site sans disposer des droits d'administration complets.
 
-On y accède via l'url https://clubalpinlyon.fr/admin/. Les identifiants en local sont: `admin` / `admin` et `content_manager` / `content`.
+On y accède via l'url https://clubalpinlyon.fr/admin/. Les identifiants en local sont: `admin` / `admin` et `admin_contenu` / `contenu`.
 
 ### FAQ
 

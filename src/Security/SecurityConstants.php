@@ -5,7 +5,7 @@ namespace App\Security;
 class SecurityConstants
 {
     public const ADMIN_USERNAME = 'caflyon';
-    public const CONTENT_MANAGER_USERNAME = 'content_manager';
+    public const CONTENT_MANAGER_USERNAME = 'admin_contenu';
 
     public const CSRF_ADMIN_TOKEN_ID = 'admin_authenticate';
 
