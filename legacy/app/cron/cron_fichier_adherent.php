@@ -43,7 +43,7 @@ $logger = LegacyContainer::get('legacy_logger');
 
 $today = new DateTime();
 $startDate = new DateTime($today->format('Y') . '-08-25');
-$endDate = new DateTime($today->format('Y') . '-12-31');
+$endDate = new DateTime($today->format('Y') . '-10-31');
 
 global $hasTolerancyPeriodPassed;
 $hasTolerancyPeriodPassed = !($today >= $startDate && $today <= $endDate);
@@ -267,7 +267,6 @@ function run()
             'nickname_user' => $member->nickname,
             'manuel_user' => 0,
             'nomade_user' => 0,
-            'date_adhesion_user' => $member->adhesionDate,
         ];
 
         if (!$member->isLicenceExpired) {
