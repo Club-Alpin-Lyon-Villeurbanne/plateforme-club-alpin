@@ -185,19 +185,24 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
             . '<td>' . (int) $elt['valid_user'] . '</td>'
             . '<td>' . html_utf8($elt['civ_user']) . '</td>'
             . '<td>' . html_utf8($elt['lastname_user']) . '</td>'
-            . '<td>' . html_utf8($elt['firstname_user']) . '</td>'
-            . '<td>' . ($elt['date_adhesion_user'] ? date('Y-m-d', $elt['date_adhesion_user']) : '-') . '</td>'
-            . '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
-            . '<td><span style="display:none">' . $elt['birthday_user'] . '</span>' . ($elt['birthday_user'] ? (int) ($elt['birthday_user']) . ' ans' : '...') . '</td>'
-            . '<td>' . html_utf8($elt['tel_user']) . '<br />' . html_utf8($elt['tel2_user']) . '</td>'
-            . '<td><a href="mailto:' . html_utf8($elt['email_user']) . '" title="Contact direct">' . html_utf8($elt['email_user']) . '</a></td>'
-            // .'<td>'.nl2br(html_utf8($elt['adresse_user'])).'</td>'
-            . '<td>' . html_utf8($elt['cp_user']) . '</td>'
-            . '<td>' . html_utf8($elt['ville_user']) . '</td>'
-            // .'<td>'.html_utf8($elt['pays_user']).'</td>'
-            . '<td>' . ($elt['doit_renouveler_user'] ? 'expirée' : 'valide') . ' ' . (!$elt['doit_renouveler_user'] && isset($elt['alerte_renouveler_user']) && $elt['alerte_renouveler_user'] ? '<span style="color:red">* Doit renouveler</span>' : '') . '</td>'
-            // .'<td></td>'
-            . '</tr>';
+            . '<td>' . html_utf8($elt['firstname_user']) . '</td>';
+
+        if ($elt['doit_renouveler_user']) {
+            echo '<td style="color:red">Licence expirée</td>';
+        } else {
+            echo '<td>' . ($elt['date_adhesion_user'] ? date('Y-m-d', $elt['date_adhesion_user']) : '-') . '</td>';
+        }
+        echo '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
+        . '<td><span style="display:none">' . $elt['birthday_user'] . '</span>' . ($elt['birthday_user'] ? (int) ($elt['birthday_user']) . ' ans' : '...') . '</td>'
+        . '<td>' . html_utf8($elt['tel_user']) . '<br />' . html_utf8($elt['tel2_user']) . '</td>'
+        . '<td><a href="mailto:' . html_utf8($elt['email_user']) . '" title="Contact direct">' . html_utf8($elt['email_user']) . '</a></td>'
+        // .'<td>'.nl2br(html_utf8($elt['adresse_user'])).'</td>'
+        . '<td>' . html_utf8($elt['cp_user']) . '</td>'
+        . '<td>' . html_utf8($elt['ville_user']) . '</td>'
+        // .'<td>'.html_utf8($elt['pays_user']).'</td>'
+        . '<td>' . ($elt['doit_renouveler_user'] ? 'expirée' : 'valide') . ' ' . (!$elt['doit_renouveler_user'] && isset($elt['alerte_renouveler_user']) && $elt['alerte_renouveler_user'] ? '<span style="color:red">* Doit renouveler</span>' : '') . '</td>'
+        // .'<td></td>'
+        . '</tr>';
     } ?>
 		</tbody>
 	</table>
