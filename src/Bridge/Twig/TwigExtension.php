@@ -2,6 +2,7 @@
 
 namespace App\Bridge\Twig;
 
+use App\Entity\AlertType;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
@@ -10,6 +11,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 class TwigExtension extends AbstractExtension implements ServiceSubscriberInterface
 {
@@ -26,6 +28,14 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
     {
         return [
             SluggerInterface::class,
+        ];
+    }
+
+    public function getFunctions(): array
+    {
+        return [
+            new TwigFunction('user_has_articles_alerts', [$this, 'getUserHasArticlesAlerts']),
+            new TwigFunction('user_has_sorties_alerts', [$this, 'getUserHasSortiesAlerts']),
         ];
     }
 
@@ -168,5 +178,15 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         $size_compl = \strlen($compl);
 
         return substr($title, 0, 64 - $size_compl) . $compl;
+    }
+
+    public function getUserHasArticlesAlerts(User $user, string $commissionCode)
+    {
+        return $user->hasAlertEnabledOn(AlertType::Article, $commissionCode);
+    }
+
+    public function getUserHasSortiesAlerts(User $user, string $commissionCode)
+    {
+        return $user->hasAlertEnabledOn(AlertType::Sortie, $commissionCode);
     }
 }

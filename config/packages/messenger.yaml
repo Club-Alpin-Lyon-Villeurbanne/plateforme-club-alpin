@@ -4,7 +4,21 @@ framework:
         failure_transport: failed
 
         transports:
+            alertes:
+                options:
+                    auto_setup: false
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%?queue_name=alertes'
+                retry_strategy:
+                    max_retries: 3
+                    # milliseconds delay
+                    delay: 10000
+                    # causes the delay to be higher before each retry
+                    # e.g. 1 second delay, 2 seconds, 4 seconds
+                    multiplier: 2
+                    max_delay: 0
             mails:
+                options:
+                    auto_setup: false
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 retry_strategy:
                     max_retries: 3
@@ -18,6 +32,9 @@ framework:
             failed: 'doctrine://default?queue_name=failed'
 
         routing:
+            'App\Messenger\Message\ArticlePublie': alertes
+            'App\Messenger\Message\SortiePubliee': alertes
+            'App\Messenger\Message\UserNotification': alertes
             'Symfony\Component\Mailer\Messenger\SendEmailMessage': mails
 
         buses:

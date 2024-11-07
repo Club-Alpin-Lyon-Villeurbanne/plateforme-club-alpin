@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\AlertType;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -55,6 +56,32 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery()
             ->getOneOrNullResult($hydratorMode)
         ;
+    }
+
+    public function findUsersIdWithAlert(string $commissionCode, AlertType $type)
+    {
+        $sql = <<<SQL
+            SELECT id FROM
+            (
+                SELECT
+                    id_user as id,
+                    JSON_EXTRACT(alerts, '$."$commissionCode".$type->name') as res
+                FROM caf_user u
+                WHERE
+                    u.alerts IS NOT NULL
+                    AND u.is_deleted = FALSE
+                    AND u.valid_user = 1
+                    AND u.email_user IS NOT NULL
+                    AND u.email_user != ''
+                    AND u.nomade_user = 0
+            ) as sub_query
+            WHERE
+                sub_query.res IS TRUE
+SQL;
+
+        foreach ($this->getEntityManager()->getConnection()->fetchAllAssociative($sql) as $user) {
+            yield $user['id'];
+        }
     }
 
     public function getFiliations(User $user)

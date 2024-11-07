@@ -241,6 +241,13 @@ class Article
         return $this->commission;
     }
 
+    public function setCommission(?Commission $commission)
+    {
+        $this->commission = $commission;
+
+        return $this;
+    }
+
     public function getEvt(): ?Evt
     {
         return $this->evt;
