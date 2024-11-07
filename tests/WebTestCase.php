@@ -2,7 +2,9 @@
 
 namespace App\Tests;
 
+use App\Entity\Article;
 use App\Entity\Commission;
+use App\Entity\Evt;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Repository\UsertypeRepository;
@@ -49,6 +51,7 @@ abstract class WebTestCase extends BaseWebTestCase
         $user->setMoreinfo('');
         $user->setCookietoken('');
         $user->setNomadeParent(0);
+        $user->setValid(true);
 
         $em->persist($user);
         $em->flush();
@@ -121,5 +124,39 @@ abstract class WebTestCase extends BaseWebTestCase
     protected function getSession(): Session
     {
         return $this->createSession($this->client);
+    }
+
+    protected function createEvent(User $user): Evt
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $commission = $this->createCommission();
+
+        $event = new Evt($user, $commission, 'Titre !', 'code', new \DateTime('+7 days'), new \DateTime('+8 days'), 'Hotel de ville', 12, 2, 'Une chtite sortie', time(), 12, 12);
+        $em->persist($event);
+        $em->flush();
+
+        return $event;
+    }
+
+    protected function createArticle(User $user): Article
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $commission = $this->createCommission();
+
+        $article = new Article();
+        $article->setUser($user);
+        $article->setTitre('titre');
+        $article->setCommission($commission);
+        $article->setTsp(time());
+        $article->setTspCrea(time());
+        $article->setTspLastedit(new \DateTime());
+        $article->setTopubly(1);
+        $article->setCode(bin2hex(random_bytes(5)));
+        $article->setCont('');
+
+        $em->persist($article);
+        $em->flush();
+
+        return $article;
     }
 }

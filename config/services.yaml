@@ -129,6 +129,10 @@ services:
     public: true
     alias: Symfony\Component\Security\Csrf\CsrfTokenManagerInterface
 
+  legacy_message_bus:
+    public: true
+    alias: Symfony\Component\Messenger\MessageBusInterface
+
   legacy_twig:
     public: true
     alias: Twig\Environment

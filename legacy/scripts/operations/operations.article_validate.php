@@ -1,6 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Messenger\Message\ArticlePublie;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 $id_article = (int) $_POST['id_article'];
@@ -19,6 +20,9 @@ $authorDatas = null;
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
     $req = "UPDATE caf_article SET status_article='$status_article', status_who_article=" . getUser()->getId() . " WHERE caf_article.id_article =$id_article";
+
+    LegacyContainer::get('legacy_message_bus')->dispatch(new ArticlePublie($id_article));
+
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL';
     }
