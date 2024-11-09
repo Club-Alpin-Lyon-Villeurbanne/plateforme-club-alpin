@@ -35,12 +35,15 @@ class SortiePublieeHandlerTest extends WebTestCase
         $userOwner = $this->signup();
         $otherUserSubscribed = $this->signup();
         $otherUserNotSubscribed = $this->signup();
+        $otherUserSubscribedToAnotherCommission = $this->signup();
 
         $evt = $this->createEvent($userOwner);
+        $otherCommission = $this->createCommission('other');
 
         $userOwner->setAlertStatus(AlertType::Sortie, $evt->getCommission()->getCode(), true);
         $otherUserSubscribed->setAlertStatus(AlertType::Sortie, $evt->getCommission()->getCode(), true);
         $otherUserNotSubscribed->setAlertStatus(AlertType::Sortie, $evt->getCommission()->getCode(), false);
+        $otherUserSubscribedToAnotherCommission->setAlertStatus(AlertType::Sortie, $otherCommission->getCode(), true);
 
         self::getContainer()->get(EntityManagerInterface::class)->flush();
 
