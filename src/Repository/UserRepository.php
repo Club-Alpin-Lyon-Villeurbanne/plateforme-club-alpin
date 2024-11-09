@@ -76,7 +76,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                     AND u.nomade_user = 0
             ) as sub_query
             WHERE
-                sub_query.res IS TRUE
+                sub_query.res = TRUE
 SQL;
 
         foreach ($this->getEntityManager()->getConnection()->fetchAllAssociative($sql) as $user) {
