@@ -227,7 +227,7 @@ if (user()) {
 
                     echo '<tr>'
                             . '<td class="agenda-gauche">'
-                                . (null !== $evt['tsp_evt'] ? jour(date('N', $evt['tsp_evt']), 'short') . ' ' . date('d', $evt['tsp_evt']) . ' ' . mois(date('m', $evt['tsp_evt'])) : '') .
+                                . (null !== $evt['tsp_evt'] ? jour(date('N', $evt['tsp_evt']), 'short') . ' ' . date('d', $evt['tsp_evt']) . ' ' . mois(date('m', $evt['tsp_evt'])) : '') . ' ' . date('Y', $evt['tsp_evt']) .
                                 // STATUT si j'en suis l'auteur :
                                 $status_evt
                             . '</td>'

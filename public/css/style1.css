@@ -276,12 +276,12 @@ table#agenda tr td{border-top:1px solid #c9c9c7; vertical-align:top;}
 table#agenda tr.up td{color:black;}
 table#agenda tr.off td{color:#CCCCCC;}
 table#agenda tr.weekendday td{background-color:#dcf0fa;}
-table#agenda td.agenda-gauche{border-right:1px solid #c9c9c7; width:130px; padding:6px 0 6px 4px; font-size:12px;}
+table#agenda td.agenda-gauche{border-right:1px solid #c9c9c7; width:140px; padding:6px 0 6px 4px; font-size:12px;}
 table#agenda td hr{margin:0 0px 0 5px; padding:0; height:1px; border:none; background:url(../img/bg-dottedhr.png) top left;}
 .agenda-date{float:right; font-family:DIN; color:#B9BFC1; font-size:28px; position:relative; bottom:44px; font-weight:100}
 .agenda-stat{font-size:11px; padding:10px 0 0 133px; color:gray;}
 a.agenda-evt-debut{display:block; clear:both; padding:8px 10px 10px 0;}
-a.agenda-evt-debut .droite{float:right; width:435px;}
+a.agenda-evt-debut .droite{float:right; width:425px;}
 a.agenda-evt-debut .picto{display:block; float:left; border-right:1px solid #dde1e4;}
 a.agenda-evt-debut .picto .picto-light{display:none;}
 a.agenda-evt-debut .picto .picto-dark{opacity:0.3;}
