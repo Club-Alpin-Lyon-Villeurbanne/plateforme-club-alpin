@@ -47,5 +47,10 @@ jobs:
         run: |
           make database-init-test
       - name: Run the unit tests
+        # For an obscure reason, the exit code is 0 even if there are errors.
+        # So we need to grep the output to check if there are errors.
         run: |
-          make tests
+          make tests 2>&1 | tee test_output.txt
+          if grep -E "ERRORS!|There was [0-9]+ failures" test_output.txt; then
+            exit 1
+          fi
