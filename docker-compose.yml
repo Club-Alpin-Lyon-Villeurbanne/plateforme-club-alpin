@@ -3,9 +3,10 @@ services:
     build:
       context: ./docker
       args:
-        - UID=${UID_OVERRIDE:-${UID:-1000}}
-        - GID=${GID_OVERRIDE:-${GID:-1000}}
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
     container_name: www_caflyon
+    profiles: ["dev", "ci"]
     ports:
       - "8000:80"
     volumes:
@@ -16,6 +17,7 @@ services:
   cafdb:
     image: mysql:5.7
     container_name: db_caflyon
+    profiles: ["dev", "ci"]
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
@@ -26,6 +28,8 @@ services:
   phpmyadmin:
     image: phpmyadmin
     container_name: phpmyadmin_caflyon
+    profiles: ["dev"]
+
     ports:
       - 8080:80
     environment:
@@ -35,5 +39,6 @@ services:
   mailcatcher:
     image: schickling/mailcatcher
     container_name: mail_caflyon
+    profiles: ["dev"]
     ports:
       - 1081:1080
