@@ -8,6 +8,8 @@ backup/*
 public/robots.txt
 public/dev.txt
 /.npm/
+/ffcam/
+/bin/tools
 
 /.php-cs-fixer.cache
 
