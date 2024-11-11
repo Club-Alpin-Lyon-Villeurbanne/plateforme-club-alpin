@@ -37,6 +37,7 @@ $itineraire = trim(stripslashes($_POST['itineraire']));
 $difficulte_evt = substr(trim(stripslashes($_POST['difficulte_evt'])), 0, 50);
 $description_evt = trim(stripslashes($_POST['description_evt']));
 $need_benevoles_evt = isset($_POST['need_benevoles_evt']) && 'on' == $_POST['need_benevoles_evt'] ? 1 : 0;
+$unsubscribe_until_evt = isset($_POST['unsubscribe_until_evt']) && 'on' == $_POST['unsubscribe_until_evt'] ? 1 : 0;
 
 // inscriptions
 if ('child' != $_POST['cycle']) {

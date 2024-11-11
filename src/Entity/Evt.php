@@ -238,6 +238,12 @@ class Evt
     private $needBenevoles = '0';
 
     /**
+     * @var bool
+     */
+    #[ORM\Column(name: 'unsubscribe_until_evt', type: 'boolean', nullable: false, options: ['default' => 0])]
+    private $unsubscribeUntilEvent = '0';
+
+    /**
      * @var int
      */
     #[ORM\Column(name: 'join_start_evt', type: 'integer', nullable: true, options: ['comment' => 'Timestamp de départ des inscriptions'])]
@@ -837,6 +843,19 @@ class Evt
         return $this;
     }
 
+    public function getUnsubscribeUntilEvent(): ?bool
+    {
+        return $this->unsubscribeUntilEvent;
+    }
+
+    public function setUnsubscribeUntilEvent(bool $unsubscribeUntilEvent): self
+    {
+        $this->unsubscribeUntilEvent = $unsubscribeUntilEvent;
+
+        return $this;
+    }
+
+
     public function getJoinStart(): ?int
     {
         return $this->joinStart;
@@ -932,10 +951,13 @@ class Evt
      */
     public function canBeUnsubscribedFrom(): bool
     {
-        $startDate = (new \DateTime())->setTimestamp($this->getTsp())->setTime(0, 0);
-        $startDate->modify(sprintf('- %d day', self::UNSUBSCRIBE_LIMIT_PERIOD));
-        $today = (new \DateTime())->setTime(0, 0);
-
-        return $startDate > $today;
+        if (true == $this->getUnsubscribeUntilEvent()) {
+            return true;
+        } else {
+            $startDate = (new \DateTime())->setTimestamp($this->getTsp())->setTime(0, 0);
+            $startDate->modify(sprintf('- %d day', self::UNSUBSCRIBE_LIMIT_PERIOD));
+            $today = (new \DateTime())->setTime(0, 0);
+            return $startDate > $today;
+        }
     }
 }

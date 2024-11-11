@@ -4,6 +4,7 @@ use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 ?>
+<?php echo $versCettePage; ?>
 <form action="<?php echo $versCettePage; ?>" method="post" style="overflow:hidden">
     <input type="hidden" name="operation" value="<?php echo isset($id_evt_to_update) && $id_evt_to_update ? 'evt_update' : 'evt_create'; ?>" />
     <input type="hidden" name="id_evt_to_update" value="<?php echo (int) $id_evt_to_update; ?>" />
@@ -275,6 +276,13 @@ inclure('infos-carte', 'mini');
                     inscriptions en ligne max.
                 </span>
             </div>
+            <br style="clear:both" />
+
+            <label for="unsubscribe_until_evt" style="margin-top:15px; display:block; float:none; width:93%; background-color:white; background-position:8px 5px; padding-left:10px; padding-top:5px; box-shadow:0 0 15px -8px black;">
+                <input type="checkbox" class="custom" name="unsubscribe_until_evt" id="unsubscribe_until_evt" <?php if (!empty($_POST['unsubscribe_until_evt']) && in_array($_POST['unsubscribe_until_evt'], [1, 'on', '1'], true)) {
+                    echo 'checked="checked"';
+                }?> /> Cochez si vous désirez que l'on puisse se désinscrire jusqu'au dernier moment avant la sortie ?
+            </label>
 
         </div>
 

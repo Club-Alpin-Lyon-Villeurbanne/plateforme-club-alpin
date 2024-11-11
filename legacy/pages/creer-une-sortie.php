@@ -114,7 +114,7 @@ if ($p2) {
 
         $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
                 , denivele_evt, distance_evt, matos_evt, difficulte_evt, description_evt, lat_evt, long_evt
-                , ngens_max_evt
+                , ngens_max_evt, unsubscribe_until_evt
                 , join_start_evt, join_max_evt, id_groupe, tarif_detail, need_benevoles_evt, itineraire
                 , nickname_user
                 , title_commission, code_commission
@@ -197,6 +197,7 @@ if ($p2) {
             $_POST['description_evt'] = $handle['description_evt'];
             $_POST['join_max_evt'] = $handle['join_max_evt'];
             $_POST['need_benevoles_evt'] = $handle['need_benevoles_evt'];
+            $_POST['unsubscribe_until_evt'] = $handle['unsubscribe_until_evt'];
             // special : tsp to days. le timestamp enregistré commence à minuit pile
             $_POST['join_start_evt_days'] = floor(($handle['tsp_evt'] - $handle['join_start_evt']) / 86400);
 
@@ -238,7 +239,7 @@ if ($p2) {
 ?>
 
         <div style="padding:10px 0 0 30px; line-height:18px; ">
-            <?php
+<?php
     // je n'ai pas le droit de créer une sortie (peu importe quelle commission)
     if (!allowed('evt_create')) {
         echo '<p class="erreur">Vous n\'avez pas l\'autorisation d\'accéder à cette page car vous ne semblez pas avoir les droits de création de sortie.</p>';
@@ -276,7 +277,7 @@ if ($p2) {
 	</div><!-- fin left -->
 
 	<!-- partie droite -->
-	<?php
+<?php
     require __DIR__ . '/../includes/right-type-agenda.php';
 ?>
 
