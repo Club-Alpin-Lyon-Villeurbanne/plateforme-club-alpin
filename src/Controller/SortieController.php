@@ -10,6 +10,7 @@ use App\Messenger\Message\SortiePubliee;
 use App\Repository\EventParticipationRepository;
 use App\Repository\UserRepository;
 use App\Twig\JavascriptGlobalsExtension;
+use App\Utils\ExcelExport;
 use App\Utils\PdfGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
@@ -43,10 +44,12 @@ class SortieController extends AbstractController
         $user = $this->getUser();
 
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
-            'currentEventId', $event->getId()
+            'currentEventId',
+            $event->getId()
         );
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
-            'apiBaseUrl', $baseUrl
+            'apiBaseUrl',
+            $baseUrl
         );
 
         return [
@@ -177,7 +180,7 @@ class SortieController extends AbstractController
 
                 if (!$participation->getUser()->getEmail()) {
                     $this->addFlash('warning', sprintf('%s %s est un adhérent nomade. Il n\'a pas d\'email et ' .
-                    'doit être prévenu par téléphone de son nouveau statut : %s. Son téléphone: %s', $participation->getUser()->getFirstname(), $participation->getUser()->getLastname(), $statusName, $participation->getUser()->getTel()));
+                        'doit être prévenu par téléphone de son nouveau statut : %s. Son téléphone: %s', $participation->getUser()->getFirstname(), $participation->getUser()->getLastname(), $statusName, $participation->getUser()->getTel()));
 
                     continue;
                 }
@@ -342,7 +345,7 @@ class SortieController extends AbstractController
 
         $participations = $event
             ->getParticipations(null, '*' === $status ? null : $status)
-            ->map(fn (EventParticipation $participation) => $participation->getUser())
+            ->map(fn(EventParticipation $participation) => $participation->getUser())
             ->toArray();
 
         $mailer->send($participations, 'transactional/message-sortie', [
@@ -455,5 +458,15 @@ class SortieController extends AbstractController
         $html = ob_get_clean();
 
         return $pdfGenerator->generatePdf($html, $slugger->slug($event->getTitre()) . '.pdf');
+    }
+
+    #[Route(name: 'sortie_xlsx', path: '/sortie/{id}/printXLSX', requirements: ['id' => '\d+'])]
+    public function generateXLSX(ExcelExport $excelExport, Evt $event, EventParticipationRepository $participationRepository): Response
+    {
+        $datas = $participationRepository->getSortedParticipations($event, null, null);
+
+        $rsm = [" ", "PARTICIPANTS (NOM, PRÉNOM)","RÔLE", "N°ADHÉRENT", "AGE", "DATE D'ADHÉSION", "TÉL.. PROFESSIONNEL", "TÉL.. I.C.E", "EMAIL"];
+
+        return $excelExport->export(substr($event->getTitre(), 0, 3).time(), $datas, $rsm);
     }
 }
