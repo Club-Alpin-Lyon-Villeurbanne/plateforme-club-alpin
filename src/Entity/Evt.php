@@ -855,7 +855,6 @@ class Evt
         return $this;
     }
 
-
     public function getJoinStart(): ?int
     {
         return $this->joinStart;
@@ -953,11 +952,11 @@ class Evt
     {
         if (true == $this->getUnsubscribeUntilEvent()) {
             return true;
-        } else {
-            $startDate = (new \DateTime())->setTimestamp($this->getTsp())->setTime(0, 0);
-            $startDate->modify(sprintf('- %d day', self::UNSUBSCRIBE_LIMIT_PERIOD));
-            $today = (new \DateTime())->setTime(0, 0);
-            return $startDate > $today;
         }
+        $startDate = (new \DateTime())->setTimestamp($this->getTsp())->setTime(0, 0);
+        $startDate->modify(sprintf('- %d day', self::UNSUBSCRIBE_LIMIT_PERIOD));
+        $today = (new \DateTime())->setTime(0, 0);
+
+        return $startDate > $today;
     }
 }
