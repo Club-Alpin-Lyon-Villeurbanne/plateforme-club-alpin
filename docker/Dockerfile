@@ -94,8 +94,11 @@ RUN install-php-extensions \
         sockets-stable \
         intl-stable \
         gd \
-        xdebug-${XDEBUG_VERSION} \
         uopz-${UOPZ_VERSION}
+
+# Install some extension without activating them
+RUN IPE_DONT_ENABLE=1 install-php-extensions \
+        xdebug-${XDEBUG_VERSION}
 
 COPY --from=build_node /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=build_node /usr/local/bin/node /usr/local/bin/node
