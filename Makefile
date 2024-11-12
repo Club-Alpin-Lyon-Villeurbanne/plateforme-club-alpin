@@ -23,21 +23,26 @@ init: ## Init the project
 	$(MAKE) npm-install
 	$(MAKE) npm-build
 	@$(call GREEN,"Le site du Club est lancé : http://127.0.0.1:8000/ 🚀")
+.PHONY: init
 
 cache-clear: ## Clear cache
 	$(SYMFONY_CONSOLE) cache:clear
+.PHONY: cache-clear
 
 ## —— ✅ Linting ——
 php-cs: bin/tools/php-cs-fixer ## Just analyze PHP code with php-cs-fixer
 	$(eval args ?= )
 	@$(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run $(args)
+.PHONY: php-cs
 
 php-cs-fix: bin/tools/php-cs-fixer ## Analyze and fix PHP code with php-cs-fixer
 	$(eval args ?= )
 	@$(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php $(args)
+.PHONY: php-cs-fix
 
 phpstan: bin/tools/phpstan ## Analyze PHP code with phpstan
 	$(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse legacy public src tests -c phpstan.neon -l 1
+.PHONY: phpstan
 
 ## —— ✅ Test ——
 .PHONY: tests
@@ -47,9 +52,11 @@ ifdef clear
 	$(MAKE) database-init-test
 endif
 	$(PHP) bin/phpunit ${path} $(args)
+.PHONY: tests
 
 phpunit-setup: ## Setup phpunit
 	@$(PHP) bin/phpunit --version
+.PHONY: phpunit-setup
 
 database-init-test: ## Init database for test
 
@@ -60,36 +67,45 @@ database-init-test: ## Init database for test
 	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/data_caf.sql
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction --env=test
 	$(MAKE) args="--env=test --no-interaction" database-fixtures-load
+.PHONY: database-init-test
 
 
 ## —— 🐳 Docker ——
 docker-start: 
 	$(DOCKER_COMPOSE) up -d
+.PHONY: docker-start
 
 docker-build: ## Build images
 	@$(DOCKER_COMPOSE) pull --parallel
 	@$(DOCKER_COMPOSE) build --pull --parallel
+.PHONY: docker-build
 
 docker-stop:
 	$(DOCKER_COMPOSE) stop
 	@$(call RED,"The containers are now stopped.")
+.PHONY: docker-stop
 
 ## —— 🎻 Composer ——
 composer-install: ## Install dependencies
 	$(COMPOSER) install
+.PHONY: composer-install
 
 composer-update: ## Update dependencies
 	$(COMPOSER) update
+.PHONY: composer-update
 
 ## —— 🐈 NPM —————————————————————————————————————————————————————————————————
 npm-install: ## Install all npm dependencies
 	$(NPM) install
+.PHONY: npm-install
 
 npm-build: ## Build the frontend files
 	$(NPM) run build
+.PHONY: npm-build
 
 npm-watch: ## Watch the frontend files
 	$(NPM) run watch
+.PHONY: npm-watch
 
 ## —— 📊 Database ——
 database-init: ## Init database
@@ -98,36 +114,43 @@ database-init: ## Init database
 	$(MAKE) database-import
 	$(MAKE) database-migrate
 	$(MAKE) args="--env=dev --no-interaction" database-fixtures-load
+.PHONY: database-init
 
 database-drop: ## Create database
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists
+.PHONY: database-drop
 
 database-create: ## Create database
 	$(SYMFONY_CONSOLE) doctrine:database:create --if-not-exists
 	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/schema_caf.sql
 	$(SYMFONY_CONSOLE) messenger:setup-transports
 	$(SYMFONY_CONSOLE) doctrine:migrations:sync-metadata-storage
-
+.PHONY: database-create
 
 database-import: ## Make import
 	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/data_caf.sql
+.PHONY: database-import
 
 database-migration: ## Make migration
 	$(SYMFONY_CONSOLE) make:migration
+.PHONY: database-migration
 
 database-migrate: ## Migrate migrations
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction
 	$(SYMFONY_CONSOLE) messenger:setup-transports
 	$(SYMFONY_CONSOLE) doctrine:migrations:sync-metadata-storage
+.PHONY: database-migrate
 
 database-diff: ## Create doctrine migrations
 	$(SYMFONY_CONSOLE) doctrine:migrations:diff --no-interaction
+.PHONY: database-diff
 
 database-fixtures-load: ## Load fixtures
 ifeq ($(args),)
 	$(eval args="--env=dev")
 endif
 	$(SYMFONY_CONSOLE) $(args) caf:fixtures:load
+.PHONY: database-fixtures-load
 
 exec: ## Execute a command in a container (container="cafsite", cmd="bash", user="www-data")
 	$(eval container ?= cafsite)
@@ -146,7 +169,9 @@ bin/tools/phpstan bin/tools/php-cs-fixer: phive.xml
 
 phive-update:
 	$(PHP) -d memory_limit=1G /usr/local/bin/phive update
+.PHONY: phive-update
 
 ## —— 🛠️  Others ——
 help: ## List of commands
 	@grep -E '(^[a-zA-Z0-9_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
+.PHONY: help
