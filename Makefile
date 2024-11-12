@@ -136,6 +136,10 @@ exec: ## Execute a command in a container (container="cafsite", cmd="bash", user
 	@$(DOCKER_COMPOSE) exec --user=$(user) $(container) $(cmd)
 .PHONY: exec
 
+logs: ## View output from containers (services="")
+	@$(DOCKER_COMPOSE) logs -f $(services)
+.PHONY: logs
+
 phive: bin/tools/phpstan bin/tools/php-cs-fixer
 bin/tools/phpstan bin/tools/php-cs-fixer: phive.xml
 	@$(PHP) -d memory_limit=1G /usr/local/bin/phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E,CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
