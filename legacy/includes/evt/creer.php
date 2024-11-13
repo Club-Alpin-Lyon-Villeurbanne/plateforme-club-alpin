@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 ?>
-<form action="<?php echo $versCettePage; ?>" method="post" style="overflow:hidden">
+<form action="<?php echo $versCettePage; ?>" method="post" style="overflow:hidden" autocomplete="off">
     <input type="hidden" name="operation" value="<?php echo isset($id_evt_to_update) && $id_evt_to_update ? 'evt_update' : 'evt_create'; ?>" />
     <input type="hidden" name="id_evt_to_update" value="<?php echo (int) $id_evt_to_update; ?>" />
 
