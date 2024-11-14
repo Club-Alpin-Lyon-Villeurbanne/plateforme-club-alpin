@@ -27,9 +27,28 @@ class ExcelExport
             foreach ($datas as $data) {
                 $user = $data["liste"]->getUser();
                 $name = mb_convert_encoding($user->getCiv() . " " . strtoupper($user->getLastname()) . " " . ucfirst(strtolower($user->getFirstname())), "UTF-8");
+                switch ($data["liste"]->getStatus()) {
+                    case (0):
+                        $status = mb_convert_encoding("Non Comfirmé", "UTF-8");
+                        break;
+                    case (1):
+                        $status = mb_convert_encoding("Validé", "UTF-8");
+                        break;
+                    case (2):
+                        $status = mb_convert_encoding("Refusé", "UTF-8");
+                        break;
+                    case (3):
+                        $status = mb_convert_encoding("Absent", "UTF-8");
+                        break;
+                    default:
+                        $status = " ";
+                        break;
+                }
+
                 $array = [
                     $count - 1,
                     $name ? $name : " ",
+                    $status,
                     $data["liste"]->getRole() ? mb_convert_encoding($data["liste"]->getRole(), "UTF-8") : " ",
                     $user->getCafnum() ? mb_convert_encoding($user->getCafnum(), "UTF-8") : " ",
                     $user->getBirthday() ? getYearsSinceDate($user->getBirthday()) : " ",
@@ -51,6 +70,7 @@ class ExcelExport
             $sheet->getColumnDimension('G')->setAutoSize(true);
             $sheet->getColumnDimension('H')->setAutoSize(true);
             $sheet->getColumnDimension('I')->setAutoSize(true);
+            $sheet->getColumnDimension('J')->setAutoSize(true);
 
             // Write and send created spreadsheet
             $writer = new Xlsx($spreadsheet);
