@@ -21,12 +21,12 @@ class FichierAdherentCommandTest extends WebTestCase
 
         $filePath = FfcamTestHelper::generateFile([
             [
-                'cafnum' => '690099990001',
+                'cafnum' => rand(100000000000, 999999999999),
                 'lastname' => 'DUPONT',
                 'firstname' => 'JEAN',
             ],
             [
-                'cafnum' => '690099990002',
+                'cafnum' => rand(100000000000, 999999999999),
                 'lastname' => 'MARTIN',
                 'firstname' => 'PIERRE',
             ],
