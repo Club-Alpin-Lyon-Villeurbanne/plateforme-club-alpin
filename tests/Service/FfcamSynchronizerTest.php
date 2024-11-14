@@ -11,30 +11,19 @@ use SlopeIt\ClockMock\ClockMock;
 
 class FfcamSynchronizerTest extends WebTestCase
 {
-    protected function tearDown(): void
-    {
-        $cafnums = ['690099990001', '690099990002'];
-        foreach ($cafnums as $cafnum) {
-            $user = self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($cafnum);
-            if ($user) {
-                self::getContainer()->get(EntityManagerInterface::class)->remove($user);
-            }
-        }
-        self::getContainer()->get(EntityManagerInterface::class)->flush();
-
-        parent::tearDown();
-    }
-
     public function testSynchronizeCreatesNewUsers(): void
     {
+        $identifiant1 = rand(100000000000, 999999999999);
+        $identifiant2 = rand(100000000000, 999999999999);
+
         $filePath = FfcamTestHelper::generateFile([
             [
-                'cafnum' => '690099990001',
+                'cafnum' => $identifiant1,
                 'lastname' => 'DUPONT',
                 'firstname' => 'JEAN',
             ],
             [
-                'cafnum' => '690099990002',
+                'cafnum' => $identifiant2,
                 'lastname' => 'MARTIN',
                 'firstname' => 'PIERRE',
             ],
@@ -42,38 +31,40 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
 
-        $this->assertTrue(null === self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber('690099990001'));
-        $this->assertTrue(null === self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber('690099990002'));
+        $this->assertTrue(null === self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($identifiant1));
+        $this->assertTrue(null === self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($identifiant2));
 
         $synchronizer->synchronize($filePath);
 
-        $user1 = self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber('690099990001');
+        $user1 = self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($identifiant1);
         $this->assertNotNull($user1->getId());
         $this->assertEquals('Jean', $user1->getFirstname());
         $this->assertEquals('Dupont', $user1->getLastname());
         $this->assertEquals('0687000001', $user1->getTel());
         $this->assertEquals('Lyon', $user1->getVille());
 
-        $user2 = self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber('690099990002');
+        $user2 = self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($identifiant2);
         $this->assertNotNull($user2->getId());
         $this->assertEquals('Pierre', $user2->getFirstname());
     }
 
     public function testSynchronizeUpdatesExistingUsers(): void
     {
+        $identifiant1 = rand(100000000000, 999999999999);
         $filePath = FfcamTestHelper::generateFile([
             [
-                'cafnum' => '690099990001',
+                'cafnum' => $identifiant1,
                 'lastname' => 'DUPONT',
                 'firstname' => 'JEAN',
             ],
         ]);
 
+        $email = 'test-' . bin2hex(random_bytes(10)) . '@clubalpinlyon.fr';
         $existingUser = $this->signup();
         $existingUser
-            ->setCafnum('690099990001')
+            ->setCafnum($identifiant1)
             ->setFirstname('Jeanne')
-            ->setEmail('custom@email.com')
+            ->setEmail($email)
             ->setPassword('hashedpassword');
 
         $em = self::getContainer()->get(EntityManagerInterface::class);
@@ -88,15 +79,16 @@ class FfcamSynchronizerTest extends WebTestCase
         $this->assertEquals('Jean', $existingUser->getFirstname());
         $this->assertEquals('Dupont', $existingUser->getLastname());
         $this->assertEquals('0687000001', $existingUser->getTel());
-        $this->assertEquals('custom@email.com', $existingUser->getEmail());
+        $this->assertEquals($email, $existingUser->getEmail());
         $this->assertEquals('hashedpassword', $existingUser->getPassword());
     }
 
     public function testSynchronizeSetsLicenceExpiredFlagOnly(): void
     {
+        $identifiant1 = rand(100000000000, 999999999999);
         $filePath = FfcamTestHelper::generateFile([
             [
-                'cafnum' => '690099990001',
+                'cafnum' => $identifiant1,
                 'lastname' => 'DUPONT',
                 'firstname' => 'JEAN',
                 'adhesionDate' => '0000-00-00',
@@ -107,7 +99,7 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $existingUser = $this->signup();
         $existingUser
-            ->setCafnum('690099990001')
+            ->setCafnum($identifiant1)
             ->setDoitRenouveler(false)
             ->setAlerteRenouveler(false);
 
@@ -129,9 +121,10 @@ class FfcamSynchronizerTest extends WebTestCase
 
     public function testSynchronizeSetsExpiredAndRenewalFlag(): void
     {
+        $identifiant1 = rand(100000000000, 999999999999);
         $filePath = FfcamTestHelper::generateFile([
             [
-                'cafnum' => '690099990001',
+                'cafnum' => $identifiant1,
                 'lastname' => 'DUPONT',
                 'firstname' => 'JEAN',
                 'adhesionDate' => '0000-00-00',
@@ -142,7 +135,7 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $existingUser = $this->signup();
         $existingUser
-            ->setCafnum('690099990001')
+            ->setCafnum($identifiant1)
             ->setDoitRenouveler(false)
             ->setAlerteRenouveler(false);
 
@@ -164,9 +157,10 @@ class FfcamSynchronizerTest extends WebTestCase
 
     public function testSynchronizeBlocksExpiredAccounts(): void
     {
+        $identifiant1 = rand(100000000000, 999999999999);
         $filePath = FfcamTestHelper::generateFile([
             [
-                'cafnum' => '690099990001',
+                'cafnum' => $identifiant1,
                 'lastname' => 'DUPONT',
                 'firstname' => 'JEAN',
                 'adhesionDate' => '0000-00-00',
@@ -177,7 +171,7 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $expiredUser = $this->signup();
         $expiredUser
-            ->setCafnum('690099990001')
+            ->setCafnum($identifiant1)
             ->setDoitRenouveler(false);
 
         $em = self::getContainer()->get(EntityManagerInterface::class);
@@ -194,9 +188,10 @@ class FfcamSynchronizerTest extends WebTestCase
 
     public function testSynchronizeUnblocksExpiredAccounts(): void
     {
+        $identifiant1 = rand(100000000000, 999999999999);
         $filePath = FfcamTestHelper::generateFile([
             [
-                'cafnum' => '690099990001',
+                'cafnum' => $identifiant1,
                 'lastname' => 'DUPONT',
                 'firstname' => 'JEAN',
                 'adhesionDate' => '2024-11-15',
@@ -207,7 +202,7 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $expiredUser = $this->signup();
         $expiredUser
-            ->setCafnum('690099990001')
+            ->setCafnum($identifiant1)
             ->setDoitRenouveler(true)
             ->setAlerteRenouveler(true);
 

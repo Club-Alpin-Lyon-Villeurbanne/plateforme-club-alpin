@@ -12,7 +12,7 @@ class FfcamTestHelper
         $content = '';
 
         foreach ($members as $member) {
-            $cafnum = $member['cafnum'] ?? '690099990001';
+            $cafnum = $member['cafnum'] ?? rand(100000000000, 999999999999);
             $shortCafnum = substr($cafnum, 4);
             $lastname = $member['lastname'] ?? 'DUPONT';
             $firstname = $member['firstname'] ?? 'JEAN';
