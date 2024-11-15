@@ -48,6 +48,12 @@ class Commission
     #[ORM\Column(name: 'title_commission', type: 'string', length: 30, nullable: false)]
     private $title;
 
+    /**
+     * @var string
+     */
+    #[ORM\Column(type: 'string', length: 30, nullable: true)]
+    private $googleDriveId;
+
     public function __construct(string $title, string $code, int $ordre)
     {
         $this->title = $title;
@@ -104,6 +110,18 @@ class Commission
     public function setTitle(string $title): self
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    public function getGoogleDriveId(): ?string
+    {
+        return $this->googleDriveId;
+    }
+
+    public function setGoogleDriveId(string $googleDriveId): self
+    {
+        $this->googleDriveId = $googleDriveId;
 
         return $this;
     }
