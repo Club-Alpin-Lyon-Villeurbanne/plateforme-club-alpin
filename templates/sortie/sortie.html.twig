@@ -319,13 +319,7 @@
                                 <img src="/img/inscrit-check.png" alt="" title=""/>
                                 <div class="text-container">Vous êtes inscrit comme participant à cette sortie.
                                     <div class="button-container">
-                                        {% if event.canBeUnsubscribedFrom %}
-                                            <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" />
-                                        {% else %}
-                                            <span data-tooltip="Il n'est plus possible de se désinscrire, merci de contacter l'encadrant.e.">
-                                                <input type="button" class="nice" value="Annuler mon inscription" disabled />
-                                            </span>
-                                        {% endif %}
+                                        <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" />
                                     </div>
                                 </div>
                             </div>
