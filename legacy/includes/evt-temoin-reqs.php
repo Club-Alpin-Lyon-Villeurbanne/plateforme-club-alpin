@@ -43,7 +43,7 @@ elseif (time() < $handle['join_start_evt']) {
     // inscriptions pleines
     if (isset($handle['ngens_max_evt']) && $count >= $handle['ngens_max_evt']) {// inscriptions max
         $handle['temoin'] = 'off';
-        $handle['temoin-title'] = 'Les ' . $handle['ngens_max_evt'] . ' places libres ont été réservées';
+        $handle['temoin-title'] = 'Les ' . ($handle['ngens_max_evt'] ?? '') . ' places libres ont été réservées';
     } else {
         $handle['temoin'] = 'on';
         $handle['temoin-title'] = (($handle['ngens_max_evt'] ?? 0) - $count) . ' places restantes';
