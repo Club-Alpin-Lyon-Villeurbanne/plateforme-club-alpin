@@ -255,14 +255,14 @@ inclure('infos-carte', 'mini');
 
             Nombre maximum de personnes sur cette sortie (encadrement compris) :<br />
             <p class="mini">
-                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="ngens_max_evt" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('ngens_max_evt', ''); ?>" placeholder=" ex : 8" />
+                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="number" min="0" name="ngens_max_evt" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('ngens_max_evt', ''); ?>" placeholder=" ex: 8" />
                 personnes affichées. Ceci n'influence <u>pas</u> le nombre d'inscriptions possibles en ligne.
             </p>
             <br style="clear:both" />
 
             <div style="width:45%; padding-right:3%; float:left">
                 Les inscriptions démarrent :<br />
-                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_start_evt_days" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_start_evt_days', ''); ?>" placeholder=" > 2" required/>
+                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="number" min="0" name="join_start_evt_days" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_start_evt_days', ''); ?>" placeholder=" > 2" required/>
 								<span class="mini">
 									jours avant la sortie.
 								</span>
@@ -270,7 +270,7 @@ inclure('infos-carte', 'mini');
 
             <div style="width:50%; float:left">
                 Inscriptions maximum via le formulaire internet :<br />
-                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_max_evt" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_max_evt', ''); ?>" placeholder="ex : 5" />
+                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="number" min="0" name="join_max_evt" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_max_evt', ''); ?>" placeholder="ex: 5" />
                 <span class="mini">
                     inscriptions en ligne max.
                 </span>
@@ -294,12 +294,12 @@ inclure('infos-carte', 'mini');
         <input type="text" name="difficulte_evt" class="type2" value="<?php echo inputVal('difficulte_evt', ''); ?>" placeholder="ex : PD, 5d+, exposé..." />
 
         <br />
-        Dénivelé positif :<br />
-        <input type="text" name="denivele_evt" class="type2" value="<?php echo inputVal('denivele_evt', ''); ?>" placeholder="ex : 1200 (m)" />m.
+        Dénivelé positif (m) :<br />
+        <input type="number" min="0" name="denivele_evt" class="type2" value="<?php echo inputVal('denivele_evt', ''); ?>" placeholder="ex : 1200" />m.
 
         <br />
-        Distance :<br />
-        <input type="text" name="distance_evt" class="type2" value="<?php echo inputVal('distance_evt', ''); ?>" placeholder="ex : 13.50 (km)" />km.
+        Distance (km) :<br />
+        <input type="number" min="0" name="distance_evt" class="type2" value="<?php echo inputVal('distance_evt', ''); ?>" placeholder="ex : 13.50" />km.
 
         <br />
         <div style="float:right; padding-right:20px;">
