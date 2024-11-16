@@ -78,7 +78,7 @@
 
             <div id="evt-list">
                 {% for event in list_events(get_commission(current_commission)) %}
-                    {% set nInscritsTotal = event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::ROLE_BENEVOLE'), constant('App\\Entity\\EventParticipation::ROLE_MANUEL'), constant('App\\Entity\\EventParticipation::ROLE_COENCADRANT'), constant('App\\Entity\\EventParticipation::ROLE_STAGIAIRE'), constant('App\\Entity\\EventParticipation::ROLE_ENCADRANT')]) | length %}
+                    {% set nInscritsTotal = event.participations() | length %}
                     {% set nPlacesRestantesTotal = max(0, event.ngensMax - nInscritsTotal) %}
                     <a href="/sortie/{{ event.code }}-{{ event.id }}.html?commission={{ event.commission.code }}" title="Voir la sortie">
                         <span style="color:#fff">{{ event.tsp | intldate('ccc d/MM') | capitalize }} </span> |
