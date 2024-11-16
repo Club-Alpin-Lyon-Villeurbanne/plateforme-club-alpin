@@ -93,10 +93,9 @@ class Evt
     #[ORM\JoinColumn(name: 'user_evt', referencedColumnName: 'id_user', nullable: false)]
     private $user;
 
-    #[ORM\ManyToOne(targetEntity: 'Commission')]
+    #[ORM\ManyToOne(targetEntity: 'Commission', cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'commission_evt', referencedColumnName: 'id_commission', nullable: false)]
     #[Groups('event:read')]
-
     private $commission;
 
     /**

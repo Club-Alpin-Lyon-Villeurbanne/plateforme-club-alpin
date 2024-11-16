@@ -1,0 +1,11 @@
+App\Entity\Article:
+  article{1..10}:
+    __construct: ['@admin_user']
+    status: 1
+    statusWho: '@admin_user'
+    toPubly: 1
+    titre: '<sentence(4)>'
+    code: '<word()>'
+    commission: '@commission_alpinisme'
+    une: true
+    cont: '<paragraph(5)>'

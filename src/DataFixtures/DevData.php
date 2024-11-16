@@ -5,30 +5,37 @@ namespace App\DataFixtures;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
+use App\Entity\UserAttr;
 use App\Repository\CommissionRepository;
+use App\Repository\UserRepository;
+use App\Repository\UsertypeRepository;
 use App\Utils\NicknameGenerator;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Nelmio\Alice\Loader\NativeLoader;
+use Nelmio\Alice\Loader\SimpleFilesLoader;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\When;
 
+#[AutoconfigureTag('dev.data_fixtures')]
+#[When(env: 'dev')]
+#[When(env: 'test')]
 class DevData implements FixtureInterface
 {
-    private CommissionRepository $commissionRepository;
-
-    public function __construct(CommissionRepository $commissionRepository)
-    {
-        $this->commissionRepository = $commissionRepository;
+    public function __construct(
+        #[Autowire('@nelmio_alice.files_loader')] private readonly SimpleFilesLoader $filesLoader,
+        #[Autowire('%kernel.project_dir%')] private readonly string $projectDir,
+        private readonly CommissionRepository $commissionRepository,
+        private readonly UserRepository $userRepository,
+        private readonly UsertypeRepository $usertypeRepository,
+    ) {
     }
 
     public function load(ObjectManager $manager)
     {
-        $filesLoader = new NativeLoader();
-
-        $set = $filesLoader->loadFiles(glob(__DIR__ . '/alice/dev/*.yaml'));
-        $comm = $this->commissionRepository->findVisibleCommission('sorties-familles');
+        $set = $this->filesLoader->loadFiles(glob($this->projectDir . '/resources/fixtures/dev/alice/*.yaml'));
 
         $licenceNum = 749999999990;
-        $start = time() + 86400 * 10;
 
         $users = [];
 
@@ -37,9 +44,9 @@ class DevData implements FixtureInterface
                 $object->setCafnum($licenceNum--);
                 $object->setNickname(NicknameGenerator::generateNickname($object->getFirstname(), $object->getLastname()));
                 $users[] = $object;
-
-                $manager->persist($object);
             }
+
+            $manager->persist($object);
         }
 
         $roles = [
@@ -55,23 +62,18 @@ class DevData implements FixtureInterface
             EventParticipation::STATUS_REFUSE,
         ];
 
+        $n = 0;
         foreach ($set->getObjects() as $object) {
+            $start = time() + 86400 * $n;
+            $n += 2;
             if ($object instanceof Evt) {
-                $object->setStatus(mt_rand(0, 2));
                 $object->setTsp($start);
-                $object->setTspEnd($start + mt_rand(1, 4) * 86400);
+                $object->setTspEnd($start + 86400 * 3);
                 $object->setJoinStart(time());
-                $object->setJoinMax(10);
-                $object->setNgensMax(10);
-                $object->setCommission($comm);
-
-                $manager->persist($object);
-
-                $start += mt_rand(1, 5) * 86400;
 
                 shuffle($users);
                 $i = 0;
-                $limit = mt_rand(4, 8);
+                $limit = 4;
 
                 foreach ($users as $user) {
                     // Owner of an event should not be added as participant
@@ -99,5 +101,21 @@ class DevData implements FixtureInterface
         }
 
         $manager->flush();
+
+        $admin = $this->userRepository->findUserByEmail('test@clubalpinlyon.fr');
+        $this->addAttribute($admin, UserAttr::PRESIDENT);
+        $this->addAttribute($admin, UserAttr::DEVELOPPEUR);
+        $this->addAttribute($admin, UserAttr::ADMINISTRATEUR);
+        $this->addAttribute($admin, UserAttr::RESPONSABLE_COMMISSION, 'commission:alpinisme');
+        $this->addAttribute($admin, UserAttr::RESPONSABLE_COMMISSION, 'commission:sorties-famille');
+        $this->addAttribute($admin, UserAttr::ENCADRANT, 'commission:alpinisme');
+        $this->addAttribute($admin, UserAttr::ENCADRANT, 'commission:sorties-famille');
+
+        $manager->flush();
+    }
+
+    protected function addAttribute(User $user, string $attribute, ?string $param = null)
+    {
+        $user->addAttribute($this->usertypeRepository->getByCode($attribute), $param);
     }
 }

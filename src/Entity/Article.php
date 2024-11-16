@@ -61,7 +61,7 @@ class Article
      * @var \DateTime
      */
     #[ORM\Column(name: 'tsp_lastedit', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP', 'comment' => 'Date de dernière modif'])]
-    private $tspLastedit = 'CURRENT_TIMESTAMP';
+    private $tspLastedit;
 
     /**
      * @var User
@@ -110,6 +110,14 @@ class Article
      */
     #[ORM\Column(name: 'nb_vues_article', type: 'integer', nullable: false, options: ['default' => 0])]
     private $nbVues = '0';
+
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+        $this->tsp = time();
+        $this->tspCrea = time();
+        $this->tspLastedit = new \DateTime();
+    }
 
     public function getId(): ?int
     {

@@ -2,40 +2,47 @@
 
 namespace App\Command\Dev;
 
-use App\DataFixtures\DevData;
-use App\Entity\User;
-use App\Entity\Usertype;
-use App\Repository\CommissionRepository;
+use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
-#[AsCommand(name: 'caf:fixtures:load')]
+#[AsCommand('caf:fixtures:load', 'Load a set of fixtures')]
 class FixturesLoadCommand extends Command
 {
-    private ContainerInterface $container;
-
-    public function __construct(ContainerInterface $container, ?string $name = null)
-    {
-        parent::__construct($name);
-        $this->container = $container;
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        #[AutowireIterator('dev.data_fixtures')]
+        private readonly iterable $fixtures,
+    ) {
+        parent::__construct();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $em = $this->container->get('doctrine')->getManager();
-        $commissionRepository = $this->container->get(CommissionRepository::class);
-        (new DevData($commissionRepository))->load($em);
+        $fixtures = [...$this->fixtures];
 
-        $userType = $em
-            ->getRepository(Usertype::class)
-            ->findOneByCode('developpeur');
-        $mainUser = $em
-            ->getRepository(User::class)
-            ->findOneByEmail('test@clubalpinlyon.fr')
-            ->addAttribute($userType);
+        $em = $this->em;
+
+        $this->em->getConnection()->executeQuery('DELETE FROM caf_article');
+        $this->em->getConnection()->executeQuery('ALTER TABLE caf_article AUTO_INCREMENT = 1');
+        $this->em->getConnection()->executeQuery('DELETE FROM caf_evt');
+        $this->em->getConnection()->executeQuery('ALTER TABLE caf_evt AUTO_INCREMENT = 1');
+        $this->em->getConnection()->executeQuery('DELETE FROM caf_commission');
+        $this->em->getConnection()->executeQuery('ALTER TABLE caf_commission AUTO_INCREMENT = 1');
+        $this->em->getConnection()->executeQuery('DELETE FROM caf_user');
+        $this->em->getConnection()->executeQuery('ALTER TABLE caf_user AUTO_INCREMENT = 1');
+
+        $executor = new ORMExecutor($em);
+        $executor->setLogger(function ($message) use ($output) {
+            $output->writeln(sprintf('  <comment>></comment> <info>%s</info>', $message));
+        });
+
+        $executor->execute($fixtures, $append = true);
+
         $em->flush();
 
         return 0;

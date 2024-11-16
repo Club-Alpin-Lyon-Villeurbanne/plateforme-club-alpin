@@ -1,0 +1,44 @@
+App\Entity\Evt:
+    mes_sorties (template):
+        __construct: ['@admin_user', '@commission_alpinisme', 'Sortie admin', '<word()>', '<dateTime("+5 days")>', '<dateTime("+8 days")>', '<address()>', '<latitude()>', '<longitude()>', '<paragraph()>', 200, 10, 10]
+        user: '@admin_user'
+        titre: 'Sortie admin'
+        place: '<address()>'
+        code: '<word()>'
+        rdv: '<address()>'
+        lat: '<latitude()>'
+        long: '<longitude()>'
+        description: '<paragraph()>'
+
+        massif: '<word()>'
+        matos: '<sentence(12)>'
+        difficulte: '<word()>'
+        joinMax: 10
+        ngensMax: 10
+
+    mes_sorties_validees{1..10} (extends mes_sorties):
+        status: 1
+
+    mes_sorties_refusees{1..10} (extends mes_sorties):
+        status: 2
+
+    mes_sorties_attente{1..10} (extends mes_sorties):
+        status: 0
+
+    sortie_user_1{1..5}:
+        __construct: ['@user1', '@commission_alpinisme', 'Sortie user 1', '<word()>', '<dateTime("+5 days")>', '<dateTime("+8 days")>', '<address()>', '<latitude()>', '<longitude()>', '<paragraph()>', 200, 10, 10]
+        user: '@user1'
+        titre: 'Sortie user 1'
+        place: '<address()>'
+        code: '<word()>'
+        rdv: '<address()>'
+        lat: '<latitude()>'
+        long: '<longitude()>'
+        description: '<paragraph()>'
+
+        massif: '<word()>'
+        matos: '<sentence(12)>'
+        difficulte: '<word()>'
+        joinMax: 10
+        ngensMax: 10
+        status: 1

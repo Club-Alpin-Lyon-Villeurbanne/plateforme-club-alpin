@@ -144,8 +144,7 @@ abstract class WebTestCase extends BaseWebTestCase
         $em = $this->getContainer()->get('doctrine')->getManager();
         $commission = $this->createCommission();
 
-        $article = new Article();
-        $article->setUser($user);
+        $article = new Article($user);
         $article->setTitre('titre');
         $article->setCommission($commission);
         $article->setTsp(time());

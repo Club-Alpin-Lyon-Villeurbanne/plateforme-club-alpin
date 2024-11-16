@@ -1,0 +1,16 @@
+App\Entity\User:
+    user (template):
+        mdp: '098f6bcd4621d373cade4e832627b4f6'
+        firstname: '<firstname()>'
+        lastname: '<lastname()>'
+        valid: true
+        email: '<email()>'
+
+    admin_user (extends user):
+        firstname: 'ADMIN'
+        lastname: 'SUPER'
+        nickname: 'Admin'
+        email: 'test@clubalpinlyon.fr'
+        cafnum: '749999999999'
+
+    user{1..10} (extends user): []

@@ -1,0 +1,29 @@
+App\Entity\Commission:
+    commission_sorties_familles:
+        __construct: ['Sorties familles', 'sorties-familles', 1]
+    commission_alpinisme:
+        __construct: ['Alpinisme', 'alpinisme', 2]
+    commission_ski_alpin:
+        __construct: ['Ski alpin / Snowboard', 'ski-alpin', 3]
+    commission_ecole_aventure:
+        __construct: ['École d''aventure', 'ecole-d-aventure', 4]
+    commission_ecole_escalade:
+        __construct: ['École d''escalade', 'ecole-d-escalade', 5]
+    commission_ecole_ski:
+        __construct: ['École de ski', 'ecole-de-ski', 6]
+    commission_escalade:
+        __construct: ['Escalade', 'escalade', 7]
+    commission_escalade_competition:
+        __construct: ['Escalade compétition', 'escalade-competition', 8]
+    commission_handicaf:
+        __construct: ['Handicaf', 'handicaf', 9]
+    commission_rando_ped:
+        __construct: ['Randonnée pédestre', 'randonnee-pedestre', 10]
+    commission_rando_raq:
+        __construct: ['Randonnée raquette', 'randonnee-raquette', 11]
+    commission_ski_rando:
+        __construct: ['Ski de randonnée', 'ski-de-randonne', 12]
+    commission_protection:
+        __construct: ['Protection de la montagne', 'protection-de-la-montagne', 13]
+    commission_formation:
+        __construct: ['Formation', 'formation', 14]
