@@ -140,6 +140,7 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
 
     public function formatDate($date, string $format = 'd/MM/YYYY')
     {
+        // see https://unicode.org/reports/tr35/tr35-dates.html#table-date-field-symbol-table
         return (new \IntlDateFormatter(
             'fr-FR',
             \IntlDateFormatter::FULL,

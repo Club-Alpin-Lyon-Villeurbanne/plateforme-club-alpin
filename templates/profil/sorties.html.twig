@@ -1,0 +1,129 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes sorties{% endblock %}
+
+{% block body %}
+    <div id="left1">
+        <div class="main-type">
+            <h1>Profil : mes sorties</h1>
+            {{ easy_include(include_name, '')}}
+
+            {% if events | length == 0 %}
+                <p class="info" style="margin-top: 15px;">Vous n'avez pas encore de sortie à afficher ici.</p>
+            {% else %}
+                <p class="mini" style="margin-top: 15px;">{{ total }} sortie{{ total > 1 ? 's' : '' }}</p>
+            {% endif %}
+
+            <table id="agenda">
+                {% for event in events %}
+                    <tr>
+                        <td class="agenda-gauche">
+                            {% set start = event.tsp | intldate('eee d MMM YYYY') | capitalize %}
+                            {% set end = event.tspEnd | intldate('eee d MMM YYYY') | capitalize %}
+
+                            {% if start == end %}
+                                Le {{ start }}<br />
+                                à {{ event.tsp | intldate('HH:mm') }}
+                            {% else %}
+                                Du {{ start }}<br/>
+                                au {{ end }}
+                            {% endif %}
+
+                            {% if app.user == event.user %}
+                                {% if event.status == constant('App\\Entity\\Evt::STATUS_LEGAL_UNSEEN') %}
+                                    <p class="alerte">Sortie en attente de publication</p>
+                                {% elseif event.status == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
+                                    <p class="info">Sortie publiée sur le site</p>
+                                {% elseif event.status == constant('App\\Entity\\Evt::STATUS_LEGAL_REFUSE') %}
+                                    <p class="erreur">Sortie refusée et non publiée</p>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="evt-tools">
+                                {% if app.user == event.user and event.status != constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
+                                    <a class="nice2" href="{{ path('sortie', { code: event.code, id: event.id }) }}?forceshow=true" title="Aperçu de la page dédiée à la sortie ci-dessous">Aperçu</a>
+                                {% endif %}
+
+                                {% if is_granted('SORTIE_UPDATE', event) %}
+                                    <a class="nice2 orange" href="/creer-une-sortie/{{ event.commission.code }}/update-{{ event.id }}.html" title="Modifier la sortie ci-dessous et les encadrants liés">Modifier</a>
+                                {% endif %}
+
+                                {% if is_granted('SORTIE_CANCEL', event) %}
+                                    <a class="nice2 red" href="/annuler-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Annuler la sortie ci-dessous">
+                                        Annuler
+                                    </a>
+                                {% endif %}
+
+                                {% if is_granted('SORTIE_DELETE', event) %}
+                                    <a class="nice2 red" href="/supprimer-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Supprimer définitivement la sortie ci-dessous">
+                                        Supprimer
+                                    </a>
+                                {% endif %}
+
+                                <a class="agenda-evt-debut" target="_top" href="{{ path('sortie', { code: event.code, id: event.id }) }}?commission={{ event.commission.code }}" title="">
+
+                                <!-- picto -->
+                                <div class="picto">
+                                    <img src="{{ commission_picto(event.commission.code) }}" alt="" title="" class="picto-light" />
+                                    <img src="{{ commission_picto(event.commission.code, 'dark') }}" alt="" title="" class="picto-dark" />
+                                </div>
+
+                                <div class="droite">
+                                    <span title="{{ event | temoin_event_title }}" style="padding: 10px 10px 5px 5px;float:left;">
+                                        <span class="temoin-places-dispos {{ event | temoin_event }}"></span>
+                                    </span>
+
+                                    <h2>
+                                        {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>{% endif %}
+                                        {{ event.titre }}
+                                    </h2>
+
+                                    <p>
+                                        <b>{{ event.commission.title }}</b>
+                                        {% if event.difficulte %}
+                                            - <b>{{ event.difficulte }}</b>
+                                        {% endif %}
+                                        {% if event.massif %}
+                                            - <b>{{ event.massif }}</b>
+                                        {% endif %}
+                                        {% if event.participation(app.user) %}
+                                            - Votre rôle : <b>{{ event.participation(app.user).role }}</b>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <br style="clear:both" />
+
+                                </a>
+
+                                {% set empietements = empietements(event, app.user) %}
+                                {% if empietements | length > 0 %}
+                                    <div class="empietements">
+                                        <b style="margin-left: 20px">Attention au timing :</b>
+                                        {% for empietement in empietements %}
+                                            {% if empietement.status == constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME') %}
+                                                <br />- Vous êtes aussi pré-inscrit sur la sortie <a href="/sortie/{{ empietement.event.code }}-{{ empietement.event.id }}.html" title="">{{ empietement.event.titre }}</a>
+                                             {% endif %}
+                                            {% if empietement.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
+                                                <br />- Vous êtes aussi <span style="color:red">confirmé</span> sur la sortie <a href="/sortie/{{ empietement.event.code }}-{{ empietement.event.id }}.html" title="">{{ empietement.event.titre }}</a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+
+                {% endfor %}
+            </table>
+
+            {% if total > per_page %}
+                <hr /><nav class="pageSelect">
+                {% for i in 1..pages %}
+                    <a href="{{ page_url }}?page={{ i }}" title="" class="{{ page == i ? 'up' : '' }}">p{{ i }}</a> {{ i < pages ? ' ' : '' }}
+                {% endfor %}
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
