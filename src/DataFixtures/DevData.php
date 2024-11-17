@@ -74,6 +74,11 @@ class DevData implements FixtureInterface
                 $limit = mt_rand(4, 8);
 
                 foreach ($users as $user) {
+                    // Owner of an event should not be added as participant
+                    if ($user === $object->getUser()) {
+                        continue;
+                    }
+
                     $participation = new EventParticipation($object, $user, $roles[array_rand($roles)], $status[array_rand($status)]);
                     if (\in_array($participation->getRole(), [EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_BENEVOLE, EventParticipation::ROLE_COENCADRANT], true)) {
                         $participation->setStatus(EventParticipation::STATUS_VALIDE);
