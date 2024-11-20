@@ -126,7 +126,8 @@ elseif (!allowed('user_read_public')) {
 		                ->getRepository(EventParticipation::class)
 		                ->getEventPresencesAndAbsencesOfUser($id_user);
 		            echo '<p><b>';
-		            printf('noté absent / validé à une sortie : %d / %d', $absences, $presences);
+		            $fiabilite = $presences > 0 ? (100 - $absences / $presences) : 100;
+		            printf('Fiabilité de présence: %.1f%% - (%d absences sur %d sorties)', $fiabilite, $absences, $presences);
 		            echo '</b></p>';
 		        }
     ?>
