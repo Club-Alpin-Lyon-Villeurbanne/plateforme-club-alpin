@@ -78,14 +78,15 @@
 
             <div id="evt-list">
                 {% for event in list_events(get_commission(current_commission)) %}
-                    {% set nPlacesRestantesOnline = max(0, event.joinMax - event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::ROLE_BENEVOLE')]) | length) %}
+                    {% set nInscritsTotal = event.participations() | length %}
+                    {% set nPlacesRestantesTotal = max(0, event.ngensMax - nInscritsTotal) %}
                     <a href="/sortie/{{ event.code }}-{{ event.id }}.html?commission={{ event.commission.code }}" title="Voir la sortie">
                         <span style="color:#fff">{{ event.tsp | intldate('ccc d/MM') | capitalize }} </span> |
                         {% if event.cancelled %}
                             <span class="cancelled">Sortie annulée</span>
                         {% else %}
                             <span style="color:#4D4D4D">{{ event.commission.title }}
-                            {% if nPlacesRestantesOnline <= 0 %}
+                            {% if nPlacesRestantesTotal <= 0 %}
                                 <span class="label-complet"> complet </span>
                             {% endif %}
                             </span>

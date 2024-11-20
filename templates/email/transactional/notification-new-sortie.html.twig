@@ -8,11 +8,11 @@
 
 {% block inner_html %}
     <p>
-        Une nouvelle sortie "{{ entity.titre }}" vient d'être publiée sur le site du Club Alpin Français Lyon-Villeurbanne dans la commission {{ entity.commission.title }}.
+        Une nouvelle sortie "{{ entity.titre }}" vient d'être publiée sur le site du Club Alpin Français Lyon-Villeurbanne dans la commission <b>{{ entity.commission.title }}</b>.
         <a href="{{ url('sortie', {code: entity.code, id: entity.id}) }}">Voir la sortie</a>.
     </p>
     <p>
-        Vous pouvez gérer vos alertes depuis <a href="{{ url('profil_alertes') }}">votre espace alertes</a>.
+        Vous pouvez gérer vos alertes depuis <a href="{{ url('profil_alertes') }}">votre espace "mes alertes"</a>.
     </p>
 {% endblock %}
 
@@ -20,5 +20,5 @@
     Une nouvelle sortie "{{ entity.titre }}" vient d'être publiée sur le site du Club Alpin Français Lyon-Villeurbanne dans la commission {{ entity.commission.title }}.
     Voir la sortie ({{ url('sortie', {code: entity.code, id: entity.id}) }}).
 
-    Vous pouvez gérer vos alertes depuis votre espace alertes ({{ url('profil_alertes') }}).
+    Vous pouvez gérer vos alertes depuis votre espace "mes alertes" ({{ url('profil_alertes') }}).
 {% endblock %}

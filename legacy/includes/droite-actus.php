@@ -20,7 +20,7 @@ if ($current_commission) {
         AND  `une_article` =0 '
         // commission donnée : filtre (mais on inclut les actus club, commission=0)
         . ($current_commission ? ' AND (commission_article = ' . (int) $comTab[$current_commission]['id_commission'] . ' OR commission_article = 0) ' : '')
-        . 'ORDER BY  `tsp_article` DESC
+        . 'ORDER BY  `tsp_validate_article` DESC
         LIMIT 16';
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
