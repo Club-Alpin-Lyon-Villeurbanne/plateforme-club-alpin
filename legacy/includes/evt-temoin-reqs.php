@@ -46,6 +46,6 @@ elseif (time() < $handle['join_start_evt']) {
         $handle['temoin-title'] = 'Les ' . ($handle['ngens_max_evt'] ?? '') . ' places libres ont été réservées';
     } else {
         $handle['temoin'] = 'on';
-        $handle['temoin-title'] = (($handle['ngens_max_evt'] ?? 0) - $count) . ' places restantes';
+        $handle['temoin-title'] = max(0, ($handle['ngens_max_evt'] ?? 0) - $count) . ' places restantes';
     }
 }
