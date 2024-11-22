@@ -121,15 +121,20 @@ elseif (!allowed('user_read_public')) {
 			<?php require __DIR__ . '/../includes/user/infos_privees.php'; ?>
 
             <?php
-		        if (allowed('user_read_private')) {
-		            list('absences' => $absences, 'presences' => $presences) = LegacyContainer::get('doctrine.orm.entity_manager')
-		                ->getRepository(EventParticipation::class)
-		                ->getEventPresencesAndAbsencesOfUser($id_user);
-		            echo '<p><b>';
-		            $fiabilite = $presences > 0 ? (100 - $absences / $presences) : 100;
-		            printf('Fiabilité de présence: %.1f%% - (%d absences sur %d sorties)', $fiabilite, $absences, $presences);
-		            echo '</b></p>';
-		        }
+    // si j'ai acces ou si les données me concernent
+    $isMyProfile = getUser()->getId() === (int) $id_user;
+    if (allowed('user_read_private') || $isMyProfile) {
+        list('absences' => $absences, 'presences' => $presences) = LegacyContainer::get('doctrine.orm.entity_manager')
+            ->getRepository(EventParticipation::class)
+            ->getEventPresencesAndAbsencesOfUser($id_user);
+        echo '<p><b>';
+        $fiabilite = $presences > 0 ? (100 - $absences / $presences) : 100;
+        printf('Fiabilité de présence: %.1f%% - (%d absences sur %d sorties)', $fiabilite, $absences, $presences);
+        if ($isMyProfile) {
+            echo '<br/>Cet indice donne une information sur le nombre d\'absences aux sorties auxquelles vous êtes inscrit.e. Il n\'est visible que par les encadrant.es';
+        }
+        echo '</b></p>';
+    }
     ?>
 
 			<br style="clear:both" />
