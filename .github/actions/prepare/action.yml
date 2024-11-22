@@ -20,15 +20,15 @@ runs:
       uses: actions/cache@v3
       with:
         path: /tmp/mysql-image
-        key: mysql-5.7-${{ runner.os }}
+        key: mysql-8-${{ runner.os }}
 
     - name: Pull MySQL image
       shell: bash
       run: |
         if [ ! -f /tmp/mysql-image/mysql.tar ]; then
           mkdir -p /tmp/mysql-image
-          docker pull mysql:5.7
-          docker save mysql:5.7 > /tmp/mysql-image/mysql.tar
+          docker pull mysql:8
+          docker save mysql:8 > /tmp/mysql-image/mysql.tar
         fi
 
     - name: Load MySQL image
