@@ -27,6 +27,8 @@ runs:
       run: |
         if [ ! -f /tmp/mysql-image/mysql.tar ]; then
           mkdir -p /tmp/mysql-image
+          
+          # The MySQL version must be updated at multiple places (docker-compose, gitlab-ci)
           docker pull mysql:8
           docker save mysql:8 > /tmp/mysql-image/mysql.tar
         fi
