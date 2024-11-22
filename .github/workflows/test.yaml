@@ -1,51 +1,45 @@
-on: [pull_request]
 name: Test
+on: [pull_request]
 
 jobs:
-  make-php-cs:
+  php-cs:
     name: php-cs-fixer
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build the environment
-        run: |
-          export UID_OVERRIDE="$UID"
-          export GID_OVERRIDE="$GID"
-          make init
-      - name: Run the linter
-        run: |
-          make args=--diff php-cs
+      
+      - name: Prepare environment
+        uses: ./.github/actions/prepare
+        
+      - name: Run php-cs
+        run: make php-cs
 
-  make-phpstan:
+  phpstan:
     name: phpstan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build the environment
-        run: |
-          export UID_OVERRIDE="$UID"
-          export GID_OVERRIDE="$GID"
-          make init
-      - name: Setup PHPUnit
-        run: |
-          make phpunit-setup
+      
+      - name: Prepare environment
+        uses: ./.github/actions/prepare
+      
+      - name: Setup phpunit
+        run: make phpunit-setup
+        
       - name: Run phpstan
-        run: |
-          make phpstan
+        run: make phpstan
 
-  make-test:
+  tests:
     name: phpunit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build the environment
-        run: |
-          export UID_OVERRIDE="$UID"
-          export GID_OVERRIDE="$GID"
-          make init
+      
+      - name: Prepare environment
+        uses: ./.github/actions/prepare
+        
       - name: Initialise the database
         run: |
           make database-init-test
-      - name: Run the unit tests
-        run: |
-          make tests
+      - name: Run tests
+        run: make tests

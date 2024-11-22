@@ -18,7 +18,9 @@ RED = echo "\x1b[31m\#\# $1\x1b[0m"
 
 ## —— 🔥 App ——
 init: ## Init the project
-	$(MAKE) docker-start
+	$(eval profile ?= default)
+
+	$(MAKE) docker-start profile=$(profile)
 	$(MAKE) composer-install
 	$(MAKE) npm-install
 	$(MAKE) npm-build
@@ -72,8 +74,10 @@ database-init-test: ## Init database for test
 
 ## —— 🐳 Docker ——
 docker-start: 
-	$(DOCKER_COMPOSE) up -d
+	$(eval profile ?= dev)
+	$(DOCKER_COMPOSE) --profile $(profile) up -d
 .PHONY: docker-start
+
 
 docker-build: ## Build images
 	@$(DOCKER_COMPOSE) pull --parallel
@@ -81,7 +85,9 @@ docker-build: ## Build images
 .PHONY: docker-build
 
 docker-stop:
-	$(DOCKER_COMPOSE) stop
+	$(eval profile ?= dev)
+
+	$(DOCKER_COMPOSE) --profile $(profile) stop
 	@$(call RED,"The containers are now stopped.")
 .PHONY: docker-stop
 
