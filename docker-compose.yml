@@ -15,6 +15,7 @@ services:
       - ./:/var/www
 
   cafdb:
+    # The MySQL version must be updated at multiple places (docker-compose, gitlab-ci)
     image: mysql:5.7
     container_name: db_caflyon
     profiles: ["dev", "ci"]
