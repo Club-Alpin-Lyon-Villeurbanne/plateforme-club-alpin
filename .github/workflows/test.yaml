@@ -12,7 +12,7 @@ jobs:
         uses: ./.github/actions/prepare
         
       - name: Run php-cs
-        run: make php-cs
+        run: make args=--diff php-cs
 
   phpstan:
     name: phpstan
