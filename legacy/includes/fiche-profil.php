@@ -127,13 +127,13 @@ elseif (!allowed('user_read_public')) {
         list('absences' => $absences, 'presences' => $presences) = LegacyContainer::get('doctrine.orm.entity_manager')
             ->getRepository(EventParticipation::class)
             ->getEventPresencesAndAbsencesOfUser($id_user);
-        echo '<p><b>';
-        $fiabilite = $presences > 0 ? (100 - $absences / $presences) : 100;
-        printf('Fiabilité de présence: %.1f%% - (%d absences sur %d sorties)', $fiabilite, $absences, $presences);
+        echo '<p>';
+        $fiabilite = round($presences > 0 ? (100 - $absences / $presences) : 100);
+        printf('<b>Taux de présence: %d%% - (%d absences sur %d sorties)</b>', $fiabilite, $absences, $presences);
         if ($isMyProfile) {
-            echo '<br/>Cet indice donne une information sur le nombre d\'absences aux sorties auxquelles vous êtes inscrit.e. Il n\'est visible que par les encadrant.es';
+            echo '<br/>Ce taux donne une information sur le nombre d\'absences aux sorties auxquelles vous êtes inscrit.e.<br/>Il n\'est visible que par les encadrant.es';
         }
-        echo '</b></p>';
+        echo '</p>';
     }
     ?>
 
