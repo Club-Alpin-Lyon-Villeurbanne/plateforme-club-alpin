@@ -1,9 +1,9 @@
-ARG PHP_VERSION=8.2.25           # https://hub.docker.com/_/php/tags?page=1&name=8.2
-ARG COMPOSER_VERSION=2.8.1       # https://hub.docker.com/_/composer/tags
+ARG PHP_VERSION=8.3.13           # https://hub.docker.com/_/php/tags?page=1&name=8.3
+ARG COMPOSER_VERSION=2.8.2       # https://hub.docker.com/_/composer/tags
 ARG NODE_VERSION=23              # https://hub.docker.com/_/node/tags
 
 ARG PHIVE_VERSION=0.15.3         # https://github.com/phar-io/phive/releases
-ARG PHPEXTINST_VERSION=2.6.1     # https://github.com/mlocati/docker-php-extension-installer/releases
+ARG PHPEXTINST_VERSION=2.5.2     # https://github.com/mlocati/docker-php-extension-installer/releases
 
 ARG IGBINARY_VERSION=3.2.16      # https://pecl.php.net/package/igbinary
 ARG APCU_VERSION=5.1.24          # https://pecl.php.net/package/apcu
@@ -82,7 +82,7 @@ ARG APCU_VERSION \
 
 # Install some extension and activate them
 RUN install-php-extensions \
-        imagick-${IMAGICK_VERSION} \
+        imagick/imagick@master \
         igbinary-${IGBINARY_VERSION} \
         apcu-${APCU_VERSION} \
         pdo_mysql-stable \

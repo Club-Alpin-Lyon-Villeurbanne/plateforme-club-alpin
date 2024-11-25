@@ -984,13 +984,59 @@
 
                                         {{ easy_include('formalites-inscription', 'formalites') }}
 
-                                        <form action="{{ app.request.requestUri }}#inscription" method="post" class="loading">
+                                        <form id="join_sortie" action="{{ app.request.requestUri }}#inscription" method="post" class="loading">
 
                                             <input type="hidden" name="operation" value="user_join" />
                                             <input type="hidden" name="id_evt" value="{{ event.id }}" />
 
                                             <div class="check-nice ">
-                                                {% include 'sortie/user_inscription_options.html.twig' %}
+                                                <p>
+                                                    <label style="width:100%;clear:both;overflow:hidden;">
+                                                        <input id="confirm_conditions" type="checkbox" name="confirm" /> J'ai lu les conditions d'usage ci-dessus et confirme ma demande d'inscription.
+                                                    </label>
+                                                </p>
+                                                <hr class="clear">
+
+                                                {% if event.needBenevoles and not my_status %}
+                                                    <p>
+                                                        <label style="width:100%;clear:both;overflow:hidden;">
+                                                            <input type="checkbox" name="jeveuxetrebenevole" /> Cochez cette case si vous souhaitez rejoindre la sortie en tant que <b>bénévole</b>.
+                                                        </label>
+                                                    </p>
+                                                {% endif %}
+
+                                                {% if filiations | length %}
+                                                    <hr class="clear" />
+                                                    {{ easy_include('inscrire-filiation-select') }}
+
+                                                    <input type="hidden" name="filiations" value="on" />
+                                                    <br />
+                                                    <label for="filiation_id_user_<?php echo user() ? getUser()->getId() : ''; ?>" style="width:100%;clear:both;overflow:hidden;">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked="checked"
+                                                            class="custom"
+                                                            name="id_user_filiation[]"
+                                                            value="{{ app.user.id }}"
+                                                            id="filiation_id_user_{{ app.user.id }}" />
+                                                        Moi-même (<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ app.user.id }}" class="fancyframe userlink">{{ app.user.nickname }}</a>)
+                                                    </label>
+                                                    <br />
+                                                    {% for filiation in filiations %}
+                                                        <br />
+                                                        <label for="filiation_id_user_{{ filiation.id }}" style="width:100%;clear:both;overflow:hidden;">
+                                                            <input
+                                                                type="checkbox"
+                                                                onclick="$('#paiement_enfant_{{ filiation.id }}').slideToggle(200)"
+                                                                class="custom"
+                                                                name="id_user_filiation[]"
+                                                                value="{{ filiation.id }}"
+                                                                id="filiation_id_user_{{ filiation.id }}" />
+                                                            {{ filiation.lastname }}, {{ filiation.firstname }} ({{ filiation.id }}, {{ filiation.nickname }})
+                                                        </label>
+                                                    {% endfor %}
+                                                    <hr class="clear" />
+                                                {% endif %}
                                             </div>
 
                                             <p style="text-align:center">
@@ -1004,6 +1050,21 @@
                                                 </a>
                                             </p>
                                         </form>
+                                        <script>
+                                            $(function () {
+                                                $('#join_sortie').on('submit', function (event) {
+                                                    event.preventDefault();
+                                                    var $this = $(this);
+
+                                                    if ($('#confirm_conditions').prop('checked')) {
+                                                        $(this).unbind('submit').submit();
+                                                    } else {
+                                                        alert('Vous devez accepter les conditions d\'usage pour vous inscrire.');
+                                                        return false;
+                                                    }
+                                                })
+                                            })
+                                        </script>
 
                                     </div>
                                     {% endif %}
