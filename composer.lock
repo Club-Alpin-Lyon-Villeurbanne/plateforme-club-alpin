@@ -4,11 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
     "content-hash": "dfdff7f078f77c3e7d1253ad69f64045",
-=======
-    "content-hash": "876c9256f6c81ba5d99fbc3bca7870f9",
->>>>>>> d83501f (Add PhpOffice and PhpSpreadsheet package)
     "packages": [
         {
             "name": "api-platform/core",
