@@ -65,7 +65,7 @@ class IcalGenerator
         }
 
         if ($lat = $evt->getLat() && $long = $evt->getLong()) {
-            $lines[] = 'GEO:' . $this->escape(str_replace(',', '.', $lat) . ';' . str_replace(',', '.', $long));
+            $lines[] = 'GEO:' . str_replace(',', '.', $lat) . ';' . str_replace(',', '.', $long);
         }
 
         if ($venue = $evt->getRdv()) {
@@ -92,13 +92,14 @@ class IcalGenerator
 
     private function escape(string $value): string
     {
+        $value = strip_tags($value);
         $value = str_replace(["\r\n", "\n"], '\\n', $value);
         $value = addcslashes($value, ',;');
 
         // 75 is the maximum length of a line (see
         // https://datatracker.ietf.org/doc/html/rfc5545#section-3.1), while 12
         // is the length of the lengthy key ("DESCRIPTION:").
-        return chunk_split($value, 75 - 12, "\r\n ");
+        return substr(chunk_split($value, 75 - 12, "\r\n "), 0, \strlen("\r\n "));
     }
 
     private function uid(Evt $evt): string
