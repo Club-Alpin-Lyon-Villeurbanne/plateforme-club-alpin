@@ -38,6 +38,8 @@ class IcalGenerator
             return null;
         }
 
+        $now = $this->formatDateTime();
+
         $lines = [
             'BEGIN:VCALENDAR',
             'VERSION:2.0',
@@ -45,9 +47,10 @@ class IcalGenerator
             'CALSCALE:GREGORIAN',
             'METHOD:PUBLISH',
             'BEGIN:VEVENT',
+            'DTSTAMP:' . $now,
             'UID:' . $this->uid($evt),
             'STATUS:' . $status->eventStatus(),
-            'LAST-MODIFIED:' . $this->formatDateTime(),
+            'LAST-MODIFIED:' . $now,
             'DTSTART:' . $this->formatDateTime($tspStart),
             'DTEND:' . $this->formatDateTime($tspEnd),
             'SUMMARY:' . $this->escape($evt->getTitre()),
@@ -73,6 +76,7 @@ class IcalGenerator
             'BEGIN:VALARM',
             'ACTION:DISPLAY',
             'TRIGGER:-PT1H',
+            'DESCRIPTION:Sortie CAF',
             'END:VALARM',
             'END:VEVENT',
             'END:VCALENDAR'
@@ -89,8 +93,12 @@ class IcalGenerator
     private function escape(string $value): string
     {
         $value = str_replace(["\r\n", "\n"], '\\n', $value);
+        $value = addcslashes($value, ',;');
 
-        return addcslashes($value, ',;');
+        // 75 is the maximum length of a line (see
+        // https://datatracker.ietf.org/doc/html/rfc5545#section-3.1), while 12
+        // is the length of the lengthy key ("DESCRIPTION:").
+        return chunk_split($value, 75 - 12, "\r\n ");
     }
 
     private function uid(Evt $evt): string
