@@ -3,10 +3,12 @@
 namespace App\Bridge\Twig;
 
 use App\Entity\Commission;
+use App\Entity\Evt;
 use App\Entity\User;
 use App\Notifications;
 use App\Repository\CommissionRepository;
 use App\Repository\ContentInlineRepository;
+use App\Repository\EventParticipationRepository;
 use App\Repository\EvtRepository;
 use App\Repository\PartenaireRepository;
 use Psr\Container\ContainerExceptionInterface;
@@ -30,6 +32,7 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         return [
             PartenaireRepository::class,
             EvtRepository::class,
+            EventParticipationRepository::class,
             ContentInlineRepository::class,
             CommissionRepository::class,
             Notifications::class,
@@ -52,7 +55,13 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
             new TwigFunction('notifications_counter_articles', [$this, 'getNotificationsValidationArticle']),
             new TwigFunction('notifications_counter_sorties', [$this, 'getNotificationsValidationSortie']),
             new TwigFunction('notifications_counter_sorties_president', [$this, 'getNotificationsValidationSortiePresident']),
+            new TwigFunction('empietements', [$this, 'getEmpietements']),
         ];
+    }
+
+    public function getEmpietements(Evt $event, ?User $user): array
+    {
+        return $this->locator->get(EventParticipationRepository::class)->getEmpietements($event, $user);
     }
 
     public function getFondCommission(?string $code): string

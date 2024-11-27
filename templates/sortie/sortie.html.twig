@@ -87,34 +87,30 @@
                 {% endif %}
 
             {# FIX ME Replace with a voter #}
-            {% elseif event.publicStatusValide and is_granted('SORTIE_UPDATE', event) %}
+            {% elseif event.publicStatusValide and (is_granted('SORTIE_UPDATE', event) or is_granted('SORTIE_DELETE', event) or is_granted('SORTIE_CANCEL', event)) %}
                 {% set closeDiv = true %}
 
                 <div class="alerte">
                     <b>Note :</b> Cette sortie est publiée et visible par les adhérents !<br />
             {% endif %}
 
-            {% if is_granted('SORTIE_UPDATE', event) %}
-                {% if not event.cancelled %}
+                {% if is_granted('SORTIE_UPDATE', event) %}
                     <a href="/creer-une-sortie/{{ event.commission.code }}/update-{{ event.id }}.html" title="Vous êtes l'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
                         <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie
                     </a>
                 {% endif %}
 
-                {% if not event.finished %}
-                    {% if allowed('evt_delete', 'commission:' ~ event.commission.code) and (event.publicStatusValide or event.cancelled) %}
-                        <a class="nice2 noprint red" href="/supprimer-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Supprimer définitivement la sortie ci-dessous">
-                            <img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie
-                        </a>
-                    {% endif %}
+                {% if is_granted('SORTIE_DELETE', event) %}
+                    <a class="nice2 noprint red" href="/supprimer-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Supprimer définitivement la sortie ci-dessous">
+                        <img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie
+                    </a>
                 {% endif %}
-            {% endif %}
 
-            {% if is_granted('SORTIE_CANCEL', event) %}
-                <a class="nice2 noprint red" href="/annuler-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Annuler la sortie ci-dessous">
-                    <img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie
-                </a>
-            {% endif %}
+                {% if is_granted('SORTIE_CANCEL', event) %}
+                    <a class="nice2 noprint red" href="/annuler-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Annuler la sortie ci-dessous">
+                        <img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie
+                    </a>
+                {% endif %}
 
             {% if closeDiv %}
                 </div><br />
@@ -401,10 +397,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-{#                                // PARTICIPANTS - EMPIETEMENTS : VÉRIFICATION DE (PRÉ)INSCRIPTIONS À D'AUTRES SORTIES DANS LE MEME TIMING#}
-{#                                // création du tableau "empiètement" pour chaque user#}
-{#                                $row['empietements'] = empietement_sortie($row['id_user'], $evt);#}
-
                                 {% for participation in participations %}
                                     {% set participation = participation['liste'] %}
                                     <tr class="status{{ participation.status }}" style="color:gray; font-size:10px;">
