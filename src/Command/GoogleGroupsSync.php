@@ -163,8 +163,8 @@ class GoogleGroupsSync extends Command
 
     private function upsertDriveAndAccesses(Commission $commission)
     {
-        if ($commission->getgoogleDriveServiceId()) {
-            $drive = $this->googleDriveService->drives->get($commission->getgoogleDriveServiceId());
+        if ($commission->getGoogleDriveId()) {
+            $drive = $this->googleDriveService->drives->get($commission->getGoogleDriveId());
         } else {
             if (!$this->dryRun) {
                 $this->output->writeln("\t☑️ Creating a Google Drive for <info>Commission " . $commission->getTitle() . '</info>');
@@ -172,7 +172,7 @@ class GoogleGroupsSync extends Command
                     'name' => sprintf('%s %s', self::PREFIX_GROUP_NAME, $commission->getTitle()),
                 ]));
 
-                $commission->setgoogleDriveServiceId($drive->getId());
+                $commission->setGoogleDriveId($drive->getId());
                 $this->em->flush();
             } else {
                 $this->output->writeln("\t💨 Would have create a Google Drive for <info>Commission " . $commission->getTitle() . '</info>');
