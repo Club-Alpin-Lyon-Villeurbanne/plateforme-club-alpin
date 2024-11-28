@@ -10,7 +10,6 @@ use App\Messenger\Message\SortiePubliee;
 use App\Repository\EventParticipationRepository;
 use App\Repository\UserRepository;
 use App\Twig\JavascriptGlobalsExtension;
-use App\Utils\IcalGenerator;
 use App\Utils\PdfGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
@@ -106,7 +105,7 @@ class SortieController extends AbstractController
     }
 
     #[Route(name: 'sortie_update_inscription', path: '/sortie/{id}/update-inscriptions', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function sortieUpdateInscriptions(#[CurrentUser] User $user, Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer, IcalGenerator $iCalGenerator)
+    public function sortieUpdateInscriptions(#[CurrentUser] User $user, Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
     {
         if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token'))) {
             $this->addFlash('error', 'Jeton de validation invalide.');
@@ -209,10 +208,6 @@ class SortieController extends AbstractController
                 'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'event_name' => $event->getTitre(),
             ];
-
-            if (EventParticipation::STATUS_VALIDE == $status) {
-                $context['i_cal_attachment'] = $iCalGenerator->eventUpsert($event, $context['event_url']);
-            }
 
             $template = match ($status) {
                 EventParticipation::STATUS_VALIDE => 'transactional/sortie-participation-confirmee',
