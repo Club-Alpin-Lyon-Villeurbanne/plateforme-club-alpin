@@ -95,7 +95,7 @@ if (is_array($p_addJs)) {
     if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
         ?>
         <div id="test-banner">
-            <p>Attention, vous vous trouvez sur un site de test. Veuillez <a href="https://clubalpinlyon.fr">cliquer ici pour accéder au site de production</a>.</p>
+            <p>Attention, vous vous trouvez sur un site de test. Veuillez <a href="https://www.clubalpinlyon.fr">cliquer ici pour accéder au site de production</a>.</p>
         </div>
     <?php
     }
