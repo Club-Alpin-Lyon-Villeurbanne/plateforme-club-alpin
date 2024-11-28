@@ -25,7 +25,7 @@ class ExpenseAttachmentNormalizer implements NormalizerInterface
         $context[self::ALREADY_CALLED] = true;
 
         // update the filePath with the url
-        $object->setFileUrl($this->fileUploader->getUploadUrl($object->getFilename(), 'expense-attachments'));
+        $object->setFileUrl($this->fileUploader->getUserUploadUrl($object->getUser(), $object->getFilename(), 'expense-attachments'));
 
         return $this->normalizer->normalize($object, $format, $context);
     }
