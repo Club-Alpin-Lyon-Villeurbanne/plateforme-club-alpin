@@ -25,6 +25,10 @@ Options -Indexes
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # redirect clubalpinlyon.fr to www.clubalpinlyon.fr to avoid CORS and cross-site cookies issues
+    RewriteCond %{HTTP_HOST} ^clubalpinlyon\.fr$ [NC]
+    RewriteRule ^(.*)$ https://www.clubalpinlyon.fr/$1 [L,R=301]
+
     # Determine the RewriteBase automatically and set it as environment variable.
     # If you are using Apache aliases to do mass virtual hosting or installed the
     # project in a subdirectory, the base path will be prepended to allow proper

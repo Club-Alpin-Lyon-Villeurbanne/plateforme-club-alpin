@@ -8,7 +8,7 @@ use App\UserRights;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
-class SortieAnnulationVoter extends Voter
+class SortieDeleteVoter extends Voter
 {
     private UserRights $userRights;
 
@@ -19,7 +19,7 @@ class SortieAnnulationVoter extends Voter
 
     protected function supports($attribute, $subject): bool
     {
-        return \in_array($attribute, ['SORTIE_CANCEL', 'SORTIE_UNCANCEL'], true);
+        return \in_array($attribute, ['SORTIE_DELETE'], true);
     }
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
@@ -34,25 +34,22 @@ class SortieAnnulationVoter extends Voter
             throw new \InvalidArgumentException(sprintf('The voter "%s" requires an event subject', __CLASS__));
         }
 
-        if ('SORTIE_UNCANCEL' === $attribute && !$subject->getCancelled()) {
-            return false;
-        }
-
-        if ('SORTIE_CANCEL' === $attribute && ($subject->getCancelled() || !$subject->isPublicStatusValide())) {
-            return false;
-        }
-
-        if ($subject->getUser() !== $user
-            && !$this->userRights->allowed('evt_validate_all')
-            && !$this->userRights->allowedOnCommission('evt_validate', $subject->getCommission())
-        ) {
-            return false;
-        }
-
         if ($subject->isFinished()) {
             return false;
         }
 
-        return $this->userRights->allowedOnCommission('evt_cancel', $subject->getCommission());
+        if ($subject->isPublicStatusValide() && !$subject->getCancelled()) {
+            return false;
+        }
+
+        if ($user === $subject->getUser()) {
+            return true;
+        }
+
+        if ($this->userRights->allowedOnCommission('evt_delete', $subject->getCommission())) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\AlertType;
 use App\Messenger\Message\ArticlePublie;
 use App\Repository\CommissionRepository;
+use App\Repository\EvtRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -51,5 +52,71 @@ class ProfilController extends AbstractController
         $this->addFlash('success', 'Configuration des alertes mise à jour.');
 
         return $this->redirect($this->generateUrl('profil_alertes'));
+    }
+
+    #[Route(path: '/sorties/next', name: 'profil_sorties_next')]
+    #[IsGranted('ROLE_USER')]
+    #[Template('profil/sorties.html.twig')]
+    public function sortiesNext(Request $request, EvtRepository $evtRepository)
+    {
+        $perPage = 30;
+        $page = $request->query->getInt('page', 1);
+        $total = $evtRepository->getUserUpcomingEventsCount($this->getUser());
+        $pages = ceil($total / $perPage);
+        $first = $perPage * ($page - 1);
+
+        return [
+            'events' => $evtRepository->getUserUpcomingEvents($this->getUser(), $first, $perPage),
+            'total' => $total,
+            'per_page' => $perPage,
+            'pages' => $pages,
+            'page' => $page,
+            'page_url' => $this->generateUrl('profil_sorties_next'),
+            'include_name' => 'profil-sorties-next',
+        ];
+    }
+
+    #[Route(path: '/sorties/prev', name: 'profil_sorties_prev')]
+    #[IsGranted('ROLE_USER')]
+    #[Template('profil/sorties.html.twig')]
+    public function sortiesPrev(Request $request, EvtRepository $evtRepository)
+    {
+        $perPage = 30;
+        $page = $request->query->getInt('page', 1);
+        $total = $evtRepository->getUserPastEventsCount($this->getUser());
+        $pages = ceil($total / $perPage);
+        $first = $perPage * ($page - 1);
+
+        return [
+            'events' => $evtRepository->getUserPastEvents($this->getUser(), $first, $perPage),
+            'total' => $total,
+            'per_page' => $perPage,
+            'pages' => $pages,
+            'page' => $page,
+            'page_url' => $this->generateUrl('profil_sorties_prev'),
+            'include_name' => 'profil-sorties-prev',
+        ];
+    }
+
+    #[Route(path: '/sorties/self', name: 'profil_sorties_self')]
+    #[IsGranted('ROLE_USER')]
+    #[Template('profil/sorties.html.twig')]
+    public function sortiesSelf(Request $request, EvtRepository $evtRepository)
+    {
+        $perPage = 30;
+        $page = $request->query->getInt('page', 1);
+        $total = $evtRepository->getUserEventsCount($this->getUser());
+        $pages = ceil($total / $perPage);
+        $first = $perPage * ($page - 1);
+
+        return [
+            'events' => $evtRepository->getUserEvents($this->getUser(), $first, $perPage),
+            'total' => $total,
+            'per_page' => $perPage,
+            'pages' => $pages,
+            'page' => $page,
+            'page_url' => $this->generateUrl('profil_sorties_self'),
+            'include_name' => 'profil-sorties-self',
+        ];
     }
 }

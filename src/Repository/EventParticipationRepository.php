@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -22,7 +23,7 @@ class EventParticipationRepository extends ServiceEntityRepository
     }
 
     /** @return EventParticipation[][] */
-    public function getEmpietements(Evt $event)
+    public function getEmpietements(Evt $event, ?User $user = null)
     {
         $qb = $this->createQueryBuilder('p')
             ->select('e, p')
@@ -41,6 +42,11 @@ class EventParticipationRepository extends ServiceEntityRepository
             ->orderBy('e.tsp', 'asc')
         ;
 
+        if ($user) {
+            $qb = $qb->andWhere('p.user = :user')
+                ->setParameter('user', $user);
+        }
+
         /** @var EventParticipation[] $results */
         $results = $qb
             ->getQuery()
@@ -50,6 +56,10 @@ class EventParticipationRepository extends ServiceEntityRepository
 
         foreach ($results as $participation) {
             $ret[$participation->getUser()->getId()][] = $participation;
+        }
+
+        if ($user) {
+            return $ret[$user->getId()] ?? [];
         }
 
         return $ret;

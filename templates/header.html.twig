@@ -182,14 +182,14 @@
                                     </a>
 
                                     {# les sorties que j'ai créé#}
-                                    <a href="/profil/sorties/self.html" title="">
+                                    <a href="{{ path('profil_sorties_self') }}" title="">
                                         <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
                                         sorties que j'organise
                                     </a><br />
                                 {% endif %}
 
-                                <a href="/profil/sorties/next.html" title="">mes sorties à venir</a><br />
-                                <a href="/profil/sorties/prev.html" title="">mes sorties passées</a><br />
+                                <a href="{{ path('profil_sorties_next') }}" title="">mes sorties à venir</a><br />
+                                <a href="{{ path('profil_sorties_prev') }}" title="">mes sorties passées</a><br />
                             </div>
 
                             <div class="nav-user">
