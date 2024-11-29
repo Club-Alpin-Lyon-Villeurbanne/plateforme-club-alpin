@@ -41,6 +41,7 @@
                         </td>
                         <td>
                             <div class="evt-tools">
+                                <div class="grid grid-row-auto">
                                 {% if app.user == event.user and event.status != constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
                                     <a class="nice2" href="{{ path('sortie', { code: event.code, id: event.id }) }}?forceshow=true" title="Aperçu de la page dédiée à la sortie ci-dessous">Aperçu</a>
                                 {% endif %}
@@ -60,6 +61,15 @@
                                         Supprimer
                                     </a>
                                 {% endif %}
+
+                                {% if event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_REFUSE') %}
+                                    <span class="ml-17 text-alert">Refusé</span>
+                                {% elseif event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
+                                    <span class="ml-17 text-validate">Validé</span>
+                                {% else %}
+                                    <span class="ml-17 text-inform">En Attente</span>
+                                {% endif %}
+                                </div>
 
                                 <a class="agenda-evt-debut" target="_top" href="{{ path('sortie', { code: event.code, id: event.id }) }}?commission={{ event.commission.code }}" title="">
 
