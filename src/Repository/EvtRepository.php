@@ -93,7 +93,8 @@ class EvtRepository extends ServiceEntityRepository
     /** @return Evt[] */
     public function getUserEvents(User $user, int $first, int $perPage)
     {
-        $qb = $this->getUserEventsDql($user);
+        $qb = $this->getUserEventsDql($user)
+            ->orderBy('e.tsp', 'desc');
 
         return $this->getPaginatedResults($qb, $first, $perPage);
     }
@@ -109,8 +110,7 @@ class EvtRepository extends ServiceEntityRepository
 
     private function getUserEventsDql(User $user): QueryBuilder
     {
-        return $this->getEventsByUserDql($user)
-            ->orderBy('e.tsp', 'asc');
+        return $this->getEventsByUserDql($user);
     }
 
     /** @return Evt[] */
@@ -137,7 +137,7 @@ class EvtRepository extends ServiceEntityRepository
         return $this->getEventsByUserDql($user, [Evt::STATUS_LEGAL_VALIDE])
             ->andWhere('e.tspEnd < :date')
             ->setParameter('date', $date->getTimestamp())
-            ->orderBy('e.tsp', 'asc');
+            ->orderBy('e.tsp', 'desc');
     }
 
     /** @return Evt[] */
