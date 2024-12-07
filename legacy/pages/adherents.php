@@ -44,21 +44,57 @@ if (allowed('user_see_all')) {
             echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour accéder à cette page</p>';
         } else {
             ?>
-<div>
-    <h2>Gestion des adhérents</h2>
-    <p>🔍 <strong>Rechercher :</strong> Utilisez le champ <strong>"Search"</strong> (en haut à droite du tableau) pour rechercher une valeur instantanément.</p>
-    <p>⬆️⬇️ <strong>Trier :</strong> Cliquez sur les titres des colonnes pour trier les résultats.</p>
+            <div>
+                <h2>Gestion des adhérents</h2>
+                <p>🔍 <strong>Rechercher :</strong> Utilisez le champ <strong>"Search"</strong> (en haut à droite du tableau) pour rechercher une valeur instantanément.</p>
+                <p>⬆️⬇️ <strong>Trier :</strong> Cliquez sur les titres des colonnes pour trier les résultats.</p>
 
-    <h3>Afficher les adhérents par statut :</h3>
-    <div>
-        <a href="/adherents.html" <?php if ('valid' == $show) { echo 'style="background:#d3d6ff"'; } ?> class="boutonFancy">✔️ Licence valide</a>&nbsp;
-        <a href="/adherents.html?show=notvalid" <?php if ('notvalid' == $show) { echo 'style="background:#d3d6ff"'; } ?> class="boutonFancy">🚫 Compte non activé</a>&nbsp;
-        <a href="/adherents.html?show=valid-expired" <?php if ('valid-expired' == $show) { echo 'style="background:#d3d6ff"'; } ?> class="boutonFancy">📅 Licence expirée</a>&nbsp;
-        <a href="/adherents.html?show=dels" <?php if ('dels' == $show) { echo 'style="background:#d3d6ff"'; } ?> class="boutonFancy">🔒 Désactivés manuellement</a>&nbsp;
-        <a href="/adherents.html?show=nomade" <?php if ('nomade' == $show) { echo 'style="background:#d3d6ff"'; } ?> class="boutonFancy">🌍 Nomades</a>&nbsp;
-        <a href="/adherents.html?show=all" <?php if ('all' == $show) { echo 'style="background:#d3d6ff"'; } ?> class="boutonFancy">📋 Tous les adhérents</a>
-    </div>
-</div>
+                <h3>Afficher les adhérents par statut :</h3>
+                <div>
+                    <a href="/adherents.html" 
+                    class="boutonFancy" 
+                    <?php if ('valid' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
+                        ✔️ Licence valide
+                    </a>&nbsp;
+
+                    <a href="/adherents.html?show=valid-expired" 
+                    class="boutonFancy" 
+                    <?php if ('valid-expired' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
+                        📅 Licence expirée
+                    </a>&nbsp;
+
+                    <a href="/adherents.html?show=notvalid" 
+                    class="boutonFancy" 
+                    <?php if ('notvalid' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
+                        🚫 Compte non activé
+                    </a>&nbsp;
+
+                    <a href="/adherents.html?show=dels" 
+                    class="boutonFancy" 
+                    <?php if ('dels' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
+                        🔒 Désactivés manuellement
+                    </a>&nbsp;
+
+                    <a href="/adherents.html?show=manual" 
+                    class="boutonFancy" 
+                    <?php if ('manual' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
+                        🛠️ Créés manuellement
+                    </a>&nbsp;
+
+                    <a href="/adherents.html?show=nomade" 
+                    class="boutonFancy" 
+                    <?php if ('nomade' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
+                        🌍 Nomades
+                    </a>&nbsp;
+
+                    <a href="/adherents.html?show=all" 
+                    class="boutonFancy" 
+                    <?php if ('all' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
+                        📋 Tous les adhérents
+                    </a>
+                </div>
+            </div>
+
 
 
 
