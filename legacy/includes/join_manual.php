@@ -28,7 +28,7 @@ if (user()) {
 			<p>
 			<div style="background-color: #f9f9f9; padding: 10px; border-left: 4px solid #007bff; margin-bottom: 10px;">
 				🔍 <strong>Recherche :</strong> Utilisez le champ "Search" pour trouver un adhérent.<br />
-				✅ <strong>Étape suivante :</strong> Sélectionnez un ou plusieurs adhérents, puis cliquez sur <strong>"Étape suivante : choix des rôles"</strong>.
+				✅ <strong>Inscription :</strong> Sélectionnez un ou plusieurs adhérents, puis cliquez sur <strong>"Étape suivante : choix des rôles"</strong>.
 			</div>
 
 				<a href="<?php echo $versCettePage; ?>" <?php if (!$showAll) {
