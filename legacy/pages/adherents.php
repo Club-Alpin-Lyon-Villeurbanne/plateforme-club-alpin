@@ -51,45 +51,28 @@ if (allowed('user_see_all')) {
 
                 <h3>Afficher les adhérents par statut :</h3>
                 <div>
-                    <a href="/adherents.html" 
-                    class="boutonFancy" 
-                    <?php if ('valid' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
+
+                    <a href="/adherents.html?show=notvalid"
+                    class="boutonFancy"
+                    <?php if ('notvalid' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
                         ✔️ Licence valide
                     </a>&nbsp;
 
-                    <a href="/adherents.html?show=valid-expired" 
-                    class="boutonFancy" 
-                    <?php if ('valid-expired' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
+                    <a href="/adherents.html?show=valid-expired"
+                    class="boutonFancy"
+                    <?php if ('valid-expired' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
                         📅 Licence expirée
                     </a>&nbsp;
 
-                    <a href="/adherents.html?show=notvalid" 
-                    class="boutonFancy" 
-                    <?php if ('notvalid' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
-                        🚫 Compte non activé
-                    </a>&nbsp;
-
-                    <a href="/adherents.html?show=dels" 
-                    class="boutonFancy" 
-                    <?php if ('dels' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
-                        🔒 Désactivés manuellement
-                    </a>&nbsp;
-
-                    <a href="/adherents.html?show=manual" 
-                    class="boutonFancy" 
-                    <?php if ('manual' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
-                        🛠️ Créés manuellement
-                    </a>&nbsp;
-
-                    <a href="/adherents.html?show=nomade" 
-                    class="boutonFancy" 
-                    <?php if ('nomade' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
+                    <a href="/adherents.html?show=nomade"
+                    class="boutonFancy"
+                    <?php if ('nomade' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
                         🌍 Nomades
                     </a>&nbsp;
 
-                    <a href="/adherents.html?show=all" 
-                    class="boutonFancy" 
-                    <?php if ('all' === $show): ?>style="background:#d3d6ff"<?php endif; ?>>
+                    <a href="/adherents.html?show=all"
+                    class="boutonFancy"
+                    <?php if ('all' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
                         📋 Tous les adhérents
                     </a>
                 </div>
@@ -157,7 +140,7 @@ if (allowed('user_see_all')) {
 				</thead>
 				<tbody>
 					<?php
-				    $total = 0;
+                    $total = 0;
 
             $isAllowed_user_giveright_1 = allowed('user_giveright_1');
             $isAllowed_user_giveright_2 = allowed('user_giveright_2');
