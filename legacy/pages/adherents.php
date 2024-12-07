@@ -46,9 +46,6 @@ if (allowed('user_see_all')) {
             ?>
             <div>
                 <h2>Gestion des adhérents</h2>
-                <p>🔍 <strong>Rechercher :</strong> Utilisez le champ <strong>"Search"</strong> (en haut à droite du tableau) pour rechercher une valeur instantanément.</p>
-                <p>⬆️⬇️ <strong>Trier :</strong> Cliquez sur les titres des colonnes pour trier les résultats.</p>
-
                 <h3>Afficher les adhérents par statut :</h3>
                 <div>
 
@@ -77,10 +74,6 @@ if (allowed('user_see_all')) {
                     </a>
                 </div>
             </div>
-
-
-
-
 			<!-- AFFICHAGE DU TABLEAU -->
 			<br />
 			<br />
@@ -98,17 +91,7 @@ if (allowed('user_see_all')) {
 						"sDom": 'T<"clear">lfrtip',
 						"oTableTools": {
 							"sSwfPath": "/tools/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf",
-							"aButtons": [
-								"copy",
-								"csv",
-								"xls",
-								{
-									"sExtends": "pdf",
-									"sPdfOrientation": "landscape"
-									// "sPdfMessage": "Your custom message would go here."
-								},
-								"print"
-							]
+							"aButtons": []
 						}
 					});
 					$('span.br').html('<br />');
