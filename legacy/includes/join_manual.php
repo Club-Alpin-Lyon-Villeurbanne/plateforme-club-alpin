@@ -26,15 +26,14 @@ if (user()) {
         if (!is_array($idUser)) {
             ?>
 			<p>
-				<img src="/img/base/magnifier.png" style="vertical-align:middle" />
-				Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
-				Cliquez sur le bouton "<i>Inscrire les adhérents sélectionnés</i>" pour passer à l'étape suivante et sélectionner leurs rôles éventuels (simple inscrit, bénévole...).
+				🔍 Recherche : Trouvez rapidement un adhérent via le champ "Search."<br />
+				✅ Inscription : Cliquez sur "Inscrire les adhérents sélectionnés" pour attribuer un rôle.
 				<br />
 				<a href="<?php echo $versCettePage; ?>" <?php if (!$showAll) {
 				    echo 'style="background:#d3d6ff"';
-				} ?> class="boutonFancy">Voir uniquement les adhérents validés</a>
+				} ?> class="boutonFancy">Adhérents avec licence active</a>
 				<a href="<?php echo $versCettePage; ?>&showAll=1" <?php if ($showAll) {
-				} ?> class="boutonFancy">Voir tous les adhérents de la base (+long)</a>
+				} ?> class="boutonFancy">Afficher tous les adhérents</a>
 
 			</p>
 			<br />
