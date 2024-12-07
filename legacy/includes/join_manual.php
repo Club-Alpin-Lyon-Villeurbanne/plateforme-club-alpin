@@ -26,9 +26,11 @@ if (user()) {
         if (!is_array($idUser)) {
             ?>
 			<p>
-				🔍 Recherche : Trouvez rapidement un adhérent via le champ "Search."<br />
-				✅ Inscription : Cliquez sur "Inscrire les adhérents sélectionnés" pour attribuer un rôle.
-				<br />
+			<div style="background-color: #f9f9f9; padding: 10px; border-left: 4px solid #007bff; margin-bottom: 10px;">
+				🔍 <strong>Recherche :</strong> Utilisez le champ "Search" pour trouver un adhérent.<br />
+				✅ <strong>Étape suivante :</strong> Sélectionnez un ou plusieurs adhérents, puis cliquez sur <strong>"Étape suivante : choix des rôles"</strong>.
+			</div>
+
 				<a href="<?php echo $versCettePage; ?>" <?php if (!$showAll) {
 				    echo 'style="background:#d3d6ff"';
 				} ?> class="boutonFancy">Adhérents avec licence active</a>
@@ -139,7 +141,7 @@ if (user()) {
 				<br />
 				<a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
 					<span class="bleucaf">&gt;</span>
-					ETAPE SUIVANTE : CHOIX DES RÔLES
+					Étape suivante : attribuer les rôles
 				</a>
 			</form>
 
