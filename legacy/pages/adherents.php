@@ -44,43 +44,23 @@ if (allowed('user_see_all')) {
             echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour accéder à cette page</p>';
         } else {
             ?>
+<div>
+    <h2>Gestion des adhérents</h2>
+    <p>🔍 <strong>Rechercher :</strong> Utilisez le champ <strong>"Search"</strong> (en haut à droite du tableau) pour rechercher une valeur instantanément.</p>
+    <p>⬆️⬇️ <strong>Trier :</strong> Cliquez sur les titres des colonnes pour trier les résultats.</p>
 
-			<h1>Gestion des adhérents</h1>
-			<p>
-				<img src="/img/base/magnifier.png" style="vertical-align:middle" />
-				Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
-				<img src="/img/base/database_go.png" style="vertical-align:middle" />
-				Les boutons de droite vous permettent d'exporter le tableau courant, le plus utile étant l'exportation en .csv.<br />
-				<img src="/img/base/info.png" style="vertical-align:middle" />
-				Vous pouvez trier les résultats selon différents critères en même temps, en pressant la touche <i>Maj / Shift</i> en cliquant sur les titres des colonnes.<br />
-			</p>
+    <h3>Afficher les adhérents par statut :</h3>
+    <div>
+        <a href="/adherents.html" <?php if ('valid' == $show) { echo 'style="background:#d3d6ff"'; } ?> class="boutonFancy">✔️ Licence valide</a>&nbsp;
+        <a href="/adherents.html?show=notvalid" <?php if ('notvalid' == $show) { echo 'style="background:#d3d6ff"'; } ?> class="boutonFancy">🚫 Compte non activé</a>&nbsp;
+        <a href="/adherents.html?show=valid-expired" <?php if ('valid-expired' == $show) { echo 'style="background:#d3d6ff"'; } ?> class="boutonFancy">📅 Licence expirée</a>&nbsp;
+        <a href="/adherents.html?show=dels" <?php if ('dels' == $show) { echo 'style="background:#d3d6ff"'; } ?> class="boutonFancy">🔒 Désactivés manuellement</a>&nbsp;
+        <a href="/adherents.html?show=nomade" <?php if ('nomade' == $show) { echo 'style="background:#d3d6ff"'; } ?> class="boutonFancy">🌍 Nomades</a>&nbsp;
+        <a href="/adherents.html?show=all" <?php if ('all' == $show) { echo 'style="background:#d3d6ff"'; } ?> class="boutonFancy">📋 Tous les adhérents</a>
+    </div>
+</div>
 
-			<p><strong>Voir les adhérents :</strong>
-				<a href="/adherents.html" <?php if ('valid' == $show) {
-				    echo 'style="background:#d3d6ff"';
-				} ?> class="boutonFancy"> compte activé / licence valide </a>&nbsp;
-				<a href="/adherents.html?show=valid-expired" <?php if ('valid-expired' == $show) {
-				    echo 'style="background:#d3d6ff"';
-				} ?> class="boutonFancy"> compte activé / licence expirée </a>&nbsp;
-				<a href="/adherents.html?show=notvalid" <?php if ('notvalid' == $show) {
-				    echo 'style="background:#d3d6ff"';
-				} ?> class="boutonFancy"> compte non activé / licence valide </a>&nbsp;
-				<a href="/adherents.html?show=expired" <?php if ('expired' == $show) {
-				    echo 'style="background:#d3d6ff"';
-				} ?> class="boutonFancy"> licence expirée </a>&nbsp;
-				<a href="/adherents.html?show=dels" <?php if ('dels' == $show) {
-				    echo 'style="background:#d3d6ff"';
-				} ?> class="boutonFancy"> désactivés manuellement </a>&nbsp;
-				<a href="/adherents.html?show=manual" <?php if ('manual' == $show) {
-				    echo 'style="background:#d3d6ff"';
-				} ?> class="boutonFancy"> créés manuellement </a>&nbsp;
-				<a href="/adherents.html?show=nomade" <?php if ('nomade' == $show) {
-				    echo 'style="background:#d3d6ff"';
-				} ?> class="boutonFancy"> nomades </a>&nbsp;
-				<a href="/adherents.html?show=all" <?php if ('all' == $show) {
-				    echo 'style="background:#d3d6ff"';
-				} ?> class="boutonFancy"> tous (+long) </a>
-			</p>
+
 
 			<!-- AFFICHAGE DU TABLEAU -->
 			<br />
