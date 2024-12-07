@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 
 if (allowed('user_see_all')) {
     $userTab = [];
-    $show = 'valid';
+    $show = 'allvalid';
     // fonctions disponibles
     if (isset($_GET['show']) && in_array($_GET['show'], ['all', 'manual', 'notvalid', 'nomade', 'dels', 'expired', 'valid-expired'], true)) {
         $show = $_GET['show'];
@@ -17,6 +17,7 @@ if (allowed('user_see_all')) {
         . ('manual' == $show ? ' AND manuel_user=1 ' : '')
         . ('nomade' == $show ? ' AND nomade_user=1 ' : '')
         . ('valid' == $show ? ' AND valid_user=1 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
+        . ('allvalid' == $show ? ' AND valid_user=1 AND nomade_user=0 ' : '')
         . ('notvalid' == $show ? ' AND valid_user=0 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
         . ('expired' == $show ? ' AND valid_user=0 AND doit_renouveler_user=1 ' : '')
         . ('valid-expired' == $show ? ' AND valid_user=1 AND doit_renouveler_user=1 ' : '')
@@ -49,9 +50,9 @@ if (allowed('user_see_all')) {
                 <h3>Afficher les adhérents par statut :</h3>
                 <div>
 
-                    <a href="/adherents.html?show=notvalid"
+                    <a href="/adherents.html"
                     class="boutonFancy"
-                    <?php if ('notvalid' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
+                    <?php if ('allvalid' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
                         ✔️ Licence valide
                     </a>&nbsp;
 
@@ -87,12 +88,7 @@ if (allowed('user_see_all')) {
 						"aaSorting": [
 							[2, "desc"],
 							[4, "asc"]
-						],
-						"sDom": 'T<"clear">lfrtip',
-						"oTableTools": {
-							"sSwfPath": "/tools/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf",
-							"aButtons": []
-						}
+						]
 					});
 					$('span.br').html('<br />');
 				});
