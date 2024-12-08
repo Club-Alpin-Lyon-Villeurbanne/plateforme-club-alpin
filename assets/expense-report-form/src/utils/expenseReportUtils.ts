@@ -1,11 +1,60 @@
 import { Accommodation, Other, ExpenseDetails } from '../types/api';
 import { TransportType, AllTransports } from '../types/transports';
+import expenseReportConfig from "../config/expense-reports.json";
 
 interface SectionItem {
   label: string;
   value: string | number;
+  isTotal?: boolean;
 }
 
+// Formattage des montants
+export const formatEuros = (amount: number): string => {
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+  }).format(amount);
+};
+
+// Calculs
+export const calculateTransportTotal = (transport: AllTransports): number => {
+  switch (transport.type) {
+    case TransportType.PERSONAL_VEHICLE:
+      const distanceTotal = (transport.distance || 0) * expenseReportConfig.tauxKilometriqueVoiture;
+      return distanceTotal + (transport.tollFee || 0) / expenseReportConfig.divisionPeage;
+
+    case TransportType.CLUB_MINIBUS:
+      if (transport.passengerCount === 0) return 0;
+      const minibusTotal = ((transport.distance || 0) * expenseReportConfig.tauxKilometriqueMinibus 
+        + (transport.fuelExpense || 0) 
+        + (transport.tollFee || 0)) / transport.passengerCount;
+      return minibusTotal;
+
+    case TransportType.RENTAL_MINIBUS:
+      if (transport.passengerCount === 0) return 0;
+      return (transport.rentalPrice + transport.fuelExpense + transport.tollFee) / transport.passengerCount;
+
+    case TransportType.PUBLIC_TRANSPORT:
+      return transport.ticketPrice;
+
+    default:
+      return 0;
+  }
+};
+
+export const calculateAccommodationTotals = (accommodations: Accommodation[]): { total: number; reimbursable: number } => {
+  return accommodations.reduce(
+    (acc, accommodation) => {
+      const price = accommodation.price || 0;
+      acc.total += price;
+      acc.reimbursable += Math.min(price, expenseReportConfig.nuiteeMaxRemboursable);
+      return acc;
+    },
+    { total: 0, reimbursable: 0 }
+  );
+};
+
+// Formatage pour affichage
 export const formatTransport = (transport: AllTransports): SectionItem[] => {
   const transportLabels: Record<TransportType, string> = {
     [TransportType.PERSONAL_VEHICLE]: "Véhicule personnel",
@@ -15,7 +64,7 @@ export const formatTransport = (transport: AllTransports): SectionItem[] => {
   };
 
   const items: SectionItem[] = [
-    { label: "Type", value: transportLabels[transport.type as TransportType] }
+    { label: "Type", value: transportLabels[transport.type] }
   ];
 
   switch (transport.type) {
@@ -68,27 +117,13 @@ export const formatOthers = (others: Other[]): SectionItem[] => {
   }));
 };
 
-export const calculateTotal = (details: ExpenseDetails): number => {
-    let transportTotal = 0;
-    const transport = details.transport;
+export const calculateTotal = (details: ExpenseDetails): { total: number; reimbursable: number } => {
+  const transportTotal = calculateTransportTotal(details.transport);
+  const accommodations = calculateAccommodationTotals(details.accommodations);
+  const othersTotal = details.others.reduce((sum, other) => sum + (other.price || 0), 0);
 
-  switch (transport.type) {
-    case TransportType.PERSONAL_VEHICLE:
-      transportTotal = transport.tollFee;
-      break;
-    case TransportType.CLUB_MINIBUS:
-      transportTotal = transport.tollFee + transport.fuelExpense;
-      break;
-    case TransportType.RENTAL_MINIBUS:
-      transportTotal = transport.tollFee + transport.fuelExpense + transport.rentalPrice;
-      break;
-    case TransportType.PUBLIC_TRANSPORT:
-      transportTotal = transport.ticketPrice;
-      break;
-  }
-
-  const accommodationsTotal = details.accommodations.reduce((sum: number, acc: Accommodation) => sum + acc.price, 0);
-  const othersTotal = details.others.reduce((sum: number, other: Other) => sum + other.price, 0);
-
-  return transportTotal + accommodationsTotal + othersTotal;
+  return {
+    total: transportTotal + accommodations.total + othersTotal,
+    reimbursable: transportTotal + accommodations.reimbursable + othersTotal,
+  };
 };

@@ -16,7 +16,11 @@
       <ExpenseReportSection
         v-if="expenseReport.details.accommodations.length"
         title="Hébergements"
-        :items="formatAccommodations(expenseReport.details.accommodations)"
+        :items="[
+          ...formatAccommodations(expenseReport.details.accommodations),
+          { label: 'Total', value: expenseSummary.accommodationTotal, isTotal: true },
+          { label: 'Montant remboursable', value: expenseSummary.accommodationReimbursable, isTotal: true }
+        ]"
       />
   
       <ExpenseReportSection
@@ -28,9 +32,11 @@
       <div class="tw-border-t tw-border-gray-200 tw-pt-4">
         <div class="tw-flex tw-justify-between tw-items-center tw-mb-4">
           <span class="tw-font-medium">Total</span>
-          <span class="tw-text-lg tw-font-semibold">
-            {{ calculateTotal(expenseReport.details) }} €
-          </span>
+          <span class="tw-text-lg tw-font-semibold">{{ expenseSummary.total }}</span>
+        </div>
+        <div class="tw-flex tw-justify-between tw-items-center tw-mb-4">
+          <span class="tw-font-medium">Total remboursable</span>
+          <span class="tw-text-lg tw-font-semibold">{{ expenseSummary.totalReimbursable }}</span>
         </div>
         <div class="tw-bg-gray-50 tw-p-4 tw-rounded-lg tw-text-sm">
           <p v-if="expenseReport.refundRequired">
@@ -46,7 +52,8 @@
         <p class="tw-text-sm tw-text-amber-800">
           Si vous avez fait une erreur et souhaitez modifier votre note de frais, merci d'en faire la demande auprès de la comptabilité: 
           <a href="mailto:comptabilite@clubalpinlyon.fr" class="tw-font-medium tw-underline hover:tw-text-amber-900">
-            comptabilite@clubalpinlyon.fr</a>
+            comptabilite@clubalpinlyon.fr
+          </a>
           en indiquant le nom et la date de la sortie.
         </p>
       </div>
@@ -54,16 +61,31 @@
   </template>
   
   <script setup lang="ts">
+  import { computed } from 'vue';
   import { ExpenseReport } from '../types/api';
   import ExpenseReportSection from './ExpenseReportSection.vue';
-  import {
-    formatTransport,
-    formatAccommodations,
-    formatOthers,
-    calculateTotal
+  import { 
+    formatTransport, 
+    formatAccommodations, 
+    formatOthers, 
+    calculateTotal, 
+    calculateAccommodationTotals,
+    formatEuros 
   } from '../utils/expenseReportUtils';
   
-  defineProps<{
+  const props = defineProps<{
     expenseReport: ExpenseReport;
   }>();
+  
+  const expenseSummary = computed(() => {
+    const totals = calculateTotal(props.expenseReport.details);
+    const accommodation = calculateAccommodationTotals(props.expenseReport.details.accommodations);
+  
+    return {
+      total: formatEuros(totals.total),
+      totalReimbursable: formatEuros(totals.reimbursable),
+      accommodationTotal: formatEuros(accommodation.total),
+      accommodationReimbursable: formatEuros(accommodation.reimbursable),
+    };
+  });
   </script>
