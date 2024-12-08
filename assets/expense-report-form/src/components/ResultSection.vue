@@ -5,7 +5,7 @@
     </h2>
 
     <ul class="tw-ml-4">
-      <li>Hébergement : {{ expenseSummary.accommodationTotal }}</li>
+      <li>Hébergement : {{ expenseSummary.accommodationTotal }} (dont {{ expenseSummary.accommodationReimbursable }} remboursable)</li>
       <li>Transport : {{ expenseSummary.transportation }}</li>
       <li>Autres dépenses : {{ expenseSummary.otherExpenses }}</li>
     </ul>
