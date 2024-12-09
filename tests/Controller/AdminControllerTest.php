@@ -22,7 +22,7 @@ class AdminControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
 
         $this->client->submitForm('admin_connect', [
-            'username' => 'caflyon',
+            'username' => 'admin',
             'password' => 'prout',
         ]);
         $this->assertResponseStatusCodeSame(200);
@@ -30,7 +30,7 @@ class AdminControllerTest extends WebTestCase
         $this->assertEquals($this->getSession()->has(SecurityConstants::SESSION_USER_ROLE_KEY), null);
 
         $this->client->submitForm('admin_connect', [
-            'username' => 'caflyon',
+            'username' => 'admin',
             'password' => 'admin',
         ]);
         $this->assertResponseStatusCodeSame(302);
