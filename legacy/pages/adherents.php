@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 
 if (allowed('user_see_all')) {
     $userTab = [];
-    $show = 'allvalid';
+    $show = 'valid';
     // fonctions disponibles
     if (isset($_GET['show']) && in_array($_GET['show'], ['all', 'manual', 'notvalid', 'nomade', 'dels', 'expired', 'valid-expired'], true)) {
         $show = $_GET['show'];
@@ -17,7 +17,6 @@ if (allowed('user_see_all')) {
         . ('manual' == $show ? ' AND manuel_user=1 ' : '')
         . ('nomade' == $show ? ' AND nomade_user=1 ' : '')
         . ('valid' == $show ? ' AND valid_user=1 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
-        . ('allvalid' == $show ? ' AND valid_user=1 AND nomade_user=0 ' : '')
         . ('notvalid' == $show ? ' AND valid_user=0 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
         . ('expired' == $show ? ' AND valid_user=0 AND doit_renouveler_user=1 ' : '')
         . ('valid-expired' == $show ? ' AND valid_user=1 AND doit_renouveler_user=1 ' : '')
@@ -45,36 +44,44 @@ if (allowed('user_see_all')) {
             echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour accéder à cette page</p>';
         } else {
             ?>
-            <div>
-                <h2>Gestion des adhérents</h2>
-                <h3>Afficher les adhérents par statut :</h3>
-                <div>
 
-                    <a href="/adherents.html"
-                    class="boutonFancy"
-                    <?php if ('allvalid' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
-                        ✔️ Licence valide
-                    </a>&nbsp;
+			<h1>Gestion des adhérents</h1>
+			<p>
+				<img src="/img/base/magnifier.png" style="vertical-align:middle" />
+				Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
+				<img src="/img/base/database_go.png" style="vertical-align:middle" />
+				Les boutons de droite vous permettent d'exporter le tableau courant, le plus utile étant l'exportation en .csv.<br />
+				<img src="/img/base/info.png" style="vertical-align:middle" />
+				Vous pouvez trier les résultats selon différents critères en même temps, en pressant la touche <i>Maj / Shift</i> en cliquant sur les titres des colonnes.<br />
+			</p>
 
-                    <a href="/adherents.html?show=valid-expired"
-                    class="boutonFancy"
-                    <?php if ('valid-expired' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
-                        📅 Licence expirée
-                    </a>&nbsp;
+			<p><strong>Voir les adhérents :</strong>
+				<a href="/adherents.html" <?php if ('valid' == $show) {
+				    echo 'style="background:#d3d6ff"';
+				} ?> class="boutonFancy"> compte activé / licence valide </a>&nbsp;
+				<a href="/adherents.html?show=valid-expired" <?php if ('valid-expired' == $show) {
+				    echo 'style="background:#d3d6ff"';
+				} ?> class="boutonFancy"> compte activé / licence expirée </a>&nbsp;
+				<a href="/adherents.html?show=notvalid" <?php if ('notvalid' == $show) {
+				    echo 'style="background:#d3d6ff"';
+				} ?> class="boutonFancy"> compte non activé / licence valide </a>&nbsp;
+				<a href="/adherents.html?show=expired" <?php if ('expired' == $show) {
+				    echo 'style="background:#d3d6ff"';
+				} ?> class="boutonFancy"> licence expirée </a>&nbsp;
+				<a href="/adherents.html?show=dels" <?php if ('dels' == $show) {
+				    echo 'style="background:#d3d6ff"';
+				} ?> class="boutonFancy"> désactivés manuellement </a>&nbsp;
+				<a href="/adherents.html?show=manual" <?php if ('manual' == $show) {
+				    echo 'style="background:#d3d6ff"';
+				} ?> class="boutonFancy"> créés manuellement </a>&nbsp;
+				<a href="/adherents.html?show=nomade" <?php if ('nomade' == $show) {
+				    echo 'style="background:#d3d6ff"';
+				} ?> class="boutonFancy"> nomades </a>&nbsp;
+				<a href="/adherents.html?show=all" <?php if ('all' == $show) {
+				    echo 'style="background:#d3d6ff"';
+				} ?> class="boutonFancy"> tous (+long) </a>
+			</p>
 
-                    <a href="/adherents.html?show=nomade"
-                    class="boutonFancy"
-                    <?php if ('nomade' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
-                        🌍 Nomades
-                    </a>&nbsp;
-
-                    <a href="/adherents.html?show=all"
-                    class="boutonFancy"
-                    <?php if ('all' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
-                        📋 Tous les adhérents
-                    </a>
-                </div>
-            </div>
 			<!-- AFFICHAGE DU TABLEAU -->
 			<br />
 			<br />
@@ -88,7 +95,22 @@ if (allowed('user_see_all')) {
 						"aaSorting": [
 							[2, "desc"],
 							[4, "asc"]
-						]
+						],
+						"sDom": 'T<"clear">lfrtip',
+						"oTableTools": {
+							"sSwfPath": "/tools/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf",
+							"aButtons": [
+								"copy",
+								"csv",
+								"xls",
+								{
+									"sExtends": "pdf",
+									"sPdfOrientation": "landscape"
+									// "sPdfMessage": "Your custom message would go here."
+								},
+								"print"
+							]
+						}
 					});
 					$('span.br').html('<br />');
 				});
@@ -119,7 +141,7 @@ if (allowed('user_see_all')) {
 				</thead>
 				<tbody>
 					<?php
-                    $total = 0;
+				    $total = 0;
 
             $isAllowed_user_giveright_1 = allowed('user_giveright_1');
             $isAllowed_user_giveright_2 = allowed('user_giveright_2');
