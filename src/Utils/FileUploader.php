@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -10,10 +11,13 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class FileUploader
 {
+    private const UPLOAD_PATH = 'ftp/user';
+
     public function __construct(
         private Security $security,
         private UrlHelper $urlHelper,
         private SluggerInterface $slugger,
+        private string $publicDir,
     ) {
     }
 
@@ -23,30 +27,24 @@ class FileUploader
         $safeFilename = $this->slugger->slug($originalFilename);
         $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
 
-        return $file->move($this->getUploadPath($subDirectory), $newFilename);
+        return $file->move($this->getUserUploadPath($this->security->getUser(), $subDirectory), $newFilename);
     }
 
-    public function getUploadPath(string $subDirectory): string
+    private function getUserUploadPath(User $user, string $subDirectory): string
     {
-        $user = $this->security->getUser();
-        if (!$user) {
-            throw new \RuntimeException('Unable to upload a file as anonymous user');
-        }
-
-        $subDirectory = trim($subDirectory, '/');
-
-        return __DIR__ . '/../../public/ftp/user/' . $user->getId() . '/' . $subDirectory;
+        return $this->publicDir . '/' . $this->getRelativePath($user, $subDirectory);
     }
 
-    public function getUploadUrl(string $filename, string $subDirectory): string
+    private function getRelativePath(User $user, string $subDirectory, ?string $filename = null): string
     {
-        $user = $this->security->getUser();
-        if (!$user) {
-            throw new \RuntimeException('Unable to upload a file as anonymous user');
-        }
-
         $subDirectory = trim($subDirectory, '/');
+        $path = self::UPLOAD_PATH . '/' . $user->getId() . '/' . $subDirectory;
 
-        return '/ftp/user/' . $user->getId() . '/' . $subDirectory . '/' . $filename;
+        return $filename ? $path . '/' . $filename : $path;
+    }
+
+    public function getUserUploadUrl(User $user, string $filename, string $subDirectory): string
+    {
+        return $this->urlHelper->getAbsoluteUrl('/' . $this->getRelativePath($user, $subDirectory, $filename));
     }
 }
