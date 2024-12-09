@@ -7,8 +7,8 @@ if (user()) {
     $idUser = $_POST['id_user'] ?? null;
     $show = isset($_GET['show']) ? $_GET['show'] : 'valid-active';
     $show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
-    $versCettePage = htmlspecialchars($versCettePage, ENT_QUOTES, 'UTF-8');
-	
+    $versCettePage = htmlspecialchars($versCettePage, \ENT_QUOTES, 'UTF-8');
+
     if (!allowed('evt_join_notme')) {
         echo '<p class="erreur">Vous n\'avez pas les droits requis pour afficher cette page</p>';
     } elseif (!$idEvt) {
@@ -21,20 +21,20 @@ if (user()) {
         if (!is_array($idUser)) {
             ?>
 			<p>
-                <a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>&show=valid-active" 
-                    class="boutonFancy" 
+                <a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>&show=valid-active"
+                    class="boutonFancy"
                     <?php if ('valid-active' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
                     ✔️ Licence valide & compte activé
                 </a>&nbsp;
 
-                <a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>&show=valid-inactive" 
-                    class="boutonFancy" 
+                <a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>&show=valid-inactive"
+                    class="boutonFancy"
                     <?php if ('valid-inactive' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
-                    ⚠️ Licence valide & compte non-activé  
+                    ⚠️ Licence valide & compte non-activé
                 </a>&nbsp;
 
-                <a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>&show=all" 
-                    class="boutonFancy" 
+                <a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>&show=all"
+                    class="boutonFancy"
                     <?php if ('all' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
                     📋 Tous les adhérents
                 </a>
@@ -77,27 +77,27 @@ if (user()) {
 
 			<form action="<?php echo $versCettePage; ?>" method="post" enctype="multipart/form-data" class="loading">
                 <?php
-                $baseReq = 'SELECT id_user, email_user, cafnum_user, firstname_user, lastname_user, nickname_user, 
+                $baseReq = 'SELECT id_user, email_user, cafnum_user, firstname_user, lastname_user, nickname_user,
                                 created_user, birthday_user, tel_user, tel2_user, civ_user, valid_user
                         FROM `caf_user`
                         WHERE id_user NOT IN (SELECT user_evt_join FROM `caf_evt_join` WHERE evt_evt_join=' . $idEvt . ')';
 
-                switch ($show) {
-                    case 'valid-active':
-                        $req = $baseReq . ' AND valid_user=1 AND doit_renouveler_user=0 AND nomade_user=0';
-                        break;
-                    case 'valid-inactive':
-                        $req = $baseReq . ' AND valid_user=0 AND doit_renouveler_user=0 AND nomade_user=0';
-                        break;
-                    case 'all':
-                    default:
-                        $req = $baseReq;
-                        break;
-                }
-                
-                $req .= ' ORDER BY lastname_user ASC LIMIT 9000';
-                $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                ?>
+            switch ($show) {
+                case 'valid-active':
+                    $req = $baseReq . ' AND valid_user=1 AND doit_renouveler_user=0 AND nomade_user=0';
+                    break;
+                case 'valid-inactive':
+                    $req = $baseReq . ' AND valid_user=0 AND doit_renouveler_user=0 AND nomade_user=0';
+                    break;
+                case 'all':
+                default:
+                    $req = $baseReq;
+                    break;
+            }
+
+            $req .= ' ORDER BY lastname_user ASC LIMIT 9000';
+            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+            ?>
 
 				<table class="datatables" style="width:100%;">
 					<thead>
@@ -112,27 +112,27 @@ if (user()) {
 					</thead>
 					<tbody>
 						<?php
-                            while ($elt = $result->fetch_assoc()) {
-                                echo '<tr id="tr-' . $elt['id_user'] . '" class="' . ($elt['valid_user'] ? 'vis-on' : 'vis-off') . '">'
-                                    . '<td>'
-                                        . '<img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />'
-                                        . '<img src="/img/label-down.png" class="cross" alt="OFF" title="" />'
-                                        . '<input type="checkbox" name="id_user[]" value="' . (int) $elt['id_user'] . '" />'
-                                        . '<input type="hidden" disabled="disabled" name="civ_user[]" value="' . html_utf8($elt['civ_user']) . '" />'
-                                        . '<input type="hidden" disabled="disabled" name="lastname_user[]" value="' . html_utf8($elt['lastname_user']) . '" />'
-                                        . '<input type="hidden" disabled="disabled" name="firstname_user[]" value="' . html_utf8($elt['firstname_user']) . '" />'
-                                        . '<input type="hidden" disabled="disabled" name="nickname_user[]" value="' . html_utf8($elt['nickname_user']) . '" />'
-                                    . '</td>'
-                                    . '<td>'
-                                        . html_utf8($elt['cafnum_user']) . '<br />'
-                                        . (int) $elt['id_user'] . ' '
-                                    . '</td>'
-                                    . '<td>' . html_utf8($elt['civ_user']) . '</td>'
-                                    . '<td>' . html_utf8($elt['lastname_user']) . '</td>'
-                                    . '<td>' . html_utf8($elt['firstname_user']) . '</td>'
-                                    . '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
-                                . '</tr>';
-                            } ?>
+                        while ($elt = $result->fetch_assoc()) {
+                            echo '<tr id="tr-' . $elt['id_user'] . '" class="' . ($elt['valid_user'] ? 'vis-on' : 'vis-off') . '">'
+                                . '<td>'
+                                    . '<img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />'
+                                    . '<img src="/img/label-down.png" class="cross" alt="OFF" title="" />'
+                                    . '<input type="checkbox" name="id_user[]" value="' . (int) $elt['id_user'] . '" />'
+                                    . '<input type="hidden" disabled="disabled" name="civ_user[]" value="' . html_utf8($elt['civ_user']) . '" />'
+                                    . '<input type="hidden" disabled="disabled" name="lastname_user[]" value="' . html_utf8($elt['lastname_user']) . '" />'
+                                    . '<input type="hidden" disabled="disabled" name="firstname_user[]" value="' . html_utf8($elt['firstname_user']) . '" />'
+                                    . '<input type="hidden" disabled="disabled" name="nickname_user[]" value="' . html_utf8($elt['nickname_user']) . '" />'
+                                . '</td>'
+                                . '<td>'
+                                    . html_utf8($elt['cafnum_user']) . '<br />'
+                                    . (int) $elt['id_user'] . ' '
+                                . '</td>'
+                                . '<td>' . html_utf8($elt['civ_user']) . '</td>'
+                                . '<td>' . html_utf8($elt['lastname_user']) . '</td>'
+                                . '<td>' . html_utf8($elt['firstname_user']) . '</td>'
+                                . '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
+                            . '</tr>';
+                        } ?>
 					</tbody>
 				</table>
 				<br style="clear:both" />
@@ -171,7 +171,7 @@ if (user()) {
                     if (isset($_POST['operation']) && 'user_join_manuel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                         echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                     }
-                    if (isset($_POST['operation']) && 'user_join_manuel' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+                if (isset($_POST['operation']) && 'user_join_manuel' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                     ?>
 						<p class="info">Envoi effectué. Actualisez cette page pour afficher les modifications.</p>
 						<script type="text/javascript">
@@ -179,7 +179,7 @@ if (user()) {
 							top.window.location.reload();
 						</script>
 						<?php
-                    } ?>
+                } ?>
 
 					<table class="big-lines-table" style="font-size:12px;">
 						<thead>
@@ -189,29 +189,29 @@ if (user()) {
 						</thead>
 						<tbody>
 							<?php
-                            foreach ($idUser as $i => $utilisateur) {
-                                echo '<tr>'
-                                    . '<td>'
-                                        . '<input type="hidden" name="id_user[]" value="' . (int) $idUser[$i] . '" />'
-                                        . '<input type="hidden" name="civ_user[]" value="' . html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')) . '" />'
-                                        . '<input type="hidden" name="lastname_user[]" value="' . html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')) . '" />'
-                                        . '<input type="hidden" name="firstname_user[]" value="' . html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')) . '" />'
-                                        . '<input type="hidden" name="nickname_user[]" value="' . html_utf8(stripslashes($_POST['nickname_user'][$i] ?? '')) . '" />'
-                                        . html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')) . ' '
-                                        . html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')) . ' '
-                                        . html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')) . ' '
-                                    . '</td>'
-                                    . '<td>'
-                                        . html_utf8(stripslashes($_POST['nickname_user'][$i] ?? ''))
-                                    . '</td>'
-                                    . '<td>'
-                                        . '<select name="role_evt_join[]">'
-                                            . '<option value="manuel">Inscrit (par défaut)</option>'
-                                            . (1 == $sortie['need_benevoles_evt'] ? '<option value="benevole">Bénévole</option>' : '')
-                                        . '</select>'
-                                    . '</td>';
-                                echo '</tr>';
-                            } ?>
+                        foreach ($idUser as $i => $utilisateur) {
+                            echo '<tr>'
+                                . '<td>'
+                                    . '<input type="hidden" name="id_user[]" value="' . (int) $idUser[$i] . '" />'
+                                    . '<input type="hidden" name="civ_user[]" value="' . html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')) . '" />'
+                                    . '<input type="hidden" name="lastname_user[]" value="' . html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')) . '" />'
+                                    . '<input type="hidden" name="firstname_user[]" value="' . html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')) . '" />'
+                                    . '<input type="hidden" name="nickname_user[]" value="' . html_utf8(stripslashes($_POST['nickname_user'][$i] ?? '')) . '" />'
+                                    . html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')) . ' '
+                                    . html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')) . ' '
+                                    . html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')) . ' '
+                                . '</td>'
+                                . '<td>'
+                                    . html_utf8(stripslashes($_POST['nickname_user'][$i] ?? ''))
+                                . '</td>'
+                                . '<td>'
+                                    . '<select name="role_evt_join[]">'
+                                        . '<option value="manuel">Inscrit (par défaut)</option>'
+                                        . (1 == $sortie['need_benevoles_evt'] ? '<option value="benevole">Bénévole</option>' : '')
+                                    . '</select>'
+                                . '</td>';
+                            echo '</tr>';
+                        } ?>
 						</tbody>
 					</table>
 
