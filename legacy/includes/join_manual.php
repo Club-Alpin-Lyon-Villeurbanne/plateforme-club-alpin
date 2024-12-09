@@ -26,15 +26,16 @@ if (user()) {
         if (!is_array($idUser)) {
             ?>
 			<p>
-				<img src="/img/base/magnifier.png" style="vertical-align:middle" />
-				Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
-				Cliquez sur le bouton "<i>Inscrire les adhérents sélectionnés</i>" pour passer à l'étape suivante et sélectionner leurs rôles éventuels (simple inscrit, bénévole...).
-				<br />
+			<div style="background-color: #f9f9f9; padding: 10px; border-left: 4px solid #007bff; margin-bottom: 10px;">
+				🔍 <strong>Recherche :</strong> Utilisez le champ "Search" pour trouver un adhérent.<br />
+				✅ <strong>Inscription :</strong> Sélectionnez un ou plusieurs adhérents, puis cliquez sur <strong>"Étape suivante : choix des rôles"</strong>.
+			</div>
+
 				<a href="<?php echo $versCettePage; ?>" <?php if (!$showAll) {
 				    echo 'style="background:#d3d6ff"';
-				} ?> class="boutonFancy">Voir uniquement les adhérents validés</a>
+				} ?> class="boutonFancy">Adhérents avec licence active</a>
 				<a href="<?php echo $versCettePage; ?>&showAll=1" <?php if ($showAll) {
-				} ?> class="boutonFancy">Voir tous les adhérents de la base (+long)</a>
+				} ?> class="boutonFancy">Afficher tous les adhérents</a>
 
 			</p>
 			<br />
@@ -140,7 +141,7 @@ if (user()) {
 				<br />
 				<a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
 					<span class="bleucaf">&gt;</span>
-					ETAPE SUIVANTE : CHOIX DES RÔLES
+					Étape suivante : attribuer les rôles
 				</a>
 			</form>
 
