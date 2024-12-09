@@ -21,7 +21,7 @@ final class Version20241209125900 extends AbstractMigration
     {
         $backendUrl = $_ENV['BACKEND_URL'] ?? '';
         $env = $_ENV['APP_ENV'] ?? 'prod';
-        $path = 'dev' === $env ? '/img/logo.png' : 'ftp/images/logo.png';
+        $path = 'dev' === $env ? '/img/logo.png' : '/ftp/images/logo.png';
         $logoUrl = $backendUrl . $path;
 
         $this->addSql('
