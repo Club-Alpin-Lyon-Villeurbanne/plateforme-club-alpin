@@ -52,6 +52,7 @@ $nAccepteesCalc = count($evt['joins']['encadrant']) + count($evt['joins']['stagi
 presidence();
 
 $logo = LegacyContainer::get('legacy_content_inline')->getLogo();
+$p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 ?>
 
 <table style="border:0; padding:0; margin:0;">
@@ -59,14 +60,14 @@ $logo = LegacyContainer::get('legacy_content_inline')->getLogo();
     <tr>
         <td style="border:0">
             <?php if (1 == $evt['status_legal_evt']) { ?>
-                <img src="/img/<?php echo $logo; ?>" alt="" title="" style="float:left;max-width:100%; max-height:100%; object-fit:contain;" /><br><br><br><br><br>
+                <img src="<?php echo $logo; ?>" alt="" title="" style="float:left;max-width:100%; max-height:100%; object-fit:contain;" /><br><br><br><br><br>
                 <div style="padding-left:45px;">
                     <?php
                     inclure('adresse-fiche-sortie', '');
                 ?>
                 </div>
             <?php } else { ?>
-                <p class="alerte">Cette sortie n'a pas été validée légalement par les dirigeants de <?php echo $p_sitename; ?>.<br>La sortie se fait sous la responsabilité des organisateurs et des participants.</p>
+                <p class="alerte">Cette sortie n'a pas été validée légalement par les dirigeants du <?php echo $p_sitename; ?>.<br>La sortie se fait sous la responsabilité des organisateurs et des participants.</p>
             <?php } ?>
         </td>
         <td style="border:0">

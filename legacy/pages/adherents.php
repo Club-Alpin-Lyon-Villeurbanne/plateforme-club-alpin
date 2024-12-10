@@ -17,7 +17,7 @@ if (allowed('user_see_all')) {
         . ('manual' == $show ? ' AND manuel_user=1 ' : '')
         . ('nomade' == $show ? ' AND nomade_user=1 ' : '')
         . ('valid' == $show ? ' AND valid_user=1 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
-        . ('allvalid' == $show ? ' AND valid_user=1 AND nomade_user=0 ' : '')
+        . ('allvalid' == $show ? ' AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
         . ('notvalid' == $show ? ' AND valid_user=0 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
         . ('expired' == $show ? ' AND valid_user=0 AND doit_renouveler_user=1 ' : '')
         . ('valid-expired' == $show ? ' AND valid_user=1 AND doit_renouveler_user=1 ' : '')

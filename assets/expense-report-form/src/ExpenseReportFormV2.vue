@@ -18,11 +18,7 @@
       <div v-else-if="expenseReport">
         <div v-if="expenseReport.status === ExpenseStatus.SUBMITTED">
           <p>
-            Votre note de frais est en attente de vérification par la
-            comptabilité.
-          </p>
-          <p>
-            Vous serez informé(e) de son acceptation ou de son refus par email.
+            <ExpenseReportSummary :expense-report="expenseReport" />
           </p>
         </div>
         <div v-else-if="expenseReport.status === ExpenseStatus.APPROVED">
@@ -126,6 +122,7 @@ import { ref, computed, watch } from "vue";
 import { ExpenseDetails, ExpenseStatus } from "./types/api";
 import AccommodationSection from "./components/AccommodationSection.vue";
 import TransportSection from "./components/TransportSection.vue";
+import ExpenseReportSummary from "./components/ExpenseReportSummary.vue";
 import ResultSection from "./components/ResultSection.vue";
 import OtherSection from "./components/OtherSection.vue";
 import { useExpenseReport } from "./composables/useExpenseReport";
@@ -204,7 +201,7 @@ const checkAttachments = () => {
   return { isValid: true };
 };
 
-const onInvalidSubmit = ({ errors }) => {
+const onInvalidSubmit = ({ errors }: { errors: Record<string, any> }) => {
   const firstError = Object.keys(errors)[0];
   const el = document.querySelector<HTMLElement>(`[name="${firstError}"]`);
   el?.scrollIntoView({
@@ -213,7 +210,7 @@ const onInvalidSubmit = ({ errors }) => {
   el?.focus();
 };
 
-const onValidSubmit = async (values) => {
+const onValidSubmit = async (values: Record<string, any>) => {
   const attachmentCheck = checkAttachments();
   if (!attachmentCheck.isValid) {
     alert(
@@ -230,8 +227,13 @@ const onValidSubmit = async (values) => {
   }
 
   isSubmitButtonLoading.value = true;
-
-  const { refundRequired, ...details } = values;
+  const { refundRequired, transport, accommodations, others, ...rest } = values;
+  const details = {
+    transport,
+    accommodations, 
+    others,
+    ...rest
+  };
   await submit({ details, refundRequired });
 
   isSubmitButtonLoading.value = false;

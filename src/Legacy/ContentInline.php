@@ -37,6 +37,6 @@ readonly class ContentInline implements ServiceSubscriberInterface
      */
     public function getLogo()
     {
-        return $this->getContent('logo-img-name');
+        return $this->getContent('logo-img-src');
     }
 }
