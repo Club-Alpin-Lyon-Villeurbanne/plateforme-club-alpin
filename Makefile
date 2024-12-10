@@ -18,7 +18,7 @@ RED = echo "\x1b[31m\#\# $1\x1b[0m"
 
 ## —— 🔥 App ——
 init: ## Init the project
-	$(eval profile ?= default)
+	$(eval profile ?= dev)
 
 	$(MAKE) docker-start profile=$(profile)
 	$(MAKE) composer-install

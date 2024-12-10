@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
+use App\Utils\EmailAlerts;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -211,8 +212,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'is_deleted', type: 'boolean', nullable: false, options: ['default' => 0])]
     private bool $isDeleted = false;
 
-    #[ORM\Column(type: 'json', nullable: true)]
-    private ?array $alerts = [];
+    #[ORM\Column(type: 'json', nullable: true, options: ['default' => EmailAlerts::DEFAULT_ALERTS_JSON])]
+    private ?array $alerts = EmailAlerts::DEFAULT_ALERTS;
 
     #[ORM\Column(type: 'string', nullable: false, options: ['default' => '[CAF-Lyon-Sortie]'])]
     private string $alertSortiePrefix = '[CAF-Lyon-Sortie]';

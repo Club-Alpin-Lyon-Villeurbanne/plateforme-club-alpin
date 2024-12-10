@@ -29,4 +29,44 @@ class UserNotificationRepository extends ServiceEntityRepository
 
         return false !== $this->_em->getConnection()->fetchOne($sql, ['signature' => UserNotification::generateSignature($user, $type, $entityId)]);
     }
+
+    // Delete all notifications sent for evcents or articles older than a year
+    public function deleteExpiredNotifications()
+    {
+        $date = new \DateTime('-1 year');
+
+        $sql = '
+            DELETE
+            FROM caf_user_notification
+            WHERE type = "Sortie"
+            AND entity_id IN (
+                SELECT id_evt
+                FROM caf_evt
+                WHERE
+                    status_evt = 1
+                    AND DATE(
+                        FROM_UNIXTIME(tsp_end_evt)
+                    ) < \'' . $date->format('Y-m-d') . '\'
+            )
+        ';
+
+        $this->_em->getConnection()->executeQuery($sql);
+
+        $sql = '
+            DELETE
+            FROM caf_user_notification
+            WHERE type = "Article"
+            AND entity_id IN (
+                SELECT id_article
+                FROM caf_article
+                WHERE
+                    status_article = 1
+                    AND DATE(
+                        FROM_UNIXTIME(tsp_validate_article)
+                    ) < \'' . $date->format('Y-m-d') . '\'
+            )
+        ';
+
+        $this->_em->getConnection()->executeQuery($sql);
+    }
 }
