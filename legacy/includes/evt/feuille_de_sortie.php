@@ -52,7 +52,7 @@ $nAccepteesCalc = count($evt['joins']['encadrant']) + count($evt['joins']['stagi
 presidence();
 
 $logo = LegacyContainer::get('legacy_content_inline')->getLogo();
-$p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
+
 ?>
 
 <table style="border:0; padding:0; margin:0;">
