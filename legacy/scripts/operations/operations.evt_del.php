@@ -41,7 +41,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         // redirection vers la page de la sortie avec le message "supprimée"
         if (!isset($errTab) || 0 === count($errTab)) {
-            header('Location: /profil/sorties/self.html?lbxMsg=evt_deleted');
+            header('Location: /profil/sorties/self?lbxMsg=evt_deleted');
             exit;
         }
     }
