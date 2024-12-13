@@ -899,7 +899,7 @@
                 {% if nInscritsTotal > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
                     <table class="big-lines-table" style="width:570px; margin-left:20px;">
 
-                        {% for inscrit in event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) %}
+                        {% for inscrit in event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) | sort((a, b) => a.user.firstname <=> b.user.firstname) %}
                             <td>
                             <td>
                                 {% if allowed('user_read_private', event.commission.code) %}
