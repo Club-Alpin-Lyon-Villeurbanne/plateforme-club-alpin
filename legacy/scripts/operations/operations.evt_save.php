@@ -183,7 +183,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // S'il ne s'agit pas d'un cycle :
     if (!$cycle_master_evt && !$cycle_parent_evt) {
         // L'auteur de la sortie est redirigé vers son espace perso > ses sorties, avec un message "Attente de validation"
-        header('Location: /profil/sorties/self.html?lbxMsg=evt_create_success');
+        header('Location: /profil/sorties/self?lbxMsg=evt_create_success');
     }
     // si cet evt est le premier d'un cycle, on reste sur la même page pour inciter à la création d'un nouvel événement dans ce cycle
     else {
