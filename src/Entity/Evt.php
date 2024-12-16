@@ -265,6 +265,9 @@ class Evt
     #[ORM\OneToMany(targetEntity: 'App\Entity\Article', mappedBy: 'evt')]
     private $articles;
 
+    #[ORM\Column(name: "visio_evt",length: 255, nullable: true)]
+    private ?string $visio = null;
+
     public function __construct(
         User $user,
         Commission $commission,
@@ -842,6 +845,18 @@ class Evt
     public function setNgensMax(int $ngensMax): self
     {
         $this->ngensMax = $ngensMax;
+
+        return $this;
+    }
+
+    public function getVisio(): ?string
+    {
+        return $this->visio;
+    }
+
+    public function setVisio(?string $visio): static
+    {
+        $this->visio = $visio;
 
         return $this;
     }
