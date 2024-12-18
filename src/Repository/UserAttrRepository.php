@@ -39,7 +39,7 @@ class UserAttrRepository extends ServiceEntityRepository
                     AND a.userType = t.id
                     AND u.doitRenouveler = 0
                     AND a.params LIKE \'commission:' . $commission->getCode() . '\'
-                ORDER BY t.hierarchie, u.firstname ASC
+                ORDER BY t.hierarchie DESC, u.firstname ASC
         ';
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -48,6 +48,37 @@ class UserAttrRepository extends ServiceEntityRepository
         // some users may appear multiple time because they have multiple attributes (resp. de commission + encadrant)
         // the list is ordered by hierarchy
         // let's keep the first occurence only
+        $seen[] = [];
+        foreach ($query->getResult() as $res) {
+            $id = $res->getUser()->getId();
+
+            if (isset($seen[$id])) {
+                continue;
+            }
+
+            yield $res;
+
+            $seen[$id] = true;
+        }
+    }
+
+    /* @return UserAttr[] */
+    public function listAllResponsables()
+    {
+        $dql = 'SELECT a
+                FROM ' . User::class . ' u, ' . Usertype::class . ' t, ' . UserAttr::class . ' a
+                WHERE
+                    a.user = u.id
+                    AND t.code = :type
+                    AND a.userType = t.id
+                    AND u.doitRenouveler = 0
+                ORDER BY t.hierarchie DESC, u.firstname ASC
+        ';
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('type', UserAttr::RESPONSABLE_COMMISSION);
+
+        // some users may appear multiple time because they are responsables multiple times
         $seen[] = [];
         foreach ($query->getResult() as $res) {
             $id = $res->getUser()->getId();

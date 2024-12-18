@@ -75,6 +75,7 @@ database-init-test: ## Init database for test
 ## —— 🐳 Docker ——
 docker-start: 
 	$(eval profile ?= dev)
+	@mkdir -p ~/.phive ~/.composer ~/.ssh
 	$(DOCKER_COMPOSE) --profile $(profile) up -d
 .PHONY: docker-start
 

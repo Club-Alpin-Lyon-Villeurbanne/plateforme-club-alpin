@@ -22,7 +22,7 @@ if (isset($_POST['operation']) && isset($errTab) && count($errTab) > 0) {
 }
 // message d'info : si c'est une modification de sortie
 if (isset($_POST['operation']) && 'evt_update' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-    echo '<p class="info"><img src="/img/base/tick.png" alt="" title="" /> Mise à jour effectuée à ' . date('H:i:s', time()) . '. <b>Important :</b> cette sortie doit à présent être validée par un responsable pour être publiée sur le site.<a href="/profil/sorties/self.html" title="">&gt; Retourner à la liste de mes sorties</a></p>';
+    echo '<p class="info"><img src="/img/base/tick.png" alt="" title="" /> Mise à jour effectuée à ' . date('H:i:s', time()) . '. <b>Important :</b> cette sortie doit à présent être validée par un responsable pour être publiée sur le site.<a href="/profil/sorties/self" title="">&gt; Retourner à la liste de mes sorties</a></p>';
 }
 ?>
 
