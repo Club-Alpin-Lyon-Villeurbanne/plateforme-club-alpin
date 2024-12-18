@@ -145,10 +145,9 @@ class GoogleGroupsSync extends Command
             unset($existingMembers[$email]);
         }
 
-        $this->upsertMemberToGoogleGroup($existingMembers, $groupKey, 'bureau-codir@clubalpinlyon.fr', 'MEMBER');
         $this->upsertMemberToGoogleGroup($existingMembers, $groupKey, 'publics-eloignes@clubalpinlyon.fr', 'MEMBER');
         $this->upsertMemberToGoogleGroup($existingMembers, $groupKey, 'escalade@clubalpinlyon.fr', 'MEMBER');
-        unset($existingMembers['publics-eloignes@clubalpinlyon.fr'], $existingMembers['escalade@clubalpinlyon.fr'], $existingMembers['bureau-codir@clubalpinlyon.fr']);
+        unset($existingMembers['publics-eloignes@clubalpinlyon.fr'], $existingMembers['escalade@clubalpinlyon.fr']);
 
         foreach ($existingMembers as $emailToRemove => $_) {
             if (!$this->dryRun) {
