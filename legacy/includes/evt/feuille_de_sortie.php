@@ -211,7 +211,7 @@ foreach ($evt['joins']['coencadrant'] as $tmp) {
     <?php } ?>
     <tr>
         <th style="width: fit-content">EN CAS D'ACCIDENT : </th>
-        <td colspan="3">Contactez notre assurance Gras-Savoye au 09 72 72 22 43. <br> Contactez le président ou vice-président (numéro ci-dessus). </td>
+        <td colspan="3">Contactez notre assurance WTW Montagne au 09 72 72 22 43. <br> Contactez le président ou vice-président (numéros ci-dessus). </td>
     </tr>
     </tbody>
 </table>
@@ -221,10 +221,10 @@ foreach ($evt['joins']['coencadrant'] as $tmp) {
     <tr>
         <th></th>
         <th>PARTICIPANTS (NOM, PRÉNOM)</th>
-        <th>N°ADHERENT</th>
+        <th>LICENCE</th>
         <th>AGE</th>
-        <th>TÉL. PERSONNEL</th>
-        <th>TÉL. <abbr title="En cas d'urgence">I.C.E</abbr></th>
+        <th>TÉL.</th>
+        <th>TÉL. <abbr title="En cas d'urgence">SECOURS</abbr></th>
     </tr>
     </thead>
     <tbody>
