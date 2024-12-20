@@ -21,6 +21,7 @@
         <button 
           @click="openFileInput"
           class="tw-text-gray-600 hover:tw-text-gray-800"
+          type="button"
         >
           Remplacer
         </button>
