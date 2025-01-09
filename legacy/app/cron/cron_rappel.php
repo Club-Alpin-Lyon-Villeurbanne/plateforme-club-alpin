@@ -36,7 +36,6 @@ function cron_email($datas)
 
     LegacyContainer::get('legacy_mailer')->send($datas['to'], $datas['template'], $datas['context']);
 
-    error_log($datas['code']);
     $req = "INSERT INTO caf_chron_operation(tsp_chron_operation, code_chron_operation, parent_chron_operation)
                                 VALUES ('" . time() . "',  '" . $datas['code'] . "',  '" . $datas['parent'] . "');";
 
