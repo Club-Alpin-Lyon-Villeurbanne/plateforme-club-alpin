@@ -41,7 +41,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $errTab[] = 'User or article not found';
     }
 
-    $sql = 'SELECT (COUNT(id_article) - 5) as total FROM caf_article WHERE status_article > 0 AND une_article > 0';
+    $sql = 'SELECT (COUNT(id_article) - 5) as total FROM caf_article WHERE status_article = 1 AND une_article = 1';
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($sql);
 
     if ($result && $row = $result->fetch_assoc()) {
