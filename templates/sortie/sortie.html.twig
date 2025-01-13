@@ -904,8 +904,10 @@
                             <td>
                                 {% if allowed('user_read_private', event.commission.code) %}
                                     <p class="mini">{{ inscrit.user.lastname|upper }}, {{ inscrit.user.firstname|capitalize }}</p>
+                                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
+                                {% else %}
+                                    {{ inscrit.user.nickname }}
                                 {% endif %}
-                                <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
                             </td>
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
@@ -934,8 +936,10 @@
                                 <td>
                                     {% if allowed('user_read_private', event.commission.code) %}
                                         <p class="mini">{{ inscrit.user.lastname|upper }}, {{ inscrit.user.firstname|capitalize }}</p>
+                                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
+                                    {% else %}
+                                        {{ inscrit.user.nickname }}
                                     {% endif %}
-                                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
                                 </td>
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}
