@@ -23,6 +23,8 @@ class UserNotificationHandler
         private readonly UserNotificationRepository $userNotificationRepository,
         private readonly EntityManagerInterface $em,
         private readonly Mailer $mailer,
+        private readonly string $defaultAlertArticlePrefix,
+        private readonly string $defaultAlertSortiePrefix,
     ) {
     }
 
@@ -58,8 +60,8 @@ class UserNotificationHandler
         };
 
         $prefix = match ($message->alertType) {
-            AlertType::Article => $user->getAlertArticlePrefix(),
-            AlertType::Sortie => $user->getAlertSortiePrefix(),
+            AlertType::Article => $user->getAlertArticlePrefix() ?? $this->defaultAlertArticlePrefix,
+            AlertType::Sortie => $user->getAlertSortiePrefix() ?? $this->defaultAlertSortiePrefix,
         };
 
         $this->mailer->send($user, $template, ['entity' => $entity, 'prefix' => $prefix]);

@@ -20,7 +20,7 @@ parameters:
   legacy_env_DISPLAY_BANNER: "%env(bool:DISPLAY_BANNER)%"
   legacy_ftp_path: "%public_dir%/ftp/"
   legacy_project_dir: "%kernel.project_dir%"
-  #configuration extraite de: legacy/config/config.php
+  legacy_env_SITENAME: "%env(string:SITENAME)%"
   legacy_env_SENTRY_DSN: "%env(string:SENTRY_DSN)%"
   legacy_env_DB_HOST: "%env(string:DB_HOST)%"
   legacy_env_DB_PORT: "%env(int:DB_PORT)%"
@@ -114,6 +114,11 @@ services:
 
   Symfony\Component\String\Slugger\SluggerInterface:
     class: Symfony\Component\String\Slugger\AsciiSlugger
+
+  App\Messenger\MessageHandler\UserNotificationHandler:
+    arguments:
+      $defaultAlertArticlePrefix: "%env(ALERT_ARTICLE_PREFIX)%"
+      $defaultAlertSortiePrefix: "%env(ALERT_SORTIE_PREFIX)%"
 
   # services used in legacy
   legacy_router:
