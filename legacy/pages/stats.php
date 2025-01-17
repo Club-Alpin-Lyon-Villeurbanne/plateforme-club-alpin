@@ -359,7 +359,10 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 						AND params_user_attr LIKE 'commission:" . $key . "'
 						AND usertype_user_attr LIKE id_usertype
 						AND (code_usertype LIKE 'encadrant' OR code_usertype LIKE 'stagiaire')
+						AND doit_renouveler_user = 0
 						";
+
+			var_dump($req);
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
             $comTab[$key]['stats']['encadrants'] = $row[0];
@@ -371,6 +374,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 						AND params_user_attr LIKE 'commission:" . $key . "'
 						AND usertype_user_attr LIKE id_usertype
 						AND code_usertype LIKE 'coencadrant'
+						AND doit_renouveler_user = 0
 						";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
