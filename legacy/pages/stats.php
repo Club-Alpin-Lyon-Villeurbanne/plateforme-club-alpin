@@ -362,7 +362,6 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 						AND doit_renouveler_user = 0
 						";
 
-			var_dump($req);
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
             $comTab[$key]['stats']['encadrants'] = $row[0];
