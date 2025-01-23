@@ -5,7 +5,7 @@
         Hébergement
       </h2>
       <InfoTooltip
-        text="L'hébergement comprends les nuitées, le petit déjeuner et le repas du soir."
+        text="L'hébergement comprend les nuitées, le petit déjeuner et le repas du soir."
         ariaLabel="Informations sur l'hébergement"
       />
     </div>

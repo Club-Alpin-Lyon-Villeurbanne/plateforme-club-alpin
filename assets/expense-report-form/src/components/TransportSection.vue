@@ -152,8 +152,6 @@ const transportOptions = [
   { value: TransportType.PUBLIC_TRANSPORT, label: "Transport en commun" },
 ];
 
-const isTooltipVisible = ref(false);
-
 onMounted(() => {
   if (!valueType.value) {
     valueType.value = TransportType.PERSONAL_VEHICLE;

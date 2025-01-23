@@ -5,7 +5,7 @@
         Autres dépenses
       </h2>
       <InfoTooltip
-        text="Saisissez les dépenses que vous souhaitez vous faire rembourser autres que le transport et l'hébergement."
+        text="Saisissez les dépenses que vous souhaitez vous faire rembourser autres que le transport et l'hébergement (forfaits de ski, cout tunnel, etc)."
         ariaLabel="Informations sur les autres dépenses"
       />
     </div>
