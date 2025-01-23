@@ -4,6 +4,7 @@ namespace App\EventListener\Entity;
 
 use App\Entity\ExpenseReport;
 use App\Mailer\Mailer;
+use App\Service\ExpenseReportCalculator;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\OnFlushEventArgs;
@@ -15,6 +16,7 @@ class ExpenseReportStatusChangeSubscriber
 {
     public function __construct(
         private readonly Mailer $mailer,
+        private readonly ExpenseReportCalculator $calculator,
     ) {
     }
 
@@ -50,7 +52,30 @@ class ExpenseReportStatusChangeSubscriber
 
             switch (true) {
                 case $newStatus === ExpenseReportStatusEnum::SUBMITTED->value:
-                    $this->mailer->send($entity->getUser(), 'transactional/expense-report-submitted--to-submitter', ['report' => $entity]);
+                    // On calcule ici le résumé de la note de frais
+                    $detailsArray = \json_decode($entity->getDetails(), true);
+                    $summary = $this->calculator->calculateTotal($detailsArray);
+                    // On peut formater si nécessaire
+                    $formattedTotal        = $this->calculator->formatEuros($summary['total']);
+                    $formattedReimbursable = $this->calculator->formatEuros($summary['reimbursable']);
+
+                    $tauxVoiture = $this->calculator->getTauxKilometriqueVoiture();
+                    $tauxMinibus = $this->calculator->getTauxKilometriqueMinibus();
+
+                    // On transmet tout au Mailer
+                    $this->mailer->send(
+                        $entity->getUser(),
+                        'transactional/expense-report-submitted--to-submitter', 
+                        [
+                            'report'      => $entity,
+                            'details'     => $detailsArray,
+                            'summary'     => $summary,
+                            'formattedTotal' => $formattedTotal,
+                            'formattedReimbursable' => $formattedReimbursable,
+                            'tauxKilometriqueVoiture' => $tauxVoiture,
+                            'tauxKilometriqueMinibus' => $tauxMinibus,
+                        ]
+                    );
                     break;
                 case $newStatus === ExpenseReportStatusEnum::REJECTED->value:
                     $this->mailer->send($entity->getUser(), 'transactional/expense-report-rejected--to-submitter', ['report' => $entity]);

@@ -1,31 +1,136 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
-{% block subject -%}
+{% block subject %}
     Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} est envoyée
-{%- endblock %}
+{% endblock %}
 
 {% block inner_html %}
-    <p>
-        Votre note de frais {% if report.event %}pour <a href="{{ url('sortie', {code: report.event.code, id: report.event.id}) }}">"{{ report.event.titre }}"</a>{% endif %} est envoyée.
-    </p>
+<div>
+  {# ================== Section TRANSPORT ================== #}
+  {% set transport = details.transport %}
+  {% if transport is not empty %}
+    <h2>Transport</h2>
     <ul>
-        <li>Encadrant.e: {{ report.user.firstname }} {{ report.user.lastname }} </li>
-        {% if report.createdAt %}<li>Date: {{ report.createdAt | date('d-m-Y') }} </li>{% endif %}
-        <li>Type: {% if report.refundRequired %}Demande de remboursement par virement{% else %}Abandon de frais{% endif %}</li>
-        {% if report.details %}<li>Details: {{ report.details }} </li>{% endif %}
+      <li>
+        <strong>Type :</strong>
+        {% if transport.type == "PERSONAL_VEHICLE" %}
+          Véhicule personnel 
+          (taux&nbsp;: {{ tauxKilometriqueVoiture }} €/km)
+        {% elseif transport.type == "CLUB_MINIBUS" %}
+          Minibus du club 
+          (taux&nbsp;: {{ tauxKilometriqueMinibus }} €/km)
+        {% elseif transport.type == "RENTAL_MINIBUS" %}
+          Minibus de location 
+          (taux&nbsp;: {{ tauxKilometriqueMinibus }} €/km)
+        {% elseif transport.type == "PUBLIC_TRANSPORT" %}
+          Transport en commun
+        {% else %}
+          Inconnu
+        {% endif %}
+      </li>
+
+      {# Logique d'affichage des champs selon le type #}
+      {% if transport.type == "PERSONAL_VEHICLE" %}
+        <li><strong>Distance :</strong> {{ transport.distance }} km</li>
+        <li><strong>Péage :</strong> {{ transport.tollFee }} €</li>
+
+      {% elseif transport.type == "CLUB_MINIBUS" %}
+        <li><strong>Distance :</strong> {{ transport.distance }} km</li>
+        <li><strong>Péage :</strong> {{ transport.tollFee }} €</li>
+        <li><strong>Carburant :</strong> {{ transport.fuelExpense }} €</li>
+        <li><strong>Nombre de passagers :</strong> {{ transport.passengerCount }}</li>
+
+      {% elseif transport.type == "RENTAL_MINIBUS" %}
+        <li><strong>Péage :</strong> {{ transport.tollFee }} €</li>
+        <li><strong>Carburant :</strong> {{ transport.fuelExpense }} €</li>
+        <li><strong>Location :</strong> {{ transport.rentalPrice }} €</li>
+        <li><strong>Nombre de passagers :</strong> {{ transport.passengerCount }}</li>
+
+      {% elseif transport.type == "PUBLIC_TRANSPORT" %}
+        <li><strong>Prix du ticket :</strong> {{ transport.ticketPrice }} €</li>
+      {% endif %}
     </ul>
-    <p>
-        La comptabilité procedera bientôt à son traitement, vous serez notifié.e.
-    </p>
+  {% else %}
+    <p>Aucune dépense de transport.</p>
+  {% endif %}
+
+  <hr/>
+
+  {# ================== Section HÉBERGEMENTS ================== #}
+  {% set accommodations = details.accommodations %}
+  {% if accommodations is not empty %}
+    <h2>Hébergements</h2>
+    <ul>
+      {% for acc in accommodations %}
+        <li>
+          <strong>Hébergement {{ loop.index }} :</strong>
+          {{ acc.price }} € 
+          {% if acc.comment %}- {{ acc.comment }}{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+    {% if accommodationTotal is defined %}
+      <p><strong>Total hébergements :</strong> {{ accommodationTotal }}</p>
+    {% endif %}
+    {% if accommodationReimbursable is defined %}
+      <p><strong>Montant remboursable (hébergements) :</strong> {{ accommodationReimbursable }}</p>
+    {% endif %}
+  {% else %}
+    <p>Aucun hébergement.</p>
+  {% endif %}
+
+  <hr/>
+
+  {# ================== Section AUTRES DÉPENSES ================== #}
+  {% set others = details.others %}
+  {% if others is not empty %}
+    <h2>Autres dépenses</h2>
+    <ul>
+      {% for o in others %}
+        <li>
+          <strong>Dépense {{ loop.index }} :</strong>
+          {{ o.price }} € 
+          {% if o.comment %}- {{ o.comment }}{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Aucune autre dépense.</p>
+  {% endif %}
+
+  <hr/>
+
+  {# ================== TOTAUX GLOBAUX ================== #}
+  {% if total is defined %}
+    <p><strong>Total global :</strong> {{ total }}</p>
+  {% endif %}
+  {% if totalReimbursable is defined %}
+    <p><strong>Total remboursable :</strong> {{ totalReimbursable }}</p>
+  {% endif %}
+
+  {% if report.refundRequired %}
+    <p>Remboursement demandé.</p>
+  {% else %}
+    <p>Don au club (un reçu fiscal vous sera envoyé en fin d'année).</p>
+  {% endif %}
+
+  <hr/>
+
+  {# ================== Message de fin ================== #}
+  <p>
+    Si vous avez fait une erreur et souhaitez modifier votre note de frais,
+    merci d'en faire la demande auprès de la comptabilité :
+    <a href="mailto:comptabilite@clubalpinlyon.fr">comptabilite@clubalpinlyon.fr</a>
+    en indiquant le nom et la date de la sortie.
+  </p>
+</div>
 {% endblock %}
 
 {% block inner_txt %}
-Votre note de frais {% if report.event %}pour "{{ report.event.titre }}" ({{ url('sortie', {code: report.event.code, id: report.event.id}) }}){% endif %} est envoyée.
+Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} est envoyée.
 
-- Encadrant.e: {{ report.user.firstname }} {{ report.user.lastname }}
-{% if report.createdAt %} - Date: {{ report.createdAt | date('d-m-Y') }}{% endif %}
-Type: {% if report.refundRequired %}Demande de remboursement par virement{% else %}Abandon de frais{% endif %}
-{% if report.details %}Details: {{ report.details }}{% endif %}
+Récapitulatif :
+- Montant total : {{ formattedTotal }}
+- Montant remboursable : {{ formattedReimbursable }}
 
-La comptabilité procedera bientôt à son traitement, vous serez notifié.e.
 {% endblock %}
