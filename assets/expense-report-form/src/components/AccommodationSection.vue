@@ -18,7 +18,7 @@
           :name="`accommodations[${idx}].price`"
           :expense-id="field.value.expenseId"
           :label="`Hébergement ${idx + 1}`"
-          :requires-attachment="false"
+          :requires-attachment="true"
         />
         <div class="tw-flex tw-flex-col">
           <div class="tw-flex tw-min-w-full">

@@ -21,10 +21,10 @@ class AttachmentValidator
             return $attachment->getExpenseId() === $expenseId;
         });
 
-        // if (!$attachmentExists) {
-        //     $context->buildViolation('Attachment is missing for expense with ID \'{expenseId}\'.')
-        //         ->setParameter('{expenseId}', $expenseId)
-        //         ->addViolation();
-        // }
+        if (!$attachmentExists) {
+            $context->buildViolation('Attachment is missing for expense with ID \'{expenseId}\'.')
+                ->setParameter('{expenseId}', $expenseId)
+                ->addViolation();
+        }
     }
 }

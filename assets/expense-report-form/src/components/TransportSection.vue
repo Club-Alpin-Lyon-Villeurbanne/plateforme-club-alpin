@@ -115,7 +115,7 @@
             name="transport.ticketPrice"
             expense-id="ticketPrice"
             label="Prix du ticket (€)"
-            :requires-attachment="false"
+            :requires-attachment="true"
           />
           <Input
               :name="`transport.comment`"
