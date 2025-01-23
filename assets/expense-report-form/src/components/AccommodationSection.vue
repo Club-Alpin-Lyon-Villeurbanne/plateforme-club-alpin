@@ -1,11 +1,17 @@
 <template>
   <div class="tw-border-b tw-border-gray-900/10 tw-pb-6">
-    <h2 class="tw-text-lg tw-font-medium tw-leading-7 tw-text-gray-900">
-      Hébergements
-    </h2>
+    <div class="tw-flex tw-items-center tw-gap-2">
+      <h2 class="tw-text-lg tw-font-medium tw-leading-7 tw-text-gray-900">
+        Hébergement
+      </h2>
+      <InfoTooltip
+        text="L'hébergement comprends les nuitées, le petit déjeuner et le repas du soir."
+        ariaLabel="Informations sur l'hébergement"
+      />
+    </div>
     <p class="tw-text-sm tw-leading-6 tw-text-gray-600">
-      Le remboursement des nuitées se fait sur la base de
-      {{ expenseReportConfig.nuiteeMaxRemboursable }}€ par nuitée
+      Le remboursement de l'hébergement se fait sur la base de
+      {{ expenseReportConfig.nuiteeMaxRemboursable }}€ par jour
     </p>
 
     <div
@@ -55,6 +61,7 @@ import { Accommodation } from "../types/api";
 import expenseReportConfig from "../config/expense-reports.json";
 import trashIcon from "../assets/svg/trash.svg?raw";
 import { useFieldArray } from "vee-validate";
+import InfoTooltip from "./InfoTooltip.vue";
 import Input from "./Input.vue";
 
 const {

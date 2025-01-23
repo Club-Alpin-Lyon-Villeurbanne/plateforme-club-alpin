@@ -1,8 +1,14 @@
 <template>
   <div class="tw-border-b tw-border-gray-900/10 tw-pb-6">
-    <h2 class="tw-text-lg tw-font-medium tw-leading-7 tw-text-gray-900">
-      Autres dépenses
-    </h2>
+    <div class="tw-flex tw-items-center tw-gap-2">
+      <h2 class="tw-text-lg tw-font-medium tw-leading-7 tw-text-gray-900">
+        Autres dépenses
+      </h2>
+      <InfoTooltip
+        text="Saisissez les dépenses que vous souhaitez vous faire rembourser autre que le transport et l'hébergement."
+        ariaLabel="Informations sur les autres dépenses"
+      />
+    </div>
     <p class="tw-text-sm tw-leading-6 tw-text-gray-600">
       Toute autre dépense que vous souhaitez vous faire rembourser
     </p>
@@ -52,6 +58,7 @@ import { useAttachments } from "../composables/useAttachment";
 import { Other } from "../types/api";
 import trashIcon from "../assets/svg/trash.svg?raw";
 import { useFieldArray } from "vee-validate";
+import InfoTooltip from "./InfoTooltip.vue";
 import Input from "./Input.vue";
 
 const { remove, push, fields: others } = useFieldArray<Other>("others");
