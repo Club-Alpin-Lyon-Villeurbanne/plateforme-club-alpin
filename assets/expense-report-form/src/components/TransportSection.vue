@@ -141,7 +141,7 @@ import ExpenseFieldV2 from "./ExpenseFieldV2.vue";
 import Input from "./Input.vue";
 import InfoTooltip from "./InfoTooltip.vue";
 import { useField } from "vee-validate";
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 
 const { value: valueType } = useField<TransportType>("transport.type");
 
