@@ -3,12 +3,6 @@
 date_default_timezone_set('Europe/Paris');
 setlocale(\LC_ALL, 'fr_FR');
 
-// NOM DU SITE ( apparaît notamment dans les e-mailings )
-$p_sitename = 'CAF Lyon Villeurbanne';
-
-// destinataire principal
-$p_contactdusite = 'sitemestre@clubalpinlyon.fr';
-
 // -------------------
 // PARAMS STATIQUES
 

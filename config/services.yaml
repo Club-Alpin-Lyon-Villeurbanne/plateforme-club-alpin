@@ -18,9 +18,9 @@ parameters:
   legacy_env_MAX_ARTICLES_ACCUEIL: "%env(int:MAX_ARTICLES_ACCUEIL)%"
   legacy_env_MAX_IMAGE_SIZE: "%env(int:MAX_IMAGE_SIZE)%"
   legacy_env_DISPLAY_BANNER: "%env(bool:DISPLAY_BANNER)%"
-  legacy_ftp_path: "%kernel.project_dir%/public/ftp/"
+  legacy_ftp_path: "%public_dir%/ftp/"
   legacy_project_dir: "%kernel.project_dir%"
-  #configuration extraite de: legacy/config/config.php
+  legacy_env_SITENAME: "%env(string:SITENAME)%"
   legacy_env_SENTRY_DSN: "%env(string:SENTRY_DSN)%"
   legacy_env_DB_HOST: "%env(string:DB_HOST)%"
   legacy_env_DB_PORT: "%env(int:DB_PORT)%"
@@ -29,6 +29,7 @@ parameters:
   legacy_env_DB_NAME: "%env(string:DB_NAME)%"
   router.request_context.scheme: "%env(string:ROUTER_REQUEST_CONTEXT_SCHEME)%"
   asset.request_context.secure: "%env(bool:ASSET_REQUEST_CONTEXT_SECURE)%"
+  public_dir: "%kernel.project_dir%/public"
 
 services:
   # default configuration for services in *this* file
@@ -114,6 +115,11 @@ services:
   Symfony\Component\String\Slugger\SluggerInterface:
     class: Symfony\Component\String\Slugger\AsciiSlugger
 
+  App\Messenger\MessageHandler\UserNotificationHandler:
+    arguments:
+      $defaultAlertArticlePrefix: "%env(ALERT_ARTICLE_PREFIX)%"
+      $defaultAlertSortiePrefix: "%env(ALERT_SORTIE_PREFIX)%"
+
   # services used in legacy
   legacy_router:
     public: true
@@ -190,3 +196,7 @@ services:
   legacy_content_inline:
     public: true
     alias: App\Legacy\ContentInline
+
+  App\Utils\FileUploader:
+    arguments:
+      $publicDir: '%public_dir%'

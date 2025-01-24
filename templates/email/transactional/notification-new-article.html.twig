@@ -4,12 +4,11 @@
     {{ prefix }}{% if entity.commission %}[{{ entity.commission.title }}]{% elseif entity.evt %}[Compte Rendu]{% endif %} {{ entity.titre }}
 {%- endblock %}
 
-{% block rappel_objet '' %}
+{% block rappel_objet 'Nouvel article: ' ~ entity.titre %}
 
 {% block inner_html %}
     <p>
-        Un {% if entity.evt %}nouveau compte-rendu{% else %}nouvel article{% endif %} "{{ entity.titre }}" vient d'être publié sur le site du Club Alpin Français Lyon-Villeurbanne{% if entity.commission %} dans la commission <b>{{ entity.commission.title }}</b>{% endif %}.
-        <a href="{{ url_site }}/article/{{ entity.code }}-{{ entity.id }}.html">Lire l'article</a>.
+        Un {% if entity.evt %}nouveau compte-rendu{% else %}nouvel article{% endif %} <a href="{{ url_site }}/article/{{ entity.code }}-{{ entity.id }}.html">"{{ entity.titre }}"</a> vient d'être publié sur le site du Club Alpin Français Lyon-Villeurbanne{% if entity.commission %} dans la commission <b>{{ entity.commission.title }}</b>{% endif %}.
     </p>
     <p>
         Vous pouvez gérer vos alertes depuis <a href="{{ url('profil_alertes') }}">votre espace "mes alertes"</a>.

@@ -72,7 +72,7 @@
 								<label for="article-prefix-input">Prefixe du sujet des emails d'alerte de nouveaux articles</label>
 							</td>
 							<td style="text-align: right">
-								<input class="type1" id="article-prefix-input" type="text" value="{{ app.user.alertArticlePrefix }}" name="article-prefix-input" />
+								<input class="type1" id="article-prefix-input" type="text" value="{{ app.user.alertArticlePrefix ?? default_alert_article_prefix }}" name="article-prefix-input" />
 							</td>
 						</tr>
 						<tr style="height:30px;">
@@ -80,7 +80,7 @@
 								<label for="sortie-prefix-input">Prefixe du sujet des emails d'alerte de nouvelles sorties</label>
 							</td>
 							<td style="text-align: right">
-								<input class="type1" id="sortie-prefix-input" type="text" value="{{ app.user.alertSortiePrefix }}" name="sortie-prefix-input" />
+								<input class="type1" id="sortie-prefix-input" type="text" value="{{ app.user.alertSortiePrefix ?? default_alert_sortie_prefix }}" name="sortie-prefix-input" />
 							</td>
 						</tr>
 					</tbody>

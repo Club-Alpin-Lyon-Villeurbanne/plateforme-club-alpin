@@ -13,6 +13,9 @@ services:
       - ./docker/vhosts:/etc/apache2/sites-enabled
       - ./docker/utils/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./:/var/www
+      - ~/.composer:/var/www/.composer
+      - ~/.phive:/var/www/.phive
+      - ~/.ssh:/var/www/.ssh:ro
 
   cafdb:
     # The MySQL version must be updated at multiple places (docker-compose, gitlab-ci)

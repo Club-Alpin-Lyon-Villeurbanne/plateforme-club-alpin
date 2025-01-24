@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
+use App\Utils\EmailAlerts;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -211,14 +212,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'is_deleted', type: 'boolean', nullable: false, options: ['default' => 0])]
     private bool $isDeleted = false;
 
-    #[ORM\Column(type: 'json', nullable: true)]
-    private ?array $alerts = [];
+    #[ORM\Column(type: 'json', nullable: true, options: ['default' => EmailAlerts::DEFAULT_ALERTS_JSON])]
+    private ?array $alerts = EmailAlerts::DEFAULT_ALERTS;
 
-    #[ORM\Column(type: 'string', nullable: false, options: ['default' => '[CAF-Lyon-Sortie]'])]
-    private string $alertSortiePrefix = '[CAF-Lyon-Sortie]';
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $alertSortiePrefix = null;
 
-    #[ORM\Column(type: 'string', nullable: false, options: ['default' => '[CAF-Lyon-Article]'])]
-    private string $alertArticlePrefix = '[CAF-Lyon-Article]';
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $alertArticlePrefix = null;
 
     public function __construct(?int $id = null)
     {
@@ -743,7 +744,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this;
     }
 
-    public function getAlertSortiePrefix(): string
+    public function getAlertSortiePrefix(): ?string
     {
         return $this->alertSortiePrefix;
     }
@@ -753,7 +754,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         $this->alertSortiePrefix = $alertSortiePrefix;
     }
 
-    public function getAlertArticlePrefix(): string
+    public function getAlertArticlePrefix(): ?string
     {
         return $this->alertArticlePrefix;
     }

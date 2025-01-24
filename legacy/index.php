@@ -27,7 +27,7 @@ $versCettePage = $p1 . ($p2 ? '/' . $p2 : '') . ($p3 ? '/' . $p3 : '') . ($p4 ? 
     </title>
     <base href="<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>" />
     <meta name="description" content="<?php echo html_utf8($meta_description); ?>">
-    <meta name="author" content="Club Alpin Français de Lyon-Villeurbanne">
+    <meta name="author" content="<?php echo LegacyContainer::getParameter('legacy_env_SITENAME'); ?>">
     <meta name="viewport" content="width=1200">
     <?php
     if (LegacyContainer::getParameter('legacy_env_GOOGLE_SITE_VERIFICATION')) {
@@ -95,7 +95,7 @@ if (is_array($p_addJs)) {
     if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
         ?>
         <div id="test-banner">
-            <p>Attention, vous vous trouvez sur un site de test. Veuillez <a href="https://clubalpinlyon.fr">cliquer ici pour accéder au site de production</a>.</p>
+            <p>Attention, vous vous trouvez sur un site de test. Veuillez <a href="https://www.clubalpinlyon.fr">cliquer ici pour accéder au site de production</a>.</p>
         </div>
     <?php
     }

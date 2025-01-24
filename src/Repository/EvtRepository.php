@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -84,6 +86,114 @@ class EvtRepository extends ServiceEntityRepository
         }
 
         return $qb
+            ->getQuery()
+            ->getResult();
+    }
+
+    /** @return Evt[] */
+    public function getUserEvents(User $user, int $first, int $perPage)
+    {
+        $qb = $this->getUserEventsDql($user)
+            ->orderBy('e.tsp', 'desc');
+
+        return $this->getPaginatedResults($qb, $first, $perPage);
+    }
+
+    public function getUserEventsCount(User $user): int
+    {
+        return $this
+            ->getUserEventsDql($user)
+            ->select('count(e)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    private function getUserEventsDql(User $user): QueryBuilder
+    {
+        return $this->getEventsByUserDql($user);
+    }
+
+    /** @return Evt[] */
+    public function getUserPastEvents(User $user, int $first, int $perPage)
+    {
+        $qb = $this->getUserPastEventsDql($user);
+
+        return $this->getPaginatedResults($qb, $first, $perPage);
+    }
+
+    public function getUserPastEventsCount(User $user): int
+    {
+        return $this
+            ->getUserPastEventsDql($user)
+            ->select('count(e)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    private function getUserPastEventsDql(User $user): QueryBuilder
+    {
+        $date = new \DateTime('today');
+
+        return $this->getEventsByUserDql($user, [Evt::STATUS_LEGAL_VALIDE])
+            ->andWhere('e.tspEnd < :date')
+            ->setParameter('date', $date->getTimestamp())
+            ->orderBy('e.tsp', 'desc');
+    }
+
+    /** @return Evt[] */
+    public function getUserUpcomingEvents(User $user, int $first, int $perPage)
+    {
+        $qb = $this->getUserUpcomingEventsDql($user);
+
+        return $this->getPaginatedResults($qb, $first, $perPage);
+    }
+
+    public function getUserUpcomingEventsCount(User $user): int
+    {
+        return $this
+            ->getUserUpcomingEventsDql($user)
+            ->select('count(e)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    private function getUserUpcomingEventsDql(User $user): QueryBuilder
+    {
+        $date = new \DateTime('today');
+
+        return $this->getEventsByUserDql($user, [Evt::STATUS_LEGAL_VALIDE])
+            ->andWhere('e.tspEnd >= :date')
+            ->setParameter('date', $date->getTimestamp())
+            ->orderBy('e.tsp', 'asc')
+        ;
+    }
+
+    private function getEventsByUserDql(User $user, array $status = []): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->select('e')
+            // required since there might be multiple participation for a user (weird schema)
+            ->distinct(true)
+            ->leftJoin('e.commission', 'c')
+            ->leftJoin('e.participations', 'p')
+            ->where('p.user = :user')
+            ->setParameter('user', $user)
+        ;
+
+        if (!empty($status)) {
+            $qb = $qb
+                ->andWhere('e.status IN (:status)')
+                ->setParameter('status', $status)
+            ;
+        }
+
+        return $qb;
+    }
+
+    private function getPaginatedResults(QueryBuilder $qb, int $first, int $perPage)
+    {
+        return $qb->setFirstResult($first)
+            ->setMaxResults($perPage)
             ->getQuery()
             ->getResult();
     }

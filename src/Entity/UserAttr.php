@@ -71,6 +71,11 @@ class UserAttr
         return $this->user->getId();
     }
 
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
     public function getUserType(): ?Usertype
     {
         return $this->userType;

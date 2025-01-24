@@ -36,10 +36,6 @@ class ExpenseAttachmentController extends AbstractController
 
         $body = $request->getPayload()->all();
 
-        // if (empty($body['expenseReportId'])) {
-        //     throw new BadRequestHttpException('expenseReportId parameter is missing');
-        // }
-
         $expenseReport = $this->expenseReportRepository->findOneBy(['id' => $expenseReportId, 'user' => $user]);
         if (!$expenseReport) {
             throw $this->createNotFoundException('ExpenseReport not found');

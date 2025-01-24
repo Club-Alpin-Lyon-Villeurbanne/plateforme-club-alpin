@@ -7,7 +7,7 @@
 
         {# LOGO COMMUN TTES PAGES #}
         <a id="logo" href="/" title="{{ db_content('logo-title') }}">
-            <img src="/img/{{ db_content('logo-img-name') }}" alt="{{ db_content('logo-title') }}" title="{{ db_content('logo-title') }}" />
+            <img src="{{ db_content('logo-img-src') }}" alt="{{ db_content('logo-title') }}" title="{{ db_content('logo-title') }}" />
         </a>
 
         {# COMMISSION #}
@@ -133,7 +133,7 @@
                         <div class="nav-user">
                             <p class="menutitle">Mes sorties</p>
 
-                                {% if app.user %}
+                                {% if app.user and caf_id == 'lyon' %}
                                     <a href="{{ path('minibus') }}" title="">
                                         <span class="star">
                                             <img src="/img/base/bullet_star.png" alt="" title="" />
@@ -182,14 +182,14 @@
                                     </a>
 
                                     {# les sorties que j'ai créé#}
-                                    <a href="/profil/sorties/self.html" title="">
+                                    <a href="{{ path('profil_sorties_self') }}" title="">
                                         <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
                                         sorties que j'organise
                                     </a><br />
                                 {% endif %}
 
-                                <a href="/profil/sorties/next.html" title="">mes sorties à venir</a><br />
-                                <a href="/profil/sorties/prev.html" title="">mes sorties passées</a><br />
+                                <a href="{{ path('profil_sorties_next') }}" title="">mes sorties à venir</a><br />
+                                <a href="{{ path('profil_sorties_prev') }}" title="">mes sorties passées</a><br />
                             </div>
 
                             <div class="nav-user">
@@ -197,8 +197,10 @@
 
                                 <a href="/profil/infos.html" title="">mes infos publiques</a><br />
                                 <a href="/profil/infos.html#private" title="">mes infos privées</a><br />
-                                <a href="/pages/boite-outils-des-encadrants.html" title="">boite à outils encadrant</a><br />
-{#                                <a href="{{ path('profil_alertes') }}" title="">mes alertes</a>#}
+                                {% if caf_id == 'lyon' %}
+                                    <a href="/pages/boite-outils-des-encadrants.html" title="">boite à outils encadrant</a><br />
+                                {% endif %}
+                                <a href="{{ path('profil_alertes') }}" title="">mes alertes</a>
                             </div>
 
                             <div class="nav-user">

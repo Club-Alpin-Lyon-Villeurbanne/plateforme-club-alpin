@@ -87,34 +87,30 @@
                 {% endif %}
 
             {# FIX ME Replace with a voter #}
-            {% elseif event.publicStatusValide and is_granted('SORTIE_UPDATE', event) %}
+            {% elseif event.publicStatusValide and (is_granted('SORTIE_UPDATE', event) or is_granted('SORTIE_DELETE', event) or is_granted('SORTIE_CANCEL', event)) %}
                 {% set closeDiv = true %}
 
                 <div class="alerte">
                     <b>Note :</b> Cette sortie est publiée et visible par les adhérents !<br />
             {% endif %}
 
-            {% if is_granted('SORTIE_UPDATE', event) %}
-                {% if not event.cancelled %}
+                {% if is_granted('SORTIE_UPDATE', event) %}
                     <a href="/creer-une-sortie/{{ event.commission.code }}/update-{{ event.id }}.html" title="Vous êtes l'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
                         <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie
                     </a>
                 {% endif %}
 
-                {% if not event.finished %}
-                    {% if allowed('evt_delete', 'commission:' ~ event.commission.code) and (event.publicStatusValide or event.cancelled) %}
-                        <a class="nice2 noprint red" href="/supprimer-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Supprimer définitivement la sortie ci-dessous">
-                            <img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie
-                        </a>
-                    {% endif %}
+                {% if is_granted('SORTIE_DELETE', event) %}
+                    <a class="nice2 noprint red" href="/supprimer-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Supprimer définitivement la sortie ci-dessous">
+                        <img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie
+                    </a>
                 {% endif %}
-            {% endif %}
 
-            {% if is_granted('SORTIE_CANCEL', event) %}
-                <a class="nice2 noprint red" href="/annuler-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Annuler la sortie ci-dessous">
-                    <img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie
-                </a>
-            {% endif %}
+                {% if is_granted('SORTIE_CANCEL', event) %}
+                    <a class="nice2 noprint red" href="/annuler-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Annuler la sortie ci-dessous">
+                        <img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie
+                    </a>
+                {% endif %}
 
             {% if closeDiv %}
                 </div><br />
@@ -159,11 +155,11 @@
         {% endif %}
 
         {% if is_granted('FICHE_SORTIE', event) %}
-        <a href="/feuille-de-sortie/evt-{{ event.id }}.html" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
+        <a href="/feuille-de-sortie/evt-{{ event.id }}.html" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2" target="_blank">
             <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
             Imprimer la fiche de sortie
         </a>
-        <a href="{{ path('sortie_pdf', { id: event.id }) }}" title="Imprimer la fiche de sortie en PDF" class="nice2">
+        <a href="{{ path('sortie_pdf', { id: event.id }) }}" title="Imprimer la fiche de sortie en PDF" class="nice2" target="_blank">
             <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
             Imprimer la fiche de sortie en PDF
         </a>
@@ -405,10 +401,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-{#                                // PARTICIPANTS - EMPIETEMENTS : VÉRIFICATION DE (PRÉ)INSCRIPTIONS À D'AUTRES SORTIES DANS LE MEME TIMING#}
-{#                                // création du tableau "empiètement" pour chaque user#}
-{#                                $row['empietements'] = empietement_sortie($row['id_user'], $evt);#}
-
                                 {% for participation in participations %}
                                     {% set participation = participation['liste'] %}
                                     <tr class="status{{ participation.status }}" style="color:gray; font-size:10px;">
@@ -911,13 +903,15 @@
                 {% if nInscritsTotal > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
                     <table class="big-lines-table" style="width:570px; margin-left:20px;">
 
-                        {% for inscrit in event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) %}
+                        {% for inscrit in event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) | sort((a, b) => a.user.firstname <=> b.user.firstname) %}
                             <td>
                             <td>
                                 {% if allowed('user_read_private', event.commission.code) %}
                                     <p class="mini">{{ inscrit.user.lastname|upper }}, {{ inscrit.user.firstname|capitalize }}</p>
+                                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
+                                {% else %}
+                                    {{ inscrit.user.nickname }}
                                 {% endif %}
-                                <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
                             </td>
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
@@ -946,8 +940,10 @@
                                 <td>
                                     {% if allowed('user_read_private', event.commission.code) %}
                                         <p class="mini">{{ inscrit.user.lastname|upper }}, {{ inscrit.user.firstname|capitalize }}</p>
+                                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
+                                    {% else %}
+                                        {{ inscrit.user.nickname }}
                                     {% endif %}
-                                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
                                 </td>
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}

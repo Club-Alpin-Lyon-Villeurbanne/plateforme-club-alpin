@@ -3,6 +3,7 @@
 use App\Legacy\LegacyContainer;
 
 $MAX_ARTICLES_ACCUEIL = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_ACCUEIL');
+$p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 
 $sliderTab = [];
 $articlesTab = [];

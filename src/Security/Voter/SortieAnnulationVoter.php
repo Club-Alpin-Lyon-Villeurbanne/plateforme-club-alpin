@@ -38,7 +38,7 @@ class SortieAnnulationVoter extends Voter
             return false;
         }
 
-        if ('SORTIE_CANCEL' === $attribute && $subject->getCancelled()) {
+        if ('SORTIE_CANCEL' === $attribute && ($subject->getCancelled() || !$subject->isPublicStatusValide())) {
             return false;
         }
 

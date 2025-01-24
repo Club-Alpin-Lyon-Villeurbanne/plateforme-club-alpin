@@ -18,7 +18,7 @@ RED = echo "\x1b[31m\#\# $1\x1b[0m"
 
 ## —— 🔥 App ——
 init: ## Init the project
-	$(eval profile ?= default)
+	$(eval profile ?= dev)
 
 	$(MAKE) docker-start profile=$(profile)
 	$(MAKE) composer-install
@@ -75,6 +75,7 @@ database-init-test: ## Init database for test
 ## —— 🐳 Docker ——
 docker-start: 
 	$(eval profile ?= dev)
+	@mkdir -p ~/.phive ~/.composer ~/.ssh
 	$(DOCKER_COMPOSE) --profile $(profile) up -d
 .PHONY: docker-start
 

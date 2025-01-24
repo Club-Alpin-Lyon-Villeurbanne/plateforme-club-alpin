@@ -71,6 +71,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                     u.alerts IS NOT NULL
                     AND u.is_deleted = FALSE
                     AND u.valid_user = 1
+                    AND u.doit_renouveler_user = 0
                     AND u.email_user IS NOT NULL
                     AND u.email_user != ''
                     AND u.nomade_user = 0
@@ -144,5 +145,26 @@ SQL;
         } catch (\Exception $exc) {
             \Sentry\captureException($exc);
         }
+    }
+
+    public function findDuplicateUser(string $lastname, string $firstname, string $birthday, string $excludeCafnum): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.lastname = :lastname')
+            ->andWhere('u.firstname = :firstname')
+            ->andWhere('u.birthday = :birthday')
+            ->andWhere('u.cafnum != :excludeCafnum')
+            ->andWhere('u.doitRenouveler = true')
+            ->andWhere('u.isDeleted = false')
+            ->orderBy('u.tsInsert', 'DESC')
+            ->setMaxResults(1)
+            ->setParameters([
+                'lastname' => $lastname,
+                'firstname' => $firstname,
+                'birthday' => $birthday,
+                'excludeCafnum' => $excludeCafnum,
+            ])
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }
