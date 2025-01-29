@@ -29,7 +29,7 @@ if (0 != strlen($userTab['cafnum_user_new']) && ((!is_numeric($userTab['cafnum_u
 
 if (!isset($errTab) || 0 === count($errTab)) {
     if ($userTab['cafnum_user_new'] > 0) {
-        LegacyContainer::get('legacy_member_merger')->mergeMembers($userTab['cafnum_user'], $userTab['cafnum_user_new']);
+        LegacyContainer::get('legacy_member_merger')->mergeExistingMembers($userTab['cafnum_user'], $userTab['cafnum_user_new']);
         $userTab['cafnum_user'] = $userTab['cafnum_user_new'];
     }
 

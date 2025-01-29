@@ -7,6 +7,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 $article = false;
 $errPage = false; // message d'erreur spécifique à la page courante si besoin
 $id_article = (int) substr(strrchr($p2, '-'), 1);
+$p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 
 // sélection complète, non conditionnelle par rapport au status
 $req = "SELECT *

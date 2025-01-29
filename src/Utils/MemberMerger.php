@@ -26,49 +26,75 @@ class MemberMerger
         $this->entityManager = $entityManager;
     }
 
-    public function mergeMembers(string $oldCafNum, string $newCafNum)
+    public function mergeExistingMembers(string $oldCafNum, string $newCafNum): void
     {
         try {
-            // Démarrer la transaction
             $this->entityManager->beginTransaction();
 
             $oldCafUser = $this->userRepository->findOneByLicenseNumber($oldCafNum);
-            $newCafUser = $this->userRepository->findOneByLicenseNumber($newCafNum);
 
             if (!$oldCafUser) {
                 throw new \Exception('Unable to find an user with this cafnum ' . $oldCafNum);
             }
 
+            $newCafUser = $this->userRepository->findOneByLicenseNumber($newCafNum);
+
             if (!$newCafUser) {
                 throw new \Exception('Unable to find an user with this cafnum ' . $newCafNum);
             }
 
+            $this->mergeUser($oldCafUser, $newCafUser);
+
             $cafnum = $newCafUser->getCafnum();
-
-            $newCafUser->setCafnum('obs_' . $cafnum);
-            $newCafUser->setEmail('obs_' . time());
-            $newCafUser->setIsDeleted(true);
-
-            $this->entityManager->flush();
-
-            $oldCafUser->setFirstname($newCafUser->getFirstname());
-            $oldCafUser->setLastname($newCafUser->getLastname());
-            $oldCafUser->setCafnum($cafnum);
-            $oldCafUser->setTel($newCafUser->getTel() ?? '');
-            $oldCafUser->setTel2($newCafUser->getTel2() ?? '');
-            $oldCafUser->setAdresse($newCafUser->getAdresse() ?? '');
-            $oldCafUser->setCp($newCafUser->getCp() ?? '');
-            $oldCafUser->setVille($newCafUser->getVille() ?? '');
-            $oldCafUser->setCafnumParent($newCafUser->getCafnumParent());
-            $oldCafUser->setDoitRenouveler($newCafUser->getDoitRenouveler());
-            $oldCafUser->setAlerteRenouveler($newCafUser->getAlerteRenouveler());
+            $newCafUser->setCafnum('obs_' . $cafnum)
+                ->setEmail('obs_' . time())
+                ->setIsDeleted(true);
 
             $this->entityManager->flush();
-
             $this->entityManager->commit();
         } catch (\Exception $e) {
             $this->entityManager->rollback();
             throw $e;
         }
+    }
+
+    /**
+     * @param string $oldCafNum  The CAF number of the existing user to keep
+     * @param User   $newCafUser The new user to merge
+     */
+    public function mergeNewMember(string $oldCafNum, User $newCafUser): void
+    {
+        try {
+            $this->entityManager->beginTransaction();
+
+            $oldCafUser = $this->userRepository->findOneByLicenseNumber($oldCafNum);
+
+            if (!$oldCafUser) {
+                throw new \Exception('Unable to find an user with this cafnum ' . $oldCafNum);
+            }
+
+            $this->mergeUser($oldCafUser, $newCafUser);
+
+            $this->entityManager->flush();
+            $this->entityManager->commit();
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            throw $e;
+        }
+    }
+
+    private function mergeUser(User $oldCafUser, User $newCafUser)
+    {
+        $oldCafUser->setFirstname($newCafUser->getFirstname())
+        ->setLastname($newCafUser->getLastname())
+        ->setCafnum($newCafUser->getCafnum())
+        ->setTel($newCafUser->getTel() ?? '')
+        ->setTel2($newCafUser->getTel2() ?? '')
+        ->setAdresse($newCafUser->getAdresse() ?? '')
+        ->setCp($newCafUser->getCp() ?? '')
+        ->setVille($newCafUser->getVille() ?? '')
+        ->setCafnumParent($newCafUser->getCafnumParent())
+        ->setDoitRenouveler($newCafUser->getDoitRenouveler())
+        ->setAlerteRenouveler($newCafUser->getAlerteRenouveler());
     }
 }

@@ -26,7 +26,7 @@ function cron_email($datas)
 
     // Verification que ce code n'existe pas deja :
     // Chaque operation ne doit être effectuee qu'une fois (un seul e-mail envoye)
-    $req = "SELECT COUNT(id_chron_operation) FROM caf_chron_operation WHERE code_chron_operation LIKE '" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($datas['code']) . "'";
+    $req = "SELECT COUNT(id_chron_operation) FROM caf_chron_operation WHERE code_chron_operation = '" . $datas['code'] . "'";
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     if (getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM))) {
         error_log('Envoi de mail ignore car deja envoye : ' . $datas['code'] . '');
@@ -144,7 +144,7 @@ foreach ($datasTab as $email => $evtdatas) {
     // vars d'envoi
     $datas = [];
     $datas['parent'] = $id_chron_launch;
-    $datas['code'] = 'please_validate_evt;id_user=' . $evtdatas[0]['id_user'] . ';ids_evt=' . $ids_evt; // ce code, unique, evite de renvoyer ce mail a chaque appel du chron
+    $datas['code'] = sha1('please_validate_evt;id_user=' . $evtdatas[0]['id_user'] . ';ids_evt=' . $ids_evt); // ce code, unique, evite de renvoyer ce mail a chaque appel du chron
     $datas['to'] = [$email => $evtdatas[0]['firstname_user'] . ' ' . $evtdatas[0]['lastname_user']];
     $datas['template'] = 'transactional/rappel-sortie-a-valider-resp-commission';
     $datas['context'] = [
@@ -226,7 +226,7 @@ foreach ($datasTab as $email => $evtdatas) {
     // vars d'envoi
     $datas = [];
     $datas['parent'] = $id_chron_launch;
-    $datas['code'] = 'please_validate_evt;id_user=' . $evtdatas[0]['id_user'] . ';ids_evt=' . $ids_evt; // ce code, unique, evite de renvoyer ce mail a chaque appel du chron
+    $datas['code'] = sha1('please_validate_evt;id_user=' . $evtdatas[0]['id_user'] . ';ids_evt=' . $ids_evt); // ce code, unique, evite de renvoyer ce mail a chaque appel du chron
     $datas['to'] = [$email => $evtdatas[0]['firstname_user'] . ' ' . $evtdatas[0]['lastname_user']];
     $datas['template'] = 'transactional/rappel-sortie-a-valider-president';
     $datas['context'] = [

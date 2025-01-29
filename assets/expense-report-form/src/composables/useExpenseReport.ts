@@ -29,10 +29,11 @@ export function useExpenseReport(initialEventId: number) {
       details: JSON.stringify(payload.details),
       refundRequired: payload.refundRequired ?? true,
     };
-
+  
     if (payload.status) {
       body = { ...body, status: payload.status };
     }
+  
     await axios.patch<ExpenseReport>(
       `/expense-reports/${expenseReport.value?.id}`,
       body,
@@ -51,10 +52,8 @@ export function useExpenseReport(initialEventId: number) {
   const submit = async (payload: Partial<ExpenseReport>) => {
     try {
       await save({ ...payload, status: "submitted" });
+      await fetchOrCreateExpenseReport(initialEventId);
       toastr?.success("Votre note de frais a bien été envoyée");
-      if (expenseReport.value) {
-        expenseReport.value.status = "submitted";
-      }
     } catch (error) {
       toastr?.error("Une erreur s'est produite");
     }

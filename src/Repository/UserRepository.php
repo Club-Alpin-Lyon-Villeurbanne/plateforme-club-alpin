@@ -146,4 +146,25 @@ SQL;
             \Sentry\captureException($exc);
         }
     }
+
+    public function findDuplicateUser(string $lastname, string $firstname, string $birthday, string $excludeCafnum): ?User
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.lastname = :lastname')
+            ->andWhere('u.firstname = :firstname')
+            ->andWhere('u.birthday = :birthday')
+            ->andWhere('u.cafnum != :excludeCafnum')
+            ->andWhere('u.doitRenouveler = true')
+            ->andWhere('u.isDeleted = false')
+            ->orderBy('u.tsInsert', 'DESC')
+            ->setMaxResults(1)
+            ->setParameters([
+                'lastname' => $lastname,
+                'firstname' => $firstname,
+                'birthday' => $birthday,
+                'excludeCafnum' => $excludeCafnum,
+            ])
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

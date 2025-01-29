@@ -30,6 +30,9 @@ class UserNotificationHandlerTest extends WebTestCase
             self::getContainer()->get(UserNotificationRepository::class),
             self::getContainer()->get(EntityManagerInterface::class),
             self::getContainer()->get(Mailer::class),
+
+            '[CAF-Sortie]',
+            '[CAF-Article]',
         );
 
         $handler(new UserNotification(AlertType::Article, 25000000, $user->getId()));
@@ -50,8 +53,12 @@ class UserNotificationHandlerTest extends WebTestCase
 
     public function testItDispatchMessagesSortie()
     {
+        $defaultAlertSortiePrefix = '[CAF-Sortie]';
+        $defaultAlertArticlePrefix = '[CAF-Article]';
+
         $userOwner = $this->signup();
         $otherUserSubscribed = $this->signup();
+        $otherUserSubscribed->setAlertSortiePrefix('Test');
 
         $evt = $this->createEvent($userOwner);
 
@@ -64,6 +71,8 @@ class UserNotificationHandlerTest extends WebTestCase
             self::getContainer()->get(UserNotificationRepository::class),
             self::getContainer()->get(EntityManagerInterface::class),
             self::getContainer()->get(Mailer::class),
+            $defaultAlertArticlePrefix,
+            $defaultAlertSortiePrefix,
         );
 
         $handler(new UserNotification(AlertType::Sortie, $evt->getId(), $userOwner->getId()));
@@ -75,7 +84,7 @@ class UserNotificationHandlerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
-        $this->assertEmailSubjectContains($emails[0], $userOwner->getAlertSortiePrefix());
+        $this->assertEmailSubjectContains($emails[0], $defaultAlertSortiePrefix);
         $this->assertEmailHtmlBodyContains($emails[0], 'Une nouvelle sortie');
         $this->assertEmailHtmlBodyContains($emails[0], 'vient d\'être publiée sur le site');
 
@@ -108,6 +117,9 @@ class UserNotificationHandlerTest extends WebTestCase
 
     public function testItDispatchMessagesArticle()
     {
+        $defaultAlertSortiePrefix = '[CAF-Sortie]';
+        $defaultAlertArticlePrefix = '[CAF-Article]';
+
         $userOwner = $this->signup();
         $otherUserSubscribed = $this->signup();
 
@@ -122,6 +134,8 @@ class UserNotificationHandlerTest extends WebTestCase
             self::getContainer()->get(UserNotificationRepository::class),
             self::getContainer()->get(EntityManagerInterface::class),
             self::getContainer()->get(Mailer::class),
+            $defaultAlertArticlePrefix,
+            $defaultAlertSortiePrefix,
         );
 
         $handler(new UserNotification(AlertType::Article, $article->getId(), $userOwner->getId()));
@@ -133,7 +147,7 @@ class UserNotificationHandlerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
-        $this->assertEmailSubjectContains($emails[0], $userOwner->getAlertArticlePrefix());
+        $this->assertEmailSubjectContains($emails[0], $defaultAlertArticlePrefix);
         $this->assertEmailHtmlBodyContains($emails[0], 'Un nouvel article');
         $this->assertEmailHtmlBodyContains($emails[0], 'vient d\'être publié sur le site');
 
@@ -152,7 +166,7 @@ class UserNotificationHandlerTest extends WebTestCase
         $this->assertCount(2, $emails);
 
         $this->assertEmailHeaderSame($emails[1], 'To', sprintf('%s <%s>', $otherUserSubscribed->getNickname(), $otherUserSubscribed->getEmail()));
-        $this->assertEmailSubjectContains($emails[1], $otherUserSubscribed->getAlertArticlePrefix());
+        $this->assertEmailSubjectContains($emails[1], $defaultAlertArticlePrefix);
         $this->assertEmailHtmlBodyContains($emails[1], 'Un nouvel article');
         $this->assertEmailHtmlBodyContains($emails[1], 'vient d\'être publié sur le site');
 
