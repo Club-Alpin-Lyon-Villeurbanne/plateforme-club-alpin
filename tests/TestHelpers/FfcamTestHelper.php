@@ -6,9 +6,12 @@ class FfcamTestHelper
 {
     private const TEMPLATE = '%s;6900;%s;99;A1;;%s;%s;M;%s;%s;;LE BELVEDERE;12 RUE DES LILAS;;69001;LYON;0;0;0000-00-00;0;;0;;0;;0472000001 0630000001;0687000001;;04.72.00.00.01;0000-00-00;;contact;RANDONNEE,SKI ALPIN,SKI NORDIQUE;;0;;;;;;;;;;;;;;;;;;;;;;;;;A;0;3;;;O;,';
 
-    public static function generateFile(array $members): string
+    public static function generateFile(array $members, ?string $filePath = null): string
     {
-        $filePath = tempnam(sys_get_temp_dir(), 'ffcam_');
+        if (!$filePath) {
+            $filePath = tempnam(sys_get_temp_dir(), 'ffcam_');
+        }
+
         $content = '';
 
         foreach ($members as $member) {

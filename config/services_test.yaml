@@ -1,3 +1,8 @@
 services:
   _defaults:
     autowire: true
+    autoconfigure: true
+
+  App\Command\FfcamFileSync:
+    arguments:
+      $ffcamFilePath: "/tmp/test_ffcam.txt"
