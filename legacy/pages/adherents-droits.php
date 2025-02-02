@@ -16,7 +16,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
 		<?php
         // req sql : trouver les attributs liés à cet user
 
-    $req = 'SELECT title_usertype, code_usertype, params_user_attr, id_user_attr
+    $req = 'SELECT title_usertype, code_usertype, params_user_attr, id_user_attr, description_user_attr
 		FROM caf_usertype, caf_user_attr
 		WHERE usertype_user_attr = id_usertype
 		AND user_user_attr = ' . $id_user . '
@@ -78,6 +78,10 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
 							</form>'
                 ;
             }
+
+            echo(strlen($row['description_user_attr'])>0?
+                ('<em>('.addslashes(html_utf8($row['description_user_attr'])).')</em>')
+            :'');
 
             echo '</li>';
         }
@@ -160,7 +164,11 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
             echo '<label for="commissions-pick-' . $row['id_commission'] . '"><input type="checkbox" name="commission[]" value="commission:' . html_utf8($row['code_commission']) . '" id="commissions-pick-' . $row['id_commission'] . '" /> ' . $row['title_commission'] . ' </label> ';
         }
     }
-    echo '</div>'; ?>
+    echo '</div>'; 
+    
+    // description de l'assignation
+    echo '<br /><br />Description / commentaire :<br /><textarea style="width:50%;height:60px;" name="description_user_attr" id="description_user_attr" rows="2" cols="100" maxlength="200"></textarea>';
+    ?>
 			<br />
 			<br />
 			<input type="submit" value="Appliquer cet attribut" class="nice" />
