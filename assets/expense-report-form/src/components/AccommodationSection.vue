@@ -10,8 +10,8 @@
       />
     </div>
     <p class="tw-text-sm tw-leading-6 tw-text-gray-600">
-      Le remboursement de l'hébergement se fait sur la base de
-      {{ expenseReportConfig.nuiteeMaxRemboursable }}€ par jour pour un hébergement en demi-pension (petit déjeuner et repas du soir).
+      Le remboursement de l'hébergement est plafonné à {{ expenseReportConfig.nuiteeMaxRemboursable }} € par jour
+      pour un séjour en demi-pension (incluant le petit-déjeuner et le repas du soir).
     </p>
 
     <div
