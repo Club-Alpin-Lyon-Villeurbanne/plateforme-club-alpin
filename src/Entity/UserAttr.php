@@ -53,6 +53,9 @@ class UserAttr
     #[ORM\Column(name: 'details_user_attr', type: 'string', length: 100, nullable: false, options: ['comment' => 'date - de qui... ?'])]
     private $details;
 
+    #[ORM\Column(name: 'description_user_attr', type: 'string', length: 100, nullable: true)]
+    private $description;
+
     public function __construct(User $user, Usertype $userType, $params = null)
     {
         $this->user = $user;

@@ -29,7 +29,7 @@ while ($row = $result->fetch_assoc()) {
     // liste des statuts
     $row['statuts'] = [];
 
-    $req = 'SELECT title_usertype, params_user_attr
+    $req = 'SELECT title_usertype, params_user_attr, description_user_attr
 		FROM caf_user_attr, caf_usertype
 		WHERE user_user_attr=' . $id_user . '
 		AND id_usertype=usertype_user_attr
@@ -39,7 +39,7 @@ while ($row = $result->fetch_assoc()) {
     $result2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row2 = $result2->fetch_assoc()) {
         $commission = substr(strrchr($row2['params_user_attr'], ':'), 1);
-        $row['statuts'][] = $row2['title_usertype'] . ($commission ? ', ' . $commission : '');
+		$row['statuts'][]=$row2['title_usertype'].($commission?', '.$commission:'').($row2['description_user_attr']?'&nbsp;<img src="img/base/info.png" title="'.addslashes(html_utf8($row2['description_user_attr'])).'">':'');
     }
 
     $tmpUser = $row;
