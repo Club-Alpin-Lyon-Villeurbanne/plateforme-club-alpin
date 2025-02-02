@@ -61,6 +61,12 @@ class FfcamSynchronizer
 
             $existingUser = $this->userRepository->findOneByLicenseNumber($parsedUser->getCafnum());
 
+            if ($existingUser) {
+                $this->updateExistingUser($existingUser, $parsedUser);
+                ++$stats['updated'];
+                continue;
+            }
+
             $potentialDuplicate = $this->userRepository->findDuplicateUser(
                 $parsedUser->getLastname(),
                 $parsedUser->getFirstname(),
@@ -79,14 +85,11 @@ class FfcamSynchronizer
 
                 $this->memberMerger->mergeNewMember($potentialDuplicate->getCafnum(), $parsedUser);
                 ++$stats['merged'];
-            } elseif (!$existingUser) {
+            } else {
                 $parsedUser->setTsInsert(time());
                 $parsedUser->setValid(false);
                 $this->entityManager->persist($parsedUser);
                 ++$stats['inserted'];
-            } else {
-                $this->updateExistingUser($existingUser, $parsedUser);
-                ++$stats['updated'];
             }
 
             if (0 === ++$i % $batchSize) {

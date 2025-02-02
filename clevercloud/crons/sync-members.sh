@@ -5,4 +5,4 @@
 # https://developers.clever-cloud.com/doc/administrate/cron/#access-environment-variables
 
 cd ${APP_HOME}
-bin/console fichier-adherent ./ffcam/6900.txt
+bin/console ffcam-file-sync

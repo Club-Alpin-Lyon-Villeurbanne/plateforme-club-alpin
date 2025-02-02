@@ -389,4 +389,57 @@ class FfcamSynchronizerTest extends WebTestCase
         $em->refresh($existingUser1);
         $this->assertEquals($identifiant1, $existingUser1->getCafnum());
     }
+
+    public function testHandlesUpdatesUserEvenIfMergeIsPossible(): void
+    {
+        $identifiant1 = rand(100000000000, 999999999999);
+        $identifiant2 = rand(100000000000, 999999999999);
+
+        $lastname1 = $this->faker->lastName();
+        $firstname1 = $this->faker->firstName();
+
+        $user1 = $this->signup();
+        $user1
+            ->setCafnum($identifiant1)
+            ->setFirstname($firstname1)
+            ->setLastname($lastname1)
+            ->setBirthday('631152000') // 1990-01-01
+            ->setTel('0606060606');
+
+        $user2 = $this->signup();
+        $user2
+            ->setCafnum($identifiant2)
+            ->setFirstname($firstname1)
+            ->setLastname($lastname1)
+            ->setBirthday('631152000') // 1990-01-01
+            ->setTel('0606060606');
+
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->persist($user1);
+        $em->persist($user2);
+        $em->flush();
+
+        // Premier merge : les deux utilisateurs vers identifiant3
+        $filePath = FfcamTestHelper::generateFile([
+            [
+                'cafnum' => $identifiant1,
+                'lastname' => $lastname1,
+                'firstname' => $firstname1,
+                'birthday' => '1990-01-01',
+                'tel' => '0606060676',
+            ],
+        ]);
+
+        $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
+        $synchronizer->synchronize($filePath);
+
+        $em->refresh($user1);
+        $em->refresh($user2);
+
+        $this->assertEquals($identifiant1, $user1->getCafnum());
+        $this->assertEquals($user1->getTel(), '0606060676');
+
+        // Check that user2 has not been merged (ie cafnum is not changed)
+        $this->assertEquals($identifiant2, $user2->getCafnum());
+    }
 }

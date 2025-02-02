@@ -200,3 +200,7 @@ services:
   App\Utils\FileUploader:
     arguments:
       $publicDir: '%public_dir%'
+
+  App\Command\FfcamFileSync:
+    arguments:
+      $ffcamFilePath: "%env(FFCAM_FILE_PATH)%"
