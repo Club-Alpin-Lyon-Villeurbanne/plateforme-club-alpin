@@ -33,6 +33,8 @@ Pour la production, les déploiements se font manuellement par une Github Action
 
 L’infrastructure consiste en un serveur web et une base de données MySQL 8.0. Cette base est hébergée et managée par Clever Cloud.
 
+Les variables d'environnement sont gérées dans la console de Clever Cloud.
+
 ## Cronjobs
 
 Les taches récurrentes sont gérées directement depuis le code en s'appuyant sur le module de cronjobs fourni par Clever Cloud.
@@ -107,7 +109,7 @@ Nous encourageons les contributions ! Que vous soyez un développeur expériment
 
 1. **Cloner le répertoire** : Clonez le répertoire sur votre machine locale pour y apporter des modifications.
 2. **Création d'une nouvelle branche** : Créez une nouvelle branche, nommée en fonction de la fonctionnalité ou du bug sur lequel vous travaillez.
-3. **Effectuez vos modifications** : Effectuez les modifications nécessaires sur cette branche en respectant les conventions de codage.
+3. **Effectuez vos modifications** : Effectuez les modifications nécessaires sur cette branche en respectant les conventions de codage. ⚠️ Avant de contribuer au code, soyez sûr que le changement que vous souhaitez apporter est dans notre backlog sur ClickUp ou que vous avez bien validé cette idée avec l'équipe informatique.
 4. **Commit** : Une fois satisfait, faites un commit en décrivant clairement les modifications apportées.
 5. **Push** : Faites un push de votre branche sur GitHub.
 6. **Pull Request (PR)** : Créez une PR et décrivez-la en français. Pour toute modification visuelle, incluez une capture d’écran. Seule l'équipe informatique peut merger une PR.
@@ -127,3 +129,11 @@ On y accède via l'url https://clubalpinlyon.fr/admin/. Les identifiants en loca
 
 **Pourquoi le code n'est-il pas open source ?**  
 Nous avons une réelle volonté d'ouvrir ce code, mais un audit SSI approfondi a révélé que le projet nécessite encore des corrections au niveau de la sécurité avant d'être partagé publiquement.
+
+### Synchronisation des nouveaux adhérents
+
+Un Cronjob est en place pour synchroniser les nouveaux adhérents avec le système de la FFCAM.
+La FFCAM upload un fichier CSV avec les nouveaux adhérents chaque nuit.
+Notre appli va parser ce fichier et créer les adhérents dans la base de données.
+Si l'adhérent existe déjà (même nom, même prénom, même date de naissance), son compte existant sera mis à jour avec les nouvelles informations.
+Si l'adhérent n'existe pas, il sera créé et il pourra accéder au site.
