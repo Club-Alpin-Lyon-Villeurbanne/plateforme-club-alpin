@@ -15,19 +15,19 @@ class ExpenseReportCalculator
 
     /**
      * @param array $config Exemple :
-     *  [
-     *    'nuiteeMaxRemboursable'   => 60,
-     *    'tauxKilometriqueVoiture' => 0.2,
-     *    'tauxKilometriqueMinibus' => 0.3,
-     *    'divisionPeage'           => 3,
-     *  ]
+     *                      [
+     *                      'nuiteeMaxRemboursable'   => 60,
+     *                      'tauxKilometriqueVoiture' => 0.2,
+     *                      'tauxKilometriqueMinibus' => 0.3,
+     *                      'divisionPeage'           => 3,
+     *                      ]
      */
     public function __construct(array $config)
     {
-        $this->nuiteeMaxRemboursable   = $config['nuiteeMaxRemboursable']   ?? 0.0;
+        $this->nuiteeMaxRemboursable = $config['nuiteeMaxRemboursable'] ?? 0.0;
         $this->tauxKilometriqueVoiture = $config['tauxKilometriqueVoiture'] ?? 0.0;
         $this->tauxKilometriqueMinibus = $config['tauxKilometriqueMinibus'] ?? 0.0;
-        $this->divisionPeage           = $config['divisionPeage']           ?? 1.0;
+        $this->divisionPeage = $config['divisionPeage'] ?? 1.0;
     }
 
     /**
@@ -38,12 +38,12 @@ class ExpenseReportCalculator
      * - PUBLIC_TRANSPORT : ticketPrice
      *
      * @param array $transport Par ex. :
-     *  [
-     *    'type'          => 'PERSONAL_VEHICLE',
-     *    'distance'      => 120,
-     *    'tollFee'       => 10,
-     *    ...
-     *  ]
+     *                         [
+     *                         'type'          => 'PERSONAL_VEHICLE',
+     *                         'distance'      => 120,
+     *                         'tollFee'       => 10,
+     *                         ...
+     *                         ]
      */
     public function calculateTransportTotal(array $transport): float
     {
@@ -52,14 +52,15 @@ class ExpenseReportCalculator
         switch ($type) {
             case 'PERSONAL_VEHICLE':
                 $distance = $transport['distance'] ?? 0.0;
-                $tollFee  = $transport['tollFee']   ?? 0.0;
+                $tollFee = $transport['tollFee'] ?? 0.0;
+
                 return ($distance * $this->tauxKilometriqueVoiture)
                      + ($tollFee / $this->divisionPeage);
 
             case 'CLUB_MINIBUS':
-                $distance       = $transport['distance']       ?? 0.0;
-                $fuelExpense    = $transport['fuelExpense']    ?? 0.0;
-                $tollFee        = $transport['tollFee']        ?? 0.0;
+                $distance = $transport['distance'] ?? 0.0;
+                $fuelExpense = $transport['fuelExpense'] ?? 0.0;
+                $tollFee = $transport['tollFee'] ?? 0.0;
                 $passengerCount = $transport['passengerCount'] ?? 0;
                 if ($passengerCount <= 0) {
                     return 0.0;
@@ -67,16 +68,18 @@ class ExpenseReportCalculator
                 $total = ($distance * $this->tauxKilometriqueMinibus)
                        + $fuelExpense
                        + $tollFee;
+
                 return $total / $passengerCount;
 
             case 'RENTAL_MINIBUS':
-                $rentalPrice    = $transport['rentalPrice']    ?? 0.0;
-                $fuelExpense    = $transport['fuelExpense']    ?? 0.0;
-                $tollFee        = $transport['tollFee']        ?? 0.0;
+                $rentalPrice = $transport['rentalPrice'] ?? 0.0;
+                $fuelExpense = $transport['fuelExpense'] ?? 0.0;
+                $tollFee = $transport['tollFee'] ?? 0.0;
                 $passengerCount = $transport['passengerCount'] ?? 0;
                 if ($passengerCount <= 0) {
                     return 0.0;
                 }
+
                 return ($rentalPrice + $fuelExpense + $tollFee) / $passengerCount;
 
             case 'PUBLIC_TRANSPORT':
@@ -94,15 +97,15 @@ class ExpenseReportCalculator
     public function calculateAccommodationTotals(array $accommodations): array
     {
         $res = [
-            'total'       => 0.0,
-            'reimbursable'=> 0.0,
+            'total' => 0.0,
+            'reimbursable' => 0.0,
         ];
 
         foreach ($accommodations as $acc) {
             $price = (float) ($acc['price'] ?? 0);
             $res['total'] += $price;
             // Plafond par nuit
-            $res['reimbursable'] += \min($price, $this->nuiteeMaxRemboursable);
+            $res['reimbursable'] += min($price, $this->nuiteeMaxRemboursable);
         }
 
         return $res;
@@ -117,6 +120,7 @@ class ExpenseReportCalculator
         foreach ($others as $other) {
             $sum += (float) ($other['price'] ?? 0);
         }
+
         return $sum;
     }
 
@@ -150,7 +154,7 @@ class ExpenseReportCalculator
         $reimbursable = $transportTotal + $accTotals['reimbursable'] + $othersTotal;
 
         return [
-            'total'        => $total,
+            'total' => $total,
             'reimbursable' => $reimbursable,
         ];
     }
@@ -161,6 +165,7 @@ class ExpenseReportCalculator
     public function formatEuros(float $amount): string
     {
         $formatter = new \NumberFormatter('fr_FR', \NumberFormatter::CURRENCY);
+
         return $formatter->formatCurrency($amount, 'EUR');
     }
 

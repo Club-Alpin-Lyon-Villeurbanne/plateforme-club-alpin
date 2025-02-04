@@ -53,10 +53,10 @@ class ExpenseReportStatusChangeSubscriber
             switch (true) {
                 case $newStatus === ExpenseReportStatusEnum::SUBMITTED->value:
                     // On calcule ici le résumé de la note de frais
-                    $detailsArray = \json_decode($entity->getDetails(), true);
+                    $detailsArray = json_decode($entity->getDetails(), true);
                     $summary = $this->calculator->calculateTotal($detailsArray);
                     // On peut formater si nécessaire
-                    $formattedTotal        = $this->calculator->formatEuros($summary['total']);
+                    $formattedTotal = $this->calculator->formatEuros($summary['total']);
                     $formattedReimbursable = $this->calculator->formatEuros($summary['reimbursable']);
 
                     $tauxVoiture = $this->calculator->getTauxKilometriqueVoiture();
@@ -65,11 +65,11 @@ class ExpenseReportStatusChangeSubscriber
                     // On transmet tout au Mailer
                     $this->mailer->send(
                         $entity->getUser(),
-                        'transactional/expense-report-submitted--to-submitter', 
+                        'transactional/expense-report-submitted--to-submitter',
                         [
-                            'report'      => $entity,
-                            'details'     => $detailsArray,
-                            'summary'     => $summary,
+                            'report' => $entity,
+                            'details' => $detailsArray,
+                            'summary' => $summary,
                             'formattedTotal' => $formattedTotal,
                             'formattedReimbursable' => $formattedReimbursable,
                             'tauxKilometriqueVoiture' => $tauxVoiture,
