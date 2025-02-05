@@ -9,83 +9,88 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExcelExport
 {
-    public function export(string $title, $datas, $rsm)
+    /**
+     * Calculate years between a given date and now
+     * @param string|int|\DateTime $date
+     * @return int
+     */
+    private function getYearsSinceDate($date): int
+    {
+        try {
+            if (is_numeric($date)) {
+                // Handle Unix timestamp
+                $date = (new \DateTime())->setTimestamp((int)$date);
+            } elseif (is_string($date)) {
+                $date = new \DateTime($date);
+            } elseif (!$date instanceof \DateTime) {
+                throw new \InvalidArgumentException('Invalid date format');
+            }
+        } catch (\Exception $e) {
+            throw new \InvalidArgumentException('Invalid date format', 0, $e);
+        }
+    
+        $now = new \DateTime();
+        
+        if ($date > $now) {
+            throw new \InvalidArgumentException('Future dates are not allowed');
+        }
+    
+        return $date->diff($now)->y;
+    }    
+    
+
+    public function export(string $title, $datas, $rsm): Response
     {
         $streamedResponse = new StreamedResponse();
+    
         $streamedResponse->setCallback(function () use ($title, $datas, $rsm) {
-
-            // Generating SpreadSheet
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
             $sheet->setTitle($title);
-
-            // Generating First Row with column name
+    
+            // Génération de l'en-tête
             $count = 1;
             $sheet->fromArray($rsm, null, 'A' . $count++);
-
-            // Generating other rows with datas
+    
+            // Génération des données
             foreach ($datas as $data) {
                 $user = $data["liste"]->getUser();
-                $name = mb_convert_encoding($user->getCiv() . " " . strtoupper($user->getLastname()) . " " . ucfirst(strtolower($user->getFirstname())), "UTF-8");
-                switch ($data["liste"]->getStatus()) {
-                    case (0):
-                        $status = mb_convert_encoding("Non Comfirmé", "UTF-8");
-                        break;
-                    case (1):
-                        $status = mb_convert_encoding("Validé", "UTF-8");
-                        break;
-                    case (2):
-                        $status = mb_convert_encoding("Refusé", "UTF-8");
-                        break;
-                    case (3):
-                        $status = mb_convert_encoding("Absent", "UTF-8");
-                        break;
-                    default:
-                        $status = " ";
-                        break;
-                }
-
+                $name = $user->getCiv() . " " . strtoupper($user->getLastname()) . " " . ucfirst(strtolower($user->getFirstname()));
+    
+                $status = match ($data["liste"]->getStatus()) {
+                    0 => "Non Confirmé",
+                    1 => "Validé",
+                    2 => "Refusé",
+                    3 => "Absent",
+                    default => " "
+                };
+    
                 $array = [
                     $count - 1,
-                    $name ? $name : " ",
+                    $name ?? " ",
                     $status,
-                    $data["liste"]->getRole() ? mb_convert_encoding($data["liste"]->getRole(), "UTF-8") : " ",
-                    $user->getCafnum() ? mb_convert_encoding($user->getCafnum(), "UTF-8") : " ",
-                    $user->getBirthday() ? getYearsSinceDate($user->getBirthday()) : " ",
-                    $user->getDateAdhesion() ? mb_convert_encoding($user->getDateAdhesion(), "UTF-8") : " ",
-                    $user->getTel() ? mb_convert_encoding(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $user->getTel()), "UTF-8") : " ",
-                    $user->getTel2() ? mb_convert_encoding(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $user->getTel2()), "UTF-8") : " ",
-                    $user->getEmail() ? mb_convert_encoding($user->getEmail(), "UTF-8") : " ",
+                    $data["liste"]->getRole() ?? " ",
+                    $user->getCafnum() ?? " ",
+                    $user->getBirthday() ? $this->getYearsSinceDate($user->getBirthday()) : " ",
+                    $user->getDateAdhesion() ?? " ",
+                    $user->getTel() ? preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $user->getTel()) : " ",
+                    $user->getTel2() ? preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $user->getTel2()) : " ",
+                    $user->getEmail() ?? " ",
                 ];
+    
                 $sheet->fromArray($array, null, 'A' . $count);
                 $count++;
             }
-
-            $sheet->getColumnDimension('A')->setAutoSize(true);
-            $sheet->getColumnDimension('B')->setAutoSize(true);
-            $sheet->getColumnDimension('C')->setAutoSize(true);
-            $sheet->getColumnDimension('D')->setAutoSize(true);
-            $sheet->getColumnDimension('E')->setAutoSize(true);
-            $sheet->getColumnDimension('F')->setAutoSize(true);
-            $sheet->getColumnDimension('G')->setAutoSize(true);
-            $sheet->getColumnDimension('H')->setAutoSize(true);
-            $sheet->getColumnDimension('I')->setAutoSize(true);
-            $sheet->getColumnDimension('J')->setAutoSize(true);
-
-            // Write and send created spreadsheet
+    
             $writer = new Xlsx($spreadsheet);
             $writer->save('php://output');
-
-            // This exit(); is required to prevent errors while opening the generated .xlsx
-            exit();
         });
-
-        // Puting headers on response and sending it
-        $streamedResponse->setStatusCode(Response::HTTP_OK);
+    
+        // Configuration des headers
         $streamedResponse->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         $streamedResponse->headers->set('Content-Disposition', 'attachment; filename="' . $title . '.xlsx"');
-        $streamedResponse->send();
-
-        return;
+    
+        return $streamedResponse;
     }
+    
 }
