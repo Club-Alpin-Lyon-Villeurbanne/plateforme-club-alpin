@@ -40,8 +40,9 @@ services:
       UPLOAD_LIMIT: ${UPLOAD_LIMIT}
 
   mailcatcher:
-    image: schickling/mailcatcher
+    image: axllent/mailpit
     container_name: mail_caflyon
     profiles: ["dev"]
     ports:
-      - 1081:1080
+      - 1025:1025
+      - 8025:8025
