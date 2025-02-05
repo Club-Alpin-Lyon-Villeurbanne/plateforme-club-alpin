@@ -101,12 +101,8 @@
   <hr/>
 
   {# ================== TOTAUX GLOBAUX ================== #}
-  {% if total is defined %}
-    <p><strong>Total global :</strong> {{ total }}</p>
-  {% endif %}
-  {% if totalReimbursable is defined %}
-    <p><strong>Total remboursable :</strong> {{ totalReimbursable }}</p>
-  {% endif %}
+  <p><strong>Total global :</strong> {{ formattedTotal }}</p>
+  <p><strong>Total remboursable :</strong> {{ formattedReimbursable }}</p>
 
   {% if report.refundRequired %}
     <p>Remboursement demandé.</p>
@@ -129,8 +125,82 @@
 {% block inner_txt %}
 Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} est envoyée.
 
-Récapitulatif :
-- Montant total : {{ formattedTotal }}
-- Montant remboursable : {{ formattedReimbursable }}
+{# ================== Section TRANSPORT ================== #}
+{% set transport = details.transport %}
+{% if transport is not empty %}
+TRANSPORT
+- Type : {% if transport.type == "PERSONAL_VEHICLE" %}Véhicule personnel (taux : {{ tauxKilometriqueVoiture }} €/km){% elseif transport.type == "CLUB_MINIBUS" %}Minibus du club (taux : {{ tauxKilometriqueMinibus }} €/km){% elseif transport.type == "RENTAL_MINIBUS" %}Minibus de location (taux : {{ tauxKilometriqueMinibus }} €/km){% elseif transport.type == "PUBLIC_TRANSPORT" %}Transport en commun{% else %}Inconnu{% endif %}
 
+{% if transport.type == "PERSONAL_VEHICLE" %}
+- Distance : {{ transport.distance }} km
+- Péage : {{ transport.tollFee }} €
+{% endif %}
+
+{% if transport.type == "CLUB_MINIBUS" %}
+- Distance : {{ transport.distance }} km
+- Péage : {{ transport.tollFee }} €
+- Carburant : {{ transport.fuelExpense }} €
+- Nombre de passagers : {{ transport.passengerCount }}
+{% endif %}
+
+{% if transport.type == "RENTAL_MINIBUS" %}
+- Péage : {{ transport.tollFee }} €
+- Carburant : {{ transport.fuelExpense }} €
+- Location : {{ transport.rentalPrice }} €
+- Nombre de passagers : {{ transport.passengerCount }}
+{% endif %}
+
+{% if transport.type == "PUBLIC_TRANSPORT" %}
+- Prix du ticket : {{ transport.ticketPrice }} €
+{% endif %}
+
+{% else %}
+Aucune dépense de transport.
+{% endif %}
+
+{# ================== Section HÉBERGEMENTS ================== #}
+{% set accommodations = details.accommodations %}
+{% if accommodations is not empty %}
+HÉBERGEMENTS
+{% for acc in accommodations %}
+- Hébergement {{ loop.index }} : {{ acc.price }} €{% if acc.comment %} - {{ acc.comment }}{% endif %}
+
+{% endfor %}
+{% if accommodationTotal is defined %}
+Total hébergements : {{ accommodationTotal }}
+{% endif %}
+{% if accommodationReimbursable is defined %}
+Montant remboursable (hébergements) : {{ accommodationReimbursable }}
+{% endif %}
+
+{% else %}
+Aucun hébergement.
+{% endif %}
+
+{# ================== Section AUTRES DÉPENSES ================== #}
+{% set others = details.others %}
+{% if others is not empty %}
+AUTRES DÉPENSES
+{% for o in others %}
+- Dépense {{ loop.index }} : {{ o.price }} €{% if o.comment %} - {{ o.comment }}{% endif %}
+
+{% endfor %}
+{% else %}
+Aucune autre dépense.
+{% endif %}
+
+{# ================== TOTAUX GLOBAUX ================== #}
+TOTAUX
+Total global : {{ formattedTotal }}
+Total remboursable : {{ formattedReimbursable }}
+
+{% if report.refundRequired %}
+Remboursement demandé.
+{% else %}
+Don au club (un reçu fiscal vous sera envoyé en fin d'année).
+{% endif %}
+
+Si vous avez fait une erreur et souhaitez modifier votre note de frais, 
+merci d'en faire la demande auprès de la comptabilité : comptabilite@clubalpinlyon.fr 
+en indiquant le nom et la date de la sortie.
 {% endblock %}
