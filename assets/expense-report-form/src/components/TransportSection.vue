@@ -23,28 +23,31 @@
             </option>
           </select>
         </div>
+        <div 
+          v-if="valueType === TransportType.PERSONAL_VEHICLE || valueType === TransportType.CLUB_MINIBUS"
+          class="tw-mt-1 tw-text-xs tw-text-gray-500"
+        >
+          Indemnité kilométrique : {{ valueType === TransportType.PERSONAL_VEHICLE ? config.tauxKilometriqueVoiture : config.tauxKilometriqueMinibus }}€/km
+        </div>
       </div>
 
       <div>
         <div
-          class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4"
           v-if="valueType === TransportType.PERSONAL_VEHICLE"
         >
-          <!-- <div>
-          Taux d’indemnité kilométrique à
-          {{ expenseReportConfig.tauxKilometriqueVoiture }}€/km
-        </div> -->
-          <ExpenseFieldV2
-            name="transport.tollFee"
-            expense-id="tollFee"
-            label="Péage (€)"
-            :requires-attachment="true"
-          />
-          <Input
-            name="transport.distance"
-            label="Distance (km)"
-            type="number"
-          />
+          <div class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4">
+            <ExpenseFieldV2
+              name="transport.tollFee"
+              expense-id="tollFee"
+              label="Péage (€)"
+              :requires-attachment="true"
+            />
+            <Input
+              name="transport.distance"
+              label="Distance (km)"
+              type="number"
+            />
+          </div>
         </div>
         <div
           class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4"
@@ -76,36 +79,33 @@
           />
         </div>
         <div
-          class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4"
           v-if="valueType === TransportType.CLUB_MINIBUS"
         >
-          <!-- <div>
-          Taux d’indemnité kilométrique à
-          {{ expenseReportConfig.tauxKilometriqueMinibus }}€/km
-        </div> -->
-          <ExpenseFieldV2
-            name="transport.tollFee"
-            expense-id="tollFee"
-            label="Péage (€)"
-            :requires-attachment="true"
-          />
-          <ExpenseFieldV2
-            name="transport.fuelExpense"
-            expense-id="fuelExpense"
-            label="Carburant (€)"
-            :requires-attachment="true"
-          />
-          <Input
-            name="transport.distance"
-            label="Distance (km)"
-            type="number"
-          />
-          <Input
-            name="transport.passengerCount"
-            label="Passagers"
-            type="number"
-            :default-value="9"
-          />
+          <div class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4">
+            <ExpenseFieldV2
+              name="transport.tollFee"
+              expense-id="tollFee"
+              label="Péage (€)"
+              :requires-attachment="true"
+            />
+            <ExpenseFieldV2
+              name="transport.fuelExpense"
+              expense-id="fuelExpense"
+              label="Carburant (€)"
+              :requires-attachment="true"
+            />
+            <Input
+              name="transport.distance"
+              label="Distance (km)"
+              type="number"
+            />
+            <Input
+              name="transport.passengerCount"
+              label="Passagers"
+              type="number"
+              :default-value="9"
+            />
+          </div>
         </div>
         <div
           class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4"
@@ -135,7 +135,7 @@ import ExpenseFieldV2 from "./ExpenseFieldV2.vue";
 import Input from "./Input.vue";
 import { useField } from "vee-validate";
 import { onMounted } from "vue";
-
+import config from "../config/expense-reports.json";
 const { value: valueType } = useField<TransportType>("transport.type");
 
 const transportOptions = [
