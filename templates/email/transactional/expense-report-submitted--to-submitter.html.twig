@@ -7,48 +7,46 @@
 {% block inner_html %}
 <div>
   {# ================== Section TRANSPORT ================== #}
-  {% set transport = details.transport %}
+  {% set transport = details.transport|default %}
   {% if transport is not empty %}
     <h2>Transport</h2>
     <ul>
       <li>
         <strong>Type :</strong>
-        {% if transport.type == "PERSONAL_VEHICLE" %}
-          Véhicule personnel 
-          (taux&nbsp;: {{ tauxKilometriqueVoiture }} €/km)
-        {% elseif transport.type == "CLUB_MINIBUS" %}
-          Minibus du club 
-          (taux&nbsp;: {{ tauxKilometriqueMinibus }} €/km)
-        {% elseif transport.type == "RENTAL_MINIBUS" %}
-          Minibus de location 
-          (taux&nbsp;: {{ tauxKilometriqueMinibus }} €/km)
-        {% elseif transport.type == "PUBLIC_TRANSPORT" %}
-          Transport en commun
-        {% else %}
-          Inconnu
-        {% endif %}
+        {% set transport_types = {
+          'PERSONAL_VEHICLE': 'Véhicule personnel (taux : ' ~ tauxKilometriqueVoiture ~ ' €/km)',
+          'CLUB_MINIBUS': 'Minibus du club (taux : ' ~ tauxKilometriqueMinibus ~ ' €/km)',
+          'RENTAL_MINIBUS': 'Minibus de location (taux : ' ~ tauxKilometriqueMinibus ~ ' €/km)',
+          'PUBLIC_TRANSPORT': 'Transport en commun'
+        } %}
+        {{ transport_types[transport.type]|default('Inconnu') }}
       </li>
 
-      {# Logique d'affichage des champs selon le type #}
-      {% if transport.type == "PERSONAL_VEHICLE" %}
-        <li><strong>Distance :</strong> {{ transport.distance }} km</li>
-        <li><strong>Péage :</strong> {{ transport.tollFee }} €</li>
+      {% set transport_details = {
+        'PERSONAL_VEHICLE': [
+          {'label': 'Distance', 'value': transport.distance ~ ' km'},
+          {'label': 'Péage', 'value': transport.tollFee ~ ' €'}
+        ],
+        'CLUB_MINIBUS': [
+          {'label': 'Distance', 'value': transport.distance ~ ' km'},
+          {'label': 'Péage', 'value': transport.tollFee ~ ' €'},
+          {'label': 'Carburant', 'value': transport.fuelExpense ~ ' €'},
+          {'label': 'Nombre de passagers', 'value': transport.passengerCount}
+        ],
+        'RENTAL_MINIBUS': [
+          {'label': 'Péage', 'value': transport.tollFee ~ ' €'},
+          {'label': 'Carburant', 'value': transport.fuelExpense ~ ' €'},
+          {'label': 'Location', 'value': transport.rentalPrice ~ ' €'},
+          {'label': 'Nombre de passagers', 'value': transport.passengerCount}
+        ],
+        'PUBLIC_TRANSPORT': [
+          {'label': 'Prix du ticket', 'value': transport.ticketPrice ~ ' €'}
+        ]
+      } %}
 
-      {% elseif transport.type == "CLUB_MINIBUS" %}
-        <li><strong>Distance :</strong> {{ transport.distance }} km</li>
-        <li><strong>Péage :</strong> {{ transport.tollFee }} €</li>
-        <li><strong>Carburant :</strong> {{ transport.fuelExpense }} €</li>
-        <li><strong>Nombre de passagers :</strong> {{ transport.passengerCount }}</li>
-
-      {% elseif transport.type == "RENTAL_MINIBUS" %}
-        <li><strong>Péage :</strong> {{ transport.tollFee }} €</li>
-        <li><strong>Carburant :</strong> {{ transport.fuelExpense }} €</li>
-        <li><strong>Location :</strong> {{ transport.rentalPrice }} €</li>
-        <li><strong>Nombre de passagers :</strong> {{ transport.passengerCount }}</li>
-
-      {% elseif transport.type == "PUBLIC_TRANSPORT" %}
-        <li><strong>Prix du ticket :</strong> {{ transport.ticketPrice }} €</li>
-      {% endif %}
+      {% for detail in transport_details[transport.type]|default([]) %}
+        <li><strong>{{ detail.label }} :</strong> {{ detail.value }}</li>
+      {% endfor %}
     </ul>
   {% else %}
     <p>Aucune dépense de transport.</p>
@@ -57,7 +55,7 @@
   <hr/>
 
   {# ================== Section HÉBERGEMENTS ================== #}
-  {% set accommodations = details.accommodations %}
+  {% set accommodations = details.accommodations|default %}
   {% if accommodations is not empty %}
     <h2>Hébergements</h2>
     <ul>
@@ -65,16 +63,12 @@
         <li>
           <strong>Hébergement {{ loop.index }} :</strong>
           {{ acc.price }} € 
-          {% if acc.comment %}- {{ acc.comment }}{% endif %}
+          {{ acc.comment ? '- ' ~ acc.comment }}
         </li>
       {% endfor %}
     </ul>
-    {% if accommodationTotal is defined %}
-      <p><strong>Total hébergements :</strong> {{ accommodationTotal }}</p>
-    {% endif %}
-    {% if accommodationReimbursable is defined %}
-      <p><strong>Montant remboursable (hébergements) :</strong> {{ accommodationReimbursable }}</p>
-    {% endif %}
+    <p><strong>Total hébergements :</strong> {{ accommodationTotal|default }}</p>
+    <p><strong>Montant remboursable (hébergements) :</strong> {{ accommodationReimbursable|default }}</p>
   {% else %}
     <p>Aucun hébergement.</p>
   {% endif %}
@@ -82,7 +76,7 @@
   <hr/>
 
   {# ================== Section AUTRES DÉPENSES ================== #}
-  {% set others = details.others %}
+  {% set others = details.others|default %}
   {% if others is not empty %}
     <h2>Autres dépenses</h2>
     <ul>
@@ -90,7 +84,7 @@
         <li>
           <strong>Dépense {{ loop.index }} :</strong>
           {{ o.price }} € 
-          {% if o.comment %}- {{ o.comment }}{% endif %}
+          {{ o.comment ? '- ' ~ o.comment }}
         </li>
       {% endfor %}
     </ul>
@@ -104,11 +98,13 @@
   <p><strong>Total global :</strong> {{ formattedTotal }}</p>
   <p><strong>Total remboursable :</strong> {{ formattedReimbursable }}</p>
 
-  {% if report.refundRequired %}
-    <p>Remboursement demandé.</p>
-  {% else %}
-    <p>Don au club (un reçu fiscal vous sera envoyé en fin d'année).</p>
-  {% endif %}
+  <p>
+    {% if report.refundRequired %}
+      Remboursement demandé.
+    {% else %}
+      Don au club (un reçu fiscal vous sera envoyé en fin d'année).
+    {% endif %}
+  </p>
 
   <hr/>
 
