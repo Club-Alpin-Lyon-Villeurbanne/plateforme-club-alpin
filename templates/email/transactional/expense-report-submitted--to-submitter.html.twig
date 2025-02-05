@@ -161,7 +161,7 @@ Aucune dépense de transport.
 {% endif %}
 
 {# ================== Section HÉBERGEMENTS ================== #}
-{% set accommodations = details.accommodations %}
+{% set accommodations = details.accommodations|default %}
 {% if accommodations is not empty %}
 HÉBERGEMENTS
 {% for acc in accommodations %}
@@ -180,7 +180,7 @@ Aucun hébergement.
 {% endif %}
 
 {# ================== Section AUTRES DÉPENSES ================== #}
-{% set others = details.others %}
+{% set others = details.others|default %}
 {% if others is not empty %}
 AUTRES DÉPENSES
 {% for o in others %}
