@@ -30,6 +30,11 @@ parameters:
   router.request_context.scheme: "%env(string:ROUTER_REQUEST_CONTEXT_SCHEME)%"
   asset.request_context.secure: "%env(bool:ASSET_REQUEST_CONTEXT_SECURE)%"
   public_dir: "%kernel.project_dir%/public"
+  expense_report:
+        nuiteeMaxRemboursable: 60
+        tauxKilometriqueVoiture: 0.2
+        tauxKilometriqueMinibus: 0.3
+        divisionPeage: 3
 
 services:
   # default configuration for services in *this* file
@@ -120,6 +125,10 @@ services:
       $defaultAlertArticlePrefix: "%env(ALERT_ARTICLE_PREFIX)%"
       $defaultAlertSortiePrefix: "%env(ALERT_SORTIE_PREFIX)%"
 
+  App\Service\ExpenseReportCalculator:
+    arguments:
+      $config: '%expense_report%'
+
   # services used in legacy
   legacy_router:
     public: true
@@ -200,3 +209,7 @@ services:
   App\Utils\FileUploader:
     arguments:
       $publicDir: '%public_dir%'
+
+  App\Command\FfcamFileSync:
+    arguments:
+      $ffcamFilePath: "%env(FFCAM_FILE_PATH)%"

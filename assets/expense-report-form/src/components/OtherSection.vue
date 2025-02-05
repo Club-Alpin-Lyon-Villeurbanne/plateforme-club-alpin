@@ -10,7 +10,7 @@
       />
     </div>
     <p class="tw-text-sm tw-leading-6 tw-text-gray-600">
-      Toute autre dépense que vous souhaitez vous faire rembourser
+      Dépenses diverses non catégorisées soumises à l'approbation préalable du service comptable.
     </p>
     <div
       v-for="(field, idx) in others"

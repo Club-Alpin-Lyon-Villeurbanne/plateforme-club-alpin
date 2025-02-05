@@ -26,14 +26,16 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $this->assertCount(0, $emails);
 
         $expenseReport->setStatus(ExpenseReportStatusEnum::SUBMITTED);
+        $expenseReport->setDetails(json_encode([]));
+
         $em->flush();
 
         $emails = $this->getMailerMessages();
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNickname(), $user->getEmail()));
-        $this->assertEmailTextBodyContains($emails[0], 'La comptabilité procedera bientôt à son traitement, vous serez notifié.e.');
-        $this->assertEmailHtmlBodyContains($emails[0], 'La comptabilité procedera bientôt à son traitement, vous serez notifié.e.');
+        $this->assertEmailTextBodyContains($emails[0], 'Si vous avez fait une erreur et souhaitez modifier votre note de frais,');
+        $this->assertEmailHtmlBodyContains($emails[0], 'Si vous avez fait une erreur et souhaitez modifier votre note de frais,');
     }
 
     public function testItSendMailOnStatusChangeRejected()

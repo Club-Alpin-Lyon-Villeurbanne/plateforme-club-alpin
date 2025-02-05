@@ -290,7 +290,7 @@
                     {# expense report form #}
 
                     {% if is_granted('fill_expense_report') or display_banner %}
-                        {% if event.finished and not event.cancelled and (my_status.role == 'encadrant' or my_status.role == 'coencadrant') %}
+                        {% if event.finished and event.statusLegal and not event.cancelled and (my_status.role == 'encadrant' or my_status.role == 'coencadrant' or my_status.role == 'stagiaire') %}
                             {% include 'vuejs/expense-report-form.twig' %}
                         {% endif %}
                     {% endif %}
