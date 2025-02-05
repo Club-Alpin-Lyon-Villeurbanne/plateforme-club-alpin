@@ -1,11 +1,17 @@
 <template>
   <div class="tw-border-b tw-border-gray-900/10 tw-pb-6">
-    <h2 class="tw-text-lg tw-font-medium tw-leading-7 tw-text-gray-900">
-      Hébergements
-    </h2>
+    <div class="tw-flex tw-items-center tw-gap-2">
+      <h2 class="tw-text-lg tw-font-medium tw-leading-7 tw-text-gray-900">
+        Hébergement
+      </h2>
+      <InfoTooltip
+        text="L'hébergement comprend les nuitées, le petit déjeuner et le repas du soir."
+        ariaLabel="Informations sur l'hébergement"
+      />
+    </div>
     <p class="tw-text-sm tw-leading-6 tw-text-gray-600">
-      Le remboursement des nuitées se fait sur la base de
-      {{ expenseReportConfig.nuiteeMaxRemboursable }}€ par nuitée
+      Le remboursement de l'hébergement est plafonné à {{ expenseReportConfig.nuiteeMaxRemboursable }} € par jour
+      pour un séjour en demi-pension (incluant le petit-déjeuner et le repas du soir).
     </p>
 
     <div
@@ -17,13 +23,13 @@
         <ExpenseFieldV2
           :name="`accommodations[${idx}].price`"
           :expense-id="field.value.expenseId"
-          :label="`Hébergement ${idx + 1}`"
+          :label="`Tarif nuitée ${idx + 1} (€)`"
           :requires-attachment="true"
         />
         <div class="tw-flex tw-flex-col">
           <div class="tw-flex tw-min-w-full">
             <Input
-              label="Commentaire"
+              :label="`Commentaire nuitée ${idx + 1}`"
               :name="`accommodations[${idx}].comment`"
               type="text"
               :input-width="`tw-w-fit`"
@@ -43,7 +49,7 @@
       @click.prevent="addAccommodation"
       class="tw-mt-8 tw-rounded-full tw-border tw-border-dashed tw-border-slate-400/70 tw-bg-transparent tw-px-2 tw-py-1 hover:tw-cursor-pointer hover:tw-border-slate-400"
     >
-      + Ajouter un hébergement
+      + Ajouter une nuitée
     </button>
   </div>
 </template>
@@ -55,6 +61,7 @@ import { Accommodation } from "../types/api";
 import expenseReportConfig from "../config/expense-reports.json";
 import trashIcon from "../assets/svg/trash.svg?raw";
 import { useFieldArray } from "vee-validate";
+import InfoTooltip from "./InfoTooltip.vue";
 import Input from "./Input.vue";
 
 const {

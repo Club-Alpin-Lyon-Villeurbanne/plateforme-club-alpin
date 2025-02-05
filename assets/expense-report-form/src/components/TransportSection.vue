@@ -1,8 +1,14 @@
 <template>
   <div class="tw-border-b tw-border-gray-900/10 tw-pb-6">
-    <h2 class="tw-text-lg tw-font-medium tw-leading-7 tw-text-gray-900">
-      Transport
-    </h2>
+    <div class="tw-flex tw-items-center tw-gap-2">
+      <h2 class="tw-text-lg tw-font-medium tw-leading-7 tw-text-gray-900">
+        Transport
+      </h2>
+      <InfoTooltip
+        text="Sélectionnez le type de transport."
+        ariaLabel="Informations sur le transport"
+      />
+    </div>
     <div class="tw-mt-5 tw-flex tw-gap-10">
       <div class="tw-relative">
         <label class="tw-block tw-text-sm tw-leading-6 tw-text-gray-900"
@@ -133,6 +139,7 @@ import { TransportType } from "../types/transports";
 import ExpenseFieldV2 from "./ExpenseFieldV2.vue";
 
 import Input from "./Input.vue";
+import InfoTooltip from "./InfoTooltip.vue";
 import { useField } from "vee-validate";
 import { onMounted } from "vue";
 import config from "../config/expense-reports.json";

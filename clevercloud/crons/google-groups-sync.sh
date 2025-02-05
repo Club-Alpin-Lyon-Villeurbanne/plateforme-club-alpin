@@ -5,4 +5,4 @@
 # https://developers.clever-cloud.com/doc/administrate/cron/#access-environment-variables
 
 cd ${APP_HOME}
-bin/console ffcam-file-sync
+bin/console google-groups-sync --execute
