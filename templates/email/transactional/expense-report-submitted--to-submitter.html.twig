@@ -1,31 +1,208 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
-{% block subject -%}
+{% block subject %}
     Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} est envoyée
-{%- endblock %}
+{% endblock %}
 
 {% block inner_html %}
-    <p>
-        Votre note de frais {% if report.event %}pour <a href="{{ url('sortie', {code: report.event.code, id: report.event.id}) }}">"{{ report.event.titre }}"</a>{% endif %} est envoyée.
-    </p>
+<div>
+  {# ================== Section TRANSPORT ================== #}
+  {% set transport = details.transport|default %}
+  {% if transport is not empty %}
+    <h2>Transport</h2>
     <ul>
-        <li>Encadrant.e: {{ report.user.firstname }} {{ report.user.lastname }} </li>
-        {% if report.createdAt %}<li>Date: {{ report.createdAt | date('d-m-Y') }} </li>{% endif %}
-        <li>Type: {% if report.refundRequired %}Demande de remboursement par virement{% else %}Abandon de frais{% endif %}</li>
-        {% if report.details %}<li>Details: {{ report.details }} </li>{% endif %}
+      <li>
+        <strong>Type :</strong>
+        {% set transport_types = {
+          'PERSONAL_VEHICLE': 'Véhicule personnel (taux : ' ~ tauxKilometriqueVoiture ~ ' €/km)',
+          'CLUB_MINIBUS': 'Minibus du club (taux : ' ~ tauxKilometriqueMinibus ~ ' €/km)',
+          'RENTAL_MINIBUS': 'Minibus de location',
+          'PUBLIC_TRANSPORT': 'Transport en commun'
+        } %}
+        {{ transport_types[transport.type]|default('Inconnu') }}
+      </li>
+
+      {% if transport.type == 'PERSONAL_VEHICLE' %}
+          {% set transport_details = [
+              {'label': 'Distance', 'value': transport.distance ~ ' km'},
+              {'label': 'Péage', 'value': transport.tollFee ~ ' €'}
+          ] %}
+      {% elseif transport.type == 'CLUB_MINIBUS' %}
+          {% set transport_details = [
+              {'label': 'Distance', 'value': transport.distance ~ ' km'},
+              {'label': 'Péage', 'value': transport.tollFee ~ ' €'},
+              {'label': 'Carburant', 'value': (transport.fuelExpense|default(0)) ~ ' €'},
+              {'label': 'Nombre de passagers', 'value': (transport.passengerCount|default(0))}
+          ] %}
+      {% elseif transport.type == 'RENTAL_MINIBUS' %}
+          {% set transport_details = [
+              {'label': 'Péage', 'value': transport.tollFee ~ ' €'},
+              {'label': 'Carburant', 'value': (transport.fuelExpense|default(0)) ~ ' €'},
+              {'label': 'Location', 'value': (transport.rentalPrice|default(0)) ~ ' €'},
+              {'label': 'Nombre de passagers', 'value': (transport.passengerCount|default(0))}
+          ] %}
+      {% elseif transport.type == 'PUBLIC_TRANSPORT' %}
+          {% set transport_details = [
+              {'label': 'Prix du ticket', 'value': (transport.ticketPrice|default(0)) ~ ' €'}
+          ] %}
+      {% else %}
+          {% set transport_details = [] %}
+      {% endif %}
+
+
+      {% for detail in transport_details|default([]) %}
+          <li><strong>{{ detail.label }} :</strong> {{ detail.value }}</li>
+      {% endfor %}
     </ul>
-    <p>
-        La comptabilité procedera bientôt à son traitement, vous serez notifié.e.
-    </p>
+  {% else %}
+    <p>Aucune dépense de transport.</p>
+  {% endif %}
+
+  <hr/>
+
+  {# ================== Section HÉBERGEMENTS ================== #}
+  {% set accommodations = details.accommodations|default %}
+  {% if accommodations is not empty %}
+    <h2>Hébergements</h2>
+    <ul>
+      {% for acc in accommodations %}
+        <li>
+          <strong>Hébergement {{ loop.index }} :</strong>
+          {{ acc.price }} € 
+          {{ acc.comment ? '- ' ~ acc.comment }}
+        </li>
+      {% endfor %}
+    </ul>
+    <p><strong>Total hébergements :</strong> {{ accommodationTotal|default }}</p>
+    <p><strong>Montant remboursable (hébergements) :</strong> {{ accommodationReimbursable|default }}</p>
+  {% else %}
+    <p>Aucun hébergement.</p>
+  {% endif %}
+
+  <hr/>
+
+  {# ================== Section AUTRES DÉPENSES ================== #}
+  {% set others = details.others|default %}
+  {% if others is not empty %}
+    <h2>Autres dépenses</h2>
+    <ul>
+      {% for o in others %}
+        <li>
+          <strong>Dépense {{ loop.index }} :</strong>
+          {{ o.price }} € 
+          {{ o.comment ? '- ' ~ o.comment }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Aucune autre dépense.</p>
+  {% endif %}
+
+  <hr/>
+
+  {# ================== TOTAUX GLOBAUX ================== #}
+  <p><strong>Total global :</strong> {{ formattedTotal }}</p>
+  <p><strong>Total remboursable :</strong> {{ formattedReimbursable }}</p>
+
+  <p>
+    {% if report.refundRequired %}
+      Remboursement demandé.
+    {% else %}
+      Don au club (un reçu fiscal vous sera envoyé en fin d'année).
+    {% endif %}
+  </p>
+
+  <hr/>
+
+  {# ================== Message de fin ================== #}
+  <p>
+    Si vous avez fait une erreur et souhaitez modifier votre note de frais,
+    merci d'en faire la demande auprès de la comptabilité :
+    <a href="mailto:comptabilite@clubalpinlyon.fr">comptabilite@clubalpinlyon.fr</a>
+    en indiquant le nom et la date de la sortie.
+  </p>
+</div>
 {% endblock %}
 
 {% block inner_txt %}
-Votre note de frais {% if report.event %}pour "{{ report.event.titre }}" ({{ url('sortie', {code: report.event.code, id: report.event.id}) }}){% endif %} est envoyée.
+Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} est envoyée.
 
-- Encadrant.e: {{ report.user.firstname }} {{ report.user.lastname }}
-{% if report.createdAt %} - Date: {{ report.createdAt | date('d-m-Y') }}{% endif %}
-Type: {% if report.refundRequired %}Demande de remboursement par virement{% else %}Abandon de frais{% endif %}
-{% if report.details %}Details: {{ report.details }}{% endif %}
+{# ================== Section TRANSPORT ================== #}
+{% set transport = details.transport| default %}
+{% if transport is not empty %}
+TRANSPORT
+- Type : {% if transport.type == "PERSONAL_VEHICLE" %}Véhicule personnel (taux : {{ tauxKilometriqueVoiture }} €/km){% elseif transport.type == "CLUB_MINIBUS" %}Minibus du club (taux : {{ tauxKilometriqueMinibus }} €/km){% elseif transport.type == "RENTAL_MINIBUS" %}Minibus de location (taux : {{ tauxKilometriqueMinibus }} €/km){% elseif transport.type == "PUBLIC_TRANSPORT" %}Transport en commun{% else %}Inconnu{% endif %}
 
-La comptabilité procedera bientôt à son traitement, vous serez notifié.e.
+{% if transport.type == "PERSONAL_VEHICLE" %}
+- Distance : {{ transport.distance }} km
+- Péage : {{ transport.tollFee }} €
+{% endif %}
+
+{% if transport.type == "CLUB_MINIBUS" %}
+- Distance : {{ transport.distance }} km
+- Péage : {{ transport.tollFee }} €
+- Carburant : {{ transport.fuelExpense }} €
+- Nombre de passagers : {{ transport.passengerCount }}
+{% endif %}
+
+{% if transport.type == "RENTAL_MINIBUS" %}
+- Péage : {{ transport.tollFee }} €
+- Carburant : {{ transport.fuelExpense }} €
+- Location : {{ transport.rentalPrice }} €
+- Nombre de passagers : {{ transport.passengerCount }}
+{% endif %}
+
+{% if transport.type == "PUBLIC_TRANSPORT" %}
+- Prix du ticket : {{ transport.ticketPrice }} €
+{% endif %}
+
+{% else %}
+Aucune dépense de transport.
+{% endif %}
+
+{# ================== Section HÉBERGEMENTS ================== #}
+{% set accommodations = details.accommodations|default %}
+{% if accommodations is not empty %}
+HÉBERGEMENTS
+{% for acc in accommodations %}
+- Hébergement {{ loop.index }} : {{ acc.price }} €{% if acc.comment %} - {{ acc.comment }}{% endif %}
+
+{% endfor %}
+{% if accommodationTotal is defined %}
+Total hébergements : {{ accommodationTotal }}
+{% endif %}
+{% if accommodationReimbursable is defined %}
+Montant remboursable (hébergements) : {{ accommodationReimbursable }}
+{% endif %}
+
+{% else %}
+Aucun hébergement.
+{% endif %}
+
+{# ================== Section AUTRES DÉPENSES ================== #}
+{% set others = details.others|default %}
+{% if others is not empty %}
+AUTRES DÉPENSES
+{% for o in others %}
+- Dépense {{ loop.index }} : {{ o.price }} €{% if o.comment %} - {{ o.comment }}{% endif %}
+
+{% endfor %}
+{% else %}
+Aucune autre dépense.
+{% endif %}
+
+{# ================== TOTAUX GLOBAUX ================== #}
+TOTAUX
+Total global : {{ formattedTotal }}
+Total remboursable : {{ formattedReimbursable }}
+
+{% if report.refundRequired %}
+Remboursement demandé.
+{% else %}
+Don au club (un reçu fiscal vous sera envoyé en fin d'année).
+{% endif %}
+
+Si vous avez fait une erreur et souhaitez modifier votre note de frais, 
+merci d'en faire la demande auprès de la comptabilité : comptabilite@clubalpinlyon.fr 
+en indiquant le nom et la date de la sortie.
 {% endblock %}
