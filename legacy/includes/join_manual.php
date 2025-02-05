@@ -2,55 +2,53 @@
 
 use App\Legacy\LegacyContainer;
 
-// Cette page sert à joindre manuellement un user à une sortie
-
 if (user()) {
-    // id de la sortie, pour n'afficher que les adhérents non inscrits
     $idEvt = isset($_GET['id_evt']) ? (int) $_GET['id_evt'] : 0;
     $idUser = $_POST['id_user'] ?? null;
+    $show = isset($_GET['show']) ? $_GET['show'] : 'valid-active';
+    $show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
+    $versCettePage = htmlspecialchars($versCettePage, \ENT_QUOTES, 'UTF-8');
 
-    $showAll = isset($_GET['showAll']) ? (int) $_GET['showAll'] : 0;
-
-    // if(!allowed('user_see_all')){
     if (!allowed('evt_join_notme')) {
         echo '<p class="erreur">Vous n\'avez pas les droits requis pour afficher cette page</p>';
     } elseif (!$idEvt) {
         echo '<p class="erreur">ID de sortie non spécifié</p>';
     } else {
-        // la vérification des droits de cet user à cette sortie se fait lors de l'opération finale : SCRIPTS.'operations.php'?>
-
+        ?>
 		<h1>Inscrire manuellement des adhérents à cette sortie</h1>
 
 		<?php
-        // PREMIERE ETAPE : SELECTION DES ADHERENTS A AJOUTER
         if (!is_array($idUser)) {
             ?>
 			<p>
-				<img src="/img/base/magnifier.png" style="vertical-align:middle" />
-				Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
-				Cliquez sur le bouton "<i>Inscrire les adhérents sélectionnés</i>" pour passer à l'étape suivante et sélectionner leurs rôles éventuels (simple inscrit, bénévole...).
-				<br />
-				<a href="<?php echo $versCettePage; ?>" <?php if (!$showAll) {
-				    echo 'style="background:#d3d6ff"';
-				} ?> class="boutonFancy">Voir uniquement les adhérents validés</a>
-				<a href="<?php echo $versCettePage; ?>&showAll=1" <?php if ($showAll) {
-				} ?> class="boutonFancy">Voir tous les adhérents de la base (+long)</a>
+                <a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>&show=valid-active"
+                    class="boutonFancy"
+                    <?php if ('valid-active' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
+                    ✔️ Licence valide & compte activé
+                </a>&nbsp;
 
+                <a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>&show=valid-inactive"
+                    class="boutonFancy"
+                    <?php if ('valid-inactive' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
+                    ⚠️ Licence valide & compte non-activé
+                </a>&nbsp;
+
+                <a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>&show=all"
+                    class="boutonFancy"
+                    <?php if ('all' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
+                    📋 Tous les adhérents
+                </a>
 			</p>
 			<br />
 
-			<!-- AFFICHAGE DU TABLEAU -->
-			<!-- DATATABLES -->
 			<link rel="stylesheet" href="/tools/datatables/media/css/jquery.dataTables.sobre.css" type="text/css" media="screen" />
 			<script type="text/javascript" src="/tools/datatables/media/js/jquery.dataTables.min.js"></script>
 
-			<!-- petit bout de css pour l'ergonomie -->
 			<style type="text/css">
 				tr{			cursor:pointer;	color:gray; background-image:url(img/label-down.png) top left;	}
 				tr.up{		color:black; text-shadow: -1px 0 0px white; outline:1px solid silver;	}
 				tr:hover{	outline:1px solid silver;	}
 				tr input{	display:none;	}
-
 				tr .tick{	display:none;	}
 				tr .cross{	display:block;	}
 				tr.up .tick{	display:block;	}
@@ -59,34 +57,47 @@ if (user()) {
 
 			<script type="text/javascript">
 			$(document).ready(function() {
-
-				// SETTING DATATABLES
-				$('.datatables').dataTable( {
+				$('.datatables').dataTable({
 					"iDisplayLength": 10,
 					"aLengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Tout"]],
 					"aaSorting": [[ 3, "asc" ]],
 					"sDom": 'T<"clear">lfrtip'
-				} );
+				});
 
-				// SÉLECTIONNER UNE LIGNE AU CLIC
-				// $('tr').bind('click', function(){
 				$('tr').live('click', function(){
                     const checkbox = $(this).find('input[type=checkbox]');
                     checkbox.attr('checked', !checkbox.attr('checked'));
-					// remove / retrieve disabled
 					if(checkbox.attr('checked'))	$(this).find('input[type=hidden]').removeAttr('disabled');
 					else							$(this).find('input[type=hidden]').attr('disabled', 'disabled');
-					// style
 					$(this).toggleClass('up');
 					return false;
 				});
-
 			});
 			</script>
 
-
 			<form action="<?php echo $versCettePage; ?>" method="post" enctype="multipart/form-data" class="loading">
-				<!--<input type="hidden" name="operation" value="xxxx" /> not yet -->
+                <?php
+                $baseReq = 'SELECT id_user, email_user, cafnum_user, firstname_user, lastname_user, nickname_user,
+                                created_user, birthday_user, tel_user, tel2_user, civ_user, valid_user
+                        FROM `caf_user`
+                        WHERE id_user NOT IN (SELECT user_evt_join FROM `caf_evt_join` WHERE evt_evt_join=' . $idEvt . ')';
+
+            switch ($show) {
+                case 'valid-active':
+                    $req = $baseReq . ' AND valid_user=1 AND doit_renouveler_user=0 AND nomade_user=0';
+                    break;
+                case 'valid-inactive':
+                    $req = $baseReq . ' AND valid_user=0 AND doit_renouveler_user=0 AND nomade_user=0';
+                    break;
+                case 'all':
+                default:
+                    $req = $baseReq;
+                    break;
+            }
+
+            $req .= ' ORDER BY lastname_user ASC LIMIT 9000';
+            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+            ?>
 
 				<table class="datatables" style="width:100%;">
 					<thead>
@@ -101,54 +112,39 @@ if (user()) {
 					</thead>
 					<tbody>
 						<?php
-				            $total = 0;
-            // REQ des users validés
-            $userTab = [];
-            $req = 'SELECT  id_user, email_user, cafnum_user, firstname_user, lastname_user, nickname_user
-									, created_user, birthday_user, tel_user, tel2_user, civ_user
-							FROM `caf_user`
-                            WHERE nomade_user!=1
-                            AND id_user NOT IN (SELECT user_evt_join FROM `caf_evt_join` WHERE evt_evt_join=' . $idEvt . ')'
-                            . ($showAll ? '' : ' AND valid_user=1 ')
-                            . ' ORDER BY lastname_user ASC
-							LIMIT 9000';
-            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            while ($elt = $result->fetch_assoc()) {
-                echo '<tr id="tr-' . $elt['id_user'] . '" class="' . (isset($elt['valid_user']) && $elt['valid_user'] ? 'vis-on' : 'vis-off') . '">'
-                    . '<td>'
-                        . '<img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />'
-                        . '<img src="/img/label-down.png" class="cross" alt="OFF" title="" />'
-                        . '<input type="checkbox" name="id_user[]" value="' . (int) $elt['id_user'] . '" />'
-                        // inputs hidden disabled : activés quand la case est cliquée (jquery)
-                        . '<input type="hidden" disabled="disabled" name="civ_user[]" value="' . html_utf8($elt['civ_user']) . '" />'
-                        . '<input type="hidden" disabled="disabled" name="lastname_user[]" value="' . html_utf8($elt['lastname_user']) . '" />'
-                        . '<input type="hidden" disabled="disabled" name="firstname_user[]" value="' . html_utf8($elt['firstname_user']) . '" />'
-                    . '</td>'
-                    . '<td>'
-                        . html_utf8($elt['cafnum_user']) . '<br />'
-                        . (int) $elt['id_user'] . ' '
-                    . '</td>'
-                    . '<td>' . html_utf8($elt['civ_user']) . '</td>'
-                    . '<td>' . html_utf8($elt['lastname_user']) . '</td>'
-                    . '<td>' . html_utf8($elt['firstname_user']) . '</td>'
-                    . '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
-                . '</tr>';
-            } ?>
+                        while ($elt = $result->fetch_assoc()) {
+                            echo '<tr id="tr-' . $elt['id_user'] . '" class="' . ($elt['valid_user'] ? 'vis-on' : 'vis-off') . '">'
+                                . '<td>'
+                                    . '<img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />'
+                                    . '<img src="/img/label-down.png" class="cross" alt="OFF" title="" />'
+                                    . '<input type="checkbox" name="id_user[]" value="' . (int) $elt['id_user'] . '" />'
+                                    . '<input type="hidden" disabled="disabled" name="civ_user[]" value="' . html_utf8($elt['civ_user']) . '" />'
+                                    . '<input type="hidden" disabled="disabled" name="lastname_user[]" value="' . html_utf8($elt['lastname_user']) . '" />'
+                                    . '<input type="hidden" disabled="disabled" name="firstname_user[]" value="' . html_utf8($elt['firstname_user']) . '" />'
+                                    . '<input type="hidden" disabled="disabled" name="nickname_user[]" value="' . html_utf8($elt['nickname_user']) . '" />'
+                                . '</td>'
+                                . '<td>'
+                                    . html_utf8($elt['cafnum_user']) . '<br />'
+                                    . (int) $elt['id_user'] . ' '
+                                . '</td>'
+                                . '<td>' . html_utf8($elt['civ_user']) . '</td>'
+                                . '<td>' . html_utf8($elt['lastname_user']) . '</td>'
+                                . '<td>' . html_utf8($elt['firstname_user']) . '</td>'
+                                . '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
+                            . '</tr>';
+                        } ?>
 					</tbody>
 				</table>
 				<br style="clear:both" />
 				<br />
 				<a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
 					<span class="bleucaf">&gt;</span>
-					ETAPE SUIVANTE : CHOIX DES RÔLES
+					Étape suivante : attribuer les rôles
 				</a>
 			</form>
 
 			<?php
-        }
-
-        // ENSUITE, CONFIRMATION ET ENVOI :
-        else {
+        } else {
             if (!count($idUser)) {
                 if (isset($_POST['result']) && 'success' == $_POST['result']) {
                     unset($_POST['result']);
@@ -157,7 +153,6 @@ if (user()) {
                     echo '<p class="info">Inscription effectuée. <a href="' . $versCettePage . '">Retour</a></p>';
                 }
             } else {
-                // On récupère des informations complémentaires sur la sortie : besoin de bénévoles ?
                 $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = ' . $idEvt;
                 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
                 while ($sorties = $result->fetch_assoc()) {
@@ -166,18 +161,16 @@ if (user()) {
 				<p>
 					Choisissez le rôle et les éventuelles options individuelles de chacun, puis validez pour confirmer. Attention : chaque utilisateur recevra un e-mail pour
 					être averti de son inscription.<br />
-					<a href="<?php echo $versCettePage; ?>" title="">&lt; Annuler / retour</a>
+					<a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>" title="">&lt; Annuler / retour</a>
 				</p>
 				<br />
 
 				<form action="<?php echo $versCettePage; ?>" method="post" enctype="multipart/form-data" class="loading">
 					<input type="hidden" name="operation" value="user_join_manuel" />
 					<?php
-                    // MESSAGES A LA SOUMISSION
                     if (isset($_POST['operation']) && 'user_join_manuel' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
                         echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
                     }
-                // redirection en cas de réussite
                 if (isset($_POST['operation']) && 'user_join_manuel' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
                     ?>
 						<p class="info">Envoi effectué. Actualisez cette page pour afficher les modifications.</p>
@@ -196,33 +189,29 @@ if (user()) {
 						</thead>
 						<tbody>
 							<?php
-                            // pour chaque user sélectionné : choix du role, puis confirmation
-                            foreach ($idUser as $i => $utilisateur) {
-                                echo '<tr>'
-                                    . '<td>'
-                                        // vars to re-post
-                                        . '<input type="hidden" name="id_user[]" value="' . (int) $idUser[$i] . '" />'
-                                        . '<input type="hidden" name="civ_user[]" value="' . html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')) . '" />'
-                                        . '<input type="hidden" name="lastname_user[]" value="' . html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')) . '" />'
-                                        . '<input type="hidden" name="firstname_user[]" value="' . html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')) . '" />'
-                                        // afficher
-                                        . html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')) . ' '
-                                        . html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')) . ' '
-                                        . html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')) . ' '
-                                    . '</td>'
-                                    . '<td>'
-                                        . html_utf8(stripslashes($_POST['nickname_user'][$i] ?? ''))
-                                    . '</td>'
-                                    . '<td>'
-                                        . '<select name="role_evt_join[]">'
-                                            . '<option value="manuel">Inscrit (par défaut)</option>'
-                                            . (1 == $sortie['need_benevoles_evt'] ? '<option value="benevole">Bénévole</option>' : '')
-                                            // .'<option value="coencadrant">Co-encadrant</option>'
-                                            // .'<option value="encadrant">Encadrant</option>'
-                                        . '</select>'
-                                    . '</td>';
-                                echo '</tr>';
-                            } ?>
+                        foreach ($idUser as $i => $utilisateur) {
+                            echo '<tr>'
+                                . '<td>'
+                                    . '<input type="hidden" name="id_user[]" value="' . (int) $idUser[$i] . '" />'
+                                    . '<input type="hidden" name="civ_user[]" value="' . html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')) . '" />'
+                                    . '<input type="hidden" name="lastname_user[]" value="' . html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')) . '" />'
+                                    . '<input type="hidden" name="firstname_user[]" value="' . html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')) . '" />'
+                                    . '<input type="hidden" name="nickname_user[]" value="' . html_utf8(stripslashes($_POST['nickname_user'][$i] ?? '')) . '" />'
+                                    . html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')) . ' '
+                                    . html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')) . ' '
+                                    . html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')) . ' '
+                                . '</td>'
+                                . '<td>'
+                                    . html_utf8(stripslashes($_POST['nickname_user'][$i] ?? ''))
+                                . '</td>'
+                                . '<td>'
+                                    . '<select name="role_evt_join[]">'
+                                        . '<option value="manuel">Inscrit (par défaut)</option>'
+                                        . (1 == $sortie['need_benevoles_evt'] ? '<option value="benevole">Bénévole</option>' : '')
+                                    . '</select>'
+                                . '</td>';
+                            echo '</tr>';
+                        } ?>
 						</tbody>
 					</table>
 
@@ -231,7 +220,6 @@ if (user()) {
 						CONFIRMER LES INSCRIPTIONS ET ENVOYER LES E-MAILS AUTOMATIQUES
 					</a>
 				</form>
-
 				<?php
             }
         }

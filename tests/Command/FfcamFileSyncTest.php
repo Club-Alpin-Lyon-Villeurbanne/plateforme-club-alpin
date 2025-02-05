@@ -7,7 +7,7 @@ use App\Tests\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class FichierAdherentCommandTest extends WebTestCase
+class FfcamFileSyncTest extends WebTestCase
 {
     public function testExecute()
     {
@@ -16,22 +16,22 @@ class FichierAdherentCommandTest extends WebTestCase
         $kernel = $this->createKernel();
         $application = new Application($kernel);
 
-        $command = $application->find('fichier-adherent');
+        $command = $application->find('ffcam-file-sync');
         $commandTester = new CommandTester($command);
 
-        $filePath = FfcamTestHelper::generateFile([
+        FfcamTestHelper::generateFile([
             [
-                'cafnum' => '690099990001',
+                'cafnum' => rand(100000000000, 999999999999),
                 'lastname' => 'DUPONT',
                 'firstname' => 'JEAN',
             ],
             [
-                'cafnum' => '690099990002',
+                'cafnum' => rand(100000000000, 999999999999),
                 'lastname' => 'MARTIN',
                 'firstname' => 'PIERRE',
             ],
-        ]);
+        ], '/tmp/test_ffcam.txt');
 
-        $this->assertSame(0, $commandTester->execute(['command' => $command->getName(), 'file-path' => $filePath]));
+        $this->assertSame(0, $commandTester->execute(['command' => $command->getName()]));
     }
 }

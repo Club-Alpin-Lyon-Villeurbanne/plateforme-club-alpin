@@ -41,6 +41,7 @@ abstract class WebTestCase extends BaseWebTestCase
         $user->setLastname('nom');
         $user->setNickname('nickname');
         $user->setCafnumParent('');
+        $user->setCafnum(mt_rand(100000000000, 999999999999));
         $user->setTel('');
         $user->setTel2('');
         $user->setAdresse('');

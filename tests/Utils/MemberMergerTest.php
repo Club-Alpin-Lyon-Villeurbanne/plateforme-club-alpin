@@ -3,36 +3,54 @@
 namespace App\Tests\Utils;
 
 use App\Entity\User;
+use App\Tests\WebTestCase;
 use App\Utils\MemberMerger;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class MemberMergerTest extends KernelTestCase
+class MemberMergerTest extends WebTestCase
 {
-    private $entityManager;
-    private $memberMerger;
-
-    protected function setUp(): void
+    public function testMergeExistingMembers(): void
     {
-        $kernel = self::bootKernel();
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $memberMerger = static::getContainer()->get(MemberMerger::class);
 
-        $this->entityManager = static::getContainer()->get('doctrine')->getManager();
-        $this->memberMerger = static::getContainer()->get(MemberMerger::class);
-    }
+        $user1 = $this->signup();
+        $user2 = $this->signup();
 
-    public function testMergeMembers(): void
-    {
-        $oldLicense = '749999999985';
-        $newLicense = '749999999986';
+        $oldLicense = $user1->getCafnum();
+        $newLicense = $user2->getCafnum();
 
-        $user1 = $this->entityManager->getRepository(User::class)->findOneByLicenseNumber($oldLicense);
-        $user2 = $this->entityManager->getRepository(User::class)->findOneByLicenseNumber($newLicense);
+        $memberMerger->mergeExistingMembers($oldLicense, $newLicense);
 
-        $this->memberMerger->mergeMembers($oldLicense, $newLicense);
-
-        $userOldLicense = $this->entityManager->getRepository(User::class)->findOneByLicenseNumber("obs_{$newLicense}");
-        $userNewLicense = $this->entityManager->getRepository(User::class)->findOneByLicenseNumber($newLicense);
+        $userOldLicense = $entityManager->getRepository(User::class)->findOneByLicenseNumber("obs_{$newLicense}");
+        $userNewLicense = $entityManager->getRepository(User::class)->findOneByLicenseNumber($newLicense);
 
         $this->assertSame($userNewLicense->getId(), $user1->getId());
         $this->assertSame($userOldLicense->getId(), $user2->getId());
+    }
+
+    public function testMergeNewMember(): void
+    {
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $memberMerger = static::getContainer()->get(MemberMerger::class);
+
+        $user1 = $this->signup();
+        $user2 = new User();
+
+        $user2Cafnum = mt_rand(100000000000, 999999999999);
+        $user2->setEmail('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr')
+            ->setCafnum($user2Cafnum)
+            ->setFirstname('prenom')
+            ->setLastname('nom')
+            ->setDoitRenouveler(false)
+            ->setAlerteRenouveler(false);
+
+        $oldLicense = $user1->getCafnum();
+
+        $memberMerger->mergeNewMember($oldLicense, $user2);
+
+        $userOldLicense = $entityManager->getRepository(User::class)->findOneByLicenseNumber("obs_{$user2Cafnum}");
+        $userNewLicense = $entityManager->getRepository(User::class)->findOneByLicenseNumber($user2Cafnum);
+
+        $this->assertSame($userNewLicense->getId(), $user1->getId());
     }
 }

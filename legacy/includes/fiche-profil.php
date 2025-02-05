@@ -6,6 +6,12 @@ use App\Legacy\LegacyContainer;
 // id du profil
 $id_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $_GET['id_user']);
 $tmpUser = false;
+$connectedUser = getUser();
+
+if (!$connectedUser) {
+    echo '<p class="erreur">Vous devez être connecté pour accéder à cette page</p>';
+    exit;
+}
 
 $req = "SELECT * FROM caf_user WHERE id_user = $id_user LIMIT 1";
 // AND valid_user = 1
@@ -46,11 +52,8 @@ if (!$id_user) {
 // pas accessbile
 elseif (!$tmpUser) {
     echo '<p class="erreur">Cette fiche utilisateur est introuvable !</p>';
-}
-// droits !
-elseif (!allowed('user_read_public')) {
-    echo '<p class="info">Désolé, vous n\'avez pas les droits nécessaires pour accéder aux fiches des adhérents.</p>';
-} else {
+}// droits !
+else {
     // j'ai le droit de le contacter ?
     $auth_contact_user = false;
     if ('all' == $tmpUser['auth_contact_user']) {
@@ -76,7 +79,7 @@ elseif (!allowed('user_read_public')) {
 
 		<!-- contacter -->
 		<?php
-        if (user() && $auth_contact_user) {
+        if ($auth_contact_user) {
             echo '<a href="javascript:void(0)" title="Utiliser le formulaire de contact pour écrire un message à cet adhérent" class="nice2" onclick="$(\'#trigger-userinfo, #trigger-usercontact\').slideToggle()">
 					<img src="/img/base/email.png" alt="" title="" /> &nbsp; &nbsp; Contacter
 				</a>';
@@ -121,14 +124,20 @@ elseif (!allowed('user_read_public')) {
 			<?php require __DIR__ . '/../includes/user/infos_privees.php'; ?>
 
             <?php
-		        if (allowed('user_read_private')) {
-		            list('absences' => $absences, 'presences' => $presences) = LegacyContainer::get('doctrine.orm.entity_manager')
-		                ->getRepository(EventParticipation::class)
-		                ->getEventPresencesAndAbsencesOfUser($id_user);
-		            echo '<p><b>';
-		            printf('noté absent / validé à une sortie : %d / %d', $absences, $presences);
-		            echo '</b></p>';
-		        }
+    // si j'ai acces ou si les données me concernent
+    $isMyProfile = $connectedUser->getId() === (int) $id_user;
+    if (allowed('user_read_private') || $isMyProfile) {
+        list('absences' => $absences, 'presences' => $presences) = LegacyContainer::get('doctrine.orm.entity_manager')
+            ->getRepository(EventParticipation::class)
+            ->getEventPresencesAndAbsencesOfUser($id_user);
+        echo '<p>';
+        $fiabilite = round($presences > 0 ? (100 - $absences / $presences) : 100);
+        printf('<b>Taux de présence: %d%% - (%d absences sur %d sorties)</b>', $fiabilite, $absences, $presences);
+        if ($isMyProfile) {
+            echo '<br/>Ce taux donne une information sur le nombre d\'absences aux sorties auxquelles vous êtes inscrit.e.<br/>Il n\'est visible que par les encadrant.es';
+        }
+        echo '</p>';
+    }
     ?>
 
 			<br style="clear:both" />

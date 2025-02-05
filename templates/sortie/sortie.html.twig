@@ -87,34 +87,30 @@
                 {% endif %}
 
             {# FIX ME Replace with a voter #}
-            {% elseif event.publicStatusValide and is_granted('SORTIE_UPDATE', event) %}
+            {% elseif event.publicStatusValide and (is_granted('SORTIE_UPDATE', event) or is_granted('SORTIE_DELETE', event) or is_granted('SORTIE_CANCEL', event)) %}
                 {% set closeDiv = true %}
 
                 <div class="alerte">
                     <b>Note :</b> Cette sortie est publiée et visible par les adhérents !<br />
             {% endif %}
 
-            {% if is_granted('SORTIE_UPDATE', event) %}
-                {% if not event.cancelled %}
+                {% if is_granted('SORTIE_UPDATE', event) %}
                     <a href="/creer-une-sortie/{{ event.commission.code }}/update-{{ event.id }}.html" title="Vous êtes l'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
                         <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie
                     </a>
                 {% endif %}
 
-                {% if not event.finished %}
-                    {% if allowed('evt_delete', 'commission:' ~ event.commission.code) and (event.publicStatusValide or event.cancelled) %}
-                        <a class="nice2 noprint red" href="/supprimer-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Supprimer définitivement la sortie ci-dessous">
-                            <img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie
-                        </a>
-                    {% endif %}
+                {% if is_granted('SORTIE_DELETE', event) %}
+                    <a class="nice2 noprint red" href="/supprimer-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Supprimer définitivement la sortie ci-dessous">
+                        <img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie
+                    </a>
                 {% endif %}
-            {% endif %}
 
-            {% if is_granted('SORTIE_CANCEL', event) %}
-                <a class="nice2 noprint red" href="/annuler-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Annuler la sortie ci-dessous">
-                    <img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie
-                </a>
-            {% endif %}
+                {% if is_granted('SORTIE_CANCEL', event) %}
+                    <a class="nice2 noprint red" href="/annuler-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Annuler la sortie ci-dessous">
+                        <img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie
+                    </a>
+                {% endif %}
 
             {% if closeDiv %}
                 </div><br />
@@ -159,11 +155,11 @@
         {% endif %}
 
         {% if is_granted('FICHE_SORTIE', event) %}
-        <a href="/feuille-de-sortie/evt-{{ event.id }}.html" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2">
+        <a href="/feuille-de-sortie/evt-{{ event.id }}.html" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2" target="_blank">
             <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
             Imprimer la fiche de sortie
         </a>
-        <a href="{{ path('sortie_pdf', { id: event.id }) }}" title="Imprimer la fiche de sortie en PDF" class="nice2">
+        <a href="{{ path('sortie_pdf', { id: event.id }) }}" title="Imprimer la fiche de sortie en PDF" class="nice2" target="_blank">
             <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
             Imprimer la fiche de sortie en PDF
         </a>
@@ -293,7 +289,7 @@
                     {# expense report form #}
 
                     {% if is_granted('fill_expense_report') or display_banner %}
-                        {% if event.finished and not event.cancelled and (my_status.role == 'encadrant' or my_status.role == 'coencadrant') %}
+                        {% if event.finished and event.statusLegal and not event.cancelled and (my_status.role == 'encadrant' or my_status.role == 'coencadrant' or my_status.role == 'stagiaire') %}
                             {% include 'vuejs/expense-report-form.twig' %}
                         {% endif %}
                     {% endif %}
@@ -319,13 +315,7 @@
                                 <img src="/img/inscrit-check.png" alt="" title=""/>
                                 <div class="text-container">Vous êtes inscrit comme participant à cette sortie.
                                     <div class="button-container">
-                                        {% if event.canBeUnsubscribedFrom %}
-                                            <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" />
-                                        {% else %}
-                                            <span data-tooltip="Il n'est plus possible de se désinscrire, merci de contacter l'encadrant.e.">
-                                                <input type="button" class="nice" value="Annuler mon inscription" disabled />
-                                            </span>
-                                        {% endif %}
+                                        <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" />
                                     </div>
                                 </div>
                             </div>
@@ -407,10 +397,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-{#                                // PARTICIPANTS - EMPIETEMENTS : VÉRIFICATION DE (PRÉ)INSCRIPTIONS À D'AUTRES SORTIES DANS LE MEME TIMING#}
-{#                                // création du tableau "empiètement" pour chaque user#}
-{#                                $row['empietements'] = empietement_sortie($row['id_user'], $evt);#}
-
                                 {% for participation in participations %}
                                     {% set participation = participation['liste'] %}
                                     <tr class="status{{ participation.status }}" style="color:gray; font-size:10px;">
@@ -910,16 +896,18 @@
                     {{ nEnAttente > 0 ? ' et '~nEnAttente~' inscription'~ (nEnAttente > 1 ? 's' : '' ) ~' en attente de confirmation' : '' }}
                 </p>
 
-                {% if nInscritsHorsEncadrement > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
+                {% if nInscritsTotal > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
                     <table class="big-lines-table" style="width:570px; margin-left:20px;">
 
-                        {% for inscrit in event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) %}
+                        {% for inscrit in event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) | sort((a, b) => a.user.firstname <=> b.user.firstname) %}
                             <td>
                             <td>
                                 {% if allowed('user_read_private', event.commission.code) %}
                                     <p class="mini">{{ inscrit.user.lastname|upper }}, {{ inscrit.user.firstname|capitalize }}</p>
+                                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
+                                {% else %}
+                                    {{ inscrit.user.nickname }}
                                 {% endif %}
-                                <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
                             </td>
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
@@ -948,8 +936,10 @@
                                 <td>
                                     {% if allowed('user_read_private', event.commission.code) %}
                                         <p class="mini">{{ inscrit.user.lastname|upper }}, {{ inscrit.user.firstname|capitalize }}</p>
+                                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
+                                    {% else %}
+                                        {{ inscrit.user.nickname }}
                                     {% endif %}
-                                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
                                 </td>
                                 <td class="small">
                                     {% if allowed('user_read_private', event.commission.code) %}
@@ -990,13 +980,59 @@
 
                                         {{ easy_include('formalites-inscription', 'formalites') }}
 
-                                        <form action="{{ app.request.requestUri }}#inscription" method="post" class="loading">
+                                        <form id="join_sortie" action="{{ app.request.requestUri }}#inscription" method="post" class="loading">
 
                                             <input type="hidden" name="operation" value="user_join" />
                                             <input type="hidden" name="id_evt" value="{{ event.id }}" />
 
                                             <div class="check-nice ">
-                                                {% include 'sortie/user_inscription_options.html.twig' %}
+                                                <p>
+                                                    <label style="width:100%;clear:both;overflow:hidden;">
+                                                        <input id="confirm_conditions" type="checkbox" name="confirm" /> J'ai lu les conditions d'usage ci-dessus et confirme ma demande d'inscription.
+                                                    </label>
+                                                </p>
+                                                <hr class="clear">
+
+                                                {% if event.needBenevoles and not my_status %}
+                                                    <p>
+                                                        <label style="width:100%;clear:both;overflow:hidden;">
+                                                            <input type="checkbox" name="jeveuxetrebenevole" /> Cochez cette case si vous souhaitez rejoindre la sortie en tant que <b>bénévole</b>.
+                                                        </label>
+                                                    </p>
+                                                {% endif %}
+
+                                                {% if filiations | length %}
+                                                    <hr class="clear" />
+                                                    {{ easy_include('inscrire-filiation-select') }}
+
+                                                    <input type="hidden" name="filiations" value="on" />
+                                                    <br />
+                                                    <label for="filiation_id_user_<?php echo user() ? getUser()->getId() : ''; ?>" style="width:100%;clear:both;overflow:hidden;">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked="checked"
+                                                            class="custom"
+                                                            name="id_user_filiation[]"
+                                                            value="{{ app.user.id }}"
+                                                            id="filiation_id_user_{{ app.user.id }}" />
+                                                        Moi-même (<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ app.user.id }}" class="fancyframe userlink">{{ app.user.nickname }}</a>)
+                                                    </label>
+                                                    <br />
+                                                    {% for filiation in filiations %}
+                                                        <br />
+                                                        <label for="filiation_id_user_{{ filiation.id }}" style="width:100%;clear:both;overflow:hidden;">
+                                                            <input
+                                                                type="checkbox"
+                                                                onclick="$('#paiement_enfant_{{ filiation.id }}').slideToggle(200)"
+                                                                class="custom"
+                                                                name="id_user_filiation[]"
+                                                                value="{{ filiation.id }}"
+                                                                id="filiation_id_user_{{ filiation.id }}" />
+                                                            {{ filiation.lastname }}, {{ filiation.firstname }} ({{ filiation.id }}, {{ filiation.nickname }})
+                                                        </label>
+                                                    {% endfor %}
+                                                    <hr class="clear" />
+                                                {% endif %}
                                             </div>
 
                                             <p style="text-align:center">
@@ -1010,6 +1046,21 @@
                                                 </a>
                                             </p>
                                         </form>
+                                        <script>
+                                            $(function () {
+                                                $('#join_sortie').on('submit', function (event) {
+                                                    event.preventDefault();
+                                                    var $this = $(this);
+
+                                                    if ($('#confirm_conditions').prop('checked')) {
+                                                        $(this).unbind('submit').submit();
+                                                    } else {
+                                                        alert('Vous devez accepter les conditions d\'usage pour vous inscrire.');
+                                                        return false;
+                                                    }
+                                                })
+                                            })
+                                        </script>
 
                                     </div>
                                     {% endif %}

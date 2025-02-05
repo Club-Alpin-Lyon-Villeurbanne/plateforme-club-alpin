@@ -6,6 +6,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 global $ogImage;
 $jwt = LegacyContainer::get(JwtExtension::class)->generateJwtToken();
+$p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 ?>
 	<!-- vars php passées au js -->
     <script type="text/javascript">

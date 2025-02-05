@@ -3,29 +3,36 @@ services:
     build:
       context: ./docker
       args:
-        - UID=${UID_OVERRIDE:-${UID:-1000}}
-        - GID=${GID_OVERRIDE:-${GID:-1000}}
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
     container_name: www_caflyon
+    profiles: ["dev", "ci"]
     ports:
       - "8000:80"
     volumes:
       - ./docker/vhosts:/etc/apache2/sites-enabled
       - ./docker/utils/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./:/var/www
+      - ~/.composer:/var/www/.composer
+      - ~/.phive:/var/www/.phive
+      - ~/.ssh:/var/www/.ssh:ro
 
   cafdb:
-    image: mysql:5.7
+    # The MySQL version must be updated at multiple places (docker-compose, gitlab-ci)
+    image: mysql:8.0.33
     container_name: db_caflyon
+    profiles: ["dev", "ci"]
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
     restart: always
-    volumes:
-      - ./db:/var/lib/mysql
+    tmpfs: /var/lib/mysql:size=2G
 
   phpmyadmin:
     image: phpmyadmin
     container_name: phpmyadmin_caflyon
+    profiles: ["dev"]
+
     ports:
       - 8080:80
     environment:
@@ -33,7 +40,9 @@ services:
       UPLOAD_LIMIT: ${UPLOAD_LIMIT}
 
   mailcatcher:
-    image: schickling/mailcatcher
+    image: axllent/mailpit
     container_name: mail_caflyon
+    profiles: ["dev"]
     ports:
-      - 1081:1080
+      - 1025:1025
+      - 8025:8025

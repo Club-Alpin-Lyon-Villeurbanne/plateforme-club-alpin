@@ -61,9 +61,9 @@ Elles sont stockées dans le répertoire clevercloud/crons. Il faut se référer
 - Accès au site : `http://127.0.0.1:8000/`
 - Compte admin par défaut : `test@clubalpinlyon.fr` / `test`
 - PHPMyAdmin : `http://127.0.0.1:8080/`, accès : `root` / `test`
-- Mailcatcher : `http://127.0.0.1:1080/`
+- Mailcatcher : `http://127.0.0.1:8025/` (lancez cette commande pour "consommer" les mails: `docker compose exec cafsite bin/console messenger:consume mails --limit=50 --quiet --no-interaction`)
 
-⚠️ L'upload d'images est encore en cours de configuration. 🚧
+⚠️ L'upload d'images ne fonctionne pas dans un environnement dockerisé. 🚧
 
 #### Troubleshooting
 
@@ -123,12 +123,13 @@ Le site comporte deux rôles annexes :
 1. **Admin** : ce rôle dispose de tous les droits, y compris la possibilité de modifier les permissions importantes, comme les rôles de président ou de responsables de commission.
 2. **Gestionnaire de contenu** : ce rôle permet de modifier les pages et les blocs de contenu du site sans disposer des droits d'administration complets.
 
-On y accède via l'url https://clubalpinlyon.fr/admin/. Les identifiants en local sont: `admin` / `admin` et `admin_contenu` / `contenu`.
+On y accède via l'url https://www.clubalpinlyon.fr/admin/. Les identifiants en local sont: `admin` / `admin` et `admin_contenu` / `contenu`.
 
 ### FAQ
 
 **Pourquoi le code n'est-il pas open source ?**  
 Nous avons une réelle volonté d'ouvrir ce code, mais un audit SSI approfondi a révélé que le projet nécessite encore des corrections au niveau de la sécurité avant d'être partagé publiquement.
+
 
 ### Synchronisation des nouveaux adhérents
 
@@ -137,3 +138,20 @@ La FFCAM upload un fichier CSV avec les nouveaux adhérents chaque nuit.
 Notre appli va parser ce fichier et créer les adhérents dans la base de données.
 Si l'adhérent existe déjà (même nom, même prénom, même date de naissance), son compte existant sera mis à jour avec les nouvelles informations.
 Si l'adhérent n'existe pas, il sera créé et il pourra accéder au site.
+
+
+### Notes de frais
+L'application permet de gérer les notes de frais des sorties.
+Cela consiste en 2 parties: 
+#### la soumission des notes de frais par les encadrants (partie soumission)
+La première partie est une interface vuejs dispsonible dans la page de chaque sortie.
+Un template twig pour envoyer un récap de la demande de note de frais à l'encadrant.
+Une API pour récuperer les infos de la notes de frais pour l'utiliser dans la partie admin.
+
+La config des taux d'indémnités kilométriques est faite dans le fichier `assets/expense-report-form/config/expense-report.json` pour la partie `client` et également dans `config/services.yaml` pour l'injection dans le container coté `server`.
+⚠️ en cas de modif des taux, il faut bien penser à mettre à jour les deux endroits.
+
+#### la vérification et validation des notes de frais par la comptabilité (partie admin).
+
+La 2eme partie, vérification des notes de frais, est une [interface distincte développée en nextjs](https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club).
+Les taux d'indémnités kilométriques sont également configurés dans le fichier https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club/blob/main/app/config.ts.

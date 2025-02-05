@@ -280,3 +280,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
         }
     }
 }
+
+if (!$errTab && $evtUrl) {
+    header('Location: ' . $evtUrl);
+    exit;
+}

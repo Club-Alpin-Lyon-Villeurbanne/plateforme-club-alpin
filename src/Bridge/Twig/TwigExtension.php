@@ -68,7 +68,7 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         if (!$event->joinHasStarted()) {
             return '';
         }
-        if ($event->getJoinMax() <= \count($event->getParticipations())) {
+        if ($event->getNgensMax() <= \count($event->getParticipations())) {
             return 'off';
         }
 
@@ -89,11 +89,11 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         if (!$event->joinHasStarted()) {
             return sprintf('Les inscriptions pour cette sortie commenceront le %s', date('d/m/y', $event->getJoinStart()));
         }
-        if ($event->getJoinMax() <= \count($event->getParticipations())) {
-            return sprintf('Les %d places libres ont été réservées', $event->getJoinMax());
+        if ($event->getNgensMax() <= \count($event->getParticipations())) {
+            return sprintf('Les %d places libres ont été réservées', $event->getNgensMax());
         }
 
-        return sprintf('%d places restantes', $event->getJoinMax() - \count($event->getParticipations()));
+        return sprintf('%d places restantes', max(0, $event->getNgensMax() - \count($event->getParticipations())));
     }
 
     public function getParticipationStatusName(?EventParticipation $participation): string
@@ -140,6 +140,7 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
 
     public function formatDate($date, string $format = 'd/MM/YYYY')
     {
+        // see https://unicode.org/reports/tr35/tr35-dates.html#table-date-field-symbol-table
         return (new \IntlDateFormatter(
             'fr-FR',
             \IntlDateFormatter::FULL,

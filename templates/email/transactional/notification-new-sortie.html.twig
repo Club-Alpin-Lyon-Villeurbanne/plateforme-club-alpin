@@ -4,15 +4,14 @@
     {{ prefix }}[{{ entity.commission.title }}] {{ entity.titre }}
 {%- endblock %}
 
-{% block rappel_objet '' %}
+{% block rappel_objet 'Nouvelle sortie: ' ~ entity.titre %}
 
 {% block inner_html %}
     <p>
-        Une nouvelle sortie "{{ entity.titre }}" vient d'être publiée sur le site du Club Alpin Français Lyon-Villeurbanne dans la commission {{ entity.commission.title }}.
-        <a href="{{ url('sortie', {code: entity.code, id: entity.id}) }}">Voir la sortie</a>.
+        Une nouvelle sortie <a href="{{ url('sortie', {code: entity.code, id: entity.id}) }}">"{{ entity.titre }}"</a> vient d'être publiée sur le site du Club Alpin Français Lyon-Villeurbanne dans la commission <b>{{ entity.commission.title }}</b>.
     </p>
     <p>
-        Vous pouvez gérer vos alertes depuis <a href="{{ url('profil_alertes') }}">votre espace alertes</a>.
+        Vous pouvez gérer vos alertes depuis <a href="{{ url('profil_alertes') }}">votre espace "mes alertes"</a>.
     </p>
 {% endblock %}
 
@@ -20,5 +19,5 @@
     Une nouvelle sortie "{{ entity.titre }}" vient d'être publiée sur le site du Club Alpin Français Lyon-Villeurbanne dans la commission {{ entity.commission.title }}.
     Voir la sortie ({{ url('sortie', {code: entity.code, id: entity.id}) }}).
 
-    Vous pouvez gérer vos alertes depuis votre espace alertes ({{ url('profil_alertes') }}).
+    Vous pouvez gérer vos alertes depuis votre espace "mes alertes" ({{ url('profil_alertes') }}).
 {% endblock %}
