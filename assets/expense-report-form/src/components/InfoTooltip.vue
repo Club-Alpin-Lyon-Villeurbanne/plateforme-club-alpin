@@ -3,7 +3,6 @@
     <button
       type="button"
       @click="handleToggleTooltip"
-      @blur="handleBlur"
       class="tw-flex tw-items-center tw-justify-center tw-rounded-full tw-bg-gray-100 tw-p-1.5 tw-text-gray-600 hover:tw-bg-gray-200 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-indigo-600"
       :aria-label="ariaLabel"
       :aria-expanded="isVisible"
@@ -29,7 +28,7 @@
           pour plus d'infos.
         </div>
         <button
-          @click="isVisible = false"
+          @click="handleClose"
           class="tw-ml-2 tw-text-gray-400 hover:tw-text-white"
           aria-label="Fermer"
         >
@@ -65,7 +64,7 @@ const handleToggleTooltip = () => {
   isVisible.value = !isVisible.value;
 };
 
-const handleBlur = () => {
+const handleClose = () => {
   isVisible.value = false;
 };
 </script> 
