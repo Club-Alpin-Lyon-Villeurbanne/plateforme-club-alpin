@@ -16,36 +16,42 @@
         {% set transport_types = {
           'PERSONAL_VEHICLE': 'Véhicule personnel (taux : ' ~ tauxKilometriqueVoiture ~ ' €/km)',
           'CLUB_MINIBUS': 'Minibus du club (taux : ' ~ tauxKilometriqueMinibus ~ ' €/km)',
-          'RENTAL_MINIBUS': 'Minibus de location (taux : ' ~ tauxKilometriqueMinibus ~ ' €/km)',
+          'RENTAL_MINIBUS': 'Minibus de location',
           'PUBLIC_TRANSPORT': 'Transport en commun'
         } %}
         {{ transport_types[transport.type]|default('Inconnu') }}
       </li>
 
-      {% set transport_details = {
-        'PERSONAL_VEHICLE': [
-          {'label': 'Distance', 'value': transport.distance ~ ' km'},
-          {'label': 'Péage', 'value': transport.tollFee ~ ' €'}
-        ],
-        'CLUB_MINIBUS': [
-          {'label': 'Distance', 'value': transport.distance ~ ' km'},
-          {'label': 'Péage', 'value': transport.tollFee ~ ' €'},
-          {'label': 'Carburant', 'value': transport.fuelExpense ~ ' €'},
-          {'label': 'Nombre de passagers', 'value': transport.passengerCount}
-        ],
-        'RENTAL_MINIBUS': [
-          {'label': 'Péage', 'value': transport.tollFee ~ ' €'},
-          {'label': 'Carburant', 'value': transport.fuelExpense ~ ' €'},
-          {'label': 'Location', 'value': transport.rentalPrice ~ ' €'},
-          {'label': 'Nombre de passagers', 'value': transport.passengerCount}
-        ],
-        'PUBLIC_TRANSPORT': [
-          {'label': 'Prix du ticket', 'value': transport.ticketPrice ~ ' €'}
-        ]
-      } %}
+      {% if transport.type == 'PERSONAL_VEHICLE' %}
+          {% set transport_details = [
+              {'label': 'Distance', 'value': transport.distance ~ ' km'},
+              {'label': 'Péage', 'value': transport.tollFee ~ ' €'}
+          ] %}
+      {% elseif transport.type == 'CLUB_MINIBUS' %}
+          {% set transport_details = [
+              {'label': 'Distance', 'value': transport.distance ~ ' km'},
+              {'label': 'Péage', 'value': transport.tollFee ~ ' €'},
+              {'label': 'Carburant', 'value': (transport.fuelExpense|default(0)) ~ ' €'},
+              {'label': 'Nombre de passagers', 'value': (transport.passengerCount|default(0))}
+          ] %}
+      {% elseif transport.type == 'RENTAL_MINIBUS' %}
+          {% set transport_details = [
+              {'label': 'Péage', 'value': transport.tollFee ~ ' €'},
+              {'label': 'Carburant', 'value': (transport.fuelExpense|default(0)) ~ ' €'},
+              {'label': 'Location', 'value': (transport.rentalPrice|default(0)) ~ ' €'},
+              {'label': 'Nombre de passagers', 'value': (transport.passengerCount|default(0))}
+          ] %}
+      {% elseif transport.type == 'PUBLIC_TRANSPORT' %}
+          {% set transport_details = [
+              {'label': 'Prix du ticket', 'value': (transport.ticketPrice|default(0)) ~ ' €'}
+          ] %}
+      {% else %}
+          {% set transport_details = [] %}
+      {% endif %}
 
-      {% for detail in transport_details[transport.type]|default([]) %}
-        <li><strong>{{ detail.label }} :</strong> {{ detail.value }}</li>
+
+      {% for detail in transport_details|default([]) %}
+          <li><strong>{{ detail.label }} :</strong> {{ detail.value }}</li>
       {% endfor %}
     </ul>
   {% else %}
@@ -122,7 +128,7 @@
 Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} est envoyée.
 
 {# ================== Section TRANSPORT ================== #}
-{% set transport = details.transport %}
+{% set transport = details.transport| default %}
 {% if transport is not empty %}
 TRANSPORT
 - Type : {% if transport.type == "PERSONAL_VEHICLE" %}Véhicule personnel (taux : {{ tauxKilometriqueVoiture }} €/km){% elseif transport.type == "CLUB_MINIBUS" %}Minibus du club (taux : {{ tauxKilometriqueMinibus }} €/km){% elseif transport.type == "RENTAL_MINIBUS" %}Minibus de location (taux : {{ tauxKilometriqueMinibus }} €/km){% elseif transport.type == "PUBLIC_TRANSPORT" %}Transport en commun{% else %}Inconnu{% endif %}

@@ -127,3 +127,20 @@ On y accède via l'url https://www.clubalpinlyon.fr/admin/. Les identifiants en 
 
 **Pourquoi le code n'est-il pas open source ?**  
 Nous avons une réelle volonté d'ouvrir ce code, mais un audit SSI approfondi a révélé que le projet nécessite encore des corrections au niveau de la sécurité avant d'être partagé publiquement.
+
+
+## Notes de frais
+L'application permet de gérer les notes de frais des sorties.
+Cela consiste en 2 parties: 
+### la soumission des notes de frais par les encadrants (partie soumission)
+La première partie est une interface vuejs dispsonible dans la page de chaque sortie.
+Un template twig pour envoyer un récap de la demande de note de frais à l'encadrant.
+Une API pour récuperer les infos de la notes de frais pour l'utiliser dans la partie admin.
+
+La config des taux d'indémnités kilométriques est faite dans le fichier `assets/expense-report-form/config/expense-report.json` pour la partie `client` et également dans `config/services.yaml` pour l'injection dans le container coté `server`.
+⚠️ en cas de modif des taux, il faut bien penser à mettre à jour les deux endroits.
+
+### la vérification et validation des notes de frais par la comptabilité (partie admin).
+
+La 2eme partie, vérification des notes de frais, est une [interface distincte développée en nextjs](https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club).
+Les taux d'indémnités kilométriques sont également configurés dans le fichier https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club/blob/main/app/config.ts.
