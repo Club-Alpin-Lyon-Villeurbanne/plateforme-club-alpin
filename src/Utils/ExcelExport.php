@@ -66,7 +66,7 @@ class ExcelExport
 
                 $array = [
                     $count - 1,
-                    $name ?? ' ',
+                    $name,
                     $status,
                     $data['liste']->getRole() ?? ' ',
                     $user->getCafnum() ?? ' ',
