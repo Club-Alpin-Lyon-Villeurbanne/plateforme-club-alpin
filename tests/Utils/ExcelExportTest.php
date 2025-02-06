@@ -5,26 +5,25 @@ namespace App\Tests\Utils;
 use App\Entity\User;
 use App\Utils\ExcelExport;
 use PHPUnit\Framework\TestCase;
-use DateTime;
-use ReflectionClass;
 
 class ExcelExportTest extends TestCase
 {
     private ExcelExport $excelExport;
-    
+
     protected function setUp(): void
     {
         $this->excelExport = new ExcelExport();
     }
 
     /**
-     * Helper method to access private methods
+     * Helper method to access private methods.
      */
     private function invokePrivateMethod($object, string $methodName, array $parameters = [])
     {
-        $reflection = new ReflectionClass(get_class($object));
+        $reflection = new \ReflectionClass($object::class);
         $method = $reflection->getMethod($methodName);
         $method->setAccessible(true);
+
         return $method->invokeArgs($object, $parameters);
     }
 
@@ -40,40 +39,40 @@ class ExcelExportTest extends TestCase
     public function dateProvider(): array
     {
         $currentYear = (int) date('Y');
-        
+
         return [
             'DateTime object' => [
-                new DateTime("$currentYear-01-01"),
-                0
+                new \DateTime("$currentYear-01-01"),
+                0,
             ],
             'DateTime object 20 years ago' => [
-                new DateTime(($currentYear - 20) . "-01-01"),
-                20
+                new \DateTime(($currentYear - 20) . '-01-01'),
+                20,
             ],
             'Unix timestamp' => [
                 strtotime("$currentYear-01-01"),
-                0
+                0,
             ],
             'Unix timestamp 10 years ago' => [
-                strtotime(($currentYear - 10) . "-01-01"),
-                10
+                strtotime(($currentYear - 10) . '-01-01'),
+                10,
             ],
             'Date string' => [
                 "$currentYear-01-01",
-                0
+                0,
             ],
             'Date string 5 years ago' => [
-                ($currentYear - 5) . "-01-01",
-                5
-            ]
+                ($currentYear - 5) . '-01-01',
+                5,
+            ],
         ];
     }
 
     public function testExport(): void
     {
-        $title = "Test Export";
+        $title = 'Test Export';
         $rsm = ['ID', 'Name', 'Status'];
-    
+
         $user = $this->createMock(User::class);
         $user->method('getCiv')->willReturn('M.');
         $user->method('getLastname')->willReturn('DOE');
@@ -84,7 +83,7 @@ class ExcelExportTest extends TestCase
         $user->method('getTel')->willReturn('0123456789');
         $user->method('getTel2')->willReturn('0987654321');
         $user->method('getEmail')->willReturn('john.doe@example.com');
-    
+
         $liste = $this->getMockBuilder(\stdClass::class)
             ->addMethods(['getUser', 'getStatus', 'getRole'])
             ->getMock();
@@ -93,21 +92,19 @@ class ExcelExportTest extends TestCase
         $liste->method('getStatus')->willReturn(1);
         $liste->method('getRole')->willReturn('Member');
 
-    
         $datas = [['liste' => $liste]];
         ob_start();
         $response = $this->excelExport->export($title, $datas, $rsm);
         $response->send(); // Force execution
         $output = ob_get_clean();
-        
+
         $this->assertNotEmpty($output, 'Excel output should not be empty');
         $this->assertStringContainsString('PK', $output, 'Excel output should be a valid XLSX file');
     }
-    
 
     public function testExportWithEmptyData(): void
     {
-        $title = "Empty Export";
+        $title = 'Empty Export';
         $rsm = ['ID', 'Name', 'Status'];
         $datas = [];
 
@@ -141,4 +138,4 @@ class ExcelExportTest extends TestCase
             'array value' => [[]],
         ];
     }
-} 
+}
