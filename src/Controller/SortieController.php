@@ -11,7 +11,6 @@ use App\Repository\EventParticipationRepository;
 use App\Repository\UserRepository;
 use App\Twig\JavascriptGlobalsExtension;
 use App\Utils\ExcelExport;
-use App\Utils\IcalGenerator;
 use App\Utils\PdfGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
@@ -346,7 +345,7 @@ class SortieController extends AbstractController
 
         $participations = $event
             ->getParticipations(null, '*' === $status ? null : $status)
-            ->map(fn(EventParticipation $participation) => $participation->getUser())
+            ->map(fn (EventParticipation $participation) => $participation->getUser())
             ->toArray();
 
         $mailer->send($participations, 'transactional/message-sortie', [
@@ -466,8 +465,8 @@ class SortieController extends AbstractController
     {
         $datas = $participationRepository->getSortedParticipations($event, null, null);
 
-        $rsm = [" ", "PARTICIPANTS (NOM, PRÉNOM)", "STATUS","RÔLE", "N°ADHÉRENT", "AGE", "DATE D'ADHÉSION", "TÉL.. PROFESSIONNEL", "TÉL.. I.C.E", "EMAIL"];
+        $rsm = [' ', 'PARTICIPANTS (NOM, PRÉNOM)', 'STATUS', 'RÔLE', 'N°ADHÉRENT', 'AGE', "DATE D'ADHÉSION", 'TÉL.. PROFESSIONNEL', 'TÉL.. I.C.E', 'EMAIL'];
 
-        return $excelExport->export(substr($event->getTitre(), 0, 3).time(), $datas, $rsm);
+        return $excelExport->export(substr($event->getTitre(), 0, 3) . time(), $datas, $rsm);
     }
 }
