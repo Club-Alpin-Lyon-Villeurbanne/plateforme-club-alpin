@@ -15,9 +15,9 @@
     <div
       v-for="(field, idx) in others"
       :key="field.key"
-      class="tw-mt-5 tw-flex"
+      class="tw-mt-2 tw-flex"
     >
-      <div class="tw-flex tw-gap-5">
+      <div class="tw-flex tw-gap-3">
         <ExpenseFieldV2
           :name="`others[${idx}].price`"
           :expense-id="field.value.expenseId"
@@ -25,7 +25,7 @@
           :requires-attachment="true"
         />
         <div class="tw-flex tw-flex-col">
-          <div class="tw-flex tw-min-w-full">
+          <div class="tw-flex tw-min-w-full tw-gap-2">
             <Input
               label="Commentaire"
               :name="`others[${idx}].comment`"
@@ -35,7 +35,7 @@
             />
             <div
               @click="removeOther(idx)"
-              class="tw-ml-12 tw-flex tw-h-7 tw-w-7 tw-cursor-pointer tw-items-center tw-justify-center tw-self-end tw-rounded-md tw-shadow-sm tw-ring-1 tw-ring-inset tw-ring-gray-300 tw-transition-colors tw-duration-200 hover:tw-text-red-500 hover:tw-ring-red-500 focus:tw-text-red-500 focus:tw-outline-none focus:tw-ring-red-500 focus:tw-ring-opacity-50"
+              class="tw-ml-2 tw-flex tw-h-6 tw-w-6 tw-cursor-pointer tw-items-center tw-justify-center tw-self-end tw-rounded-md tw-shadow-sm tw-ring-1 tw-ring-inset tw-ring-gray-300 tw-transition-colors tw-duration-200 hover:tw-text-red-500 hover:tw-ring-red-500 focus:tw-text-red-500 focus:tw-outline-none focus:tw-ring-red-500 focus:tw-ring-opacity-50"
             >
               <div class="block tw-h-4 tw-w-4" v-html="trashIcon"></div>
             </div>
@@ -45,7 +45,7 @@
     </div>
     <button
       @click.prevent="addOther"
-      class="tw-mt-8 tw-rounded-full tw-border tw-border-dashed tw-border-slate-400/70 tw-bg-transparent tw-px-2 tw-py-1 hover:tw-cursor-pointer hover:tw-border-slate-400"
+      class="tw-mt-4 tw-rounded-full tw-border tw-border-dashed tw-border-slate-400/70 tw-bg-transparent tw-px-2 tw-py-1 hover:tw-cursor-pointer hover:tw-border-slate-400"
     >
       + Ajouter une dépense
     </button>

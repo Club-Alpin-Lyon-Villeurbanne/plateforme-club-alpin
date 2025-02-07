@@ -1,7 +1,7 @@
 <template>
-  <div class="tw-border-b tw-border-gray-900/10 tw-pb-6">
+  <div class="tw-border-b tw-border-gray-900/10 tw-pb-3">
     <div class="tw-flex tw-items-center tw-gap-2">
-      <h2 class="tw-text-lg tw-font-medium tw-leading-7 tw-text-gray-900">
+      <h2 class="tw-text-base tw-font-medium tw-leading-5 tw-text-gray-900">
         Transport
       </h2>
       <InfoTooltip
@@ -9,9 +9,9 @@
         ariaLabel="Informations sur le transport"
       />
     </div>
-    <div class="tw-mt-5 tw-flex tw-gap-10">
+    <div class="tw-mt-2 tw-flex tw-gap-4">
       <div class="tw-relative">
-        <label class="tw-block tw-text-sm tw-leading-6 tw-text-gray-900"
+        <label class="tw-block tw-text-xs tw-leading-4 tw-text-gray-900"
           >Type de transport</label
         >
         <div class="tw-mt-0.5">
@@ -41,7 +41,7 @@
         <div
           v-if="valueType === TransportType.PERSONAL_VEHICLE"
         >
-          <div class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4">
+          <div class="tw-grid tw-grid-cols-2 tw-gap-x-4 tw-gap-y-2">
             <ExpenseFieldV2
               name="transport.tollFee"
               expense-id="tollFee"
@@ -56,7 +56,7 @@
           </div>
         </div>
         <div
-          class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4"
+          class="tw-grid tw-grid-cols-2 tw-gap-x-4 tw-gap-y-2"
           v-else-if="valueType === TransportType.RENTAL_MINIBUS"
         >
           <ExpenseFieldV2
@@ -87,7 +87,7 @@
         <div
           v-if="valueType === TransportType.CLUB_MINIBUS"
         >
-          <div class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4">
+          <div class="tw-grid tw-grid-cols-2 tw-gap-x-4 tw-gap-y-2">
             <ExpenseFieldV2
               name="transport.tollFee"
               expense-id="tollFee"
@@ -114,7 +114,7 @@
           </div>
         </div>
         <div
-          class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4"
+          class="tw-grid tw-grid-cols-2 tw-gap-x-4 tw-gap-y-2"
           v-if="valueType === TransportType.PUBLIC_TRANSPORT"
         >
           <ExpenseFieldV2
