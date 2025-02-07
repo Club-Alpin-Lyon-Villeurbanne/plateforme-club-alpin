@@ -123,9 +123,10 @@
         tabindex="0"
         aria-label="Formulaire de retour d'avis"
       >
-      Donnez-nous votre avis
+        💬 Donnez-nous votre avis
       </a>
     </div>
+    <div class="tw-h-4"></div>
   </div>
 </template>
 
