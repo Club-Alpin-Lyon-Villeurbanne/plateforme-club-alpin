@@ -114,6 +114,19 @@
       </div>
       <div v-else>Impossible de charger la note de frais</div>
     </div>
+    <div class="tw-mt-4 tw-text-center">
+      <a
+        href="https://forms.gle/pjoKg3myPKhPmhdC6"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="tw-text-blue-600 hover:tw-underline"
+        tabindex="0"
+        aria-label="Formulaire de retour d'avis"
+      >
+        💬 Donnez-nous votre avis
+      </a>
+    </div>
+    <div class="tw-h-4"></div>
   </div>
 </template>
 
