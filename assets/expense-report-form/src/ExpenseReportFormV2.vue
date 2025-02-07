@@ -1,9 +1,9 @@
 <template>
   <div
-    class="expense-report-form tw-mb-6 tw-mr-[2rem] tw-bg-white tw-px-4 tw-font-sans tw-ring-1 tw-ring-slate-900/10"
+    class="expense-report-form tw-mb-2 tw-mr-[2rem] tw-bg-white tw-px-4 tw-font-sans tw-ring-1 tw-ring-slate-900/10"
   >
     <div
-      class="tw-flex tw-flex-row tw-justify-between tw-border-b tw-border-slate-300 tw-px-4 tw-py-4"
+      class="tw-flex tw-flex-row tw-justify-between tw-border-b tw-border-slate-300 tw-px-4 tw-py-1"
     >
       <span class="antialiased tw-text-2xl tw-font-medium">Note de frais</span>
       <span
@@ -13,7 +13,7 @@
         >{{ badge.label }}</span
       >
     </div>
-    <div class="tw-py-4">
+    <div class="tw-py-1">
       <div v-if="isLoading">Chargement de la note de frais...</div>
       <div v-else-if="expenseReport">
         <div v-if="expenseReport.status === ExpenseStatus.SUBMITTED">
@@ -27,7 +27,7 @@
         <div v-else>
           <div
             v-if="expenseReport.statusComment"
-            class="tw-mb-4 tw-rounded-lg tw-border-x-4 tw-border-red-500 tw-bg-red-50 tw-p-2"
+            class="tw-mb-2 tw-rounded-lg tw-border-x-4 tw-border-red-500 tw-bg-red-50 tw-p-1"
           >
             <div class="tw-text-red-700">
               <p class="tw-font-semibold tw-italic">
@@ -35,23 +35,21 @@
               </p>
             </div>
           </div>
-          <form class="tw-space-y-6 tw-px-4">
+          <form class="tw-space-y-1 tw-px-4">
             <TransportSection />
             <AccommodationSection />
             <OtherSection />
             <ResultSection v-model="values" />
-            <div class="tw-mb-4">
-              <h2
-                class="tw-text-lg tw-font-medium tw-leading-7 tw-text-gray-900"
-              >
-                Remboursement
+            <div class="tw-mb-1">
+              <h2 class="tw-text-lg tw-font-medium tw-leading-6 tw-text-gray-900">
+                <strong>REMBOURSEMENT</strong>
               </h2>
-              <p class="tw-text-xs tw-leading-6 tw-text-gray-600">
-                Si vous le souhaitez, vous pouvez faire don de cette note de
-                frais au club. <br />
+              <p class="tw-text-xs tw-leading-5 tw-text-gray-600">
+                Si vous le souhaitez, vous pouvez faire <strong>don</strong> de cette note de frais au club.
+                <br />
                 Vous recevrez en fin d'année un reçu fiscal en attestant.
               </p>
-              <div class="tw-mt-2 tw-space-y-2">
+              <div class="tw-mt-0.5 tw-space-y-1">
                 <div class="tw-flex tw-items-center tw-gap-x-3">
                   <input
                     type="radio"
@@ -59,12 +57,13 @@
                     name="refundRequired"
                     :value="false"
                     v-model="refundRequired"
-                    class="tw-h-4 tw-w-4 tw-border-gray-300 tw-text-indigo-600 focus:tw-ring-indigo-600"
+                    class="tw-h-3 tw-w-3 tw-border-gray-300 tw-text-indigo-600 focus:tw-ring-indigo-600"
                   />
                   <label
                     for="refund_required_no"
-                    class="tw-block tw-text-sm tw-font-medium tw-leading-6 tw-text-gray-900"
-                    >Je fais don de cette note de frais au club
+                    class="tw-block tw-text-sm tw-font-medium tw-leading-5 tw-text-gray-900"
+                  >
+                    Je fais <strong>don</strong> de cette note de frais au club
                   </label>
                 </div>
                 <div class="tw-flex tw-items-center tw-gap-x-3">
@@ -79,13 +78,14 @@
                   <label
                     for="refund_required_no"
                     class="tw-block tw-text-sm tw-font-medium tw-leading-6 tw-text-gray-900"
-                    >Je demande le remboursement de cette note de frais</label
                   >
+                    Je demande le <strong>remboursement</strong> de cette note de frais
+                  </label>
                 </div>
               </div>
             </div>
           </form>
-          <div class="tw-mt-10 tw-flex tw-justify-end tw-gap-5">
+          <div class="tw-mt-1 tw-flex tw-justify-end tw-gap-3">
             <button
               v-if="expenseReport.status === ExpenseStatus.DRAFT"
               type="button"
@@ -94,7 +94,7 @@
                 'tw-cursor-not-allowed tw-opacity-50': isSaveButtonLoading,
               }"
               @click="onSaveAsDraft"
-              class="tw-cursor-pointer tw-rounded-md tw-bg-slate-400 tw-px-2 tw-py-2 tw-font-semibold tw-text-white"
+              class="tw-cursor-pointer tw-rounded-md tw-bg-slate-400 tw-px-2 tw-py-1 tw-font-semibold tw-text-white"
             >
               Enregistrer en brouillon
             </button>
@@ -114,7 +114,7 @@
       </div>
       <div v-else>Impossible de charger la note de frais</div>
     </div>
-    <div class="tw-mt-4 tw-text-center">
+    <div class="tw-mt-1 tw-text-center">
       <a
         href="https://forms.gle/pjoKg3myPKhPmhdC6"
         target="_blank"
@@ -126,7 +126,7 @@
         💬 Donnez-nous votre avis
       </a>
     </div>
-    <div class="tw-h-4"></div>
+    <div class="tw-h-1"></div>
   </div>
 </template>
 
