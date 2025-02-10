@@ -47,6 +47,7 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $expenseReport = new ExpenseReport();
         $expenseReport->setUser($user);
         $expenseReport->setStatus(ExpenseReportStatusEnum::SUBMITTED);
+        $expenseReport->setDetails(json_encode([]));
         $expenseReport->setEvent($event);
         $em->persist($expenseReport);
         $em->flush();
@@ -74,6 +75,7 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $expenseReport = new ExpenseReport();
         $expenseReport->setUser($user);
         $expenseReport->setStatus(ExpenseReportStatusEnum::SUBMITTED);
+        $expenseReport->setDetails(json_encode([]));
         $expenseReport->setEvent($event);
         $em->persist($expenseReport);
         $em->flush();
