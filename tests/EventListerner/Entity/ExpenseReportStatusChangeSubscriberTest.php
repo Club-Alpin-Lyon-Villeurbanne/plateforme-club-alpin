@@ -36,6 +36,8 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNickname(), $user->getEmail()));
         $this->assertEmailTextBodyContains($emails[0], 'Si vous avez fait une erreur et souhaitez modifier votre note de frais,');
         $this->assertEmailHtmlBodyContains($emails[0], 'Si vous avez fait une erreur et souhaitez modifier votre note de frais,');
+        $this->assertEmailTextBodyContains($emails[0], 'est envoyée à la comptabilité.');
+        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et est envoyée à la comptabilité.');
     }
 
     public function testItSendMailOnStatusChangeRejected()

@@ -43,7 +43,6 @@ class ExpenseReportStatusChangeSubscriber
                 continue;
             }
 
-            // Préparation des paramètres communs
             $params = ['report' => $entity];
             $detailsArray = json_decode($entity->getDetails(), true);
             $summary = $this->calculator->calculateTotal($detailsArray);
@@ -58,7 +57,6 @@ class ExpenseReportStatusChangeSubscriber
                 'status' => $newStatus,
             ]);
 
-            // Envoi de l'email avec un seul template
             $this->mailer->send(
                 $entity->getUser(),
                 'transactional/expense-report-status-email',
