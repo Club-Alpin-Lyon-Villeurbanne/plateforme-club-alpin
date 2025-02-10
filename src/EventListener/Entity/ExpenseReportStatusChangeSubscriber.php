@@ -5,7 +5,6 @@ namespace App\EventListener\Entity;
 use App\Entity\ExpenseReport;
 use App\Mailer\Mailer;
 use App\Service\ExpenseReportCalculator;
-use App\Utils\Enums\ExpenseReportStatusEnum;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
@@ -48,7 +47,7 @@ class ExpenseReportStatusChangeSubscriber
             $params = ['report' => $entity];
             $detailsArray = json_decode($entity->getDetails(), true);
             $summary = $this->calculator->calculateTotal($detailsArray);
-            
+
             $params = array_merge($params, [
                 'details' => $detailsArray,
                 'summary' => $summary,
@@ -56,9 +55,8 @@ class ExpenseReportStatusChangeSubscriber
                 'formattedReimbursable' => $this->calculator->formatEuros($summary['reimbursable']),
                 'tauxKilometriqueVoiture' => $this->calculator->getTauxKilometriqueVoiture(),
                 'tauxKilometriqueMinibus' => $this->calculator->getTauxKilometriqueMinibus(),
-                'status' => $newStatus
+                'status' => $newStatus,
             ]);
-                    
 
             // Envoi de l'email avec un seul template
             $this->mailer->send(
