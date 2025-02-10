@@ -9,17 +9,18 @@
 
 {% block inner_html %}
 <div>
-    {% if status != 'submitted' %}
     <p>
         Votre note de frais {% if report.event %}pour <a href="{{ url('sortie', {code: report.event.code, id: report.event.id}) }}">"{{ report.event.titre }}"</a>{% endif %} 
-        a été traitée et est {{ status == 'rejected' ? 'refusée' : 'désormais acceptée' }}.
+        a été traitée et
+            {%- if status == 'submitted' %}est envoyée à la comptabilité
+            {%- elseif status == 'rejected' %}a été refusée
+            {%- else %}a été acceptée{% endif %}
     </p>
     
     {% if status == 'rejected' and report.statusComment %}
     <p>
         Message laissé par la comptabilité : "{{ report.statusComment }}"
     </p>
-    {% endif %}
     {% endif %}
     <h2>Détails</h2>
     <ul>
@@ -148,14 +149,14 @@
 
 {% block inner_txt %}
 Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 
-{%- if status == 'submitted' %}est envoyée
-{%- elseif status == 'rejected' %}a été refusée
-{%- else %}a été acceptée{% endif %}
+    {%- if status == 'submitted' %}est envoyée
+    {%- elseif status == 'rejected' %}a été refusée
+    {%- else %}a été acceptée{% endif %}
 
     {% if report.event %}({{ url('sortie', {code: report.event.code, id: report.event.id}) }}){% endif %}
 
     {% if status == 'rejected' and report.statusComment %}
-Message laissé par la comptabilité : "{{ report.statusComment }}"
+        Message laissé par la comptabilité : "{{ report.statusComment }}"
     {% endif %}
 
 - Encadrant.e: {{ report.user.firstname }} {{ report.user.lastname }}

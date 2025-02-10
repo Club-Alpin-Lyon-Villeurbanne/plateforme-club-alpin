@@ -62,8 +62,8 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNickname(), $user->getEmail()));
-        $this->assertEmailTextBodyContains($emails[0], 'a été traitée et est refusée');
-        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et est refusée');
+        $this->assertEmailTextBodyContains($emails[0], 'a été refusée');
+        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et a été refusée');
     }
 
     public function testItSendMailOnStatusChangeApproved()
@@ -90,7 +90,7 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNickname(), $user->getEmail()));
-        $this->assertEmailTextBodyContains($emails[0], 'a été traitée et est désormais acceptée');
-        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et est désormais acceptée');
+        $this->assertEmailTextBodyContains($emails[0], 'a été acceptée');
+        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et a été acceptée');
     }
 }
