@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="/css/loginadmin.css" type="text/css"  media="screen" />
 </head>
 <body style="text-align:center;">
+    <a id="logo" href="/" title="{{ db_content('logo-title') }}">
+        <img src="{{ db_content('logo-img-src') }}" alt="{{ db_content('logo-title') }}" title="{{ db_content('logo-title') }}" />
+    </a>    
     {% if error is defined %}
         <div class="erreur" style="width:400px;margin:30px auto;text-align:center;padding: 10px; border: 1px solid red;">
             {{ error }}
