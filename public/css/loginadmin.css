@@ -1,9 +1,12 @@
 
 	body{
 	font-family:Arial;
-	padding:130px 0px 0px 0px;
+	padding: 30px;
 	margin: 0px 0px 0px;
-	background:url('../img/logo.png') no-repeat center 20px;
+	}
+	#logo{
+		display: block;
+		margin-bottom: 40px;
 	}
 	p.info{
 	margin:0px 0px 0px 0px;
