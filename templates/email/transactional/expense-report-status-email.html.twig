@@ -11,7 +11,7 @@
 <div>
     <p>
         Votre note de frais {% if report.event %}pour <a href="{{ url('sortie', {code: report.event.code, id: report.event.id}) }}">"{{ report.event.titre }}"</a>{% endif %} 
-        a été traitée et
+        a été traitée et 
             {%- if status == 'submitted' %}est envoyée à la comptabilité
             {%- elseif status == 'rejected' %}a été refusée
             {%- else %}a été acceptée{% endif %}
