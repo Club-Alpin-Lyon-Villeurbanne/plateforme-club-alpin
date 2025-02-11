@@ -32,7 +32,7 @@ class FfcamFileParser
 
     private function parseLine(string $line, int $lineNumber): User
     {
-        $line = mb_convert_encoding($line, 'UTF-8');
+        $line = mb_convert_encoding($line, 'UTF-8', 'ISO-8859-1');
         $line = stripslashes($line);
         $line = explode(';', $line);
 
