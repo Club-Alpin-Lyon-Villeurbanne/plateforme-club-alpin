@@ -392,7 +392,7 @@ inclure('infos-matos', 'mini');
 
         theme_advanced_toolbar_location : "top",
         theme_advanced_toolbar_align : "left",
-        theme_advanced_statusbar_location : "bottom",
+        theme_advanced_statusbar_location : "none",
         theme_advanced_resizing : true,
 
         document_base_url : '<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>',
