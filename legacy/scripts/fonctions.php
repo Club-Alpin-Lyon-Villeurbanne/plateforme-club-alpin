@@ -10,7 +10,7 @@ function display_sorties($id_user, $limit = 10, $title = '')
 {
     $req = '
         SELECT SQL_CALC_FOUND_ROWS
-            id_evt, code_evt, status_evt, status_legal_evt, cancelled_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt, join_max_evt, join_start_evt
+            id_evt, code_evt, status_evt, status_legal_evt, cancelled_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, child_version_from_evt, join_max_evt, join_start_evt
             , nickname_user
             , title_commission, code_commission
             , role_evt_join

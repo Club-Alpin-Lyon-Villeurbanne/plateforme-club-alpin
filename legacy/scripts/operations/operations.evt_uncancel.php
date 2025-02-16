@@ -12,7 +12,7 @@ if (!$id_evt) {
 
 if (!isset($errTab) || 0 === count($errTab)) {
     // recuperation de la sortie demandée
-    $req = "SELECT id_evt, code_evt, status_evt, titre_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt, tsp_evt, code_commission,
+    $req = "SELECT id_evt, code_evt, status_evt, titre_evt, child_version_from_evt, tsp_evt, code_commission,
         id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user
         FROM caf_evt, caf_user, caf_commission
         WHERE id_evt=$id_evt
@@ -28,18 +28,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
         } else {
             // mise à jour
             if (!isset($errTab) || 0 === count($errTab)) {
-                // si cette sortie fait partie d'un cycle et si la premiere du cycle est annulee on dissocie la sortie actuelle
-                $cycle_parent_evt = $handle['cycle_parent_evt'];
-                if ($handle['cycle_parent_evt'] > 0) {
-                    $req = "SELECT id_evt FROM caf_evt WHERE id_evt=$id_evt AND cancelled_evt='0'";
-                    if (!$handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-                        $errTab[] = 'Erreur SQL SELECT COUNT';
-                    } elseif ($handleSql2->num_rows > 0) {
-                        $cycle_parent_evt = null;
-                    }
-                }
 
-                $req = "UPDATE caf_evt SET cancelled_evt='0', cancelled_who_evt=null, cancelled_when_evt='0', status_evt='0',cycle_parent_evt=" . ($cycle_parent_evt ? "'$cycle_parent_evt'" : 'null') . " WHERE caf_evt.id_evt =$id_evt";
+                $req = "UPDATE caf_evt SET cancelled_evt='0', cancelled_who_evt=null, cancelled_when_evt='0', status_evt='0' WHERE caf_evt.id_evt =$id_evt";
                 if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL';
                 }
@@ -47,7 +37,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 LegacyContainer::get('legacy_mailer')->send($handle['email_user'], 'transactional/sortie-reactivee', [
                     'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $handle['code_evt'] . '-' . $handle['id_evt'] . '.html',
                     'event_name' => $handle['titre_evt'],
-                    'is_cycle' => $handle['cycle_master_evt'],
                 ]);
             }
 

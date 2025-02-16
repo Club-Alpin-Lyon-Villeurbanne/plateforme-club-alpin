@@ -22,7 +22,7 @@ if ($id_evt) {
     $req = "SELECT
             id_evt, code_evt, status_evt, status_legal_evt, status_who_evt, status_legal_who_evt,
                 user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt,
-                rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt,
+                rdv_evt,titre_evt, massif_evt, tarif_evt, child_version_from_evt,
                 cancelled_evt, cancelled_who_evt, cancelled_when_evt, description_evt, denivele_evt, difficulte_evt,
                 matos_evt, need_benevoles_evt, lat_evt, long_evt, join_start_evt, ngens_max_evt, join_max_evt,
                 id_groupe, tarif_detail, distance_evt, itineraire,
@@ -61,41 +61,6 @@ if ($id_evt) {
             // participants integres a la sortie
             $handle['joins'] = ['inscrit' => [], 'manuel' => [], 'encadrant' => [], 'stagiaire' => [], 'coencadrant' => [], 'benevole' => [], 'enattente' => []];
 
-            if ($handle['cycle_parent_evt']) {
-                // cette sortie fait partie d'un cycle, alors on ajoute un lien vers son parent
-                $req = '
-                    SELECT id_evt, code_evt, status_evt, status_legal_evt, cancelled_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt, join_max_evt, join_start_evt
-                        , nickname_user, civ_user
-                        , title_commission, code_commission
-                    FROM caf_evt
-                        , caf_user
-                        , caf_commission
-                    WHERE id_user = user_evt
-                    AND id_evt=' . (int) $handle['cycle_parent_evt'] . '
-                    AND id_commission = commission_evt
-                    ORDER BY  `tsp_crea_evt` DESC
-                    LIMIT 1';
-
-                $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                    $handle['cycleparent'] = $handle2;
-                }
-            } elseif ($handle['cycle_master_evt']) {
-                // cette sortie est la premiere d'un cycle, on recupere les infos des sorties suivantes
-                $req = '
-                    SELECT id_evt, code_evt, status_evt, status_legal_evt, cancelled_evt, user_evt, commission_evt, title_commission, code_commission, tsp_evt, titre_evt, cycle_parent_evt
-                    FROM caf_evt
-                        , caf_commission
-                    WHERE cycle_parent_evt=' . (int) $id_evt . '
-                    AND id_commission = commission_evt
-                    ORDER BY `tsp_crea_evt` ASC
-                    LIMIT 30';
-                $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                    $handle['cyclechildren'][] = $handle2;
-                }
-            }
-
             // participants "speciaux" avec droits :
             $req = "SELECT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                         , role_evt_join, is_covoiturage
@@ -115,7 +80,7 @@ if ($id_evt) {
             $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                         , role_evt_join , is_covoiturage
                 FROM caf_evt_join, caf_user
-                WHERE evt_evt_join  = ' . (int) ($handle['cycle_parent_evt'] ?: $id_evt) . '
+                WHERE evt_evt_join = ' . (int) $id_evt . '
                 AND user_evt_join = id_user
                 AND status_evt_join = 0
                 LIMIT 300';
@@ -129,7 +94,7 @@ if ($id_evt) {
             $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                         , role_evt_join, is_covoiturage
                 FROM caf_evt_join, caf_user
-                WHERE evt_evt_join  = ' . (int) ($handle['cycle_parent_evt'] ?: $id_evt) . "
+                WHERE evt_evt_join = ' . (int) $id_evt . "
                 AND user_evt_join = id_user
                 AND role_evt_join LIKE 'inscrit'
                 AND status_evt_join = 1
@@ -143,7 +108,7 @@ if ($id_evt) {
             $req = 'SELECT DISTINCT id_user, cafnum_user, firstname_user, lastname_user, nickname_user, nomade_user, tel_user, tel2_user, email_user, birthday_user, civ_user
                         , role_evt_join, is_covoiturage
                 FROM caf_evt_join, caf_user
-                WHERE evt_evt_join  = ' . (int) ($handle['cycle_parent_evt'] ?: $id_evt) . "
+                WHERE evt_evt_join = ' . (int) $id_evt . "
                 AND user_evt_join = id_user
                 AND role_evt_join LIKE 'manuel'
                 AND status_evt_join = 1

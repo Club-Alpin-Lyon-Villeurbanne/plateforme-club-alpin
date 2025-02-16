@@ -48,8 +48,8 @@ if (allowed('evt_validate_all') || allowed('evt_validate')) {
 
     // requetes pour les sorties en attente de validation de cet user POUR TOUTES LES COMMISSIONS
     if (allowed('evt_validate_all')) {
-        $req = 'SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
-					, join_start_evt, cycle_master_evt, cycle_parent_evt
+        $req = 'SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, child_version_from_evt
+					, join_start_evt
 					, nickname_user
 					, title_commission, code_commission
 		FROM caf_evt, caf_user, caf_commission
@@ -67,8 +67,8 @@ if (allowed('evt_validate_all') || allowed('evt_validate')) {
         $tab = LegacyContainer::get('legacy_user_rights')->getCommissionListForRight('evt_validate');
 
         // sorties à valider, selon la (les) commission dont nous sommes responsables
-        $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
-					, join_start_evt, cycle_master_evt, cycle_parent_evt
+        $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, child_version_from_evt
+					, join_start_evt
 					, nickname_user
 					, title_commission, code_commission
 		FROM caf_evt, caf_user, caf_commission

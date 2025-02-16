@@ -86,33 +86,12 @@ if ($p2) {
         $benevolesTab[] = $handle;
     }
 
-    // sorties creees par moi, et premières d'un cycle, dans la commission courante
-    $parentEvents = [];
-    $req = 'SELECT  id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
-                , title_commission, code_commission
-        FROM caf_evt, caf_commission
-        WHERE user_evt = ' . getUser()->getId() . "
-        AND cycle_master_evt=1
-        AND id_commission = commission_evt
-        AND code_commission = '" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2) . "'
-        ORDER BY tsp_evt DESC
-        LIMIT 200";
-    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-        // compte de sorties enfant
-        $req = 'SELECT COUNT(id_evt) FROM caf_evt WHERE cycle_parent_evt=' . $handle['id_evt'];
-        $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-        $handle['nchildren'] = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
-
-        $parentEvents[] = $handle;
-    }
-
     // MISE A JOUR
     if ($p3 && 'update-' == substr($p3, 0, 7)) {
         // un ID de sortie est vise, il s'agit d'une modif et non d'une creation
         $id_evt = (int) substr(strrchr($p3, '-'), 1);
 
-        $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
+        $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, child_version_from_evt
                 , denivele_evt, distance_evt, matos_evt, difficulte_evt, description_evt, lat_evt, long_evt
                 , ngens_max_evt
                 , join_start_evt, join_max_evt, id_groupe, tarif_detail, need_benevoles_evt, itineraire
@@ -178,8 +157,6 @@ if ($p2) {
             $_POST['tarif_evt'] = $handle['tarif_evt'];
             $_POST['tarif_detail'] = $handle['tarif_detail'];
             $_POST['massif_evt'] = $handle['massif_evt'];
-            $_POST['cycle_master_evt'] = $handle['cycle_master_evt'];
-            $_POST['cycle_parent_evt'] = $handle['cycle_parent_evt'];
             $_POST['id_groupe'] = $handle['id_groupe'];
             $_POST['itineraire'] = $handle['itineraire'];
             $_POST['rdv_evt'] = $handle['rdv_evt'];
@@ -199,21 +176,6 @@ if ($p2) {
             $_POST['need_benevoles_evt'] = $handle['need_benevoles_evt'];
             // special : tsp to days. le timestamp enregistré commence à minuit pile
             $_POST['join_start_evt_days'] = floor(($handle['tsp_evt'] - $handle['join_start_evt']) / 86400);
-
-            // c'est une sortie enfant, recup du parent si sortie creee par un tiers
-            if ($handle['cycle_parent_evt'] > 0) {
-                $_POST['cycle'] = 'child';
-
-                $req = 'SELECT id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
-        FROM caf_evt, caf_commission
-        WHERE id_evt=' . $handle['cycle_parent_evt'] . '
-        AND user_evt != ' . getUser()->getId() . '
-        AND cycle_master_evt=1
-        ORDER BY tsp_evt DESC
-        LIMIT 1';
-                $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-                $parentEvents[] = $handleSql->fetch_array(\MYSQLI_ASSOC);
-            }
         }
     }
 }

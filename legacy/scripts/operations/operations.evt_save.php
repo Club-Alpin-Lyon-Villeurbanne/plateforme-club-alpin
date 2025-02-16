@@ -51,8 +51,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $code_evt = substr(formater($titre_evt, 3), 0, 30);
 
     if ('evt_create' == $_POST['operation']) {
-        $req = "INSERT INTO caf_evt(status_evt ,status_legal_evt ,user_evt ,commission_evt ,tsp_evt ,tsp_end_evt ,tsp_crea_evt ,place_evt ,titre_evt ,code_evt ,massif_evt ,rdv_evt ,tarif_evt, tarif_detail, denivele_evt ,distance_evt ,lat_evt ,long_evt ,matos_evt ,itineraire, difficulte_evt ,description_evt , need_benevoles_evt , join_start_evt, join_max_evt, ngens_max_evt, cycle_master_evt ,cycle_parent_evt ,child_version_from_evt ,child_version_tosubmit, id_groupe, cancelled_evt)
-					VALUES ('0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '" . ($place_evt ?? '') . "', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$tarif_detail', '$denivele_evt', '$distance_evt', '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', '$cycle_master_evt', " . ($cycle_parent_evt ? "'$cycle_parent_evt'" : 'null') . ", '0', '0', " . ($id_groupe ?: 'null') . ", '0');";
+        $req = "INSERT INTO caf_evt(status_evt ,status_legal_evt ,user_evt ,commission_evt ,tsp_evt ,tsp_end_evt ,tsp_crea_evt ,place_evt ,titre_evt ,code_evt ,massif_evt ,rdv_evt ,tarif_evt, tarif_detail, denivele_evt ,distance_evt ,lat_evt ,long_evt ,matos_evt ,itineraire, difficulte_evt ,description_evt , need_benevoles_evt , join_start_evt, join_max_evt, ngens_max_evt ,child_version_from_evt ,child_version_tosubmit, id_groupe, cancelled_evt)
+					VALUES ('0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '" . ($place_evt ?? '') . "', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$tarif_detail', '$denivele_evt', '$distance_evt', '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', '0', '0', " . ($id_groupe ?: 'null') . ", '0');";
     } elseif (isset($_POST['operation']) && 'evt_update' == $_POST['operation']) {
         // MISE A JOUR de l'éléments existant // IMPORTANT : le status repasse à 0
         $req = "UPDATE caf_evt SET `status_evt`=0,
@@ -79,18 +79,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
 				`need_benevoles_evt` =  '$need_benevoles_evt'";
         if (null != $id_groupe) {
             $req .= ", id_groupe = '$id_groupe' ";
-        }
-        if (0 == $cycle_master_evt) {
-            $req .= ', cycle_master_evt = 0 ';
-        } else {
-            $req .= ", cycle_master_evt = '$cycle_master_evt' ";
-        }
-        if (!$cycle_parent_evt) {
-            $req .= ', cycle_parent_evt = null ';
-        } else {
-            $req .= ", cycle_parent_evt = '$cycle_parent_evt' ";
-            $req2 = "UPDATE caf_evt SET cycle_master_evt = 1 WHERE id_evt=$cycle_parent_evt";
-            LegacyContainer::get('legacy_mysqli_handler')->query($req2);
         }
 
         $req .= " WHERE  `caf_evt`.`id_evt` =$id_evt";
@@ -180,51 +168,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
 // All good
 if (!isset($errTab) || 0 === count($errTab)) {
-    // S'il ne s'agit pas d'un cycle :
-    if (!$cycle_master_evt && !$cycle_parent_evt) {
-        // L'auteur de la sortie est redirigé vers son espace perso > ses sorties, avec un message "Attente de validation"
-        header('Location: /profil/sorties/self?lbxMsg=evt_create_success');
-    }
-    // si cet evt est le premier d'un cycle, on reste sur la même page pour inciter à la création d'un nouvel événement dans ce cycle
-    else {
-        if ($_POST['operation'] = 'evt_update') {
-            unset($id_evt);
-            unset($id_evt_to_update);
-        }
-
-        if ($cycle_master_evt) {
-            // var pour le blocage de certaines options sur la page
-            $suiteDeCycle = true;
-            // message à afficher
-            $lbxMsg = 'evt_create_success_newcycle';
-            // on redirige vers la même page, avec des variables forcées
-            $_POST['cycle'] = 'child';
-            $_POST['cycle_parent_evt'] = $id_evt;
-            // RAZ
-            $_POST['tsp_evt_day'] = '';
-            $_POST['tsp_evt_hour'] = '';
-            $_POST['tsp_end_evt_day'] = '';
-            $_POST['tsp_end_evt_hour'] = '';
-            // modification du titre
-            if ('SUITE DE : ' != substr(strtoupper($_POST['titre_evt']), 0, 11)) {
-                $_POST['titre_evt'] = 'SUITE DE : ' . $_POST['titre_evt'];
-            }
-        }
-        // si cet evt est le N-ième d'un cycle, on reste sur la même page pour inciter à la création d'un nouvel événement dans ce cycle
-        else {
-            // var pour le blocage de certaines options sur la page
-            $suiteDeCycle = true;
-            // message à afficher
-            $lbxMsg = 'evt_create_success_newcycle_2';
-            // on redirige vers la même page, avec des variables forcées
-            $_POST['cycle'] = 'child';
-            // RAZ
-            $_POST['tsp_evt_day'] = '';
-            $_POST['tsp_evt_hour'] = '';
-            $_POST['tsp_end_evt_day'] = '';
-            $_POST['tsp_end_evt_hour'] = '';
-        }
-
-        header('Location: /creer-une-sortie/' . html_utf8($code_commission) . '.html?lbxMsg=' . $lbxMsg);
-    }
+    // L'auteur de la sortie est redirigé vers son espace perso > ses sorties, avec un message "Attente de validation"
+    header('Location: /profil/sorties/self?lbxMsg=evt_create_success');
 }

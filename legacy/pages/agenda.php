@@ -34,8 +34,8 @@ for ($i = 1; $i <= $nDays; ++$i) {
 // infos statistiques
 $nEvts = 0; // nombre d'events démarrant de mois ci
 
-$req = 'SELECT  id_evt, cancelled_evt, code_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, commission_evt, titre_evt, massif_evt, difficulte_evt, cycle_master_evt, cycle_parent_evt
-            , cycle_parent_evt, child_version_from_evt, join_max_evt, ngens_max_evt, join_start_evt, id_groupe
+$req = 'SELECT  id_evt, cancelled_evt, code_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, commission_evt, titre_evt, massif_evt, difficulte_evt
+            , child_version_from_evt, join_max_evt, ngens_max_evt, join_start_evt, id_groupe
             , title_commission, code_commission
     FROM caf_evt, caf_commission
     WHERE id_commission = commission_evt
