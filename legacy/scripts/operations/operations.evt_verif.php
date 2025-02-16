@@ -97,7 +97,6 @@ if (!preg_match('#[0-9]{2}:[0-9]{2}#', $tsp_end_evt_hour)) {
     $errTab[] = "L'heure de fin doit être au format hh:mm.";
 }
 
-
 // vérifications des dates
 if (!isset($errTab) || 0 === count($errTab)) {
     // checks dates

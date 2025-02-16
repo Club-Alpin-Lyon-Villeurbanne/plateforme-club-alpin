@@ -36,7 +36,6 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     if (!isset($errTab) || 0 === count($errTab)) {
         $req = "UPDATE caf_evt SET cancelled_evt='1', cancelled_who_evt='" . getUser()->getId() . "', cancelled_when_evt='" . time() . "'  WHERE caf_evt.id_evt =$id_evt";
 
-
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
         }

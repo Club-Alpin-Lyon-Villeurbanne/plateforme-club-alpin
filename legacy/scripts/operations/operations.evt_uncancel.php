@@ -28,7 +28,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
         } else {
             // mise à jour
             if (!isset($errTab) || 0 === count($errTab)) {
-
                 $req = "UPDATE caf_evt SET cancelled_evt='0', cancelled_who_evt=null, cancelled_when_evt='0', status_evt='0' WHERE caf_evt.id_evt =$id_evt";
                 if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                     $errTab[] = 'Erreur SQL';
