@@ -19,7 +19,7 @@ $count = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
 
 
 // annulé ?
-elseif (isset($handle['cancelled_evt']) && $handle['cancelled_evt']) {
+if (isset($handle['cancelled_evt']) && $handle['cancelled_evt']) {
     $handle['temoin'] = 'off';
     $handle['temoin-title'] = 'Cette sortie est annulée';
 }
