@@ -36,6 +36,8 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNickname(), $user->getEmail()));
         $this->assertEmailTextBodyContains($emails[0], 'Si vous avez fait une erreur et souhaitez modifier votre note de frais,');
         $this->assertEmailHtmlBodyContains($emails[0], 'Si vous avez fait une erreur et souhaitez modifier votre note de frais,');
+        $this->assertEmailTextBodyContains($emails[0], 'est envoyée à la comptabilité.');
+        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et est envoyée à la comptabilité.');
     }
 
     public function testItSendMailOnStatusChangeRejected()
@@ -47,6 +49,7 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $expenseReport = new ExpenseReport();
         $expenseReport->setUser($user);
         $expenseReport->setStatus(ExpenseReportStatusEnum::SUBMITTED);
+        $expenseReport->setDetails(json_encode([]));
         $expenseReport->setEvent($event);
         $em->persist($expenseReport);
         $em->flush();
@@ -61,8 +64,8 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNickname(), $user->getEmail()));
-        $this->assertEmailTextBodyContains($emails[0], 'a été traitée et est refusée');
-        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et est refusée');
+        $this->assertEmailTextBodyContains($emails[0], 'a été refusée');
+        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et a été refusée');
     }
 
     public function testItSendMailOnStatusChangeApproved()
@@ -74,6 +77,7 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $expenseReport = new ExpenseReport();
         $expenseReport->setUser($user);
         $expenseReport->setStatus(ExpenseReportStatusEnum::SUBMITTED);
+        $expenseReport->setDetails(json_encode([]));
         $expenseReport->setEvent($event);
         $em->persist($expenseReport);
         $em->flush();
@@ -88,7 +92,7 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNickname(), $user->getEmail()));
-        $this->assertEmailTextBodyContains($emails[0], 'a été traitée et est désormais acceptée');
-        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et est désormais acceptée');
+        $this->assertEmailTextBodyContains($emails[0], 'a été acceptée');
+        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et a été acceptée');
     }
 }

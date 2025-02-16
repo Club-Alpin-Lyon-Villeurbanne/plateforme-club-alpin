@@ -4,12 +4,14 @@ namespace App\Entity;
 
 use App\Repository\EventParticipationRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * EventParticipation.
  */
 #[ORM\Table(name: 'caf_evt_join')]
 #[ORM\Entity(repositoryClass: EventParticipationRepository::class)]
+#[UniqueEntity(fields: ['evt', 'user'], message: 'Cette participation existe déjà')]
 class EventParticipation implements \JsonSerializable
 {
     public const STATUS_NON_CONFIRME = 0;

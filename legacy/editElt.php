@@ -86,7 +86,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 
 							theme_advanced_toolbar_location : "top",
 							theme_advanced_toolbar_align : "left",
-							theme_advanced_statusbar_location : "bottom",
+							theme_advanced_statusbar_location : "none",
 							theme_advanced_resizing : true,
 
 							content_css : "css/base.css,css/style1.css,fonts/stylesheet.css",

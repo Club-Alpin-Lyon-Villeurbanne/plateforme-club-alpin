@@ -138,7 +138,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if (!isset($errTab) || 0 === count($errTab)) {
             foreach ($encadrants as $id_user) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
-                    $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
+                    $req = "REPLACE INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
                                                         VALUES(1,               '$id_evt',  '$id_user',  'encadrant', " . time() . ');';
                     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                         $errTab[] = 'Erreur SQL: ' . LegacyContainer::get('legacy_mysqli_handler')->lastError();
@@ -147,7 +147,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
             foreach ($stagiaires as $id_user) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
-                    $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
+                    $req = "REPLACE INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
                                                         VALUES(1,               '$id_evt',  '$id_user',  'stagiaire', " . time() . ');';
                     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                         $errTab[] = 'Erreur SQL: ' . LegacyContainer::get('legacy_mysqli_handler')->lastError();
@@ -156,7 +156,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
             foreach ($coencadrants as $id_user) {
                 if (!in_array($id_user, $deja_encadrants, true)) {
-                    $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
+                    $req = "REPLACE INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join)
                                                         VALUES(1, '$id_evt',  '$id_user',  'coencadrant', " . time() . ');';
                     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                         $errTab[] = 'Erreur SQL: ' . LegacyContainer::get('legacy_mysqli_handler')->lastError();
