@@ -17,7 +17,6 @@ $req = 'SELECT COUNT(id_evt_join) FROM caf_evt_join
 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $count = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
 
-
 // annulé ?
 if (isset($handle['cancelled_evt']) && $handle['cancelled_evt']) {
     $handle['temoin'] = 'off';
