@@ -219,6 +219,10 @@ CREATE TABLE IF NOT EXISTS `caf_evt` (
   `join_start_evt` int(11) NOT NULL COMMENT 'Timestamp de départ des inscriptions',
   `join_max_evt` int(11) NOT NULL COMMENT 'Nombre max d''inscriptions spontanées sur le site, ET PAS d''inscrits total',
   `ngens_max_evt` int(11) NOT NULL COMMENT 'Nombre de gens pouvant y aller au total. Donnée "visuelle" uniquement, pas de calcul.',
+  `cycle_master_evt` tinyint(1) NOT NULL COMMENT 'Est-ce la première sortie d''un cycle de sorties liées ?',
+  `cycle_parent_evt` int(11) NOT NULL COMMENT 'Si cette sortie est l''enfant d''un cycle, l''id du parent est ici',
+  `child_version_from_evt` int(11) NOT NULL DEFAULT '0' COMMENT 'Versionning : chaque modification d-evt crée une entrée "enfant" de l-originale. Ce champ prend l-ID de l-original',
+  `child_version_tosubmit` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_evt`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 
