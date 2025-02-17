@@ -115,7 +115,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                             // si la sortie est publiée, on annonce que des e-mails vont être envoyés
                             if (1 == $evt['status_evt']) {
                                 ?>
-
+                                    <textarea class="type2" style="width:610px" name="msg" placeholder="ex : Sortie annulée pour cause de météo défavorable."><?php echo inputVal('msg', ''); ?></textarea>
                                     <a href="javascript:void(0)" title="Enregistrer" class="nice2 red" onclick="$(this).parents('form').submit()">
                                         Annuler définitivement la sortie ci-dessous et avertir <?php echo count($joins); ?> participant(s) inscrit(s).
                                     </a>
