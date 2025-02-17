@@ -10,7 +10,7 @@ $id_evt = (int) substr(strrchr($p2, '-'), 1);
 
 // sélection complète, non conditionnelle par rapport au status
 $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt,
-            tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, child_version_from_evt
+            tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt
             , cancelled_evt, cancelled_who_evt, cancelled_when_evt, description_evt, denivele_evt, difficulte_evt, matos_evt, need_benevoles_evt
             , lat_evt, long_evt
             , join_start_evt

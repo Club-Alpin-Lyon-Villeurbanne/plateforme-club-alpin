@@ -16,7 +16,7 @@ if (!$id_evt) {
 }
 
 // recuperation de la sortie demandée
-$req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, child_version_from_evt
+$req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt
             , nickname_user
             , title_commission, code_commission
     FROM caf_evt, caf_user, caf_commission

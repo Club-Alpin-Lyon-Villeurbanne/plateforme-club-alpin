@@ -12,7 +12,7 @@ if (!$id_evt) {
 
 if (!isset($errTab) || 0 === count($errTab)) {
     // recuperation de la sortie demandée
-    $req = "SELECT id_evt, code_evt, status_evt, titre_evt, child_version_from_evt, tsp_evt, code_commission,
+    $req = "SELECT id_evt, code_evt, status_evt, titre_evt, tsp_evt, code_commission,
         id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user
         FROM caf_evt, caf_user, caf_commission
         WHERE id_evt=$id_evt

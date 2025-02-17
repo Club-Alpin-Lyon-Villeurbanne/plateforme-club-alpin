@@ -22,7 +22,7 @@ if ($id_evt) {
     $req = "SELECT
             id_evt, code_evt, status_evt, status_legal_evt, status_who_evt, status_legal_who_evt,
                 user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt,
-                rdv_evt,titre_evt, massif_evt, tarif_evt, child_version_from_evt,
+                rdv_evt,titre_evt, massif_evt, tarif_evt,
                 cancelled_evt, cancelled_who_evt, cancelled_when_evt, description_evt, denivele_evt, difficulte_evt,
                 matos_evt, need_benevoles_evt, lat_evt, long_evt, join_start_evt, ngens_max_evt, join_max_evt,
                 id_groupe, tarif_detail, distance_evt, itineraire,

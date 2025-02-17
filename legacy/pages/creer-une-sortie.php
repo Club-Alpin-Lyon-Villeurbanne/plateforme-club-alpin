@@ -91,7 +91,7 @@ if ($p2) {
         // un ID de sortie est vise, il s'agit d'une modif et non d'une creation
         $id_evt = (int) substr(strrchr($p3, '-'), 1);
 
-        $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, child_version_from_evt
+        $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt
                 , denivele_evt, distance_evt, matos_evt, difficulte_evt, description_evt, lat_evt, long_evt
                 , ngens_max_evt
                 , join_start_evt, join_max_evt, id_groupe, tarif_detail, need_benevoles_evt, itineraire
