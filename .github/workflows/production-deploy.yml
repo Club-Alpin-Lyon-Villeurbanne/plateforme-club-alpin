@@ -9,7 +9,6 @@ concurrency:
 
 jobs:
   deploy-to-clevercloud:
-    if: github.ref == 'refs/heads/production'
     environment: production
     runs-on: ubuntu-latest
     steps:
