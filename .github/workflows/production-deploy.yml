@@ -1,6 +1,6 @@
 name: Deploy on Production - Lyon Villeurbanne 🚀
 
-on: 
+on:
   workflow_dispatch:
 
 concurrency:
@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   deploy-to-clevercloud:
-    if: github.ref == 'refs/heads/production'
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix-prod-')
     environment: production
     runs-on: ubuntu-latest
     steps:
