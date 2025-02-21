@@ -198,7 +198,7 @@
                                 <a href="/profil/infos.html" title="">mes infos publiques</a><br />
                                 <a href="/profil/infos.html#private" title="">mes infos privées</a><br />
                                 {% if caf_id == 'lyon' %}
-                                    {% if allowed('article_create') %}
+                                    {% if allowed('user_read_private') %} {# utilisation d'une permission existante données uniquement aux co-encadrants, encadrants et stagiaires #}
                                         <a href="/pages/boite-outils-des-encadrants.html" title="">boite à outils encadrant</a><br />
                                     {% endif %}
                                     <a href="{{ path('profil_alertes') }}" title="">mes alertes</a>
