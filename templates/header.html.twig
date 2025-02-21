@@ -198,7 +198,9 @@
                                 <a href="/profil/infos.html" title="">mes infos publiques</a><br />
                                 <a href="/profil/infos.html#private" title="">mes infos privées</a><br />
                                 {% if caf_id == 'lyon' %}
-                                    <a href="/pages/boite-outils-des-encadrants.html" title="">boite à outils encadrant</a><br />
+                                    {% if allowed('article_create') %}
+                                        <a href="/pages/boite-outils-des-encadrants.html" title="">boite à outils encadrant</a><br />
+                                    {% endif %}
                                     <a href="{{ path('profil_alertes') }}" title="">mes alertes</a>
                                 {% endif %}
                             </div>
