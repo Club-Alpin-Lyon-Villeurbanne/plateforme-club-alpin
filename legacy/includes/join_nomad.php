@@ -100,9 +100,6 @@ if (user()) {
 					<option value="Mme." <?php if (isset($_POST['civ_user']) && 'Mme.' == $_POST['civ_user']) {
 					    echo 'selected="selected"';
 					} ?>>Mme.</option>
-					<option value="Mlle." <?php if (isset($_POST['civ_user']) && 'Mlle.' == $_POST['civ_user']) {
-					    echo 'selected="selected"';
-					} ?>>Mlle.</option>
 				</select>
 			</div>
 
