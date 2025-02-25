@@ -44,9 +44,6 @@
 						<option value="MME" <?php if (isset($_POST['civ_user']) && 'MME' == $_POST['civ_user']) {
 						    echo 'selected="selected"';
 						} ?>>Mme.</option>
-						<option value="MLLE" <?php if (isset($_POST['civ_user']) && 'MLLE' == $_POST['civ_user']) {
-						    echo 'selected="selected"';
-						} ?>>Mlle.</option>
 					</select>
 					<br />
 
