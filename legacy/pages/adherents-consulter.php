@@ -55,6 +55,22 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
             }
         }
 
+        // ROLES
+		//( code_usertype LIKE 'responsable-commission' || code_usertype LIKE 'encadrant' || code_usertype LIKE 'coencadrant' )
+
+		$req="SELECT title_usertype, params_user_attr, description_user_attr
+        FROM caf_usertype, caf_user_attr
+        WHERE usertype_user_attr = id_usertype
+        AND user_user_attr = ".$id_user."
+        ORDER BY title_usertype, params_user_attr";
+        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        $userTab['roles'] = [];
+        if ( $result->num_rows > 0) {
+            while($tmpArray = $result->fetch_assoc()){
+                $userTab['roles'][] = $tmpArray;
+            }
+        }
+
         // NOMBRE ARTICLES
         $req = "SELECT id_article, code_article, titre_article, tsp_validate_article FROM caf_article WHERE user_article='" . $id_user . "' AND status_article=1 ORDER BY id_article DESC";
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -220,8 +236,12 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
         $rowValueHeader = [];
 
         foreach ($userTab['sorties'] as $evt) {
-            ++$rowValueHeader[$evt['role_evt_join']];
-            $row = '<a target="_blank" href="/sortie/' . html_utf8($evt['code_evt']) . '-' . (int) $evt['id_evt'] . '.html?commission=' . $evt['code_commission'];
+            if (!isset($rowValueHeader[$evt['role_evt_join']])) {
+                $rowValueHeader[$evt['role_evt_join']] = 0;
+            }
+            $rowValueHeader[$evt['role_evt_join']]++;
+            
+            $row = '<a target="_blank" href="/sortie/' . html_utf8($evt['code_evt']);
             if (allowed('evt_validate') && 1 != $evt['status_evt']) {
                 $row .= '&forceshow=true';
             }
@@ -233,6 +253,17 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
             $rowRoleEvtValue .= "&nbsp;&nbsp;&nbsp;- $role : $nbRole<br />";
         }
         printTableRow('Sorties :<br /><font size="-1" >' . $rowRoleEvtValue . '</font>', '<font size="-1" >' . implode('<br />', $rowValue) . '</font>');
+    }
+
+    if (is_array($userTab['roles'])) {
+        $rowValue = array();
+        foreach ($userTab['roles'] as $role){
+            if($role['description_user_attr']){
+                $role['description_user_attr'] = ' <em>('.$role['description_user_attr'].')</em>';
+            }
+            $rowValue[] = join (' ', $role);
+        }
+        printTableRow('Rôles spécifiques :', join ('<br />', $rowValue));
     }
     printTableRow('N° ID en base :', $userTab['id_user']); ?>
 
