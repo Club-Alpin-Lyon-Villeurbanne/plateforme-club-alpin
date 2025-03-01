@@ -16,7 +16,7 @@ if ($p2) {
     // encadrants
     $encadrantsTab = [];
     $com = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2);
-    $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
+    $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user, description_user_attr
         FROM caf_user, caf_user_attr, caf_usertype
         WHERE doit_renouveler_user=0
         AND id_user =user_user_attr
@@ -53,7 +53,7 @@ if ($p2) {
     // coencadrants
     $coencadrantsTab = [];
     $com = LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2);
-    $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user
+    $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, civ_user, description_user_attr
         FROM caf_user, caf_user_attr, caf_usertype
         WHERE doit_renouveler_user=0
         AND id_user =user_user_attr
