@@ -63,11 +63,11 @@
                                 {% endif %}
 
                                 {% if event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_REFUSE') %}
-                                    <span class="ml-17 text-alert">Refusé</span>
+                                    <span style="margin-left: auto" class="text-alert">Publication Refusé</span>
                                 {% elseif event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
-                                    <span class="ml-17 text-validate">Validé</span>
+                                    <span style="margin-left: auto" class="text-validate">Publié</span>
                                 {% else %}
-                                    <span class="ml-17 text-inform">En Attente</span>
+                                    <span style="margin-left: auto" class="text-inform">En Attente de Publication</span>
                                 {% endif %}
                                 </div>
 

@@ -405,7 +405,6 @@ form .niveau.editable:hover .input{background-image:none;}
 .text-alert {color:red}
 .text-inform {color:orange}
 .text-validate {color: greenyellow}
-.ml-17 {margin-left: 17em}
 .ign {padding:10px;}
 .display_lieu, .point_ramasse, .bus {border:1px solid #ddd;margin: 0 10px 10px 0; padding:10px;overflow:hidden;}
 .bbox{box-sizing:border-box}
