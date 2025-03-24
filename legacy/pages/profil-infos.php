@@ -120,12 +120,9 @@ if (user()) {
                 <label for="gender_male"><input type="radio" name="civ_user" value="M." id="gender_m" <?php if ('M.' == $tmpUser['civ_user']) {
                     echo 'checked="checked"';
                 } ?> />M.</label>
-                <label for="gender_mm"><input type="radio" name="civ_user" value="Mme." id="gender_mm" <?php if ('Mme.' == $tmpUser['civ_user']) {
+                <label for="gender_mm"><input type="radio" name="civ_user" value="Mme." id="gender_mm" <?php if ('Mme.' == $tmpUser['civ_user'] || 'Mlle.' == $tmpUser['civ_user']) {
                     echo 'checked="checked"';
                 } ?> />Mme.</label>
-                <label for="gender_mlle"><input type="radio" name="civ_user" value="Mlle." id="gender_mlle" <?php if ('Mlle.' == $tmpUser['civ_user']) {
-                    echo 'checked="checked"';
-                } ?> />Mlle.</label>
                 <label for="gender_unknown"><input type="radio" name="civ_user" value="..." id="gender_unknown" <?php if ('...' == $tmpUser['civ_user']) {
                     echo 'checked="checked"';
                 } ?> />...</label>

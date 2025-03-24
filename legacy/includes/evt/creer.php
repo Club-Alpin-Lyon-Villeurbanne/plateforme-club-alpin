@@ -95,6 +95,7 @@ foreach ($encadrantsTab as $encadrant) {
 									' . $encadrant['firstname_user'] . '
 									' . $encadrant['lastname_user'] . '
 									<a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . $encadrant['id_user'] . '" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
+									'.($encadrant['description_user_attr']?'&nbsp;<img src="img/base/info.png" title="'.addslashes(html_utf8($encadrant['description_user_attr'])).'">':'').'
 								</label>';
 }
 ?>
@@ -134,7 +135,8 @@ foreach ($coencadrantsTab as $coencadrant) {
 									' . $coencadrant['firstname_user'] . '
 									' . $coencadrant['lastname_user'] . '
 									<a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . $coencadrant['id_user'] . '" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
-								</label>';
+									'.($coencadrant['description_user_attr']?'&nbsp;<img src="img/base/info.png" title="'.addslashes(html_utf8($coencadrant['description_user_attr'])).'">':'').'
+                                    </label>';
 }
 ?>
             <br style="clear:both" />
@@ -392,7 +394,7 @@ inclure('infos-matos', 'mini');
 
         theme_advanced_toolbar_location : "top",
         theme_advanced_toolbar_align : "left",
-        theme_advanced_statusbar_location : "bottom",
+        theme_advanced_statusbar_location : "none",
         theme_advanced_resizing : true,
 
         document_base_url : '<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>',
