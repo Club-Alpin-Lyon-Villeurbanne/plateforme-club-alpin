@@ -115,23 +115,6 @@
             {% if closeDiv %}
                 </div><br />
             {% endif %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         {% for article in event.articles %}
         <a style="float:right; font-family:DIN, Arial; font-weight:normal; display:block; padding:5px 20px 0 0;" href="/article/{{ article.code }}-{{ article.id }}.html" title="{{ article.titre }}">
             <span class="bleucaf">></span> Voir le compte rendu de sortie "{{ article.titre }}"
@@ -176,12 +159,15 @@
             <img src="/img/base/pdf.png" alt="PRINT" title="" style="height:20px" />
             Imprimer la fiche de sortie en PDF
         </a>
+        <a class="nice2 blue" href="{{ path('sortie_xlsx', { id: event.id }) }}" title="Exporter la liste des participants en Excel">
+            <img src="/img/base/sheet.png" alt="" title="" /> Exporter la liste des participants en Excel
+        </a>
         {% endif %}
 
         {% set my_status = event.participation(app.user) %}
 
         {% if not event.isFinished %}
-            <input id="add-to-calendar" type="button" class="nice2" value="Ajouter à mon agenda" />
+            <input id="add-to-calendar" type="button" class="nice2" value="📅 Ajouter à mon agenda" />
 
             <script>
             const config = {
@@ -672,11 +658,6 @@
                             {% else %}
                             <i>Vous pourrez ajouter des participants quand la sortie sera publiée</i>
                             {% endif %}
-
-
-                        <a class="nice2 blue" href="{{ path('sortie_xlsx', { id: event.id }) }}" title="Exporter la liste des participants en Excel">
-                            <img src="/img/base/sheet.png" alt="" title="" /> Exporter la liste des participants en Excel
-                        </a>
                         {% endif %}
                     {% endif %}
                 <br style="clear:both"  /><br />
