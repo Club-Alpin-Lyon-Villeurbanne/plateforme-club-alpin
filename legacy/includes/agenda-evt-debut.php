@@ -31,13 +31,6 @@ echo html_utf8($evt['titre_evt'] . (isset($evt['jourN']) && $evt['jourN'] ? ' [j
 if (isset($evt['groupe']) && is_array($evt['groupe'])) {
     echo ' <small>(' . html_utf8($evt['groupe']['nom']) . ')</small>';
 }
-if (isset($evt['cycle_master_evt']) && $evt['cycle_master_evt'] > 0) {
-    // SORTIE DE DEBUT DE CYCLE
-    echo ' <img src="/img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie de début de cycle" />';
-} elseif ($evt['cycle_parent_evt'] > 0) {
-    // SORTIE FAISANT PARTIE D'UN CYCLE
-    echo ' <img src="/img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie faisant partie d\'un cycle" />';
-}
 ?>
 		</h2>
 

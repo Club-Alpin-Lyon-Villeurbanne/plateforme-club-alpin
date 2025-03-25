@@ -56,9 +56,6 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
 
     public function getTemoinPlacesSortie(Evt $event)
     {
-        if ($event->getCycleParent()) {
-            return '';
-        }
         if ($event->getCancelled()) {
             return 'off';
         }
@@ -77,9 +74,6 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
 
     public function getTemoinPlacesSortieTitle(Evt $event)
     {
-        if ($event->getCycleParent()) {
-            return 'Les inscriptions pour cette sortie ont lieu dans la première sortie du cycle';
-        }
         if ($event->getCancelled()) {
             return 'Cette sortie est annulée';
         }

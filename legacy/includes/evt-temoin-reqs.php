@@ -17,14 +17,8 @@ $req = 'SELECT COUNT(id_evt_join) FROM caf_evt_join
 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $count = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
 
-// suite de cycle
-if ($handle['cycle_parent_evt']) {
-    $handle['temoin'] = '';
-    $handle['temoin-title'] = 'Les inscriptions pour cette sortie ont lieu dans la première sortie du cycle';
-}
-
 // annulé ?
-elseif (isset($handle['cancelled_evt']) && $handle['cancelled_evt']) {
+if (isset($handle['cancelled_evt']) && $handle['cancelled_evt']) {
     $handle['temoin'] = 'off';
     $handle['temoin-title'] = 'Cette sortie est annulée';
 }

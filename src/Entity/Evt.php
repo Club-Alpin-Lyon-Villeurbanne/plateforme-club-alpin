@@ -261,31 +261,6 @@ class Evt
     #[ORM\Column(name: 'ngens_max_evt', type: 'integer', nullable: false, options: ['comment' => 'Nombre de gens pouvant y aller au total. Donnée "visuelle" uniquement, pas de calcul.'])]
     private $ngensMax;
 
-    /**
-     * @var bool
-     */
-    #[ORM\Column(name: 'cycle_master_evt', type: 'boolean', nullable: false, options: ['comment' => "Est-ce la première sortie d'un cycle de sorties liées ?"])]
-    private $cycleMaster = false;
-
-    #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'cycleChildren')]
-    #[ORM\JoinColumn(name: 'cycle_parent_evt', referencedColumnName: 'id_evt', nullable: true)]
-    private $cycleParent;
-
-    #[ORM\OneToMany(targetEntity: 'Evt', mappedBy: 'cycleParent')]
-    private $cycleChildren;
-
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'child_version_from_evt', type: 'integer', nullable: false, options: ['comment' => 'Versionning : chaque modification d-evt crée une entrée "enfant" de l-originale. Ce champ prend l-ID de l-original'])]
-    private $childVersionFrom = '0';
-
-    /**
-     * @var bool
-     */
-    #[ORM\Column(name: 'child_version_tosubmit', type: 'boolean', nullable: false)]
-    private $childVersionTosubmit = '0';
-
     #[ORM\OneToMany(targetEntity: 'App\Entity\Article', mappedBy: 'evt')]
     private $articles;
 
@@ -320,7 +295,6 @@ class Evt
         $this->commission = $commission;
         $this->participations = new ArrayCollection();
         $this->articles = new ArrayCollection();
-        $this->cycleChildren = new ArrayCollection();
         $this->tspCrea = time();
 
         // FIX ME fix encadrant
@@ -347,7 +321,6 @@ class Evt
             'commission' => $this->commission->getId(),
             'participations' => $this->participations,
             'articles' => $this->articles,
-            'cycleChildren' => $this->cycleChildren,
             'tspCrea' => $this->tspCrea,
         ];
     }
@@ -868,60 +841,6 @@ class Evt
     public function setNgensMax(int $ngensMax): self
     {
         $this->ngensMax = $ngensMax;
-
-        return $this;
-    }
-
-    public function getCycleMaster(): ?bool
-    {
-        return $this->cycleMaster;
-    }
-
-    public function setCycleMaster(bool $cycleMaster): self
-    {
-        $this->cycleMaster = $cycleMaster;
-
-        return $this;
-    }
-
-    public function getCycleParent(): ?self
-    {
-        return $this->cycleParent;
-    }
-
-    public function setCycleParent(self $cycleParent): self
-    {
-        $this->cycleParent = $cycleParent;
-
-        return $this;
-    }
-
-    /** @return Evt[] */
-    public function getCycleChildren(): Collection
-    {
-        return $this->cycleChildren;
-    }
-
-    public function getChildVersionFrom(): ?int
-    {
-        return $this->childVersionFrom;
-    }
-
-    public function setChildVersionFrom(int $childVersionFrom): self
-    {
-        $this->childVersionFrom = $childVersionFrom;
-
-        return $this;
-    }
-
-    public function getChildVersionTosubmit(): ?bool
-    {
-        return $this->childVersionTosubmit;
-    }
-
-    public function setChildVersionTosubmit(bool $childVersionTosubmit): self
-    {
-        $this->childVersionTosubmit = $childVersionTosubmit;
 
         return $this;
     }
