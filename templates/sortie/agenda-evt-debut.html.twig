@@ -20,11 +20,6 @@
             {% if event.groupe %}
                <small>({{ event.groupe.nom }})</small>
             {% endif %}
-            {% if event.cycleMaster %}
-                <img src="/img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie de début de cycle" />
-            {% elseif event.cycleParent %}
-                <img src="/img/base/arrow_rotate_clockwise.png" width="16" height="16" alt="sortie faisant partie d'un cycle" />
-            {% endif %}
         </h2>
 
         <p>

@@ -39,11 +39,7 @@ $description_evt = trim(stripslashes($_POST['description_evt']));
 $need_benevoles_evt = isset($_POST['need_benevoles_evt']) && 'on' == $_POST['need_benevoles_evt'] ? 1 : 0;
 
 // inscriptions
-if ('child' != $_POST['cycle']) {
-    $join_start_evt_days = (int) $_POST['join_start_evt_days'];
-} else {
-    $join_start_evt_days = 10;
-}
+$join_start_evt_days = 10;
 $join_max_evt = (int) $_POST['join_max_evt'];
 $ngens_max_evt = (int) $_POST['ngens_max_evt'];
 // tableaux
@@ -99,22 +95,6 @@ if (!preg_match('#[0-9]{2}/[0-9]{2}/[0-9]{4}#', $tsp_end_evt_day)) {
 }
 if (!preg_match('#[0-9]{2}:[0-9]{2}#', $tsp_end_evt_hour)) {
     $errTab[] = "L'heure de fin doit être au format hh:mm.";
-}
-
-// Gestion des cycles
-$cycle_parent_evt = null;
-$cycle_master_evt = 0;
-if ('none' == $_POST['cycle']) { // ceci est la première sortie d'un cycle, la parente
-    unset($_POST['cycle_parent_evt']);
-    unset($_POST['cycle']);
-    unset($_POST['parent']);
-    unset($_POST['cycle_parent_evt']);
-} elseif ('parent' == $_POST['cycle']) { // ceci est la première sortie d'un cycle, la parente
-    $cycle_master_evt = 1;
-    unset($_POST['parent']);
-    unset($_POST['cycle_parent_evt']);
-} elseif ('child' == $_POST['cycle']) { // ceci est une sortie enfant d'un cycle enregistré
-    $cycle_parent_evt = (int) $_POST['cycle_parent_evt'];
 }
 
 // vérifications des dates

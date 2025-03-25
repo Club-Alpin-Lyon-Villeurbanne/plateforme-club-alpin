@@ -16,7 +16,7 @@ if (!$id_evt) {
 }
 
 // recuperation de la sortie demandée
-$req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
+$req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt
             , nickname_user
             , title_commission, code_commission
     FROM caf_evt, caf_user, caf_commission
@@ -35,10 +35,6 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // Mise à jour : annulation
     if (!isset($errTab) || 0 === count($errTab)) {
         $req = "UPDATE caf_evt SET cancelled_evt='1', cancelled_who_evt='" . getUser()->getId() . "', cancelled_when_evt='" . time() . "'  WHERE caf_evt.id_evt =$id_evt";
-        // annulation de toutes les sorties du cycle
-        if (true || $_POST['del_cycle_master_evt']) {
-            $req .= " OR caf_evt.cycle_parent_evt=$id_evt";
-        }
 
         if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
             $errTab[] = 'Erreur SQL';
@@ -48,12 +44,7 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // message aux participants si la sortie est annulée alors qu'elle est publiée
     if ((!isset($errTab) || 0 === count($errTab)) && 1 == $handle['status_evt']) {
         // participants:
-        // si la sortie est enfant d'un cycle, on cherche les participants à la sortie parente
-        if ($handle['cycle_parent_evt']) {
-            $id_evt_forjoins = (int) $handle['cycle_parent_evt'];
-        } else {
-            $id_evt_forjoins = (int) $handle['id_evt'];
-        }
+        $id_evt_forjoins = (int) $handle['id_evt'];
 
         $handle['joins'] = [];
         $req = "SELECT id_evt_join, id_user, email_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user
@@ -67,10 +58,6 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         if (!isset($errTab) || 0 === count($errTab)) {
             $req = "DELETE FROM caf_evt_join WHERE role_evt_join NOT IN ('encadrant', 'stagiaire', 'coencadrant') AND (caf_evt_join.evt_evt_join = $id_evt";
 
-            // desinscription de toutes les sorties du cycle si annulation du cycle complet, normalement y'en a pas...
-            if (true || $_POST['del_cycle_master_evt']) {
-                $req .= " OR caf_evt_join.evt_evt_join IN (SELECT DISTINCT id_evt FROM caf_evt WHERE cycle_parent_evt = $id_evt)";
-            }
             $req .= ')';
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';

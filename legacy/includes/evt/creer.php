@@ -9,10 +9,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
     <input type="hidden" name="id_evt_to_update" value="<?php echo (int) $id_evt_to_update; ?>" />
 
     <?php
-    // masque certaines option si cet evt est une suite de cycle
-    if (isset($_POST['cycle_parent_evt']) && $_POST['cycle_parent_evt'] && 'child' == $_POST['cycle']) {
-        $suiteDeCycle = true;
-    }
 
 // message d'erreur
 if (isset($_POST['operation']) && isset($errTab) && count($errTab) > 0) {
@@ -183,7 +179,6 @@ foreach ($coencadrantsTab as $coencadrant) {
             <input style="width:95%;" type="text" name="massif_evt" class="type2" value="<?php echo inputVal('massif_evt', ''); ?>" placeholder="ex : Chartreuse" />
         </div>
 
-        <input type="hidden" name="cycle" id="cycle_none" value="none" />
 
         <br />
         <div style="float:left; width:45%; padding:0 20px 5px 0;">
@@ -251,8 +246,7 @@ inclure('infos-carte', 'mini');
     <h2 class="trigger-h2">Inscriptions :</h2>
     <div class="trigger-me" style="padding-right:20px">
 
-        <!-- si on rensigne une suite de cycle, cette section est blqoquée  -->
-        <div id="inscriptions-on" style="display:<?php echo isset($suiteDeCycle) && $suiteDeCycle ? 'none' : 'block'; ?>">
+        <div id="inscriptions-on" style="display:block">
 
 
             Nombre maximum de personnes sur cette sortie (encadrement compris) :<br />
@@ -278,11 +272,6 @@ inclure('infos-carte', 'mini');
                 </span>
             </div>
 
-        </div>
-
-        <!-- message d'info -->
-        <div id="inscriptions-off" style="display:<?php echo isset($suiteDeCycle) && $suiteDeCycle ? 'block' : 'none'; ?>">
-            <p class="alerte">Les inscriptions à cette sortie sont gérées sur la première sortie du cycle dont elle fait partie.</p>
         </div>
 
         <br style="clear:both" />

@@ -13,21 +13,6 @@ $().ready(function() {
             return false;
     });
 	
-	// affichage / masquage des options de parenté : pour la création de cycles
-	$('input[name=cycle]').bind('click change blur', function(){
-		if($(this).val()=='child'){
-			$('#cycle_parent_select').fadeIn(200);
-			// on masque aussi le module d'inscription car c'est l'inscription du premier evt du cycle qui fait foi
-			$('#inscriptions-off').show();
-			$('#inscriptions-on').hide();
-		}
-		else{
-			$('#cycle_parent_select').fadeOut(200);
-			$('#inscriptions-off').hide();
-			$('#inscriptions-on').show();
-		}
-	});
-	
 	
 	// JQUERYUI
 	
