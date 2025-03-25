@@ -147,12 +147,25 @@
             <span class="date"> / {{ event.tsp | intldate('cccc d MMMM') }}</span>
         </h1>
 
-        {% if app.user and event.user.id == app.user.id and event.isFinished %}
-        <a href="/article-new.html?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
-            <img src="/img/base/pencil_add.png" alt="" title="" style="" />
-            Compte rendu
-        </a>
-        {% endif %}
+        <div class="tw-flex tw-gap-4">
+            {% if app.user and event.user.id == app.user.id and event.isFinished %}
+            <a href="/article-new.html?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
+                <img src="/img/base/pencil_add.png" alt="" title="" style="" />
+                Compte rendu
+            </a>
+            {% endif %}
+
+            {% if is_granted('SORTIE_DUPLICATE', event) %}
+            <form action="{{ path('sortie_duplicate', { id: event.id }) }}" method="post" class="loading">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
+
+                <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants et les mêmes paramètres" class="nice2">
+                    <img src="/img/base/add.png" alt="Dupliquer la sortie" title="" style="height:20px" />
+                    Dupliquer cette sortie avec ce groupe
+                </a>
+            </form>
+            {% endif %}
+        </div>
 
         {% if is_granted('FICHE_SORTIE', event) %}
         <a href="/feuille-de-sortie/evt-{{ event.id }}.html" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2" target="_blank">
@@ -160,21 +173,9 @@
             Imprimer la fiche de sortie
         </a>
         <a href="{{ path('sortie_pdf', { id: event.id }) }}" title="Imprimer la fiche de sortie en PDF" class="nice2" target="_blank">
-            <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
+            <img src="/img/base/pdf.png" alt="PRINT" title="" style="height:20px" />
             Imprimer la fiche de sortie en PDF
         </a>
-        {% endif %}
-
- 
-
-        {% if is_granted('SORTIE_DUPLICATE', event) %}
-         <form action="{{ path('sortie_duplicate', { id: event.id }) }}" method="post" class="loading">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
-
-            <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants et les mêmes paramètres" class="nice2">
-                Dupliquer cette sortie avec ce groupe
-            </a>
-        </form>
         {% endif %}
 
         {% set my_status = event.participation(app.user) %}
@@ -671,6 +672,11 @@
                             {% else %}
                             <i>Vous pourrez ajouter des participants quand la sortie sera publiée</i>
                             {% endif %}
+
+
+                        <a class="nice2 blue" href="{{ path('sortie_xlsx', { id: event.id }) }}" title="Exporter la liste des participants en Excel">
+                            <img src="/img/base/sheet.png" alt="" title="" /> Exporter la liste des participants en Excel
+                        </a>
                         {% endif %}
                     {% endif %}
                 <br style="clear:both"  /><br />
