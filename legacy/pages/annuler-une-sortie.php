@@ -10,7 +10,7 @@ $id_evt = (int) substr(strrchr($p2, '-'), 1);
 
 // sélection complète, non conditionnelle par rapport au status
 $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt,
-            tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
+            tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt
             , cancelled_evt, cancelled_who_evt, cancelled_when_evt, description_evt, denivele_evt, difficulte_evt, matos_evt, need_benevoles_evt
             , lat_evt, long_evt
             , join_start_evt
@@ -28,12 +28,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // on a le droit de supprimer cette page ?
     if (allowed('evt_cancel', 'commission:' . $handle['code_commission'])) {
         // participants:
-        // si la sortie est enfant d'un cycle, on cherche les participants à la sortie parente
-        if ($handle['cycle_parent_evt']) {
-            $id_evt_forjoins = $handle['cycle_parent_evt'];
-        } else {
-            $id_evt_forjoins = $handle['id_evt'];
-        }
+        $id_evt_forjoins = $handle['id_evt'];
 
         $handle['joins'] = [];
         $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
@@ -117,20 +112,10 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
                                 <?php
 
-                                if ($evt['cycle_master_evt'] > 0) {
-                                    echo "<b>Cette sortie est la première d'un cycle de plusieurs sorties. <b>Son annulation entraînera l'annulation de toutes les sorties du cycle.</b></b><br /><br />";
-                                }
-
                             // si la sortie est publiée, on annonce que des e-mails vont être envoyés
                             if (1 == $evt['status_evt']) {
                                 ?>
                                     <textarea class="type2" style="width:610px" name="msg" placeholder="ex : Sortie annulée pour cause de météo défavorable."><?php echo inputVal('msg', ''); ?></textarea>
-                                    <?php
-                                        if (false && $evt['cycle_master_evt']) {
-                                            echo '<input type="checkbox" name="del_cycle_master_evt" value="1" checked /> <b>SORTIE DE DEBUT DE CYCLE</b>, annuler toutes les sorties du cycle';
-                                        } ?>
-
-
                                     <a href="javascript:void(0)" title="Enregistrer" class="nice2 red" onclick="$(this).parents('form').submit()">
                                         Annuler définitivement la sortie ci-dessous et avertir <?php echo count($joins); ?> participant(s) inscrit(s).
                                     </a>
@@ -141,10 +126,6 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                                 ?>
                                     <p class="mini">La sortie n'est pas publiée : aucun message ne sera envoyé</p>
                                     <textarea class="type2" style="width:610px; display:none;" name="msg" placeholder="ex : Sortie annulée pour cause de météo défavorable.">No msg sent</textarea>
-                                    <?php
-                                        if (false && $evt['cycle_master_evt']) {
-                                            echo '<input type="checkbox" name="del_cycle_master_evt" value="1" checked /> <b>SORTIE DE DEBUT DE CYCLE</b>, annuler toutes les sorties du cycle';
-                                        } ?>
 
                                     <a href="javascript:void(0)" title="Enregistrer" class="nice2 red" onclick="$(this).parents('form').submit()">
                                         Annuler définitivement la sortie ci-dessous
