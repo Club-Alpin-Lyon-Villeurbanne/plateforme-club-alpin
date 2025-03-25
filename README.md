@@ -33,6 +33,8 @@ Pour la production, les déploiements se font manuellement par une Github Action
 
 L’infrastructure consiste en un serveur web et une base de données MySQL 8.0. Cette base est hébergée et managée par Clever Cloud.
 
+Les variables d'environnement sont gérées dans la console de Clever Cloud.
+
 ## Cronjobs
 
 Les taches récurrentes sont gérées directement depuis le code en s'appuyant sur le module de cronjobs fourni par Clever Cloud.
@@ -107,7 +109,7 @@ Nous encourageons les contributions ! Que vous soyez un développeur expériment
 
 1. **Cloner le répertoire** : Clonez le répertoire sur votre machine locale pour y apporter des modifications.
 2. **Création d'une nouvelle branche** : Créez une nouvelle branche, nommée en fonction de la fonctionnalité ou du bug sur lequel vous travaillez.
-3. **Effectuez vos modifications** : Effectuez les modifications nécessaires sur cette branche en respectant les conventions de codage.
+3. **Effectuez vos modifications** : Effectuez les modifications nécessaires sur cette branche en respectant les conventions de codage. ⚠️ Avant de contribuer au code, soyez sûr que le changement que vous souhaitez apporter est dans notre backlog sur ClickUp ou que vous avez bien validé cette idée avec l'équipe informatique.
 4. **Commit** : Une fois satisfait, faites un commit en décrivant clairement les modifications apportées.
 5. **Push** : Faites un push de votre branche sur GitHub.
 6. **Pull Request (PR)** : Créez une PR et décrivez-la en français. Pour toute modification visuelle, incluez une capture d’écran. Seule l'équipe informatique peut merger une PR.
@@ -129,10 +131,19 @@ On y accède via l'url https://www.clubalpinlyon.fr/admin/. Les identifiants en 
 Nous avons une réelle volonté d'ouvrir ce code, mais un audit SSI approfondi a révélé que le projet nécessite encore des corrections au niveau de la sécurité avant d'être partagé publiquement.
 
 
-## Notes de frais
+### Synchronisation des nouveaux adhérents
+
+Un Cronjob est en place pour synchroniser les nouveaux adhérents avec le système de la FFCAM.
+La FFCAM upload un fichier CSV avec les nouveaux adhérents chaque nuit.
+Notre appli va parser ce fichier et créer les adhérents dans la base de données.
+Si l'adhérent existe déjà (même nom, même prénom, même date de naissance), son compte existant sera mis à jour avec les nouvelles informations.
+Si l'adhérent n'existe pas, il sera créé et il pourra accéder au site.
+
+
+### Notes de frais
 L'application permet de gérer les notes de frais des sorties.
 Cela consiste en 2 parties: 
-### la soumission des notes de frais par les encadrants (partie soumission)
+#### la soumission des notes de frais par les encadrants (partie soumission)
 La première partie est une interface vuejs dispsonible dans la page de chaque sortie.
 Un template twig pour envoyer un récap de la demande de note de frais à l'encadrant.
 Une API pour récuperer les infos de la notes de frais pour l'utiliser dans la partie admin.
@@ -140,7 +151,7 @@ Une API pour récuperer les infos de la notes de frais pour l'utiliser dans la p
 La config des taux d'indémnités kilométriques est faite dans le fichier `assets/expense-report-form/config/expense-report.json` pour la partie `client` et également dans `config/services.yaml` pour l'injection dans le container coté `server`.
 ⚠️ en cas de modif des taux, il faut bien penser à mettre à jour les deux endroits.
 
-### la vérification et validation des notes de frais par la comptabilité (partie admin).
+#### la vérification et validation des notes de frais par la comptabilité (partie admin).
 
 La 2eme partie, vérification des notes de frais, est une [interface distincte développée en nextjs](https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club).
 Les taux d'indémnités kilométriques sont également configurés dans le fichier https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club/blob/main/app/config.ts.
