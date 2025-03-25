@@ -11,7 +11,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
  */
 #[ORM\Table(name: 'caf_commission')]
 #[ORM\Entity]
-#[ApiResource]
+#[ApiResource(
+    operations: []
+)]
 class Commission
 {
     /**
