@@ -107,6 +107,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $tab2 = explode(':', $tsp_evt_hour);
     $tsp_evt = mktime($tab2[0], $tab2[1], 0, $tab[1], $tab[0], $tab[2]);
 
+    // Vérification que la date n'est pas dans le passé
+    if ($tsp_evt < time()) {
+        $errTab[] = 'La date de la sortie ne peut pas être dans le passé.';
+    }
+
     // génération du timestamp de départ des inscriptions : join_start_evt devient un timestamp
     $join_start_evt = $tsp_evt - ($join_start_evt_days * 60 * 60 * 24);
     $join_start_evt = mktime(0, 0, 0, date('n', $join_start_evt), date('j', $join_start_evt), date('Y', $join_start_evt));
