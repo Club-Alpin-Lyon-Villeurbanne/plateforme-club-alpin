@@ -79,34 +79,37 @@
                                     <h2 class="tw-flex tw-items-center tw-gap-2">
                                         {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>{% endif %}
                                         {{ event.titre }}
-                                        {% if event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_REFUSE') %}
-                                            <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
-                                                <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                                </svg>
-                                                Refusé
-                                            </span>
-                                        {% elseif event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
-                                            <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
-                                                <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                                Validé
-                                            </span>
-                                        {% elseif event.participation(app.user) and event.participation(app.user).status == constant('App\\Entity\\EventParticipation::STATUS_ABSENT') %}
-                                            <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
-                                                <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                </svg>
-                                                Absent
-                                            </span>
-                                        {% else %}
-                                            <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
-                                                <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                </svg>
-                                                En attente
-                                            </span>
+                                        {% set participation = event.participation(app.user) %}
+                                        {% if participation %}
+                                            {% if participation.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                    Refusé
+                                                </span>
+                                            {% elseif participation.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                    Validé
+                                                </span>
+                                            {% elseif participation.status == constant('App\\Entity\\EventParticipation::STATUS_ABSENT') %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    Absent
+                                                </span>
+                                            {% else %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    En attente
+                                                </span>
+                                            {% endif %}
                                         {% endif %}
                                     </h2>
 

@@ -171,7 +171,7 @@ class EvtRepository extends ServiceEntityRepository
     private function getEventsByUserDql(User $user, array $status = []): QueryBuilder
     {
         $qb = $this->createQueryBuilder('e')
-            ->select('e')
+            ->select('e, p')
             // required since there might be multiple participation for a user (weird schema)
             ->distinct(true)
             ->leftJoin('e.commission', 'c')
