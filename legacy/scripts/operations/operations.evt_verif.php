@@ -109,7 +109,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // Vérification que la date n'est pas dans le passé
     if ($tsp_evt < time()) {
-        $errTab[] = "La date de la sortie ne peut pas être dans le passé.";
+        $errTab[] = 'La date de la sortie ne peut pas être dans le passé.';
     }
 
     // génération du timestamp de départ des inscriptions : join_start_evt devient un timestamp
