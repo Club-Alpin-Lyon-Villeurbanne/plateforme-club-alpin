@@ -402,8 +402,7 @@ form .niveau.editable:hover .input{background-image:none;}
 .mr10{margin-right:10px;}
 .mr20{margin-right:20px;}
 .mt20{margin-top:20px;}
-.text-alert {color:red}
-.text-inform {color:orange}
+
 .ign {padding:10px;}
 .display_lieu, .point_ramasse, .bus {border:1px solid #ddd;margin: 0 10px 10px 0; padding:10px;overflow:hidden;}
 .bbox{box-sizing:border-box}
