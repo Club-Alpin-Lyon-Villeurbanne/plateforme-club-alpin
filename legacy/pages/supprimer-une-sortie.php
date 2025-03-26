@@ -7,7 +7,7 @@ $errPage = false; // message d'erreur spécifique à la page courante si besoin
 $id_evt = (int) substr(strrchr($p2, '-'), 1);
 
 // sélection complète, non conditionnelle par rapport au status
-$req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, cycle_master_evt, cycle_parent_evt, child_version_from_evt
+$req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt
             , cancelled_evt, cancelled_who_evt, cancelled_when_evt, description_evt, denivele_evt, difficulte_evt, matos_evt, need_benevoles_evt
             , lat_evt, long_evt
             , join_start_evt
@@ -104,19 +104,11 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
 						<?php
 
-                        if ($evt['cycle_master_evt'] > 0) {
-                            echo "<b>Cette sortie est la première d'un cycle de plusieurs sorties. <b>Sa suppression entraînera la suppression de toutes les sorties du cycle.</b></b><br /><br />";
-                        }
-
                     // si la sortie est publiée, on annonce que des e-mails vont être envoyés
                     if (1 == $evt['status_evt']) {
                         ?>
 
 							<p class="alerte">Cette sortie est publiée sur le site. En la supprimant, vous créez une page introuvable.</p>
-							<?php
-                                if (false && $evt['cycle_master_evt']) {
-                                    echo '<input type="checkbox" name="del_cycle_master_evt" value="1" checked /> <b>SORTIE DE DEBUT DE CYCLE</b>, supprimer toutes les sorties du cycle';
-                                } ?>
 
 							<a href="javascript:void(0)" title="Supprimer" class="nice2 red" onclick="$(this).parents('form').submit()">
 								Supprimer définitivement la sortie ci-dessous
@@ -127,10 +119,6 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     else {
                         ?>
 							<p class="info">La sortie n'est pas publiée sur le site. Vous pouvez la supprimer sereinement.</p>
-							<?php
-                                if (false && $evt['cycle_master_evt']) {
-                                    echo '<input type="checkbox" name="del_cycle_master_evt" value="1" checked /> <b>SORTIE DE DEBUT DE CYCLE</b>, supprimer toutes les sorties du cycle';
-                                } ?>
 							<a href="javascript:void(0)" title="Supprimer" class="nice2 red" onclick="$(this).parents('form').submit()">
 								Supprimer définitivement la sortie ci-dessous
 							</a>

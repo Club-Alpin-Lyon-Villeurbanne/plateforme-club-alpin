@@ -61,7 +61,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
 
         $req = 'SELECT
                 SQL_CALC_FOUND_ROWS
-                id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, cycle_master_evt, cycle_parent_evt
+                id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt
                 , title_commission, code_commission
             FROM caf_evt, caf_commission, caf_user
             WHERE id_commission = commission_evt

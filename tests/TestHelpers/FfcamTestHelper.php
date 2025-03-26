@@ -35,7 +35,9 @@ class FfcamTestHelper
             ) . "\n";
         }
 
-        file_put_contents($filePath, $content);
+        $isoContent = mb_convert_encoding($content, 'ISO-8859-1', 'UTF-8');
+
+        file_put_contents($filePath, $isoContent);
 
         return $filePath;
     }

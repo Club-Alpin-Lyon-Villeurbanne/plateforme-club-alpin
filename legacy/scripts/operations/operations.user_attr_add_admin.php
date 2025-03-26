@@ -8,7 +8,7 @@ $needComm = false; // besoin, ou pas de spécifier la commission liée à ce typ
 $id_usertype = (int) $_POST['id_usertype'];
 $id_user = (int) $_POST['id_user'];
 $params_user_attr_tab = $_POST['commission'] ?? null;
-$description_user_attr=$_POST['description_user_attr'];
+$description_user_attr = $_POST['description_user_attr'];
 if (!$id_usertype || !$id_user) {
     $errTab[] = 'Valeurs manquantes';
 }
@@ -42,7 +42,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $params_user_attr_tab = [''];
     }
     // pour chaque commission
-	$description_user_attr=substr(LegacyContainer::get('legacy_mysqli_handler')->escapeString($description_user_attr), 0, 99);
+    $description_user_attr = substr(LegacyContainer::get('legacy_mysqli_handler')->escapeString($description_user_attr), 0, 99);
     foreach ($params_user_attr_tab as $params_user_attr) {
         $params_user_attr = LegacyContainer::get('legacy_mysqli_handler')->escapeString($params_user_attr);
 
@@ -57,7 +57,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if (!$row[0]) {
             // ajout
             $req = "INSERT INTO caf_user_attr(user_user_attr ,usertype_user_attr ,params_user_attr ,details_user_attr, description_user_attr)
-                                        VALUES ('$id_user', '$id_usertype', '$params_user_attr', '" . time() . "',  ".(strlen($description_user_attr)>0?("'".$description_user_attr."'"):'NULL').");";
+                                        VALUES ('$id_user', '$id_usertype', '$params_user_attr', '" . time() . "',  " . (strlen($description_user_attr) > 0 ? ("'" . $description_user_attr . "'") : 'NULL') . ');';
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }
