@@ -13,8 +13,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 #[ORM\Table(name: 'caf_evt')]
 #[ORM\Entity]
-#[ApiResource]
-
+#[ApiResource(
+    operations: []
+)]
 class Evt
 {
     public const STATUS_PUBLISHED_UNSEEN = 0;
