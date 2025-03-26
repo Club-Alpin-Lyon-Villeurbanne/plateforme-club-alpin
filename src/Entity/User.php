@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
  * User.
@@ -18,7 +19,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Table(name: 'caf_user')]
 #[ORM\Index(name: 'id_user', columns: ['id_user'])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource(normalizationContext: ['groups' => ['user:read']])]
+#[ApiResource(operations: [], normalizationContext: ['groups' => ['user:read']])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSerializable
 {
     /**
@@ -43,6 +44,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      * @var string
      */
     #[ORM\Column(name: 'mdp_user', type: 'string', length: 1024, nullable: true)]
+    #[Ignore]
     private $mdp;
 
     /**
@@ -156,6 +158,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      * @var string
      */
     #[ORM\Column(name: 'cookietoken_user', type: 'string', length: 32, nullable: true)]
+    #[Ignore]
     private $cookietoken;
 
     /**

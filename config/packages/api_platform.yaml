@@ -22,3 +22,12 @@ api_platform:
       rfc_7807_compliant_errors: true
   event_listeners_backward_compatibility_layer: false
   keep_legacy_inflector: false
+
+when@prod:
+  api_platform:
+    enable_swagger: false
+    enable_swagger_ui: false
+    enable_docs: false
+    enable_re_doc: false
+    graphql:
+      enabled: false
