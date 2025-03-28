@@ -121,6 +121,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $tab2 = explode(':', $tsp_end_evt_hour);
     $tsp_end_evt = mktime($tab2[0], $tab2[1], 0, $tab[1], $tab[0], $tab[2]);
 
+    if ($tsp_end_evt < $tsp_evt) {
+        $errTab[] = "La date de fin ne peut pas être antérieure à la date de début de l'événement.";
+    }
+
     if ($join_start_evt_days <= 1 || $join_start_evt > $tsp_evt) {
         $errTab[] = "Vérifiez les dates d'inscription : vous devez entrer un nombre de jours supérieur ou égal à 2 pour les délais d'inscriptions.";
     }
