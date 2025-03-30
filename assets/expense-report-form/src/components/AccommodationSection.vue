@@ -20,8 +20,8 @@
       class="tw-mt-5 tw-flex"
     >
       <div class="tw-flex tw-gap-5">
-        <ExpenseFieldV2
-          :name="`accommodations[${idx}].price`"
+        <ExpenseField
+          :name="`accommodations.${idx}.price`"
           :expense-id="field.value.expenseId"
           :label="`Tarif nuitée ${idx + 1} (€)`"
           :requires-attachment="true"
@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts" setup>
-import ExpenseFieldV2 from "./ExpenseFieldV2.vue";
+import ExpenseField from "./ExpenseField.vue";
 import { useAttachments } from "../composables/useAttachment";
 import { Accommodation } from "../types/api";
 import expenseReportConfig from "../config/expense-reports.json";
