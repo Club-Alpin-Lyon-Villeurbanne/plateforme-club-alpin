@@ -135,7 +135,7 @@ else {
         $fiabilite = $total > 0 ? round(($presences / $total) * 100) : 100;
         printf('<b>Taux de présence: %d%% - (%d absences sur %d sorties)</b>', $fiabilite, $absences, $total);
         if ($isMyProfile) {
-            echo '<br/>Ce taux donne une information sur le nombre d\'absences aux sorties auxquelles vous êtes inscrit.e.<br/>Il n\'est visible que par les encadrant.es';
+            echo '<br/>Ce taux donne une information sur le nombre d\'absences aux sorties auxquelles vous êtes inscrit.e.<br/>Il n\'est visible que par les encadrant.es.<br />Vous pouvez consulter la liste des sorties où vous avez été absent.e sur <a target="_parent"href="profil/sorties/self"/>la page de vos sorties</a>,';
         }
         echo '</p>';
     }
