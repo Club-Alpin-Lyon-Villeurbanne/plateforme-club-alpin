@@ -21,7 +21,7 @@
     >
       <div class="tw-flex tw-gap-5">
         <ExpenseField
-          :name="`accommodations.${idx}.price`"
+          :name="`accommodations[${idx}].price`"
           :expense-id="field.value.expenseId"
           :label="`Tarif nuitée ${idx + 1} (€)`"
           :requires-attachment="true"

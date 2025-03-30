@@ -71,7 +71,7 @@ interface Props {
 defineProps<Props>();
 
 const emit = defineEmits<{
-  (e: "upload", file: File): void;
+  (e: "fileChanged", file: File): void;
 }>();
 
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -84,6 +84,6 @@ const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (!target.files?.length) return;
 
-  emit("upload", target.files[0]);
+  emit("fileChanged", target.files[0]);
 };
 </script> 

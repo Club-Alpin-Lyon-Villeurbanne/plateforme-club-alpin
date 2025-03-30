@@ -1,19 +1,19 @@
 <template>
   <div class="tw-flex tw-flex-col">
-    <Input :name="name" :label="label" type="number" @changed="handleChange" />
+    <Input :name="name" :label="label" type="number" />
     
     <AttachmentField
       v-if="requiresAttachment"
       :expense-id="expenseId"
       :is-required="isAttachmentRequired"
       :attachment="attachment"
-      @upload="handleFileUpload"
+      @fileChanged="handleFileChanged"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, inject, watch, onUnmounted } from "vue";
+import { computed, inject, watch, onUnmounted, onMounted } from "vue";
 import axios from "axios";
 import Input from "./Input.vue";
 import AttachmentField from "./AttachmentField.vue";
@@ -44,11 +44,7 @@ const { value } = useField(() => props.name);
 const attachment = computed(() => getAttachmentByExpenseId(props.expenseId));
 const isAttachmentRequired = computed(() => Number(value.value) > 0);
 
-const handleChange = () => {
-  // On ne fait rien ici, on laisse le watch gérer les changements
-};
-
-const handleFileUpload = async (file: File) => {
+const handleFileChanged = async (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("expenseId", props.expenseId);
@@ -94,13 +90,15 @@ watch(value, (newValue) => {
 });
 
 // Initialisation
-if (props.requiresAttachment && isAttachmentRequired.value) {
-  registerField({
-    name: props.name,
-    expenseId: props.expenseId,
-    label: props.label,
-  });
-}
+onMounted(() => {
+  if (props.requiresAttachment && isAttachmentRequired.value) {
+    registerField({
+      name: props.name,
+      expenseId: props.expenseId,
+      label: props.label,
+    });
+  }
+});
 
 // Nettoyage
 onUnmounted(() => {
