@@ -42,7 +42,7 @@ const { registerField, unregisterField } = useRequiredAttachmentFields();
 const { value } = useField(() => props.name);
 
 const attachment = computed(() => getAttachmentByExpenseId(props.expenseId));
-const isAttachmentRequired = computed(() => Number(value.value) > 0);
+const isValueFilled = computed(() => Number(value.value) > 0);
 
 const handleFileChanged = async (file: File) => {
   const formData = new FormData();
