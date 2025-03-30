@@ -274,8 +274,17 @@
                 {# expense report form #}
 
                 {% if display_notes_de_frais %}
-                    {% if event.finished and event.statusLegal and not event.cancelled and (my_status.role == 'encadrant' or my_status.role == 'coencadrant' or my_status.role == 'stagiaire') %}
-                        {% include 'vuejs/expense-report-form.twig' %}
+                    {% if event.finished and not event.cancelled and (my_status.role == 'encadrant' or my_status.role == 'coencadrant' or my_status.role == 'stagiaire') %}
+                        {% if event.statusLegal %}
+                            {% include 'vuejs/expense-report-form.twig' %}
+                        {% else %}
+                            <div class="alerte">
+                                <img src="/img/base/bullet_error.png" alt="" title="" style="float:left" />
+                                <br />
+                                Cette sortie n'a pas été validée par le président. Il n'est donc pas possible de soumettre de note de frais.<br />
+                                En cas d'erreur, contactez votre responsable de commission.<br />&nbsp;
+                            </div>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             {% else %}
