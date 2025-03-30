@@ -5,7 +5,7 @@ export const schema = zod.object({
   transport: zod.discriminatedUnion("type", [
     zod.object({
       type: zod.literal(TransportType.RENTAL_MINIBUS),
-      tollFee: zod.number().min(1),
+      tollFee: zod.number().min(0).optional(),
       fuelExpense: zod.number().min(1),
       rentalPrice: zod.number().min(1),
       passengerCount: zod.number().min(1),
@@ -16,12 +16,12 @@ export const schema = zod.object({
     }),
     zod.object({
       type: zod.literal(TransportType.PERSONAL_VEHICLE),
-      tollFee: zod.number().min(1),
+      tollFee: zod.number().min(0).optional(),
       distance: zod.number().min(1),
     }),
     zod.object({
       type: zod.literal(TransportType.CLUB_MINIBUS),
-      tollFee: zod.number().min(1),
+      tollFee: zod.number().min(0).optional(),
       fuelExpense: zod.number().min(1),
       distance: zod.number().min(1),
       passengerCount: zod.number().min(1),
