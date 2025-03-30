@@ -91,7 +91,7 @@ watch(value, (newValue) => {
 
 // Initialisation
 onMounted(() => {
-  if (props.requiresAttachment && isAttachmentRequired.value) {
+  if (props.requiresAttachment && isValueFilled.value) {
     registerField({
       name: props.name,
       expenseId: props.expenseId,
