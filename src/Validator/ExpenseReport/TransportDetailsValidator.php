@@ -54,6 +54,7 @@ class TransportDetailsValidator
             $context->buildViolation('Transport details must be an object.')
                 ->atPath('details.transport')
                 ->addViolation();
+
             return false;
         }
 
@@ -61,6 +62,7 @@ class TransportDetailsValidator
             $context->buildViolation('Transport type is missing.')
                 ->atPath('details.transport.type')
                 ->addViolation();
+
             return false;
         }
 
@@ -73,6 +75,7 @@ class TransportDetailsValidator
             $context->buildViolation('Invalid transport type.')
                 ->atPath('details.transport.type')
                 ->addViolation();
+
             return false;
         }
 
@@ -82,7 +85,7 @@ class TransportDetailsValidator
     private function validateRequiredFields(array $transport, string $type, ExecutionContextInterface $context): void
     {
         $requiredFields = self::REQUIRED_FIELDS[$type] ?? [];
-        
+
         foreach ($requiredFields as $field) {
             if (!isset($transport[$field])) {
                 $context->buildViolation("{$field} is required for {$type}.")
