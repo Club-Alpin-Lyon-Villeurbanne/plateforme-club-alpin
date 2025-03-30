@@ -131,8 +131,9 @@ else {
             ->getRepository(EventParticipation::class)
             ->getEventPresencesAndAbsencesOfUser($id_user);
         echo '<p>';
-        $fiabilite = round($presences > 0 ? (100 - $absences / $presences) : 100);
-        printf('<b>Taux de présence: %d%% - (%d absences sur %d sorties)</b>', $fiabilite, $absences, $presences);
+        $total = $presences + $absences;
+        $fiabilite = $total > 0 ? round(($presences / $total) * 100) : 100;
+        printf('<b>Taux de présence: %d%% - (%d absences sur %d sorties)</b>', $fiabilite, $absences, $total);
         if ($isMyProfile) {
             echo '<br/>Ce taux donne une information sur le nombre d\'absences aux sorties auxquelles vous êtes inscrit.e.<br/>Il n\'est visible que par les encadrant.es';
         }
