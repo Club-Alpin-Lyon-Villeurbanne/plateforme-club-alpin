@@ -42,7 +42,7 @@
           v-if="valueType === TransportType.PERSONAL_VEHICLE"
         >
           <div class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4">
-            <ExpenseFieldV2
+            <ExpenseField
               name="transport.tollFee"
               expense-id="tollFee"
               label="Péage (€)"
@@ -59,19 +59,19 @@
           class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4"
           v-else-if="valueType === TransportType.RENTAL_MINIBUS"
         >
-          <ExpenseFieldV2
+          <ExpenseField
             name="transport.tollFee"
             expense-id="tollFee"
             label="Péage (€)"
             :requires-attachment="true"
           />
-          <ExpenseFieldV2
+          <ExpenseField
             name="transport.fuelExpense"
             expense-id="fuelExpense"
             label="Carburant (€)"
             :requires-attachment="true"
           />
-          <ExpenseFieldV2
+          <ExpenseField
             name="transport.rentalPrice"
             expense-id="rentalPrice"
             label="Location (€)"
@@ -88,13 +88,13 @@
           v-if="valueType === TransportType.CLUB_MINIBUS"
         >
           <div class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4">
-            <ExpenseFieldV2
+            <ExpenseField
               name="transport.tollFee"
               expense-id="tollFee"
               label="Péage (€)"
               :requires-attachment="true"
             />
-            <ExpenseFieldV2
+            <ExpenseField
               name="transport.fuelExpense"
               expense-id="fuelExpense"
               label="Carburant (€)"
@@ -117,7 +117,7 @@
           class="tw-grid tw-grid-cols-2 tw-gap-x-8 tw-gap-y-4"
           v-if="valueType === TransportType.PUBLIC_TRANSPORT"
         >
-          <ExpenseFieldV2
+          <ExpenseField
             name="transport.ticketPrice"
             expense-id="ticketPrice"
             label="Prix du ticket (€)"
@@ -136,7 +136,7 @@
 
 <script lang="ts" setup>
 import { TransportType } from "../types/transports";
-import ExpenseFieldV2 from "./ExpenseFieldV2.vue";
+import ExpenseField from "./ExpenseField.vue";
 
 import Input from "./Input.vue";
 import InfoTooltip from "./InfoTooltip.vue";
