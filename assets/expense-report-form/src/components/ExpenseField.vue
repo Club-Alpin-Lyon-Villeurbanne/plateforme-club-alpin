@@ -5,7 +5,7 @@
     <AttachmentField
       v-if="requiresAttachment"
       :expense-id="expenseId"
-      :is-required="isAttachmentRequired"
+      :is-required="isValueFilled"
       :attachment="attachment"
       @fileChanged="handleFileChanged"
     />
