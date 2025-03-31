@@ -2,8 +2,9 @@
 
 {% block subject -%}
     Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 
-    {%- if status == 'submitted' %} est envoyée
+    {%- if status == 'submitted' %} est envoyée à la comptabilité
     {%- elseif status == 'rejected' %} a été refusée
+    {%- elseif status == 'accounted' %}  a été intégrée dans l'outil de comptabilité et n'est donc plus modifiable
     {%- else %} a été acceptée{% endif %}.
 {%- endblock %}
 
@@ -14,6 +15,7 @@
         a été traitée et
             {%- if status == 'submitted' %} est envoyée à la comptabilité
             {%- elseif status == 'rejected' %} a été refusée
+            {%- elseif status == 'accounted' %} a été intégrée dans l'outil de comptabilité et n'est donc plus modifiable
             {%- else %} a été acceptée{% endif %}.
     </p>
     
@@ -151,6 +153,7 @@
 Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 
     {%- if status == 'submitted' %} est envoyée à la comptabilité
     {%- elseif status == 'rejected' %} a été refusée
+    {%- elseif status == 'accounted' %} a été comptabilisée
     {%- else %} a été acceptée{% endif %}.
 
     {% if report.event %}({{ url('sortie', {code: report.event.code, id: report.event.id}) }}){% endif %}

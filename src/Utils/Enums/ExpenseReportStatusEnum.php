@@ -8,6 +8,7 @@ enum ExpenseReportStatusEnum: string
     case SUBMITTED = 'submitted';
     case REJECTED = 'rejected';
     case APPROVED = 'approved';
+    case ACCOUNTED = 'accounted';
 
     // public static function case(): array
     // {

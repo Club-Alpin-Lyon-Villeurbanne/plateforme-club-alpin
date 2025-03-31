@@ -24,6 +24,9 @@
         <div v-else-if="expenseReport.status === ExpenseStatus.APPROVED">
           Votre note de frais a été acceptée.
         </div>
+        <div v-else-if="expenseReport.status === ExpenseStatus.ACCOUNTED">
+          Votre note de frais a été comptabilisée.
+        </div>
         <div v-else>
           <div
             v-if="expenseReport.statusComment"
@@ -192,6 +195,12 @@ const badge = computed(
           label: "Refusée",
           bgColor: "tw-bg-red-50",
           fontColor: "tw-text-red-700",
+        };
+      case ExpenseStatus.ACCOUNTED:
+        return {
+          label: "Comptabilisée",
+          bgColor: "tw-bg-purple-50",
+          fontColor: "tw-text-purple-700",
         };
       default:
         return { label: "", bgColor: "", fontColor: "" };
