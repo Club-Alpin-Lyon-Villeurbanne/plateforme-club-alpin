@@ -25,7 +25,7 @@
           Votre note de frais a été acceptée.
         </div>
         <div v-else-if="expenseReport.status === ExpenseStatus.ACCOUNTED">
-          Votre note de frais a été comptabilisée.
+          Votre note de frais a été intégrée dans l'outil de comptabilité et n'est donc plus modifiable.
         </div>
         <div v-else>
           <div

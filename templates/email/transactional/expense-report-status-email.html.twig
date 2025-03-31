@@ -4,7 +4,7 @@
     Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 
     {%- if status == 'submitted' %} est envoyée à la comptabilité
     {%- elseif status == 'rejected' %} a été refusée
-    {%- elseif status == 'accounted' %}  a été intégrée dans l'outil de comptabilité et n'est donc plus modifiable
+    {%- elseif status == 'accounted' %}  a été comptabilisée
     {%- else %} a été acceptée{% endif %}.
 {%- endblock %}
 
