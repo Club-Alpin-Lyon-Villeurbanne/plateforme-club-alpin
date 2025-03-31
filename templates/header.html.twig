@@ -171,8 +171,10 @@
                                     </a><br />
                                 {% endif %}
 
-                                <a href="{{ path('profil_sorties_next') }}" title="">mes sorties à venir</a><br />
-                                <a href="{{ path('profil_sorties_prev') }}" title="">mes sorties passées</a><br />
+                                <a href="{{ path('profil_sorties_next') }}" title="">
+                                <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes sorties à venir</a><br />
+                                <a href="{{ path('profil_sorties_prev') }}" title="">
+                                <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes sorties passées</a><br />
                             </div>
 
                             <div class="nav-user">
@@ -188,42 +190,46 @@
                                     {% endif %}
                                 {% endif %}
                                 {% if app.user and caf_id == 'lyon' %}
-                                    <a href="{{ path('profil_alertes') }}" title="">mes alertes</a>
+                                    <a href="{{ path('profil_alertes') }}" title="">
+                                    <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes alertes</a>
                                     <a href="{{ path('minibus') }}" title="">
-                                        réservation de minibus
-                                    </a>
+                                    <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>réservation de minibus</a>
                                     <a href="{{ path('local_club') }}" title="">
-                                        réservation local du Club
-                                    </a>
+                                    <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>réservation local du Club</a>
                                 {% endif %}
+                                <a href="https://www.clubalpinlyon.fr/ftp/telechargements/livretaccueil-v2.pdf" title="">
+                                <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
+                                livret d'accueil des adhérents
+                                </a>
 
                             </div>
 
-                            <div class="nav-user">
-                                <p class="menutitle">Articles</p>
+                            {% if allowed('article_create') or allowed('article_validate') or allowed('article_validate_all') %}
 
-                                {% if allowed('article_create') %}
-                                    <a href="/article-new.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>rédiger un article
-                                    </a>
-                                    <a href="/profil/articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes articles
-                                    </a>
-                                {% endif %}
+                                <div class="nav-user">
+                                    <p class="menutitle">Articles</p>
 
-                                {% if allowed('article_validate') or allowed('article_validate_all') %}
-                                    <a href="/gestion-des-articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
+                                    {% if allowed('article_create') %}
+                                        <a href="/article-new.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                            <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>rédiger un article
+                                        </a>
+                                        <a href="/profil/articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                            <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes articles
+                                        </a>
+                                    {% endif %}
 
-                                        {% set notif_article = notifications_counter_articles() %}
-                                        {% if notif_article > 0 %}<span class="notification">{{ notif_article }}</span>{% endif %}
-                                        validation / gestion des articles
-                                    </a>
-                                {% endif %}
+                                    {% if allowed('article_validate') or allowed('article_validate_all') %}
+                                        <a href="/gestion-des-articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                            <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
 
-                                <a href="/recherche.html" title="">rechercher un article</a><br />
+                                            {% set notif_article = notifications_counter_articles() %}
+                                            {% if notif_article > 0 %}<span class="notification">{{ notif_article }}</span>{% endif %}
+                                            validation / gestion des articles
+                                        </a>
+                                    {% endif %}
 
-                            </div>
+                                </div>
+                            {% endif %}
 
                             <br  style="clear:both" />
 
