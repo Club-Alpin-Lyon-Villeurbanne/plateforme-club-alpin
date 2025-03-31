@@ -131,24 +131,7 @@
 
                     <div style="width:515px; min-height:160px; float:left; border-right:1px solid #c6e39f; min-height:130px; padding:0px 5px 0 0">
                         <div class="nav-user">
-                            <p class="menutitle">Mes sorties</p>
-
-                                {% if app.user and caf_id == 'lyon' %}
-                                    <a href="{{ path('minibus') }}" title="">
-                                        <span class="star">
-                                            <img src="/img/base/bullet_star.png" alt="" title="" />
-                                        </span>
-
-                                        réservation de minibus
-                                    </a>
-                                    <a href="{{ path('local_club') }}" title="">
-                                        <span class="star">
-                                            <img src="/img/base/bullet_star.png" alt="" title="" />
-                                        </span>
-
-                                        réservation local du Club
-                                    </a>
-                                {% endif %}
+                            <p class="menutitle">Sorties</p>
 
                                 {% if allowed('evt_validate') %}
                                     {# publier une sortie (notification au besoin, variable définie dans SCRIPTS.'reqs.php') #}
@@ -193,16 +176,27 @@
                             </div>
 
                             <div class="nav-user">
-                                <p class="menutitle">Mon profil</p>
-
-                                <a href="/profil/infos.html" title="">mes infos publiques</a><br />
-                                <a href="/profil/infos.html#private" title="">mes infos privées</a><br />
+                                <p class="menutitle">Outils</p>
                                 {% if caf_id == 'lyon' %}
                                     {% if allowed('user_read_private') %} {# utilisation d'une permission existante données uniquement aux co-encadrants, encadrants et stagiaires #}
-                                        <a href="/pages/boite-outils-des-encadrants.html" title="">boite à outils encadrant</a><br />
+                                        <a href="/pages/boite-outils-des-encadrants.html" title="">
+                                        <span class="star">
+                                            <img src="/img/base/bullet_star.png" alt="" title="" />
+                                        </span>
+                                        boite à outils encadrant
+                                        </a>
                                     {% endif %}
-                                    <a href="{{ path('profil_alertes') }}" title="">mes alertes</a>
                                 {% endif %}
+                                {% if app.user and caf_id == 'lyon' %}
+                                    <a href="{{ path('profil_alertes') }}" title="">mes alertes</a>
+                                    <a href="{{ path('minibus') }}" title="">
+                                        réservation de minibus
+                                    </a>
+                                    <a href="{{ path('local_club') }}" title="">
+                                        réservation local du Club
+                                    </a>
+                                {% endif %}
+
                             </div>
 
                             <div class="nav-user">
