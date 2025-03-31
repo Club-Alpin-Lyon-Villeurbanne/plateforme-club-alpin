@@ -10,8 +10,4 @@ enum ExpenseReportStatusEnum: string
     case APPROVED = 'approved';
     case ACCOUNTED = 'accounted';
 
-    // public static function case(): array
-    // {
-    //     return array_column(self::cases(), 'value');
-    // }
 }
