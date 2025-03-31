@@ -9,5 +9,4 @@ enum ExpenseReportStatusEnum: string
     case REJECTED = 'rejected';
     case APPROVED = 'approved';
     case ACCOUNTED = 'accounted';
-
 }
