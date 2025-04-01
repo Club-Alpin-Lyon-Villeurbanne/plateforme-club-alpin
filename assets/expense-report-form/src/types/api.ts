@@ -62,4 +62,5 @@ export enum ExpenseStatus {
   SUBMITTED = "submitted",
   REJECTED = "rejected",
   APPROVED = "approved",
+  ACCOUNTED = "accounted",
 }

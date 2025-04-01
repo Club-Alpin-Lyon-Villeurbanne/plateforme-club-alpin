@@ -8,9 +8,5 @@ enum ExpenseReportStatusEnum: string
     case SUBMITTED = 'submitted';
     case REJECTED = 'rejected';
     case APPROVED = 'approved';
-
-    // public static function case(): array
-    // {
-    //     return array_column(self::cases(), 'value');
-    // }
+    case ACCOUNTED = 'accounted';
 }
