@@ -28,7 +28,7 @@ class StatusTransitionValidator
         $validTransitions = [
             ExpenseReportStatusEnum::DRAFT->value => [ExpenseReportStatusEnum::SUBMITTED->value],
             ExpenseReportStatusEnum::SUBMITTED->value => [ExpenseReportStatusEnum::APPROVED->value, ExpenseReportStatusEnum::REJECTED->value],
-            ExpenseReportStatusEnum::APPROVED->value => [],
+            ExpenseReportStatusEnum::APPROVED->value => [ExpenseReportStatusEnum::ACCOUNTED->value],
             ExpenseReportStatusEnum::REJECTED->value => [ExpenseReportStatusEnum::SUBMITTED->value],
         ];
 
