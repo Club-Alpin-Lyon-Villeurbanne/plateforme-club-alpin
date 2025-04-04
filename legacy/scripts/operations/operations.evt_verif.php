@@ -39,7 +39,7 @@ $description_evt = trim(stripslashes($_POST['description_evt']));
 $need_benevoles_evt = isset($_POST['need_benevoles_evt']) && 'on' == $_POST['need_benevoles_evt'] ? 1 : 0;
 
 // inscriptions
-$join_start_evt_days = 10;
+$join_start_evt_days = (int) $_POST['join_start_evt_days'];
 $join_max_evt = (int) $_POST['join_max_evt'];
 $ngens_max_evt = (int) $_POST['ngens_max_evt'];
 // tableaux
