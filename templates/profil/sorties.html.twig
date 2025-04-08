@@ -30,10 +30,12 @@
                             {% endif %}
 
                             {% if app.user == event.user %}
-                                {% if event.status == constant('App\\Entity\\Evt::STATUS_LEGAL_UNSEEN') %}
-                                    <p class="alerte">Sortie en attente de publication</p>
+                                {% if event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
+                                    <p class="info">Publiée et validée par le président</p>
+                                {% elseif event.status == constant('App\\Entity\\Evt::STATUS_LEGAL_UNSEEN') %}
+                                    <p class="alerte">En attente de publication</p>
                                 {% elseif event.status == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
-                                    <p class="info">Sortie publiée sur le site</p>
+                                    <p class="draft">Publiée non validée par le président</p>
                                 {% elseif event.status == constant('App\\Entity\\Evt::STATUS_LEGAL_REFUSE') %}
                                     <p class="erreur">Sortie refusée et non publiée</p>
                                 {% endif %}
@@ -80,7 +82,7 @@
                                         {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>{% endif %}
                                         {{ event.titre }}
                                         {% set participation = event.participation(app.user) %}
-                                        {% if participation %}
+                                        {% if participation and app.user != event.user %}
                                             {% if participation.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
                                                 <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
                                                     <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -93,7 +95,7 @@
                                                     <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                                     </svg>
-                                                    Validé
+                                                    Accepté
                                                 </span>
                                             {% elseif participation.status == constant('App\\Entity\\EventParticipation::STATUS_ABSENT') %}
                                                 <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
