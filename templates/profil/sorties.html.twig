@@ -115,12 +115,6 @@
 
                                     <p>
                                         <b>{{ event.commission.title }}</b>
-                                        {% if event.difficulte %}
-                                            - <b>{{ event.difficulte }}</b>
-                                        {% endif %}
-                                        {% if event.massif %}
-                                            - <b>{{ event.massif }}</b>
-                                        {% endif %}
                                         {% if event.participation(app.user) %}
                                             - Votre rôle : <b>{{ event.participation(app.user).role }}</b>
                                         {% endif %}
