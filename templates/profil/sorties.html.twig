@@ -32,11 +32,11 @@
                             {% if app.user == event.user %}
                                 {% if event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
                                     <p class="info">Publiée et validée par le président</p>
-                                {% elseif event.status == constant('App\\Entity\\Evt::STATUS_LEGAL_UNSEEN') %}
+                                {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_UNSEEN') %}
                                     <p class="alerte">En attente de publication</p>
-                                {% elseif event.status == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
+                                {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE') %}
                                     <p class="draft">Publiée non validée par le président</p>
-                                {% elseif event.status == constant('App\\Entity\\Evt::STATUS_LEGAL_REFUSE') %}
+                                {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_REFUSE') %}
                                     <p class="erreur">Sortie refusée et non publiée</p>
                                 {% endif %}
                             {% endif %}
@@ -44,7 +44,7 @@
                         <td>
                             <div class="evt-tools">
                                 <div class="grid grid-row-auto">
-                                {% if app.user == event.user and event.status != constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
+                                {% if app.user == event.user and event.status != constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE') %}
                                     <a class="nice2" href="{{ path('sortie', { code: event.code, id: event.id }) }}?forceshow=true" title="Aperçu de la page dédiée à la sortie ci-dessous">Aperçu</a>
                                 {% endif %}
 
