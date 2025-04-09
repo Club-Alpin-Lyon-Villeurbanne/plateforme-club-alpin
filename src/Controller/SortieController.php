@@ -102,7 +102,7 @@ class SortieController extends AbstractController
             ], [], null, $event->getUser()->getEmail());
         }
 
-        $this->addFlash('info', 'La sortie est validée');
+        $this->addFlash('info', 'La sortie est publiée');
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
@@ -172,7 +172,7 @@ class SortieController extends AbstractController
                     $statusName = 'En attente';
                 }
                 if (EventParticipation::STATUS_VALIDE === $status) {
-                    $statusName = 'Inscrit';
+                    $statusName = 'Accepté';
                 }
                 if (EventParticipation::STATUS_REFUSE === $status) {
                     $statusName = 'Refusé';

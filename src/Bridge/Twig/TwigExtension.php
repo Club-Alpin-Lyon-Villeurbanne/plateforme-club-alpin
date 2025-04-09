@@ -98,9 +98,9 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
 
         switch ($participation->getStatus()) {
             case EventParticipation::STATUS_NON_CONFIRME:
-                return 'Non confirmé';
+                return 'En attente';
             case EventParticipation::STATUS_VALIDE:
-                return 'Validé';
+                return 'Accepté';
             case EventParticipation::STATUS_REFUSE:
                 return 'Refusé';
             case EventParticipation::STATUS_ABSENT:
