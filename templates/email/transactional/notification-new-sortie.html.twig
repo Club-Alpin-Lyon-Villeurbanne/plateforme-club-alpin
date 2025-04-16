@@ -1,7 +1,9 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
+
     {{ prefix }}[{{ entity.commission.title }}] {{ entity.titre }} / {{ entity.tsp | intldate('cccc d MMMM') }}
+
 {%- endblock %}
 
 {% block rappel_objet 'Nouvelle sortie: ' ~ entity.titre ~ ' / ' ~ entity.tsp | intldate('cccc d MMMM') %}
