@@ -131,24 +131,7 @@
 
                     <div style="width:515px; min-height:160px; float:left; border-right:1px solid #c6e39f; min-height:130px; padding:0px 5px 0 0">
                         <div class="nav-user">
-                            <p class="menutitle">Mes sorties</p>
-
-                                {% if app.user and caf_id == 'lyon' %}
-                                    <a href="{{ path('minibus') }}" title="">
-                                        <span class="star">
-                                            <img src="/img/base/bullet_star.png" alt="" title="" />
-                                        </span>
-
-                                        réservation de minibus
-                                    </a>
-                                    <a href="{{ path('local_club') }}" title="">
-                                        <span class="star">
-                                            <img src="/img/base/bullet_star.png" alt="" title="" />
-                                        </span>
-
-                                        réservation local du Club
-                                    </a>
-                                {% endif %}
+                            <p class="menutitle">Sorties</p>
 
                                 {% if allowed('evt_validate') %}
                                     {# publier une sortie (notification au besoin, variable définie dans SCRIPTS.'reqs.php') #}
@@ -188,48 +171,65 @@
                                     </a><br />
                                 {% endif %}
 
-                                <a href="{{ path('profil_sorties_next') }}" title="">mes sorties à venir</a><br />
-                                <a href="{{ path('profil_sorties_prev') }}" title="">mes sorties passées</a><br />
+                                <a href="{{ path('profil_sorties_next') }}" title="">
+                                <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes sorties à venir</a><br />
+                                <a href="{{ path('profil_sorties_prev') }}" title="">
+                                <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes sorties passées</a><br />
                             </div>
 
                             <div class="nav-user">
-                                <p class="menutitle">Mon profil</p>
-
-                                <a href="/profil/infos.html" title="">mes infos publiques</a><br />
-                                <a href="/profil/infos.html#private" title="">mes infos privées</a><br />
+                                <p class="menutitle">Outils</p>
                                 {% if caf_id == 'lyon' %}
                                     {% if allowed('user_read_private') %} {# utilisation d'une permission existante données uniquement aux co-encadrants, encadrants et stagiaires #}
-                                        <a href="/pages/boite-outils-des-encadrants.html" title="">boite à outils encadrant</a><br />
+                                        <a href="/pages/boite-outils-des-encadrants.html" title="">
+                                        <span class="star">
+                                            <img src="/img/base/bullet_star.png" alt="" title="" />
+                                        </span>
+                                        boite à outils encadrant
+                                        </a>
                                     {% endif %}
-                                    <a href="{{ path('profil_alertes') }}" title="">mes alertes</a>
                                 {% endif %}
+                                {% if app.user and caf_id == 'lyon' %}
+                                    <a href="{{ path('profil_alertes') }}" title="">
+                                    <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes alertes</a>
+                                    <a href="{{ path('minibus') }}" title="">
+                                    <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>réservation de minibus</a>
+                                    <a href="{{ path('local_club') }}" title="">
+                                    <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>réservation local du Club</a>
+                                {% endif %}
+                                <a href="https://www.clubalpinlyon.fr/ftp/telechargements/livretaccueil-v2.pdf" title="">
+                                <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
+                                livret d'accueil des adhérents
+                                </a>
+
                             </div>
 
-                            <div class="nav-user">
-                                <p class="menutitle">Articles</p>
+                            {% if allowed('article_create') or allowed('article_validate') or allowed('article_validate_all') %}
 
-                                {% if allowed('article_create') %}
-                                    <a href="/article-new.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>rédiger un article
-                                    </a>
-                                    <a href="/profil/articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes articles
-                                    </a>
-                                {% endif %}
+                                <div class="nav-user">
+                                    <p class="menutitle">Articles</p>
 
-                                {% if allowed('article_validate') or allowed('article_validate_all') %}
-                                    <a href="/gestion-des-articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
+                                    {% if allowed('article_create') %}
+                                        <a href="/article-new.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                            <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>rédiger un article
+                                        </a>
+                                        <a href="/profil/articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                            <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes articles
+                                        </a>
+                                    {% endif %}
 
-                                        {% set notif_article = notifications_counter_articles() %}
-                                        {% if notif_article > 0 %}<span class="notification">{{ notif_article }}</span>{% endif %}
-                                        validation / gestion des articles
-                                    </a>
-                                {% endif %}
+                                    {% if allowed('article_validate') or allowed('article_validate_all') %}
+                                        <a href="/gestion-des-articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                            <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
 
-                                <a href="/recherche.html" title="">rechercher un article</a><br />
+                                            {% set notif_article = notifications_counter_articles() %}
+                                            {% if notif_article > 0 %}<span class="notification">{{ notif_article }}</span>{% endif %}
+                                            validation / gestion des articles
+                                        </a>
+                                    {% endif %}
 
-                            </div>
+                                </div>
+                            {% endif %}
 
                             <br  style="clear:both" />
 
