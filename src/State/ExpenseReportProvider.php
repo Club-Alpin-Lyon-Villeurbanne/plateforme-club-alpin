@@ -5,6 +5,7 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Repository\ExpenseReportRepository;
+use App\Utils\Enums\ExpenseReportStatusEnum;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class ExpenseReportProvider implements ProviderInterface
@@ -20,6 +21,7 @@ class ExpenseReportProvider implements ProviderInterface
         $canValidateReport = $this->security->isGranted('validate_expense_report');
 
         $filters = $context['filters'] ?? [];
+        $includeDrafts = isset($filters['include_drafts']) && 'true' === $filters['include_drafts'];
 
         if ($operation instanceof \ApiPlatform\Metadata\CollectionOperationInterface) {
             $qb = $this->expenseReportRepository->createQueryBuilder('er');
@@ -31,6 +33,12 @@ class ExpenseReportProvider implements ProviderInterface
             if (!$canValidateReport) {
                 $qb->andWhere('er.user = :user')
                    ->setParameter('user', $this->security->getUser());
+            }
+
+            // Exclure les notes de frais en brouillon seulement si include_drafts n'est pas défini à true
+            if (!$includeDrafts) {
+                $qb->andWhere('er.status != :draftStatus')
+                   ->setParameter('draftStatus', ExpenseReportStatusEnum::DRAFT->value);
             }
 
             return $qb->getQuery()->getResult();
