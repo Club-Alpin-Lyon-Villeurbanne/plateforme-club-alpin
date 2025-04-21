@@ -20,7 +20,7 @@ class ExpenseReportProvider implements ProviderInterface
         $canValidateReport = $this->security->isGranted('validate_expense_report');
 
         $filters = $context['filters'] ?? [];
-        $includeDrafts = isset($filters['include_drafts']) && $filters['include_drafts'] === 'true';
+        $includeDrafts = isset($filters['include_drafts']) && 'true' === $filters['include_drafts'];
 
         if ($operation instanceof \ApiPlatform\Metadata\CollectionOperationInterface) {
             $qb = $this->expenseReportRepository->createQueryBuilder('er');
