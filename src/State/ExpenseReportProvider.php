@@ -5,6 +5,7 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Repository\ExpenseReportRepository;
+use App\Utils\Enums\ExpenseReportStatusEnum;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class ExpenseReportProvider implements ProviderInterface
@@ -37,7 +38,7 @@ class ExpenseReportProvider implements ProviderInterface
             // Exclure les notes de frais en brouillon seulement si include_drafts n'est pas défini à true
             if (!$includeDrafts) {
                 $qb->andWhere('er.status != :draftStatus')
-                   ->setParameter('draftStatus', 'draft');
+                   ->setParameter('draftStatus', ExpenseReportStatusEnum::DRAFT->value);
             }
 
             return $qb->getQuery()->getResult();
