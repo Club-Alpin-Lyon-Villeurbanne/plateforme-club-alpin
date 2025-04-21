@@ -20,6 +20,7 @@ class ExpenseReportProvider implements ProviderInterface
         $canValidateReport = $this->security->isGranted('validate_expense_report');
 
         $filters = $context['filters'] ?? [];
+        $includeDrafts = isset($filters['include_drafts']) && $filters['include_drafts'] === 'true';
 
         if ($operation instanceof \ApiPlatform\Metadata\CollectionOperationInterface) {
             $qb = $this->expenseReportRepository->createQueryBuilder('er');
@@ -31,6 +32,12 @@ class ExpenseReportProvider implements ProviderInterface
             if (!$canValidateReport) {
                 $qb->andWhere('er.user = :user')
                    ->setParameter('user', $this->security->getUser());
+            }
+
+            // Exclure les notes de frais en brouillon seulement si include_drafts n'est pas défini à true
+            if (!$includeDrafts) {
+                $qb->andWhere('er.status != :draftStatus')
+                   ->setParameter('draftStatus', 'draft');
             }
 
             return $qb->getQuery()->getResult();
