@@ -35,14 +35,24 @@ class ExpenseReportStatusListener
         $oldStatus = $args->getOldValue('status');
         $newStatus = $args->getNewValue('status');
 
-        // On ne log que si le statut change réellement
+        try {
+            if (is_string($oldStatus)) {
+                $oldStatus = ExpenseReportStatusEnum::from($oldStatus);
+            }
+            if (is_string($newStatus)) {
+                $newStatus = ExpenseReportStatusEnum::from($newStatus);
+            }
+        } catch (\ValueError $e) {
+            throw new \RuntimeException('Statut de note de frais invalide lors du changement de statut.', 0, $e);
+        }
+
         if ($oldStatus === $newStatus) {
             return;
         }
 
         $user = $this->security->getUser();
-        if (!$user) {
-            return;
+        if (!$user instanceof \App\Entity\User) {
+            throw new \RuntimeException('Impossible de déterminer l\'utilisateur lors du changement de statut de la note de frais.');
         }
 
         $history = new ExpenseReportStatusHistory();
