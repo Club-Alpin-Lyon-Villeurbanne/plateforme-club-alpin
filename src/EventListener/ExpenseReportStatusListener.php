@@ -5,9 +5,8 @@ namespace App\EventListener;
 use App\Entity\ExpenseReport;
 use App\Entity\ExpenseReportStatusHistory;
 use App\Utils\Enums\ExpenseReportStatusEnum;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
-use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class ExpenseReportStatusListener

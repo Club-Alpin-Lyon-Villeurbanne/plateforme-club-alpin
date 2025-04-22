@@ -10,16 +10,23 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
 {
+    private static $testUser;
+
+    public static function setUpBeforeClass(): void
+    {
+        parent::setUpBeforeClass();
+        $instance = new static();
+        self::$testUser = $instance->signup();
+        $securityMock = $instance->createMock(Security::class);
+        $securityMock->method('getUser')->willReturn(self::$testUser);
+        self::getContainer()->set(Security::class, $securityMock);
+    }
+
     public function testItSendMailOnStatusChangeSubmitted()
     {
         $em = self::getContainer()->get(EntityManagerInterface::class);
-        $user = $this->signup();
+        $user = self::$testUser;
         $event = $this->createEvent($user);
-
-        // Mock Security pour retourner $user
-        $securityMock = $this->createMock(Security::class);
-        $securityMock->method('getUser')->willReturn($user);
-        self::getContainer()->set(Security::class, $securityMock);
 
         $expenseReport = new ExpenseReport();
         $expenseReport->setUser($user);
@@ -49,13 +56,8 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
     public function testItSendMailOnStatusChangeRejected()
     {
         $em = self::getContainer()->get(EntityManagerInterface::class);
-        $user = $this->signup();
+        $user = self::$testUser;
         $event = $this->createEvent($user);
-
-        // Mock Security pour retourner $user
-        $securityMock = $this->createMock(Security::class);
-        $securityMock->method('getUser')->willReturn($user);
-        self::getContainer()->set(Security::class, $securityMock);
 
         $expenseReport = new ExpenseReport();
         $expenseReport->setUser($user);
@@ -82,13 +84,8 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
     public function testItSendMailOnStatusChangeApproved()
     {
         $em = self::getContainer()->get(EntityManagerInterface::class);
-        $user = $this->signup();
+        $user = self::$testUser;
         $event = $this->createEvent($user);
-
-        // Mock Security pour retourner $user
-        $securityMock = $this->createMock(Security::class);
-        $securityMock->method('getUser')->willReturn($user);
-        self::getContainer()->set(Security::class, $securityMock);
 
         $expenseReport = new ExpenseReport();
         $expenseReport->setUser($user);
