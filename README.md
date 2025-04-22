@@ -18,12 +18,12 @@ Cette phase d'amélioration a permis de migrer vers Symfony, d'améliorer l'infr
 - ⚙️ Build : [Github Actions](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/actions)
 
 ### Environnements
-- 🧪 Test : [www.clubalpinlyon.top](https://www.clubalpinlyon.top)
+- 🧪 Test / staging : [www.clubalpinlyon.top](https://www.clubalpinlyon.top)
 - 🚀 Production : [www.clubalpinlyon.fr](https://www.clubalpinlyon.fr)
 
 ## Infrastructure
 
-Nous disposons de deux environnements hébergés sur [Clever Cloud](https://www.clever-cloud.com/):
+Nous disposons de deux environnements hébergés sur [Clever Cloud](https://www.clever-cloud.com/) :
 
 La [staging](https://www.clubalpinlyon.top) pour réaliser nos tests une fois les développements intégrés
 La [production](https://www.clubalpinlyon.fr), l'environnement final de nos utilisateurs.
@@ -37,8 +37,8 @@ Les variables d'environnement sont gérées dans la console de Clever Cloud.
 
 ## Cronjobs
 
-Les taches récurrentes sont gérées directement depuis le code en s'appuyant sur le module de cronjobs fourni par Clever Cloud.
-Elles sont stockées dans le répertoire clevercloud/crons. Il faut se référer à cette documentation si besoin : https://developers.clever-cloud.com/doc/administrate/cron/
+Les tâches récurrentes sont gérées directement depuis le code en s'appuyant sur le module de cronjobs fourni par Clever Cloud.
+Elles sont stockées dans le répertoire `clevercloud/crons`. Il faut se référer à cette documentation si besoin : https://developers.clever-cloud.com/doc/administrate/cron/
 
 - vérification de la validité des adhésions via des fichiers FFCAM
 - sauvegarde des images
@@ -50,6 +50,7 @@ Elles sont stockées dans le répertoire clevercloud/crons. Il faut se référer
 
 - [Docker](https://docs.docker.com/engine/install/) & docker-compose
 - Make (installé par défaut sur Mac et Linux ; disponible via [Chocolatey](https://community.chocolatey.org/packages/make) pour Windows)
+- Si vous avez d'autres projets utilisant les mêmes ports, pensez à les arrêter avant de lancer le projet CAF ;) (ou changez les ports)
 
 #### Étapes
 
@@ -61,13 +62,13 @@ Elles sont stockées dans le répertoire clevercloud/crons. Il faut se référer
 - Accès au site : `http://127.0.0.1:8000/`
 - Compte admin par défaut : `test@clubalpinlyon.fr` / `test`
 - PHPMyAdmin : `http://127.0.0.1:8080/`, accès : `root` / `test`
-- Mailcatcher : `http://127.0.0.1:8025/` (lancez cette commande pour "consommer" les mails: `docker compose exec cafsite bin/console messenger:consume mails --limit=50 --quiet --no-interaction`)
+- Mailcatcher : `http://127.0.0.1:8025/` (lancez cette commande pour "consommer" les mails : `docker compose exec cafsite bin/console messenger:consume mails --limit=50 --quiet --no-interaction`)
 
 ⚠️ L'upload d'images ne fonctionne pas dans un environnement dockerisé. 🚧
 
 #### Troubleshooting
 
-Après une migration vers un nouveau setup, exécutez `docker stop cafsite && docker rm cafsite` pour éviter les conflits d'images Docker.
+Après une migration vers un nouveau setup, exécutez `docker stop www_caflyon && docker rm www_caflyon` pour éviter les conflits d'images Docker.
 
 ##### Utilisateurs MacOS
 
@@ -123,7 +124,7 @@ Le site comporte deux rôles annexes :
 1. **Admin** : ce rôle dispose de tous les droits, y compris la possibilité de modifier les permissions importantes, comme les rôles de président ou de responsables de commission.
 2. **Gestionnaire de contenu** : ce rôle permet de modifier les pages et les blocs de contenu du site sans disposer des droits d'administration complets.
 
-On y accède via l'url https://www.clubalpinlyon.fr/admin/. Les identifiants en local sont: `admin` / `admin` et `admin_contenu` / `contenu`.
+On y accède via l'url https://www.clubalpinlyon.fr/admin/. Les identifiants en local sont : `admin` / `admin` et `admin_contenu` / `contenu`.
 
 ### FAQ
 
@@ -142,16 +143,16 @@ Si l'adhérent n'existe pas, il sera créé et il pourra accéder au site.
 
 ### Notes de frais
 L'application permet de gérer les notes de frais des sorties.
-Cela consiste en 2 parties: 
+Cela consiste en 2 parties : 
 #### la soumission des notes de frais par les encadrants (partie soumission)
-La première partie est une interface vuejs dispsonible dans la page de chaque sortie.
+La première partie est une interface VueJs disponible dans la page de chaque sortie.
 Un template twig pour envoyer un récap de la demande de note de frais à l'encadrant.
-Une API pour récuperer les infos de la notes de frais pour l'utiliser dans la partie admin.
+Une API pour récupérer les infos de la note de frais pour l'utiliser dans la partie admin.
 
-La config des taux d'indémnités kilométriques est faite dans le fichier `assets/expense-report-form/config/expense-report.json` pour la partie `client` et également dans `config/services.yaml` pour l'injection dans le container coté `server`.
+La config des taux d'indemnités kilométriques est faite dans le fichier `assets/expense-report-form/config/expense-report.json` pour la partie `client` et également dans `config/services.yaml` pour l'injection dans le container coté `server`.
 ⚠️ en cas de modif des taux, il faut bien penser à mettre à jour les deux endroits.
 
 #### la vérification et validation des notes de frais par la comptabilité (partie admin).
 
-La 2eme partie, vérification des notes de frais, est une [interface distincte développée en nextjs](https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club).
-Les taux d'indémnités kilométriques sont également configurés dans le fichier https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club/blob/main/app/config.ts.
+La deuxième partie, vérification des notes de frais, est une [interface distincte développée en nextjs](https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club).
+Les taux d'indemnités kilométriques sont également configurés dans le fichier https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club/blob/main/app/config.ts.
