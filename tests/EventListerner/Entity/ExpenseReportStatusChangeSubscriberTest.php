@@ -6,26 +6,13 @@ use App\Entity\ExpenseReport;
 use App\Tests\WebTestCase;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 
 class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
 {
-    private static $testUser;
-
-    public static function setUpBeforeClass(): void
-    {
-        parent::setUpBeforeClass();
-        $instance = new static();
-        self::$testUser = $instance->signup();
-        $securityMock = $instance->createMock(Security::class);
-        $securityMock->method('getUser')->willReturn(self::$testUser);
-        self::getContainer()->set(Security::class, $securityMock);
-    }
-
     public function testItSendMailOnStatusChangeSubmitted()
     {
         $em = self::getContainer()->get(EntityManagerInterface::class);
-        $user = self::$testUser;
+        $user = $this->signup();
         $event = $this->createEvent($user);
 
         $expenseReport = new ExpenseReport();
@@ -56,7 +43,7 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
     public function testItSendMailOnStatusChangeRejected()
     {
         $em = self::getContainer()->get(EntityManagerInterface::class);
-        $user = self::$testUser;
+        $user = $this->signup();
         $event = $this->createEvent($user);
 
         $expenseReport = new ExpenseReport();
@@ -84,7 +71,7 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
     public function testItSendMailOnStatusChangeApproved()
     {
         $em = self::getContainer()->get(EntityManagerInterface::class);
-        $user = self::$testUser;
+        $user = $this->signup();
         $event = $this->createEvent($user);
 
         $expenseReport = new ExpenseReport();
