@@ -14,7 +14,7 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $em = self::getContainer()->get(EntityManagerInterface::class);
         $user = $this->signup();
         $this->signin($user);
-        
+
         $event = $this->createEvent($user);
 
         $expenseReport = new ExpenseReport();
