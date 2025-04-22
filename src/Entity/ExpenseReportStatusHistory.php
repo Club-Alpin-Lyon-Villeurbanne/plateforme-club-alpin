@@ -3,11 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\ExpenseReportStatusHistoryRepository;
-use Doctrine\ORM\Mapping as ORM;
-use App\Entity\ExpenseReport;
-use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ExpenseReportStatusHistoryRepository::class)]
 class ExpenseReportStatusHistory
