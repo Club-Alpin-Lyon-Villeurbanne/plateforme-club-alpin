@@ -17,8 +17,11 @@ table.dataTable thead th {
 	padding: 3px 18px 3px 10px;
 	border-bottom: 1px solid black;
 	font-weight: bold;
+}
+table.datatable thead th:hover {
 	cursor: pointer;
 	*cursor: hand;
+	text-decoration: underline !important;
 }
 
 table.dataTable tfoot th {
