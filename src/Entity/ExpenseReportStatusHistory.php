@@ -47,6 +47,7 @@ class ExpenseReportStatusHistory
     public function setExpenseReport(?ExpenseReport $expenseReport): self
     {
         $this->expenseReport = $expenseReport;
+        
         return $this;
     }
 
@@ -58,6 +59,7 @@ class ExpenseReportStatusHistory
     public function setOldStatus(?ExpenseReportStatusEnum $oldStatus): self
     {
         $this->oldStatus = $oldStatus;
+        
         return $this;
     }
 
@@ -69,6 +71,7 @@ class ExpenseReportStatusHistory
     public function setNewStatus(ExpenseReportStatusEnum $newStatus): self
     {
         $this->newStatus = $newStatus;
+        
         return $this;
     }
 
@@ -80,6 +83,7 @@ class ExpenseReportStatusHistory
     public function setChangedBy(?User $changedBy): self
     {
         $this->changedBy = $changedBy;
+        
         return $this;
     }
 
@@ -91,6 +95,7 @@ class ExpenseReportStatusHistory
     public function setChangedAt(\DateTimeImmutable $changedAt): self
     {
         $this->changedAt = $changedAt;
+        
         return $this;
     }
 }

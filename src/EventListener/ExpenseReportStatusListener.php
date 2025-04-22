@@ -36,10 +36,10 @@ class ExpenseReportStatusListener
         $newStatus = $args->getNewValue('status');
 
         try {
-            if (is_string($oldStatus)) {
+            if (\is_string($oldStatus)) {
                 $oldStatus = ExpenseReportStatusEnum::from($oldStatus);
             }
-            if (is_string($newStatus)) {
+            if (\is_string($newStatus)) {
                 $newStatus = ExpenseReportStatusEnum::from($newStatus);
             }
         } catch (\ValueError $e) {
