@@ -214,3 +214,7 @@ services:
   App\Command\FfcamFileSync:
     arguments:
       $ffcamFilePath: "%env(FFCAM_FILE_PATH)%"
+
+  App\EventListener\ExpenseReportStatusListener:
+    tags:
+      - { name: doctrine.event_listener, event: preUpdate }
