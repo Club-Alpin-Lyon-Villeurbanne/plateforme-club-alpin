@@ -728,7 +728,7 @@
                 {# Bloc détails cachés #}
                 {% if allowed('user_read_limited') and event.detailsCaches %}
                     <ul class="nice-list">
-                        <li class="wide"><b>DÉTAILS PRATIQUES (invisible du grand public) :</b><br /> {{ event.detailsCaches | converturls | nl2br }}</li>
+                        <li class="wide"><b>DÉTAILS PRATIQUES :</b><br /> {{ event.detailsCaches | converturls | nl2br }}</li>
                     </ul>
                     <br style="clear:both" />
                     <hr />
