@@ -7,6 +7,7 @@ $destinataire = $expediteur = null;
 
 $id_user = (int) $_POST['id_user'];
 $nom = stripslashes($_POST['nom'] ?? '');
+$shortName = $nom;
 $email = stripslashes($_POST['email'] ?? '');
 $objet = stripslashes($_POST['objet'] ?? '');
 $message = stripslashes($_POST['message'] ?? '');
@@ -45,6 +46,7 @@ else {
 
     // dans ce cas, les valeurs sont réécrites
     $nom = $expediteur['civ_user'] . ' ' . $expediteur['firstname_user'] . ' ' . $expediteur['lastname_user'] . ' (' . $expediteur['nickname_user'] . ')';
+    $shortName = $expediteur['firstname_user'] . ' ' . $expediteur['lastname_user'];
     $email = $expediteur['email_user'];
 }
 
@@ -83,6 +85,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 if (!isset($errTab) || 0 === count($errTab)) {
     LegacyContainer::get('legacy_mailer')->send($destinataire['email_user'], 'transactional/contact-form', [
         'contact_name' => $nom,
+        'contact_shortname' => $shortName,
         'contact_email' => $email,
         'contact_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $expediteur['id_user'] . '.html',
         'contact_objet' => $objet,

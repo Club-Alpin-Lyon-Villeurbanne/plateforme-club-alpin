@@ -76,7 +76,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $row = $result->fetch_row();
         if (!$row[0]) {
-            $errTab[] = "Désolé, nous ne trouvons pas ce numéro d'adhérent dans notre base de donnée. Si vous venez de vous (ré)inscrire au CAF, nous vons invitons à réessayer ultérieurement.";
+            $errTab[] = "Désolé, nous ne trouvons pas ce numéro d'adhérent dans notre base de données. Si vous venez de vous (ré)inscrire au CAF, nous vons invitons à réessayer ultérieurement.";
         }
     }
 
