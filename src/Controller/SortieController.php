@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
+use App\Legacy\LegacyContainer;
 use App\Mailer\Mailer;
 use App\Messenger\Message\SortiePubliee;
 use App\Repository\EventParticipationRepository;
@@ -354,6 +355,7 @@ class SortieController extends AbstractController
             'url_sortie' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'name_sortie' => $event->getTitre(),
             'message' => $request->request->get('message'),
+            'message_author_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $event->getUser()->getId() . '.html',
         ], [], $event->getUser(), $event->getUser()->getEmail());
 
         $this->addFlash('info', 'Votre message a bien été envoyé.');
