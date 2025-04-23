@@ -265,7 +265,7 @@ class Evt
     #[ORM\OneToMany(targetEntity: 'App\Entity\Article', mappedBy: 'evt')]
     private $articles;
 
-    #[ORM\Column(name: "visio_evt",length: 255, nullable: true)]
+    #[ORM\Column(name: 'visio_evt', length: 255, nullable: true)]
     private ?string $visio = null;
 
     public function __construct(
