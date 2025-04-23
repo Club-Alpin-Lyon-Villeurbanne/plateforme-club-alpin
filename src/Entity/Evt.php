@@ -265,8 +265,8 @@ class Evt
     #[ORM\OneToMany(targetEntity: 'App\Entity\Article', mappedBy: 'evt')]
     private $articles;
 
-    #[ORM\Column(name: 'visio_evt', length: 255, nullable: true)]
-    private ?string $visio = null;
+    #[ORM\Column(name: 'details_caches_evt', type: 'text', nullable: true)]
+    private ?string $detailsCaches = null;
 
     public function __construct(
         User $user,
@@ -849,14 +849,14 @@ class Evt
         return $this;
     }
 
-    public function getVisio(): ?string
+    public function getDetailsCaches(): ?string
     {
-        return $this->visio;
+        return $this->detailsCaches;
     }
 
-    public function setVisio(?string $visio): static
+    public function setDetailsCaches(?string $detailsCaches): static
     {
-        $this->visio = $visio;
+        $this->detailsCaches = $detailsCaches;
 
         return $this;
     }

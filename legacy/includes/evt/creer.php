@@ -222,8 +222,16 @@ inclure('infos-carte', 'mini');
 
         <br style="clear:both"/>
 
-        <div>
-            Ajouter un lien visio pour cet évenment : <input type="text" name="visio_evt" class="type2" style="width:50%" value="<?php echo inputVal('visio_evt', ''); ?>"/>
+
+        <div style="margin: 10px 0 10px 0;">
+            Détails pratiques (invisible du grand public) :<br />
+            <textarea
+                name="details_caches_evt"
+                class="type2"
+                style="width:95%; min-height:60px;"
+                placeholder="ex : code portail, consignes, lien visio, etc."
+                autocomplete="off"
+            ><?php echo inputVal('details_caches_evt', ''); ?></textarea>
         </div>
         <br style="clear:both" />
         <br />

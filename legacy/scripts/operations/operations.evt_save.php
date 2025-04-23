@@ -28,7 +28,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $itineraire = LegacyContainer::get('legacy_mysqli_handler')->escapeString($itineraire);
     $difficulte_evt = LegacyContainer::get('legacy_mysqli_handler')->escapeString($difficulte_evt);
     $description_evt = LegacyContainer::get('legacy_mysqli_handler')->escapeString($description_evt);
-    $visio_evt = LegacyContainer::get('legacy_mysqli_handler')->escapeString($visio_evt);
+    $details_caches_evt = LegacyContainer::get('legacy_mysqli_handler')->escapeString($details_caches_evt);
 
     if (0 == $id_groupe) {
         $id_groupe = null;
@@ -52,8 +52,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $code_evt = substr(formater($titre_evt, 3), 0, 30);
 
     if ('evt_create' == $_POST['operation']) {
-        $req = "INSERT INTO caf_evt(status_evt ,status_legal_evt ,user_evt ,commission_evt ,tsp_evt ,tsp_end_evt ,tsp_crea_evt ,place_evt ,titre_evt ,code_evt ,massif_evt ,rdv_evt ,tarif_evt, tarif_detail, denivele_evt ,distance_evt ,lat_evt ,long_evt ,matos_evt ,itineraire, difficulte_evt ,description_evt , need_benevoles_evt , join_start_evt, join_max_evt, ngens_max_evt, id_groupe, cancelled_evt)
-					VALUES ('0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '" . ($place_evt ?? '') . "', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$tarif_detail', '$denivele_evt', '$distance_evt', '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', " . ($id_groupe ?: 'null') . ", '0', '$visio_evt');";
+        $req = "INSERT INTO caf_evt(status_evt ,status_legal_evt ,user_evt ,commission_evt ,tsp_evt ,tsp_end_evt ,tsp_crea_evt ,place_evt ,titre_evt ,code_evt ,massif_evt ,rdv_evt ,tarif_evt, tarif_detail, denivele_evt ,distance_evt ,lat_evt ,long_evt ,matos_evt ,itineraire, difficulte_evt ,description_evt , need_benevoles_evt , join_start_evt, join_max_evt, ngens_max_evt, id_groupe, cancelled_evt, details_caches_evt)
+					VALUES ('0', '0', '$user_evt', '$commission_evt', '$tsp_evt', '$tsp_end_evt', '$tsp_crea_evt', '" . ($place_evt ?? '') . "', '$titre_evt', '$code_evt', '$massif_evt', '$rdv_evt', $tarif_evt, '$tarif_detail', '$denivele_evt', '$distance_evt', '$lat_evt', '$long_evt', '$matos_evt', '$itineraire', '$difficulte_evt', '$description_evt', $need_benevoles_evt , '$join_start_evt', '$join_max_evt', '$ngens_max_evt', " . ($id_groupe ?: 'null') . ", '0', '$details_caches_evt');";
     } elseif (isset($_POST['operation']) && 'evt_update' == $_POST['operation']) {
         // MISE A JOUR de l'éléments existant // IMPORTANT : le status repasse à 0
         $req = "UPDATE caf_evt SET `status_evt`=0,
@@ -77,8 +77,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 				`join_max_evt` =  '$join_max_evt',
 				`ngens_max_evt` =  '$ngens_max_evt',
 				`description_evt` =  '$description_evt',
-				`need_benevoles_evt` =  '$need_benevoles_evt'
-				`visio_evt` =  '$vsio_evt'";
+				`need_benevoles_evt` =  '$need_benevoles_evt',
+                `details_caches_evt` =  '$details_caches_evt'";
         if (null != $id_groupe) {
             $req .= ", id_groupe = '$id_groupe' ";
         }

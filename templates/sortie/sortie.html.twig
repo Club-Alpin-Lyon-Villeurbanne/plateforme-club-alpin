@@ -718,11 +718,21 @@
                         <li class="wide"><b>TARIF :</b> {{ event.tarif }} Euros</li>
                     {% endif %}
                     {% if event.tarifDetail %}
-                        <li class="wide"><b>DÉTAIL :</b> {{ event.tarifDetail | converturls | nl2br }}</li>
+                        <li class="wide"><b>DÉTAIL :</b><br /> {{ event.tarifDetail | converturls | nl2br }}</li>
                     {% endif %}
                 </ul>
                 <br style="clear:both" />
                 <hr />
+
+
+                {# Bloc détails cachés #}
+                {% if allowed('user_read_limited') and event.detailsCaches %}
+                    <ul class="nice-list">
+                        <li class="wide"><b>DÉTAILS PRATIQUES (invisible du grand public) :</b><br /> {{ event.detailsCaches | converturls | nl2br }}</li>
+                    </ul>
+                    <br style="clear:both" />
+                    <hr />
+                {% endif %}
             {% endif %}
 
             <ul class="nice-list">
