@@ -230,7 +230,6 @@ inclure('infos-carte', 'mini');
                 class="type2"
                 style="width:95%; min-height:60px;"
                 placeholder="ex : code portail, consignes, lien visio, etc."
-                autocomplete="off"
             ><?php echo inputVal('details_caches_evt', ''); ?></textarea>
         </div>
         <br style="clear:both" />

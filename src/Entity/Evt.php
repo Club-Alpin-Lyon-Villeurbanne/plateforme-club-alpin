@@ -265,8 +265,8 @@ class Evt
     #[ORM\OneToMany(targetEntity: 'App\Entity\Article', mappedBy: 'evt')]
     private $articles;
 
-    #[ORM\Column(name: 'details_caches_evt', type: 'text', nullable: true)]
-    private ?string $detailsCaches = null;
+    #[ORM\Column(name: 'details_caches_evt', type: 'text', length: 65535, nullable: true)]
+    private $detailsCaches;
 
     public function __construct(
         User $user,
@@ -854,7 +854,7 @@ class Evt
         return $this->detailsCaches;
     }
 
-    public function setDetailsCaches(?string $detailsCaches): static
+    public function setDetailsCaches(?string $detailsCaches): self
     {
         $this->detailsCaches = $detailsCaches;
 

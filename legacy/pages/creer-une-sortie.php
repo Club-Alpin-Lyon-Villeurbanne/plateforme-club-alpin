@@ -96,7 +96,7 @@ if ($p2) {
                 , ngens_max_evt
                 , join_start_evt, join_max_evt, id_groupe, tarif_detail, need_benevoles_evt, itineraire
                 , nickname_user
-                , title_commission, code_commission
+                , title_commission, code_commission, details_caches_evt
         FROM caf_evt, caf_user, caf_commission as commission
         WHERE id_evt=$id_evt
         AND id_user = user_evt
@@ -156,6 +156,7 @@ if ($p2) {
             $_POST['benevoles'] = $benevoles;
             $_POST['tarif_evt'] = $handle['tarif_evt'];
             $_POST['tarif_detail'] = $handle['tarif_detail'];
+            $_POST['details_caches_evt'] = $handle['details_caches_evt'];
             $_POST['massif_evt'] = $handle['massif_evt'];
             $_POST['id_groupe'] = $handle['id_groupe'];
             $_POST['itineraire'] = $handle['itineraire'];
