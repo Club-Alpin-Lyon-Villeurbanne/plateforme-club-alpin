@@ -32,15 +32,15 @@ if (isset($_POST['operation']) && 'evt_update' == $_POST['operation'] && (!isset
         <?php
         // liens dans le cas de la creation d'une sortie
         if (!$id_evt_to_update) {
-        ?>
+            ?>
             <div class="faux-select-wrapper" id="choix-commission">
                 <div class="faux-select">
                     <?php
-                    foreach ($comTab as $code => $data) {
-                        if (allowed('evt_create', 'commission:' . $code)) {
-                            echo '<a href="/creer-une-sortie/' . html_utf8($code) . '.html" title="" class="' . ($code == $current_commission ? 'up' : '') . '">' . html_utf8($data['title_commission']) . '</a> ';
-                        }
-                    } ?>
+                        foreach ($comTab as $code => $data) {
+                            if (allowed('evt_create', 'commission:' . $code)) {
+                                echo '<a href="/creer-une-sortie/' . html_utf8($code) . '.html" title="" class="' . ($code == $current_commission ? 'up' : '') . '">' . html_utf8($data['title_commission']) . '</a> ';
+                            }
+                        } ?>
                 </div>
             </div>
         <?php
@@ -50,7 +50,7 @@ if (isset($_POST['operation']) && 'evt_update' == $_POST['operation'] && (!isset
         else {
             echo '<b>' . $comTab[$current_commission]['title_commission'] . '</b><input type="hidden" name="commission_evt" value="' . (int) $_POST['commission_evt'] . '" />';
         }
-        ?>
+?>
     </div>
 
     <div style="float:right;margin-right:20px;">
@@ -64,11 +64,11 @@ if (isset($_POST['operation']) && 'evt_update' == $_POST['operation'] && (!isset
         <select name="id_groupe" class="type1" style="width:95%">
             <option value="">- Précisez le groupe concerné par cette sortie (facultatif) :</option>
             <?php
-            // articles liés aux commissions
-            foreach ($groupes as $code => $groupe) {
-                echo '<option value="' . $groupe['id'] . '" ' . (array_key_exists('id_groupe', $_POST) && $_POST['id_groupe'] == $groupe['id'] ? 'selected="selected"' : '') . '>Groupe : ' . html_utf8($groupe['nom']) . ' &raquo;</option>';
-            }
-            ?>
+    // articles liés aux commissions
+    foreach ($groupes as $code => $groupe) {
+        echo '<option value="' . $groupe['id'] . '" ' . (array_key_exists('id_groupe', $_POST) && $_POST['id_groupe'] == $groupe['id'] ? 'selected="selected"' : '') . '>Groupe : ' . html_utf8($groupe['nom']) . ' &raquo;</option>';
+    }
+        ?>
         </select>
     <?php } else { ?>
         <input type="hidden" name="id_groupe" value="">
@@ -80,53 +80,53 @@ if (isset($_POST['operation']) && 'evt_update' == $_POST['operation'] && (!isset
         <h2 class="trigger-h2">Encadrant(s) :</h2>
         <div class="trigger-me check-nice">
             <?php
-            $encadrants = isset($_POST['encadrants']) && is_array($_POST['encadrants']) ? $_POST['encadrants'] : [];
-            if (!count($encadrantsTab)) {
-                // echo '<p class="erreur">Erreur : aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission. Vous ne pourrez pas créer de sortie...</p>';
-                echo '<p class="info">Aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission.</p>';
-            }
-            foreach ($encadrantsTab as $encadrant) {
-                echo '<label for="encadrant-' . $encadrant['id_user'] . '">
+        $encadrants = isset($_POST['encadrants']) && is_array($_POST['encadrants']) ? $_POST['encadrants'] : [];
+if (!count($encadrantsTab)) {
+    // echo '<p class="erreur">Erreur : aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission. Vous ne pourrez pas créer de sortie...</p>';
+    echo '<p class="info">Aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission.</p>';
+}
+foreach ($encadrantsTab as $encadrant) {
+    echo '<label for="encadrant-' . $encadrant['id_user'] . '">
 									<input type="checkbox" ' . (in_array($encadrant['id_user'], $encadrants, true) ? 'checked="checked"' : '') . ' name="encadrants[]" value="' . $encadrant['id_user'] . '" id="encadrant-' . $encadrant['id_user'] . '" />
 									' . $encadrant['firstname_user'] . '
 									' . $encadrant['lastname_user'] . '
 									<a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . $encadrant['id_user'] . '" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
 									' . ($encadrant['description_user_attr'] ? '&nbsp;<img src="img/base/info.png" title="' . addslashes(html_utf8($encadrant['description_user_attr'])) . '">' : '') . '
 								</label>';
-            }
-            ?>
+}
+?>
             <br style="clear:both" />
         </div>
 
         <h2 class="trigger-h2">Stagiaire(s) :</h2>
         <div class="trigger-me check-nice">
             <?php
-            $stagiaires = isset($_POST['stagiaires']) && is_array($_POST['stagiaires']) ? $_POST['stagiaires'] : [];
-            if (!count($stagiairesTab)) {
-                echo '<p class="info">Aucun adhérent n\'est déclaré <b>stagiaire</b> pour cette commission.</p>';
-            }
-            foreach ($stagiairesTab as $stagiaire) {
-                echo '<label for="stagiaire-' . $stagiaire['id_user'] . '">
+$stagiaires = isset($_POST['stagiaires']) && is_array($_POST['stagiaires']) ? $_POST['stagiaires'] : [];
+if (!count($stagiairesTab)) {
+    echo '<p class="info">Aucun adhérent n\'est déclaré <b>stagiaire</b> pour cette commission.</p>';
+}
+foreach ($stagiairesTab as $stagiaire) {
+    echo '<label for="stagiaire-' . $stagiaire['id_user'] . '">
                     <input type="checkbox" ' . (in_array($stagiaire['id_user'], $stagiaires, true) ? 'checked="checked"' : '') . ' name="stagiaires[]" value="' . $stagiaire['id_user'] . '" id="encadrant-' . $stagiaire['id_user'] . '" />
                     ' . $stagiaire['firstname_user'] . '
                     ' . $stagiaire['lastname_user'] . '
                     <a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . $stagiaire['id_user'] . '" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
                 </label>';
-            }
-            ?>
+}
+?>
             <br style="clear:both" />
         </div>
 
         <h2 class="trigger-h2">Co-Encadrant(s) :</h2>
         <div class="trigger-me check-nice">
             <?php
-            $coencadrants = isset($_POST['coencadrants']) && is_array($_POST['coencadrants']) ? $_POST['coencadrants'] : [];
-            if (!count($coencadrantsTab)) {
-                // echo '<p class="info">Aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission.</p>';echo '<p class="erreur">Erreur : aucun adhérent n\'est déclaré <b>coencadrant</b> pour cette commission. Vous ne pourrez pas créer de sortie...</p>';
-                echo '<p class="info">Aucun adhérent n\'est déclaré <b>co-encadrant</b> pour cette commission.</p>';
-            }
-            foreach ($coencadrantsTab as $coencadrant) {
-                echo '<label for="coencadrant-' . $coencadrant['id_user'] . '">
+$coencadrants = isset($_POST['coencadrants']) && is_array($_POST['coencadrants']) ? $_POST['coencadrants'] : [];
+if (!count($coencadrantsTab)) {
+    // echo '<p class="info">Aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission.</p>';echo '<p class="erreur">Erreur : aucun adhérent n\'est déclaré <b>coencadrant</b> pour cette commission. Vous ne pourrez pas créer de sortie...</p>';
+    echo '<p class="info">Aucun adhérent n\'est déclaré <b>co-encadrant</b> pour cette commission.</p>';
+}
+foreach ($coencadrantsTab as $coencadrant) {
+    echo '<label for="coencadrant-' . $coencadrant['id_user'] . '">
 									<input type="checkbox" ' . (in_array($coencadrant['id_user'], $coencadrants, true) ? 'checked="checked"' : '') . ' name="coencadrants[]" value="' . $coencadrant['id_user'] . '" id="coencadrant-' . $coencadrant['id_user'] . '" />
 									' . $coencadrant['firstname_user'] . '
 									' . $coencadrant['lastname_user'] . '
@@ -139,8 +139,8 @@ if (isset($_POST['operation']) && 'evt_update' == $_POST['operation'] && (!isset
         </div>
 
         <h2 class="trigger-h2">Bénévoles <?php if ($id_evt_to_update) {
-                                                echo '(modifiable dans la gestion des inscrits) ';
-                                            } ?>:</h2>
+            echo '(modifiable dans la gestion des inscrits) ';
+        } ?>:</h2>
         <div class="trigger-me check-nice">
             <?php
             // modification possible seulement en cas de creation d'une nouvelle sortie
@@ -159,12 +159,12 @@ if (isset($_POST['operation']) && 'evt_update' == $_POST['operation'] && (!isset
                 }
                 echo '<br style="clear:both" />';
             }
-            ?>
+?>
 
             <label for="need_benevoles_evt" style="margin-top:15px; display:block; float:none; width:93%; background-color:white; background-position:8px 5px; padding-left:10px; padding-top:5px; box-shadow:0 0 15px -8px black;">
                 <input type="checkbox" class="custom" name="need_benevoles_evt" id="need_benevoles_evt" <?php if (!empty($_POST['need_benevoles_evt']) && in_array($_POST['need_benevoles_evt'], [1, 'on', '1'], true)) {
-                                                                                                            echo 'checked="checked"';
-                                                                                                        } ?> /> Afficher un encart &laquo;Nous aurions besoin de bénévoles&raquo; sur la page de la sortie ?
+                    echo 'checked="checked"';
+                } ?> /> Afficher un encart &laquo;Nous aurions besoin de bénévoles&raquo; sur la page de la sortie ?
             </label>
 
             <br style="clear:both" />
@@ -185,15 +185,15 @@ if (isset($_POST['operation']) && 'evt_update' == $_POST['operation'] && (!isset
             Ville, et lieu de rendez-vous covoiturage :<br />
             <?php
             inclure('infos-lieu-de-rdv', 'mini');
-            ?>
+?>
             <input type="text" name="rdv_evt" class="type2" style="width:95%" value="<?php echo inputVal('rdv_evt', ''); ?>" placeholder="ex : Pralognan la Vanoise, les fontanettes" required minlength="3" maxlength="200" />
         </div>
 
         <div style="float:left; width:45%; padding:0 20px 0 0;">
             Précisez sur la carte :<br />
             <?php
-            inclure('infos-carte', 'mini');
-            ?>
+inclure('infos-carte', 'mini');
+?>
             <input type="button" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le point sur la carte" />
             <input type="hidden" name="lat_evt" value="<?php echo inputVal('lat_evt', ''); ?>" />
             <input type="hidden" name="long_evt" value="<?php echo inputVal('long_evt', ''); ?>" />
@@ -240,7 +240,7 @@ if (isset($_POST['operation']) && 'evt_update' == $_POST['operation'] && (!isset
 
         <?php
         inclure('infos-tarifs', 'mini');
-        ?>
+?>
         Détails des frais :
         <textarea name="tarif_detail" class="type2" style="width:95%; min-height:80px" placeholder="Ex : Remontées mécaniques 12€, Péage 11.50€, Car 7€, Vin chaud 5€ = somme 35.50"><?php echo inputVal('tarif_detail', ''); ?></textarea>
         <br />
@@ -326,8 +326,8 @@ if (isset($_POST['operation']) && 'evt_update' == $_POST['operation'] && (!isset
         Matériel nécessaire :
         <textarea name="matos_evt" class="type2" style="width:95%; min-height:80px" placeholder="ex : 10 Dégaines, 1 Baudrier, 1 Maillot de bain..."><?php echo inputVal('matos_evt', ''); ?></textarea>
         <?php
-        inclure('infos-matos', 'mini');
-        ?>
+inclure('infos-matos', 'mini');
+?>
     </div>
 
 
