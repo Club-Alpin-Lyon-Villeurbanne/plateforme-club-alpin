@@ -82,6 +82,15 @@ if (!$join_start_evt_days) {
 if (strlen($rdv_evt) < 3 || strlen($rdv_evt) > 200) {
     $errTab[] = "Merci d'entrer un lieu de rendez-vous de 3 à 200 caractères";
 }
+if (strlen($difficulte_evt) > 50) {
+    $errTab[] = "Merci d'entrer une difficulté de 50 caractères maximum";
+}
+if (strlen($denivele_evt) > 50) {
+    $errTab[] = "Merci d'entrer un dénivelé de 50 caractères maximum";
+}
+if (strlen($distance_evt) > 50) {
+    $errTab[] = "Merci d'entrer une difficulté de 50 caractères maximum";
+}
 if (!$lat_evt || !$long_evt || 1 == $lat_evt || 1 == $long_evt) {
     $errTab[] = 'Coordonnées introuvables. Vérifiez le positionnement du curseur sur la carte.';
 }

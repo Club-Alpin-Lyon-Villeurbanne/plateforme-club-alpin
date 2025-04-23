@@ -200,9 +200,6 @@ inclure('infos-carte', 'mini');
         <div style="width:50%; float:left">
             Date de fin de la sortie :<br />
             <input type="text" name="tsp_end_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_end_evt_day', ''); ?>" placeholder="jj/mm/aaaa" required />
-            <!--
-							<input type="text" name="tsp_end_evt_hour" class="type2" style="width:45%;" value="<?php echo inputVal('tsp_end_evt_hour', ''); ?>" placeholder="hh:ii" />
-							-->
             <input type="button" value="même jour ?" class="nice" onclick="$('input[name=tsp_end_evt_day]').val($('input[name=tsp_evt_day]').val())" style="margin-top:7px" />
         </div>
 
@@ -278,15 +275,15 @@ inclure('infos-carte', 'mini');
     <div class="trigger-me">
 
         Difficulté, niveau : 50 caractères max.<br />
-        <input type="text" name="difficulte_evt" class="type2" value="<?php echo inputVal('difficulte_evt', ''); ?>" placeholder="ex : PD, 5d+, exposé..." />
+        <input type="text" name="difficulte_evt" class="type2" value="<?php echo inputVal('difficulte_evt', ''); ?>" placeholder="ex : PD, 5d+, exposé..." maxlength="50" />
 
         <br />
         Dénivelé positif :<br />
-        <input type="text" name="denivele_evt" class="type2" value="<?php echo inputVal('denivele_evt', ''); ?>" placeholder="ex : 1200 (m)" />m.
+        <input type="text" name="denivele_evt" class="type2" value="<?php echo inputVal('denivele_evt', ''); ?>" placeholder="ex : 1200 (m)" maxlength="50" />m.
 
         <br />
         Distance :<br />
-        <input type="text" name="distance_evt" class="type2" value="<?php echo inputVal('distance_evt', ''); ?>" placeholder="ex : 13.50 (km)" />km.
+        <input type="text" name="distance_evt" class="type2" value="<?php echo inputVal('distance_evt', ''); ?>" placeholder="ex : 13.50 (km)" maxlength="50" />km.
 
         <br />
         <div style="float:right; padding-right:20px;">
