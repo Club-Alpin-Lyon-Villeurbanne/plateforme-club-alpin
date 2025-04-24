@@ -10,7 +10,7 @@ function display_sorties($id_user, $limit = 10, $title = '')
 {
     $req = '
         SELECT SQL_CALC_FOUND_ROWS
-            id_evt, code_evt, status_evt, status_legal_evt, cancelled_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, join_max_evt, join_start_evt
+            id_evt, code_evt, status_evt, status_evt_join, status_legal_evt, cancelled_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, join_max_evt, join_start_evt
             , nickname_user
             , title_commission, code_commission
             , role_evt_join
@@ -23,7 +23,6 @@ function display_sorties($id_user, $limit = 10, $title = '')
         AND id_commission = commission_evt '
         // jointure avec la table participation
         . 'AND evt_evt_join = id_evt
-        AND status_evt_join = 1
         AND user_evt_join = ' . $id_user
         // de la plus récente a la plus ancienne
         . ' ORDER BY  `tsp_evt` DESC

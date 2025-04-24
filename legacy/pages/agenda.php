@@ -34,24 +34,35 @@ for ($i = 1; $i <= $nDays; ++$i) {
 // infos statistiques
 $nEvts = 0; // nombre d'events démarrant de mois ci
 
-$req = 'SELECT  id_evt, cancelled_evt, code_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, commission_evt, titre_evt, massif_evt, difficulte_evt
-            , join_max_evt, ngens_max_evt, join_start_evt, id_groupe
-            , title_commission, code_commission
-    FROM caf_evt, caf_commission
-    WHERE id_commission = commission_evt
-    AND status_evt = 1 '
-    //  " AND cancelled_evt != 1 " // les sorties annulées y figurent ausssi
-    . ($p2 ? " AND code_commission = '" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2) . "' " : '')
-    // truc des dates :
-    . ' AND ( '
-        // la fin de l'événement est comprise dans ce mois
-        . " ( tsp_end_evt > $start_tsp AND tsp_end_evt < $end_tsp ) "
-        // OU le début de l'événement est compris dans ce mois
-        . " OR ( tsp_evt > $start_tsp AND tsp_evt < $end_tsp ) "
-        // OU l'événement comprend l'intégralité du mois
-        . " OR ( tsp_evt < $start_tsp AND tsp_end_evt > $end_tsp ) "
-    . ' ) '
-    . ' ORDER BY cancelled_evt ASC , tsp_evt ASC';
+$userId = null;
+if (user()) {
+    $userId = getUser()->getId();
+}
+$req = 'SELECT  e.id_evt, e.cancelled_evt, e.code_evt, e.tsp_evt, e.tsp_end_evt, e.tsp_crea_evt, e.commission_evt, e.titre_evt, e.massif_evt, e.difficulte_evt, e.user_evt ';
+if (null !== $userId) {
+    $req .= ', j.status_evt_join';
+}
+$req .= ', e.join_max_evt, e.ngens_max_evt, e.join_start_evt, e.id_groupe
+            , c.title_commission, c.code_commission
+    FROM caf_evt AS e
+    INNER JOIN caf_commission as c ON (c.id_commission = e.commission_evt) ';
+if (null !== $userId) {
+    $req .= 'LEFT JOIN caf_evt_join AS j ON (e.id_evt = j.evt_evt_join AND user_evt_join = ' . $userId . ') ';
+}
+$req .= 'WHERE id_commission = e.commission_evt
+    AND e.status_evt = 1 '
+//  " AND cancelled_evt != 1 " // les sorties annulées y figurent ausssi
+. ($p2 ? " AND code_commission = '" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($p2) . "' " : '')
+// truc des dates :
+. ' AND ( '
+    // la fin de l'événement est comprise dans ce mois
+    . " ( e.tsp_end_evt > $start_tsp AND e.tsp_end_evt < $end_tsp ) "
+    // OU le début de l'événement est compris dans ce mois
+    . " OR ( e.tsp_evt > $start_tsp AND e.tsp_evt < $end_tsp ) "
+    // OU l'événement comprend l'intégralité du mois
+    . " OR ( e.tsp_evt < $start_tsp AND e.tsp_end_evt > $end_tsp ) "
+. ' ) '
+. ' ORDER BY e.cancelled_evt ASC , e.tsp_evt ASC';
 
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 

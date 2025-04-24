@@ -32,3 +32,18 @@
 .nice-checkboxes label:hover{ background: #e6e6e6; }
 .nice-checkboxes label.up{ background:#c7d2e7; }
 .nice-checkboxes label *{ vertical-align:middle; }
+
+/* tailwind */
+.tw-flex{display:flex!important}.tw-inline-flex{display:inline-flex!important}
+.tw-items-center{align-items:center!important}
+.tw-gap-1{gap:.25rem!important}
+.tw-ml-auto{margin-left:auto!important}
+.tw-text-xs{font-size:.75rem!important;line-height:1rem!important}
+.tw-font-medium{font-weight:500!important}
+.tw-whitespace-nowrap{white-space:nowrap!important}
+.tw-text-red-600{--tw-text-opacity: 1 !important;color:rgb(220 38 38 / var(--tw-text-opacity))!important}
+.tw-text-green-600{--tw-text-opacity: 1 !important;color:rgb(22 163 74 / var(--tw-text-opacity))!important}
+.tw-text-gray-600{--tw-text-opacity: 1 !important;color:rgb(75 85 99 / var(--tw-text-opacity))!important}
+.tw-text-orange-600{--tw-text-opacity: 1 !important;color:rgb(234 88 12 / var(--tw-text-opacity))!important}
+.tw-w-3{width:.75rem!important}
+.tw-h-3{height:.75rem!important}
