@@ -14,6 +14,18 @@ if (isset($_GET['ajx'])) {
 
 // lien vers cette page (pour formulaires, ou ancres)
 $versCettePage = $p1 . ($p2 ? '/' . $p2 : '') . ($p3 ? '/' . $p3 : '') . ($p4 ? '/' . $p4 : '') . '.html';			// multilangue / une langue
+$eventTitle = '';
+$eventTimestamp = 0;
+if (!empty($evt) && is_array($evt) && array_key_exists('titre_evt', $evt) && !empty($evt['titre_evt'])) {
+    $eventTitle = $evt['titre_evt'];
+} elseif (!empty($_GET['titre_evt'])) {
+    $eventTitle = $_GET['titre_evt'];
+}
+if (!empty($evt) && is_array($evt) && array_key_exists('tsp_evt', $evt) && !empty($evt['tsp_evt'])) {
+    $eventTimestamp = $evt['tsp_evt'];
+} elseif (!empty($_GET['tsp_evt'])) {
+    $eventTimestamp = $_GET['tsp_evt'];
+}
 
 ?><!doctype html>
 <html lang="fr">
@@ -22,7 +34,7 @@ $versCettePage = $p1 . ($p2 ? '/' . $p2 : '') . ($p3 ? '/' . $p3 : '') . ($p4 ? 
     <title>
     <?php echo html_utf8($meta_title); ?>
     <?php if ('feuille-de-sortie' == $p1) { ?>
-        - Feuille de sortie - <?php echo html_utf8($evt['titre_evt']); ?> - <?php echo date('d.m.Y', $evt['tsp_evt']); ?>
+        - Feuille de sortie - <?php echo html_utf8($eventTitle); ?> - <?php echo date('d.m.Y', $eventTimestamp); ?>
     <?php } ?>
     </title>
     <base href="<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>" />
