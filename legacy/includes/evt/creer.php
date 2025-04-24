@@ -81,10 +81,6 @@ if (isset($_POST['operation']) && 'evt_update' == $_POST['operation'] && (!isset
         <div class="trigger-me check-nice">
             <?php
         $encadrants = isset($_POST['encadrants']) && is_array($_POST['encadrants']) ? $_POST['encadrants'] : [];
-if (!count($encadrantsTab)) {
-    // echo '<p class="erreur">Erreur : aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission. Vous ne pourrez pas créer de sortie...</p>';
-    echo '<p class="info">Aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission.</p>';
-}
 foreach ($encadrantsTab as $encadrant) {
     echo '<label for="encadrant-' . $encadrant['id_user'] . '">
 									<input type="checkbox" ' . (in_array($encadrant['id_user'], $encadrants, true) ? 'checked="checked"' : '') . ' name="encadrants[]" value="' . $encadrant['id_user'] . '" id="encadrant-' . $encadrant['id_user'] . '" />
@@ -102,9 +98,6 @@ foreach ($encadrantsTab as $encadrant) {
         <div class="trigger-me check-nice">
             <?php
 $stagiaires = isset($_POST['stagiaires']) && is_array($_POST['stagiaires']) ? $_POST['stagiaires'] : [];
-if (!count($stagiairesTab)) {
-    echo '<p class="info">Aucun adhérent n\'est déclaré <b>stagiaire</b> pour cette commission.</p>';
-}
 foreach ($stagiairesTab as $stagiaire) {
     echo '<label for="stagiaire-' . $stagiaire['id_user'] . '">
                     <input type="checkbox" ' . (in_array($stagiaire['id_user'], $stagiaires, true) ? 'checked="checked"' : '') . ' name="stagiaires[]" value="' . $stagiaire['id_user'] . '" id="encadrant-' . $stagiaire['id_user'] . '" />
@@ -121,10 +114,6 @@ foreach ($stagiairesTab as $stagiaire) {
         <div class="trigger-me check-nice">
             <?php
 $coencadrants = isset($_POST['coencadrants']) && is_array($_POST['coencadrants']) ? $_POST['coencadrants'] : [];
-if (!count($coencadrantsTab)) {
-    // echo '<p class="info">Aucun adhérent n\'est déclaré <b>encadrant</b> pour cette commission.</p>';echo '<p class="erreur">Erreur : aucun adhérent n\'est déclaré <b>coencadrant</b> pour cette commission. Vous ne pourrez pas créer de sortie...</p>';
-    echo '<p class="info">Aucun adhérent n\'est déclaré <b>co-encadrant</b> pour cette commission.</p>';
-}
 foreach ($coencadrantsTab as $coencadrant) {
     echo '<label for="coencadrant-' . $coencadrant['id_user'] . '">
 									<input type="checkbox" ' . (in_array($coencadrant['id_user'], $coencadrants, true) ? 'checked="checked"' : '') . ' name="coencadrants[]" value="' . $coencadrant['id_user'] . '" id="coencadrant-' . $coencadrant['id_user'] . '" />
@@ -146,9 +135,6 @@ foreach ($coencadrantsTab as $coencadrant) {
             // modification possible seulement en cas de creation d'une nouvelle sortie
             if (!$id_evt_to_update) {
                 $benevoles = isset($_POST['benevoles']) && is_array($_POST['benevoles']) ? $_POST['benevoles'] : [];
-                if (!count($benevolesTab)) {
-                    echo '<p class="info">Aucun adhérent n\'est déclaré <b>bénévole</b> pour cette commission ou cette sortie.</p>';
-                }
                 foreach ($benevolesTab as $benevole) {
                     echo '<label for="benevole-' . $benevole['id_user'] . '">
 									<input ' . ($id_evt_to_update ? 'disabled' : '') . ' type="checkbox" ' . (in_array($benevole['id_user'], $benevoles, true) ? 'checked="checked"' : '') . ' name="benevoles[]" value="' . $benevole['id_user'] . '" id="benevole-' . $benevole['id_user'] . '" />
