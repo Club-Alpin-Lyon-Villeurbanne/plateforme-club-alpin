@@ -453,6 +453,8 @@ class SortieController extends AbstractController
         $path = 'index.php';
         $_GET['p1'] = 'feuille-de-sortie';
         $_GET['p2'] = 'evt-' . $event->getId();
+        $_GET['titre_evt'] = $event->getTitre();
+        $_GET['tsp_evt'] = $event->getTsp();
 
         ob_start();
         require $this->getParameter('kernel.project_dir') . '/legacy/' . $path;

@@ -220,7 +220,7 @@ foreach ($evt['joins']['coencadrant'] as $tmp) {
     <thead>
     <tr>
         <th></th>
-        <th>PARTICIPANTS (NOM, PRÉNOM)</th>
+        <th>PARTICIPANTS (PRÉNOM, NOM)</th>
         <th>LICENCE</th>
         <th>AGE</th>
         <th>TÉL.</th>
@@ -249,7 +249,7 @@ if (is_array($joinsParticipants)) {
         ?>
             <tr>
                 <td><?php echo $number++; ?></td>
-                <td><?php echo html_utf8($tmp['civ_user'] . ' ' . strtoupper($tmp['lastname_user']) . ', ' . ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></td>
+                <td><?php echo html_utf8($tmp['civ_user'] . ' ' . ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))) . ', ' . strtoupper($tmp['lastname_user']); ?></td>
                 <td><?php echo html_utf8($tmp['cafnum_user']); ?></td>
                 <td><?php echo getYearsSinceDate($tmp['birthday_user']); ?></td>
                 <td><?php echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user'])); ?></td>
