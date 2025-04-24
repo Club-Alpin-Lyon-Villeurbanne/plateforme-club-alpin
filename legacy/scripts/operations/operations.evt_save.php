@@ -78,7 +78,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 				`ngens_max_evt` =  '$ngens_max_evt',
 				`description_evt` =  '$description_evt',
 				`need_benevoles_evt` =  '$need_benevoles_evt',
-                `details_caches_evt` =  '$details_caches_evt'";
+				`details_caches_evt` =  '$details_caches_evt'";
         if (null != $id_groupe) {
             $req .= ", id_groupe = '$id_groupe' ";
         }
