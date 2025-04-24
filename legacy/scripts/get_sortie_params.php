@@ -27,7 +27,7 @@ if ($id_evt) {
                 matos_evt, need_benevoles_evt, lat_evt, long_evt, join_start_evt, ngens_max_evt, join_max_evt,
                 id_groupe, tarif_detail, distance_evt, itineraire,
             nickname_user, civ_user, firstname_user, lastname_user, tel_user,
-            title_commission, code_commission
+            title_commission, code_commission, details_caches_evt
         FROM caf_evt as evt, caf_user as user, caf_commission as commission
         WHERE id_evt=$id_evt
             AND id_user = user_evt

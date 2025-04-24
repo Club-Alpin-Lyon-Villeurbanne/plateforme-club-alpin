@@ -180,19 +180,19 @@ class Evt
     /**
      * @var string|null
      */
-    #[ORM\Column(name: 'tarif_detail', type: 'text', length: 65535, nullable: true)]
+    #[ORM\Column(name: 'tarif_detail', type: 'text', nullable: true)]
     private $tarifDetail;
 
     /**
      * @var string|null
      */
-    #[ORM\Column(name: 'denivele_evt', type: 'text', length: 50, nullable: true)]
+    #[ORM\Column(name: 'denivele_evt', type: 'text', nullable: true)]
     private $denivele;
 
     /**
      * @var string|null
      */
-    #[ORM\Column(name: 'distance_evt', type: 'text', length: 50, nullable: true)]
+    #[ORM\Column(name: 'distance_evt', type: 'text', nullable: true)]
     private $distance;
 
     /**
@@ -210,7 +210,7 @@ class Evt
     /**
      * @var string
      */
-    #[ORM\Column(name: 'matos_evt', type: 'text', length: 65535, nullable: true)]
+    #[ORM\Column(name: 'matos_evt', type: 'text', nullable: true)]
     private $matos;
 
     /**
@@ -222,13 +222,13 @@ class Evt
     /**
      * @var string|null
      */
-    #[ORM\Column(name: 'itineraire', type: 'text', length: 65535, nullable: true)]
+    #[ORM\Column(name: 'itineraire', type: 'text', nullable: true)]
     private $itineraire;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'description_evt', type: 'text', length: 65535, nullable: false)]
+    #[ORM\Column(name: 'description_evt', type: 'text', nullable: false)]
     private $description;
 
     /**
@@ -264,6 +264,9 @@ class Evt
 
     #[ORM\OneToMany(targetEntity: 'App\Entity\Article', mappedBy: 'evt')]
     private $articles;
+
+    #[ORM\Column(name: 'details_caches_evt', type: 'text', nullable: true)]
+    private $detailsCaches;
 
     public function __construct(
         User $user,
@@ -842,6 +845,18 @@ class Evt
     public function setNgensMax(int $ngensMax): self
     {
         $this->ngensMax = $ngensMax;
+
+        return $this;
+    }
+
+    public function getDetailsCaches(): ?string
+    {
+        return $this->detailsCaches;
+    }
+
+    public function setDetailsCaches(?string $detailsCaches): self
+    {
+        $this->detailsCaches = $detailsCaches;
 
         return $this;
     }
