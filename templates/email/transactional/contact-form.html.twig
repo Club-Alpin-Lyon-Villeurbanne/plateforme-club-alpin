@@ -1,20 +1,17 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-Contact sur le site du club
+Contact de {{ contact_shortname }} : {{ contact_objet }}
 {%- endblock %}
 
 {% block inner_html %}
     <p>
         Un visiteur du site vous a contacté :
     </p>
-    <p>
-        <b>Infos :</b>
-    </p>
     <ul>
-        <li><b>Nom:</b> <a href="{{ contact_url }}">{{ contact_name }}</a></li>
-        <li><b>Email:</b> <a href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
-        <li><b>Objet:</b> {{ contact_objet }}</li>
+        <li><b>Nom :</b> <a href="{{ contact_url }}">{{ contact_name }}</a></li>
+        <li><b>Email :</b> <a href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
+        <li><b>Objet :</b> {{ contact_objet }}</li>
     </ul>
     <p>
         <b>Message :</b>
@@ -25,11 +22,9 @@ Contact sur le site du club
 {% block inner_txt %}
 Un visiteur du site vous a contacté :
 
-Infos :
-
-Nom: {{ contact_name }} ({{ contact_url }})
-Email: {{ contact_email }}
-Objet: {{ contact_objet }}
+Nom : {{ contact_name }} ({{ contact_url }})
+Email : {{ contact_email }}
+Objet : {{ contact_objet }}
 
 Message : {{ message }}
 {% endblock %}
