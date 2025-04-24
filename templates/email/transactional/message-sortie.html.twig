@@ -6,7 +6,7 @@
 
 {% block inner_html %}
     <p>
-        Vous avez reçu un message de {{ message_author }} au sujet de la sortie <a href="{{ url_sortie }}">{{ name_sortie }}</a>.
+        Vous avez reçu un message de <a href="{{ message_author_url }}">{{ message_author }}</a> au sujet de la sortie <a href="{{ url_sortie }}">{{ name_sortie }}</a>.
     </p>
     <p>
         <b>Message :</b>
