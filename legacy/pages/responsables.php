@@ -54,8 +54,12 @@ foreach ($comTab as $code => $data) {
     echo '<table class="big-lines-table"><tbody>';
     while ($row = $result->fetch_assoc()) {
         if (!in_array($row['id_user'], $dejaVus, true)) {
+            $userImg = '';
+            if (user()) {
+                $userImg = '<td style="text-align:center; width:60px;"><img src="' . userImg($row['id_user'], 'pic') . '" alt="" title="" style="max-height:40px; max-width:60px;" /></td>';
+            }
             echo '<tr>
-								<td style="text-align:center; width:60px;"><img src="' . userImg($row['id_user'], 'pic') . '" alt="" title="" style="max-height:40px; max-width:60px;" /></td>
+								' . $userImg . '
 								<td>' . userlink($row['id_user'], $row['nickname_user']) . '</td>
 								<td>' . $row['title_usertype'] . '</td>
 							</tr>';
