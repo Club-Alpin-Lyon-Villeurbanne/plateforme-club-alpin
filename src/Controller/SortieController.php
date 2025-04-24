@@ -466,7 +466,7 @@ class SortieController extends AbstractController
     {
         $datas = $participationRepository->getSortedParticipations($event, null, null);
 
-        $rsm = [' ', 'PARTICIPANTS (NOM, PRÉNOM)', 'STATUS', 'RÔLE', 'N°ADHÉRENT', 'AGE', "DATE D'ADHÉSION", 'TÉL.. PROFESSIONNEL', 'TÉL.. I.C.E', 'EMAIL'];
+        $rsm = [' ', 'PARTICIPANTS (PRÉNOM, NOM)', 'STATUS', 'RÔLE', 'N°ADHÉRENT', 'AGE', "DATE D'ADHÉSION", 'TÉL.. PROFESSIONNEL', 'TÉL.. I.C.E', 'EMAIL'];
 
         return $excelExport->export(substr($event->getTitre(), 0, 3) . time(), $datas, $rsm);
     }

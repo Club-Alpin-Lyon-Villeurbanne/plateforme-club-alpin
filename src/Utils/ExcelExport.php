@@ -54,7 +54,7 @@ class ExcelExport
             // Génération des données
             foreach ($datas as $data) {
                 $user = $data['liste']->getUser();
-                $name = $user->getCiv() . ' ' . strtoupper($user->getLastname()) . ' ' . ucfirst(strtolower($user->getFirstname()));
+                $name = $user->getCiv() . ' ' . ucfirst(strtolower($user->getFirstname())) . ' ' . strtoupper($user->getLastname());
 
                 $status = match ($data['liste']->getStatus()) {
                     0 => 'Non Confirmé',
