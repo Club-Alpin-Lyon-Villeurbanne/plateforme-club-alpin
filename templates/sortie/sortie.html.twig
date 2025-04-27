@@ -727,9 +727,11 @@
 
 
             {# Bloc détails cachés #}
-            {% if allowed('user_read_limited') and event.detailsCaches %}
+            {% if not app.user %}
+                <div style="color: red; font-weight: bold; margin: 1rem 0;">Détails de la sortie visibles après connexion</div>
+            {% else %}
                 <ul class="nice-list">
-                    <li class="wide"><b>DÉTAILS PRATIQUES :</b><br /> {{ event.detailsCaches | converturls | nl2br }}</li>
+                    <li class="wide"><b>DÉTAILS PRATIQUES :</b><br />{{ event.detailsCaches | default('') | converturls | nl2br }}</li>
                 </ul>
                 <br style="clear:both" />
                 <hr />
