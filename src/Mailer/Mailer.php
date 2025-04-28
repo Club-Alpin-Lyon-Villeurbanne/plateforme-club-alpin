@@ -33,13 +33,15 @@ class Mailer
     }
 
     /**
-     * @param array|string|User $to
-     * @param string|User|null  $sender
-     * @param string|bool|null  $replyTo
-     *
      * @throws TransportExceptionInterface
      */
-    public function send($to, string $template, array $context = [], array $headers = [], $sender = null, $replyTo = null): void
+    public function send(
+        array|string|User $to,
+        string $template,
+        array $context = [],
+        array $headers = [],
+        string|User|null $sender = null,
+        array|string|User|bool|null $replyTo = null): void
     {
         $subject = $this->renderer->renderSubject($template, $context);
         $htmlBody = $this->renderer->renderBody($template, 'html', $context);
@@ -87,6 +89,12 @@ class Mailer
             } else {
                 $replyTo = null;
             }
+        } elseif (\is_array($replyTo)) {
+            $items = [];
+            foreach ($replyTo as $item) {
+                $items[] = $this->isValid($item) ? new Address($item, $item) : null;
+            }
+            $replyTo = $items;
         } elseif ($this->isValid($replyTo)) {
             $replyTo = new Address($replyTo, $replyTo);
         }
@@ -104,8 +112,10 @@ class Mailer
             $email->to(...$toFlat);
         }
 
-        if (false !== $replyTo) {
-            $email->replyTo($replyTo ?? $sender ?? $this->replyTo);
+        if ($replyTo instanceof Address) {
+            $email->replyTo($replyTo);
+        } elseif (\is_array($replyTo)) {
+            $email->replyTo(...$replyTo);
         }
 
         if ($headers) {
