@@ -84,6 +84,7 @@ class SortieController extends AbstractController
 
         $mailer->send($event->getUser(), 'transactional/sortie-publiee', [
             'event_name' => $event->getTitre(),
+            'commission' => $event->getCommission()->getTitle(),
             'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'event_date' => date('d/m/Y', $event->getTsp()),
         ]);
@@ -99,6 +100,8 @@ class SortieController extends AbstractController
                 'author_nickname' => $event->getUser()->getNickname(),
                 'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'event_name' => $event->getTitre(),
+                'commission' => $event->getCommission()->getTitle(),
+                'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
                 'role' => $participation->getRole(),
             ], [], null, $event->getUser()->getEmail());
         }
@@ -211,6 +214,8 @@ class SortieController extends AbstractController
                 'role' => $roleName,
                 'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'event_name' => $event->getTitre(),
+                'commission' => $event->getCommission()->getTitle(),
+                'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
             ];
 
             $template = match ($status) {
@@ -245,6 +250,7 @@ class SortieController extends AbstractController
         $mailer->send($event->getUser(), 'transactional/sortie-refusee', [
             'message' => $request->request->get('msg', '...'),
             'event_name' => $event->getTitre(),
+            'commission' => $event->getCommission()->getTitle(),
             'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'event_date' => date('d/m/Y', $event->getTsp()),
         ]);
@@ -270,6 +276,7 @@ class SortieController extends AbstractController
 
         $mailer->send($event->getUser(), 'transactional/sortie-president-validee', [
             'event_name' => $event->getTitre(),
+            'commission' => $event->getCommission()->getTitle(),
             'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'event_date' => date('d/m/Y', $event->getTsp()),
         ]);
@@ -297,6 +304,7 @@ class SortieController extends AbstractController
 
         $mailer->send($event->getUser(), 'transactional/sortie-president-refusee', [
             'event_name' => $event->getTitre(),
+            'commission' => $event->getCommission()->getTitle(),
             'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'event_date' => date('d/m/Y', $event->getTsp()),
         ]);
@@ -364,6 +372,8 @@ class SortieController extends AbstractController
             'message_author' => sprintf('%s %s', $event->getUser()->getFirstname(), strtoupper($event->getUser()->getLastname())),
             'url_sortie' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'name_sortie' => $event->getTitre(),
+            'commission' => $event->getCommission()->getTitle(),
+            'date_sortie' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
             'message' => $request->request->get('message'),
             'message_author_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $event->getUser()->getId() . '.html',
         ], [], $event->getUser(), $replyToAddresses);
@@ -396,6 +406,8 @@ class SortieController extends AbstractController
                 'username' => $participation->getUser()->getFirstname() . ' ' . $participation->getUser()->getLastname(),
                 'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'event_name' => $event->getTitre(),
+                'commission' => $event->getCommission()->getTitle(),
+                'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
                 'user' => $user,
             ], [], null, $user->getEmail());
         }

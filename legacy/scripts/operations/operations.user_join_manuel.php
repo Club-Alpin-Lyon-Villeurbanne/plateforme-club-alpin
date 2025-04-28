@@ -116,11 +116,15 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // recup infos evt
             $evtUrl = '';
             $evtName = '';
-            $req = "SELECT id_evt, code_evt, titre_evt FROM caf_evt WHERE id_evt=$id_evt LIMIT 1";
+            $evtDate = '';
+            $commissionTitle = '';
+            $req = "SELECT id_evt, code_evt, titre_evt, tsp_evt, title_commission FROM caf_evt AS e INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) WHERE id_evt=$id_evt LIMIT 1";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($row = $result->fetch_assoc()) {
                 $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $row['code_evt'] . '-' . $row['id_evt'] . '.html';
                 $evtName = $row['titre_evt'];
+                $evtDate = date('d/m/Y', $row['tsp_evt']);
+                $commissionTitle = $row['title_commission'];
             }
 
             if (0 === count($errTabMail)) {
@@ -128,6 +132,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     'role' => 'manuel' === $role_evt_join ? null : $role_evt_join,
                     'event_name' => $evtName,
                     'event_url' => $evtUrl,
+                    'event_date' => $evtDate,
+                    'commission' => $commissionTitle,
                 ]);
             }
         }

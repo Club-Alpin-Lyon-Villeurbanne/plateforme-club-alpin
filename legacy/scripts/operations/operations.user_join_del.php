@@ -6,7 +6,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 $id_evt = (int) $_POST['id_evt'];
 $id_user = getUser()->getId();
 
-$evtDate = $evtTarif = $encEmail = $encName = null;
+$evtDate = $evtTarif = $encEmail = $encName = $commissionTitle = null;
 
 if (!$id_user || !$id_evt) {
     $errTab[] = 'Erreur de données';
@@ -14,7 +14,7 @@ if (!$id_user || !$id_evt) {
 
 if (!isset($errTab) || 0 === count($errTab)) {
     // Informations sur l'événement
-    $req = "SELECT id_evt, titre_evt, tsp_evt, tarif_evt, code_evt FROM caf_evt WHERE id_evt=$id_evt LIMIT 1";
+    $req = "SELECT id_evt, titre_evt, tsp_evt, tarif_evt, code_evt, commission_title FROM caf_evt AS e INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) WHERE id_evt=$id_evt LIMIT 1";
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $row = $result->fetch_row();
     if ($row) {
@@ -23,6 +23,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $evtName = html_utf8($row[1]);
         $evtDate = html_utf8(date('d-m-Y', $row[2]));
         $evtTarif = html_utf8($row[3]);
+        $commissionTitle = html_utf8($row[5]);
         $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . stripslashes($evtCode) . '-' . $evtId . '.html';
     }
 
@@ -79,6 +80,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'username' => $tmpUserName,
                 'event_url' => $evtUrl,
                 'event_name' => $evtName,
+                'event_date' => $evtDate,
+                'commission' => $commissionTitle,
                 'user' => getUser(),
             ], [], null, getUser()->getEmail());
         }

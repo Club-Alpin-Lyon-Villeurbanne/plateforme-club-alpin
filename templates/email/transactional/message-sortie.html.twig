@@ -1,12 +1,15 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    {{ objet | default('Un message à propos de la sortie qui arrive') }}
+    {% if commission %}[{{ commission }}]{% endif %}[Message] {{ name_sortie }} du {{ date_sortie }}
 {%- endblock %}
 
 {% block inner_html %}
     <p>
         Vous avez reçu un message de <a href="{{ message_author_url }}">{{ message_author }}</a> au sujet de la sortie <a href="{{ url_sortie }}">{{ name_sortie }}</a>.
+    </p>
+    <p>
+        <b>Objet :</b> {{ objet }}
     </p>
     <p>
         <b>Message :</b>
@@ -17,7 +20,9 @@
 {% endblock %}
 
 {% block inner_txt %}
-Vous avez reçu un message de {{ message_author }} au sujet de la sortie <a href="{{ url_sortie }}">{{ name_sortie }}</a>.
+Vous avez reçu un message de <a href="{{ message_author_url }}">{{ message_author }}</a> au sujet de la sortie <a href="{{ url_sortie }}">{{ name_sortie }}</a>.
+
+Objet : {{ objet }}
 
 Message :
 
