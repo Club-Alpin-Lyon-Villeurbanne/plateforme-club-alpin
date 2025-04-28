@@ -10,7 +10,7 @@ PHP = $(EXEC) php
 COMPOSER = $(EXEC) composer
 NPM = $(EXEC) npm
 SYMFONY_CONSOLE = $(PHP) bin/console
-MYSQL = $(DOCKER_COMPOSE) --project-directory . --project-name caflyon -f docker-compose.yml exec -T cafdb mysql
+MYSQL = $(DOCKER_COMPOSE) -f docker-compose.yml exec -T cafdb mysql
 
 # Colors
 GREEN = echo "\x1b[32m\#\# $1\x1b[0m"
