@@ -70,7 +70,7 @@ export function useExpenseReport(initialEventId: number) {
   const fetchOrCreateExpenseReport = async (eventId: number) => {
     try {
       const response = await axios.get<ExpenseReport[]>(
-        `/expense-reports?event=${eventId}`,
+        `/expense-reports?include_drafts=true&event=${eventId}`,
       );
 
       let fetchedReport: ExpenseReport;
