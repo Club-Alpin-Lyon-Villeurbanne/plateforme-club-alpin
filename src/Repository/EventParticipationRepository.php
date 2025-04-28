@@ -83,9 +83,12 @@ class EventParticipationRepository extends ServiceEntityRepository
                                     FROM App\Entity\Usertype ut
                                     WHERE ut.code = ej.role
                                 ) as weight')
+            ->join('ej.user', 'inscrit')
             ->where('ej.evt = :event')
             ->setParameter('event', $event)
             ->orderBy('weight', 'DESC')
+            ->addOrderBy('inscrit.firstname', 'ASC')
+            ->addOrderBy('inscrit.lastname', 'ASC')
             ->addOrderBy('ej.tsp', 'ASC')
         ;
 

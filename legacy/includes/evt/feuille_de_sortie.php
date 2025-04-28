@@ -241,7 +241,7 @@ $joinsParticipants = array_merge(
 
 if (is_array($joinsParticipants)) {
     foreach ($joinsParticipants as $it => $tmpUser) {
-        $joinsParticipants[$tmpUser['lastname_user'] . $tmpUser['firstname_user'] . $tmpUser['id_user']] = $tmpUser;
+        $joinsParticipants[$tmpUser['firstname_user'] . $tmpUser['lastname_user'] . $tmpUser['id_user']] = $tmpUser;
         unset($joinsParticipants[$it]);
     }
     ksort($joinsParticipants);
