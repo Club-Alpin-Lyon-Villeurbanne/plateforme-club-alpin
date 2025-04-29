@@ -632,22 +632,33 @@
 
                         <h2>Formulaire de contact</h2>
 
+                        <label>Envoyer à ?</label><br />
                         <input required type="radio" name="status_sendmail" id="status_sendmail_1" value="1" />
-                        <label for="status_sendmail_1"> Envoyer uniquement aux adhérents confirmés pour la sortie</label><br />
+                        <label for="status_sendmail_1"> Uniquement aux adhérents confirmés pour la sortie</label><br />
 
                         <input required type="radio" name="status_sendmail" id="status_sendmail_2" value="2" />
-                        <label for="status_sendmail_2"> Envoyer uniquement aux adhérents refusés/absents</label><br />
+                        <label for="status_sendmail_2"> Uniquement aux adhérents refusés/absents</label><br />
 
                         <input required type="radio" name="status_sendmail" id="status_sendmail_0" value="0" />
-                        <label for="status_sendmail_0"> Envoyer uniquement aux adhérents en attente de confirmation</label><br />
+                        <label for="status_sendmail_0"> Uniquement aux adhérents en attente de confirmation</label><br />
 
                         <input required type="radio" name="status_sendmail" id="status_sendmail_all" value="*" />
-                        <label for="status_sendmail_all"> Envoyer à toute la liste des inscrits, confirmés ou non</label><br />
+                        <label for="status_sendmail_all"> Toute la liste des inscrits, confirmés ou non</label><br />
 
                         <br />
-                        Objet :<br />
+                        <label for="objet">Objet :</label><br />
                         <input required type="text" name="objet" class="type1" style="width:95%" value="Note importante pour la sortie du {{ event.tsp | date('d/m') }}" /><br />
-                        Message :<br />
+                        <br />
+
+                        <label>Répondre à ?</label><br />
+                        <input required type="radio" name="reply_to_option" id="reply_to_option_me_only" value="me_only" />
+                        <label for="reply_to_option_me_only"> Uniquement moi</label><br />
+
+                        <input required type="radio" name="reply_to_option" id="reply_to_option_everyone" value="everyone" />
+                        <label for="reply_to_option_everyone"> Tous les encadrants et co-encadrants déclarés</label><br />
+                        <br />
+
+                        <label for="message">Message :</label><br />
                         <textarea required name="message" class="type1" style="width:95%; height:150px"></textarea>
 
                         <br /><br />
