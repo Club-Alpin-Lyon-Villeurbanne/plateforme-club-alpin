@@ -28,7 +28,6 @@ class DevData implements FixtureInterface
         $comm = $this->commissionRepository->findVisibleCommission('sorties-familles');
 
         $licenceNum = 749999999990;
-        $start = time() + 86400 * 10;
 
         $users = [];
 
@@ -58,6 +57,7 @@ class DevData implements FixtureInterface
         foreach ($set->getObjects() as $object) {
             if ($object instanceof Evt) {
                 $object->setStatus(mt_rand(0, 2));
+                $start = time() + mt_rand(-60, 74) * 86400;
                 $object->setTsp($start);
                 $object->setTspEnd($start + mt_rand(1, 4) * 86400);
                 $object->setJoinStart(time());
@@ -66,8 +66,6 @@ class DevData implements FixtureInterface
                 $object->setCommission($comm);
 
                 $manager->persist($object);
-
-                $start += mt_rand(1, 5) * 86400;
 
                 shuffle($users);
                 $i = 0;
