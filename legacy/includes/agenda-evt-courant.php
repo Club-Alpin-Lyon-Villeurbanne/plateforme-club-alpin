@@ -25,7 +25,7 @@ use App\Entity\EventParticipation;
 		}
 echo html_utf8($evt['titre_evt'] . ($evt['jourN'] ? ' [jour ' . $evt['jourN'] . ']' : ''));
 
-if (is_array($evt) && array_key_exists('status_evt_join', $evt)) {
+if (is_array($evt) && array_key_exists('status_evt_join', $evt) && null !== $evt['status_evt_join']) {
     if (EventParticipation::STATUS_REFUSE == $evt['status_evt_join']) {
         echo '<span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
             <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
