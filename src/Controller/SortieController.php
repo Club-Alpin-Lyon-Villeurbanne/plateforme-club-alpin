@@ -351,7 +351,7 @@ class SortieController extends AbstractController
 
         $mailer->send($participations, 'transactional/message-sortie', [
             'objet' => $request->request->get('objet'),
-            'message_author' => sprintf('%s %s', $event->getUser()->getFirstname(), $event->getUser()->getLastname()),
+            'message_author' => sprintf('%s %s', $event->getUser()->getFirstname(), strtoupper($event->getUser()->getLastname())),
             'url_sortie' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'name_sortie' => $event->getTitre(),
             'message' => $request->request->get('message'),
