@@ -74,7 +74,7 @@ class EvtRepository extends ServiceEntityRepository
             ->leftJoin('e.commission', 'c')
             ->where('e.status = :status')
             ->setParameter('status', Evt::STATUS_LEGAL_VALIDE)
-            ->andWhere(':date >= e.tsp OR :date <= e.tspEnd')
+            ->andWhere(':date <= e.tsp OR :date <= e.tspEnd')
             ->setParameter('date', $date->getTimestamp())
             ->orderBy('e.tsp', 'asc')
             ->addOrderBy('c.title', 'ASC')
