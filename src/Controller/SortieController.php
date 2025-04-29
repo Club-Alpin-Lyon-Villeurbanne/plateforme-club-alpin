@@ -340,6 +340,16 @@ class SortieController extends AbstractController
         $status = $request->request->get('status_sendmail');
         $status = ctype_digit($status) ? (int) $status : $status;
 
+        $replyToMode = $request->request->get('reply_to_option');
+        $replyToAddresses = [];
+        if ('everyone' === $replyToMode) {
+            foreach ($event->getEncadrants() as $joined) {
+                $replyToAddresses[] = $joined->getUser()->getEmail();
+            }
+        } else {
+            $replyToAddresses = $event->getUser()->getEmail();
+        }
+
         if (!\in_array($status, ['*', EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_ABSENT, EventParticipation::STATUS_NON_CONFIRME, EventParticipation::STATUS_REFUSE], true)) {
             throw new BadRequestException(sprintf('Invalid status "%s".', $status));
         }
@@ -356,7 +366,7 @@ class SortieController extends AbstractController
             'name_sortie' => $event->getTitre(),
             'message' => $request->request->get('message'),
             'message_author_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $event->getUser()->getId() . '.html',
-        ], [], $event->getUser(), $event->getUser()->getEmail());
+        ], [], $event->getUser(), $replyToAddresses);
 
         $this->addFlash('info', 'Votre message a bien été envoyé.');
 
