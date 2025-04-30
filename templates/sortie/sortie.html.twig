@@ -75,7 +75,7 @@
                     <b>Sortie annulée :</b><br /> Cette sortie a été annulée le {{ event.cancelledWhen | date('d/m/Y à H:i') }}
 
                 {% if event.cancelledWho %}
-                    , par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.cancelledWho.id }}" class="fancyframe userlink">{{ event.cancelledWho.nickname }}</a>
+                    , par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.cancelledWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ event.cancelledWho.nickname }}</a>
                 {% endif %}
                 <br />
 
@@ -399,7 +399,7 @@
 
                                     <td>
                                         {{ participation.user.lastname | upper }}, {{ participation.user.firstname | capitalize }}<br/>
-                                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ participation.user.id }}" class="fancyframe userlink">{{ participation.user.nickname }}</a>
+                                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ participation.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ participation.user.nickname }}</a>
 
                                         {% if participation.user.doitRenouveler %}
                                             <p style="color:red">&#9888;&#65039; Licence expirée</p>
@@ -784,7 +784,7 @@
         <ul class="nice-list">
             <li class="wide">
                 <b>SORTIE DÉPOSÉE PAR :</b>
-                <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.user.id }}" class="fancyframe userlink">
+                <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
                     {{ event.user.nickname }}
                 </a>
                 <span class="mini">
@@ -796,7 +796,7 @@
                 <li class="wide"><b>ENCADRANTS :</b>
                     {% for encadrant in event.encadrants('encadrant') %}
                         {% if loop.index > 1 %}, {% endif %}
-                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}" class="fancyframe userlink">
+                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
                             {{ encadrant.user.nickname }}
                         </a>
                     {% endfor %}
@@ -808,7 +808,7 @@
                 <li class="wide"><b>STAGIAIRE :</b>
                     {% for stagiaire in event.encadrants('stagiaire') %}
                         {% if loop.index > 1 %}, {% endif %}
-                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ stagiaire.user.id }}" class="fancyframe userlink">
+                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ stagiaire.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
                             {{ stagiaire.user.nickname }}
                         </a>
                     {% endfor %}
@@ -820,7 +820,7 @@
                 <li class="wide"><b>CO-ENCADRANTS :</b>
                     {% for encadrant in event.encadrants('coencadrant') %}
                         {% if loop.index > 1 %}, {% endif %}
-                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}" class="fancyframe userlink">
+                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
                             {{ encadrant.user.nickname }}
                         </a>
                     {% endfor %}
@@ -832,7 +832,7 @@
                 <li class="wide"><b>BÉNÉVOLES :</b>
                     {% for encadrant in event.encadrants('benevole') %}
                         {% if loop.index > 1 %}, {% endif %}
-                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}" class="fancyframe userlink">
+                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
                             {{ encadrant.user.nickname }}
                         </a>
                     {% endfor %}
@@ -920,7 +920,7 @@
                             {% if allowed('user_read_private', event.commission.code) %}
                                 <p class="mini">{{ inscrit.user.lastname|upper }}, {{ inscrit.user.firstname|capitalize }}</p>
                             {% endif %}
-                            <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
+                            <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
                         </td>
                         <td class="small">
                             {% if allowed('user_read_private', event.commission.code) %}
@@ -950,7 +950,7 @@
                             <td>
                                 {% if allowed('user_read_private', event.commission.code) %}
                                     <p class="mini">{{ inscrit.user.lastname|upper }}, {{ inscrit.user.firstname|capitalize }}</p>
-                                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
+                                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
                                 {% else %}
                                     {{ inscrit.user.nickname }}
                                 {% endif %}
@@ -1030,7 +1030,7 @@
                                                         name="id_user_filiation[]"
                                                         value="{{ app.user.id }}"
                                                         id="filiation_id_user_{{ app.user.id }}" />
-                                                    Moi-même (<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ app.user.id }}" class="fancyframe userlink">{{ app.user.nickname }}</a>)
+                                                    Moi-même (<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ app.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ app.user.nickname }}</a>)
                                                 </label>
                                                 <br />
                                                 {% for filiation in filiations %}

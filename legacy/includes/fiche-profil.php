@@ -5,8 +5,18 @@ use App\Legacy\LegacyContainer;
 
 // id du profil
 $id_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $_GET['id_user']);
-$tmpUser = false;
+$tmpUser = $tmpEvent = $tmpArticle = false;
 $connectedUser = getUser();
+
+$idEvent = null;
+if (array_key_exists('id_event', $_GET) && !empty($_GET['id_event'])) {
+    $idEvent = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $_GET['id_event']);
+}
+
+$idArticle = null;
+if (array_key_exists('id_article', $_GET) && !empty($_GET['id_article'])) {
+    $idArticle = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $_GET['id_article']);
+}
 
 if (!$connectedUser) {
     echo '<p class="erreur">Vous devez être connecté pour accéder à cette page</p>';
@@ -14,9 +24,6 @@ if (!$connectedUser) {
 }
 
 $req = "SELECT * FROM caf_user WHERE id_user = $id_user LIMIT 1";
-// AND valid_user = 1
-// echo '<!-- '.$req.' -->';
-
 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($row = $result->fetch_assoc()) {
     // echo '<!-- FOUND -->';
@@ -43,6 +50,22 @@ while ($row = $result->fetch_assoc()) {
     }
 
     $tmpUser = $row;
+}
+
+if (!empty($idEvent)) {
+    $eventReq = "SELECT * FROM caf_evt WHERE id_evt = $idEvent LIMIT 1";
+    $eventResult = LegacyContainer::get('legacy_mysqli_handler')->query($eventReq);
+    while ($eventRow = $eventResult->fetch_assoc()) {
+        $tmpEvent = $eventRow;
+    }
+}
+
+if (!empty($idArticle)) {
+    $articleReq = "SELECT * FROM caf_article WHERE id_article = $idArticle LIMIT 1";
+    $articleResult = LegacyContainer::get('legacy_mysqli_handler')->query($articleReq);
+    while ($articleRow = $articleResult->fetch_assoc()) {
+        $tmpArticle = $articleRow;
+    }
 }
 
 // err technique
