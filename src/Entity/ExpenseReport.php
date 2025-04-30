@@ -57,6 +57,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ValidExpenseReport]
 class ExpenseReport
 {
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_SUBMITTED = 'submitted';
+    public const STATUS_APPROUVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_ACCOUNTED = 'accounted';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
