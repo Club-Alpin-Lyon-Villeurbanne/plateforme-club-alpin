@@ -81,10 +81,6 @@ if (is_array($evt) && array_key_exists('status_evt_join', $evt) && null !== $evt
 echo ''
     // commission
     . '<b>' . html_utf8($evt['title_commission']) . '</b>'
-    // difficulté, ou pas
-    . (isset($evt['difficulte_evt']) && $evt['difficulte_evt'] ? ' - <b>' . html_utf8($evt['difficulte_evt']) . '</b>' : '')
-    // massif, ou pas
-    . (isset($evt['massif_evt']) && $evt['massif_evt'] ? ' - <b>' . html_utf8($evt['massif_evt']) . '</b>' : '')
     // rôle de l'user dans cette sortie
     . (isset($evt['role_evt_join']) && $evt['role_evt_join'] ? ' - Votre rôle : <b>' . html_utf8($evt['role_evt_join']) . '</b>' : '')
 ;
