@@ -82,8 +82,6 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                         foreach ($tmpUser['statuts'] as $status) {
                             echo '<li style="">' . $status . '</li>';
                         } ?>
-						<li><a href="<?php echo $versCettePage; ?>#user-sorties" title="">Voir ses sorties</a></li>
-						<li><a href="<?php echo $versCettePage; ?>#user-articles" title="">Voir ses articles</a></li>
 					</ul>
 					<br style="clear:left;" />
 
