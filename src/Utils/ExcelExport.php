@@ -56,18 +56,9 @@ class ExcelExport
                 $user = $data['liste']->getUser();
                 $name = $user->getCiv() . ' ' . ucfirst(strtolower($user->getFirstname())) . ' ' . strtoupper($user->getLastname());
 
-                $status = match ($data['liste']->getStatus()) {
-                    0 => 'Non Confirmé',
-                    1 => 'Validé',
-                    2 => 'Refusé',
-                    3 => 'Absent',
-                    default => ' '
-                };
-
                 $array = [
                     $count - 1,
                     $name,
-                    $status,
                     $data['liste']->getRole() ?? ' ',
                     $user->getCafnum() ?? ' ',
                     $user->getBirthday() ? $this->getYearsSinceDate($user->getBirthday()) : ' ',
