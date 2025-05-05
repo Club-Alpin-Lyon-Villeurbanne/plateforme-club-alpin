@@ -348,16 +348,6 @@ class SortieController extends AbstractController
         $status = $request->request->get('status_sendmail');
         $status = ctype_digit($status) ? (int) $status : $status;
 
-        $replyToMode = $request->request->get('reply_to_option');
-        $replyToAddresses = [];
-        if ('everyone' === $replyToMode) {
-            foreach ($event->getEncadrants() as $joined) {
-                $replyToAddresses[] = $joined->getUser()->getEmail();
-            }
-        } else {
-            $replyToAddresses = $event->getUser()->getEmail();
-        }
-
         if (!\in_array($status, ['*', EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_ABSENT, EventParticipation::STATUS_NON_CONFIRME, EventParticipation::STATUS_REFUSE], true)) {
             throw new BadRequestException(sprintf('Invalid status "%s".', $status));
         }
@@ -366,6 +356,18 @@ class SortieController extends AbstractController
             ->getParticipations(null, '*' === $status ? null : $status)
             ->map(fn (EventParticipation $participation) => $participation->getUser())
             ->toArray();
+
+        $replyToMode = $request->request->get('reply_to_option');
+        $replyToAddresses = [];
+        if ('everyone' === $replyToMode) {
+            foreach ($event->getEncadrants() as $joined) {
+                $replyToAddresses[] = $joined->getUser()->getEmail();
+                $participations[] = $joined->getUser()->getEmail();
+            }
+        } elseif ('me_only' === $replyToMode) {
+            $replyToAddresses = $event->getUser()->getEmail();
+            $participations[] = $event->getUser()->getEmail();
+        }
 
         $mailer->send($participations, 'transactional/message-sortie', [
             'objet' => $request->request->get('objet'),
