@@ -19,9 +19,13 @@ echo '" title="">';
 
 		<!-- temoin de validité des places libres. Ajouter class ok / full -->
         <span title="<?php echo $evt['temoin-title'] ?? ''; ?>" style="padding: 10px 10px 5px 5px;float:left;">
-            <span class="temoin-places-dispos <?php if (isset($evt['temoin'])) {
-                echo $evt['temoin'];
-            } ?>"></span>
+            <span class="temoin-places-dispos"><?php if (isset($evt['temoin']) && 'off' == $evt['temoin']) {
+                echo '🚫';
+            } elseif (isset($evt['temoin']) && 'on' == $evt['temoin']) {
+                echo '🟢';
+            } else {
+                echo '⏳';
+            }?></span>
         </span>
 
 		<!-- titre -->

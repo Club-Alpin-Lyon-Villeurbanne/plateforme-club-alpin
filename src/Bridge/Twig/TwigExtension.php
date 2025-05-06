@@ -51,6 +51,7 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
             new TwigFilter('participation_role_name', [$this, 'getParticipationRoleName']),
             new TwigFilter('temoin_event', [$this, 'getTemoinPlacesSortie']),
             new TwigFilter('temoin_event_title', [$this, 'getTemoinPlacesSortieTitle']),
+            new TwigFilter('temoin_event_picto', [$this, 'getPictoTemoinPlacesSortie']),
         ];
     }
 
@@ -70,6 +71,24 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         }
 
         return 'on';
+    }
+
+    public function getPictoTemoinPlacesSortie(Evt $event): string
+    {
+        if ($event->getCancelled()) {
+            return '🚫';
+        }
+        if ($event->hasStarted()) {
+            return '🚫';
+        }
+        if (!$event->joinHasStarted()) {
+            return '⏳';
+        }
+        if ($event->getNgensMax() <= \count($event->getParticipations())) {
+            return '🚫';
+        }
+
+        return '🟢';
     }
 
     public function getTemoinPlacesSortieTitle(Evt $event)

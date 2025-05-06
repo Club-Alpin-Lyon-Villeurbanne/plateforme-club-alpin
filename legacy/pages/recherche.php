@@ -61,7 +61,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
 
         $req = 'SELECT
                 SQL_CALC_FOUND_ROWS
-                id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt
+                id_evt, code_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, join_start_evt, ngens_max_evt, cancelled_evt
                 , title_commission, code_commission
             FROM caf_evt, caf_commission, caf_user
             WHERE id_commission = commission_evt
@@ -88,6 +88,9 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
         $totalEvt = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+            // compte places totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
+            require __DIR__ . '/../includes/evt-temoin-reqs.php';
+
             $evtTab[] = $handle;
         }
     }
