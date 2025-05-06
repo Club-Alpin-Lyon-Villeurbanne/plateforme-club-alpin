@@ -36,7 +36,7 @@ class ExpenseAttachmentController extends AbstractController
 
         $body = $request->getPayload()->all();
 
-        $expenseReport = $this->expenseReportRepository->findOneBy(['id' => $expenseReportId, 'user' => $user]);
+        $expenseReport = $this->expenseReportRepository->getExpenseReportByEventAndUser($expenseReportId, $user);
         if (!$expenseReport) {
             throw $this->createNotFoundException('ExpenseReport not found');
         }
