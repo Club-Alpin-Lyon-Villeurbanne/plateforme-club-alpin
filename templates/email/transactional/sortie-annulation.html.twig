@@ -1,7 +1,7 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    Sortie du {{ event_date }} annulée !
+    {% if commission %}[{{ commission }}]{% endif %}[Sortie annulée] {{ event_name }} du {{ event_date }}
 {%- endblock %}
 
 {% block inner_html %}

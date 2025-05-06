@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$is_covoiturage = $evtUrl = $evtName = $inscrits = null;
+$is_covoiturage = $evtUrl = $evtName = $inscrits = $evtDate = $commissionTitle = null;
 
 // Filiations
 if (isset($_POST['filiations']) && 'on' == $_POST['filiations']) {
@@ -190,8 +190,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         // infos sur la sortie
         $evt = [];
-        $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt '
-        . 'FROM caf_evt '
+        $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt, title_commission '
+        . 'FROM caf_evt AS e '
+        . 'INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) '
         . "WHERE id_evt = $id_evt "
         . 'LIMIT 1 ';
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -201,6 +202,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $evt['code_evt'] . '-' . $evt['id_evt'] . '.html';
         $evtName = $evt['titre_evt'];
+        $evtDate = date('d/m/Y', $evt['tsp_evt']);
+        $commissionTitle = $evt['title_commission'];
 
         // infos sur ce nouvel inscrit
         $inscrits = [];
@@ -222,6 +225,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'role' => $role_evt_join,
                 'event_name' => $evtName,
                 'event_url' => $evtUrl,
+                'event_date' => $evtDate,
+                'commission' => $commissionTitle,
                 'inscrits' => array_map(function ($cetinscrit) {
                     return [
                         'firstname' => $cetinscrit['firstname_user'],
@@ -252,6 +257,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'role' => $role_evt_join,
                 'event_name' => $evtName,
                 'event_url' => $evtUrl,
+                'event_date' => $evtDate,
+                'commission' => $commissionTitle,
                 'inscrits' => [
                     [
                         'firstname' => getUser()->getFirstname(),
@@ -267,6 +274,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'role' => $role_evt_join,
                 'event_name' => $evtName,
                 'event_url' => $evtUrl,
+                'event_date' => $evtDate,
+                'commission' => $commissionTitle,
                 'inscrits' => array_map(function ($cetinscrit) {
                     return [
                         'firstname' => $cetinscrit['firstname_user'],

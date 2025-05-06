@@ -1,7 +1,7 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    {{ inscrits | length  }} nouvelle{{ inscrits|length > 1 ? 's' : '' }} demande{{ inscrits|length > 1 ? 's' : '' }} d'inscription à la sortie {{ event_name }}
+    {% if commission %}[{{ commission }}]{% endif %}[{{ inscrits | length  }} nouvelle{{ inscrits|length > 1 ? 's' : '' }} demande{{ inscrits|length > 1 ? 's' : '' }}] Inscription à {{ event_name }} du {{ event_date }}
 {%- endblock %}
 
 {% block inner_html %}

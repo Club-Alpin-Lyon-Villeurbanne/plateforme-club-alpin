@@ -73,6 +73,7 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
             LegacyContainer::get('legacy_mailer')->send($handle2['email_user'], 'transactional/sortie-annulation', [
                 'event_name' => $handle['titre_evt'],
+                'commission' => $handle['title_commission'],
                 'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $handle['code_evt'] . '-' . (int) $handle['id_evt'] . '.html',
                 'event_date' => date('d/m/Y', $handle['tsp_evt']),
                 'cancel_user_name' => getUser()->getNickname(),

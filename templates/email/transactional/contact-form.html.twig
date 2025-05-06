@@ -1,7 +1,7 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-Contact de {{ contact_shortname }} : {{ contact_objet }}
+    [Message] {{ contact_shortname }} : {{ contact_objet }}
 {%- endblock %}
 
 {% block inner_html %}

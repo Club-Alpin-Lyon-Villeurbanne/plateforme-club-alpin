@@ -1,7 +1,7 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    Votre sortie a été publiée sur le site
+    {% if commission %}[{{ commission }}]{% endif %}[Sortie publiée] {{ event_name }} du {{ event_date }}
 {%- endblock %}
 
 {% block inner_html %}
