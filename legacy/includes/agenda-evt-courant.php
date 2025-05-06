@@ -7,10 +7,7 @@ use App\Entity\EventParticipation;
 
 	<!-- picto (retiré) -->
 	<div class="picto">
-		<?php /*
-        <img src="<?php echo comPicto($evt['comm_evt'], 'light');?>" alt="" title="" class="picto-light" />
-        <img src="<?php echo comPicto($evt['comm_evt'], 'dark');?>" alt="" title="" class="picto-dark" />
-        */ ?>
+        <img src="<?php echo comPicto($evt['commission_evt'] ?? '', 'dark'); ?>" alt="" title="" class="picto-dark" />
 	</div>
 
 	<div class="droite">
