@@ -27,3 +27,7 @@ doctrine:
         controller_resolver:
             auto_mapping: true
         enable_lazy_ghost_objects: true
+        dql:
+            datetime_functions:
+                cast: DoctrineExtensions\Query\Mysql\Cast
+                from_unixtime: DoctrineExtensions\Query\Mysql\FromUnixtime
