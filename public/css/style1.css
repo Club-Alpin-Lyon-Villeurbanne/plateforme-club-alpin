@@ -47,9 +47,7 @@ a.mini, .mini a{font-weight:100; color:black;}
 #includer-stuff .tiers.clear{clear:both}
 #chron-loader{position:relative; z-index:10; background:white; padding:20px; display:none; border-top:3px groove gray;}
 #chron-loader.visible{display:block}
-.temoin-places-dispos{display:block; height:10px; width:10px; background:silver; float:left; border-radius:5px;}
-.temoin-places-dispos.on{background:#8ac843;}
-.temoin-places-dispos.off{background:#ff0c20;}
+.temoin-places-dispos{display:block; float:left;}
 ul.nice-list{list-style-type:none;overflow:hidden;}
 ul.nice-list li{display:block; float:left; width:290px; padding:3px 5px 3px 15px; background:url(../img/puce.png) no-repeat 0 3px;}
 ul.transport{list-style-type:none;overflow:hidden;}

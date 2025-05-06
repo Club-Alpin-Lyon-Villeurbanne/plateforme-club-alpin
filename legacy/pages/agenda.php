@@ -91,7 +91,7 @@ while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // info statistique
         ++$nEvts;
 
-        // compte plpaces totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
+        // compte places totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
         require __DIR__ . '/../includes/evt-temoin-reqs.php';
 
         // on l'ajoute au bon jour, colonne 'debut'
