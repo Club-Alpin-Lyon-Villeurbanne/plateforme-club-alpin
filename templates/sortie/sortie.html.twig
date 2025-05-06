@@ -459,7 +459,19 @@
                                             </label>
                                         {% endif %}
 
-                                        {% if (event.finished and participation.isStatusValide) or not event.finished %}
+                                        {% if event.finished and participation.isStatusValide %}
+                                            <label for="join_{{ participation.id }}_1">
+                                                <input
+                                                    {{ participation.isStatusValide ? 'checked="checked"' : '' }}
+                                                    {{ disable_accepted ? 'disabled="disabled"' : '' }}
+                                                    type="radio"
+                                                    name="status_evt_join_{{ participation.id }}"
+                                                    id="join_{{ participation.id }}_1"
+                                                    value="1"
+                                                />
+                                                Présent
+                                            </label>
+                                        {% elseif not event.finished %}
                                             <label for="join_{{ participation.id }}_1">
                                                 <input
                                                     {{ participation.isStatusValide ? 'checked="checked"' : '' }}
@@ -473,7 +485,7 @@
                                             </label>
                                         {% endif %}
 
-                                        {% if event.finished and not participation.isStatusRefuse %}
+                                        {% if event.finished and not participation.isStatusRefuse and not participation.isStatusEnAttente %}
                                             <label for="join_{{ participation.id }}_3">
                                                 <input
                                                     {{ participation.isStatusAbsent ? 'checked="checked"' : '' }}
@@ -501,16 +513,18 @@
                                             </label>
                                         {% endif %}
 
-                                        <label for="join_{{ participation.id }}_-1">
-                                            <input
-                                                name="status_evt_join_{{ participation.id }}"
-                                                {{ disable_unsubscribe ? 'disabled="disabled"' : '' }}
-                                                type="radio"
-                                                id="join_{{ participation.id }}_-1"
-                                                value="-1"
-                                            />
-                                            Désinscrire
-                                        </label>
+                                        {% if (event.finished and not participation.isStatusRefuse and not participation.isStatusEnAttente) or not event.finished %}
+                                            <label for="join_{{ participation.id }}_-1">
+                                                <input
+                                                    name="status_evt_join_{{ participation.id }}"
+                                                    {{ disable_unsubscribe ? 'disabled="disabled"' : '' }}
+                                                    type="radio"
+                                                    id="join_{{ participation.id }}_-1"
+                                                    value="-1"
+                                                />
+                                                Désinscrire
+                                            </label>
+                                        {% endif %}
 
 
                                     {% endif %}
