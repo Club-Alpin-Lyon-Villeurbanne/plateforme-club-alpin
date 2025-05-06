@@ -163,10 +163,10 @@ Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif
 Message laissé par la comptabilité : "{{ report.statusComment }}"
     {% endif %}
 
-- Encadrant.e: {{ report.user.firstname }} {{ report.user.lastname }}
-{% if report.event.tsp %}- Date de la sortie: {{ report.event.tsp | date('d-m-Y') }}{% endif %}
-{% if report.updatedAt %}- Date de la soumission de la note de frais: {{ report.updatedAt | date('d-m-Y') }}{% endif %}
-- Type: {% if report.refundRequired %}Demande de remboursement par virement{% else %}Abandon de frais{% endif %}
+- Encadrant.e : {{ report.user.firstname }} {{ report.user.lastname }}
+{% if report.event.tsp %}- Date de la sortie : {{ report.event.tsp | date('d-m-Y') }}{% endif %}
+{% if report.updatedAt %}- Date de la soumission de la note de frais : {{ report.updatedAt | date('d-m-Y') }}{% endif %}
+- Type : {% if report.refundRequired %}Demande de remboursement par virement{% else %}Abandon de frais{% endif %}
 
 
     {# ================== Section TRANSPORT ================== #}
