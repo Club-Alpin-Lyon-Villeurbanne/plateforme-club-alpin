@@ -87,8 +87,9 @@ function getUrlFriendlyString($text)
 /*
 La fonction "userlink" affiche un lien vers le profil d'un utilisateur en fonction du contexte demandé par "style"
 */
-function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user = false, $lastname_user = false, $style = 'public')
+function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user = false, $lastname_user = false, $style = 'public', ?int $idArticle = null)
 {
+    $complement = '';
     switch ($style) {
         case 'public': 	$return = html_utf8($nickname_user);
             break;
@@ -99,7 +100,11 @@ function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user =
         default:		return;
     }
 
-    return '<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . (int) $id_user . '" class="fancyframe userlink" title="' . cont('userlink-title') . '">' . $return . '</a>';
+    if (!empty($idArticle) && $idArticle > 0) {
+        $complement .= '&amp;id_article=' . $idArticle;
+    }
+
+    return '<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . (int) $id_user . $complement . '" class="fancyframe userlink" title="' . cont('userlink-title') . '">' . $return . '</a>';
 }
 
 /*

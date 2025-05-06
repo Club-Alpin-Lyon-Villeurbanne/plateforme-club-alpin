@@ -3,9 +3,11 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$destinataire = $expediteur = null;
+$destinataire = $expediteur = $event = $article = null;
 
 $id_user = (int) $_POST['id_user'];
+$idEvent = (int) $_POST['id_event'] ?? 0;
+$idArticle = (int) $_POST['id_article'] ?? 0;
 $nom = stripslashes($_POST['nom'] ?? '');
 $shortName = $nom;
 $email = stripslashes($_POST['email'] ?? '');
@@ -71,6 +73,22 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 }
 
+if (!empty($idEvent)) {
+    $eventReq = "SELECT e.*, c.title_commission FROM caf_evt AS e INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) WHERE id_evt = $idEvent LIMIT 1";
+    $eventResult = LegacyContainer::get('legacy_mysqli_handler')->query($eventReq);
+    while ($eventRow = $eventResult->fetch_assoc()) {
+        $event = $eventRow;
+    }
+}
+
+if (!empty($idArticle)) {
+    $articleReq = "SELECT * FROM caf_article WHERE id_article = $idArticle LIMIT 1";
+    $articleResult = LegacyContainer::get('legacy_mysqli_handler')->query($articleReq);
+    while ($articleRow = $articleResult->fetch_assoc()) {
+        $article = $articleRow;
+    }
+}
+
 // contact autorisé ? antipiratage
 if (!isset($errTab) || 0 === count($errTab)) {
     $auth_contact_user = false;
@@ -83,6 +101,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
+    $eventLink = $articleLink = null;
+
+    if ($event) {
+        $eventLink = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $event['code_evt'] . '-' . $event['id_evt'] . '.html';
+    } elseif ($article) {
+        $articleLink = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'article/' . $article['code_article'] . '-' . $article['id_article'] . '.html';
+    }
     LegacyContainer::get('legacy_mailer')->send($destinataire['email_user'], 'transactional/contact-form', [
         'contact_name' => $nom,
         'contact_shortname' => $shortName,
@@ -90,6 +115,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
         'contact_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $expediteur['id_user'] . '.html',
         'contact_objet' => $objet,
         'message' => $message,
+        'eventName' => $event ? $event['titre_evt'] : '',
+        'eventLink' => $event ? $eventLink : '',
+        'commission' => $event ? $event['title_commission'] : '',
+        'articleTitle' => $article ? $article['titre_article'] : '',
+        'articleLink' => $article ? $articleLink : '',
     ], [], null, $email);
 }
 

@@ -63,7 +63,7 @@ if (!$article) {
         echo 'Le ' . date('d.m.Y', $article['tsp_article']);
 
     echo ', par ';
-    echo userlink($article['auteur']['id_user'], $article['auteur']['nickname_user']);
+    echo userlink($article['auteur']['id_user'], $article['auteur']['nickname_user'], false, false, false, 'public', (int) $article['id_article']);
 
     if ($totalComments > 1) {
         echo ', <a href="' . $_SERVER['REQUEST_URI'] . "#comments\">$totalComments commentaires</a>";
