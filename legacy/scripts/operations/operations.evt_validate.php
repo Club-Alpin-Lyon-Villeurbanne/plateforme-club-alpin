@@ -24,7 +24,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     // récupération des infos user et evt
-    $req = "SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_evt, titre_evt, code_evt, tsp_evt FROM caf_user, caf_evt WHERE id_user=user_evt AND id_evt=$id_evt LIMIT 1";
+    $req = "SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_evt, titre_evt, code_evt, tsp_evt, title_commission FROM caf_user, caf_evt, caf_commission WHERE id_user=user_evt AND commission_evt=id_commission AND id_evt=$id_evt LIMIT 1";
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     $authorDatas = false;
     while ($row = $result->fetch_assoc()) {
@@ -41,6 +41,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_evt || 2 == $stat
     if (1 == $status_evt) {
         LegacyContainer::get('legacy_mailer')->send($authorDatas['email_user'], 'transactional/sortie-publiee', [
             'event_name' => $authorDatas['titre_evt'],
+            'commission' => $authorDatas['title_commission'],
             'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $authorDatas['code_evt'] . '-' . $authorDatas['id_evt'] . '.html',
             'event_date' => date('d/m/Y', $authorDatas['tsp_evt']),
         ]);
@@ -49,6 +50,7 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_evt || 2 == $stat
         LegacyContainer::get('legacy_mailer')->send($authorDatas['email_user'], 'transactional/sortie-refusee', [
             'message' => stripslashes($_POST['msg'] ?: '...'),
             'event_name' => $authorDatas['titre_evt'],
+            'commission' => $authorDatas['title_commission'],
             'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $authorDatas['code_evt'] . '-' . $authorDatas['id_evt'] . '.html',
             'event_date' => date('d/m/Y', $authorDatas['tsp_evt']),
         ]);
@@ -74,6 +76,8 @@ if ((!isset($errTab) || 0 === count($errTab)) && 1 == $status_evt) {
             'author_nickname' => $authorDatas['nickname_user'],
             'event_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $authorDatas['code_evt'] . '-' . $authorDatas['id_evt'] . '.html',
             'event_name' => $authorDatas['titre_evt'],
+            'event_date' => date('d/m/Y', $authorDatas['tsp_evt']),
+            'commission' => $authorDatas['title_commission'],
             'role' => $row['role_evt_join'],
         ], [], null, $authorDatas['email_user']);
     }

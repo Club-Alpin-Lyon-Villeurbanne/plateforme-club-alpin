@@ -1,7 +1,7 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    Désinscription de {{ username }}
+    {% if commission %}[{{ commission }}]{% endif %}[Désinscription] {{ username }} pour {{ event_name }} du {{ event_date }}
 {%- endblock %}
 
 {% block inner_html %}
@@ -23,6 +23,6 @@
     Il(elle) vient de supprimer son inscription.
 
     Plus d'infos :
-      - Pseudo: {{ user.nickname }}
-      - Email: {{ user.email }}
+      - Pseudo : {{ user.nickname }}
+      - Email : {{ user.email }}
 {% endblock %}

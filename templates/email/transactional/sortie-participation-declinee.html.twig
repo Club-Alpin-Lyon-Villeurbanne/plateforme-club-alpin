@@ -1,7 +1,7 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    Votre inscription est déclinée
+    {% if commission %}[{{ commission }}]{% endif %}[Refusé] Votre inscription à {{ event_name }} du {{ event_date }}
 {%- endblock %}
 
 {% block inner_html %}
