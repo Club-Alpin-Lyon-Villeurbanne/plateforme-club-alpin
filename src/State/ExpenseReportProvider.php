@@ -22,6 +22,7 @@ class ExpenseReportProvider implements ProviderInterface
 
         $filters = $context['filters'] ?? [];
         $includeDrafts = isset($filters['include_drafts']) && 'true' === $filters['include_drafts'];
+        $filterByOwner = isset($filters['filter_by_owner']) && 'true' === $filters['filter_by_owner'];
 
         if ($operation instanceof \ApiPlatform\Metadata\CollectionOperationInterface) {
             $qb = $this->expenseReportRepository->createQueryBuilder('er');
@@ -30,7 +31,7 @@ class ExpenseReportProvider implements ProviderInterface
                    ->setParameter('event', $filters['event']);
             }
 
-            if (!$canValidateReport) {
+            if (!$canValidateReport || $filterByOwner) {
                 $qb->andWhere('er.user = :user')
                    ->setParameter('user', $this->security->getUser());
             }
