@@ -44,7 +44,7 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 		<link rel="stylesheet" href="/css/style1.css" type="text/css" />
 		<link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" />
 		<link rel="stylesheet" href="/css/base.css" type="text/css"  />
-		<link rel="stylesheet" href="/css/common.css" type="text/css"  />
+		<link rel="stylesheet" href="/css/common.css?v=<?php echo mt_rand(); ?>" type="text/css"  />
 		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" />
 		<!-- css PRINTS -->
 		<link rel="stylesheet" href="/css/print.css" type="text/css"  media="print" />
