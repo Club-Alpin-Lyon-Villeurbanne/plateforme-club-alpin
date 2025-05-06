@@ -22,6 +22,7 @@ init: ## Init the project
 
 	$(MAKE) docker-start profile=$(profile)
 	$(MAKE) composer-install
+	$(MAKE) assets-install
 	$(MAKE) npm-install
 	$(MAKE) npm-build
 	@$(call GREEN,"Le site du Club est lancé : http://127.0.0.1:8000/ 🚀")
@@ -182,3 +183,7 @@ phive-update:
 help: ## List of commands
 	@grep -E '(^[a-zA-Z0-9_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
 .PHONY: help
+
+assets-install: ## assets install
+	$(SYMFONY_CONSOLE) assets:install
+.PHONY: assets-install

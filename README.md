@@ -109,7 +109,7 @@ Nous encourageons les contributions ! Que vous soyez un développeur expériment
 ### Processus de contribution
 
 1. **Cloner le répertoire** : Clonez le répertoire sur votre machine locale pour y apporter des modifications.
-2. **Création d'une nouvelle branche** : Créez une nouvelle branche, nommée en fonction de la fonctionnalité ou du bug sur lequel vous travaillez.
+2. **Création d'une nouvelle branche** : Créez une nouvelle branche, nommée en fonction de la fonctionnalité (préfixée `feat/`) ou du bug (préfixée par `fix/`) sur lequel vous travaillez.
 3. **Effectuez vos modifications** : Effectuez les modifications nécessaires sur cette branche en respectant les conventions de codage. ⚠️ Avant de contribuer au code, soyez sûr que le changement que vous souhaitez apporter est dans notre backlog sur ClickUp ("PRET POUR DEV 🏁") ou que vous avez bien validé cette idée avec l'équipe informatique.
 4. **Commit** : Une fois satisfait, faites un commit en décrivant clairement les modifications apportées.
 5. **Push** : Faites un push de votre branche sur GitHub.
