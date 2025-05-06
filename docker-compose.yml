@@ -26,7 +26,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
     restart: always
-    tmpfs: /var/lib/mysql:size=2G
+    volumes:
+      - mysql_data:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin
@@ -46,3 +47,6 @@ services:
     ports:
       - 1025:1025
       - 8025:8025
+
+volumes:
+  mysql_data:
