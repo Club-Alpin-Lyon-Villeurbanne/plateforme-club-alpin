@@ -1,7 +1,7 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    [Message] {{ contact_shortname }} : {{ contact_objet }}
+    {% if commission %}[{{ commission }}]{% endif %}[Message] {{ contact_shortname }} : {{ contact_objet }}
 {%- endblock %}
 
 {% block inner_html %}
@@ -17,6 +17,15 @@
         <b>Message :</b>
         {{ message | converturls | nl2br }}
     </p>
+    {% if eventName %}
+        <p>
+            Ce message vous a été envoyé depuis <a href="{{ eventLink }}">{{ eventName }}</a>.
+        </p>
+    {% elseif articleTitle %}
+        <p>
+            Ce message vous a été envoyé depuis <a href="{{ articleLink }}">{{ articleTitle }}</a>.
+        </p>
+    {% endif %}
 {% endblock %}
 
 {% block inner_txt %}
@@ -27,4 +36,10 @@ Email : {{ contact_email }}
 Objet : {{ contact_objet }}
 
 Message : {{ message }}
+
+{% if eventName %}
+    Ce message vous a été envoyé depuis {{ eventName }}.
+{% elseif articleTitle %}
+    Ce message vous a été envoyé depuis {{ articleTitle }}.
+{% endif %}
 {% endblock %}
