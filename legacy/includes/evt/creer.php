@@ -207,18 +207,6 @@ inclure('infos-carte', 'mini');
         </div>
 
         <br style="clear:both"/>
-
-
-        <div style="margin: 10px 0 10px 0;">
-            Détails pratiques (invisible du grand public) :<br />
-            <textarea
-                name="details_caches_evt"
-                class="type2"
-                style="width:95%; min-height:60px;"
-                placeholder="ex : code portail, consignes, lien visio, etc."
-            ><?php echo inputVal('details_caches_evt', ''); ?></textarea>
-        </div>
-        <br style="clear:both" />
         <br />
     </div>
 
@@ -329,6 +317,16 @@ inclure('infos-matos', 'mini');
         <textarea name="itineraire" class="type2" style="width:95%; min-height:80px"><?php echo stripslashes($_POST['itineraire'] ?? ''); ?></textarea>
     </div>
 
+    <h2 class="trigger-h2">Détails pratiques (partie invisible aux adhérents non connectés) :</h2>
+    <div class="trigger-me">
+        <textarea
+                name="details_caches_evt"
+                class="type2"
+                rows="12"
+                placeholder="ex : fichier de covoiturage, groupe Whatsapp ou canal de discussion, ..."
+                style="width:95%; min-height:60px;"
+        ><?php echo inputVal('details_caches_evt', ''); ?></textarea>
+    </div>
 
     <h2 class="trigger-h2">Description complète :</h2>
     <div class="trigger-me">

@@ -719,8 +719,26 @@
             <hr />
         {% endif %}
 
+        {# Bloc détails cachés #}
+        {% if event.detailsCaches %}
+            <ul class="nice-list">
+                <li class="wide"><b>DÉTAILS PRATIQUES :</b><br />
+                    {% if allowed('user_read_limited') %}
+                        {{ event.detailsCaches | converturls | nl2br }}
+                    {% else %}
+                        Détails de la sortie visibles après connexion
+                    {% endif %}
+                </li>
+            </ul>
+            <br style="clear:both" />
+            <hr />
+        {% endif %}
+
         {% if not event.cancelled %}
-            <div class="description_evt">{{ event.description | raw }}</div>
+            <ul class="nice-list">
+                <li class="wide"><b>DESCRIPTION COMPLÈTE :</b>
+                <div class="description_evt">{{ event.description | raw }}</div></li>
+            </ul>
             <hr style="clear:both" />
 
             {% if allowed('user_read_limited') and (event.tarif > 0 or event.tarifDetail) %}
@@ -731,16 +749,6 @@
                     {% if event.tarifDetail %}
                         <li class="wide"><b>DÉTAIL :</b><br /> {{ event.tarifDetail | converturls | nl2br }}</li>
                     {% endif %}
-                </ul>
-                <br style="clear:both" />
-                <hr />
-            {% endif %}
-
-
-            {# Bloc détails cachés #}
-            {% if allowed('user_read_limited') and event.detailsCaches %}
-                <ul class="nice-list">
-                    <li class="wide"><b>DÉTAILS PRATIQUES :</b><br /> {{ event.detailsCaches | converturls | nl2br }}</li>
                 </ul>
                 <br style="clear:both" />
                 <hr />
