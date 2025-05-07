@@ -292,8 +292,10 @@ a.agenda-evt-debut:hover b, a.agenda-evt-debut:focus b{color:#fff;}
 a.agenda-evt-debut:hover .picto .picto-light, a.agenda-evt-debut:focus .picto .picto-light{display:inline;}
 a.agenda-evt-debut:hover .picto .picto-dark, a.agenda-evt-debut:focus .picto .picto-dark{display:none;}
 a.agenda-evt-courant{display:block; clear:both; padding:8px 10px 10px 0;}
-a.agenda-evt-courant .droite{float:right; width:435px;}
-a.agenda-evt-courant .picto{display:block; float:left; height:22px; width:35px; border-right:1px solid #dde1e4;}
+a.agenda-evt-courant .droite{float:right; width:425px;}
+a.agenda-evt-courant .picto{display:block; float:left; border-right:1px solid #dde1e4;}
+a.agenda-evt-courant .picto .picto-light{display:none;}
+a.agenda-evt-courant .picto .picto-dark{opacity:0.3;}
 a.agenda-evt-courant h2{font-size:16px; padding:0; color:#c3c4c8;}
 a.agenda-evt-courant:hover, a.agenda-evt-courant:focus{background:#f0f1f4;}
 #evt-list{}
