@@ -1,12 +1,9 @@
 name: Deploy on Production - Lyon Villeurbanne 🚀
-
 on:
   workflow_dispatch:
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   deploy-to-clevercloud:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix-prod-')
@@ -16,11 +13,69 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - uses: 47ng/actions-clever-cloud@v2.0.0
+          
+      # Obtention des informations sur les commits pour les inclure dans la notification
+      - name: Get commit info
+        id: commit-info
+        run: |
+          echo "author=$(git log -1 --pretty=format:'%an')" >> $GITHUB_OUTPUT
+          echo "message=$(git log -1 --pretty=format:'%s')" >> $GITHUB_OUTPUT
+          echo "sha_short=$(git log -1 --pretty=format:'%h')" >> $GITHUB_OUTPUT
+          
+          # Pour récupérer les 5 derniers commits (convertit # en retours à la ligne pour Slack)
+          RECENT_COMMITS=$(git log -5 --pretty=format:"• %h - %s (%an)" | sed ':a;N;$!ba;s/\n/\\n/g')
+          echo "recent_commits=$RECENT_COMMITS" >> $GITHUB_OUTPUT
+          
+      # Déploiement sur Clever Cloud
+      - name: Deploy to Clever Cloud
+        id: deploy
+        uses: 47ng/actions-clever-cloud@v2.0.0
         with:
           alias: web-prod
           force: true
         env:
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+          
+      # Notification Slack en cas de succès
+      - name: Slack notification - Success
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: deployments
+          SLACK_COLOR: good
+          SLACK_ICON: https://clever-cloud.com/favicon.ico
+          SLACK_TITLE: '✅ Déploiement réussi sur Production - Lyon Villeurbanne'
+          SLACK_MESSAGE: |
+            *Derniers commits déployés:*
+            ${{ steps.commit-info.outputs.recent_commits }}
+            
+            *Branch:* ${{ github.ref_name }}
+            *Déclenché par:* ${{ github.actor }}
+            *Application:* web-prod
+          SLACK_FOOTER: 'Clever Cloud Deployment'
+          MSG_MINIMAL: true
+          
+      # Notification Slack en cas d'échec
+      - name: Slack notification - Failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: deployments
+          SLACK_COLOR: danger
+          SLACK_ICON: https://clever-cloud.com/favicon.ico
+          SLACK_TITLE: '❌ Échec du déploiement sur Production - Lyon Villeurbanne'
+          SLACK_MESSAGE: |
+            *Derniers commits:*
+            ${{ steps.commit-info.outputs.recent_commits }}
+            
+            *Branch:* ${{ github.ref_name }}
+            *Déclenché par:* ${{ github.actor }}
+            *Application:* web-prod
+            
+            *Pour plus de détails, consultez les logs Clever Cloud:*
+            https://console.clever-cloud.com/organisations/orga_ad557a52-c460-4455-88b0-8acd46733724/applications/app_a79768fb-5fc1-457e-acbe-77d16dbf5689/logs
+          SLACK_FOOTER: 'Clever Cloud Deployment'
+          MSG_MINIMAL: true

@@ -7,20 +7,17 @@ use App\Entity\EventParticipation;
 
 	<!-- picto (retiré) -->
 	<div class="picto">
-		<?php /*
-        <img src="<?php echo comPicto($evt['comm_evt'], 'light');?>" alt="" title="" class="picto-light" />
-        <img src="<?php echo comPicto($evt['comm_evt'], 'dark');?>" alt="" title="" class="picto-dark" />
-        */ ?>
+        <img src="<?php echo comPicto($evt['commission_evt'] ?? '', 'dark'); ?>" alt="" title="" class="picto-dark" />
 	</div>
 
 	<div class="droite">
 		<!-- temoin de validité des places libres. Ajouter class ok / full -->
         <span style="padding: 10px 10px 5px 5px;float:left;">
-            <span class="temoin-places-dispos"><?php if (isset($evt['temoin']) && 'off' == $evt['temoin']) {
+            <span class="temoin-places-dispos"><?php if (isset($evt['temoin']) && 'full' == $evt['temoin']) {
                 echo '🚫';
-            } elseif (isset($evt['temoin']) && 'on' == $evt['temoin']) {
+            } elseif (isset($evt['temoin']) && 'free' == $evt['temoin']) {
                 echo '🟢';
-            } else {
+            } elseif (isset($evt['temoin']) && 'waiting' == $evt['temoin']) {
                 echo '⏳';
             }?></span>
         </span>

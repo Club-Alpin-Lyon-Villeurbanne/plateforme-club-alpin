@@ -78,6 +78,9 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         if ($event->getCancelled()) {
             return '🚫';
         }
+        if ($event->isFinished()) {
+            return '';
+        }
         if ($event->hasStarted()) {
             return '🚫';
         }

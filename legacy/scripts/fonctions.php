@@ -10,7 +10,7 @@ function display_sorties($id_user, $limit = 10, $title = '')
 {
     $req = '
         SELECT SQL_CALC_FOUND_ROWS
-            id_evt, code_evt, status_evt, status_evt_join, status_legal_evt, cancelled_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, join_max_evt, join_start_evt
+            id_evt, code_evt, status_evt, status_evt_join, status_legal_evt, cancelled_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, join_max_evt, join_start_evt, ngens_max_evt
             , nickname_user
             , title_commission, code_commission
             , role_evt_join
@@ -41,6 +41,9 @@ function display_sorties($id_user, $limit = 10, $title = '')
         // liste
         echo '<table id="agenda">';
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+            // compte places totales, données stockées dans $handle['temoin'] && $handle['temoin-title']
+            require __DIR__ . '/../includes/evt-temoin-reqs.php';
+
             $evt = $handle;
 
             echo '<tr>'

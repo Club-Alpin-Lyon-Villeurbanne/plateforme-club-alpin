@@ -19,27 +19,27 @@ $count = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
 
 // annulé ?
 if (isset($handle['cancelled_evt']) && $handle['cancelled_evt']) {
-    $handle['temoin'] = 'off';
+    $handle['temoin'] = 'full';
     $handle['temoin-title'] = 'Cette sortie est annulée';
 }
 
 // trop tard ?
 elseif (time() > $handle['tsp_evt'] - (24 * 60 * 60)) { // date max d'inscri. 24 h
-    $handle['temoin'] = 'off';
+    $handle['temoin'] = '';
     $handle['temoin-title'] = 'Les inscriptions sont terminées';
 }
 
 // inscriptions pas encore commencées
 elseif (time() < $handle['join_start_evt']) {
-    $handle['temoin'] = '';
+    $handle['temoin'] = 'waiting';
     $handle['temoin-title'] = 'Les inscriptions pour cette sortie commenceront le ' . date('d/m/y', $handle['join_start_evt']);
 } else {
     // inscriptions pleines
     if (isset($handle['ngens_max_evt']) && $count >= $handle['ngens_max_evt']) {// inscriptions max
-        $handle['temoin'] = 'off';
+        $handle['temoin'] = 'full';
         $handle['temoin-title'] = 'Les ' . ($handle['ngens_max_evt'] ?? '') . ' places libres ont été réservées';
     } else {
-        $handle['temoin'] = 'on';
+        $handle['temoin'] = 'free';
         $handle['temoin-title'] = max(0, ($handle['ngens_max_evt'] ?? 0) - $count) . ' places restantes';
     }
 }
