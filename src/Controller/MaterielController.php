@@ -49,6 +49,7 @@ class MaterielController extends AbstractController
             if ($this->materielApiService->userExists($user)) {
                 $this->logger->warning('L\'utilisateur a déjà un compte sur la plateforme de réservation de matériel');
                 $this->addFlash('error', 'Vous avez déjà un compte sur la plateforme de réservation de matériel.');
+
                 return $this->redirectToRoute('materiel');
             }
 
@@ -70,6 +71,7 @@ class MaterielController extends AbstractController
             $this->logger->info('Email envoyé avec succès');
 
             $this->addFlash('success', 'Votre compte a été créé avec succès. Vous allez recevoir un email avec vos identifiants de connexion.');
+
             return $this->redirectToRoute('materiel');
         } catch (\Exception $e) {
             $this->logger->error('Erreur lors de la création du compte', [
@@ -78,6 +80,7 @@ class MaterielController extends AbstractController
             ]);
 
             $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer plus tard.');
+
             return $this->redirectToRoute('materiel');
         }
     }
