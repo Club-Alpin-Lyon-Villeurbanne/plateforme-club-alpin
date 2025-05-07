@@ -143,7 +143,7 @@ class MaterielApiServiceTest extends TestCase
     public function testUserExists(): void
     {
         $user = new User();
-        
+
         // Test when user has no account
         $this->assertFalse($this->service->userExists($user));
 
@@ -155,16 +155,16 @@ class MaterielApiServiceTest extends TestCase
     public function testGeneratePassword(): void
     {
         $password = $this->service->generatePassword();
-        
+
         $this->assertIsString($password);
-        $this->assertEquals(12, strlen($password));
+        $this->assertEquals(12, \strlen($password));
         $this->assertMatchesRegularExpression('/^[a-zA-Z0-9!@#$%^&*()_+]{12}$/', $password);
     }
 
     public function testGeneratePseudo(): void
     {
         $pseudo = $this->service->generatePseudo('John', 'Doe');
-        
+
         $this->assertEquals('J.DOE', $pseudo);
     }
-} 
+}

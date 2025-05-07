@@ -79,7 +79,7 @@ class MaterielControllerTest extends TestCase
             ->willReturn([
                 'email' => 'test@example.com',
                 'password' => 'password123',
-                'pseudo' => 'J.DOE'
+                'pseudo' => 'J.DOE',
             ]);
 
         $this->materielEmailService->expects($this->once())
@@ -91,7 +91,7 @@ class MaterielControllerTest extends TestCase
                 [
                     'email' => 'test@example.com',
                     'password' => 'password123',
-                    'pseudo' => 'J.DOE'
+                    'pseudo' => 'J.DOE',
                 ]
             );
 
@@ -146,4 +146,4 @@ class MaterielControllerTest extends TestCase
         $this->assertFalse($data['success']);
         $this->assertStringContainsString('erreur est survenue', $data['message']);
     }
-} 
+}
