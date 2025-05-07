@@ -778,12 +778,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setMaterielAccountCreatedAt(?\DateTimeInterface $materielAccountCreatedAt): self
     {
         $this->materielAccountCreatedAt = $materielAccountCreatedAt;
+
         return $this;
     }
 
     public function hasMaterielAccount(): bool
     {
-        return $this->materielAccountCreatedAt !== null;
+        return null !== $this->materielAccountCreatedAt;
     }
 
     public function getFormattedMaterielAccountCreatedAt(): string
@@ -791,6 +792,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         if (!$this->materielAccountCreatedAt) {
             return '';
         }
+
         return $this->materielAccountCreatedAt->format('d/m/Y à H:i');
     }
 }

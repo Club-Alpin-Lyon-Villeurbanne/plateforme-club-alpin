@@ -2,9 +2,8 @@
 
 namespace App\Service;
 
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mailer\MailerInterface;
 
 class MaterielEmailService
 {
@@ -32,4 +31,4 @@ class MaterielEmailService
 
         $this->mailer->send($email);
     }
-} 
+}
