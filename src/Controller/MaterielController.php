@@ -43,24 +43,12 @@ class MaterielController extends AbstractController
             'lastname' => $user->getLastname(),
         ]);
 
-        // Vérifier si la requête attend une réponse JSON (AJAX)
-        $isAjax = 'XMLHttpRequest' === $request->headers->get('X-Requested-With');
-
         try {
             // Check if user already exists
             $this->logger->info('Vérification de l\'existence de l\'utilisateur');
             if ($this->materielApiService->userExists($user)) {
                 $this->logger->warning('L\'utilisateur a déjà un compte sur la plateforme de réservation de matériel');
-
-                if ($isAjax) {
-                    return $this->json([
-                        'success' => false,
-                        'message' => 'Vous avez déjà un compte sur la plateforme de réservation de matériel.',
-                    ]);
-                }
-
                 $this->addFlash('error', 'Vous avez déjà un compte sur la plateforme de réservation de matériel.');
-
                 return $this->redirectToRoute('materiel');
             }
 
@@ -81,15 +69,7 @@ class MaterielController extends AbstractController
             );
             $this->logger->info('Email envoyé avec succès');
 
-            if ($isAjax) {
-                return $this->json([
-                    'success' => true,
-                    'message' => 'Votre compte a été créé avec succès. Vous allez recevoir un email avec vos identifiants de connexion.',
-                ]);
-            }
-
             $this->addFlash('success', 'Votre compte a été créé avec succès. Vous allez recevoir un email avec vos identifiants de connexion.');
-
             return $this->redirectToRoute('materiel');
         } catch (\Exception $e) {
             $this->logger->error('Erreur lors de la création du compte', [
@@ -97,15 +77,7 @@ class MaterielController extends AbstractController
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            if ($isAjax) {
-                return $this->json([
-                    'success' => false,
-                    'message' => 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer plus tard.',
-                ]);
-            }
-
             $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer plus tard.');
-
             return $this->redirectToRoute('materiel');
         }
     }
