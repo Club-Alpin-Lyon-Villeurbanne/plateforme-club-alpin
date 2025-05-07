@@ -11,20 +11,7 @@ $req = "SELECT * FROM caf_user WHERE id_user = $id_user LIMIT 1";
 // AND valid_user = 1
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-    // liste des statuts
-    $row['statuts'] = [];
-
-    $req = 'SELECT title_usertype, params_user_attr
-        FROM caf_user_attr, caf_usertype
-        WHERE user_user_attr=' . $id_user . '
-        AND id_usertype=usertype_user_attr
-        ORDER BY hierarchie_usertype DESC
-        LIMIT 50';
-    $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($row2 = $handleSql2->fetch_assoc()) {
-        $commission = substr(strrchr($row2['params_user_attr'], ':'), 1);
-        $row['statuts'][] = $row2['title_usertype'] . ($commission ? ', ' . $commission : '');
-    }
+    require __DIR__ . '/../includes/user/statuts.php';
 
     $tmpUser = $row;
 }
@@ -68,6 +55,7 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 					<h1 style="padding:13px 0 0 0">
 						<?php require __DIR__ . '/../includes/user/display_name.php'; ?>
 					</h1>
+                    <br style="clear:left;" />
 
 					<!-- formulaire de contact -->
 					<?php
@@ -76,14 +64,8 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                         require __DIR__ . '/../includes/user/contact_form.php';
                     } ?>
 
-					<!-- statuts -->
-					<ul class="nice-list">
-						<?php
-                        foreach ($tmpUser['statuts'] as $status) {
-                            echo '<li style="">' . $status . '</li>';
-                        } ?>
-					</ul>
-					<br style="clear:left;" />
+                    <!-- statuts -->
+                    <?php require __DIR__ . '/../includes/user/display_status.php'; ?>
 
 					<!-- infos persos-->
 					<?php require __DIR__ . '/../includes/user/infos_privees.php'; ?>
