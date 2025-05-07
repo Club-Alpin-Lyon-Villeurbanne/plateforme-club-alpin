@@ -1,0 +1,38 @@
+{% extends 'email/transactional/layout.html.twig' %}
+
+{% block subject %}Votre compte sur la plateforme de réservation de matériel{% endblock %}
+
+{% block inner_html %}
+<div>
+    <p>Bonjour {{ firstName }} {{ lastName }},</p>
+
+    <p>Votre compte sur la plateforme de réservation de matériel a été créé avec succès.</p>
+
+    <div class="p-4 my-4 rounded bg-gray-50">
+        <h2 class="mb-2 text-lg font-semibold">Vos identifiants de connexion :</h2>
+        <ul class="space-y-2 list-none">
+            <li><strong>Identifiant :</strong> {{ pseudo }}</li>
+            <li><strong>Email :</strong> {{ userEmail }}</li>
+            <li><strong>Mot de passe :</strong> {{ password }}</li>
+        </ul>
+    </div>
+
+    <p class="mb-4">
+        Vous pouvez dès maintenant vous connecter à la plateforme en cliquant sur le bouton ci-dessous :
+    </p>
+
+    <div class="my-6 text-center">
+        <a href="{{ platformUrl }}" class="inline-block px-6 py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+            Accéder à la plateforme
+        </a>
+    </div>
+
+    <p class="mt-6 text-sm text-gray-600">
+        Pour des raisons de sécurité, nous vous recommandons de changer votre mot de passe lors de votre première connexion.
+    </p>
+
+    <p class="mt-6">
+        Si vous avez des questions, n'hésitez pas à nous contacter à <a href="mailto:materiel@clubalpinlyon.fr" class="text-blue-600">materiel@clubalpinlyon.fr</a>
+    </p>
+</div>
+{% endblock %} 

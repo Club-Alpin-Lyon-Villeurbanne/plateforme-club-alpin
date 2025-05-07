@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion du matériel{% endblock %}
+
+{% block body %}
+    {# Stocker les messages flash dans des variables locales au début du template #}
+    {% set errorMessages = app.flashes('error') %}
+    {% set successMessages = app.flashes('success') %}
+    
+    <div id="left1">
+        <h1 class="page-h1">Gestion du matériel</h1>
+        <div class="main-type">
+            {# Affichage des messages flash en haut de la page #}
+            {% for message in errorMessages %}
+                <div class="info info-container" style="margin-right:2rem !important">
+                    <img src="/img/inscrit-check.png" alt="" title="">
+                    <div class="text-container">{{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+            
+            {% for message in successMessages %}
+
+                <div class="info info-container" style="margin-right:2rem !important">
+                    <img src="/img/inscrit-check.png" alt="" title="">
+                    <div class="text-container">{{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <h2 class="bleucaf">Accès à la plateforme de réservation</h2>
+            
+            <p>
+                Pour accéder à notre plateforme de réservation de matériel, vous devez créer un compte sur notre outil de gestion.
+                Une fois votre compte créé, vous pourrez :
+            </p>
+            <ul>
+                <li>Consulter le catalogue de matériel disponible</li>
+                <li>Réserver du matériel pour vos sorties</li>
+                <li>Gérer vos réservations en cours</li>
+                <li>Consulter l'historique de vos emprunts</li>
+            </ul>
+
+            <div class="p-4 mb-6 border-l-4 border-blue-500 bg-blue-50">
+                <div class="flex">
+                    <div class="ml-3">
+                        <p class="text-sm text-blue-700">
+                            La création de compte est automatique et instantanée. Vous recevrez vos identifiants par email.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">
+                        Connecté en tant que : <span class="font-medium">{{ user.firstname }} {{ user.lastname }}</span>
+                    </p>
+                </div>
+                <div class="flex flex-col items-end space-y-4">
+                    {% if user.hasMaterielAccount() %}
+                        <div class="p-4 mb-6 border-l-4 border-green-500 bg-green-50">
+                            <div class="flex">
+                                <div class="ml-3">
+                                    <p class="text-sm text-green-700">
+                                        Votre compte a été créé le {{ user.materielAccountCreatedAt ? user.materielAccountCreatedAt.format('d/m/Y à H:i') : '' }}
+                                    </p>
+                                    <a href="{{ materiel_platform_url }}" target="_blank" class="mt-2 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                        Accéder à la plateforme
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% elseif errorMessages|length == 0 and successMessages|length == 0 %}
+                        <form method="post" action="{{ path('materiel_create_account') }}" class="w-full sm:w-auto">
+                            <button type="submit" class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Créer mon compte
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+
+            <h2 class="bleucaf">Informations importantes</h2>
+            
+            <h3 class="bleucaf">Conditions d'emprunt</h3>
+            <ul>
+                <li>Le matériel est réservé aux adhérents du club</li>
+                <li>Les réservations doivent être faites au minimum 48h à l'avance</li>
+                <li>La durée maximale d'emprunt est de 7 jours</li>
+                <li>Le matériel doit être rendu dans l'état où il a été emprunté</li>
+            </ul>
+
+            <h3 class="bleucaf">Contact</h3>
+            <p>
+                Pour toute question concernant le matériel ou les réservations, contactez-nous à :
+                <a href="mailto:materiel@clubalpinlyon.fr" class="text-blue-600 hover:text-blue-800">materiel@clubalpinlyon.fr</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

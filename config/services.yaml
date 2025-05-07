@@ -36,6 +36,10 @@ parameters:
         tauxKilometriqueVoiture: 0.2
         tauxKilometriqueMinibus: 0.3
         divisionPeage: 3
+  materiel_api_base_url: "%env(LOXYA_API_URL)%"
+  materiel_api_username: "%env(LOXYA_API_USERNAME)%"
+  materiel_api_password: "%env(LOXYA_API_PASSWORD)%"
+  materiel_platform_url: "%env(LOXYA_PLATFORM_URL)%"
 
 services:
   # default configuration for services in *this* file
@@ -218,3 +222,13 @@ services:
   App\EventListener\ExpenseReportStatusListener:
     tags:
       - { name: doctrine.event_listener, event: preUpdate }
+
+  App\Service\MaterielApiService:
+    arguments:
+      $apiBaseUrl: '%materiel_api_base_url%'
+      $apiUsername: '%materiel_api_username%'
+      $apiPassword: '%materiel_api_password%'
+
+  App\Service\MaterielEmailService:
+    arguments:
+      $materielPlatformUrl: '%materiel_platform_url%'
