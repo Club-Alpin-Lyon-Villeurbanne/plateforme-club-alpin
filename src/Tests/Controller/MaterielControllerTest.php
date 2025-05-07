@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Controller\MaterielController;
 use App\Entity\User;
 use App\Service\MaterielApiService;
 use App\Service\MaterielEmailService;
