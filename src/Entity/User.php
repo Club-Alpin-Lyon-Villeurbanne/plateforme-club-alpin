@@ -224,6 +224,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $alertArticlePrefix = null;
 
+    #[ORM\Column(name: 'materiel_account_created_at', type: 'datetime', nullable: true, options: ['comment' => 'Date de création du compte sur la plateforme de matériel'])]
+    private ?\DateTimeInterface $materielAccountCreatedAt = null;
+
     public function __construct(?int $id = null)
     {
         $this->attrs = new ArrayCollection();
@@ -765,5 +768,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setAlertArticlePrefix(string $alertArticlePrefix): void
     {
         $this->alertArticlePrefix = $alertArticlePrefix;
+    }
+
+    public function getMaterielAccountCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->materielAccountCreatedAt;
+    }
+
+    public function setMaterielAccountCreatedAt(?\DateTimeInterface $materielAccountCreatedAt): self
+    {
+        $this->materielAccountCreatedAt = $materielAccountCreatedAt;
+        return $this;
+    }
+
+    public function hasMaterielAccount(): bool
+    {
+        return $this->materielAccountCreatedAt !== null;
+    }
+
+    public function getFormattedMaterielAccountCreatedAt(): string
+    {
+        if (!$this->materielAccountCreatedAt) {
+            return '';
+        }
+        return $this->materielAccountCreatedAt->format('d/m/Y à H:i');
     }
 }

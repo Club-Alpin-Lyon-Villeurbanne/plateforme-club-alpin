@@ -48,8 +48,8 @@ class MaterielController extends AbstractController
         try {
             // Check if user already exists
             $this->logger->info('Vérification de l\'existence de l\'utilisateur');
-            if ($this->materielApiService->checkUserExists($user->getEmail())) {
-                $this->logger->warning('L\'utilisateur existe déjà dans le système');
+            if ($this->materielApiService->userExists($user)) {
+                $this->logger->warning('L\'utilisateur a déjà un compte sur la plateforme de réservation de matériel');
                 
                 if ($isAjax) {
                     return $this->json([
@@ -64,11 +64,7 @@ class MaterielController extends AbstractController
 
             // Create user account
             $this->logger->info('Création du compte utilisateur');
-            $credentials = $this->materielApiService->createUser(
-                $user->getEmail(),
-                $user->getFirstname(),
-                $user->getLastname()
-            );
+            $credentials = $this->materielApiService->createUser($user);
             $this->logger->info('Compte utilisateur créé avec succès', [
                 'pseudo' => $credentials['pseudo']
             ]);

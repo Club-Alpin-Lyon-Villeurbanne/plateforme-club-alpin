@@ -11,6 +11,8 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Psr\Log\LoggerInterface;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 
 class MaterielApiService
 {
@@ -20,9 +22,11 @@ class MaterielApiService
     private ?string $jwtToken = null;
     private HttpClientInterface $client;
     private LoggerInterface $logger;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         LoggerInterface $logger,
+        EntityManagerInterface $entityManager,
         string $apiBaseUrl = '',
         string $apiUsername = '',
         string $apiPassword = ''
@@ -32,6 +36,7 @@ class MaterielApiService
         $this->apiPassword = $apiPassword;
         $this->client = HttpClient::create();
         $this->logger = $logger;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -40,9 +45,8 @@ class MaterielApiService
     private function authenticate(): void
     {
         try {
-            $this->logger->info('Attempting to authenticate with Loxya API', [
-                'url' => $this->apiBaseUrl . '/api/session',
-                'email' => $this->apiUsername
+            $this->logger->info('Authentification à l\'API Loxya', [
+                'url' => $this->apiBaseUrl . '/api/session'
             ]);
 
             $response = $this->client->request('POST', $this->apiBaseUrl . '/api/session', [
@@ -57,76 +61,26 @@ class MaterielApiService
             ]);
 
             $statusCode = $response->getStatusCode();
-            $this->logger->info('Authentication response received', [
-                'statusCode' => $statusCode,
-                'email' => $this->apiUsername
-            ]);
 
             if ($statusCode === Response::HTTP_OK) {
                 $data = $response->toArray();
                 $this->jwtToken = $data['token'];
-                $this->logger->info('Successfully authenticated with Loxya API', [
-                    'email' => $this->apiUsername
-                ]);
+                $this->logger->info('Authentification réussie');
             } else {
-                $this->logger->error('Authentication failed', [
+                $this->logger->error('Échec de l\'authentification', [
                     'statusCode' => $statusCode,
-                    'response' => $response->getContent(false),
-                    'email' => $this->apiUsername
+                    'response' => $response->getContent(false)
                 ]);
                 throw new \RuntimeException('Failed to authenticate with Loxya API: Invalid response code ' . $statusCode);
             }
         } catch (\Exception $e) {
-            $this->logger->error('Authentication error', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'email' => $this->apiUsername
+            $this->logger->error('Erreur d\'authentification', [
+                'error' => $e->getMessage()
             ]);
             throw new \RuntimeException('Failed to authenticate with Loxya API: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Check if user exists in the Loxya system
-     */
-    public function checkUserExists(string $email): bool
-    {
-        if (!$this->jwtToken) {
-            $this->authenticate();
-        }
-
-        try {
-            $response = $this->client->request('GET', $this->apiBaseUrl . '/api/users', [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $this->jwtToken,
-                    'accept' => 'application/json',
-                ],
-                'query' => [
-                    'page' => 1,
-                    'limit' => 100,
-                    'ascending' => 1,
-                    'deleted' => 0,
-                ],
-            ]);
-
-            $this->logger->info('API response received for user check', [
-                'statusCode' => $response->getStatusCode(),
-                'content' => $response->getContent(false)
-            ]);
-
-            if ($response->getStatusCode() === Response::HTTP_OK) {
-                $users = $response->toArray()['data'];
-                foreach ($users as $user) {
-                    if ($user['email'] === $email) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        } catch (TransportExceptionInterface|ClientExceptionInterface|DecodingExceptionInterface $e) {
-            throw new \RuntimeException('Failed to check user existence: ' . $e->getMessage());
-        }
-    }
 
     /**
      * Generate a random password
@@ -155,20 +109,18 @@ class MaterielApiService
     /**
      * Create a new user in the Loxya system
      */
-    public function createUser(string $email, string $firstName, string $lastName): array
+    public function createUser(User $user): array
     {
         if (!$this->jwtToken) {
             $this->authenticate();
         }
 
-        $pseudo = $this->generatePseudo($firstName, $lastName);
+        $pseudo = $this->generatePseudo($user->getFirstname(), $user->getLastname());
         $password = $this->generatePassword();
 
         try {
-            $this->logger->info('Attempting to create user in Loxya API', [
-                'email' => $email,
-                'firstName' => $firstName,
-                'lastName' => $lastName,
+            $this->logger->info('Création d\'un utilisateur dans l\'API Loxya', [
+                'email' => $user->getEmail(),
                 'pseudo' => $pseudo
             ]);
 
@@ -178,10 +130,10 @@ class MaterielApiService
                     'accept' => 'application/json',
                 ],
                 'json' => [
-                    'first_name' => $firstName,
-                    'last_name' => $lastName,
+                    'first_name' => $user->getFirstname(),
+                    'last_name' => $user->getLastname(),
                     'pseudo' => $pseudo,
-                    'email' => $email,
+                    'email' => $user->getEmail(),
                     'phone' => '',
                     'password' => $password,
                     'group' => 'readonly-planning-general',
@@ -190,33 +142,40 @@ class MaterielApiService
             ]);
 
             $statusCode = $response->getStatusCode();
-            $this->logger->info('Create user response received', [
-                'statusCode' => $statusCode
-            ]);
 
             if ($statusCode === Response::HTTP_CREATED) {
                 $userData = $response->toArray();
-                $this->logger->info('User created successfully', [
+                $this->logger->info('Utilisateur créé avec succès', [
                     'pseudo' => $pseudo
                 ]);
+
+                // Mettre à jour le statut dans la base de données locale
+                $user->setMaterielAccountCreatedAt(new \DateTime());
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+
                 return [
-                    'email' => $email,
+                    'email' => $user->getEmail(),
                     'password' => $password,
                     'pseudo' => $pseudo,
                 ];
             }
 
-            $this->logger->error('Failed to create user', [
+            $this->logger->error('Échec de la création de l\'utilisateur', [
                 'statusCode' => $statusCode,
                 'response' => $response->getContent(false)
             ]);
             throw new \RuntimeException('Failed to create user: ' . $response->getContent(false));
         } catch (\Exception $e) {
-            $this->logger->error('Error creating user', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+            $this->logger->error('Erreur lors de la création de l\'utilisateur', [
+                'error' => $e->getMessage()
             ]);
             throw new \RuntimeException('Failed to create user: ' . $e->getMessage());
         }
+    }
+
+    public function userExists(User $user): bool
+    {
+        return $user->hasMaterielAccount();
     }
 } 
