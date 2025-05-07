@@ -4,7 +4,7 @@ use App\Legacy\LegacyContainer;
 
 // id du profil
 $id_user = (int) $p2;
-$tmpUser = false;
+$tmpUser = $tmpEvent = $tmpArticle = false;
 
 $req = "SELECT * FROM caf_user WHERE id_user = $id_user LIMIT 1";
 
