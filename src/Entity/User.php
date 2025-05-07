@@ -786,13 +786,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     {
         return null !== $this->materielAccountCreatedAt;
     }
-
-    public function getFormattedMaterielAccountCreatedAt(): string
-    {
-        if (!$this->materielAccountCreatedAt) {
-            return '';
-        }
-
-        return $this->materielAccountCreatedAt->format('d/m/Y à H:i');
-    }
 }
