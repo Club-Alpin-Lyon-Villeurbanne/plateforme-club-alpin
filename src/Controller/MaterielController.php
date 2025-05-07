@@ -28,6 +28,7 @@ class MaterielController extends AbstractController
     {
         return [
             'user' => $this->getUser(),
+            'materiel_platform_url' => $this->getParameter('materiel_platform_url'),
         ];
     }
 

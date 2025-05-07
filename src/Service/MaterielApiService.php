@@ -37,7 +37,7 @@ class MaterielApiService
     /**
      * Authenticate with the API and get JWT token.
      */
-    private function authenticate(): void
+    public function authenticate(): void
     {
         try {
             $this->logger->info('Authentification à l\'API Loxya', [
@@ -74,6 +74,14 @@ class MaterielApiService
             ]);
             throw new \RuntimeException('Failed to authenticate with Loxya API: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Get the JWT token.
+     */
+    public function getJwtToken(): ?string
+    {
+        return $this->jwtToken;
     }
 
     /**
