@@ -105,11 +105,11 @@ class MaterielApiService
      */
     private function generatePseudo(string $firstName, string $lastName): string
     {
-        return strtoupper(substr($firstName, 0, 1) . '.' . $lastName);
+        return strtolower($firstName . '.' . $lastName);
     }
 
     /**
-     * Create a new user in the Loxya system.
+     * Create a new beneficiary in the Loxya system.
      */
     public function createUser(User $user): array
     {
@@ -121,25 +121,22 @@ class MaterielApiService
         $password = $this->generatePassword();
 
         try {
-            $this->logger->info('Création d\'un utilisateur dans l\'API Loxya', [
+            $this->logger->info('Création d\'un bénéficiaire dans l\'API Loxya', [
                 'email' => $user->getEmail(),
                 'pseudo' => $pseudo,
             ]);
 
-            $response = $this->client->request('POST', $this->apiBaseUrl . '/api/users', [
+            $response = $this->client->request('POST', $this->apiBaseUrl . '/api/beneficiaries', [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->jwtToken,
-                    'accept' => 'application/json',
                 ],
                 'json' => [
                     'first_name' => $user->getFirstname(),
                     'last_name' => $user->getLastname(),
-                    'pseudo' => $pseudo,
+                    'can_make_reservation' => true,
                     'email' => $user->getEmail(),
-                    'phone' => '',
+                    'pseudo' => $pseudo,
                     'password' => $password,
-                    'group' => 'readonly-planning-general',
-                    'restricted_parks' => [],
                 ],
             ]);
 
@@ -147,7 +144,7 @@ class MaterielApiService
 
             if (Response::HTTP_CREATED === $statusCode) {
                 $userData = $response->toArray();
-                $this->logger->info('Utilisateur créé avec succès', [
+                $this->logger->info('Bénéficiaire créé avec succès', [
                     'pseudo' => $pseudo,
                 ]);
 
@@ -163,16 +160,16 @@ class MaterielApiService
                 ];
             }
 
-            $this->logger->error('Échec de la création de l\'utilisateur', [
+            $this->logger->error('Échec de la création du bénéficiaire', [
                 'statusCode' => $statusCode,
                 'response' => $response->getContent(false),
             ]);
-            throw new \RuntimeException('Failed to create user: ' . $response->getContent(false));
+            throw new \RuntimeException('Failed to create beneficiary: ' . $response->getContent(false));
         } catch (\Exception $e) {
-            $this->logger->error('Erreur lors de la création de l\'utilisateur', [
+            $this->logger->error('Erreur lors de la création du bénéficiaire', [
                 'error' => $e->getMessage(),
             ]);
-            throw new \RuntimeException('Failed to create user: ' . $e->getMessage());
+            throw new \RuntimeException('Failed to create beneficiary: ' . $e->getMessage());
         }
     }
 
