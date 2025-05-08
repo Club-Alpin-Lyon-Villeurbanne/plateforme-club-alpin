@@ -22,9 +22,11 @@ jobs:
           echo "message=$(git log -1 --pretty=format:'%s')" >> $GITHUB_OUTPUT
           echo "sha_short=$(git log -1 --pretty=format:'%h')" >> $GITHUB_OUTPUT
           
-          # Pour récupérer les 5 derniers commits (convertit # en retours à la ligne pour Slack)
-          RECENT_COMMITS=$(git log -5 --pretty=format:"• %h - %s (%an)" | sed ':a;N;$!ba;s/\n/\\n/g')
-          echo "recent_commits=$RECENT_COMMITS" >> $GITHUB_OUTPUT
+          # Format plus propre pour Slack avec des retours à la ligne corrects
+          COMMITS=$(git log -5 --pretty=format:"• %h %s (%an)")
+          # Échappement des caractères spéciaux pour Slack
+          COMMITS_ESCAPED=$(echo "$COMMITS" | sed 's/"/\\"/g' | tr '\n' ' ' | sed 's/•/\\n•/g')
+          echo "recent_commits=$COMMITS_ESCAPED" >> $GITHUB_OUTPUT
           
       # Déploiement sur Clever Cloud
       - name: Deploy to Clever Cloud
@@ -51,11 +53,13 @@ jobs:
             *Derniers commits déployés:*
             ${{ steps.commit-info.outputs.recent_commits }}
             
-            *Branch:* ${{ github.ref_name }}
-            *Déclenché par:* ${{ github.actor }}
-            *Application:* web-prod
+            *Informations:*
+            • *Branch:* ${{ github.ref_name }}
+            • *Déclenché par:* ${{ github.actor }}
+            • *Application:* web-prod
+            • *Dernier commit:* ${{ steps.commit-info.outputs.sha_short }}
           SLACK_FOOTER: 'Clever Cloud Deployment'
-          MSG_MINIMAL: true
+          MSG_MINIMAL: false
           
       # Notification Slack en cas d'échec
       - name: Slack notification - Failure
@@ -71,11 +75,13 @@ jobs:
             *Derniers commits:*
             ${{ steps.commit-info.outputs.recent_commits }}
             
-            *Branch:* ${{ github.ref_name }}
-            *Déclenché par:* ${{ github.actor }}
-            *Application:* web-prod
+            *Informations:*
+            • *Branch:* ${{ github.ref_name }}
+            • *Déclenché par:* ${{ github.actor }}
+            • *Application:* web-prod
+            • *Dernier commit:* ${{ steps.commit-info.outputs.sha_short }}
             
             *Pour plus de détails, consultez les logs Clever Cloud:*
             https://console.clever-cloud.com/organisations/orga_ad557a52-c460-4455-88b0-8acd46733724/applications/app_a79768fb-5fc1-457e-acbe-77d16dbf5689/logs
           SLACK_FOOTER: 'Clever Cloud Deployment'
-          MSG_MINIMAL: true
+          MSG_MINIMAL: false
