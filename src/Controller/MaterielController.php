@@ -42,7 +42,6 @@ class MaterielController extends AbstractController
         ]);
 
         try {
-
             // Create user account
             $this->logger->info('Création du compte utilisateur');
             $credentials = $this->materielApiService->createUser($user);
