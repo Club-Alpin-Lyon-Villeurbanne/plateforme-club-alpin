@@ -1,0 +1,149 @@
+name: Test Deploy Workflow 🧪
+on:
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test-deploy:
+    environment: development
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      # Obtention des informations sur les commits pour les inclure dans la notification
+      - name: Get commit info
+        id: commit-info
+        run: |
+          # Récupération du hash du dernier commit déployé depuis les variables d'environnement
+          LAST_DEPLOYED_SHA=${{ vars.LAST_DEPLOYED_SHA }}
+          
+          if [ -n "$LAST_DEPLOYED_SHA" ]; then
+            # Si un hash existe, on récupère les commits depuis ce hash
+            CHANGES=$(git log $LAST_DEPLOYED_SHA..HEAD --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+            echo "changes=$CHANGES" >> $GITHUB_OUTPUT
+          else
+            # Sinon, on récupère les 5 derniers commits
+            CHANGES=$(git log -5 --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+            echo "changes=$CHANGES" >> $GITHUB_OUTPUT
+          fi
+          
+          # Informations sur le commit actuel
+          echo "author=$(git log -1 --pretty=format:'%an')" >> $GITHUB_OUTPUT
+          echo "message=$(git log -1 --pretty=format:'%s')" >> $GITHUB_OUTPUT
+          echo "sha_short=$(git log -1 --pretty=format:'%h')" >> $GITHUB_OUTPUT
+          echo "sha_full=$(git log -1 --pretty=format:'%H')" >> $GITHUB_OUTPUT
+          
+      # Validation des changements
+      - name: Validate changes
+        run: |
+          if [ -z "${{ steps.commit-info.outputs.changes }}" ]; then
+            echo "Aucun changement détecté depuis le dernier déploiement"
+            exit 1
+          fi
+          
+      # Simulation de déploiement (au lieu de déployer réellement)
+      - name: Simulate deployment
+        run: |
+          echo "Simulation de déploiement réussie"
+          echo "Dernier commit déployé : ${{ steps.commit-info.outputs.sha_full }}"
+          
+      # Mise à jour du hash du dernier commit déployé
+      - name: Update last deployed SHA
+        if: success()
+        run: |
+          echo "Simulation de mise à jour de LAST_DEPLOYED_SHA avec : ${{ steps.commit-info.outputs.sha_full }}"
+          # On ne met pas à jour la vraie variable en mode test
+          
+      # Notification Slack en cas de succès
+      - name: Slack notification - Success
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: deployments-test
+          SLACK_COLOR: good
+          SLACK_ICON: https://clever-cloud.com/favicon.ico
+          SLACK_TITLE: '✅ Test de déploiement réussi'
+          SLACK_MESSAGE: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Changements qui seraient déployés:*\n${{ steps.commit-info.outputs.changes }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch:*\n${{ github.ref_name }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Déclenché par:*\n${{ github.actor }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Commit:*\n${{ steps.commit-info.outputs.sha_short }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*<https://github.com/${{ github.repository }}/commit/${{ steps.commit-info.outputs.sha_full }}|Voir les changements sur GitHub>*"
+                  }
+                }
+              ]
+            }
+          SLACK_FOOTER: 'Test Deployment'
+          MSG_MINIMAL: true
+          
+      # Notification Slack en cas d'échec
+      - name: Slack notification - Failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: deployments-test
+          SLACK_COLOR: danger
+          SLACK_ICON: https://clever-cloud.com/favicon.ico
+          SLACK_TITLE: '❌ Test de déploiement échoué'
+          SLACK_MESSAGE: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Changements qui n'auraient pas été déployés:*\n${{ steps.commit-info.outputs.changes }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch:*\n${{ github.ref_name }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Déclenché par:*\n${{ github.actor }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Commit:*\n${{ steps.commit-info.outputs.sha_short }}"
+                    }
+                  ]
+                }
+              ]
+            }
+          SLACK_FOOTER: 'Test Deployment'
+          MSG_MINIMAL: true 
