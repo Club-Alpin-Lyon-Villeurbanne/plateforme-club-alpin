@@ -5,9 +5,7 @@ namespace App\Controller;
 use App\Service\MaterielApiService;
 use App\Service\MaterielEmailService;
 use Psr\Log\LoggerInterface;
-use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -21,22 +19,22 @@ class MaterielController extends AbstractController
     ) {
     }
 
-    #[Route(path: '/materiel', name: 'materiel')]
+    #[Route('/materiel', name: 'materiel_index')]
     #[IsGranted('ROLE_USER')]
-    #[Template('materiel/index.html.twig')]
-    public function index(): array
+    public function index(): Response
     {
-        return [
+        return $this->render('materiel/index.html.twig', [
             'user' => $this->getUser(),
             'materiel_platform_url' => $this->getParameter('materiel_platform_url'),
-        ];
+        ]);
     }
 
-    #[Route(path: '/materiel/create-account', name: 'materiel_create_account', methods: ['POST'])]
+    #[Route('/materiel/create-account', name: 'materiel_create_account', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
-    public function createAccount(Request $request): Response
+    public function createAccount(): Response
     {
         $user = $this->getUser();
+
         $this->logger->info('Début de la création de compte pour l\'utilisateur', [
             'email' => $user->getEmail(),
             'firstname' => $user->getFirstname(),
@@ -44,14 +42,6 @@ class MaterielController extends AbstractController
         ]);
 
         try {
-            // Check if user already exists
-            $this->logger->info('Vérification de l\'existence de l\'utilisateur');
-            if ($this->materielApiService->userExists($user)) {
-                $this->logger->warning('L\'utilisateur a déjà un compte sur la plateforme de réservation de matériel');
-                $this->addFlash('error', 'Vous avez déjà un compte sur la plateforme de réservation de matériel.');
-
-                return $this->redirectToRoute('materiel');
-            }
 
             // Create user account
             $this->logger->info('Création du compte utilisateur');
@@ -72,7 +62,7 @@ class MaterielController extends AbstractController
 
             $this->addFlash('success', 'Votre compte a été créé avec succès. Vous allez recevoir un email avec vos identifiants de connexion.');
 
-            return $this->redirectToRoute('materiel');
+            return $this->redirectToRoute('materiel_index');
         } catch (\Exception $e) {
             $this->logger->error('Erreur lors de la création du compte', [
                 'error' => $e->getMessage(),
@@ -81,7 +71,7 @@ class MaterielController extends AbstractController
 
             $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer plus tard.');
 
-            return $this->redirectToRoute('materiel');
+            return $this->redirectToRoute('materiel_index');
         }
     }
 }

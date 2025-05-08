@@ -50,52 +50,51 @@
                     </div>
                 </div>
             </div>
-
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-600">
-                        Connecté en tant que : <span class="font-medium">{{ user.firstname }} {{ user.lastname }}</span>
-                    </p>
-                </div>
-                <div class="flex flex-col items-end space-y-4">
-                    {% if user.hasMaterielAccount() %}
-                        <div class="p-4 mb-6 border-l-4 border-green-500 bg-green-50">
-                            <div class="flex">
-                                <div class="ml-3">
-                                    <p class="text-sm text-green-700">
-                                        Votre compte a été créé le {{ user.materielAccountCreatedAt ? user.materielAccountCreatedAt.format('d/m/Y à H:i') : '' }}
-                                    </p>
-                                    <a href="{{ materiel_platform_url }}" target="_blank" class="mt-2 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                        Accéder à la plateforme
-                                    </a>
-                                </div>
+            <div class="flex flex-col items-end space-y-4">
+                {% if user.hasMaterielAccount() %}
+                    <div class="p-4 mb-6 border-l-4 border-green-500 bg-green-50">
+                        <div class="flex">
+                            <div class="ml-3">
+                                <p class="text-sm text-green-700">
+                                    Vous avez déjà un compte sur la plateforme de location de matériel (créé le {{ user.materielAccountCreatedAt ? user.materielAccountCreatedAt.format('d/m/Y à H:i') : '' }})
+                                </p>
+                                <a href="{{ materiel_platform_url }}" target="_blank" class="nice2 blue">
+                                    🎒 Accéder à la plateforme
+                                </a>
                             </div>
                         </div>
-                    {% elseif errorMessages|length == 0 and successMessages|length == 0 %}
-                        <form method="post" action="{{ path('materiel_create_account') }}" class="w-full sm:w-auto">
-                            <button type="submit" class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Créer mon compte
-                            </button>
-                        </form>
-                    {% endif %}
-                </div>
+                    </div>
+                {% elseif user.doitRenouveler %}
+                    <div class="p-4 mb-6 border-l-4 border-red-500 bg-red-50">
+                        <div class="flex">
+                            <div class="ml-3">
+                                <p class="text-sm text-red-700">
+                                    ⚠️ Votre licence n'est pas valide. Veuillez renouveler votre adhésion pour accéder au service de réservation de matériel.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% elseif errorMessages|length == 0 and successMessages|length == 0 %}
+                    <form method="post" action="{{ path('materiel_create_account') }}" class="w-full sm:w-auto">
+                        <button type="submit" class="nice2 blue" style="font-size: 16px; padding: 8px 20px;">
+                            ✨ Créer mon compte
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
             </div>
 
-            <h2 class="bleucaf">Informations importantes</h2>
-            
-            <h3 class="bleucaf">Conditions d'emprunt</h3>
-            <ul>
-                <li>Le matériel est réservé aux adhérents du club</li>
-                <li>Les réservations doivent être faites au minimum 48h à l'avance</li>
-                <li>La durée maximale d'emprunt est de 7 jours</li>
-                <li>Le matériel doit être rendu dans l'état où il a été emprunté</li>
-            </ul>
-
-            <h3 class="bleucaf">Contact</h3>
-            <p>
-                Pour toute question concernant le matériel ou les réservations, contactez-nous à :
-                <a href="mailto:materiel@clubalpinlyon.fr" class="text-blue-600 hover:text-blue-800">materiel@clubalpinlyon.fr</a>
-            </p>
+            <div class="main-type">
+                <h2 class="bleucaf">Informations importantes</h2>
+                
+                <h3 class="bleucaf">Conditions d'emprunt</h3>
+                <ul>
+                    <li>Le matériel est réservé aux adhérents du club</li>
+                    <li>Les réservations doivent être faites au minimum 48h à l'avance</li>
+                    <li>La durée maximale d'emprunt est de 7 jours</li>
+                    <li>Le matériel doit être rendu dans l'état où il a été emprunté</li>
+                </ul>
+            </div>
         </div>
     </div>
 {% endblock %}
