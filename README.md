@@ -6,6 +6,22 @@
 ![Symfony](https://img.shields.io/badge/Symfony-6.4-6d6dff?logo=symfony)
 ![Database](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql)
 
+## Documentation
+
+La documentation complète du projet est disponible dans le répertoire [docs/](docs/README.md).
+
+### Liens rapides
+
+- [Guide d'installation](docs/getting-started/installation.md)
+- [Guide de contribution](docs/development/contribution.md)
+- [Environnement de test](https://www.clubalpinlyon.top)
+- [Production](https://www.clubalpinlyon.fr)
+
+### Outils
+
+- 📋 Tickets : [Clickup](https://app.clickup.com/)
+- 🐛 Report de bugs : [sentry](https://club-alpin-lyon.sentry.io/issues/?project=6021900&statsPeriod=14d)
+- ⚙️ Build : [Github Actions](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/actions)
 
 Bienvenue sur le dépôt du code source de l'application web utilisée du Club Alpin Français de Lyon-Villeurbanne pour la gestion des adhérents, du contenu du site (pages & articles), de la gestion des sorties et des participants à ces sorties.
 Le développement de ce site en php a commencé vers 2010. Vers 2019, un groupe de bénévole a entrepris de réduire la dette technique afin de faciliter la maintenance et l'évolution de cet outil vital pour le Club Alpin de Lyon.
@@ -31,7 +47,7 @@ Un déploiement continu via une Github Action est en place pour la staging, ce q
 
 Pour la production, les déploiements se font manuellement par une Github Action.
 
-L’infrastructure consiste en un serveur web et une base de données MySQL 8.0. Cette base est hébergée et managée par Clever Cloud.
+L'infrastructure consiste en un serveur web et une base de données MySQL 8.0. Cette base est hébergée et managée par Clever Cloud.
 
 Les variables d'environnement sont gérées dans la console de Clever Cloud.
 
@@ -99,12 +115,12 @@ Docker version X.X.X, build xxxxxxx
 Des erreurs peuvent apparaître lors du lancement des conteneurs Docker avec `make init` :
 
 - `permission denied while trying to connect to the Docker daemon socket` : ajoutez votre utilisateur dans le groupe `docker` : `$ sudo usermod -a -G docker $USER`, puis relancez WSL ([voir SO](https://stackoverflow.com/a/48450294)).
-- Le conteneur `db_caflyon` peut ne pas démarrer. Dans ce cas, vérifiez les logs avec `$ docker compose logs cafdb`. Si l’erreur `Could not set file permission for ca-key.pem` apparaît, démarrez les conteneurs depuis Powershell (`> docker compose up`), retournez dans WSL, arrêtez-les (`$ make docker-stop`) puis relancez (`$ make init`) ([voir SO](https://stackoverflow.com/a/78768559)).
-- Pour corriger l’erreur `--initialize specified but the data directory has files in it`, supprimez le contenu du dossier `./db`.
+- Le conteneur `db_caflyon` peut ne pas démarrer. Dans ce cas, vérifiez les logs avec `$ docker compose logs cafdb`. Si l'erreur `Could not set file permission for ca-key.pem` apparaît, démarrez les conteneurs depuis Powershell (`> docker compose up`), retournez dans WSL, arrêtez-les (`$ make docker-stop`) puis relancez (`$ make init`) ([voir SO](https://stackoverflow.com/a/78768559)).
+- Pour corriger l'erreur `--initialize specified but the data directory has files in it`, supprimez le contenu du dossier `./db`.
 
 ## Contribution au projet
 
-Nous encourageons les contributions ! Que vous soyez un développeur expérimenté ou un débutant, votre participation est précieuse. Si vous êtes nouveau, consultez le backlog sur ClickUp pour trouver un ticket, en priorité dans "PRET POUR DEV 🏁". Si vous souhaitez contribuer sur un sujet non présent dans ClickUp, contactez l’équipe informatique pour proposer votre idée, confirmer sa pertinence et éviter de travailler inutilement.
+Nous encourageons les contributions ! Que vous soyez un développeur expérimenté ou un débutant, votre participation est précieuse. Si vous êtes nouveau, consultez le backlog sur ClickUp pour trouver un ticket, en priorité dans "PRET POUR DEV 🏁". Si vous souhaitez contribuer sur un sujet non présent dans ClickUp, contactez l'équipe informatique pour proposer votre idée, confirmer sa pertinence et éviter de travailler inutilement.
 
 ### Processus de contribution
 
@@ -113,7 +129,7 @@ Nous encourageons les contributions ! Que vous soyez un développeur expériment
 3. **Effectuez vos modifications** : Effectuez les modifications nécessaires sur cette branche en respectant les conventions de codage. ⚠️ Avant de contribuer au code, soyez sûr que le changement que vous souhaitez apporter est dans notre backlog sur ClickUp ("PRET POUR DEV 🏁") ou que vous avez bien validé cette idée avec l'équipe informatique.
 4. **Commit** : Une fois satisfait, faites un commit en décrivant clairement les modifications apportées.
 5. **Push** : Faites un push de votre branche sur GitHub.
-6. **Pull Request (PR)** : Créez une PR et décrivez-la en français. Pour toute modification visuelle, incluez une capture d’écran. Seule l'équipe informatique peut merger une PR.
+6. **Pull Request (PR)** : Créez une PR et décrivez-la en français. Pour toute modification visuelle, incluez une capture d'écran. Seule l'équipe informatique peut merger une PR.
 
 Nous attendons avec impatience vos contributions et vous remercions pour votre temps et votre effort ! 🙏🏼
 
