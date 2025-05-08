@@ -18,13 +18,32 @@ jobs:
       - name: Get commit info
         id: commit-info
         run: |
+          # Récupération du hash du dernier commit déployé depuis les variables d'environnement
+          LAST_DEPLOYED_SHA=${{ vars.LAST_DEPLOYED_SHA }}
+          
+          if [ -n "$LAST_DEPLOYED_SHA" ]; then
+            # Si un hash existe, on récupère les commits depuis ce hash
+            CHANGES=$(git log $LAST_DEPLOYED_SHA..HEAD --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+            echo "changes=$CHANGES" >> $GITHUB_OUTPUT
+          else
+            # Sinon, on récupère les 5 derniers commits
+            CHANGES=$(git log -5 --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+            echo "changes=$CHANGES" >> $GITHUB_OUTPUT
+          fi
+          
+          # Informations sur le commit actuel
           echo "author=$(git log -1 --pretty=format:'%an')" >> $GITHUB_OUTPUT
           echo "message=$(git log -1 --pretty=format:'%s')" >> $GITHUB_OUTPUT
           echo "sha_short=$(git log -1 --pretty=format:'%h')" >> $GITHUB_OUTPUT
+          echo "sha_full=$(git log -1 --pretty=format:'%H')" >> $GITHUB_OUTPUT
           
-          # Pour récupérer les 5 derniers commits (convertit # en retours à la ligne pour Slack)
-          RECENT_COMMITS=$(git log -5 --pretty=format:"• %h - %s (%an)" | sed ':a;N;$!ba;s/\n/\\n/g')
-          echo "recent_commits=$RECENT_COMMITS" >> $GITHUB_OUTPUT
+      # Validation des changements
+      - name: Validate changes
+        run: |
+          if [ -z "${{ steps.commit-info.outputs.changes }}" ]; then
+            echo "Aucun changement détecté depuis le dernier déploiement"
+            exit 1
+          fi
           
       # Déploiement sur Clever Cloud
       - name: Deploy to Clever Cloud
@@ -37,6 +56,16 @@ jobs:
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
           
+      # Mise à jour du hash du dernier commit déployé
+      - name: Update last deployed SHA
+        if: success()
+        run: |
+          curl -X PATCH \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d "{\"value\":\"${{ steps.commit-info.outputs.sha_full }}\"}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/variables/LAST_DEPLOYED_SHA"
+          
       # Notification Slack en cas de succès
       - name: Slack notification - Success
         if: success()
@@ -48,12 +77,45 @@ jobs:
           SLACK_ICON: https://clever-cloud.com/favicon.ico
           SLACK_TITLE: '✅ Déploiement réussi sur Production - Lyon Villeurbanne'
           SLACK_MESSAGE: |
-            *Derniers commits déployés:*
-            ${{ steps.commit-info.outputs.recent_commits }}
-            
-            *Branch:* ${{ github.ref_name }}
-            *Déclenché par:* ${{ github.actor }}
-            *Application:* web-prod
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Changements déployés:*\n${{ steps.commit-info.outputs.changes }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch:*\n${{ github.ref_name }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Déclenché par:*\n${{ github.actor }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Application:*\nweb-prod"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Commit:*\n${{ steps.commit-info.outputs.sha_short }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*<https://github.com/${{ github.repository }}/commit/${{ steps.commit-info.outputs.sha_full }}|Voir les changements sur GitHub>*"
+                  }
+                }
+              ]
+            }
           SLACK_FOOTER: 'Clever Cloud Deployment'
           MSG_MINIMAL: true
           
@@ -68,14 +130,44 @@ jobs:
           SLACK_ICON: https://clever-cloud.com/favicon.ico
           SLACK_TITLE: '❌ Échec du déploiement sur Production - Lyon Villeurbanne'
           SLACK_MESSAGE: |
-            *Derniers commits:*
-            ${{ steps.commit-info.outputs.recent_commits }}
-            
-            *Branch:* ${{ github.ref_name }}
-            *Déclenché par:* ${{ github.actor }}
-            *Application:* web-prod
-            
-            *Pour plus de détails, consultez les logs Clever Cloud:*
-            https://console.clever-cloud.com/organisations/orga_ad557a52-c460-4455-88b0-8acd46733724/applications/app_a79768fb-5fc1-457e-acbe-77d16dbf5689/logs
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Changements en attente:*\n${{ steps.commit-info.outputs.changes }}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch:*\n${{ github.ref_name }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Déclenché par:*\n${{ github.actor }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Application:*\nweb-prod"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Commit:*\n${{ steps.commit-info.outputs.sha_short }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Pour plus de détails, consultez les logs Clever Cloud:*\nhttps://console.clever-cloud.com/organisations/orga_ad557a52-c460-4455-88b0-8acd46733724/applications/app_a79768fb-5fc1-457e-acbe-77d16dbf5689/logs"
+                  }
+                }
+              ]
+            }
           SLACK_FOOTER: 'Clever Cloud Deployment'
           MSG_MINIMAL: true
