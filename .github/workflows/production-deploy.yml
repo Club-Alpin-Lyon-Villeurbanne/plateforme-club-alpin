@@ -21,13 +21,13 @@ jobs:
           # Récupération du hash du dernier commit déployé depuis les variables d'environnement
           LAST_DEPLOYED_SHA=${{ vars.LAST_DEPLOYED_SHA }}
           
-          if [ -n "$LAST_DEPLOYED_SHA" ]; then
-            # Si un hash existe, on récupère les commits depuis ce hash
-            CHANGES=$(git log $LAST_DEPLOYED_SHA..HEAD --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+          if [ -n "$LAST_DEPLOYED_SHA" ] && git rev-parse --verify "$LAST_DEPLOYED_SHA" >/dev/null 2>&1; then
+            # Si un hash existe et est valide, on récupère les commits depuis ce hash
+            CHANGES=$(git log "$LAST_DEPLOYED_SHA..HEAD" --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | tr '\n' '\\n')
             echo "changes=$CHANGES" >> $GITHUB_OUTPUT
           else
             # Sinon, on récupère les 5 derniers commits
-            CHANGES=$(git log -5 --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+            CHANGES=$(git log -5 --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | tr '\n' '\\n')
             echo "changes=$CHANGES" >> $GITHUB_OUTPUT
           fi
           
