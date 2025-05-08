@@ -78,47 +78,18 @@ jobs:
           SLACK_ICON: https://clever-cloud.com/favicon.ico
           SLACK_TITLE: '✅ Déploiement réussi sur Production - Lyon Villeurbanne'
           SLACK_MESSAGE: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Changements déployés:*\n${{ steps.commit-info.outputs.changes }}"
-                  }
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Branch:*\n${{ github.ref_name }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Déclenché par:*\n${{ github.actor }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Application:*\nweb-prod"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Commit:*\n${{ steps.commit-info.outputs.sha_short }}"
-                    }
-                  ]
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*<https://github.com/${{ github.repository }}/commit/${{ steps.commit-info.outputs.sha_full }}|Voir les changements sur GitHub>*"
-                  }
-                }
-              ]
-            }
+            *Changements déployés:*
+            ${{ steps.commit-info.outputs.changes }}
+            
+            *Informations:*
+            • *Branch:* ${{ github.ref_name }}
+            • *Déclenché par:* ${{ github.actor }}
+            • *Application:* web-prod
+            • *Dernier commit:* ${{ steps.commit-info.outputs.sha_short }}
+            
+            *<https://github.com/${{ github.repository }}/commit/${{ steps.commit-info.outputs.sha_full }}|Voir les changements sur GitHub>*
           SLACK_FOOTER: 'Clever Cloud Deployment'
-          MSG_MINIMAL: true
+          MSG_MINIMAL: false
           
       # Notification Slack en cas d'échec
       - name: Slack notification - Failure
@@ -131,44 +102,16 @@ jobs:
           SLACK_ICON: https://clever-cloud.com/favicon.ico
           SLACK_TITLE: '❌ Échec du déploiement sur Production - Lyon Villeurbanne'
           SLACK_MESSAGE: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Changements en attente:*\n${{ steps.commit-info.outputs.changes }}"
-                  }
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Branch:*\n${{ github.ref_name }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Déclenché par:*\n${{ github.actor }}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Application:*\nweb-prod"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Commit:*\n${{ steps.commit-info.outputs.sha_short }}"
-                    }
-                  ]
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Pour plus de détails, consultez les logs Clever Cloud:*\nhttps://console.clever-cloud.com/organisations/orga_ad557a52-c460-4455-88b0-8acd46733724/applications/app_a79768fb-5fc1-457e-acbe-77d16dbf5689/logs"
-                  }
-                }
-              ]
-            }
+            *Changements en attente:*
+            ${{ steps.commit-info.outputs.changes }}
+            
+            *Informations:*
+            • *Branch:* ${{ github.ref_name }}
+            • *Déclenché par:* ${{ github.actor }}
+            • *Application:* web-prod
+            • *Dernier commit:* ${{ steps.commit-info.outputs.sha_short }}
+            
+            *Pour plus de détails, consultez les logs Clever Cloud:*
+            https://console.clever-cloud.com/organisations/orga_ad557a52-c460-4455-88b0-8acd46733724/applications/app_a79768fb-5fc1-457e-acbe-77d16dbf5689/logs
           SLACK_FOOTER: 'Clever Cloud Deployment'
-          MSG_MINIMAL: true
+          MSG_MINIMAL: false
