@@ -1,6 +1,22 @@
 {% extends 'email/transactional/layout.html.twig' %}
 
-{% block subject %}Votre compte sur la plateforme de réservation de matériel{% endblock %}
+{% block subject %}[Gestion du matériel][Inscription] Votre compte sur la plateforme Loxya{% endblock %}
+
+{% block text %}
+Bonjour {{ firstName }} {{ lastName }},
+
+Votre compte sur la plateforme de réservation de matériel a été créé avec succès.
+
+Vos identifiants de connexion :
+- Email : {{ userEmail }}
+- Mot de passe : {{ password }}
+
+Vous pouvez dès maintenant vous connecter à la plateforme Loxya en utilisant le lien suivant :
+{{ platformUrl }}
+
+Cordialement,
+L'équipe du Club Alpin de Lyon Villeurbanne
+{% endblock %}
 
 {% block inner_html %}
 <div>
@@ -22,7 +38,8 @@
 
     <div class="my-6 text-center">
         <a href="{{ platformUrl }}" class="inline-block px-6 py-3 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-            Accéder à la plateforme
+            Accéder à la plateforme Loxya du Club Alpin de Lyon Villeurbanne
+
         </a>
     </div>
 </div>
