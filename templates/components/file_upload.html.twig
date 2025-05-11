@@ -1,0 +1,64 @@
+{#
+  Composant d'upload d'image avec prévisualisation
+  Paramètres:
+  - id: identifiant unique du composant (obligatoire)
+  - width: largeur du composant (défaut: w-64)
+  - height: hauteur du composant (défaut: h-32)
+  - uploadUrl: URL pour l'upload (obligatoire)
+  - currentImageUrl: URL de l'image actuelle (optionnel)
+  - mediaIdInputId: ID de l'input hidden qui stockera l'ID du média (obligatoire)
+  - maxFileSize: taille maximale en Mo (défaut: 5)
+  - accept: format accepté (ex: image/*)
+#}
+
+{% set width = width|default('tw-w-64') %}
+{% set height = height|default('tw-h-32') %}
+{% set maxFileSize = maxFileSize|default(5) %}
+
+<div class="image-upload-component" data-upload-url="{{ uploadUrl }}" data-media-id-input="{{ mediaIdInputId }}" data-max-file-size="{{ maxFileSize }}" data-accept="{{ accept|default('image/*') }}">
+    <input type="file" id="{{ id }}-file-input" accept="{{ accept }}" style="display: none;" />
+    <div class="{{ width }} {{ height }} tw-rounded-md tw-overflow-hidden tw-border tw-border-gray-300 tw-border-dashed tw-relative">
+        <div class="upload-preview tw-flex tw-items-center tw-justify-center tw-h-full tw-cursor-pointer group" onclick="document.getElementById('{{ id }}-file-input').click()">
+            {% if currentImageUrl %}
+                <img src="{{ currentImageUrl }}" alt="{{ currentImageAlt|default('') }}" class="preview-image tw-w-full tw-h-full tw-object-cover group-hover:tw-blur-sm tw-transition-all" />
+                <div class="preview-overlay tw-absolute tw-inset-0 tw-bg-black tw-bg-opacity-40 tw-flex tw-items-center tw-justify-center tw-transition-opacity">
+                    <div class="tw-text-white tw-text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-8 tw-w-8 tw-mx-auto tw-mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12" />
+                        </svg>
+                        <div>Remplacer le fichier</div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="upload-placeholder tw-text-center tw-text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-8 tw-w-8 tw-mx-auto tw-mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <div>Cliquer pour envoyer un fichier</div>
+                </div>
+            {% endif %}
+            <div id="{{ id }}-loading-indicator" class="tw-absolute tw-inset-0 tw-bg-white tw-items-center tw-justify-center" style="display: none;">
+                <div class="tw-text-center tw-text-gray-600">
+                    <svg class="tw-animate-spin tw-h-8 tw-w-8 tw-mx-auto tw-mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="tw-opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="tw-opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <div>Chargement...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Template pour l'image après upload (caché) -->
+    <template id="{{ id }}-image-preview-template">
+        <img class="preview-image tw-w-full tw-h-full tw-object-cover group-hover:tw-blur-sm tw-transition-all" alt="Aperçu" />
+        <div class="preview-overlay tw-absolute tw-inset-0 tw-bg-black tw-bg-opacity-40 tw-flex tw-items-center tw-justify-center tw-transition-opacity">
+            <div class="tw-text-white tw-text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-8 tw-w-8 tw-mx-auto tw-mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12" />
+                </svg>
+                <div>Remplacer le fichier</div>
+            </div>
+        </div>
+    </template>
+</div> 
