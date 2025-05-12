@@ -26,28 +26,12 @@ if (!$connectedUser) {
 $req = "SELECT * FROM caf_user WHERE id_user = $id_user LIMIT 1";
 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($row = $result->fetch_assoc()) {
-    // echo '<!-- FOUND -->';
-
     // debug
     if (1 == $row['birthday_user']) {
         $row['birthday_user'] = 0;
     }
 
-    // liste des statuts
-    $row['statuts'] = [];
-
-    $req = 'SELECT title_usertype, params_user_attr, description_user_attr
-		FROM caf_user_attr, caf_usertype
-		WHERE user_user_attr=' . $id_user . '
-		AND id_usertype=usertype_user_attr
-		ORDER BY hierarchie_usertype DESC
-		LIMIT 50';
-
-    $result2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($row2 = $result2->fetch_assoc()) {
-        $commission = substr(strrchr($row2['params_user_attr'], ':'), 1);
-        $row['statuts'][] = $row2['title_usertype'] . ($commission ? ', ' . $commission : '') . ($row2['description_user_attr'] ? '&nbsp;<img src="img/base/info.png" title="' . addslashes(html_utf8($row2['description_user_attr'])) . '">' : '');
-    }
+    require __DIR__ . '/../includes/user/statuts.php';
 
     $tmpUser = $row;
 }
@@ -115,19 +99,10 @@ else {
 		<h1>
 		<?php require __DIR__ . '/../includes/user/display_name.php'; ?>
 		</h1>
+        <br style="clear:left;" />
 
 		<!-- statuts -->
-		<ul class="nice-list">
-			<?php
-            // if(allowed('user_read_limited')){
-                foreach ($tmpUser['statuts'] as $status) {
-                    echo '<li style="">' . $status . '</li>';
-                }
-    // } else {
-    // echo '<li style="">Adhérent du club</li>';
-    // }?>
-		</ul>
-		<br style="clear:both" />
+        <?php require __DIR__ . '/../includes/user/display_status.php'; ?>
 
 		<!-- formulaire de contact -->
 		<?php
@@ -139,9 +114,6 @@ else {
 		<div id="trigger-userinfo" style="display:<?php if (isset($_POST['operation']) && 'user_contact' == $_POST['operation']) {
 		    echo 'none';
 		} ?>">
-
-
-
 
 			<!-- infos persos-->
 			<?php require __DIR__ . '/../includes/user/infos_privees.php'; ?>
