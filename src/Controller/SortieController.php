@@ -365,20 +365,20 @@ class SortieController extends AbstractController
                 $participations[] = $joined->getUser()->getEmail();
             }
         } elseif ('me_only' === $replyToMode) {
-            $replyToAddresses = $event->getUser()->getEmail();
-            $participations[] = $event->getUser()->getEmail();
+            $replyToAddresses = $this->getUser()->getEmail();
+            $participations[] = $this->getUser()->getEmail();
         }
 
         $mailer->send($participations, 'transactional/message-sortie', [
             'objet' => $request->request->get('objet'),
-            'message_author' => sprintf('%s %s', $event->getUser()->getFirstname(), strtoupper($event->getUser()->getLastname())),
+            'message_author' => sprintf('%s %s', $this->getUser()->getFirstname(), strtoupper($this->getUser()->getLastname())),
             'url_sortie' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'name_sortie' => $event->getTitre(),
             'commission' => $event->getCommission()->getTitle(),
             'date_sortie' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
             'message' => $request->request->get('message'),
-            'message_author_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $event->getUser()->getId() . '.html',
-        ], [], $event->getUser(), $replyToAddresses);
+            'message_author_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $this->getUser()->getId() . '.html',
+        ], [], $this->getUser(), $replyToAddresses);
 
         $this->addFlash('info', 'Votre message a bien été envoyé.');
 
