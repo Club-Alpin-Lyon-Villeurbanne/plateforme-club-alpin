@@ -2,7 +2,7 @@
 
 if (allowed('user_read_private')) {
     echo '<hr  />'
-        . '<p><b>Infos privées : </b></p>'
+        . '<h3>Infos privées : </h3>'
         . '<ul class="nice-list">'
             . '<li>LICENCE : ' . html_utf8($tmpUser['cafnum_user']) . '</a> </li>'
             . '<li><a href="mailto:' . html_utf8($tmpUser['email_user']) . '" title="Contact direct">' . html_utf8($tmpUser['email_user']) . '</a> </li>'
