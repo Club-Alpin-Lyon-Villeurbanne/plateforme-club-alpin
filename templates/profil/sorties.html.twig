@@ -15,7 +15,14 @@
             {% endif %}
 
             <table id="agenda">
-                {% for event in events %}
+                {% for item in events %}
+                    {% if item is iterable %}
+                        {% set event = item.0 %}
+                        {% set exp_status = item.exp_status %}
+                    {% else %}
+                        {% set event = item %}
+                        {% set exp_status = null %}
+                    {% endif %}
                     <tr>
                         <td class="agenda-gauche">
                             {% set start = event.tsp | intldate('eee d MMM YYYY') | capitalize %}
@@ -81,8 +88,55 @@
                                     <h2 class="tw-flex tw-items-center tw-gap-2">
                                         {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>{% endif %}
                                         {{ event.titre }}
+
                                         {% set participation = event.participation(app.user) %}
-                                        {% if participation and app.user != event.user %}
+                                        {% if participation and display_notes_de_frais and include_name is same as ('profil-sorties-prev')
+                                            and event.finished and not event.cancelled
+                                            and (participation.role == constant('App\\Entity\\EventParticipation::ROLE_ENCADRANT') or participation.role == constant('App\\Entity\\EventParticipation::ROLE_COENCADRANT') or participation.role == constant('App\\Entity\\EventParticipation::ROLE_STAGIAIRE')) %}
+                                            {% if exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_DRAFT') %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    NdF brouillon
+                                                </span>
+                                            {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_SUBMITTED') %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    NdF en vérif.
+                                                </span>
+                                            {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_APPROUVED') %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                    NdF acceptée
+                                                </span>
+                                            {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_ACCOUNTED') %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                    NdF compta.
+                                                </span>
+                                            {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_REJECTED') %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                    NdF refusée
+                                                </span>
+                                            {% else %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    NdF possible
+                                                </span>
+                                            {% endif %}
+                                        {% elseif participation and include_name is not same as ('profil-sorties-prev') and app.user != event.user %}
                                             {% if participation.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
                                                 <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
                                                     <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
