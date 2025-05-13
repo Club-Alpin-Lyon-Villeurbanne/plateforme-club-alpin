@@ -72,9 +72,6 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
 						<select name="commission_article" class="type1" style="width:95%">
 
 							<option value="">- Choisissez :</option>
-							<option value="0" <?php if (isset($_POST['commission_article']) && '0' == $_POST['commission_article']) {
-							    echo 'selected="selected"';
-							} ?>>Actualité du club : apparait dans toutes les commissions</option>
 							<option value="-1" <?php if (isset($_POST['commission_article']) && '-1' == $_POST['commission_article']) {
 							    echo 'selected="selected"';
 							} ?>>Compte rendu de sortie</option>
@@ -215,7 +212,7 @@ if (isset($_GET['compterendu']) && $_GET['compterendu']) {
 
 
 
-					<h2 class="trigger-h2">Contenus :</h2>
+					<h2 class="trigger-h2">Contenu :</h2>
 					<div class="trigger-me" style="width:95%">
 						<p style="padding-right:20px;">
 							<b>Attention :</b><br />Si vous copiez-collez du texte depuis un site, ou un document Word, cochez le bouton <img src="/img/texte-brut.png" title="Coller en tant que texte brut" alt="T" />
