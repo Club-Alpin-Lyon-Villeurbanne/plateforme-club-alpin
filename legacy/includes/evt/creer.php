@@ -147,12 +147,6 @@ foreach ($coencadrantsTab as $coencadrant) {
             }
 ?>
 
-            <label for="need_benevoles_evt" style="margin-top:15px; display:block; float:none; width:93%; background-color:white; background-position:8px 5px; padding-left:10px; padding-top:5px; box-shadow:0 0 15px -8px black;">
-                <input type="checkbox" class="custom" name="need_benevoles_evt" id="need_benevoles_evt" <?php if (!empty($_POST['need_benevoles_evt']) && in_array($_POST['need_benevoles_evt'], [1, 'on', '1'], true)) {
-                    echo 'checked="checked"';
-                } ?> /> Afficher un encart &laquo;Nous aurions besoin de bénévoles&raquo; sur la page de la sortie ?
-            </label>
-
             <br style="clear:both" />
         </div>
     </div>
