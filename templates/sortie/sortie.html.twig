@@ -736,9 +736,9 @@
 
         {% if not event.cancelled %}
             <ul class="nice-list">
-                <li class="wide"><b>DESCRIPTION COMPLÈTE :</b>
-                <div class="description_evt">{{ event.description | raw }}</div></li>
+                <li class="wide"><b>DESCRIPTION COMPLÈTE :</b></li>
             </ul>
+            <div class="description_evt">{{ event.description | raw }}</div>
             <hr style="clear:both" />
 
             {% if allowed('user_read_limited') and (event.tarif > 0 or event.tarifDetail) %}
