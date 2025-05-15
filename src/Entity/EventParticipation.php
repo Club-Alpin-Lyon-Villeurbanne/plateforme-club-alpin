@@ -25,6 +25,11 @@ class EventParticipation implements \JsonSerializable
     public const ROLE_STAGIAIRE = 'stagiaire';
     public const ROLE_COENCADRANT = 'coencadrant';
     public const ROLE_BENEVOLE = 'benevole';
+    public const ROLES_ENCADREMENT = [
+        self::ROLE_ENCADRANT,
+        self::ROLE_STAGIAIRE,
+        self::ROLE_COENCADRANT,
+    ];
 
     /**
      * @var int
