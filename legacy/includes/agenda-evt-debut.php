@@ -23,6 +23,8 @@ echo '" title="">';
                 echo '🚫';
             } elseif (isset($evt['temoin']) && 'free' == $evt['temoin']) {
                 echo '🟢';
+            } elseif (isset($evt['temoin']) && 'finished' == $evt['temoin']) {
+                echo '⚪';
             } elseif (isset($evt['temoin']) && 'waiting' == $evt['temoin']) {
                 echo '⏳';
             }?></span>
