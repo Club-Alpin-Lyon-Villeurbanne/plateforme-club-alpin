@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
+use App\Entity\ExpenseReport;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -134,11 +135,14 @@ class EvtRepository extends ServiceEntityRepository
 
     private function getUserPastEventsDql(User $user): QueryBuilder
     {
-        $date = new \DateTime('today');
+        $date = new \DateTime();
 
         return $this->getEventsByUserDql($user, [Evt::STATUS_LEGAL_VALIDE])
+            ->addSelect('er.status as exp_status')
+            ->leftJoin(ExpenseReport::class, 'er', 'WITH', 'er.event = e.id AND er.user = :user')
             ->andWhere('e.tspEnd < :date')
             ->setParameter('date', $date->getTimestamp())
+            ->setParameter('user', $user)
             ->orderBy('e.tsp', 'desc')
         ;
     }
