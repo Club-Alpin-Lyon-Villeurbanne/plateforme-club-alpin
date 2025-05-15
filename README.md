@@ -109,13 +109,20 @@ Nous encourageons les contributions ! Que vous soyez un développeur expériment
 ### Processus de contribution
 
 1. **Cloner le répertoire** : Clonez le répertoire sur votre machine locale pour y apporter des modifications.
-2. **Création d'une nouvelle branche** : Créez une nouvelle branche, nommée en fonction de la fonctionnalité ou du bug sur lequel vous travaillez.
+2. **Création d'une nouvelle branche** : Créez une nouvelle branche, nommée en fonction de la fonctionnalité (préfixée `feat/`) ou du bug (préfixée par `fix/`) sur lequel vous travaillez.
 3. **Effectuez vos modifications** : Passez le ticket en "EN COURS". Effectuez les modifications nécessaires sur cette branche en respectant les conventions de codage. ⚠️ Avant de contribuer au code, soyez sûr que le changement que vous souhaitez apporter est dans notre backlog sur ClickUp ("PRET POUR DEV 🏁") ou que vous avez bien validé cette idée avec l'équipe informatique.
 4. **Commit** : Une fois satisfait, faites un commit en décrivant clairement les modifications apportées.
 5. **Push** : Faites un push de votre branche sur GitHub.
 6. **Pull Request (PR)** : Créez une PR et décrivez-la en français. Pour toute modification visuelle, incluez une capture d’écran. Seule l'équipe informatique peut merger une PR. Passez le ticket en "EN REVIEW PAR DEV" et ajouter le nom de la PR en commentaire. 
 
 Nous attendons avec impatience vos contributions et vous remercions pour votre temps et votre effort ! 🙏🏼
+
+### Processus de déploiement
+
+1. **Merger la PR** : une fois qu'elle est approuvée, vous pouvez merger votre PR ; le déploiement en [staging](https://www.clubalpinlyon.top) se lance automatiquement
+2. **Mettre à jour le statut du ticket** : dès que la PR est mergée et déployée en staging, passer le ticket à "en cours de review client" dans ClickUp
+3. **Déployer en production** : une fois la modification validée en staging, utiliser la GitHub Action "Deploy on Production - Lyon Villeurbanne"
+4. **Changelog** : pendant que se déploie le code, mettre à jour le fichier [Journal des modifications](https://docs.google.com/document/d/1CzbCZnuNkAFWPn365V2vgJNvAouHgLD52IZ6fLw0du0)
 
 ## Rôles
 
