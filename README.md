@@ -113,7 +113,7 @@ Nous encourageons les contributions ! Que vous soyez un développeur expériment
 3. **Effectuez vos modifications** : Passez le ticket en "EN COURS". Effectuez les modifications nécessaires sur cette branche en respectant les conventions de codage. ⚠️ Avant de contribuer au code, soyez sûr que le changement que vous souhaitez apporter est dans notre backlog sur ClickUp ("PRET POUR DEV 🏁") ou que vous avez bien validé cette idée avec l'équipe informatique.
 4. **Commit** : Une fois satisfait, faites un commit en décrivant clairement les modifications apportées.
 5. **Push** : Faites un push de votre branche sur GitHub.
-6. **Pull Request (PR)** : Créez une PR et décrivez-la en français. Pour toute modification visuelle, incluez une capture d’écran. Seule l'équipe informatique peut merger une PR. Passez le ticket en "EN REVIEW PAR DEV" et ajouter le nom de la PR en commentaire. 
+6. **Pull Request (PR)** : Créez une PR et décrivez-la en français. Pour toute modification visuelle, incluez une capture d’écran. Seule l'équipe informatique peut merger une PR. Passez le ticket en "EN REVIEW PAR DEV" et ajouter le lien de la PR en commentaire du ticket. 
 
 Nous attendons avec impatience vos contributions et vous remercions pour votre temps et votre effort ! 🙏🏼
 
