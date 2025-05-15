@@ -27,8 +27,7 @@ if (isset($handle['cancelled_evt']) && $handle['cancelled_evt']) {
 elseif (time() > $handle['tsp_evt']) {
     $handle['temoin'] = 'finished';
     $handle['temoin-title'] = 'La sortie a commencé ou est terminée';
-}
-elseif (time() > $handle['tsp_evt'] - (24 * 60 * 60)) { // date max d'inscri. 24 h
+} elseif (time() > $handle['tsp_evt'] - (24 * 60 * 60)) { // date max d'inscri. 24 h
     $handle['temoin'] = 'finished';
     $handle['temoin-title'] = 'Les inscriptions sont terminées ou la sortie a commencé';
 }
