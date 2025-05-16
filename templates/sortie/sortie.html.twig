@@ -398,7 +398,7 @@
                                 <tr class="status{{ participation.status }}" style="color:gray; font-size:10px;">
 
                                     <td>
-                                        {{ participation.user.lastname | upper }}, {{ participation.user.firstname | capitalize }}<br/>
+                                        {{ participation.user.firstname | capitalize }} {{ participation.user.lastname | upper }}<br/>
                                         <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ participation.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ participation.user.nickname }}</a>
 
                                         {% if participation.user.doitRenouveler %}
