@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2dd27b5c36c237af6530b824ebdf9319",
+    "content-hash": "dec17f6d691674af38786dc053939816",
     "packages": [
         {
             "name": "api-platform/core",
@@ -5661,34 +5661,33 @@
         },
         {
             "name": "rollerworks/password-strength-bundle",
-            "version": "v2.2.4",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollerworks/PasswordStrengthBundle.git",
-                "reference": "76bc45875b0a7e5a3b8011451e9cda2c4ae1562b"
+                "reference": "12da0d334b7a0ba429d3bfef919dc01c168def3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollerworks/PasswordStrengthBundle/zipball/76bc45875b0a7e5a3b8011451e9cda2c4ae1562b",
-                "reference": "76bc45875b0a7e5a3b8011451e9cda2c4ae1562b",
+                "url": "https://api.github.com/repos/rollerworks/PasswordStrengthBundle/zipball/12da0d334b7a0ba429d3bfef919dc01c168def3f",
+                "reference": "12da0d334b7a0ba429d3bfef919dc01c168def3f",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1",
-                "rollerworks/password-strength-validator": "^1.0.1",
-                "symfony/framework-bundle": "^3.4.22 || ^4.0 || ^5.0 || ^6.0"
+                "php": ">=8.2",
+                "rollerworks/password-strength-validator": "^2.0",
+                "symfony/framework-bundle": "^6.0 || ^7.0"
             },
             "require-dev": {
-                "matthiasnoback/symfony-dependency-injection-test": "^3.1.0 || ^4.1.0",
-                "symfony/console": "^3.4.22 || ^4.0 || ^5.0 || ^6.0",
-                "symfony/flex": "^1.20 || ^2.3",
-                "symfony/phpunit-bridge": "^3.4.22 || ^4.0 || ^5.0 || ^6.0",
-                "symfony/var-dumper": "^3.4.22 || ^4.0 || ^5.0 || ^6.0"
+                "matthiasnoback/symfony-dependency-injection-test": "^5.0 || ^v4.3.1",
+                "phpunit/phpunit": "^9.5",
+                "rollerscapes/standards": "^1.0",
+                "symfony/phpunit-bridge": "^6.0 || ^7.0"
             },
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.1-dev"
+                    "dev-main": "3.0-dev"
                 }
             },
             "autoload": {
@@ -5722,47 +5721,42 @@
             ],
             "support": {
                 "issues": "https://github.com/rollerworks/PasswordStrengthBundle/issues",
-                "source": "https://github.com/rollerworks/PasswordStrengthBundle/tree/v2.2.4"
+                "source": "https://github.com/rollerworks/PasswordStrengthBundle/tree/v3.0.1"
             },
-            "time": "2023-08-05T12:57:47+00:00"
+            "time": "2024-07-22T13:29:13+00:00"
         },
         {
             "name": "rollerworks/password-strength-validator",
-            "version": "v1.7.3",
+            "version": "v2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rollerworks/PasswordStrengthValidator.git",
-                "reference": "7ad6e573f506fe7693f83265d858f0f04ffbf97e"
+                "reference": "89f0c1d4b884db5f08d143517732f064c9f29623"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rollerworks/PasswordStrengthValidator/zipball/7ad6e573f506fe7693f83265d858f0f04ffbf97e",
-                "reference": "7ad6e573f506fe7693f83265d858f0f04ffbf97e",
+                "url": "https://api.github.com/repos/rollerworks/PasswordStrengthValidator/zipball/89f0c1d4b884db5f08d143517732f064c9f29623",
+                "reference": "89f0c1d4b884db5f08d143517732f064c9f29623",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.3",
-                "psr/container": "^1.0 || ^2.0",
-                "symfony/deprecation-contracts": "^2.4 || ^3.0",
+                "php": ">=8.2",
+                "symfony/config": "^6.0 || ^7.0",
                 "symfony/polyfill-mbstring": "^1.5.0",
-                "symfony/translation": "^4.4 || ^5.0 || ^6.0",
-                "symfony/validator": "^4.4 || ^5.0 || ^6.0"
+                "symfony/translation": "^6.0 || ^7.0",
+                "symfony/validator": "^6.0 || ^7.0"
             },
             "require-dev": {
-                "guzzlehttp/psr7": "^1.4",
-                "php-http/httplug": "^1.1",
-                "phpspec/prophecy": "^1.10.3",
-                "phpspec/prophecy-phpunit": "^2.0",
+                "phpstan/phpstan": "^1.10",
+                "phpstan/phpstan-phpunit": "^1.1",
+                "phpstan/phpstan-symfony": "^1.2",
                 "phpunit/phpunit": "^9.5",
-                "psr/log": "^1.0 || ^2.0",
-                "symfony/config": "^4.4 || ^5.0 || ^6.0",
-                "symfony/console": "^4.4 || ^5.0 || ^6.0",
-                "symfony/phpunit-bridge": "^5.3 || ^6.0"
+                "symfony/phpunit-bridge": "^6.0 || ^7.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.7-dev"
+                    "dev-main": "2.0-dev"
                 }
             },
             "autoload": {
@@ -5795,9 +5789,9 @@
             ],
             "support": {
                 "issues": "https://github.com/rollerworks/PasswordStrengthValidator/issues",
-                "source": "https://github.com/rollerworks/PasswordStrengthValidator/tree/v1.7.3"
+                "source": "https://github.com/rollerworks/PasswordStrengthValidator/tree/v2.0.3"
             },
-            "time": "2022-07-13T09:56:53+00:00"
+            "time": "2024-12-17T20:29:28+00:00"
         },
         {
             "name": "sabberworm/php-css-parser",
