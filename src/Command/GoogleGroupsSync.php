@@ -13,6 +13,7 @@ use Google\Service\Directory;
 use Google\Service\Directory\Group;
 use Google\Service\Directory\Member;
 use Google\Service\Drive;
+use Google\Service\Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -58,7 +59,11 @@ class GoogleGroupsSync extends Command
         ;
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * @throws Exception
+     * @throws \Google\Exception
+     */
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
 
@@ -116,13 +121,16 @@ class GoogleGroupsSync extends Command
         return 0;
     }
 
-    private function addResponsablesCommissionGroup()
+    /**
+     * @throws Exception
+     */
+    private function addResponsablesCommissionGroup(): void
     {
         $groupKey = $this->upsertGoogleGroup(self::ALL_RESPONSABLES, 'Responsables de Commissions');
 
         try {
             $existingMembers = $this->getCommissionGoogleGroupMembers($groupKey);
-        } catch (\Google\Service\Exception $e) {
+        } catch (Exception $e) {
             if (!$this->dryRun) {
                 throw $e;
             }
@@ -160,7 +168,10 @@ class GoogleGroupsSync extends Command
         }
     }
 
-    private function processCommission(Commission $commission)
+    /**
+     * @throws Exception
+     */
+    private function processCommission(Commission $commission): void
     {
         if (\in_array($commission->getCode(), [
             'vie-du-club',
@@ -176,7 +187,7 @@ class GoogleGroupsSync extends Command
 
         try {
             $existingMembers = $this->getCommissionGoogleGroupMembers($groupKey);
-        } catch (\Google\Service\Exception $e) {
+        } catch (Exception $e) {
             if (!$this->dryRun) {
                 throw $e;
             }
@@ -222,7 +233,7 @@ class GoogleGroupsSync extends Command
 
         try {
             $existingCommissionsAll = $this->getCommissionGoogleGroupMembers(self::ALL_COMMISSIONS_ADRESSE);
-        } catch (\Google\Service\Exception $e) {
+        } catch (Exception $e) {
             if (!$this->dryRun) {
                 throw $e;
             }
@@ -233,7 +244,7 @@ class GoogleGroupsSync extends Command
         $this->upsertMemberToGoogleGroup($existingCommissionsAll, self::ALL_COMMISSIONS_ADRESSE, $groupKey);
     }
 
-    private function upsertMemberToGoogleGroup(array $existingMembers, string $groupKey, string $email, string $type = 'MEMBER')
+    private function upsertMemberToGoogleGroup(array $existingMembers, string $groupKey, string $email, string $type = 'MEMBER'): void
     {
         if (!isset($existingMembers[$email])) {
             $member = new Member();
@@ -249,7 +260,7 @@ class GoogleGroupsSync extends Command
         } else {
             try {
                 $member = $this->googleGroupsService->members->get($groupKey, $email);
-            } catch (\Google\Service\Exception $e) {
+            } catch (Exception $e) {
                 $this->output->writeln("\t🚨 No Google Account found for email <info>$email</info>, impossible de verifier le role ; utilisateur.ice avec acces OK, role a verifier");
 
                 return;
@@ -272,7 +283,7 @@ class GoogleGroupsSync extends Command
         }
     }
 
-    private function upsertDriveAndAccesses(Commission $commission)
+    private function upsertDriveAndAccesses(Commission $commission): void
     {
         $this->output->writeln('');
         $this->output->writeln("\tCheck du Google drive...");
@@ -311,7 +322,7 @@ class GoogleGroupsSync extends Command
                             ]),
                             ['supportsAllDrives' => true, 'sendNotificationEmail' => false]
                         );
-                    } catch (\Google\Service\Exception $e) {
+                    } catch (Exception $e) {
                         $this->output->writeln("\t🚨 Erreur en ajoutant l'acces");
                     }
                 } else {
@@ -337,7 +348,7 @@ class GoogleGroupsSync extends Command
                                 ]),
                                 ['supportsAllDrives' => true, 'sendNotificationEmail' => false]
                             );
-                        } catch (\Google\Service\Exception $e) {
+                        } catch (Exception $e) {
                             $this->output->writeln("\t🚨 Erreur en ajoutant l'acces à <info>" . $responsableEmail . "</info>. L'email n'est peut etre pas associee a un compte Google</info>");
                         }
                     } else {
@@ -372,7 +383,7 @@ class GoogleGroupsSync extends Command
                             ]),
                             ['supportsAllDrives' => true, 'sendNotificationEmail' => false]
                         );
-                    } catch (\Google\Service\Exception $e) {
+                    } catch (Exception $e) {
                         $this->output->writeln("\t🚨 Erreur en ajoutant l'acces");
                     }
                 } else {
@@ -433,7 +444,7 @@ class GoogleGroupsSync extends Command
         return false;
     }
 
-    private function getCommissionGoogleGroupMembers(string $groupEmail)
+    private function getCommissionGoogleGroupMembers(string $groupEmail): array
     {
         $members = array_map(static fn (Member $member) => mb_strtolower($member->getEmail() ?? ''), $this->googleGroupsService->members->listMembers($groupEmail)->getMembers());
 
