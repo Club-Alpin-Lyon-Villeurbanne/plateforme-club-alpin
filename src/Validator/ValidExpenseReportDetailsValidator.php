@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 class ValidExpenseReportDetailsValidator extends ConstraintValidator
 {
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof ValidExpenseReportDetails) {
             throw new UnexpectedTypeException($constraint, ValidExpenseReportDetails::class);
@@ -56,7 +56,7 @@ class ValidExpenseReportDetailsValidator extends ConstraintValidator
         }
     }
 
-    private function validateTransport(array $transport)
+    private function validateTransport(array $transport): void
     {
         $requiredFields = ['type', 'amount'];
         foreach ($requiredFields as $field) {
@@ -75,7 +75,7 @@ class ValidExpenseReportDetailsValidator extends ConstraintValidator
         }
     }
 
-    private function validateAccommodation(array $accommodation, int $index, array &$usedExpenseIds)
+    private function validateAccommodation(array $accommodation, int $index, array &$usedExpenseIds): void
     {
         $requiredFields = ['expenseId', 'price'];
         foreach ($requiredFields as $field) {
@@ -97,7 +97,7 @@ class ValidExpenseReportDetailsValidator extends ConstraintValidator
         }
     }
 
-    private function validateOtherExpense(array $expense, int $index, array &$usedExpenseIds)
+    private function validateOtherExpense(array $expense, int $index, array &$usedExpenseIds): void
     {
         $requiredFields = ['expenseId', 'description', 'amount'];
         foreach ($requiredFields as $field) {
