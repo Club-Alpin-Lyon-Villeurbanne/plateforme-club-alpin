@@ -27,7 +27,7 @@ abstract class WebTestCase extends BaseWebTestCase
         $this->client = static::createClient();
     }
 
-    protected function signup(?string $email = null)
+    protected function signup(?string $email = null): User
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
 
@@ -60,7 +60,7 @@ abstract class WebTestCase extends BaseWebTestCase
         return $user;
     }
 
-    protected function signin($username = 'test@clubalpinlyon.fr', $providerKey = 'main')
+    protected function signin($username = 'test@clubalpinlyon.fr', $providerKey = 'main'): User
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
 
@@ -93,7 +93,7 @@ abstract class WebTestCase extends BaseWebTestCase
         return $user;
     }
 
-    protected function signout($providerKey = 'main')
+    protected function signout($providerKey = 'main'): void
     {
         $session = $this->getSession();
         $session->remove('_security_' . $providerKey);
@@ -113,7 +113,7 @@ abstract class WebTestCase extends BaseWebTestCase
         return $commission;
     }
 
-    protected function addAttribute(User $user, string $attribute, ?string $param = null)
+    protected function addAttribute(User $user, string $attribute, ?string $param = null): void
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
         $userTypeRepo = $this->getContainer()->get(UsertypeRepository::class);
