@@ -10,6 +10,7 @@ use App\Repository\UserRepository;
 use App\Repository\UsertypeRepository;
 use App\UserRights;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseWebTestCase;
+use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -19,7 +20,7 @@ abstract class WebTestCase extends BaseWebTestCase
 {
     use SessionHelper;
 
-    protected $client;
+    protected ?AbstractBrowser $client;
 
     protected function setUp(): void
     {
