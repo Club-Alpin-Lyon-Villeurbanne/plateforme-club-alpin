@@ -248,7 +248,7 @@ INSERT INTO `caf_page` (`id_page`, `parent_page`, `admin_page`, `superadmin_page
 --
 
 INSERT INTO `caf_user` (`id_user`, `email_user`, `mdp_user`, `cafnum_user`, `cafnum_parent_user`, `firstname_user`, `lastname_user`, `nickname_user`, `created_user`, `birthday_user`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `civ_user`, `moreinfo_user`, `auth_contact_user`, `valid_user`, `cookietoken_user`, `manuel_user`, `nomade_user`, `nomade_parent_user`, `date_adhesion_user`, `doit_renouveler_user`, `alerte_renouveler_user`, `ts_insert_user`, `ts_update_user`) VALUES
-(1, 'test@clubalpinlyon.fr', '098f6bcd4621d373cade4e832627b4f6', '749999999999', '', 'ADMIN', 'SUPER', 'Admin', 1375216633, 270687600, '0950985475', '', '19 ALLEE DU LAC ST ANDRE', '73375', 'LE BOURGET DU LAC', '', 'M', '', 'users', 1, '8f7d807e1f53eff5f9efbe5cb81090fb', 0, 0, 0, 1379977200, 0, 0, 1372629601, 1395098083);
+(1, 'test@clubalpinlyon.fr', '098f6bcd4621d373cade4e832627b4f6', '749999999999', '', 'Admin', 'Super', 'Admin', 1375216633, 270687600, '0950985475', '', '19 ALLEE DU LAC ST ANDRE', '73375', 'LE BOURGET DU LAC', '', 'M', '', 'users', 1, '8f7d807e1f53eff5f9efbe5cb81090fb', 0, 0, 0, 1379977200, 0, 0, 1372629601, 1395098083);
 
 --
 -- Contenu de la table `caf_userright`
