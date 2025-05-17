@@ -21,6 +21,7 @@
         "google/apiclient": "^2.18",
         "imagine/imagine": "^1.2",
         "lexik/jwt-authentication-bundle": "^2",
+        "liip/imagine-bundle": "*",
         "nelmio/cors-bundle": "^2.4",
         "pentatrion/vite-bundle": "^7.0",
         "phpdocumentor/reflection-docblock": "^5.3",
@@ -60,7 +61,8 @@
         "symfony/yaml": "6.4.*",
         "twig/extra-bundle": "^3.3",
         "twig/string-extra": "^3.3",
-        "twig/twig": "^3.3"
+        "twig/twig": "^3.3",
+        "vich/uploader-bundle": "^2.6"
     },
     "require-dev": {
         "doctrine/data-fixtures": "^1.6",
