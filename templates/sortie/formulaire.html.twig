@@ -39,23 +39,10 @@
             {{ form_row(form.titre) }}<br />
             {{ form_row(form.massif) }}<br />
 
-            <div style="float:left; width:45%; padding:0 20px 5px 0;">
-                {{ form_row(form.rdv) }}
-                {{ form_row(form.lat) }}
-                {{ form_row(form.long) }}
-            </div>
-
-            <div style="float:left; width:45%; padding:0 20px 0 0;">
-                Précisez sur la carte :<br />
-                <input type="button" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le marqueur sur la carte" />
-                <div class="mini">
-                    Cliquez ci-dessus pour placer le marqueur sur la carte, puis déplacez ce dernier sur le <span style="text-decoration: underline;">lieu exact du RDV</span>. Vous pouvez zoomer / dézoomer.
-                </div>
-            </div>
-            <br style="clear:both" />
-
-            <div id="place_finder_error" class="erreur" style="display:none"></div>
-            <div id="map-creersortie"></div>
+            {{ form_row(form.rdv) }}<br />
+            {{ form_row(form.lat) }}
+            {{ form_row(form.long) }}
+            <div id="suggestions"></div>
             <br style="clear:both" />
 
             <div style="width:45%; padding-right:3%; float:left">
@@ -152,19 +139,14 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-          integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-          crossorigin="" />
+    {{ vite_entry_link_tags('autocomplete_address') }}
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     {{ vite_entry_script_tags('participants') }}
     {{ vite_entry_script_tags('commission_switch') }}
-    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
-            integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
-            crossorigin=""></script>
-    <script type="text/javascript" src="/js/map.js"></script>
+    {{ vite_entry_script_tags('autocomplete_address') }}
     <script language="javascript" type="text/javascript" src="/tools/tinymce/tiny_mce.js"></script>
     <script language="javascript" type="text/javascript" src="/js/jquery.webkitresize.min.js"></script>
     <script type="text/javascript">

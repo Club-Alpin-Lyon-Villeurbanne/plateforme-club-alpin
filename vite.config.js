@@ -26,6 +26,7 @@ export default defineConfig({
         tailwind: "./assets/tailwind.js",
         participants: './assets/participants.js',
         commission_switch: './assets/commission-switch.js',
+        autocomplete_address: './assets/autocomplete-address.js',
       },
     },
   },

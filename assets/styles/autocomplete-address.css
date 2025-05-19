@@ -1,0 +1,16 @@
+#suggestions {
+    display: none;
+    max-height: 150px;
+    overflow-y: auto;
+    background: white;
+    z-index: 1000;
+    border: 1px solid #ccc;
+    width: 96%;
+}
+#suggestions div {
+    padding: 8px;
+    cursor: pointer;
+}
+#suggestions div:hover {
+    background-color: #f0f0f0;
+}
