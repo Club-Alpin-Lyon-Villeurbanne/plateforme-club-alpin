@@ -15,7 +15,7 @@ $scriptsDir = __DIR__ . '/../scripts/';
 // _________________________________________________ FONCTIONS MAISON
 require __DIR__ . '/../app/fonctions.php';
 // _________________________________________________ VARIABLES "GLOBALES" DU SITE
-require __DIR__ . '/../config/params.php';
+require __DIR__ . '/../app/params.php';
 // _________________________________________________ FONCTIONS PARTAGEES
 require __DIR__ . '/../scripts/fonctions.php';
 // _________________________________________________ OPERATIONS ADMIN & CLIENT
