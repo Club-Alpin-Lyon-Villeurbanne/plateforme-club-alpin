@@ -94,7 +94,7 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         return '🟢';
     }
 
-    public function getTemoinPlacesSortieTitle(Evt $event)
+    public function getTemoinPlacesSortieTitle(Evt $event): string
     {
         if ($event->getCancelled()) {
             return 'Cette sortie est annulée';
