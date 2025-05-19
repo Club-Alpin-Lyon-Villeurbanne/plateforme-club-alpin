@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * Article.
@@ -10,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'caf_article')]
 #[ORM\Index(name: 'id_article', columns: ['id_article'])]
 #[ORM\Entity]
+#[Vich\Uploadable]
 class Article
 {
     /**
@@ -110,6 +112,10 @@ class Article
      */
     #[ORM\Column(name: 'nb_vues_article', type: 'integer', nullable: false, options: ['default' => 0])]
     private $nbVues = '0';
+
+    #[ORM\ManyToOne(targetEntity: MediaUpload::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?MediaUpload $mediaUpload = null;
 
     public function getId(): ?int
     {
@@ -292,6 +298,18 @@ class Article
     public function setNbVues(int $nbVues): self
     {
         $this->nbVues = $nbVues;
+
+        return $this;
+    }
+
+    public function getMediaUpload(): ?MediaUpload
+    {
+        return $this->mediaUpload;
+    }
+
+    public function setMediaUpload(?MediaUpload $mediaUpload): self
+    {
+        $this->mediaUpload = $mediaUpload;
 
         return $this;
     }

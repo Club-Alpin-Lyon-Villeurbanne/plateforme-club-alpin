@@ -131,7 +131,7 @@
 
         <div class="tw-flex tw-gap-4">
             {% if app.user and event.user.id == app.user.id and event.isFinished %}
-            <a href="/article-new.html?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
+            <a href="/article/new?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
                 <img src="/img/base/pencil_add.png" alt="" title="" style="" />
                 Compte rendu
             </a>

@@ -15,7 +15,7 @@
 {% set height = height|default('tw-h-32') %}
 {% set maxFileSize = maxFileSize|default(5) %}
 
-<div class="image-upload-component" data-upload-url="{{ uploadUrl }}" data-media-id-input="{{ mediaIdInputId }}" data-max-file-size="{{ maxFileSize }}" data-accept="{{ accept|default('image/*') }}">
+<div class="{{width}} {{height}} image-upload-component" data-upload-url="{{ uploadUrl }}" data-media-id-input="{{ mediaIdInputId }}" data-max-file-size="{{ maxFileSize }}" data-accept="{{ accept|default('image/*') }}">
     <input type="file" id="{{ id }}-file-input" accept="{{ accept }}" style="display: none;" />
     <div class="{{ width }} {{ height }} tw-rounded-md tw-overflow-hidden tw-border tw-border-gray-300 tw-border-dashed tw-relative">
         <div class="upload-preview tw-flex tw-items-center tw-justify-center tw-h-full tw-cursor-pointer group" onclick="document.getElementById('{{ id }}-file-input').click()">

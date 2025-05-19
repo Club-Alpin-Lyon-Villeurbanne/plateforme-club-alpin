@@ -2,15 +2,15 @@
 // affichage complete d'une sortie.
 // var necessaire : $article
 
+use App\Legacy\LegacyContainer;
+
 echo '<article id="fiche-article">';
 if (!$article) {
     echo '<p class="erreur">Erreur : article non trouvé ou non autorisé</p>';
 } else {
     // check image
-    if (is_file(__DIR__ . '/../../public/ftp/articles/' . (int) $article['id_article'] . '/wide-figure.jpg')) {
-        $img = '/ftp/articles/' . (int) $article['id_article'] . '/wide-figure.jpg';
-    } else {
-        $img = '/ftp/articles/0/wide-figure.jpg';
+    if ($article['media_upload_id']) {
+        $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'wide_thumbnail');
     } ?>
         <img src="<?php echo $img; ?>" alt="image article" title="<?php echo html_utf8($article['titre_article']); ?>" class="wide-figure" />
 	<div class="titleimage">
@@ -110,7 +110,7 @@ if (!$article) {
     // edition
     if (allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
         || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId()) {
-        echo '<a href="/article-edit/' . (int) $article['id_article'] . '.html" title="" class="nice2 orange">
+        echo '<a href="/article/' . (int) $article['id_article'] . '/edit" title="" class="nice2 orange">
 			<img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cet article
 		</a>';
     }
