@@ -62,7 +62,7 @@ Elles sont stockées dans le répertoire `clevercloud/crons`. Il faut se référ
 - Accès au site : `http://127.0.0.1:8000/`
 - Compte admin par défaut : `test@clubalpinlyon.fr` / `test`
 - PHPMyAdmin : `http://127.0.0.1:8080/`, accès : `root` / `test`
-- Mailcatcher : `http://127.0.0.1:8025/` (lancez cette commande pour "consommer" les mails : `docker compose exec cafsite bin/console messenger:consume mails --limit=50 --quiet --no-interaction`)
+- Mailcatcher : `http://127.0.0.1:8025/` ; lancer cette commande pour "consommer" les mails : `make consume-mails` (ou `docker compose exec cafsite bin/console messenger:consume mails --limit=50 --quiet --no-interaction`)
 
 ⚠️ L'upload d'images ne fonctionne pas dans un environnement dockerisé. 🚧
 
