@@ -137,6 +137,7 @@ class EventType extends AbstractType
                 'label' => 'Lieu de rendez-vous covoiturage',
                 'help' => 'Ville et adresse du lieu de RDV pour vous rendre à la sortie. Choisissez dans les suggestions ci-dessous',
                 'required' => true,
+                'autocomplete' => 'off',
                 'attr' => [
                     'placeholder' => 'ex : place Bellecour, les fontanettes',
                     'min_length' => 3,
