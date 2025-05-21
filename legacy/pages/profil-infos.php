@@ -220,18 +220,6 @@ if (user()) {
             */ ?>
 
             <hr style="margin: 20px 0" />
-
-            <h2 id="niveaux"><span class="bleucaf">&gt;</span>Infos sur mon niveau</h2>
-            <?php
-                $ecriture = get_niveaux($tmpUser['id_user'], true);
-    if ($ecriture) {
-        display_niveaux($ecriture, 'ecriture');
-    }
-    $lecture = get_niveaux($tmpUser['id_user'], false);
-    if ($lecture) {
-        display_niveaux($lecture, 'lecture', $ecriture);
-    } ?>
-            <hr />
             Qui peut vous contacter sur le site, via un formulaire de contact ? Votre adresse e-mail n'est jamais dévoilée, excepté aux responsables du club ou aux organisateurs des sorties auxquelles vous êtes inscrit.<br />
 
             <?php $whocan_selected = $tmpUser['auth_contact_user']; ?>

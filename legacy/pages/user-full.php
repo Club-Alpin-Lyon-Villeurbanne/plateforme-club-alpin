@@ -72,24 +72,6 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
 					<br />
 				</div>
-
-                <?php
-                    $ecriture = get_niveaux($id_user, true);
-                $lecture = get_niveaux($id_user, false);
-                if ($ecriture || $lecture) {
-                    echo '<br style="clear:both" /><hr /><h2>Son niveau</h2>';
-                }
-                if ($ecriture) {
-                    echo '<form method="post" action="' . $versCettePage . '" class="hover">';
-                    echo '<input type="hidden" name="operation" value="niveau_update" >';
-                    display_niveaux($ecriture, 'ecriture');
-                    echo '<div style="text-align:center"><a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents(\'form\').submit()"><span class="bleucaf">&gt;</span>ENREGISTRER LES NIVEAUX</a></div>';
-                    echo '</form>';
-                }
-                if ($lecture) {
-                    display_niveaux($lecture, 'lecture', $ecriture);
-                } ?>
-
 				<br style="clear:both" />
 				<hr  />
 
