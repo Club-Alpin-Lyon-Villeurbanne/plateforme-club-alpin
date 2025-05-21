@@ -229,14 +229,14 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'commission' => $commissionTitle,
                 'inscrits' => array_map(function ($cetinscrit) {
                     return [
-                        'firstname' => $cetinscrit['firstname_user'],
-                        'lastname' => $cetinscrit['lastname_user'],
+                        'firstname' => ucfirst($cetinscrit['firstname_user']),
+                        'lastname' => strtoupper($cetinscrit['lastname_user']),
                         'nickname' => $cetinscrit['nickname_user'],
                         'email' => $cetinscrit['email_user'],
                     ];
                 }, $inscrits),
-                'firstname' => getUser()->getFirstname(),
-                'lastname' => getUser()->getLastname(),
+                'firstname' => ucfirst(getUser()->getFirstname()),
+                'lastname' => strtoupper(getUser()->getLastname()),
                 'nickname' => getUser()->getNickname(),
                 'covoiturage' => $is_covoiturage,
                 'dest_role' => array_key_exists('role_evt_join', $destinataire) ? $destinataire['role_evt_join'] : 'l\'auteur',
@@ -247,7 +247,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // E-MAIL AU PRE-INSCRIT
     if (!isset($errTab) || 0 === count($errTab)) {
         $toMail = getUser()->getEmail();
-        $toName = getUser()->getFirstname();
+        $toName = ucfirst(getUser()->getFirstname());
 
         $ramassage = false;
 
@@ -261,8 +261,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'commission' => $commissionTitle,
                 'inscrits' => [
                     [
-                        'firstname' => getUser()->getFirstname(),
-                        'lastname' => getUser()->getLastname(),
+                        'firstname' => ucfirst(getUser()->getFirstname()),
+                        'lastname' => strtoupper(getUser()->getLastname()),
                         'nickname' => getUser()->getNickname(),
                         'email' => getUser()->getEmail(),
                     ],
@@ -278,8 +278,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'commission' => $commissionTitle,
                 'inscrits' => array_map(function ($cetinscrit) {
                     return [
-                        'firstname' => $cetinscrit['firstname_user'],
-                        'lastname' => $cetinscrit['lastname_user'],
+                        'firstname' => ucfirst($cetinscrit['firstname_user']),
+                        'lastname' => strtoupper($cetinscrit['lastname_user']),
                         'nickname' => $cetinscrit['nickname_user'],
                         'email' => $cetinscrit['email_user'],
                     ];

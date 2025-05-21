@@ -40,8 +40,8 @@ class FfcamFileParser
 
         $user = new User();
 
-        $firstname = $this->normalizeNames(trim($line[10]));
-        $lastname = $this->normalizeNames(trim($line[9]));
+        $firstname = ucfirst($this->normalizeNames(trim($line[10])));
+        $lastname = strtoupper($this->normalizeNames(trim($line[9])));
 
         $datePart = explode('-', $line[6]);
         $birthday = mktime(1, 0, 0, $datePart[1], $datePart[2], $datePart[0]);

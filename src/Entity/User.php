@@ -362,7 +362,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     public function getFirstname(): ?string
     {
-        return $this->firstname;
+        return ucfirst($this->firstname);
     }
 
     public function setFirstname(string $firstname): self
@@ -374,7 +374,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     public function getLastname(): ?string
     {
-        return $this->lastname;
+        return strtoupper($this->lastname);
     }
 
     public function setLastname(string $lastname): self
