@@ -137,27 +137,6 @@ else {
     ?>
 
 			<br style="clear:both" />
-
-            <?php $ecriture = get_niveaux($tmpUser['id_user'], true);
-    $lecture = get_niveaux($tmpUser['id_user'], false);
-    if ($lecture || $ecriture) {
-        ?>
-            <h2 id="niveaux"><span class="bleucaf">&gt;</span>Infos sur son niveau</h2>
-            <?php
-                if ($ecriture) {
-                    echo "<p class='mini'>Vous pouvez éditer certaines informations depuis le profil complet de cet adhérent.</p>";
-                }
-        if (is_array($ecriture) && is_array($lecture)) {
-            $lecture = array_merge($ecriture, $lecture);
-        }
-        if ($lecture) {
-            display_niveaux($lecture, 'lecture');
-        } ?>
-
-			<br style="clear:both" />
-            <?php
-    } ?>
-
 			<?php
             // REQUETES SQL POUR LES SORTIES :
             display_sorties($id_user, 3, 'Dernières sorties');
