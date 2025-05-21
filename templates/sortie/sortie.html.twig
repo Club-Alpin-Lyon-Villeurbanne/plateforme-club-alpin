@@ -30,6 +30,7 @@
 {% endmacro %}
 
 {% block body %}
+    {% import 'macros/cancel_block.html.twig' as block_macros %}
         <div id="fiche-sortie">
 
             {% set closeDiv = false %}
@@ -253,14 +254,7 @@
                             </form>
                         </div>
                         <br />
-                    <div class="info info-container" style="margin-right:2rem !important">
-                        <img src="/img/inscrit-check.png" alt="" title=""/>
-                        <div class="text-container">Vous êtes inscrit à cette sortie en tant que : {{ my_status.role }}.
-                            <div class="button-container">
-                                <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" />
-                            </div>
-                        </div>
-                    </div>
+                    {{ block_macros.display_confirmed_cancel_block(my_status.role) }}
                     {% endif %}
                 {% else %}
                     <p class="info" style="margin-right:2rem !important">
@@ -306,14 +300,7 @@
                             </form>
                         </div>
                         <br />
-                        <div class="info info-container" style="margin-right:2rem !important">
-                            <img src="/img/inscrit-check.png" alt="" title=""/>
-                            <div class="text-container">Vous êtes inscrit comme participant à cette sortie.
-                                <div class="button-container">
-                                    <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" />
-                                </div>
-                            </div>
-                        </div>
+                        {{ block_macros.display_confirmed_cancel_block('participant') }}
                     {% endif %}
                 {% else %}
                     <p class="info" style="margin-right:2rem !important">
