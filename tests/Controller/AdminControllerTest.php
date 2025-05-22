@@ -36,6 +36,6 @@ class AdminControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(302);
         $this->assertResponseRedirects('/');
 
-        $this->assertEquals($this->getSession()->get(SecurityConstants::SESSION_USER_ROLE_KEY), SecurityConstants::ROLE_ADMIN);
+        $this->assertEquals(SecurityConstants::ROLE_ADMIN, $this->getSession()->get(SecurityConstants::SESSION_USER_ROLE_KEY));
     }
 }

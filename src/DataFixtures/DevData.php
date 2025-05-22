@@ -10,6 +10,7 @@ use App\Utils\NicknameGenerator;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Nelmio\Alice\Loader\NativeLoader;
+use Nelmio\Alice\Throwable\LoadingThrowable;
 
 class DevData implements FixtureInterface
 {
@@ -20,7 +21,10 @@ class DevData implements FixtureInterface
         $this->commissionRepository = $commissionRepository;
     }
 
-    public function load(ObjectManager $manager)
+    /**
+     * @throws LoadingThrowable
+     */
+    public function load(ObjectManager $manager): void
     {
         $filesLoader = new NativeLoader();
 

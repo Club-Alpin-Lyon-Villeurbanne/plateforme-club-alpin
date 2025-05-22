@@ -4,7 +4,6 @@ namespace App\Serializer;
 
 use App\Entity\ExpenseAttachment;
 use App\Utils\FileUploader;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -13,14 +12,13 @@ class ExpenseAttachmentNormalizer implements NormalizerInterface
     private const ALREADY_CALLED = 'BOOK_ATTRIBUTE_NORMALIZER_ALREADY_CALLED';
 
     public function __construct(
-        private Security $security,
         private FileUploader $fileUploader,
         #[Autowire(service: 'serializer.normalizer.object')]
         private readonly NormalizerInterface $normalizer,
     ) {
     }
 
-    public function normalize($object, $format = null, array $context = [])
+    public function normalize($object, $format = null, array $context = []): float|array|\ArrayObject|bool|int|string|null
     {
         $context[self::ALREADY_CALLED] = true;
 
@@ -30,7 +28,7 @@ class ExpenseAttachmentNormalizer implements NormalizerInterface
         return $this->normalizer->normalize($object, $format, $context);
     }
 
-    public function supportsNormalization($data, $format = null, array $context = [])
+    public function supportsNormalization($data, $format = null, array $context = []): bool
     {
         if (isset($context[self::ALREADY_CALLED])) {
             return false;
