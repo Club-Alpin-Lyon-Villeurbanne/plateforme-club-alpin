@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 // message d'erreur
 if (isset($_POST['operation']) && isset($errTab) && count($errTab) > 0) {
     echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul>';
-    echo '<b>Attention :</b> Le marqueur rouge sur la carte a peut-être été déplacé !';
+    echo '<b>Attention :</b> Le marqueur bleu sur la carte a peut-être été déplacé !';
     echo '</div>';
 }
 // message d'info : si c'est une modification de sortie
