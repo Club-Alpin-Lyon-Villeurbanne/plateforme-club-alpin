@@ -597,14 +597,20 @@
 
                     <!-- stats affichées -->
                     <p>Stats :</p>
+                    {% set nbDemandesAcceptees = (event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) | length) + (event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_ABSENT')) | length) %}
                     <ul>
                         <li>
                             <b id="nDemandes">{{ event.participations(null, null) | length }}</b> demande(s), dont
-                            <b id="nAcceptees">{{ event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) | length }}</b> acceptée(s), et
-                            <b id="nRefusees">{{ event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_REFUSE')) | length }}</b> refusée(s).
+                            <b id="nAcceptees">{{ nbDemandesAcceptees }}</b> acceptée(s) et
+                            <b id="nRefusees">{{ event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_REFUSE')) | length }}</b> refusée(s)
                         </li>
+                        {% if (event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length > 0) %}
+                            <li>
+                                <b id="nAttente">{{ event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length }}</b> resté(s) en attente
+                            </li>
+                        {% endif %}
                         <li>
-                            <b id="nRefusees">{{ event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_ABSENT')) | length }}</b> absent(s).
+                            <b id="nAbsents">{{ event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_ABSENT')) | length }}</b> absent(s)
                         </li>
                     </ul>
 
