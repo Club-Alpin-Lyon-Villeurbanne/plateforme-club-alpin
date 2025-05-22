@@ -12,7 +12,8 @@ if (!$article) {
     } else {
         $img = '/ftp/articles/0/wide-figure.jpg';
     } ?>
-	<div class="titleimage" style="background-image:url(<?php echo $img; ?>)">
+        <img src="<?php echo $img; ?>" alt="image article" title="<?php echo html_utf8($article['titre_article']); ?>" class="wide-figure" />
+	<div class="titleimage">
 		<h1>
 			<?php
                 echo html_utf8($article['titre_article']);
