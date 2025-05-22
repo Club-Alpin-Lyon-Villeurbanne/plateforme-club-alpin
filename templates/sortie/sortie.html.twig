@@ -587,8 +587,7 @@
                                     </td>
                                     <td>
                                         <a href="mailto:{{ participation.user.email }}">{{ participation.user.email | u.truncate(15, '...') }}</a><br />
-                                        {{ participation.user.tel|split('', 2)|join(' ') }}<br />
-                                        {{ participation.user.tel2|split('', 2)|join(' ') }}
+                                        {{ participation.user.tel|split('', 2)|join(' ') }}
                                     </td>
                                 </tr>
                             {% endfor %}
