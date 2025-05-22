@@ -13,9 +13,9 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 class ValidExpenseReportValidator extends ConstraintValidator
 {
-    private $statusTransitionValidator;
-    private $detailsImmutabilityValidator;
-    private $detailsValidator;
+    private StatusTransitionValidator $statusTransitionValidator;
+    private DetailsImmutabilityValidator $detailsImmutabilityValidator;
+    private DetailsValidator $detailsValidator;
 
     public function __construct(
         StatusTransitionValidator $statusTransitionValidator,
@@ -27,7 +27,7 @@ class ValidExpenseReportValidator extends ConstraintValidator
         $this->detailsValidator = $detailsValidator;
     }
 
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof ValidExpenseReport) {
             throw new UnexpectedTypeException($constraint, ValidExpenseReport::class);

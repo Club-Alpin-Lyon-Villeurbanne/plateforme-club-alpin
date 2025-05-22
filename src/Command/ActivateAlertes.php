@@ -21,7 +21,7 @@ class ActivateAlertes extends Command
         parent::__construct($name);
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->em->getConnection()->executeQuery('UPDATE caf_user SET alerts = :alerts WHERE alerts IS NULL OR JSON_TYPE(alerts) = \'ARRAY\'', [
             'alerts' => EmailAlerts::DEFAULT_ALERTS_JSON,

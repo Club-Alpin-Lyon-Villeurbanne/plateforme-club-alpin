@@ -2,12 +2,12 @@
 
 namespace App\Dto;
 
-use ApiPlatform\Api\FilterInterface;
+use ApiPlatform\Metadata\FilterInterface;
 
 final class ExpenseReportStatusDto implements FilterInterface
 {
-    public $status;
-    public $statusComment;
+    public string $status;
+    public string $statusComment;
 
     public function getDescription(string $resourceClass): array
     {

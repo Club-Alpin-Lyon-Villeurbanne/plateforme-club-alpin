@@ -2,11 +2,12 @@
 
 namespace App\Tests;
 
+use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 
 trait VarDumperTestTrait
 {
-    protected $client;
+    protected ?AbstractBrowser $client;
 
     public function assertDumpEquals($dump, $data, $message = '')
     {

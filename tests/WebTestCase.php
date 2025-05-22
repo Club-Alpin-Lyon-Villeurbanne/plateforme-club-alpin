@@ -10,6 +10,7 @@ use App\Repository\UserRepository;
 use App\Repository\UsertypeRepository;
 use App\UserRights;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseWebTestCase;
+use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -19,7 +20,7 @@ abstract class WebTestCase extends BaseWebTestCase
 {
     use SessionHelper;
 
-    protected $client;
+    protected ?AbstractBrowser $client;
 
     protected function setUp(): void
     {
@@ -27,7 +28,7 @@ abstract class WebTestCase extends BaseWebTestCase
         $this->client = static::createClient();
     }
 
-    protected function signup(?string $email = null)
+    protected function signup(?string $email = null): User
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
 
@@ -60,7 +61,7 @@ abstract class WebTestCase extends BaseWebTestCase
         return $user;
     }
 
-    protected function signin($username = 'test@clubalpinlyon.fr', $providerKey = 'main')
+    protected function signin($username = 'test@clubalpinlyon.fr', $providerKey = 'main'): User
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
 
@@ -93,7 +94,7 @@ abstract class WebTestCase extends BaseWebTestCase
         return $user;
     }
 
-    protected function signout($providerKey = 'main')
+    protected function signout($providerKey = 'main'): void
     {
         $session = $this->getSession();
         $session->remove('_security_' . $providerKey);
@@ -113,7 +114,7 @@ abstract class WebTestCase extends BaseWebTestCase
         return $commission;
     }
 
-    protected function addAttribute(User $user, string $attribute, ?string $param = null)
+    protected function addAttribute(User $user, string $attribute, ?string $param = null): void
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
         $userTypeRepo = $this->getContainer()->get(UsertypeRepository::class);
