@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Dto\ExpenseReportCreateDto;
 use App\Repository\ExpenseReportRepository;
+use App\State\ExpenseReportCloneProcessor;
 use App\State\ExpenseReportCreateProcessor;
 use App\State\ExpenseReportProvider;
 use App\Utils\Enums\ExpenseReportStatusEnum;
@@ -33,6 +34,12 @@ use Symfony\Component\Validator\Constraints as Assert;
             input: ExpenseReportCreateDto::class,
             processor: ExpenseReportCreateProcessor::class,
             security: "is_granted('ROLE_USER')",
+        ),
+        new Post(
+            uriTemplate: '/expense-reports/{id}/clone',
+            processor: ExpenseReportCloneProcessor::class,
+            security: "is_granted('ROLE_USER')",
+            name: 'clone',
         ),
         new GetCollection(
             uriTemplate: '/expense-reports',
