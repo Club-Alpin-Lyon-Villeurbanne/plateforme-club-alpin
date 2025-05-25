@@ -12,7 +12,7 @@ elseif ($article['evt']['code_commission'] ?? null) {
 // disabling links :
 if (1 != $article['status_article']) {
     if (!allowed('article_edit', 'commission:' . $article['commission_article'])) {
-        $url = "javascript:$.fancybox('<p class=\'info\'>Désolé, vous ne pouvez pas ouvrir cette page <br />car cet article n\'est pas publié sur le site.</p>')";
+        $url = "javascript:showModal('<p class=\'info\'>Désolé, vous ne pouvez pas ouvrir cette page <br />car cet article n\'est pas publié sur le site.</p>')";
     }
 }
 

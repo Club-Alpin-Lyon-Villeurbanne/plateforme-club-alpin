@@ -47,7 +47,7 @@ if (!$id_comment) {
             echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
         } ?>
 			<br />
-			<input type="button" class="nice2" value="Annuler" onclick="top.$.fancybox.close()" />
+			<input type="button" class="nice2" value="Annuler" onclick="closeModal()" />
 			<input type="submit" class="nice2 red" value="Supprimer le commentaire ci-dessous" />
 			<br />
 			<hr />

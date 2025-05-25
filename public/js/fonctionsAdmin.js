@@ -62,8 +62,8 @@ function lp_alert(msg){
 	$(shadow).fadeIn();
 	$(promptbox).fadeIn();
 	*/
-	msg=$('<div><div style="width:400px">'+msg+'<br style="clear:both"><a class="bigButton" title="" href="javascript:void(0)" style="width:95%" onclick="$.fancybox.close()">OK</a></div><div>');
-	$.fancybox([msg.html()]);
+	var msg = $('<div class="info" style="text-align:left; max-width:600px; line-height:17px;"><div>'+msg+'</div><div style="text-align:center; margin-top:10px;"><a href="javascript:void(0)" style="width:95%" onclick="closeModal()">OK</a></div><div>');
+	showModal(msg.html());
 	// , {afterShow:function(val){ console.log(val); }}
 	
 }

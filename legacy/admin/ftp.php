@@ -42,15 +42,11 @@ if (!isset($_GET['dossier'])) {
 
 		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/admin.css">
 		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
-		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
 
 		<!-- jquery -->
 		<script type="text/javascript" src="/js/jquery-1.5.2.min.js"></script>
 		<script type="text/javascript" src="/js/fonctionsAdmin.js"></script>
 		<script type="text/javascript" src="/admin/ftp.js"></script>
-		<!-- fancybox -->
-		<script type="text/javascript" src="/tools/fancybox/jquery.fancybox.pack.js" charset="utf-8"></script>
-		<!-- <script type="text/javascript" src="/tools/fancybox/jquery.mousewheel-3.0.4.pack.js" charset="utf-8"></script> -->
 		<!-- datatables -->
 		<script type="text/javascript" src="/tools/datatables/media/js/jquery.dataTables.min.js" charset="utf-8"></script>
 		<link href="/css/datatables-ftp.css" rel="stylesheet" type="text/css">
@@ -95,10 +91,10 @@ if (!isset($_GET['dossier'])) {
 					                            // c'est un dossier, non masqué
 					                            if (is_dir($ftpPath . $dir . $file) && !FtpFile::shouldHide($file)) {
 					                                $one = true;
-					                                echo '<div class="level level' . $level . '">'
+					                                echo '<div class="level' . $level . '">'
 					                                    . '<a class="dirtrigger" href="' . $file . '/" title=""></a>'
 					                                    . '<a class="dirlink ' . ($dossier == $dir . $file . '/' ? 'selected' : '') . '" href="' . $dir . $file . '/" title="">' . $file . '</a>';
-					                                // if(!arbo_read($dir.$file.'/', $level+1)) echo '<div class="level level'.($level+1).'">-</div>';
+					                                // if(!arbo_read($dir.$file.'/', $level+1)) echo '<div class="level'.($level+1).'">-</div>';
 					                                if (!arbo_read($ftpPath, $dir . $file . '/', $level + 1)) {
 					                                    echo '<span class="removetrigger"></span>';
 					                                }

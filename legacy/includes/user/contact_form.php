@@ -40,7 +40,7 @@ if (user()) {
             <textarea name="message" class="type1" style="width:<?php echo $contact_form_width; ?>; height:150px"><?php echo !empty($_POST['message']) ? html_utf8(stripslashes($_POST['message'])) : ''; ?></textarea>
 
             <br /><br />
-            <input type="submit" class="nice" value="&gt; Envoyer mon message" onclick="$.fancybox.close()" />
+            <input type="submit" class="nice" value="&gt; Envoyer mon message" onclick="closeModal();" />
 
         <?php
     } ?>

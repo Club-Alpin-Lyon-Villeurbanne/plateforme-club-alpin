@@ -45,7 +45,8 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 		<link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" />
 		<link rel="stylesheet" href="/css/base.css" type="text/css"  />
 		<link rel="stylesheet" href="/css/common.css" type="text/css"  />
-		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" />
+		<!-- <link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" /> -->
+		<link rel="stylesheet" href="/css/micromodal.css" type="text/css" />
 		<!-- css PRINTS -->
 		<link rel="stylesheet" href="/css/print.css" type="text/css"  media="print" />
 	<?php
@@ -61,14 +62,7 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 	<script type="text/javascript" src="/js/jquery.easing.1.3.js"></script>
 	<script type="text/javascript" src="/js/jquery.pngFix.pack.js"></script>
 	<script type="text/javascript" src="/js/jquery.color.js"></script>
-	<!-- au besoin
-	<script type="text/javascript" src="/js/jquery.animate-shadow-min.js"></script>
-	<script type="text/javascript" src="/js/jquery-1.5.2.min.js"></script>
-	<script type="text/javascript" src="/js/jquery.backgroundPosition.js"></script>
-	-->
-	<!-- fancybox -->
-    <script type="text/javascript" src="/tools/fancybox/jquery.fancybox.pack.js"></script>
-	<!-- <script type="text/javascript" src="/tools/fancybox/jquery.mousewheel-3.0.4.pack.js"></script> -->
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 	<!-- script persos -->
     <script src="/js/fonctions.js" type="text/javascript"></script>
@@ -83,9 +77,11 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) { ?>
 		<script src="/js/fonctionsAdmin.js" type="text/javascript"></script>
 	<?php } ?>
 
-    <script src="/js/onready.js" type="text/javascript"></script>
     <script src="/js/onready-site.js" type="text/javascript"></script>
+    <script src="/js/legacy-modal.js" type="text/javascript"></script>
 
+    <!-- Nouveau code pour les modales -->
+    <script type="module" src="/build/assets/onready-mkgPOeFz.js"></script>
 
 	<!-- OPENGRAPHS -->
 	<meta property="og:title" content="<?php echo html_utf8($meta_title); ?>" />

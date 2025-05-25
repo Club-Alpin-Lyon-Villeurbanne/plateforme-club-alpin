@@ -17,7 +17,7 @@ if (user()) {
                 Voulez-vous vraiment supprimer cette photo de profil ?<br />
                 <br />
                 <input type="submit" class="nice red" value="Confirmer">
-                <input type="button" class="nice" value="Annuler" onclick="$.fancybox.close()">
+                <input type="button" class="nice" value="Annuler" onclick="closeModal()">
             </form>
         </div>
         <hr />
@@ -244,7 +244,7 @@ if (user()) {
 
             // action au clic sur le bouton
             $('#edit_profil_image .delete').bind('click', function(){
-                $.fancybox($('#confirm-delete').html());
+                showModal($('#confirm-delete').html());
                 return false;
             });
 

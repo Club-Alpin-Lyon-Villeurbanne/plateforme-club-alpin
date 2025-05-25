@@ -16,48 +16,8 @@ if (!$article) {
 	<div class="titleimage">
 		<h1>
 			<?php
-                echo html_utf8($article['titre_article']);
-    if (allowed('article_validate_all')) {
-        /*
-        echo "\n";
-        echo '<script >
-            function do_une_article ( status_une ) {
-
-                $.ajax({
-                    type: "POST",
-                    dataType : "json",
-                    url: "/?ajx=operations",
-                    data: { operation: "active_une_article", id_article: "'.$article['id_article'].'", new_status: status_une },
-                    success: function(jsonMsg){
-                        if(jsonMsg.success){
-                            $.fancybox(\'<p class="info">\'+jsonMsg.successmsg+\'</p>\');
-                            if (status_une == 1) {
-                                $.(une_article_img).src=\'/img/star.png\';
-                            } else {
-                                $.(une_article_img).src=\'/img/star_off.png\';
-                            }
-                        }
-                        else{
-                            $.fancybox(\'<p class="erreur">Erreur : <br />\'+(jsonMsg.error).join(\',<br />\')+\'</p>\');
-                        }
-                    }
-                });
-            };
-
-            </script>';
-
-        if ($article['une_article']) {
-            echo '&nbsp;&nbsp;&nbsp;<a id="une_article_off" href="javascript:do_une_article(\'0\');"><img id="une_article_img" src="/img/star.png" title="Supprimer de la une" width="16" height="16"></a>';
-        } else {
-            echo '&nbsp;&nbsp;&nbsp;<a id="une_article_off" href="javascript:do_une_article(\'1\');"><img id="une_article_img" src="/img/star_off.png" title="Ajouter à la une" width="16" height="16"></a>';
-        }
-            */
-    } ?>
+                echo html_utf8($article['titre_article']); ?>
 		</h1>
-		<p class="date">
-			<?php
-    ?>
-		</p>
 		<p class="auteur">
 			<?php
 
@@ -108,7 +68,7 @@ if (!$article) {
 				<input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
 			</form>
 
-			<input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
+			<input type="button" value="Refuser" class="nice2 red" onclick="showModal($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
 			<div style="display:none" id="refuser-' . (int) $article['id_article'] . '">
 				<form action="' . $versCettePage . '" method="post" class="loading">
 					<input type="hidden" name="operation" value="article_validate" />
@@ -118,7 +78,7 @@ if (!$article) {
 					<p>Laissez un message à l\'auteur pour lui expliquer la raison du refus :</p>
 					<input type="text" name="msg" class="type1" placeholder="ex : Décocher &laquo;A la Une&raquo;" />
 					<input type="submit" value="Refuser la publication" class="nice2 red" />
-					<input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
+					<input type="button" value="Annuler" class="nice2" onclick="closeModal()" />
 				</form>
 			</div><br />';
         }
@@ -137,7 +97,7 @@ if (!$article) {
 
     if ('1' != $article['status_article'] && (allowed('article_delete_notmine') || allowed('article_delete', 'commission:' . $article['commission_article']))) {
         // Suppression
-        echo '<a href="javascript:$.fancybox($(\'#supprimer-form-' . $article['id_article'] . '\').html());" title="" class="nice2 red">
+        echo '<a href="javascript:showModal($(\'#supprimer-form-' . $article['id_article'] . '\').html());" title="" class="nice2 red">
 				<img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cet article
 			</a>';
         echo '<div id="supprimer-form-' . (int) $article['id_article'] . '" style="display:none">
@@ -145,14 +105,14 @@ if (!$article) {
 					<input type="hidden" name="operation" value="article_del" />
 					<input type="hidden" name="id_article" value="' . $article['id_article'] . '" />
 					<p>Voulez-vous vraiment supprimer définitivement cet article ? <br />Cette action est irréversible.</p>
-					<input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
+					<input type="button" class="nice2" value="Annuler" onclick="closeModal();" />
 					<input type="submit" class="nice2 red" value="Supprimer cet article" />
 				</form>
 			</div>';
     } elseif (allowed('article_validate_all') || allowed('article_edit', 'commission:' . $article['commission_article'])) {
         // article publié, on peut le depublier
 
-        echo '<a href="javascript:$.fancybox($(\'#depublier-form-' . $article['id_article'] . '\').html());" title="" class="nice2 red" id="button-depublier">
+        echo '<a href="javascript:showModal($(\'#depublier-form-' . $article['id_article'] . '\').html());" title="" class="nice2 red" id="button-depublier">
 				<img src="/img/base/pencil_delete.png" alt="" title="" style="" />&nbsp;&nbsp;Dépublier
 			</a>
 			<div id="depublier-form-' . $article['id_article'] . '" style="display:none">
@@ -162,7 +122,7 @@ if (!$article) {
 					<p>Voulez-vous vraiment retirer cet article du site ? Il repassera en "Brouillon" et vous devrez à nouveau
 					le faire publier par un responsable si vous désirez le publier à nouveau.</p>
 
-					<input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
+					<input type="button" class="nice2" value="Annuler" onclick="closeModal();" />
 					<input type="submit" class="nice2 orange" value="Dépublier mon article" />
 				</form>
 			</div>';
@@ -185,10 +145,10 @@ if (!$article) {
 						data: { operation: "renew_date_article", id_article: "' . $article['id_article'] . '" },
 						success: function(jsonMsg){
 							if(jsonMsg.success){
-								$.fancybox(\'<p class="info">\'+jsonMsg.successmsg+\'</p>\');
+								showModal(\'<div class="info" style="text-align:left; max-width:600px; line-height:17px;">\'+jsonMsg.successmsg+\'</div>\');
 							}
 							else{
-								$.fancybox(\'<p class="erreur">Erreur : <br />\'+(jsonMsg.error).join(\',<br />\')+\'</p>\');
+								showModal(\'<div class="erreur">Erreur : <br />\'+(jsonMsg.error).join(\',<br />\')+\'</div>\');
 							}
 						}
 					});

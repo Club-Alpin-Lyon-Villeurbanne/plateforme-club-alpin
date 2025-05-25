@@ -92,7 +92,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 							content_css : "css/base.css,css/style1.css,fonts/stylesheet.css",
 							body_id : "bodytinymce",
 							body_class : "<?php echo $_GET['class']; ?>",
-							theme_advanced_styles : "Entete Article=ArticleEntete;Titre de menu=menutitle;Bleu clair du CAF=bleucaf;Image flottante gauche=imgFloatLeft;Image flottante droite=imgFloatRight;Lien fancybox=fancybox;Mini=mini;Bloc alerte=erreur;Bloc info=info",
+							theme_advanced_styles : "Entete Article=ArticleEntete;Titre de menu=menutitle;Bleu clair du CAF=bleucaf;Image flottante gauche=imgFloatLeft;Image flottante droite=imgFloatRight;Mini=mini;Bloc alerte=erreur;Bloc info=info",
 
 							relative_urls : true,
 							convert_urls : false,
@@ -193,7 +193,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 									<a href="javascript:void(0)" onclick="$(this).parents('form').submit();" class="boutonfancy">
 										<img src="/img/base/save.png" alt="" title="" style="height:15px; vertical-align:bottom;" /> ENREGISTRER</a>
 
-									<a href="javascript:void(0)" onclick="parent.$.fancybox.close();" class="boutonfancy annuler">
+									<a href="javascript:void(0)" onclick="closeModal();" class="boutonfancy annuler">
 										<img src="/img/base/x.png" alt="" title="" style="vertical-align:top; padding-top:2px;" /> ANNULER</a>
 
 									<br /><br />
@@ -283,7 +283,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
         // log
         mylog('edit-html', 'Modif élément : <i>' . $code_content_html . '</i>', false); ?>
 		<script>
-			parent.$.fancybox.close();
+			parent.closeModal();
 			parent.window.document.contUpdate('<?php echo $code_content_html; ?>');
 		</script>
 		<?php

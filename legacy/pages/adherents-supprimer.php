@@ -28,11 +28,11 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
                 echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
             }
     if (isset($_POST['operation']) && 'user_delete' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-        echo '<p class="info">Utilisateur supprimé ! (Vous devrez <a href="javascript:top.$.fancybox.close();top.frames.location.reload(false);">Recharger la page</a> pour voir le changement)</p>';
+        echo '<p class="info">Utilisateur supprimé ! (Vous devrez <a href="javascript:closeModal();top.frames.location.reload(false);">Recharger la page</a> pour voir le changement)</p>';
     } else {
         ?>
 				<input type="submit" class="nice2 orange" value="Supprimer" />
-				<a href="javascript:top.$.fancybox.close();" title="" class="nice2">Annuler</a>
+				<a href="javascript:closeModal();" title="" class="nice2">Annuler</a>
 				<?php
     } ?>
 		</form>

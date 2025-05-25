@@ -1,0 +1,89 @@
+{# templates/test/micromodal.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Test Micromodal{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ vite_entry_link_tags('micromodal') }}
+{% endblock %}
+
+{% block body %}
+    <div style="padding: 50px;">
+        <h1>Test Micromodal</h1>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button id="test-modal-btn" class="btn btn-primary">
+                🧪 Test Modal Simple
+            </button>
+            
+            <button id="test-modal-frame-btn" class="btn btn-primary">
+                🖼️ Test Modal Frame
+            </button>
+            
+            <button id="test-modal-confirm-btn" class="btn btn-primary">
+                ✅ Test Modal Confirmation
+            </button>
+        </div>
+        
+        <p style="margin-top: 20px;">
+            <strong>Instructions :</strong><br>
+            1. Cliquer sur un des boutons pour tester différents types de modals<br>
+            2. Modal doit s'ouvrir avec le contenu approprié<br>
+            3. Fermer avec × ou clic sur overlay<br>
+            4. Vérifier console pour messages
+        </p>
+    </div>
+
+    {# Include template modal #}
+    {% include 'components/micromodal.html.twig' %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Test Modal Simple
+            document.getElementById('test-modal-btn').addEventListener('click', function() {
+                modal.show(`
+                    <p>✅ Modal Simple fonctionne correctement !</p>
+                    <p>Cette modal remplacera Fancybox.</p>
+                    <ul>
+                        <li>✅ S'ouvre</li>
+                        <li>✅ Se ferme avec ×</li>
+                        <li>✅ Se ferme avec overlay</li>
+                        <li>✅ CSS appliqué</li>
+                    </ul>
+                `, '🎉 Test Modal Simple');
+            });
+
+            // Test Modal Frame
+            document.getElementById('test-modal-frame-btn').addEventListener('click', function() {
+                modal.showFrame(
+                    'https://example.com',
+                    '🖼️ Test Modal Frame',
+                    800,
+                    '600px'
+                );
+            });
+
+            // Test Modal Confirmation
+            document.getElementById('test-modal-confirm-btn').addEventListener('click', function() {
+                modal.confirm(
+                    'Êtes-vous sûr de vouloir effectuer cette action ?',
+                    function() {
+                        console.log('✅ Action confirmée');
+                        alert('Action confirmée !');
+                    },
+                    function() {
+                        console.log('❌ Action annulée');
+                        alert('Action annulée !');
+                    },
+                    '⚠️ Confirmation'
+                );
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ vite_entry_script_tags('micromodal') }}
+{% endblock %}
