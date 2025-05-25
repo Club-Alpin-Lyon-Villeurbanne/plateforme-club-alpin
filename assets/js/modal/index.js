@@ -1,6 +1,5 @@
 import '../../css/micromodal.css';
 import MicroModal from 'micromodal';
-import { showModal, showModalFrame, showConfirmation, closeModal, initFancyboxReplacements } from '../modal-helpers';
 
 class Modal {
     constructor() {
@@ -134,7 +133,7 @@ class Modal {
                 const title = this.getAttribute('title') || '';
                 const content = this.getAttribute('href');
                 console.log('Opening modal with content:', content, 'and title:', title);
-                modal.show(content, title);
+                this.show(content, title);
             });
         });
         
@@ -146,7 +145,7 @@ class Modal {
                 const url = this.getAttribute('href');
                 const title = this.getAttribute('title') || '';
                 console.log('Opening modal with URL:', url, 'and title:', title);
-                modal.showFrame(url, title, 950, '80%');
+                this.showFrame(url, title, 950, '80%');
             });
         });
         
@@ -159,7 +158,7 @@ class Modal {
                 const title = this.getAttribute('title') || 'Administration';
                 
                 // Version admin = pas de fermeture sur overlay
-                modal.showFrame(url, title, 950, '98%');
+                this.showFrame(url, title, 950, '98%');
                 
                 // Désactiver fermeture overlay pour admin
                 const overlay = document.querySelector('.modal__overlay');

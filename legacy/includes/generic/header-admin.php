@@ -24,5 +24,3 @@
 		<!-- script admin -->
 		<script src="/js/fonctionsAdmin.js" type="text/javascript"></script>
 	<?php } ?>
-	<!-- on ready -->
-    <script src="/js/onready.js" type="text/javascript"></script>
