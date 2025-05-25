@@ -128,7 +128,7 @@ use App\Legacy\LegacyContainer;
 					success: function(jsonMsg){
 						if(jsonMsg.success){
 							// var htmlMsg = $('<span/>').html(jsonMsg.successmsg).text();
-							// $.fancybox('<div class="info" style="text-align:left; max-width:600px; line-height:17px;">'+htmlMsg+'</div>');
+							// showModal('<div class="info" style="text-align:left; max-width:600px; line-height:17px;">'+htmlMsg+'</div>');
 						}
 						else{
 							// interprétation du html pour chaque erreur
@@ -140,7 +140,7 @@ use App\Legacy\LegacyContainer;
 							if(form.find('.erreur').length)
 								form.find('.erreur').html(jsonMsg.error.join(',<br />')).fadeIn();
 							else
-								$.fancybox('<div class="erreur" style="text-align:left; max-width:600px; line-height:17px;">'+jsonMsg.error.join(',<br />')+'</div>');
+								showModal('<div class="erreur" style="text-align:left; max-width:600px; line-height:17px;">'+jsonMsg.error.join(',<br />')+'</div>');
 						}
 					}
 				});

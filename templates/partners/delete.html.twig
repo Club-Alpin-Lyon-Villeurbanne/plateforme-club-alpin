@@ -39,8 +39,8 @@
             }
 
             function closeFancybox() {
-                if (window.parent && window.parent.$.fancybox) {
-                    window.parent.$.fancybox.close();
+                if (window.parent && window.parent.closeModal) {
+                    window.parent.closeModal();
                 }
             }
         });

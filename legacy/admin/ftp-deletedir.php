@@ -115,7 +115,7 @@ if (count($errTab) > 0) {
                     <input type="hidden" name="lock" value="locked" />
                     <br />
                     <input type="submit" class="nice red" value="Supprimer ce dossier et les éléments contenus" onclick="$(this).siblings('input[name=lock]').val('unlocked')" />
-                    <input type="button" class="nice orange" value="Annuler" onclick="parent.$.fancybox.close()" />
+                    <input type="button" class="nice orange" value="Annuler" onclick="parent.showModal('<?php echo html_utf8(implode('</li><li>', $errTab)); ?>')" />
                 </form>
             </body>
         </html>

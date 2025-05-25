@@ -56,7 +56,7 @@ if (count($errTab) > 0) {
         if (0 === count($errTab)) {
             ?>
             <script type="text/javascript">
-                // parent.$('#ftp-2-arbo a.selected').click(); parent.$.fancybox.close();
+                // parent.$('#ftp-2-arbo a.selected').click(); closeModal();
                 parent.document.location.href='ftp.php?dossier='+parent.currentDir;
             </script>
             <?php
@@ -103,7 +103,7 @@ if (count($errTab) > 0) {
                     <br />
                     <br />
                     <input type="submit" class="nice green" value="Ajouter !" onclick="$(this).siblings('input[name=lock]').val('unlocked')" />
-                    <input type="button" class="nice orange" value="Annuler" onclick="parent.$.fancybox.close()" />
+                    <input type="button" class="nice orange" value="Annuler" onclick="closeModal()" />
                 </form>
             </body>
         </html>
