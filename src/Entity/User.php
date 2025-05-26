@@ -236,6 +236,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         }
     }
 
+    public function __toString()
+    {
+        return $this->getFullName();
+    }
+
     public function jsonSerialize(): mixed
     {
         return [
@@ -265,6 +270,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
             'tsInsert' => $this->getTsInsert(),
             'tsUpdate' => $this->getTsUpdate(),
         ];
+    }
+
+    public function getFullName(): string
+    {
+        return $this->getFirstname() . ' ' . $this->getLastname();
     }
 
     /** @return UserAttr[] */
