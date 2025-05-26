@@ -94,7 +94,7 @@
             {% endif %}
 
                 {% if is_granted('SORTIE_UPDATE', event) %}
-                    <a href="/creer-une-sortie/{{ event.commission.code }}/update-{{ event.id }}.html" title="Vous êtes l'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
+                    <a href="/modifier-une-sortie/{{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
                         <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie
                     </a>
                 {% endif %}

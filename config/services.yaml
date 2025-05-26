@@ -236,3 +236,7 @@ services:
   App\Service\MaterielEmailService:
     arguments:
       $materielPlatformUrl: '%materiel_platform_url%'
+
+  App\Form\EventType:
+    arguments:
+      $club: '%env(CAF_ID)%'

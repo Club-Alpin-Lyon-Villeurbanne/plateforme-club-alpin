@@ -22,6 +22,7 @@ init: ## Init the project
 
 	$(MAKE) docker-start profile=$(profile)
 	$(MAKE) composer-install
+	$(MAKE) assets-install
 	$(MAKE) npm-install
 	$(MAKE) npm-build
 	@$(call GREEN,"Le site du Club est lancé : http://127.0.0.1:8000/ 🚀")
@@ -186,3 +187,7 @@ help: ## List of commands
 consume-mails: ## consume mails
 	$(SYMFONY_CONSOLE) messenger:consume mails --limit=50 --quiet --no-interaction
 .PHONY: consume-mails
+
+assets-install: ## assets install
+	$(SYMFONY_CONSOLE) assets:install
+.PHONY: assets-install
