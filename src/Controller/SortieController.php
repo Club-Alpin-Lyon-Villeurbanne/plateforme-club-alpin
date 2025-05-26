@@ -83,8 +83,11 @@ class SortieController extends AbstractController
 
             /** @var Evt $event */
             $event = $form->getData();
+            $eventData = $data['event'] ?? null;
             $formData = $data['form'] ?? null;
-            $formData = null === $formData && $data['event'] ? $data['event'] : null;
+            if (null === $formData && null !== $eventData) {
+                $formData = $eventData;
+            }
 
             if (!$isUpdate) {
                 $event->setCode(substr($slugger->slug($event->getTitre(), '-'), 0, 30));
@@ -129,7 +132,7 @@ class SortieController extends AbstractController
             $entityManager->persist($event);
             $entityManager->flush();
 
-            return $this->redirect('/profil/sorties/self?lbxMsg=evt_create_success');
+            return $this->redirect('/profil/sorties/self');
         }
 
         return [
