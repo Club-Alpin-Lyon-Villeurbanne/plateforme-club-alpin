@@ -101,6 +101,16 @@ class EvtRepository extends ServiceEntityRepository
         return $this->getPaginatedResults($qb, $first, $perPage);
     }
 
+    /** @return Evt[] */
+    public function getUserCreatedEvents(User $user, int $first, int $perPage): array
+    {
+        $qb = $this->getEventsCreatedByUserDql($user)
+            ->orderBy('e.tsp', 'desc')
+        ;
+
+        return $this->getPaginatedResults($qb, $first, $perPage);
+    }
+
     public function getUserEventsCount(User $user): int
     {
         return $this
@@ -181,6 +191,29 @@ class EvtRepository extends ServiceEntityRepository
             ->leftJoin('e.participations', 'p')
             ->where('p.user = :user')
             ->setParameter('user', $user)
+        ;
+
+        if (!empty($status)) {
+            $qb = $qb
+                ->andWhere('e.status IN (:status)')
+                ->setParameter('status', $status)
+            ;
+        }
+
+        return $qb;
+    }
+
+    private function getEventsCreatedByUserDql(User $user, array $status = []): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->select('e, p')
+            ->distinct(true)
+            ->leftJoin('e.commission', 'c')
+            ->leftJoin('e.participations', 'p')
+            ->where('e.user = :user')
+            ->andWhere('e.tsp > :date')
+            ->setParameter('user', $user)
+            ->setParameter('date', time())
         ;
 
         if (!empty($status)) {

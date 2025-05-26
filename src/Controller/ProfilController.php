@@ -110,7 +110,7 @@ class ProfilController extends AbstractController
         $first = $perPage * ($page - 1);
 
         return [
-            'events' => $evtRepository->getUserEvents($this->getUser(), $first, $perPage),
+            'events' => $evtRepository->getUserCreatedEvents($this->getUser(), $first, $perPage),
             'total' => $total,
             'per_page' => $perPage,
             'pages' => $pages,
