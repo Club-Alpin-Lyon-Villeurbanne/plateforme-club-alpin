@@ -29,7 +29,7 @@ class UserAttrRepository extends ServiceEntityRepository
         UserAttr::STAGIAIRE,
         UserAttr::COENCADRANT,
         UserAttr::BENEVOLE,
-    ])
+    ]): \Generator|array
     {
         $dql = 'SELECT a
                 FROM ' . User::class . ' u, ' . Usertype::class . ' t, ' . UserAttr::class . ' a
@@ -63,7 +63,7 @@ class UserAttrRepository extends ServiceEntityRepository
     }
 
     /* @return UserAttr[] */
-    public function listAllResponsables()
+    public function listAllResponsables(): \Generator|array
     {
         $dql = 'SELECT a
                 FROM ' . User::class . ' u, ' . Usertype::class . ' t, ' . UserAttr::class . ' a
