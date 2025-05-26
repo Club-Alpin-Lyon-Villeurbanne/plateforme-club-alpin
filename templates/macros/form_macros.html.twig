@@ -1,0 +1,33 @@
+{% macro display_group_form_field(field) %}
+    {% if field.vars.choices|length > 0 %}
+        {{ form_row(field) }}
+    {% endif %}
+{% endmacro %}
+
+{% macro display_encadrement(form, is_update) %}
+    <h2 class="trigger-h2">Encadrant(s) :</h2>
+    <div class="trigger-me check-nice">
+        {{ form_row(form.encadrants) }}
+        <br style="clear:both" />
+    </div>
+
+    <h2 class="trigger-h2">Stagiaire(s) :</h2>
+    <div class="trigger-me check-nice">
+        {{ form_row(form.initiateurs) }}
+        <br style="clear:both" />
+    </div>
+
+    <h2 class="trigger-h2">Co-Encadrant(s) :</h2>
+    <div class="trigger-me check-nice">
+        {{ form_row(form.coencadrants) }}
+        <br style="clear:both" />
+    </div>
+
+    <h2 class="trigger-h2">Bénévoles {% if is_update %}(modifiable dans la gestion des inscrits) {% endif %}:</h2>
+    <div class="trigger-me check-nice">
+        <div {% if is_update %}class="hidden"{% endif %}>
+            {{ form_row(form.benevoles) }}
+        </div>
+        <br style="clear:both" />
+    </div>
+{% endmacro %}

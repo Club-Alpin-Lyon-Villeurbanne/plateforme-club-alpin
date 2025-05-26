@@ -5,7 +5,9 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -18,6 +20,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 class Evt
 {
+    use TimestampableEntity;
+
     public const STATUS_PUBLISHED_UNSEEN = 0;
     public const STATUS_PUBLISHED_VALIDE = 1;
     public const STATUS_PUBLISHED_REFUSE = 2;
@@ -26,262 +30,169 @@ class Evt
     public const STATUS_LEGAL_VALIDE = 1;
     public const STATUS_LEGAL_REFUSE = 2;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'id_evt', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[Groups('event:read')]
-    private $id;
+    private ?int $id;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'status_evt', type: 'smallint', nullable: false, options: ['comment' => '0-unseen 1-ok 2-refused', 'default' => 0])]
     #[Groups('event:read')]
+    private int $status = 0;
 
-    private $status = 0;
-
-    /**
-     * @var User
-     */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'status_who_evt', referencedColumnName: 'id_user', nullable: true)]
-    private $statusWho;
+    private ?User $statusWho;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'status_legal_evt', type: 'smallint', nullable: false, options: ['comment' => '0-unseen 1-ok 2-refused', 'default' => 0])]
     #[Groups('event:read')]
 
-    private $statusLegal = 0;
+    private int $statusLegal = 0;
 
-    /**
-     * @var User
-     */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'status_legal_who_evt', referencedColumnName: 'id_user', nullable: true)]
-    private $statusLegalWho;
+    private ?User $statusLegalWho;
 
-    /**
-     * @var bool
-     */
     #[ORM\Column(name: 'cancelled_evt', type: 'boolean', nullable: false, options: ['default' => false])]
-    private $cancelled = '0';
+    private bool $cancelled = false;
 
-    /**
-     * @var User
-     */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'cancelled_who_evt', referencedColumnName: 'id_user', nullable: true)]
-    private $cancelledWho;
+    private ?User $cancelledWho;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'cancelled_when_evt', type: 'bigint', nullable: true, options: ['comment' => 'Timestamp annulation'])]
-    private $cancelledWhen;
+    private ?int $cancelledWhen;
 
-    /**
-     * @var ExpenseReport[]
-     */
-    #[ORM\OneToMany(targetEntity: ExpenseReport::class, mappedBy: 'event')]
-    private $expenseReports = [];
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: ExpenseReport::class)]
+    private ?Collection $expenseReports;
 
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'user_evt', referencedColumnName: 'id_user', nullable: false)]
-    private $user;
+    private ?User $user;
 
     #[ORM\ManyToOne(targetEntity: 'Commission')]
     #[ORM\JoinColumn(name: 'commission_evt', referencedColumnName: 'id_commission', nullable: false)]
     #[Groups('event:read')]
 
-    private $commission;
+    private ?Commission $commission;
 
-    /**
-     * @var Groupe|null
-     */
     #[ORM\ManyToOne(targetEntity: 'Groupe', fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'id_groupe', referencedColumnName: 'id', nullable: true)]
-    private $groupe;
+    private ?Groupe $groupe;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'tsp_evt', type: 'bigint', nullable: true, options: ['comment' => 'timestamp du début du event'])]
     #[Groups('event:read')]
 
-    private $tsp;
+    private ?int $tsp;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'tsp_end_evt', type: 'bigint', nullable: true)]
     #[Groups('event:read')]
 
-    private $tspEnd;
+    private ?int $tspEnd;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'tsp_crea_evt', type: 'bigint', nullable: false, options: ['comment' => "Création de l'entrée"])]
-    private $tspCrea;
+    private ?int $tspCrea;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'tsp_edit_evt', type: 'bigint', nullable: true)]
-    private $tspEdit;
+    private ?int $tspEdit;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage'])]
-    private $place;
+    private ?string $place;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'titre_evt', type: 'string', length: 100, nullable: false)]
     #[Groups('event:read')]
 
-    private $titre;
+    private ?string $titre;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'code_evt', type: 'string', length: 30, nullable: false)]
     #[Groups('event:read')]
+    private ?string $code;
 
-    private $code;
-
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'massif_evt', type: 'string', length: 100, nullable: true)]
-    private $massif;
+    private ?string $massif;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu détaillé du rdv'])]
     #[Groups('event:read')]
 
-    private $rdv;
+    private ?string $rdv;
 
-    /**
-     * @var float|null
-     */
     #[ORM\Column(name: 'tarif_evt', type: 'float', precision: 10, scale: 2, nullable: true)]
-    private $tarif;
+    private ?float $tarif;
 
-    /**
-     * @var string|null
-     */
     #[ORM\Column(name: 'tarif_detail', type: 'text', nullable: true)]
-    private $tarifDetail;
+    private ?string $tarifDetail;
 
-    /**
-     * @var string|null
-     */
     #[ORM\Column(name: 'denivele_evt', type: 'text', nullable: true)]
-    private $denivele;
+    private ?string $denivele;
 
-    /**
-     * @var string|null
-     */
     #[ORM\Column(name: 'distance_evt', type: 'text', nullable: true)]
-    private $distance;
+    private ?string $distance;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'lat_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
-    private $lat;
+    private string|float|null $lat;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'long_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
-    private $long;
+    private string|float|null $long;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'matos_evt', type: 'text', nullable: true)]
-    private $matos;
+    private ?string $matos;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'difficulte_evt', type: 'string', length: 50, nullable: true)]
-    private $difficulte;
+    private ?string $difficulte;
 
-    /**
-     * @var string|null
-     */
     #[ORM\Column(name: 'itineraire', type: 'text', nullable: true)]
-    private $itineraire;
+    private ?string $itineraire;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'description_evt', type: 'text', nullable: false)]
-    private $description;
+    private ?string $description;
 
-    /**
-     * @var bool
-     */
     #[ORM\Column(name: 'need_benevoles_evt', type: 'boolean', nullable: false)]
-    private $needBenevoles = '0';
+    private bool $needBenevoles = false;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'join_start_evt', type: 'integer', nullable: true, options: ['comment' => 'Timestamp de départ des inscriptions'])]
-    private $joinStart;
+    private ?int $joinStart;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'join_max_evt', type: 'integer', nullable: false, options: ['comment' => "Nombre max d'inscriptions spontanées sur le site, ET PAS d'inscrits total"])]
-    private $joinMax;
+    private ?int $joinMax;
 
-    /**
-     * @var EventParticipation[]
-     */
-    #[ORM\OneToMany(targetEntity: 'EventParticipation', mappedBy: 'evt', cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'evt', targetEntity: 'EventParticipation', cascade: ['persist'], orphanRemoval: true)]
+    private ?Collection $participations;
 
-    private $participations;
-
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'ngens_max_evt', type: 'integer', nullable: false, options: ['comment' => 'Nombre de gens pouvant y aller au total. Donnée "visuelle" uniquement, pas de calcul.'])]
-    private $ngensMax;
+    private ?int $ngensMax;
 
-    #[ORM\OneToMany(targetEntity: 'App\Entity\Article', mappedBy: 'evt')]
-    private $articles;
+    #[ORM\OneToMany(mappedBy: 'evt', targetEntity: 'App\Entity\Article')]
+    private ?Collection $articles;
 
     #[ORM\Column(name: 'details_caches_evt', type: 'text', nullable: true)]
-    private $detailsCaches;
+    private ?string $detailsCaches;
+
+    #[ORM\Column(name: 'event_start_date', type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => 'date et heure du début du event'])]
+    #[Groups('event:read')]
+    private ?\DateTime $eventStartDate;
+
+    #[ORM\Column(name: 'event_end_date', type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => 'date et heure de fin du event'])]
+    #[Groups('event:read')]
+    private ?\DateTime $eventEndDate;
+
+    #[ORM\Column(name: 'join_start_date', type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => 'date du début des inscriptions'])]
+    #[Groups('event:read')]
+    private ?\DateTime $joinStartDate;
 
     public function __construct(
-        User $user,
-        Commission $commission,
-        string $titre,
-        string $code,
+        ?User $user,
+        ?Commission $commission,
+        ?string $titre,
+        ?string $code,
         ?\DateTime $dateStart,
         ?\DateTime $dateEnd,
-        string $rdv,
-        float $rdvLat,
-        float $rdvLong,
-        string $description,
+        ?string $rdv,
+        ?float $rdvLat,
+        ?float $rdvLong,
+        ?string $description,
         ?int $demarrageInscriptions,
-        int $maxInscriptions,
-        int $maxParticipants
+        ?int $maxInscriptions,
+        ?int $maxParticipants
     ) {
         $this->user = $user;
         $this->titre = $titre;
@@ -297,9 +208,23 @@ class Evt
         $this->joinMax = $maxInscriptions;
         $this->ngensMax = $maxParticipants;
         $this->commission = $commission;
+        $this->difficulte = null;
+        $this->groupe = null;
+        $this->tarif = null;
+        $this->tarifDetail = null;
+        $this->denivele = null;
+        $this->distance = null;
+        $this->matos = null;
+        $this->itineraire = null;
+        $this->detailsCaches = null;
+        $this->massif = null;
         $this->participations = new ArrayCollection();
         $this->articles = new ArrayCollection();
+        $this->expenseReports = new ArrayCollection();
         $this->tspCrea = time();
+        $this->tspEdit = time();
+        $this->setCreatedAt(new \DateTime());
+        $this->setUpdatedAt(new \DateTime());
 
         // FIX ME fix encadrant
         $this->participations->add(new EventParticipation($this, $user, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE));
@@ -443,6 +368,13 @@ class Evt
         return $participation;
     }
 
+    public function removeParticipation(EventParticipation $participation): void
+    {
+        if ($this->participations->removeElement($participation)) {
+            $participation->setEvt(null);
+        }
+    }
+
     /** @return EventParticipation[] */
     public function getParticipations($roles = null, $status = EventParticipation::STATUS_VALIDE): Collection
     {
@@ -457,6 +389,14 @@ class Evt
             return (null === $roles || \in_array($participation->getRole(), $roles, true))
                 && (null === $status || \in_array($participation->getStatus(), $status, true));
         });
+    }
+
+    public function clearRoleParticipations(string $role = EventParticipation::ROLE_BENEVOLE): void
+    {
+        $participations = $this->getParticipations([$role], null);
+        foreach ($participations as $participation) {
+            $this->removeParticipation($participation);
+        }
     }
 
     #[Groups('event:read')]
@@ -499,12 +439,12 @@ class Evt
         return $this->getParticipations($types, [EventParticipation::STATUS_VALIDE]);
     }
 
-    public function getCommission(): Commission
+    public function getCommission(): ?Commission
     {
         return $this->commission;
     }
 
-    public function setCommission(Commission $commission): self
+    public function setCommission(?Commission $commission): self
     {
         $this->commission = $commission;
 
@@ -662,7 +602,7 @@ class Evt
         return $this->massif;
     }
 
-    public function setMassif(string $massif): self
+    public function setMassif(?string $massif): self
     {
         $this->massif = $massif;
 
@@ -758,7 +698,7 @@ class Evt
         return $this->matos;
     }
 
-    public function setMatos(string $matos): self
+    public function setMatos(?string $matos): self
     {
         $this->matos = $matos;
 
@@ -770,7 +710,7 @@ class Evt
         return $this->difficulte;
     }
 
-    public function setDifficulte(string $difficulte): self
+    public function setDifficulte(?string $difficulte): self
     {
         $this->difficulte = $difficulte;
 
@@ -818,7 +758,7 @@ class Evt
         return $this->joinStart;
     }
 
-    public function setJoinStart(int $joinStart): self
+    public function setJoinStart(?int $joinStart): self
     {
         $this->joinStart = $joinStart;
 
@@ -857,6 +797,42 @@ class Evt
     public function setDetailsCaches(?string $detailsCaches): self
     {
         $this->detailsCaches = $detailsCaches;
+
+        return $this;
+    }
+
+    public function getEventStartDate(): ?\DateTime
+    {
+        return $this->eventStartDate;
+    }
+
+    public function setEventStartDate(?\DateTime $eventStartDate): self
+    {
+        $this->eventStartDate = $eventStartDate;
+
+        return $this;
+    }
+
+    public function getEventEndDate(): ?\DateTime
+    {
+        return $this->eventEndDate;
+    }
+
+    public function setEventEndDate(?\DateTime $eventEndDate): self
+    {
+        $this->eventEndDate = $eventEndDate;
+
+        return $this;
+    }
+
+    public function getJoinStartDate(): ?\DateTime
+    {
+        return $this->joinStartDate;
+    }
+
+    public function setJoinStartDate(?\DateTime $joinStartDate): self
+    {
+        $this->joinStartDate = $joinStartDate;
 
         return $this;
     }

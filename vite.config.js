@@ -33,6 +33,8 @@ export default defineConfig({
         "fonts": "./assets/fonts/stylesheet.css",
         "admin-styles": "./assets/styles/admin.css",
         "admin-login": "./assets/styles/loginadmin.css",
+        participants: './assets/participants.js',
+        commission_switch: './assets/commission-switch.js',
       },
     },
   },

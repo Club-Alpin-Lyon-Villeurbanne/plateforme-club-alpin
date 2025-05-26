@@ -181,3 +181,39 @@ cursor : text;
 .text-din {
 	font-family: 'DIN', sans-serif;
 }
+
+div.trigger-me label, div#form-event label {
+	display: block;
+}
+form.padded-form {
+	padding:10px 0 0 30px;
+	line-height:18px;
+}
+
+form.padded-form .wide {
+	width: 95%;
+}
+form.padded-form .small {
+	width: 40px;
+	color: black;
+}
+
+label.required::after {
+	 content: " *";
+	 color: red;
+ }
+span.required {
+	 color: red;
+}
+.btn-blue {
+	background-color: #53B4E4;
+}
+.hidden {
+	display: none;
+}
+.help-text {
+	display: inline;
+}
+textarea.ckeditor {
+	min-height: 400px;
+}
