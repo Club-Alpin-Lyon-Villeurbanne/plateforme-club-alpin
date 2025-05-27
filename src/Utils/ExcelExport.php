@@ -62,7 +62,7 @@ class ExcelExport
                     $data['liste']->getRole() ?? ' ',
                     $user->getCafnum() ?? ' ',
                     $user->getBirthday() ? $this->getYearsSinceDate($user->getBirthday()) : ' ',
-                    $user->getDateAdhesion() ?? ' ',
+                    date('d/m/Y H:i', $user->getDateAdhesion()) ?? ' ',
                     $user->getTel() ? preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $user->getTel()) : ' ',
                     $user->getTel2() ? preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $user->getTel2()) : ' ',
                     $user->getEmail() ?? ' ',
