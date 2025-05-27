@@ -300,11 +300,11 @@
                             <img src="{{ user_picto(app.user, 'min') }}" alt="" title="" style="float:left; padding:0 10px 0 0;" />
 
                             {% if is_granted('IS_IMPERSONATOR') %}
-                                <p style="border: 2px solid red; border-radius: 5px;color:#fff; font-size:18px; padding:10px;">
-                                    En cours d'impersonification <a style="color:white;" href="/?_switch_user=_exit">Quitter</a>
+                                <p style="border: 2px solid red; border-radius: 5px; font-size:18px; padding:10px;">
+                                    En cours d'impersonification <a href="/?_switch_user=_exit">Quitter</a>
                                 </p>
                             {% endif %}
-                            <p style="color:#fff; font-family:DIN; font-size:18px; line-height:20px; white-space:nowrap; padding-top:10px;">
+                            <p style="font-family:DIN; font-size:18px; line-height:20px; white-space:nowrap; padding-top:10px;">
                                 Mon pseudonyme : <br />
                                 <span style="font-family:DINBold; font-size:21px;">{{ app.user.getNickname() }}</span>
                             </p>
@@ -323,7 +323,7 @@
                                 <p class="status">
                                     Vous êtes <span style="font-family:DINBold">{{ app.user.getAttributes()[0].getTitle() }}</span>
                                     {% if app.user.getAttributes() | length > 1 %}
-                                        <a href="/profil.html" title="Entre autres choses..." style="color:white; font-weight:100; font-family:Arial">[+]</a>
+                                        <a href="/profil.html" title="Entre autres choses..." style="font-weight:100; font-family:Arial">[+]</a>
                                     {% endif %}
                                 </p>
                             {% else %}
