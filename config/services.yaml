@@ -211,6 +211,10 @@ services:
     public: true
     alias: App\Legacy\ContentInline
 
+  legacy_entrypoint_renderer:
+    public: true
+    alias: App\Legacy\LegacyEntrypointRenderer
+
   App\Utils\FileUploader:
     arguments:
       $publicDir: '%public_dir%'

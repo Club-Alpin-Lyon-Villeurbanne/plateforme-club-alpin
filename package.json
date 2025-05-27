@@ -32,6 +32,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.3.1",
+    "micromodal": "^0.6.1",
     "tailwind-merge": "^2.5.2",
     "typescript": "^5.5.4",
     "vee-validate": "^4.13.2",
