@@ -486,16 +486,16 @@ class SortieController extends AbstractController
         require $this->getParameter('kernel.project_dir') . '/legacy/' . $path;
         $html = ob_get_clean();
 
-        return $pdfGenerator->generatePdf($html, $slugger->slug($event->getTitre()) . '.pdf');
+        return $pdfGenerator->generatePdf($html, substr($slugger->slug($event->getTitre(), '-'), 0, 20) . '-' . time() . '.pdf');
     }
 
     #[Route(name: 'sortie_xlsx', path: '/sortie/{id}/printXLSX', requirements: ['id' => '\d+'])]
-    public function generateXLSX(ExcelExport $excelExport, Evt $event, EventParticipationRepository $participationRepository): Response
+    public function generateXLSX(ExcelExport $excelExport, Evt $event, EventParticipationRepository $participationRepository, SluggerInterface $slugger): Response
     {
         $datas = $participationRepository->getSortedParticipations($event);
 
         $rsm = [' ', 'PARTICIPANTS (PRÉNOM, NOM)', 'RÔLE', 'N°ADHÉRENT', 'AGE', "DATE D'ADHÉSION", 'TÉL.. PROFESSIONNEL', 'TÉL.. I.C.E', 'EMAIL'];
 
-        return $excelExport->export(substr($event->getTitre(), 0, 3) . time(), $datas, $rsm);
+        return $excelExport->export(substr($slugger->slug($event->getTitre(), '-'), 0, 20) . '-' . time(), $datas, $rsm);
     }
 }
