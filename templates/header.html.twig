@@ -132,14 +132,10 @@
                     <div style="width:515px; min-height:160px; float:left; border-right:1px solid #c6e39f; min-height:130px; padding:0px 5px 0 0">
                         <div class="nav-user">
                             <p class="menutitle">Sorties</p>
-
                                 {% if allowed('evt_validate') %}
                                     {# publier une sortie (notification au besoin, variable définie dans SCRIPTS.'reqs.php') #}
                                     <a href="/gestion-des-sorties.html" title="">
-                                        <span class="star">
-                                            <img src="/img/base/bullet_star.png" alt="" title="" />
-                                        </span>
-
+                                        <span class="puce">•</span>
                                         {% set notif_sorties = notifications_counter_sorties() %}
                                         {% if notif_sorties > 0 %}<span class="notification">{{ notif_sorties }}</span>{% endif %}
                                         publication des sorties
@@ -149,8 +145,7 @@
                                 {% if allowed('evt_legal_accept') %}
                                     {# valider juridiquement une sortie#}
                                     <a href="/validation-des-sorties.html" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
-
+                                        <span class="puce">•</span>
                                         {% set notif_president = notifications_counter_sorties_president() %}
                                         {% if notif_president > 0 %}<span class="notification">{{ notif_president }}</span>{% endif %}
                                         validation des sorties
@@ -160,21 +155,23 @@
                                 {% if allowed('evt_create') %}
                                     {# créer une sortie (par défaut : pour la commission courante si autorisé)#}
                                     <a href="/creer-une-sortie.html" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
+                                        <span class="puce">•</span>
                                         proposer une sortie
                                     </a>
 
                                     {# les sorties que j'ai créé#}
                                     <a href="{{ path('profil_sorties_self') }}" title="sorties que je propose">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
+                                        <span class="puce">•</span>
                                         sorties que je propose
                                     </a><br />
                                 {% endif %}
 
                                 <a href="{{ path('profil_sorties_next') }}" title="">
-                                <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes sorties à venir</a><br />
+                                <span class="puce">•</span>
+                                    mes sorties à venir</a><br />
                                 <a href="{{ path('profil_sorties_prev') }}" title="">
-                                <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes sorties passées</a><br />
+                                <span class="puce">•</span>
+                                    mes sorties passées</a><br />
                             </div>
 
                             <div class="nav-user">
@@ -182,71 +179,71 @@
                                 {% if caf_id == 'lyon' %}
                                     {% if allowed('user_read_private') %} {# utilisation d'une permission existante données uniquement aux co-encadrants, encadrants et stagiaires #}
                                         <a href="/pages/boite-outils-des-encadrants.html" title="">
-                                        <span class="star">
-                                            <img src="/img/base/bullet_star.png" alt="" title="" />
-                                        </span>
-                                        boite à outils encadrant
+                                            <span class="puce">•</span>
+                                            boite à outils encadrant
                                         </a>
                                     {% endif %}
                                 {% endif %}
                                 {% if app.user and caf_id == 'lyon' %}
                                     <a href="{{ path('profil_alertes') }}" title="">
-                                    <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes alertes</a>
+                                    <span class="puce">•</span>
+                                        mes alertes</a>
                                     <a href="{{ path('minibus') }}" title="">
-                                    <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>réservation de minibus</a>
+                                    <span class="puce">•</span>
+                                        réservation de minibus</a>
                                     <a href="{{ path('local_club') }}" title="">
-                                    <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>réservation local du Club</a>
+                                    <span class="puce">•</span>
+                                        réservation local du Club</a>
                                 {% endif %}
                                 <a href="https://www.clubalpinlyon.fr/ftp/telechargements/livretaccueil-v2.pdf" title="">
-                                <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
+                                <span class="puce">•</span>
                                 livret d'accueil des adhérents
                                 </a>
-
                             </div>
 
                             {% if allowed('article_create') or allowed('article_validate') or allowed('article_validate_all') %}
-
                                 <div class="nav-user">
                                     <p class="menutitle">Articles</p>
 
                                     {% if allowed('article_create') %}
                                         <a href="/article-new.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
-                                            <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>rédiger un article
+                                            <span class="puce">•</span>
+                                            rédiger un article
                                         </a>
                                         <a href="/profil/articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
-                                            <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>mes articles
+                                            <span class="puce">•</span>
+                                            mes articles
                                         </a>
                                     {% endif %}
 
                                     {% if allowed('article_validate') or allowed('article_validate_all') %}
                                         <a href="/gestion-des-articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
-                                            <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>
-
+                                            <span class="puce">•</span>
                                             {% set notif_article = notifications_counter_articles() %}
                                             {% if notif_article > 0 %}<span class="notification">{{ notif_article }}</span>{% endif %}
                                             validation / gestion des articles
                                         </a>
                                     {% endif %}
-
                                 </div>
                             {% endif %}
 
                             <br  style="clear:both" />
 
                             {% if allowed('user_see_all') or allowed('user_create_manually') or allowed('user_updatefiles') %}
-
                                 <div class="nav-user">
                                     <p class="menutitle" style="padding-top:13px;">Adhérents</p>
 
                                     {% if allowed('user_see_all') %}
                                         <a href="/adherents.html" title="">
-                                            <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>gestion des adhérents
+                                            <span class="puce">•</span>
+                                            gestion des adhérents
                                         </a>
                                     {% endif %}
 
                                     {% if allowed('user_create_manually') %}
                                         <a href="/adherents-creer.html" title="">
-                                            <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>créer un adhérent/salarié
+                                            <span class="puce">•</span>
+                                            créer un adhérent/salarié
                                         </a>
                                     {% endif %}
                                 </div>
@@ -257,17 +254,18 @@
                                 <p class="menutitle" style="padding-top:13px;">Commissions</p>
                                 {% if allowed('comm_edit') %}
                                     <a href="/gestion-des-commissions.html" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>gestion des commissions
+                                        <span class="puce">•</span>
+                                        gestion des commissions
                                     </a>
                                 {% endif %}
 
                                 {% if allowed('comm_create') %}
                                     <a href="/commission-add.html" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>créer une commission
+                                        <span class="puce">•</span>
+                                        créer une commission
                                     </a>
                                 {% endif %}
                             </div>
-                        
                         {% endif %}
 
                         {% if allowed('stats_commissions_read') or allowed('stats_users_read') %}
@@ -275,19 +273,22 @@
                                 <p class="menutitle" style="padding-top:13px;">Statistiques</p>
                                 {% if allowed('stats_commissions_read') %}
                                     <a href="/stats/commissions.html" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>statistiques par sorties
+                                        <span class="puce">•</span>
+                                        statistiques par sorties
                                     </a>
                                 {% endif %}
 
                                 {% if allowed('stats_users_read') %}
                                     <a href="/stats/users.html" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>statistiques par adhérents
+                                        <span class="puce">•</span>
+                                        statistiques par adhérents
                                     </a>
                                 {% endif %}
 
                                 {% if allowed('article_create') %}
                                     <a href="/stats/nbvues.html" title="">
-                                        <span class="star"><img src="/img/base/bullet_star.png" alt="" title="" /></span>statistiques articles
+                                        <span class="puce">•</span>
+                                        statistiques articles
                                     </a>
                                 {% endif %}
                             </div>
