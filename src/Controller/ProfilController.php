@@ -43,7 +43,7 @@ class ProfilController extends AbstractController
             $user->setAlertStatus(AlertType::Article, $commission->getCode(), ($params['articles'][$commission->getCode()] ?? '0') === '1');
         }
 
-        $user->setAlertStatus(AlertType::Article, ArticlePublie::ACTU_CLUB_RUBRIQUE, ($params['articles'][ArticlePublie::ACTU_CLUB_RUBRIQUE] ?? '0') === '1');
+        $user->setAlertStatus(AlertType::Article, ArticlePublie::ACTU_CLUB_RUBRIQUE, false);
         $user->setAlertSortiePrefix($params['sortie-prefix-input']);
         $user->setAlertArticlePrefix($params['article-prefix-input']);
 
