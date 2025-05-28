@@ -114,7 +114,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 		';
     } ?>
 
-	<h1>Fiche adhérent : <?php echo $userTab['firstname_user'] . ' ' . $userTab['lastname_user']; ?></h1>
+	<h1>Fiche adhérent : <?php echo ucfirst($userTab['firstname_user']) . ' ' . strtoupper($userTab['lastname_user']); ?></h1>
 
 	<hr />
 
@@ -125,12 +125,12 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 		<table width='100%'>
 
 			<?php
-                printTableRow('<img src="' . userImg($userTab['id_user'], 'pic') . '" alt="" title="" style="max-width:100%" />', '<h1>' . $userTab['civ_user'] . ' ' . $userTab['firstname_user'] . ' ' . $userTab['lastname_user'] . '</h1>');
+                printTableRow('<img src="' . userImg($userTab['id_user'], 'pic') . '" alt="" title="" style="max-width:100%" />', '<h1>' . $userTab['civ_user'] . ' ' . ucfirst($userTab['firstname_user']) . ' ' . strtoupper($userTab['lastname_user']) . '</h1>');
 
     $rowValue = '<a href="/user-full/' . $userTab['id_user'] . '.html" title="Fiche profil" target="_top">' . $userTab['nickname_user'] . '</a>';
     // possibilite de supprimer le user si pas de sortie ni articles
     if (isGranted(SecurityConstants::ROLE_ADMIN) && !is_array($userTab['sorties']) && !is_array($userTab['articles'])) {
-        $rowValue .= '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/adherents-supprimer.php&amp;id_user=' . (int) $userTab['id_user'] . '&amp;nom=' . urlencode($userTab['civ_user'] . ' ' . $elt['firstname_user'] . ' ' . $userTab['lastname_user']) . '" title="Supprimer le compte de cet utilisateur"><img src="/img/base/user_delete.png" alt="SUPPRIMER" title=""></a> ';
+        $rowValue .= '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/adherents-supprimer.php&amp;id_user=' . (int) $userTab['id_user'] . '&amp;nom=' . urlencode($userTab['civ_user'] . ' ' . ucfirst($elt['firstname_user']) . ' ' . strtoupper($userTab['lastname_user'])) . '" title="Supprimer le compte de cet utilisateur"><img src="/img/base/user_delete.png" alt="SUPPRIMER" title=""></a> ';
     }
     printTableRow('Pseudo :', $rowValue);
 
@@ -150,14 +150,14 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 
     $rowValue = '';
     if ($userTab['cafnum_parent_user']) {
-        $rowValue = '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user=' . (int) $userTab['cafnum_parent_user']['id_user'] . '">' . $userTab['cafnum_parent_user']['firstname_user'] . ' ' . $userTab['cafnum_parent_user']['lastname_user'] . '</a>';
+        $rowValue = '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user=' . (int) $userTab['cafnum_parent_user']['id_user'] . '">' . ucfirst($userTab['cafnum_parent_user']['firstname_user']) . ' ' . strtoupper($userTab['cafnum_parent_user']['lastname_user']) . '</a>';
         printTableRow('Parent (chef de famille) :', $rowValue);
     }
 
     $rowValue = [];
     if (is_array($userTab['enfants'])) {
         foreach ($userTab['enfants'] as $enfant) {
-            $rowValue[] = '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user=' . (int) $enfant['id_user'] . '">' . $enfant['firstname_user'] . ' ' . $enfant['lastname_user'] . '</a>';
+            $rowValue[] = '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user=' . (int) $enfant['id_user'] . '">' . ucfirst($enfant['firstname_user']) . ' ' . strtoupper($enfant['lastname_user']) . '</a>';
         }
 
         printTableRow('Adhérents affiliés : ', implode('<br />', $rowValue));

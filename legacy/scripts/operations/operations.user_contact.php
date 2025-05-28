@@ -47,8 +47,8 @@ else {
     }
 
     // dans ce cas, les valeurs sont réécrites
-    $nom = $expediteur['civ_user'] . ' ' . $expediteur['firstname_user'] . ' ' . $expediteur['lastname_user'] . ' (' . $expediteur['nickname_user'] . ')';
-    $shortName = $expediteur['firstname_user'] . ' ' . $expediteur['lastname_user'];
+    $nom = $expediteur['civ_user'] . ' ' . ucfirst($expediteur['firstname_user']) . ' ' . strtoupper($expediteur['lastname_user']) . ' (' . $expediteur['nickname_user'] . ')';
+    $shortName = ucfirst($expediteur['firstname_user']) . ' ' . strtoupper($expediteur['lastname_user']);
     $email = $expediteur['email_user'];
 }
 

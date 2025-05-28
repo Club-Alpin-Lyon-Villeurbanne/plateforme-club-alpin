@@ -18,8 +18,8 @@ class MaterielEmailService
             $to,
             'transactional/materiel-account-creation',
             [
-                'firstName' => $firstName,
-                'lastName' => $lastName,
+                'firstName' => ucfirst($firstName),
+                'lastName' => strtoupper($lastName),
                 'userEmail' => $credentials['email'],
                 'password' => $credentials['password'],
                 'pseudo' => $credentials['pseudo'],
