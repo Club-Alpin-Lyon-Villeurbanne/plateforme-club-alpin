@@ -86,7 +86,6 @@
                     </form>
                 {% endif %}
 
-            {# FIX ME Replace with a voter #}
             {% elseif event.publicStatusValide and (is_granted('SORTIE_UPDATE', event) or is_granted('SORTIE_DELETE', event) or is_granted('SORTIE_CANCEL', event)) %}
                 {% set closeDiv = true %}
 
