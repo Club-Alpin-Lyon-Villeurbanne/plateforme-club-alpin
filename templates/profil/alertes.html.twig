@@ -14,26 +14,6 @@
 
 
 			<form action="{{ path('profil_alertes_update') }}" method="post">
-				<table style="width: 100%;">
-					<thead>
-						<tr>
-							<th style="text-align: left;"></th>
-							<th style="text-align: center;width: 120px;"></th>
-							<th style="text-align: center;width: 120px;"></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr style="height:30px;">
-							<td style="text-align: left;">
-								Être alerté lors de la publication d'articles d'actualités du club
-							</td>
-							<td style="text-align: center;">
-								<input value="1" name="articles[{{ constant('App\\Messenger\\Message\\ArticlePublie::ACTU_CLUB_RUBRIQUE') }}]" type="checkbox" {{ user_has_articles_alerts(app.user, constant('App\\Messenger\\Message\\ArticlePublie::ACTU_CLUB_RUBRIQUE')) ? 'checked="checked"' }}/>
-							</td>
-							<td></td>
-						</tr>
-					</tbody>
-				</table>
 				<table style="width: 100%;margin-top: 20px;">
 					<thead>
 					<tr style="height:30px;">
