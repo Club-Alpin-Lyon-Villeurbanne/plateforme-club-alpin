@@ -39,7 +39,7 @@ class UserAttrRepository extends ServiceEntityRepository
                     AND a.userType = t.id
                     AND u.doitRenouveler = 0
                     AND a.params LIKE \'commission:' . $commission->getCode() . '\'
-                ORDER BY t.hierarchie DESC, u.firstname ASC
+                ORDER BY t.hierarchie DESC, u.firstname ASC, u.lastname ASC
         ';
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -72,7 +72,7 @@ class UserAttrRepository extends ServiceEntityRepository
                     AND t.code = :type
                     AND a.userType = t.id
                     AND u.doitRenouveler = 0
-                ORDER BY t.hierarchie DESC, u.firstname ASC
+                ORDER BY t.hierarchie DESC, u.firstname ASC, u.lastname ASC
         ';
 
         $query = $this->getEntityManager()->createQuery($dql);
