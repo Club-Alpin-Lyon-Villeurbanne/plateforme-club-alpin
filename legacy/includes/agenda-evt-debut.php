@@ -42,29 +42,38 @@ if (isset($evt['groupe']) && is_array($evt['groupe'])) {
 }
 
 if (is_array($evt) && array_key_exists('status_evt_join', $evt) && null !== $evt['status_evt_join']) {
-    if (EventParticipation::STATUS_REFUSE == $evt['status_evt_join']) {
-        echo '<span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
+    // rôle de l'user dans cette sortie
+    if (isset($evt['role_evt_join']) && $evt['role_evt_join'] && in_array($evt['role_evt_join'], [EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_COENCADRANT, EventParticipation::ROLE_STAGIAIRE], true)) {
+        $str = '<span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">';
+        if (getUser()->getId() == $evt['user_evt']) {
+            $str .= '✍️';
+        }
+        $str .= html_utf8($evt['role_evt_join']) . '</span>';
+        echo $str;
+        unset($str);
+    } elseif (EventParticipation::STATUS_REFUSE == $evt['status_evt_join']) {
+        echo '<span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
             <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
             Refusé
         </span>';
     } elseif (EventParticipation::STATUS_VALIDE == $evt['status_evt_join']) {
-        echo '<span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
+        echo '<span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
             <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>
             Accepté
         </span>';
     } elseif (EventParticipation::STATUS_ABSENT == $evt['status_evt_join']) {
-        echo '<span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
+        echo '<span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
             <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             Absent
         </span>';
     } else {
-        echo '<span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
+        echo '<span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
             <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
@@ -81,8 +90,6 @@ if (is_array($evt) && array_key_exists('status_evt_join', $evt) && null !== $evt
 echo ''
     // commission
     . '<b>' . html_utf8($evt['title_commission']) . '</b>'
-    // rôle de l'user dans cette sortie
-    . (isset($evt['role_evt_join']) && $evt['role_evt_join'] ? ' - Votre rôle : <b>' . html_utf8($evt['role_evt_join']) . '</b>' : '')
 ;
 ?>
 		</p>
