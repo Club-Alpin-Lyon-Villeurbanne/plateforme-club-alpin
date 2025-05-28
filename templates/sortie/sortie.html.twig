@@ -578,6 +578,9 @@
                                         {% else %}
                                             {{ participation | participation_role_name }}
                                         {% endif %}
+                                        {% if participation.user is same as event.user %}
+                                            <br />(organisateur)
+                                        {% endif %}
 
                                     </td>
                                     <td style="white-space:nowrap">
