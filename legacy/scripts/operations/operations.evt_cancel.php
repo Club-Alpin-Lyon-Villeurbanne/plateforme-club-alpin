@@ -66,7 +66,7 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
             if (!isMail($handle2['email_user'])) {
-                $nomadMsg[] = $handle2['civ_user'] . ' ' . $handle2['firstname_user'] . ' ' . $handle2['lastname_user'] . ' - ' . $handle2['tel_user'] . ' - ' . $handle2['tel2_user'];
+                $nomadMsg[] = $handle2['civ_user'] . ' ' . ucfirst($handle2['firstname_user']) . ' ' . strtoupper($handle2['lastname_user']) . ' - ' . $handle2['tel_user'] . ' - ' . $handle2['tel2_user'];
 
                 continue;
             }

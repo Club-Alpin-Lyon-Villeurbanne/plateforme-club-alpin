@@ -37,8 +37,8 @@ class MaterielController extends AbstractController
 
         $this->logger->info('Début de la création de compte pour l\'utilisateur', [
             'email' => $user->getEmail(),
-            'firstname' => $user->getFirstname(),
-            'lastname' => $user->getLastname(),
+            'firstname' => ucfirst($user->getFirstname()),
+            'lastname' => strtoupper($user->getLastname()),
         ]);
 
         try {
@@ -53,8 +53,8 @@ class MaterielController extends AbstractController
             $this->logger->info('Envoi de l\'email avec les identifiants');
             $this->materielEmailService->sendAccountCreationEmail(
                 $user->getEmail(),
-                $user->getFirstname(),
-                $user->getLastname(),
+                ucfirst($user->getFirstname()),
+                strtoupper($user->getLastname()),
                 $credentials
             );
             $this->logger->info('Email envoyé avec succès');

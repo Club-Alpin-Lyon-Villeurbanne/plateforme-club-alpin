@@ -25,8 +25,8 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     }
 
     $civUser = $userTab['civ_user'] ?? '';
-    $firstnameUser = $userTab['firstname_user'];
-    $lastnameUser = $userTab['lastname_user'];
+    $firstnameUser = ucfirst($userTab['firstname_user']);
+    $lastnameUser = strtoupper($userTab['lastname_user']);
     $nicknameUser = $userTab['nickname_user'];
     $alerteRenouvelerUser = $userTab['alerte_renouveler_user'];
     $dateAdhesionUser = $userTab['date_adhesion_user'];
@@ -78,7 +78,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 						<h1>
 							<?php
 
-                            echo $civUser . ' ' . $firstnameUser . ' ' . $lastnameUser . '<br/>
+                            echo $civUser . ' ' . ucfirst($firstnameUser) . ' ' . strtoupper($lastnameUser) . '<br/>
                             (<a href="/user-full/' . $idUser . '.html" title="Fiche profil" target="_top">' . $nicknameUser . '</a>)'; ?>
 						</h1>
 					</td>
