@@ -108,13 +108,8 @@ if (allowed('user_see_all')) {
 						<th>Adhésion</th>
 						<th>Pseudo</th>
 						<th>Age</th>
-						<th>Tel / Tel2</th>
+						<th>Tel</th>
 						<th>E-mail</th>
-						<!-- <th>Adresse</th> -->
-						<th>CP</th>
-						<th>Ville</th>
-						<!-- <th>Pays</th> -->
-						<!--<th>Droits</th>-->
 					</tr>
 				</thead>
 				<tbody>
@@ -194,14 +189,8 @@ if (allowed('user_see_all')) {
 
                 echo '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
                 . '<td>' . ($isAllowed_user_read_private ? '<span style="display:none">' . $elt['birthday_user'] . '</span>' . ($elt['birthday_user'] ? (int) ($elt['birthday_user']) . ' ans' : '...') : $img_lock) . '</td>'
-                . '<td>' . ($isAllowed_user_read_private ? html_utf8($elt['tel_user']) . '<br />' . html_utf8($elt['tel2_user']) : $img_lock) . '</td>'
+                . '<td>' . ($isAllowed_user_read_private ? html_utf8($elt['tel_user']) : $img_lock) . '</td>'
                 . '<td>' . ($isAllowed_user_read_private ? '<a href="mailto:' . html_utf8($elt['email_user']) . '" title="Contact direct">' . html_utf8($elt['email_user']) . '</a>' : $img_lock) . '</td>'
-                // .'<td>'.(allowed('user_read_private')?nl2br(html_utf8($elt['adresse_user'])):$img_lock).'</td>'
-                . '<td>' . ($isAllowed_user_read_private ? html_utf8($elt['cp_user']) : $img_lock) . '</td>'
-                . '<td>' . ($isAllowed_user_read_private ? html_utf8($elt['ville_user']) : $img_lock) . '</td>'
-                // .'<td>'.(allowed('user_read_private')?html_utf8($elt['pays_user']):$img_lock).'</td>'
-                // .'<td></td>'
-
                 . '</tr>';
             } ?>
 				</tbody>

@@ -115,8 +115,20 @@ else {
 		    echo 'none';
 		} ?>">
 
-			<!-- infos persos-->
-			<?php require __DIR__ . '/../includes/user/infos_privees.php'; ?>
+			<!-- infos persos réduites -->
+            <?php
+		    if (allowed('user_read_private')) {
+		        echo '<hr  />'
+		             . '<h3>Infos privées : </h3>'
+		             . '<ul class="nice-list">'
+		             . '<li>LICENCE : ' . html_utf8($tmpUser['cafnum_user']) . '</a> </li>'
+		             . '<li><a href="mailto:' . html_utf8($tmpUser['email_user']) . '" title="Contact direct">' . html_utf8($tmpUser['email_user']) . '</a> </li>'
+		             . '<li class="wide">' . html_utf8($tmpUser['ville_user'] . ' ' . $tmpUser['pays_user']) . ' </li>'
+		             . '</ul>'
+		             . '<br style="clear:both" />'
+		        ;
+		    }
+    ?>
 
             <?php
     // si j'ai acces ou si les données me concernent
