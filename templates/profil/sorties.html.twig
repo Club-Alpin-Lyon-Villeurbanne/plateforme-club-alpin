@@ -68,7 +68,41 @@
                                         {{ event.titre }}
 
                                         {% set participation = event.participation(app.user) %}
-                                        {% if participation and app.user != event.user %}
+                                        {% if participation and display_notes_de_frais and include_name is same as ('profil-sorties-prev')
+                                            and event.finished and not event.cancelled and event.statusLegal
+                                            and (participation.role in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT')) %}
+                                            {% if exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_DRAFT') %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
+                                                    🧾 ✍
+                                                    NdF brouillon
+                                                </span>
+                                            {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_SUBMITTED') %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
+                                                    🧾⏳
+                                                    NdF en vérif.
+                                                </span>
+                                            {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_APPROUVED') %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
+                                                    🧾 🆗
+                                                    NdF acceptée
+                                                </span>
+                                            {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_ACCOUNTED') %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
+                                                    🧾 ✅
+                                                    NdF comptabilisée
+                                                </span>
+                                            {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_REJECTED') %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
+                                                    🧾 ❌
+                                                    NdF refusée
+                                                </span>
+                                            {% else %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
+                                                    🧾❓
+                                                    NdF possible
+                                                </span>
+                                            {% endif %}
+                                        {% elseif participation and app.user != event.user %}
                                             {% if participation.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
                                                 <span class="tw-inline-flex tw-items-center tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
                                                     <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
