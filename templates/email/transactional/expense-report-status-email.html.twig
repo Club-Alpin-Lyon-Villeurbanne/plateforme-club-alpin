@@ -26,8 +26,9 @@
     {% endif %}
     <h2>Détails</h2>
     <ul>
-        <li>Encadrant.e: {{ report.user.firstname }} {{ report.user.lastname }} </li>
-        {% if report.createdAt %}<li>Date: {{ report.createdAt | date('d-m-Y') }} </li>{% endif %}
+        <li>Encadrant.e : {{ report.user.firstname }} {{ report.user.lastname }} </li>
+        {% if report.event.tsp %}<li>Date de la sortie : {{ report.event.tsp | date('d-m-Y') }}</li>{% endif %}
+        {% if report.updatedAt %}<li>Date de la soumission de la note de frais : {{ report.updatedAt | date('d-m-Y') }} </li>{% endif %}
     </ul>
 
     <hr/>
@@ -162,9 +163,10 @@ Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif
 Message laissé par la comptabilité : "{{ report.statusComment }}"
     {% endif %}
 
-- Encadrant.e: {{ report.user.firstname }} {{ report.user.lastname }}
-{% if report.createdAt %}- Date: {{ report.createdAt | date('d-m-Y') }}{% endif %}
-- Type: {% if report.refundRequired %}Demande de remboursement par virement{% else %}Abandon de frais{% endif %}
+- Encadrant.e : {{ report.user.firstname }} {{ report.user.lastname }}
+{% if report.event.tsp %}- Date de la sortie : {{ report.event.tsp | date('d-m-Y') }}{% endif %}
+{% if report.updatedAt %}- Date de la soumission de la note de frais : {{ report.updatedAt | date('d-m-Y') }}{% endif %}
+- Type : {% if report.refundRequired %}Demande de remboursement par virement{% else %}Abandon de frais{% endif %}
 
 
     {# ================== Section TRANSPORT ================== #}

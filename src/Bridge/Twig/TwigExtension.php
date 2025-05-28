@@ -79,37 +79,37 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
             return '🚫';
         }
         if ($event->isFinished()) {
-            return '';
+            return '⚪';
         }
         if ($event->hasStarted()) {
-            return '🚫';
+            return '⚪';
         }
         if (!$event->joinHasStarted()) {
             return '⏳';
         }
-        if ($event->getNgensMax() <= \count($event->getParticipations())) {
+        if ($event->getNgensMax() <= $event->getParticipationsCount()) {
             return '🚫';
         }
 
         return '🟢';
     }
 
-    public function getTemoinPlacesSortieTitle(Evt $event)
+    public function getTemoinPlacesSortieTitle(Evt $event): string
     {
         if ($event->getCancelled()) {
             return 'Cette sortie est annulée';
         }
-        if ($event->hasStarted()) {
+        if ($event->isFinished() || $event->hasStarted()) {
             return 'Les inscriptions sont terminées';
         }
         if (!$event->joinHasStarted()) {
             return sprintf('Les inscriptions pour cette sortie commenceront le %s', date('d/m/y', $event->getJoinStart()));
         }
-        if ($event->getNgensMax() <= \count($event->getParticipations())) {
+        if ($event->getNgensMax() <= $event->getParticipationsCount()) {
             return sprintf('Les %d places libres ont été réservées', $event->getNgensMax());
         }
 
-        return sprintf('%d places restantes', max(0, $event->getNgensMax() - \count($event->getParticipations())));
+        return sprintf('%d places restantes', max(0, $event->getNgensMax() - $event->getParticipationsCount()));
     }
 
     public function getParticipationStatusName(?EventParticipation $participation): string
@@ -122,7 +122,7 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
             case EventParticipation::STATUS_NON_CONFIRME:
                 return 'En attente';
             case EventParticipation::STATUS_VALIDE:
-                return 'Accepté';
+                return $participation->getEvent()->isFinished() ? 'Présent' : 'Accepté';
             case EventParticipation::STATUS_REFUSE:
                 return 'Refusé';
             case EventParticipation::STATUS_ABSENT:

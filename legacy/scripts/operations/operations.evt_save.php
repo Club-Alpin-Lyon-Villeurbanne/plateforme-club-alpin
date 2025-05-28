@@ -27,6 +27,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $matos_evt = LegacyContainer::get('legacy_mysqli_handler')->escapeString($matos_evt);
     $itineraire = LegacyContainer::get('legacy_mysqli_handler')->escapeString($itineraire);
     $difficulte_evt = LegacyContainer::get('legacy_mysqli_handler')->escapeString($difficulte_evt);
+    $denivele_evt = LegacyContainer::get('legacy_mysqli_handler')->escapeString($denivele_evt);
+    $distance_evt = LegacyContainer::get('legacy_mysqli_handler')->escapeString($distance_evt);
     $description_evt = LegacyContainer::get('legacy_mysqli_handler')->escapeString($description_evt);
     $details_caches_evt = LegacyContainer::get('legacy_mysqli_handler')->escapeString($details_caches_evt);
 

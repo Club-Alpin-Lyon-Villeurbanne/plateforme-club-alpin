@@ -15,7 +15,14 @@
             {% endif %}
 
             <table id="agenda">
-                {% for event in events %}
+                {% for item in events %}
+                    {% if item is iterable %}
+                        {% set event = item.0 %}
+                        {% set exp_status = item.exp_status %}
+                    {% else %}
+                        {% set event = item %}
+                        {% set exp_status = null %}
+                    {% endif %}
                     <tr>
                         <td class="agenda-gauche">
                             {% set start = event.tsp | intldate('eee d MMM YYYY') | capitalize %}
@@ -81,6 +88,7 @@
                                     <h2 class="tw-flex tw-items-center tw-gap-2">
                                         {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>{% endif %}
                                         {{ event.titre }}
+
                                         {% set participation = event.participation(app.user) %}
                                         {% if participation and app.user != event.user %}
                                             {% if participation.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
@@ -117,12 +125,6 @@
 
                                     <p>
                                         <b>{{ event.commission.title }}</b>
-                                        {% if event.difficulte %}
-                                            - <b>{{ event.difficulte }}</b>
-                                        {% endif %}
-                                        {% if event.massif %}
-                                            - <b>{{ event.massif }}</b>
-                                        {% endif %}
                                         {% if event.participation(app.user) %}
                                             - Votre rôle : <b>{{ event.participation(app.user).role }}</b>
                                         {% endif %}

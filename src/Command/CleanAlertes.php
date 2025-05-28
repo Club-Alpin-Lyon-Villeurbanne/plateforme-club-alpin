@@ -20,7 +20,7 @@ class CleanAlertes extends Command
         parent::__construct($name);
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->userNotificationRepository->deleteExpiredNotifications();
 

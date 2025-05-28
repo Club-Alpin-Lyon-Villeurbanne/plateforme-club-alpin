@@ -78,7 +78,7 @@ Elles sont stockées dans le répertoire `clevercloud/crons`. Il faut se référ
 - Accès au site : `http://127.0.0.1:8000/`
 - Compte admin par défaut : `test@clubalpinlyon.fr` / `test`
 - PHPMyAdmin : `http://127.0.0.1:8080/`, accès : `root` / `test`
-- Mailcatcher : `http://127.0.0.1:8025/` (lancez cette commande pour "consommer" les mails : `docker compose exec cafsite bin/console messenger:consume mails --limit=50 --quiet --no-interaction`)
+- Mailcatcher : `http://127.0.0.1:8025/` ; lancer cette commande pour "consommer" les mails : `make consume-mails` (ou `docker compose exec cafsite bin/console messenger:consume mails --limit=50 --quiet --no-interaction`)
 
 ⚠️ L'upload d'images ne fonctionne pas dans un environnement dockerisé. 🚧
 
@@ -126,10 +126,10 @@ Nous encourageons les contributions ! Que vous soyez un développeur expériment
 
 1. **Cloner le répertoire** : Clonez le répertoire sur votre machine locale pour y apporter des modifications.
 2. **Création d'une nouvelle branche** : Créez une nouvelle branche, nommée en fonction de la fonctionnalité ou du bug sur lequel vous travaillez.
-3. **Effectuez vos modifications** : Effectuez les modifications nécessaires sur cette branche en respectant les conventions de codage. ⚠️ Avant de contribuer au code, soyez sûr que le changement que vous souhaitez apporter est dans notre backlog sur ClickUp ("PRET POUR DEV 🏁") ou que vous avez bien validé cette idée avec l'équipe informatique.
+3. **Effectuez vos modifications** : Passez le ticket en "EN COURS". Effectuez les modifications nécessaires sur cette branche en respectant les conventions de codage. ⚠️ Avant de contribuer au code, soyez sûr que le changement que vous souhaitez apporter est dans notre backlog sur ClickUp ("PRET POUR DEV 🏁") ou que vous avez bien validé cette idée avec l'équipe informatique.
 4. **Commit** : Une fois satisfait, faites un commit en décrivant clairement les modifications apportées.
 5. **Push** : Faites un push de votre branche sur GitHub.
-6. **Pull Request (PR)** : Créez une PR et décrivez-la en français. Pour toute modification visuelle, incluez une capture d'écran. Seule l'équipe informatique peut merger une PR.
+6. **Pull Request (PR)** : Créez une PR et décrivez-la en français. Pour toute modification visuelle, incluez une capture d’écran. Seule l'équipe informatique peut merger une PR. Passez le ticket en "EN REVIEW PAR DEV" et ajouter le nom de la PR en commentaire. 
 
 Nous attendons avec impatience vos contributions et vous remercions pour votre temps et votre effort ! 🙏🏼
 

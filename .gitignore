@@ -40,3 +40,7 @@ public/dev.txt
 /node_modules/
 /public/build/
 ###< pentatrion/vite-bundle ###
+
+###> liip/imagine-bundle ###
+/public/media/cache/
+###< liip/imagine-bundle ###

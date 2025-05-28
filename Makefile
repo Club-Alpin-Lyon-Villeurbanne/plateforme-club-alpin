@@ -65,8 +65,8 @@ database-init-test: ## Init database for test
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists --env=test
 	$(SYMFONY_CONSOLE) doctrine:database:create --env=test
 	$(SYMFONY_CONSOLE) messenger:setup-transports --env=test
-	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/schema_caf.sql
-	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/config/data_caf.sql
+	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/data/schema_caf.sql
+	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/data/data_caf.sql
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction --env=test
 	$(MAKE) args="--env=test --no-interaction" database-fixtures-load
 .PHONY: database-init-test
@@ -129,13 +129,13 @@ database-drop: ## Create database
 
 database-create: ## Create database
 	$(SYMFONY_CONSOLE) doctrine:database:create --if-not-exists
-	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/schema_caf.sql
+	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/data/schema_caf.sql
 	$(SYMFONY_CONSOLE) messenger:setup-transports
 	$(SYMFONY_CONSOLE) doctrine:migrations:sync-metadata-storage
 .PHONY: database-create
 
 database-import: ## Make import
-	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/config/data_caf.sql
+	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/data/data_caf.sql
 .PHONY: database-import
 
 database-migration: ## Make migration
@@ -182,3 +182,7 @@ phive-update:
 help: ## List of commands
 	@grep -E '(^[a-zA-Z0-9_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
 .PHONY: help
+
+consume-mails: ## consume mails
+	$(SYMFONY_CONSOLE) messenger:consume mails --limit=50 --quiet --no-interaction
+.PHONY: consume-mails

@@ -398,7 +398,7 @@
                                 <tr class="status{{ participation.status }}" style="color:gray; font-size:10px;">
 
                                     <td>
-                                        {{ participation.user.lastname | upper }}, {{ participation.user.firstname | capitalize }}<br/>
+                                        {{ participation.user.firstname | capitalize }} {{ participation.user.lastname | upper }}<br/>
                                         <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ participation.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ participation.user.nickname }}</a>
 
                                         {% if participation.user.doitRenouveler %}
@@ -459,7 +459,19 @@
                                             </label>
                                         {% endif %}
 
-                                        {% if (event.finished and participation.isStatusValide) or not event.finished %}
+                                        {% if event.finished and participation.isStatusValide %}
+                                            <label for="join_{{ participation.id }}_1">
+                                                <input
+                                                    {{ participation.isStatusValide ? 'checked="checked"' : '' }}
+                                                    {{ disable_accepted ? 'disabled="disabled"' : '' }}
+                                                    type="radio"
+                                                    name="status_evt_join_{{ participation.id }}"
+                                                    id="join_{{ participation.id }}_1"
+                                                    value="1"
+                                                />
+                                                Présent
+                                            </label>
+                                        {% elseif not event.finished %}
                                             <label for="join_{{ participation.id }}_1">
                                                 <input
                                                     {{ participation.isStatusValide ? 'checked="checked"' : '' }}
@@ -473,7 +485,7 @@
                                             </label>
                                         {% endif %}
 
-                                        {% if event.finished and not participation.isStatusRefuse %}
+                                        {% if event.finished and not participation.isStatusRefuse and not participation.isStatusEnAttente %}
                                             <label for="join_{{ participation.id }}_3">
                                                 <input
                                                     {{ participation.isStatusAbsent ? 'checked="checked"' : '' }}
@@ -501,16 +513,18 @@
                                             </label>
                                         {% endif %}
 
-                                        <label for="join_{{ participation.id }}_-1">
-                                            <input
-                                                name="status_evt_join_{{ participation.id }}"
-                                                {{ disable_unsubscribe ? 'disabled="disabled"' : '' }}
-                                                type="radio"
-                                                id="join_{{ participation.id }}_-1"
-                                                value="-1"
-                                            />
-                                            Désinscrire
-                                        </label>
+                                        {% if (event.finished and not participation.isStatusRefuse and not participation.isStatusEnAttente) or not event.finished %}
+                                            <label for="join_{{ participation.id }}_-1">
+                                                <input
+                                                    name="status_evt_join_{{ participation.id }}"
+                                                    {{ disable_unsubscribe ? 'disabled="disabled"' : '' }}
+                                                    type="radio"
+                                                    id="join_{{ participation.id }}_-1"
+                                                    value="-1"
+                                                />
+                                                Désinscrire
+                                            </label>
+                                        {% endif %}
 
 
                                     {% endif %}
@@ -583,14 +597,20 @@
 
                     <!-- stats affichées -->
                     <p>Stats :</p>
+                    {% set nbDemandesAcceptees = (event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) | length) + (event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_ABSENT')) | length) %}
                     <ul>
                         <li>
                             <b id="nDemandes">{{ event.participations(null, null) | length }}</b> demande(s), dont
-                            <b id="nAcceptees">{{ event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) | length }}</b> acceptée(s), et
-                            <b id="nRefusees">{{ event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_REFUSE')) | length }}</b> refusée(s).
+                            <b id="nAcceptees">{{ nbDemandesAcceptees }}</b> acceptée(s) et
+                            <b id="nRefusees">{{ event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_REFUSE')) | length }}</b> refusée(s)
                         </li>
+                        {% if (event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length > 0) %}
+                            <li>
+                                <b id="nAttente">{{ event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length }}</b> resté(s) en attente
+                            </li>
+                        {% endif %}
                         <li>
-                            <b id="nRefusees">{{ event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_ABSENT')) | length }}</b> absent(s).
+                            <b id="nAbsents">{{ event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_ABSENT')) | length }}</b> absent(s)
                         </li>
                     </ul>
 
@@ -736,9 +756,9 @@
 
         {% if not event.cancelled %}
             <ul class="nice-list">
-                <li class="wide"><b>DESCRIPTION COMPLÈTE :</b>
-                <div class="description_evt">{{ event.description | raw }}</div></li>
+                <li class="wide"><b>DESCRIPTION COMPLÈTE :</b></li>
             </ul>
+            <div class="description_evt">{{ event.description | raw }}</div>
             <hr style="clear:both" />
 
             {% if allowed('user_read_limited') and (event.tarif > 0 or event.tarifDetail) %}
@@ -906,8 +926,8 @@
             <br style="clear:both" /><hr />
 
             <p>
-                <span style="padding: 10px 10px 5px 5px;float:left;">
-                    <span class="temoin-places-dispos">{{ nPlacesRestantesOnline > 0 ? '🟢' : '🚫' }}</span>
+                <span title="{{ event | temoin_event_title }}" style="padding: 10px 10px 5px 5px;float:left;">
+                    <span class="temoin-places-dispos"> {{ event | temoin_event_picto }}</span>
                 </span>
                 <span style="font-size:14px; font-family:DINBold; color:#666666">
                     {{ nInscritsTotal }} PARTICIPANT{{ nInscritsTotal > 1 ? 'S' : '' }} INSCRIT{{ nInscritsTotal > 1 ? 'S' : '' }}

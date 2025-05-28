@@ -83,10 +83,12 @@ class EventParticipationRepository extends ServiceEntityRepository
                                     FROM App\Entity\Usertype ut
                                     WHERE ut.code = ej.role
                                 ) as weight')
+            ->addSelect('CASE WHEN ej.status = 0 THEN 3 ELSE ej.status END as status_sort')
             ->join('ej.user', 'inscrit')
             ->where('ej.evt = :event')
             ->setParameter('event', $event)
             ->orderBy('weight', 'DESC')
+            ->addOrderBy('status_sort', 'ASC')
             ->addOrderBy('inscrit.firstname', 'ASC')
             ->addOrderBy('inscrit.lastname', 'ASC')
             ->addOrderBy('ej.tsp', 'ASC')
