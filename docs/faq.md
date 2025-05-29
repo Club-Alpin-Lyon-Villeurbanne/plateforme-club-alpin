@@ -2,9 +2,6 @@
 
 ## Questions générales
 
-### Pourquoi le code n'est-il pas open source ?
-Nous avons une réelle volonté d'ouvrir ce code, mais un audit SSI approfondi a révélé que le projet nécessite encore des corrections au niveau de la sécurité avant d'être partagé publiquement.
-
 ### Pourquoi l'upload d'images ne fonctionne pas en local ?
 L'upload d'images ne fonctionne pas dans un environnement dockerisé. C'est une limitation connue de l'environnement de développement local.
 

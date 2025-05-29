@@ -10,17 +10,6 @@ docker stop www_caflyon && docker rm www_caflyon
 ```
 pour éviter les conflits d'images Docker.
 
-### Utilisateurs MacOS
-
-Sur les ordinateurs avec une puce Apple Silicon, on rencontre l'erreur `no matching manifest for linux/arm64/v8 in the manifest list entries`. Pour la résoudre, ajoutez un fichier `docker-compose.override.yml` à la racine du projet avec le contenu suivant :
-
-```yml
-version: "3"
-services:
-  cafdb:
-    platform: linux/amd64
-```
-
 ### Utilisateurs Windows
 
 Après avoir installé [WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install) et [Docker Desktop](https://docs.docker.com/desktop/install/windows-install), suivez les instructions pour activer le backend Docker WSL2 : https://docs.docker.com/desktop/wsl/.
