@@ -107,7 +107,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($row = $result->fetch_assoc()) {
                 $toMail = $row['email_user'];
-                $toName = $row['firstname_user'];
+                $toName = ucfirst($row['firstname_user']);
             }
             if (!isMail($toMail)) {
                 $errTabMail[] = "Les coordonnées du contact sont erronées (l'inscription est réalisée quand même)";

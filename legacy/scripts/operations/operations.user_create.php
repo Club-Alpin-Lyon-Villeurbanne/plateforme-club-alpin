@@ -4,8 +4,8 @@ use App\Legacy\LegacyContainer;
 use App\Utils\NicknameGenerator;
 
 $civ_user = trim(stripslashes($_POST['civ_user']));
-$firstname_user = trim(stripslashes($_POST['firstname_user']));
-$lastname_user = trim(stripslashes($_POST['lastname_user']));
+$firstname_user = ucfirst(trim(stripslashes($_POST['firstname_user'])));
+$lastname_user = strtoupper(trim(stripslashes($_POST['lastname_user'])));
 $nickname_user = NicknameGenerator::generateNickname($firstname_user, $lastname_user);
 $cafnum_user = trim(stripslashes($_POST['cafnum_user']));
 $email_user = trim(stripslashes($_POST['email_user']));

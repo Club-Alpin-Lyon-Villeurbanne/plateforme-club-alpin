@@ -86,7 +86,6 @@
                     </form>
                 {% endif %}
 
-            {# FIX ME Replace with a voter #}
             {% elseif event.publicStatusValide and (is_granted('SORTIE_UPDATE', event) or is_granted('SORTIE_DELETE', event) or is_granted('SORTIE_CANCEL', event)) %}
                 {% set closeDiv = true %}
 
@@ -578,6 +577,9 @@
                                         {% else %}
                                             {{ participation | participation_role_name }}
                                         {% endif %}
+                                        {% if participation.user is same as event.user %}
+                                            <br />(organisateur)
+                                        {% endif %}
 
                                     </td>
                                     <td style="white-space:nowrap">
@@ -587,8 +589,7 @@
                                     </td>
                                     <td>
                                         <a href="mailto:{{ participation.user.email }}">{{ participation.user.email | u.truncate(15, '...') }}</a><br />
-                                        {{ participation.user.tel|split('', 2)|join(' ') }}<br />
-                                        {{ participation.user.tel2|split('', 2)|join(' ') }}
+                                        {{ participation.user.tel|split('', 2)|join(' ') }}
                                     </td>
                                 </tr>
                             {% endfor %}

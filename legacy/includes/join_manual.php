@@ -128,8 +128,8 @@ if (user()) {
                                     . (int) $elt['id_user'] . ' '
                                 . '</td>'
                                 . '<td>' . html_utf8($elt['civ_user']) . '</td>'
-                                . '<td>' . html_utf8($elt['lastname_user']) . '</td>'
-                                . '<td>' . html_utf8($elt['firstname_user']) . '</td>'
+                                . '<td>' . strtoupper(html_utf8($elt['lastname_user'])) . '</td>'
+                                . '<td>' . ucfirst(html_utf8($elt['firstname_user'])) . '</td>'
                                 . '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
                             . '</tr>';
                         } ?>
@@ -198,8 +198,8 @@ if (user()) {
                                     . '<input type="hidden" name="firstname_user[]" value="' . html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')) . '" />'
                                     . '<input type="hidden" name="nickname_user[]" value="' . html_utf8(stripslashes($_POST['nickname_user'][$i] ?? '')) . '" />'
                                     . html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')) . ' '
-                                    . html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')) . ' '
-                                    . html_utf8(stripslashes($_POST['lastname_user'][$i] ?? '')) . ' '
+                                    . ucfirst(html_utf8(stripslashes($_POST['firstname_user'][$i] ?? ''))) . ' '
+                                    . strtoupper(html_utf8(stripslashes($_POST['lastname_user'][$i] ?? ''))) . ' '
                                 . '</td>'
                                 . '<td>'
                                     . html_utf8(stripslashes($_POST['nickname_user'][$i] ?? ''))

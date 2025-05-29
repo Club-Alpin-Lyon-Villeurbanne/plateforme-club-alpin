@@ -72,7 +72,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $errTab[] = 'Erreur SQL';
             }
 
-            $tmpUserName = (getUser()->getFirstname() . ' ' . getUser()->getLastname());
+            $tmpUserName = (ucfirst(getUser()->getFirstname()) . ' ' . strtoupper(getUser()->getLastname()));
             $evtName = $_POST['titre_evt'];
             $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . stripslashes($_POST['code_evt']) . '-' . $_POST['id_evt'] . '.html';
 

@@ -2,8 +2,10 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
+use App\Entity\UserAttr;
 use App\UserRights;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -43,8 +45,8 @@ class SortieAnnulationVoter extends Voter
         }
 
         if ($subject->getUser() !== $user
-            && !$this->userRights->allowed('evt_validate_all')
-            && !$this->userRights->allowedOnCommission('evt_validate', $subject->getCommission())
+            && !$this->userRights->allowed('evt_cancel_any')
+            && !$this->userRights->allowedOnCommission('evt_cancel', $subject->getCommission())
         ) {
             return false;
         }
@@ -53,6 +55,24 @@ class SortieAnnulationVoter extends Voter
             return false;
         }
 
-        return $this->userRights->allowedOnCommission('evt_cancel', $subject->getCommission());
+        $amIEncadrant = false;
+        foreach ($subject->getEncadrants([EventParticipation::ROLE_ENCADRANT]) as $eventParticipation) {
+            if ($eventParticipation->getUser() === $user) {
+                $amIEncadrant = true;
+            }
+        }
+
+        $amIResponsable = false;
+        foreach ($user->getAttributes() as $attribute) {
+            if (UserAttr::RESPONSABLE_COMMISSION === $attribute->getUserType()->getCode()) {
+                $amIResponsable = true;
+            }
+        }
+
+        if (($amIEncadrant || $amIResponsable) && $this->userRights->allowedOnCommission('evt_cancel', $subject->getCommission())) {
+            return true;
+        }
+
+        return false;
     }
 }

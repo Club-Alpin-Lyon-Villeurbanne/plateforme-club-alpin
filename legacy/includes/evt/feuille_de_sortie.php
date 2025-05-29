@@ -249,7 +249,7 @@ if (is_array($joinsParticipants)) {
         ?>
             <tr>
                 <td><?php echo $number++; ?></td>
-                <td><?php echo html_utf8($tmp['civ_user'] . ' ' . ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))) . ', ' . strtoupper($tmp['lastname_user']); ?></td>
+                <td><?php echo html_utf8($tmp['civ_user'] . ' ' . ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))) . ' ' . strtoupper($tmp['lastname_user']); ?></td>
                 <td><?php echo html_utf8($tmp['cafnum_user']); ?></td>
                 <td><?php echo getYearsSinceDate($tmp['birthday_user']); ?></td>
                 <td><?php echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user'])); ?></td>
@@ -258,9 +258,10 @@ if (is_array($joinsParticipants)) {
         <?php
     }
 }
+$total = $number;
 // lignes vides
 if (!isset($_GET['hide_blank']) || 'y' != $_GET['hide_blank']) {
-    for ($i = $number; $i <= (max($evt['ngens_max_evt'], $nAccepteesCalc) * 1); ++$i) {
+    for ($i = $number; $i < ($total + 5); ++$i) {
         ?>
             <tr>
                 <td><?php echo $number++; ?></td>

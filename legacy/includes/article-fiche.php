@@ -17,42 +17,7 @@ if (!$article) {
 		<h1>
 			<?php
                 echo html_utf8($article['titre_article']);
-    if (allowed('article_validate_all')) {
-        /*
-        echo "\n";
-        echo '<script >
-            function do_une_article ( status_une ) {
-
-                $.ajax({
-                    type: "POST",
-                    dataType : "json",
-                    url: "/?ajx=operations",
-                    data: { operation: "active_une_article", id_article: "'.$article['id_article'].'", new_status: status_une },
-                    success: function(jsonMsg){
-                        if(jsonMsg.success){
-                            $.fancybox(\'<p class="info">\'+jsonMsg.successmsg+\'</p>\');
-                            if (status_une == 1) {
-                                $.(une_article_img).src=\'/img/star.png\';
-                            } else {
-                                $.(une_article_img).src=\'/img/star_off.png\';
-                            }
-                        }
-                        else{
-                            $.fancybox(\'<p class="erreur">Erreur : <br />\'+(jsonMsg.error).join(\',<br />\')+\'</p>\');
-                        }
-                    }
-                });
-            };
-
-            </script>';
-
-        if ($article['une_article']) {
-            echo '&nbsp;&nbsp;&nbsp;<a id="une_article_off" href="javascript:do_une_article(\'0\');"><img id="une_article_img" src="/img/star.png" title="Supprimer de la une" width="16" height="16"></a>';
-        } else {
-            echo '&nbsp;&nbsp;&nbsp;<a id="une_article_off" href="javascript:do_une_article(\'1\');"><img id="une_article_img" src="/img/star_off.png" title="Ajouter à la une" width="16" height="16"></a>';
-        }
-            */
-    } ?>
+    ?>
 		</h1>
 		<p class="date">
 			<?php
@@ -124,18 +89,25 @@ if (!$article) {
         }
     }
 
-    if ((allowed('article_delete_notmine') || allowed('article_delete', 'commission:' . $article['commission_article']) || allowed('article_edit_notmine') || allowed('article_edit', 'commission:' . $article['commission_article'])) && 1 == $article['status_article']) {
+    if ((allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
+         || allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
+         || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
+         || allowed('article_edit')) && user() && $article['user_article'] == (string) getUser()->getId()
+        && 1 == $article['status_article']) {
         echo '<div class="alerte noprint"><b>Note :</b> Cet article est publié sur le site et visible par les adhérents !<br />';
     }
 
     // edition
-    if (allowed('article_edit_notmine') || allowed('article_edit', 'commission:' . $article['commission_article'])) {
+    if (allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
+        || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId()) {
         echo '<a href="/article-edit/' . (int) $article['id_article'] . '.html" title="" class="nice2 orange">
 			<img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cet article
 		</a>';
     }
 
-    if ('1' != $article['status_article'] && (allowed('article_delete_notmine') || allowed('article_delete', 'commission:' . $article['commission_article']))) {
+    if ('1' != $article['status_article']
+        && (allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
+         || allowed('article_delete')) && user() && $article['user_article'] == (string) getUser()->getId()) {
         // Suppression
         echo '<a href="javascript:$.fancybox($(\'#supprimer-form-' . $article['id_article'] . '\').html());" title="" class="nice2 red">
 				<img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cet article
@@ -149,7 +121,9 @@ if (!$article) {
 					<input type="submit" class="nice2 red" value="Supprimer cet article" />
 				</form>
 			</div>';
-    } elseif (allowed('article_validate_all') || allowed('article_edit', 'commission:' . $article['commission_article'])) {
+    } elseif (allowed('article_validate_all')
+              || allowed('article_validate', 'commission:' . $article['commission_article'])
+              || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId()) {
         // article publié, on peut le depublier
 
         echo '<a href="javascript:$.fancybox($(\'#depublier-form-' . $article['id_article'] . '\').html());" title="" class="nice2 red" id="button-depublier">
@@ -174,7 +148,6 @@ if (!$article) {
 			<img src="/img/base/arrow_refresh_small.png" alt="" title="" style="" />&nbsp;&nbsp;Remonter en tête
 		</a>';
 
-        //		echo '<input class="nice2 green" type="button" value="&nbsp;&nbsp;Remonter en tête" onclick="javascript:document.forms[\'renew-date-article-'.$article['id_article'].'\'].submit();" />';
         echo '<script>
 				function do_renew_date_article () {
 
@@ -197,7 +170,14 @@ if (!$article) {
 				</script>';
     }
 
-    if ('1' != $article['topubly_article'] || allowed('article_validate', 'commission:' . $article['commission_article']) || allowed('article_validate_all') || allowed('article_delete_notmine') || allowed('article_delete', 'commission:' . $article['commission_article']) || allowed('article_edit_notmine') || allowed('article_edit', 'commission:' . $article['commission_article'])) {
+    if ('1' != $article['topubly_article']
+        || allowed('article_validate_all')
+        || allowed('article_validate', 'commission:' . $article['commission_article'])
+        || allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
+        || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
+        || allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
+        || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId()
+    ) {
         echo '</div><br />';
     }
 

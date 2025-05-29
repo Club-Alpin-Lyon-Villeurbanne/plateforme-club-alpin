@@ -66,15 +66,15 @@ if (user()) {
 						LIMIT 1000';
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         while ($row = $result->fetch_assoc()) {
-            echo '<option value="' . (int) $row['id_user'] . '">' . html_utf8($row['cafnum_user'] . ' - ' . $row['firstname_user'] . ' ' . $row['lastname_user']) . ' - le ' . date('d/m/y', $row['created_user']) . '</option>';
+            echo '<option value="' . (int) $row['id_user'] . '">' . html_utf8($row['cafnum_user'] . ' - ' . ucfirst($row['firstname_user']) . ' ' . strtoupper($row['lastname_user'])) . ' - le ' . date('d/m/y', $row['created_user']) . '</option>';
 
             echo '
 						<script type="text/javascript">
 							prefilled[prefilled.length] = {
 								"civ_user": ' . json_encode($row['civ_user'], \JSON_THROW_ON_ERROR) . ',
 								"cafnum_user": ' . json_encode($row['cafnum_user'], \JSON_THROW_ON_ERROR) . ',
-								"firstname_user": ' . json_encode($row['firstname_user'], \JSON_THROW_ON_ERROR) . ',
-								"lastname_user": ' . json_encode($row['lastname_user'], \JSON_THROW_ON_ERROR) . ',
+								"firstname_user": ' . json_encode(ucfirst($row['firstname_user']), \JSON_THROW_ON_ERROR) . ',
+								"lastname_user": ' . json_encode(strtoupper($row['lastname_user']), \JSON_THROW_ON_ERROR) . ',
 								"tel_user": ' . json_encode($row['tel_user'], \JSON_THROW_ON_ERROR) . ',
 								"tel2_user": ' . json_encode($row['tel2_user'], \JSON_THROW_ON_ERROR) . ',
 								"email_user": ' . json_encode($row['email_user'], \JSON_THROW_ON_ERROR) . '

@@ -9,7 +9,7 @@
 
 ## 🏔️ À propos
 
-Application web du Club Alpin Français de Lyon-Villeurbanne, maintenant open source ! Ce projet est utilisé par plusieurs clubs alpins pour gérer leurs activités, adhérents et sorties.
+Application web permettant de gérer un Club Alpin Francais! Ce projet est utilisé par plusieurs clubs alpins pour gérer leurs activités, adhérents et sorties.
 
 ### 🌟 Pourquoi contribuer ?
 
@@ -57,7 +57,7 @@ Application web du Club Alpin Français de Lyon-Villeurbanne, maintenant open so
 
 - [Environnement de test](https://www.clubalpinlyon.top)
 - [Production](https://www.clubalpinlyon.fr)
-- [Tickets](https://app.clickup.com/)
+- [Tickets](https://app.clickup.com/42653954/v/li/222711017)
 - [Report de bugs](https://club-alpin-lyon.sentry.io/issues/?project=6021900&statsPeriod=14d)
 - [Build](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/actions)
 

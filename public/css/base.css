@@ -177,3 +177,7 @@ cursor : text;
 
 	
 #ftpPublic{background:#dedede; padding:8px; border-radius:10px; border:1px solid silver; }
+
+.text-din {
+	font-family: 'DIN', sans-serif;
+}
