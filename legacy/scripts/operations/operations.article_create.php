@@ -45,17 +45,18 @@ if (
 
 // enregistrement en BD
 if (!isset($errTab) || 0 === count($errTab)) {
-    $titre_article = LegacyContainer::get('legacy_mysqli_handler')->escapeString($titre_article);
-    $code_article = LegacyContainer::get('legacy_mysqli_handler')->escapeString($code_article);
-    $cont_article = LegacyContainer::get('legacy_mysqli_handler')->escapeString($cont_article);
+    $commission_article_value = $commission_article > 0 ? $commission_article : null;
+    $evt_article_value = $evt_article ? $evt_article : null;
 
-    $req = "INSERT INTO caf_article(`status_article` ,`topubly_article` ,`tsp_crea_article` ,`tsp_article` ,`user_article` ,`titre_article` ,`code_article` ,`commission_article` ,`evt_article` ,`une_article` ,`cont_article`)
-                        VALUES ('$status_article',  '$topubly_article',  '$tsp_crea_article',  '$tsp_article',  '$user_article',  '$titre_article',  '$code_article', " . ($commission_article > 0 ? "'$commission_article'" : 'null') . ',  ' . ($evt_article ? "'" . $evt_article . "'" : 'null') . " ,  '$une_article',  '$cont_article');";
-    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO caf_article(`status_article` ,`topubly_article` ,`tsp_crea_article` ,`tsp_article` ,`user_article` ,`titre_article` ,`code_article` ,`commission_article` ,`evt_article` ,`une_article` ,`cont_article`)
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+    $stmt->bind_param("iiiiissiiis", $status_article, $topubly_article, $tsp_crea_article, $tsp_article, $user_article, $titre_article, $code_article, $commission_article_value, $evt_article_value, $une_article, $cont_article);
+    if (!$stmt->execute()) {
         $errTab[] = 'Erreur SQL';
     } else {
         $id_article = LegacyContainer::get('legacy_mysqli_handler')->insertId();
     }
+    $stmt->close();
 }
 
 // déplacement des fichiers

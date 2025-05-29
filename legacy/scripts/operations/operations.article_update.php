@@ -39,28 +39,31 @@ if(
 
 // enregistrement en BD
 if (!isset($errTab) || 0 === count($errTab)) {
-    $titre_article = LegacyContainer::get('legacy_mysqli_handler')->escapeString($titre_article);
-    $cont_article = LegacyContainer::get('legacy_mysqli_handler')->escapeString($cont_article);
-
-    $req = "UPDATE caf_article
-    SET status_article = $status_article
-    , topubly_article = $topubly_article
-    , titre_article = '$titre_article'
-    , commission_article = " . ($commission_article > 0 ? "'$commission_article'" : 'null') . '
-    , evt_article = ' . ($evt_article ? "'" . $evt_article . "'" : 'null') . "
-    , une_article = $une_article
-    , cont_article = '$cont_article'
-    , tsp_article=" . time() . "
-    WHERE id_article = $id_article
-    "
+    $commission_article_value = $commission_article > 0 ? $commission_article : null;
+    $evt_article_value = $evt_article ? $evt_article : null;
+    $current_time = time();
+    
+    $sql = "UPDATE caf_article
+    SET status_article = ?, topubly_article = ?, titre_article = ?, commission_article = ?, evt_article = ?, une_article = ?, cont_article = ?, tsp_article = ?
+    WHERE id_article = ?";
+    
     // on verifie si on est l'auteur que si on a pas le droit de modifier TOUS les articles
-    . (allowed('article_edit_notmine') ? '' : ' AND user_article = ' . getUser()->getId())
-    ;
-    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+    if (!allowed('article_edit_notmine')) {
+        $sql .= " AND user_article = ?";
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($sql);
+        $user_id = getUser()->getId();
+        $stmt->bind_param("iiisiisii", $status_article, $topubly_article, $titre_article, $commission_article_value, $evt_article_value, $une_article, $cont_article, $current_time, $id_article, $user_id);
+    } else {
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($sql);
+        $stmt->bind_param("iiisiisii", $status_article, $topubly_article, $titre_article, $commission_article_value, $evt_article_value, $une_article, $cont_article, $current_time, $id_article);
+    }
+    
+    if (!$stmt->execute()) {
         $errTab[] = 'Erreur SQL';
     } elseif (LegacyContainer::get('legacy_mysqli_handler')->affectedRows() < 1) {
         $errTab[] = "Aucun enregistrement affecté : ID introuvable, ou vous n'êtes pas le créateur de cette article, ou bien aucune modification n'a été apportée.";
     }
+    $stmt->close();
 }
 
 // debug : reload page

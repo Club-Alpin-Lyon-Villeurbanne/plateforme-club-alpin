@@ -18,18 +18,24 @@ if (!allowed('evt_validate')) {
 
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
-    $req = "UPDATE caf_evt SET status_evt='$status_evt', status_who_evt=" . getUser()->getId() . " WHERE caf_evt.id_evt =$id_evt";
-    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+    $user_id = getUser()->getId();
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE caf_evt SET status_evt = ?, status_who_evt = ? WHERE caf_evt.id_evt = ?");
+    $stmt->bind_param("iii", $status_evt, $user_id, $id_evt);
+    if (!$stmt->execute()) {
         $errTab[] = 'Erreur SQL';
     }
+    $stmt->close();
 
     // récupération des infos user et evt
-    $req = "SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_evt, titre_evt, code_evt, tsp_evt, title_commission FROM caf_user, caf_evt, caf_commission WHERE id_user=user_evt AND commission_evt=id_commission AND id_evt=$id_evt LIMIT 1";
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_evt, titre_evt, code_evt, tsp_evt, title_commission FROM caf_user, caf_evt, caf_commission WHERE id_user = user_evt AND commission_evt = id_commission AND id_evt = ? LIMIT 1");
+    $stmt->bind_param("i", $id_evt);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $authorDatas = false;
     while ($row = $result->fetch_assoc()) {
         $authorDatas = $row;
     }
+    $stmt->close();
     if (!$authorDatas) {
         $errTab[] = 'User or evt not found';
     }
@@ -59,16 +65,10 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_evt || 2 == $stat
 
 if ((!isset($errTab) || 0 === count($errTab)) && 1 == $status_evt) {
     $handle['joins'] = [];
-    $req = "SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user
-            , role_evt_join
-        FROM caf_evt_join, caf_user
-        WHERE evt_evt_join =$id_evt
-        AND status_evt_join = 1
-        AND user_evt_join = id_user
-        AND id_user != " . $authorDatas['id_user'] . '
-        LIMIT 300';
-
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, role_evt_join FROM caf_evt_join, caf_user WHERE evt_evt_join = ? AND status_evt_join = 1 AND user_evt_join = id_user AND id_user != ? LIMIT 300");
+    $stmt->bind_param("ii", $id_evt, $authorDatas['id_user']);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     while ($row = $result->fetch_assoc()) {
         LegacyContainer::get('legacy_mailer')->send($row['email_user'], 'transactional/sortie-publiee-inscrit', [
@@ -81,4 +81,5 @@ if ((!isset($errTab) || 0 === count($errTab)) && 1 == $status_evt) {
             'role' => $row['role_evt_join'],
         ], [], null, $authorDatas['email_user']);
     }
+    $stmt->close();
 }

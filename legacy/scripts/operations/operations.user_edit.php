@@ -33,11 +33,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $userTab['cafnum_user'] = $userTab['cafnum_user_new'];
     }
 
-    $req = "UPDATE `caf_user` SET email_user='" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($userTab['email_user']) . "',
-            auth_contact_user='" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($userTab['auth_contact_user']) . "'";
-
-    $req .= "WHERE cafnum_user='" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($userTab['cafnum_user']) . "'";
-
-    LegacyContainer::get('legacy_mysqli_handler')->query($req);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE `caf_user` SET email_user=?, auth_contact_user=? WHERE cafnum_user=?");
+    $stmt->bind_param("sss", $userTab['email_user'], $userTab['auth_contact_user'], $userTab['cafnum_user']);
+    $stmt->execute();
+    $stmt->close();
     $okTab[] = 'Mise à jour du compte';
 }

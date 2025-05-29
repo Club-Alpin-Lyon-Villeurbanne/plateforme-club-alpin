@@ -10,26 +10,28 @@ $id_evt = (int) $_GET['id_evt']; // spécial : donné dans l'URL
 
 // suis-je encadrant sur cette sortie ?
 $suis_encadrant = false;
-$req = "SELECT COUNT(id_evt_join)
-FROM caf_evt_join
-WHERE evt_evt_join=$id_evt
-AND user_evt_join = " . getUser()->getId() . "
-AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant')
-LIMIT 1";
-$result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+$stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join = ? AND user_evt_join = ? AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant') LIMIT 1");
+$user_id = getUser()->getId();
+$stmt->bind_param("ii", $id_evt, $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
 $row = $result->fetch_row();
 if ($row[0] > 0) {
     $suis_encadrant = true;
 }
+$stmt->close();
 
 // suis-je l'auteur de cette sortie ?
 $suis_auteur = false;
-$req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND user_evt = " . getUser()->getId() . ' LIMIT 1';
-$result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+$stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt = ? AND user_evt = ? LIMIT 1");
+$stmt->bind_param("ii", $id_evt, $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
 $row = $result->fetch_row();
 if ($row[0] > 0) {
     $suis_auteur = true;
 }
+$stmt->close();
 
 // checks SQL : l'user doit être l'auteur *OU* avoir le droit de modifier toutes les inscriptions *OU* être encadrant sur la sortie
 if (!allowed('evt_join_doall') && !allowed('evt_join_notme') && !$suis_encadrant && !$suis_auteur) {
@@ -53,12 +55,15 @@ if (!is_array($_POST['id_user'])) {
 
 if (!isset($errTab) || 0 === count($errTab)) {
     // verification de la validité de la sortie
-    $req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND status_evt != 1 LIMIT 1";
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt = ? AND status_evt != 1 LIMIT 1");
+    $stmt->bind_param("i", $id_evt);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $row = $result->fetch_row();
     if ($row[0]) {
         $errTab[] = 'Cette sortie ne semble pas publiée, les inscriptions sont impossible';
     }
+    $stmt->close();
 
     // pour chaque id donné
     foreach ($_POST['id_user'] as $i => $user) {
@@ -68,7 +73,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $is_covoiturage = 'NULL';
 
         // si pas de pb, intégration
-        $role_evt_join = LegacyContainer::get('legacy_mysqli_handler')->escapeString($role_evt_join);
 
         if (!isset($errTab) || 0 === count($errTab)) {
             // attention : status_evt_join est à 1 ici par défaut
@@ -77,15 +81,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $status_evt_join = 1;
             }
 
-            $req = "INSERT INTO caf_evt_join(
-                        status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join,
-                        lastchange_when_evt_join, lastchange_who_evt_join,
-                        is_covoiturage, affiliant_user_join)
-                    VALUES (
-                        $status_evt_join, '$id_evt',    '$id_user',  '$role_evt_join', " . time() . ',
-                        ' . time() . ', 			' . getUser()->getId() . ",
-                        $is_covoiturage,  null);";
-            if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_covoiturage, affiliant_user_join) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)");
+            $current_time = time();
+            $stmt->bind_param("iiisiiis", $status_evt_join, $id_evt, $id_user, $role_evt_join, $current_time, $current_time, $user_id, $is_covoiturage);
+            if (!$stmt->execute()) {
                 $errTab[] = 'Erreur SQL';
             } else {
                 unset($_POST['id_user'][$i]);
@@ -95,6 +94,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 unset($_POST['nickname_user'][$i]);
                 unset($_POST['role_evt_join'][$i]);
             }
+            $stmt->close();
         }
 
         if (!isset($errTab) || 0 === count($errTab)) {
@@ -103,12 +103,15 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // recup de son email & nom
             $toMail = '';
             $toName = '';
-            $req = "SELECT email_user, firstname_user, lastname_user, civ_user FROM caf_user WHERE id_user=$id_user LIMIT 1";
-            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT email_user, firstname_user, lastname_user, civ_user FROM caf_user WHERE id_user = ? LIMIT 1");
+            $stmt->bind_param("i", $id_user);
+            $stmt->execute();
+            $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
                 $toMail = $row['email_user'];
                 $toName = ucfirst($row['firstname_user']);
             }
+            $stmt->close();
             if (!isMail($toMail)) {
                 $errTabMail[] = "Les coordonnées du contact sont erronées (l'inscription est réalisée quand même)";
             }
@@ -118,14 +121,17 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $evtName = '';
             $evtDate = '';
             $commissionTitle = '';
-            $req = "SELECT id_evt, code_evt, titre_evt, tsp_evt, title_commission FROM caf_evt AS e INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) WHERE id_evt=$id_evt LIMIT 1";
-            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT id_evt, code_evt, titre_evt, tsp_evt, title_commission FROM caf_evt AS e INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) WHERE id_evt = ? LIMIT 1");
+            $stmt->bind_param("i", $id_evt);
+            $stmt->execute();
+            $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
                 $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $row['code_evt'] . '-' . $row['id_evt'] . '.html';
                 $evtName = $row['titre_evt'];
                 $evtDate = date('d/m/Y', $row['tsp_evt']);
                 $commissionTitle = $row['title_commission'];
             }
+            $stmt->close();
 
             if (0 === count($errTabMail)) {
                 LegacyContainer::get('legacy_mailer')->send($toMail, 'transactional/sortie-inscription', [

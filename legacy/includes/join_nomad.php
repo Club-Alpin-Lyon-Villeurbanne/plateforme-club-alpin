@@ -7,11 +7,14 @@ use App\Legacy\LegacyContainer;
 if (user()) {
     // id de la sortie
     $id_evt = (int) $_GET['id_evt'];
-    $req = 'SELECT * FROM `caf_evt` WHERE `id_evt` = ' . $id_evt;
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT * FROM `caf_evt` WHERE `id_evt` = ?');
+    $stmt->bind_param("i", $id_evt);
+    $stmt->execute();
+    $result = $stmt->get_result();
     while ($sorties = $result->fetch_assoc()) {
         $sortie = $sorties;
     }
+    $stmt->close();
 
     if (!$id_evt) {
         echo '<p class="erreur">ID de sortie non spécifié</p>';
