@@ -1,4 +1,4 @@
-# Club Alpin Français de Lyon-Villeurbanne
+# Code source pour l'application de gestion de Clubs Alpins Français
 
 [![CI/CD](https://img.shields.io/badge/Automatisation-github_actions-orange)](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/actions)
 [![Clever Cloud](https://img.shields.io/badge/Hébergement-Clever_cloud-yellow)](https://console.clever-cloud.com/)
