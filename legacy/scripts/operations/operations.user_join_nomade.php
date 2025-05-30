@@ -23,7 +23,7 @@ WHERE evt_evt_join = ?
 AND user_evt_join = ?
 AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant')
 LIMIT 1");
-$stmt->bind_param("ii", $id_evt, getUser()->getId());
+$stmt->bind_param('ii', $id_evt, getUser()->getId());
 $stmt->execute();
 $result = $stmt->get_result();
 $row = $result->fetch_row();
@@ -34,8 +34,8 @@ $stmt->close();
 
 // suis-je l'auteur de cette sortie ?
 $suis_auteur = false;
-$stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt = ? AND user_evt = ? LIMIT 1");
-$stmt->bind_param("ii", $id_evt, getUser()->getId());
+$stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt = ? AND user_evt = ? LIMIT 1');
+$stmt->bind_param('ii', $id_evt, getUser()->getId());
 $stmt->execute();
 $result = $stmt->get_result();
 $row = $result->fetch_row();
@@ -68,9 +68,9 @@ if (!$lastname_user) {
 if ($email_user && !filter_var($email_user, \FILTER_VALIDATE_EMAIL)) {
     $errTab[] = "L'adresse email est invalide";
 } else {
-    $reqmail = "SELECT COUNT(*) FROM caf_user WHERE email_user = ?";
+    $reqmail = 'SELECT COUNT(*) FROM caf_user WHERE email_user = ?';
     $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($reqmail);
-    $stmt->bind_param("s", $email_user);
+    $stmt->bind_param('s', $email_user);
     $stmt->execute();
     $resultmail = $stmt->get_result();
     $rowmail = $resultmail->fetch_row();
@@ -97,7 +97,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         )');
         $current_time = time();
         $parent_id = getUser()->getId();
-        $stmt->bind_param("ssssssisssi", $email_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $current_time, $tel_user, $tel2_user, $civ_user, $parent_id);
+        $stmt->bind_param('ssssssisssi', $email_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $current_time, $tel_user, $tel2_user, $civ_user, $parent_id);
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur SQL';
         } else {
@@ -118,17 +118,16 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $is_covoiturage = 'NULL';
 
         if (!isset($errTab) || 0 === count($errTab)) {
-
             // attention : status_evt_join est à 0 ici par défaut
             $status_evt_join = 0;
             if ($suis_encadrant || $suis_auteur) {
                 $status_evt_join = 1;
             }
 
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_covoiturage, affiliant_user_join) VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL)");
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_covoiturage, affiliant_user_join) VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL)');
             $current_time = time();
             $who = getUser()->getId();
-            $stmt->bind_param("iiisiii", $status_evt_join, $id_evt, $id_user, $role_evt_join, $current_time, $current_time, $who);
+            $stmt->bind_param('iiisiii', $status_evt_join, $id_evt, $id_user, $role_evt_join, $current_time, $current_time, $who);
             if (!$stmt->execute()) {
                 $errTab[] = 'Erreur SQL';
             }

@@ -46,11 +46,11 @@ if (
 // enregistrement en BD
 if (!isset($errTab) || 0 === count($errTab)) {
     $commission_article_value = $commission_article > 0 ? $commission_article : null;
-    $evt_article_value = $evt_article ? $evt_article : null;
+    $evt_article_value = $evt_article ?: null;
 
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO caf_article(`status_article` ,`topubly_article` ,`tsp_crea_article` ,`tsp_article` ,`user_article` ,`titre_article` ,`code_article` ,`commission_article` ,`evt_article` ,`une_article` ,`cont_article`)
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?)");
-    $stmt->bind_param("iiiiissiiis", $status_article, $topubly_article, $tsp_crea_article, $tsp_article, $user_article, $titre_article, $code_article, $commission_article_value, $evt_article_value, $une_article, $cont_article);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO caf_article(`status_article` ,`topubly_article` ,`tsp_crea_article` ,`tsp_article` ,`user_article` ,`titre_article` ,`code_article` ,`commission_article` ,`evt_article` ,`une_article` ,`cont_article`)
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?)');
+    $stmt->bind_param('iiiiissiiis', $status_article, $topubly_article, $tsp_crea_article, $tsp_article, $user_article, $titre_article, $code_article, $commission_article_value, $evt_article_value, $une_article, $cont_article);
     if (!$stmt->execute()) {
         $errTab[] = 'Erreur SQL';
     } else {

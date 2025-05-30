@@ -22,20 +22,19 @@ if (isGranted(SecurityConstants::ROLE_ADMIN)) {
     $log .= "\n linkedtopage_content_inline :  \n" . $linkedtopage_content_inline;
 
     if (isset($_POST['id_content_inline']) && isset($_POST['lang_content_inline']) && isset($_POST['contenu_content_inline'])) {
-
         // entrée à créer
         if (!$id_content_inline) {
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO  `caf_content_inline` (groupe_content_inline, code_content_inline ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO  `caf_content_inline` (groupe_content_inline, code_content_inline ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`) VALUES (?, ?, ?, ?, ?, ?)');
             $current_time = time();
-            $stmt->bind_param("isssis", $groupe_content_inline, $code_content_inline, $lang_content_inline, $contenu_content_inline, $current_time, $linkedtopage_content_inline);
+            $stmt->bind_param('isssis', $groupe_content_inline, $code_content_inline, $lang_content_inline, $contenu_content_inline, $current_time, $linkedtopage_content_inline);
         } else {
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE  `caf_content_inline` SET  `contenu_content_inline` =  ?, `date_content_inline` =  ?  WHERE  `caf_content_inline`.`id_content_inline` = ? LIMIT 1 ;");
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE  `caf_content_inline` SET  `contenu_content_inline` =  ?, `date_content_inline` =  ?  WHERE  `caf_content_inline`.`id_content_inline` = ? LIMIT 1 ;');
             $current_time = time();
-            $stmt->bind_param("sii", $contenu_content_inline, $current_time, $id_content_inline);
+            $stmt->bind_param('sii', $contenu_content_inline, $current_time, $id_content_inline);
         }
         $log .= "\n SQL : ";
         if (!$stmt->execute()) {
-            $log .= "ERREUR : requête préparée";
+            $log .= 'ERREUR : requête préparée';
         } else {
             $log .= "\n OK ";
             $result['success'] = true;

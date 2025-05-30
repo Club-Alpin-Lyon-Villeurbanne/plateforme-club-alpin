@@ -38,7 +38,7 @@ else {
         FROM caf_user
         WHERE id_user = ?');
     $user_id = getUser()->getId();
-    $stmt->bind_param("i", $user_id);
+    $stmt->bind_param('i', $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($handle = $result->fetch_array(\MYSQLI_ASSOC)) {
@@ -59,10 +59,10 @@ else {
 if (!isset($errTab) || 0 === count($errTab)) {
     $destinataire = false;
     // ce user autorise t-il le contact
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT civ_user, firstname_user, lastname_user, auth_contact_user, email_user
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT civ_user, firstname_user, lastname_user, auth_contact_user, email_user
         FROM caf_user
-        WHERE id_user = ?");
-    $stmt->bind_param("i", $id_user);
+        WHERE id_user = ?');
+    $stmt->bind_param('i', $id_user);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($handle = $result->fetch_array(\MYSQLI_ASSOC)) {
@@ -78,8 +78,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 }
 
 if (!empty($idEvent)) {
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT e.*, c.title_commission FROM caf_evt AS e INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) WHERE id_evt = ? LIMIT 1");
-    $stmt->bind_param("i", $idEvent);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT e.*, c.title_commission FROM caf_evt AS e INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) WHERE id_evt = ? LIMIT 1');
+    $stmt->bind_param('i', $idEvent);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($eventRow = $result->fetch_assoc()) {
@@ -89,8 +89,8 @@ if (!empty($idEvent)) {
 }
 
 if (!empty($idArticle)) {
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT * FROM caf_article WHERE id_article = ? LIMIT 1");
-    $stmt->bind_param("i", $idArticle);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT * FROM caf_article WHERE id_article = ? LIMIT 1');
+    $stmt->bind_param('i', $idArticle);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($articleRow = $result->fetch_assoc()) {

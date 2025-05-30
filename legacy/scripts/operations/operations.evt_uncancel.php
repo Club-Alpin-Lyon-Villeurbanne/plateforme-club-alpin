@@ -12,14 +12,14 @@ if (!$id_evt) {
 
 if (!isset($errTab) || 0 === count($errTab)) {
     // recuperation de la sortie demandée
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT id_evt, code_evt, status_evt, titre_evt, tsp_evt, code_commission,
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_evt, code_evt, status_evt, titre_evt, tsp_evt, code_commission,
         id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user
         FROM caf_evt, caf_user, caf_commission
         WHERE id_evt=?
         AND id_user = user_evt
         AND commission_evt=id_commission
-        LIMIT 1");
-    $stmt->bind_param("i", $id_evt);
+        LIMIT 1');
+    $stmt->bind_param('i', $id_evt);
     $stmt->execute();
     $handleSql = $stmt->get_result();
 
@@ -31,7 +31,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // mise à jour
             if (!isset($errTab) || 0 === count($errTab)) {
                 $stmt2 = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE caf_evt SET cancelled_evt='0', cancelled_who_evt=null, cancelled_when_evt='0', status_evt='0' WHERE caf_evt.id_evt =?");
-                $stmt2->bind_param("i", $id_evt);
+                $stmt2->bind_param('i', $id_evt);
                 if (!$stmt2->execute()) {
                     $errTab[] = 'Erreur SQL';
                 }

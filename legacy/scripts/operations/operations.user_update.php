@@ -33,8 +33,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // 04/09/2013 - gmn - desactivation car import FFCAM => E.HENKE : on doit malgré tout pouvoir enregistrer les infos personnelles de contact
     if (!isset($errTab) || 0 === count($errTab)) {
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE `caf_user` SET `auth_contact_user` = ? WHERE `id_user` = ? LIMIT 1");
-        $stmt->bind_param("si", $auth_contact_user, $id_user);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE `caf_user` SET `auth_contact_user` = ? WHERE `id_user` = ? LIMIT 1');
+        $stmt->bind_param('si', $auth_contact_user, $id_user);
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur SQL';
         }
@@ -97,8 +97,8 @@ if ('' !== $email_user_mailchange) {
 
     // VERIFICATIONS
     // compte des entrées existantes avec cet e-mail
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT COUNT(id_user) FROM caf_user WHERE email_user LIKE ? AND id_user != ?");
-    $stmt->bind_param("si", $email_user_mailchange, $id_user);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE email_user LIKE ? AND id_user != ?');
+    $stmt->bind_param('si', $email_user_mailchange, $id_user);
     $stmt->execute();
     $result = $stmt->get_result();
     if (getArrayFirstValue($result->fetch_array(\MYSQLI_NUM))) {
@@ -109,8 +109,8 @@ if ('' !== $email_user_mailchange) {
     // ENTRÉE DE LA DEMANDE DANS LA BD
     if (!isset($errTab) || 0 === count($errTab)) {
         $token = bin2hex(random_bytes(16));
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO `caf_user_mailchange` (`user_user_mailchange`, `token_user_mailchange`, `email_user_mailchange`) VALUES (?, ?, ?)");
-        $stmt->bind_param("iss", $id_user, $token, $email_user_mailchange);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO `caf_user_mailchange` (`user_user_mailchange`, `token_user_mailchange`, `email_user_mailchange`) VALUES (?, ?, ?)');
+        $stmt->bind_param('iss', $id_user, $token, $email_user_mailchange);
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur SQL';
         } else {

@@ -11,8 +11,8 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
         $log .= "\n GET id_page = $id_page";
         $id_page = (int) $id_page;
         if ($id_page) {
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE `caf_pdt` SET `ordre_pdt` = ? WHERE `caf_pdt`.`id_pdt` = ? LIMIT 1");
-            $stmt->bind_param("ii", $ordre_pdt, $id_page);
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE `caf_pdt` SET `ordre_pdt` = ? WHERE `caf_pdt`.`id_pdt` = ? LIMIT 1');
+            $stmt->bind_param('ii', $ordre_pdt, $id_page);
             $stmt->execute();
             $stmt->close();
             $log .= "\n REQ : UPDATE caf_pdt ...";

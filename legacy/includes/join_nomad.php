@@ -8,7 +8,7 @@ if (user()) {
     // id de la sortie
     $id_evt = (int) $_GET['id_evt'];
     $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT * FROM `caf_evt` WHERE `id_evt` = ?');
-    $stmt->bind_param("i", $id_evt);
+    $stmt->bind_param('i', $id_evt);
     $stmt->execute();
     $result = $stmt->get_result();
     while ($sorties = $result->fetch_assoc()) {

@@ -44,8 +44,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // vérification que c'est bien mon affilié
             // sauf moi-meme
             if ($id_user_tmp != getUser()->getId()) {
-                $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT COUNT(id_user) FROM caf_user WHERE cafnum_parent_user = ? AND id_user = ?");
-                $stmt->bind_param("si", getUser()->getCafnum(), $id_user_tmp);
+                $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE cafnum_parent_user = ? AND id_user = ?');
+                $stmt->bind_param('si', getUser()->getCafnum(), $id_user_tmp);
                 $stmt->execute();
                 $result = $stmt->get_result();
                 $row = $result->fetch_row();
@@ -58,8 +58,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     // verification de la validité de la sortie
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt = ? AND status_evt != 1 LIMIT 1");
-    $stmt->bind_param("i", $id_evt);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt = ? AND status_evt != 1 LIMIT 1');
+    $stmt->bind_param('i', $id_evt);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_row();
@@ -70,8 +70,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // verification du timing de la sortie
     $current_time = time();
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt = ? AND tsp_evt < ? LIMIT 1");
-    $stmt->bind_param("ii", $id_evt, $current_time);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt = ? AND tsp_evt < ? LIMIT 1');
+    $stmt->bind_param('ii', $id_evt, $current_time);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_row();
@@ -81,8 +81,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 
     // verification du timing de la sortie : inscriptions
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt = ? AND join_start_evt > ? LIMIT 1");
-    $stmt->bind_param("ii", $id_evt, $current_time);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt = ? AND join_start_evt > ? LIMIT 1');
+    $stmt->bind_param('ii', $id_evt, $current_time);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_row();
@@ -96,8 +96,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // verification de l'existence de cette demande
     if (!$filiations) {
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join = ? AND user_evt_join = ? LIMIT 1");
-        $stmt->bind_param("ii", $id_evt, $id_user);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join = ? AND user_evt_join = ? LIMIT 1');
+        $stmt->bind_param('ii', $id_evt, $id_user);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_row();
@@ -111,13 +111,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
     else {
         foreach ($idUsersFiliations as $id_user_tmp) {
             $id_user_tmp = (int) $id_user_tmp;
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT id_user, lastname_user, firstname_user, civ_user
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_user, lastname_user, firstname_user, civ_user
             FROM caf_evt_join, caf_user
             WHERE evt_evt_join = ?
             AND user_evt_join = id_user
             AND id_user = ?
-            LIMIT 1");
-            $stmt->bind_param("ii", $id_evt, $id_user_tmp);
+            LIMIT 1');
+            $stmt->bind_param('ii', $id_evt, $id_user_tmp);
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
@@ -139,18 +139,18 @@ if (!isset($errTab) || 0 === count($errTab)) {
         // normal
         if (!$filiations) {
             if (!$update) {
-                $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_covoiturage, affiliant_user_join, lastchange_when_evt_join, lastchange_who_evt_join)
-                          VALUES(?, ?, ?, ?, ?, ?, null, null, null)");
-                $stmt->bind_param("iiisii", $status_evt_join, $id_evt, $id_user, $role_evt_join, $current_timestamp, $is_covoiturage);
+                $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, is_covoiturage, affiliant_user_join, lastchange_when_evt_join, lastchange_who_evt_join)
+                          VALUES(?, ?, ?, ?, ?, ?, null, null, null)');
+                $stmt->bind_param('iiisii', $status_evt_join, $id_evt, $id_user, $role_evt_join, $current_timestamp, $is_covoiturage);
                 $success = $stmt->execute();
                 $stmt->close();
             } elseif (in_array($id_user, $update, true)) {
-                $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE `caf_evt_join`
+                $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE `caf_evt_join`
                             SET
                                 `is_covoiturage` = ?
                             WHERE
-                                `user_evt_join` = ? AND evt_evt_join = ?");
-                $stmt->bind_param("iii", $is_covoiturage, $id_user, $id_evt);
+                                `user_evt_join` = ? AND evt_evt_join = ?');
+                $stmt->bind_param('iii', $is_covoiturage, $id_user, $id_evt);
                 $success = $stmt->execute();
                 $stmt->close();
             }
@@ -162,18 +162,18 @@ if (!isset($errTab) || 0 === count($errTab)) {
         else {
             foreach ($idUsersFiliations as $id_user_tmp) {
                 if (!$update || !in_array($id_user_tmp, $update, true)) {
-                    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, affiliant_user_join, role_evt_join, tsp_evt_join, is_covoiturage)
-                              VALUES(?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->bind_param("iiiiisi", $status_evt_join, $id_evt, $id_user_tmp, $id_user, $role_evt_join, $current_timestamp, $is_covoiturage);
+                    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, affiliant_user_join, role_evt_join, tsp_evt_join, is_covoiturage)
+                              VALUES(?, ?, ?, ?, ?, ?, ?)');
+                    $stmt->bind_param('iiiiisi', $status_evt_join, $id_evt, $id_user_tmp, $id_user, $role_evt_join, $current_timestamp, $is_covoiturage);
                     $success = $stmt->execute();
                     $stmt->close();
                 } elseif (in_array($id_user_tmp, $update, true)) {
-                    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE `caf_evt_join`
+                    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE `caf_evt_join`
                             SET
                                 `is_covoiturage` = ?
                             WHERE
-                                `user_evt_join` = ? AND evt_evt_join = ?");
-                    $stmt->bind_param("iii", $is_covoiturage, $id_user_tmp, $id_evt);
+                                `user_evt_join` = ? AND evt_evt_join = ?');
+                    $stmt->bind_param('iii', $is_covoiturage, $id_user_tmp, $id_evt);
                     $success = $stmt->execute();
                     $stmt->close();
                 }
@@ -192,9 +192,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_user, email_user, nickname_user, firstname_user, lastname_user, civ_user '
         . 'FROM caf_user, caf_evt '
         . 'WHERE id_user = user_evt '
-        . "AND id_evt = ? "
+        . 'AND id_evt = ? '
         . 'LIMIT 1');
-        $stmt->bind_param("i", $id_evt);
+        $stmt->bind_param('i', $id_evt);
         $stmt->execute();
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
@@ -206,10 +206,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_user, email_user, nickname_user, firstname_user, lastname_user, civ_user, role_evt_join '
         . 'FROM caf_user, caf_evt_join '
         . 'WHERE id_user = user_evt_join '
-        . "AND evt_evt_join = ? "
+        . 'AND evt_evt_join = ? '
         . 'AND status_evt_join = 1 '
         . "AND (role_evt_join = 'encadrant' OR role_evt_join = 'stagiaire' OR role_evt_join = 'coencadrant')");
-        $stmt->bind_param("i", $id_evt);
+        $stmt->bind_param('i', $id_evt);
         $stmt->execute();
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
@@ -222,9 +222,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_evt, code_evt, titre_evt, tsp_evt, title_commission '
         . 'FROM caf_evt AS e '
         . 'INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) '
-        . "WHERE id_evt = ? "
+        . 'WHERE id_evt = ? '
         . 'LIMIT 1');
-        $stmt->bind_param("i", $id_evt);
+        $stmt->bind_param('i', $id_evt);
         $stmt->execute();
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
@@ -242,9 +242,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if ($filiations) {
             // Pour les filiations, utiliser une requête préparée avec des placeholders dynamiques
             $placeholders = str_repeat('?,', count($idUsersFiliations) - 1) . '?';
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT email_user, nickname_user, firstname_user, lastname_user, civ_user, birthday_user 
-                FROM caf_user 
-                WHERE id_user IN ($placeholders) 
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT email_user, nickname_user, firstname_user, lastname_user, civ_user, birthday_user
+                FROM caf_user
+                WHERE id_user IN ($placeholders)
                 LIMIT 100");
             $stmt->bind_param(str_repeat('i', count($idUsersFiliations)), ...$idUsersFiliations);
             $stmt->execute();
@@ -254,11 +254,11 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
             $stmt->close();
         } else {
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT email_user, nickname_user, firstname_user, lastname_user, civ_user, birthday_user 
-                FROM caf_user 
-                WHERE id_user = ? 
-                LIMIT 1");
-            $stmt->bind_param("i", $id_user);
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT email_user, nickname_user, firstname_user, lastname_user, civ_user, birthday_user
+                FROM caf_user
+                WHERE id_user = ?
+                LIMIT 1');
+            $stmt->bind_param('i', $id_user);
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {

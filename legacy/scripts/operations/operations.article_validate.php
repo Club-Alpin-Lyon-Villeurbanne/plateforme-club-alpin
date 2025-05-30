@@ -19,9 +19,9 @@ $authorDatas = null;
 
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE caf_article SET status_article=?, status_who_article=? WHERE caf_article.id_article =?");
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_article SET status_article=?, status_who_article=? WHERE caf_article.id_article =?');
     $user_id = getUser()->getId();
-    $stmt->bind_param("iii", $status_article, $user_id, $id_article);
+    $stmt->bind_param('iii', $status_article, $user_id, $id_article);
 
     LegacyContainer::get('legacy_message_bus')->dispatch(new ArticlePublie($id_article));
 
@@ -29,18 +29,18 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $errTab[] = 'Erreur SQL';
     }
     $stmt->close();
-    
+
     $stmt2 = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_article SET tsp_validate_article=? WHERE caf_article.id_article=? AND (tsp_validate_article=0 OR tsp_validate_article IS NULL)'); // premiere validation
     $current_time = time();
-    $stmt2->bind_param("ii", $current_time, $id_article);
+    $stmt2->bind_param('ii', $current_time, $id_article);
     if (!$stmt2->execute()) {
         $errTab[] = 'Erreur SQL';
     }
     $stmt2->close();
 
     // récupération des infos user et article
-    $stmt3 = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_article, titre_article, code_article, tsp_crea_article, tsp_article FROM caf_user, caf_article WHERE id_user=user_article AND id_article=? LIMIT 1");
-    $stmt3->bind_param("i", $id_article);
+    $stmt3 = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_article, titre_article, code_article, tsp_crea_article, tsp_article FROM caf_user, caf_article WHERE id_user=user_article AND id_article=? LIMIT 1');
+    $stmt3->bind_param('i', $id_article);
     $stmt3->execute();
     $result = $stmt3->get_result();
     while ($row = $result->fetch_assoc()) {

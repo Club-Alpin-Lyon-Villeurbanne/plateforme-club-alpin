@@ -44,7 +44,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             AND a.status_' . $parent_type_comment . ' = 1
             LIMIT 1';
     $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($sql);
-    $stmt->bind_param("i", $parent_comment);
+    $stmt->bind_param('i', $parent_comment);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_row();
@@ -59,10 +59,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
 // insert SQL
 if (!isset($errTab) || 0 === count($errTab)) {
     // article publié et commentable ?
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO caf_comment(status_comment, tsp_comment, user_comment, name_comment, email_comment, cont_comment, parent_type_comment, parent_comment) VALUES ('1', ?, ?, '', '', ?, ?, ?)");
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO caf_comment(status_comment, tsp_comment, user_comment, name_comment, email_comment, cont_comment, parent_type_comment, parent_comment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
     $current_time = time();
     $user_id = getUser()->getId();
-    $stmt->bind_param("iisssi", $current_time, $user_id, $cont_comment, $parent_type_comment, $parent_comment);
+    $status = '1';
+    $empty = '';
+    $stmt->bind_param('siissssi', $status, $current_time, $user_id, $empty, $empty, $cont_comment, $parent_type_comment, $parent_comment);
     if (!$stmt->execute()) {
         $errTab[] = 'Erreur SQL';
     }

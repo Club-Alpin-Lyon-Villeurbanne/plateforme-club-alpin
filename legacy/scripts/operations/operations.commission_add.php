@@ -181,8 +181,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $suffixe = '';
     while (!$passed) {
         $check_code = $code_commission . $suffixe;
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT COUNT(id_commission) FROM caf_commission WHERE code_commission LIKE ?");
-        $stmt->bind_param("s", $check_code);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_commission) FROM caf_commission WHERE code_commission LIKE ?');
+        $stmt->bind_param('s', $check_code);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_row();
@@ -197,7 +197,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // enregistrement
     $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO caf_commission(ordre_commission, vis_commission, code_commission, title_commission) VALUES (0, '0', ?, ?)");
-    $stmt->bind_param("ss", $code_commission, $title_commission);
+    $stmt->bind_param('ss', $code_commission, $title_commission);
     if (!$stmt->execute()) {
         $errTab[] = 'Erreur SQL';
     }

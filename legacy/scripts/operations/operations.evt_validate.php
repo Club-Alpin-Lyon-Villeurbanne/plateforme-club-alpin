@@ -19,16 +19,16 @@ if (!allowed('evt_validate')) {
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
     $user_id = getUser()->getId();
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE caf_evt SET status_evt = ?, status_who_evt = ? WHERE caf_evt.id_evt = ?");
-    $stmt->bind_param("iii", $status_evt, $user_id, $id_evt);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_evt SET status_evt = ?, status_who_evt = ? WHERE caf_evt.id_evt = ?');
+    $stmt->bind_param('iii', $status_evt, $user_id, $id_evt);
     if (!$stmt->execute()) {
         $errTab[] = 'Erreur SQL';
     }
     $stmt->close();
 
     // récupération des infos user et evt
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_evt, titre_evt, code_evt, tsp_evt, title_commission FROM caf_user, caf_evt, caf_commission WHERE id_user = user_evt AND commission_evt = id_commission AND id_evt = ? LIMIT 1");
-    $stmt->bind_param("i", $id_evt);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_evt, titre_evt, code_evt, tsp_evt, title_commission FROM caf_user, caf_evt, caf_commission WHERE id_user = user_evt AND commission_evt = id_commission AND id_evt = ? LIMIT 1');
+    $stmt->bind_param('i', $id_evt);
     $stmt->execute();
     $result = $stmt->get_result();
     $authorDatas = false;
@@ -65,8 +65,8 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_evt || 2 == $stat
 
 if ((!isset($errTab) || 0 === count($errTab)) && 1 == $status_evt) {
     $handle['joins'] = [];
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, role_evt_join FROM caf_evt_join, caf_user WHERE evt_evt_join = ? AND status_evt_join = 1 AND user_evt_join = id_user AND id_user != ? LIMIT 300");
-    $stmt->bind_param("ii", $id_evt, $authorDatas['id_user']);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, role_evt_join FROM caf_evt_join, caf_user WHERE evt_evt_join = ? AND status_evt_join = 1 AND user_evt_join = id_user AND id_user != ? LIMIT 300');
+    $stmt->bind_param('ii', $id_evt, $authorDatas['id_user']);
     $stmt->execute();
     $result = $stmt->get_result();
 

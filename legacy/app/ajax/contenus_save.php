@@ -17,10 +17,10 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     $log .= "\n html_entity_decode :  \n" . $contenu_content_inline;
 
     if ($id_content_inline && isset($_POST['val'])) {
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE  `caf_content_inline` SET  `contenu_content_inline` =  ? WHERE  `caf_content_inline`.`id_content_inline` = ? LIMIT 1 ;");
-        $stmt->bind_param("si", $contenu_content_inline, $id_content_inline);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE  `caf_content_inline` SET  `contenu_content_inline` =  ? WHERE  `caf_content_inline`.`id_content_inline` = ? LIMIT 1 ;');
+        $stmt->bind_param('si', $contenu_content_inline, $id_content_inline);
         if (!$stmt->execute()) {
-            $result['error'] = "SQL error : UPDATE caf_content_inline";
+            $result['error'] = 'SQL error : UPDATE caf_content_inline';
         } else {
             $result['success'] = true;
             $result['req'] = 'UPDATE caf_content_inline ...';

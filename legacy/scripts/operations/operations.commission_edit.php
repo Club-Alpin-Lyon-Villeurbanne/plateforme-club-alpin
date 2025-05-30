@@ -171,8 +171,8 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['picto-dark']['size'] >
 // SQL
 if (!isset($errTab) || 0 === count($errTab)) {
     // enregistrement
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE caf_commission SET title_commission = ? WHERE id_commission = ?");
-    $stmt->bind_param("si", $title_commission, $id_commission);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_commission SET title_commission = ? WHERE id_commission = ?');
+    $stmt->bind_param('si', $title_commission, $id_commission);
     if (!$stmt->execute()) {
         $errTab[] = 'Erreur SQL';
     }

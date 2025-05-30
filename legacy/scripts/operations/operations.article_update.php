@@ -40,24 +40,24 @@ if(
 // enregistrement en BD
 if (!isset($errTab) || 0 === count($errTab)) {
     $commission_article_value = $commission_article > 0 ? $commission_article : null;
-    $evt_article_value = $evt_article ? $evt_article : null;
+    $evt_article_value = $evt_article ?: null;
     $current_time = time();
-    
-    $sql = "UPDATE caf_article
+
+    $sql = 'UPDATE caf_article
     SET status_article = ?, topubly_article = ?, titre_article = ?, commission_article = ?, evt_article = ?, une_article = ?, cont_article = ?, tsp_article = ?
-    WHERE id_article = ?";
-    
+    WHERE id_article = ?';
+
     // on verifie si on est l'auteur que si on a pas le droit de modifier TOUS les articles
     if (!allowed('article_edit_notmine')) {
-        $sql .= " AND user_article = ?";
+        $sql .= ' AND user_article = ?';
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($sql);
         $user_id = getUser()->getId();
-        $stmt->bind_param("iiisiisii", $status_article, $topubly_article, $titre_article, $commission_article_value, $evt_article_value, $une_article, $cont_article, $current_time, $id_article, $user_id);
+        $stmt->bind_param('iiisiisii', $status_article, $topubly_article, $titre_article, $commission_article_value, $evt_article_value, $une_article, $cont_article, $current_time, $id_article, $user_id);
     } else {
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($sql);
-        $stmt->bind_param("iiisiisii", $status_article, $topubly_article, $titre_article, $commission_article_value, $evt_article_value, $une_article, $cont_article, $current_time, $id_article);
+        $stmt->bind_param('iiisiisii', $status_article, $topubly_article, $titre_article, $commission_article_value, $evt_article_value, $une_article, $cont_article, $current_time, $id_article);
     }
-    
+
     if (!$stmt->execute()) {
         $errTab[] = 'Erreur SQL';
     } elseif (LegacyContainer::get('legacy_mysqli_handler')->affectedRows() < 1) {

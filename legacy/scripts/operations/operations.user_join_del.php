@@ -14,8 +14,8 @@ if (!$id_user || !$id_evt) {
 
 if (!isset($errTab) || 0 === count($errTab)) {
     // Informations sur l'événement
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT id_evt, titre_evt, tsp_evt, tarif_evt, code_evt, commission_title FROM caf_evt AS e INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) WHERE id_evt = ? LIMIT 1");
-    $stmt->bind_param("i", $id_evt);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_evt, titre_evt, tsp_evt, tarif_evt, code_evt, commission_title FROM caf_evt AS e INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) WHERE id_evt = ? LIMIT 1');
+    $stmt->bind_param('i', $id_evt);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_row();
@@ -38,7 +38,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             WHERE A.evt_evt_join = ?
             AND (A.role_evt_join LIKE 'encadrant')
             LIMIT 1");
-    $stmt->bind_param("i", $id_evt);
+    $stmt->bind_param('i', $id_evt);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_row();
@@ -49,8 +49,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $stmt->close();
 
     // récupération du statut de l'inscription : si elle est valide, l'orga recoit un e-mail
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT status_evt_join FROM caf_evt_join WHERE evt_evt_join = ? AND user_evt_join = ? ORDER BY tsp_evt_join DESC LIMIT 1");
-    $stmt->bind_param("ii", $id_evt, $id_user);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT status_evt_join FROM caf_evt_join WHERE evt_evt_join = ? AND user_evt_join = ? ORDER BY tsp_evt_join DESC LIMIT 1');
+    $stmt->bind_param('ii', $id_evt, $id_user);
     $stmt->execute();
     $result = $stmt->get_result();
     $status_evt_join = 0;
@@ -64,8 +64,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
         // recup de son email & nom
         $toMail = '';
         $toName = '';
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT email_user, firstname_user, lastname_user FROM caf_user, caf_evt WHERE id_evt = ? AND user_evt = id_user LIMIT 1");
-        $stmt->bind_param("i", $id_evt);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT email_user, firstname_user, lastname_user FROM caf_user, caf_evt WHERE id_evt = ? AND user_evt = id_user LIMIT 1');
+        $stmt->bind_param('i', $id_evt);
         $stmt->execute();
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
@@ -79,8 +79,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         if (!isset($errTab) || 0 === count($errTab)) {
             // si pas de pb, suppression de l'inscription
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("DELETE FROM caf_evt_join WHERE evt_evt_join = ? AND user_evt_join = ?");
-            $stmt->bind_param("ii", $id_evt, $id_user);
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('DELETE FROM caf_evt_join WHERE evt_evt_join = ? AND user_evt_join = ?');
+            $stmt->bind_param('ii', $id_evt, $id_user);
             if (!$stmt->execute()) {
                 $errTab[] = 'Erreur SQL';
             }

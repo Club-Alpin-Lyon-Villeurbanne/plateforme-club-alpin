@@ -15,7 +15,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 
     if ($code_content_html) {
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT `contenu_content_html` FROM  `caf_content_html` WHERE  `code_content_html` LIKE  ? AND  `lang_content_html` LIKE  'fr' ORDER BY  `date_content_html` DESC  LIMIT 1");
-        $stmt->bind_param("s", $code_content_html);
+        $stmt->bind_param('s', $code_content_html);
         $stmt->execute();
         $handleSql = $stmt->get_result();
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {

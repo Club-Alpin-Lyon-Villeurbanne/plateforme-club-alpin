@@ -12,8 +12,8 @@ if (!count($_POST['id_commission'])) {
 if (!isset($errTab) || 0 === count($errTab)) {
     for ($i = 0; $i < count($_POST['id_commission']); ++$i) {
         $id_commission = (int) $_POST['id_commission'][$i];
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE caf_commission SET ordre_commission = ? WHERE id_commission = ? LIMIT 1");
-        $stmt->bind_param("ii", $i, $id_commission);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_commission SET ordre_commission = ? WHERE id_commission = ? LIMIT 1');
+        $stmt->bind_param('ii', $i, $id_commission);
         if (!$stmt->execute()) {
             $errTab[] = "Erreur SQL $i";
         }

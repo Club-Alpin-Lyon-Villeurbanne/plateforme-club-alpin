@@ -14,7 +14,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     if ($code_content_html) {
         // update VIS
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE `caf_content_html` SET  `vis_content_html` =  ? WHERE  `code_content_html` LIKE  ? AND  `lang_content_html` LIKE  'fr' ORDER BY  `date_content_html` DESC  LIMIT 1");
-        $stmt->bind_param("is", $vis_content_html, $code_content_html);
+        $stmt->bind_param('is', $vis_content_html, $code_content_html);
         if ($stmt->execute()) {
             $result['success'] = true;
         }
@@ -23,7 +23,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
         // retour contenu si visible
         if ($vis_content_html) {
             $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT `contenu_content_html` FROM  `caf_content_html` WHERE  `code_content_html` LIKE  ? AND  `lang_content_html` LIKE  'fr' ORDER BY  `date_content_html` DESC  LIMIT 1");
-            $stmt->bind_param("s", $code_content_html);
+            $stmt->bind_param('s', $code_content_html);
             $stmt->execute();
             $handleSql = $stmt->get_result();
             while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
