@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { login } from './helpers/auth';
 
 // Variables globales
 const BASE_URL = 'http://127.0.0.1:8000/';
@@ -12,18 +13,6 @@ const HEURE = '08:00';
 const CONTENU = 'test de contenu de page';
 const TITRE = `test création de sortie ${Date.now()}`;
 const DATE_SORTIE = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR');
-
-// Fonction utilitaire pour login
-const login = async (page: Page) => {
-  await page.goto(BASE_URL);
-  await page.locator('#toolbar-user').hover();
-  await page.getByRole('textbox', { name: 'Votre e-mail' }).click();
-  await page.getByRole('textbox', { name: 'Votre e-mail' }).fill(USER_EMAIL);
-  await page.getByRole('textbox', { name: 'Votre e-mail' }).press('Tab');
-  await page.getByRole('textbox', { name: 'Votre mot de passe' }).fill(USER_PASSWORD);
-  await page.getByRole('button', { name: 'Connexion' }).click();
-  await page.waitForTimeout(1000);
-};
 
 // Fonction utilitaire pour créer une sortie
 const creerSortie = async (page: Page) => {
@@ -61,7 +50,7 @@ const creerSortie = async (page: Page) => {
 };
 
 test('création de sortie famille', async ({ page }) => {
-  await login(page);
+  await login(page, USER_EMAIL, USER_PASSWORD);
   await creerSortie(page);
   await page.waitForTimeout(1000);
 
