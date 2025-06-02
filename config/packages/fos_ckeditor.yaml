@@ -1,0 +1,14 @@
+# Read the documentation: https://symfony.com/doc/current/bundles/FOSCKEditorBundle/index.html
+fos_ck_editor:
+    default_config: default
+    configs:
+        default:
+            toolbar: full
+            language: fr
+    enable: true
+    autoload: false     # ← désactive le chargement automatique des assets
+    base_path: "build/assets/ckeditor"
+
+twig:
+    form_themes:
+        - '@FOSCKEditor/Form/ckeditor_widget.html.twig'
