@@ -176,6 +176,10 @@
 
                             <div class="nav-user">
                                 <p class="menutitle">Outils</p>
+                                <a href="https://www.clubalpinlyon.fr/ftp/telechargements/livretaccueil-v2.pdf" title="">
+                                    <span class="puce">•</span>
+                                    livret d'accueil des adhérents
+                                </a>
                                 {% if caf_id == 'lyon' %}
                                     {% if allowed('user_read_private') %} {# utilisation d'une permission existante données uniquement aux co-encadrants, encadrants et stagiaires #}
                                         <a href="/pages/boite-outils-des-encadrants.html" title="">
@@ -184,10 +188,6 @@
                                         </a>
                                     {% endif %}
                                 {% endif %}
-                                <a href="https://www.clubalpinlyon.fr/ftp/telechargements/livretaccueil-v2.pdf" title="">
-                                    <span class="puce">•</span>
-                                    livret d'accueil des adhérents
-                                </a>
                                 {% if app.user and caf_id == 'lyon' %}
                                     <a href="{{ path('profil_alertes') }}" title="">
                                     <span class="puce">•</span>
