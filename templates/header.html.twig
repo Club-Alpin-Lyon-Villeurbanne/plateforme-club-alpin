@@ -199,6 +199,11 @@
                                 <span class="puce">•</span>
                                 livret d'accueil des adhérents
                                 </a>
+                                {% if app.user and caf_id == 'lyon' %}
+                                    <a href="{{ path('materiel_index') }}" title="">
+                                        <span class="puce">•</span>
+                                        réservation de matériel</a>
+                                {% endif %}
                             </div>
 
                             {% if allowed('article_create') or allowed('article_validate') or allowed('article_validate_all') %}
