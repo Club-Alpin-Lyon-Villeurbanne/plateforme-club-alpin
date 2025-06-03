@@ -184,6 +184,10 @@
                                         </a>
                                     {% endif %}
                                 {% endif %}
+                                <a href="https://www.clubalpinlyon.fr/ftp/telechargements/livretaccueil-v2.pdf" title="">
+                                    <span class="puce">•</span>
+                                    livret d'accueil des adhérents
+                                </a>
                                 {% if app.user and caf_id == 'lyon' %}
                                     <a href="{{ path('profil_alertes') }}" title="">
                                     <span class="puce">•</span>
@@ -194,12 +198,6 @@
                                     <a href="{{ path('local_club') }}" title="">
                                     <span class="puce">•</span>
                                         réservation local du Club</a>
-                                {% endif %}
-                                <a href="https://www.clubalpinlyon.fr/ftp/telechargements/livretaccueil-v2.pdf" title="">
-                                <span class="puce">•</span>
-                                livret d'accueil des adhérents
-                                </a>
-                                {% if app.user and caf_id == 'lyon' %}
                                     <a href="{{ path('materiel_index') }}" title="">
                                         <span class="puce">•</span>
                                         réservation de matériel</a>
