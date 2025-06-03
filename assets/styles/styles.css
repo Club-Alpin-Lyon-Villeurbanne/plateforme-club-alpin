@@ -154,7 +154,7 @@ a#toolbar-commission.toptrigger b{white-space:normal;}
 #toolbar-navigation-hidden .menutitle {color: #201100}
 #toolbar-user-hidden .menutitle {color: #152200}
 .menucontent{font-family:DIN; color:white; font-size:14px;}
-#bigfond{background:url(../../public/img/bigfond-default-1-45.jpg) center; background-size:cover;position:fixed; z-index:1; top:0; left:0; width:100%; height:100%;}
+#bigfond{background-position: center; background-size:cover;position:fixed; z-index:1; top:0; left:0; width:100%; height:100%;}
 #main{position:relative; z-index:50; width:980px; margin:auto; text-align:left; box-shadow:0 0 10px -1px black; min-height:400px; background-color:#f7f8fc;}
 
 #mainfooter{position:relative; z-index:10; width:920px; padding:30px 30px 60px 30px;; margin:auto; text-align:left; background:#f0f4f7; box-shadow:0 0 10px -1px black;min-height:100px; margin-top:17px;}

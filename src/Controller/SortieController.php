@@ -58,6 +58,7 @@ class SortieController extends AbstractController
             'participations' => $participationRepository->getSortedParticipations($event, null, null),
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participationRepository->getEmpietements($event),
+            'current_commission' => $event->getCommission()->getCode(),
         ];
     }
 
