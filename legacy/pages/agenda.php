@@ -253,7 +253,7 @@ for ($i = 1; $i <= $nDays; ++$i) {
         $bgwe = 'weekendday';
     }
 
-    echo '<tr class="' . (count($agendaTab[$i]['debut']) ? 'up' : 'off') . ' ' . $bgwe . '">' // ligne UP ou OFF si sortie démarre ou pas
+    echo '<tr id="' . str_pad($i, 2, '0', STR_PAD_LEFT) . '" class="' . (count($agendaTab[$i]['debut']) ? 'up' : 'off') . ' ' . $bgwe . '">' // ligne UP ou OFF si sortie démarre ou pas
             . '<td class="agenda-gauche ' . $bgwe . '">' . $weekTab[$iWeek] . ' ' . $i . ' ' . mois($month) . '</td>'
             . '<td>'
     ;

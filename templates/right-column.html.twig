@@ -69,11 +69,11 @@
 
     <div class="right-green">
         <div class="right-green-in">
-
+            {% set date_anchor = 'now'|date('d') %}
             {% if current_commission %}
                 <h1 class="agenda-h1"><a href="/agenda/{{ current_commission }}.html" title="Afficher l'agenda complet pour cette commission">Agenda</a></h1>
             {% else %}
-                <h1 class="agenda-h1"><a href="/agenda.html" title="Afficher l'agenda complet">Agenda</a></h1>
+                <h1 class="agenda-h1"><a href="/agenda.html#{{ date_anchor }}" title="Afficher l'agenda complet">Agenda</a></h1>
             {% endif %}
 
             <div id="evt-list">
@@ -107,7 +107,7 @@
             {% if current_commission %}
                 <a href="/agenda/{{ current_commission }}.html" title="Afficher l'agenda complet pour cette commission" class="lien-big">> Voir toutes les sorties {{ commission_title(current_commission) }}</a>
             {% endif %}
-            <a href="/agenda.html" title="Afficher l'agenda complet" class="lien-big">> Voir toutes les sorties du club</a>
+            <a href="/agenda.html#{{ date_anchor }}" title="Afficher l'agenda complet" class="lien-big">> Voir toutes les sorties du club</a>
         </div>
     </div>
 </div>
