@@ -104,7 +104,7 @@ export function useExpenseReport(initialEventId: number) {
         "Erreur lors de la récupération/création de la note de frais:",
         error,
       );
-      toastr?.error("Une erreur s'est produit");
+      toastr?.error("Une erreur s'est produite");
     } finally {
       isLoading.value = false;
     }
