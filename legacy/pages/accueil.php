@@ -137,8 +137,10 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     }
 
                     echo '<a href="/article/' . html_utf8($article['code_article'] . '-' . $article['id_article']) . '.html" class="slide" style="background-image:url(' . $img . ')" title="CLIQUEZ POUR VOIR L\'ARTICLE">
-						<p class="alaune">ARTICLE A LA UNE</p>
-						<h2>' . html_utf8($article['titre_article']) . '</h2>
+                        <div class="bandeau-slider">
+                            <p class="alaune">ARTICLE A LA UNE</p>
+                            <h2>' . html_utf8($article['titre_article']) . '</h2>
+						</div>
 					</a>';
                 }
 ?>

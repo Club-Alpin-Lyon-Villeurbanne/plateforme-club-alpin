@@ -231,12 +231,11 @@ label.in_front {margin-top:15px; display:block; float:none; width:93%; backgroun
 .lien-big:hover, .lien-big:focus{text-decoration:none; background:rgba(0,0,0, 0.3);}
 #home-slider{width:665px; overflow:hidden;}
 #home-slider-helper{pointer-events: none;display:none;z-index:31;background:#48b1ea;width:665px;height:150px;font-size:400%;color:#ffffff;font-family:DINBold; position:absolute; text-align:center;vertical-align:middle;opacity:0.9;}
-#home-slider-wrapper{height:365px; position:relative;z-index:30;}
-#home-slider .slide{/* balise a */ display:table-cell; width:665px; height:365px; background:url(../../public/ftp/articles/0/med-default.jpg) no-repeat top left; background-size:cover; vertical-align:bottom; text-decoration:none;}
+#home-slider-wrapper{height:450px; position:relative;z-index:30;}
+#home-slider .slide{/* balise a */ display:table-cell; width:665px; height:450px; background:url(../../public/ftp/articles/0/med-default.jpg) no-repeat top left; vertical-align:top; text-decoration:none;}
 #home-slider .slide p{color:#20566f; font-family:DINBold; font-weight:100; text-transform:uppercase; font-size:14px; width:599px; padding:4px 33px 0 33px ; /* force la dimension de la slide */}
 #home-slider .slide h2{color:#fff; font-family:DIN; font-weight:100; font-size:23px; text-transform:none; line-height:22px; width:599px; padding:5px 33px 15px 33px; /* force la dimension de la slide */}
-#home-slider .slide p, #home-slider .slide h2{/* background:rgba(139, 194, 220, 0.7); */ background:rgba(72, 177, 234, 0.85)}
-#home-slider .slide:hover p, #home-slider .slide:focus p, #home-slider .slide:hover h2, #home-slider .slide:focus h2 {/* background:rgba(139, 194, 220, 0.8); */ background:rgba(72, 177, 234, 1)}
+.bandeau-slider {margin-top:365px; min-height: 65px; background:rgba(72, 177, 234, 1)}
 #home-slider-nav{height:0px; width:0px; position:absolute; z-index:60;}
 #home-slider-nav-wrapper{height:365px; width:0px; /* display:table-cell; vertical-align:middle; */}
 #home-slider-nav-wrapper a, #home-slider-nav-wrapper img{/* position:relative; z-index:60; */}
