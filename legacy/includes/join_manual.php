@@ -5,7 +5,7 @@ use App\Legacy\LegacyContainer;
 if (user()) {
     $idEvt = isset($_GET['id_evt']) ? (int) $_GET['id_evt'] : 0;
     $idUser = $_POST['id_user'] ?? null;
-    $show = isset($_GET['show']) ? $_GET['show'] : 'valid-active';
+    $show = isset($_GET['show']) ? $_GET['show'] : 'valid';
     $show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
     $versCettePage = htmlspecialchars($versCettePage, \ENT_QUOTES, 'UTF-8');
 
@@ -21,16 +21,10 @@ if (user()) {
         if (!is_array($idUser)) {
             ?>
 			<p>
-                <a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>&show=valid-active"
+                <a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>&show=valid"
                     class="boutonFancy"
-                    <?php if ('valid-active' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
-                    ✔️ Licence valide & compte activé
-                </a>&nbsp;
-
-                <a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>&show=valid-inactive"
-                    class="boutonFancy"
-                    <?php if ('valid-inactive' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
-                    ⚠️ Licence valide & compte non-activé
+                    <?php if ('valid' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
+                    ✔️ Licence valide
                 </a>&nbsp;
 
                 <a href="<?php echo $versCettePage; ?>?id_evt=<?php echo $idEvt; ?>&show=all"
@@ -83,6 +77,9 @@ if (user()) {
                         WHERE id_user NOT IN (SELECT user_evt_join FROM `caf_evt_join` WHERE evt_evt_join=' . $idEvt . ')';
 
             switch ($show) {
+                case 'valid':
+                    $req = $baseReq . ' AND doit_renouveler_user=0 AND nomade_user=0';
+                    break;
                 case 'valid-active':
                     $req = $baseReq . ' AND valid_user=1 AND doit_renouveler_user=0 AND nomade_user=0';
                     break;
@@ -109,6 +106,7 @@ if (user()) {
 							<th>Prénom</th>
 							<th>Pseudo</th>
                             <th>Age</th>
+                            <th>Compte activé ?</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -133,6 +131,7 @@ if (user()) {
                                 . '<td>' . ucfirst(html_utf8($elt['firstname_user'])) . '</td>'
                                 . '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
                                 . '<td>' . getYearsSinceDate($elt['birthday_user']) . '</td>'
+                                . '<td>' . ($elt['valid_user'] ? 'oui' : '<span style="color: red;" title="Les comptes non activés ne reçoivent pas les e-mails">⚠️ non</span>') . '</td>'
                             . '</tr>';
                         } ?>
 					</tbody>
