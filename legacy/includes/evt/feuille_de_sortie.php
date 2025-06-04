@@ -13,6 +13,7 @@ if (isGranted(SecurityConstants::ROLE_ADMIN)
             (user() && $evt['user_evt'] == (string) getUser()->getId())
             || allowed('evt_validate_all')
             || allowed('evt_join_doall')
+            || allowed('evt_print')
             || 'encadrant' == $monStatut
             || 'stagiaire' == $monStatut || 'coencadrant' == $monStatut
             || allowed('evt_validate', 'commission:' . $evt['code_commission'])
