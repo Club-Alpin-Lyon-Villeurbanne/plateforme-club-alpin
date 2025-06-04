@@ -167,7 +167,7 @@ if (allowed('user_see_all')) {
                 echo '</td>';
 
                 $img_lock = '<img src="/img/base/lock_gray.png" alt="caché"  title="Vous devez disposer de droits supérieurs pour afficher cette information" />';
-                
+
                 $emailCol = '';
                 if (1 == $elt['valid_user'] && $elt['email_user']) {
                     $emailCol = ($isAllowed_user_read_private ? '<a href="mailto:' . html_utf8($elt['email_user']) . '" title="Contact direct">' . html_utf8($elt['email_user']) . '</a>' : $img_lock);
