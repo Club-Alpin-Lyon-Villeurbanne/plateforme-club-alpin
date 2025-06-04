@@ -126,7 +126,7 @@
             {% if event.groupe %}
                 <small> ({{ event.groupe.nom }}) </small>
             {% endif %}
-            <span class="date"> / {{ event.tsp | intldate('cccc d MMMM') }}</span>
+            <span class="date"> / {{ event.tsp | intldate('cccc d MMMM YYYY') }}</span>
         </h1>
 
         <div class="tw-flex tw-gap-4">
