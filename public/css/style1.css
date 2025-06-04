@@ -124,7 +124,7 @@ a#toolbar-commission.toptrigger b{white-space:normal;}
 #toolbar-commission-hidden a{display:block; float:left; width:24%; white-space:nowrap; overflow:hidden; margin:2px 1% 0 0; color:00191E; text-transform:uppercase; height:35px; line-height:35px; font-family:DIN; font-weight:100; font-size:13px; text-decoration:none;}
 #toolbar-commission-hidden a .picto{display:block; margin-right:10px; float:left; width:35px; height:35px; background-position:100px 100px; background-repeat:no-repeat;}
 #toolbar-commission-hidden a .picto img{vertical-align:middle; height:35px;}
-#toolbar-commission-hidden a:hover, #toolbar-commission-hidden a:focus{background:url(../img/puce1.png) no-repeat right center rgba(255, 255, 255, 0.2); color:#fff; text-shadow:0 1px 0px #fff;}
+#toolbar-commission-hidden a:hover, #toolbar-commission-hidden a:focus{background:url(../img/puce1.png) no-repeat right center rgba(255, 255, 255, 0.2); color:#fff;}
 #toolbar-commission-hidden a:hover .picto, #toolbar-commission-hidden a:focus .picto{background-position:center;}
 #toolbar-commission-hidden a:hover .picto img, #toolbar-commission-hidden a:focus .picto img{opacity:0;}
 #toolbar-navigation {border-left:1px solid #e6e6e6; float:left; padding:35px 10px 0px 20px; width:170px; height:75px;}
@@ -149,7 +149,7 @@ a#toolbar-commission.toptrigger b{white-space:normal;}
 #top-openers{position:absolute; z-index:80;left:0px; width:100%;}
 #top-openers .opener{position:relative; z-index:80; bottom:6px;}
 #top-hider{display:none; position:absolute; top:0px; left:0px; z-index:60; height:100%; width:100%; background:rgba(26, 26, 26, 0.8); cursor:default;}
-.menutitle{font-family:DIN; text-transform:uppercase; font-size:16px; padding:2px 0 5px 0; text-shadow:0 1px 0 grey;}
+.menutitle{font-family:DIN; text-transform:uppercase; font-size:16px; padding:2px 0 5px 0;}
 #toolbar-commission-hidden .menutitle {color: #00191E}
 #toolbar-navigation-hidden .menutitle {color: #201100}
 #toolbar-user-hidden .menutitle {color: #152200}
