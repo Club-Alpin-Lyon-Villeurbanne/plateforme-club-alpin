@@ -40,6 +40,12 @@ class FicheSortieVoter extends Voter
             return false;
         }
 
+        foreach ($user->getAttributes() as $attribute) {
+            if (UserAttr::SALARIE === $attribute->getUserType()->getCode()) {
+                return true;
+            }
+        }
+
         $amIEncadrant = false;
         foreach ($subject->getEncadrants() as $eventParticipation) {
             if ($eventParticipation->getUser() === $user) {
