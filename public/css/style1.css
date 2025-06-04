@@ -336,8 +336,8 @@ tr.status-1 {border-top:1px solid #d3d3d3;background-image:url(../img/red-overla
 #edit_profil_image .delete{position:absolute;}
 #edit_profil_image .delete img{cursor:pointer; position:relative; bottom:7px; right:7px;}
 #fiche-article{}
-#fiche-article .titleimage{width:665px; background-size:cover; display:table-cell; vertical-align:bottom;}
-#fiche-article .titleimage p, #fiche-article .titleimage h1 {background:rgba(72, 177, 234, 0.85); color:white;}
+#fiche-article .titleimage{width:665px; background-size:cover; display:table-cell; vertical-align:bottom; padding: 5px;}
+#fiche-article .titleimage {background:rgba(72, 177, 234, 0.85); color:white;}
 #fiche-article .titleimage a{color:white; font-weight:inherit;}
 #fiche-article .titleimage .date{padding:2px 30px 0 30px;}
 #fiche-article .titleimage h1{padding:10px 20px 0 30px;font-size:24px;line-height:110%}
@@ -438,4 +438,13 @@ form .niveau.editable:hover .input{background-image:none;}
 .wide-figure {
     margin: 0;
     padding: 0;
+}
+.article-commission {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    display: inline-block;
+    background-color: #fff;
+    color: #48b1ea;
+    margin-left: 30px;
 }

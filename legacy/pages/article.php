@@ -10,8 +10,9 @@ $id_article = (int) substr(strrchr($p2, '-'), 1);
 $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 
 // sélection complète, non conditionnelle par rapport au status
-$req = "SELECT *
-    FROM caf_article
+$req = "SELECT a.*, c.title_commission
+    FROM caf_article as a
+    LEFT JOIN caf_commission as c ON a.commission_article = c.id_commission
     WHERE id_article=$id_article
     LIMIT 1";
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);

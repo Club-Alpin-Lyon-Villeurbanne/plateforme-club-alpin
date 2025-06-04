@@ -19,17 +19,17 @@ if (!$article) {
                 echo html_utf8($article['titre_article']);
     ?>
 		</h1>
-		<p class="date">
-			<?php
+        <?php
+        if (!empty($article['title_commission'])) {
+            echo '<span class="date article-commission">' . html_utf8($article['title_commission']) . '</span>';
+        }
     ?>
-		</p>
 		<p class="auteur">
 			<?php
 
-        echo 'Le ' . date('d.m.Y', $article['tsp_article']);
-
-    echo ', par ';
+        echo 'Rédigé par ';
     echo userlink($article['auteur']['id_user'], $article['auteur']['nickname_user'], false, false, false, 'public', (int) $article['id_article']);
+    echo ' le ' . date('d.m.Y', $article['tsp_article']);
 
     if ($totalComments > 1) {
         echo ', <a href="' . $_SERVER['REQUEST_URI'] . "#comments\">$totalComments commentaires</a>";
