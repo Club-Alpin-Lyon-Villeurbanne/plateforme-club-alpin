@@ -24,6 +24,8 @@ export default defineConfig({
       input: {
         "expense-report-form": "./assets/expense-report-form/main.js",
         tailwind: "./assets/tailwind.js",
+        modal: "./assets/js/modal/modal.js",
+        modal_css: "./assets/styles/modal.css",
       },
     },
   },

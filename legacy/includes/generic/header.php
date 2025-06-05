@@ -48,6 +48,7 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" />
 		<!-- css PRINTS -->
 		<link rel="stylesheet" href="/css/print.css" type="text/css"  media="print" />
+		<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('modal_css'); ?>
 	<?php
         }
 ?>
@@ -74,6 +75,8 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
     <script src="/js/fonctions.js" type="text/javascript"></script>
 	<!-- script scroll up -->
     <script src="/js/scrollup.js" type="text/javascript"></script>
+	<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteScriptTags('modal'); ?>
+
 
 	<?php
     use App\Security\SecurityConstants;

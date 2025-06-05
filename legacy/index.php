@@ -197,6 +197,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) && count($contLog) && !$p
 
             <?php } ?>
         </div> <!--! end of #siteHeight -->
-    </div> <!--! end of #container -->
+    </div>
+    <?php echo LegacyContainer::get(name: 'legacy_twig')->render('components/modal.html.twig'); ?>
 </body>
 </html>
