@@ -23,7 +23,7 @@ if ($p2) {
         AND usertype_user_attr=id_usertype
         AND code_usertype='encadrant'
         AND params_user_attr='commission:$com'
-        ORDER BY  lastname_user ASC";
+        ORDER BY firstname_user ASC, lastname_user ASC";
     // CRI - 29/08/2015
     // Correctif car la commission du jeudi compte plus de 50 encadrants
     // LIMIT 0 , 50";
@@ -41,7 +41,7 @@ if ($p2) {
         AND usertype_user_attr=id_usertype
         AND code_usertype='stagiaire'
         AND params_user_attr='commission:$com'
-        ORDER BY  lastname_user ASC";
+        ORDER BY firstname_user ASC, lastname_user ASC";
     // CRI - 29/08/2015
     // Correctif car la commission du jeudi compte plus de 50 encadrants
     // LIMIT 0 , 50";
@@ -60,7 +60,7 @@ if ($p2) {
         AND usertype_user_attr=id_usertype
         AND code_usertype='coencadrant'
         AND params_user_attr='commission:$com'
-        ORDER BY  lastname_user ASC";
+        ORDER BY firstname_user ASC, lastname_user ASC";
     // CRI - 29/08/2015
     // Correctif car la commission du jeudi compte plus de 50 encadrants
     // LIMIT 0 , 50";
@@ -79,7 +79,7 @@ if ($p2) {
         AND usertype_user_attr=id_usertype
         AND code_usertype='benevole'
         AND params_user_attr='commission:$com'
-        ORDER BY  lastname_user ASC
+        ORDER BY firstname_user ASC, lastname_user ASC
         LIMIT 0 , 50";
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
