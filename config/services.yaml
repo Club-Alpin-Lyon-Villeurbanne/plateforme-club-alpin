@@ -236,7 +236,3 @@ services:
   App\Service\MaterielEmailService:
     arguments:
       $materielPlatformUrl: '%materiel_platform_url%'
-
-  legacy_entrypoint_renderer:
-    public: true
-    alias: App\Legacy\LegacyEntrypointRenderer
