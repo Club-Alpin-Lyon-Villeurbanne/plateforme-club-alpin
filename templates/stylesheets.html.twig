@@ -1,13 +1,13 @@
 {{ vite_entry_link_tags('tailwind') }}
 
 <!-- css COMMUNS SCREEN + PRINT -->
-<link rel="stylesheet" href="/css/style1.css" type="text/css" />
-<link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" />
-<link rel="stylesheet" href="/css/base.css" type="text/css"  />
-<link rel="stylesheet" href="/css/common.css" type="text/css"  />
+{{ vite_entry_link_tags('styles') }}
+{{ vite_entry_link_tags('fonts') }}
+{{ vite_entry_link_tags('base-styles') }}
+{{ vite_entry_link_tags('common-styles') }}
 <link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" />
 <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <!-- css PRINTS -->
-<link rel="stylesheet" href="/css/print.css" type="text/css"  media="print" />
+{{ vite_entry_link_tags('print-styles', {'attr': {'media': 'print'}}) }}
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 {{ vite_entry_link_tags('modal_css') }}

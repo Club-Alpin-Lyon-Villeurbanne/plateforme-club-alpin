@@ -2,7 +2,7 @@
 
 
 #pagesLibres{ border-collapse:collapse; }
-	#pagesLibres tr.vis-off td{ background-image:url(../img/base/braies-light.png); color:rgba(0,0,0,0.5); }
+	#pagesLibres tr.vis-off td{ background-image:url(../../public/img/base/braies-light.png); color:rgba(0,0,0,0.5); }
 
 
 /* version 2 du dossier FTP */
@@ -18,13 +18,13 @@
 	#ftp-2-arbo .level.level0{ height:auto; display:block; }
 	#ftp-2-arbo .level a.dirtrigger{ 
 	display:block; float:left; padding:0; width:15px; height:15px; text-align:center;
-	background:url(../img/base/puce-mini-off.png) no-repeat center;
+	background:url(../../public/img/base/puce-mini-off.png) no-repeat center;
 	}
-	#ftp-2-arbo .level a.dirtrigger.open{ background:url(../img/base/puce-mini-on.png) no-repeat center; }
+	#ftp-2-arbo .level a.dirtrigger.open{ background:url(../../public/img/base/puce-mini-on.png) no-repeat center; }
 	#ftp-2-arbo .level a.dirtrigger.off{ cursor:default; opacity:0.3; }
 	#ftp-2-arbo .level a.dirlink{ 
 	color:#676767;
-	display:block; margin-left:15px; white-space:nowrap; background:url(../img/base/folder.png) no-repeat top left; padding:3px 2px 2px 20px; 
+	display:block; margin-left:15px; white-space:nowrap; background:url(../../public/img/base/folder.png) no-repeat top left; padding:3px 2px 2px 20px; 
 	}
 	#ftp-2-arbo .level a.dirlink:hover, #ftp-2-arbo .level a.dirlink:focus{ text-decoration:none; color:black; }
 	#ftp-2-arbo .level a.dirlink.selected{ background-color:rgba(255, 255, 255, 0.3); }
@@ -145,20 +145,20 @@ background:#eeeeee;
 .grab{ cursor:move; }
 .placeholder1{
 padding:7px 0px; 
-background:url(../img/base/braies.png) #e1e1e1; 
+background:url(../../public/img/base/braies.png) #e1e1e1; 
 -webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px; 
 -moz-box-shadow:inset 0px 0px 15px gray; -webkit-box-shadow:inset 0px 0px 15px gray; box-shadow:inset 0px 0px 15px gray;
 }
 
 .placeholder2{
 margin-right:3px; width:39px; height:33px; display:block; float:left;
-background:url(../img/base/braies.png) #e1e1e1; 
+background:url(../../public/img/base/braies.png) #e1e1e1; 
 -webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px; 
 -moz-box-shadow:inset 0px 0px 15px gray; -webkit-box-shadow:inset 0px 0px 15px gray; box-shadow:inset 0px 0px 15px gray;
 }
 
 .placeholder3{
-background:url(../img/base/braies.png) #e1e1e1; /* min-height:25px; */ opacity:0.5;
+background:url(../../public/img/base/braies.png) #e1e1e1; /* min-height:25px; */ opacity:0.5;
 -moz-box-shadow:inset 0px 0px 15px gray; -webkit-box-shadow:inset 0px 0px 15px gray; box-shadow:inset 0px 0px 15px gray;
 
 clear:both; 
@@ -168,7 +168,7 @@ padding:5px; margin:5px 0px 2px 0px;
 
 .placeholder4{
 margin-right:3px 3px 0 0; width:70px; height:70px; display:block; float:left;
-background:url(../img/base/braies.png) #e1e1e1; 
+background:url(../../public/img/base/braies.png) #e1e1e1; 
 -webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px; 
 -moz-box-shadow:inset 0px 0px 15px gray; -webkit-box-shadow:inset 0px 0px 15px gray; box-shadow:inset 0px 0px 15px gray;
 }
@@ -194,7 +194,7 @@ p{padding:3px 0px;}
 .type1{ 
 -webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px; 
 -moz-box-shadow:inset 0px 0px 4px #000000; -webkit-box-shadow:inset 0px 0px 4px #000000; box-shadow:inset 0px 0px 4px #000000;
-border:none; background:url('../img/base/fd-admin-hwc.jpg') center #2e2e2e; color:white; font-weight:bold; padding:4px; margin:2px 0px 5px 0px; width:300px;
+border:none; background:url('../../public/img/base/fd-admin-hwc.jpg') center #2e2e2e; color:white; font-weight:bold; padding:4px; margin:2px 0px 5px 0px; width:300px;
 }
 	.type1:focus{ -moz-box-shadow:inset 0px 0px 15px #000000; -webkit-box-shadow:inset 0px 0px 15px #000000; box-shadow:inset 0px 0px 15px #000000;}
 
@@ -212,7 +212,7 @@ clear:both;  min-height:15px;
 background-color: rgba(79, 186, 255, 0.3);
 border:none; padding:5px; margin:5px 0px 2px 0px;
 }
-.page-element.invisible{ background-color: rgba(200, 200, 200, 0.3); background-image:url(../img/base/braies-light.png); color:#6c7e82; }
+.page-element.invisible{ background-color: rgba(200, 200, 200, 0.3); background-image:url(../../public/img/base/braies-light.png); color:#6c7e82; }
 .page-element-info-1{ width:20%; float:left; padding-right:15px;}
 .page-element-info-2{ 
 width:20px; height:18px; padding:1px; margin:0 5px 0 0; text-align:center;  float:left; text-align:center; position:relative; bottom:3px; 

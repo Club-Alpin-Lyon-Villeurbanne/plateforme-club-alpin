@@ -89,7 +89,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 							theme_advanced_statusbar_location : "none",
 							theme_advanced_resizing : true,
 
-							content_css : "css/base.css,css/style1.css,fonts/stylesheet.css",
+							content_css : "<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('fonts'); ?>",
 							body_id : "bodytinymce",
 							body_class : "<?php echo $_GET['class']; ?>",
 							theme_advanced_styles : "Entete Article=ArticleEntete;Titre de menu=menutitle;Bleu clair du CAF=bleucaf;Image flottante gauche=imgFloatLeft;Image flottante droite=imgFloatRight;Lien fancybox=fancybox;Mini=mini;Bloc alerte=erreur;Bloc info=info",
@@ -146,8 +146,8 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 
 					</script>
 					<!-- /tinyMCE -->
-					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/admin.css">
-					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
+                    <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('admin-styles'); ?>
+                    <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>
 				</head>
 				<body style="background:white; text-align:left; border:none;">
 

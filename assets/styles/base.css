@@ -24,7 +24,7 @@ input.nice.orange{ background:rgba(255, 132, 0, 0.1); }
 
 #adminmissing{ 
 position:fixed; z-index:300; bottom:0px; left:0px; width:100%; color:white; text-align:left;
-background : url('../img/base/error.png') 10px 10px no-repeat #4a4f52; color : white; 
+background : url('../../public/img/base/error.png') 10px 10px no-repeat #4a4f52; color : white; 
 -moz-box-shadow: inset 0px 0px 25px #000000;-webkit-box-shadow: inset 0px 0px 25px #000000;box-shadow: inset 0px 0px 25px #000000; 
 }
 	#adminmissing input{ 
@@ -34,7 +34,7 @@ background : url('../img/base/error.png') 10px 10px no-repeat #4a4f52; color : w
 	#adminmissing input:hover { color : #fff; }
 
 #menuAdmin {
-position:relative; z-index:500; width:100%; padding:0; opacity:1; background : url('../img/base/adminMenu.gif') 4px 4px no-repeat #4a4f52; color : white; 
+position:relative; z-index:500; width:100%; padding:0; opacity:1; background : url('../../public/img/base/adminMenu.gif') 4px 4px no-repeat #4a4f52; color : white; 
 -moz-box-shadow: inset 0px 0px 25px #000000;-webkit-box-shadow: inset 0px 0px 25px #000000;box-shadow: inset 0px 0px 25px #000000; 
 }
 	#menuAdmin img { vertical-align:middle; }
@@ -62,7 +62,7 @@ user-select: none;
 }
 
 .blocdesactive{ 
-border:1px outset #fff; background:url(../img/base/braies.png);
+border:1px outset #fff; background:url(../../public/img/base/braies.png);
 font-family:Arial; font-weight:100; font-size:10px;  text-align:center; 
 margin:0px;  padding:25px 10px 3px 10px;
 border-radius:5px; box-shadow:0 0 5px silver;
@@ -152,7 +152,7 @@ cursor : text;
 float : none;
 }
 #bodytinymcespecial {
-background : url('../imgs/tile.jpg') #fff;
+background-color:  #fff;
 text-align : left;
 padding : 0;
 cursor : text;
