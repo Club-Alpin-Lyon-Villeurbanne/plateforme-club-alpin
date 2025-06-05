@@ -23,7 +23,7 @@
 .user-right-edit-table td.toggle:hover{ box-shadow:inset 0 0 10px silver; }
 .user-right-edit-table td.toggle.false { background-color:#e4e4e4; }
 .user-right-edit-table td.toggle.true { background-color:#60b28e; }
-.user-right-edit-table td.toggle.edited { background-image:url(../img/base/braies.png); }
+.user-right-edit-table td.toggle.edited { background-image:url(../../public/img/base/braies.png); }
 
 
 /* ATTRIBUTION DES TYPES AUX USERS */

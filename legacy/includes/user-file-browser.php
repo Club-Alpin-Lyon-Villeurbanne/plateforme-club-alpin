@@ -54,8 +54,8 @@ if (user()) {
 		    echo 'Vos fichiers en ligne';
 		} ?></title>
 
-		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/style1.css">
-		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
+        <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('styles'); ?>
+        <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>
 
 		<!-- valums file upload -->
 		<link href="/tools/valums-file-upload/css/fileuploader-user.css" rel="stylesheet" type="text/css">
