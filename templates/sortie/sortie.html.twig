@@ -241,11 +241,14 @@
                     <div id="inscription-annuler" style="display: none;">
                             {{ easy_include('formalites-inscription-suppression', 'formalites') }}
 
-                            <form action="{{ path('sortie_remove_participant', { id: my_status.id }) }}" method="post" class="loading">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
+                            <form id="cancel_valid_participation_encadrant" action="{{ path('sortie_remove_participant', { id: my_status.id }) }}" method="post" class="loading">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" /><br>
+
+                                <label for="cancel_reason_encadrant">Veuillez expliquer la raison de l'annulation de votre participation *</label>
+                                <textarea id="cancel_reason_encadrant" name="cancel_reason_encadrant" class="type2" style="width:95%; min-height:80px" placeholder="ex : maladie, contraintes personnelles ou familiales, problème de matériel"></textarea>
 
                                 <p style="text-align:center">
-                                    <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+                                    <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="checkCancelReason(event, 'cancel_reason_encadrant', 'cancel_valid_participation_encadrant');">
                                         <span class="bleucaf">&gt;</span>
                                         ANNULER MA DEMANDE D'INSCRIPTION
                                     </a>
@@ -294,11 +297,14 @@
                         <div id="inscription-annuler" style="display: none;">
                             {{ easy_include('formalites-inscription-suppression', 'formalites') }}
 
-                            <form action="{{ path('sortie_remove_participant', { id: my_status.id }) }}" method="post" class="loading">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
+                            <form id="cancel_valid_participation" action="{{ path('sortie_remove_participant', { id: my_status.id }) }}" method="post" class="loading">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" /><br>
+
+                                <label for="cancel_reason">Veuillez expliquer la raison de l'annulation de votre participation *</label>
+                                <textarea id="cancel_reason" name="cancel_reason" class="type2" style="width:95%; min-height:80px" placeholder="ex : maladie, contraintes personnelles ou familiales, problème de matériel"></textarea>
 
                                 <p style="text-align:center">
-                                    <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+                                    <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="checkCancelReason(event, 'cancel_reason', 'cancel_valid_participation');">
                                         <span class="bleucaf">&gt;</span>
                                         ANNULER MA DEMANDE D'INSCRIPTION
                                     </a>
@@ -1135,4 +1141,19 @@
     {{ parent() }}
     <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" type="text/css"  media="screen" />
+    <script>
+        function checkCancelReason(e, textarea_field_id, form_id) {
+            if (undefined !== document.querySelector('#' + textarea_field_id)) {
+                if ('' !== document.querySelector('#' + textarea_field_id).value) {
+                    document.querySelector('#' + form_id).submit();
+                } else {
+                    e.preventDefault();
+                    alert('Veuillez indiquer la raison de l\'annulation de votre inscription');
+                    return false;
+                }
+            }
+
+            $(this).parents('form').submit();
+        }
+    </script>
 {% endblock %}

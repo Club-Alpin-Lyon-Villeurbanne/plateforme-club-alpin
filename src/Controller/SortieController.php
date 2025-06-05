@@ -404,12 +404,14 @@ class SortieController extends AbstractController
         $user = $this->getUser();
 
         if ($participation->isStatusValide()) {
+            $reason = $request->request->get('cancel_reason') ?? $request->request->get('cancel_reason_encadrant');
             $mailer->send($event->getUser(), 'transactional/sortie-desinscription', [
                 'username' => $participation->getUser()->getFirstname() . ' ' . $participation->getUser()->getLastname(),
                 'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'event_name' => $event->getTitre(),
                 'commission' => $event->getCommission()->getTitle(),
                 'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                'reason_explanation' => $reason ?? '',
                 'user' => $user,
             ], [], null, $user->getEmail());
         }
