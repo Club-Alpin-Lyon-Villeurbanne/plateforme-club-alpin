@@ -28,9 +28,37 @@
             {% endfor %}
 
             <p>
-                Le club dispose de matériel pour vous aider à accéder aux activités.<br><br>
-                Seuls les adhérents du club alpin francais de Lyon Villeurbanne à jour de leur licence peuvent emprunter et réserver le matériel du club notre plateforme de réservation Loxya. Ce n'est pas possible avec des cartes découvertes.<br><br>
-                Il n'est pas possible de réserver du matériel pour quelqu'un d'autre.
+                Le club dispose de certains matériels pour vous aider à accéder aux activités.
+            </p>
+            <p>
+                Il vous est possible d'en louer via notre plateforme de réservation Loxya.
+            </p>
+            <br>
+
+            <p>
+                Tout d'abord, quelques règles :
+            </p>
+            <div class="p-4 mb-6 border-l-4 border-blue-500 bg-blue-50">
+                <div class="flex">
+                    <div class="ml-3">
+                        <ul class="text-sm text-blue-700">
+                            <li>Seuls les adhérents du club alpin français de Lyon Villeurbanne à jour de leur licence peuvent emprunter et réserver le matériel du club via notre plateforme de réservation Loxya. Ce n'est pas possible avec des cartes découvertes.</li>
+                            <li>Il n'est pas possible d'emprunter du matériel pour quelqu'un d'autre</li>
+                            <li>Le matériel doit être emprunté pour une sortie collective officielle du club déposée sur ce site internet, il n'est pas possible de louer du matériel pour un usage en dehors de ces sorties.</li>
+                            <li>Vous pouvez venir chercher le matériel le jeudi précédent la sortie, et le restituer le mardi suivant, lors des permanences matériel de 18h30 à 20h.</li>
+                            <li>Merci d'indiquer dans les notes additionnelles (lors de la validation de votre panier sur la plateforme) la sortie pour laquelle le matériel est emprunté, ainsi que le nom de l'encadrant de la sortie.</li>
+                            <li>La réservation doit être acceptée puis payée, sans quoi matériel ne pourra pas être récupéré</li>
+                            <li>Le matériel doit être rendu dans l'état où il a été emprunté ou à défaut, merci de signaler tout problème rencontré.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <p>
+                Nous ne demandons pas de caution, mais en cas de perte ou détérioration du matériel, il vous sera demandé de régler les frais de réparation, ou la valeur de remplacement du matériel concerné.
+            </p>
+            <p>
+                Merci.
             </p>
 
             <h2 class="bleucaf">Accès à la plateforme de réservation</h2>
@@ -39,19 +67,19 @@
                 Pour accéder à cette plateforme de réservation, vous devez créer un compte sur notre outil de gestion.
                 Une fois votre compte créé, vous pourrez :
             </p>
-            
 
             <div class="p-4 mb-6 border-l-4 border-blue-500 bg-blue-50">
                 <div class="flex">
                     <div class="ml-3">
-                        <p class="text-sm text-blue-700">
-                            • Vous connecter sur la plateforme Loxya<br>
-                            • Consulter le matériel disponible à vos dates<br>
-                            • Faire une demande de réservation
-                        </p>
+                        <ul class="text-sm text-blue-700">
+                            <li>Vous connecter sur la plateforme Loxya</li>
+                            <li>Consulter le matériel disponible à vos dates</li>
+                            <li>Faire une demande de réservation</li>
+                        </ul>
                     </div>
                 </div>
             </div>
+
             <div class="flex flex-col items-end space-y-4">
                 {% if user.hasMaterielAccount() %}
                     <div class="info info-container" style="margin-right:2rem !important">
@@ -79,6 +107,9 @@
                     <p class="mb-4 text-sm text-gray-600">
                         La création de votre compte et la réception de vos identifiants / mot de passe par mail se feront instantanément.
                     </p>
+                    <p class="mb-4 text-sm text-gray-600">
+                        Pensez à bien noter ou enregistrer votre mot de passe. Il nous est impossible de le changer s'il venait à être perdu. Merci de faire attention.
+                    </p>
                     <form method="post" action="{{ path('materiel_create_account') }}" class="w-full sm:w-auto">
                         <button type="submit" class="nice2 blue" style="font-size: 16px; padding: 8px 20px;">
                             ✨ Créer mon compte
@@ -86,15 +117,7 @@
                     </form>
                 {% endif %}
             </div>
-
-            <h2 class="bleucaf">Informations importantes</h2>
-            
-            <h3 class="bleucaf">Conditions d'emprunt</h3>
-            <ul>
-                <li>si la réservation n'est pas acceptée / payée, le matériel ne peut pas être récupéré</li>
-                <li>La durée maximale d'emprunt est de 7 jours</li>
-                <li>Le matériel doit être rendu dans l'état où il a été emprunté</li>
-            </ul>
+            <br>
 
             <div class="mt-8 text-center">
                 <a href="https://forms.clickup.com/42653954/f/18np82-775/1BKP6TIKU0RIYXCRWE" target="_blank" class="text-blue-600 hover:text-blue-800">
