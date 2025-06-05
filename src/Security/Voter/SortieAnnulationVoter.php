@@ -53,6 +53,6 @@ class SortieAnnulationVoter extends Voter
             return false;
         }
 
-        return ($this->userRights->allowedOnCommission('evt_cancel', $subject->getCommission()) || $this->userRights->allowed('evt_cancel_any'));
+        return $this->userRights->allowedOnCommission('evt_cancel', $subject->getCommission()) || $this->userRights->allowed('evt_cancel_any');
     }
 }
