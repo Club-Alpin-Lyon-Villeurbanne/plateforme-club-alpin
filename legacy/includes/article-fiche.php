@@ -170,14 +170,12 @@ if (!$article) {
 				</script>';
     }
 
-    if ('1' != $article['topubly_article']
-        || allowed('article_validate_all')
-        || allowed('article_validate', 'commission:' . $article['commission_article'])
-        || allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
-        || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
-        || allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
-        || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId()
-    ) {
+    // mêmes conditions que pour la balise ouvrante
+    if ((allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
+         || allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
+         || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
+         || allowed('article_edit')) && user() && $article['user_article'] == (string) getUser()->getId()
+        && 1 == $article['status_article']) {
         echo '</div><br />';
     }
 
