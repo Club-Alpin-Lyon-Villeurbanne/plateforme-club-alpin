@@ -417,15 +417,15 @@
                                     {% set disable_absent = true %}
                                     {% set disable_unsubscribe = true %}
 
-                                    {% if allowed('evt_joining_accept') or allowed('evt_join_doall') %}
+                                    {% if app.user is same as (event.user) or allowed('evt_joining_accept', 'commission:' ~ event.commission.code) or allowed('evt_join_doall') %}
                                         {% set disable_waiting = false %}
                                         {% set disable_accepted = false %}
                                         {% set disable_absent = false %}
                                     {% endif %}
-                                    {% if allowed('evt_joining_refuse') or allowed('evt_join_doall') %}
+                                    {% if app.user is same as (event.user) or allowed('evt_joining_refuse', 'commission:' ~ event.commission.code) or allowed('evt_join_doall') %}
                                         {% set disable_refused = false %}
                                     {% endif %}
-                                    {% if allowed('evt_unjoin_notme') or allowed('evt_join_doall') %}
+                                    {% if app.user is same as (event.user) or allowed('evt_unjoin_notme', 'commission:' ~ event.commission.code) or allowed('evt_join_doall') %}
                                         {% set disable_unsubscribe = false %}
                                     {% endif %}
 
