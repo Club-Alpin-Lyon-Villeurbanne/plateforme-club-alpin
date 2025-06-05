@@ -1,7 +1,12 @@
+<?php
+use App\Legacy\LegacyContainer;
+use App\Security\SecurityConstants;
+
+?>
 	<!-- css -->
-	<link rel="stylesheet" href="/css/base.css" type="text/css"  media="screen" />
-	<link rel="stylesheet" href="/css/common.css" type="text/css"  media="screen" />
-	<link rel="stylesheet" href="/css/admin.css" type="text/css"  media="screen" />
+    <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>
+    <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('common-styles'); ?>
+    <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('admin-styles'); ?>
 	<link rel="stylesheet" href="/css/ui-cupertino/jquery-ui-1.8.18.custom.css" type="text/css"  media="screen" />
 	<link rel="stylesheet" href="/tools/_fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 
@@ -21,10 +26,7 @@
 	<!-- script persos -->
     <script src="/js/fonctions.js" type="text/javascript"></script>
 	<?php
-
-    use App\Security\SecurityConstants;
-
-	if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) { ?>
+    if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) { ?>
 		<!-- script admin -->
 		<script src="/js/fonctionsAdmin.js" type="text/javascript"></script>
 	<?php } ?>

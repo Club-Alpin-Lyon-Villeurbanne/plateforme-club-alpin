@@ -40,8 +40,8 @@ if (!isset($_GET['dossier'])) {
 		<meta charset="utf-8">
 		<title>DOSSIER FTP</title>
 
-		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/admin.css">
-		<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
+        <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('admin-styles'); ?>
+        <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>
 		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
 
 		<!-- jquery -->
