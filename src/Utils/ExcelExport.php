@@ -38,7 +38,7 @@ class ExcelExport
         return $date->diff($now)->y;
     }
 
-    public function export(string $title, $datas, $rsm): Response
+    public function export(string $title, $datas, $rsm, string $filename): Response
     {
         $streamedResponse = new StreamedResponse();
 
@@ -78,7 +78,7 @@ class ExcelExport
 
         // Configuration des headers
         $streamedResponse->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $streamedResponse->headers->set('Content-Disposition', 'attachment; filename="' . $title . '.xlsx"');
+        $streamedResponse->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '.xlsx"');
 
         return $streamedResponse;
     }

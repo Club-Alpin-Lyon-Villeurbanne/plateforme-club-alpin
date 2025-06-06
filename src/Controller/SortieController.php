@@ -486,7 +486,7 @@ class SortieController extends AbstractController
         require $this->getParameter('kernel.project_dir') . '/legacy/' . $path;
         $html = ob_get_clean();
 
-        return $pdfGenerator->generatePdf($html, substr($slugger->slug($event->getTitre(), '-'), 0, 20) . '-' . time() . '.pdf');
+        return $pdfGenerator->generatePdf($html, $this->getFilename($event->getTitre(), $slugger) . '.pdf');
     }
 
     #[Route(name: 'sortie_xlsx', path: '/sortie/{id}/printXLSX', requirements: ['id' => '\d+'])]
@@ -496,6 +496,11 @@ class SortieController extends AbstractController
 
         $rsm = [' ', 'PARTICIPANTS (PRÉNOM, NOM)', 'RÔLE', 'N°ADHÉRENT', 'AGE', "DATE D'ADHÉSION", 'TÉL.. PROFESSIONNEL', 'TÉL.. I.C.E', 'EMAIL'];
 
-        return $excelExport->export(substr($slugger->slug($event->getTitre(), '-'), 0, 20) . '-' . time(), $datas, $rsm);
+        return $excelExport->export(substr($slugger->slug($event->getTitre(), '-'), 0, 20), $datas, $rsm, $this->getFilename($event->getTitre(), $slugger));
+    }
+
+    protected function getFilename(string $eventTitle, SluggerInterface $slugger): string
+    {
+        return substr($slugger->slug($eventTitle, '-'), 0, 20) . '.' . date('Y-m-d.H-i-s');
     }
 }

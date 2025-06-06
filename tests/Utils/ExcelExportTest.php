@@ -94,7 +94,7 @@ class ExcelExportTest extends TestCase
 
         $datas = [['liste' => $liste]];
         ob_start();
-        $response = $this->excelExport->export($title, $datas, $rsm);
+        $response = $this->excelExport->export($title, $datas, $rsm, $title);
         $response->send(); // Force execution
         $output = ob_get_clean();
 
@@ -110,7 +110,7 @@ class ExcelExportTest extends TestCase
 
         try {
             ob_start();
-            $this->excelExport->export($title, $datas, $rsm);
+            $this->excelExport->export($title, $datas, $rsm, $title);
             ob_end_clean();
             $this->assertTrue(true);
         } catch (\Exception $e) {
