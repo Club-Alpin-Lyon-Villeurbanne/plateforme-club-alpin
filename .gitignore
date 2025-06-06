@@ -44,3 +44,6 @@ public/dev.txt
 ###> liip/imagine-bundle ###
 /public/media/cache/
 ###< liip/imagine-bundle ###
+
+# Claude Code assistant files
+.claude/

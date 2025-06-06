@@ -64,7 +64,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $user_id = getUser()->getId();
     $status = '1';
     $empty = '';
-    $stmt->bind_param('siissssi', $status, $current_time, $user_id, $empty, $empty, $cont_comment, $parent_type_comment, $parent_comment);
+    $stmt->bind_param('siiisssi', $status, $current_time, $user_id, $empty, $empty, $cont_comment, $parent_type_comment, $parent_comment);
     if (!$stmt->execute()) {
         $errTab[] = 'Erreur SQL';
     }
