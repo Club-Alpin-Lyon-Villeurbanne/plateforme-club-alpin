@@ -47,3 +47,7 @@ public/dev.txt
 
 # Claude Code assistant files
 .claude/
+
+# Test reports
+test-results/
+playwright-report/

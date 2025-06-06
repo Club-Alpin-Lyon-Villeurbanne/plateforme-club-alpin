@@ -5,9 +5,7 @@ parameters:
     - src
     - tests
 
-  ignoreErrors:
-    - '#Variable \$p_[a-z_]+ might not be defined#'
-    - '#Variable \$p\d might not be defined#'
+  ignoreErrors: []
 
   excludePaths:
     - legacy/scripts/operations/operations.bus_update.php
