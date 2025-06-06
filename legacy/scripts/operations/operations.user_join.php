@@ -133,6 +133,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $is_covoiturage = null;
         $status_evt_join = 0;
         $current_timestamp = time();
+        $success = true;
 
         $evt = get_evt($id_evt);
 
