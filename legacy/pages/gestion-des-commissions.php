@@ -41,13 +41,14 @@ use App\Legacy\LegacyContainer;
                                         // pour ajax
                                         . '<input type="hidden" name="id_commission" value="' . (int) $row['id_commission'] . '" class="id_commission" />'
                                         // bigfond
-                                        . '<a href="' . $bigImgUrl . '" title="" class="fancybox"><img style="width:100%" src="' . $bigImgUrl . '" alt="" title="Agrandir" /></a>'
+                                        . '<a href="javascript:void(0)" title="" onclick="modal.show(getElementById(\'image-preview-' . (int) $row['id_commission'] . '\').innerHTML)"><img style="width:100%" src="' . $bigImgUrl . '" alt="" title="Agrandir" /></a>'
                                         . '<br />'
                                         // pictos
                                         . '<img src="' . comPicto($row['id_commission'], 'dark') . '" alt="" title="" /> '
                                         . '<img src="' . comPicto($row['id_commission']) . '" alt="" title="" /> '
                                         . '<img src="' . comPicto($row['id_commission'], 'light') . '" alt="" title="" /> '
                                     . '</div>'
+                                    . '<div id="image-preview-' . (int) $row['id_commission'] . '" style="display:none"><img style="width:100%" src="' . $bigImgUrl . '" /></div>'
                                     . '<div class="item-2">';
                         // reorder
                         if (LegacyContainer::get('legacy_user_rights')->allowed('comm_edit')) {
@@ -128,7 +129,7 @@ use App\Legacy\LegacyContainer;
 					success: function(jsonMsg){
 						if(jsonMsg.success){
 							// var htmlMsg = $('<span/>').html(jsonMsg.successmsg).text();
-							// $.fancybox('<div class="info" style="text-align:left; max-width:600px; line-height:17px;">'+htmlMsg+'</div>');
+							// modal.show('<div class="info" style="text-align:left; max-width:600px; line-height:17px;">'+htmlMsg+'</div>');
 						}
 						else{
 							// interprétation du html pour chaque erreur
@@ -140,7 +141,7 @@ use App\Legacy\LegacyContainer;
 							if(form.find('.erreur').length)
 								form.find('.erreur').html(jsonMsg.error.join(',<br />')).fadeIn();
 							else
-								$.fancybox('<div class="erreur" style="text-align:left; max-width:600px; line-height:17px;">'+jsonMsg.error.join(',<br />')+'</div>');
+								modal.show('<div class="erreur" style="text-align:left; line-height:17px;">'+jsonMsg.error.join(',<br />')+'</div>');
 						}
 					}
 				});

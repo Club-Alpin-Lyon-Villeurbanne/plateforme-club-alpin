@@ -15,7 +15,7 @@
                             body: new FormData(form)
                         }).then(response => {
                             if (response.ok) {
-                                closeFancybox();
+                                modal.close();
                                 if (window.parent) {
                                     window.parent.location.reload();
                                 }
@@ -34,14 +34,8 @@
             if (cancelButton) {
                 cancelButton.addEventListener('click', function(event) {
                     event.preventDefault();
-                    closeFancybox();
+                    modal.close();
                 });
-            }
-
-            function closeFancybox() {
-                if (window.parent && window.parent.$.fancybox) {
-                    window.parent.$.fancybox.close();
-                }
             }
         });
     </script>

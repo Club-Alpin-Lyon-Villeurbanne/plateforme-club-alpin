@@ -105,8 +105,8 @@
                     return response.json();
                 })
                 .then(data => {
-                    if (window.parent && window.parent.$.fancybox) {
-                        window.parent.$.fancybox.close();
+                    if (window.parent && window.parent.modal) {
+                        window.parent.modal.close();
                     }
                     if (window.parent) {
                         window.parent.location.reload();

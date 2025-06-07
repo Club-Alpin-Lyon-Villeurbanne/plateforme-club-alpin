@@ -921,7 +921,7 @@
 		busy = false;
 	};
 
-	// Note: within an iframe use - parent.$.fancybox.close();
+	// Note: within an iframe use - parent.modal.close();
 	$.fancybox.close = function() {
 		if (busy || wrap.is(':hidden')) {
 			return;

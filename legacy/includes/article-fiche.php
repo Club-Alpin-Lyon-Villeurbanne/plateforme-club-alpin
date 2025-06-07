@@ -73,7 +73,7 @@ if (!$article) {
 				<input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
 			</form>
 
-			<input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
+			<input type="button" value="Refuser" class="nice2 red" onclick="modal.show(this.nextElementSibling.innerHTML)" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
 			<div style="display:none" id="refuser-' . (int) $article['id_article'] . '">
 				<form action="' . $versCettePage . '" method="post" class="loading">
 					<input type="hidden" name="operation" value="article_validate" />
@@ -83,7 +83,7 @@ if (!$article) {
 					<p>Laissez un message à l\'auteur pour lui expliquer la raison du refus :</p>
 					<input type="text" name="msg" class="type1" placeholder="ex : Décocher &laquo;A la Une&raquo;" />
 					<input type="submit" value="Refuser la publication" class="nice2 red" />
-					<input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
+					<input type="button" value="Annuler" class="nice2" onclick="modal.close()" />
 				</form>
 			</div><br />';
         }
@@ -109,15 +109,15 @@ if (!$article) {
         && (allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
          || allowed('article_delete')) && user() && $article['user_article'] == (string) getUser()->getId()) {
         // Suppression
-        echo '<a href="javascript:$.fancybox($(\'#supprimer-form-' . $article['id_article'] . '\').html());" title="" class="nice2 red">
+        echo '<a href="javascript:modal.show(document.getElementById(\'supprimer-form-' . $article['id_article'] . '\').innerHTML);" title="" class="nice2 red">
 				<img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cet article
 			</a>';
         echo '<div id="supprimer-form-' . (int) $article['id_article'] . '" style="display:none">
-				<form action="' . $versCettePage . '" method="post" style="width:600px; text-align:left">
+				<form action="' . $versCettePage . '" method="post" style="text-align:left">
 					<input type="hidden" name="operation" value="article_del" />
 					<input type="hidden" name="id_article" value="' . $article['id_article'] . '" />
 					<p>Voulez-vous vraiment supprimer définitivement cet article ? <br />Cette action est irréversible.</p>
-					<input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
+					<input type="button" class="nice2" value="Annuler" onclick="modal.close();" />
 					<input type="submit" class="nice2 red" value="Supprimer cet article" />
 				</form>
 			</div>';
@@ -126,17 +126,17 @@ if (!$article) {
               || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId()) {
         // article publié, on peut le depublier
 
-        echo '<a href="javascript:$.fancybox($(\'#depublier-form-' . $article['id_article'] . '\').html());" title="" class="nice2 red" id="button-depublier">
+        echo '<a href="javascript:modal.show(document.getElementById(\'depublier-form-' . $article['id_article'] . '\').innerHTML);" title="" class="nice2 red" id="button-depublier">
 				<img src="/img/base/pencil_delete.png" alt="" title="" style="" />&nbsp;&nbsp;Dépublier
 			</a>
 			<div id="depublier-form-' . $article['id_article'] . '" style="display:none">
-				<form action="' . $versCettePage . '" method="post" style="width:600px; text-align:left">
+				<form action="' . $versCettePage . '" method="post" style="text-align:left">
 					<input type="hidden" name="operation" value="article_depublier" />
 					<input type="hidden" name="id_article" value="' . $article['id_article'] . '" />
 					<p>Voulez-vous vraiment retirer cet article du site ? Il repassera en "Brouillon" et vous devrez à nouveau
 					le faire publier par un responsable si vous désirez le publier à nouveau.</p>
 
-					<input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
+					<input type="button" class="nice2" value="Annuler" onclick="modal.close();" />
 					<input type="submit" class="nice2 orange" value="Dépublier mon article" />
 				</form>
 			</div>';
@@ -158,10 +158,10 @@ if (!$article) {
 						data: { operation: "renew_date_article", id_article: "' . $article['id_article'] . '" },
 						success: function(jsonMsg){
 							if(jsonMsg.success){
-								$.fancybox(\'<p class="info">\'+jsonMsg.successmsg+\'</p>\');
+								modal.show(\'<p class="info">\'+jsonMsg.successmsg+\'</p>\');
 							}
 							else{
-								$.fancybox(\'<p class="erreur">Erreur : <br />\'+(jsonMsg.error).join(\',<br />\')+\'</p>\');
+								modal.show(\'<p class="erreur">Erreur : <br />\'+(jsonMsg.error).join(\',<br />\')+\'</p>\');
 							}
 						}
 					});

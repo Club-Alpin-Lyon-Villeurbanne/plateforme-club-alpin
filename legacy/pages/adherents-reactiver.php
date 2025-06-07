@@ -29,7 +29,7 @@ if (!allowed('user_reactivate')) {
     } else {
         ?>
 				<input type="submit" class="nice2 green" value="Réactiver" />
-				<a href="javascript:top.$.fancybox.close()" title="" class="nice2">Annuler</a>
+				<a href="javascript:top.modal.close()" title="" class="nice2">Annuler</a>
 				<?php
     } ?>
 		</form>

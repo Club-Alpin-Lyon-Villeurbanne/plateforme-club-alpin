@@ -32,7 +32,7 @@ if (!allowed('user_reset')) {
     } else {
         ?>
 				<input type="submit" class="nice2 orange" value="Réinitialiser cet adhérent" />
-				<a href="javascript:top.$.fancybox.close()" title="" class="nice2">Annuler</a>
+				<a href="javascript:top.modal.close()" title="" class="nice2">Annuler</a>
 				<?php
     } ?>
 		</form>

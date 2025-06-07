@@ -178,7 +178,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 								<input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
 							</form>
 
-							<input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
+							<input type="button" value="Refuser" class="nice2 red" onclick="modal.show(this.nextElementSibling.innerHTML)" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
 							<div style="display:none" id="refuser-' . (int) $article['id_article'] . '">
 								<form action="' . $versCettePage . '" method="post" class="loading">
 									<input type="hidden" name="operation" value="article_validate" />
@@ -188,7 +188,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 									<p>Laissez un message à l\'auteur pour lui expliquer la raison du refus :</p>
 									<input type="text" name="msg" class="type1" placeholder="ex : Décocher &laquo;A la Une&raquo;" />
 									<input type="submit" value="Refuser la publication" class="nice2 red" />
-									<input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
+									<input type="button" value="Annuler" class="nice2" onclick="modal.close()" />
 								</form>
 							</div>';
                         echo '</div>'
@@ -258,7 +258,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                         // Suppression
                         if (allowed('article_delete_notmine') || allowed('article_delete', 'commission:' . $article['commission_article'])) {
-                            echo '<a href="javascript:$.fancybox($(\'#supprimer-form-' . $article['id_article'] . '\').html());" title="" class="nice2 red">
+                            echo '<a href="javascript:void(0)" title="" onclick="modal.show(getElementById(\'supprimer-form-' . (int) $article['id_article'] . '\').innerHTML)" class="nice2 red">
 										Supprimer
 									</a>';
                             echo '<div id="supprimer-form-' . (int) $article['id_article'] . '" style="display:none">
@@ -266,7 +266,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 											<input type="hidden" name="operation" value="article_del" />
 											<input type="hidden" name="id_article" value="' . $article['id_article'] . '" />
 											<p>Voulez-vous vraiment supprimer définitivement cet article ? <br />Cette action est irréversible.</p>
-											<input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
+											<input type="button" class="nice2" value="Annuler" onclick="modal.close();" />
 											<input type="submit" class="nice2 red" value="Supprimer cet article" />
 										</form>
 									</div>';

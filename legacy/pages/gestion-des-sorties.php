@@ -173,7 +173,7 @@ elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1
 												<input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
 											</form>
 
-											<input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
+											<input type="button" value="Refuser" class="nice2 red" onclick="modal.show(this.nextElementSibling.innerHTML)" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
 											<div style="display:none" id="refuser-' . (int) $evt['id_evt'] . '">
                                                 <form action="' . generateRoute('sortie_refus', ['id' => (int) $evt['id_evt']]) . '" method="post" class="loading">
                                                     <input type="hidden" name="csrf_token" value="' . csrfToken('sortie_refus') . '" />
@@ -181,7 +181,7 @@ elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1
 													<p>Laissez un message à l\'auteur pour lui expliquer la raison du refus :</p>
 													<input type="text" name="msg" class="type1" placeholder="ex: Mauvais point de RDV" />
 													<input type="submit" value="Refuser la publication" class="nice2 red" />
-													<input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
+													<input type="button" value="Annuler" class="nice2" onclick="modal.close()" />
 												</form>
 											</div>
 											<a class="nice2 noprint red" href="/supprimer-une-sortie/' . html_utf8($evt['code_evt']) . '-' . (int) $evt['id_evt'] . '.html" title="Supprimer définitivement la sortie"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie</a>

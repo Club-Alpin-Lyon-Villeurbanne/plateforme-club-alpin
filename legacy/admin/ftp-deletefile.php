@@ -60,7 +60,7 @@ if (count($errTab) > 0) {
             ?>
             <script type="text/javascript">
                 parent.$('#ftp-2-arbo a.selected').click();
-                parent.$.fancybox.close();
+                parent.modal.close();
             </script>
             <?php
             exit;
@@ -102,7 +102,7 @@ if (count($errTab) > 0) {
                     <input type="hidden" name="lock" value="locked" />
                     <br />
                     <input type="submit" class="nice red" value="Supprimer ce fichier" onclick="$(this).siblings('input[name=lock]').val('unlocked')" />
-                    <input type="button" class="nice orange" value="Annuler" onclick="parent.$.fancybox.close()" />
+                    <input type="button" class="nice orange" value="Annuler" onclick="parent.modal.close()" />
                 </form>
             </body>
         </html>

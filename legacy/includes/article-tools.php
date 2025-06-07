@@ -52,17 +52,17 @@ if (user()) {
         // si publié : dépublier
         if (1 == $article['status_article']) {
             ?>
-			<a href="javascript:$.fancybox($('#depublier-form-<?php echo $article['id_article']; ?>').html());" title="" class="nice2 red" id="button-depublier">
+			<a href="javascript:modal.show(document.getElementById('depublier-form-<?php echo $article['id_article']; ?>').innerHTML);" title="" class="nice2 red" id="button-depublier">
 				Dépublier
 			</a>
 			<div id="depublier-form-<?php echo $article['id_article']; ?>" style="display:none">
-				<form action="<?php echo $versCettePage; ?>" method="post" style="width:600px; text-align:left">
+				<form action="<?php echo $versCettePage; ?>" method="post" style="text-align:left">
 					<input type="hidden" name="operation" value="article_depublier" />
 					<input type="hidden" name="id_article" value="<?php echo $article['id_article']; ?>" />
 					<p>Voulez-vous vraiment retirer cet article du site ? Il repassera en "Brouillon" et vous devrez à nouveau
 					le faire publier par un responsable si vous désirez le publier à nouveau.</p>
 
-					<input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
+					<input type="button" class="nice2" value="Annuler" onclick="modal.close();" />
 					<input type="submit" class="nice2 orange" value="Dépublier mon article" />
 				</form>
 			</div>
@@ -72,16 +72,16 @@ if (user()) {
     // si dépublié : supprimer
     if (1 != $article['status_article']) {
         ?>
-			<a href="javascript:$.fancybox($('#supprimer-form-<?php echo $article['id_article']; ?>').html());" title="" class="nice2 red">
+			<a href="javascript:modal.show(document.getElementById('supprimer-form-<?php echo $article['id_article']; ?>').innerHTML);" title="" class="nice2 red">
 				Supprimer
 			</a>
 			<div id="supprimer-form-<?php echo $article['id_article']; ?>" style="display:none">
-				<form action="<?php echo $versCettePage; ?>" method="post" style="width:600px; text-align:left">
+				<form action="<?php echo $versCettePage; ?>" method="post" style="text-align:left">
 					<input type="hidden" name="operation" value="article_del" />
 					<input type="hidden" name="id_article" value="<?php echo $article['id_article']; ?>" />
 					<p>Voulez-vous vraiment supprimer définitivement cet article ? <br />Cette action est irréversible.</p>
 
-					<input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
+					<input type="button" class="nice2" value="Annuler" onclick="modal.close();" />
 					<input type="submit" class="nice2 red" value="Supprimer mon article" />
 				</form>
 			</div>
