@@ -236,7 +236,7 @@ $().ready(function() {
 				success: function(jsonMsg){
 					if(jsonMsg.success){
 						var htmlMsg = $('<span/>').html(jsonMsg.successmsg).text();
-						$.fancybox('<div class="info" style="text-align:left; max-width:600px; line-height:17px;">'+htmlMsg+'</div>');
+						modal.show('<div class="info" style="text-align:left; line-height:17px;">'+htmlMsg+'</div>');
 					}
 					else{
 						// interprétation du html pour chaque erreur
@@ -248,13 +248,13 @@ $().ready(function() {
 						if(form.find('.erreur').length)
 							form.find('.erreur').html(jsonMsg.error.join(',<br />')).fadeIn();
 						else
-							$.fancybox('<div class="erreur" style="text-align:left; max-width:600px; line-height:17px;">'+jsonMsg.error.join(',<br />')+'</div>');
+							modal.show('<div class="erreur" style="text-align:left;line-height:17px;">'+jsonMsg.error.join(',<br />')+'</div>');
 					}
 				},
 				error: function(err){
 					// alert('Ajax error');
 					// console.log(err);
-					$.fancybox('<div class="erreur" style="text-align:left; max-width:600px; line-height:17px;">Erreur : '+err.responseText+'</div>');
+					modal.show('<div class="erreur" style="text-align:left; line-height:17px;">Erreur : '+err.responseText+'</div>');
 				}
 			});
 		}

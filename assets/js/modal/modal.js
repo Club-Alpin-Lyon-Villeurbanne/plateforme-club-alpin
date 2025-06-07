@@ -17,6 +17,10 @@ class Modal {
         document.getElementById('app-modal-content').innerHTML = content;
         MicroModal.show('app-modal');
     }
+
+    close() {
+        MicroModal.close('app-modal');
+    }
 }
 
 const modal = new Modal();
