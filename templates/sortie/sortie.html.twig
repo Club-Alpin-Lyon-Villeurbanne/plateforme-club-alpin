@@ -815,6 +815,10 @@
                         var marker = L.marker([lat, lon]).addTo(mymap);
                     })
                 </script>
+            {% else %}
+                <ul class="nice-list">
+                    <li><b>RDV :</b> visible après connexion</li>
+                </ul>
             {% endif %}
             <hr />
         {% endif %}
