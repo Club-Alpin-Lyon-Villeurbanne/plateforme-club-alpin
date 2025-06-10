@@ -52,7 +52,7 @@ class ExcelExport
             // Génération de l'en-tête
             $count = 1;
             $sheet->fromArray($rsm, null, 'A' . $count++);
-            
+
             // type des données
             $types = [
                 DataType::TYPE_NUMERIC,
