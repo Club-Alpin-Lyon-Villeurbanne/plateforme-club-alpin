@@ -8,11 +8,14 @@ if (!$id_comment) {
 } else {
     // recup
     $comment = false;
-    $req = "SELECT * FROM caf_comment WHERE id_comment = $id_comment";
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT * FROM caf_comment WHERE id_comment = ?');
+    $stmt->bind_param('i', $id_comment);
+    $stmt->execute();
+    $result = $stmt->get_result();
     while ($handle = $result->fetch_array(\MYSQLI_ASSOC)) {
         $comment = $handle;
     }
+    $stmt->close();
 
     if (!$comment) {
         echo "<p class='erreur'>Commentaire introuvable.</p>";
