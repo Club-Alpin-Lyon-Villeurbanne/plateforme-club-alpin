@@ -6,8 +6,8 @@ parameters:
     - tests
 
   ignoreErrors:
+    - '#Variable \$p[0-9_]+ might not be defined#'
     - '#Variable \$p_[a-z_]+ might not be defined#'
-    - '#Variable \$p\d might not be defined#'
 
   excludePaths:
     - legacy/scripts/operations/operations.bus_update.php

@@ -17,26 +17,32 @@ $role_evt_join = stripslashes($_POST['role_evt_join']);
 
 // suis-je encadrant sur cette sortie ?
 $suis_encadrant = false;
-$req = "SELECT COUNT(id_evt_join)
+$stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT COUNT(id_evt_join)
 FROM caf_evt_join
-WHERE evt_evt_join=$id_evt
-AND user_evt_join = " . getUser()->getId() . "
+WHERE evt_evt_join = ?
+AND user_evt_join = ?
 AND (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant')
-LIMIT 1";
-$result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+LIMIT 1");
+$stmt->bind_param('ii', $id_evt, getUser()->getId());
+$stmt->execute();
+$result = $stmt->get_result();
 $row = $result->fetch_row();
 if ($row[0] > 0) {
     $suis_encadrant = true;
 }
+$stmt->close();
 
 // suis-je l'auteur de cette sortie ?
 $suis_auteur = false;
-$req = "SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt=$id_evt AND user_evt = " . getUser()->getId() . ' LIMIT 1';
-$result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+$stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt = ? AND user_evt = ? LIMIT 1');
+$stmt->bind_param('ii', $id_evt, getUser()->getId());
+$stmt->execute();
+$result = $stmt->get_result();
 $row = $result->fetch_row();
 if ($row[0] > 0) {
     $suis_auteur = true;
 }
+$stmt->close();
 
 // checks SQL : l'user doit être l'auteur *OU* avoir le droit de modifier toutes les inscriptions *OU* être encadrant sur la sortie
 if (!allowed('evt_join_doall') && !allowed('evt_join_notme') && !$suis_encadrant && !$suis_auteur) {
@@ -62,14 +68,16 @@ if (!$lastname_user) {
 if ($email_user && !filter_var($email_user, \FILTER_VALIDATE_EMAIL)) {
     $errTab[] = "L'adresse email est invalide";
 } else {
-    $reqmail = "SELECT COUNT(*)
-    FROM caf_user
-    WHERE email_user='$email_user'";
-    $resultmail = LegacyContainer::get('legacy_mysqli_handler')->query($reqmail);
+    $reqmail = 'SELECT COUNT(*) FROM caf_user WHERE email_user = ?';
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($reqmail);
+    $stmt->bind_param('s', $email_user);
+    $stmt->execute();
+    $resultmail = $stmt->get_result();
     $rowmail = $resultmail->fetch_row();
     if ($rowmail[0] > 0) {
         $errTab[] = "L'adresse email existe déja sur le site";
     }
+    $stmt->close();
 }
 if (!$role_evt_join) {
     $errTab[] = 'Merci de renseigner le champ <i>rôle</i>';
@@ -78,23 +86,24 @@ if (!$role_evt_join) {
 if (!isset($errTab) || 0 === count($errTab)) {
     // si pas d'ID user spécifié, on crée ce nomade
     if (!$id_user) {
-        // securite
-        $civ_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($civ_user);
-        $cafnum_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($cafnum_user);
-        $firstname_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($firstname_user);
-        $lastname_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($lastname_user);
         $nickname_user = NicknameGenerator::generateNickname($firstname_user, $lastname_user);
-        $tel_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($tel_user);
-        $tel2_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($tel2_user);
-        $email_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString($email_user);
 
-        $req = 'INSERT INTO caf_user(email_user, mdp_user, cafnum_user, firstname_user, lastname_user, nickname_user, created_user, birthday_user, tel_user, tel2_user, adresse_user, cp_user, ville_user, pays_user, civ_user, moreinfo_user, auth_contact_user, valid_user ,cookietoken_user, manuel_user, nomade_user, nomade_parent_user, cafnum_parent_user, doit_renouveler_user, alerte_renouveler_user)
-                        VALUES (' . ($email_user ? "'$email_user'" : 'NULL') . ", '',  'N_$cafnum_user',  '$firstname_user',  '$lastname_user',  '$nickname_user',  '" . time() . "',  NULL,  '$tel_user',  '$tel2_user',  '',  '',  '',  '',  '$civ_user',  '',  'none',  '1',  '',  '0',  '1',  '" . getUser()->getId() . "', null, 0, 0)";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO caf_user(
+            email_user, mdp_user, cafnum_user, firstname_user, lastname_user, nickname_user, created_user, birthday_user, tel_user, tel2_user, adresse_user, cp_user, ville_user, pays_user, civ_user, moreinfo_user, auth_contact_user, valid_user, cookietoken_user, manuel_user, nomade_user, nomade_parent_user, cafnum_parent_user, doit_renouveler_user, alerte_renouveler_user
+        ) VALUES (
+            ?,
+            \'\',
+            ?, ?, ?, ?, ?, NULL, ?, ?, \'\', \'\', \'\', \'\', ?, \'\', \'none\', 1, \'\', 0, 1, ?, NULL, 0, 0
+        )');
+        $current_time = time();
+        $parent_id = getUser()->getId();
+        $stmt->bind_param('ssssssisssi', $email_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $current_time, $tel_user, $tel2_user, $civ_user, $parent_id);
+        if (!$stmt->execute()) {
             $errTab[] = 'Erreur SQL';
         } else {
             $id_user = LegacyContainer::get('legacy_mysqli_handler')->insertId();
         }
+        $stmt->close();
     }
 
     // a ce stade, on doit avoir l'ID de l'user
@@ -109,20 +118,20 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $is_covoiturage = 'NULL';
 
         if (!isset($errTab) || 0 === count($errTab)) {
-            $role_evt_join = LegacyContainer::get('legacy_mysqli_handler')->escapeString($role_evt_join);
-
             // attention : status_evt_join est à 0 ici par défaut
             $status_evt_join = 0;
             if ($suis_encadrant || $suis_auteur) {
                 $status_evt_join = 1;
             }
 
-            $req = "INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_covoiturage, affiliant_user_join)
-                                    VALUES($status_evt_join, 		'$id_evt',  '$id_user',  	'$role_evt_join', " . time() . ', 		' . time() . ', 			' . getUser()->getId() . ",
-                        $is_covoiturage, null);";
-            if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_covoiturage, affiliant_user_join) VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL)');
+            $current_time = time();
+            $who = getUser()->getId();
+            $stmt->bind_param('iiisiii', $status_evt_join, $id_evt, $id_user, $role_evt_join, $current_time, $current_time, $who);
+            if (!$stmt->execute()) {
                 $errTab[] = 'Erreur SQL';
             }
+            $stmt->close();
         }
     }
 }
