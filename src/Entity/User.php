@@ -408,12 +408,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this;
     }
 
-    public function getBirthday(): ?string
+    public function getBirthday(): ?int
     {
         return $this->birthday;
     }
 
-    public function setBirthday(?string $birthday): self
+    public function setBirthday(?int $birthday): self
     {
         $this->birthday = $birthday;
 
@@ -588,12 +588,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this;
     }
 
-    public function getDateAdhesion(): ?string
+    public function getDateAdhesion(): ?int
     {
         return $this->dateAdhesion;
     }
 
-    public function setDateAdhesion(?string $dateAdhesion): self
+    public function setDateAdhesion(?int $dateAdhesion): self
     {
         $this->dateAdhesion = $dateAdhesion;
 
