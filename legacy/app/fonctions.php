@@ -135,13 +135,14 @@ function userImg($id_user, $style = '')
 
 /*
 La fonction "comFd" prend l'ID d'une commission et retourne l'URL absolue de l'aimge de fond
-liée à cette commission, ou bien de celle par défaut
+liée à cette commission
 */
 function comFd($id_commission)
 {
-    $rel = '/ftp/commission/' . (int) $id_commission . '/bigfond.jpg';
-    if (!file_exists(__DIR__ . '/../../public' . $rel)) {
-        $rel = '/ftp/commission/0/bigfond.jpg';
+    $rel = '';
+
+    if (!empty($id_commission)) {
+        $rel = '/ftp/commission/' . (int) $id_commission . '/bigfond.jpg';
     }
 
     return $rel;
