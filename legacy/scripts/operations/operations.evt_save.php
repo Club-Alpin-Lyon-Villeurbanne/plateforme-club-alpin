@@ -19,7 +19,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $errTab[] = "Erreur dans le champ 'Tarif' : " . $tarif_evt . " n'est pas une valeur numérique";
     }
     if ('0.00' == $tarif_evt || empty($tarif_evt)) {
-        $tarif_evt = 'NULL';
+        $tarif_evt = 0;
     }
     if ('0.00' == $distance_evt || empty($distance_evt)) {
         $distance_evt = '';
@@ -27,22 +27,25 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if ('0' == $denivele_evt || empty($denivele_evt)) {
         $denivele_evt = '';
     }
+    if (empty($place_evt)) {
+        $place_evt = '';
+    }
 
     // code : juste pour un formatage explicite des URL vers les sorties
     $code_evt = substr(formater($titre_evt, 3), 0, 30);
 
     if ('evt_create' == $_POST['operation']) {
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO caf_evt(status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, place_evt, titre_evt, code_evt, massif_evt, rdv_evt, tarif_evt, tarif_detail, denivele_evt, distance_evt, lat_evt, long_evt, matos_evt, itineraire, difficulte_evt, description_evt, need_benevoles_evt, join_start_evt, join_max_evt, ngens_max_evt, id_groupe, cancelled_evt, details_caches_evt) VALUES ('0', '0', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '0', ?)");
-        $stmt->bind_param('iissssssssssssssssssssssssss', $user_evt, $commission_evt, $tsp_evt, $tsp_end_evt, $tsp_crea_evt, $place_evt, $titre_evt, $code_evt, $massif_evt, $rdv_evt, $tarif_evt, $tarif_detail, $denivele_evt, $distance_evt, $lat_evt, $long_evt, $matos_evt, $itineraire, $difficulte_evt, $description_evt, $need_benevoles_evt, $join_start_evt, $join_max_evt, $ngens_max_evt, $id_groupe, $details_caches_evt);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO caf_evt(status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, place_evt, titre_evt, code_evt, massif_evt, rdv_evt, tarif_evt, tarif_detail, denivele_evt, distance_evt, lat_evt, long_evt, matos_evt, itineraire, difficulte_evt, description_evt, need_benevoles_evt, join_start_evt, join_max_evt, ngens_max_evt, id_groupe, cancelled_evt, details_caches_evt) VALUES ('0', '0', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '0', ?)");
+        $stmt->bind_param('iisssssssssdssssssssssssss', $user_evt, $commission_evt, $tsp_evt, $tsp_end_evt, $tsp_crea_evt, $place_evt, $titre_evt, $code_evt, $massif_evt, $rdv_evt, $tarif_evt, $tarif_detail, $denivele_evt, $distance_evt, $lat_evt, $long_evt, $matos_evt, $itineraire, $difficulte_evt, $description_evt, $need_benevoles_evt, $join_start_evt, $join_max_evt, $ngens_max_evt, $id_groupe, $details_caches_evt);
     } elseif (isset($_POST['operation']) && 'evt_update' == $_POST['operation']) {
         // MISE A JOUR de l'éléments existant // IMPORTANT : le status repasse à 0
         $current_time = time();
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_evt SET `status_evt`=0, `tsp_evt`=?, `tsp_end_evt`=?, `tsp_edit_evt`=?, `titre_evt`=?, `code_evt`=?, `massif_evt`=?, `rdv_evt`=?, `tarif_evt`=?, `tarif_detail`=?, `denivele_evt`=?, `distance_evt`=?, `lat_evt`=?, `long_evt`=?, `matos_evt`=?, `itineraire`=?, `difficulte_evt`=?, `join_start_evt`=?, `join_max_evt`=?, `ngens_max_evt`=?, `description_evt`=?, `need_benevoles_evt`=?, `details_caches_evt`=?' . (null != $id_groupe ? ', id_groupe = ?' : '') . ' WHERE `caf_evt`.`id_evt` = ?');
 
         if (null != $id_groupe) {
-            $stmt->bind_param('ssisssssssssssssssssssii', $tsp_evt, $tsp_end_evt, $current_time, $titre_evt, $code_evt, $massif_evt, $rdv_evt, $tarif_evt, $tarif_detail, $denivele_evt, $distance_evt, $lat_evt, $long_evt, $matos_evt, $itineraire, $difficulte_evt, $join_start_evt, $join_max_evt, $ngens_max_evt, $description_evt, $need_benevoles_evt, $details_caches_evt, $id_groupe, $id_evt);
+            $stmt->bind_param('ssissssdssssssssssssssii', $tsp_evt, $tsp_end_evt, $current_time, $titre_evt, $code_evt, $massif_evt, $rdv_evt, $tarif_evt, $tarif_detail, $denivele_evt, $distance_evt, $lat_evt, $long_evt, $matos_evt, $itineraire, $difficulte_evt, $join_start_evt, $join_max_evt, $ngens_max_evt, $description_evt, $need_benevoles_evt, $details_caches_evt, $id_groupe, $id_evt);
         } else {
-            $stmt->bind_param('ssisssssssssssssssssssi', $tsp_evt, $tsp_end_evt, $current_time, $titre_evt, $code_evt, $massif_evt, $rdv_evt, $tarif_evt, $tarif_detail, $denivele_evt, $distance_evt, $lat_evt, $long_evt, $matos_evt, $itineraire, $difficulte_evt, $join_start_evt, $join_max_evt, $ngens_max_evt, $description_evt, $need_benevoles_evt, $details_caches_evt, $id_evt);
+            $stmt->bind_param('ssissssdssssssssssssssi', $tsp_evt, $tsp_end_evt, $current_time, $titre_evt, $code_evt, $massif_evt, $rdv_evt, $tarif_evt, $tarif_detail, $denivele_evt, $distance_evt, $lat_evt, $long_evt, $matos_evt, $itineraire, $difficulte_evt, $join_start_evt, $join_max_evt, $ngens_max_evt, $description_evt, $need_benevoles_evt, $details_caches_evt, $id_evt);
         }
     }
 
