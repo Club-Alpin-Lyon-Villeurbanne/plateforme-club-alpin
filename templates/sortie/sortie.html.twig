@@ -166,25 +166,29 @@
         {% set my_status = event.participation(app.user) %}
 
         {% if not event.isFinished %}
-            <input id="add-to-calendar" type="button" class="nice2" value="📅 Ajouter à mon agenda" />
+            {% if allowed('user_read_limited') %}
+                <input id="add-to-calendar" type="button" class="nice2" value="📅 Ajouter à mon agenda" />
 
-            <script>
-            const config = {
-                name: "{{ event.titre }}",
-                startDate: "{{ event.tsp | intldate('yyyy-MM-dd') }}",
-                startTime: "{{ event.tsp | date('H:i') }}",
-                endDate: "{{ event.tspEnd | intldate('yyyy-MM-dd') }}",
-                endTime: "{{ event.tspEnd | date('H:i') }}",
-                location: "{{ event.rdv }}",
-                options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
-                timeZone: "Europe/Paris",
-                language: "fr"
-            };
-            const button = document.getElementById('add-to-calendar');
-            if (button) {
-                button.addEventListener('click', () => atcb_action(config, button));
-            }
-            </script>
+                <script>
+                const config = {
+                    name: "{{ event.titre }}",
+                    startDate: "{{ event.tsp | intldate('yyyy-MM-dd') }}",
+                    startTime: "{{ event.tsp | date('H:i') }}",
+                    endDate: "{{ event.tspEnd | intldate('yyyy-MM-dd') }}",
+                    endTime: "{{ event.tspEnd | date('H:i') }}",
+                    location: "{{ event.rdv }}",
+                    options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
+                    timeZone: "Europe/Paris",
+                    language: "fr"
+                };
+                const button = document.getElementById('add-to-calendar');
+                if (button) {
+                    button.addEventListener('click', () => atcb_action(config, button));
+                }
+                </script>
+            {% else %}
+                Vous n'avez pas accès à certaines informations de cette sortie car vous n'êtes pas connecté.
+            {% endif %}
         {% endif %}
  
         <br />
@@ -817,7 +821,7 @@
                 </script>
             {% else %}
                 <ul class="nice-list">
-                    <li><b>RDV :</b> visible après connexion</li>
+                    <li><b>RDV :</b> lieu et heure visibles après connexion</li>
                 </ul>
             {% endif %}
             <hr />
