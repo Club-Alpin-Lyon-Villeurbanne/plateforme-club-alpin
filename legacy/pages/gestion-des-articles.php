@@ -36,7 +36,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
     if (allowed('article_validate_all')) {
         // compte nb total articles
-        $req = 'SELECT COUNT(id_article) FROM caf_article WHERE status_article=0';
+        $req = 'SELECT COUNT(id_article) FROM caf_article WHERE status_article=0 AND topubly_article=1';
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $compte = getArrayFirstValue($handleSql->fetch_array(\MYSQLI_NUM)); // nombre total d'evts à valider, défini plus haut
 
@@ -54,6 +54,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 		LEFT JOIN caf_commission ON (caf_commission.id_commission = caf_article.commission_article)
 		LEFT JOIN caf_user ON (caf_user.id_user = caf_article.user_article)
 		WHERE status_article=0
+	    AND topubly_article=1
 		AND id_user = user_article
 		ORDER BY topubly_article desc,  tsp_validate_article ASC
 		LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
@@ -67,6 +68,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
             LEFT JOIN caf_evt e ON (a.evt_article = e.id_evt)
             LEFT JOIN caf_commission ce ON e.commission_evt = ce.id_commission
 		WHERE a.status_article=0
+	    AND a.topubly_article=1
 		AND a.commission_article = c.id_commission
 		AND (
             c.code_commission IN ('" . implode("','", $tab) . "')
@@ -93,6 +95,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
             LEFT JOIN caf_evt e ON (a.evt_article = e.id_evt)
             LEFT JOIN caf_commission ce ON e.commission_evt = ce.id_commission
 		WHERE status_article=0
+        AND a.topubly_article = 1
 		AND a.commission_article = c.id_commission
 		AND (
             c.code_commission IN ('" . implode("','", $tab) . "')
@@ -215,9 +218,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                 // liste articles cours de redaction :
                 $notif_validerunarticle = count($articleStandbyRedac);
-                if (0 == $notif_validerunarticle) {
-                    echo '<p class="info">Aucun article n\'est en cours de rédaction pour l\'instant.</p>';
-                } else {
+                if (!empty($articleStandbyRedac)) {
                     echo '<br /><br /><h2>' . $notif_validerunarticle . ' article' . ($notif_validerunarticle > 1 ? 's' : '') . ' en cours de rédaction dont la publication n\'a pas été demandée :</h2>';
 
                     // ************
