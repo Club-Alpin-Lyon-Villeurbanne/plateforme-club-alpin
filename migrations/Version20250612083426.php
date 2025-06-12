@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
 /**
- * Add composite index to optimize admin members display query
+ * Add composite index to optimize admin members display query.
  */
 final class Version20250612083426 extends AbstractMigration
 {
