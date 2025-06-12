@@ -70,8 +70,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $id_user = (int) $_POST['id_user'][$i];
         $role_evt_join = stripslashes($_POST['role_evt_join'][$i]);
 
-        $is_covoiturage = 'NULL';
-
         // si pas de pb, intégration
 
         if (!isset($errTab) || 0 === count($errTab)) {
@@ -81,9 +79,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $status_evt_join = 1;
             }
 
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_covoiturage, affiliant_user_join) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)');
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, role_evt_join, tsp_evt_join, lastchange_when_evt_join, lastchange_who_evt_join, is_covoiturage, affiliant_user_join) VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL)');
             $current_time = time();
-            $stmt->bind_param('iiisiiis', $status_evt_join, $id_evt, $id_user, $role_evt_join, $current_time, $current_time, $user_id, $is_covoiturage);
+            $stmt->bind_param('iiisiii', $status_evt_join, $id_evt, $id_user, $role_evt_join, $current_time, $current_time, $user_id);
             if (!$stmt->execute()) {
                 $errTab[] = 'Erreur SQL';
             } else {
