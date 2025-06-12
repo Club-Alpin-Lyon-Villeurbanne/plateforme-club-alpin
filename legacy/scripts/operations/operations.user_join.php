@@ -255,7 +255,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             }
             $stmt->close();
         } else {
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT email_user, nickname_user, firstname_user, lastname_user, civ_user, birthday_user
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_user, email_user, nickname_user, firstname_user, lastname_user, civ_user, birthday_user
                 FROM caf_user
                 WHERE id_user = ?
                 LIMIT 1');
@@ -281,6 +281,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                         'lastname' => strtoupper($cetinscrit['lastname_user']),
                         'nickname' => $cetinscrit['nickname_user'],
                         'email' => $cetinscrit['email_user'],
+                        'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $cetinscrit['id_user'] . '.html',
                     ];
                 }, $inscrits),
                 'firstname' => ucfirst(getUser()->getFirstname()),
