@@ -23,7 +23,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
         . ('notvalid' == $show ? ' AND valid_user=0 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
         . ('expired' == $show ? ' AND valid_user=0 AND doit_renouveler_user=1 ' : '')
         . ('valid-expired' == $show ? ' AND valid_user=1 AND doit_renouveler_user=1 ' : '')
-        . ' ORDER BY lastname_user ASC, lastname_user ASC LIMIT 9000';			// , pays_user
+        . ' ORDER BY lastname_user ASC LIMIT 9000';
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $handleSql->fetch_assoc()) {
