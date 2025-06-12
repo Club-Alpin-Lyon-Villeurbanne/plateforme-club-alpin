@@ -63,7 +63,7 @@ class EventType extends AbstractType
                     return $er->createQueryBuilder('g')
                         ->where('g.actif = 1')
                         ->andWhere('g.idCommission = :commission')
-                        ->setparameters(['commission' => $commission])
+                        ->setParameters(['commission' => $commission])
                         ->orderBy('g.nom', 'ASC')
                     ;
                 },
