@@ -2,17 +2,19 @@
 <html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %} - {{ sitename }}</title>
+        <title>{{ sitename }} - {% block title %}Accueil{% endblock %}</title>
         <base href="{{ url('legacy_root') }}" />
         <meta name="description" content="{% block meta_description %}Site officiel du {{ sitename }} : activités sportives été et hiver, alpinisme, randonnée, ski, refuges...{% endblock %}">
         <meta name="viewport" content="width=1200">
         <link rel="shortcut icon" href="/favicon.ico" />
 
-        <meta property="og:title" content="{{ sitename }}" />
-        <meta property="og:description" content="{{ block('meta_description') }}" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="{{ app.request.uri }}" />
         <meta property="og:site_name" content="{{ sitename }}" />
+        {% block og_markup %}
+            <meta property="og:title" content="{{ sitename }}" />
+            <meta property="og:description" content="{{ block('meta_description') }}" />
+        {% endblock %}
 
         {% if google_site_verification != "" %}
         <meta name="google-site-verification" content="{{ google_site_verification }}" />
