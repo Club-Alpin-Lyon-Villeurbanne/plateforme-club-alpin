@@ -4,7 +4,6 @@ namespace App\Security\Voter;
 
 use App\Entity\Evt;
 use App\Entity\User;
-use App\Entity\UserAttr;
 use App\UserRights;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -40,22 +39,14 @@ class FicheSortieVoter extends Voter
             return false;
         }
 
-        $amIEncadrant = false;
+        if ($this->userRights->allowedOnCommission('evt_print', $subject->getCommission())) {
+            return true;
+        }
+
         foreach ($subject->getEncadrants() as $eventParticipation) {
             if ($eventParticipation->getUser() === $user) {
-                $amIEncadrant = true;
+                return true;
             }
-        }
-
-        $amIResponsable = false;
-        foreach ($user->getAttributes() as $attribute) {
-            if (UserAttr::RESPONSABLE_COMMISSION === $attribute->getUserType()->getCode()) {
-                $amIResponsable = true;
-            }
-        }
-
-        if (($amIEncadrant || $amIResponsable) && $this->userRights->allowedOnCommission('evt_print', $subject->getCommission())) {
-            return true;
         }
 
         return false;

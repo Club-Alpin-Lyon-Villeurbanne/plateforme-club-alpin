@@ -173,7 +173,7 @@ elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1
 												<input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
 											</form>
 
-											<input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
+											<input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
 											<div style="display:none" id="refuser-' . (int) $evt['id_evt'] . '">
                                                 <form action="' . generateRoute('sortie_refus', ['id' => (int) $evt['id_evt']]) . '" method="post" class="loading">
                                                     <input type="hidden" name="csrf_token" value="' . csrfToken('sortie_refus') . '" />

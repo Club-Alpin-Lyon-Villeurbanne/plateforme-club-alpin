@@ -49,7 +49,7 @@
                             <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_validate') }}" />
                             <input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
                         </form>
-                        <input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
+                        <input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
                         <div style="display:none" id="refuser-{{ event.id }}">
                             <form action="{{ path('sortie_refus', { id: event.id }) }}" method="post" class="loading">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_refus') }}" />
@@ -126,7 +126,7 @@
             {% if event.groupe %}
                 <small> ({{ event.groupe.nom }}) </small>
             {% endif %}
-            <span class="date"> / {{ event.tsp | intldate('cccc d MMMM') }}</span>
+            <span class="date"> / {{ event.tsp | intldate('cccc d MMMM YYYY') }}</span>
         </h1>
 
         <div class="tw-flex tw-gap-4">
@@ -1135,4 +1135,9 @@
     {{ parent() }}
     <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" type="text/css"  media="screen" />
+{% endblock %}
+
+{% block og_markup %}
+    <meta property="og:title" content="{{ event.titre }}" />
+    <meta property="og:description" content="{{ event.description|striptags|slice(0, 200) ~ '...' }}" />
 {% endblock %}

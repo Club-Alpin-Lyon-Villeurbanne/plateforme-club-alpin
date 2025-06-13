@@ -31,24 +31,25 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
             ?>
 		<style type="text/css">
 		<?php
-                    include __DIR__ . '/../../../public/css/style1.css';
-            include __DIR__ . '/../../../public/fonts/stylesheet.css';
-            include __DIR__ . '/../../../public/css/base.css';
-            include __DIR__ . '/../../../public/css/common.css';
-            include __DIR__ . '/../../../public/css/print.css';
+                    include __DIR__ . '/../../../assets/styles/styles.css';
+            include __DIR__ . '/../../../assets/fonts/stylesheet.css';
+            include __DIR__ . '/../../../assets/styles/base.css';
+            include __DIR__ . '/../../../assets/styles/common.css';
+            include __DIR__ . '/../../../assets/styles/print.css';
             ?>
 		</style>
 		<?php
         } else {
+            echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('styles');
+            echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('fonts');
+            echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles');
+            echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('common-styles');
             ?>
-		<link rel="stylesheet" href="/css/style1.css" type="text/css" />
-		<link rel="stylesheet" href="/fonts/stylesheet.css" type="text/css" />
-		<link rel="stylesheet" href="/css/base.css" type="text/css"  />
-		<link rel="stylesheet" href="/css/common.css" type="text/css"  />
 		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" />
 		<!-- css PRINTS -->
-		<link rel="stylesheet" href="/css/print.css" type="text/css"  media="print" />
-	<?php
+        <?php
+            echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('print-styles', ['attr' => ['media' => 'print']]);
+            echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('modal_css');
         }
 ?>
 
@@ -74,6 +75,8 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
     <script src="/js/fonctions.js" type="text/javascript"></script>
 	<!-- script scroll up -->
     <script src="/js/scrollup.js" type="text/javascript"></script>
+	<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteScriptTags('modal'); ?>
+
 
 	<?php
     use App\Security\SecurityConstants;

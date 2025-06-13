@@ -29,24 +29,25 @@ use App\Legacy\LegacyContainer;
                     $action = LegacyContainer::get('legacy_user_rights')->allowed('comm_edit', $row['code_commission']);
 
                     if ($action) {
-                        // chemin vers grand eimage
+                        $bigImgUrl = '';
+                        // chemin vers grande image
                         if (file_exists(__DIR__ . '/../../public/ftp/commission/' . $row['id_commission'] . '/bigfond.jpg')) {
                             $bigImgUrl = '/ftp/commission/' . $row['id_commission'] . '/bigfond.jpg';
-                        } else {
-                            $bigImgUrl = '/ftp/commission/0/bigfond.jpg';
                         }
 
                         echo '<div class="item ' . (1 == $row['vis_commission'] ? 'on' : 'off') . '">'
                                     . '<div class="item-1">'
                                         // pour ajax
-                                        . '<input type="hidden" name="id_commission" value="' . (int) $row['id_commission'] . '" class="id_commission" />'
-                                        // bigfond
-                                        . '<a href="' . $bigImgUrl . '" title="" class="fancybox"><img style="width:100%" src="' . $bigImgUrl . '" alt="" title="Agrandir" /></a>'
-                                        . '<br />'
-                                        // pictos
-                                        . '<img src="' . comPicto($row['id_commission'], 'dark') . '" alt="" title="" /> '
-                                        . '<img src="' . comPicto($row['id_commission']) . '" alt="" title="" /> '
-                                        . '<img src="' . comPicto($row['id_commission'], 'light') . '" alt="" title="" /> '
+                                        . '<input type="hidden" name="id_commission" value="' . (int) $row['id_commission'] . '" class="id_commission" />';
+                        // bigfond
+                        if (!empty($bigImgUrl)) {
+                            echo '<a href="' . $bigImgUrl . '" title="" class="fancybox"><img style="width:100%" src="' . $bigImgUrl . '" alt="" title="Agrandir" /></a>';
+                        }
+                        echo '<br />'
+                        // pictos
+                        . '<img src="' . comPicto($row['id_commission'], 'dark') . '" alt="" title="" /> '
+                        . '<img src="' . comPicto($row['id_commission']) . '" alt="" title="" /> '
+                        . '<img src="' . comPicto($row['id_commission'], 'light') . '" alt="" title="" /> '
                                     . '</div>'
                                     . '<div class="item-2">';
                         // reorder
@@ -78,9 +79,6 @@ use App\Legacy\LegacyContainer;
                         if (allowed('comm_read', 'commission:' . $row['code_commission'])) {
                             echo '<a href="/commission-consulter.html?id_commission=' . (int) $row['id_commission'] . '" title="" class="nice2">Fiche commission</a><br />';
                         }
-                        // .'<a href="/includer.php?p=includes/commission-edit-text.php&amp;id_commission='.intval($row['id_commission']).'" title="" class="fancyframe nice2">Modifier le titre</a> <br />'
-                        // .'<a href="/includer.php?p=includes/commission-edit-bigfond.php&amp;id_commission='.intval($row['id_commission']).'" title="" class="fancyframe nice2">Modifier l\'image de fond</a> '
-                        // .'<a href="/includer.php?p=includes/commission-edit-pictos.php&amp;id_commission='.intval($row['id_commission']).'" title="" class="fancyframe nice2">Modifier les pictogrammes</a> <br />'
                         echo '</div>'
                                     . '<br style="clear:both" />'
                                 . '</div>';

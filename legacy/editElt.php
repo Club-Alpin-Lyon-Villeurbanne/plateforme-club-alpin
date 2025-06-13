@@ -15,7 +15,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     // affichage normal : pas de donnees recues
     if ((!isset($_POST['etape'])) || ('enregistrement' != $_POST['etape'])) {
         // récupération du contenu
-        $code_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_GET['p']);
+        $code_content_html = $_GET['p'];
         $id_content_html = !empty($_GET['id_content_html']) ? (int) htmlspecialchars($_GET['id_content_html']) : null;
 
         if (!$code_content_html) {
@@ -25,12 +25,15 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
         }
 
         // récupération des dernieres versions dans cette langue
-        $req = "SELECT * FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND `lang_content_html` LIKE 'fr' ORDER BY  `date_content_html` DESC LIMIT 0 , 10";
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT * FROM `caf_content_html` WHERE `code_content_html` = ? AND `lang_content_html` = 'fr' ORDER BY `date_content_html` DESC LIMIT 10");
+        $stmt->bind_param('s', $code_content_html);
+        $stmt->execute();
         $contentVersionsTab = [];
-        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        $handleSql = $stmt->get_result();
         while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             $contentVersionsTab[] = $handle;
         }
+        $stmt->close();
 
         // version courante
         $runningVersion = []; // def : empty array
@@ -89,7 +92,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 							theme_advanced_statusbar_location : "none",
 							theme_advanced_resizing : true,
 
-							content_css : "css/base.css,css/style1.css,fonts/stylesheet.css",
+							content_css : "<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('fonts'); ?>",
 							body_id : "bodytinymce",
 							body_class : "<?php echo $_GET['class']; ?>",
 							theme_advanced_styles : "Entete Article=ArticleEntete;Titre de menu=menutitle;Bleu clair du CAF=bleucaf;Image flottante gauche=imgFloatLeft;Image flottante droite=imgFloatRight;Lien fancybox=fancybox;Mini=mini;Bloc alerte=erreur;Bloc info=info",
@@ -146,8 +149,8 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 
 					</script>
 					<!-- /tinyMCE -->
-					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/admin.css">
-					<link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
+                    <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('admin-styles'); ?>
+                    <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>
 				</head>
 				<body style="background:white; text-align:left; border:none;">
 
@@ -244,23 +247,26 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             $contenu_content_html = '&nbsp;';
         }
 
-        // Nettoyage
-        $contenu_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($contenu_content_html);
-        $code_content_html = LegacyContainer::get('legacy_mysqli_handler')->escapeString($code_content_html);
+        // Nettoyage non nécessaire avec les requêtes préparées
 
         // compte des nombre d'entrées à supprimer
-        $req = "SELECT COUNT(`id_content_html`) FROM  `caf_content_html` WHERE  `code_content_html` LIKE  '$code_content_html' AND  `lang_content_html` LIKE  'fr'";
-        $sqlCount = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT COUNT(`id_content_html`) FROM `caf_content_html` WHERE `code_content_html` = ? AND `lang_content_html` = 'fr'");
+        $stmt->bind_param('s', $code_content_html);
+        $stmt->execute();
+        $sqlCount = $stmt->get_result();
         $nVersions = getArrayFirstValue($sqlCount->fetch_array(\MYSQLI_NUM));
+        $stmt->close();
         $nDelete = $nVersions - $MAX_VERSIONS;
         if ($nDelete > 0) {
             // s'il y en a à supprimer
-            $req = "DELETE FROM `caf_content_html` WHERE `code_content_html` LIKE '$code_content_html' AND  `lang_content_html` LIKE  'fr' ORDER BY  `date_content_html` ASC LIMIT $nDelete"; // ASC pour commencer par la fin de ceux a supprimer
-            if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("DELETE FROM `caf_content_html` WHERE `code_content_html` = ? AND `lang_content_html` = 'fr' ORDER BY `date_content_html` ASC LIMIT ?");
+            $stmt->bind_param('si', $code_content_html, $nDelete);
+            if (!$stmt->execute()) {
                 header('HTTP/1.0 400 Bad Request');
                 echo '<br />Erreur SQL clean !';
                 exit;
             }
+            $stmt->close();
         }
 
         // Mise à jour des CURRENT
@@ -272,13 +278,15 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
         }
 
         // Enregistrement
-        $req = "INSERT INTO  `caf_content_html` (code_content_html ,`lang_content_html` ,`contenu_content_html` ,`date_content_html` ,`linkedtopage_content_html`, `current_content_html`, `vis_content_html`)
-															VALUES ('$code_content_html',  'fr',  '$contenu_content_html',  '" . time() . "',  '$linkedtopage_content_html', 1, $vis_content_html);";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO `caf_content_html` (code_content_html, lang_content_html, contenu_content_html, date_content_html, linkedtopage_content_html, current_content_html, vis_content_html) VALUES (?, 'fr', ?, ?, ?, 1, ?)");
+        $current_time = time();
+        $stmt->bind_param('ssisi', $code_content_html, $contenu_content_html, $current_time, $linkedtopage_content_html, $vis_content_html);
+        if (!$stmt->execute()) {
             header('HTTP/1.0 400 Bad request');
             echo 'Erreur SQL';
             exit;
         }
+        $stmt->close();
 
         // log
         mylog('edit-html', 'Modif élément : <i>' . $code_content_html . '</i>', false); ?>

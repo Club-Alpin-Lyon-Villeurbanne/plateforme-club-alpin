@@ -13,6 +13,7 @@ twig:
         caf_id: "%env(CAF_ID)%"
         default_alert_article_prefix: "%env(ALERT_ARTICLE_PREFIX)%"
         default_alert_sortie_prefix: "%env(ALERT_SORTIE_PREFIX)%"
+        site_version: "%env(string:COMMIT_ID)%"
 
 when@test:
     twig:

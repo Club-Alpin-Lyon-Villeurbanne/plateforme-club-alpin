@@ -19,17 +19,17 @@ if (!$article) {
                 echo html_utf8($article['titre_article']);
     ?>
 		</h1>
-		<p class="date">
-			<?php
+        <?php
+        if (!empty($article['title_commission'])) {
+            echo '<span class="date article-commission">' . html_utf8($article['title_commission']) . '</span>';
+        }
     ?>
-		</p>
 		<p class="auteur">
 			<?php
 
-        echo 'Le ' . date('d.m.Y', $article['tsp_article']);
-
-    echo ', par ';
+        echo 'Rédigé par ';
     echo userlink($article['auteur']['id_user'], $article['auteur']['nickname_user'], false, false, false, 'public', (int) $article['id_article']);
+    echo ' le ' . date('d.m.Y', $article['tsp_article']);
 
     if ($totalComments > 1) {
         echo ', <a href="' . $_SERVER['REQUEST_URI'] . "#comments\">$totalComments commentaires</a>";
@@ -57,11 +57,21 @@ if (!$article) {
     // contenu HTML
     echo '<div class="cont_article"><br />';
 
+    if ('1' != $article['topubly_article']
+        || '1' != $article['status_article']
+        || (allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
+            || allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
+            || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
+            || allowed('article_edit')) && user() && $article['user_article'] == (string) getUser()->getId()
+           && 1 == $article['status_article']) {
+        echo '<div class="alerte noprint">';
+    }
+
     // article trouvé mais normalement pas visible, c'est le cas d'un mode admin ou validateur
     if ('1' != $article['topubly_article']) {
-        echo '<div class="alerte noprint"><b>Note :</b> Cet article est en cours de rédaction par <b>' . userlink($article['auteur']['id_user'], $article['auteur']['nickname_user']) . '</b>. La publication n\'a pas encore été demandée.<br />';
+        echo '<b>Note :</b> Cet article est en cours de rédaction par <b>' . userlink($article['auteur']['id_user'], $article['auteur']['nickname_user']) . '</b>. La publication n\'a pas encore été demandée.<br />';
     } elseif ('1' != $article['status_article']) {
-        echo '<div class="alerte noprint"><b>Note :</b> Cet article n\'est pas publié sur le site. Si vous voyez ce message apparaître, c\'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n\'ont pas accès aux informations ci-dessous.<br />';
+        echo '<b>Note :</b> Cet article n\'est pas publié sur le site. Si vous voyez ce message apparaître, c\'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n\'ont pas accès aux informations ci-dessous.<br />';
 
         // Moderation
         if (allowed('article_validate', 'commission:' . $article['commission_article']) || allowed('article_validate_all')) {
@@ -94,7 +104,7 @@ if (!$article) {
          || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
          || allowed('article_edit')) && user() && $article['user_article'] == (string) getUser()->getId()
         && 1 == $article['status_article']) {
-        echo '<div class="alerte noprint"><b>Note :</b> Cet article est publié sur le site et visible par les adhérents !<br />';
+        echo '<b>Note :</b> Cet article est publié sur le site et visible par les adhérents !<br />';
     }
 
     // edition
@@ -170,14 +180,14 @@ if (!$article) {
 				</script>';
     }
 
+    // mêmes conditions que pour la balise ouvrante
     if ('1' != $article['topubly_article']
-        || allowed('article_validate_all')
-        || allowed('article_validate', 'commission:' . $article['commission_article'])
-        || allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
-        || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
-        || allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
-        || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId()
-    ) {
+        || '1' != $article['status_article']
+        || (allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
+            || allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
+            || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
+            || allowed('article_edit')) && user() && $article['user_article'] == (string) getUser()->getId()
+           && 1 == $article['status_article']) {
         echo '</div><br />';
     }
 

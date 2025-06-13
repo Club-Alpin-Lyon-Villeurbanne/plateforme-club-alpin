@@ -22,30 +22,26 @@ if (isGranted(SecurityConstants::ROLE_ADMIN)) {
     $log .= "\n linkedtopage_content_inline :  \n" . $linkedtopage_content_inline;
 
     if (isset($_POST['id_content_inline']) && isset($_POST['lang_content_inline']) && isset($_POST['contenu_content_inline'])) {
-        $code_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString($code_content_inline);
-        $contenu_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString($contenu_content_inline);
-        $lang_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString($lang_content_inline);
-        $linkedtopage_content_inline = LegacyContainer::get('legacy_mysqli_handler')->escapeString($linkedtopage_content_inline);
-
         // entrée à créer
         if (!$id_content_inline) {
-            $req = "INSERT INTO  `caf_content_inline` (groupe_content_inline, code_content_inline ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`)
-														VALUES ('$groupe_content_inline',  '$code_content_inline',  '$lang_content_inline',  '$contenu_content_inline',  '" . time() . "',  '$linkedtopage_content_inline');";
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO  `caf_content_inline` (groupe_content_inline, code_content_inline ,`lang_content_inline` ,`contenu_content_inline` ,`date_content_inline` ,`linkedtopage_content_inline`) VALUES (?, ?, ?, ?, ?, ?)');
+            $current_time = time();
+            $stmt->bind_param('isssis', $groupe_content_inline, $code_content_inline, $lang_content_inline, $contenu_content_inline, $current_time, $linkedtopage_content_inline);
+        } else {
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE  `caf_content_inline` SET  `contenu_content_inline` =  ?, `date_content_inline` =  ?  WHERE  `caf_content_inline`.`id_content_inline` = ? LIMIT 1 ;');
+            $current_time = time();
+            $stmt->bind_param('sii', $contenu_content_inline, $current_time, $id_content_inline);
         }
-        // entrée existante
-        else {
-            $req = "UPDATE  `caf_content_inline` SET  `contenu_content_inline` =  '$contenu_content_inline', `date_content_inline` =  '" . time() . "'  WHERE  `caf_content_inline`.`id_content_inline` =$id_content_inline LIMIT 1 ;";
-        }
-
         $log .= "\n SQL : ";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $log .= "ERREUR : $req";
+        if (!$stmt->execute()) {
+            $log .= 'ERREUR : requête préparée';
         } else {
             $log .= "\n OK ";
             $result['success'] = true;
-            $result['req'] = $req;
+            $result['req'] = 'requête préparée';
             $result['content'] = stripslashes($contenu_content_inline);
         }
+        $stmt->close();
     }
 
     // to pass data through iframe you will need to encode all html tags

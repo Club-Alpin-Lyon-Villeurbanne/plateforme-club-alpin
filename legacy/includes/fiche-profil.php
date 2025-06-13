@@ -123,7 +123,6 @@ else {
 		             . '<ul class="nice-list">'
 		             . '<li>LICENCE : ' . html_utf8($tmpUser['cafnum_user']) . '</a> </li>'
 		             . '<li><a href="mailto:' . html_utf8($tmpUser['email_user']) . '" title="Contact direct">' . html_utf8($tmpUser['email_user']) . '</a> </li>'
-		             . '<li class="wide">' . html_utf8($tmpUser['ville_user'] . ' ' . $tmpUser['pays_user']) . ' </li>'
 		             . '</ul>'
 		             . '<br style="clear:both" />'
 		        ;

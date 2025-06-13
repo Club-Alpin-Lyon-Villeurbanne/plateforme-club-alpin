@@ -49,8 +49,8 @@ if (isGranted(SecurityConstants::ROLE_ADMIN)) {
                 echo 'Vos fichiers en téléchargements';
             } ?></title>
 
-            <link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/style1.css">
-            <link rel="stylesheet" media="screen" type="text/css" title="Design" href="/css/base.css">
+            <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('styles'); ?>
+            <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>
 
             <!-- valums file upload -->
             <link href="/css/ftp-fileuploader.css" rel="stylesheet" type="text/css">

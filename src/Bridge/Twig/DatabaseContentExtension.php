@@ -66,16 +66,14 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
 
     public function getFondCommission(?string $code): string
     {
+        $rel = '';
+
         if ($code && $commission = $this->locator->get(CommissionRepository::class)->findVisibleCommission($code)) {
             $id = $commission->getId();
-        } else {
-            $id = 0;
         }
 
-        $rel = '/ftp/commission/' . $id . '/bigfond.jpg';
-
-        if (!file_exists(__DIR__ . '/../../../public/' . $rel)) {
-            $rel = '/ftp/commission/0/bigfond.jpg';
+        if (!empty($id)) {
+            $rel = '/ftp/commission/' . $id . '/bigfond.jpg';
         }
 
         return $rel;
