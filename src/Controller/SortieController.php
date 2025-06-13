@@ -132,7 +132,7 @@ class SortieController extends AbstractController
             $entityManager->persist($event);
             $entityManager->flush();
 
-            return $this->redirect('/profil/sorties/self');
+            return $this->redirectToRoute('profil_sorties_self');
         }
 
         return [

@@ -1,5 +1,7 @@
 <?php
 
 // redirection vers la nouvelle (si des gens l'ont en favoris ou autres)
-header('Location: /creer-une-sortie');
+use App\Legacy\LegacyContainer;
+
+header('Location: ' . LegacyContainer::get('router')->generate('creer_sortie'));
 exit;

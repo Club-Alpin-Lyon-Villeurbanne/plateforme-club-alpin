@@ -156,7 +156,7 @@
                                 {% if allowed('evt_create') %}
                                     {# créer une sortie (par défaut : pour la commission courante si autorisé)#}
                                     <li>
-                                        <a href="/creer-une-sortie" title="">
+                                        <a href="{{ path('creer_sortie') }}" title="">
                                             proposer une sortie
                                         </a>
                                     </li>
