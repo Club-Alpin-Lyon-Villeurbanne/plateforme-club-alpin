@@ -1136,3 +1136,8 @@
     <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" type="text/css"  media="screen" />
 {% endblock %}
+
+{% block og_markup %}
+    <meta property="og:title" content="{{ event.titre }}" />
+    <meta property="og:description" content="{{ event.description|striptags|slice(0, 200) ~ '...' }}" />
+{% endblock %}
