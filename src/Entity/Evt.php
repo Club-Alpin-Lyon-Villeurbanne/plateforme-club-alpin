@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -18,6 +19,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 class Evt
 {
+    use TimestampableEntity;
+
     public const STATUS_PUBLISHED_UNSEEN = 0;
     public const STATUS_PUBLISHED_VALIDE = 1;
     public const STATUS_PUBLISHED_REFUSE = 2;
@@ -163,6 +166,18 @@ class Evt
     #[ORM\Column(name: 'details_caches_evt', type: 'text', nullable: true)]
     private ?string $detailsCaches;
 
+    #[ORM\Column(name: 'event_start_date', type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => 'date et heure du début du event'])]
+    #[Groups('event:read')]
+    private ?\DateTime $eventStartDate;
+
+    #[ORM\Column(name: 'event_end_date', type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => 'date et heure de fin du event'])]
+    #[Groups('event:read')]
+    private ?\DateTime $eventEndDate;
+
+    #[ORM\Column(name: 'join_start_date', type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => 'date du début des inscriptions'])]
+    #[Groups('event:read')]
+    private ?\DateTime $joinStartDate;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -207,6 +222,8 @@ class Evt
         $this->expenseReports = new ArrayCollection();
         $this->tspCrea = time();
         $this->tspEdit = time();
+        $this->setCreatedAt(new \DateTime());
+        $this->setUpdatedAt(new \DateTime());
 
         // FIX ME fix encadrant
         $this->participations->add(new EventParticipation($this, $user, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE));
@@ -779,6 +796,42 @@ class Evt
     public function setDetailsCaches(?string $detailsCaches): self
     {
         $this->detailsCaches = $detailsCaches;
+
+        return $this;
+    }
+
+    public function getEventStartDate(): ?\DateTime
+    {
+        return $this->eventStartDate;
+    }
+
+    public function setEventStartDate(?\DateTime $eventStartDate): self
+    {
+        $this->eventStartDate = $eventStartDate;
+
+        return $this;
+    }
+
+    public function getEventEndDate(): ?\DateTime
+    {
+        return $this->eventEndDate;
+    }
+
+    public function setEventEndDate(?\DateTime $eventEndDate): self
+    {
+        $this->eventEndDate = $eventEndDate;
+
+        return $this;
+    }
+
+    public function getJoinStartDate(): ?\DateTime
+    {
+        return $this->joinStartDate;
+    }
+
+    public function setJoinStartDate(?\DateTime $joinStartDate): self
+    {
+        $this->joinStartDate = $joinStartDate;
 
         return $this;
     }
