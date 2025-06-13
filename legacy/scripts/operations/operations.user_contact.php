@@ -34,14 +34,17 @@ if (!user()) {
 else {
     $expediteur = false;
     // ce user autorise t-il le contact
-    $req = 'SELECT id_user, civ_user, firstname_user, lastname_user, email_user, nickname_user
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_user, civ_user, firstname_user, lastname_user, email_user, nickname_user
         FROM caf_user
-        WHERE id_user = ' . getUser()->getId();
-
-    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+        WHERE id_user = ?');
+    $user_id = getUser()->getId();
+    $stmt->bind_param('i', $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($handle = $result->fetch_array(\MYSQLI_ASSOC)) {
         $expediteur = $handle;
     }
+    $stmt->close();
     if (!$expediteur) {
         $errTab[] = 'Expediteur introuvable';
     }
@@ -56,15 +59,16 @@ else {
 if (!isset($errTab) || 0 === count($errTab)) {
     $destinataire = false;
     // ce user autorise t-il le contact
-    $req = "SELECT civ_user, firstname_user, lastname_user, auth_contact_user, email_user
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT civ_user, firstname_user, lastname_user, auth_contact_user, email_user
         FROM caf_user
-        WHERE id_user = $id_user
-        ";
-
-    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+        WHERE id_user = ?');
+    $stmt->bind_param('i', $id_user);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($handle = $result->fetch_array(\MYSQLI_ASSOC)) {
         $destinataire = $handle;
     }
+    $stmt->close();
     if (!$destinataire) {
         $errTab[] = 'Destinataire introuvable';
     }
@@ -74,19 +78,25 @@ if (!isset($errTab) || 0 === count($errTab)) {
 }
 
 if (!empty($idEvent)) {
-    $eventReq = "SELECT e.*, c.title_commission FROM caf_evt AS e INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) WHERE id_evt = $idEvent LIMIT 1";
-    $eventResult = LegacyContainer::get('legacy_mysqli_handler')->query($eventReq);
-    while ($eventRow = $eventResult->fetch_assoc()) {
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT e.*, c.title_commission FROM caf_evt AS e INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) WHERE id_evt = ? LIMIT 1');
+    $stmt->bind_param('i', $idEvent);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($eventRow = $result->fetch_assoc()) {
         $event = $eventRow;
     }
+    $stmt->close();
 }
 
 if (!empty($idArticle)) {
-    $articleReq = "SELECT * FROM caf_article WHERE id_article = $idArticle LIMIT 1";
-    $articleResult = LegacyContainer::get('legacy_mysqli_handler')->query($articleReq);
-    while ($articleRow = $articleResult->fetch_assoc()) {
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT * FROM caf_article WHERE id_article = ? LIMIT 1');
+    $stmt->bind_param('i', $idArticle);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($articleRow = $result->fetch_assoc()) {
         $article = $articleRow;
     }
+    $stmt->close();
 }
 
 // contact autorisé ? antipiratage

@@ -37,14 +37,18 @@ $comment_article = null;
 // checks SQL
 if (!isset($errTab) || 0 === count($errTab)) {
     // article publié et commentable ?
-    $req = 'SELECT a.id_article, a.user_article, u.email_user, a.titre_article, a.code_article
+    $sql = 'SELECT a.id_article, a.user_article, u.email_user, a.titre_article, a.code_article
             FROM caf_' . $parent_type_comment . ' a, caf_user u
             WHERE u.id_user=a.user_article
-            AND a.id_' . $parent_type_comment . " = $parent_comment
-            AND a.status_" . $parent_type_comment . ' = 1
+            AND a.id_' . $parent_type_comment . ' = ?
+            AND a.status_' . $parent_type_comment . ' = 1
             LIMIT 1';
-    $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($sql);
+    $stmt->bind_param('i', $parent_comment);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $row = $result->fetch_row();
+    $stmt->close();
     if (!$row[0]) {
         $errTab[] = "L'élément visé ne semble pas publié.";
     } else {
@@ -54,15 +58,17 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
 // insert SQL
 if (!isset($errTab) || 0 === count($errTab)) {
-    // formatage
-    $cont_comment_mysql = LegacyContainer::get('legacy_mysqli_handler')->escapeString($cont_comment);
-
     // article publié et commentable ?
-    $req = "INSERT INTO caf_comment(status_comment, tsp_comment, user_comment, name_comment, email_comment, cont_comment, parent_type_comment, parent_comment)
-                            VALUES ('1', 			 '" . time() . "',  '" . getUser()->getId() . "',  '',  '',  '$cont_comment_mysql',  '$parent_type_comment',  '$parent_comment');";
-    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO caf_comment(status_comment, tsp_comment, user_comment, name_comment, email_comment, cont_comment, parent_type_comment, parent_comment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+    $current_time = time();
+    $user_id = getUser()->getId();
+    $status = '1';
+    $empty = '';
+    $stmt->bind_param('siiisssi', $status, $current_time, $user_id, $empty, $empty, $cont_comment, $parent_type_comment, $parent_comment);
+    if (!$stmt->execute()) {
         $errTab[] = 'Erreur SQL';
     }
+    $stmt->close();
 
     if ('' !== $comment_article[2]) {
         LegacyContainer::get('legacy_mailer')->send($comment_article[2], 'transactional/article-comment', [

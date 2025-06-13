@@ -94,11 +94,9 @@
         {# navigation adherent #}
         <nav id="toolbar-user-hidden" style="display: none; opacity: 0;">
             <div class="sitewidth">
-                <img src="/img/bg-usermenu.png" alt="" title="" style="float:left; padding:30px 30px 30px 0" />
-
                 {% if not app.user %}
                     {# creer un compte (vers page profil) #}
-                    <div style="width:515px; float:left; border-right:1px solid #c6e39f; min-height:120px; padding:0px 5px 0 0">
+                    <div style="width:640px; float:left; border-right:1px solid #c6e39f; min-height:120px; padding:0px 5px 0 0">
                         {{ easy_include('mainmenu-creer-mon-compte', 'menucontent')}}
                         <a class="nice2" href="/profil.html" title="">Activer mon compte</a>
                     </div>
@@ -112,16 +110,16 @@
                 {% else %}
                     {% if app.user.getDoitRenouveler %}
                         {# MESSAGE D'ALERTE SI CET USER EST VERROUILLE POUR LICENCE EXPIREE #}
-                        <div style="padding:5px 0 30px 100px">
+                        <div style="padding:5px 0 30px 0">
                             {{ easy_include('alerte-licence-obsolete', 'alerte')}}
                         </div>
                     {% elseif app.user.getAlerteRenouveler %}
                         {# MESSAGE D'ALERTE SI CET USER DOIT RENOUVELER SA LICENCE AVANT BIENTOT #}
-                        <div style="padding:5px 0 30px 100px">
+                        <div style="padding:5px 0 30px 0">
                             {{ easy_include('alerte-licence-renouveler', 'alerte')}}
                         </div>
                     {% elseif is_user_profile_incomplete() %}
-                        <div style="padding:5px 0 30px 100px">
+                        <div style="padding:5px 0 30px 0">
                             <div id="incomplete-profile-warning" class="alerte">
                                 <h1>Attention, votre compte est incomplet.</h1>
                                 <p class="mt20">{{ display_user_profile_warning() }}</p>
@@ -129,211 +127,248 @@
                         </div>
                     {% endif %}
 
-                    <div style="width:515px; min-height:160px; float:left; border-right:1px solid #c6e39f; min-height:130px; padding:0px 5px 0 0">
+                    <div style="width:640px; min-height:160px; float:left; border-right:1px solid #c6e39f; min-height:130px; padding:0px 5px 0 0">
                         <div class="nav-user">
                             <p class="menutitle">Sorties</p>
+                            <ul>
                                 {% if allowed('evt_validate') %}
                                     {# publier une sortie (notification au besoin, variable définie dans SCRIPTS.'reqs.php') #}
-                                    <a href="/gestion-des-sorties.html" title="">
-                                        <span class="puce">•</span>
-                                        {% set notif_sorties = notifications_counter_sorties() %}
-                                        {% if notif_sorties > 0 %}<span class="notification">{{ notif_sorties }}</span>{% endif %}
-                                        publication des sorties
-                                    </a>
+                                    <li>
+                                        <a href="/gestion-des-sorties.html" title="">
+                                            {% set notif_sorties = notifications_counter_sorties() %}
+                                            {% if notif_sorties > 0 %}<span class="notification">{{ notif_sorties }}</span>{% endif %}
+                                            publication des sorties
+                                        </a>
+                                    </li>
                                 {% endif %}
 
                                 {% if allowed('evt_legal_accept') %}
                                     {# valider juridiquement une sortie#}
-                                    <a href="/validation-des-sorties.html" title="">
-                                        <span class="puce">•</span>
-                                        {% set notif_president = notifications_counter_sorties_president() %}
-                                        {% if notif_president > 0 %}<span class="notification">{{ notif_president }}</span>{% endif %}
-                                        validation des sorties
-                                    </a>
+                                    <li>
+                                        <a href="/validation-des-sorties.html" title="">
+                                            {% set notif_president = notifications_counter_sorties_president() %}
+                                            {% if notif_president > 0 %}<span class="notification">{{ notif_president }}</span>{% endif %}
+                                            validation des sorties
+                                        </a>
+                                    </li>
                                 {% endif %}
 
                                 {% if allowed('evt_create') %}
                                     {# créer une sortie (par défaut : pour la commission courante si autorisé)#}
-                                    <a href="/creer-une-sortie.html" title="">
-                                        <span class="puce">•</span>
-                                        proposer une sortie
-                                    </a>
+                                    <li>
+                                        <a href="/creer-une-sortie.html" title="">
+                                            proposer une sortie
+                                        </a>
+                                    </li>
 
                                     {# les sorties que j'ai créé#}
-                                    <a href="{{ path('profil_sorties_self') }}" title="sorties que je propose">
-                                        <span class="puce">•</span>
-                                        sorties que je propose
-                                    </a><br />
-                                {% endif %}
-
-                                <a href="{{ path('profil_sorties_next') }}" title="">
-                                <span class="puce">•</span>
-                                    mes sorties à venir</a><br />
-                                <a href="{{ path('profil_sorties_prev') }}" title="">
-                                <span class="puce">•</span>
-                                    mes sorties passées</a><br />
-                            </div>
-
-                            <div class="nav-user">
-                                <p class="menutitle">Outils</p>
-                                {% if caf_id == 'lyon' %}
-                                    <a href="https://www.clubalpinlyon.fr/ftp/telechargements/livretaccueil-v2.pdf" title="">
-                                        <span class="puce">•</span>
-                                        livret d'accueil des adhérents
-                                    </a>
-                                    {% if allowed('user_read_private') %} {# utilisation d'une permission existante données uniquement aux co-encadrants, encadrants et stagiaires #}
-                                        <a href="/pages/boite-outils-des-encadrants.html" title="">
-                                            <span class="puce">•</span>
-                                            boite à outils encadrant
+                                    <li>
+                                        <a href="{{ path('profil_sorties_self') }}" title="sorties que je propose">
+                                            sorties que je propose
                                         </a>
-                                    {% endif %}
+                                    </li>
                                 {% endif %}
-                                {% if app.user and caf_id == 'lyon' %}
+
+                                <li>
+                                    <a href="{{ path('profil_sorties_next') }}" title="">
+                                        mes sorties à venir
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ path('profil_sorties_prev') }}" title="">
+                                        mes sorties passées
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="nav-user">
+                            <p class="menutitle">Outils</p>
+                            <ul>
+                            {% if caf_id == 'lyon' %}
+                                <li>
+                                    <a href="https://www.clubalpinlyon.fr/ftp/telechargements/livretaccueil-v2.pdf" title="">
+                                    livret d'accueil des adhérents
+                                    </a>
+                                </li>
+                                {% if allowed('user_read_private') %} {# utilisation d'une permission existante données uniquement aux co-encadrants, encadrants et stagiaires #}
+                                <li>
+                                    <a href="/pages/boite-outils-des-encadrants.html" title="">
+                                        boite à outils encadrant
+                                    </a>
+                                </li>
+                                {% endif %}
+                            {% endif %}
+                            {% if app.user and caf_id == 'lyon' %}
+                                <li>
                                     <a href="{{ path('profil_alertes') }}" title="">
-                                    <span class="puce">•</span>
-                                        mes alertes</a>
+                                        mes alertes
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="{{ path('minibus') }}" title="">
-                                    <span class="puce">•</span>
-                                        réservation de minibus</a>
+                                        réservation de minibus
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="{{ path('local_club') }}" title="">
-                                    <span class="puce">•</span>
-                                        réservation local du Club</a>
+                                        réservation local du Club
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="{{ path('materiel_index') }}" title="">
-                                        <span class="puce">•</span>
-                                        réservation de matériel</a>
-                                {% endif %}
-                            </div>
+                                        réservation de matériel
+                                    </a>
+                                </li>
+                            {% endif %}
+                            </ul>
+                        </div>
 
-                            {% if allowed('article_create') or allowed('article_validate') or allowed('article_validate_all') %}
-                                <div class="nav-user">
-                                    <p class="menutitle">Articles</p>
-
-                                    {% if allowed('article_create') %}
+                        {% if allowed('article_create') or allowed('article_validate') or allowed('article_validate_all') %}
+                            <div class="nav-user">
+                                <p class="menutitle">Articles</p>
+                                <ul>
+                                {% if allowed('article_create') %}
+                                    <li>
                                         <a href="/article-new.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
-                                            <span class="puce">•</span>
                                             rédiger un article
                                         </a>
+                                    </li>
+                                    <li>
                                         <a href="/profil/articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
-                                            <span class="puce">•</span>
                                             mes articles
                                         </a>
-                                    {% endif %}
+                                    </li>
+                                {% endif %}
 
-                                    {% if allowed('article_validate') or allowed('article_validate_all') %}
+                                {% if allowed('article_validate') or allowed('article_validate_all') %}
+                                    <li>
                                         <a href="/gestion-des-articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
-                                            <span class="puce">•</span>
                                             {% set notif_article = notifications_counter_articles() %}
                                             {% if notif_article > 0 %}<span class="notification">{{ notif_article }}</span>{% endif %}
-                                            validation / gestion des articles
+                                            validation/gestion des articles
                                         </a>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
+                                    </li>
+                                {% endif %}
+                                </ul>
+                            </div>
+                        {% endif %}
 
-                            <br  style="clear:both" />
+                        <br  style="clear:both" />
 
-                            {% if allowed('user_see_all') or allowed('user_create_manually') or allowed('user_updatefiles') %}
-                                <div class="nav-user">
-                                    <p class="menutitle" style="padding-top:13px;">Adhérents</p>
-
-                                    {% if allowed('user_see_all') %}
+                        {% if allowed('user_see_all') or allowed('user_create_manually') or allowed('user_updatefiles') %}
+                            <div class="nav-user">
+                                <p class="menutitle" style="padding-top:13px;">Adhérents</p>
+                                <ul>
+                                {% if allowed('user_see_all') %}
+                                    <li>
                                         <a href="/adherents.html" title="">
-                                            <span class="puce">•</span>
-                                            gestion des adhérents
+                                        gestion des adhérents
                                         </a>
-                                    {% endif %}
+                                    </li>
+                                {% endif %}
 
-                                    {% if allowed('user_create_manually') %}
+                                {% if allowed('user_create_manually') %}
+                                    <li>
                                         <a href="/adherents-creer.html" title="">
-                                            <span class="puce">•</span>
-                                            créer un adhérent/salarié
+                                        créer un adhérent/salarié
                                         </a>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
+                                    </li>
+                                {% endif %}
+                                </ul>
+                            </div>
+                        {% endif %}
 
                         {% if allowed('comm_create') or allowed('comm_edit') or allowed('comm_desactivate') or allowed('comm_delete') %}
                             <div class="nav-user">
                                 <p class="menutitle" style="padding-top:13px;">Commissions</p>
+                                <ul>
                                 {% if allowed('comm_edit') %}
-                                    <a href="/gestion-des-commissions.html" title="">
-                                        <span class="puce">•</span>
-                                        gestion des commissions
-                                    </a>
+                                    <li>
+                                        <a href="/gestion-des-commissions.html" title="">
+                                            gestion des commissions
+                                        </a>
+                                    </li>
                                 {% endif %}
 
                                 {% if allowed('comm_create') %}
-                                    <a href="/commission-add.html" title="">
-                                        <span class="puce">•</span>
-                                        créer une commission
-                                    </a>
+                                    <li>
+                                        <a href="/commission-add.html" title="">
+                                            créer une commission
+                                        </a>
+                                    </li>
                                 {% endif %}
+                                </ul>
                             </div>
                         {% endif %}
 
                         {% if allowed('stats_commissions_read') or allowed('stats_users_read') %}
                             <div class="nav-user">
                                 <p class="menutitle" style="padding-top:13px;">Statistiques</p>
+                                <ul>
                                 {% if allowed('stats_commissions_read') %}
-                                    <a href="/stats/commissions.html" title="">
-                                        <span class="puce">•</span>
+                                    <li>
+                                        <a href="/stats/commissions.html" title="">
                                         statistiques par sorties
-                                    </a>
+                                        </a>
+                                    </li>
                                 {% endif %}
 
                                 {% if allowed('stats_users_read') %}
-                                    <a href="/stats/users.html" title="">
-                                        <span class="puce">•</span>
+                                    <li>
+                                        <a href="/stats/users.html" title="">
                                         statistiques par adhérents
-                                    </a>
+                                        </a>
+                                    </li>
                                 {% endif %}
 
                                 {% if allowed('article_create') %}
-                                    <a href="/stats/nbvues.html" title="">
-                                        <span class="puce">•</span>
+                                    <li>
+                                        <a href="/stats/nbvues.html" title="">
                                         statistiques articles
-                                    </a>
+                                        </a>
+                                    </li>
                                 {% endif %}
+                                </ul>
                             </div>
                         {% endif %}
+                    </div>
 
-                        </div>
+                    <div style="width:290px; float:right; padding:0px 10px 0 0; ">
 
-                        <div style="width:340px; float:right; padding:0px 10px 0 0; ">
+                        <img src="{{ user_picto(app.user, 'min') }}" alt="" title="" style="float:left; padding:0 10px 0 0;" />
 
-                            <img src="{{ user_picto(app.user, 'min') }}" alt="" title="" style="float:left; padding:0 10px 0 0;" />
-
-                            {% if is_granted('IS_IMPERSONATOR') %}
-                                <p style="border: 2px solid red; border-radius: 5px; font-size:18px; padding:10px;">
-                                    En cours d'impersonification <a href="/?_switch_user=_exit">Quitter</a>
-                                </p>
-                            {% endif %}
-                            <p style="font-family:DIN; font-size:18px; line-height:20px; white-space:nowrap; padding-top:10px;">
-                                Mon pseudonyme : <br />
-                                <span style="font-family:DINBold; font-size:21px;">{{ app.user.getNickname() }}</span>
+                        {% if is_granted('IS_IMPERSONATOR') %}
+                            <p style="border: 2px solid red; border-radius: 5px; font-size:14px; padding:10px;">
+                                En cours d'impersonification <a href="/?_switch_user=_exit">Quitter</a>
                             </p>
-                            
-                            {# deconn #}
-                            <a href="{{ path('app_logout') }}" title="" class="nice2">
-                                Me déconnecter
-                            </a>
-                            <br />
-                            {# compte #}
-                            <a href="/profil.html" title="" class="nice2">
-                                Mon compte
-                            </a>
+                        {% endif %}
+                        <p style="font-family:DIN; font-size:18px; line-height:20px; white-space:nowrap; padding-top:10px;">
+                            Mon pseudonyme : <br />
+                            <span style="font-family:DINBold; font-size:21px;">{{ app.user.getNickname() }}</span>
+                        </p>
 
-                            {% if app.user.hasAttribute() %}
-                                <p class="status">
-                                    Vous êtes <span style="font-family:DINBold">{{ app.user.getAttributes()[0].getTitle() }}</span>
-                                    {% if app.user.getAttributes() | length > 1 %}
-                                        <a href="/profil.html" title="Entre autres choses..." style="font-weight:100; font-family:Arial">[+]</a>
-                                    {% endif %}
-                                </p>
-                            {% else %}
-                                <p class="status">Vous êtes connecté en tant qu'<span style="font-family:DINBold">adhérent</span></p>
-                            {% endif %}
-                        </div>
+                        {# deconn #}
+                        <a href="{{ path('app_logout') }}" title="" class="nice2">
+                            Me déconnecter
+                        </a>
+                        <br />
+                        {# compte #}
+                        <a href="/profil.html" title="" class="nice2">
+                            Mon compte
+                        </a>
+
+                        {% if app.user.hasAttribute() %}
+                            <p class="status">
+                                Vous êtes <span style="font-family:DINBold">{{ app.user.getAttributes()[0].getTitle() }}</span>
+                                {% if app.user.getAttributes() | length > 1 %}
+                                    <a href="/profil.html" title="Entre autres choses..." style="font-weight:100; font-family:Arial">[+]</a>
+                                {% endif %}
+                            </p>
+                        {% else %}
+                            <p class="status">Vous êtes connecté en tant qu'<span style="font-family:DINBold">adhérent</span></p>
+                        {% endif %}
+                    </div>
 
                 {% endif %}
                 <br style="clear:both" />

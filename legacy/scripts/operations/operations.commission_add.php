@@ -175,16 +175,18 @@ $id_commission = null;
 // SQL
 if (!isset($errTab) || 0 === count($errTab)) {
     $code_commission = formater($title_commission, 3);
-    $code_commission = LegacyContainer::get('legacy_mysqli_handler')->escapeString($code_commission);
-    $title_commission = LegacyContainer::get('legacy_mysqli_handler')->escapeString($title_commission);
 
     // Le code doit être unique dans la base
     $passed = false;
     $suffixe = '';
     while (!$passed) {
-        $req = "SELECT COUNT(id_commission) FROM caf_commission WHERE code_commission LIKE '$code_commission$suffixe'";
-        $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        $check_code = $code_commission . $suffixe;
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_commission) FROM caf_commission WHERE code_commission LIKE ?');
+        $stmt->bind_param('s', $check_code);
+        $stmt->execute();
+        $result = $stmt->get_result();
         $row = $result->fetch_row();
+        $stmt->close();
         if (0 == $row[0]) {
             $passed = true;
         } else {
@@ -194,11 +196,12 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $code_commission .= $suffixe;
 
     // enregistrement
-    $req = "INSERT INTO caf_commission(ordre_commission, vis_commission, code_commission, title_commission)
-                                                VALUES (0,  '0',  '$code_commission',  '$title_commission');";
-    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO caf_commission(ordre_commission, vis_commission, code_commission, title_commission) VALUES (0, '0', ?, ?)");
+    $stmt->bind_param('ss', $code_commission, $title_commission);
+    if (!$stmt->execute()) {
         $errTab[] = 'Erreur SQL';
     }
+    $stmt->close();
     $id_commission = LegacyContainer::get('legacy_mysqli_handler')->insertId();
 
     if (!$id_commission) {

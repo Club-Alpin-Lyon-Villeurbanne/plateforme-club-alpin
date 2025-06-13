@@ -170,13 +170,13 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['picto-dark']['size'] >
 
 // SQL
 if (!isset($errTab) || 0 === count($errTab)) {
-    $title_commission = LegacyContainer::get('legacy_mysqli_handler')->escapeString($title_commission);
-
     // enregistrement
-    $req = "UPDATE caf_commission SET title_commission = '$title_commission' WHERE id_commission =$id_commission";
-    if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_commission SET title_commission = ? WHERE id_commission = ?');
+    $stmt->bind_param('si', $title_commission, $id_commission);
+    if (!$stmt->execute()) {
         $errTab[] = 'Erreur SQL';
     }
+    $stmt->close();
 
     if (!$id_commission) {
         $errTab[] = 'Erreur SQL : id irrécupérable';
