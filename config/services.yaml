@@ -134,6 +134,12 @@ services:
     arguments:
       $config: '%expense_report%'
 
+  App\State\UserOwnedExtension:
+        arguments:
+            $security: '@security.helper'
+        tags:
+            - { name: 'api_platform.doctrine.orm.query_extension.collection' }
+            
   # services used in legacy
   legacy_router:
     public: true
