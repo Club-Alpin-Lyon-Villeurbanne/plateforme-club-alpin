@@ -138,7 +138,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             <p>Voulez-vous vraiment rendre cette page visible aux visiteurs du site ?</p>
             <br />
             <input type="submit" class="nice green" value="Confirmer" />
-            <input type="button" class="nice" value="Annuler" onclick="$.fancybox.close()" />
+            <input type="button" class="nice" value="Annuler" onclick="modal.close()" />
             <br />&nbsp;
         </form>
     </div>
@@ -155,7 +155,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             <p>Voulez-vous vraiment masquer cette page aux visiteurs du site ?</p>
             <br />
             <input type="submit" class="nice orange" value="Confirmer" />
-            <input type="button" class="nice" value="Annuler" onclick="$.fancybox.close()" />
+            <input type="button" class="nice" value="Annuler" onclick="modal.close()" />
             <br />&nbsp;
         </form>
     </div>
@@ -174,7 +174,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             <br />
             <br />
             <input type="submit" class="nice red" value="Supprimer" />
-            <input type="button" class="nice" value="Annuler" onclick="$.fancybox.close()" />
+            <input type="button" class="nice" value="Annuler" onclick="modal.close()" />
             <br />&nbsp;
         </form>
     </div>
@@ -207,12 +207,12 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
                         if(jsonMsg.operation=='majBd' && jsonMsg.val=='0'){
                             $('#tr-'+jsonMsg.id).addClass('vis-off').removeClass('vis-on')
                                 .find('a.majVis img').attr('src','img/base/vis-off.png');
-                            $.fancybox.close();
+                            modal.close();
                         }
                         if(jsonMsg.operation=='majBd' && jsonMsg.val=='1'){
                             $('#tr-'+jsonMsg.id).addClass('vis-on').removeClass('vis-off')
                                 .find('a.majVis img').attr('src','img/base/vis-on.png');
-                            $.fancybox.close();
+                            modal.close();
                         }
                         if(jsonMsg.operation=='pagelibre_del'){
                             window.location.href='admin-pages-libres.html';
@@ -221,7 +221,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
                         // fin des actions spéciales
                     }
                     else{
-                        $.fancybox('<p class="erreur">Erreur : <br />'+(jsonMsg.error).join(',<br />')+'</p>');
+                        modal.show('<p class="erreur">Erreur : <br />'+(jsonMsg.error).join(',<br />')+'</p>');
                     }
                 }
             });
@@ -239,10 +239,10 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
                 // mise a jour des champs necessaires aux formulaires
                 $('#confirm-afficher input[name=id], #confirm-masquer input[name=id]').val(id);
 
-                if(!edit)	$.fancybox($('#noteditedyet').html());
+                if(!edit)	modal.show(document.getElementById('noteditedyet').innerHTML);
                 else{
-                    if(hidden)  $.fancybox($('#confirm-afficher').html());
-                    else		$.fancybox($('#confirm-masquer').html());
+                    if(hidden)  modal.show(document.getElementById('confirm-afficher').innerHTML);
+                    else		modal.show(document.getElementById('confirm-masquer').innerHTML);
                 }
             }
             return false;
@@ -256,7 +256,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             if(id){
                 // mise a jour des champs necessaires aux formulaires
                 $('#confirm-delete input[name=id_page]').val(id);
-                $.fancybox($('#confirm-delete').html());
+                modal.show(document.getElementById('confirm-delete').innerHTML);
             }
             return false;
         });

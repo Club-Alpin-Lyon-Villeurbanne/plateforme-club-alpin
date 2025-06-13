@@ -551,7 +551,7 @@
 				$(document).bind('keydown.fb', function(e) {
 					if (e.keyCode == 27 && currentOpts.enableEscapeButton) {
 						e.preventDefault();
-						$.fancybox.close();
+						modal.close();
 
 					} else if ((e.keyCode == 37 || e.keyCode == 39) && currentOpts.enableKeyboardNav && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'SELECT') {
 						e.preventDefault();
@@ -921,7 +921,7 @@
 		busy = false;
 	};
 
-	// Note: within an iframe use - parent.$.fancybox.close();
+	// Note: within an iframe use - parent.modal.close();
 	$.fancybox.close = function() {
 		if (busy || wrap.is(':hidden')) {
 			return;
