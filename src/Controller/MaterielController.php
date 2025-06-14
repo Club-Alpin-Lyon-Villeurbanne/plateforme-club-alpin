@@ -55,6 +55,7 @@ Pour résoudre ce problème :
 2. Demandez la suppression de votre compte de bénéficiaire et de votre compte utilisateur sur la plateforme de matériel (bien penser à vider la corbeille de Loxya)
 
 Nous pourrons alors recréer votre compte correctement.');
+
             return $this->redirectToRoute('materiel_index');
         }
 
