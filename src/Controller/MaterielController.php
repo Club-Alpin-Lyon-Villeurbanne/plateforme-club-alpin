@@ -68,7 +68,15 @@ class MaterielController extends AbstractController
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer plus tard.');
+            $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte.
+
+La raison la plus courante est que vous avez déjà un compte sur Loxya.
+
+Pour résoudre ce problème :
+1. Contactez numerique@clubalpin.fr
+2. Demandez la suppression de votre compte de bénéficiaire et de votre compte utilisateur sur la plateforme de matériel (bien penser à vider la corbeille de Loxya)
+
+Nous pourrons alors recréer votre compte correctement.');
 
             return $this->redirectToRoute('materiel_index');
         }
