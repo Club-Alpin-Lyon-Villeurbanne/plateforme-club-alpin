@@ -199,22 +199,25 @@ class MaterielApiService
             ]);
 
             $statusCode = $response->getStatusCode();
-            if ($statusCode !== 200) {
+            if (200 !== $statusCode) {
                 $this->logger->error('Erreur lors de la vérification de l\'existence utilisateur sur Loxya', [
                     'statusCode' => $statusCode,
                     'response' => $response->getContent(false),
                 ]);
+
                 return false;
             }
 
             $data = $response->toArray();
             // L'API retourne un tableau d'utilisateurs dans la clé 'data' ou directement le tableau
             $users = $data['data'] ?? $data;
+
             return !empty($users);
         } catch (\Exception $e) {
             $this->logger->error('Exception lors de la vérification de l\'existence utilisateur sur Loxya', [
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
