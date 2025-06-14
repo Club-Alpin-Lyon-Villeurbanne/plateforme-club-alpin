@@ -46,7 +46,7 @@ class MaterielController extends AbstractController
             $this->logger->info('Utilisateur déjà existant sur Loxya', [
                 'email' => $user->getEmail(),
             ]);
-            $this->addFlash('error', "Une erreur est survenue lors de la création de votre compte.\n\nLa raison la plus courante est que vous avez déjà un compte sur Loxya.\n\nPour résoudre ce problème :\n1. Contactez <a href=\"mailto:numerique@clubalpin.fr\" class=\"underline text-blue-700\">numerique@clubalpin.fr</a>\n2. Demandez la suppression de votre compte de bénéficiaire et de votre compte utilisateur sur la plateforme de matériel (bien penser à vider la corbeille de Loxya)\n\nNous pourrons alors recréer votre compte correctement.");
+            $this->addFlash('error', "Un compte existe déjà sur la plateforme de matériel avec votre email.\n\nPour résoudre ce problème :\n1. Contactez <a href=\"mailto:numerique@clubalpin.fr\" class=\"underline text-blue-700\">numerique@clubalpin.fr</a>\n2. Demandez la suppression de votre compte de bénéficiaire et de votre compte utilisateur sur la plateforme de matériel (bien penser à vider la corbeille de Loxya)\n\nNous pourrons alors recréer votre compte correctement.");
 
             return $this->redirectToRoute('materiel_index');
         }
@@ -78,7 +78,7 @@ class MaterielController extends AbstractController
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            $this->addFlash('error', "Une erreur est survenue lors de la création de votre compte.\n\nLa raison la plus courante est que vous avez déjà un compte sur Loxya.\n\nPour résoudre ce problème :\n1. Contactez <a href=\"mailto:numerique@clubalpin.fr\" class=\"underline text-blue-700\">numerique@clubalpin.fr</a>\n2. Demandez la suppression de votre compte de bénéficiaire et de votre compte utilisateur sur la plateforme de matériel (bien penser à vider la corbeille de Loxya)\n\nNous pourrons alors recréer votre compte correctement.");
+            $this->addFlash('error', "Un compte existe déjà sur la plateforme de matériel avec votre email.\n\nPour résoudre ce problème :\n1. Contactez <a href=\"mailto:numerique@clubalpin.fr\" class=\"underline text-blue-700\">numerique@clubalpin.fr</a>\n2. Demandez la suppression de votre compte de bénéficiaire et de votre compte utilisateur sur la plateforme de matériel (bien penser à vider la corbeille de Loxya)\n\nNous pourrons alors recréer votre compte correctement.");
 
             return $this->redirectToRoute('materiel_index');
         }
