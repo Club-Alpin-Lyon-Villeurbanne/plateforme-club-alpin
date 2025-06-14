@@ -41,6 +41,16 @@ class MaterielController extends AbstractController
             'lastname' => strtoupper($user->getLastname()),
         ]);
 
+        // Vérification existence sur Loxya
+        if ($this->materielApiService->userExistsOnLoxya($user)) {
+            $this->logger->info('Utilisateur déjà existant sur Loxya', [
+                'email' => $user->getEmail(),
+            ]);
+            $this->addFlash('error', "Un compte existe déjà sur la plateforme de matériel avec votre email.\n\nPour résoudre ce problème :\n1. Contactez <a href=\"mailto:numerique@clubalpin.fr\" class=\"underline text-blue-700\">numerique@clubalpin.fr</a>\n2. Demandez la suppression de votre compte (dans la liste des bénéficiaires et dans la liste des utilisateurs sur la plateforme de matériel, bien penser à vider la corbeille des utilisateurs)\n\nNous pourrons alors recréer votre compte correctement.");
+
+            return $this->redirectToRoute('materiel_index');
+        }
+
         try {
             // Create user account
             $this->logger->info('Création du compte utilisateur');
