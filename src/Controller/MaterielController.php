@@ -41,6 +41,23 @@ class MaterielController extends AbstractController
             'lastname' => strtoupper($user->getLastname()),
         ]);
 
+        // Vérification existence sur Loxya
+        if ($this->materielApiService->userExistsOnLoxya($user)) {
+            $this->logger->info('Utilisateur déjà existant sur Loxya', [
+                'email' => $user->getEmail(),
+            ]);
+            $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte.
+
+La raison la plus courante est que vous avez déjà un compte sur Loxya.
+
+Pour résoudre ce problème :
+1. Contactez numerique@clubalpin.fr
+2. Demandez la suppression de votre compte de bénéficiaire et de votre compte utilisateur sur la plateforme de matériel (bien penser à vider la corbeille de Loxya)
+
+Nous pourrons alors recréer votre compte correctement.');
+            return $this->redirectToRoute('materiel_index');
+        }
+
         try {
             // Create user account
             $this->logger->info('Création du compte utilisateur');
