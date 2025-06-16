@@ -46,7 +46,7 @@ class MaterielController extends AbstractController
             $this->logger->info('Utilisateur déjà existant sur Loxya', [
                 'email' => $user->getEmail(),
             ]);
-            $this->addFlash('error', "Un compte existe déjà sur la plateforme de matériel avec votre email.\n\nPour résoudre ce problème :\n1. Contactez <a href=\"mailto:numerique@clubalpin.fr\" class=\"underline text-blue-700\">numerique@clubalpin.fr</a>\n2. Demandez la suppression de votre compte (dans la liste des bénéficiaires et dans la liste des utilisateurs sur la plateforme de matériel, bien penser à vider la corbeille des utilisateurs)\n\nNous pourrons alors recréer votre compte correctement.");
+            $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Merci de remplir le formulaire <a href="https://forms.clickup.com/42653954/f/18np82-775/1BKP6TIKU0RIYXCRWE">https://forms.clickup.com/42653954/f/18np82-775/1BKP6TIKU0RIYXCRWE</a> en renseignant le code d\'erreur 409.');
 
             return $this->redirectToRoute('materiel_index');
         }
@@ -78,7 +78,7 @@ class MaterielController extends AbstractController
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer plus tard.');
+            $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Merci de remplir le formulaire <a href="https://forms.clickup.com/42653954/f/18np82-775/1BKP6TIKU0RIYXCRWE">https://forms.clickup.com/42653954/f/18np82-775/1BKP6TIKU0RIYXCRWE</a> en renseignant le code d\'erreur 400.');
 
             return $this->redirectToRoute('materiel_index');
         }
