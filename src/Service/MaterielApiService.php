@@ -105,7 +105,7 @@ class MaterielApiService
      */
     private function generatePseudo(string $firstName, string $lastName): string
     {
-        return strtolower($firstName . '.' . $lastName);
+        return strtolower(preg_replace('/[^a-zA-Z]/', '', $firstName . $lastName));
     }
 
     /**
