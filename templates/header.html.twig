@@ -224,13 +224,13 @@
                             </ul>
                         </div>
 
-                        {% if allowed('article_create') or allowed('article_validate') or allowed('article_validate_all') %}
-                            <div class="nav-user">
-                                <p class="menutitle">Articles</p>
-                                <ul>
-                                {% if allowed('article_create') %}
-                                    <li>
-                                        <a href="/article-new.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                            {% if allowed('article_create') or allowed('article_validate') or allowed('article_validate_all') %}
+
+                                <div class="nav-user">
+                                    <p class="menutitle">Articles</p>
+
+                                    {% if allowed('article_create') %}
+                                        <a href="/article/new{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
                                             rédiger un article
                                         </a>
                                     </li>

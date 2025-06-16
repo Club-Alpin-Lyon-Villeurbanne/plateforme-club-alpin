@@ -1,15 +1,16 @@
 <?php
 // URL
+
+use App\Legacy\LegacyContainer;
+
 $url = 'article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html';
 if (isset($current_commission) && $current_commission) {
     $url .= '?commission=' . $current_commission;
 }
 
 // check image
-if (is_file(__DIR__ . '/../../public/ftp/articles/' . (int) $article['id_article'] . '/min-figure.jpg')) {
-    $img = '/ftp/articles/' . (int) $article['id_article'] . '/min-figure.jpg';
-} else {
-    $img = '/ftp/articles/0/min-figure.jpg';
+if ($article['media_upload_id']) {
+    $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'min_thumbnail');
 }
 
 ?>
