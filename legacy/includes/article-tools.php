@@ -6,7 +6,7 @@ if (user()) {
 		<?php
         // statut de l'article
         if (0 == $article['topubly_article']) {
-            echo "<p class='draft'>Brouillon : vous n'avez pas demandé à publier cet article pour le moment.</p>";
+            echo "<p class='draft'>Brouillon (non publié)</p>";
         } elseif (0 == $article['status_article']) {
             echo "<p class='alerte'>En attente : cet article n'a pas encore été publié par un responsable.</p>";
         } elseif (1 == $article['status_article']) {
