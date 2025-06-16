@@ -35,16 +35,6 @@ if (!$article) {
         echo ', <a href="' . $_SERVER['REQUEST_URI'] . "#comments\">$totalComments commentaires</a>";
     } elseif ($totalComments > 0) {
         echo ', <a href="' . $_SERVER['REQUEST_URI'] . "#comments\">$totalComments commentaire</a>";
-    }
-    // compte rendu de sortie ?
-    if (-1 == $article['commission_article'] && $article['evt']) {
-        $urlEvt = 'sortie/' . $article['evt']['code_evt'] . '-' . $article['evt']['id_evt'] . '.html'; ?> -
-					Sortie liée :
-					&laquo;
-					<a href="<?php echo $urlEvt; ?>" title="Voir la sortie liée à cet article : &laquo; <?php echo html_utf8($article['evt']['titre_evt']); ?> &raquo;">
-						<?php echo html_utf8($article['evt']['titre_evt']); ?></a>
-					&raquo;
-					<?php
     } ?>
 		</p>
 	</div>
@@ -186,6 +176,16 @@ if (!$article) {
             || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId())
            && 1 == $article['status_article']) {
         echo '</div><br />';
+    }
+
+    // compte rendu de sortie ?
+    if (array_key_exists('evt', $article)) {
+        $urlEvt = 'sortie/' . $article['evt']['code_evt'] . '-' . $article['evt']['id_evt'] . '.html';
+        echo '<p class="italic">
+             📋 Ceci est un compte-rendu de la sortie &laquo; <a href="' . $urlEvt . '" title="Voir la sortie liée à cet article">
+                    ' . html_utf8($article['evt']['titre_evt']) . '
+                </a> &raquo;
+            </p>';
     }
 
     echo $article['cont_article'];
