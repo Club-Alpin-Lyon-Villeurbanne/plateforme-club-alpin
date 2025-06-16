@@ -36,9 +36,6 @@ if (!$article) {
     } elseif ($totalComments > 0) {
         echo ', <a href="' . $_SERVER['REQUEST_URI'] . "#comments\">$totalComments commentaire</a>";
     }
-    if (allowed('article_create')) {
-        echo ', ' . $article['nb_vues_article'] . ' vues';
-    }
     // compte rendu de sortie ?
     if (-1 == $article['commission_article'] && $article['evt']) {
         $urlEvt = 'sortie/' . $article['evt']['code_evt'] . '-' . $article['evt']['id_evt'] . '.html'; ?> -
