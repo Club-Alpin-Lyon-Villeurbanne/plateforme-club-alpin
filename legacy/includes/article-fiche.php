@@ -59,13 +59,13 @@ if (!$article) {
         || (allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
             || allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
             || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
-            || allowed('article_edit')) && user() && $article['user_article'] == (string) getUser()->getId()
+            || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId())
            && 1 == $article['status_article']) {
         echo '<div class="alerte noprint">';
     }
 
     // article trouvé mais normalement pas visible, c'est le cas d'un mode admin ou validateur
-    if ('1' != $article['topubly_article']) {
+    if ('1' != $article['topubly_article'] && '1' != $article['status_article']) {
         echo '<b>Note :</b> Cet article est en cours de rédaction par <b>' . userlink($article['auteur']['id_user'], $article['auteur']['nickname_user']) . '</b>. La publication n\'a pas encore été demandée.<br />';
     } elseif ('1' != $article['status_article']) {
         echo '<b>Note :</b> Cet article n\'est pas publié sur le site. Si vous voyez ce message apparaître, c\'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n\'ont pas accès aux informations ci-dessous.<br />';
@@ -99,7 +99,7 @@ if (!$article) {
     if ((allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
          || allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
          || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
-         || allowed('article_edit')) && user() && $article['user_article'] == (string) getUser()->getId()
+         || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId())
         && 1 == $article['status_article']) {
         echo '<b>Note :</b> Cet article est publié sur le site et visible par les adhérents !<br />';
     }
@@ -114,7 +114,7 @@ if (!$article) {
 
     if ('1' != $article['status_article']
         && (allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
-         || allowed('article_delete')) && user() && $article['user_article'] == (string) getUser()->getId()) {
+         || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId())) {
         // Suppression
         echo '<a href="javascript:$.fancybox($(\'#supprimer-form-' . $article['id_article'] . '\').html());" title="" class="nice2 red">
 				<img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cet article
@@ -183,7 +183,7 @@ if (!$article) {
         || (allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
             || allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
             || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
-            || allowed('article_edit')) && user() && $article['user_article'] == (string) getUser()->getId()
+            || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId())
            && 1 == $article['status_article']) {
         echo '</div><br />';
     }
