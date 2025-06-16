@@ -43,13 +43,15 @@ class MemberMerger
                 throw new \Exception('Unable to find an user with this cafnum ' . $newCafNum);
             }
 
-            $this->mergeUser($oldCafUser, $newCafUser);
-
+            $clone = clone $newCafUser;
             $cafnum = $newCafUser->getCafnum();
-            $newCafUser->setCafnum('obs_' . $cafnum)
-                ->setEmail('obs_' . time())
-                ->setIsDeleted(true);
 
+            $newCafUser->setCafnum('obs_' . $cafnum)
+            ->setEmail('obs_' . time())
+            ->setIsDeleted(true);
+            $this->entityManager->flush();
+
+            $this->mergeUser($oldCafUser, $clone);
             $this->entityManager->flush();
             $this->entityManager->commit();
         } catch (\Exception $e) {

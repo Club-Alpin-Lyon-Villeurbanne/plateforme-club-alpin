@@ -215,7 +215,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'is_deleted', type: 'boolean', nullable: false, options: ['default' => 0])]
     private bool $isDeleted = false;
 
-    #[ORM\Column(type: 'json', nullable: true, options: ['default' => EmailAlerts::DEFAULT_ALERTS_JSON])]
+    #[ORM\Column(type: 'json', nullable: true)]
     private ?array $alerts = EmailAlerts::DEFAULT_ALERTS;
 
     #[ORM\Column(type: 'string', nullable: true)]
