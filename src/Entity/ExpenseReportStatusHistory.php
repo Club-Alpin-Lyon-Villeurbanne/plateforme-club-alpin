@@ -2,12 +2,31 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ExpenseReportStatusHistoryRepository::class)]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: '/expense-reports/{id}/history',
+            uriVariables: [
+                'id' => new Link(
+                    fromClass: ExpenseReport::class,
+                    toProperty: 'expenseReport'
+                ),
+            ],
+            normalizationContext: ['groups' => ['report:read']],
+            security: "is_granted('ROLE_USER')"
+        ),
+    ]
+)]
 class ExpenseReportStatusHistory
 {
     #[ORM\Id]
@@ -20,9 +39,11 @@ class ExpenseReportStatusHistory
     private ?ExpenseReport $expenseReport = null;
 
     #[ORM\Column(enumType: ExpenseReportStatusEnum::class, nullable: true)]
+    #[Groups(['report:read'])]
     private ?ExpenseReportStatusEnum $oldStatus = null;
 
     #[ORM\Column(enumType: ExpenseReportStatusEnum::class)]
+    #[Groups(['report:read'])]
     private ExpenseReportStatusEnum $newStatus;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
@@ -30,6 +51,8 @@ class ExpenseReportStatusHistory
     private ?User $changedBy = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Groups(['report:read'])]
+
     private ?\DateTimeImmutable $changedAt = null;
 
     public function getId(): ?int
