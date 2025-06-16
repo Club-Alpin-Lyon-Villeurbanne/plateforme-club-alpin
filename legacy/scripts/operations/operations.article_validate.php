@@ -19,7 +19,7 @@ $authorDatas = null;
 
 // save
 if (!isset($errTab) || 0 === count($errTab)) {
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_article SET status_article=?, status_who_article=? WHERE caf_article.id_article =?');
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_article SET status_article=?, status_who_article=?, topubly_article = 0 WHERE caf_article.id_article =?');
     $user_id = getUser()->getId();
     $stmt->bind_param('iii', $status_article, $user_id, $id_article);
 
