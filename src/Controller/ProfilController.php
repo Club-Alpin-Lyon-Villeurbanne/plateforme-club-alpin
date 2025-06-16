@@ -7,6 +7,8 @@ use App\Messenger\Message\ArticlePublie;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -98,14 +100,18 @@ class ProfilController extends AbstractController
         ];
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     #[Route(path: '/sorties/self', name: 'profil_sorties_self')]
     #[IsGranted('ROLE_USER')]
     #[Template('profil/sorties.html.twig')]
-    public function sortiesSelf(Request $request, EvtRepository $evtRepository)
+    public function sortiesSelf(Request $request, EvtRepository $evtRepository): array
     {
         $perPage = 30;
         $page = $request->query->getInt('page', 1);
-        $total = $evtRepository->getUserEventsCount($this->getUser());
+        $total = $evtRepository->getUserCreatedEventsCount($this->getUser());
         $pages = ceil($total / $perPage);
         $first = $perPage * ($page - 1);
 

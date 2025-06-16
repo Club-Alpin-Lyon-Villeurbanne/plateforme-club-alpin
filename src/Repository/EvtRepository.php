@@ -7,6 +7,8 @@ use App\Entity\Evt;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -112,6 +114,20 @@ class EvtRepository extends ServiceEntityRepository
         return $this->getPaginatedResults($qb, $first, $perPage);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getUserCreatedEventsCount(User $user): float|bool|int|string|null
+    {
+        return $this
+            ->getEventsCreatedByUserDql($user)
+            ->select('count(e)')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
     public function getUserEventsCount(User $user): int
     {
         return $this
@@ -215,9 +231,7 @@ class EvtRepository extends ServiceEntityRepository
             ->leftJoin('e.commission', 'c')
             ->leftJoin('e.participations', 'p')
             ->where('e.user = :user')
-            ->andWhere('e.tsp > :date')
             ->setParameter('user', $user)
-            ->setParameter('date', time())
         ;
 
         if (!empty($status)) {
