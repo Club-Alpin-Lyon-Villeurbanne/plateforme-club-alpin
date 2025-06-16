@@ -9,6 +9,7 @@
         "php": "8.3.*",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-intl": "*",
         "ext-zip": "*",
         "api-platform/core": "^3.2",
         "beberlei/doctrineextensions": "^1.5",
