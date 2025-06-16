@@ -166,25 +166,29 @@
         {% set my_status = event.participation(app.user) %}
 
         {% if not event.isFinished %}
-            <input id="add-to-calendar" type="button" class="nice2" value="📅 Ajouter à mon agenda" />
+            {% if allowed('user_read_limited') %}
+                <input id="add-to-calendar" type="button" class="nice2" value="📅 Ajouter à mon agenda" />
 
-            <script>
-            const config = {
-                name: "{{ event.titre }}",
-                startDate: "{{ event.tsp | intldate('yyyy-MM-dd') }}",
-                startTime: "{{ event.tsp | date('H:i') }}",
-                endDate: "{{ event.tspEnd | intldate('yyyy-MM-dd') }}",
-                endTime: "{{ event.tspEnd | date('H:i') }}",
-                location: "{{ event.rdv }}",
-                options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
-                timeZone: "Europe/Paris",
-                language: "fr"
-            };
-            const button = document.getElementById('add-to-calendar');
-            if (button) {
-                button.addEventListener('click', () => atcb_action(config, button));
-            }
-            </script>
+                <script>
+                const config = {
+                    name: "{{ event.titre }}",
+                    startDate: "{{ event.tsp | intldate('yyyy-MM-dd') }}",
+                    startTime: "{{ event.tsp | date('H:i') }}",
+                    endDate: "{{ event.tspEnd | intldate('yyyy-MM-dd') }}",
+                    endTime: "{{ event.tspEnd | date('H:i') }}",
+                    location: "{{ event.rdv }}",
+                    options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
+                    timeZone: "Europe/Paris",
+                    language: "fr"
+                };
+                const button = document.getElementById('add-to-calendar');
+                if (button) {
+                    button.addEventListener('click', () => atcb_action(config, button));
+                }
+                </script>
+            {% else %}
+                Vous n'avez pas accès à certaines informations de cette sortie car vous n'êtes pas connecté.
+            {% endif %}
         {% endif %}
  
         <br />
@@ -762,13 +766,22 @@
             <div class="description_evt">{{ event.description | raw }}</div>
             <hr style="clear:both" />
 
-            {% if allowed('user_read_limited') and (event.tarif > 0 or event.tarifDetail) %}
+            {% if (event.tarif > 0 or event.tarifDetail) %}
                 <ul class="nice-list">
-                    {% if event.tarif %}
-                        <li class="wide"><b>TARIF :</b> {{ event.tarif }} Euros</li>
-                    {% endif %}
-                    {% if event.tarifDetail %}
-                        <li class="wide"><b>DÉTAIL :</b><br /> {{ event.tarifDetail | converturls | nl2br }}</li>
+                    {% if allowed('user_read_limited') %}
+                        {% if event.tarif %}
+                            <li class="wide"><b>TARIF :</b> {{ event.tarif }} Euros</li>
+                        {% endif %}
+                        {% if event.tarifDetail %}
+                            <li class="wide"><b>DÉTAIL :</b><br /> {{ event.tarifDetail | converturls | nl2br }}</li>
+                        {% endif %}
+                    {% else %}
+                        {% if event.tarif %}
+                            <li class="wide"><b>TARIF :</b> visible après connexion</li>
+                        {% endif %}
+                        {% if event.tarifDetail %}
+                            <li class="wide"><b>DÉTAIL :</b> visible après connexion</li>
+                        {% endif %}
                     {% endif %}
                 </ul>
                 <br style="clear:both" />
@@ -806,6 +819,10 @@
                         var marker = L.marker([lat, lon]).addTo(mymap);
                     })
                 </script>
+            {% else %}
+                <ul class="nice-list">
+                    <li><b>RDV :</b> lieu et heure visibles après connexion</li>
+                </ul>
             {% endif %}
             <hr />
         {% endif %}
