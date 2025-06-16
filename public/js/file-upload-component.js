@@ -16,6 +16,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const templateId = fileInput.id.replace('-file-input', '-image-preview-template');
         const template = document.getElementById(templateId);
         
+        // Initialiser les événements de survol pour l'overlay existant
+        const existingOverlay = component.querySelector('.preview-overlay');
+        if (existingOverlay && previewDiv) {
+            existingOverlay.style.opacity = '0';
+            previewDiv.addEventListener('mouseenter', function() {
+                existingOverlay.style.opacity = '1';
+            });
+            previewDiv.addEventListener('mouseleave', function() {
+                existingOverlay.style.opacity = '0';
+            });
+        }
+        
         fileInput.addEventListener('change', function(event) {
             const file = event.target.files[0];
             
@@ -76,17 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     img.src = data.url;
                     
                     previewDiv.appendChild(clone);
-                }
-                
-                const overlay = previewDiv.querySelector('.preview-overlay');
-                overlay.style.opacity = '0';
-                if (overlay) {
-                    previewDiv.addEventListener('mouseenter', function() {
-                        overlay.style.opacity = '1';
-                    });
-                    previewDiv.addEventListener('mouseleave', function() {
-                        overlay.style.opacity = '0';
-                    });
                 }
             })
             .catch(error => {

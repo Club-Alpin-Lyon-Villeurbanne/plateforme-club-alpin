@@ -49,8 +49,9 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
         // articles à valider, selon la (les) commission dont nous sommes responsables
         $req = 'SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
-					, id_user, nickname_user, lastname_user, firstname_user, code_commission, title_commission
+					, id_user, nickname_user, lastname_user, firstname_user, code_commission, title_commission, media_upload_id, filename
 		FROM caf_article
+		LEFT JOIN media_upload ON caf_article.media_upload_id = media_upload.id
 		LEFT JOIN caf_commission ON (caf_commission.id_commission = caf_article.commission_article)
 		LEFT JOIN caf_user ON (caf_user.id_user = caf_article.user_article)
 		WHERE status_article=0
@@ -146,10 +147,8 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                         $article = $articleStandby[$i];
 
                         // check image
-                        if (is_file(__DIR__ . '/../../public/ftp/articles/' . (int) $article['id_article'] . '/wide-figure.jpg')) {
-                            $img = '/ftp/articles/' . (int) $article['id_article'] . '/wide-figure.jpg';
-                        } else {
-                            $img = '/ftp/articles/0/wide-figure.jpg';
+                        if ($article['media_upload_id']) {
+                            $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'wide_thumbnail');
                         }
 
                         // type d'article : lié à l'id de la commission en fait
@@ -226,10 +225,8 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                         $article = $articleStandbyRedac[$i];
 
                         // check image
-                        if (is_file(__DIR__ . '/../../public/ftp/articles/' . (int) $article['id_article'] . '/wide-figure.jpg')) {
-                            $img = '/ftp/articles/' . (int) $article['id_article'] . '/wide-figure.jpg';
-                        } else {
-                            $img = '/ftp/articles/0/wide-figure.jpg';
+                        if ($article['media_upload_id']) {
+                            $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'wide_thumbnail');
                         }
 
                         // type d'article : lié à l'id de la commission en fait
@@ -251,7 +248,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                         // edition
                         if (allowed('article_edit_notmine') || allowed('article_edit', 'commission:' . $article['commission_article'])) {
-                            echo '<a href="/article-edit/' . (int) $article['id_article'] . '.html" title="" class="nice2 orange">
+                            echo '<a href="/article/' . (int) $article['id_article'] . '/edit" title="" class="nice2 orange">
 									Modifier
 								</a>';
                         }

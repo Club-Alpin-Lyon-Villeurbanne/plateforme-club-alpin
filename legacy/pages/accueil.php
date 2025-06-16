@@ -10,12 +10,14 @@ $articlesTab = [];
 
 // *******************
 // articles dans le slider
-$req = 'SELECT `id_article` , `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article`
-	FROM  `caf_article`
-	WHERE  `status_article` =1
-	AND  `une_article` =1
-	ORDER BY  `tsp_validate_article` DESC
-	LIMIT 0 , 5';
+$req = 'SELECT a.`id_article`, a.`tsp_crea_article`, a.`tsp_article`, a.`user_article`, a.`titre_article`,
+        a.`code_article`, a.`commission_article`, a.`media_upload_id`, m.`filename`
+	FROM `caf_article` a
+	LEFT JOIN `media_upload` m ON a.`media_upload_id` = m.`id`
+	WHERE a.`status_article` = 1
+	AND a.`une_article` = 1
+	ORDER BY a.`tsp_validate_article` DESC
+	LIMIT 0, 5';
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     $sliderTab[] = $handle;
@@ -30,9 +32,10 @@ if ($pagenum < 1) {
 } // les pages commencent à 1
 
 // premiere requete : défaut, ne considère pas les articles liés à une sortie, liée à la commission courante
-$select = 'id_article , status_article ,  status_who_article ,  tsp_article ,  user_article ,  titre_article ,  code_article ,  commission_article ,  evt_article ,  une_article ,  cont_article ';
+$select = 'id_article , status_article ,  status_who_article ,  tsp_article ,  user_article ,  titre_article ,  code_article ,  commission_article ,  evt_article ,  une_article ,  cont_article , media_upload_id, filename';
 $req = 'SELECT SQL_CALC_FOUND_ROWS ' . $select . '
 	FROM  caf_article
+	LEFT JOIN media_upload m ON caf_article.media_upload_id = m.id
 	WHERE  status_article =1
 	';
 
@@ -130,10 +133,8 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     $article = $sliderTab[$i];
 
                     // check image
-                    if (is_file(__DIR__ . '/../../public/ftp/articles/' . (int) $article['id_article'] . '/wide-figure.jpg')) {
-                        $img = '/ftp/articles/' . (int) $article['id_article'] . '/wide-figure.jpg';
-                    } else {
-                        $img = '/ftp/articles/0/wide-figure.jpg';
+                    if ($article['media_upload_id']) {
+                        $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'wide_thumbnail');
                     }
 
                     echo '<a href="/article/' . html_utf8($article['code_article'] . '-' . $article['id_article']) . '.html" class="slide" style="background-image:url(' . $img . ')" title="CLIQUEZ POUR VOIR L\'ARTICLE">

@@ -2,7 +2,6 @@
 
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 $article = false;
 $errPage = false; // message d'erreur spécifique à la page courante si besoin
@@ -13,6 +12,7 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 $req = "SELECT a.*, c.title_commission
     FROM caf_article as a
     LEFT JOIN caf_commission as c ON a.commission_article = c.id_commission
+    LEFT JOIN media_upload m ON a.media_upload_id = m.id
     WHERE id_article=$id_article
     LIMIT 1";
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -80,8 +80,8 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         $meta_title = $handle['titre_article'] . ' | ' . $p_sitename;
         $meta_description = limiterTexte(strip_tags($handle['cont_article']), 200) . '...';
         // opengraphe : image pour les partages
-        if (is_file(__DIR__ . '/../../public/ftp/articles/' . (int) $handle['id_article'] . '/wide-figure.jpg')) {
-            $ogImage = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'ftp/articles/' . (int) $handle['id_article'] . '/wide-figure.jpg';
+        if ($handle['media_upload_id']) {
+            $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $handle['filename']], 'wide_thumbnail');
         }
 
         // maj nb vues

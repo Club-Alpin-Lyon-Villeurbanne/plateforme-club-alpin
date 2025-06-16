@@ -7,6 +7,7 @@ use App\Legacy\Rss\FeedWriter;
 use App\Repository\ArticleRepository;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,6 +29,7 @@ class RssController extends AbstractController
         CommissionRepository $commissionRepository,
         ArticleRepository $articleRepository,
         EvtRepository $evtRepository,
+        CacheManager $cacheManager
     ) {
         $comTab = [];
 
@@ -59,8 +61,8 @@ class RssController extends AbstractController
                 $entry['description'] = $article->getCont();
                 $entry['timestamp'] = $article->getTsp();
 
-                if (is_file(__DIR__ . '/../public/ftp/articles/' . $article->getId() . '/wide-figure.jpg')) {
-                    $entry['img'] = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'ftp/articles/' . $article->getId() . '/wide-figure.jpg';
+                if ($article->getMediaUpload()) {
+                    $entry['img'] = $cacheManager->getBrowserPath('uploads/files/' . $article->getMediaUpload()->getFilename(), 'wide_thumbnail');
                 }
 
                 $entryTab[] = $entry;
