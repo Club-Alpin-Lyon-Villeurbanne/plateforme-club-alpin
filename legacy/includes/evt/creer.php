@@ -40,6 +40,7 @@ $listeEquipementsRecommande = [
     'Trail' => 'Frontale, veste coupe vent, couverture de survie, carte du CAF, de quoi boire, de quoi manger en cas de moins bien',
 ];
 ?>
+    <span class="italic">Les champs marqués d'un <span class="required">*</span> sont obligatoires.</span><br>
 
     <br class="clear">
 
@@ -73,8 +74,8 @@ $listeEquipementsRecommande = [
     </div>
 
     <div style="float:right;margin-right:20px;">
-        Titre :<br />
-        <input style="width:320px;" type="text" name="titre_evt" class="type1" value="<?php echo inputVal('titre_evt', ''); ?>" placeholder="ex : Escalade du Grand Som" required minlength="10" maxlength="100" />
+        <label for="titre_evt" class="required">Titre :</label><br />
+        <input style="width:320px;" type="text" name="titre_evt" id="titre_evt" class="type1" value="<?php echo inputVal('titre_evt', ''); ?>" placeholder="ex : Escalade du Grand Som" required minlength="10" maxlength="100" />
     </div>
 
     <?php $groupes = get_groupes($comTab[$current_commission]['id_commission'], true); ?>
@@ -96,7 +97,7 @@ $listeEquipementsRecommande = [
 
 
     <div id="individus">
-        <h2 class="trigger-h2">Encadrant(s) :</h2>
+        <h2 class="trigger-h2 required">Encadrant(s) :</h2>
         <div class="trigger-me check-nice">
             <?php
         $encadrants = isset($_POST['encadrants']) && is_array($_POST['encadrants']) ? $_POST['encadrants'] : [];
@@ -181,11 +182,11 @@ foreach ($coencadrantsTab as $coencadrant) {
 
         <br />
         <div style="float:left; width:45%; padding:0 20px 5px 0;">
-            Ville, et lieu de rendez-vous covoiturage :<br />
+            <label for="rdv_evt" class="required">Ville, et lieu de rendez-vous covoiturage :</label><br />
             <?php
             inclure('infos-lieu-de-rdv', 'mini');
 ?>
-            <input type="text" name="rdv_evt" class="type2" style="width:95%" value="<?php echo inputVal('rdv_evt', ''); ?>" placeholder="ex : Pralognan la Vanoise, les fontanettes" required minlength="3" maxlength="200" />
+            <input type="text" name="rdv_evt" id="rdv_evt" class="type2" style="width:95%" value="<?php echo inputVal('rdv_evt', ''); ?>" placeholder="ex : Pralognan la Vanoise, les fontanettes" required minlength="3" maxlength="200" />
         </div>
 
         <div style="float:left; width:45%; padding:0 20px 0 0;">
@@ -205,14 +206,14 @@ inclure('infos-carte', 'mini');
 
         <br />
         <div style="width:45%; padding-right:3%; float:left">
-            Date et heure de RDV / covoiturage :<br />
-            <input type="text" name="tsp_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_evt_day', ''); ?>" placeholder="jj/mm/aaaa" required />
+            <label for="tsp_evt_day" class="required">Date et heure de RDV / covoiturage :</label><br />
+            <input type="text" name="tsp_evt_day" id="tsp_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_evt_day', ''); ?>" placeholder="jj/mm/aaaa" required />
             <input type="text" name="tsp_evt_hour" class="type2" style="width:45%" value="<?php echo inputVal('tsp_evt_hour', ''); ?>" placeholder="hh:ii" required />
         </div>
 
         <div style="width:50%; float:left">
-            Date de fin de la sortie :<br />
-            <input type="text" name="tsp_end_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_end_evt_day', ''); ?>" placeholder="jj/mm/aaaa" required />
+            <label for="tsp_end_evt_day" class="required">Date de fin de la sortie :</label><br />
+            <input type="text" name="tsp_end_evt_day" id="tsp_end_evt_day" class="type2" style="width:45%; float:left;" value="<?php echo inputVal('tsp_end_evt_day', ''); ?>" placeholder="jj/mm/aaaa" required />
             <input type="button" value="même jour ?" class="nice" onclick="$('input[name=tsp_end_evt_day]').val($('input[name=tsp_evt_day]').val())" style="margin-top:7px" />
         </div>
 
@@ -243,16 +244,16 @@ inclure('infos-carte', 'mini');
         <div id="inscriptions-on" style="display:block">
 
 
-            Nombre maximum de personnes sur cette sortie (encadrement compris) :<br />
+            <label for="ngens_max_evt" class="required">Nombre maximum de personnes sur cette sortie (encadrement compris) :</label><br />
             <p class="mini">
-                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="ngens_max_evt" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('ngens_max_evt', ''); ?>" placeholder=" ex : 8" />
+                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="ngens_max_evt" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('ngens_max_evt', ''); ?>" placeholder=" ex : 8" required />
                 personnes affichées. Ceci n'influence <u>pas</u> le nombre d'inscriptions possibles en ligne.
             </p>
             <br style="clear:both" />
 
             <div style="width:45%; padding-right:3%; float:left">
-                Les inscriptions démarrent :<br />
-                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_start_evt_days" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_start_evt_days', ''); ?>" placeholder=" > 2" required />
+                <label for="join_start_evt_days" class="required">Les inscriptions démarrent :</label><br />
+                <input onblur="if($(this).val()) $(this).val(parseInt($(this).val()) -0);" type="text" name="join_start_evt_days" id="join_start_evt_days" class="type2" style="width:40px; text-align:center" value="<?php echo inputVal('join_start_evt_days', ''); ?>" placeholder=" > 2" required />
                 <span class="mini">
                     jours avant la sortie.
                 </span>
@@ -337,7 +338,7 @@ inclure('infos-matos', 'mini');
         ><?php echo inputVal('details_caches_evt', ''); ?></textarea>
     </div>
 
-    <h2 class="trigger-h2">Description complète :</h2>
+    <h2 class="trigger-h2 required">Description complète :</h2>
     <div class="trigger-me">
         <p>
             Entrez ci-dessous toutes les informations qui ne figurent pas dans le formulaire.

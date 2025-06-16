@@ -49,3 +49,10 @@
 .tw-h-3{height:.75rem!important}
 
 .italic {font-style: italic}
+label.required::after, h2.required::after {
+    content: " *";
+    color: red;
+}
+span.required {
+    color: red;
+}
