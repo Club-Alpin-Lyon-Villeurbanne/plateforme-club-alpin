@@ -213,7 +213,7 @@ if ($p2) {
         // pour chaque comm que je peux modifier, lien
         foreach ($comTab as $tmp) {
             if (allowed('evt_create', 'commission:' . $tmp['code_commission'])) {
-                echo '<a class="lien-big" style="color:black;" href="/creer-une-sortie/' . html_utf8($tmp['code_commission']) . '.html" title="">&gt; Créer une sortie <b>' . html_utf8($tmp['title_commission']) . '</b></a><br />';
+                echo '<a class="lien-big" style="color:black;" href="' . LegacyContainer::get('router')->generate('creer_sortie', ['code' => html_utf8($tmp['code_commission'])]) . '" title="">&gt; Créer une sortie <b>' . html_utf8($tmp['title_commission']) . '</b></a><br />';
             }
         }
     }
