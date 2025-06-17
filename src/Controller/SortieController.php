@@ -404,7 +404,7 @@ class SortieController extends AbstractController
 
         $user = $this->getUser();
 
-        if ($participation->isStatusValide()) {
+        if ($participation->isStatusValide() || $participation->isStatusEnAttente()) {
             $mailer->send($event->getUser(), 'transactional/sortie-desinscription', [
                 'username' => $participation->getUser()->getFirstname() . ' ' . $participation->getUser()->getLastname(),
                 'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
@@ -412,6 +412,7 @@ class SortieController extends AbstractController
                 'commission' => $event->getCommission()->getTitle(),
                 'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
                 'user' => $user,
+                'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $user->getId() . '.html',
             ], [], null, $user->getEmail());
         }
 
