@@ -804,7 +804,7 @@
 
             {% if allowed('user_read_limited') %}
                 <ul class="nice-list">
-                    <li><b>RDV :</b> {{ event.rdv }}</li>
+                    <li><b>RDV :</b> {% if event.rdv is not same as ('') %}{{ event.rdv }}{% else %}Voir sur la carte ci-dessous{% endif %}</li>
                     <li class="wide"><b>POINT DE RENDEZ-VOUS SUR LA CARTE :</b> </li>
                 </ul>
                 <br style="clear:both" />

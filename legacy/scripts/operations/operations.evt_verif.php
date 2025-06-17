@@ -79,7 +79,7 @@ if ($ngens_max_evt < $join_max_evt) {
 if (!$join_start_evt_days) {
     $errTab[] = 'Merci de préciser le nombre de jours avant la sortie, pour les inscriptions';
 }
-if (strlen($rdv_evt) < 3 || strlen($rdv_evt) > 200) {
+if (!empty($rdv_evt) && (strlen($rdv_evt) < 3 || strlen($rdv_evt) > 200)) {
     $errTab[] = "Merci d'entrer un lieu de rendez-vous de 3 à 200 caractères";
 }
 if (strlen($difficulte_evt) > 50) {
@@ -92,7 +92,7 @@ if (strlen($distance_evt) > 50) {
     $errTab[] = "Merci d'entrer une distance de 50 caractères maximum";
 }
 if (!$lat_evt || !$long_evt || 1 == $lat_evt || 1 == $long_evt) {
-    $errTab[] = 'Coordonnées introuvables. Vérifiez le positionnement du curseur sur la carte.';
+    $errTab[] = 'Coordonnées introuvables. Vérifiez le positionnement du marqueur sur la carte.';
 }
 if (!preg_match('#[0-9]{2}/[0-9]{2}/[0-9]{4}#', $tsp_evt_day)) {
     $errTab[] = 'La date du rendez-vous doit être au format jj/mm/aaaa.';
