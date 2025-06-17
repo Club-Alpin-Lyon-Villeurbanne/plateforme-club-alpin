@@ -177,4 +177,47 @@ class MaterielApiService
     {
         return $user->hasMaterielAccount();
     }
+
+    /**
+     * Vérifie si un utilisateur existe déjà sur Loxya via l'API externe.
+     */
+    public function userExistsOnLoxya(User $user): bool
+    {
+        if (!$this->jwtToken) {
+            $this->authenticate();
+        }
+
+        $email = $user->getEmail();
+        $url = $this->apiBaseUrl . '/api/users?page=1&limit=100&ascending=1&search[]=' . urlencode($email) . '&deleted=0';
+
+        try {
+            $response = $this->client->request('GET', $url, [
+                'headers' => [
+                    'accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . $this->jwtToken,
+                ],
+            ]);
+
+            $statusCode = $response->getStatusCode();
+            if (200 !== $statusCode) {
+                $this->logger->error('Erreur lors de la vérification de l\'existence utilisateur sur Loxya', [
+                    'statusCode' => $statusCode,
+                    'response' => $response->getContent(false),
+                ]);
+
+                return false;
+            }
+
+            $data = $response->toArray();
+            $users = $data['data'] ?? $data;
+
+            return !empty($users);
+        } catch (\Exception $e) {
+            $this->logger->error('Exception lors de la vérification de l\'existence utilisateur sur Loxya', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
 }
