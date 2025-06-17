@@ -80,12 +80,6 @@ if (user()) {
                 case 'valid':
                     $req = $baseReq . ' AND doit_renouveler_user=0 AND nomade_user=0';
                     break;
-                case 'valid-active':
-                    $req = $baseReq . ' AND valid_user=1 AND doit_renouveler_user=0 AND nomade_user=0';
-                    break;
-                case 'valid-inactive':
-                    $req = $baseReq . ' AND valid_user=0 AND doit_renouveler_user=0 AND nomade_user=0';
-                    break;
                 case 'all':
                 default:
                     $req = $baseReq;
