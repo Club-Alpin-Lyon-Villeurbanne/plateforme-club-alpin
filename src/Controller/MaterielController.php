@@ -41,6 +41,16 @@ class MaterielController extends AbstractController
             'lastname' => strtoupper($user->getLastname()),
         ]);
 
+        // Vérification existence sur Loxya
+        if ($this->materielApiService->userExistsOnLoxya($user)) {
+            $this->logger->info('Utilisateur déjà existant sur Loxya', [
+                'email' => $user->getEmail(),
+            ]);
+            $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Merci de remplir le formulaire <a href="https://forms.clickup.com/42653954/f/18np82-775/1BKP6TIKU0RIYXCRWE">https://forms.clickup.com/42653954/f/18np82-775/1BKP6TIKU0RIYXCRWE</a> en renseignant le code d\'erreur 409.');
+
+            return $this->redirectToRoute('materiel_index');
+        }
+
         try {
             // Create user account
             $this->logger->info('Création du compte utilisateur');
@@ -68,7 +78,7 @@ class MaterielController extends AbstractController
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer plus tard.');
+            $this->addFlash('error', 'Une erreur est survenue lors de la création de votre compte. Merci de remplir le formulaire <a href="https://forms.clickup.com/42653954/f/18np82-775/1BKP6TIKU0RIYXCRWE">https://forms.clickup.com/42653954/f/18np82-775/1BKP6TIKU0RIYXCRWE</a> en renseignant le code d\'erreur 400.');
 
             return $this->redirectToRoute('materiel_index');
         }
