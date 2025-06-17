@@ -229,7 +229,9 @@
                                 <div class="nav-user">
                                     <p class="menutitle">Articles</p>
 
+                                    <ul>
                                     {% if allowed('article_create') %}
+                                        <li>
                                         <a href="/article/new{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
                                             rédiger un article
                                         </a>
