@@ -47,3 +47,5 @@
 .tw-text-orange-600{--tw-text-opacity: 1 !important;color:rgb(234 88 12 / var(--tw-text-opacity))!important}
 .tw-w-3{width:.75rem!important}
 .tw-h-3{height:.75rem!important}
+
+.italic {font-style: italic}
