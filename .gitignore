@@ -50,3 +50,5 @@ public/dev.txt
 # Test reports
 test-results/
 playwright-report/
+
+public/uploads/files/*

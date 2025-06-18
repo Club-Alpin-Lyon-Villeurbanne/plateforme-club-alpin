@@ -5,12 +5,17 @@ namespace App\Controller;
 use App\Entity\Article;
 use App\Entity\MediaUpload;
 use App\Form\ArticleType;
+use App\Repository\ArticleRepository;
+use App\Repository\CommentRepository;
 use App\Repository\EvtRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ArticleController extends AbstractController
@@ -114,6 +119,28 @@ class ArticleController extends AbstractController
             'article' => $article,
             'edit_mode' => null !== $article->getId(),
         ]);
+    }
+
+    #[Route(path: '/article/{code}-{id}.html', name: 'article_view', requirements: ['id' => '\d+', 'code' => '[a-z0-9-]+'], methods: ['GET'], priority: '10')]
+    #[Template('article/article.html.twig')]
+    public function article(Article $article, ArticleRepository $articleRepository, CommentRepository $commentRepository): array
+    {
+        if (!$this->isGranted('ARTICLE_VIEW', $article)) {
+            throw new AccessDeniedHttpException('Not found');
+        }
+
+        // maj nb vues
+        if (!$this->isGranted('ARTICLE_UPDATE', $article)) {
+            $articleRepository->updateViews($article);
+        }
+
+        return [
+            'article' => $article,
+            'current_commission' => $article->getCommission()?->getCode(),
+            'comments' => $commentRepository->findByArticle($article),
+            'article_url' => $this->generateUrl('article_view', ['id' => $article->getId(), 'code' => $article->getCode()], UrlGeneratorInterface::ABSOLUTE_URL),
+            'event_url' => $article->getEvt() ? $this->generateUrl('sortie', ['id' => $article->getEvt()->getId(), 'code' => $article->getEvt()->getCode()]) : '',
+        ];
     }
 
     private function generateArticleCode(string $title, SluggerInterface $slugger): string
