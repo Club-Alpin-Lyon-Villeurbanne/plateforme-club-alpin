@@ -190,6 +190,19 @@ class EvtRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    public function getRecentPastEvents(): array
+    {
+        return $this->createQueryBuilder('e')
+            ->where('e.status = :status')
+            ->andWhere('e.tsp < :date')
+            ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
+            ->setParameter('date', time())
+            ->orderBy('e.tsp', 'asc')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     private function getUserUpcomingEventsDql(User $user): QueryBuilder
     {
         $date = new \DateTime('today');
