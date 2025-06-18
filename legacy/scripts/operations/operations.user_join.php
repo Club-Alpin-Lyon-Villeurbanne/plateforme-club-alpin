@@ -243,7 +243,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if ($filiations) {
             // Pour les filiations, utiliser une requête préparée avec des placeholders dynamiques
             $placeholders = str_repeat('?,', count($idUsersFiliations) - 1) . '?';
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT email_user, nickname_user, firstname_user, lastname_user, civ_user, birthday_user
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT id_user, email_user, nickname_user, firstname_user, lastname_user, civ_user, birthday_user
                 FROM caf_user
                 WHERE id_user IN ($placeholders)
                 LIMIT 100");
