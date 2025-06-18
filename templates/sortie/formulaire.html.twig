@@ -25,21 +25,16 @@
                 Sortie liée à la commission :<br />
                 <b>{{ commission }}</b>
             {% else %}
-                Sortie liée à la commission :<br />
-                <div class="faux-select-wrapper" id="choix-commission">
-                    <div class="faux-select">
-                    {% for comm in commissions %}
-                        <a href="{{ path('creer_sortie', {'code': comm.code}) }}" title="" class="{% if comm.code is same as(current_commission) %}up{% endif %}">{{ comm.title }}</a>
-                    {% endfor %}
-                    </div>
-                </div>
+                {{ form_row(form.commission) }}
             {% endif %}
         </div>
         <div style="float:right;margin-right:20px;">
             {{ form_row(form.titre) }}
         </div>
         <br style="clear:both" /><br>
-        {{ form_macros.display_group_form_field(form.groupe) }}
+        <div id="groupe">
+            {{ form_macros.display_group_form_field(form.groupe) }}
+        </div>
 
         <div id="individus">
             {{ form_macros.display_encadrement(form, isUpdate) }}
@@ -175,7 +170,6 @@
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
             integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
             crossorigin=""></script>
-    <script type="text/javascript" src="/js/faux-select.js"></script>
     <script type="text/javascript" src="/js/map.js"></script>
     <script type="text/javascript" charset="utf-8" src="/js/jquery-ui-1.10.2.custom.min.js"></script>
     <script language="javascript" type="text/javascript" src="/tools/tinymce/tiny_mce.js"></script>
@@ -184,6 +178,7 @@
         // au chargement complet de la page
         document.addEventListener('DOMContentLoaded', function () {
             initParticipantsCheckboxes(document);
+            switchCommission(document);
 
             // liste matériel
             document.querySelector('#predefinitions-matos-submit').addEventListener('click', (e) => {
@@ -199,11 +194,9 @@
                 }
             });
 
-            // refresh au changement de commisssion
-            document.querySelector('#choix-commission a').addEventListener('click', (e) => {
-                if(!confirm("Attention, si vous changez cette valeur, cette page sera rechargée et vous perdrez les informations déja remplies. \nContinuer ?")) {
-                    return false;
-                }
+            // refresh au changement de commission
+            document.querySelector('#event_commission').addEventListener('change', (e) => {
+                switchCommission(document);
             });
 
             // champ description pas obligatoire en js
