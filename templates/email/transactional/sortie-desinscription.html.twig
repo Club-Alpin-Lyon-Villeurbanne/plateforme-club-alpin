@@ -7,7 +7,7 @@
 {% block inner_html %}
     <p>
         {{ username }} était inscrit(e) ou en attente pour la sortie <a href="{{ event_url }}">{{ event_name }}</a>.
-        Il(elle) vient de supprimer son inscription.
+        Il(elle) vient d'annuler sa participation.
     </p>
     <p>
         Plus d'infos :
@@ -20,7 +20,7 @@
 
 {% block inner_txt %}
     {{ username }} était inscrit(e) ou en attente pour la sortie {{ event_name }} ({{ event_url }}).
-    Il(elle) vient de supprimer son inscription.
+    Il(elle) vient d'annuler sa participation.
 
     Plus d'infos :
       - Pseudo : {{ user.nickname }}
