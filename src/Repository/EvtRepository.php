@@ -198,6 +198,7 @@ class EvtRepository extends ServiceEntityRepository
             ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
             ->setParameter('date', time())
             ->orderBy('e.tsp', 'asc')
+            ->setMaxResults(300)
             ->getQuery()
             ->getResult()
         ;
