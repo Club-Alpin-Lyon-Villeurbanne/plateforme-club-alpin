@@ -26,17 +26,27 @@ if (user()) {
         <?php if (getUser()->hasAttribute()) { ?>
             <h2><span class="bleucaf">&gt;</span> Vos statuts :</h2>
             <?php inclure('infos-profil-statuts', 'vide'); ?>
+                <br><br>
+            <h3>Gestion du club :</h3>
             <ul class="nice-list">
                 <?php
                 foreach (getUser()->getAttributes() as $attr) {
-                    if (UserAttr::RESPONSABLE_COMMISSION === $attr->getCode()) {
-                        echo '<li><a href="/commission-consulter.html?code_commission=' . $attr->getCommission() . '" title="Fiche commission">' . $attr->getTitle() . ', ' . $attr->getCommission() . '</a></li>';
-                    } elseif (in_array($attr->getCode(), [UserAttr::ENCADRANT, UserAttr::COENCADRANT], true)) {
-                        echo '<li>' . $attr->getTitle() . ', ' . $attr->getCommission() . '</li>';
-                    } else {
+                    if (!in_array($attr->getCode(), UserAttr::COMMISSION_RELATED, true)) {
                         echo '<li>' . $attr->getTitle() . '</li>';
                     }
                 }
+            ?>
+            </ul>
+            <br style="clear:both" />
+
+            <h3>Commissions :</h3>
+            <ul class="nice-list">
+            <?php
+            foreach (getUser()->getAttributes() as $attr) {
+                if (in_array($attr->getCode(), UserAttr::COMMISSION_RELATED, true)) {
+                    echo '<li>' . $attr->getCommission() . ' : ' . $attr->getTitle() . '</li>';
+                }
+            }
             ?>
             </ul>
             <br style="clear:both" />
