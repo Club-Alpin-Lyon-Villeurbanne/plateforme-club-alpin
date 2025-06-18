@@ -63,16 +63,16 @@ class EventType extends AbstractType
         $builder
             ->add('commission', EntityType::class, [
                 'class' => Commission::class,
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('c')
-                          ->where('c.vis = true')
-                          ->orderBy('c.ordre', 'ASC')
-                    ;
-                },
+                'choices' => array_filter(
+                    iterator_to_array($this->commissionRepository->findVisible()),
+                    fn (Commission $commission) => $this->userRights->allowedOnCommission('evt_create', $commission),
+                ),
                 'label' => 'Sortie liée à la commission',
+                'placeholder' => 'Choisissez une commission',
                 'required' => true,
                 'attr' => [
-                    'class' => 'type1',
+                    'class' => 'type1 wide',
+                    'style' => 'width: 100%',
                 ],
             ])
             ->add('groupe', EntityType::class, [
