@@ -2,13 +2,6 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token('article_comment') }}" />
     <input type="hidden" name="unlock1" value="0" />
 
-{#    <?php#}
-{#    // MESSAGES A LA SOUMISSION#}
-{#    if ('comment' == ($_POST['operation'] ?? null) && isset($errTab) && count($errTab) > 0) {#}
-{#    echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';#}
-{#    }#}
-{#    ?>#}
-
     <div style="float:left; width:75px; padding-top:3px;">
         <img src="{{ user_image(article.user, 'pic') }}" alt="Profil" title="{{ article.user.nickname }}" />
     </div>
