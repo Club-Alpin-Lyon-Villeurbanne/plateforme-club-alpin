@@ -67,6 +67,8 @@ class ArticleController extends AbstractController
                 if ($isNew) {
                     $article->setUser($this->getUser());
                     $article->setTspCrea(time());
+                } else {
+                    $article->setLastEditWho($this->getUser());
                 }
 
                 $article->setTsp(time());
