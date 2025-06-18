@@ -75,7 +75,7 @@
 
             {% if article.commission and allowed('article_edit_notmine', 'commission:' ~ article.commission.code)
                 or allowed('article_edit') and app.user and article.user is same as (app.user) %}
-                    <a href="/article-edit/{{ article.id }}.html" title="" class="nice2 orange">
+                    <a href="/article/{{ article.id }}/edit" title="" class="nice2 orange">
                         <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cet article
                     </a>
             {% endif %}
