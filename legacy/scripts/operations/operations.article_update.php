@@ -52,10 +52,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $sql .= ' AND user_article = ?';
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($sql);
         $user_id = getUser()->getId();
-        $stmt->bind_param('iiisiisii', $status_article, $topubly_article, $titre_article, $commission_article_value, $evt_article_value, $une_article, $cont_article, $current_time, $id_article, $user_id);
+        $stmt->bind_param('iisiiisii', $status_article, $topubly_article, $titre_article, $commission_article_value, $evt_article_value, $une_article, $cont_article, $current_time, $id_article, $user_id);
     } else {
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($sql);
-        $stmt->bind_param('iiisiisii', $status_article, $topubly_article, $titre_article, $commission_article_value, $evt_article_value, $une_article, $cont_article, $current_time, $id_article);
+        $stmt->bind_param('iisiiisi', $status_article, $topubly_article, $titre_article, $commission_article_value, $evt_article_value, $une_article, $cont_article, $current_time, $id_article);
     }
 
     if (!$stmt->execute()) {
