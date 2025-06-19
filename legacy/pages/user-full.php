@@ -1,5 +1,6 @@
 <?php
 
+use App\Entity\EventParticipation;
 use App\Legacy\LegacyContainer;
 
 // id du profil
@@ -69,9 +70,27 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
 					<!-- infos persos-->
 					<?php require __DIR__ . '/../includes/user/infos_privees.php'; ?>
-
-					<br />
 				</div>
+                <br style="clear:both" />
+
+                <?php
+                // si j'ai acces ou si les données me concernent
+                $isMyProfile = getUser()->getId() === (int) $id_user;
+                if (allowed('user_read_private') || $isMyProfile) {
+                    ['absences' => $absences, 'presences' => $presences] = LegacyContainer::get('doctrine.orm.entity_manager')
+                      ->getRepository(EventParticipation::class)
+                      ->getEventPresencesAndAbsencesOfUser($id_user)
+                    ;
+                    echo '<p>';
+                    $total = $presences + $absences;
+                    $fiabilite = $total > 0 ? round(($presences / $total) * 100) : 100;
+                    printf('<b>Taux de présence: %d%% - (%d absences sur %d sorties)</b>', $fiabilite, $absences, $total);
+                    if ($isMyProfile) {
+                        echo '<br/>Ce taux donne une information sur le nombre d\'absences aux sorties auxquelles vous êtes inscrit.e.<br/>Il n\'est visible que par les encadrant.es.<br />Vous pouvez consulter la liste des sorties où vous avez été absent.e sur <a href="profil/sorties/prev"/>la page de vos sorties passées</a>.';
+                    }
+                    echo '</p>';
+                }
+                ?>
 				<br style="clear:both" />
 				<hr  />
 
