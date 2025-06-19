@@ -133,6 +133,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     $article = $sliderTab[$i];
 
                     // check image
+                    $img = '';
                     if ($article['media_upload_id']) {
                         $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'wide_thumbnail');
                     }

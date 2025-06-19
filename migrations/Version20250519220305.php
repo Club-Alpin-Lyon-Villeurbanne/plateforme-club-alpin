@@ -30,7 +30,7 @@ final class Version20250519220305 extends AbstractMigration
 
         $now = new \DateTimeImmutable();
         $timestamp = $now->format('Y-m-d H:i:s');
-        $uploadDir = $projectDir . '/public/uploads/files';
+        $uploadDir = $projectDir . '/public/ftp/uploads/files';
 
         // Ensure upload directory exists
         if (!$filesystem->exists($uploadDir)) {
@@ -88,7 +88,7 @@ final class Version20250519220305 extends AbstractMigration
                     );
 
                     ++$migratedCount;
-                    $this->write("Migrated image for article {$articleId} from {$sourceImagePath} to MediaUpload with filename {$uniqueIdentifier}");
+                    $this->write("Migrated image for article {$articleId} from {$sourceImagePath} to MediaUpload path {$newFilePath}");
                 } catch (\Exception $e) {
                     $this->write("Error migrating image for article {$articleId}: " . $e->getMessage());
                 }

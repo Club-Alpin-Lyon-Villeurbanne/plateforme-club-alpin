@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\MediaUpload;
 use App\Repository\MediaUploadRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -77,29 +76,12 @@ class MediaUploadController extends AbstractController
 
         $this->entityManager->flush();
 
-        $imagePath = $request->getSchemeAndHttpHost() . '/uploads/files/' . $mediaUpload->getFilename();
-
-        $thumbnails = [];
-        if (\in_array(strtolower($file->getClientOriginalExtension()), ['jpg', 'jpeg', 'png', 'gif', 'webp'], true)) {
-            try {
-                // Chemin relatif pour LiipImagine
-                $relativeImagePath = 'uploads/files/' . $mediaUpload->getFilename();
-
-                // Générer les URLs des thumbnails
-                $thumbnails = [
-                    'wide' => $this->imagineCacheManager->getBrowserPath($relativeImagePath, 'wide_thumbnail'),
-                    'min' => $this->imagineCacheManager->getBrowserPath($relativeImagePath, 'min_thumbnail'),
-                ];
-            } catch (NotLoadableException $e) {
-                throw new BadRequestHttpException('Image non valide');
-            }
-        }
+        $imagePath = $request->getSchemeAndHttpHost() . '/ftp/uploads/files/' . $mediaUpload->getFilename();
 
         return $this->json([
             'id' => $mediaUpload->getId(),
             'filename' => $mediaUpload->getFilename(),
             'url' => $imagePath,
-            'thumbnails' => $thumbnails,
             'createdAt' => $mediaUpload->getCreatedAt()->format('c'),
         ], Response::HTTP_CREATED);
     }
