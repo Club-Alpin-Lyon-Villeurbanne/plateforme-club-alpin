@@ -9,7 +9,7 @@ $id_article = (int) substr(strrchr($p2, '-'), 1);
 $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 
 // sélection complète, non conditionnelle par rapport au status
-$req = "SELECT a.*, c.title_commission
+$req = "SELECT a.*, c.title_commission, c.code_commission, m.filename
     FROM caf_article as a
     LEFT JOIN caf_commission as c ON a.commission_article = c.id_commission
     LEFT JOIN media_upload m ON a.media_upload_id = m.id
