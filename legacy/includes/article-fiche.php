@@ -46,8 +46,8 @@ if (!$article) {
 
     if ('1' != $article['topubly_article']
         || '1' != $article['status_article']
-        || (allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
-            || allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
+        || (allowed('article_delete_notmine', 'commission:' . $article['code_commission'])
+            || allowed('article_edit_notmine', 'commission:' . $article['code_commission'])
             || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
             || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId())
            && 1 == $article['status_article']) {
@@ -61,7 +61,7 @@ if (!$article) {
         echo '<b>Note :</b> Cet article n\'est pas publié sur le site. Si vous voyez ce message apparaître, c\'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n\'ont pas accès aux informations ci-dessous.<br />';
 
         // Moderation
-        if (allowed('article_validate', 'commission:' . $article['commission_article']) || allowed('article_validate_all')) {
+        if (allowed('article_validate', 'commission:' . $article['code_commission']) || allowed('article_validate_all')) {
             echo '
 			<form action="' . $versCettePage . '" method="post" style="display:inline" class="loading">
 				<input type="hidden" name="operation" value="article_validate" />
@@ -86,8 +86,8 @@ if (!$article) {
         }
     }
 
-    if ((allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
-         || allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
+    if ((allowed('article_delete_notmine', 'commission:' . $article['code_commission'])
+         || allowed('article_edit_notmine', 'commission:' . $article['code_commission'])
          || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
          || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId())
         && 1 == $article['status_article']) {
@@ -95,7 +95,7 @@ if (!$article) {
     }
 
     // edition
-    if (allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
+    if (allowed('article_edit_notmine', 'commission:' . $article['code_commission'])
         || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId()) {
         echo '<a href="/article/' . (int) $article['id_article'] . '/edit" title="" class="nice2 orange">
 			<img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cet article
@@ -103,7 +103,7 @@ if (!$article) {
     }
 
     if ('1' != $article['status_article']
-        && (allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
+        && (allowed('article_delete_notmine', 'commission:' . $article['code_commission'])
          || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId())) {
         // Suppression
         echo '<a href="javascript:$.fancybox($(\'#supprimer-form-' . $article['id_article'] . '\').html());" title="" class="nice2 red">
@@ -119,7 +119,7 @@ if (!$article) {
 				</form>
 			</div>';
     } elseif (allowed('article_validate_all')
-              || allowed('article_validate', 'commission:' . $article['commission_article'])
+              || allowed('article_validate', 'commission:' . $article['code_commission'])
               || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId()) {
         // article publié, on peut le depublier
 
@@ -170,8 +170,8 @@ if (!$article) {
     // mêmes conditions que pour la balise ouvrante
     if ('1' != $article['topubly_article']
         || '1' != $article['status_article']
-        || (allowed('article_delete_notmine', 'commission:' . $article['commission_article'])
-            || allowed('article_edit_notmine', 'commission:' . $article['commission_article'])
+        || (allowed('article_delete_notmine', 'commission:' . $article['code_commission'])
+            || allowed('article_edit_notmine', 'commission:' . $article['code_commission'])
             || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
             || allowed('article_edit') && user() && $article['user_article'] == (string) getUser()->getId())
            && 1 == $article['status_article']) {
