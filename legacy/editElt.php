@@ -92,7 +92,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 							theme_advanced_statusbar_location : "none",
 							theme_advanced_resizing : true,
 
-							content_css : "<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('fonts'); ?>",
+							content_css : "<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkRef('base-styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkRef('styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkRef('fonts'); ?>",
 							body_id : "bodytinymce",
 							body_class : "<?php echo $_GET['class']; ?>",
 							theme_advanced_styles : "Entete Article=ArticleEntete;Titre de menu=menutitle;Bleu clair du CAF=bleucaf;Image flottante gauche=imgFloatLeft;Image flottante droite=imgFloatRight;Lien fancybox=fancybox;Mini=mini;Bloc alerte=erreur;Bloc info=info",
