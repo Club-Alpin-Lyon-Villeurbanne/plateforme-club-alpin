@@ -11,8 +11,8 @@ if (!$article) {
     // check image
     if ($article['media_upload_id']) {
         $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'wide_thumbnail');
+        echo '<img src="' . $img . '" alt="image article" title="' . html_utf8($article['titre_article']) . '" class="wide-figure" />';
     } ?>
-        <img src="<?php echo $img; ?>" alt="image article" title="<?php echo html_utf8($article['titre_article']); ?>" class="wide-figure" />
 	<div class="titleimage">
 		<h1>
 			<?php
