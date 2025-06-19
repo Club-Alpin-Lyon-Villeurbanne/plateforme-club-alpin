@@ -395,7 +395,7 @@ inclure('infos-matos', 'mini');
 
         document_base_url: '<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>',
 
-        content_css: "<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('fonts'); ?>",
+        content_css: "<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkRef('base-styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkRef('styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkRef('fonts'); ?>",
         body_id: "bodytinymce_user",
         body_class: "description_evt",
         theme_advanced_styles: "Entete Article=ArticleEntete;Titre de menu=menutitle;Bleu clair du CAF=bleucaf;Image flottante gauche=imgFloatLeft;Image flottante droite=imgFloatRight;Lien fancybox=fancybox;Mini=mini;Bloc alerte=erreur;Bloc info=info",
