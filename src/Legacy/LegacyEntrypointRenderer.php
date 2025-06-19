@@ -37,4 +37,9 @@ class LegacyEntrypointRenderer
     {
         return $this->entrypointRenderer->renderLinks($entryName, $options, $configName);
     }
+
+    public function renderViteLinkRef(string $entryName, array $options = [], ?string $configName = null): string
+    {
+        return $this->entrypointRenderer->renderLinks($entryName, $options, $configName, false)[0]->getAttributes()['href'];
+    }
 }
