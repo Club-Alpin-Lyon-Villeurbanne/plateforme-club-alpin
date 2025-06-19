@@ -65,8 +65,9 @@ function display_sorties($id_user, $limit = 10, $title = '')
 function display_articles($id_user, $limit = 10, $title = '')
 {
     $req = '
-        SELECT SQL_CALC_FOUND_ROWS *
-        FROM caf_article
+        SELECT SQL_CALC_FOUND_ROWS a.*, m.filename
+        FROM caf_article as a
+        LEFT JOIN media_upload m ON a.media_upload_id = m.id
         WHERE status_article=1
         AND user_article = ' . $id_user
         . ' ORDER BY  `tsp_article` DESC
