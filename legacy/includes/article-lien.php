@@ -19,6 +19,7 @@ if (1 != $article['status_article']) {
     }
 }
 
+$img = '';
 if ($article['media_upload_id']) {
     $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'min_thumbnail');
 }

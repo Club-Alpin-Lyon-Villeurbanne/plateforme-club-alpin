@@ -7,6 +7,11 @@ liip_imagine:
         default:
             web_path: ~
 
+    loaders:
+        default:
+            filesystem:
+                data_root: '%public_dir%/ftp'
+
     filter_sets:
         wide_thumbnail:
             quality: 85
