@@ -28,4 +28,46 @@ Le site comporte deux rôles principaux :
 Accès : https://www.clubalpinlyon.fr/admin/
 Identifiants locaux : 
 - Admin : `admin` / `admin`
-- Gestionnaire de contenu : `admin_contenu` / `contenu` 
+- Gestionnaire de contenu : `admin_contenu` / `contenu`
+
+## Procédure de hotfix en production
+
+1. **Identifier le dernier commit déployé en production**  
+   - Rendez-vous sur le site en production ([www.clubalpinlyon.fr](https://www.clubalpinlyon.fr)).
+   - Le hash du dernier commit déployé est affiché en bas à droite de la page.
+
+2. **Créer une branche de hotfix depuis ce commit**
+   - Dans votre terminal, exécutez :
+     ```sh
+     git checkout <hash_commit_prod> -b hotfix-prod-<description>
+     ```
+   - Remplacez `<hash_commit_prod>` par le hash relevé à l'étape 1, et `<description>` par un nom explicite.
+
+3. **Cherry-pick les commits nécessaires**
+   - Pour chaque correctif à appliquer, exécutez :
+     ```sh
+     git cherry-pick <hash_commit>
+     ```
+   - Remplacez `<hash_commit>` par le hash du commit à intégrer.
+
+4. **Pousser la branche sur le remote**
+   - Exécutez :
+     ```sh
+     git push origin hotfix-prod-<description>
+     ```
+
+5. **Déclencher le déploiement**
+   - Le déploiement en production est autorisé pour les branches `main` et celles commençant par `hotfix-prod-`.
+   - La règle de déploiement est :
+     ```yaml
+     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix-prod-')
+     ```
+
+6. **Après validation**
+   - Une fois le correctif validé et déployé, supprimez la branche hotfix si elle n'est plus utile.
+   - **Ne pas ouvrir de Pull Request vers main** : les correctifs sont déjà présents ou seront intégrés via le flux normal.
+
+**Résumé**
+- Toujours partir du commit de prod.
+- Toujours nommer la branche `hotfix-prod-...`.
+- Seules les branches `main` et `hotfix-prod-*` déclenchent un déploiement en production. 
