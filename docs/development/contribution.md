@@ -50,22 +50,30 @@ Identifiants locaux :
      ```
    - Remplacez `<hash_commit>` par le hash du commit à intégrer.
 
-4. **Pousser la branche sur le remote**
+4. **Obtenir une review (optionnel)**
+   - Pour faire relire les changements sans créer de confusion :
+     - Créez une Pull Request en mode "Draft" avec le préfixe "[REVIEW ONLY - DO NOT MERGE]"
+     - Ou partagez directement le lien des commits sur Slack
+     - La review doit se concentrer sur la pertinence des commits cherry-pickés et leur ordre
+   - ⚠️ Ces PR de review ne doivent JAMAIS être mergées car les changements sont déjà dans main
+
+5. **Pousser la branche sur le remote**
    - Exécutez :
      ```sh
      git push origin hotfix-prod-<description>
      ```
 
-5. **Déclencher le déploiement**
+6. **Déclencher le déploiement**
    - Le déploiement en production est autorisé pour les branches `main` et celles commençant par `hotfix-prod-`.
    - La règle de déploiement est :
      ```yaml
      if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix-prod-')
      ```
 
-6. **Après validation**
+7. **Après validation**
    - Une fois le correctif validé et déployé, supprimez la branche hotfix si elle n'est plus utile.
    - **Ne pas ouvrir de Pull Request vers main** : les correctifs sont déjà présents ou seront intégrés via le flux normal.
+   - Si une PR de review a été créée, la fermer sans merger avec un commentaire explicatif
 
 **Résumé**
 - Toujours partir du commit de prod.
