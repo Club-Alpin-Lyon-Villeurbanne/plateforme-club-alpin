@@ -3,9 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Article;
-use App\Entity\Commission;
 use App\Entity\Evt;
 use App\Repository\CommissionRepository;
+use App\Repository\EvtRepository;
 use App\UserRights;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -21,7 +21,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ArticleType extends AbstractType
 {
-    public function __construct(private CommissionRepository $commissionRepository, private UserRights $userRights)
+    public function __construct(
+        private readonly CommissionRepository $commissionRepository,
+        private readonly EvtRepository $eventRepository,
+        private readonly UserRights $userRights)
     {
     }
 
@@ -72,10 +75,15 @@ class ArticleType extends AbstractType
             ])
             ->add('evt', EntityType::class, [
                 'class' => Evt::class,
+                'choices' => array_filter(
+                    $this->eventRepository->getRecentPastEvents(),
+                    fn (Evt $event) => $this->userRights->allowedOnCommission('evt_create', $event->getCommission())
+                ),
                 'choice_label' => function (Evt $evt) {
                     return date('d', $evt->getTsp()) . ' ' .
                            $this->getMonthName(date('m', $evt->getTsp())) . ' ' .
                            date('Y', $evt->getTsp()) . ' | ' .
+                           $evt->getCommission()->getTitle() . ' | ' .
                            $evt->getTitre();
                 },
                 'placeholder' => '- Non merci',
