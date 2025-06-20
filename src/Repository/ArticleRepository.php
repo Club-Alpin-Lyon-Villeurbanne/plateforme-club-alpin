@@ -71,4 +71,16 @@ class ArticleRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function updateViews(Article $article): int
+    {
+        return $this->createQueryBuilder('a')
+            ->update()
+            ->set('a.nbVues', 'a.nbVues + 1')
+            ->where('a.id = :id_article')
+            ->setParameter('id_article', $article->getId())
+            ->getQuery()
+            ->execute()
+        ;
+    }
 }
