@@ -773,14 +773,14 @@
                             <li class="wide"><b>TARIF :</b> {{ event.tarif }} Euros</li>
                         {% endif %}
                         {% if event.tarifDetail %}
-                            <li class="wide"><b>DÉTAIL :</b><br /> {{ event.tarifDetail | converturls | nl2br }}</li>
+                            <li class="wide"><b>DÉTAILS DES FRAIS :</b><br /> {{ event.tarifDetail | converturls | nl2br }}</li>
                         {% endif %}
                     {% else %}
                         {% if event.tarif %}
                             <li class="wide"><b>TARIF :</b> visible après connexion</li>
                         {% endif %}
                         {% if event.tarifDetail %}
-                            <li class="wide"><b>DÉTAIL :</b> visible après connexion</li>
+                            <li class="wide"><b>DÉTAILS DES FRAIS :</b> visible après connexion</li>
                         {% endif %}
                     {% endif %}
                 </ul>
