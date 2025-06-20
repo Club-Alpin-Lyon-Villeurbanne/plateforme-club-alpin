@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Dto\ExpenseReportCreateDto;
+use App\Dto\ExpenseReportStatusDto;
 use App\Repository\ExpenseReportRepository;
 use App\State\ExpenseReportCloneProcessor;
 use App\State\ExpenseReportCreateProcessor;
@@ -51,6 +52,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new Patch(
             uriTemplate: '/expense-reports/{id}',
+            input: ExpenseReportStatusDto::class,
             security: 'object.getUser() == user or is_granted("validate_expense_report")',
             // normalizationContext: ['groups' => ['report:read', 'attachment:read', 'user:read', 'event:read']]
         ),
