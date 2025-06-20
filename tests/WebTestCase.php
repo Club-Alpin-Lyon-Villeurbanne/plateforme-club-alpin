@@ -133,7 +133,7 @@ abstract class WebTestCase extends BaseWebTestCase
         $em = $this->getContainer()->get('doctrine')->getManager();
         $commission = $this->createCommission();
 
-        $event = new Evt($user, $commission, 'Titre !', 'code', new \DateTime('+7 days'), new \DateTime('+8 days'), 'Hotel de ville', 12, 2, 'Une chtite sortie', time(), 12, 12);
+        $event = new Evt($user, $commission, 'Titre !', 'code', new \DateTimeImmutable('+7 days'), new \DateTimeImmutable('+8 days'), 'Hotel de ville', 12, 2, 'Une chtite sortie', time(), 12, 12, new \DateTimeImmutable());
         $em->persist($event);
         $em->flush();
 

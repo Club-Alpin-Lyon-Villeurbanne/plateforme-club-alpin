@@ -63,6 +63,7 @@ class SortieController extends AbstractController
                 null,
                 null,
                 null,
+                null,
                 null
             );
             $event->setJoinStart((new \DateTime())->getTimestamp());
@@ -96,8 +97,8 @@ class SortieController extends AbstractController
             if (empty($event->getJoinMax())) {
                 $event->setJoinMax($event->getNgensMax());
             }
-            if (empty($event->getJoinStart())) {
-                $event->setJoinStart(time());
+            if (empty($event->getJoinStartDate())) {
+                $event->setJoinStartDate(new \DateTimeImmutable());
             }
 
             // encadrants & co
@@ -122,9 +123,9 @@ class SortieController extends AbstractController
             }
 
             // anciens timestamps
-            $event->setTsp(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['eventStartDate'])?->getTimestamp());
-            $event->setTspEnd(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['eventEndDate'])?->getTimestamp());
-            $event->setJoinStart(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['joinStartDate'])?->getTimestamp());
+            $event->setTsp($event->getEventStartDate()?->getTimestamp());
+            $event->setTspEnd($event->getEventStartDate()?->getTimestamp());
+            $event->setJoinStart($event->getJoinStartDate()?->getTimestamp());
 
             $entityManager->persist($event);
             $entityManager->flush();
@@ -565,7 +566,8 @@ class SortieController extends AbstractController
             $event->getDescription(),
             null,
             $event->getJoinMax(),
-            $event->getNgensMax()
+            $event->getNgensMax(),
+            null
         );
         $newEvent->setMassif($event->getMassif());
         $newEvent->setTarif($event->getTarif());
