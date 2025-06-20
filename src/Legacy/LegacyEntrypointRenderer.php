@@ -38,8 +38,18 @@ class LegacyEntrypointRenderer
         return $this->entrypointRenderer->renderLinks($entryName, $options, $configName);
     }
 
-    public function renderViteLinkRef(string $entryName, array $options = [], ?string $configName = null): string
+    public function renderViteLinkRef(string $entryName): string
     {
-        return $this->entrypointRenderer->renderLinks($entryName, $options, $configName, false)[0]->getAttributes()['href'];
+        $tags = $this->entrypointRenderer->getRenderedTags();
+        foreach ($tags as $tag) {
+            if ($entryName === $tag->getOrigin()) {
+                $attributes = $tag->getAttributes();
+                if (\array_key_exists('href', $attributes)) {
+                    return $attributes['href'];
+                }
+            }
+        }
+
+        return '';
     }
 }
