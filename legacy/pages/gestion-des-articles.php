@@ -150,6 +150,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                         $article = $articleStandby[$i];
 
                         // check image
+                        $img = '';
                         if ($article['media_upload_id']) {
                             $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'wide_thumbnail');
                         }
