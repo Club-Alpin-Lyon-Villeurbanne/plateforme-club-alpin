@@ -19,15 +19,18 @@ if (!$article) {
                 echo html_utf8($article['titre_article']);
     ?>
 		</h1>
-        <?php
-        if (!empty($article['title_commission'])) {
-            echo '<span class="date article-commission">' . html_utf8($article['title_commission']) . '</span>';
-        }
+        <div class="article-title-infos">
+            <?php
+            if (!empty($article['title_commission'])) {
+                echo '<div class="article-title-commission">' . html_utf8($article['title_commission']) . '</div>';
+            } elseif (!empty($article['evt']['title_commission'])) {
+                echo '<div class="article-title-commission">' . html_utf8($article['evt']['title_commission']) . '</div>';
+            }
     ?>
-		<p class="auteur">
+        </div>
+		<div class="article-title-author">
 			<?php
-
-        echo 'Rédigé par ';
+    echo 'Rédigé par ';
     echo userlink($article['auteur']['id_user'], $article['auteur']['nickname_user'], false, false, false, 'public', (int) $article['id_article']);
     echo ' le ' . date('d.m.Y', $article['tsp_article']);
 
@@ -36,7 +39,7 @@ if (!$article) {
     } elseif ($totalComments > 0) {
         echo ', <a href="' . $_SERVER['REQUEST_URI'] . "#comments\">$totalComments commentaire</a>";
     } ?>
-		</p>
+		</div>
 	</div>
 
 	<?php
