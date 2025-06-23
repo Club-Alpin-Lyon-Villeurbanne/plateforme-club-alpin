@@ -404,6 +404,9 @@
                                         {{ participation.user.firstname | capitalize }} {{ participation.user.lastname | upper }}<br/>
                                         <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ participation.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ participation.user.nickname }}</a>
 
+                                        {% if age_user(participation.user) and age_user(participation.user) < 18 %}
+                                            <p style="color:red">{{ age_user(participation.user) }} ans</p>
+                                        {% endif %}
                                         {% if participation.user.doitRenouveler %}
                                             <p style="color:red">&#9888;&#65039; Licence expirée</p>
                                         {% endif %}
