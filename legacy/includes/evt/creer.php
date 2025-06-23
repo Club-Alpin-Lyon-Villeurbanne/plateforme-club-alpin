@@ -13,7 +13,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 // message d'erreur
 if (isset($_POST['operation']) && isset($errTab) && count($errTab) > 0) {
     echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul>';
-    echo '<b>Attention :</b> Le marqueur bleu sur la carte a peut-être été déplacé !';
     echo '</div>';
 }
 // message d'info : si c'est une modification de sortie
@@ -182,21 +181,21 @@ foreach ($coencadrantsTab as $coencadrant) {
 
         <br />
         <div style="float:left; width:45%; padding:0 20px 5px 0;">
-            <label for="rdv_evt" class="required">Ville, et lieu de rendez-vous covoiturage :</label><br />
+            Ville et lieu de rendez-vous covoiturage :<br />
             <?php
             inclure('infos-lieu-de-rdv', 'mini');
 ?>
-            <input type="text" name="rdv_evt" id="rdv_evt" class="type2" style="width:95%" value="<?php echo inputVal('rdv_evt', ''); ?>" placeholder="ex : Pralognan la Vanoise, les fontanettes" required minlength="3" maxlength="200" />
+            <input type="text" name="rdv_evt" id="rdv_evt" class="type2" style="width:95%" value="<?php echo inputVal('rdv_evt', '56 rue du 4 août 1789 Villeurbanne'); ?>" placeholder="ex : place Bellecour, les fontanettes" minlength="3" maxlength="200" />
         </div>
 
         <div style="float:left; width:45%; padding:0 20px 0 0;">
-            Précisez sur la carte :<br />
+            <label class="required">Précisez sur la carte :</label><br />
             <?php
 inclure('infos-carte', 'mini');
 ?>
-            <input type="button" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le point sur la carte" />
-            <input type="hidden" name="lat_evt" value="<?php echo inputVal('lat_evt', ''); ?>" />
-            <input type="hidden" name="long_evt" value="<?php echo inputVal('long_evt', ''); ?>" />
+            <input type="button" name="codeAddress" class="type2" style="border-radius:5px; cursor:pointer;" value="Placer le marqueur" />
+            <input type="hidden" name="lat_evt" value="<?php echo inputVal('lat_evt', '45.76476483029371'); ?>" />
+            <input type="hidden" name="long_evt" value="<?php echo inputVal('long_evt', '4.879565284189081'); ?>" />
 
         </div>
         <br style="clear:both" />
