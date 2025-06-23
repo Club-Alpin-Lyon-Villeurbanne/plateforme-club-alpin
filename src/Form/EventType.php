@@ -64,7 +64,7 @@ class EventType extends AbstractType
             $appointment = '56 rue du 4 août 1789 Villeurbanne';
         }
         $lat = $event->getLat();
-        if (empty($latitude)) {
+        if (empty($lat)) {
             $lat = '45.76476483029371';
         }
         $long = $event->getLong();
