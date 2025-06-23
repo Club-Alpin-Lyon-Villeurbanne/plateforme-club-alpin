@@ -2,21 +2,27 @@
 
 namespace App\Controller;
 
+use App\Entity\Commission;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
+use App\Form\EventType;
 use App\Legacy\LegacyContainer;
 use App\Mailer\Mailer;
 use App\Messenger\Message\SortiePubliee;
+use App\Repository\CommissionRepository;
 use App\Repository\EventParticipationRepository;
 use App\Repository\UserRepository;
 use App\Twig\JavascriptGlobalsExtension;
+use App\UserRights;
 use App\Utils\ExcelExport;
 use App\Utils\PdfGenerator;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -29,7 +35,121 @@ use Twig\Environment;
 
 class SortieController extends AbstractController
 {
-    #[Route(name: 'sortie', path: '/sortie/{code}-{id}.html', requirements: ['id' => '\d+', 'code' => '[a-z0-9-]+'], methods: ['GET'], priority: '10')]
+    #[Route(path: '/creer-une-sortie/{code}', name: 'creer_sortie', methods: ['GET', 'POST'])]
+    #[Route(path: '/modifier-une-sortie/{event}', name: 'modifier_sortie', requirements: ['event' => '\d+'], methods: ['GET', 'POST'])]
+    #[Template('sortie/formulaire.html.twig')]
+    public function create(
+        Request $request,
+        ManagerRegistry $doctrine,
+        SluggerInterface $slugger,
+        CommissionRepository $commissionRepository,
+        UserRights $userRights,
+        ?Evt $event = null,
+        ?Commission $commission = null,
+    ): array|RedirectResponse {
+        $user = $this->getUser();
+        $isUpdate = true;
+        if (!$event instanceof Evt) {
+            $event = new Evt(
+                $user,
+                $commission,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
+            $isUpdate = false;
+        }
+
+        if (!$this->isGranted('SORTIE_UPDATE', $event)) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à modifier cette sortie.');
+        }
+
+        $form = $this->createForm(EventType::class, $event);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $doctrine->getManager();
+            $data = $request->request->all();
+
+            /** @var Evt $event */
+            $event = $form->getData();
+            $eventData = $data['event'] ?? null;
+            $formData = $data['form'] ?? null;
+            if (null === $formData && null !== $eventData) {
+                $formData = $eventData;
+            }
+
+            if (!$isUpdate) {
+                $event->setCode(substr($slugger->slug($event->getTitre(), '-'), 0, 30));
+            } elseif (Evt::STATUS_LEGAL_VALIDE === $event->getStatus()) {
+                $event->setStatus(Evt::STATUS_LEGAL_UNSEEN);
+            }
+
+            // champs auto
+            if (empty($event->getJoinMax())) {
+                $event->setJoinMax($event->getNgensMax());
+            }
+            if (empty($event->getJoinStart())) {
+                $event->setJoinStart(time());
+            }
+
+            // encadrants & co
+            $rolesMap = [
+                EventParticipation::ROLE_ENCADRANT => 'encadrants',
+                EventParticipation::ROLE_STAGIAIRE => 'initiateurs',
+                EventParticipation::ROLE_COENCADRANT => 'coencadrants',
+                EventParticipation::ROLE_BENEVOLE => 'benevoles',
+            ];
+            if ($isUpdate) {
+                // les bénévoles ne sont pas modifiables mais il ne faut pas les "perdre" à l'édition
+                unset($rolesMap[EventParticipation::ROLE_BENEVOLE]);
+            }
+            foreach ($rolesMap as $role => $roleName) {
+                $event->clearRoleParticipations($role);
+                if (!empty($formData[$roleName])) {
+                    foreach ($formData[$roleName] as $participantId) {
+                        $participant = $entityManager->getRepository(User::class)->find($participantId);
+                        $event->addParticipation($participant, $role);
+                    }
+                }
+            }
+
+            // anciens timestamps
+            $event->setTsp(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['eventStartDate'])?->getTimestamp());
+            $event->setTspEnd(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['eventEndDate'])?->getTimestamp());
+            $event->setJoinStart(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['joinStartDate'])?->getTimestamp());
+
+            $entityManager->persist($event);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('profil_sorties_self');
+        }
+
+        $availableCommissions = array_filter(
+            iterator_to_array($commissionRepository->findVisible()),
+            fn (Commission $commission) => $userRights->allowedOnCommission('evt_create', $commission),
+        );
+
+        return [
+            'form' => $form,
+            'title' => $isUpdate ? 'Modifier une sortie' : 'Proposer une sortie',
+            'isUpdate' => $isUpdate,
+            'commission' => $isUpdate ? $event->getCommission()->getTitle() : '',
+            'event' => $event,
+            'commissions' => $availableCommissions,
+            'current_commission' => $commission?->getCode() ?? '',
+        ];
+    }
+
+    #[Route(path: '/sortie/{code}-{id}.html', name: 'sortie', requirements: ['id' => '\d+', 'code' => '[a-z0-9-]+'], methods: ['GET'], priority: '10')]
     #[Template('sortie/sortie.html.twig')]
     public function sortie(
         Evt $event,
@@ -424,7 +544,7 @@ class SortieController extends AbstractController
     public function sortieDuplicate(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
     {
         if (!$this->isGranted('SORTIE_DUPLICATE', $event)) {
-            throw new AccessDeniedHttpException('Not found');
+            throw new AccessDeniedHttpException('Not allowed');
         }
 
         if (!$this->isCsrfTokenValid('sortie_duplicate', $request->request->get('csrf_token'))) {
@@ -470,7 +590,7 @@ class SortieController extends AbstractController
 
         $em->flush();
 
-        return $this->redirect(sprintf('/creer-une-sortie/%s/update-%d.html', $newEvent->getCommission()->getCode(), $newEvent->getId()));
+        return $this->redirectToRoute('modifier_sortie', ['event' => $newEvent->getId()]);
     }
 
     #[Route(name: 'sortie_pdf', path: '/sortie/{id}/printPDF', requirements: ['id' => '\d+'])]

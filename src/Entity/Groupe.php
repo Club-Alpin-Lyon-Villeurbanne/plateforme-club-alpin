@@ -55,6 +55,11 @@ class Groupe
     #[ORM\Column(name: 'actif', type: 'boolean', nullable: false, options: ['default' => '1'])]
     private $actif = true;
 
+    public function __toString()
+    {
+        return $this->nom;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

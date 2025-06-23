@@ -50,6 +50,7 @@ a.mini, .mini a{font-weight:100; color:black;}
 .temoin-places-dispos{display:block; float:left;}
 ul.nice-list{list-style-type:none;overflow:hidden;}
 ul.nice-list li{display:block; float:left; width:290px; padding:3px 5px 3px 15px; background:url(../../public/img/puce.png) no-repeat 0 3px;}
+ul.nice-list li.no-bullet {background:none !important;}
 ul.transport{list-style-type:none;overflow:hidden;}
 ul.transport > li{background:url(../../public/img/bus.png) no-repeat 0 3px;display:block;float:left;  padding-left:25px;width:auto;width:33%;}
 ul.transport > li.wide{width:100%;box-sizing:border-box}
