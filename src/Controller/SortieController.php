@@ -98,6 +98,13 @@ class SortieController extends AbstractController
                 $event->setTspEdit((new \DateTime())->getTimestamp());
             }
 
+            // brouillon ?
+            $isDraft = false;
+            if (\in_array('eventDraftSave', array_keys($formData), true)) {
+                $isDraft = true;
+            }
+            $event->setIsDraft($isDraft);
+
             // encadrants & co
             $rolesMap = [
                 EventParticipation::ROLE_ENCADRANT => 'encadrants',

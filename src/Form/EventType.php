@@ -401,11 +401,18 @@ class EventType extends AbstractType
                     'class' => 'mini',
                 ],
             ])
+            ->add('eventDraftSave', SubmitType::class, [
+                'label' => '<span class="bleucaf">&gt;</span> ENREGISTRER COMME BROUILLON',
+                'label_html' => true,
+                'attr' => [
+                    'class' => 'mediumlink',
+                ],
+            ])
             ->add('eventSave', SubmitType::class, [
                 'label' => '<span class="blanc">&gt;</span> ENREGISTRER ET DEMANDER LA PUBLICATION',
                 'label_html' => true,
                 'attr' => [
-                    'class' => 'biglink',
+                    'class' => 'mediumlink btn-blue blanc',
                 ],
             ])
             ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {

@@ -13,6 +13,7 @@ if (allowed('evt_validate_all')) { // pouvoir de valider toutes les sorties de t
 	FROM caf_evt, caf_user
 	WHERE status_evt=0
     AND tsp_evt IS NOT NULL
+    AND is_draft=0
 	AND id_user=user_evt '
     . 'ORDER BY tsp_crea_evt ASC ';
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -25,6 +26,7 @@ if (allowed('evt_validate_all')) { // pouvoir de valider toutes les sorties de t
     $req = "SELECT COUNT(id_evt) FROM caf_evt, caf_user, caf_commission
 		WHERE status_evt=0
         AND tsp_evt IS NOT NULL
+		AND is_draft=0
 		AND id_user=user_evt
 		AND commission_evt=id_commission
 		AND (code_commission LIKE '" . implode("' OR code_commission LIKE '", $tab) . "') " // condition OR pour toutes les commissions autorisées
@@ -55,6 +57,7 @@ if (allowed('evt_validate_all') || allowed('evt_validate')) {
 		FROM caf_evt, caf_user, caf_commission
 		WHERE status_evt=0
         AND tsp_evt IS NOT NULL
+		AND is_draft=0
 		AND id_user = user_evt
 		AND commission_evt=id_commission '
         . 'ORDER BY tsp_evt ASC
@@ -68,12 +71,13 @@ if (allowed('evt_validate_all') || allowed('evt_validate')) {
 
         // sorties à valider, selon la (les) commission dont nous sommes responsables
         $req = "SELECT  id_evt, code_evt, status_evt, status_legal_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt
-					, join_start_evt
+					, join_start_evt, is_draft
 					, nickname_user
 					, title_commission, code_commission
 		FROM caf_evt, caf_user, caf_commission
 		WHERE status_evt=0
         AND tsp_evt IS NOT NULL
+		AND is_draft=0
 		AND id_user=user_evt
 		AND commission_evt=id_commission
 		AND (code_commission LIKE '" . implode("' OR code_commission LIKE '", $tab) . "') " // condition OR pour toutes les commissions autorisées

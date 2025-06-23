@@ -27,6 +27,8 @@ echo '" title="">';
                 echo '⚪';
             } elseif (isset($evt['temoin']) && 'waiting' == $evt['temoin']) {
                 echo '⏳';
+            } elseif (isset($evt['temoin']) && 'draft' == $evt['temoin']) {
+                echo '✍️';
             }?></span>
         </span>
 
