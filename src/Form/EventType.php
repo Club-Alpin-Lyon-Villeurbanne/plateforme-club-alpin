@@ -12,6 +12,7 @@ use App\UserRights;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -393,6 +394,14 @@ class EventType extends AbstractType
                 ],
                 'constraints' => [
                     new NotBlank(),
+                ],
+            ])
+            ->add('autoAccept', CheckboxType::class, [
+                'label' => 'Accepter automatiquement',
+                'required' => false,
+                'help' => ' Si vous cochez cette case, les demandes d\'inscription seront automatiquement acceptées, sous votre responsabilité.',
+                'help_attr' => [
+                    'class' => 'mini',
                 ],
             ])
             ->add('eventSave', SubmitType::class, [
