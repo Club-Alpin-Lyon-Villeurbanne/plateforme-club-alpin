@@ -122,10 +122,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 			<br />
  -->
 			Numéro de licence :<br />
-			<input type="text" name="cafnum_user" class="type1" value="<?php echo $cafnumUser; ?>" readonly /> à inverser avec le nouveau numéro
-			<input type="text" name="cafnum_user_new" class="type1" value="<?php if ($cafnumUserNew) {
-			    echo $cafnumUserNew;
-			} ?>" placeholder="" />
+			<input type="text" name="cafnum_user" class="type1" value="<?php echo $cafnumUser; ?>" readonly />
 			<br />
 
 			<!--
