@@ -34,6 +34,7 @@ export default defineConfig({
         "admin-styles": "./assets/styles/admin.css",
         "admin-login": "./assets/styles/loginadmin.css",
         participants: './assets/participants.js',
+        commission_switch: './assets/commission-switch.js',
       },
     },
   },

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Repository\CommissionRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
@@ -10,7 +11,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
  * Commission.
  */
 #[ORM\Table(name: 'caf_commission')]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: CommissionRepository::class)]
 #[ApiResource(
     operations: []
 )]
@@ -61,6 +62,11 @@ class Commission
         $this->title = $title;
         $this->code = $code;
         $this->ordre = $ordre;
+    }
+
+    public function __toString()
+    {
+        return $this->title;
     }
 
     public function getId(): ?int
