@@ -58,7 +58,7 @@ class EventType extends AbstractType
             $eventJoinStartDate = new \DateTime();
             $eventJoinStartDate->setTimestamp($event->getJoinStart());
         }
-        
+
         $appointment = $event->getRdv();
         if (empty($appointment)) {
             $appointment = '56 rue du 4 août 1789 Villeurbanne';
