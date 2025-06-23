@@ -47,7 +47,7 @@ class EventParticipation implements \JsonSerializable
 
     #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'participations', fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'evt_evt_join', nullable: false, referencedColumnName: 'id_evt', onDelete: 'CASCADE')]
-    private $evt;
+    private ?Evt $evt;
 
     /**
      * @var User
@@ -180,7 +180,7 @@ class EventParticipation implements \JsonSerializable
         return $this->evt;
     }
 
-    public function setEvt(Evt $evt): self
+    public function setEvt(?Evt $evt): self
     {
         $this->evt = $evt;
 

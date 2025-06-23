@@ -22,14 +22,13 @@ class UserAttrRepository extends ServiceEntityRepository
         parent::__construct($registry, UserAttr::class);
     }
 
-    /* @return UserAttr[] */
     public function listAllEncadrants(Commission $commission, $types = [
         UserAttr::RESPONSABLE_COMMISSION,
         UserAttr::ENCADRANT,
         UserAttr::STAGIAIRE,
         UserAttr::COENCADRANT,
         UserAttr::BENEVOLE,
-    ])
+    ]): \Generator
     {
         $dql = 'SELECT a
                 FROM ' . User::class . ' u, ' . Usertype::class . ' t, ' . UserAttr::class . ' a
@@ -39,7 +38,7 @@ class UserAttrRepository extends ServiceEntityRepository
                     AND a.userType = t.id
                     AND u.doitRenouveler = 0
                     AND a.params LIKE \'commission:' . $commission->getCode() . '\'
-                ORDER BY t.hierarchie DESC, u.firstname ASC
+                ORDER BY t.hierarchie DESC, u.firstname ASC, u.lastname ASC
         ';
 
         $query = $this->getEntityManager()->createQuery($dql);
@@ -62,8 +61,7 @@ class UserAttrRepository extends ServiceEntityRepository
         }
     }
 
-    /* @return UserAttr[] */
-    public function listAllResponsables()
+    public function listAllResponsables(): \Generator
     {
         $dql = 'SELECT a
                 FROM ' . User::class . ' u, ' . Usertype::class . ' t, ' . UserAttr::class . ' a
@@ -72,7 +70,7 @@ class UserAttrRepository extends ServiceEntityRepository
                     AND t.code = :type
                     AND a.userType = t.id
                     AND u.doitRenouveler = 0
-                ORDER BY t.hierarchie DESC, u.firstname ASC
+                ORDER BY t.hierarchie DESC, u.firstname ASC, u.lastname ASC
         ';
 
         $query = $this->getEntityManager()->createQuery($dql);
