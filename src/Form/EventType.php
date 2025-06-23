@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Commission;
 use App\Entity\Evt;
 use App\Entity\Groupe;
 use App\Repository\CommissionRepository;
@@ -73,6 +74,20 @@ class EventType extends AbstractType
         }
 
         $builder
+            ->add('commission', EntityType::class, [
+                'class' => Commission::class,
+                'choices' => array_filter(
+                    iterator_to_array($this->commissionRepository->findVisible()),
+                    fn (Commission $commission) => $this->userRights->allowedOnCommission('evt_create', $commission),
+                ),
+                'label' => 'Sortie liée à la commission',
+                'placeholder' => 'Choisissez une commission',
+                'required' => true,
+                'attr' => [
+                    'class' => 'type1 wide',
+                    'style' => 'width: 100%',
+                ],
+            ])
             ->add('groupe', EntityType::class, [
                 'class' => Groupe::class,
                 'query_builder' => function (EntityRepository $er) use ($commission) {
@@ -127,7 +142,7 @@ class EventType extends AbstractType
                     'placeholder' => 'ex : Escalade du Grand Som',
                     'min_length' => 10,
                     'max_length' => 100,
-                    'class' => 'type1',
+                    'class' => 'type2',
                     'style' => 'width:320px',
                 ],
                 'constraints' => [
