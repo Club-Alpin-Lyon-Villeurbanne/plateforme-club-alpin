@@ -1,7 +1,6 @@
 /* débug utf8 */
 
 $().ready(function() {
-// $(window).load(function(){
 
 	// //////////////////
 	var geocoder;
@@ -30,9 +29,9 @@ $().ready(function() {
 				]
 			  }
 			];
-			
-			var lat            = 45.73413;
-			var lon            = 4.90965;
+
+			var lat            = 45.76476483029371;
+			var lon            = 4.879565284189081;
 			var zoom           = 16;
 
 			map = L.map('map-creersortie').setView([lat, lon], zoom);
@@ -53,7 +52,6 @@ $().ready(function() {
 		if(typeof(address)=="undefined")
 			var address=$('input[name=rdv_evt]').val();
 
-		// console.log(address);
 		geocode = 'https://nominatim.openstreetmap.org/search?format=json&q=' + address;
 		$.getJSON(geocode, function(data) {
 		  // get lat + lon from first match
@@ -68,27 +66,28 @@ $().ready(function() {
 						{
 						    draggable: 'true'
 						});
-			    marker.on('dragend', function() { updatePosition(latlng); });
 			    map.addLayer(marker);
 			} else {
 			    marker.setLatLng([lat,lon]);
 			}
 			updatePosition(marker._latlng);
+			marker.on('dragend', function() { updatePosition(marker._latlng, true); });
 		});
 	}
 	
 	// RECUPERE LA POSITION DU MARKER DONNÉ EN PARAMETRE // gère le passage à la suite du formaulaire, aussi
-	function updatePosition(position) {
-		// $('input[name=lat_ramassage]').val(marker.position.hb);
-		// $('input[name=long_ramassage]').val(marker.position.ib);
+	function updatePosition(position, reset = false) {
 		$('input[name=lat_evt]').val(position.lat);
 		$('input[name=long_evt]').val(position.lng);
+		if (reset) {
+			$('input[name=rdv_evt]').val('');
+		}
 	}
 	
 	// /////////
 	// LAUNCHES
 
-	autoLoadMap=[45.73413, 4.90965];
+	autoLoadMap=[45.76476483029371, 4.879565284189081];
 	if(typeof(autoLoadMap)!="undefined") {
 		if(autoLoadMap.length){
 			if(map_initialize()) {
@@ -113,14 +112,11 @@ $().ready(function() {
 				    marker.setLatLng([lat,lon]);
 				}
 			}
-			// else console.log('impossible de démarrer la carte');
 		}
-		// else console.log('nolength');
-		// console.log(autoLoadMap);
 	}
 	
 	// /////////
-	// AU LANCMENET
+	// AU LANCEMENT
 	if(map_initialize()) {
 		// clic sur le bouton pour placer la marker par rapport à l'adresse donnée
 		$('input[name=codeAddress]').click(function() {
@@ -131,6 +127,12 @@ $().ready(function() {
 			codeAddress($('input[name=lat_evt]').val()+' '+$('input[name=long_evt]').val());
 		}
 	}
-	
+
+	// champ texte modifié => on reset la carte
+	$('input[name=rdv_evt]').on('change', function() {
+		map.removeLayer(marker);
+		$('input[name=lat_evt]').val('');
+		$('input[name=long_evt]').val('');
+	});
 });
 
