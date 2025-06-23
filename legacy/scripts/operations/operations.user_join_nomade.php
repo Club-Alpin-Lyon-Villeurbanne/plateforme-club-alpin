@@ -97,7 +97,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         )');
         $current_time = time();
         $parent_id = getUser()->getId();
-        $stmt->bind_param('ssssssisssi', $email_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $current_time, $tel_user, $tel2_user, $civ_user, $parent_id);
+        $stmt->bind_param('sssssisssi', $email_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $current_time, $tel_user, $tel2_user, $civ_user, $parent_id);
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur SQL';
         } else {
