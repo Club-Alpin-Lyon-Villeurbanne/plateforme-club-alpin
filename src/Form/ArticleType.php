@@ -7,6 +7,7 @@ use App\Entity\Evt;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
 use App\UserRights;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -56,23 +57,23 @@ class ArticleType extends AbstractType
         }
 
         $builder
-        ->add('articleType', ChoiceType::class, [
-            'mapped' => false,
-            'label' => "Type d'article",
-            'choices' => [
-                '- Choisissez :' => '',
-                'Compte rendu de sortie' => '-1',
-            ] + $commissionChoices,
-            'group_by' => function ($choice, $key, $value) {
-                if (is_numeric($value) && (int) $value > 0) {
-                    return 'Article lié à une commission :';
-                }
-
-                return null;
-            },
-            'required' => true,
-            'data' => $defaultArticleType,
-        ])
+            ->add('articleType', ChoiceType::class, [
+                'mapped' => false,
+                'label' => "Type d'article",
+                'choices' => [
+                    '- Choisissez :' => '',
+                    'Compte rendu de sortie' => '-1',
+                ] + $commissionChoices,
+                'group_by' => function ($choice, $key, $value) {
+                    if (is_numeric($value) && (int) $value > 0) {
+                        return 'Article lié à une commission :';
+                    }
+    
+                    return null;
+                },
+                'required' => true,
+                'data' => $defaultArticleType,
+            ])
             ->add('isCompteRendu', HiddenType::class, [
                 'mapped' => false,
                 'data' => $isCompteRendu,
@@ -105,11 +106,13 @@ class ArticleType extends AbstractType
                 'required' => false,
                 'help' => 'À utiliser avec parcimonie. Ceci place l\'article au sommet de la page d\'accueil, dans les actualités défilantes. Il reste affiché là jusqu\'à ce qu\'un autre article à la Une vienne l\'en déloger. Utile pour une actualité qui dure dans le temps, ou une alerte à mettre en valeur. La photo est alors obligatoire.',
             ])
-            ->add('cont', TextareaType::class, [
+            ->add('cont', CKEditorType::class, [
                 'label' => 'Contenu',
+                'required' => true,
                 'attr' => [
-                    'class' => 'tinymce',
+                    'class' => 'type1 wide ckeditor',
                     'rows' => 15,
+                    'style' => 'width: 97%; min-height:300px',
                 ],
             ])
             ->add('mediaUploadId', HiddenType::class, [

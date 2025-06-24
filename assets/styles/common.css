@@ -63,3 +63,12 @@ span.required, .field-error {
 ul.field-error {
     list-style: none;
 }
+
+.ck-content, .ck-editor__editable {
+    min-height: 300px;
+}
+label.ck-label {display: none !important}
+
+.padded-form .ck-editor {
+    max-width: 96%;
+}
