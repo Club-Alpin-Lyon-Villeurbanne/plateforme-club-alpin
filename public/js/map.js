@@ -127,6 +127,7 @@ $().ready(function() {
 	// champ texte modifié => on reset la carte
 	$('input[id=event_rdv]').on('change', function() {
 		map.removeLayer(marker);
+		marker = false;
 		$('input[id=event_lat]').val('');
 		$('input[id=event_long]').val('');
 	});
