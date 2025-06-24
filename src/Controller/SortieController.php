@@ -83,12 +83,10 @@ class SortieController extends AbstractController
             $event = $form->getData();
             $eventData = $data['event'] ?? null;
             $formData = $data['form'] ?? null;
-            if (null === $formData && null !== $eventData) {
-                $formData = $eventData;
-            }
+            $formData = array_merge($eventData, $formData);
 
             if (!$isUpdate) {
-                $event->setCode(substr($slugger->slug($event->getTitre(), '-'), 0, 30));
+                $event->setCode(strtolower(substr($slugger->slug($event->getTitre(), '-'), 0, 30)));
             } elseif (Evt::STATUS_LEGAL_VALIDE === $event->getStatus()) {
                 $event->setStatus(Evt::STATUS_LEGAL_UNSEEN);
             }
