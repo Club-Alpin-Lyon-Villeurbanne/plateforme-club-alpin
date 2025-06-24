@@ -222,8 +222,7 @@ class EventType extends AbstractType
                     'class' => 'type2',
                 ],
                 'required' => false,
-                'help' => 'Le champ <em>tarif</em> est facultatif ! Mais <span style="text-decoration: underline;">n\'oubliez pas de préciser</span> dans le cadre «Description complète» si les membres devront participer aux frais de covoiturage : essence, péage...<br>
-                    Indiquez aussi la date à partir de laquelle les éventuels frais seront perdus en cas d\'annulation de participation',
+                'help' => 'Le champ <em>tarif</em> est facultatif ! Mais <span style="text-decoration: underline;">n\'oubliez pas de préciser</span> dans le cadre «Description complète» si les membres devront participer aux frais de covoiturage : essence, péage...',
                 'help_attr' => [
                     'class' => 'mini',
                 ],
@@ -232,7 +231,7 @@ class EventType extends AbstractType
             ->add('tarifDetail', TextareaType::class, [
                 'label' => 'Détails des frais',
                 'attr' => [
-                    'placeholder' => 'ex : coût de la nuitée, coût du transport, coût des repas compris dans le prix, autres frais',
+                    'placeholder' => 'ex : coût de chaque nuitée, coût du transport, coût des repas, date à laquelle les frais sont perdus (et lesquels)',
                     'class' => 'type2 wide',
                     'rows' => 5,
                 ],
