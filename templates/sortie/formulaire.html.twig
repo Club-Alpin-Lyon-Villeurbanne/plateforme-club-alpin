@@ -8,6 +8,7 @@
 
         {% import 'macros/form_macros.html.twig' as form_macros %}
         {% form_theme form 'form/encadrants_checkbox_theme.html.twig' %}
+        {% form_theme form 'form/field_error.html.twig' %}
 
         {{ form_start(form, {
             attr: {class: 'padded-form'}
@@ -18,6 +19,14 @@
         {% endif %}
 
         <span class="italic">Les champs marqués d'un <span class="required">*</span> sont obligatoires.</span><br>
+
+        {% if form.vars.errors|length > 0 %}
+            <br>
+            <div class="alerte has-errors">
+                Le formulaire contient des erreurs, merci de vérifier votre saisie.<br>
+                {{ form_errors(form) }}
+            </div>
+        {% endif %}
         <br class="clear">
 
         <div style="float:left; padding:0 20px 10px 0">
