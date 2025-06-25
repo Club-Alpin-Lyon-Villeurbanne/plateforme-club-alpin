@@ -178,11 +178,11 @@ if (user()) {
 						<?php
                 } ?>
 
-					<table class="big-lines-table" style="font-size:12px;">
+					<table class="big-lines-table">
 						<thead>
-							<th style="font-size:12px; text-align:left">Nom</th>
-							<th style="font-size:12px; text-align:left">Pseudo</th>
-							<th style="font-size:12px; text-align:left">Rôle</th>
+							<th style="text-align:left">Nom</th>
+							<th style="text-align:left">Pseudo</th>
+							<th style="text-align:left">Rôle</th>
 						</thead>
 						<tbody>
 							<?php
