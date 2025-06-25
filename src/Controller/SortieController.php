@@ -140,7 +140,7 @@ class SortieController extends AbstractController
         return [
             'form' => $form,
             'title' => $isUpdate ? 'Modifier une sortie' : 'Proposer une sortie',
-            'isUpdate' => $isUpdate,
+            'is_update' => $isUpdate,
             'commission' => $isUpdate ? $event->getCommission()->getTitle() : '',
             'event' => $event,
             'commissions' => $availableCommissions,
