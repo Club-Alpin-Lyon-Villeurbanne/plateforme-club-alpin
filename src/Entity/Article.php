@@ -88,12 +88,9 @@ class Article
     #[ORM\JoinColumn(name: 'commission_article', referencedColumnName: 'id_commission', nullable: true)]
     private $commission;
 
-    /**
-     * @var Evt
-     */
     #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'articles')]
     #[ORM\JoinColumn(name: 'evt_article', referencedColumnName: 'id_evt', nullable: true)]
-    private $evt;
+    private ?Evt $evt = null;
 
     /**
      * @var bool
@@ -259,7 +256,7 @@ class Article
         return $this->evt;
     }
 
-    public function setEvt(Evt $evt): self
+    public function setEvt(?Evt $evt): self
     {
         $this->evt = $evt;
 

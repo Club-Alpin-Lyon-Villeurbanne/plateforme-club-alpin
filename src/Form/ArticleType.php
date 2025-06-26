@@ -45,11 +45,13 @@ class ArticleType extends AbstractType
 
         $article = $options['data'] ?? null;
         $defaultArticleType = '';
+        $isCompteRendu = false;
 
         if ($article && $article->getCommission()) {
             $defaultArticleType = $article->getCommission()->getId();
         } elseif ($article && $article->getEvt()) {
             $defaultArticleType = '-1'; // Compte rendu de sortie
+            $isCompteRendu = true;
         }
 
         $builder
@@ -72,6 +74,7 @@ class ArticleType extends AbstractType
         ])
             ->add('isCompteRendu', HiddenType::class, [
                 'mapped' => false,
+                'data' => $isCompteRendu,
             ])
             ->add('evt', EntityType::class, [
                 'class' => Evt::class,
