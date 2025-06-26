@@ -193,6 +193,7 @@ class EvtRepository extends ServiceEntityRepository
     public function getRecentPastEvents(): array
     {
         $limitDate = new \DateTime('last year');
+
         return $this->createQueryBuilder('e')
             ->where('e.status = :status')
             ->andWhere('e.tsp < :date')
