@@ -10,7 +10,7 @@ if (user()) {
         } elseif (0 == $article['status_article']) {
             echo "<p class='alerte'>En attente : cet article n'a pas encore été publié par un responsable.</p>";
         } elseif (1 == $article['status_article']) {
-            echo "<p class='info'>Publié : cet article est en ligne, " . $article['nb_vues_article'] . ' vues</p>';
+            echo '<p class="info">Publié : cet article est en ligne</p>';
         } elseif (2 == $article['status_article']) {
             echo "<p class='erreur'>Désactivé : cet article a été refusé par un responsable</p>";
         }
