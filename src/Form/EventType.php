@@ -140,9 +140,9 @@ class EventType extends AbstractType
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : Escalade du Grand Som',
-                    'min_length' => 10,
-                    'max_length' => 100,
-                    'class' => 'type2',
+                    'minlength' => 10,
+                    'maxlength' => 100,
+                    'class' => 'type1',
                     'style' => 'width:320px',
                 ],
                 'constraints' => [
@@ -167,8 +167,8 @@ class EventType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'ex : place Bellecour, les fontanettes',
-                    'min_length' => 3,
-                    'max_length' => 200,
+                    'minlength' => 3,
+                    'maxlength' => 200,
                     'class' => 'type2 wide',
                 ],
                 'data' => $appointment,
@@ -205,7 +205,7 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('eventEndDate', DateTimeType::class, [
-                'label' => 'Date et heure de fin de la sortie',
+                'label' => 'Date et heure (estimée) de retour',
                 'required' => true,
                 'mapped' => false,
                 'data' => $eventEndDate,
@@ -213,6 +213,10 @@ class EventType extends AbstractType
                 'html5' => true,
                 'attr' => [
                     'class' => 'type2 wide',
+                ],
+                'help' => 'Retour au point de RDV / covoiturage',
+                'help_attr' => [
+                    'class' => 'mini',
                 ],
             ])
             ->add('tarif', NumberType::class, [
@@ -222,11 +226,6 @@ class EventType extends AbstractType
                     'class' => 'type2',
                 ],
                 'required' => false,
-                'help' => 'Le champ <em>tarif</em> est facultatif ! Mais <span style="text-decoration: underline;">n\'oubliez pas de préciser</span> dans le cadre «Description complète» si les membres devront participer aux frais de covoiturage : essence, péage...',
-                'help_attr' => [
-                    'class' => 'mini',
-                ],
-                'help_html' => true,
             ])
             ->add('tarifDetail', TextareaType::class, [
                 'label' => 'Détails des frais',
@@ -244,11 +243,6 @@ class EventType extends AbstractType
                     'placeholder' => 'ex : 8',
                     'class' => 'type2 small',
                 ],
-                'help' => 'personnes affichées. Ceci n\'influence <span style="text-decoration: underline;">pas</span> le nombre d\'inscriptions possibles en ligne.',
-                'help_attr' => [
-                    'class' => 'mini',
-                ],
-                'help_html' => true,
                 'constraints' => [
                     new GreaterThan(0),
                 ],
@@ -259,10 +253,6 @@ class EventType extends AbstractType
                 'attr' => [
                     'placeholder' => 'ex : 5',
                     'class' => 'type2 small',
-                ],
-                'help' => ' inscriptions en ligne max.',
-                'help_attr' => [
-                    'class' => 'mini',
                 ],
                 'constraints' => [
                     new GreaterThan(0),
@@ -284,7 +274,7 @@ class EventType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'ex : PD, 5d+, exposé, ...',
-                    'max_length' => 50,
+                    'maxlength' => 50,
                     'class' => 'type2',
                 ],
                 'constraints' => [
@@ -298,7 +288,7 @@ class EventType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'ex : 1200',
-                    'max_length' => 50,
+                    'maxlength' => 50,
                     'class' => 'type2',
                 ],
                 'help' => 'm',
@@ -316,7 +306,7 @@ class EventType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'ex : 13.50',
-                    'max_length' => 50,
+                    'maxlength' => 50,
                     'class' => 'type2',
                 ],
                 'help' => 'km',
@@ -337,10 +327,6 @@ class EventType extends AbstractType
                     'rows' => 5,
                 ],
                 'required' => false,
-                'help' => 'Note : Ci-dessus, les sauts de ligne seront remplacés par des virgules sur la page dédiée à la sortie.',
-                'help_attr' => [
-                    'class' => 'mini',
-                ],
             ])
             ->add('itineraire', TextareaType::class, [
                 'label' => false,

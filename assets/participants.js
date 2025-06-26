@@ -10,7 +10,7 @@ function switchUserJoin(checkbox) {
         tmpType = typeTab[i];
         // on ne s'intéresse qu'aux autres blocs de types, pas celui qu'on parcourt
         if (type != tmpType) {
-            let selector = '_event_' + tmpType + '_entry_' + id;
+            let selector = '_form_' + tmpType + '_entry_' + id;
             const field = document.querySelector('[data-id="' + selector + '"]');
             if (undefined !== field && null !== field) {
                 const parent = field.parentElement;

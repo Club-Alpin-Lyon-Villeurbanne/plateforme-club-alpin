@@ -7,21 +7,28 @@
         <h1 class="page-h1">{{ title }}</h1>
 
         {% import 'macros/form_macros.html.twig' as form_macros %}
-        {% form_theme form 'form/encadrants_checkbox_theme.html.twig' %}
+        {% form_theme form with ['form/encadrants_checkbox_theme.html.twig', 'form/field_error.html.twig'] %}
 
         {{ form_start(form, {
             attr: {class: 'padded-form'}
         }) }}
 
-        {% if isUpdate and event.status is same as (1) %}
+        {% if is_update and event.status is same as (1) %}
             <p class="alerte">Attention : si vous modifiez cette sortie, elle devra à nouveau être validée par un responsable avant d'être affichée sur le site !</p><br />
         {% endif %}
 
         <span class="italic">Les champs marqués d'un <span class="required">*</span> sont obligatoires.</span><br>
+
+        {% if form.vars.errors|length > 0 %}
+            <br>
+            <div class="alerte has-errors">
+                Le formulaire contient des erreurs, merci de vérifier votre saisie.<br>
+            </div>
+        {% endif %}
         <br class="clear">
 
         <div style="float:left; padding:0 20px 10px 0">
-            {% if isUpdate %}
+            {% if is_update %}
                 Sortie liée à la commission :<br />
                 <b>{{ commission }}</b>
             {% else %}
@@ -37,7 +44,7 @@
         </div>
 
         <div id="individus">
-            {{ form_macros.display_encadrement(form, isUpdate) }}
+            {{ form_macros.display_encadrement(form, is_update) }}
         </div>
 
         <h2 class="clear trigger-h2">Informations :</h2>
@@ -177,8 +184,9 @@
     <script type="text/javascript">
         // au chargement complet de la page
         document.addEventListener('DOMContentLoaded', function () {
-            initParticipantsCheckboxes(document);
-            switchCommission(document);
+            {% if is_update is same as (false) %}
+                switchCommission(document);
+            {% endif %}
 
             // liste matériel
             document.querySelector('#predefinitions-matos-submit').addEventListener('click', (e) => {
