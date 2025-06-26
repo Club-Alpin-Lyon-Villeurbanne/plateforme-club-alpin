@@ -116,7 +116,7 @@ class SortieController extends AbstractController
                 if (!empty($formData[$roleName])) {
                     foreach ($formData[$roleName] as $participantId) {
                         $participant = $entityManager->getRepository(User::class)->find($participantId);
-                        $event->addParticipation($participant, $role);
+                        $event->addParticipation($participant, $role, EventParticipation::STATUS_VALIDE);
                     }
                 }
             }
