@@ -10,7 +10,7 @@
         {% form_theme form with ['form/encadrants_checkbox_theme.html.twig', 'form/field_error.html.twig'] %}
 
         {{ form_start(form, {
-            attr: {class: 'padded-form'}
+            attr: {class: 'padded-form', 'id': 'event_form'}
         }) }}
 
         {% if is_update and event.status is same as (1) %}
@@ -306,5 +306,28 @@
 
             return false;
         }
+
+        document.getElementById('event_form').addEventListener('submit', function (e) {
+            // vérifier qu'au moins 1 encadrant est coché
+            const checkboxes = document.querySelectorAll('input[name="form[encadrants][]"]:checked');
+            if (checkboxes.length <= 0) {
+                alert('Veuillez sélectionner au moins un encadrant.');
+                e.preventDefault();
+
+                return false;
+            }
+
+            // vérifier que la description est remplie
+            const editorContent = tinyMCE.get('{{ form.description.vars.id }}').getContent({ format: 'text' }).trim();
+            if (editorContent === '') {
+                alert('Veuillez renseigner la description complète.');
+                e.preventDefault();
+
+                return false;
+            } else {
+                // On remet à jour le champ textarea pour que le contenu soit soumis
+                tinyMCE.triggerSave();
+            }
+        });
     </script>
 {% endblock %}

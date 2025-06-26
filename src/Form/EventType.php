@@ -22,6 +22,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\GreaterThan;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -202,6 +203,13 @@ class EventType extends AbstractType
                 'html5' => true,
                 'attr' => [
                     'class' => 'type2 wide',
+                    'min' => (new \DateTime())->format('Y-m-d\TH:i'),
+                ],
+                'constraints' => [
+                    new GreaterThanOrEqual([
+                        'value' => 'today',
+                        'message' => 'Veuillez choisir une date dans le futur.',
+                    ]),
                 ],
             ])
             ->add('eventEndDate', DateTimeType::class, [
@@ -213,6 +221,13 @@ class EventType extends AbstractType
                 'html5' => true,
                 'attr' => [
                     'class' => 'type2 wide',
+                    'min' => (new \DateTime('today'))->format('Y-m-d\TH:i'),
+                ],
+                'constraints' => [
+                    new GreaterThanOrEqual([
+                        'value' => 'today',
+                        'message' => 'Veuillez choisir une date dans le futur.',
+                    ]),
                 ],
                 'help' => 'Retour au point de RDV / covoiturage',
                 'help_attr' => [
