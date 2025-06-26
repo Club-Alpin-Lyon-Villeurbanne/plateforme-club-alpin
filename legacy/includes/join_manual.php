@@ -108,6 +108,7 @@ if (user()) {
 							<th>Nom</th>
 							<th>Prénom</th>
 							<th>Pseudo</th>
+                            <th>Age</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -131,6 +132,7 @@ if (user()) {
                                 . '<td>' . strtoupper(html_utf8($elt['lastname_user'])) . '</td>'
                                 . '<td>' . ucfirst(html_utf8($elt['firstname_user'])) . '</td>'
                                 . '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
+                                . '<td>' . getYearsSinceDate($elt['birthday_user']) . '</td>'
                             . '</tr>';
                         } ?>
 					</tbody>
