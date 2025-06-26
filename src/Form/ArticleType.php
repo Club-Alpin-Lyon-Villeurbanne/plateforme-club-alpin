@@ -59,7 +59,6 @@ class ArticleType extends AbstractType
             'mapped' => false,
             'label' => "Type d'article",
             'choices' => [
-                '- Choisissez :' => '',
                 'Compte rendu de sortie' => '-1',
             ] + $commissionChoices,
             'group_by' => function ($choice, $key, $value) {
@@ -71,6 +70,7 @@ class ArticleType extends AbstractType
             },
             'required' => true,
             'data' => $defaultArticleType,
+            'placeholder' => '- Choisissez le type d\'article',
         ])
             ->add('isCompteRendu', HiddenType::class, [
                 'mapped' => false,
@@ -89,7 +89,7 @@ class ArticleType extends AbstractType
                            $evt->getCommission()->getTitle() . ' | ' .
                            $evt->getTitre();
                 },
-                'placeholder' => '- Non merci',
+                'placeholder' => '--',
                 'required' => false,
                 'label' => 'Lier cet article à une sortie',
             ])
