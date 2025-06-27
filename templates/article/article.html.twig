@@ -11,16 +11,18 @@
             <h1>
                 {{ article.titre }}
             </h1>
-            {% if article.commission %}
-                <span class="date article-commission">{{ article.commission.title }}</span>
-            {% elseif article.evt and article.evt.commission %}
-                <span class="date article-commission">{{ article.evt.commission.title }}</span>
-            {% endif %}
-            <p class="auteur">
-                Rédigé par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.user.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.user.nickname }}</a>
-                le {{ article.tspCrea|date('d/m/Y') }}<br>
-                <a href="{{ article_url }}#comments">{{ comments|length }} commentaire{% if comments|length > 1 %}s{% endif %}</a>
-            </p>
+            <div class="article-title-infos">
+                {% if article.commission %}
+                    <div class="article-title-commission">{{ article.commission.title }}</div>
+                {% elseif article.evt and article.evt.commission %}
+                    <div class="article-title-commission">{{ article.evt.commission.title }}</div>
+                {% endif %}
+                <div class="article-title-author">
+                    Rédigé par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.user.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.user.nickname }}</a>
+                    le {{ article.tspCrea|date('d/m/Y') }}<br>
+                    <a href="{{ article_url }}#comments">{{ comments|length }} commentaire{% if comments|length > 1 %}s{% endif %}</a>
+                </div>
+            </div>
         </div>
 
         <div class="cont_article"><br />
