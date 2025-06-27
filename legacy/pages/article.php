@@ -35,8 +35,10 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
         // info de la sortie liée
         if ($handle['evt_article'] > 0) {
-            $req = 'SELECT code_evt, id_evt, titre_evt FROM caf_evt
-                WHERE id_evt = ' . (int) $handle['evt_article'] . '
+            $req = 'SELECT e.code_evt, e.id_evt, e.titre_evt, c.title_commission
+                FROM caf_evt as e
+                LEFT JOIN caf_commission as c ON c.id_commission = e.commission_evt
+                WHERE e.id_evt = ' . (int) $handle['evt_article'] . '
                 LIMIT 1';
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
