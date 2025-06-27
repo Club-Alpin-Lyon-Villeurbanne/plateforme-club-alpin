@@ -25,6 +25,7 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Type;
 
 class EventType extends AbstractType
 {
@@ -241,6 +242,12 @@ class EventType extends AbstractType
                     'class' => 'type2',
                 ],
                 'required' => false,
+                'html5' => true,
+                'scale' => 2,
+                'constraints' => [
+                    new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
+                    new GreaterThan(0),
+                ],
             ])
             ->add('tarifDetail', TextareaType::class, [
                 'label' => 'Détails des frais',
@@ -254,22 +261,29 @@ class EventType extends AbstractType
             ->add('ngensMax', NumberType::class, [
                 'label' => 'Nombre maximum de personnes sur cette sortie (encadrement compris)',
                 'required' => true,
+                'html5' => true,
                 'attr' => [
                     'placeholder' => 'ex : 8',
-                    'class' => 'type2 small',
+                    'class' => 'type2',
+                    'min' => 1,
                 ],
+                'scale' => 0,
                 'constraints' => [
+                    new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
                     new GreaterThan(0),
                 ],
             ])
             ->add('joinMax', NumberType::class, [
                 'label' => 'Inscriptions maximum via le formulaire internet',
                 'required' => false,
+                'html5' => true,
                 'attr' => [
                     'placeholder' => 'ex : 5',
-                    'class' => 'type2 small',
+                    'class' => 'type2',
                 ],
+                'scale' => 0,
                 'constraints' => [
+                    new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
                     new GreaterThan(0),
                 ],
             ])

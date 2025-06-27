@@ -82,8 +82,8 @@ class SortieController extends AbstractController
 
             /** @var Evt $event */
             $event = $form->getData();
-            $eventData = $data['event'] ?? null;
-            $formData = $data['form'] ?? null;
+            $eventData = $data['event'] ?? [];
+            $formData = $data['form'] ?? [];
             $formData = array_merge($eventData, $formData);
 
             if (!$isUpdate) {

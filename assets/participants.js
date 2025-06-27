@@ -2,15 +2,17 @@
 function switchUserJoin(checkbox) {
     const typeTab = new Array('encadrants', 'initiateurs', 'coencadrants');
     const tab = checkbox.getAttribute('data-id').split('_');
+    const prefix = tab[1];
     const type = tab[2];
     const id = tab[4];
+
     // pour chaque type (ensemble de checkbox)
     let tmpType;
     for (let i = 0; i < typeTab.length; i++) {
         tmpType = typeTab[i];
         // on ne s'intéresse qu'aux autres blocs de types, pas celui qu'on parcourt
         if (type != tmpType) {
-            let selector = '_form_' + tmpType + '_entry_' + id;
+            let selector = '_' + prefix + '_' + tmpType + '_entry_' + id;
             const field = document.querySelector('[data-id="' + selector + '"]');
             if (undefined !== field && null !== field) {
                 const parent = field.parentElement;
