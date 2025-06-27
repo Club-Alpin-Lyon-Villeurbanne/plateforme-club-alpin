@@ -316,9 +316,12 @@
             {% endif %}
 
             // vérifier qu'au moins 1 encadrant est coché
-            const checkboxes = document.querySelectorAll('input[name="' + prefix + '[encadrants][]"]:checked');
-            if (checkboxes.length <= 0) {
-                alert('Veuillez sélectionner au moins un encadrant.');
+            const encadrants = document.querySelectorAll('input[name="' + prefix + '[encadrants][]"]:checked');
+            const initiateurs = document.querySelectorAll('input[name="' + prefix + '[initiateurs][]"]:checked');
+            const coencadrants = document.querySelectorAll('input[name="' + prefix + '[coencadrants][]"]:checked');
+            const encadrement = encadrants.length + coencadrants.length + initiateurs.length;
+            if (encadrement <= 0) {
+                alert('Veuillez sélectionner au moins un encadrant ou co-encadrant.');
                 e.preventDefault();
 
                 return false;
@@ -326,8 +329,8 @@
 
             // vérifier que la description est remplie
             const editorContent = tinyMCE.get('{{ form.description.vars.id }}').getContent({ format: 'text' }).trim();
-            if (editorContent === '') {
-                alert('Veuillez renseigner la description complète.');
+            if (editorContent.length <= 3) {
+                alert('Veuillez renseigner une description pour cette sortie.');
                 e.preventDefault();
 
                 return false;
