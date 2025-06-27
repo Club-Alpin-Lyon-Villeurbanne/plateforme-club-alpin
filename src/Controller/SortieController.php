@@ -88,8 +88,9 @@ class SortieController extends AbstractController
 
             if (!$isUpdate) {
                 $event->setCode(strtolower(substr($slugger->slug($event->getTitre(), '-'), 0, 30)));
-            } elseif (Evt::STATUS_LEGAL_VALIDE === $event->getStatus()) {
-                $event->setStatus(Evt::STATUS_LEGAL_UNSEEN);
+            } elseif (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()) {
+                // sortie dépubliée à l'édition
+                $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
             }
 
             // champs auto
