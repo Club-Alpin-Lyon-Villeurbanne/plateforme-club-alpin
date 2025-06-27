@@ -1,5 +1,6 @@
 <?php
 
+use App\Entity\EventParticipation;
 use App\Entity\UserAttr;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
@@ -79,7 +80,6 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
                 </tr>
                 </thead>
                 <tbody>
-                <?php if (1 == $evt['status_legal_evt']) { ?>
                     <?php if (isset($president) && !empty($president)) { ?>
                         <tr>
                             <th colspan="3">PRESIDENT : </th>
@@ -124,47 +124,6 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
                         <th>COMMISSION : </th>
                         <td colspan="2"><?php echo html_utf8($evt['title_commission']); ?></td>
                     </tr>
-                <?php } ?>
-                <tr>
-                    <th colspan="3">ORGANISATEUR : </th>
-                </tr>
-                <tr>
-                    <td><?php echo html_utf8(strtoupper($evt['lastname_user']) . ', ' . ucfirst(strtolower($evt['firstname_user']))); ?></td>
-                    <th>TEL</th>
-                    <td><?php echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $evt['tel_user'])); ?></td>
-                </tr>
-                <tr>
-                    <th colspan="3">ENCADRANT(S) : </th>
-                </tr>
-                <?php
-                foreach ($evt['joins']['encadrant'] as $tmp) {
-                    ?>
-                    <tr>
-                        <td><b><?php echo html_utf8($tmp['civ_user'] . ' ' . strtoupper($tmp['lastname_user']) . ', ' . ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></b></td>
-                        <th>TEL</th>
-                        <td><?php echo preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user']); ?></td>
-                    </tr>
-                <?php
-                }
-foreach ($evt['joins']['stagiaire'] as $tmp) {
-    ?>
-                    <tr>
-                        <td><b><?php echo html_utf8($tmp['civ_user'] . ' ' . strtoupper($tmp['lastname_user']) . ', ' . ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></b></td>
-                        <th>TEL</th>
-                        <td><?php echo preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user']); ?></td>
-                    </tr>
-                <?php
-}
-foreach ($evt['joins']['coencadrant'] as $tmp) {
-    ?>
-                    <tr>
-                        <td><?php echo html_utf8($tmp['civ_user'] . ' ' . strtoupper($tmp['lastname_user']) . ', ' . ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))); ?></td>
-                        <th>TEL</th>
-                        <td><?php echo preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user']); ?></td>
-                    </tr>
-                <?php
-}
-?>
                 </tbody>
             </table>
         </td>
@@ -232,32 +191,43 @@ foreach ($evt['joins']['coencadrant'] as $tmp) {
     <?php
     $number = 1;
 // constitution de la liste complete des participants
+$autresParticipants = array_merge(
+    $evt['joins']['inscrit'],
+    $evt['joins']['manuel']
+);
+foreach ($autresParticipants as $it => $tmpUser) {
+    $autresParticipants[$tmpUser['firstname_user'] . $tmpUser['lastname_user'] . $tmpUser['id_user']] = $tmpUser;
+    unset($autresParticipants[$it]);
+    ksort($autresParticipants);
+}
 $joinsParticipants = array_merge(
     $evt['joins']['encadrant'],
     $evt['joins']['stagiaire'],
     $evt['joins']['coencadrant'],
     $evt['joins']['benevole'],
-    $evt['joins']['inscrit'],
-    $evt['joins']['manuel']);
-
-if (is_array($joinsParticipants)) {
-    foreach ($joinsParticipants as $it => $tmpUser) {
-        $joinsParticipants[$tmpUser['firstname_user'] . $tmpUser['lastname_user'] . $tmpUser['id_user']] = $tmpUser;
-        unset($joinsParticipants[$it]);
+    $autresParticipants
+);
+foreach ($joinsParticipants as $tmp) {
+    ?>
+        <tr>
+            <td><?php echo $number++; ?></td>
+            <td>
+                <?php
+                echo html_utf8($tmp['civ_user'] . ' ' . ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))) . ' ' . strtoupper($tmp['lastname_user']);
+    if (in_array($tmp['role_evt_join'], EventParticipation::ROLES_ENCADREMENT, true) || EventParticipation::ROLE_BENEVOLE === $tmp['role_evt_join']) {
+        echo ' (' . $tmp['role_evt_join'] . ')';
     }
-    ksort($joinsParticipants);
-    foreach ($joinsParticipants as $tmp) {
-        ?>
-            <tr>
-                <td><?php echo $number++; ?></td>
-                <td><?php echo html_utf8($tmp['civ_user'] . ' ' . ucfirst(mb_strtolower($tmp['firstname_user'], 'UTF-8'))) . ' ' . strtoupper($tmp['lastname_user']); ?></td>
-                <td><?php echo html_utf8($tmp['cafnum_user']); ?></td>
-                <td><?php echo getYearsSinceDate($tmp['birthday_user']); ?></td>
-                <td><?php echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user'])); ?></td>
-                <td><?php echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel2_user'])); ?></td>
-            </tr>
-        <?php
+    if ($tmp['id_user'] == $evt['user_evt']) {
+        echo ' (organisateur)';
     }
+    ?>
+            </td>
+            <td><?php echo html_utf8($tmp['cafnum_user']); ?></td>
+            <td><?php echo getYearsSinceDate($tmp['birthday_user']); ?></td>
+            <td><?php echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel_user'])); ?></td>
+            <td><?php echo html_utf8(preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $tmp['tel2_user'])); ?></td>
+        </tr>
+    <?php
 }
 $total = $number;
 // lignes vides
