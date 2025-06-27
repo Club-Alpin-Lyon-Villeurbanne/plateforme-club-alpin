@@ -69,6 +69,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
     foreach ($_POST['id_user'] as $i => $user) {
         $id_user = (int) $_POST['id_user'][$i];
         $role_evt_join = stripslashes($_POST['role_evt_join'][$i]);
+        if (!$role_evt_join) {
+            $role_evt_join = 'inscrit';
+        }
 
         // si pas de pb, intégration
 
