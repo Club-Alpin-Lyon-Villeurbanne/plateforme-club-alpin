@@ -8,15 +8,15 @@ use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 
 require __DIR__ . '/../app/includes.php';
 
-if (isGranted(SecurityConstants::ROLE_ADMIN)) {
-    // bien connecté ?
-    $id_user = getUser()->getId();
-    if (!$id_user && !isGranted(SecurityConstants::ROLE_ADMIN)) {
-        header('HTTP/1.0 401 Authorization Required');
-        echo 'ERREUR : id invalide';
-        exit;
-    }
+// bien connecté ?
+$id_user = getUser()->getId();
+if (!$id_user && !isGranted(SecurityConstants::ROLE_ADMIN) && !isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
+    header('HTTP/1.0 401 Authorization Required');
+    echo 'ERREUR : id invalide';
+    exit;
+}
 
+if (isGranted(SecurityConstants::ROLE_ADMIN) || isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     // recuperation du dossier
     $type = $_GET['type'];
     $dossier = null;
