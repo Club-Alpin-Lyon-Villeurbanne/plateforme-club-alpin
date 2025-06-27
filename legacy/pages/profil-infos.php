@@ -1,8 +1,11 @@
 <?php
 
 use App\Entity\UserAttr;
+use App\Repository\CommissionRepository;
 
 if (user()) {
+    $em = $this->getRegistry();
+    $commissionRepository = new CommissionRepository($em);
     ?>
     <div class="main-type">
         <h1>Mon profil - Gestion de mon compte</h1>
@@ -27,25 +30,40 @@ if (user()) {
             <h2><span class="bleucaf">&gt;</span> Vos statuts :</h2>
             <?php inclure('infos-profil-statuts', 'vide'); ?>
                 <br><br>
-            <h3>Gestion du club :</h3>
+            <?php
+            $clubRoles = [];
+            $commissionRoles = [];
+            foreach (getUser()->getAttributes() as $attr) {
+                if (in_array($attr->getCode(), UserAttr::COMMISSION_RELATED, true)) {
+                    $commissionRoles[] = $attr;
+                } else {
+                    $clubRoles[] = $attr;
+                }
+            }
+            ?>
+            <h3>Responsabilité dans le club :</h3>
             <ul class="nice-list">
                 <?php
-                foreach (getUser()->getAttributes() as $attr) {
-                    if (!in_array($attr->getCode(), UserAttr::COMMISSION_RELATED, true)) {
+                if (!empty($clubRoles)) {
+                    foreach ($clubRoles as $attr) {
                         echo '<li>' . $attr->getTitle() . '</li>';
                     }
+                } else {
+                    echo '<li>aucune responsabilité</li>';
                 }
             ?>
             </ul>
             <br style="clear:both" />
 
-            <h3>Commissions :</h3>
+            <h3>Responsabilité dans les commissions :</h3>
             <ul class="nice-list">
             <?php
-            foreach (getUser()->getAttributes() as $attr) {
-                if (in_array($attr->getCode(), UserAttr::COMMISSION_RELATED, true)) {
-                    echo '<li>' . $attr->getCommission() . ' : ' . $attr->getTitle() . '</li>';
+            if (!empty($commissionRoles)) {
+                foreach ($commissionRoles as $attr) {
+                    echo '<li>' . $commissionRepository->getCommissionNameByCode($attr->getCommission()) . ' : ' . $attr->getTitle() . '</li>';
                 }
+            } else {
+                echo '<li>aucune responsabilité</li>';
             }
             ?>
             </ul>
@@ -60,7 +78,6 @@ if (user()) {
             <ul class="nice-list">
                 <?php
             foreach ($tmpUser['enfants'] as $enfant) {
-                // echo '<li>'.$enfant['firstname_user'].' '.$enfant['lastname_user'].'</li>';
                 echo '<li>' . userlink($enfant['id_user'], $enfant['nickname_user'], '', $enfant['firstname_user'], $enfant['lastname_user'], $style = 'full') . '</li>';
             }
             ?>
