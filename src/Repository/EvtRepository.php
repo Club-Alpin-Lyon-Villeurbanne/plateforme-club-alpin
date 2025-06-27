@@ -196,8 +196,8 @@ class EvtRepository extends ServiceEntityRepository
 
         return $this->createQueryBuilder('e')
             ->where('e.status = :status')
-            ->andWhere('e.tsp < :date')
-            ->andWhere('e.tspCrea > :limitDate')
+            ->andWhere('e.tspEnd < :date')
+            ->andWhere('e.tsp > :limitDate')
             ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
             ->setParameter('date', time())
             ->setParameter('limitDate', $limitDate->getTimestamp())
