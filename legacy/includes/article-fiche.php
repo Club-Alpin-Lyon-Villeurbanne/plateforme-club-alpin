@@ -27,10 +27,9 @@ if (!$article) {
                 echo '<div class="article-title-commission">' . html_utf8($article['evt']['title_commission']) . '</div>';
             }
     ?>
-        </div>
-		<div class="article-title-author">
-			<?php
-    echo 'Rédigé par ';
+            <div class="article-title-author">
+                <?php
+        echo 'Rédigé par ';
     echo userlink($article['auteur']['id_user'], $article['auteur']['nickname_user'], false, false, false, 'public', (int) $article['id_article']);
     echo ' le ' . date('d.m.Y', $article['tsp_article']);
 
@@ -39,7 +38,8 @@ if (!$article) {
     } elseif ($totalComments > 0) {
         echo ', <a href="' . $_SERVER['REQUEST_URI'] . "#comments\">$totalComments commentaire</a>";
     } ?>
-		</div>
+            </div>
+        </div>
 	</div>
 
 	<?php
