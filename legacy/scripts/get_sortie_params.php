@@ -70,6 +70,7 @@ if ($id_evt) {
                 AND status_evt_join = 1
                 AND
                     (role_evt_join LIKE 'encadrant' OR role_evt_join LIKE 'stagiaire' OR role_evt_join LIKE 'coencadrant' OR role_evt_join LIKE 'benevole')
+                ORDER BY firstname_user ASC, lastname_user ASC, id_user ASC
                 LIMIT 300";
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -83,6 +84,7 @@ if ($id_evt) {
                 WHERE evt_evt_join = ' . (int) $id_evt . '
                 AND user_evt_join = id_user
                 AND status_evt_join = 0
+                ORDER BY firstname_user ASC, lastname_user ASC, id_user ASC
                 LIMIT 300';
 
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -98,6 +100,7 @@ if ($id_evt) {
                 AND user_evt_join = id_user
                 AND role_evt_join LIKE 'inscrit'
                 AND status_evt_join = 1
+                ORDER BY firstname_user ASC, lastname_user ASC, id_user ASC
                 LIMIT 300";
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
@@ -112,6 +115,7 @@ if ($id_evt) {
                 AND user_evt_join = id_user
                 AND role_evt_join LIKE 'manuel'
                 AND status_evt_join = 1
+                ORDER BY firstname_user ASC, lastname_user ASC, id_user ASC
                 LIMIT 300";
             $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
