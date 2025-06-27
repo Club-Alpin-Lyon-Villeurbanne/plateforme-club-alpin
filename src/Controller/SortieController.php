@@ -66,7 +66,7 @@ class SortieController extends AbstractController
                 null,
                 null
             );
-            $event->setJoinStart((new \DateTime())->getTimestamp());
+            $event->setJoinStartDate(new \DateTimeImmutable());
             $isUpdate = false;
         }
 
