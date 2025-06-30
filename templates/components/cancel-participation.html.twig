@@ -1,0 +1,22 @@
+<br>
+<div id="inscription-annuler" style="display: none;">
+    {{ easy_include('formalites-inscription-suppression', 'formalites') }}
+
+    <form action="{{ path('sortie_remove_participant', { id: my_status_id }) }}" method="post" class="loading">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
+        <label for="cancel_reason">Veuillez expliquer la raison de l'annulation de votre demande</label>
+        <textarea id="cancel_reason" name="cancel_reason" class="type2" style="width:98%; min-height:80px" placeholder="ex : maladie, contraintes personnelles ou familiales, problème de matériel"></textarea>
+
+        <p style="text-align:center">
+            <a class="mediumlink" href="javascript:void(0)" title="Je maintiens ma demande de participation à la sortie" onclick="$('#inscription-annuler').slideToggle(200)">
+                <span class="bleucaf">&gt;</span>
+                JE SOUHAITE BIEN PARTICIPER
+            </a>
+            <a class="mediumlink" href="javascript:void(0)" title="J'annule ma demande de participation à la sortie" onclick="$(this).parents('form').submit()">
+                <span class="bleucaf">&gt;</span>
+                JE NE SOUHAITE PLUS PARTICIPER
+            </a>
+        </p>
+    </form>
+</div>
+<br>
