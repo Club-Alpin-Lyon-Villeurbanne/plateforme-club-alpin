@@ -69,16 +69,6 @@ if (user()) {
         require $operationsDir . 'operations.evt_cancel.php';
     }
 
-    // SORTIE : modification : remet le status à 0
-    elseif ('evt_update' == $operation) {
-        require $operationsDir . 'operations.evt_update.php';
-    }
-
-    // SORTIE : création
-    elseif ('evt_create' == $operation) {
-        require $operationsDir . 'operations.evt_create.php';
-    }
-
     // ARTICLE : publication OU refus
     elseif ('article_validate' == $operation) {
         require $operationsDir . 'operations.article_validate.php';
