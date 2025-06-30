@@ -784,16 +784,16 @@ class Evt
 
         return $this;
     }
-    
+
     public function isAutoAccept(): bool
     {
         return $this->autoAccept;
     }
-    
+
     public function setAutoAccept(bool $autoAccept): self
     {
         $this->autoAccept = $autoAccept;
-        
+
         return $this;
     }
 }
