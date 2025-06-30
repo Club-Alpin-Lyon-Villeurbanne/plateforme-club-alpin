@@ -14,6 +14,8 @@ if (isset($_POST['filiations']) && 'on' == $_POST['filiations']) {
 
 $idUsersFiliations = !empty($_POST['id_user_filiation']) ? array_map('intval', $_POST['id_user_filiation']) : [];
 
+$joinMessage = $_POST['message'];
+
 // Evenement défini et utilisateur aussi
 $id_evt = (int) $_POST['id_evt'];
 $id_user = getUser()->getId();
@@ -287,6 +289,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'firstname' => ucfirst(getUser()->getFirstname()),
                 'lastname' => strtoupper(getUser()->getLastname()),
                 'nickname' => getUser()->getNickname(),
+                'message' => $joinMessage,
                 'covoiturage' => $is_covoiturage,
                 'dest_role' => array_key_exists('role_evt_join', $destinataire) ? $destinataire['role_evt_join'] : 'l\'auteur',
             ], [], null, getUser()->getEmail());

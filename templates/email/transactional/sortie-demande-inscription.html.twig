@@ -18,6 +18,11 @@
         <li>
             <b>Rôle :</b> {{ role }}
         </li>
+        {% if message %}
+        <li>
+            <b>Message :</b> {{ message }}
+        </li>
+        {% endif %}
     </ul>
     <p>
         Vous recevez ce message car vous êtes {{ dest_role }} sur cette sortie.
@@ -34,5 +39,9 @@
 
     Rôle : {{ role }}
 
+    {% if message %}
+    Message : {{ message }}
+
+    {% endif %}
     Vous recevez ce message car vous êtes {{ dest_role }} sur cette sortie.
 {% endblock %}
