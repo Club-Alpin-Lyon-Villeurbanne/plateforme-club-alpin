@@ -20,8 +20,6 @@ api_platform:
     extra_properties:
       standard_put: true
       rfc_7807_compliant_errors: true
-  event_listeners_backward_compatibility_layer: false
-  keep_legacy_inflector: false
   use_symfony_listeners: true
   serializer:
     hydra_prefix: true
