@@ -79,7 +79,17 @@ class ArticleController extends AbstractController
 
                 $article->setTsp(time());
                 $article->setTspLastedit(new \DateTime());
-                $article->setTopubly($form->get('topubly')->getData() ? 1 : 0);
+
+                // brouillon ?
+                $data = $request->request->all();
+                $articleData = $data['article'] ?? [];
+                $formData = $data['form'] ?? [];
+                $formData = array_merge($articleData, $formData);
+                $isDraft = false;
+                if (\in_array('articleDraftSave', array_keys($formData), true)) {
+                    $isDraft = true;
+                }
+                $article->setTopubly(!$isDraft);
 
                 if ($form->get('isCompteRendu')->getData() && !$article->getEvt()) {
                     $errors[] = 'Si cet article est un compte rendu de sortie, veuillez sélectionner la sortie liée.';

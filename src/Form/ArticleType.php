@@ -12,6 +12,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -111,12 +112,6 @@ class ArticleType extends AbstractType
                     'rows' => 15,
                 ],
             ])
-            ->add('topubly', CheckboxType::class, [
-                'label' => 'Demander la publication de cet article dès que possible ?',
-                'required' => false,
-                'mapped' => false,
-                'data' => true,
-            ])
             ->add('mediaUploadId', HiddenType::class, [
                 'mapped' => false,
                 'required' => false,
@@ -124,6 +119,20 @@ class ArticleType extends AbstractType
             ->add('commission', HiddenType::class, [
                 'mapped' => false,
                 'required' => false,
+            ])
+            ->add('articleDraftSave', SubmitType::class, [
+                'label' => '<span class="bleucaf">&gt;</span> ENREGISTRER COMME BROUILLON',
+                'label_html' => true,
+                'attr' => [
+                    'class' => 'mediumlink',
+                ],
+            ])
+            ->add('articleSave', SubmitType::class, [
+                'label' => '<span class="blanc">&gt;</span> ENREGISTRER ET DEMANDER LA PUBLICATION',
+                'label_html' => true,
+                'attr' => [
+                    'class' => 'mediumlink btn-blue blanc',
+                ],
             ])
 
             // Gestion des événements du formulaire pour la logique conditionnelle
