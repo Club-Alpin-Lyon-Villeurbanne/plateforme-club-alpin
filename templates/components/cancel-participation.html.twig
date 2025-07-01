@@ -1,6 +1,6 @@
 <br>
 <div id="inscription-annuler" style="display: none;">
-    {{ easy_include('formalites-inscription-suppression', 'formalites') }}
+    {{ easy_include('formalites-inscription-suppression', 'formalites') }}<br>
 
     <form action="{{ path('sortie_remove_participant', { id: my_status_id }) }}" method="post" class="loading">
         <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
@@ -9,12 +9,10 @@
 
         <p style="text-align:center">
             <a class="mediumlink" href="javascript:void(0)" title="Je maintiens ma demande de participation à la sortie" onclick="$('#inscription-annuler').slideToggle(200)">
-                <span class="bleucaf">&gt;</span>
-                JE SOUHAITE BIEN PARTICIPER
+                RESTER INSCRIT
             </a>
-            <a class="mediumlink" href="javascript:void(0)" title="J'annule ma demande de participation à la sortie" onclick="$(this).parents('form').submit()">
-                <span class="bleucaf">&gt;</span>
-                JE NE SOUHAITE PLUS PARTICIPER
+            <a class="mediumlink btn-blue blanc" href="javascript:void(0)" title="J'annule ma demande de participation à la sortie" onclick="$(this).parents('form').submit()">
+                SE DÉSINSCRIRE
             </a>
         </p>
     </form>
