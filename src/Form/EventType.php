@@ -20,6 +20,9 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
@@ -178,7 +181,6 @@ class EventType extends AbstractType
                     'class' => 'mini',
                 ],
                 'constraints' => [
-                    new NotBlank(),
                     new Length([
                         'min' => 3,
                         'max' => 200,
@@ -187,13 +189,23 @@ class EventType extends AbstractType
             ])
             ->add('lat', HiddenType::class, [
                 'label' => false,
-                'required' => false,
+                'required' => true,
                 'data' => $lat,
+                'constraints' => [
+                    new NotBlank(null, 'La latitude est obligatoire. Avez-vous bien cliqué sur le bouton pour placer le marqueur ?'),
+                    new Type(['type' => 'numeric', 'message' => 'La latitude doit être un nombre valide.']),
+                    new GreaterThan(0),
+                ],
             ])
             ->add('long', HiddenType::class, [
                 'label' => false,
-                'required' => false,
+                'required' => true,
                 'data' => $long,
+                'constraints' => [
+                    new NotBlank(null, 'La longitude est obligatoire. Avez-vous bien cliqué sur le bouton pour placer le marqueur ?'),
+                    new Type(['type' => 'numeric', 'message' => 'La longitude doit être un nombre valide.']),
+                    new GreaterThan(0),
+                ],
             ])
             ->add('eventStartDate', DateTimeType::class, [
                 'label' => 'Date et heure de RDV / covoiturage',
@@ -402,6 +414,37 @@ class EventType extends AbstractType
                     'class' => 'biglink',
                 ],
             ])
+            ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
+                $form = $event->getForm();
+                $data = $form->getData();
+//                dd($data);
+                
+                // cohérence dates début et fin
+                $startDate = $form->get('eventStartDate')->getData();
+                $endDate = $form->get('eventEndDate')->getData();
+                if ($startDate && $endDate && $endDate <= $startDate) {
+                    $form->get('eventStartDate')->addError(new FormError(
+                        'La date de RDV / covoiturage doit être antérieure à la date de retour.'
+                    ));
+                }
+
+                // cohérence date sortie / date démarrage inscriptions
+                $joinStartDate = $form->get('joinStartDate')->getData();
+                if ($startDate && $joinStartDate && $joinStartDate >= $startDate) {
+                    $form->get('joinStartDate')->addError(new FormError(
+                        'La date de démarrage des inscriptions doit être antérieure à la date de RDV / covoiturage.'
+                    ));
+                }
+                
+                // cohérence nombre de places totales / en ligne
+                $totalParticipants = $data->getNgensMax();
+                $onlineParticipants = $data->getJoinMax();
+                if ($totalParticipants && $onlineParticipants && $totalParticipants < $onlineParticipants) {
+                    $form->get('ngensMax')->addError(new FormError(
+                        'Il devrait y avoir davantage de places totales que de possibilités d\'inscription via internet.'
+                    ));
+                }
+            })
         ;
     }
 
