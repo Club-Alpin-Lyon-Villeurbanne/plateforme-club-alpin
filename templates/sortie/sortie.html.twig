@@ -582,10 +582,10 @@
                                                 Bénévole
                                             </label>
                                         {% else %}
-                                            {{ participation | participation_role_name }}<br />
+                                            {{ participation | participation_role_name }}
                                         {% endif %}
                                         {% if participation.user is same as event.user %}
-                                            (organisateur)
+                                            <br />(organisateur)
                                         {% endif %}
 
                                     </td>
