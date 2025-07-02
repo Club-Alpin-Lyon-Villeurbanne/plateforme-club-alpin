@@ -1,6 +1,6 @@
 // 1 seul rôle / utilisateur coché à la fois
 function switchUserJoin(checkbox) {
-    const typeTab = new Array('encadrants', 'initiateurs', 'coencadrants');
+    const typeTab = new Array('encadrants', 'initiateurs', 'coencadrants', 'benevoles');
     const tab = checkbox.getAttribute('data-id').split('_');
     const prefix = tab[1];
     const type = tab[2];
