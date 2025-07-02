@@ -96,12 +96,13 @@ class FfcamFileParser
     {
         $normalizedPhoneNumber = $phoneNumber;
         $normalizedPhoneNumber = str_ireplace('o', '0', $normalizedPhoneNumber);
-        $normalizedPhoneNumber = preg_replace('/[^\d]+/', '', $normalizedPhoneNumber);
+        $normalizedPhoneNumber = preg_replace('/(?:0033)/', '0', $normalizedPhoneNumber);
         $normalizedPhoneNumber = preg_replace('/(?:\+?33)/', '0', $normalizedPhoneNumber);
+        $normalizedPhoneNumber = preg_replace('/[^\d]+/', '', $normalizedPhoneNumber);
 
-        $regex = '/(?:0[1-9](?:[ .-]?\d{2}){4})/';
-        if (!preg_match_all($regex, $normalizedPhoneNumber, $matches)) {
-            return $phoneNumber;
+        $regex = '/(?:0[1-9](\d{2}){4})/';
+        if (false !== preg_match_all($regex, $normalizedPhoneNumber, $matches)) {
+            return $normalizedPhoneNumber;
         }
 
         foreach ($matches[0] as $number) {
