@@ -47,7 +47,6 @@ class SortieController extends AbstractController
         ?Evt $event = null,
         ?Commission $commission = null,
     ): array|RedirectResponse {
-        /** @var User $user */
         $user = $this->getUser();
         $isUpdate = true;
         if (!$event instanceof Evt) {
@@ -121,10 +120,6 @@ class SortieController extends AbstractController
                         $event->addParticipation($participant, $role, EventParticipation::STATUS_VALIDE);
                     }
                 }
-            }
-            // le créateur de la sortie est automatiquement participant validé s'il n'est pas coché dans l'encadrement
-            if (null === $event->getParticipation($user)) {
-                $event->addParticipation($user, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
             }
 
             // anciens timestamps
