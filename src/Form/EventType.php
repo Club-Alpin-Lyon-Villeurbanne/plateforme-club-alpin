@@ -274,7 +274,7 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('joinMax', NumberType::class, [
-                'label' => 'Inscriptions maximum via le formulaire internet',
+                'label' => 'Inscriptions maximum via le formulaire internet (hors encadrement)',
                 'required' => false,
                 'html5' => true,
                 'attr' => [
