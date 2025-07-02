@@ -58,6 +58,17 @@ if (!$civ_user) {
 }
 if (!$cafnum_user) {
     $errTab[] = "Numéro d'adhérent manquant ou invalide";
+} else {
+    $reqmail = 'SELECT COUNT(*) FROM caf_user WHERE cafnum_user = ?';
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($reqmail);
+    $stmt->bind_param('s', $cafnum_user);
+    $stmt->execute();
+    $resultmail = $stmt->get_result();
+    $rowmail = $resultmail->fetch_row();
+    if ($rowmail[0] > 0) {
+        $errTab[] = "Le numéro d'adhérent existe déja sur le site";
+    }
+    $stmt->close();
 }
 if (!$firstname_user) {
     $errTab[] = 'Merci de renseigner le champ prénom';
