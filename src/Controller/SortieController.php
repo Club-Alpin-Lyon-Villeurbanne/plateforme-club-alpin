@@ -117,6 +117,10 @@ class SortieController extends AbstractController
                 if (!empty($formData[$roleName])) {
                     foreach ($formData[$roleName] as $participantId) {
                         $participant = $entityManager->getRepository(User::class)->find($participantId);
+                        // si ce participant est déjà inscrit, on met à jour son statut de participation
+                        if ($participation = $event->getParticipation($participant)) {
+                            $event->removeParticipation($participation);
+                        }
                         $event->addParticipation($participant, $role, EventParticipation::STATUS_VALIDE);
                     }
                 }
