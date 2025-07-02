@@ -93,14 +93,6 @@ class SortieController extends AbstractController
                 $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
             }
 
-            // champs auto
-            if (empty($event->getJoinMax())) {
-                $event->setJoinMax($event->getNgensMax());
-            }
-            if (empty($event->getJoinStart())) {
-                $event->setJoinStart(time());
-            }
-
             // encadrants & co
             $rolesMap = [
                 EventParticipation::ROLE_ENCADRANT => 'encadrants',
@@ -125,7 +117,17 @@ class SortieController extends AbstractController
             // anciens timestamps
             $event->setTsp(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['eventStartDate'])?->getTimestamp());
             $event->setTspEnd(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['eventEndDate'])?->getTimestamp());
-            $event->setJoinStart(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['joinStartDate'])?->getTimestamp());
+            if ($formData['joinStartDate']) {
+                $event->setJoinStart(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['joinStartDate'])?->getTimestamp());
+            }
+
+            // champs auto
+            if (empty($event->getJoinMax())) {
+                $event->setJoinMax($event->getNgensMax());
+            }
+            if (empty($event->getJoinStart())) {
+                $event->setJoinStart(time());
+            }
 
             $entityManager->persist($event);
             $entityManager->flush();
