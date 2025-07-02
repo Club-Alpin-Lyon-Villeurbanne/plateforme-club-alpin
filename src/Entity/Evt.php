@@ -26,6 +26,9 @@ class Evt
     public const STATUS_LEGAL_VALIDE = 1;
     public const STATUS_LEGAL_REFUSE = 2;
 
+    public const float DEFAULT_LATITUDE = 45.76476483029371;
+    public const float DEFAULT_LONGITUDE = 4.879565284189081;
+
     #[ORM\Column(name: 'id_evt', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -185,8 +188,16 @@ class Evt
         $this->tspEnd = $dateEnd ? $dateEnd->getTimestamp() : null;
         $this->place = ''; // unused, must be dropped
         $this->rdv = $rdv;
-        $this->lat = $rdvLat;
-        $this->long = $rdvLong;
+        if ($rdvLat) {
+            $this->lat = $rdvLat;
+        } else {
+            $this->lat = self::DEFAULT_LATITUDE;
+        }
+        if ($rdvLong) {
+            $this->long = $rdvLong;
+        } else {
+            $this->long = self::DEFAULT_LONGITUDE;
+        }
         $this->description = $description;
         $this->joinStart = $demarrageInscriptions;
         $this->joinMax = $maxInscriptions;
@@ -596,7 +607,7 @@ class Evt
         return $this->rdv;
     }
 
-    public function setRdv(string $rdv): self
+    public function setRdv(?string $rdv): self
     {
         $this->rdv = $rdv;
 
@@ -651,24 +662,24 @@ class Evt
         return $this;
     }
 
-    public function getLat(): ?string
+    public function getLat(): string|float|null
     {
         return $this->lat;
     }
 
-    public function setLat(string $lat): self
+    public function setLat(string|float|null $lat): self
     {
         $this->lat = $lat;
 
         return $this;
     }
 
-    public function getLong(): ?string
+    public function getLong(): string|float|null
     {
         return $this->long;
     }
 
-    public function setLong(string $long): self
+    public function setLong(string|float|null $long): self
     {
         $this->long = $long;
 

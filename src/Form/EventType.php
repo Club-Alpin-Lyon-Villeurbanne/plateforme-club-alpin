@@ -71,11 +71,11 @@ class EventType extends AbstractType
         }
         $lat = $event->getLat();
         if (empty($lat)) {
-            $lat = '45.76476483029371';
+            $lat = Evt::DEFAULT_LATITUDE;
         }
         $long = $event->getLong();
         if (empty($long)) {
-            $long = '4.879565284189081';
+            $long = Evt::DEFAULT_LONGITUDE;
         }
 
         $builder
@@ -417,8 +417,7 @@ class EventType extends AbstractType
             ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
                 $form = $event->getForm();
                 $data = $form->getData();
-//                dd($data);
-                
+
                 // cohérence dates début et fin
                 $startDate = $form->get('eventStartDate')->getData();
                 $endDate = $form->get('eventEndDate')->getData();
@@ -435,7 +434,7 @@ class EventType extends AbstractType
                         'La date de démarrage des inscriptions doit être antérieure à la date de RDV / covoiturage.'
                     ));
                 }
-                
+
                 // cohérence nombre de places totales / en ligne
                 $totalParticipants = $data->getNgensMax();
                 $onlineParticipants = $data->getJoinMax();

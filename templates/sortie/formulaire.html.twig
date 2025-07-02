@@ -22,10 +22,12 @@
         {% if form.vars.errors|length > 0 %}
             <br>
             <div class="alerte has-errors">
-                Le formulaire contient des erreurs, merci de vérifier votre saisie.<br>
+                Le formulaire contient des erreurs, merci de vérifier votre saisie.<br><br>
+                <ul>
                 {% for error in form.vars.errors %}
-                    {{ error.message }}<br>
+                    <li>{{ error.message }}</li>
                 {% endfor %}
+                </ul>
             </div>
         {% endif %}
         <br class="clear">
