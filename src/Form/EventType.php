@@ -38,6 +38,9 @@ class EventType extends AbstractType
         protected CommissionRepository $commissionRepository,
         protected UserRights $userRights,
         protected string $club,
+        protected float $defaultLat,
+        protected float $defaultLong,
+        protected string $defaultAppointmentPlace,
     ) {
     }
 
@@ -67,15 +70,15 @@ class EventType extends AbstractType
 
         $appointment = $event->getRdv();
         if (empty($appointment)) {
-            $appointment = '56 rue du 4 août 1789 Villeurbanne';
+            $appointment = $this->defaultAppointmentPlace;
         }
         $lat = $event->getLat();
         if (empty($lat)) {
-            $lat = Evt::DEFAULT_LATITUDE;
+            $lat = $this->defaultLat;
         }
         $long = $event->getLong();
         if (empty($long)) {
-            $long = Evt::DEFAULT_LONGITUDE;
+            $long = $this->defaultLong;
         }
 
         $builder

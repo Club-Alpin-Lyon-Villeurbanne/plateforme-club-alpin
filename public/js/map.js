@@ -1,6 +1,6 @@
 $().ready(function() {
 	// //////////////////
-	var geocoder;
+	var geocode;
 	var marker=false;
 	var map=false;
 	
