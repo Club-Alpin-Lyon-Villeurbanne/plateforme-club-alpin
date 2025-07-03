@@ -4,6 +4,7 @@ namespace App\Tests;
 
 use App\Entity\Article;
 use App\Entity\Commission;
+use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -134,6 +135,7 @@ abstract class WebTestCase extends BaseWebTestCase
         $commission = $this->createCommission();
 
         $event = new Evt($user, $commission, 'Titre !', 'code', new \DateTime('+7 days'), new \DateTime('+8 days'), 'Hotel de ville', 12, 2, 'Une chtite sortie', time(), 12, 12);
+        $event->addParticipation($user, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
         $em->persist($event);
         $em->flush();
 
