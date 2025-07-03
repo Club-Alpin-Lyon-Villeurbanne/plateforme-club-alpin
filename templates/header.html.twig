@@ -220,6 +220,21 @@
                                         réservation de matériel
                                     </a>
                                 </li>
+                                {% if app.user.hasAttribute(constant('App\\Entity\\UserAttr::BENEVOLE'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::REDACTEUR'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::COENCADRANT'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::STAGIAIRE'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::ENCADRANT'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::RESPONSABLE_COMMISSION'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::VICE_PRESIDENT'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::PRESIDENT'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::ADMINISTRATEUR')) %}
+                                    <li>
+                                        <a href="https://drive.google.com/drive/shared-drives" title="">
+                                            Drives partagés
+                                        </a>
+                                    </li>
+                                {% endif %}
                             {% endif %}
                             </ul>
                         </div>
