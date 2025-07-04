@@ -38,7 +38,7 @@ $userId = null;
 if (user()) {
     $userId = getUser()->getId();
 }
-$req = 'SELECT  e.id_evt, e.cancelled_evt, e.code_evt, e.tsp_evt, e.tsp_end_evt, e.tsp_crea_evt, e.commission_evt, e.titre_evt, e.massif_evt, e.difficulte_evt, e.user_evt, e.is_draft ';
+$req = 'SELECT  e.id_evt, e.cancelled_evt, e.code_evt, e.tsp_evt, e.tsp_end_evt, e.tsp_crea_evt, e.commission_evt, e.titre_evt, e.massif_evt, e.place_evt, e.difficulte_evt, e.user_evt, e.is_draft ';
 if (null !== $userId) {
     $req .= ', j.status_evt_join';
 }

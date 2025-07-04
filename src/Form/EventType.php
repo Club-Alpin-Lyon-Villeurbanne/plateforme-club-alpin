@@ -145,12 +145,16 @@ class EventType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('massif', TextType::class, [
-                'label' => 'Massif',
+            ->add('place', TextType::class, [
+                'label' => 'Lieu de départ activité',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'ex : Chartreuse',
+                    'placeholder' => 'ex : 69510 Messimy, 74400 Chamonix',
                     'class' => 'type2 wide',
+                ],
+                'help' => 'Code postal et ville. Permet de déduire le massif',
+                'help_attr' => [
+                    'class' => 'mini',
                 ],
             ])
             ->add('rdv', TextType::class, [

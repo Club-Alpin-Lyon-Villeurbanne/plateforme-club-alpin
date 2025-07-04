@@ -51,8 +51,6 @@
 
         <h2 class="clear trigger-h2">Informations :</h2>
         <div class="trigger-me">
-            {{ form_row(form.massif) }}<br />
-
             <div style="float:left; width:45%; padding:0 20px 5px 0;">
                 {{ form_row(form.rdv) }}
                 {{ form_row(form.lat) }}
@@ -79,6 +77,9 @@
                 {{ form_row(form.eventEndDate) }}
             </div>
             <br style="clear:both" />
+
+            {{ form_row(form.place) }}
+            <ul id="place_suggestions"></ul>
         </div>
 
         <h2 class="trigger-h2">Tarif :</h2>
@@ -180,6 +181,7 @@
     {{ parent() }}
     {{ vite_entry_script_tags('participants') }}
     {{ vite_entry_script_tags('commission_switch') }}
+    {{ vite_entry_script_tags('autocomplete_communes') }}
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
             integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
             crossorigin=""></script>
@@ -194,6 +196,7 @@
             {% else %}
                 switchCommission(document);
             {% endif %}
+            searchCommunes(document);
 
             // liste matériel
             document.querySelector('#predefinitions-matos-submit').addEventListener('click', (e) => {
@@ -220,38 +223,6 @@
             if (contentField) {
                 contentField.removeAttribute('required');
             }
-        });
-    </script>
-    <script type="text/javascript">
-        $().ready(function() {
-            const availableTags = [
-                "Aravis",
-                "Bauges",
-                "Beaufortain",
-                "Belledonne",
-                "Bornes",
-                "Chablais",
-                "Chartreuse",
-                "Devoluy",
-                "Diois",
-                "Ecrins",
-                "Grandes Rousses",
-                "Mercantour",
-                "Mont Blanc",
-                "Oisans",
-                "Trièves",
-                "Vanoise",
-                "Vercors",
-                "Vosges"
-            ];
-            $("input[id=event_massif]").autocomplete({
-                source: availableTags,
-                minLength: 0,
-                delay: 100
-            });
-            $("input[id=event_massif]").focus(function () {
-                $(this).trigger(jQuery.Event("keydown"));
-            });
         });
 
         document.getElementById('event_form').addEventListener('submit', function (e) {

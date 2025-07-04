@@ -93,6 +93,9 @@ class RssController extends AbstractController
                 if ($event->getMassif()) {
                     $entry['description'] .= ('' !== $entry['description'] ? ' | ' : '') . 'massif : ' . $event->getMassif();
                 }
+                if ($event->getPlace()) {
+                    $entry['description'] .= ('' !== $entry['description'] ? ' | ' : '') . 'lieu départ activité : ' . $event->getPlace();
+                }
                 if ($event->getTarif()) {
                     $entry['description'] .= ('' !== $entry['description'] ? ' | ' : '') . 'tarif : ' . $event->getTarif();
                 }

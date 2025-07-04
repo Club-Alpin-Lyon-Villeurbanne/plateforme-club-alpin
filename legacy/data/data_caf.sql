@@ -215,7 +215,6 @@ INSERT INTO `caf_page` (`id_page`, `parent_page`, `admin_page`, `superadmin_page
 (17, 13, 0, 0, 1, 63, 0, 63, 0, 0, 'articles', '', 0, 0, 0.0, '', '', 0, 0, 0),
 (18, 13, 0, 0, 1, 64, 0, 64, 0, 0, 'photos', '', 0, 0, 0.0, '', '', 0, 0, 0),
 (19, 13, 0, 0, 1, 65, 0, 65, 0, 0, 'filiation', '', 0, 0, 0.0, '', '', 0, 0, 0),
-(20, 0, 0, 0, 1, 66, 0, 66, 0, 0, 'creer-une-sortie', '', 0, 0, 0.0, '/css/ui-cupertino/jquery-ui-1.8.18.custom.css', '/js/jquery-ui-1.10.2.custom.min.js;/js/jquery-ui-timepicker-addon.js;/js/creer-une-sortie.js', 0, 0, 0),
 (21, 0, 0, 0, 1, 0, 0, 0, 0, 0, 'gestion-des-sorties', 'Gestion des sorties', 0, 0, 0.0, '', '', 0, 0, 0),
 (22, 0, 0, 0, 1, 69, 0, 69, 0, 0, 'sortie', '', 0, 0, 0.1, '', '', 0, 0, 0),
 (23, 0, 0, 0, 1, 0, 0, 0, 0, 0, 'supprimer-une-sortie', 'Supprimer une sortie', 0, 0, 0.0, '', '', 0, 0, 0),
