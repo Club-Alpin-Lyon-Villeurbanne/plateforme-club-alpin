@@ -22,7 +22,12 @@
         {% if form.vars.errors|length > 0 %}
             <br>
             <div class="alerte has-errors">
-                Le formulaire contient des erreurs, merci de vérifier votre saisie.<br>
+                Le formulaire contient des erreurs, merci de vérifier votre saisie.<br><br>
+                <ul>
+                {% for error in form.vars.errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+                </ul>
             </div>
         {% endif %}
         <br class="clear">
@@ -83,6 +88,7 @@
         <div class="trigger-me">
             <div>
                 {{ form_label(form.tarif) }}
+                {{ form_errors(form.tarif) }}
                 {{ form_widget(form.tarif) }} €<br />
                 {{ form_help(form.tarif) }}
             </div><br />
@@ -94,6 +100,7 @@
             <div style="width:45%; padding-right:3%; float:left">
                 <div>
                     {{ form_label(form.ngensMax) }}
+                    {{ form_errors(form.ngensMax) }}
                     {{ form_widget(form.ngensMax) }} {{ form_help(form.ngensMax) }}
                 </div><br />
             </div>
@@ -109,10 +116,12 @@
             {{ form_row(form.difficulte) }}<br />
             <div>
                 {{ form_label(form.denivele) }}
+                {{ form_errors(form.denivele) }}
                 {{ form_widget(form.denivele) }} m
             </div><br />
             <div>
                 {{ form_label(form.distance) }}
+                {{ form_errors(form.distance) }}
                 {{ form_widget(form.distance) }} km
             </div><br />
             <div style="float:right; padding-right:20px;">
