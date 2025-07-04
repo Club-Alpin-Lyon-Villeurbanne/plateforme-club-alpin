@@ -1,6 +1,6 @@
 $().ready(function() {
 	// //////////////////
-	var geocoder;
+	var geocode;
 	var marker=false;
 	var map=false;
 	
@@ -121,6 +121,10 @@ $().ready(function() {
 		// si les input lat et long contiennent une info, on place le marker dessus
 		if($('input[id=event_lat]').val() && $('input[id=event_long]').val()) {
 			codeAddress($('input[id=event_lat]').val()+' '+$('input[id=event_long]').val());
+		} else {
+			// sinon on reset la carte
+			map.removeLayer(marker);
+			marker = false;
 		}
 	}
 
