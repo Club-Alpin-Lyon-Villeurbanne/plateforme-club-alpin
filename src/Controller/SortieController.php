@@ -95,6 +95,7 @@ class SortieController extends AbstractController
             } elseif (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()) {
                 // sortie dépubliée à l'édition
                 $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
+                $event->setTspEdit((new \DateTime())->getTimestamp());
             }
 
             // encadrants & co
