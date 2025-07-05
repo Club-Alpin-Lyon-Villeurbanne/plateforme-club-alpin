@@ -81,14 +81,15 @@ if (is_array($p_addJs)) {
         if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
             ?>
         <style>
-            body {
-                padding-top: 30px;
+            #container, .fancybox-opened {
+                margin-top: 50px !important;
             }
             #test-banner {
                 position: fixed;
                 top: 0;
                 left: 0;
                 width: 100%;
+                height: 30px;
                 background-color: #f44336;
                 color: #ffffff;
                 text-align: center;
