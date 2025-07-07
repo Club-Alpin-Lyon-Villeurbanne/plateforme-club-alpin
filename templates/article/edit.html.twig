@@ -155,6 +155,94 @@
                     </div>
                     
                     <br style="clear:both" />
+                    
+                    <div style="margin-top: 20px;">
+                        <label for="photo-origin">📸 Origine de l'image :</label><br />
+                        <select id="photo-origin" name="photo_origin" class="type1" style="width:95%; margin-top: 5px;">
+                            <option value="">-- Sélectionnez l'origine de l'image --</option>
+                            <optgroup label="Images libres de droits">
+                                <option value="unsplash">🆓 Unsplash (libre de droits)</option>
+                                <option value="pexels">🆓 Pexels (libre de droits)</option>
+                                <option value="pixabay">🆓 Pixabay (libre de droits)</option>
+                                <option value="wikimedia">🆓 Wikimedia Commons (libre de droits)</option>
+                            </optgroup>
+                            <optgroup label="Images personnelles">
+                                <option value="photo_perso">📷 Image personnelle (prise par moi)</option>
+                                <option value="membre_club">👥 Image d'un autre membre du club</option>
+                            </optgroup>
+                            <optgroup label="Autres sources">
+                                <option value="site_web">🌐 Site web / Internet</option>
+                                <option value="autre">❓ Autre source</option>
+                            </optgroup>
+                        </select>
+                        
+                        <div id="photo-perso-consent" style="display: none; margin-top: 15px; padding: 15px; background-color: #f0f8ff; border-radius: 5px;">
+                            <div style="margin-bottom: 10px;">
+                                <label>
+                                    <input type="checkbox" name="photo_author_certification" id="photo-author-certification" />
+                                    Je certifie être l'auteur de cette image
+                                </label>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label>
+                                    <input type="checkbox" name="photo_usage_authorization" id="photo-usage-authorization" />
+                                    J'autorise le Club Alpin de Lyon à utiliser cette image sur son site web et ses communications (réseaux sociaux, newsletter, documents)
+                                </label>
+                            </div>
+                            <div>
+                                <label>
+                                    <input type="checkbox" name="photo_author_mention" id="photo-author-mention" />
+                                    J'accepte que mon nom soit mentionné comme auteur
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="photo-membre-club" style="display: none; margin-top: 15px; padding: 15px; background-color: #fff8e1; border-radius: 5px;">
+                            <div style="margin-bottom: 10px;">
+                                <label for="photo-membre-name">📝 Nom du photographe :</label><br />
+                                <input type="text" id="photo-membre-name" name="photo_membre_name" class="type1" style="width:95%; margin-top: 5px;" 
+                                    placeholder="Nom et prénom du membre" required />
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label for="photo-membre-email">📧 Email du photographe :</label><br />
+                                <input type="email" id="photo-membre-email" name="photo_membre_email" class="type1" style="width:95%; margin-top: 5px;" 
+                                    placeholder="email@exemple.com" required />
+                            </div>
+                            <p class="info" style="margin-top: 10px;">
+                                ⚠️ Une demande d'autorisation sera envoyée automatiquement au photographe.
+                            </p>
+                        </div>
+                        
+                        <div id="photo-site-web" style="display: none; margin-top: 15px; padding: 15px; background-color: #ffebee; border-radius: 5px;">
+                            <div style="margin-bottom: 10px;">
+                                <label for="photo-url">🔗 URL source : <span style="color: red;">*</span></label><br />
+                                <input type="url" id="photo-url" name="photo_url" class="type1" style="width:95%; margin-top: 5px;" 
+                                    placeholder="https://www.exemple.com" required />
+                            </div>
+                            <p class="erreur" style="margin-top: 10px;">
+                                ⚠️ <strong>ATTENTION :</strong> Vérification obligatoire des droits d'auteur<br />
+                                📋 Cette publication sera mise en attente de validation
+                            </p>
+                        </div>
+                        
+                        <div id="photo-autre-details" style="display: none; margin-top: 15px; padding: 15px; background-color: #ffebee; border-radius: 5px;">
+                            <div style="margin-bottom: 10px;">
+                                <label for="photo-details">📝 Précisez la source : <span style="color: red;">*</span></label><br />
+                                <textarea id="photo-details" name="photo_details" class="type1" style="width:95%; height: 80px; margin-top: 5px;" 
+                                    placeholder="Décrivez précisément l'origine de l'image et confirmez que vous avez les droits d'utilisation" required></textarea>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label for="photo-license">📎 Joindre la licence/autorisation :</label><br />
+                                <input type="file" id="photo-license" name="photo_license" style="margin-top: 5px;" 
+                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" />
+                                <p class="mini">Formats acceptés : PDF, JPG, PNG, DOC, DOCX</p>
+                            </div>
+                            <p class="alerte" style="margin-top: 10px;">
+                                ⚠️ <strong>Validation manuelle requise - délai supplémentaire</strong><br />
+                                Le club a déjà dû payer des amendes de 500€ pour des photos publiées sans autorisation.
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <h2 class="title-header">Contenus :</h2>
@@ -276,6 +364,39 @@
             const contentField = document.getElementById('{{ form.cont.vars.id }}');
             if (contentField) {
                 contentField.removeAttribute('required');
+            }
+            
+            // Gestion de l'origine de la photo
+            const photoOriginSelect = document.getElementById('photo-origin');
+            const photoPersoConsent = document.getElementById('photo-perso-consent');
+            const photoMembreClub = document.getElementById('photo-membre-club');
+            const photoSiteWeb = document.getElementById('photo-site-web');
+            const photoAutreDetails = document.getElementById('photo-autre-details');
+            
+            if (photoOriginSelect) {
+                photoOriginSelect.addEventListener('change', function() {
+                    // Masquer tous les éléments conditionnels
+                    photoPersoConsent.style.display = 'none';
+                    photoMembreClub.style.display = 'none';
+                    photoSiteWeb.style.display = 'none';
+                    photoAutreDetails.style.display = 'none';
+                    
+                    // Afficher l'élément approprié selon la sélection
+                    switch(this.value) {
+                        case 'photo_perso':
+                            photoPersoConsent.style.display = 'block';
+                            break;
+                        case 'membre_club':
+                            photoMembreClub.style.display = 'block';
+                            break;
+                        case 'site_web':
+                            photoSiteWeb.style.display = 'block';
+                            break;
+                        case 'autre':
+                            photoAutreDetails.style.display = 'block';
+                            break;
+                    }
+                });
             }
         });
     </script>
