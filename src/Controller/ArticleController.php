@@ -62,15 +62,13 @@ class ArticleController extends AbstractController
                 if ($isNew) {
                     $article->setUser($this->getUser());
                     $article->setTspCrea(time());
+                    $article->setCode($this->generateArticleCode($article->getTitre(), $slugger));
+                } else {
+                    $article->setStatus(0);
                 }
 
                 $article->setTsp(time());
                 $article->setTspLastedit(new \DateTime());
-
-                if ($isNew) {
-                    $article->setCode($this->generateArticleCode($article->getTitre(), $slugger));
-                }
-
                 $article->setTopubly($form->get('topubly')->getData() ? 1 : 0);
 
                 if ($form->get('isCompteRendu')->getData() && !$article->getEvt()) {
