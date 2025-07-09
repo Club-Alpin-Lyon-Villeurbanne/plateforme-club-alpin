@@ -100,7 +100,7 @@ if (allowed('user_see_all')) {
 				<thead>
 					<tr>
 						<th>Outils</th>
-						<th>n° CAF / Infos / DBID </th>
+						<th>n° CAF / Infos</th>
 						<!-- <th>Actif ?</th> -->
 						<th>Civ</th>
 						<th>Nom</th>
@@ -170,11 +170,10 @@ if (allowed('user_see_all')) {
 
                 // INFOS
                 echo '<td>'
-                    . html_utf8($elt['cafnum_user']) . '<br />'
+                    . html_utf8($elt['cafnum_user']) . ' '
                     . ($elt['manuel_user'] ? '<img src="/img/base/user_manuel.png" alt="MANUEL" title="Utilisateur créé manuellement" /> ' : '')
                     . ($elt['nomade_user'] ? '<img src="/img/base/nomade_user.png" alt="NOMADE" title="Utilisateur nomade" /> ' : '')
                     . ('2' == $elt['valid_user'] ? '<img src="/img/base/user_desactive.png" alt="DESACTIVE" title="Utilisateur désactivé manuellement" /> ' : '')
-                    . (int) $elt['id_user'] . ' '
                     . '</td>'
                     // .'<td>'.intval($elt['valid_user']).'</td>'
                     . '<td>' . html_utf8($elt['civ_user']) . '</td>'
