@@ -161,12 +161,19 @@ if (allowed('user_see_all')) {
                 }
 
                 if ($isGranted_role_allowed_to_switch) {
-                    echo (1 == $elt['valid_user'] && $elt['email_user']) ? ' <a href="/profil.html?_switch_user=' . urlencode($elt['email_user']) . '" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png"></a> ' : ' ';
+                    echo (1 == $elt['valid_user'] && $elt['email_user']) ? ' <a href="/profil.html?_switch_user=' . urlencode($elt['email_user']) . '" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png"></a> ' : '';
                 }
 
                 echo '</td>';
 
                 $img_lock = '<img src="/img/base/lock_gray.png" alt="caché"  title="Vous devez disposer de droits supérieurs pour afficher cette information" />';
+
+                $emailCol = '';
+                if (1 == $elt['valid_user'] && $elt['email_user']) {
+                    $emailCol = ($isAllowed_user_read_private ? '<a href="mailto:' . html_utf8($elt['email_user']) . '" title="Contact direct">' . html_utf8($elt['email_user']) . '</a>' : $img_lock);
+                } else {
+                    $emailCol = '<span style="color: red;" title="Les comptes non activés ne reçoivent pas les e-mails">⚠️ compte non activé</span>';
+                }
 
                 // INFOS
                 echo '<td>'
@@ -189,7 +196,7 @@ if (allowed('user_see_all')) {
                 echo '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
                 . '<td>' . ($isAllowed_user_read_private ? '<span style="display:none">' . $elt['birthday_user'] . '</span>' . ($elt['birthday_user'] ? (int) ($elt['birthday_user']) . ' ans' : '...') : $img_lock) . '</td>'
                 . '<td>' . ($isAllowed_user_read_private ? html_utf8($elt['tel_user']) : $img_lock) . '</td>'
-                . '<td>' . ($isAllowed_user_read_private ? '<a href="mailto:' . html_utf8($elt['email_user']) . '" title="Contact direct">' . html_utf8($elt['email_user']) . '</a>' : $img_lock) . '</td>'
+                . '<td>' . $emailCol . '</td>'
                 . '</tr>';
             } ?>
 				</tbody>
