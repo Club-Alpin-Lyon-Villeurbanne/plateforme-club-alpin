@@ -59,11 +59,6 @@ if (user()) {
         require $operationsDir . 'operations.evt_del.php';
     }
 
-    // SORTIE : reactivation
-    elseif ('evt_uncancel' == $operation) {
-        require $operationsDir . 'operations.evt_uncancel.php';
-    }
-
     // SORTIE : annulation
     elseif ('evt_cancel' == $operation) {
         require $operationsDir . 'operations.evt_cancel.php';

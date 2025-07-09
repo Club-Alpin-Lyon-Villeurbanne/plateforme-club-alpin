@@ -589,6 +589,8 @@ class SortieController extends AbstractController
         $newEvent->setDifficulte($event->getDifficulte());
         $newEvent->setItineraire($event->getItineraire());
         $newEvent->setNeedBenevoles($event->getNeedBenevoles());
+        $newEvent->setGroupe($event->getGroupe());
+        $newEvent->setJoinStart(time());
 
         $em->persist($newEvent);
 
