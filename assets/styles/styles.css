@@ -459,5 +459,6 @@ form .niveau.editable:hover .input{background-image:none;}
 }
 .article-title-author {
     flex: 60%;
+    text-align: right;
 }
 h2.bleucaf {font-family:DINBold; font-weight: bold; margin: 20px 0 10px 0; text-transform: uppercase; font-size: 18px;}
