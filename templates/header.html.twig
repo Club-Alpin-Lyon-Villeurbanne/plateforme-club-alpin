@@ -199,12 +199,12 @@
                                 </li>
                                 {% endif %}
                             {% endif %}
+                            <li>
+                                <a href="{{ path('profil_alertes') }}" title="">
+                                    mes alertes
+                                </a>
+                            </li>
                             {% if app.user and caf_id == 'lyon' %}
-                                <li>
-                                    <a href="{{ path('profil_alertes') }}" title="">
-                                        mes alertes
-                                    </a>
-                                </li>
                                 <li>
                                     <a href="{{ path('minibus') }}" title="">
                                         réservation de minibus
