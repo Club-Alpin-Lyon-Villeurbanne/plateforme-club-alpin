@@ -86,7 +86,7 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
                         </tr>
                         <?php foreach ($president as $p) { ?>
                             <tr>
-                                <td><?php echo html_utf8(strtoupper($p['lastname_user']) . ', ' . ucfirst(strtolower($p['firstname_user']))); ?></td>
+                                <td><?php echo html_utf8(ucfirst(strtolower($p['firstname_user']) . ' ' . strtoupper($p['lastname_user']))); ?></td>
                                 <th>TEL</th>
                                 <td><?php
                                 if (!empty($p['tel_user'])) {
@@ -106,7 +106,7 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
                         </tr>
                         <?php foreach ($vicepresident as $vp) { ?>
                             <tr>
-                                <td><?php echo html_utf8(strtoupper($vp['lastname_user']) . ', ' . ucfirst(strtolower($vp['firstname_user']))); ?></td>
+                                <td><?php echo html_utf8(ucfirst(strtolower($vp['firstname_user']) . ' ' . strtoupper($vp['lastname_user']))); ?></td>
                                 <th>TEL</th>
                                 <td><?php
                             if (!empty($vp['tel_user'])) {
