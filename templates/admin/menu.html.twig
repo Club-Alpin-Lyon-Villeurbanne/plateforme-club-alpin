@@ -1,0 +1,24 @@
+{% set is_admin = false %}
+{% set is_content_manager = false %}
+{% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
+    {% set is_admin = true %}
+{% endif %}
+{% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_CONTENT_MANAGER')) %}
+    {% set is_content_manager = true %}
+{% endif %}
+
+<div id="menuAdmin" style="position:relative">
+    <!-- specs -->
+    <a href="{{ path('admin_logout') }}" title="" class="adminmenulink special"><img src="/img/base/door_out.png" alt="" title="" /> Déconnexion</a>
+    {% if is_admin %}
+    <a href="/includer.php?p=includes/admin-log.php&admin=true" title="Voir les activités administrateur" class="adminmenulink special fancyframe"><img src="/img/base/report.png" alt="" title="" /> Log</a>
+    {% endif %}
+    <a href="{{ path('legacy_root') }}" title="Retour au site" class="adminmenulink special"><img src="/img/base/house.png" alt="" title="" /> Retour au site</a>
+
+    <span style="float:left">Menu {% if is_admin %}Administrateur{% elseif is_content_manager %}Gestionnaire Contenu{% endif %} : </span>
+
+    <div style="margin-left:160px">
+        {{ render(controller('App\\Controller\\AdminController::adminMenuPages')) }}
+    </div>
+    <div style="clear:both"></div>
+</div>

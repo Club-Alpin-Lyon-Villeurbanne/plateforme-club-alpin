@@ -117,7 +117,7 @@ if (is_array($p_addJs)) {
         <div id="siteHeight">
             <?php
         // _________________________________________________ MENU ADMINISTRATEUR & gestionnaire de contenu
-        if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
+        if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) && $p_pageadmin) {
             require __DIR__ . '/admin/menuAdmin.php';
         }
 
