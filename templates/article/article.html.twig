@@ -26,8 +26,7 @@
         </div>
 
         <div class="cont_article"><br />
-            {% if article.topubly is not same as (1)
-                or article.status is not same as (constant('App\\Entity\\Article::STATUS_PUBLISHED'))
+            {% if article.status is not same as (constant('App\\Entity\\Article::STATUS_PUBLISHED'))
                 or (
                     article.commission and allowed('article_delete_notmine', 'commission:' ~ article.commission.code)
                     or article.commission and allowed('article_edit_notmine', 'commission:' ~ article.commission.code)
@@ -122,8 +121,7 @@
                 </a>
             {% endif %}
 
-            {% if article.topubly is not same as (1)
-                or article.status is not same as (constant('App\\Entity\\Article::STATUS_PUBLISHED'))
+            {% if article.status is not same as (constant('App\\Entity\\Article::STATUS_PUBLISHED'))
                 or (
                     article.commission and allowed('article_delete_notmine', 'commission:' ~ article.commission.code)
                     or article.commission and allowed('article_edit_notmine', 'commission:' ~ article.commission.code)
