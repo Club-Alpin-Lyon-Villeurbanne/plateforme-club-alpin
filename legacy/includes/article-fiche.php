@@ -47,8 +47,7 @@ if (!$article) {
     // contenu HTML
     echo '<div class="cont_article"><br />';
 
-    if ('1' != $article['topubly_article']
-        || '1' != $article['status_article']
+    if ('1' != $article['status_article']
         || (allowed('article_delete_notmine', 'commission:' . $article['code_commission'])
             || allowed('article_edit_notmine', 'commission:' . $article['code_commission'])
             || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
@@ -171,8 +170,7 @@ if (!$article) {
     }
 
     // mêmes conditions que pour la balise ouvrante
-    if ('1' != $article['topubly_article']
-        || '1' != $article['status_article']
+    if ('1' != $article['status_article']
         || (allowed('article_delete_notmine', 'commission:' . $article['code_commission'])
             || allowed('article_edit_notmine', 'commission:' . $article['code_commission'])
             || allowed('article_delete') && user() && $article['user_article'] == (string) getUser()->getId()
