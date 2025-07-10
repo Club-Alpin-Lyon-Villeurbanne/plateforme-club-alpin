@@ -137,6 +137,9 @@ class SortieController extends AbstractController
             if (empty($event->getJoinStart())) {
                 $event->setJoinStart(time());
             }
+            if (empty($event->getRdv())) {
+                $event->setRdv('');
+            }
 
             $entityManager->persist($event);
             $entityManager->flush();
