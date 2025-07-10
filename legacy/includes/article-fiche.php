@@ -34,9 +34,9 @@ if (!$article) {
     echo ' le ' . date('d.m.Y', $article['tsp_article']);
 
     if ($totalComments > 1) {
-        echo ', <a href="' . $_SERVER['REQUEST_URI'] . "#comments\">$totalComments commentaires</a>";
+        echo '<br><a href="' . $_SERVER['REQUEST_URI'] . "#comments\">$totalComments commentaires</a>";
     } elseif ($totalComments > 0) {
-        echo ', <a href="' . $_SERVER['REQUEST_URI'] . "#comments\">$totalComments commentaire</a>";
+        echo '<br><a href="' . $_SERVER['REQUEST_URI'] . "#comments\">$totalComments commentaire</a>";
     } ?>
             </div>
         </div>
