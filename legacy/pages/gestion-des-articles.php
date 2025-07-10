@@ -15,15 +15,13 @@ if (allowed('article_validate_all')) { // pouvoir de valider les articles
     $tab = LegacyContainer::get('legacy_user_rights')->getCommissionListForRight('article_validate');
 
     $req = "SELECT COUNT(id_article)
-	FROM caf_commission c, caf_article a
+	FROM caf_article a
         LEFT JOIN caf_evt e ON (a.evt_article = e.id_evt)
-        LEFT JOIN caf_commission ce ON e.commission_evt = ce.id_commission
+        INNER JOIN caf_commission ce ON (e.commission_evt = c.id_commission OR a.commission_article = c.id_commission)
 	WHERE a.status_article=0
 	AND a.topubly_article=1
-	AND a.commission_article=c.id_commission
 	AND (
 	    c.code_commission IN ('" . implode("','", $tab) . "')
-	    OR (a.commission_article = -1 AND e.id_evt IS NOT NULL AND ce.code_commission IN ('" . implode("','", $tab) . "'))
     )"; // condition OR pour toutes les commissions autorisées, et les compte-rendus de sorties (commission à -1) sur une commission ou j'ai acces
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -65,15 +63,13 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
         // compte nb total articles
         $req = "SELECT COUNT(id_article)
-        FROM caf_commission c, caf_article a
+        FROM caf_article a
             LEFT JOIN caf_evt e ON (a.evt_article = e.id_evt)
-            LEFT JOIN caf_commission ce ON e.commission_evt = ce.id_commission
+            INNER JOIN caf_commission ce ON (e.commission_evt = c.id_commission OR a.commission_article = c.id_commission)
 		WHERE a.status_article=0
 	    AND a.topubly_article=1
-		AND a.commission_article = c.id_commission
 		AND (
             c.code_commission IN ('" . implode("','", $tab) . "')
-            OR (a.commission_article = -1 AND e.id_evt IS NOT NULL AND ce.code_commission IN ('" . implode("','", $tab) . "'))
         ) "; // condition OR pour toutes les commissions autorisées
 
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -90,17 +86,17 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
         // articles à valider, selon la (les) commission dont nous sommes responsables
         $req = "SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
-					, id_user, nickname_user, lastname_user, firstname_user, c.code_commission, c.title_commission
-        FROM caf_commission c, caf_article a
+					, id_user, nickname_user, lastname_user, firstname_user, media_upload_id
+     , c.code_commission, c.title_commission, m.filename
+        FROM caf_article a
 		    LEFT JOIN caf_user u ON (u.id_user = a.user_article)
             LEFT JOIN caf_evt e ON (a.evt_article = e.id_evt)
-            LEFT JOIN caf_commission ce ON e.commission_evt = ce.id_commission
+            INNER JOIN caf_commission c ON (e.commission_evt = c.id_commission OR a.commission_article = c.id_commission)
+            LEFT JOIN media_upload as m ON (a.media_upload_id = m.id)
 		WHERE status_article=0
         AND a.topubly_article = 1
-		AND a.commission_article = c.id_commission
 		AND (
             c.code_commission IN ('" . implode("','", $tab) . "')
-            OR (a.commission_article = -1 AND e.id_evt IS NOT NULL AND ce.code_commission IN ('" . implode("','", $tab) . "'))
         ) " // condition OR pour toutes les commissions autorisées
         . 'AND u.id_user = a.user_article
 		ORDER BY topubly_article desc,  tsp_validate_article ASC
@@ -156,11 +152,9 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                         }
 
                         // type d'article : lié à l'id de la commission en fait
-                        if (0 == $article['commission_article']) {
-                            $type = 'Actualité du club (toutes les commissions)';
-                        } elseif (-1 == $article['commission_article']) {
+                        if (!empty($article['evt_article'])) {
                             $type = 'Compte rendu de sortie';
-                        } else {
+                        } elseif (!empty($article['commission_article'])) {
                             $type = 'Actualité « ' . $article['title_commission'] . ' »';
                         }
 
