@@ -95,6 +95,46 @@
             {{ form_row(form.tarifDetail) }}
         </div>
 
+        <h2 class="trigger-h2">Billetterie HelloAsso :</h2>
+        <div class="trigger-me">
+            <div style="padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+                <label style="display: block; margin-bottom: 15px; cursor: pointer;">
+                    <input type="checkbox" id="helloasso_enabled" name="helloasso_enabled" style="margin-right: 10px;" />
+                    <strong>Créer un événement HelloAsso pour cette sortie</strong>
+                </label>
+                
+                <div id="helloasso_config" style="display: none; margin-top: 20px; padding: 20px; background-color: white; border: 1px solid #ddd; border-radius: 5px;">
+                    <p style="color: #666; margin-bottom: 15px;">
+                        Cette option permet de créer automatiquement un événement dans HelloAsso pour gérer les paiements en ligne.
+                    </p>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label for="helloasso_amount" style="display: block; margin-bottom: 5px;">
+                            Montant de l'événement HelloAsso : <span class="required">*</span>
+                        </label>
+                        <input type="number" 
+                               id="helloasso_amount" 
+                               name="helloasso_amount" 
+                               class="type2" 
+                               placeholder="ex : 35.50"
+                               step="0.01"
+                               min="0"
+                               style="width: 150px;" /> €
+                        <div class="mini help-text" style="margin-top: 5px;">
+                            Ce montant sera demandé aux participants lors de leur inscription sur HelloAsso
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 10px; background-color: #e3f2fd; border-radius: 3px;">
+                        <p style="margin: 0; font-size: 0.9em;">
+                            <strong>Note :</strong> L'événement HelloAsso sera créé automatiquement après validation de la sortie.
+                            Les participants pourront s'inscrire et payer directement en ligne.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <h2 class="trigger-h2">Inscriptions :</h2>
         <div class="trigger-me">
             <div style="width:45%; padding-right:3%; float:left">
@@ -223,6 +263,34 @@
             const contentField = document.getElementById('{{ form.description.vars.id }}');
             if (contentField) {
                 contentField.removeAttribute('required');
+            }
+
+            // Gestion de l'affichage du cadre HelloAsso
+            const helloassoCheckbox = document.getElementById('helloasso_enabled');
+            const helloassoConfig = document.getElementById('helloasso_config');
+            const helloassoAmount = document.getElementById('helloasso_amount');
+
+            if (helloassoCheckbox) {
+                helloassoCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        helloassoConfig.style.display = 'block';
+                        // Animation de slide
+                        helloassoConfig.style.opacity = '0';
+                        helloassoConfig.style.transition = 'opacity 0.3s ease-in-out';
+                        setTimeout(() => {
+                            helloassoConfig.style.opacity = '1';
+                        }, 10);
+                    } else {
+                        helloassoConfig.style.opacity = '0';
+                        setTimeout(() => {
+                            helloassoConfig.style.display = 'none';
+                            // Vider le champ montant si la case est décochée
+                            if (helloassoAmount) {
+                                helloassoAmount.value = '';
+                            }
+                        }, 300);
+                    }
+                });
             }
         });
     </script>

@@ -129,6 +129,26 @@
             <span class="date"> / {{ event.tsp | intldate('cccc d MMMM yyyy') }}</span>
         </h1>
 
+        {# Bannière HelloAsso (simulation pour prototype) #}
+        {% if true %} {# Simulation: toujours afficher pour le prototype #}
+            <div style="background-color: #00b4d8; color: white; padding: 15px 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin: 0 0 5px 0; color: white;">💳 Paiement attendu pour cette sortie</h3>
+                        <p style="margin: 0; font-size: 14px;">Le règlement de <strong style="font-size: 16px;">35,50 €</strong> est requis pour valider votre inscription</p>
+                        <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.9;">Paiement sécurisé via HelloAsso - CB, PayPal ou virement acceptés</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <a href="#" onclick="alert('Redirection vers HelloAsso pour payer 35,50€ (prototype)'); return false;" 
+                           style="background-color: white; color: #00b4d8; padding: 12px 25px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            Payer maintenant →
+                        </a>
+                        <p style="margin: 5px 0 0 0; font-size: 11px;">Paiement 100% sécurisé</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
         <div class="tw-flex tw-gap-4">
             {% if app.user and event.user.id == app.user.id and event.isFinished %}
             <a href="/article/new?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
@@ -370,6 +390,20 @@
                         $('#nRefusees').html(nRefusees);
                     });
 
+                    // Génération aléatoire des statuts de paiement HelloAsso (prototype)
+                    $('.payment-status').each(function() {
+                        var randomStatus = Math.random();
+                        var $cell = $(this);
+                        
+                        if (randomStatus < 0.7) {
+                            // 70% ont payé
+                            $cell.html('<span style="color: #4CAF50; font-weight: bold;">✓ Payé</span><br><span style="font-size: 9px; color: #666;">HelloAsso</span>');
+                        } else {
+                            // 30% non payé
+                            $cell.html('<span style="color: #F44336; font-weight: bold;">✗ Non payé</span>');
+                        }
+                    });
+
                 });
             </script>
 
@@ -388,10 +422,11 @@
                     <table class="datatable">
                         <thead>
                             <tr>
-                                <th width='30%'>Nom / Pseudo</th>
-                                <th width='15%'>Statut</th>
-                                <th width='15%'>Rôle</th>
+                                <th width='25%'>Nom / Pseudo</th>
+                                <th width='12%'>Statut</th>
+                                <th width='12%'>Rôle</th>
                                 <th width='10%'>Date</th>
+                                <th width='12%'>Paiement</th>
                                 <th>Contact</th>
                             </tr>
                         </thead>
@@ -594,6 +629,9 @@
                                         {{ participation.tsp | date('d/m') }}<br />
                                         {{ participation.tsp | date('à H:i') }}
                                     </td>
+                                    <td class="payment-status" data-user-id="{{ participation.user.id }}">
+                                        <!-- Statut de paiement sera ajouté par JavaScript -->
+                                    </td>
                                     <td>
                                         {% if participation.user.valid %}
                                             <a href="mailto:{{ participation.user.email }}">{{ participation.user.email | u.truncate(15, '...') }}</a><br />
@@ -604,6 +642,61 @@
                                     </td>
                                 </tr>
                             {% endfor %}
+                            
+                            {# Participants fictifs pour le prototype - Non payés #}
+                            <tr class="status1" style="color:gray; font-size:10px;">
+                                <td>
+                                    Marie DURAND<br/>
+                                    <a href="#" class="fancyframe userlink" onclick="return false;">mariedurand</a>
+                                </td>
+                                <td class="mini joinlabels status1">
+                                    <label>
+                                        <input checked="checked" disabled="disabled" type="radio" value="1" />
+                                        Accepté
+                                    </label>
+                                </td>
+                                <td class="mini">
+                                    Inscrit<br />
+                                </td>
+                                <td style="white-space:nowrap">
+                                    15/11<br />
+                                    à 14:30
+                                </td>
+                                <td class="payment-status-manual">
+                                    <span style="color: #F44336; font-weight: bold;">✗ Non payé</span>
+                                </td>
+                                <td>
+                                    <a href="mailto:marie.durand@example.com">marie.durand@ex...</a><br />
+                                    06 12 34 56 78
+                                </td>
+                            </tr>
+                            
+                            <tr class="status1" style="color:gray; font-size:10px;">
+                                <td>
+                                    Pierre MARTIN<br/>
+                                    <a href="#" class="fancyframe userlink" onclick="return false;">pierremartin</a>
+                                </td>
+                                <td class="mini joinlabels status1">
+                                    <label>
+                                        <input checked="checked" disabled="disabled" type="radio" value="1" />
+                                        Accepté
+                                    </label>
+                                </td>
+                                <td class="mini">
+                                    Inscrit<br />
+                                </td>
+                                <td style="white-space:nowrap">
+                                    16/11<br />
+                                    à 09:15
+                                </td>
+                                <td class="payment-status-manual">
+                                    <span style="color: #F44336; font-weight: bold;">✗ Non payé</span>
+                                </td>
+                                <td>
+                                    <a href="mailto:pierre.martin@example.com">pierre.martin@e...</a><br />
+                                    07 98 76 54 32
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
 
