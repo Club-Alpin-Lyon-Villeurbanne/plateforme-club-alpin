@@ -26,7 +26,8 @@ class ArticleRepository extends ServiceEntityRepository
             FROM caf_article a';
 
         if (!empty($commissions)) {
-            $sql .= ' INNER JOIN caf_commission c ON c . id_commission = a . commission_article ';
+            $sql .= ' LEFT JOIN caf_evt e ON (e.id_evt = a.evt_article)
+            INNER JOIN caf_commission c ON (c.id_commission = a.commission_article OR c.id_commission = e.commission_evt) ';
         }
 
         $sql .= ' WHERE a.status_article=0 AND a.topubly_article=1';
