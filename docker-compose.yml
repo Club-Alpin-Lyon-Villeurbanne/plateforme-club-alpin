@@ -5,7 +5,7 @@ services:
       args:
         - UID=${UID:-1000}
         - GID=${GID:-1000}
-    container_name: www_caflyon
+    container_name: www_pca
     profiles: ["dev", "ci"]
     ports:
       - "8000:80"
@@ -20,7 +20,7 @@ services:
   cafdb:
     # The MySQL version must be updated at multiple places (docker-compose, gitlab-ci)
     image: mysql:8.0.33
-    container_name: db_caflyon
+    container_name: db_pca
     profiles: ["dev", "ci"]
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
@@ -31,7 +31,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin
-    container_name: phpmyadmin_caflyon
+    container_name: phpmyadmin_pca
     profiles: ["dev"]
 
     ports:
@@ -42,7 +42,7 @@ services:
 
   mailcatcher:
     image: axllent/mailpit
-    container_name: mail_caflyon
+    container_name: mail_pca
     profiles: ["dev"]
     ports:
       - 1025:1025

@@ -5,7 +5,7 @@ ifneq ($(shell docker compose version 2>/dev/null),)
 else
   DOCKER_COMPOSE=docker-compose
 endif
-EXEC = $(DOCKER) exec -w /var/www www_caflyon
+EXEC = $(DOCKER) exec -w /var/www www_pca
 PHP = $(EXEC) php
 COMPOSER = $(EXEC) composer
 NPM = $(EXEC) npm
