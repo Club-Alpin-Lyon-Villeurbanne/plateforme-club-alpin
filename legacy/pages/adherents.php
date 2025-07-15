@@ -21,7 +21,7 @@ if (allowed('user_see_all')) {
         . ('notvalid' == $show ? ' AND valid_user=0 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
         . ('expired' == $show ? ' AND doit_renouveler_user=1 ' : '')
         . ('valid-expired' == $show ? ' AND valid_user=1 AND doit_renouveler_user=1 ' : '')
-        . ' ORDER BY lastname_user ASC, lastname_user ASC LIMIT 9000';			// , pays_user
+        . ' ORDER BY lastname_user ASC, firstname_user ASC LIMIT 9000';			// , pays_user
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $handleSql->fetch_assoc()) {
@@ -86,7 +86,7 @@ if (allowed('user_see_all')) {
 					$('#pagesLibres').dataTable({
 						"iDisplayLength": 100,
 						"aaSorting": [
-							[2, "desc"],
+							[3, "asc"],
 							[4, "asc"]
 						]
 					});
