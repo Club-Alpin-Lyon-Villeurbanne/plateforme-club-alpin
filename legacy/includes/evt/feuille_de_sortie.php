@@ -22,8 +22,10 @@ if (isGranted(SecurityConstants::ROLE_ADMIN)
         || (user() && getUser()->hasAttribute(UserAttr::SALARIE))
         || (
             (
-                allowed('evt_join_notme') || allowed('evt_unjoin_notme')
-                || allowed('evt_joining_accept') || allowed('evt_joining_refuse')
+                allowed('evt_join_notme')
+                || allowed('evt_unjoin_notme', 'commission:' . $evt['code_commission'])
+                || allowed('evt_joining_accept', 'commission:' . $evt['code_commission'])
+                || allowed('evt_joining_refuse', 'commission:' . $evt['code_commission'])
             ) && (
                 user() && getUser()->hasAttribute(UserAttr::RESPONSABLE_COMMISSION, $evt['code_commission'])
             )
