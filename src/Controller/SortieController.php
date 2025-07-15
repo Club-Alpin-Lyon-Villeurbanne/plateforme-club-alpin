@@ -131,9 +131,6 @@ class SortieController extends AbstractController
             }
 
             // champs auto
-            if (empty($event->getJoinMax())) {
-                $event->setJoinMax($event->getNgensMax());
-            }
             if (empty($event->getJoinStart())) {
                 $event->setJoinStart(time());
             }
