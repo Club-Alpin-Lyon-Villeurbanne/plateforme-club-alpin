@@ -94,12 +94,7 @@ class FfcamFileParser
 
     private function normalizePhoneNumber(string $phoneNumber): string
     {
-        $normalizedPhoneNumber = $phoneNumber;
-        $normalizedPhoneNumber = str_ireplace('o', '0', $normalizedPhoneNumber);
-        $normalizedPhoneNumber = preg_replace('/(?:\+)/', '00', $normalizedPhoneNumber);
-        $normalizedPhoneNumber = preg_replace('/(?:0033)/', '0', $normalizedPhoneNumber);
-
-        return preg_replace('/[^\d]+/', '', $normalizedPhoneNumber);
+        return $phoneNumber;
     }
 
     private function normalizeNames(string $name): string
