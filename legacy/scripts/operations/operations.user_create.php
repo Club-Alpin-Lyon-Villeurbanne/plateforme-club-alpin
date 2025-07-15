@@ -43,6 +43,18 @@ if (!preg_match('#[0-9]{2}/[0-9]{2}/[0-9]{4}#', $birthday_user)) {
     $errTab[] = 'La date de naissance doit être au format jj/mm/aaaa.';
 }
 
+// vérification anti doublon de licence
+$check_query = 'SELECT COUNT(*) FROM caf_user WHERE cafnum_user = ?';
+$stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($check_query);
+$stmt->bind_param('s', $cafnum_user);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_row();
+if ($row[0] > 0) {
+    $errTab[] = 'Un compte existe déjà avec ce numéro de licence.';
+}
+$stmt->close();
+
 // formatage date anniversaire
 if (!isset($errTab) || 0 === count($errTab)) {
     // tsp de début
@@ -53,7 +65,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 if (!isset($errTab) || 0 === count($errTab)) {
     $mdp_user = LegacyContainer::get('legacy_hasher_factory')->getPasswordHasher('login_form')->hash($mdp_user);
 
-    // vérification anti doublon (seulement sur comptes confirmés)
+    // vérification anti doublon d'email (seulement sur comptes confirmés)
     $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE email_user = ? AND valid_user = 1');
     $stmt->bind_param('s', $email_user);
     $stmt->execute();
