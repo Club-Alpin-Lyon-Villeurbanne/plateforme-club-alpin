@@ -600,7 +600,7 @@
                                         {% else %}
                                             <span style="color: red; font-weight: bold" title="Les comptes non activés ne reçoivent pas les e-mails">compte non activé</span><br />
                                         {% endif %}
-                                        {{ participation.user.tel|split('', 2)|join(' ') }}
+                                        {{ participation.user.tel }}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -977,11 +977,11 @@
                         </td>
                         <td class="small">
                             {% if allowed('user_read_private', event.commission.code) %}
-                                {{ inscrit.user.tel|split('', 2)|join(' ') }}
+                                {{ inscrit.user.tel }}
                             {% endif %}
                         <td class="small">
                             {% if allowed('user_read_private', event.commission.code) %}
-                                {{ inscrit.user.tel2|split('', 2)|join(' ') }}
+                                {{ inscrit.user.tel2 }}
                             {% endif %}
                         </td>
                         <td class="small">
@@ -1010,11 +1010,11 @@
                             </td>
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
-                                    {{ inscrit.user.tel|split('', 2)|join(' ') }}
+                                    {{ inscrit.user.tel }}
                                 {% endif %}
                             <td class="small">
                                 {% if allowed('user_read_private', event.commission.code) %}
-                                    {{ inscrit.user.tel2|split('', 2)|join(' ') }}
+                                    {{ inscrit.user.tel2 }}
                                 {% endif %}
                             </td>
                             <td class="small">
@@ -1075,7 +1075,7 @@
 
                                                 <input type="hidden" name="filiations" value="on" />
                                                 <br />
-                                                <label for="filiation_id_user_<?php echo user() ? getUser()->getId() : ''; ?>" style="width:100%;clear:both;overflow:hidden;">
+                                                <label for="filiation_id_user_{{ app.user.id }}" style="width:100%;clear:both;overflow:hidden;">
                                                     <input
                                                         type="checkbox"
                                                         checked="checked"
