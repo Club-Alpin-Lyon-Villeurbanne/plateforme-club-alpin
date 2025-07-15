@@ -4,6 +4,7 @@ use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 $is_covoiturage = $evtUrl = $evtName = $inscrits = $evtDate = $commissionTitle = null;
+$auto_accept = false;
 
 // Filiations
 if (isset($_POST['filiations']) && 'on' == $_POST['filiations']) {
@@ -133,9 +134,21 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // SI PAS DE PB, INTÉGRATION BDD
     if (!isset($errTab) || 0 === count($errTab)) {
         $is_covoiturage = null;
-        $status_evt_join = 0;
         $current_timestamp = time();
         $success = true;
+
+        // si on accepte les demandes automatiquement
+        $status_evt_join = 0;
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT auto_accept FROM caf_evt WHERE id_evt = ? LIMIT 1');
+        $stmt->bind_param('i', $id_evt);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_row();
+        $stmt->close();
+        if (1 === $row[0]) {
+            $status_evt_join = 1;
+            $auto_accept = true;
+        }
 
         $evt = get_evt($id_evt);
 
@@ -276,6 +289,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'event_name' => $evtName,
                 'event_url' => $evtUrl,
                 'event_date' => $evtDate,
+                'auto_accept' => $auto_accept,
                 'commission' => $commissionTitle,
                 'inscrits' => array_map(function ($cetinscrit) {
                     return [
@@ -303,8 +317,17 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         $ramassage = false;
 
-        // inscription simple de moi à moi
-        if (!$filiations) {
+        // inscription auto-acceptée
+        if ($auto_accept) {
+            LegacyContainer::get('legacy_mailer')->send(getUser()->getEmail(), 'transactional/sortie-participation-confirmee', [
+                'role' => $role_evt_join,
+                'event_name' => $evtName,
+                'event_url' => $evtUrl,
+                'event_date' => $evtDate,
+                'commission' => $commissionTitle,
+            ]);
+        } elseif (!$filiations) {
+            // inscription simple de moi à moi
             LegacyContainer::get('legacy_mailer')->send(getUser()->getEmail(), 'transactional/sortie-demande-inscription-confirmation', [
                 'role' => $role_evt_join,
                 'event_name' => $evtName,

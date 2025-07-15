@@ -36,13 +36,15 @@ class Evt
     #[Groups('event:read')]
     private int $status = 0;
 
+    #[ORM\Column(name: 'auto_accept', type: 'boolean', nullable: false, options: ['default' => false])]
+    private bool $autoAccept = false;
+
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'status_who_evt', referencedColumnName: 'id_user', nullable: true)]
     private ?User $statusWho;
 
     #[ORM\Column(name: 'status_legal_evt', type: 'smallint', nullable: false, options: ['comment' => '0-unseen 1-ok 2-refused', 'default' => 0])]
     #[Groups('event:read')]
-
     private int $statusLegal = 0;
 
     #[ORM\ManyToOne(targetEntity: 'User')]
@@ -779,6 +781,18 @@ class Evt
     public function setDetailsCaches(?string $detailsCaches): self
     {
         $this->detailsCaches = $detailsCaches;
+
+        return $this;
+    }
+
+    public function isAutoAccept(): bool
+    {
+        return $this->autoAccept;
+    }
+
+    public function setAutoAccept(bool $autoAccept): self
+    {
+        $this->autoAccept = $autoAccept;
 
         return $this;
     }
