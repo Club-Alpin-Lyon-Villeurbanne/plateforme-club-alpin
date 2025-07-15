@@ -43,10 +43,10 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
             if ('benevole' == $row['code_usertype'] && allowed('user_giveright_1', $row['params_user_attr'])) {
                 $deleteRight = true;
             }
-            if ('encadrant' == $row['code_usertype'] && allowed('user_giveright_1', $row['params_user_attr'])) {
+            if ('encadrant' == $row['code_usertype'] && allowed('comm_delier_encadrant', $row['params_user_attr'])) {
                 $deleteRight = true;
             }
-            if ('stagiaire' == $row['code_usertype'] && allowed('user_giveright_1', $row['params_user_attr'])) {
+            if ('stagiaire' == $row['code_usertype'] && allowed('comm_delier_encadrant', $row['params_user_attr'])) {
                 $deleteRight = true;
             }
             if ('coencadrant' == $row['code_usertype'] && allowed('user_giveright_1', $row['params_user_attr'])) {
@@ -66,6 +66,11 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
                 $deleteRight = true;
             }
             if ('vice-president' == $row['code_usertype'] && allowed('user_givepresidence')) {
+                $deleteRight = true;
+            }
+
+            // comm_delier_responsable
+            if ('responsable-commission' == $row['code_usertype'] && allowed('comm_delier_responsable')) {
                 $deleteRight = true;
             }
 
