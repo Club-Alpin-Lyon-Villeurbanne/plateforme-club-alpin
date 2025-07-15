@@ -24,6 +24,14 @@ class UserAttr
     public const SALARIE = 'salarie';
     public const BENEVOLE = 'benevole';
     public const COENCADRANT = 'coencadrant';
+    public const array COMMISSION_RELATED = [
+        self::RESPONSABLE_COMMISSION,
+        self::BENEVOLE,
+        self::ENCADRANT,
+        self::STAGIAIRE,
+        self::COENCADRANT,
+        self::REDACTEUR,
+    ];
 
     /**
      * @var int
