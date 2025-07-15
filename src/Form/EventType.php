@@ -299,7 +299,7 @@ class EventType extends AbstractType
                 'scale' => 0,
                 'constraints' => [
                     new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
-                    new GreaterThan(0),
+                    new GreaterThanOrEqual(0),
                 ],
             ])
             ->add('joinStartDate', DateTimeType::class, [
