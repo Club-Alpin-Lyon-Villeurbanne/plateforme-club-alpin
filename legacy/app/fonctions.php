@@ -30,7 +30,7 @@ function presidence()
     global $vicepresident;
 
     $president = $vicepresident = [];
-    $president_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 6 WHERE U.id_user = A.user_user_attr';
+    $president_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 6 WHERE U.id_user = A.user_user_attr ORDER BY U.firstname_user ASC, U.lastname_user ASC';
     $president_result = LegacyContainer::get('legacy_mysqli_handler')->query($president_sql);
     while ($row_president = $president_result->fetch_assoc()) {
         if ('1' !== $row_president['id_user']) {
@@ -39,7 +39,7 @@ function presidence()
     }
 
     $vicepresident = [];
-    $vicepresident_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 7 WHERE U.id_user = A.user_user_attr';
+    $vicepresident_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 7 WHERE U.id_user = A.user_user_attr ORDER BY U.firstname_user ASC, U.lastname_user ASC';
     $vicepresident_result = LegacyContainer::get('legacy_mysqli_handler')->query($vicepresident_sql);
     while ($row_vicepresident = $vicepresident_result->fetch_assoc()) {
         if ('1' !== $row_vicepresident['id_user']) {
