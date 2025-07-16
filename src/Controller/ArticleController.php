@@ -3,20 +3,30 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\Comment;
 use App\Entity\MediaUpload;
 use App\Form\ArticleType;
+use App\Mailer\Mailer;
+use App\Repository\ArticleRepository;
+use App\Repository\CommentRepository;
 use App\Repository\EvtRepository;
+use App\UserRights;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ArticleController extends AbstractController
 {
     #[Route('/article/new', name: 'article_new')]
-    #[Route('/article/{id}/edit', name: 'article_edit')]
+    #[Route('/article/{id}/edit', name: 'article_edit', requirements: ['id' => '\d+'])]
     public function new(
         Request $request,
         EntityManagerInterface $entityManager,
@@ -112,6 +122,94 @@ class ArticleController extends AbstractController
             'article' => $article,
             'edit_mode' => null !== $article->getId(),
         ]);
+    }
+
+    #[Route(path: '/article/{code}-{id}.html', name: 'article_view', requirements: ['id' => '\d+', 'code' => '[a-z0-9-]+'], methods: ['GET'], priority: '10')]
+    #[Template('article/article.html.twig')]
+    public function article(Article $article, ArticleRepository $articleRepository, CommentRepository $commentRepository): array
+    {
+        if (!$this->isGranted('ARTICLE_VIEW', $article)) {
+            throw new AccessDeniedHttpException('Not found');
+        }
+
+        // maj nb vues
+        if (!$this->isGranted('ARTICLE_UPDATE', $article)) {
+            $articleRepository->updateViews($article);
+        }
+
+        return [
+            'article' => $article,
+            'current_commission' => $article->getCommission()?->getCode(),
+            'comments' => $commentRepository->findByArticle($article),
+            'article_url' => $this->generateUrl('article_view', ['id' => $article->getId(), 'code' => $article->getCode()], UrlGeneratorInterface::ABSOLUTE_URL),
+            'event_url' => $article->getEvt() ? $this->generateUrl('sortie', ['id' => $article->getEvt()->getId(), 'code' => $article->getEvt()->getCode()]) : '',
+        ];
+    }
+
+    #[Route('/article/{id}/commenter', name: 'article_comment', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
+    public function addComment(Request $request, EntityManagerInterface $em, UserRights $userRights, Mailer $mailer, ?Article $article = null): RedirectResponse
+    {
+        $errors = 0;
+        $type = Comment::ARTICLE_TYPE;
+
+        if (!$this->getUser()) {
+            throw new AccessDeniedHttpException('Seuls les adhérents connectés peuvent commenter pour le moment');
+        }
+
+        if (!$this->isCsrfTokenValid('article_comment', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        if (!$userRights->allowed('article_comment')) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à commenter.');
+        }
+
+        if (!$article) {
+            ++$errors;
+            $this->addFlash('error', 'Parent non défini.');
+        }
+        if (Article::STATUS_PUBLISHED !== $article->getStatus()) {
+            ++$errors;
+            $this->addFlash('error', 'L\'article visé ne semble pas publié.');
+        }
+        if ('unlocked' !== $request->request->get('unlock1')) {
+            ++$errors;
+            $this->addFlash('error', 'L\'antispam n\'a pas autorisé l\'envoi. Merci de cliquer sur le bouton &laquo;OK&raquo; pour envoyer le message.');
+        }
+
+        $content = trim(stripslashes($request->request->get('cont_comment')));
+        if (\strlen($content) < 10) {
+            ++$errors;
+            $this->addFlash('error', 'Par souci de pertinence, les commentaires doivent comporter au moins 10 caractères.');
+        }
+
+        $articleViewRoute = $this->generateUrl('article_view', ['code' => $article->getCode(), 'id' => $article->getId()]) . '#comments';
+        if (empty($errors)) {
+            $comment = new Comment();
+            $comment
+                ->setParentType($type)
+                ->setParent($article->getId())
+                ->setUser($this->getUser())
+                ->setTsp(time())
+                ->setStatus(1)
+                ->setName('')
+                ->setEmail('')
+                ->setCont($content)
+            ;
+            $em->persist($comment);
+            $em->flush();
+
+            // prévenir l'auteur de l'article
+            $mailer->send($article->getUser(), 'transactional/article-comment', [
+                'article_name' => $article->getTitre(),
+                'article_url' => $articleViewRoute,
+                'message' => $content,
+            ], [], null, $this->getUser()->getEmail());
+
+            $this->addFlash('info', 'Commentaire déposé');
+        }
+
+        return $this->redirect($articleViewRoute);
     }
 
     private function generateArticleCode(string $title, SluggerInterface $slugger): string
