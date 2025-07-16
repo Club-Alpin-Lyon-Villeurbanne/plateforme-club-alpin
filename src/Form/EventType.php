@@ -4,12 +4,10 @@ namespace App\Form;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
-use App\Entity\Groupe;
 use App\Repository\CommissionRepository;
 use App\Repository\UserAttrRepository;
 use App\Service\ParticipantService;
 use App\UserRights;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -95,22 +93,6 @@ class EventType extends AbstractType
                 'attr' => [
                     'class' => 'type1 wide',
                     'style' => 'width: 100%',
-                ],
-            ])
-            ->add('groupe', EntityType::class, [
-                'class' => Groupe::class,
-                'query_builder' => function (EntityRepository $er) use ($commission) {
-                    return $er->createQueryBuilder('g')
-                        ->where('g.actif = 1')
-                        ->andWhere('g.idCommission = :commission')
-                        ->setParameters(['commission' => $commission])
-                        ->orderBy('g.nom', 'ASC')
-                    ;
-                },
-                'label' => 'Groupe concerné par cette sortie',
-                'required' => false,
-                'attr' => [
-                    'class' => 'type1 wide',
                 ],
             ])
             ->add('encadrants', ChoiceType::class, [
