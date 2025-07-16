@@ -141,8 +141,8 @@ a#toolbar-commission.toptrigger b{white-space:normal;}
 #toolbar-user .notification-user span{display:inline-block; height:15px; width:15px; text-align:center; font-size:12px; line-height:15px; font-family:DINBold; font-weight:100; padding:3px; border-radius:15px; background:#8dc540; box-shadow:0 0 7px -2px black;}
 #toolbar-user .notification-user-alerte{height:0px; width:62px; position:relative; z-index:51; bottom:11px; text-align:right}
 #toolbar-user .notification-user-alerte span{display:inline-block; height:15px; width:15px; text-align:center; font-size:12px; line-height:15px; font-family:DINBold; font-weight:100; padding:3px; border-radius:15px; background:#f15a24; color: black; box-shadow:0 0 7px -2px black;}
-#toolbar-user-hidden .nav-user{float:left; width:200px; line-height:18px; padding:0 11px 0 0;}
-#toolbar-user-hidden .nav-user a{display:inline-block; line-height:15px; font-weight:inherit; color:inherit;}
+#toolbar-user-hidden .nav-user{float:left; width:200px; padding:0 11px 0 0;}
+#toolbar-user-hidden .nav-user a{font-weight:inherit; color:inherit;}
 #toolbar-user-hidden .nav-user a .star{display:block; float:left; width:0px; position:relative; right:14px; bottom:1px;}
  #toolbar-user-hidden .status{padding:0 0 0 0; margin:0; clear:both; font-size:14px; line-height:22px;}
 /* bloc pour masquer l'ombre sous le liens au survol */.shadowcache{display:block; height:0px; position:relative; top:28px; right:20px;}
