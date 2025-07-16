@@ -186,7 +186,7 @@ div.trigger-me label, div#form-event label {
 	display: block;
 }
 form.padded-form {
-	padding:10px 0 0 30px;
+	padding:10px 30px 0 30px;
 	line-height:18px;
 }
 form.padded-form .wide {

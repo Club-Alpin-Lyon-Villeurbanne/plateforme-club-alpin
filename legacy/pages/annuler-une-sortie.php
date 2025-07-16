@@ -148,7 +148,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 <h2 style="text-align:center; background:white; padding:10px">INSCRITS :</h2>
                 <?php
                 // RESUME DE LA SORTIE
-                echo '<table class="big-lines-table" style="width:570px; margin-left:20px;">';
+                echo '<table class="big-lines-table" style="margin-left:20px;">';
 
                 // echo '<pre>';print_r($joins); echo '</pre>';
 

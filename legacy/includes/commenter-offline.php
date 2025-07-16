@@ -1,13 +1,12 @@
-<!-- formulaires ajax en lightbox -->
-<form action="<?php echo $versCettePage; ?>" method="post" id="comment-form">
+<form action="<?php echo $versCettePage; ?>" method="post" id="comment-form" style="display: flex">
 	<input type="hidden" name="operation" value="comment" />
 	<input type="hidden" name="unlock1" value="0" />
 
-	<div style="float:left; width:75px; padding-top:3px;">
+	<div style="flex: 1; width:75px; padding-top:3px;">
 		<img src="/ftp/user/0/pic-profil.jpg" alt="" title="" />
 	</div>
-	<div style="float:left; width:530px;">
-		<textarea name="cont_comment" class="type2" style="width:460px; height:90px;" placeholder="Laisser un commentaire" ></textarea>
+	<div style="flex: 9;">
+		<textarea name="cont_comment" class="type2" style="width:100%; height:90px;" placeholder="Laisser un commentaire" ></textarea>
 		<br />
 		<input type="text" class="type2" style="width:215px; margin-right:16px" name="nom_comment" placeholder="Votre nom" />
 		<input type="text" class="type2" style="width:215px" name="email_comment" placeholder="Votre e-mail">

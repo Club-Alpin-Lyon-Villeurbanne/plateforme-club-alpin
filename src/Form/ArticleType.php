@@ -110,6 +110,7 @@ class ArticleType extends AbstractType
                 'attr' => [
                     'class' => 'tinymce',
                     'rows' => 15,
+                    'style' => 'width: 100%;',
                 ],
             ])
             ->add('mediaUploadId', HiddenType::class, [

@@ -95,11 +95,6 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
 		<!-- Slider -->
 		<div id="home-slider">
-			<!--
-			<div id="home-slider-helper">
-				SOUS CETTE PHOTO<br />SE CACHE UN ARTICLE<br />CLIQUEZ POUR LE VOIR !
-			</div>
-			// -->
 			<!-- nav-spots -->
 			<div id="home-slider-nav">
 				<div id="home-slider-nav-wrapper">
@@ -110,12 +105,6 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                             echo '<a href="javascript:void(0)" title="" class="' . ($i ? '' : 'up') . '"><span>' . ($i + 1) . '</span></a>';
                         }
 ?>
-						<!--
-						<a href="javascript:void(0)" title="" class="up"><span>1</span></a>
-						<a href="javascript:void(0)" title=""><span>2</span></a>
-						<a href="javascript:void(0)" title=""><span>3</span></a>
-						<a href="javascript:void(0)" title=""><span>4</span></a>
-						-->
 						<img src="/img/home-slider-nav-2.png" alt="" title="" />
 					</div>
 				</div>
@@ -135,7 +124,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     // check image
                     $img = '';
                     if ($article['media_upload_id']) {
-                        $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'wide_thumbnail');
+                        $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'fullwide_thumbnail');
                     }
 
                     echo '<a href="/article/' . html_utf8($article['code_article'] . '-' . $article['id_article']) . '.html" class="slide" style="background-image:url(' . $img . ')" title="CLIQUEZ POUR VOIR L\'ARTICLE">
