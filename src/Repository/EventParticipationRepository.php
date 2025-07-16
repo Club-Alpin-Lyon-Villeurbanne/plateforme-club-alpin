@@ -68,14 +68,14 @@ class EventParticipationRepository extends ServiceEntityRepository
     /**
      * Retourne la liste des participations triée par rôles.
      *
-     * @param Evt $event
-     *                    La sortie
-     * @param     $roles
-     *                   Les rôles à filtrer
-     * @param     $status
-     *                   Les status à filtrer
+     * @param Evt        $event
+     *                           La sortie
+     * @param array|null $roles
+     *                           Les rôles à filtrer
+     * @param int|null   $status
+     *                           Les status à filtrer
      */
-    public function getSortedParticipations(Evt $event, $roles = null, $status = EventParticipation::STATUS_VALIDE): mixed
+    public function getSortedParticipations(Evt $event, ?array $roles = null, ?int $status = EventParticipation::STATUS_VALIDE, bool $sortOnlyByName = false): mixed
     {
         $qb = $this->createQueryBuilder('ej')
             ->select('ej as liste')
@@ -87,8 +87,14 @@ class EventParticipationRepository extends ServiceEntityRepository
             ->join('ej.user', 'inscrit')
             ->where('ej.evt = :event')
             ->setParameter('event', $event)
-            ->orderBy('weight', 'DESC')
-            ->addOrderBy('status_sort', 'ASC')
+        ;
+        if (!$sortOnlyByName) {
+            $qb
+                ->addOrderBy('weight', 'DESC')
+                ->addOrderBy('status_sort', 'ASC')
+            ;
+        }
+        $qb
             ->addOrderBy('inscrit.firstname', 'ASC')
             ->addOrderBy('inscrit.lastname', 'ASC')
             ->addOrderBy('ej.tsp', 'ASC')
