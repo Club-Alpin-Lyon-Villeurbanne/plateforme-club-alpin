@@ -90,9 +90,10 @@ select.type1{border-color:#eaeaea; padding-top:5px; padding-bottom:6px;}
 .type2:focus{background-color:#ccff99; outline:0;}
 .userlink{font-weight:inherit; font-size:12px;}
 .userlink:hover, .userlink:focus {text-decoration:underline;}
-.biglink, .mediumlink{display:inline-block; margin:auto; text-align:center; background:#ebebeb; padding:5px 40px; font-weight:100; font-family:DINBold; font-size:14px; color:#666666; cursor:pointer; border: none;}
-.biglink:hover, .mediumlink:hover, .biglink:focus, .mediumlink:focus{text-decoration:none; outline:0; color:black; background:#d7d7d7;}
+.biglink, .mediumlink, .minilink {display:inline-block; margin:auto; text-align:center; background:#ebebeb; padding:5px 40px; font-weight:100; font-family:DINBold; font-size:14px; color:#666666; cursor:pointer; border: none;}
+.biglink:hover, .mediumlink:hover, .minilink:hover, .biglink:focus, .mediumlink:focus, .minilink:focus {text-decoration:none; outline:0; color:black; background:#d7d7d7;}
 .mediumlink {width: 45%}
+.minilink {width: 30%}
 .pageSelect{padding:15px 0; white-space:nowrap; overflow:hidden; margin-right:20px;}
 .pageSelect a{display:inline-block; text-align:center; background:#ebebeb; padding:5px 10px; font-weight:100; font-family:DIN; font-size:11px; color:#666666; margin:0 1px;}
 .pageSelect a:hover, .pageSelect a:focus{background:#d7d7d7; color:black; text-decoration:none}
