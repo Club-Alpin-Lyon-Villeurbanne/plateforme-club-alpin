@@ -14,6 +14,10 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[Vich\Uploadable]
 class Article
 {
+    public const int STATUS_PENDING = 0;
+    public const int STATUS_PUBLISHED = 1;
+    public const int STATUS_REFUSED = 2;
+
     /**
      * @var int
      */
