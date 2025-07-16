@@ -293,7 +293,7 @@
 
             document_base_url: '{{ url('legacy_root') }}',
 
-            content_css: "{{ vite_entry_link_tags('base-styles') }},{{ vite_entry_link_tags('styles') }},{{ vite_entry_link_tags('fonts') }}",
+            content_css: "{{ vite_entry_link_ref('base-styles') }},{{ vite_entry_link_ref('styles') }},{{ vite_entry_link_ref('fonts') }}",
             body_id: "bodytinymce_user",
             body_class: "description_evt",
             theme_advanced_styles: "Entete Article=ArticleEntete;Titre de menu=menutitle;Bleu clair du CAF=bleucaf;Image flottante gauche=imgFloatLeft;Image flottante droite=imgFloatRight;Lien fancybox=fancybox;Mini=mini;Bloc alerte=erreur;Bloc info=info",
