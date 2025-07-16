@@ -67,7 +67,7 @@ class ArticleType extends AbstractType
                     if (is_numeric($value) && (int) $value > 0) {
                         return 'Article lié à une commission :';
                     }
-    
+
                     return null;
                 },
                 'required' => true,
