@@ -227,15 +227,24 @@ class SortieController extends AbstractController
                 continue;
             }
 
-            $mailer->send($participation->getUser(), 'transactional/sortie-publiee-inscrit', [
-                'author_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'voir-profil/' . $event->getUser()->getId() . '.html',
-                'author_nickname' => $event->getUser()->getNickname(),
-                'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                'event_name' => $event->getTitre(),
-                'commission' => $event->getCommission()->getTitle(),
-                'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
-                'role' => $participation->getRole(),
-            ], [], null, $event->getUser()->getEmail());
+            if ($event->getTspCrea() === $event->getTspEdit()) {
+                $mailer->send($participation->getUser(), 'transactional/sortie-publiee-inscrit', [
+                    'author_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'voir-profil/' . $event->getUser()->getId() . '.html',
+                    'author_nickname' => $event->getUser()->getNickname(),
+                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'event_name' => $event->getTitre(),
+                    'commission' => $event->getCommission()->getTitle(),
+                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                    'role' => $participation->getRole(),
+                ], [], null, $event->getUser()->getEmail());
+            } else {
+                $mailer->send($participation->getUser(), 'transactional/sortie-modifiee', [
+                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'event_name' => $event->getTitre(),
+                    'commission' => $event->getCommission()->getTitle(),
+                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                ], [], null, $event->getUser()->getEmail());
+            }
         }
 
         $this->addFlash('info', 'La sortie est publiée');
