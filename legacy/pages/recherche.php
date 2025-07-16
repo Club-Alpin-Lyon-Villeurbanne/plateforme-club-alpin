@@ -79,7 +79,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             AND status_evt = 1';
         // si une comm est sélectionnée, filtre
         if ($current_commission) {
-            $req .= ' AND (commission_article = ? OR commission_article = 0) ';
+            $req .= ' AND commission_evt = ? ';
         }
         // RECHERCHE
         $req .= ' AND (
@@ -94,9 +94,9 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             LIMIT 10';
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($req);
         if ($current_commission) {
-            $stmt->bind_param('isssss', (int) $comTab[$current_commission]['id_commission'], $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
+            $stmt->bind_param('issssss', (int) $comTab[$current_commission]['id_commission'], $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
         } else {
-            $stmt->bind_param('sssss', $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
+            $stmt->bind_param('ssssss', $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
         }
         $stmt->execute();
         $handleSql = $stmt->get_result();
