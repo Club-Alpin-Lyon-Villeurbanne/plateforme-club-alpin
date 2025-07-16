@@ -39,6 +39,9 @@ class Evt
     #[ORM\Column(name: 'auto_accept', type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $autoAccept = false;
 
+    #[ORM\Column(name: 'is_draft', type: 'boolean', nullable: false, options: ['default' => true])]
+    private bool $isDraft = true;
+
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'status_who_evt', referencedColumnName: 'id_user', nullable: true)]
     private ?User $statusWho;
@@ -209,6 +212,7 @@ class Evt
         $this->expenseReports = new ArrayCollection();
         $this->tspCrea = time();
         $this->tspEdit = time();
+        $this->isDraft = false;
     }
 
     public function jsonSerialize(): mixed
@@ -790,6 +794,18 @@ class Evt
     public function setAutoAccept(bool $autoAccept): self
     {
         $this->autoAccept = $autoAccept;
+
+        return $this;
+    }
+
+    public function isDraft(): bool
+    {
+        return $this->isDraft;
+    }
+
+    public function setIsDraft(bool $isDraft): self
+    {
+        $this->isDraft = $isDraft;
 
         return $this;
     }

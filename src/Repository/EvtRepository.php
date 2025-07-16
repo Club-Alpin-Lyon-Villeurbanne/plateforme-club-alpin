@@ -33,7 +33,8 @@ class EvtRepository extends ServiceEntityRepository
             FROM caf_evt e
             INNER JOIN caf_commission c ON c.id_commission = e.commission_evt
             WHERE status_evt = \'0\'
-                AND tsp_evt IS NOT NULL';
+                AND tsp_evt IS NOT NULL
+                AND is_draft = 0';
 
         $params = [];
         $sqlPart = [];

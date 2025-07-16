@@ -180,21 +180,10 @@
                     <br />
                 </div>
 
-                <h2 class="title-header">Enregistrer / Publier :</h2>
                 <div style="width:95%">
-                    <div class="check-nice">
-                        {{ form_widget(form.topubly) }}
-                        Demander la publication de cet article dès que possible ?
-
-                        <br style="clear:both">
-                    </div>
-                    <br /><br />
-
                     <div style="text-align:center">
-                        <button type="submit" class="biglink">
-                            <span class="bleucaf">&gt;</span>
-                            ENREGISTRER CET ARTICLE DANS &laquo; MES ARTICLES &raquo;
-                        </button>
+                        {{ form_widget(form.articleDraftSave) }}
+                        {{ form_widget(form.articleSave) }}
                     </div>
                 </div>
             {{ form_end(form) }}
