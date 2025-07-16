@@ -797,16 +797,16 @@ class Evt
 
         return $this;
     }
-    
+
     public function isDraft(): bool
     {
         return $this->isDraft;
     }
-    
+
     public function setIsDraft(bool $isDraft): self
     {
         $this->isDraft = $isDraft;
-        
+
         return $this;
     }
 }
