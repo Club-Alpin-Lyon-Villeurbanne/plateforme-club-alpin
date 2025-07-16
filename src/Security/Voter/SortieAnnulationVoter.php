@@ -47,16 +47,18 @@ class SortieAnnulationVoter extends Voter
             return false;
         }
 
-        $amIEncadrant = false;
+        $isCurrentUserEncadrant = false;
         foreach ($subject->getEncadrants(EventParticipation::ROLES_ENCADREMENT_ETENDU) as $eventParticipation) {
             if ($eventParticipation->getUser() === $user) {
-                $amIEncadrant = true;
+                $isCurrentUserEncadrant = true;
+                break;
             }
         }
 
-        return ($subject->getUser() === $user || $amIEncadrant) && $this->userRights->allowed('evt_cancel_own')
-           || $this->userRights->allowedOnCommission('evt_cancel', $subject->getCommission())
-           || $this->userRights->allowed('evt_cancel_any')
+        return ($subject->getUser() === $user
+            || $isCurrentUserEncadrant) && $this->userRights->allowed('evt_cancel_own')
+            || $this->userRights->allowedOnCommission('evt_cancel', $subject->getCommission())
+            || $this->userRights->allowed('evt_cancel_any')
         ;
     }
 }
