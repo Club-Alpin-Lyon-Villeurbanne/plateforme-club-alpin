@@ -209,9 +209,6 @@ class Evt
         $this->expenseReports = new ArrayCollection();
         $this->tspCrea = time();
         $this->tspEdit = time();
-
-        // FIX ME fix encadrant
-        $this->participations->add(new EventParticipation($this, $user, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE));
     }
 
     public function jsonSerialize(): mixed

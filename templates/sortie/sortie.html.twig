@@ -130,24 +130,32 @@
         </h1>
 
         <div class="tw-flex tw-gap-4">
-            {% if app.user and event.user.id == app.user.id and event.isFinished %}
-            <a href="/article/new?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
-                <img src="/img/base/pencil_add.png" alt="" title="" style="" />
-                Compte rendu
-            </a>
-            {% endif %}
-
             {% if is_granted('SORTIE_DUPLICATE', event) %}
-            <form action="{{ path('sortie_duplicate', { id: event.id }) }}" method="post" class="loading">
+            <form action="{{ path('sortie_duplicate', { id: event.id, mode: 'full' }) }}" method="post" class="loading">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
 
                 <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants et les mêmes paramètres" class="nice2">
-                    <img src="/img/base/add.png" alt="Dupliquer la sortie" title="" style="height:20px" />
+                    <img src="/img/base/add.png" alt="Dupliquer la sortie avec ce groupe" title="" style="height:20px" />
                     Dupliquer cette sortie avec ce groupe
                 </a>
             </form>
+                <form action="{{ path('sortie_duplicate', { id: event.id, mode: 'empty' }) }}" method="post" class="loading">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
+
+                    <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes paramètres (sans participant)" class="nice2">
+                        <img src="/img/base/add.png" alt="Dupliquer la sortie" title="" style="height:20px" />
+                        Dupliquer cette sortie
+                    </a>
+                </form>
             {% endif %}
         </div>
+
+        {% if app.user and event.user.id == app.user.id and event.isFinished %}
+            <a href="/article/new?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
+                <img src="/img/base/pencil_add.png" alt="" title="" style="" />
+                Compte rendu
+            </a><br>
+        {% endif %}
 
         {% if is_granted('FICHE_SORTIE', event) %}
         <a href="/feuille-de-sortie/evt-{{ event.id }}.html" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2" target="_blank">

@@ -553,8 +553,8 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    #[Route(name: 'sortie_duplicate', path: '/sortie/{id}/duplicate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function sortieDuplicate(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
+    #[Route(path: '/sortie/{id}/duplicate/{mode}', name: 'sortie_duplicate', requirements: ['id' => '\d+', 'mode' => 'full|empty'], methods: ['POST'], priority: '10')]
+    public function sortieDuplicate(Request $request, Evt $event, EntityManagerInterface $em, string $mode = 'empty'): RedirectResponse
     {
         if (!$this->isGranted('SORTIE_DUPLICATE', $event)) {
             throw new AccessDeniedHttpException('Not allowed');
@@ -592,17 +592,13 @@ class SortieController extends AbstractController
         $newEvent->setGroupe($event->getGroupe());
         $newEvent->setJoinStart(time());
 
-        $em->persist($newEvent);
-
-        foreach ($event->getParticipations() as $participation) {
-            if ($participation->getUser() === $newEvent->getUser()) {
-                continue;
+        if ('full' === $mode) {
+            foreach ($event->getParticipations() as $participation) {
+                $join = $newEvent->addParticipation($participation->getUser(), $participation->getRole(), $participation->getStatus());
+                $em->persist($join);
             }
-
-            $join = $newEvent->addParticipation($participation->getUser(), $participation->getRole(), $participation->getStatus());
-            $em->persist($join);
         }
-
+        $em->persist($newEvent);
         $em->flush();
 
         return $this->redirectToRoute('modifier_sortie', ['event' => $newEvent->getId()]);
