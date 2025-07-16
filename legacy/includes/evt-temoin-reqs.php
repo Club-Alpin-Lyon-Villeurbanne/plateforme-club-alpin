@@ -17,8 +17,14 @@ $req = 'SELECT COUNT(id_evt_join) FROM caf_evt_join
 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 $count = getArrayFirstValue($handleSql2->fetch_array(\MYSQLI_NUM));
 
+// brouillon ?
+if (isset($handle['is_draft']) && $handle['is_draft']) {
+    $handle['temoin'] = 'draft';
+    $handle['temoin-title'] = 'Cette sortie est un brouillon';
+}
+
 // annulé ?
-if (isset($handle['cancelled_evt']) && $handle['cancelled_evt']) {
+elseif (isset($handle['cancelled_evt']) && $handle['cancelled_evt']) {
     $handle['temoin'] = 'full';
     $handle['temoin-title'] = 'Cette sortie est annulée';
 }

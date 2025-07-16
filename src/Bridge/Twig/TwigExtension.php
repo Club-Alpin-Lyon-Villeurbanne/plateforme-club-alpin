@@ -75,6 +75,9 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
 
     public function getPictoTemoinPlacesSortie(Evt $event): string
     {
+        if ($event->isDraft()) {
+            return '✍️';
+        }
         if ($event->getCancelled()) {
             return '🚫';
         }
@@ -96,6 +99,9 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
 
     public function getTemoinPlacesSortieTitle(Evt $event): string
     {
+        if ($event->isDraft()) {
+            return 'Cette sortie est un brouillon';
+        }
         if ($event->getCancelled()) {
             return 'Cette sortie est annulée';
         }
