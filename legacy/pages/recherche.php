@@ -6,6 +6,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
     // vérification des caractères
     $safeStr = substr(html_utf8(stripslashes($_GET['str'])), 0, 80);
     $safeStrSql = LegacyContainer::get('legacy_mysqli_handler')->escapeString(substr(stripslashes($_GET['str']), 0, 80));
+    $safeStrSqlWildCard = '%' . $safeStrSql . '%';
 
     if (strlen($safeStr) < 3) {
         $errTab[] = 'Votre recherche doit comporter au moins 3 caractères.';
@@ -22,21 +23,28 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             FROM caf_article AS a
             LEFT JOIN caf_user as u  ON a.user_article = u.id_user
             LEFT JOIN media_upload m ON a.media_upload_id = m.id
-            WHERE  `status_article` =1
-            AND status_article = 1
-            '
-            // commission donnée : filtre (mais on inclut les actus club, commission=0)
-            . ($current_commission ? ' AND (commission_article = ' . (int) $comTab[$current_commission]['id_commission'] . ' OR commission_article = 0) ' : '')
-            // RECHERCHE
-            . " AND (
-                        titre_article LIKE  '%$safeStrSql%'
-                    OR	cont_article LIKE  '%$safeStrSql%'
-                    OR	nickname_user LIKE  '%$safeStrSql%'
-            ) "
+            WHERE  status_article = 1';
+        // commission donnée : filtre (mais on inclut les actus club, commission=0)
+        if ($current_commission) {
+            $req .= ' AND (commission_article = ? OR commission_article = 0) ';
+        }
+        // RECHERCHE
+        $req .= ' AND (
+                        titre_article LIKE  ?
+                    OR	cont_article LIKE  ?
+                    OR	nickname_user LIKE  ?
+            ) '
 
-            . ' ORDER BY  `tsp_validate_article` DESC
+        . ' ORDER BY  `tsp_validate_article` DESC
             LIMIT 10';
-        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($req);
+        if ($current_commission) {
+            $stmt->bind_param('isss', (int) $comTab[$current_commission]['id_commission'], $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
+        } else {
+            $stmt->bind_param('sss', $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
+        }
+        $stmt->execute();
+        $handleSql = $stmt->get_result();
 
         // calcul du total grâce à SQL_CALC_FOUND_ROWS
         $totalSql = LegacyContainer::get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
@@ -55,6 +63,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             }
             $articlesTab[] = $handle;
         }
+        $stmt->close();
 
         // *******
         // RECH SORTIES
@@ -67,22 +76,29 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             FROM caf_evt, caf_commission, caf_user
             WHERE id_commission = commission_evt
             AND id_user = user_evt
-            AND status_evt = 1
-            '
-            // si une comm est sélectionnée, filtre
-            . ($current_commission ? " AND code_commission LIKE '" . LegacyContainer::get('legacy_mysqli_handler')->escapeString($current_commission) . "' " : '')
-            // RECHERCHE
-            . " AND (
-                        titre_evt LIKE '%$safeStrSql%'
-                    OR	massif_evt LIKE '%$safeStrSql%'
-                    OR	rdv_evt LIKE '%$safeStrSql%'
-                    OR	description_evt LIKE '%$safeStrSql%'
-                    OR	nickname_user LIKE '%$safeStrSql%'
-            ) "
-            . ' ORDER BY tsp_evt DESC
+            AND status_evt = 1';
+        // si une comm est sélectionnée, filtre
+        if ($current_commission) {
+            $req .= ' AND (commission_article = ? OR commission_article = 0) ';
+        }
+        // RECHERCHE
+        $req .= ' AND (
+                        titre_evt LIKE ?
+                    OR	massif_evt LIKE ?
+                    OR	rdv_evt LIKE ?
+                    OR	description_evt LIKE ?
+                    OR	nickname_user LIKE ?
+            ) '
+        . ' ORDER BY tsp_evt DESC
             LIMIT 10';
-
-        $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($req);
+        if ($current_commission) {
+            $stmt->bind_param('isssss', (int) $comTab[$current_commission]['id_commission'], $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
+        } else {
+            $stmt->bind_param('sssss', $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
+        }
+        $stmt->execute();
+        $handleSql = $stmt->get_result();
 
         // calcul du total grâce à SQL_CALC_FOUND_ROWS
         $totalSql = LegacyContainer::get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
@@ -94,6 +110,42 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
 
             $evtTab[] = $handle;
         }
+        $stmt->close();
+
+        // *******
+        // RECH PAGES LIBRES
+        $freePagesTab = [];
+
+        $req = 'SELECT
+                SQL_CALC_FOUND_ROWS
+                p.id_page, p.code_page, p.default_name_page, i.contenu_content_inline,
+                CASE WHEN i.contenu_content_inline IS NOT NULL THEN i.contenu_content_inline ELSE p.default_name_page END as page_title
+            FROM caf_page as p
+            INNER JOIN caf_content_html as c ON (c.code_content_html = CONCAT(\'main-pagelibre-\', p.id_page) AND c.current_content_html = 1)
+            LEFT JOIN caf_content_inline as i ON (i.code_content_inline = CONCAT(\'meta-title-\', p.code_page))
+            WHERE p.pagelibre_page = 1
+            AND p.vis_page = 1';
+        // RECHERCHE
+        $req .= ' AND (
+                    p.default_name_page LIKE ?
+                    OR c.contenu_content_html LIKE ?
+                    OR i.contenu_content_inline LIKE ?
+            )
+            ORDER BY created_page DESC
+            LIMIT 10';
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($req);
+        $stmt->bind_param('sss', $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
+        $stmt->execute();
+        $handleSql = $stmt->get_result();
+
+        // calcul du total grâce à SQL_CALC_FOUND_ROWS
+        $totalSql = LegacyContainer::get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
+        $totalFreePages = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
+
+        while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+            $freePagesTab[] = $handle;
+        }
+        $stmt->close();
     }
 }
 ?>
@@ -153,6 +205,18 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
                             . '</tr>';
                     }
                     echo '</table>';
+
+                    // RECHERCHE - PAGES LIBRES
+                    echo '<br /><hr /><h2>Pages</h2>';
+                    if (!count($freePagesTab)) {
+                        echo '<p class="alerte">Aucune page trouvée</p>';
+                    } else {
+                        echo '<p class="mini">' . $totalFreePages . ' page' . ($totalFreePages > 1 ? 's' : '') . ' trouvée' . ($totalFreePages > 1 ? 's' : '') . '. ' . ($totalFreePages != count($freePagesTab) ? 'Voici les ' . count($freePagesTab) . ' plus récentes :' : '') . '</p>';
+                    }
+                    echo '<br />';
+                    foreach ($freePagesTab as $freePage) {
+                        echo '<a href="/pages/' . $freePage['code_page'] . '.html">' . $freePage['page_title'] . '</a><br />';
+                    }
                 }
             }
 // - Sorties
