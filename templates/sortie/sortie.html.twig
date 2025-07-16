@@ -206,43 +206,36 @@
         {% if my_status and my_status.status == constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME') %}
             {% if not event.finished %}
                 {% if allowed('evt_unjoin') %}
-                <div id="inscription-annuler" style="display: none;">
-                    {{ easy_include('formalites-inscription-suppression', 'formalites') }}
-
-                    <form action="{{ path('sortie_remove_participant', { id: my_status.id }) }}" method="post" class="loading">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
-
-                        <p style="text-align:center">
-                            <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
-                                <span class="bleucaf">&gt;</span>
-                                ANNULER MA DEMANDE D'INSCRIPTION
-                            </a>
-                        </p>
-                    </form>
-                </div>
-                <p class="alerte">
-                    <img src="/img/inscrit-standby.png" alt="" title="" style="float:left" />
-                    <br />Vous avez demandé à participer à cette sortie, et votre demande est en attente de validation.<br />
-                    <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
-                </p>
-                <br />
+                    <div class="alerte info-container" style="margin-right:2rem !important">
+                        <img src="/img/inscrit-standby.png" alt="" title=""/>
+                        <div class="text-container">
+                            Vous avez demandé à participer à cette sortie, et votre demande est en attente de validation.<br />
+                            <div class="button-container">
+                                <input type="button" class="nice" value="Annuler ma demande" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
+                            </div>
+                        </div>
+                    </div>
+                    {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id} %}
                 {% endif %}
             {% else %}
-                <p class="alerte">
-                    <img src="/img/inscrit-standby.png" alt="" title="" style="float:left" />
-                    <br />Vous avez demandé à participer à cette sortie, mais votre demande est restée en attente.<br />&nbsp;
-                </p>
+                <div class="alerte info-container" style="margin-right:2rem !important">
+                    <img src="/img/inscrit-standby.png" alt="" title=""/>
+                    <div class="text-container">
+                        Vous avez demandé à participer à cette sortie, mais votre demande est restée en attente.<br />
+                    </div>
+                </div>
                 <br />
             {% endif %}
         {% endif %}
 
         {% if my_status and my_status.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
-            <p class="erreur">
-                <img src="/img/inscrit-cross.png" alt="" title="" style="float:left" />
-                <br />
-                Vous avez demandé à participer à cette sortie, mais l'organisateur a décliné votre inscription.
-                N'hésitez pas à le contacter pour en savoir plus.<br />&nbsp;
-            </p>
+            <div class="erreur info-container" style="margin-right:2rem !important">
+                <img src="/img/inscrit-cross.png" alt="" title=""/>
+                <div class="text-container">
+                    Vous avez demandé à participer à cette sortie, mais l'organisateur a décliné votre inscription.
+                    N'hésitez pas à le contacter pour en savoir plus.
+                </div>
+            </div>
             <br />
         {% endif %}
 
@@ -250,35 +243,24 @@
             {% if my_status.role == 'encadrant' or my_status.role == 'stagiaire' or my_status.role == 'coencadrant' or my_status.role == 'benevole' %}
                 {% if not event.finished %}
                     {% if allowed('evt_unjoin') %}
-                    <div id="inscription-annuler" style="display: none;">
-                            {{ easy_include('formalites-inscription-suppression', 'formalites') }}
-
-                            <form action="{{ path('sortie_remove_participant', { id: my_status.id }) }}" method="post" class="loading">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
-
-                                <p style="text-align:center">
-                                    <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
-                                        <span class="bleucaf">&gt;</span>
-                                        ANNULER MA DEMANDE D'INSCRIPTION
-                                    </a>
-                                </p>
-                            </form>
-                        </div>
-                        <br />
-                    <div class="info info-container" style="margin-right:2rem !important">
-                        <img src="/img/inscrit-check.png" alt="" title=""/>
-                        <div class="text-container">Vous êtes inscrit à cette sortie en tant que : {{ my_status.role }}.
-                            <div class="button-container">
-                                <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" />
+                        <div class="info info-container" style="margin-right:2rem !important">
+                            <img src="/img/inscrit-check.png" alt="" title=""/>
+                            <div class="text-container">
+                                Vous êtes inscrit à cette sortie en tant que : {{ my_status.role }}.<br>
+                                <div class="button-container">
+                                    <input type="button" class="nice" value="Annuler ma participation" onclick="$('#inscription-annuler').slideToggle(200)" />
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id} %}
                     {% endif %}
                 {% else %}
-                    <p class="info" style="margin-right:2rem !important">
-                        <img src="/img/inscrit-encadrant.png" alt="" title="" style="float:left" />
-                        <br />Vous avez participé à cette sortie en tant que : {{ my_status.role }}.<br />&nbsp;
-                    </p>
+                    <div class="info info-container" style="margin-right:2rem !important">
+                        <img src="/img/inscrit-encadrant.png" alt="" title=""/>
+                        <div class="text-container">
+                            Vous avez participé à cette sortie en tant que : {{ my_status.role }}.
+                        </div>
+                    </div>
                     <br />
                 {% endif %}
 
@@ -303,35 +285,30 @@
             {% else %}
                 {% if not event.finished %}
                     {% if allowed('evt_unjoin') %}
-                        <div id="inscription-annuler" style="display: none;">
-                            {{ easy_include('formalites-inscription-suppression', 'formalites') }}
-
-                            <form action="{{ path('sortie_remove_participant', { id: my_status.id }) }}" method="post" class="loading">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
-
-                                <p style="text-align:center">
-                                    <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
-                                        <span class="bleucaf">&gt;</span>
-                                        ANNULER MA DEMANDE D'INSCRIPTION
-                                    </a>
-                                </p>
-                            </form>
-                        </div>
-                        <br />
                         <div class="info info-container" style="margin-right:2rem !important">
                             <img src="/img/inscrit-check.png" alt="" title=""/>
-                            <div class="text-container">Vous êtes inscrit comme participant à cette sortie.
+                            <div class="text-container">
+                                Vous êtes inscrit comme participant à cette sortie.<br><br>
+                                <span class="italic">
+                                    Si vous ne pouvez plus venir, il est important d'annuler votre participation.<br>
+                                    En annulant, l'encadrant sera averti par mail.<br>
+                                    Selon le délai, vous perdrez éventuellement des frais liés au covoiturage et hébergement - voir les infos à ce sujet sur la description de la sortie.
+                                </span>
                                 <div class="button-container">
-                                    <input type="button" class="nice" value="Annuler mon inscription" onclick="$('#inscription-annuler').slideToggle(200)" />
+                                    <input type="button" class="nice" value="Annuler ma participation" onclick="$('#inscription-annuler').slideToggle(200)" />
                                 </div>
                             </div>
                         </div>
+                        {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id} %}
                     {% endif %}
                 {% else %}
-                    <p class="info" style="margin-right:2rem !important">
-                        <img src="/img/inscrit-check.png" alt="" title="" style="float:left" />
-                        <br />Vous avez participé à cette sortie.<br />&nbsp;
-                    </p><br />
+                    <div class="info info-container" style="margin-right:2rem !important">
+                        <img src="/img/inscrit-check.png" alt="" title=""/>
+                        <div class="text-container">
+                            Vous avez participé à cette sortie.
+                        </div>
+                    </div>
+                    <br />
                 {% endif %}
             {% endif %}
         {% endif %}

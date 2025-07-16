@@ -555,6 +555,7 @@ class SortieController extends AbstractController
         if ($participation->isStatusValide() || $participation->isStatusEnAttente()) {
             // notifier les encadrants
             $encadrants = $event->getEncadrants();
+            $reason = $request->request->get('cancel_reason') ?? '';
             foreach ($encadrants as $encadrant) {
                 $mailer->send($encadrant->getUser(), 'transactional/sortie-desinscription', [
                     'username' => $participation->getUser()->getFirstname() . ' ' . $participation->getUser()->getLastname(),
@@ -562,6 +563,7 @@ class SortieController extends AbstractController
                     'event_name' => $event->getTitre(),
                     'commission' => $event->getCommission()->getTitle(),
                     'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                    'reason_explanation' => $reason,
                     'user' => $user,
                     'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $user->getId() . '.html',
                 ], [], null, $user->getEmail());
