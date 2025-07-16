@@ -537,15 +537,19 @@ class SortieController extends AbstractController
         $user = $this->getUser();
 
         if ($participation->isStatusValide() || $participation->isStatusEnAttente()) {
-            $mailer->send($event->getUser(), 'transactional/sortie-desinscription', [
-                'username' => $participation->getUser()->getFirstname() . ' ' . $participation->getUser()->getLastname(),
-                'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                'event_name' => $event->getTitre(),
-                'commission' => $event->getCommission()->getTitle(),
-                'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
-                'user' => $user,
-                'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $user->getId() . '.html',
-            ], [], null, $user->getEmail());
+            // notifier les encadrants
+            $encadrants = $event->getEncadrants();
+            foreach ($encadrants as $encadrant) {
+                $mailer->send($encadrant->getUser(), 'transactional/sortie-desinscription', [
+                    'username' => $participation->getUser()->getFirstname() . ' ' . $participation->getUser()->getLastname(),
+                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'event_name' => $event->getTitre(),
+                    'commission' => $event->getCommission()->getTitle(),
+                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                    'user' => $user,
+                    'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $user->getId() . '.html',
+                ], [], null, $user->getEmail());
+            }
         }
 
         $this->addFlash('info', 'La participation est annulée');
