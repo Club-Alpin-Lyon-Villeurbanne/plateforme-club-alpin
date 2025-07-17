@@ -64,7 +64,7 @@ ul.field-error {
     list-style: none;
 }
 
-.ck-content, .ck-editor__editable {
+.ck-content, .ck-editor__editable, .ck-editor__editable_inline {
     min-height: 300px;
 }
 label.ck-label {display: none !important}

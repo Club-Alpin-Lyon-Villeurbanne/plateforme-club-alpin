@@ -189,6 +189,14 @@
     <script type="text/javascript" charset="utf-8" src="/js/jquery-ui-1.10.2.custom.min.js"></script>
     {{ vite_entry_script_tags('ckeditor') }}
     <script type="text/javascript">
+        function isCkeditorDescriptionValid() {
+            const editor = document.getElementById('event_description');
+            const html = editor.value || '';
+            const content = html.replace(/<[^>]*>/g, '').trim();
+
+            return content.length > 3;
+        }
+
         // au chargement complet de la page
         document.addEventListener('DOMContentLoaded', function () {
             {% if is_update is same as (true) %}
@@ -223,37 +231,33 @@
             if (contentField) {
                 contentField.removeAttribute('required');
             }
-        });
 
-        document.getElementById('event_form').addEventListener('submit', function (e) {
-            let prefix = 'form';
-            {% if is_update %}
-                prefix = 'event';
-            {% endif %}
+            document.getElementById('event_form').addEventListener('submit', function (e) {
+                let prefix = 'form';
+                {% if is_update %}
+                    prefix = 'event';
+                {% endif %}
 
-            // vérifier qu'au moins 1 encadrant est coché
-            const encadrants = document.querySelectorAll('input[name="' + prefix + '[encadrants][]"]:checked');
-            const initiateurs = document.querySelectorAll('input[name="' + prefix + '[initiateurs][]"]:checked');
-            const coencadrants = document.querySelectorAll('input[name="' + prefix + '[coencadrants][]"]:checked');
-            const encadrement = encadrants.length + coencadrants.length + initiateurs.length;
-            if (encadrement <= 0) {
-                alert('Veuillez sélectionner au moins un encadrant ou co-encadrant.');
-                e.preventDefault();
+                // vérifier que la description est remplie
+                if (!isCkeditorDescriptionValid()) {
+                    alert('Veuillez renseigner une description pour cette sortie.');
+                    e.preventDefault();
 
-                return false;
-            }
+                    return false;
+                }
 
-            // vérifier que la description est remplie
-            const editorContent = tinyMCE.get('{{ form.description.vars.id }}').getContent({ format: 'text' }).trim();
-            if (editorContent.length <= 3) {
-                alert('Veuillez renseigner une description pour cette sortie.');
-                e.preventDefault();
+                // vérifier qu'au moins 1 encadrant est coché
+                const encadrants = document.querySelectorAll('input[name="' + prefix + '[encadrants][]"]:checked');
+                const initiateurs = document.querySelectorAll('input[name="' + prefix + '[initiateurs][]"]:checked');
+                const coencadrants = document.querySelectorAll('input[name="' + prefix + '[coencadrants][]"]:checked');
+                const encadrement = encadrants.length + coencadrants.length + initiateurs.length;
+                if (encadrement <= 0) {
+                    alert('Veuillez sélectionner au moins un encadrant ou co-encadrant.');
+                    e.preventDefault();
 
-                return false;
-            } else {
-                // On remet à jour le champ textarea pour que le contenu soit soumis
-                tinyMCE.triggerSave();
-            }
+                    return false;
+                }
+            });
         });
     </script>
 {% endblock %}
