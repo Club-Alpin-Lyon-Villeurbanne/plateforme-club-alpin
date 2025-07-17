@@ -108,6 +108,7 @@ npm-install: ## Install all npm dependencies
 
 npm-build: ## Build the frontend files
 	$(NPM) run build
+	$(NPM) run build:encore
 .PHONY: npm-build
 
 npm-watch: ## Watch the frontend files
