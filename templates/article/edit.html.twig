@@ -70,7 +70,7 @@
                 <p class="alerte">Attention : si vous modifiez cet article, il devra à nouveau être validé par un responsable avant d'être publié sur le site !</p>
             {% endif %}
 
-            {{ form_start(form, {'attr': {'action': article.id ? path('article_edit', {'id': article.id}) : path('article_new'), 'method': 'post'}}) }}
+            {{ form_start(form, {'attr': {'id': 'article_form', 'action': article.id ? path('article_edit', {'id': article.id}) : path('article_new'), 'method': 'post'}}) }}
                 {% if errors is defined and errors|length > 0 %}
                     <div class="erreur">
                         Erreur :
@@ -187,12 +187,30 @@
     <script src="/js/jquery.webkitresize.min.js"></script>
     <script src="/js/file-upload-component.js"></script>
     <script>
+        function isCkeditorContentValid() {
+            const editor = document.getElementById('article_cont');
+            const html = editor.value || '';
+            const content = html.replace(/<[^>]*>/g, '').trim();
+
+            return content.length > 3;
+        }
+
         // champ contenu pas obligatoire en js
         document.addEventListener('DOMContentLoaded', function() {
             const contentField = document.getElementById('{{ form.cont.vars.id }}');
             if (contentField) {
                 contentField.removeAttribute('required');
             }
+
+            document.getElementById('article_form').addEventListener('submit', function (e) {
+                // vérifier que le contenu est rempli
+                if (!isCkeditorContentValid()) {
+                    alert('Veuillez renseigner le contenu de votre article.');
+                    e.preventDefault();
+
+                    return false;
+                }
+            });
         });
     </script>
 {% endblock %}
