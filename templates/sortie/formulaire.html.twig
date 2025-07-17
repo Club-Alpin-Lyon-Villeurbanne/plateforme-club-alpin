@@ -106,6 +106,14 @@
             </div>
             <br style="clear:both" />
             {{ form_row(form.joinStartDate) }}
+            <br style="clear:both" /><br>
+            <div>
+                <label for="{{ form.autoAccept.vars.id }}" class="{% if form.autoAccept.vars.data %}up{% else %}down{% endif %}">
+                    {{ form_widget(form.autoAccept) }}
+                    {{ field_label(form.autoAccept) }}
+                </label>
+                {{ form_help(form.autoAccept) }}
+            </div>
         </div>
 
         <h2 class="trigger-h2">Difficulté / matériel :</h2>
@@ -155,16 +163,6 @@
             {{ form_row(form.description) }}
         </div>
 
-        <h2 class="trigger-h2">Accepter automatiquement les demandes d'inscription :</h2>
-        <div class="trigger-me check-nice">
-            <div>
-                <label for="{{ form.autoAccept.vars.id }}" class="{% if form.autoAccept.vars.data %}up{% else %}down{% endif %}">
-                    {{ form_widget(form.autoAccept) }}
-                    {{ field_label(form.autoAccept) }}
-                </label><br><br>
-                {{ form_help(form.autoAccept) }}
-            </div>
-        </div>
         <br /><br />
         <div style="text-align:center">
             {{ form_widget(form.eventDraftSave) }}
