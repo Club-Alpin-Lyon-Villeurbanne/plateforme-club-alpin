@@ -40,34 +40,27 @@ if (user()) {
                     $clubRoles[] = $attr;
                 }
             }
-            ?>
-            <h3>Responsabilité dans le club :</h3>
-            <ul class="nice-list">
-                <?php
-                if (!empty($clubRoles)) {
-                    foreach ($clubRoles as $attr) {
-                        echo '<li>' . $attr->getTitle() . '</li>';
-                    }
-                } else {
-                    echo '<li>aucune responsabilité</li>';
-                }
-            ?>
-            </ul>
-            <br style="clear:both" />
 
-            <h3>Responsabilité dans les commissions :</h3>
-            <ul class="nice-list">
-            <?php
+            if (!empty($clubRoles)) {
+                echo '<h3>Responsabilité dans le club :</h3>';
+                echo '<ul class="nice-list">';
+                foreach ($clubRoles as $attr) {
+                    echo '<li>' . $attr->getTitle() . '</li>';
+                }
+                echo '</ul>';
+                echo '<br style="clear:both" />';
+            }
+
             if (!empty($commissionRoles)) {
+                echo '<h3>Responsabilité dans les commissions :</h3>';
+                echo '<ul class="nice-list">';
                 foreach ($commissionRoles as $attr) {
                     echo '<li>' . $commissionRepository->getCommissionNameByCode($attr->getCommission()) . ' : ' . $attr->getTitle() . '</li>';
                 }
-            } else {
-                echo '<li>aucune responsabilité</li>';
+                echo '</ul>';
+                echo '<br style="clear:both" />';
             }
             ?>
-            </ul>
-            <br style="clear:both" />
             <hr />
         <?php } ?>
 
