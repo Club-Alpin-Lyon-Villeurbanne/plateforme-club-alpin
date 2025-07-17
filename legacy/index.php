@@ -40,7 +40,7 @@ if (!empty($evt) && is_array($evt) && array_key_exists('tsp_evt', $evt) && !empt
     <base href="<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>" />
     <meta name="description" content="<?php echo html_utf8($meta_description); ?>">
     <meta name="author" content="<?php echo LegacyContainer::getParameter('legacy_env_SITENAME'); ?>">
-    <meta name="viewport" content="width=1000">
+    <meta name="viewport" content="width=1500">
     <?php
     if (LegacyContainer::getParameter('legacy_env_GOOGLE_SITE_VERIFICATION')) {
         ?>
