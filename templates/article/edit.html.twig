@@ -157,6 +157,29 @@
                     <br style="clear:both" />
                 </div>
 
+            <div class="alerte info-container" style="width: 90%;">
+                ⚠️
+                <div class="text-container">
+                    <div>
+                        <label for="{{ form.imagesAuthorized.vars.id }}">
+                            {{ form_widget(form.imagesAuthorized) }}
+                            {{ form_label(form.imagesAuthorized) }}
+                        </label>
+                        <br><br>
+                        {{ form_help(form.imagesAuthorized) }}
+                    </div>
+                    <br><br>
+                    <div>
+                        <label for="{{ form.agreeEdito.vars.id }}">
+                            {{ form_widget(form.agreeEdito) }}
+                            {{ form_label(form.agreeEdito) }}
+                        </label>
+                        <br>
+                        {{ form_help(form.agreeEdito) }}
+                    </div>
+                </div>
+            </div>
+
                 <h2 class="title-header">Contenu :</h2>
                 <div style="width:95%">
                     <div style="position:relative; right:0px; ">
