@@ -164,7 +164,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 <?php
                 if (!empty($joins)) {
                     // RESUME DE LA SORTIE
-                    echo '<table class="big-lines-table" style="width:570px; margin-left:20px;">';
+                    echo '<table class="big-lines-table" style="margin-left:20px;">';
 
                     // inscrits en ligne via formulaire
                     foreach ($joins as $tmpUser) {
