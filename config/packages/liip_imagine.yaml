@@ -13,6 +13,12 @@ liip_imagine:
                 data_root: '%public_dir%/ftp'
 
     filter_sets:
+        optimized:
+            quality: 75
+        fullwide_thumbnail:
+            quality: 75
+            filters:
+                thumbnail: { size: [1000, 545], mode: outbound }
         wide_thumbnail:
             quality: 75
             filters:
