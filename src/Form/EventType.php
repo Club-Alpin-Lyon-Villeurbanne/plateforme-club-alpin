@@ -394,12 +394,13 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('autoAccept', CheckboxType::class, [
-                'label' => 'Accepter automatiquement',
+                'label' => 'Accepter automatiquement les demandes d\'inscription',
                 'required' => false,
-                'help' => ' Si vous cochez cette case, les demandes d\'inscription seront automatiquement acceptées, sous votre responsabilité.',
+                'help' => ' Si vous cochez cette case, les demandes d\'inscription seront automatiquement acceptées, sous votre responsabilité.<br>Rien ne change pour les emails, tout se déroulera comme si vous acceptiez manuellement.',
                 'help_attr' => [
                     'class' => 'mini',
                 ],
+                'help_html' => true,
             ])
             ->add('eventDraftSave', SubmitType::class, [
                 'label' => '<span class="bleucaf">&gt;</span> ENREGISTRER COMME BROUILLON',
