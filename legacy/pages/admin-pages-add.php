@@ -74,7 +74,7 @@ if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_CONTENT_MA
     ?>
 		<div style="float:left; width:430px; padding-right:20px;">
 			<b>Titre de la page pour chaque langue :</b><br />
-			<p style="width:350px; font-size:10px; line-height:9px;">META titles : ce titre apparaît dans le menu supérieur du navigateur, et dans les résultats de recherche Google</p>
+			<p style="width:350px; font-size: 0.7rem; line-height:9px;">META titles : ce titre apparaît dans le menu supérieur du navigateur, et dans les résultats de recherche Google</p>
 			<img src="/img/base/flag-fr.png" title="fr" alt="fr" style="height:28px; vertical-align:top" />
             <input type="text" name="titre[]" class="type1" value="<?php echo html_utf8(stripslashes($_POST['titre'][0])); ?>" placeholder="" /><br />
 
@@ -83,7 +83,7 @@ if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_CONTENT_MA
 
 		<div style="float:left; width:430px; padding-right:20px;">
 			<b>Code de la page, affiché dans l'URL :</b><br />
-			<p style="width:350px; font-size:10px; line-height:9px;">
+			<p style="width:350px; font-size: 0.7rem; line-height:9px;">
 				En minuscules, lettres, chiffres et tirets<br />
 				Utilisez le bouton &laquo;Générer&raquo; pour gagner du temps.
 			</p>
