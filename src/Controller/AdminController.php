@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Page;
 use App\Security\SecurityConstants;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,5 +57,24 @@ class AdminController extends AbstractController
         $request->getSession()->remove(SecurityConstants::SESSION_USER_ROLE_KEY);
 
         return $this->redirect($this->generateUrl('legacy_root'));
+    }
+
+    #[Route(path: '/admin/menu', name: 'admin_menu', methods: ['GET'])]
+    #[IsGranted(SecurityConstants::ROLE_CONTENT_MANAGER)]
+    #[Template('admin/menu-pages.html.twig')]
+    public function adminMenuPages(EntityManagerInterface $entityManager): array
+    {
+        $pages = $entityManager
+            ->getRepository(Page::class)
+            ->getAdminPages(
+                $this->isGranted(SecurityConstants::ROLE_CONTENT_MANAGER),
+                $this->isGranted(SecurityConstants::ROLE_ADMIN)
+            )
+        ;
+
+        return [
+            'pages' => $pages,
+            'allowedContentManagerPages' => ['admin-partenaires', 'admin-contenus', 'admin-pages-libres'],
+        ];
     }
 }

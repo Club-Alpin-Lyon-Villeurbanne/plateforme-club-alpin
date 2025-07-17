@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
+use App\Repository\PageRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Page.
  */
 #[ORM\Table(name: 'caf_page')]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PageRepository::class)]
 class Page
 {
     /**
