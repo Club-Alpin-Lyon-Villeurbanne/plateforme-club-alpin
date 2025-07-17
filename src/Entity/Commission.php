@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
 use App\Repository\CommissionRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -13,7 +15,9 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Table(name: 'caf_commission')]
 #[ORM\Entity(repositoryClass: CommissionRepository::class)]
 #[ApiResource(
-    operations: []
+    order: ['ordre' => 'ASC'],
+    operations: [new Get(), new GetCollection()],
+    normalizationContext: ['groups' => ['commission:read']]
 )]
 class Commission
 {
@@ -23,14 +27,14 @@ class Commission
     #[ORM\Column(name: 'id_commission', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    #[Groups('event:read')]
-
+    #[Groups(['event:read', 'article:read', 'commission:read'])]
     private $id;
 
     /**
      * @var int
      */
     #[ORM\Column(name: 'ordre_commission', type: 'integer', nullable: false)]
+    #[Groups('commission:read')]
     private $ordre;
 
     /**
@@ -43,18 +47,21 @@ class Commission
      * @var string
      */
     #[ORM\Column(name: 'code_commission', type: 'string', length: 50, nullable: false, unique: true)]
+    #[Groups('commission:read')]
     private $code;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'title_commission', type: 'string', length: 30, nullable: false)]
+    #[Groups('commission:read')]
     private $title;
 
     /**
      * @var string
      */
     #[ORM\Column(type: 'string', length: 30, nullable: true)]
+    #[Groups('commission:read')]
     private $googleDriveId;
 
     public function __construct(string $title, string $code, int $ordre)
