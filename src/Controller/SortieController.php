@@ -67,9 +67,10 @@ class SortieController extends AbstractController
                 null,
                 null,
                 null,
+                null,
                 null
             );
-            $event->setJoinStart((new \DateTime())->getTimestamp());
+            $event->setJoinStartDate(new \DateTimeImmutable());
             $isUpdate = false;
         }
 
@@ -131,15 +132,16 @@ class SortieController extends AbstractController
             }
 
             // anciens timestamps
-            $event->setTsp(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['eventStartDate'])?->getTimestamp());
-            $event->setTspEnd(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['eventEndDate'])?->getTimestamp());
-            if ($formData['joinStartDate']) {
-                $event->setJoinStart(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['joinStartDate'])?->getTimestamp());
-            }
+            $event->setTsp($event->getEventStartDate()?->getTimestamp());
+            $event->setTspEnd($event->getEventStartDate()?->getTimestamp());
+            $event->setJoinStart($event->getJoinStartDate()?->getTimestamp());
 
             // champs auto
             if (empty($event->getJoinStart())) {
                 $event->setJoinStart(time());
+            }
+            if (empty($event->getJoinStartDate())) {
+                $event->setJoinStartDate(new \DateTimeImmutable());
             }
             if (empty($event->getRdv())) {
                 $event->setRdv('');
@@ -599,7 +601,8 @@ class SortieController extends AbstractController
             $event->getDescription(),
             null,
             $event->getJoinMax(),
-            $event->getNgensMax()
+            $event->getNgensMax(),
+            null
         );
         $newEvent->setMassif($event->getMassif());
         $newEvent->setPlace($event->getPlace());

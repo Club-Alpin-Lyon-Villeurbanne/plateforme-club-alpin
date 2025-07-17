@@ -51,22 +51,9 @@ class EventType extends AbstractType
         $commission = $event->getCommission();
         $this->participantService->buildManagersLists($commission, $event);
 
-        // timestamps to datetimes
-        $eventStartDate = null;
-        $eventEndDate = null;
-        $eventJoinStartDate = null;
-        if (!empty($event->getTsp())) {
-            $eventStartDate = new \DateTime();
-            $eventStartDate->setTimestamp($event->getTsp());
-        }
-        if (!empty($event->getTspEnd())) {
-            $eventEndDate = new \DateTime();
-            $eventEndDate->setTimestamp($event->getTspEnd());
-        }
-        if (!empty($event->getJoinStart())) {
-            $eventJoinStartDate = new \DateTime();
-            $eventJoinStartDate->setTimestamp($event->getJoinStart());
-        }
+        $eventStartDate = $event->getEventStartDate();
+        $eventEndDate = $event->getEventEndDate();
+        $eventJoinStartDate = $event->getJoinStartDate();
 
         $appointment = $event->getRdv();
         if (empty($appointment)) {
@@ -201,7 +188,6 @@ class EventType extends AbstractType
             ->add('eventStartDate', DateTimeType::class, [
                 'label' => 'Date et heure de RDV / covoiturage',
                 'required' => true,
-                'mapped' => false,
                 'data' => $eventStartDate,
                 'widget' => 'single_text',
                 'html5' => true,
@@ -219,7 +205,6 @@ class EventType extends AbstractType
             ->add('eventEndDate', DateTimeType::class, [
                 'label' => 'Date et heure (estimée) de retour',
                 'required' => true,
-                'mapped' => false,
                 'data' => $eventEndDate,
                 'widget' => 'single_text',
                 'html5' => true,
@@ -293,7 +278,6 @@ class EventType extends AbstractType
             ->add('joinStartDate', DateTimeType::class, [
                 'label' => 'Les inscriptions démarrent le',
                 'required' => false,
-                'mapped' => false,
                 'data' => $eventJoinStartDate,
                 'widget' => 'single_text',
                 'html5' => true,
