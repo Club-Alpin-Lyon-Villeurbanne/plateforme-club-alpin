@@ -4,12 +4,8 @@
 use App\Legacy\LegacyContainer;
 
 $url = 'article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html';
-// if($current_commission) $url.='?commission='.$current_commission; // v1 : commission courante sur la page
-if ($article['commission']['code_commission'] ?? null) {
-    $url .= '?commission=' . $article['commission']['code_commission'];
-} // V2 commission de cet article
-elseif ($article['evt']['code_commission'] ?? null) {
-    $url .= '?commission=' . $article['evt']['code_commission'];
+if ($article['code_commission'] ?? null) {
+    $url .= '?commission=' . $article['code_commission'];
 } // commission de la sortie associée
 
 // disabling links :
@@ -44,10 +40,10 @@ if ($article['media_upload_id']) {
         echo date('d.m.y - ', $article['tsp_article']);
 
 // une commission est bien liée
-if ($article['commission'] ?? null) {
+if ($article['code_commission'] ?? null) {
     ?>
-			<a href="/accueil/<?php echo html_utf8($article['commission']['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
-				<?php echo html_utf8($article['commission']['title_commission']); ?>
+			<a href="/accueil/<?php echo html_utf8($article['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
+				<?php echo html_utf8($article['title_commission']); ?>
 			</a>
 			<?php
 }
