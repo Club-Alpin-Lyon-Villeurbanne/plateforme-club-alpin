@@ -20,6 +20,10 @@
                 <div class="article-title-author">
                     Rédigé par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.user.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.user.nickname }}</a>
                     le {{ article.tspCrea|date('d/m/Y') }}<br>
+                    {% if article.lastEditWho %}
+                        Modifié par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.lastEditWho.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.lastEditWho.nickname }}</a>
+                        le {{ article.tspLastedit|date('d/m/Y') }}<br>
+                    {% endif %}
                     <a href="{{ article_url }}#comments">{{ comments|length }} commentaire{% if comments|length > 1 %}s{% endif %}</a>
                 </div>
             </div>

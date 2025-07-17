@@ -69,6 +69,10 @@ class Article
     #[ORM\Column(name: 'tsp_lastedit', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP', 'comment' => 'Date de dernière modif'])]
     private $tspLastedit = 'CURRENT_TIMESTAMP';
 
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\JoinColumn(name: 'lastedit_who', referencedColumnName: 'id_user', nullable: true, options: ['comment' => 'User de la dernière modif'])]
+    private ?User $lastEditWho;
+
     /**
      * @var User
      */
@@ -311,6 +315,18 @@ class Article
     public function setMediaUpload(?MediaUpload $mediaUpload): self
     {
         $this->mediaUpload = $mediaUpload;
+
+        return $this;
+    }
+
+    public function getLastEditWho(): ?User
+    {
+        return $this->lastEditWho;
+    }
+
+    public function setLastEditWho(?User $lastEditWho): self
+    {
+        $this->lastEditWho = $lastEditWho;
 
         return $this;
     }
