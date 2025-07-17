@@ -35,4 +35,4 @@ bin/console doctrine:migrations:sync-metadata-storage
 bin/console messenger:setup-transports
 
 # Frontend build
-npm install && npm run build && npm run build:encore
+npm install && npm run build && npm run build:webpack

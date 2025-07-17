@@ -38,6 +38,7 @@ public/dev.txt
 ###> pentatrion/vite-bundle ###
 /node_modules/
 /public/build/
+/public/build-webpack/
 ###< pentatrion/vite-bundle ###
 
 ###> liip/imagine-bundle ###

@@ -31,7 +31,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:encore": "encore production --progress",
+    "build:webpack": "encore production --progress",
     "watch": "vite build --watch"
   },
   "dependencies": {
