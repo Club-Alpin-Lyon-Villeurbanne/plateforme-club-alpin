@@ -144,6 +144,9 @@ class SortieController extends AbstractController
             if (empty($event->getRdv())) {
                 $event->setRdv('');
             }
+            if (empty($event->getPlace())) {
+                $event->setPlace('');
+            }
 
             $entityManager->persist($event);
             $entityManager->flush();
