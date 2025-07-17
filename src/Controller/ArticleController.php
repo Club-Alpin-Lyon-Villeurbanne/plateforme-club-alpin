@@ -75,6 +75,7 @@ class ArticleController extends AbstractController
                     $article->setCode($this->generateArticleCode($article->getTitre(), $slugger));
                 } else {
                     $article->setStatus(0);
+                    $article->setLastEditWho($this->getUser());
                 }
 
                 $article->setTsp(time());
