@@ -26,6 +26,8 @@ api_platform:
       JWT:
         name: Authorization
         type: header
+    swagger_ui_extra_configuration:
+      persistAuthorization: true
 
 when@prod:
   api_platform:
