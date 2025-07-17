@@ -1,0 +1,3 @@
+{% block ckeditor_widget %}
+    <textarea {{ block('widget_attributes') }} class="ckeditor">{{ value|e('html') }}</textarea>
+{% endblock %}

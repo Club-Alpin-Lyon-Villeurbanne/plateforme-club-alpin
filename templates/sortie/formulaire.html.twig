@@ -7,7 +7,7 @@
         <h1 class="page-h1">{{ title }}</h1>
 
         {% import 'macros/form_macros.html.twig' as form_macros %}
-        {% form_theme form with ['form/encadrants_checkbox_theme.html.twig', 'form/field_error.html.twig'] %}
+        {% form_theme form with ['form/encadrants_checkbox_theme.html.twig', 'form/field_error.html.twig'form/ckeditor_theme.html.twig'] %}
 
         {{ form_start(form, {
             attr: {class: 'padded-form', 'id': 'event_form'}
@@ -197,6 +197,21 @@
                 switchCommission(document);
             {% endif %}
             searchCommunes(document);
+
+            document.querySelector('form[name="event"]').addEventListener('submit', function (e) {
+                document.querySelectorAll('textarea.ckeditor').forEach((el) => {
+                    if (el._ckeditorInstance) {
+                        el.value = el._ckeditorInstance.getData().trim();
+
+                        // vérifier que la description complète est renseignée
+                        if ('event_description' === el.id && '' === el._ckeditorInstance.getData().trim()) {
+                            e.preventDefault();
+                            alert('La description complète est obligatoire.');
+                            return false;
+                        }
+                    }
+                });
+            });
 
             // liste matériel
             document.querySelector('#predefinitions-matos-submit').addEventListener('click', (e) => {
