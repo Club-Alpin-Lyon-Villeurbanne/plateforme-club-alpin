@@ -392,7 +392,7 @@ class EventType extends AbstractType
                 'attr' => [
                     'class' => 'type2 wide tinymce',
                     'rows' => 15,
-                    'style' => 'width:615px; min-height:300px',
+                    'style' => 'width:100%; min-height:300px',
                 ],
                 'constraints' => [
                     new NotBlank(),
