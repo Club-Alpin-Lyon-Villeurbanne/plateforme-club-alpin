@@ -36,10 +36,14 @@ class FfcamSynchronizer
             return;
         }
 
-        $stats = $this->processMembers($this->fileParser->parse($ffcamFilePath));
+        try {
+            $stats = $this->processMembers($this->fileParser->parse($ffcamFilePath));
 
-        $this->archiveFile($ffcamFilePath, $stats);
-        $this->logResults($ffcamFilePath, $stats);
+            $this->archiveFile($ffcamFilePath, $stats);
+            $this->logResults($ffcamFilePath, $stats);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
 
         $this->userRepository->blockExpiredAccounts();
         $this->userRepository->removeExpiredFiliations();
@@ -50,6 +54,9 @@ class FfcamSynchronizer
         return file_exists($filePath) && is_file($filePath);
     }
 
+    /**
+     * @throws \Exception
+     */
     private function processMembers(\Generator $members): array
     {
         $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0];
