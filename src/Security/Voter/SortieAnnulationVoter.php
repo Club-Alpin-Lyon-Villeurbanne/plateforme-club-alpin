@@ -2,6 +2,7 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
 use App\UserRights;
@@ -42,17 +43,22 @@ class SortieAnnulationVoter extends Voter
             return false;
         }
 
-        if ($subject->getUser() !== $user
-            && !$this->userRights->allowed('evt_cancel_any')
-            && !$this->userRights->allowedOnCommission('evt_cancel', $subject->getCommission())
-        ) {
-            return false;
-        }
-
         if ($subject->isFinished()) {
             return false;
         }
 
-        return $this->userRights->allowedOnCommission('evt_cancel', $subject->getCommission()) || $this->userRights->allowed('evt_cancel_any');
+        $isCurrentUserEncadrant = false;
+        foreach ($subject->getEncadrants(EventParticipation::ROLES_ENCADREMENT_ETENDU) as $eventParticipation) {
+            if ($eventParticipation->getUser() === $user) {
+                $isCurrentUserEncadrant = true;
+                break;
+            }
+        }
+
+        return ($subject->getUser() === $user
+            || $isCurrentUserEncadrant) && $this->userRights->allowed('evt_cancel_own')
+            || $this->userRights->allowedOnCommission('evt_cancel', $subject->getCommission())
+            || $this->userRights->allowed('evt_cancel_any')
+        ;
     }
 }
