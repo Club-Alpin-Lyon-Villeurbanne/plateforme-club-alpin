@@ -1,7 +1,8 @@
 # Code source pour l'application de gestion de Clubs Alpins Français
 
-[![CI/CD](https://img.shields.io/badge/Automatisation-github_actions-orange)](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/actions)
+[![CI/CD](https://img.shields.io/badge/Automatisation-github_actions-orange)](https://github.com/Club-Alpin-Lyon-Villeurbanne/plateforme-club-alpin/actions)
 [![Clever Cloud](https://img.shields.io/badge/Hébergement-Clever_cloud-yellow)](https://console.clever-cloud.com/)
+[![GitGuardian Security](https://img.shields.io/badge/GitGuardian-Monitored-green?logo=gitguardian)](https://dashboard.gitguardian.com/workspace/474277/incidents/secrets)
 ![PHP Version](https://img.shields.io/badge/PHP-8.2-blue?logo=php)
 ![Symfony](https://img.shields.io/badge/Symfony-6.4-6d6dff?logo=symfony)
 ![Database](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql)
@@ -27,7 +28,7 @@ Application web permettant de gérer un Club Alpin Francais! Ce projet est utili
 
 ## 🚀 Démarrage rapide
 
-1. [Forkez](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/fork) le repo
+1. [Forkez](https://github.com/Club-Alpin-Lyon-Villeurbanne/plateforme-club-alpin/fork) le repo
 2. Clonez votre fork localement
 3. Suivez le [guide d'installation](docs/installation.md)
 4. Consultez le [guide de contribution](docs/contribution.md)
@@ -59,7 +60,7 @@ Application web permettant de gérer un Club Alpin Francais! Ce projet est utili
 - [Production](https://www.clubalpinlyon.fr)
 - [Tickets](https://app.clickup.com/42653954/v/li/222711017)
 - [Report de bugs](https://club-alpin-lyon.sentry.io/issues/?project=6021900&statsPeriod=14d)
-- [Build](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon/actions)
+- [Build](https://github.com/Club-Alpin-Lyon-Villeurbanne/plateforme-club-alpin/actions)
 
 ## 🤝 Contribuer
 
