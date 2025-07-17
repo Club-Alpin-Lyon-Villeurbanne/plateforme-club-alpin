@@ -1,0 +1,15 @@
+{% macro display_confirmed_cancel_block(role) %}
+    <div class="info info-container" style="margin-right:2rem !important">
+        <img src="/img/inscrit-check.png" alt="" title=""/>
+        <div class="text-container">Vous êtes inscrit à cette sortie en tant que : {{ role }}.<br /><br />
+            <span class="italic">
+                Si vous ne pouvez plus venir, il est important d'annuler votre participation.<br />
+                En annulant, l'encadrant sera averti par mail.<br />
+                Selon le délai, vous perdrez éventuellement des frais liés au covoiturage et hébergement - voir les infos à ce sujet sur la description de la sortie.
+            </span>
+            <div class="button-container">
+                <input type="button" class="nice" value="Annuler ma participation" onclick="$('#inscription-annuler').slideToggle(200)" />
+            </div>
+        </div>
+    </div>
+{% endmacro %}
