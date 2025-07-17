@@ -71,7 +71,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
 
         $req = 'SELECT
                 SQL_CALC_FOUND_ROWS
-                id_evt, code_evt, commission_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, join_start_evt, ngens_max_evt, cancelled_evt, is_draft
+                id_evt, code_evt, commission_evt, tsp_evt, tsp_crea_evt, titre_evt, massif_evt, place_evt, join_start_evt, ngens_max_evt, cancelled_evt, is_draft
                 , title_commission, code_commission
             FROM caf_evt, caf_commission, caf_user
             WHERE id_commission = commission_evt
@@ -79,12 +79,13 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             AND status_evt = 1';
         // si une comm est sélectionnée, filtre
         if ($current_commission) {
-            $req .= ' AND (commission_article = ? OR commission_article = 0) ';
+            $req .= ' AND commission_evt = ? ';
         }
         // RECHERCHE
         $req .= ' AND (
                         titre_evt LIKE ?
                     OR	massif_evt LIKE ?
+                    OR	place_evt LIKE ?
                     OR	rdv_evt LIKE ?
                     OR	description_evt LIKE ?
                     OR	nickname_user LIKE ?
@@ -93,9 +94,9 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             LIMIT 10';
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($req);
         if ($current_commission) {
-            $stmt->bind_param('isssss', (int) $comTab[$current_commission]['id_commission'], $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
+            $stmt->bind_param('issssss', (int) $comTab[$current_commission]['id_commission'], $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
         } else {
-            $stmt->bind_param('sssss', $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
+            $stmt->bind_param('ssssss', $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
         }
         $stmt->execute();
         $handleSql = $stmt->get_result();

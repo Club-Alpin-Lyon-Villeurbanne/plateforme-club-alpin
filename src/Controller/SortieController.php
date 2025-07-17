@@ -602,6 +602,7 @@ class SortieController extends AbstractController
             $event->getNgensMax()
         );
         $newEvent->setMassif($event->getMassif());
+        $newEvent->setPlace($event->getPlace());
         $newEvent->setTarif($event->getTarif());
         $newEvent->setTarifDetail($event->getTarifDetail());
         $newEvent->setDetailsCaches($event->getDetailsCaches());

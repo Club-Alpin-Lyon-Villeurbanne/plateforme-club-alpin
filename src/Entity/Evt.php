@@ -97,7 +97,7 @@ class Evt
     #[ORM\Column(name: 'tsp_edit_evt', type: 'bigint', nullable: true)]
     private ?int $tspEdit;
 
-    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage'])]
+    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de départ activité'])]
     private ?string $place;
 
     #[ORM\Column(name: 'titre_evt', type: 'string', length: 100, nullable: false)]
@@ -112,7 +112,7 @@ class Evt
     #[ORM\Column(name: 'massif_evt', type: 'string', length: 100, nullable: true)]
     private ?string $massif;
 
-    #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu détaillé du rdv'])]
+    #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage'])]
     #[Groups('event:read')]
 
     private ?string $rdv;

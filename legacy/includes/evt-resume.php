@@ -19,6 +19,11 @@ if (!$evt) {
             '<li><b>MASSIF :</b> ' . html_utf8($evt['massif_evt']) . '</li>'
         : '')
 
+         // lieu départ ?
+         . ($evt['place_evt'] ?
+            '<li><b>LIEU DÉPART ACTIVITÉ :</b> ' . html_utf8($evt['place_evt']) . '</li>'
+        : '')
+
         // denivele ?
         . ($evt['denivele_evt'] ?
             '<li><b>DÉNIVELÉ :</b> ' . html_utf8($evt['denivele_evt']) . ' m</li>'

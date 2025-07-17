@@ -704,10 +704,13 @@
         <hr />
         {% endif %}
 
-        {% if event.massif or event.itineraire %}
+        {% if event.massif or event.place or event.itineraire %}
             <ul class="nice-list">
                 {% if event.massif %}
                     <li class="wide"><b>MASSIF :</b> {{ event.massif }}</li>
+                {% endif %}
+                {% if event.place %}
+                    <li class="wide"><b>LIEU DÉPART ACTIVITÉ :</b> {{ event.place }}</li>
                 {% endif %}
                 {% if event.itineraire %}
                     <li class="wide"><b>ITINÉRAIRE DE L'ACTIVITÉ :</b> {{ event.itineraire }}</li>
