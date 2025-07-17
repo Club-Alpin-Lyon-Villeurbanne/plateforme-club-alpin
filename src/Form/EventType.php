@@ -303,7 +303,7 @@ class EventType extends AbstractType
             ])
             ->add('difficulte', TextType::class, [
                 'label' => 'Difficulté, niveau',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : PD, 5d+, exposé, ...',
                     'maxlength' => 50,
@@ -317,7 +317,7 @@ class EventType extends AbstractType
             ])
             ->add('denivele', TextType::class, [
                 'label' => 'Dénivelé positif',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : 1200',
                     'maxlength' => 50,
@@ -335,7 +335,7 @@ class EventType extends AbstractType
             ])
             ->add('distance', TextType::class, [
                 'label' => 'Distance',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : 13.50',
                     'maxlength' => 50,
