@@ -3,7 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GraphQl\Query;
+use ApiPlatform\Metadata\GraphQl\QueryCollection;
 use App\Repository\UserRepository;
+use App\State\CurrentUserProvider;
 use App\Utils\EmailAlerts;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,7 +23,14 @@ use Symfony\Component\Serializer\Annotation\Ignore;
 #[ORM\Table(name: 'caf_user')]
 #[ORM\Index(name: 'id_user', columns: ['id_user'])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource(operations: [], normalizationContext: ['groups' => ['user:read']])]
+#[ApiResource(operations: [], graphQlOperations:[], normalizationContext: ['groups' => ['user:read']])]
+#[ApiResource(
+    uriTemplate: '/users/current',
+    operations: [new Get()],
+    graphQlOperations: [new Query(name: 'current', provider: CurrentUserProvider::class)],
+    normalizationContext: ['groups' => ['user:read']],
+    provider: CurrentUserProvider::class
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSerializable
 {
     /**
@@ -37,6 +48,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     /**
      * @var string
      */
+    #[Groups('user:read')]
     #[ORM\Column(name: 'email_user', type: 'string', length: 200, nullable: true, unique: true)]
     private $email;
 
@@ -51,7 +63,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      * @var string
      */
     #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, nullable: true, unique: true, options: ['comment' => 'Numéro de licence'])]
-
+    #[Groups('user:read')]
     private $cafnum;
 
     /**
@@ -65,7 +77,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'firstname_user', type: 'string', length: 50, nullable: false)]
     #[Groups('user:read')]
-
     private $firstname;
 
     /**
@@ -73,13 +84,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'lastname_user', type: 'string', length: 50, nullable: false)]
     #[Groups('user:read')]
-
     private $lastname;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'nickname_user', type: 'string', length: 20, nullable: false)]
+    #[Groups('user:read')]
     private $nickname;
 
     /**
