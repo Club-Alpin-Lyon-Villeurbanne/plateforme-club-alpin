@@ -17,6 +17,7 @@ use App\Twig\JavascriptGlobalsExtension;
 use App\UserRights;
 use App\Utils\ExcelExport;
 use App\Utils\PdfGenerator;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Twig\Attribute\Template;
@@ -26,6 +27,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -284,6 +286,10 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws Exception
+     */
     #[Route(name: 'sortie_update_inscription', path: '/sortie/{id}/update-inscriptions', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieUpdateInscriptions(#[CurrentUser] User $user, Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
     {
@@ -299,6 +305,18 @@ class SortieController extends AbstractController
             return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
         }
 
+        // reste-t-il assez de place ?
+        $nbJoinMax = $event->getNgensMax();
+        $currentParticipantNb = $event->getParticipationsCount();
+        $availableSpotNb = $nbJoinMax - $currentParticipantNb;
+        if ($currentParticipantNb > $nbJoinMax) {
+            $this->addFlash('error', 'Vous ne pouvez pas valider plus de participants que de places disponibles (' . $availableSpotNb . ').');
+
+            return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
+        }
+
+        $em->getConnection()->beginTransaction();
+        $commit = true;
         foreach ($request->request->all('id_evt_join', []) as $participationId) {
             $status = $request->request->get('status_evt_join_' . $participationId);
             $role = $request->request->get('role_evt_join_' . $participationId);
@@ -335,6 +353,12 @@ class SortieController extends AbstractController
                 ->setLastchangeWhen(time())
                 ->setLastchangeWho($user)
             ;
+            $em->persist($participation);
+            ++$currentParticipantNb;
+            if ($currentParticipantNb > $nbJoinMax && EventParticipation::STATUS_VALIDE === $status) {
+                $this->addFlash('error', 'Vous ne pouvez pas valider plus de participants que de places disponibles (' . $availableSpotNb . ').');
+                $commit = false;
+            }
 
             if (!\in_array($status, [EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_REFUSE, EventParticipation::STATUS_ABSENT], true)) {
                 continue;
@@ -402,7 +426,12 @@ class SortieController extends AbstractController
             $mailer->send($toMail, $template, $context, replyTo: $replyTo);
         }
 
-        $em->flush();
+        if ($commit) {
+            $em->flush();
+            $em->getConnection()->commit();
+        } else {
+            $em->getConnection()->rollBack();
+        }
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
