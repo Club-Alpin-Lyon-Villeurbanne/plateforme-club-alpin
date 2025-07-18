@@ -1,7 +1,12 @@
 api_platform:
   title: Hello API Platform
   version: 1.0.0
+  graphql:
+      enabled: true
+      graphiql:
+        enabled: true
   formats:
+    jsonld: ["application/ld+json"]
     json: ["application/json"]
     multipart: ["multipart/form-data"]
   patch_formats:
@@ -36,4 +41,6 @@ when@prod:
     enable_docs: false
     enable_re_doc: false
     graphql:
-      enabled: false
+      introspection: false
+      graphiql:
+        enabled: false

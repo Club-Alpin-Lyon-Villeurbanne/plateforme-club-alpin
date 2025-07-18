@@ -12,6 +12,7 @@
         "ext-intl": "*",
         "ext-zip": "*",
         "api-platform/core": "^4.1",
+        "api-platform/graphql": "*",
         "beberlei/doctrineextensions": "^1.5",
         "composer/package-versions-deprecated": "1.11.99.4",
         "doctrine/doctrine-bundle": "^2.4",
@@ -65,7 +66,8 @@
         "twig/extra-bundle": "^3.3",
         "twig/string-extra": "^3.3",
         "twig/twig": "^3.3",
-        "vich/uploader-bundle": "^2.6"
+        "vich/uploader-bundle": "^2.6",
+        "webonyx/graphql-php": "^15.21"
     },
     "require-dev": {
         "doctrine/data-fixtures": "^1.6",
