@@ -8,7 +8,10 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Serializer\Filter\GroupFilter;
+use App\Serializer\TimeStamp;
+use App\Serializer\TimeStampNormalizer;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
@@ -64,12 +67,16 @@ class Article
      * @var int
      */
     #[ORM\Column(name: 'tsp_crea_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp de création de l'article"])]
+    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[TimeStamp]
     private $tspCrea;
 
     /**
      * @var int
      */
     #[ORM\Column(name: 'tsp_validate_article', type: 'integer', nullable: true)]
+    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[TimeStamp]
     private $tspValidate;
 
     /**
@@ -77,6 +84,8 @@ class Article
      */
     #[ORM\Column(name: 'tsp_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp affiché de l'article"])]
     #[Groups('article:read')]
+    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[TimeStamp]
     private $tsp;
 
     /**

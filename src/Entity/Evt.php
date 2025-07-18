@@ -9,10 +9,13 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Serializer\Filter\GroupFilter;
+use App\Serializer\TimeStamp;
+use App\Serializer\TimeStampNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Context;
 
 /**
  * Evt.
@@ -94,16 +97,24 @@ class Evt
 
     #[ORM\Column(name: 'tsp_evt', type: 'bigint', nullable: true, options: ['comment' => 'timestamp du début du event'])]
     #[Groups('event:read')]
+    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[TimeStamp]
     private ?int $tsp;
 
     #[ORM\Column(name: 'tsp_end_evt', type: 'bigint', nullable: true)]
     #[Groups('event:read')]
+    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[TimeStamp]
     private ?int $tspEnd;
 
     #[ORM\Column(name: 'tsp_crea_evt', type: 'bigint', nullable: false, options: ['comment' => "Création de l'entrée"])]
+    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[TimeStamp]
     private ?int $tspCrea;
 
     #[ORM\Column(name: 'tsp_edit_evt', type: 'bigint', nullable: true)]
+    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[TimeStamp]
     private ?int $tspEdit;
 
     #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de départ activité'])]
@@ -170,6 +181,8 @@ class Evt
     private bool $needBenevoles = false;
 
     #[ORM\Column(name: 'join_start_evt', type: 'integer', nullable: true, options: ['comment' => 'Timestamp de départ des inscriptions'])]
+    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[TimeStamp]
     #[Groups('event:details')]
     private ?int $joinStart;
 

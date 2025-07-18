@@ -259,3 +259,6 @@ services:
       $defaultLat: '%default_latitude%'
       $defaultLong: '%default_longitude%'
     tags: ['controller.service_arguments']
+
+  App\Serializer\TimeStampConverter:
+    decorates: api_platform.graphql.type_converter
