@@ -856,6 +856,15 @@
                 <br style="clear:both" />
             {% endif %}
 
+            {% if event.status is same as (constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE')) and event.statusWho %}
+                <li class="wide">
+                    <b>SORTIE PUBLIÉE PAR :</b>
+                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.statusWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
+                        {{ event.statusWho.nickname }}
+                    </a>
+                </li>
+            {% endif %}
+
             <br style="clear:both" />
 
             {% if event.needBenevoles and not event.cancelled %}
@@ -1067,7 +1076,7 @@
                                         </div>
 
                                         <p style="text-align:center">
-                                            <label for="name">Ajouter un message à votre demande (optionnel) :</label><br>
+                                            <label for="name">Ajouter un message à votre demande (facultatif) :</label><br>
                                             <textarea name="message" placeholder="Par exemple :
 - J'ai tel niveau et telle expérience
 - J'ai une voiture avec 4 places dispos

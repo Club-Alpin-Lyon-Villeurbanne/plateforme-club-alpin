@@ -24,6 +24,13 @@
                         Modifié par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.lastEditWho.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.lastEditWho.nickname }}</a>
                         le {{ article.tspLastedit|date('d/m/Y') }}<br>
                     {% endif %}
+                    {% if article.status is same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) and article.statusWho %}
+                        Publié par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.statusWho.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.statusWho.nickname }}</a>
+                        {% if article.tspValidate %}
+                            le {{ article.tspValidate|date('d/m/Y') }}
+                        {% endif %}
+                        <br>
+                    {% endif %}
                     <a href="{{ article_url }}#comments">{{ comments|length }} commentaire{% if comments|length > 1 %}s{% endif %}</a>
                 </div>
             </div>
