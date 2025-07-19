@@ -29,7 +29,8 @@ use Symfony\Component\Serializer\Annotation\Ignore;
     operations: [new Get()],
     graphQlOperations: [new Query(name: 'current', provider: CurrentUserProvider::class)],
     normalizationContext: ['groups' => ['user:read']],
-    provider: CurrentUserProvider::class
+    provider: CurrentUserProvider::class,
+    security: "is_granted('ROLE_USER')",
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSerializable
 {

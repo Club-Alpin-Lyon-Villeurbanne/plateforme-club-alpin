@@ -8,6 +8,8 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GraphQl\Query;
+use ApiPlatform\Metadata\GraphQl\QueryCollection;
 use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Serializer\TimeStamp;
 use App\Serializer\TimeStampNormalizer;
@@ -25,7 +27,12 @@ use Symfony\Component\Serializer\Attribute\Context;
 #[ApiResource(
     order: ['tsp' => 'ASC'],
     operations: [new Get(), new GetCollection()],
-    normalizationContext: ['groups' => ['event:read']]
+    normalizationContext: ['groups' => ['event:read']],
+    graphQlOperations: [
+        new Query(normalizationContext: ['groups' => ['event:read', 'commission:read']]),
+        new QueryCollection(normalizationContext: ['groups' => ['event:read', 'commission:read']])
+    ],
+    security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact'])]
 #[ApiFilter(RangeFilter::class, properties: ['tsp'])]

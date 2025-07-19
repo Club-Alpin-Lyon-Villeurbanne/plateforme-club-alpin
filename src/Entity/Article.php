@@ -7,6 +7,8 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\GraphQl\Query;
+use ApiPlatform\Metadata\GraphQl\QueryCollection;
 use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Serializer\TimeStamp;
 use App\Serializer\TimeStampNormalizer;
@@ -25,7 +27,12 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ApiResource(
     order: ['tsp' => 'DESC'],
     operations: [new Get(), new GetCollection()],
-    normalizationContext: ['groups' => ['article:read']]
+    normalizationContext: ['groups' => ['article:read']],
+    graphQlOperations: [
+        new Query(),
+        new QueryCollection()
+    ],
+    security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact'])]
 #[ApiFilter(GroupFilter::class)]
