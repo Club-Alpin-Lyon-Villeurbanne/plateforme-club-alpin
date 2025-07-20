@@ -38,7 +38,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Id]
     #[ORM\Column(name: 'id_user', type: 'bigint', nullable: false)]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    #[Groups(['user:read', 'article:read', 'event:read'])]
+    #[Groups(['user:read', 'article:read', 'event:read', 'eventParticipation:read'])]
     private $id;
 
     #[ORM\OneToMany(targetEntity: 'UserAttr', mappedBy: 'user', cascade: ['persist'])]
@@ -75,14 +75,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      * @var string
      */
     #[ORM\Column(name: 'firstname_user', type: 'string', length: 50, nullable: false)]
-    #[Groups('user:read')]
+    #[Groups(['user:read', 'eventParticipation:read'])]
     private $firstname;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'lastname_user', type: 'string', length: 50, nullable: false)]
-    #[Groups('user:read')]
+    #[Groups(['user:read', 'eventParticipation:read'])]
     private $lastname;
 
     /**

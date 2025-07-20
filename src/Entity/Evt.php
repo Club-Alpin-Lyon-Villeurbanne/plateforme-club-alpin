@@ -29,8 +29,8 @@ use Symfony\Component\Serializer\Attribute\Context;
     operations: [new Get(), new GetCollection()],
     normalizationContext: ['groups' => ['event:read']],
     graphQlOperations: [
-        new Query(normalizationContext: ['groups' => ['event:read', 'commission:read']]),
-        new QueryCollection(normalizationContext: ['groups' => ['event:read', 'commission:read']])
+        new Query(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
+        new QueryCollection(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
     ],
     security: "is_granted('ROLE_USER')",
 )]
@@ -117,6 +117,7 @@ class Evt
     #[ORM\Column(name: 'tsp_crea_evt', type: 'bigint', nullable: false, options: ['comment' => "Création de l'entrée"])]
     #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[TimeStamp]
+    #[Groups('event:details')]
     private ?int $tspCrea;
 
     #[ORM\Column(name: 'tsp_edit_evt', type: 'bigint', nullable: true)]
@@ -125,6 +126,7 @@ class Evt
     private ?int $tspEdit;
 
     #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de départ activité'])]
+    #[Groups('event:details')]
     private ?string $place;
 
     #[ORM\Column(name: 'titre_evt', type: 'string', length: 100, nullable: false)]
@@ -198,6 +200,7 @@ class Evt
     private ?int $joinMax;
 
     #[ORM\OneToMany(mappedBy: 'evt', targetEntity: 'EventParticipation', cascade: ['persist'], orphanRemoval: true)]
+    #[Groups('eventParticipation:read')]
     private ?Collection $participations;
 
     #[ORM\Column(name: 'ngens_max_evt', type: 'integer', nullable: false, options: ['comment' => 'Nombre de gens pouvant y aller au total. Donnée "visuelle" uniquement, pas de calcul.'])]
@@ -461,7 +464,7 @@ class Evt
     }
 
     /** @return EventParticipation[] */
-    public function getEncadrants($types = [EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_STAGIAIRE, EventParticipation::ROLE_COENCADRANT]): Collection
+    public function getEncadrants($types = [EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_STAGIAIRE, EventParticipation::ROLE_COENCADRANT])
     {
         return $this->getParticipations($types, [EventParticipation::STATUS_VALIDE]);
     }
