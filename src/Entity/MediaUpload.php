@@ -2,28 +2,39 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\MediaUploadRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: MediaUploadRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[Vich\Uploadable]
+#[ApiResource(
+    operations: [],
+    normalizationContext: ['groups' => ['media:read']],
+    graphQlOperations: [],
+    security: "is_granted('ROLE_USER')",
+)]
 class MediaUpload
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('media:read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('media:read')]
     private ?string $filename = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $originalFilename = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Groups('media:read')]
     private ?string $mimeType = null;
 
     #[Vich\UploadableField(mapping: 'files', fileNameProperty: 'filename', originalName: 'originalFilename', mimeType: 'mimeType')]

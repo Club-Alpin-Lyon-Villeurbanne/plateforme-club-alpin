@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
@@ -29,12 +30,13 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     operations: [new Get(), new GetCollection()],
     normalizationContext: ['groups' => ['article:read']],
     graphQlOperations: [
-        new Query(),
-        new QueryCollection()
+        new Query(normalizationContext: ['groups' => ['article:read', 'media:read']]),
+        new QueryCollection(normalizationContext: ['groups' => ['article:read', 'media:read']]),
     ],
     security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact'])]
+#[ApiFilter(BooleanFilter::class, properties: ['une'])]
 #[ApiFilter(GroupFilter::class)]
 class Article
 {
@@ -165,6 +167,7 @@ class Article
 
     #[ORM\ManyToOne(targetEntity: MediaUpload::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[Groups('media:read')]
     private ?MediaUpload $mediaUpload = null;
 
     public function getId(): ?int
