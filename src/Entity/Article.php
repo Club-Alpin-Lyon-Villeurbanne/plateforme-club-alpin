@@ -30,8 +30,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     operations: [new Get(), new GetCollection()],
     normalizationContext: ['groups' => ['article:read']],
     graphQlOperations: [
-        new Query(normalizationContext: ['groups' => ['article:read', 'media:read']]),
-        new QueryCollection(normalizationContext: ['groups' => ['article:read', 'media:read']]),
+        new Query(normalizationContext: ['groups' => ['article:read', 'media:read', 'user:read']]),
+        new QueryCollection(normalizationContext: ['groups' => ['article:read', 'media:read', 'user:read']]),
     ],
     security: "is_granted('ROLE_USER')",
 )]
