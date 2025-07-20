@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\GraphQl\Query;
 use ApiPlatform\Metadata\GraphQl\QueryCollection;
 use App\Repository\UserRepository;
@@ -23,14 +24,11 @@ use Symfony\Component\Serializer\Annotation\Ignore;
 #[ORM\Table(name: 'caf_user')]
 #[ORM\Index(name: 'id_user', columns: ['id_user'])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource(operations: [], graphQlOperations:[], normalizationContext: ['groups' => ['user:read']])]
 #[ApiResource(
-    uriTemplate: '/users/current',
     operations: [new Get()],
-    graphQlOperations: [new Query(name: 'current', provider: CurrentUserProvider::class)],
+    graphQlOperations: [new Query()],
     normalizationContext: ['groups' => ['user:read']],
-    provider: CurrentUserProvider::class,
-    security: "is_granted('ROLE_USER')",
+    security: "is_granted('ROLE_USER') and object == user",
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSerializable
 {
