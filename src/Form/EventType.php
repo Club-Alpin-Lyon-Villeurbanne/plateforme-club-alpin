@@ -366,6 +366,7 @@ class EventType extends AbstractType
                 'attr' => [
                     'class' => 'type2 wide',
                     'rows' => 5,
+                    'placeholder' => 'ex: du parking 1540 Aussois à côté des remontées mécaniques du Grand Jeu, prendre NNE jusqu\'à Plan Aval puis suivre refuge de la Fournache 2333m par la Randolière',
                 ],
             ])
             ->add('details_caches', TextareaType::class, [
