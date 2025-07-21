@@ -8,6 +8,7 @@ use App\Messenger\Message\SortiePubliee;
 use App\Messenger\Message\UserNotification;
 use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
+use App\Service\PushNotificationService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -18,6 +19,7 @@ class SortiePublieeHandler
         private readonly EvtRepository $evtRepository,
         private readonly UserRepository $userRepository,
         private readonly MessageBusInterface $messageBus,
+        private readonly PushNotificationService $pushNotificationService,
     ) {
     }
 
@@ -34,6 +36,9 @@ class SortiePublieeHandler
         foreach ($this->userRepository->findUsersIdWithAlert($commissionCode, AlertType::Sortie) as $userId) {
             $this->notifyUser($evt, $userId);
         }
+
+        $this->pushNotificationService->notifyEvent($evt);
+
     }
 
     private function notifyUser(Evt $sortie, int $userId): void
