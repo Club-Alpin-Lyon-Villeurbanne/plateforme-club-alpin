@@ -70,7 +70,7 @@
                 <p class="alerte">Attention : si vous modifiez cet article, il devra à nouveau être validé par un responsable avant d'être publié sur le site !</p>
             {% endif %}
 
-            {{ form_start(form, {'attr': {'action': article.id ? path('article_edit', {'id': article.id}) : path('article_new'), 'method': 'post'}}) }}
+            {{ form_start(form, {'attr': {'id': 'article_form', 'action': article.id ? path('article_edit', {'id': article.id}) : path('article_new'), 'method': 'post'}}) }}
                 {% if errors is defined and errors|length > 0 %}
                     <div class="erreur">
                         Erreur :
@@ -265,6 +265,20 @@
             if (contentField) {
                 contentField.removeAttribute('required');
             }
+
+            document.getElementById('article_form').addEventListener('submit', function (e) {
+                // vérifier que le contenu est rempli
+                const editorContent = tinyMCE.get('{{ form.cont.vars.id }}').getContent({ format: 'text' }).trim();
+                if (editorContent.length <= 3) {
+                    alert('Veuillez renseigner le contenu de votre article.');
+                    e.preventDefault();
+
+                    return false;
+                } else {
+                    // On remet à jour le champ textarea pour que le contenu soit soumis
+                    tinyMCE.triggerSave();
+                }
+            });
         });
     </script>
 {% endblock %}
