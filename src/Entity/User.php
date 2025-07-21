@@ -5,12 +5,11 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\GraphQl\Mutation;
 use ApiPlatform\Metadata\GraphQl\Query;
-use ApiPlatform\Metadata\GraphQl\QueryCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Repository\UserRepository;
-use App\State\CurrentUserProvider;
 use App\Utils\EmailAlerts;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -27,8 +26,14 @@ use Symfony\Component\Serializer\Annotation\Ignore;
 #[ORM\Index(name: 'id_user', columns: ['id_user'])]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
-    operations: [new Get(normalizationContext: ['groups' => ['user:read']],)],
-    graphQlOperations: [new Query(normalizationContext: ['groups' => ['user:read', "user:details"]])],
+    operations: [
+        new Get(normalizationContext: ['groups' => ['user:read']]),
+        new Patch(normalizationContext: ['groups' => ['user:read', 'user:details']], denormalizationContext: ['groups' => ['user:write']]),
+    ],
+    graphQlOperations: [
+        new Query(normalizationContext: ['groups' => ['user:read', "user:details"]]),
+        new Mutation(name: 'update', normalizationContext: ['groups' => ['user:read', "user:details"]], denormalizationContext: ['groups' => ['user:write']]),
+    ],
     security: "is_granted('ROLE_USER') and object == user",
 )]
 #[ApiFilter(GroupFilter::class)]
@@ -228,7 +233,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private bool $isDeleted = false;
 
     #[ORM\Column(type: 'json', nullable: true)]
-    #[Groups('user:details')]
+    #[Groups(['user:details', 'user:write'])]
     private ?array $alerts = EmailAlerts::DEFAULT_ALERTS;
 
     #[ORM\Column(type: 'string', nullable: true)]
