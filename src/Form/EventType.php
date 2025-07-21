@@ -8,7 +8,6 @@ use App\Repository\CommissionRepository;
 use App\Repository\UserAttrRepository;
 use App\Service\ParticipantService;
 use App\UserRights;
-use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -386,13 +385,13 @@ class EventType extends AbstractType
                     'placeholder' => '- Listes prédéfinies',
                 ],
             ])
-            ->add('description', CKEditorType::class, [
+            ->add('description', TextareaType::class, [
                 'label' => false,
                 'required' => true,
                 'attr' => [
-                    'class' => 'type2 wide ckeditor',
+                    'class' => 'type2 wide tinymce',
                     'rows' => 15,
-                    'style' => 'width:95%; min-height:300px',
+                    'style' => 'width:615px; min-height:300px',
                 ],
                 'constraints' => [
                     new NotBlank(),
