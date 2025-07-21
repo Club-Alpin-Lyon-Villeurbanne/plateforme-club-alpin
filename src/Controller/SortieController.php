@@ -144,6 +144,12 @@ class SortieController extends AbstractController
             if (empty($event->getRdv())) {
                 $event->setRdv('');
             }
+            if (empty($event->getPlace())) {
+                $event->setPlace('');
+            }
+            if (!$event->getJoinMax() && 0 != $event->getJoinMax()) {
+                $event->setJoinMax($event->getNgensMax());
+            }
 
             $entityManager->persist($event);
             $entityManager->flush();
