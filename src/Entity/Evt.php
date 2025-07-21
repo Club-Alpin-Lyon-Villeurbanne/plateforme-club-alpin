@@ -76,6 +76,7 @@ class Evt
     private ?User $statusLegalWho;
 
     #[ORM\Column(name: 'cancelled_evt', type: 'boolean', nullable: false, options: ['default' => false])]
+    #[Groups('event:read')]
     private bool $cancelled = false;
 
     #[ORM\ManyToOne(targetEntity: 'User')]
