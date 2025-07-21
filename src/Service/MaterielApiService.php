@@ -149,7 +149,7 @@ class MaterielApiService
                 ]);
 
                 // Mettre à jour les droits utilisateur pour permettre l'accès au planning
-                $this->updateUserGroup($userData['id'], $pseudo, $user->getFirstname(), $user->getLastname(), $user->getEmail());
+                $this->updateUserGroup($userData['id']);
 
                 // Mettre à jour le statut dans la base de données locale
                 $user->setMaterielAccountCreatedAt(new \DateTime());
@@ -179,7 +179,7 @@ class MaterielApiService
     /**
      * Mettre à jour le groupe d'un utilisateur pour lui donner accès au planning.
      */
-    private function updateUserGroup(int $userId, string $pseudo, string $firstName, string $lastName, string $email): void
+    private function updateUserGroup(int $userId): void
     {
         if (!$this->jwtToken) {
             $this->authenticate();
@@ -188,7 +188,6 @@ class MaterielApiService
         try {
             $this->logger->info('Mise à jour des droits utilisateur', [
                 'userId' => $userId,
-                'pseudo' => $pseudo,
             ]);
 
             $response = $this->client->request('PUT', $this->apiBaseUrl . '/api/users/' . $userId, [
@@ -197,14 +196,7 @@ class MaterielApiService
                     'Authorization' => 'Bearer ' . $this->jwtToken,
                 ],
                 'json' => [
-                    'first_name' => $firstName,
-                    'last_name' => $lastName,
-                    'pseudo' => $pseudo,
-                    'email' => $email,
-                    'phone' => null,
-                    'password' => '',
                     'group' => 'readonly-planning-self',
-                    'restricted_parks' => [],
                 ],
             ]);
 
