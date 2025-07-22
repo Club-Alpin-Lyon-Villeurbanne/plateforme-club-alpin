@@ -54,7 +54,7 @@ label.required::after, h2.required::after {
     content: " *";
     color: red;
 }
-span.required, .field-error {
+span.required, .field-error, .red {
     color: red;
 }
 .field-error {
@@ -62,6 +62,9 @@ span.required, .field-error {
 }
 ul.field-error {
     list-style: none;
+}
+.green {
+    color: green;
 }
 
 .ck-content, .ck-editor__editable {
