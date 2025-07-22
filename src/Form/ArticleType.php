@@ -7,13 +7,13 @@ use App\Entity\Evt;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
 use App\UserRights;
-use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -105,13 +105,13 @@ class ArticleType extends AbstractType
                 'required' => false,
                 'help' => 'À utiliser avec parcimonie. Ceci place l\'article au sommet de la page d\'accueil, dans les actualités défilantes. Il reste affiché là jusqu\'à ce qu\'un autre article à la Une vienne l\'en déloger. Utile pour une actualité qui dure dans le temps, ou une alerte à mettre en valeur. La photo est alors obligatoire.',
             ])
-            ->add('cont', CKEditorType::class, [
+            ->add('cont', TextareaType::class, [
                 'label' => 'Contenu',
                 'required' => true,
                 'attr' => [
-                    'class' => 'type1 wide ckeditor',
+                    'class' => 'type1 wide tinymce',
                     'rows' => 15,
-                    'style' => 'width: 97%; min-height:300px',
+                    'style' => 'width: 615px; min-height:300px',
                 ],
             ])
             ->add('mediaUploadId', HiddenType::class, [

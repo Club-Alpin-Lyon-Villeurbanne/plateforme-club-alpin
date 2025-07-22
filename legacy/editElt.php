@@ -61,7 +61,9 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 					<!-- persos -->
 					<script type="text/javascript" src="/js/fonctions.js"></script>
 					<script type="text/javascript" src="/js/fonctionsAdmin.js"></script>
-                    <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteScriptTags('ckeditor'); ?>
+                    <!-- tinyMCE -->
+                    <script language="javascript" type="text/javascript" src="/tools/tinymce/tiny_mce.js"></script>
+                    <script language="javascript" type="text/javascript" src="/js/jquery.webkitresize.min.js"></script><!-- debug handles -->
 					<script language="javascript" type="text/javascript">
 						function loadVersion(){
 							var id_content_html= $("select[name=versions]").val();
@@ -73,8 +75,69 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 								$("#loading1").fadeIn({duration:1500, complete:function(){
 									window.location=url;
 								}});
-							};
+							}
 						}
+
+                        function onchange(inst){
+                            $("a.annuler img").attr('src', 'img/base/x-up.png');
+                        }
+                        tinyMCE.init({
+                            // debug handles
+                            init_instance_callback: function () { $(".mceIframeContainer iframe").webkitimageresize().webkittableresize().webkittdresize(); },
+
+                            theme : "advanced",
+                            mode : "exact",
+                            language : "fr",
+                            elements : "contenu_content_html",
+                            entity_encoding : "raw",
+                            plugins : "safari,spellchecker,style,layer,table,save,advhr,advimage,advlink,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,pagebreak",
+                            remove_linebreaks : false,
+                            file_browser_callback : 'lpbrowser',
+
+                            // forecolor,backcolor,|,
+                            theme_advanced_buttons1 : "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,styleselect,formatselect,fontsizeselect,|,help,|,removeformat,cleanup,code",
+                            theme_advanced_buttons2 : "cut,copy,paste,pastetext,|,bullist,numlist,|,blockquote,|,undo,redo,|,link,unlink,anchor,|,image,media,|,search,replace",
+                            theme_advanced_buttons3 : "tablecontrols,|,hr,visualaid,|,sub,sup,|,charmap,iespell,advhr,|,fullscreen",
+
+                            theme_advanced_toolbar_location : "top",
+                            theme_advanced_toolbar_align : "left",
+                            theme_advanced_statusbar_location : "none",
+
+                            content_css : "<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkRef('base-styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkRef('styles'); ?>,<?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkRef('fonts'); ?>",
+                            body_id : "bodytinymce",
+                            body_class : "<?php echo $_GET['class']; ?>",
+                            theme_advanced_styles : "Entete Article=ArticleEntete;Titre de menu=menutitle;Bleu clair du CAF=bleucaf;Image flottante gauche=imgFloatLeft;Image flottante droite=imgFloatRight;Lien fancybox=fancybox;Mini=mini;Bloc alerte=erreur;Bloc info=info",
+
+                            relative_urls : true,
+                            convert_urls : false,
+                            remove_script_host : false,
+                            theme_advanced_blockformats : "p,h1,h2,h3,h4,h5,ul,li",
+                            height: 500,
+                            theme_advanced_resize_horizontal : false,
+                            theme_advanced_resizing : true,
+                            apply_source_formatting : true,
+                            spellchecker_languages : "+English=en,Danish=da,Dutch=nl,Finnish=fi,French=fr,German=de,Italian=it,Polish=pl,Portuguese=pt,Spanish=es,Swedish=sv",
+
+                            onchange_callback : "onchange"
+                        });
+
+
+                        function lpbrowser(field_name, url, type, win) {
+                            // alert("Field_Name: " + field_name + "nURL: " + url + "nType: " + type + "nWin: " + win); // debug/testing
+                            tinyMCE.activeEditor.windowManager.open({
+                                file : 'admin/lpfibr.php?dossier='+(type=='image'?'images-pages-libres&type=image':'&type=file'),
+                                title : 'Mini-File Browser',
+                                width : 700,  // Your dimensions may differ - toy around with them!
+                                height : 400,
+                                resizable : "yes",
+                                inline : "yes",  // This parameter only has an effect if you use the inlinepopups plugin!
+                                close_previous : "no"
+                            }, {
+                                window : win,
+                                input : field_name
+                            });
+                            return false;
+                        }
 
 						// ONREADY
 						$().ready(function(){
@@ -83,6 +146,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 						});
 
 					</script>
+                    <!-- /tinyMCE -->
                     <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('admin-styles'); ?>
                     <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>
                     <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('common-styles'); ?>
@@ -140,7 +204,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
                                         echo '<p class="info">Le contenu ci-dessous a été chargé depuis une version antérieure, mais n\'a pas encore été sauvegardé.</p>';
                                     } ?>
 									<div style="background:#c0c0c0; ">
-										<textarea id="edition1" class="<?php echo $_GET['class']; ?> ckeditor" name="contenu_content_html" style="width:100%; min-height:300px"><?php
+										<textarea id="edition1" class="<?php echo $_GET['class']; ?>" name="contenu_content_html" style="width:100%; min-height:300px"><?php
                                             // affichage contenu courant
                                             echo !empty($runningVersion['contenu_content_html']) ? $runningVersion['contenu_content_html'] : ''; ?>
 										</textarea>
