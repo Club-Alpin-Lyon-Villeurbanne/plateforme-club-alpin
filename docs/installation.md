@@ -9,16 +9,16 @@
 ## Installation
 
 1. **Fork du projet** :
-   - Allez sur [https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon)
+   - Allez sur [https://github.com/Club-Alpin-Lyon-Villeurbanne/plateforme-club-alpin](https://github.com/Club-Alpin-Lyon-Villeurbanne/plateforme-club-alpin)
    - Cliquez sur le bouton "Fork" en haut à droite
    - Clonez votre fork localement :
    ```bash
-   git clone git@github.com:VOTRE-USERNAME/caflyon.git
-   cd caflyon
+   git clone git@github.com:VOTRE-USERNAME/plateforme-club-alpin.git
+   cd plateforme-club-alpin
    ```
    - Ajoutez le repo original comme upstream :
    ```bash
-   git remote add upstream git@github.com:Club-Alpin-Lyon-Villeurbanne/caflyon.git
+   git remote add upstream git@github.com:Club-Alpin-Lyon-Villeurbanne/plateforme-club-alpin.git
    ```
 
 2. Initialiser l'environnement :
@@ -44,7 +44,7 @@ Pour consommer les mails : `make consume-mails`
 
 Après une migration vers un nouveau setup, exécutez :
 ```bash
-docker stop www_caflyon && docker rm www_caflyon
+docker stop www_pca && docker rm www_pca
 ```
 
 ### Windows

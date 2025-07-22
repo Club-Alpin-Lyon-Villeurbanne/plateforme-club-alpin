@@ -43,10 +43,10 @@ Nous maintenons des standards de qualité élevés pour garantir la pérennité 
 ## Processus de Contribution
 
 1. **Fork du projet** : 
-   - Allez sur [https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon](https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon)
+   - Allez sur [https://github.com/Club-Alpin-Lyon-Villeurbanne/plateforme-club-alpin](https://github.com/Club-Alpin-Lyon-Villeurbanne/plateforme-club-alpin)
    - Cliquez sur le bouton "Fork" en haut à droite
    - Clonez votre fork localement
-   - Ajoutez le repo original comme upstream : `git remote add upstream git@github.com:Club-Alpin-Lyon-Villeurbanne/caflyon.git`
+   - Ajoutez le repo original comme upstream : `git remote add upstream git@github.com:Club-Alpin-Lyon-Villeurbanne/plateforme-club-alpin.git`
 
 2. **Création d'une branche** : 
    - Assurez-vous que votre fork est à jour : `git fetch upstream && git checkout main && git merge upstream/main`
