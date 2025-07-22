@@ -248,7 +248,7 @@ class EventType extends AbstractType
                 'scale' => 2,
                 'constraints' => [
                     new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
-                    new GreaterThan(0),
+                    new GreaterThanOrEqual(0),
                 ],
             ])
             ->add('tarifDetail', TextareaType::class, [
