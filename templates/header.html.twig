@@ -2,6 +2,10 @@
 {% set p1 = p1 | default('') %}
 {% set impersonification_style = is_granted('IS_IMPERSONATOR') ? "background-color:#df4949;" : "" %}
 
+{% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_CONTENT_MANAGER')) %}
+    {% include 'admin/menu.html.twig' %}
+{% endif %}
+
 <header id="mainHeader" style="{{ impersonification_style }}">
     <div class="sitewidth" style="min-width:980px;">
 
