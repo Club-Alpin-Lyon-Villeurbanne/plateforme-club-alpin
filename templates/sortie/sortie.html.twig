@@ -768,12 +768,7 @@
                     <b>DÉPART :</b> Le {{ event.tsp | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tsp|date('H:i') }}{% endif %}
                 </li>
                 <li>
-                    <b>RETOUR :</b>
-                    {% if event.tsp | date('dmY') == event.tspEnd | date('dmY') %}
-                        Le même jour
-                    {% else %}
-                        Le {{ event.tspEnd | intldate('cccc d MMMM') }}
-                    {% endif %}
+                    <b>RETOUR :</b> Le {{ event.tspEnd | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tspEnd|date('H:i') }}{% endif %}
                 </li>
             </ul>
 
@@ -796,7 +791,7 @@
                 </script>
             {% else %}
                 <ul class="nice-list">
-                    <li><b>RDV :</b> lieu et heure visibles après connexion</li>
+                    <li><b>RDV :</b> lieu et heures visibles après connexion</li>
                 </ul>
             {% endif %}
             <hr />

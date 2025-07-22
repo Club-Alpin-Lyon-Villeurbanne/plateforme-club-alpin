@@ -302,7 +302,7 @@ class EventType extends AbstractType
             ])
             ->add('difficulte', TextType::class, [
                 'label' => 'Difficulté, niveau',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : PD, 5d+, exposé, ...',
                     'maxlength' => 50,
@@ -316,7 +316,7 @@ class EventType extends AbstractType
             ])
             ->add('denivele', TextType::class, [
                 'label' => 'Dénivelé positif',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : 1200',
                     'maxlength' => 50,
@@ -334,7 +334,7 @@ class EventType extends AbstractType
             ])
             ->add('distance', TextType::class, [
                 'label' => 'Distance',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : 13.50',
                     'maxlength' => 50,
@@ -365,6 +365,7 @@ class EventType extends AbstractType
                 'attr' => [
                     'class' => 'type2 wide',
                     'rows' => 5,
+                    'placeholder' => 'ex: du parking 1540 Aussois à côté des remontées mécaniques du Grand Jeu, prendre NNE jusqu\'à Plan Aval puis suivre refuge de la Fournache 2333m par la Randolière',
                 ],
             ])
             ->add('details_caches', TextareaType::class, [
