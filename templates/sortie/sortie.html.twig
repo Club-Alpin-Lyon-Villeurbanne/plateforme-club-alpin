@@ -808,6 +808,17 @@
             </span>
             </li>
 
+            <li class="wide">
+                <b>SORTIE PUBLIÉE PAR :</b>
+                {% if event.status is same as (constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE')) and event.statusWho %}
+                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.statusWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
+                        {{ event.statusWho.nickname }}
+                    </a>
+                {% else %}
+                    <span class="mini">non publiée</span>
+                {% endif %}
+            </li>
+
             {% if event.encadrants('encadrant') | length > 0 %}
                 <li class="wide"><b>ENCADRANTS :</b>
                     {% for encadrant in event.encadrants('encadrant') %}
@@ -855,17 +866,6 @@
                 </li>
                 <br style="clear:both" />
             {% endif %}
-
-            <li class="wide">
-                <b>SORTIE PUBLIÉE PAR :</b>
-                {% if event.status is same as (constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE')) and event.statusWho %}
-                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.statusWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
-                        {{ event.statusWho.nickname }}
-                    </a>
-                {% else %}
-                    <span class="mini">non publiée</span>
-                {% endif %}
-            </li>
 
             <br style="clear:both" />
 
