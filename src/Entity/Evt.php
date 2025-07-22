@@ -453,6 +453,15 @@ class Evt
         return null;
     }
 
+    #[Groups('event:read')]
+    public function getCurrentUserParticipation(): ?EventParticipation {
+        $user = $this->getUser();
+        if(!$user) {
+            return null;
+        }
+        return $this->getParticipation($user);
+    }
+
     public function getParticipationById(int $id): ?EventParticipation
     {
         foreach ($this->participations as $participation) {
