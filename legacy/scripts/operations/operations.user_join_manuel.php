@@ -65,6 +65,54 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
     $stmt->close();
 
+    // liste des encadrants
+    $destinataires = [];
+    // créateur de sortie (on utilise les ID comme clé pour éviter le doublon d'email créateur de sortie + encadrant de sortie)
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_user, email_user, nickname_user, firstname_user, lastname_user, civ_user '
+       . 'FROM caf_user, caf_evt '
+       . 'WHERE id_user = user_evt '
+       . 'AND id_evt = ? '
+       . 'LIMIT 1');
+    $stmt->bind_param('i', $id_evt);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $destinataires['' . $row['id_user']] = $row;
+    }
+    $stmt->close();
+
+    // encadrants (on utilise les ID comme clé pour éviter le doublon d'email créateur de sortie + encadrant de sortie)
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_user, email_user, nickname_user, firstname_user, lastname_user, civ_user, role_evt_join '
+       . 'FROM caf_user, caf_evt_join '
+       . 'WHERE id_user = user_evt_join '
+       . 'AND evt_evt_join = ? '
+       . 'AND status_evt_join = 1 '
+       . "AND (role_evt_join = 'encadrant' OR role_evt_join = 'stagiaire' OR role_evt_join = 'coencadrant')");
+    $stmt->bind_param('i', $id_evt);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $destinataires['' . $row['id_user']] = $row;
+    }
+    $stmt->close();
+
+    // recup infos evt
+    $evtUrl = '';
+    $evtName = '';
+    $evtDate = '';
+    $commissionTitle = '';
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_evt, code_evt, titre_evt, tsp_evt, title_commission FROM caf_evt AS e INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) WHERE id_evt = ? LIMIT 1');
+    $stmt->bind_param('i', $id_evt);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $row['code_evt'] . '-' . $row['id_evt'] . '.html';
+        $evtName = $row['titre_evt'];
+        $evtDate = date('d/m/Y', $row['tsp_evt']);
+        $commissionTitle = $row['title_commission'];
+    }
+    $stmt->close();
+
     // pour chaque id donné
     foreach ($_POST['id_user'] as $i => $user) {
         $id_user = (int) $_POST['id_user'][$i];
@@ -102,39 +150,25 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // ENVOI DU MAIL
 
             // recup de son email & nom
+            $inscrits = [];
             $toMail = '';
             $toName = '';
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT email_user, firstname_user, lastname_user, civ_user FROM caf_user WHERE id_user = ? LIMIT 1');
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_user, email_user, nickname_user, firstname_user, lastname_user, civ_user FROM caf_user WHERE id_user = ? LIMIT 1');
             $stmt->bind_param('i', $id_user);
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
                 $toMail = $row['email_user'];
                 $toName = ucfirst($row['firstname_user']);
+                $inscrits[] = $row;
             }
             $stmt->close();
             if (!isMail($toMail)) {
                 $errTabMail[] = "Les coordonnées du contact sont erronées (l'inscription est réalisée quand même)";
             }
 
-            // recup infos evt
-            $evtUrl = '';
-            $evtName = '';
-            $evtDate = '';
-            $commissionTitle = '';
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_evt, code_evt, titre_evt, tsp_evt, title_commission FROM caf_evt AS e INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) WHERE id_evt = ? LIMIT 1');
-            $stmt->bind_param('i', $id_evt);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            while ($row = $result->fetch_assoc()) {
-                $evtUrl = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $row['code_evt'] . '-' . $row['id_evt'] . '.html';
-                $evtName = $row['titre_evt'];
-                $evtDate = date('d/m/Y', $row['tsp_evt']);
-                $commissionTitle = $row['title_commission'];
-            }
-            $stmt->close();
-
             if (0 === count($errTabMail)) {
+                // envoi du mail à l'adhérent
                 LegacyContainer::get('legacy_mailer')->send($toMail, 'transactional/sortie-inscription', [
                     'role' => 'manuel' === $role_evt_join ? null : $role_evt_join,
                     'event_name' => $evtName,
@@ -142,6 +176,30 @@ if (!isset($errTab) || 0 === count($errTab)) {
                     'event_date' => $evtDate,
                     'commission' => $commissionTitle,
                 ]);
+
+                // envoi des mails aux encadrants
+                foreach ($destinataires as $id_destinataire => $destinataire) {
+                    LegacyContainer::get('legacy_mailer')->send($destinataire['email_user'], 'transactional/sortie-inscription-manuelle', [
+                        'role' => $role_evt_join,
+                        'event_name' => $evtName,
+                        'event_url' => $evtUrl,
+                        'event_date' => $evtDate,
+                        'commission' => $commissionTitle,
+                        'inscrits' => array_map(function ($cetinscrit) {
+                            return [
+                                'firstname' => ucfirst($cetinscrit['firstname_user']),
+                                'lastname' => strtoupper($cetinscrit['lastname_user']),
+                                'nickname' => $cetinscrit['nickname_user'],
+                                'email' => $cetinscrit['email_user'],
+                                'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $cetinscrit['id_user'] . '.html',
+                            ];
+                        }, $inscrits),
+                        'firstname' => ucfirst(getUser()->getFirstname()),
+                        'lastname' => strtoupper(getUser()->getLastname()),
+                        'nickname' => getUser()->getNickname(),
+                        'dest_role' => array_key_exists('role_evt_join', $destinataire) ? $destinataire['role_evt_join'] : 'l\'auteur',
+                    ], [], null, getUser()->getEmail());
+                }
             }
         }
     }
