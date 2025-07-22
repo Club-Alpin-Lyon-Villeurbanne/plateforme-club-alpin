@@ -13,11 +13,12 @@
             attr: {class: 'padded-form', 'id': 'event_form'}
         }) }}
 
-        {% if is_update and event.status is same as (1) %}
-            <p class="alerte">Attention : si vous modifiez cette sortie, elle devra à nouveau être validée par un responsable avant d'être affichée sur le site !</p><br />
-        {% endif %}
-
-        <span class="italic">Les champs marqués d'un <span class="required">*</span> sont obligatoires.</span><br>
+        <div class="italic">
+            Les champs marqués d'un <span class="required">*</span> sont obligatoires.
+            {% if is_update and event.status is same as (1) %}
+                <br>Les champs marqués d'un <span class="revalidation">*</span> demanderont une réapprobation de la sortie par un responsable de commission si vous les modifiez.
+            {% endif %}
+        </div><br>
 
         {% if form.vars.errors|length > 0 %}
             <br>

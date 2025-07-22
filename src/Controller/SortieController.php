@@ -77,6 +77,17 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à modifier cette sortie.');
         }
 
+        $originalEntityData = [];
+        if ($isUpdate) {
+            $originalEntityData['difficulte'] = $event->getDifficulte();
+            $originalEntityData['ngensMax'] = $event->getngensMax();
+            $originalEntityData['encadrants'] = [];
+            $currentEncadrants = $event->getEncadrants();
+            foreach ($currentEncadrants as $currentEncadrant) {
+                $originalEntityData['encadrants'][$currentEncadrant->getUser()->getId()] = $currentEncadrant->getRole();
+            }
+        }
+
         $form = $this->createForm(EventType::class, $event);
 
         $form->handleRequest($request);
@@ -89,14 +100,6 @@ class SortieController extends AbstractController
             $eventData = $data['event'] ?? [];
             $formData = $data['form'] ?? [];
             $formData = array_merge($eventData, $formData);
-
-            if (!$isUpdate) {
-                $event->setCode(strtolower(substr($slugger->slug($event->getTitre(), '-'), 0, 30)));
-            } elseif (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()) {
-                // sortie dépubliée à l'édition
-                $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
-                $event->setTspEdit((new \DateTime())->getTimestamp());
-            }
 
             // brouillon ?
             $isDraft = false;
@@ -116,10 +119,12 @@ class SortieController extends AbstractController
                 // les bénévoles ne sont pas modifiables mais il ne faut pas les "perdre" à l'édition
                 unset($rolesMap[EventParticipation::ROLE_BENEVOLE]);
             }
+            $newEncadrants = [];
             foreach ($rolesMap as $role => $roleName) {
                 $event->clearRoleParticipations($role);
                 if (!empty($formData[$roleName])) {
                     foreach ($formData[$roleName] as $participantId) {
+                        $newEncadrants[$participantId] = $role;
                         $participant = $entityManager->getRepository(User::class)->find($participantId);
                         // si ce participant est déjà inscrit, on met à jour son statut de participation
                         if ($participation = $event->getParticipation($participant)) {
@@ -127,6 +132,20 @@ class SortieController extends AbstractController
                         }
                         $event->addParticipation($participant, $role, EventParticipation::STATUS_VALIDE);
                     }
+                }
+            }
+
+            if (!$isUpdate) {
+                $event->setCode(strtolower(substr($slugger->slug($event->getTitre(), '-'), 0, 30)));
+            } else {
+                $event->setTspEdit((new \DateTime())->getTimestamp());
+
+                // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
+                if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus() &&
+                    ($originalEntityData['difficulte'] !== $event->getDifficulte()
+                    || $originalEntityData['ngensMax'] !== $event->getngensMax()
+                    || $originalEntityData['encadrants'] !== $newEncadrants)) {
+                    $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
                 }
             }
 
