@@ -141,8 +141,8 @@ class SortieController extends AbstractController
                 $event->setTspEdit((new \DateTime())->getTimestamp());
 
                 // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
-                if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus() &&
-                    ($originalEntityData['difficulte'] !== $event->getDifficulte()
+                if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()
+                    && ($originalEntityData['difficulte'] !== $event->getDifficulte()
                     || $originalEntityData['ngensMax'] !== $event->getngensMax()
                     || $originalEntityData['encadrants'] !== $newEncadrants)) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
