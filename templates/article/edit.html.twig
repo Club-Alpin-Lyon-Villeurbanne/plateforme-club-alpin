@@ -10,6 +10,9 @@
         .title-header {
             margin-top: 20px;
             margin-bottom: 15px;
+            font-weight: 100;
+            font-family: DIN, sans-serif;
+            font-size: 1.5em;
         }
         .mini {
             font-size: 0.9em;
@@ -40,20 +43,21 @@
             max-width: 100%;
             height: auto;
         }
-        .bleucaf {
-            color: #0066cc;
+        .article-radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
         }
-        .biglink {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #f5f5f5;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            color: #333;
-            border: 1px solid #ddd;
+        .article-radio-item {
+            flex: 0 0 43%;
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 10px;
         }
-
+        .article-radio-label.required::after {
+            content: '' !important;
+        }
     </style>
 {% endblock %}
 
@@ -63,6 +67,8 @@
     <h1 class="page-h1">{% if article.id %}<b>Modifier</b> cet article{% else %}Nouvel <b>article</b>{% endif %}</h1>
 
     <div style="padding:10px 0 0 30px; line-height:18px; ">
+        <p class="italic">Les champs marqués d'un <span class="required">*</span> sont obligatoires.</p>
+
         {% if not allowed('article_create') %}
             <p class="erreur">Vous n'avez pas l'autorisation d'accéder à cette page car vous ne semblez pas avoir les droits de rédaction.</p>
         {% else %}
@@ -91,30 +97,43 @@
                     </p>
                 {% endfor %}
 
-                <h2 class="title-header">Informations principales :</h2>
-                <div>
-                    <!-- liste des commissions où poster l'article -->
-                    Type d'article :<br />
-                    {{ form_widget(form.articleType, {'attr': {'class': 'type1', 'style': 'width:95%', 'minlength': '3', 'maxlength': '200'}}) }}
-                    <br />
+                <div style="margin-top: 15px">
+                    {{ form_row(form.commission) }}
                     <br />
 
-                    {{ form_widget(form.isCompteRendu, {'attr': {'style': 'display:none;'}}) }}
+                    <div>
+                        {{ form_label(form.articleType) }}
+                        <div class="article-radio-group">
+                            {% for child in form.articleType %}
+                                <div class="article-radio-item">
+                                    {{ form_widget(child, {
+                                        attr: {
+                                            class: 'article-radio-input'
+                                        }
+                                    }) }}
+                                    {{ form_label(child, null, {
+                                        label_attr: {
+                                            class: 'article-radio-label'
+                                        }
+                                    }) }}
 
-                    Lier cet article à une sortie :<br />
-                    <p id="id-sortie-obligatoire-trigger" class="mini">
-                        Champ obligatoire pour un compte rendu de sortie.
-                    </p>
-                    {{ form_widget(form.evt, {'attr': {'class': 'type1', 'style': 'width:95%'}}) }}
-                    <br />
+                                    {% if child.vars.value is same as ('cr') %}
+                                        <div id="sortie-liee" {% if edit_mode is same as (false) %}class="hidden"{% endif %}>
+                                            <br>
+                                            {{ form_row(form.evt) }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                            {{ form_errors(form.articleType) }}
+                        </div>
+                    </div>
                     <br />
 
-                    Titre :<br />
-                    {{ form_widget(form.titre, {'attr': {'style': 'width:94%;', 'class': 'type1'}}) }}
-                    <br />
+                    {{ form_row(form.titre) }}
                     <br />
 
-                    {{ form_widget(form.une, {'attr': {'class': 'custom'}}) }}
+                    {{ form_widget(form.une) }}
                     Placer cet article à la Une ?
                     <p class="mini" style="padding-right:20px;">
                         <b>À utiliser avec parcimonie.</b> Ceci place l'article au sommet de la page d'accueil, dans les actualités défilantes.
@@ -124,7 +143,7 @@
                     <br />
                 </div>
 
-                <h2 class="title-header">Photo :</h2>
+                <h2 class="title-header">Photo</h2>
                 <div style="width:95%">
                     Envoyez une photo horizontale pour illustrer cet article. Format .jpg, 5Mo maximum !
                     <p class="mini">
@@ -179,7 +198,7 @@
                 </div>
             </div>
 
-                <h2 class="title-header">Contenu :</h2>
+                <h2 class="title-header required">Contenu</h2>
                 <div style="width:95%">
                     <p style="padding-right:20px;">
                         <b>Attention :</b><br />Si vous copiez-collez du texte depuis un site, ou un document Word, cochez le bouton <img src="/img/texte-brut.png" title="Coller en tant que texte brut" alt="T" />
@@ -218,7 +237,6 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="/js/faux-select.js"></script>
     <script src="/tools/tinymce/tiny_mce.js"></script>
     <script src="/js/jquery.webkitresize.min.js"></script>
     <script src="/js/file-upload-component.js"></script>
@@ -282,12 +300,53 @@
             return false;
         }
 
-        // champ contenu pas obligatoire en js
         document.addEventListener('DOMContentLoaded', function() {
+            let is_update = false;
+            {% if edit_mode %}
+                is_update = true;
+            {% endif %}
+
+            // champ contenu pas obligatoire en js
             const contentField = document.getElementById('{{ form.cont.vars.id }}');
             if (contentField) {
                 contentField.removeAttribute('required');
             }
+
+            // sortie liée non obligatoire si pas CR
+            const sortieLiee = document.getElementById('{{ form.evt.vars.id }}');
+            const articleType = document.querySelector('input[name="article[articleType]"]:checked');
+            if (articleType && articleType.value !== 'cr' || !is_update) {
+                sortieLiee.removeAttribute('required');
+            }
+
+            const radios = document.querySelectorAll('input[name="article[articleType]"]');
+            radios.forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'cr') {
+                        document.getElementById('sortie-liee').style.display = 'block';
+                        sortieLiee.setAttribute('required', true);
+                    } else {
+                        document.getElementById('sortie-liee').style.display = 'none';
+                        sortieLiee.removeAttribute('required');
+                    }
+                });
+            });
+
+            // sorties de la commission choisie
+            document.getElementById('article_commission').addEventListener('change', function() {
+                const selectedItem = document.getElementById('article_commission').selectedOptions[0];
+                const commission = encodeURIComponent(selectedItem.value);
+
+                fetch('/sorties-par-commission?commission=' + commission, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    document.querySelector('#sortie-liee').innerHTML = html;
+                });
+            });
 
             document.getElementById('article_form').addEventListener('submit', function (e) {
                 // vérifier que le contenu est rempli
