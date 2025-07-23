@@ -823,6 +823,17 @@
             </span>
             </li>
 
+            <li class="wide">
+                <b>SORTIE PUBLIÉE PAR :</b>
+                {% if event.status is same as (constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE')) and event.statusWho %}
+                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.statusWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
+                        {{ event.statusWho.nickname }}
+                    </a>
+                {% else %}
+                    <span class="mini">non publiée</span>
+                {% endif %}
+            </li>
+
             {% if event.encadrants('encadrant') | length > 0 %}
                 <li class="wide"><b>ENCADRANTS :</b>
                     {% for encadrant in event.encadrants('encadrant') %}
@@ -1082,7 +1093,7 @@
                                         </div>
 
                                         <p style="text-align:center">
-                                            <label for="name">Ajouter un message à votre demande (optionnel) :</label><br>
+                                            <label for="name">Ajouter un message à votre demande (facultatif) :</label><br>
                                             <textarea name="message" placeholder="Par exemple :
 - J'ai tel niveau et telle expérience
 - J'ai une voiture avec 4 places dispos
