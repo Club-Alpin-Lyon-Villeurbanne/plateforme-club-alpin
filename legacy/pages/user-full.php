@@ -6,6 +6,7 @@ use App\Legacy\LegacyContainer;
 // id du profil
 $id_user = (int) $p2;
 $tmpUser = $tmpEvent = $tmpArticle = false;
+$connectedUser = getUser();
 
 $req = "SELECT * FROM caf_user WHERE id_user = $id_user LIMIT 1";
 
@@ -25,7 +26,9 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 	<div id="left1">
 		<div style="padding:20px">
 			<?php
-            if (!allowed('user_read_limited')) {
+            if (!$connectedUser) {
+                echo '<br /><br /><p class="erreur">Vous devez être connecté pour accéder à cette page.</p>';
+            } elseif (!allowed('user_read_limited')) {
                 echo '<br /><br /><p class="erreur">Désolé. Vous n\'avez pas les droit requis pour afficher cette page.</p>';
             } elseif (!$tmpUser) {
                 echo '<br /><br /><p class="erreur">Cet utilisateur est introuvable.</p>';

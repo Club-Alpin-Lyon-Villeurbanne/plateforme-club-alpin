@@ -13,20 +13,21 @@
             attr: {class: 'padded-form', 'id': 'event_form'}
         }) }}
 
-        {% if is_update and event.status is same as (1) %}
-            <p class="alerte">Attention : si vous modifiez cette sortie, elle devra à nouveau être validée par un responsable avant d'être affichée sur le site !</p><br />
-        {% endif %}
-
-        <span class="italic">Les champs marqués d'un <span class="required">*</span> sont obligatoires.</span><br>
+        <div class="italic">
+            Les champs marqués d'un <span class="required">*</span> sont obligatoires.
+            {% if is_update and event.status is same as (1) %}
+                <br>Les champs marqués d'un <span class="revalidation">*</span> demanderont une réapprobation de la sortie par un responsable de commission si vous les modifiez.
+            {% endif %}
+        </div><br>
 
         {% if form.vars.errors|length > 0 %}
             <br>
             <div class="alerte has-errors">
                 Le formulaire contient des erreurs, merci de vérifier votre saisie.<br><br>
                 <ul>
-                {% for error in form.vars.errors %}
-                    <li>{{ error.message }}</li>
-                {% endfor %}
+                    {% for error in form.vars.errors %}
+                        <li>{{ error.message }}</li>
+                    {% endfor %}
                 </ul>
             </div>
         {% endif %}
@@ -152,6 +153,15 @@
                 Entrez ci-dessous toutes les informations qui ne figurent pas dans le formulaire.<br>
                 N'hésitez pas à mettre un maximum de détails, cet élément formera le corps de la page dédiée à cette sortie.
             </p>
+            <p>
+                <b>Attention :</b><br />Si vous copiez-collez du texte depuis un site, ou un document Word, cochez le bouton <img src="/img/texte-brut.png" title="Coller en tant que texte brut" alt="T" />
+                avant de coller votre contenu. Sinon vous risquez de provoquer des erreurs sur la page.
+            </p>
+            <p>
+                <b>Des liens et des images :</b><br />
+                Utilisez le bouton <img src="/img/button-link.png" title="" alt="" /> puis <img src="/img/button-parcourir.png" title="" alt="" /> pour ajouter un fichier à télécharger (topo, tracé gps...).<br />
+                Utilisez le bouton <img src="/img/button-img.png" title="" alt="" /> puis <img src="/img/button-parcourir.png" title="" alt="" /> pour ajouter une image.<br />
+            </p><br />
             {{ form_row(form.description) }}
         </div>
 
@@ -187,7 +197,8 @@
             crossorigin=""></script>
     <script type="text/javascript" src="/js/map.js"></script>
     <script type="text/javascript" charset="utf-8" src="/js/jquery-ui-1.10.2.custom.min.js"></script>
-    {{ vite_entry_script_tags('ckeditor') }}
+    <script language="javascript" type="text/javascript" src="/tools/tinymce/tiny_mce.js"></script>
+    <script language="javascript" type="text/javascript" src="/js/jquery.webkitresize.min.js"></script>
     <script type="text/javascript">
         // au chargement complet de la page
         document.addEventListener('DOMContentLoaded', function () {
@@ -224,6 +235,64 @@
                 contentField.removeAttribute('required');
             }
         });
+
+        tinyMCE.init({
+            init_instance_callback: function() {
+                $(".mceIframeContainer iframe").webkitimageresize().webkittableresize().webkittdresize();
+            },
+
+            height: 500,
+            theme: "advanced",
+            mode: "exact",
+            language: "fr",
+            elements: "event_description",
+            entity_encoding: "raw",
+            plugins: "safari,spellchecker,style,layer,table,save,advhr,advimage,advlink,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,pagebreak",
+            remove_linebreaks: false,
+            file_browser_callback: 'userfilebrowser',
+
+            theme_advanced_buttons1: "newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,styleselect,formatselect,|,removeformat,cleanup,code",
+            theme_advanced_buttons2: "undo,redo,|,cut,copy,paste,pastetext,|,bullist,numlist,|,link,unlink,image,media,|,charmap,sub,sup",
+            theme_advanced_buttons3: "tablecontrols,|,hr,visualaid,|,fullscreen",
+
+            theme_advanced_toolbar_location : "top",
+            theme_advanced_toolbar_align : "left",
+            theme_advanced_statusbar_location : "none",
+
+            document_base_url: '{{ url('legacy_root') }}',
+
+            content_css: "{{ vite_entry_link_ref('base-styles') }},{{ vite_entry_link_ref('styles') }},{{ vite_entry_link_ref('fonts') }}",
+            body_id: "bodytinymce_user",
+            body_class: "description_evt",
+            theme_advanced_styles: "Entete Article=ArticleEntete;Titre de menu=menutitle;Bleu clair du CAF=bleucaf;Image flottante gauche=imgFloatLeft;Image flottante droite=imgFloatRight;Lien fancybox=fancybox;Mini=mini;Bloc alerte=erreur;Bloc info=info",
+
+            relative_urls: true,
+            convert_urls: false,
+            remove_script_host: false,
+            theme_advanced_blockformats: "p,h3,h4,h5,ul,li",
+
+            theme_advanced_resize_horizontal: false,
+            theme_advanced_resizing: true,
+            apply_source_formatting: true,
+            spellchecker_languages: "+English=en,Danish=da,Dutch=nl,Finnish=fi,French=fr,German=de,Italian=it,Polish=pl,Portuguese=pt,Spanish=es,Swedish=sv"
+        });
+
+        function userfilebrowser(field_name, url, type, win) {
+            tinyMCE.activeEditor.windowManager.open({
+                file: 'includes/user-file-browser.php?type=' + type,
+                title: 'Mini-File Browser',
+                width: 800, // Your dimensions may differ - toy around with them!
+                height: 500,
+                resizable: "yes",
+                inline: "yes", // This parameter only has an effect if you use the inlinepopups plugin!
+                close_previous: "no"
+            }, {
+                window: win,
+                input: field_name
+            });
+
+            return false;
+        }
 
         document.getElementById('event_form').addEventListener('submit', function (e) {
             let prefix = 'form';

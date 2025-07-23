@@ -49,18 +49,6 @@
             "migrations/.gitignore"
         ]
     },
-    "friendsofsymfony/ckeditor-bundle": {
-        "version": "2.6",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "main",
-            "version": "2.0",
-            "ref": "f5ad42002183a6881962683e6d84bbb25cdfce5d"
-        },
-        "files": [
-            "config/packages/fos_ckeditor.yaml"
-        ]
-    },
     "gesdinet/jwt-refresh-token-bundle": {
         "version": "1.3",
         "recipe": {
@@ -250,15 +238,6 @@
         "files": [
             "config/packages/mailer.yaml"
         ]
-    },
-    "symfony/mailgun-mailer": {
-        "version": "6.4",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "4.4",
-            "ref": "addcb559b32d9dbb4843826b063565e1b15a2a57"
-        }
     },
     "symfony/maker-bundle": {
         "version": "1.59",

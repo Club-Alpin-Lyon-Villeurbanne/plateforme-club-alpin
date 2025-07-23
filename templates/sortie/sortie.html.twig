@@ -30,6 +30,7 @@
 {% endmacro %}
 
 {% block body %}
+    {% import 'macros/cancel_block.html.twig' as block_macros %}
         <div id="fiche-sortie">
 
             {% set closeDiv = false %}
@@ -243,15 +244,7 @@
             {% if my_status.role == 'encadrant' or my_status.role == 'stagiaire' or my_status.role == 'coencadrant' or my_status.role == 'benevole' %}
                 {% if not event.finished %}
                     {% if allowed('evt_unjoin') %}
-                        <div class="info info-container" style="margin-right:2rem !important">
-                            <img src="/img/inscrit-check.png" alt="" title=""/>
-                            <div class="text-container">
-                                Vous êtes inscrit à cette sortie en tant que : {{ my_status.role }}.<br>
-                                <div class="button-container">
-                                    <input type="button" class="nice" value="Annuler ma participation" onclick="$('#inscription-annuler').slideToggle(200)" />
-                                </div>
-                            </div>
-                        </div>
+                        {{ block_macros.display_confirmed_cancel_block(my_status.role) }}
                         {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id} %}
                     {% endif %}
                 {% else %}
@@ -285,20 +278,7 @@
             {% else %}
                 {% if not event.finished %}
                     {% if allowed('evt_unjoin') %}
-                        <div class="info info-container" style="margin-right:2rem !important">
-                            <img src="/img/inscrit-check.png" alt="" title=""/>
-                            <div class="text-container">
-                                Vous êtes inscrit comme participant à cette sortie.<br><br>
-                                <span class="italic">
-                                    Si vous ne pouvez plus venir, il est important d'annuler votre participation.<br>
-                                    En annulant, l'encadrant sera averti par mail.<br>
-                                    Selon le délai, vous perdrez éventuellement des frais liés au covoiturage et hébergement - voir les infos à ce sujet sur la description de la sortie.
-                                </span>
-                                <div class="button-container">
-                                    <input type="button" class="nice" value="Annuler ma participation" onclick="$('#inscription-annuler').slideToggle(200)" />
-                                </div>
-                            </div>
-                        </div>
+                        {{ block_macros.display_confirmed_cancel_block('participant') }}
                         {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id} %}
                     {% endif %}
                 {% else %}
@@ -366,13 +346,24 @@
                 {% endif %}
 
                 <br />
+                <select id="contact_participants_type" class="type1" style="display:none; min-width: 250px;">
+                    <option value="">Sélectionner des destinataires</option>
+                    <option value="all">Tout le monde</option>
+                    <option value="accepted">Les participants acceptés</option>
+                    <option value="refused">Les participants refusés</option>
+                    <option value="waiting">Les participants en attente</option>
+                    <option value="absent">Les absents</option>
+                </select>
+                <br /><br />
 
-                <form action="{{ path('sortie_update_inscription', { id: event.id })}}" method="post" class="loading">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_update_inscriptions') }}" />
+                <form id="contact_update_participants" method="post" class="loading">
+                    <input type="hidden" name="csrf_token_inscriptions" value="{{ csrf_token('sortie_update_inscriptions') }}" />
+                    <input type="hidden" name="csrf_token_contact" value="{{ csrf_token('contact_participants') }}" />
 
                     <table class="datatable">
                         <thead>
                             <tr>
+                                <th class="select-contact"></th>
                                 <th width='30%'>Nom / Pseudo</th>
                                 <th width='15%'>Statut</th>
                                 <th width='15%'>Rôle</th>
@@ -383,7 +374,21 @@
                         <tbody>
                             {% for participation in participations %}
                                 {% set participation = participation['liste'] %}
+                                {% set class = '' %}
+                                {% if participation.isStatusEnAttente %}
+                                    {% set class = 'waiting' %}
+                                {% elseif participation.isStatusValide %}
+                                    {% set class = 'accepted' %}
+                                {% elseif participation.isStatusRefuse %}
+                                    {% set class = 'refused' %}
+                                {% elseif participation.isStatusAbsent %}
+                                    {% set class = 'absent' %}
+                                {% endif %}
+
                                 <tr class="status{{ participation.status }}" style="color:gray; font-size:10px;">
+                                    <td class="select-contact">
+                                        <input type="checkbox" id="contact_participant_{{ participation.id }}" name="contact_participant[{{ participation.id }}]" value="{{ participation.id }}" class="contact-cb {{ class }}" />
+                                    </td>
 
                                     <td>
                                         {{ participation.user.firstname | capitalize }} {{ participation.user.lastname | upper }}<br/>
@@ -621,7 +626,7 @@
 
                         <div style="text-align:center">
                             <br />
-                            <button type="submit" style="cursor: pointer; border: none;" class="biglink" title="Enregistrer">
+                            <button id="submit_update_participants" type="submit" style="cursor: pointer; border: none;" class="biglink" title="Enregistrer" formaction="{{ path('sortie_update_inscription', { id: event.id })}}">
                                 <span class="bleucaf">&gt;</span>
                                 ENREGISTRER LES STATUTS CI-DESSUS
                             </button>
@@ -631,7 +636,6 @@
                     {% endif %}
                     <br />
                     <br />
-                </form>
                 <hr />
 
                 {% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
@@ -639,48 +643,38 @@
 
                     {% if is_granted('SORTIE_CONTACT_PARTICIPANTS', event) %}
                     <!-- Contact par email des participants (orga uniquement) -->
-                    <a class="nice2 blue" href="javascript:void(0)" onclick="$('#contact-inscrits').slideToggle()" title="">
+                    <a class="nice2 blue" href="javascript:void(0)" onclick="$('#contact-inscrits').slideToggle();$('.select-contact').toggle();$('#contact_participants_type').toggle();">
                         <img src="/img/base/email.png" alt="" title="" /> Envoyer un e-mail groupé aux inscrits
                     </a>
                     <br />
 
-                    <form action="{{ path('contact_participants', { id: event.id }) }}" method="post" id="contact-inscrits" style="display: none; border : 1px solid #eaeaea; box-shadow:0 0 20px -10px gray;; padding:10px; margin:10px 0 20px 0;; border-radius:10px">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token('contact_participants') }}" />
-
+                    <div id="contact-inscrits" style="display: none; border : 1px solid #eaeaea; box-shadow:0 0 20px -10px gray;; padding:10px; margin:10px 0 20px 0;; border-radius:10px">
                         <h2>Formulaire de contact</h2>
 
-                        <label>Envoyer à ?</label><br />
-                        <input required type="radio" name="status_sendmail" id="status_sendmail_1" value="1" />
-                        <label for="status_sendmail_1"> Uniquement aux adhérents confirmés pour la sortie</label><br />
-
-                        <input required type="radio" name="status_sendmail" id="status_sendmail_2" value="2" />
-                        <label for="status_sendmail_2"> Uniquement aux adhérents refusés/absents</label><br />
-
-                        <input required type="radio" name="status_sendmail" id="status_sendmail_0" value="0" />
-                        <label for="status_sendmail_0"> Uniquement aux adhérents en attente de confirmation</label><br />
-
-                        <input required type="radio" name="status_sendmail" id="status_sendmail_all" value="*" />
-                        <label for="status_sendmail_all"> Toute la liste des inscrits, confirmés ou non</label><br />
+                        <div>
+                            <br>
+                            Sélectionnez les destinataires dans le tableau ci-dessus, en cochant les cases correspondantes en début de ligne.
+                        </div>
 
                         <br />
                         <label for="objet">Objet :</label><br />
-                        <input required type="text" name="objet" class="type1" style="width:95%" value="Note importante pour la sortie du {{ event.tsp | date('d/m') }}" /><br />
+                        <input id="contact_subject" type="text" name="objet" class="type1" style="width:95%" value="Note importante pour la sortie du {{ event.tsp | date('d/m') }}" /><br />
                         <br />
 
-                        <label>Mettre en copie et répondre à ?</label><br />
-                        <input required type="radio" name="reply_to_option" id="reply_to_option_me_only" value="me_only" />
+                        <label>Répondre à ?</label><br />
+                        <input type="radio" name="reply_to_option" id="reply_to_option_me_only" value="me_only" />
                         <label for="reply_to_option_me_only"> Uniquement moi</label><br />
 
-                        <input required type="radio" name="reply_to_option" id="reply_to_option_everyone" value="everyone" />
+                        <input type="radio" name="reply_to_option" id="reply_to_option_everyone" value="everyone" />
                         <label for="reply_to_option_everyone"> Tous les encadrants et co-encadrants déclarés</label><br />
                         <br />
 
                         <label for="message">Message :</label><br />
-                        <textarea required name="message" class="type1" style="width:95%; height:150px"></textarea>
+                        <textarea id="contact_message" name="message" class="type1" style="width:95%; height:150px"></textarea>
 
                         <br /><br />
-                        <input type="submit" class="nice" value="&gt; Envoyer mon message" onclick="$.fancybox.close()" />
-                        </form>
+                        <input id="submit_contact_participants" type="submit" class="nice" value="&gt; Envoyer mon message" onclick="$.fancybox.close()" formaction="{{ path('contact_participants', { id: event.id }) }}" />
+                    </div>
                     {% endif %}
 
                     {% if allowed('user_see_all') or allowed('evt_join_notme') or allowed('evt_join_doall') %}
@@ -697,6 +691,7 @@
                         {% endif %}
                     {% endif %}
                 {% endif %}
+            </form>
             <br style="clear:both"  /><br />
 
         </div>
@@ -788,12 +783,7 @@
                     <b>DÉPART :</b> Le {{ event.tsp | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tsp|date('H:i') }}{% endif %}
                 </li>
                 <li>
-                    <b>RETOUR :</b>
-                    {% if event.tsp | date('dmY') == event.tspEnd | date('dmY') %}
-                        Le même jour
-                    {% else %}
-                        Le {{ event.tspEnd | intldate('cccc d MMMM') }}
-                    {% endif %}
+                    <b>RETOUR :</b> Le {{ event.tspEnd | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tspEnd|date('H:i') }}{% endif %}
                 </li>
             </ul>
 
@@ -816,7 +806,7 @@
                 </script>
             {% else %}
                 <ul class="nice-list">
-                    <li><b>RDV :</b> lieu et heure visibles après connexion</li>
+                    <li><b>RDV :</b> lieu et heures visibles après connexion</li>
                 </ul>
             {% endif %}
             <hr />
@@ -1155,6 +1145,48 @@
     {{ parent() }}
     <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" type="text/css"  media="screen" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // champs obligatoires selon le form validé
+            const btn1 = document.getElementById('submit_update_participants');
+            const btn2 = document.getElementById('submit_contact_participants');
+
+            const contact_subject = document.getElementById('contact_subject');
+            const contact_message = document.getElementById('contact_message');
+            const contact_reply_to = document.querySelector('input[name="reply_to_option"]');
+
+            btn1.addEventListener('click', () => {
+                contact_subject.required = false;
+                contact_message.required = false;
+                contact_reply_to.required = false;
+            });
+
+            btn2.addEventListener('click', () => {
+                contact_subject.required = true;
+                contact_message.required = true;
+                contact_reply_to.required = true;
+            });
+
+            // sélection automatique de certains participants
+            const checkboxes = document.querySelectorAll('.contact-cb');
+            const select = document.getElementById('contact_participants_type');
+
+            select.addEventListener('change', () => {
+                // reset la sélection actuelle
+                checkboxes.forEach(checkbox => checkbox.checked = false);
+
+                // appliquer la sélection choisie
+                const selectedOption = select.options[select.selectedIndex].value;
+                if (undefined !== selectedOption && selectedOption !== '') {
+                    const selectedCheckboxes = document.querySelectorAll('.' + selectedOption);
+                    selectedCheckboxes.forEach(checkbox => checkbox.checked = true);
+                    if ('all' === selectedOption) {
+                        checkboxes.forEach(checkbox => checkbox.checked = true);
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}
 
 {% block og_markup %}

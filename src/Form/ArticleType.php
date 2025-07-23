@@ -7,13 +7,13 @@ use App\Entity\Evt;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
 use App\UserRights;
-use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -60,7 +60,6 @@ class ArticleType extends AbstractType
                 'mapped' => false,
                 'label' => "Type d'article",
                 'choices' => [
-                    '- Choisissez :' => '',
                     'Compte rendu de sortie' => '-1',
                 ] + $commissionChoices,
                 'group_by' => function ($choice, $key, $value) {
@@ -72,6 +71,7 @@ class ArticleType extends AbstractType
                 },
                 'required' => true,
                 'data' => $defaultArticleType,
+                'placeholder' => '- Choisissez le type d\'article',
             ])
             ->add('isCompteRendu', HiddenType::class, [
                 'mapped' => false,
@@ -90,7 +90,7 @@ class ArticleType extends AbstractType
                            $evt->getCommission()->getTitle() . ' | ' .
                            $evt->getTitre();
                 },
-                'placeholder' => '- Non merci',
+                'placeholder' => '--',
                 'required' => false,
                 'label' => 'Lier cet article à une sortie',
             ])
@@ -105,13 +105,13 @@ class ArticleType extends AbstractType
                 'required' => false,
                 'help' => 'À utiliser avec parcimonie. Ceci place l\'article au sommet de la page d\'accueil, dans les actualités défilantes. Il reste affiché là jusqu\'à ce qu\'un autre article à la Une vienne l\'en déloger. Utile pour une actualité qui dure dans le temps, ou une alerte à mettre en valeur. La photo est alors obligatoire.',
             ])
-            ->add('cont', CKEditorType::class, [
+            ->add('cont', TextareaType::class, [
                 'label' => 'Contenu',
                 'required' => true,
                 'attr' => [
-                    'class' => 'type1 wide ckeditor',
+                    'class' => 'type1 wide tinymce',
                     'rows' => 15,
-                    'style' => 'width: 97%; min-height:300px',
+                    'style' => 'width: 615px; min-height:300px',
                 ],
             ])
             ->add('mediaUploadId', HiddenType::class, [
@@ -121,6 +121,18 @@ class ArticleType extends AbstractType
             ->add('commission', HiddenType::class, [
                 'mapped' => false,
                 'required' => false,
+            ])
+            ->add('agreeEdito', CheckboxType::class, [
+                'label' => 'Je certifie que j\'ai pris connaissance de la <a href="https://docs.google.com/document/d/1-ncrWAzL2cH-xqcU3k5ro__RdT7Y5R-yOiOfaxXvPBA/edit?tab=t.0#heading=h.3d5p9gabuuee">ligne éditoriale du club</a> avant de poster mon article',
+                'label_html' => true,
+                'required' => true,
+            ])
+            ->add('imagesAuthorized', CheckboxType::class, [
+                'label' => 'Je certifie que j\'ai l\'autorisation des propriétaires de chaque image et chaque photo présente dans cet article sinon le club se risque à des amendes, <a href="https://docs.google.com/document/d/1cqDS86gtFWpfUMVzyWUzOIvuy85eZXsfoeM652YEQVg/edit?tab=t.0#heading=h.1pyse3gnh66u">voici l\'explication de cas déjà passés dans notre club</a>.',
+                'label_html' => true,
+                'required' => true,
+                'help' => 'Vous n\'êtes pas autorisé à utiliser des photos d\'internet, sauf si elles proviennent des plateformes : <a href="https://www.pexels.com/fr-fr/">Pexels</a>, <a href="https://pixabay.com/fr/">Pixabay</a>, <a href="https://unsplash.com/fr">Unsplash</a>',
+                'help_html' => true,
             ])
             ->add('articleDraftSave', SubmitType::class, [
                 'label' => '<span class="bleucaf">&gt;</span> ENREGISTRER COMME BROUILLON',

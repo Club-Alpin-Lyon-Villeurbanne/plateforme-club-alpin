@@ -383,9 +383,11 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($userOwner);
 
+        $participants = $event->getParticipations(null, null);
+        $testParticipantId = $participants[0]->getId();
         $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
-            'csrf_token' => $this->generateCsrfToken($this->client, 'contact_participants'),
-            'status_sendmail' => '*',
+            'csrf_token_contact' => $this->generateCsrfToken($this->client, 'contact_participants'),
+            'contact_participant' => [$testParticipantId => $testParticipantId],
             'objet' => 'un objet de culte',
             'message' => 'tirelipimpon',
         ]);
@@ -411,8 +413,8 @@ class SortieControllerTest extends WebTestCase
         $this->signin($userOwner);
 
         $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
-            'csrf_token' => $this->generateCsrfToken($this->client, 'contact_participants'),
-            'status_sendmail' => EventParticipation::STATUS_REFUSE,
+            'csrf_token_contact' => $this->generateCsrfToken($this->client, 'contact_participants'),
+            'contact_participant' => [17861268532135512851588522 => '17861268532135512851588522'],
             'objet' => 'un objet de culte',
             'message' => 'tirelipimpon',
         ]);
@@ -430,9 +432,11 @@ class SortieControllerTest extends WebTestCase
 
         $this->signin($userOwner);
 
+        $participants = $event->getParticipations(null, null);
+        $testParticipantId = $participants[0]->getId();
         $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
-            'csrf_token' => $this->generateCsrfToken($this->client, 'contact_participants'),
-            'status_sendmail' => EventParticipation::STATUS_VALIDE,
+            'csrf_token_contact' => $this->generateCsrfToken($this->client, 'contact_participants'),
+            'contact_participant' => [$testParticipantId => $testParticipantId],
             'objet' => 'un objet de culte',
             'message' => 'Prout PROUT',
         ]);
@@ -465,7 +469,7 @@ class SortieControllerTest extends WebTestCase
 
         // Update status to valide
         $this->client->request('POST', sprintf('/sortie/%d/update-inscriptions', $event->getId()), [
-            'csrf_token' => $this->generateCsrfToken($this->client, 'sortie_update_inscriptions'),
+            'csrf_token_inscriptions' => $this->generateCsrfToken($this->client, 'sortie_update_inscriptions'),
             'id_evt_join' => [$participation->getId()],
             'status_evt_join_' . $participation->getId() => EventParticipation::STATUS_VALIDE,
             'role_evt_join_' . $participation->getId() => EventParticipation::ROLE_INSCRIT,
@@ -499,7 +503,7 @@ class SortieControllerTest extends WebTestCase
 
         // Update status to refuse
         $this->client->request('POST', sprintf('/sortie/%d/update-inscriptions', $event->getId()), [
-            'csrf_token' => $this->generateCsrfToken($this->client, 'sortie_update_inscriptions'),
+            'csrf_token_inscriptions' => $this->generateCsrfToken($this->client, 'sortie_update_inscriptions'),
             'id_evt_join' => [$participation->getId()],
             'status_evt_join_' . $participation->getId() => EventParticipation::STATUS_REFUSE,
             'role_evt_join_' . $participation->getId() => EventParticipation::ROLE_INSCRIT,
@@ -533,7 +537,7 @@ class SortieControllerTest extends WebTestCase
 
         // Update status to absent
         $this->client->request('POST', sprintf('/sortie/%d/update-inscriptions', $event->getId()), [
-            'csrf_token' => $this->generateCsrfToken($this->client, 'sortie_update_inscriptions'),
+            'csrf_token_inscriptions' => $this->generateCsrfToken($this->client, 'sortie_update_inscriptions'),
             'id_evt_join' => [$participation->getId()],
             'status_evt_join_' . $participation->getId() => EventParticipation::STATUS_ABSENT,
             'role_evt_join_' . $participation->getId() => EventParticipation::ROLE_INSCRIT,

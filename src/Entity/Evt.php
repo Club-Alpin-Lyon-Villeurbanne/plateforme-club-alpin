@@ -606,7 +606,7 @@ class Evt
         return $this->place;
     }
 
-    public function setPlace(string $place): self
+    public function setPlace(?string $place): self
     {
         $this->place = $place;
 

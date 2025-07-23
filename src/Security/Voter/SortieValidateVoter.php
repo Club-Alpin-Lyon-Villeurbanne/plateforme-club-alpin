@@ -34,7 +34,7 @@ class SortieValidateVoter extends Voter
             throw new \InvalidArgumentException(sprintf('The voter "%s" requires an event subject', __CLASS__));
         }
 
-        if (!$subject->getCancelled() && $subject->isPublicStatusValide()) {
+        if (!$subject->getCancelled() && $subject->isPublicStatusValide() || $subject->isDraft()) {
             return false;
         }
 

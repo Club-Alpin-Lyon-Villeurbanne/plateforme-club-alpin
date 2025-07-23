@@ -154,7 +154,7 @@ class Article
     /**
      * @var string
      */
-    #[ORM\Column(name: 'cont_article', type: 'text', length: 65535, nullable: false)]
+    #[ORM\Column(name: 'cont_article', type: 'text', nullable: false)]
     #[Groups('article:read')]
     private $cont;
 
@@ -169,6 +169,12 @@ class Article
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     #[Groups('media:read')]
     private ?MediaUpload $mediaUpload = null;
+
+    #[ORM\Column(name: 'agree_edito', type: 'boolean', nullable: false, options: ['default' => false])]
+    private bool $agreeEdito = false;
+
+    #[ORM\Column(name: 'images_authorized', type: 'boolean', nullable: false, options: ['default' => false])]
+    private bool $imagesAuthorized = false;
 
     public function getId(): ?int
     {
@@ -375,6 +381,30 @@ class Article
     public function setLastEditWho(?User $lastEditWho): self
     {
         $this->lastEditWho = $lastEditWho;
+
+        return $this;
+    }
+
+    public function isAgreeEdito(): bool
+    {
+        return $this->agreeEdito;
+    }
+
+    public function setAgreeEdito(bool $agreeEdito): self
+    {
+        $this->agreeEdito = $agreeEdito;
+
+        return $this;
+    }
+
+    public function isImagesAuthorized(): bool
+    {
+        return $this->imagesAuthorized;
+    }
+
+    public function setImagesAuthorized(bool $imagesAuthorized): self
+    {
+        $this->imagesAuthorized = $imagesAuthorized;
 
         return $this;
     }

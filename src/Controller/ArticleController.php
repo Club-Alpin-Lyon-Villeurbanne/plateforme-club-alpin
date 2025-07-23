@@ -48,6 +48,10 @@ class ArticleController extends AbstractController
 
         if (!$article) {
             $article = new Article();
+        } else {
+            // reset des cases obligatoires pour être bien sûr que c'est toujours OK même en cas de modification de l'article
+            $article->setAgreeEdito(false);
+            $article->setImagesAuthorized(false);
         }
 
         if (!$article->getId() && $request->query->get('compterendu')) {

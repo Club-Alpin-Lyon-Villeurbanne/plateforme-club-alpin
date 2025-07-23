@@ -8,7 +8,6 @@ use App\Repository\CommissionRepository;
 use App\Repository\UserAttrRepository;
 use App\Service\ParticipantService;
 use App\UserRights;
-use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -249,7 +248,7 @@ class EventType extends AbstractType
                 'scale' => 2,
                 'constraints' => [
                     new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
-                    new GreaterThan(0),
+                    new GreaterThanOrEqual(0),
                 ],
             ])
             ->add('tarifDetail', TextareaType::class, [
@@ -262,7 +261,8 @@ class EventType extends AbstractType
                 'required' => false,
             ])
             ->add('ngensMax', NumberType::class, [
-                'label' => 'Nombre maximum de personnes sur cette sortie (encadrement compris)',
+                'label' => 'Nombre maximum de personnes sur cette sortie (encadrement compris) <span class="revalidation">*</span>',
+                'label_html' => true,
                 'required' => true,
                 'html5' => true,
                 'attr' => [
@@ -302,8 +302,9 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('difficulte', TextType::class, [
-                'label' => 'Difficulté, niveau',
-                'required' => false,
+                'label' => 'Difficulté, niveau <span class="revalidation">*</span>',
+                'label_html' => true,
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : PD, 5d+, exposé, ...',
                     'maxlength' => 50,
@@ -317,7 +318,7 @@ class EventType extends AbstractType
             ])
             ->add('denivele', TextType::class, [
                 'label' => 'Dénivelé positif',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : 1200',
                     'maxlength' => 50,
@@ -335,7 +336,7 @@ class EventType extends AbstractType
             ])
             ->add('distance', TextType::class, [
                 'label' => 'Distance',
-                'required' => false,
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : 13.50',
                     'maxlength' => 50,
@@ -366,6 +367,7 @@ class EventType extends AbstractType
                 'attr' => [
                     'class' => 'type2 wide',
                     'rows' => 5,
+                    'placeholder' => 'ex: du parking 1540 Aussois à côté des remontées mécaniques du Grand Jeu, prendre NNE jusqu\'à Plan Aval puis suivre refuge de la Fournache 2333m par la Randolière',
                 ],
             ])
             ->add('details_caches', TextareaType::class, [
@@ -386,13 +388,13 @@ class EventType extends AbstractType
                     'placeholder' => '- Listes prédéfinies',
                 ],
             ])
-            ->add('description', CKEditorType::class, [
+            ->add('description', TextareaType::class, [
                 'label' => false,
                 'required' => true,
                 'attr' => [
-                    'class' => 'type2 wide ckeditor',
+                    'class' => 'type2 wide tinymce',
                     'rows' => 15,
-                    'style' => 'width:95%; min-height:300px',
+                    'style' => 'width:615px; min-height:300px',
                 ],
                 'constraints' => [
                     new NotBlank(),

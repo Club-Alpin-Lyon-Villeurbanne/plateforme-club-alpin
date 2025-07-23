@@ -23,7 +23,8 @@ use Symfony\Component\Serializer\Annotation\Ignore;
  * User.
  */
 #[ORM\Table(name: 'caf_user')]
-#[ORM\Index(name: 'id_user', columns: ['id_user'])]
+#[ORM\Index(columns: ['id_user'], name: 'id_user')]
+#[ORM\Index(columns: ['is_deleted', 'valid_user', 'doit_renouveler_user', 'nomade_user', 'lastname_user'], name: 'idx_user_admin_listing')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
     operations: [
@@ -114,13 +115,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     /**
      * @var string
      */
-    #[ORM\Column(name: 'tel_user', type: 'string', length: 30, nullable: true)]
+    #[ORM\Column(name: 'tel_user', type: 'string', length: 100, nullable: true)]
     private $tel;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'tel2_user', type: 'string', length: 30, nullable: true)]
+    #[ORM\Column(name: 'tel2_user', type: 'string', length: 100, nullable: true)]
     private $tel2;
 
     /**
