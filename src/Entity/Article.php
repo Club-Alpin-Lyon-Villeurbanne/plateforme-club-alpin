@@ -109,7 +109,7 @@ class Article
     /**
      * @var string
      */
-    #[ORM\Column(name: 'cont_article', type: 'text', length: 65535, nullable: false)]
+    #[ORM\Column(name: 'cont_article', type: 'text', nullable: false)]
     private $cont;
 
     /**
