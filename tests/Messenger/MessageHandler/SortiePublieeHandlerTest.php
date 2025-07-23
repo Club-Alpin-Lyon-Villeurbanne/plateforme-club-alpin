@@ -7,6 +7,7 @@ use App\Messenger\Message\SortiePubliee;
 use App\Messenger\MessageHandler\SortiePublieeHandler;
 use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
+use App\Service\PushNotificationService;
 use App\Tests\VarDumperTestTrait;
 use App\Tests\WebTestCase;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,6 +23,7 @@ class SortiePublieeHandlerTest extends WebTestCase
             self::getContainer()->get(EvtRepository::class),
             self::getContainer()->get(UserRepository::class),
             self::getContainer()->get(MessageBusInterface::class),
+            self::getContainer()->get(PushNotificationService::class),
         );
 
         // this id should not exist
@@ -51,6 +53,7 @@ class SortiePublieeHandlerTest extends WebTestCase
             self::getContainer()->get(EvtRepository::class),
             self::getContainer()->get(UserRepository::class),
             self::getContainer()->get(MessageBusInterface::class),
+            self::getContainer()->get(PushNotificationService::class),
         );
 
         $handler(new SortiePubliee($evt->getId()));
