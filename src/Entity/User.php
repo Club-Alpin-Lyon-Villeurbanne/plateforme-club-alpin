@@ -97,13 +97,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     /**
      * @var string
      */
-    #[ORM\Column(name: 'tel_user', type: 'string', length: 30, nullable: true)]
+    #[ORM\Column(name: 'tel_user', type: 'string', length: 100, nullable: true)]
     private $tel;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'tel2_user', type: 'string', length: 30, nullable: true)]
+    #[ORM\Column(name: 'tel2_user', type: 'string', length: 100, nullable: true)]
     private $tel2;
 
     /**
