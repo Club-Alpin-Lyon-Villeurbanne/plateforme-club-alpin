@@ -191,11 +191,11 @@ class EvtRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function getRecentPastEvents(): array
+    public function getRecentPastEvents(?Commission $commission = null): array
     {
         $limitDate = new \DateTime('last year');
 
-        return $this->createQueryBuilder('e')
+        $queryBuilder = $this->createQueryBuilder('e')
             ->where('e.status = :status')
             ->andWhere('e.tspEnd < :date')
             ->andWhere('e.tsp > :limitDate')
@@ -203,6 +203,15 @@ class EvtRepository extends ServiceEntityRepository
             ->setParameter('date', time())
             ->setParameter('limitDate', $limitDate->getTimestamp())
             ->orderBy('e.tsp', 'desc')
+        ;
+        if ($commission) {
+            $queryBuilder
+                ->andWhere('e.commission = :commission')
+                ->setParameter('commission', $commission)
+            ;
+        }
+
+        return $queryBuilder
             ->getQuery()
             ->getResult()
         ;
