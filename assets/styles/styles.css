@@ -469,3 +469,7 @@ h2.bleucaf {font-family:DINBold; font-weight: bold; margin: 20px 0 10px 0; text-
     background-color: #53B4E4;
 }
 .blanc{color:#fff;}
+
+.select-contact {
+    display: none;
+}

@@ -268,7 +268,7 @@ class SortieController extends AbstractController
     #[Route(name: 'sortie_update_inscription', path: '/sortie/{id}/update-inscriptions', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieUpdateInscriptions(#[CurrentUser] User $user, Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
     {
-        if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token'))) {
+        if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token_inscriptions'))) {
             $this->addFlash('error', 'Jeton de validation invalide.');
 
             return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
@@ -492,7 +492,7 @@ class SortieController extends AbstractController
     #[Route(name: 'contact_participants', path: '/sortie/{id}/contact-participants', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function contactParticipants(Request $request, Evt $event, Mailer $mailer)
     {
-        if (!$this->isCsrfTokenValid('contact_participants', $request->request->get('csrf_token'))) {
+        if (!$this->isCsrfTokenValid('contact_participants', $request->request->get('csrf_token_contact'))) {
             throw new BadRequestException('Jeton de validation invalide.');
         }
 
@@ -500,28 +500,24 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
         }
 
-        $status = $request->request->get('status_sendmail');
-        $status = ctype_digit($status) ? (int) $status : $status;
-
-        if (!\in_array($status, ['*', EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_ABSENT, EventParticipation::STATUS_NON_CONFIRME, EventParticipation::STATUS_REFUSE], true)) {
-            throw new BadRequestException(sprintf('Invalid status "%s".', $status));
-        }
-
+        $receivers = $request->request->all('contact_participant');
         $participations = $event
-            ->getParticipations(null, '*' === $status ? null : $status)
+            ->getParticipations(null, null)
+            ->filter(function ($participation) use ($receivers) {
+                return \in_array($participation->getId(), $receivers, false);
+            })
             ->map(fn (EventParticipation $participation) => $participation->getUser())
-            ->toArray();
+            ->toArray()
+        ;
 
         $replyToMode = $request->request->get('reply_to_option');
         $replyToAddresses = [];
         if ('everyone' === $replyToMode) {
             foreach ($event->getEncadrants() as $joined) {
                 $replyToAddresses[] = $joined->getUser()->getEmail();
-                $participations[] = $joined->getUser()->getEmail();
             }
         } elseif ('me_only' === $replyToMode) {
             $replyToAddresses = $this->getUser()->getEmail();
-            $participations[] = $this->getUser()->getEmail();
         }
 
         $mailer->send($participations, 'transactional/message-sortie', [
