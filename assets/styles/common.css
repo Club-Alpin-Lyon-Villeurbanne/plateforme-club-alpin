@@ -75,3 +75,7 @@ label.ck-label {display: none !important}
 .padded-form .ck-editor {
     max-width: 96%;
 }
+
+span.revalidation {
+    color: teal;
+}

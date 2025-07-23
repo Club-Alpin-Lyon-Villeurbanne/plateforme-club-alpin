@@ -261,7 +261,8 @@ class EventType extends AbstractType
                 'required' => false,
             ])
             ->add('ngensMax', NumberType::class, [
-                'label' => 'Nombre maximum de personnes sur cette sortie (encadrement compris)',
+                'label' => 'Nombre maximum de personnes sur cette sortie (encadrement compris) <span class="revalidation">*</span>',
+                'label_html' => true,
                 'required' => true,
                 'html5' => true,
                 'attr' => [
@@ -301,7 +302,8 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('difficulte', TextType::class, [
-                'label' => 'Difficulté, niveau',
+                'label' => 'Difficulté, niveau <span class="revalidation">*</span>',
+                'label_html' => true,
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : PD, 5d+, exposé, ...',

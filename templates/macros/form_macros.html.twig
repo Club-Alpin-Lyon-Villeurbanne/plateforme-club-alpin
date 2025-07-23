@@ -5,19 +5,19 @@
 {% endmacro %}
 
 {% macro display_encadrement(form, is_update) %}
-    <h2 class="trigger-h2 required">Encadrant(s) :</h2>
+    <h2 class="trigger-h2 required">Encadrant(s) : <span class="revalidation">*</span></h2>
     <div class="trigger-me check-nice">
         {{ form_row(form.encadrants) }}
         <br style="clear:both" />
     </div>
 
-    <h2 class="trigger-h2">Initiateur(s) stagiaire(s) :</h2>
+    <h2 class="trigger-h2 required">Initiateur(s) stagiaire(s) : <span class="revalidation">*</span></h2>
     <div class="trigger-me check-nice">
         {{ form_row(form.initiateurs) }}
         <br style="clear:both" />
     </div>
 
-    <h2 class="trigger-h2">Co-Encadrant(s) :</h2>
+    <h2 class="trigger-h2 required">Co-Encadrant(s) : <span class="revalidation">*</span></h2>
     <div class="trigger-me check-nice">
         {{ form_row(form.coencadrants) }}
         <br style="clear:both" />
