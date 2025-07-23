@@ -44,9 +44,11 @@ public/dev.txt
 /public/media/cache/
 ###< liip/imagine-bundle ###
 
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
 # Claude Code assistant files
 .claude/
-
-# Test reports
-test-results/
-playwright-report/
