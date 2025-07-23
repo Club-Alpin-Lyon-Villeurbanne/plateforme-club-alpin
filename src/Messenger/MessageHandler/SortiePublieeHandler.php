@@ -38,7 +38,6 @@ class SortiePublieeHandler
         }
 
         $this->pushNotificationService->notifyEvent($evt);
-
     }
 
     private function notifyUser(Evt $sortie, int $userId): void

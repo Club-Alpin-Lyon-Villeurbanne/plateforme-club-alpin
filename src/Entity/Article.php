@@ -76,7 +76,7 @@ class Article
      * @var int
      */
     #[ORM\Column(name: 'tsp_crea_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp de création de l'article"])]
-    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[TimeStamp]
     private $tspCrea;
 
@@ -84,7 +84,7 @@ class Article
      * @var int
      */
     #[ORM\Column(name: 'tsp_validate_article', type: 'integer', nullable: true)]
-    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[TimeStamp]
     private $tspValidate;
 
@@ -93,7 +93,7 @@ class Article
      */
     #[ORM\Column(name: 'tsp_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp affiché de l'article"])]
     #[Groups('article:read')]
-    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[TimeStamp]
     private $tsp;
 

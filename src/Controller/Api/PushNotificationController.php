@@ -16,11 +16,12 @@ class PushNotificationController extends AbstractController
         private PushNotificationService $push,
         private ArticleRepository $articleRepository,
         private EvtRepository $eventRepository,
-    ){}
+    ) {
+    }
 
     #[Route(name: 'notifications_article', path: '/api/notifications/article', methods: ['GET'])]
-    public function notifyArticle(#[MapQueryParameter] int $id) {
-        
+    public function notifyArticle(#[MapQueryParameter] int $id)
+    {
         $article = $this->articleRepository->find($id);
         if (!$article) {
             return new Response('Article not found', 404);
@@ -31,8 +32,8 @@ class PushNotificationController extends AbstractController
     }
 
     #[Route(name: 'notifications_event', path: '/api/notifications/event', methods: ['GET'])]
-    public function notifyEvent(#[MapQueryParameter] int $id) {
-        
+    public function notifyEvent(#[MapQueryParameter] int $id)
+    {
         $event = $this->eventRepository->find($id);
         if (!$event) {
             return new Response('Event not found', 404);

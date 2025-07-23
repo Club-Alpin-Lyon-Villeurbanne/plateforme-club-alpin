@@ -15,7 +15,7 @@ class PushNotificationService
 {
     private Messaging $messaging;
 
-    function __construct(private Security $security)
+    public function __construct(private Security $security)
     {
         $factory = new Factory();
         $this->messaging = $factory->createMessaging();
@@ -28,11 +28,11 @@ class PushNotificationService
         ?string $imageUrl = null,
         ?array $data = []
     ) {
-
         $message = CloudMessage::new()
-            ->withNotification(Notification::create($_ENV['SITENAME'] . " - " . $title, $body, $imageUrl))
+            ->withNotification(Notification::create($_ENV['SITENAME'] . ' - ' . $title, $body, $imageUrl))
             ->withData($data)
             ->toTopic($_ENV['APP_INSTANCE'] . '_' . $topic);
+
         return $this->messaging->send($message);
     }
 
@@ -40,9 +40,10 @@ class PushNotificationService
     {
         /** @var User? $user */
         $user = $this->security->getUser() instanceof User ? $this->security->getUser() : null;
-        if($user) {
-            return strval($user->getId());
+        if ($user) {
+            return (string) $user->getId();
         }
+
         return null;
     }
 

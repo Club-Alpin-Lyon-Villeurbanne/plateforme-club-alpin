@@ -32,8 +32,8 @@ use Symfony\Component\Serializer\Annotation\Ignore;
         new Patch(normalizationContext: ['groups' => ['user:read', 'user:details']], denormalizationContext: ['groups' => ['user:write']]),
     ],
     graphQlOperations: [
-        new Query(normalizationContext: ['groups' => ['user:read', "user:details"]]),
-        new Mutation(name: 'update', normalizationContext: ['groups' => ['user:read', "user:details"]], denormalizationContext: ['groups' => ['user:write']]),
+        new Query(normalizationContext: ['groups' => ['user:read', 'user:details']]),
+        new Mutation(name: 'update', normalizationContext: ['groups' => ['user:read', 'user:details']], denormalizationContext: ['groups' => ['user:write']]),
     ],
     security: "is_granted('ROLE_USER') and object == user",
 )]

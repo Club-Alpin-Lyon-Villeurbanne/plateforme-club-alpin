@@ -11,8 +11,6 @@ use Doctrine\ORM\QueryBuilder;
 
 final readonly class PublishedArticleExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
-
-
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?Operation $operation = null, array $context = []): void
     {
         $this->addWhere($queryBuilder, $resourceClass);

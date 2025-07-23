@@ -6,8 +6,8 @@ use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\GraphQl\Query;
 use ApiPlatform\Metadata\GraphQl\QueryCollection;
 use ApiPlatform\Serializer\Filter\GroupFilter;
@@ -105,24 +105,24 @@ class Evt
 
     #[ORM\Column(name: 'tsp_evt', type: 'bigint', nullable: true, options: ['comment' => 'timestamp du début du event'])]
     #[Groups('event:read')]
-    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[TimeStamp]
     private ?int $tsp;
 
     #[ORM\Column(name: 'tsp_end_evt', type: 'bigint', nullable: true)]
     #[Groups('event:read')]
-    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[TimeStamp]
     private ?int $tspEnd;
 
     #[ORM\Column(name: 'tsp_crea_evt', type: 'bigint', nullable: false, options: ['comment' => "Création de l'entrée"])]
-    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[TimeStamp]
     #[Groups('event:details')]
     private ?int $tspCrea;
 
     #[ORM\Column(name: 'tsp_edit_evt', type: 'bigint', nullable: true)]
-    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[TimeStamp]
     private ?int $tspEdit;
 
@@ -191,7 +191,7 @@ class Evt
     private bool $needBenevoles = false;
 
     #[ORM\Column(name: 'join_start_evt', type: 'integer', nullable: true, options: ['comment' => 'Timestamp de départ des inscriptions'])]
-    #[Context(normalizationContext:[TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[TimeStamp]
     #[Groups('event:details')]
     private ?int $joinStart;
@@ -454,11 +454,13 @@ class Evt
     }
 
     #[Groups('event:read')]
-    public function getCurrentUserParticipation(): ?EventParticipation {
+    public function getCurrentUserParticipation(): ?EventParticipation
+    {
         $user = $this->getUser();
-        if(!$user) {
+        if (!$user) {
             return null;
         }
+
         return $this->getParticipation($user);
     }
 

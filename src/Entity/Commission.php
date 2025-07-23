@@ -3,8 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\GraphQl\Query;
 use ApiPlatform\Metadata\GraphQl\QueryCollection;
 use App\Repository\CommissionRepository;
@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     normalizationContext: ['groups' => ['commission:read']],
     graphQlOperations: [
         new Query(),
-        new QueryCollection()
+        new QueryCollection(),
     ],
     security: "is_granted('ROLE_USER')",
 )]
