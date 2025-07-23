@@ -340,7 +340,7 @@ class SortieController extends AbstractController
                 continue;
             }
 
-            if (($event->isFinished() && !\in_array($status, [EventParticipation::STATUS_ABSENT], true)) || 'on' === $request->request->get('disablemails')) {
+            if ($event->isFinished() && !\in_array($status, [EventParticipation::STATUS_ABSENT], true)) {
                 continue;
             }
 
