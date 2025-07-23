@@ -3,7 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Article;
+use App\Entity\Commission;
 use App\Entity\Evt;
+use App\Helper\MonthHelper;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
 use App\UserRights;
@@ -16,8 +18,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ArticleType extends AbstractType
@@ -25,57 +25,54 @@ class ArticleType extends AbstractType
     public function __construct(
         private readonly CommissionRepository $commissionRepository,
         private readonly EvtRepository $eventRepository,
-        private readonly UserRights $userRights)
-    {
+        private readonly UserRights $userRights,
+        private readonly MonthHelper $monthHelper
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        // Récupérer toutes les commissions visibles et les convertir en tableau
-        $commissions = $this->commissionRepository->findVisible();
-        // S'assurer que $commissions est un tableau et non un générateur
-        $commissions = \is_array($commissions) ? $commissions : iterator_to_array($commissions);
-
-        // Créer les choix pour les commissions
-        $commissionChoices = [];
-        foreach ($commissions as $commission) {
-            if ($this->userRights->allowedOnCommission('article_create', $commission)) {
-                $commissionChoices['Actualité « ' . $commission->getTitle() . ' »'] = (string) $commission->getId();
-            }
-        }
-
         $article = $options['data'] ?? null;
         $defaultArticleType = '';
-        $isCompteRendu = false;
 
-        if ($article && $article->getCommission()) {
-            $defaultArticleType = $article->getCommission()->getId();
-        } elseif ($article && $article->getEvt()) {
-            $defaultArticleType = '-1'; // Compte rendu de sortie
-            $isCompteRendu = true;
+        if ($article && $article->getEvt()) {
+            $defaultArticleType = 'cr';
+        } elseif ($article && $article->getCommission()) {
+            $defaultArticleType = 'article';
         }
 
         $builder
+            ->add('commission', EntityType::class, [
+                'class' => Commission::class,
+                'choices' => array_filter(
+                    iterator_to_array($this->commissionRepository->findVisible()),
+                    fn (Commission $commission) => $this->userRights->allowedOnCommission('article_create', $commission),
+                ),
+                'label' => 'Commission',
+                'label_attr' => [
+                    'class' => 'title-header',
+                ],
+                'placeholder' => 'Choisissez une commission',
+                'required' => true,
+                'attr' => [
+                    'class' => 'type1 wide',
+                    'style' => 'width: 95%',
+                ],
+            ])
             ->add('articleType', ChoiceType::class, [
                 'mapped' => false,
-                'label' => "Type d'article",
+                'label' => 'Je rédige',
+                'label_attr' => [
+                    'class' => 'title-header',
+                ],
                 'choices' => [
-                    'Compte rendu de sortie' => '-1',
-                ] + $commissionChoices,
-                'group_by' => function ($choice, $key, $value) {
-                    if (is_numeric($value) && (int) $value > 0) {
-                        return 'Article lié à une commission :';
-                    }
-
-                    return null;
-                },
+                    '📋 un compte rendu de sortie' => 'cr',
+                    '📖 un article' => 'article',
+                ],
+                'expanded' => true,
+                'multiple' => false,
                 'required' => true,
                 'data' => $defaultArticleType,
-                'placeholder' => '- Choisissez le type d\'article',
-            ])
-            ->add('isCompteRendu', HiddenType::class, [
-                'mapped' => false,
-                'data' => $isCompteRendu,
             ])
             ->add('evt', EntityType::class, [
                 'class' => Evt::class,
@@ -85,24 +82,41 @@ class ArticleType extends AbstractType
                 ),
                 'choice_label' => function (Evt $evt) {
                     return date('d', $evt->getTsp()) . ' ' .
-                           $this->getMonthName(date('m', $evt->getTsp())) . ' ' .
+                           $this->monthHelper->getMonthName(date('m', $evt->getTsp())) . ' ' .
                            date('Y', $evt->getTsp()) . ' | ' .
                            $evt->getCommission()->getTitle() . ' | ' .
                            $evt->getTitre();
                 },
-                'placeholder' => '--',
-                'required' => false,
+                'placeholder' => 'Sélectionner',
+                'required' => true,
                 'label' => 'Lier cet article à une sortie',
+                'attr' => [
+                    'class' => 'type1 wide',
+                    'style' => 'width: 95%',
+                ],
+                'help' => 'Champ obligatoire pour un compte rendu de sortie.',
+                'help_attr' => [
+                    'class' => 'mini',
+                ],
             ])
             ->add('titre', TextType::class, [
                 'label' => 'Titre',
+                'label_attr' => [
+                    'class' => 'title-header',
+                ],
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : Escalade du Grand Som, une sortie bien gaillarde !',
+                    'class' => 'type1 wide',
+                    'style' => 'width: 95%',
                 ],
             ])
             ->add('une', CheckboxType::class, [
                 'label' => 'Placer cet article à la Une ?',
                 'required' => false,
+                'attr' => [
+                    'class' => 'custom',
+                ],
                 'help' => 'À utiliser avec parcimonie. Ceci place l\'article au sommet de la page d\'accueil, dans les actualités défilantes. Il reste affiché là jusqu\'à ce qu\'un autre article à la Une vienne l\'en déloger. Utile pour une actualité qui dure dans le temps, ou une alerte à mettre en valeur. La photo est alors obligatoire.',
             ])
             ->add('cont', TextareaType::class, [
@@ -115,10 +129,6 @@ class ArticleType extends AbstractType
                 ],
             ])
             ->add('mediaUploadId', HiddenType::class, [
-                'mapped' => false,
-                'required' => false,
-            ])
-            ->add('commission', HiddenType::class, [
                 'mapped' => false,
                 'required' => false,
             ])
@@ -148,41 +158,7 @@ class ArticleType extends AbstractType
                     'class' => 'mediumlink btn-blue blanc',
                 ],
             ])
-
-            // Gestion des événements du formulaire pour la logique conditionnelle
-            ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
-                $data = $event->getData();
-                $form = $event->getForm();
-
-                // Gérer la conversion de l'ID de commission en objet Commission
-                if (isset($data['articleType'])) {
-                    if ('0' === $data['articleType'] || '-1' === $data['articleType'] || '' === $data['articleType']) {
-                        $data['commission'] = null;
-                    } else {
-                        $data['commission'] = (int) $data['articleType'];
-                    }
-                }
-
-                if (isset($data['articleType']) && '-1' === $data['articleType']) {
-                    $data['isCompteRendu'] = true;
-                } else {
-                    $data['isCompteRendu'] = false;
-                }
-
-                $event->setData($data);
-            })
-            ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
-                $form = $event->getForm();
-                $article = $event->getData();
-
-                if ($form->has('commission') && $form->get('commission')->getData()) {
-                    $commissionId = $form->get('commission')->getData();
-                    $commission = $this->commissionRepository->find($commissionId);
-                    if ($commission) {
-                        $article->setCommission($commission);
-                    }
-                }
-            });
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -190,25 +166,5 @@ class ArticleType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Article::class,
         ]);
-    }
-
-    private function getMonthName(string $month): string
-    {
-        $months = [
-            '01' => 'janvier',
-            '02' => 'février',
-            '03' => 'mars',
-            '04' => 'avril',
-            '05' => 'mai',
-            '06' => 'juin',
-            '07' => 'juillet',
-            '08' => 'août',
-            '09' => 'septembre',
-            '10' => 'octobre',
-            '11' => 'novembre',
-            '12' => 'décembre',
-        ];
-
-        return $months[$month] ?? $month;
     }
 }
