@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
@@ -37,6 +38,7 @@ use Symfony\Component\Serializer\Attribute\Context;
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', "participations.user.id" => 'exact'])]
 #[ApiFilter(RangeFilter::class, properties: ['tsp'])]
 #[ApiFilter(GroupFilter::class)]
+#[ApiFilter(OrderFilter::class, properties: ['tsp'])]
 class Evt
 {
     public const STATUS_PUBLISHED_UNSEEN = 0;
