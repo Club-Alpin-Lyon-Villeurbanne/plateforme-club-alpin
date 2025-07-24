@@ -349,10 +349,16 @@
                 <select id="contact_participants_type" class="type1" style="display:none; min-width: 250px;">
                     <option value="">Sélectionner des destinataires</option>
                     <option value="all">Tout le monde</option>
-                    <option value="accepted">Les participants acceptés</option>
+                    {% if event.finished %}
+                        <option value="accepted">Les présents</option>
+                    {% else %}
+                        <option value="accepted">Les participants acceptés</option>
+                    {% endif %}
                     <option value="refused">Les participants refusés</option>
                     <option value="waiting">Les participants en attente</option>
-                    <option value="absent">Les absents</option>
+                    {% if event.finished %}
+                        <option value="absent">Les absents</option>
+                    {% endif %}
                 </select>
                 <br /><br />
 
