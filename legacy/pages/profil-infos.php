@@ -33,34 +33,46 @@ if (user()) {
             <?php
             $clubRoles = [];
             $commissionRoles = [];
-            foreach (getUser()->getAttributes() as $attr) {
+            $attributes = getUser()->getAttributes();
+            foreach ($attributes as $attr) {
                 if (in_array($attr->getCode(), UserAttr::COMMISSION_RELATED, true)) {
-                    $commissionRoles[] = $attr;
+                    if (!isset($commissionRoles[$attr->getParams()])) {
+                        $commissionRoles[$attr->getParams()] = $attr;
+                    }
                 } else {
-                    $clubRoles[] = $attr;
+                    if (!isset($clubRoles[$attr->getParams()])) {
+                        $clubRoles[$attr->getParams()] = $attr;
+                    }
                 }
             }
-
-            if (!empty($clubRoles)) {
-                echo '<h3>Responsabilité dans le club :</h3>';
-                echo '<ul class="nice-list">';
-                foreach ($clubRoles as $attr) {
-                    echo '<li>' . $attr->getTitle() . '</li>';
+            ?>
+            <h3>Responsabilité dans le club :</h3>
+            <ul class="nice-list">
+                <?php
+                if (!empty($clubRoles)) {
+                    foreach ($clubRoles as $attr) {
+                        echo '<li>' . $attr->getTitle() . '</li>';
+                    }
+                } else {
+                    echo '<li>N/A</li>';
                 }
-                echo '</ul>';
-                echo '<br style="clear:both" />';
-            }
+            ?>
+            </ul>
+            <br style="clear:both" />
 
+            <h3>Responsabilité dans les commissions :</h3>
+            <ul class="nice-list">
+                <?php
             if (!empty($commissionRoles)) {
-                echo '<h3>Responsabilité dans les commissions :</h3>';
-                echo '<ul class="nice-list">';
                 foreach ($commissionRoles as $attr) {
                     echo '<li>' . $commissionRepository->getCommissionNameByCode($attr->getCommission()) . ' : ' . $attr->getTitle() . '</li>';
                 }
-                echo '</ul>';
-                echo '<br style="clear:both" />';
+            } else {
+                echo '<li>N/A</li>';
             }
             ?>
+            </ul>
+            <br style="clear:both" />
             <hr />
         <?php } ?>
 
