@@ -34,6 +34,8 @@ class HelloAssoController extends AbstractController
         if (!$code || !$codeVerifier || $codeVerifier !== $code) {
             throw new \Exception('Invalid OAuth callback');
         }
+        
+        // récuperer l'autorization_code dans la réponse
 
         return $this->redirect('/');
     }
