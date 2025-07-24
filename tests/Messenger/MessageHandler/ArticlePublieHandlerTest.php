@@ -50,6 +50,7 @@ class ArticlePublieHandlerTest extends WebTestCase
             self::getContainer()->get(ArticleRepository::class),
             self::getContainer()->get(UserRepository::class),
             self::getContainer()->get(MessageBusInterface::class),
+            self::getContainer()->get(PushNotificationService::class),
         );
 
         $handler(new ArticlePublie($article->getId()));
