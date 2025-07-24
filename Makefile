@@ -186,3 +186,7 @@ help: ## List of commands
 consume-mails: ## consume mails
 	$(SYMFONY_CONSOLE) messenger:consume mails --limit=50 --quiet --no-interaction
 .PHONY: consume-mails
+
+api-token: ## Get API token
+	$(EXEC) curl -s -X 'POST' 'http://localhost:80/api/auth' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{"email": "test@clubalpinlyon.fr","password": "test"}' | jq -r '.token'
+.PHONY: api-token
