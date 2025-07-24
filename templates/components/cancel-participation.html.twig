@@ -1,17 +1,23 @@
 <br>
+{% set wording = 'participation' %}
+{% if my_status is same as (constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) %}
+    {% set wording = 'demande d\'inscription' %}
+{% endif %}
 <div id="inscription-annuler" style="display: none;">
-    {{ easy_include('formalites-inscription-suppression', 'formalites') }}<br>
+    <h2>Annuler votre {{ wording }}</h2>
+    <p>Vous pouvez annuler instantanément votre {{ wording }}. L'organisateur recevra un e-mail pour l'en avertir.</p>
+    <br>
 
     <form action="{{ path('sortie_remove_participant', { id: my_status_id }) }}" method="post" class="loading">
         <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
-        <label for="cancel_reason">Veuillez expliquer la raison de l'annulation de votre demande</label>
+        <label for="cancel_reason">Veuillez expliquer la raison de l'annulation de votre {{ wording }}</label>
         <textarea id="cancel_reason" name="cancel_reason" class="type2" style="width:98%; min-height:80px" placeholder="ex : maladie, contraintes personnelles ou familiales, problème de matériel"></textarea>
 
         <p style="text-align:center">
-            <a class="minilink" href="javascript:void(0)" title="Je maintiens ma demande de participation à la sortie" onclick="$('#inscription-annuler').slideToggle(200)">
+            <a class="minilink" href="javascript:void(0)" title="Je maintiens ma {{ wording }} à la sortie" onclick="$('#inscription-annuler').slideToggle(200)">
                 RESTER INSCRIT
             </a>
-            <a class="minilink btn-blue blanc" href="javascript:void(0)" title="J'annule ma demande de participation à la sortie" onclick="$(this).parents('form').submit()">
+            <a class="minilink btn-blue blanc" href="javascript:void(0)" title="J'annule ma {{ wording }} à la sortie" onclick="$(this).parents('form').submit()">
                 SE DÉSINSCRIRE
             </a>
         </p>
