@@ -212,11 +212,11 @@
                         <div class="text-container">
                             Vous avez demandé à participer à cette sortie, et votre demande est en attente de validation.<br />
                             <div class="button-container">
-                                <input type="button" class="nice" value="Annuler ma demande" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
+                                <input type="button" class="nice" value="Annuler ma demande d'inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
                             </div>
                         </div>
                     </div>
-                    {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id} %}
+                    {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id, 'my_status': my_status.status} %}
                 {% endif %}
             {% else %}
                 <div class="alerte info-container" style="margin-right:2rem !important">
@@ -245,7 +245,7 @@
                 {% if not event.finished %}
                     {% if allowed('evt_unjoin') %}
                         {{ block_macros.display_confirmed_cancel_block(my_status.role) }}
-                        {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id} %}
+                        {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id, 'my_status': my_status.status} %}
                     {% endif %}
                 {% else %}
                     <div class="info info-container" style="margin-right:2rem !important">
@@ -279,7 +279,7 @@
                 {% if not event.finished %}
                     {% if allowed('evt_unjoin') %}
                         {{ block_macros.display_confirmed_cancel_block('participant') }}
-                        {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id} %}
+                        {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id, 'my_status': my_status.status} %}
                     {% endif %}
                 {% else %}
                     <div class="info info-container" style="margin-right:2rem !important">
