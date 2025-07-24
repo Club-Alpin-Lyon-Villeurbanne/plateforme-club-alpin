@@ -34,7 +34,7 @@ use Symfony\Component\Serializer\Attribute\Context;
     ],
     security: "is_granted('ROLE_USER')",
 )]
-#[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact'])]
+#[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', "participations.user.id" => 'exact'])]
 #[ApiFilter(RangeFilter::class, properties: ['tsp'])]
 #[ApiFilter(GroupFilter::class)]
 class Evt
