@@ -38,7 +38,6 @@ public/dev.txt
 ###> pentatrion/vite-bundle ###
 /node_modules/
 /public/build/
-/public/build-webpack/
 ###< pentatrion/vite-bundle ###
 
 ###> liip/imagine-bundle ###
@@ -57,10 +56,3 @@ node_modules/
 # Test reports
 test-results/
 playwright-report/
-
-###> symfony/webpack-encore-bundle ###
-/node_modules/
-/public/build/
-npm-debug.log
-yarn-error.log
-###< symfony/webpack-encore-bundle ###

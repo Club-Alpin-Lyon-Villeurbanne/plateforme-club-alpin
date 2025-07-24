@@ -23,7 +23,6 @@
         <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ url_site }}/rss.xml?mode=articles" />
 
         {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
             {% include 'stylesheets.html.twig' %}
         {% endblock %}
 
@@ -80,7 +79,6 @@
             </div>
         </div>
         {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
             <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha.site_key }}"></script>
         {% endblock %}
         {% block trackers %}
