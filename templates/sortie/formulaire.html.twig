@@ -15,9 +15,7 @@
 
         <div class="italic">
             Les champs marqués d'un <span class="required">*</span> sont obligatoires.
-            {% if is_update and event.status is same as (1) %}
-                <br>Les champs marqués d'un <span class="revalidation">*</span> demanderont une réapprobation de la sortie par un responsable de commission si vous les modifiez.
-            {% endif %}
+            <br>Les champs marqués d'un <span class="revalidation">*</span> demanderont une réapprobation de la sortie par un responsable de commission si vous les modifiez.
         </div><br>
 
         {% if form.vars.errors|length > 0 %}
@@ -300,13 +298,12 @@
                 prefix = 'event';
             {% endif %}
 
-            // vérifier qu'au moins 1 encadrant est coché
+            // vérifier qu'au moins 1 encadrant ou stagiaire est coché
             const encadrants = document.querySelectorAll('input[name="' + prefix + '[encadrants][]"]:checked');
             const initiateurs = document.querySelectorAll('input[name="' + prefix + '[initiateurs][]"]:checked');
-            const coencadrants = document.querySelectorAll('input[name="' + prefix + '[coencadrants][]"]:checked');
-            const encadrement = encadrants.length + coencadrants.length + initiateurs.length;
+            const encadrement = encadrants.length + initiateurs.length;
             if (encadrement <= 0) {
-                alert('Veuillez sélectionner au moins un encadrant ou co-encadrant.');
+                alert('Veuillez sélectionner au moins un encadrant ou initiateur stagiaire.');
                 e.preventDefault();
 
                 return false;
