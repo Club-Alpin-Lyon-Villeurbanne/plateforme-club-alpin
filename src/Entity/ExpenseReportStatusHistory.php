@@ -25,7 +25,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
             normalizationContext: ['groups' => ['report:read']],
             security: "is_granted('ROLE_USER')"
         ),
-    ]
+    ],
+    graphQlOperations: [],
 )]
 class ExpenseReportStatusHistory
 {

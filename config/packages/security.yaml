@@ -86,4 +86,6 @@ security:
         - { path: ^/api/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
         - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs
         - { path: ^/api/(auth|token/refresh), roles: PUBLIC_ACCESS }
+        - { path: ^/api/graphql/graphiql, roles: PUBLIC_ACCESS }
+        - { path: ^/api/graphql, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

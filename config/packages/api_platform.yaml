@@ -1,7 +1,12 @@
 api_platform:
   title: Hello API Platform
   version: 1.0.0
+  graphql:
+      enabled: true
+      graphiql:
+        enabled: true
   formats:
+    jsonld: ["application/ld+json"]
     json: ["application/json"]
     multipart: ["multipart/form-data"]
   patch_formats:
@@ -18,13 +23,16 @@ api_platform:
     cache_headers:
       vary: ["Content-Type", "Authorization", "Origin"]
     extra_properties:
-      standard_put: true
-      rfc_7807_compliant_errors: true
-  event_listeners_backward_compatibility_layer: false
-  keep_legacy_inflector: false
   use_symfony_listeners: true
   serializer:
     hydra_prefix: true
+  swagger:
+    api_keys:
+      JWT:
+        name: Authorization
+        type: header
+    swagger_ui_extra_configuration:
+      persistAuthorization: true
 
 when@prod:
   api_platform:
@@ -33,4 +41,17 @@ when@prod:
     enable_docs: false
     enable_re_doc: false
     graphql:
-      enabled: false
+      introspection: false
+      graphiql:
+        enabled: false
+
+when@staging:
+  api_platform:
+    enable_swagger: false
+    enable_swagger_ui: false
+    enable_docs: false
+    enable_re_doc: false
+    graphql:
+      introspection: false
+      graphiql:
+        enabled: false

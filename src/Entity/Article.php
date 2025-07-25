@@ -2,7 +2,20 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\GraphQl\Query;
+use ApiPlatform\Metadata\GraphQl\QueryCollection;
+use ApiPlatform\Serializer\Filter\GroupFilter;
+use App\Serializer\TimeStamp;
+use App\Serializer\TimeStampNormalizer;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
@@ -12,6 +25,19 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Index(name: 'id_article', columns: ['id_article'])]
 #[ORM\Entity]
 #[Vich\Uploadable]
+#[ApiResource(
+    order: ['tsp' => 'DESC'],
+    operations: [new Get(), new GetCollection()],
+    normalizationContext: ['groups' => ['article:read']],
+    graphQlOperations: [
+        new Query(normalizationContext: ['groups' => ['article:read', 'media:read', 'user:read']]),
+        new QueryCollection(normalizationContext: ['groups' => ['article:read', 'media:read', 'user:read']]),
+    ],
+    security: "is_granted('ROLE_USER')",
+)]
+#[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact'])]
+#[ApiFilter(BooleanFilter::class, properties: ['une'])]
+#[ApiFilter(GroupFilter::class)]
 class Article
 {
     public const int STATUS_PENDING = 0;
@@ -24,6 +50,7 @@ class Article
     #[ORM\Column(name: 'id_article', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[Groups('article:read')]
     private $id;
 
     /**
@@ -49,28 +76,37 @@ class Article
      * @var int
      */
     #[ORM\Column(name: 'tsp_crea_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp de création de l'article"])]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[TimeStamp]
     private $tspCrea;
 
     /**
      * @var int
      */
     #[ORM\Column(name: 'tsp_validate_article', type: 'integer', nullable: true)]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[TimeStamp]
     private $tspValidate;
 
     /**
      * @var int
      */
     #[ORM\Column(name: 'tsp_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp affiché de l'article"])]
+    #[Groups('article:read')]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[TimeStamp]
     private $tsp;
 
     /**
      * @var \DateTime
      */
     #[ORM\Column(name: 'tsp_lastedit', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP', 'comment' => 'Date de dernière modif'])]
+    #[Groups('article:read')]
     private $tspLastedit = 'CURRENT_TIMESTAMP';
 
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'lastedit_who', referencedColumnName: 'id_user', nullable: true, options: ['comment' => 'User de la dernière modif'])]
+    #[Groups('article:read')]
     private ?User $lastEditWho;
 
     /**
@@ -78,48 +114,60 @@ class Article
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'user_article', referencedColumnName: 'id_user', nullable: false)]
+    #[Groups('article:read')]
     private $user;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'titre_article', type: 'string', length: 200, nullable: false)]
+    #[Groups('article:read')]
     private $titre;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'code_article', type: 'string', length: 50, nullable: false, options: ['comment' => 'Pour affichage dans les URL'])]
+    #[Groups('article:read')]
     private $code;
 
+    /**
+     * @var Commission|null
+     */
     #[ORM\ManyToOne(targetEntity: 'Commission')]
     #[ORM\JoinColumn(name: 'commission_article', referencedColumnName: 'id_commission', nullable: true)]
+    #[Groups('article:read')]
     private $commission;
 
     #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'articles')]
     #[ORM\JoinColumn(name: 'evt_article', referencedColumnName: 'id_evt', nullable: true)]
+    #[Groups('article:read')]
     private ?Evt $evt = null;
 
     /**
      * @var bool
      */
     #[ORM\Column(name: 'une_article', type: 'boolean', nullable: false, options: ['comment' => 'A la une ?'])]
+    #[Groups('article:read')]
     private $une = false;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'cont_article', type: 'text', nullable: false)]
+    #[Groups('article:read')]
     private $cont;
 
     /**
      * @var int
      */
     #[ORM\Column(name: 'nb_vues_article', type: 'integer', nullable: false, options: ['default' => 0])]
+    #[Groups('article:read')]
     private $nbVues = '0';
 
     #[ORM\ManyToOne(targetEntity: MediaUpload::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[Groups('media:read')]
     private ?MediaUpload $mediaUpload = null;
 
     #[ORM\Column(name: 'agree_edito', type: 'boolean', nullable: false, options: ['default' => false])]
