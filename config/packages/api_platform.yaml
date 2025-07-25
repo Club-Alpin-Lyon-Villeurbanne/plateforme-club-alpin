@@ -44,3 +44,14 @@ when@prod:
       introspection: false
       graphiql:
         enabled: false
+
+when@staging:
+  api_platform:
+    enable_swagger: false
+    enable_swagger_ui: false
+    enable_docs: false
+    enable_re_doc: false
+    graphql:
+      introspection: false
+      graphiql:
+        enabled: false
