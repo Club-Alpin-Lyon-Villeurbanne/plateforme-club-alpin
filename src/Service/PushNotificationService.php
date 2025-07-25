@@ -9,13 +9,14 @@ use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class PushNotificationService
 {
     private Messaging $messaging;
 
-    public function __construct(private Security $security)
+    public function __construct(private Security $security, private CacheManager $cache)
     {
         $factory = new Factory();
         $this->messaging = $factory->createMessaging();
@@ -51,8 +52,8 @@ class PushNotificationService
     {
         $userId = $this->getUserId();
         if ($userId) {
-            // TODO: URL could maybe not be hard coded
-            $thumbnailUrl = $_ENV['BACKEND_URL'] . '/media/cache/wide_thumbnail/uploads/files/' . $article->getMediaUpload()?->getFilename();
+            $thumbnail = $article->getMediaUpload();
+            $thumbnailUrl = $thumbnail ? $this->cache->generateUrl('uploads/files/' . $thumbnail->getFilename(), 'wide_thumbnail') : null;
             $this->sendNotificationToTopic('article_all', 'Nouvel article', $article->getTitre(), $thumbnailUrl, [
                 'url' => $_ENV['APP_DEEPLINK_SCHEME'] . '://article/' . $article->getId(),
                 'instanceId' => $_ENV['APP_INSTANCE'],
