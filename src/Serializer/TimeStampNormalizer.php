@@ -2,7 +2,6 @@
 
 namespace App\Serializer;
 
-use App\Entity\Article;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class TimeStampNormalizer implements NormalizerInterface
@@ -16,7 +15,7 @@ class TimeStampNormalizer implements NormalizerInterface
 
     public function supportsNormalization($data, ?string $format = null, array $context = []): bool
     {
-        return is_int($data) && isset($context[self::FORMAT_KEY]) && \is_string($context[self::FORMAT_KEY]);
+        return \is_int($data) && isset($context[self::FORMAT_KEY]) && \is_string($context[self::FORMAT_KEY]);
     }
 
     public function getSupportedTypes(?string $format): array

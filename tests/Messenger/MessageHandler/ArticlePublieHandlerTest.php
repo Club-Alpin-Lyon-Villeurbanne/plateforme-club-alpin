@@ -7,7 +7,6 @@ use App\Messenger\Message\ArticlePublie;
 use App\Messenger\MessageHandler\ArticlePublieHandler;
 use App\Repository\ArticleRepository;
 use App\Repository\UserRepository;
-use App\Service\PushNotificationService;
 use App\Tests\VarDumperTestTrait;
 use App\Tests\WebTestCase;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,7 +22,6 @@ class ArticlePublieHandlerTest extends WebTestCase
             self::getContainer()->get(ArticleRepository::class),
             self::getContainer()->get(UserRepository::class),
             self::getContainer()->get(MessageBusInterface::class),
-            self::getContainer()->get(PushNotificationService::class),
         );
 
         // this id should not exist
@@ -50,7 +48,6 @@ class ArticlePublieHandlerTest extends WebTestCase
             self::getContainer()->get(ArticleRepository::class),
             self::getContainer()->get(UserRepository::class),
             self::getContainer()->get(MessageBusInterface::class),
-            self::getContainer()->get(PushNotificationService::class),
         );
 
         $handler(new ArticlePublie($article->getId()));

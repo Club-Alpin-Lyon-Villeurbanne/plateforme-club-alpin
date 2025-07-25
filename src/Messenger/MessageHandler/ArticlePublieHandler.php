@@ -8,7 +8,6 @@ use App\Messenger\Message\ArticlePublie;
 use App\Messenger\Message\UserNotification;
 use App\Repository\ArticleRepository;
 use App\Repository\UserRepository;
-use App\Service\PushNotificationService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -19,7 +18,6 @@ class ArticlePublieHandler
         private readonly ArticleRepository $articleRepository,
         private readonly UserRepository $userRepository,
         private readonly MessageBusInterface $messageBus,
-        private readonly PushNotificationService $pushNotificationService,
     ) {
     }
 
@@ -42,8 +40,6 @@ class ArticlePublieHandler
         foreach ($this->userRepository->findUsersIdWithAlert($commissionCode, AlertType::Article) as $userId) {
             $this->notifyUser($article, $userId);
         }
-
-        $this->pushNotificationService->notifyArticle($article);
     }
 
     private function notifyUser(Article $article, int $userId)
