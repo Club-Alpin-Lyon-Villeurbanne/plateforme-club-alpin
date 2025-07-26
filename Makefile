@@ -188,5 +188,5 @@ consume-mails: ## consume mails
 .PHONY: consume-mails
 
 api-swagger: ## Run API Swagger UI
-	docker run -p 8001:8080 -e SWAGGER_JSON_URL=http://localhost:8000/api/docs.jsonopenapi docker.swagger.io/swaggerapi/swagger-ui
+	$(DOCKER) run -p 8001:8080 -e SWAGGER_JSON_URL=http://localhost:8000/api/docs.jsonopenapi docker.swagger.io/swaggerapi/swagger-ui
 .PHONY: api-swagger
