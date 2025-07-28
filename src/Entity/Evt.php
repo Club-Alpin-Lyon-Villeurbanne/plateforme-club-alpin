@@ -266,7 +266,7 @@ class Evt
         return $this->statusWho;
     }
 
-    public function setStatusWho(User $statusWho): self
+    public function setStatusWho(?User $statusWho): self
     {
         $this->statusWho = $statusWho;
 
