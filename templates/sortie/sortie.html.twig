@@ -657,7 +657,7 @@
                     <div id="contact-inscrits" style="display: none; border : 1px solid #eaeaea; box-shadow:0 0 20px -10px gray;; padding:10px; margin:10px 0 20px 0;; border-radius:10px">
                         <h2>Formulaire de contact</h2>
 
-                        <div>
+                        <div class="italic">
                             <br>
                             Sélectionnez les destinataires dans le tableau ci-dessus, en cochant les cases correspondantes en début de ligne.
                         </div>
@@ -1178,10 +1178,19 @@
                 contact_reply_to.required = false;
             });
 
-            btn2.addEventListener('click', () => {
+            btn2.addEventListener('click', (event) => {
                 contact_subject.required = true;
                 contact_message.required = true;
                 contact_reply_to.required = true;
+
+                // au moins un destinataire sélectionné
+                const selectedCheckboxes = document.querySelectorAll('.contact-cb:checked');
+                if (selectedCheckboxes.length <= 0) {
+                    alert('Veuillez sélectionner des destinataires pour votre e-mail groupé dans le tableau');
+                    event.preventDefault();
+
+                    return false;
+                }
             });
 
             // sélection automatique de certains participants
