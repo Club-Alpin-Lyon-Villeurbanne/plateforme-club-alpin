@@ -79,9 +79,6 @@ class SortieController extends AbstractController
 
         $originalEntityData = [];
         if ($isUpdate) {
-            $originalEntityData['difficulte'] = $event->getDifficulte();
-            $originalEntityData['denivele'] = $event->getDenivele();
-            $originalEntityData['distance'] = $event->getDistance();
             $originalEntityData['place'] = $event->getPlace();
             $originalEntityData['ngensMax'] = $event->getngensMax();
             $originalEntityData['encadrants'] = [];
@@ -145,10 +142,7 @@ class SortieController extends AbstractController
 
                 // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
                 if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()
-                    && ($originalEntityData['difficulte'] !== $event->getDifficulte()
-                    || $originalEntityData['distance'] !== $event->getDistance()
-                    || $originalEntityData['denivele'] !== $event->getDenivele()
-                    || $originalEntityData['place'] !== $event->getPlace()
+                    && ($originalEntityData['place'] !== $event->getPlace()
                     || $originalEntityData['ngensMax'] !== $event->getngensMax()
                     || $originalEntityData['encadrants'] !== $newEncadrants)) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);

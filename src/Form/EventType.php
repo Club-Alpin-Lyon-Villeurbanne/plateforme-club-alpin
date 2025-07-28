@@ -303,9 +303,8 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('difficulte', TextType::class, [
-                'label' => 'Difficulté, niveau <span class="revalidation">*</span>',
-                'label_html' => true,
-                'required' => true,
+                'label' => 'Difficulté, niveau',
+                'required' => false,
                 'attr' => [
                     'placeholder' => 'ex : PD, 5d+, exposé, ...',
                     'maxlength' => 50,
@@ -318,9 +317,8 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('denivele', TextType::class, [
-                'label' => 'Dénivelé positif <span class="revalidation">*</span>',
-                'label_html' => true,
-                'required' => true,
+                'label' => 'Dénivelé positif',
+                'required' => false,
                 'attr' => [
                     'placeholder' => 'ex : 1200',
                     'maxlength' => 50,
@@ -337,9 +335,8 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('distance', TextType::class, [
-                'label' => 'Distance <span class="revalidation">*</span>',
-                'label_html' => true,
-                'required' => true,
+                'label' => 'Distance',
+                'required' => false,
                 'attr' => [
                     'placeholder' => 'ex : 13.50',
                     'maxlength' => 50,
