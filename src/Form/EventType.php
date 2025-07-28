@@ -145,8 +145,9 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('place', TextType::class, [
-                'label' => 'Lieu de départ de l\'activité encadrée',
-                'required' => false,
+                'label' => 'Lieu de départ de l\'activité encadrée <span class="revalidation">*</span>',
+                'label_html' => true,
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : 69510 Messimy, 74400 Chamonix',
                     'class' => 'type2 wide',
@@ -317,7 +318,8 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('denivele', TextType::class, [
-                'label' => 'Dénivelé positif',
+                'label' => 'Dénivelé positif <span class="revalidation">*</span>',
+                'label_html' => true,
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : 1200',
@@ -335,7 +337,8 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('distance', TextType::class, [
-                'label' => 'Distance',
+                'label' => 'Distance <span class="revalidation">*</span>',
+                'label_html' => true,
                 'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : 13.50',
