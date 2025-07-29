@@ -131,13 +131,10 @@ class Article
     #[Groups('article:read')]
     private $code;
 
-    /**
-     * @var Commission|null
-     */
     #[ORM\ManyToOne(targetEntity: 'Commission')]
     #[ORM\JoinColumn(name: 'commission_article', referencedColumnName: 'id_commission', nullable: true)]
     #[Groups('article:read')]
-    private $commission;
+    private ?Commission $commission = null;
 
     #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'articles')]
     #[ORM\JoinColumn(name: 'evt_article', referencedColumnName: 'id_evt', nullable: true)]
