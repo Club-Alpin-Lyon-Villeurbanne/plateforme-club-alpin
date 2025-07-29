@@ -59,12 +59,9 @@ class Article
     #[ORM\Column(name: 'status_article', type: 'integer', nullable: false, options: ['comment' => '0=pas vu, 1=valide, 2=refusé'])]
     private $status = '0';
 
-    /**
-     * @var User
-     */
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'status_who_article', referencedColumnName: 'id_user', nullable: true)]
-    private $statusWho;
+    private ?User $statusWho;
 
     /**
      * @var int
@@ -80,13 +77,10 @@ class Article
     #[TimeStamp]
     private $tspCrea;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'tsp_validate_article', type: 'integer', nullable: true)]
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[TimeStamp]
-    private $tspValidate;
+    private ?int $tspValidate;
 
     /**
      * @var int
@@ -195,7 +189,7 @@ class Article
         return $this->statusWho;
     }
 
-    public function setStatusWho(User $statusWho): self
+    public function setStatusWho(?User $statusWho): self
     {
         $this->statusWho = $statusWho;
 
@@ -231,7 +225,7 @@ class Article
         return $this->tspValidate;
     }
 
-    public function setTspValidate(int $tspValidate): self
+    public function setTspValidate(?int $tspValidate): self
     {
         $this->tspValidate = $tspValidate;
 

@@ -212,11 +212,11 @@
                         <div class="text-container">
                             Vous avez demandé à participer à cette sortie, et votre demande est en attente de validation.<br />
                             <div class="button-container">
-                                <input type="button" class="nice" value="Annuler ma demande" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
+                                <input type="button" class="nice" value="Annuler ma demande d'inscription" onclick="$('#inscription-annuler').slideToggle(200)" style="margin-top:6px;" />
                             </div>
                         </div>
                     </div>
-                    {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id} %}
+                    {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id, 'my_status': my_status.status} %}
                 {% endif %}
             {% else %}
                 <div class="alerte info-container" style="margin-right:2rem !important">
@@ -245,7 +245,7 @@
                 {% if not event.finished %}
                     {% if allowed('evt_unjoin') %}
                         {{ block_macros.display_confirmed_cancel_block(my_status.role) }}
-                        {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id} %}
+                        {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id, 'my_status': my_status.status} %}
                     {% endif %}
                 {% else %}
                     <div class="info info-container" style="margin-right:2rem !important">
@@ -279,7 +279,7 @@
                 {% if not event.finished %}
                     {% if allowed('evt_unjoin') %}
                         {{ block_macros.display_confirmed_cancel_block('participant') }}
-                        {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id} %}
+                        {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id, 'my_status': my_status.status} %}
                     {% endif %}
                 {% else %}
                     <div class="info info-container" style="margin-right:2rem !important">
@@ -349,10 +349,16 @@
                 <select id="contact_participants_type" class="type1" style="display:none; min-width: 250px;">
                     <option value="">Sélectionner des destinataires</option>
                     <option value="all">Tout le monde</option>
-                    <option value="accepted">Les participants acceptés</option>
+                    {% if event.finished %}
+                        <option value="accepted">Les présents</option>
+                    {% else %}
+                        <option value="accepted">Les participants acceptés</option>
+                    {% endif %}
                     <option value="refused">Les participants refusés</option>
                     <option value="waiting">Les participants en attente</option>
-                    <option value="absent">Les absents</option>
+                    {% if event.finished %}
+                        <option value="absent">Les absents</option>
+                    {% endif %}
                 </select>
                 <br /><br />
 
@@ -651,7 +657,7 @@
                     <div id="contact-inscrits" style="display: none; border : 1px solid #eaeaea; box-shadow:0 0 20px -10px gray;; padding:10px; margin:10px 0 20px 0;; border-radius:10px">
                         <h2>Formulaire de contact</h2>
 
-                        <div>
+                        <div class="italic">
                             <br>
                             Sélectionnez les destinataires dans le tableau ci-dessus, en cochant les cases correspondantes en début de ligne.
                         </div>
@@ -783,7 +789,7 @@
                     <b>DÉPART :</b> Le {{ event.tsp | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tsp|date('H:i') }}{% endif %}
                 </li>
                 <li>
-                    <b>RETOUR :</b> Le {{ event.tspEnd | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tspEnd|date('H:i') }}{% endif %}
+                    <b>RETOUR :</b> Le {{ event.tspEnd | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tspEnd|date('H:i') }} (heure estimée){% endif %}
                 </li>
             </ul>
 
@@ -821,6 +827,17 @@
                 <span class="mini">
                 - le {{ event.tspCrea | date('d/m/y') }}{% if event.tspEdit %}, modifiée le {{ event.tspEdit | date('d/m/y à H:i') }} {% endif %}
             </span>
+            </li>
+
+            <li class="wide">
+                <b>SORTIE PUBLIÉE PAR :</b>
+                {% if event.status is same as (constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE')) and event.statusWho %}
+                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.statusWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
+                        {{ event.statusWho.nickname }}
+                    </a>
+                {% else %}
+                    <span class="mini">non publiée</span>
+                {% endif %}
             </li>
 
             {% if event.encadrants('encadrant') | length > 0 %}
@@ -1082,7 +1099,7 @@
                                         </div>
 
                                         <p style="text-align:center">
-                                            <label for="name">Ajouter un message à votre demande (optionnel) :</label><br>
+                                            <label for="name">Ajouter un message à votre demande (facultatif) :</label><br>
                                             <textarea name="message" placeholder="Par exemple :
 - J'ai tel niveau et telle expérience
 - J'ai une voiture avec 4 places dispos
@@ -1161,10 +1178,19 @@
                 contact_reply_to.required = false;
             });
 
-            btn2.addEventListener('click', () => {
+            btn2.addEventListener('click', (event) => {
                 contact_subject.required = true;
                 contact_message.required = true;
                 contact_reply_to.required = true;
+
+                // au moins un destinataire sélectionné
+                const selectedCheckboxes = document.querySelectorAll('.contact-cb:checked');
+                if (selectedCheckboxes.length <= 0) {
+                    alert('Veuillez sélectionner des destinataires pour votre e-mail groupé dans le tableau');
+                    event.preventDefault();
+
+                    return false;
+                }
             });
 
             // sélection automatique de certains participants

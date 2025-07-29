@@ -20,6 +20,7 @@ class SortieControllerTest extends WebTestCase
 
         $event = $this->createEvent($user);
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
         $this->getContainer()->get('doctrine')->getManager()->flush();
         $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
         $this->assertResponseStatusCodeSame(200);
@@ -38,7 +39,9 @@ class SortieControllerTest extends WebTestCase
         $event2 = $this->createEvent($user);
 
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
         $event2->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
 
         $this->getContainer()->get('doctrine')->getManager()->flush();
         $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
@@ -87,6 +90,7 @@ class SortieControllerTest extends WebTestCase
 
         $event = $this->createEvent($userOwner);
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
         $this->getContainer()->get('doctrine')->getManager()->flush();
         $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
         $this->assertResponseStatusCodeSame(200);

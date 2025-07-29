@@ -8,11 +8,11 @@ if (user()) {
     if (1 == $article['status_article']) {
         echo '<p class="info">Publié : cet article est en ligne</p>';
     } elseif (2 == $article['status_article']) {
-        echo "<p class='erreur'>Désactivé : cet article a été refusé par un responsable</p>";
+        echo "<p class='erreur'>Désactivé : cet article a été refusé par les responsables de commission</p>";
     } elseif (0 == $article['topubly_article']) {
         echo "<p class='draft'>Brouillon (non publié)</p>";
     } elseif (0 == $article['status_article'] && 1 == $article['topubly_article']) {
-        echo "<p class='alerte'>En attente : cet article n'a pas encore été publié par un responsable.</p>";
+        echo "<p class='alerte'>En attente : cet article n'a pas encore été publié par les responsables de commission</p>";
     }
 
     // BOUTONS
