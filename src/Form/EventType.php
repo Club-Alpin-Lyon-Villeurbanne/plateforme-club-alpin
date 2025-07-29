@@ -145,9 +145,8 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('place', TextType::class, [
-                'label' => 'Lieu de départ de l\'activité encadrée <span class="revalidation">*</span>',
-                'label_html' => true,
-                'required' => true,
+                'label' => 'Lieu de départ de l\'activité encadrée',
+                'required' => false,
                 'attr' => [
                     'placeholder' => 'ex : 69510 Messimy, 74400 Chamonix',
                     'class' => 'type2 wide',
