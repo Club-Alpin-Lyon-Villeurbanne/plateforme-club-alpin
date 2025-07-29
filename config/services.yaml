@@ -43,7 +43,8 @@ parameters:
   default_latitude: '%env(DEFAULT_LATITUDE)%'
   default_longitude: '%env(DEFAULT_LONGITUDE)%'
   default_appmt_place: '%env(DEFAULT_APPMT_PLACE)%'
-
+  app_deeplink_scheme: '%env(APP_DEEPLINK_SCHEME)%'
+  app_instance_id: '%env(APP_INSTANCE_ID)%'
 services:
   # default configuration for services in *this* file
   _defaults:
@@ -262,3 +263,9 @@ services:
 
   App\Serializer\TimeStampConverter:
     decorates: api_platform.graphql.type_converter
+
+  App\Service\PushNotificationService:
+    arguments:
+      $appInstanceId: '%app_instance_id%'
+      $appDeeplinkScheme: '%app_deeplink_scheme%'
+      $sitename: '%legacy_env_SITENAME%'
