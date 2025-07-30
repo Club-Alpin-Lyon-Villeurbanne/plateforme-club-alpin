@@ -1,6 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 $MAX_ARTICLES_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_VALIDATION');
 $notif_validerunarticle = 0;
@@ -159,13 +160,15 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                             $type = 'Actualité « ' . $article['title_commission'] . ' »';
                         }
 
+                        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
+
                         // Aff
                         echo '<hr />'
                         // Boutons
                         . '<div class="article-tools-valid">'
 
                             // apercu
-                            . '<a class="nice2" href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
+                            . '<a class="nice2" href="' . $article_link . '" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
 
                         // Moderation
                         echo '
@@ -191,7 +194,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 							</div>';
                         echo '</div>'
 
-                            . '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">'
+                            . '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="' . $article_link . '" target="_blank">'
                                 // image liee
                                 . '<img src="' . $img . '" alt="" title="" style="width:100%; " />'
                             . '</a></div>'
@@ -199,7 +202,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                             // INFOS
                             . '<p style="padding:5px 5px; line-height:18px;">'
-                                . '<b><a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
+                                . '<b><a href="' . $article_link . '" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
                                 . '<b>Type d\'article :</b> ' . $type . '<br />'
                                 . '<span class="mini">Par ' . userlink($article['id_user'], $article['nickname_user']) . '</span> - '
                                 . '<span class="mini">Le ' . jour(date('N', $article['tsp_article']), 'short') . ' ' . date('d', $article['tsp_article']) . ' ' . mois(date('m', $article['tsp_article'])) . ' ' . date('Y', $article['tsp_article']) . ' à ' . date('H:i', $article['tsp_article']) . '<br />'
@@ -235,17 +238,19 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                             $type = 'Actualité « ' . $article['title_commission'] . ' »';
                         }
 
+                        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
+
                         // Aff
                         echo '<hr />'
                         // Boutons
                         . '<div class="article-tools-valid">'
 
                             // apercu
-                            . '<a class="nice2" href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
+                            . '<a class="nice2" href="' . $article_link . '" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
 
                         // edition
                         if (allowed('article_edit_notmine') || allowed('article_edit', 'commission:' . $article['commission_article'])) {
-                            echo '<a href="/article/' . (int) $article['id_article'] . '/edit" title="" class="nice2 orange">
+                            echo '<a href="' . LegacyContainer::get('legacy_router')->generate('article_edit', ['id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL) . '" title="" class="nice2 orange">
 									Modifier
 								</a>';
                         }
@@ -268,7 +273,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                         echo '</div>';
 
-                        echo '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">'
+                        echo '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="' . $article_link . '" target="_blank">'
                                 // image liee
                                 . '<img src="' . $img . '" alt="" title="" style="width:100%; " />'
                             . '</a></div>'
@@ -276,7 +281,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                             // INFOS
                             . '<p style="padding:5px 5px; line-height:18px;">'
-                                . '<b><a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
+                                . '<b><a href="' . $article_link . '" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
                                 . '<b>Type d\'article :</b> ' . $type . '<br />'
                                 . '<span class="mini">Par ' . userlink($article['id_user'], $article['nickname_user']) . '</span> - '
                                 . '<span class="mini">Le ' . jour(date('N', $article['tsp_article']), 'short') . ' ' . date('d', $article['tsp_article']) . ' ' . mois(date('m', $article['tsp_article'])) . ' ' . date('Y', $article['tsp_article']) . ' à ' . date('H:i', $article['tsp_article']) . '<br />'

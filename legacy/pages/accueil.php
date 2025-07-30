@@ -1,6 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 $MAX_ARTICLES_ACCUEIL = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_ACCUEIL');
 $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
@@ -128,7 +129,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                         $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'wide_thumbnail');
                     }
 
-                    echo '<a href="/article/' . html_utf8($article['code_article'] . '-' . $article['id_article']) . '.html" class="slide" style="background-image:url(' . $img . ')" title="CLIQUEZ POUR VOIR L\'ARTICLE">
+                    echo '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL) . '" class="slide" style="background-image:url(' . $img . ')" title="CLIQUEZ POUR VOIR L\'ARTICLE">
                         <div class="bandeau-slider">
                             <p class="alaune">ARTICLE A LA UNE</p>
                             <h2>' . html_utf8($article['titre_article']) . '</h2>
