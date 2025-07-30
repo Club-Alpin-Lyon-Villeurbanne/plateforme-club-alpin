@@ -66,13 +66,13 @@ if ((!isset($errTab) || 0 === count($errTab)) && (1 == $status_article || 2 == $
     if (1 == $status_article) {
         LegacyContainer::get('legacy_mailer')->send($authorDatas['email_user'], 'transactional/article-valide', [
             'article_name' => $authorDatas['titre_article'],
-            'article_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'article/' . $authorDatas['code_article'] . '-' . $authorDatas['id_article'] . '.html',
+            'article_url' => LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $authorDatas['code_article'], 'id' => $authorDatas['id_article']], UrlGeneratorInterface::ABSOLUTE_URL),
         ]);
     }
     if (2 == $status_article) {
         LegacyContainer::get('legacy_mailer')->send($authorDatas['email_user'], 'transactional/article-refuse', [
             'article_name' => $authorDatas['titre_article'],
-            'article_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'article/' . $authorDatas['code_article'] . '-' . $authorDatas['id_article'] . '.html',
+            'article_url' => LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $authorDatas['code_article'], 'id' => $authorDatas['id_article']], UrlGeneratorInterface::ABSOLUTE_URL),
             'message' => stripslashes($_POST['msg'] ?: '...'),
         ]);
     }

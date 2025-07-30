@@ -58,10 +58,10 @@
                         <input type="hidden" name="operation" value="article_validate" />
                         <input type="hidden" name="status_article" value="1" />
                         <input type="hidden" name="id_article" value="{{ article.id }}" />
-                        <input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
+                        <input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de l'article" />
                     </form>
 
-                    <input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
+                    <input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cet article. Vous devrez ajouter un message au rédacteur de l'article." />
                     <div style="display:none" id="refuser-{{ article.id }}">
                         <form action="{{ article_url }}" method="post" class="loading">
                             <input type="hidden" name="operation" value="article_validate" />
@@ -87,7 +87,7 @@
 
             {% if article.commission and allowed('article_edit_notmine', 'commission:' ~ article.commission.code)
                 or allowed('article_edit') and app.user and article.user is same as (app.user) %}
-                    <a href="/article/{{ article.id }}/edit" title="" class="nice2 orange">
+                    <a href="{{ path('article_edit', {'id': article.id}) }}" title="" class="nice2 orange">
                         <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cet article
                     </a>
             {% endif %}

@@ -1,4 +1,8 @@
 <?php
+
+use App\Legacy\LegacyContainer;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 if (user()) {
     ?>
 	<div class="article-tools">
@@ -18,8 +22,9 @@ if (user()) {
     // BOUTONS
     // publié ? voir
     if (1 == $article['status_article']) {
+        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
         ?>
-			<a href="/article/<?php echo html_utf8($article['code_article'] . '-' . $article['id_article']); ?>.html" title="" class="nice2">
+			<a href="<?php echo $article_link; ?>" title="" class="nice2">
 				Voir
 			</a>
 			<?php
@@ -27,8 +32,9 @@ if (user()) {
 
     // Sinon : apercu
     else {
+        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
         ?>
-			<a href="/article/<?php echo html_utf8($article['code_article'] . '-' . $article['id_article']); ?>.html?forceshow=true" title="" class="nice2">
+			<a href="<?php echo $article_link; ?>" title="" class="nice2">
 				Aperçu
 			</a>
 			<?php
@@ -36,7 +42,7 @@ if (user()) {
 
     // on peut toujours modifier
     ?>
-		<a href="/article/<?php echo (int) $article['id_article']; ?>/edit" title="" class="nice2 orange">
+		<a href="<?php echo LegacyContainer::get('legacy_router')->generate('article_edit', ['id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL); ?>" title="" class="nice2 orange">
 			Modifier
 		</a>
 		<?php
