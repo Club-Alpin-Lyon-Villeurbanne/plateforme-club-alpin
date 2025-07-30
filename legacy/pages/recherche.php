@@ -39,7 +39,8 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             LIMIT 10';
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($req);
         if ($current_commission) {
-            $stmt->bind_param('isss', (int) $comTab[$current_commission]['id_commission'], $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
+            $id_commission = (int) $comTab[$current_commission]['id_commission'];
+            $stmt->bind_param('isss', $id_commission, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
         } else {
             $stmt->bind_param('sss', $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
         }
@@ -94,7 +95,8 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             LIMIT 10';
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($req);
         if ($current_commission) {
-            $stmt->bind_param('issssss', (int) $comTab[$current_commission]['id_commission'], $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
+            $id_commission = (int) $comTab[$current_commission]['id_commission'];
+            $stmt->bind_param('issssss', $id_commission, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
         } else {
             $stmt->bind_param('ssssss', $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
         }
