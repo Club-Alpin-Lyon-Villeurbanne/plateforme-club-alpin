@@ -44,8 +44,9 @@ $req .= ')
 	LEFT JOIN media_upload m ON caf_article.media_upload_id = m.id
 	WHERE  status_article =1
 	';
-
-$req .= ' AND DATEDIFF(NOW(), tsp_lastedit)<30 ';
+if (!$current_commission) {
+    $req .= ' AND DATEDIFF(NOW(), tsp_lastedit)<30 ';
+}
 // commission donnée : filtre (mais on inclut les actus club, commission=0)
 $req .= ' ORDER BY  tsp_validate_article DESC
 	LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
