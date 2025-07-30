@@ -37,9 +37,6 @@ class EventType extends AbstractType
         protected CommissionRepository $commissionRepository,
         protected UserRights $userRights,
         protected string $club,
-        protected float $defaultLat,
-        protected float $defaultLong,
-        protected string $defaultAppointmentPlace,
     ) {
     }
 
@@ -67,18 +64,10 @@ class EventType extends AbstractType
             $eventJoinStartDate->setTimestamp($event->getJoinStart());
         }
 
+        // lieu et coordonnées GPS (marqueur sur la carte)
         $appointment = $event->getRdv();
-        if (empty($appointment)) {
-            $appointment = $this->defaultAppointmentPlace;
-        }
         $lat = $event->getLat();
-        if (empty($lat)) {
-            $lat = $this->defaultLat;
-        }
         $long = $event->getLong();
-        if (empty($long)) {
-            $long = $this->defaultLong;
-        }
 
         $builder
             ->add('commission', EntityType::class, [

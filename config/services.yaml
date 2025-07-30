@@ -249,13 +249,11 @@ services:
   App\Form\EventType:
     arguments:
       $club: '%env(CAF_ID)%'
-      $defaultLat: '%default_latitude%'
-      $defaultLong: '%default_longitude%'
-      $defaultAppointmentPlace: '%default_appmt_place%'
     tags: ['form.type']
 
   App\Controller\SortieController:
     arguments:
       $defaultLat: '%default_latitude%'
       $defaultLong: '%default_longitude%'
+      $defaultAppointmentPlace: '%default_appmt_place%'
     tags: ['controller.service_arguments']

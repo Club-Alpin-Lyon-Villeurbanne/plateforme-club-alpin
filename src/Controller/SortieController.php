@@ -35,8 +35,11 @@ use Twig\Environment;
 
 class SortieController extends AbstractController
 {
-    public function __construct(protected float $defaultLat, protected float $defaultLong)
-    {
+    public function __construct(
+        protected float $defaultLat,
+        protected float $defaultLong,
+        protected string $defaultAppointmentPlace,
+    ) {
     }
 
     #[Route(path: '/creer-une-sortie', name: 'creer_sortie', methods: ['GET', 'POST'])]
@@ -61,7 +64,7 @@ class SortieController extends AbstractController
                 null,
                 null,
                 null,
-                null,
+                $this->defaultAppointmentPlace,
                 $this->defaultLat,
                 $this->defaultLong,
                 null,
