@@ -54,7 +54,9 @@ class ArticleController extends AbstractController
             $article->setImagesAuthorized(false);
         }
 
-        if (!$article->getId() && $request->query->get('compterendu')) {
+        $form = $this->createForm(ArticleType::class, $article);
+
+        if (!$article->getId() && 'cr' == $form->get('articleType')) {
             $evtId = $request->query->get('evt_article');
             if ($evtId) {
                 $evt = $evtRepository->find($evtId);
@@ -64,7 +66,6 @@ class ArticleController extends AbstractController
             }
         }
 
-        $form = $this->createForm(ArticleType::class, $article);
         $form->handleRequest($request);
 
         $errors = [];
@@ -96,7 +97,7 @@ class ArticleController extends AbstractController
                 }
                 $article->setTopubly(!$isDraft);
 
-                if ($form->get('isCompteRendu')->getData() && !$article->getEvt()) {
+                if ('cr' == $form->get('articleType') && !$article->getEvt()) {
                     $errors[] = 'Si cet article est un compte rendu de sortie, veuillez sélectionner la sortie liée.';
                 }
 
