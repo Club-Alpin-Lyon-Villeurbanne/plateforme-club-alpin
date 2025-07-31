@@ -242,7 +242,7 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
         }
 
-        $event->setStatus(Evt::STATUS_LEGAL_VALIDE)->setStatusWho($this->getUser());
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($this->getUser());
         $em->flush();
 
         $messageBus->dispatch(new SortiePubliee($event->getId()));
@@ -419,7 +419,7 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
         }
 
-        $event->setStatus(Evt::STATUS_LEGAL_REFUSE)->setStatusWho($this->getUser());
+        $event->setStatus(Evt::STATUS_PUBLISHED_REFUSE)->setStatusWho($this->getUser());
         $em->flush();
 
         $mailer->send($event->getUser(), 'transactional/sortie-refusee', [
