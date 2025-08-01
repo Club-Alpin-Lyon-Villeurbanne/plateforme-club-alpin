@@ -43,6 +43,11 @@ parameters:
   default_latitude: '%env(DEFAULT_LATITUDE)%'
   default_longitude: '%env(DEFAULT_LONGITUDE)%'
   default_appmt_place: '%env(DEFAULT_APPMT_PLACE)%'
+  hello_asso_client_id: '%env(HELLO_ASSO_CLIENT_ID)%'
+  hello_asso_client_secret: '%env(HELLO_ASSO_CLIENT_SECRET)%'
+  hello_asso_api_base_url: '%env(HELLO_ASSO_API_BASE_URL)%'
+  hello_asso_authorize_base_url: '%env(HELLO_ASSO_AUTHORIZE_BASE_URL)%'
+  hello_asso_activity_type_id: '%env(int:HELLO_ASSO_ACTIVITY_TYPE_ID)%'
 
 services:
   # default configuration for services in *this* file
@@ -257,3 +262,18 @@ services:
       $defaultLong: '%default_longitude%'
       $defaultAppointmentPlace: '%default_appmt_place%'
     tags: ['controller.service_arguments']
+
+  App\Controller\HelloAssoController:
+    arguments:
+      $clientId: '%hello_asso_client_id%'
+      $clientSecret: '%hello_asso_client_secret%'
+      $baseUrl: '%hello_asso_api_base_url%'
+    tags: ['controller.service_arguments']
+
+  App\Service\HelloAssoService:
+    arguments:
+      $clientId: '%hello_asso_client_id%'
+      $clientSecret: '%hello_asso_client_secret%'
+      $baseUrl: '%hello_asso_api_base_url%'
+      $authorizeUrl: '%hello_asso_authorize_base_url%'
+      $activityTypeId: '%hello_asso_activity_type_id%'

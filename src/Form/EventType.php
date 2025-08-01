@@ -397,6 +397,33 @@ class EventType extends AbstractType
                 ],
                 'help_html' => true,
             ])
+            ->add('hasHelloAssoForm', CheckboxType::class, [
+                'label' => 'Créer un événement HelloAsso pour cette sortie',
+                'required' => false,
+                'help' => 'Cette option permet de créer automatiquement un événement dans HelloAsso pour les paiements en ligne.',
+                'help_attr' => [
+                    'class' => 'mini',
+                ],
+            ])
+            ->add('helloAssoFormAmount', NumberType::class, [
+                'label' => 'Montant de l\'événement HelloAsso <span class="revalidation">*</span>',
+                'label_html' => true,
+                'attr' => [
+                    'placeholder' => 'ex : 35.50',
+                    'class' => 'type2',
+                ],
+                'help' => 'Ce montant sera demandé aux participants lors de leur inscription sur HelloAsso',
+                'help_attr' => [
+                    'class' => 'mini',
+                ],
+                'required' => true,
+                'html5' => true,
+                'scale' => 2,
+                'constraints' => [
+                    new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
+                    new GreaterThanOrEqual(0),
+                ],
+            ])
             ->add('eventDraftSave', SubmitType::class, [
                 'label' => '<span class="bleucaf">&gt;</span> ENREGISTRER COMME BROUILLON',
                 'label_html' => true,
