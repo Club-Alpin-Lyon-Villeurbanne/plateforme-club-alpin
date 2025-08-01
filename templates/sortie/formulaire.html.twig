@@ -92,6 +92,28 @@
             {{ form_row(form.tarifDetail) }}
         </div>
 
+        <h2 class="trigger-h2">Billetterie HelloAsso : <span class="revalidation">*</span></h2>
+        <div class="trigger-me">
+            <div>
+                <label for="{{ form.hasHelloAssoForm.vars.id }}" class="{% if form.hasHelloAssoForm.vars.data %}up{% else %}down{% endif %}">
+                    {{ form_widget(form.hasHelloAssoForm) }}
+                    {{ field_label(form.hasHelloAssoForm) }} <span class="revalidation">*</span>
+                </label>
+                {{ form_help(form.hasHelloAssoForm) }}
+            </div><br />
+            <div id="form-hello-asso" style="display:none">
+                <div>
+                    {{ form_label(form.helloAssoFormAmount) }}
+                    {{ form_errors(form.helloAssoFormAmount) }}
+                    {{ form_widget(form.helloAssoFormAmount) }} €<br />
+                    {{ form_help(form.helloAssoFormAmount) }}
+                </div><br />
+                <div class="ha-notice">
+                    <span class="bold">Note :</span> L'événement HelloAsso sera créé automatiquement après approbation et publication de la sortie. Les participants pourront s'inscrire et payer directement en ligne.
+                </div>
+            </div>
+        </div>
+
         <h2 class="trigger-h2">Inscriptions :</h2>
         <div class="trigger-me">
             <div style="width:45%; padding-right:3%; float:left">
@@ -232,6 +254,24 @@
             if (contentField) {
                 contentField.removeAttribute('required');
             }
+
+            // champ montant hello asso pas obligatoire si hello asso pas coché
+            const helloAssoAmountField = document.getElementById('{{ form.helloAssoFormAmount.vars.id }}');
+            helloAssoAmountField.removeAttribute('required');
+
+            // si hello asso coché, remettre le montant obligatoire
+            const helloAssoCheckbox = document.getElementById('{{ form.hasHelloAssoForm.vars.id }}');
+            helloAssoCheckbox.addEventListener('change', (e) => {
+                const helloAssoBlock = document.getElementById('form-hello-asso');
+
+                if (helloAssoCheckbox.checked) {
+                    helloAssoBlock.style.display = 'block';
+                    helloAssoAmountField.setAttribute('required', true);
+                } else {
+                    helloAssoBlock.style.display = 'none';
+                    helloAssoAmountField.removeAttribute('required');
+                }
+            });
         });
 
         tinyMCE.init({

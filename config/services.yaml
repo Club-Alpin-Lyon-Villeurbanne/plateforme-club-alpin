@@ -47,6 +47,12 @@ parameters:
   mobile_app_deeplink_scheme: '%env(MOBILE_APP_DEEPLINK_SCHEME)%'
   mobile_app_minimum_version: '%env(MOBILE_APP_MINIMUM_VERSION)%'
   api_version: '%env(API_VERSION)%'
+  hello_asso_client_id: '%env(HELLO_ASSO_CLIENT_ID)%'
+  hello_asso_client_secret: '%env(HELLO_ASSO_CLIENT_SECRET)%'
+  hello_asso_api_base_url: '%env(HELLO_ASSO_API_BASE_URL)%'
+  hello_asso_authorize_base_url: '%env(HELLO_ASSO_AUTHORIZE_BASE_URL)%'
+  hello_asso_activity_type_id: '%env(int:HELLO_ASSO_ACTIVITY_TYPE_ID)%'
+
 services:
   # default configuration for services in *this* file
   _defaults:
@@ -266,3 +272,18 @@ services:
       $appInstanceName: '%app_instance_name%'
       $appDeeplinkScheme: '%mobile_app_deeplink_scheme%'
       $sitename: '%legacy_env_SITENAME%'
+
+  App\Controller\HelloAssoController:
+    arguments:
+      $clientId: '%hello_asso_client_id%'
+      $clientSecret: '%hello_asso_client_secret%'
+      $baseUrl: '%hello_asso_api_base_url%'
+    tags: ['controller.service_arguments']
+
+  App\Service\HelloAssoService:
+    arguments:
+      $clientId: '%hello_asso_client_id%'
+      $clientSecret: '%hello_asso_client_secret%'
+      $baseUrl: '%hello_asso_api_base_url%'
+      $authorizeUrl: '%hello_asso_authorize_base_url%'
+      $activityTypeId: '%hello_asso_activity_type_id%'
