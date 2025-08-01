@@ -54,7 +54,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
 		- Un champ vert est complété, et sauvegardé
 	</p>
 	<h2>Langues disponibles :
-    <a href="/admin-traductions/fr.html" title="" style="font-size:23px; margin-right:20px; padding:3px; color:black; background:white;">
+    <a href="/admin-traductions/fr.html" title="" style="font-size:1.3rem; margin-right:20px; padding:3px; color:black; background:white;">
         <img src="/img/base/flag-fr.png" alt="" title="" style="height:30px; vertical-align:middle;" /> FR </a>
 	</h2>
 	<br style="clear:both" />
