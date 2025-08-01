@@ -169,7 +169,32 @@ if (user()) {
                 Cette modification ne prendra effet qu'après avoir cliqué sur le lien qui vous sera envoyé à la nouvelle adresse e-mail.
             </p>
             <input type="text" name="email_user_mailchange" class="type1" style="width:300px" value="<?php echo inputVal('email_user_mailchange'); ?>" placeholder="<?php echo html_utf8($tmpUser['email_user']); ?>" />
-
+            
+            <?php
+            // Vérifier si l'email actuel de l'utilisateur correspond aux fournisseurs problématiques
+            $currentEmail = strtolower($tmpUser['email_user'] ?? '');
+            $problematicProviders = ['free.fr', 'orange.fr', 'wanadoo.fr'];
+            $hasProblematicEmail = false;
+            
+            foreach ($problematicProviders as $provider) {
+                if (str_ends_with($currentEmail, '@' . $provider)) {
+                    $hasProblematicEmail = true;
+                    break;
+                }
+            }
+            
+            if ($hasProblematicEmail) {
+                echo '<div class="alerte info-container" style="width: 90%; margin-top: 10px;">';
+                echo '⚠️';
+                echo '<div class="text-container">';
+                echo 'Nous avons identifié des problèmes de non réception avec certains fournisseurs de messagerie, notamment Wanadoo, Orange et Free (même si cela fonctionne chez certains utilisateurs).<br>';
+                echo 'Après investigation et signalement du problème aux services concernés, nous ne sommes malheureusement pas en mesure d\'y remédier de notre côté.<br>';
+                echo 'Nous vous recommandons de vérifier si nous ne sommes pas dans vos spams sinon, de changer d\'hébergeur.';
+                echo '</div>';
+                echo '</div>';
+            }
+            ?>
+            
             <hr style="margin: 20px 0" />
             <h2 id="edit-password"><span class="bleucaf">&gt;</span>Modifier mon mot de passe</h2>
             <p>
