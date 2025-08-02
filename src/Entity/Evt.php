@@ -9,10 +9,7 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\GraphQl\Query;
-use ApiPlatform\Metadata\GraphQl\QueryCollection;
 use ApiPlatform\Serializer\Filter\GroupFilter;
-use App\Serializer\TimeStamp;
 use App\Serializer\TimeStampNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,10 +27,6 @@ use Symfony\Component\Serializer\Attribute\Context;
     operations: [
         new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
         new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:read', 'eventParticipation:read']]),
-    ],
-    graphQlOperations: [
-        new Query(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
-        new QueryCollection(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
     ],
     security: "is_granted('ROLE_USER')",
 )]
@@ -110,24 +103,20 @@ class Evt
     #[ORM\Column(name: 'tsp_evt', type: 'bigint', nullable: true, options: ['comment' => 'timestamp du début du event'])]
     #[Groups('event:read')]
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[TimeStamp]
     private ?int $tsp;
 
     #[ORM\Column(name: 'tsp_end_evt', type: 'bigint', nullable: true)]
     #[Groups('event:read')]
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[TimeStamp]
     private ?int $tspEnd;
 
     #[ORM\Column(name: 'tsp_crea_evt', type: 'bigint', nullable: false, options: ['comment' => "Création de l'entrée"])]
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[TimeStamp]
     #[Groups('event:details')]
     private ?int $tspCrea;
 
     #[ORM\Column(name: 'tsp_edit_evt', type: 'bigint', nullable: true)]
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[TimeStamp]
     private ?int $tspEdit;
 
     #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de départ activité'])]
@@ -196,7 +185,6 @@ class Evt
 
     #[ORM\Column(name: 'join_start_evt', type: 'integer', nullable: true, options: ['comment' => 'Timestamp de départ des inscriptions'])]
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[TimeStamp]
     #[Groups('event:details')]
     private ?int $joinStart;
 

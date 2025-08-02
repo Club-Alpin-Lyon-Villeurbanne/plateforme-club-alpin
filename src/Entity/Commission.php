@@ -5,8 +5,6 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\GraphQl\Query;
-use ApiPlatform\Metadata\GraphQl\QueryCollection;
 use App\Repository\CommissionRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -20,10 +18,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
     order: ['ordre' => 'ASC'],
     operations: [new Get(), new GetCollection()],
     normalizationContext: ['groups' => ['commission:read']],
-    graphQlOperations: [
-        new Query(),
-        new QueryCollection(),
-    ],
     security: "is_granted('ROLE_USER')",
 )]
 class Commission

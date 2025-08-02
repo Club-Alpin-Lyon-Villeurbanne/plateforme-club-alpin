@@ -15,7 +15,6 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ApiResource(
     operations: [],
     normalizationContext: ['groups' => ['media:read']],
-    graphQlOperations: [],
     security: "is_granted('ROLE_USER')",
 )]
 class MediaUpload

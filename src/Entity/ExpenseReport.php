@@ -58,7 +58,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     provider: ExpenseReportProvider::class,
     security: "is_granted('ROLE_USER')",
     normalizationContext: ['groups' => ['report:read', 'attachment:read', 'user:read', 'event:read'], 'skip_null_values' => false],
-    graphQlOperations: []
 )]
 
 #[ApiFilter(SearchFilter::class, properties: ['event' => 'exact'])]

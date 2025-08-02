@@ -8,10 +8,7 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\GraphQl\Query;
-use ApiPlatform\Metadata\GraphQl\QueryCollection;
 use ApiPlatform\Serializer\Filter\GroupFilter;
-use App\Serializer\TimeStamp;
 use App\Serializer\TimeStampNormalizer;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Context;
@@ -29,11 +26,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     order: ['tsp' => 'DESC'],
     operations: [
         new Get(normalizationContext: ['groups' => ['article:read', 'media:read', 'article:details', 'user:read']]),
-        new GetCollection(normalizationContext: ['groups' => ['article:read', 'media:read']])
-    ],
-    graphQlOperations: [
-        new Query(normalizationContext: ['groups' => ['article:read', 'media:read', 'user:read']]),
-        new QueryCollection(normalizationContext: ['groups' => ['article:read', 'media:read', 'user:read']]),
+        new GetCollection(normalizationContext: ['groups' => ['article:read', 'media:read']]),
     ],
     security: "is_granted('ROLE_USER')",
 )]
@@ -76,12 +69,10 @@ class Article
      */
     #[ORM\Column(name: 'tsp_crea_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp de création de l'article"])]
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[TimeStamp]
     private $tspCrea;
 
     #[ORM\Column(name: 'tsp_validate_article', type: 'integer', nullable: true)]
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[TimeStamp]
     private ?int $tspValidate;
 
     /**
@@ -90,7 +81,6 @@ class Article
     #[ORM\Column(name: 'tsp_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp affiché de l'article"])]
     #[Groups('article:read')]
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[TimeStamp]
     private $tsp;
 
     /**

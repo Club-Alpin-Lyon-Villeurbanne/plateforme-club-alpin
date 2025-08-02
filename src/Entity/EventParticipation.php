@@ -16,7 +16,6 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[UniqueEntity(fields: ['evt', 'user'], message: 'Cette participation existe déjà')]
 #[ApiResource(
     operations: [],
-    graphQlOperations: [],
     normalizationContext: ['groups' => ['eventParticipation:read']],
 )]
 class EventParticipation implements \JsonSerializable

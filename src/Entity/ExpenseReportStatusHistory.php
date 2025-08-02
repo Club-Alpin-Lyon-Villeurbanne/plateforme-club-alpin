@@ -26,7 +26,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
             security: "is_granted('ROLE_USER')"
         ),
     ],
-    graphQlOperations: [],
 )]
 class ExpenseReportStatusHistory
 {

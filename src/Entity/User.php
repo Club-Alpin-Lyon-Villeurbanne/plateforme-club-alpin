@@ -5,8 +5,6 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GraphQl\Mutation;
-use ApiPlatform\Metadata\GraphQl\Query;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Repository\UserRepository;
@@ -30,10 +28,6 @@ use Symfony\Component\Serializer\Annotation\Ignore;
     operations: [
         new Get(normalizationContext: ['groups' => ['user:read', 'user:details']]),
         new Patch(normalizationContext: ['groups' => ['user:read', 'user:details']], denormalizationContext: ['groups' => ['user:write']]),
-    ],
-    graphQlOperations: [
-        new Query(normalizationContext: ['groups' => ['user:read', 'user:details']]),
-        new Mutation(name: 'update', normalizationContext: ['groups' => ['user:read', 'user:details']], denormalizationContext: ['groups' => ['user:write']]),
     ],
     security: "is_granted('ROLE_USER') and object == user",
 )]

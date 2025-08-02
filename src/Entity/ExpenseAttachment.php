@@ -36,7 +36,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     normalizationContext: ['groups' => ['attachment:read']],
     security: "is_granted('ROLE_USER')",
-    graphQlOperations: []
 )]
 #[ORM\Entity]
 class ExpenseAttachment

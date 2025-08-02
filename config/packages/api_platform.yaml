@@ -1,10 +1,6 @@
 api_platform:
   title: Hello API Platform
   version: 1.0.0
-  graphql:
-      enabled: true
-      graphiql:
-        enabled: true
   formats:
     jsonld: ["application/ld+json"]
     json: ["application/json"]
@@ -43,10 +39,6 @@ when@prod:
     enable_swagger_ui: false
     enable_docs: false
     enable_re_doc: false
-    graphql:
-      introspection: false
-      graphiql:
-        enabled: false
 
 when@staging:
   api_platform:
@@ -54,7 +46,3 @@ when@staging:
     enable_swagger_ui: false
     enable_docs: false
     enable_re_doc: false
-    graphql:
-      introspection: false
-      graphiql:
-        enabled: false
