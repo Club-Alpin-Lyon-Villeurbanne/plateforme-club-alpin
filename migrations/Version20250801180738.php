@@ -72,29 +72,16 @@ final class Version20250801180738 extends AbstractMigration
             PRIMARY KEY(id)
         ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
 
-        // 5. Table caf_theme (optionnelle)
-        $this->addSql('CREATE TABLE caf_theme (
-            id INT AUTO_INCREMENT NOT NULL,
-            code_theme VARCHAR(20) NOT NULL,
-            libelle VARCHAR(255) NOT NULL,
-            description TEXT DEFAULT NULL,
-            ordre INT DEFAULT 0,
-            actif BOOLEAN DEFAULT TRUE,
-            UNIQUE KEY unique_code_theme (code_theme),
-            INDEX idx_ordre_theme (ordre),
-            PRIMARY KEY(id)
-        ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-
         // Ajout d'un index unique sur code_competence dans caf_competence pour les clés étrangères
         $this->addSql('CREATE UNIQUE INDEX UNIQ_CODE_COMPETENCE ON caf_competence (code_competence)');
 
         // Ajout des clés étrangères
         $this->addSql('ALTER TABLE caf_validation_competence ADD CONSTRAINT FK_CAF_VAL_COMP_USER FOREIGN KEY (user_id) REFERENCES caf_user (id_user) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE caf_validation_competence ADD CONSTRAINT FK_CAF_VAL_COMP_CODE FOREIGN KEY (code_competence) REFERENCES caf_competence (code_competence) ON DELETE RESTRICT');
-        
+
         $this->addSql('ALTER TABLE caf_formation_competence ADD CONSTRAINT FK_CAF_FORM_COMP_FORM FOREIGN KEY (code_formation) REFERENCES caf_formation_validee (code_formation) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE caf_formation_competence ADD CONSTRAINT FK_CAF_FORM_COMP_CODE FOREIGN KEY (code_competence) REFERENCES caf_competence (code_competence) ON DELETE RESTRICT');
-        
+
         $this->addSql('ALTER TABLE caf_niveau_competence ADD CONSTRAINT FK_CAF_NIV_COMP_CURSUS FOREIGN KEY (cursus_niveau_id) REFERENCES caf_niveau_pratique_referentiel (cursus_niveau_id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE caf_niveau_competence ADD CONSTRAINT FK_CAF_NIV_COMP_CODE FOREIGN KEY (code_competence) REFERENCES caf_competence (code_competence) ON DELETE RESTRICT');
     }
@@ -117,6 +104,5 @@ final class Version20250801180738 extends AbstractMigration
         $this->addSql('DROP TABLE caf_formation_competence');
         $this->addSql('DROP TABLE caf_niveau_pratique_referentiel');
         $this->addSql('DROP TABLE caf_niveau_competence');
-        $this->addSql('DROP TABLE caf_theme');
     }
 }
