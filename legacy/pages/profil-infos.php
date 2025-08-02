@@ -184,14 +184,16 @@ if (user()) {
     }
 
     if ($hasProblematicEmail) {
-        echo '<div class="alerte info-container" style="width: 90%; margin-top: 10px;">';
-        echo '⚠️';
-        echo '<div class="text-container">';
-        echo 'Nous avons identifié des problèmes de non réception avec certains fournisseurs de messagerie, notamment Wanadoo, Orange et Free (même si cela fonctionne chez certains utilisateurs).<br>';
-        echo 'Après investigation et signalement du problème aux services concernés, nous ne sommes malheureusement pas en mesure d\'y remédier de notre côté.<br>';
-        echo 'Nous vous recommandons de vérifier si nous ne sommes pas dans vos spams sinon, de changer d\'hébergeur.';
-        echo '</div>';
-        echo '</div>';
+        ?>
+        <div class="alerte info-container" style="width: 90%; margin-top: 10px;">
+            ⚠️
+            <div class="text-container">
+                Nous avons identifié des problèmes de non réception avec certains fournisseurs de messagerie, notamment Wanadoo, Orange et Free (même si cela fonctionne chez certains utilisateurs).<br>
+                Après investigation et signalement du problème aux services concernés, nous ne sommes malheureusement pas en mesure d'y remédier de notre côté.<br>
+                Nous vous recommandons de vérifier si nous ne sommes pas dans vos spams sinon, de changer d'hébergeur.
+            </div>
+        </div>
+        <?php
     }
     ?>
 
