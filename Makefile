@@ -187,6 +187,10 @@ consume-mails: ## consume mails
 	$(SYMFONY_CONSOLE) messenger:consume mails --limit=50 --quiet --no-interaction
 .PHONY: consume-mails
 
+consume-alertes: ## consume alertes
+	$(SYMFONY_CONSOLE) messenger:consume alertes --limit=50 --quiet --no-interaction
+.PHONY: consume-alertes
+
 api-swagger: ## Run API Swagger UI
 	$(DOCKER) run -p 8001:8080 -e SWAGGER_JSON_URL=http://localhost:8000/api/docs.jsonopenapi docker.swagger.io/swaggerapi/swagger-ui
 .PHONY: api-swagger
