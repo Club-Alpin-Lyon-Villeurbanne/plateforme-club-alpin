@@ -28,7 +28,7 @@ use Symfony\Component\Serializer\Annotation\Ignore;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(normalizationContext: ['groups' => ['user:read']]),
+        new Get(normalizationContext: ['groups' => ['user:read', 'user:details']]),
         new Patch(normalizationContext: ['groups' => ['user:read', 'user:details']], denormalizationContext: ['groups' => ['user:write']]),
     ],
     graphQlOperations: [

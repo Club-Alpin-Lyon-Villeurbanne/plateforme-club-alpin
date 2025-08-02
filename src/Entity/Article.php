@@ -27,8 +27,10 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[Vich\Uploadable]
 #[ApiResource(
     order: ['tsp' => 'DESC'],
-    operations: [new Get(), new GetCollection()],
-    normalizationContext: ['groups' => ['article:read']],
+    operations: [
+        new Get(normalizationContext: ['groups' => ['article:read', 'media:read', 'article:details', 'user:read']]),
+        new GetCollection(normalizationContext: ['groups' => ['article:read', 'media:read']])
+    ],
     graphQlOperations: [
         new Query(normalizationContext: ['groups' => ['article:read', 'media:read', 'user:read']]),
         new QueryCollection(normalizationContext: ['groups' => ['article:read', 'media:read', 'user:read']]),
@@ -146,7 +148,7 @@ class Article
      * @var string
      */
     #[ORM\Column(name: 'cont_article', type: 'text', nullable: false)]
-    #[Groups('article:read')]
+    #[Groups('article:details')]
     private $cont;
 
     /**

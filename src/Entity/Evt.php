@@ -27,8 +27,10 @@ use Symfony\Component\Serializer\Attribute\Context;
 #[ORM\Entity]
 #[ApiResource(
     order: ['tsp' => 'ASC'],
-    operations: [new Get(), new GetCollection()],
-    normalizationContext: ['groups' => ['event:read']],
+    operations: [
+        new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
+        new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:read', 'eventParticipation:read']]),
+    ],
     graphQlOperations: [
         new Query(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
         new QueryCollection(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
@@ -37,7 +39,7 @@ use Symfony\Component\Serializer\Attribute\Context;
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', 'participations.user.id' => 'exact'])]
 #[ApiFilter(RangeFilter::class, properties: ['tsp'])]
-#[ApiFilter(GroupFilter::class)]
+#[ApiFilter(GroupFilter::class, arguments: ['overrideDefaultGroups' => true])]
 #[ApiFilter(OrderFilter::class, properties: ['tsp'])]
 class Evt
 {
@@ -199,7 +201,7 @@ class Evt
     private ?int $joinStart;
 
     #[ORM\Column(name: 'join_max_evt', type: 'integer', nullable: false, options: ['comment' => "Nombre max d'inscriptions spontanées sur le site, ET PAS d'inscrits total"])]
-    #[Groups('event:details')]
+    #[Groups('event:read')]
     private ?int $joinMax;
 
     #[ORM\OneToMany(mappedBy: 'evt', targetEntity: 'EventParticipation', cascade: ['persist'], orphanRemoval: true)]
@@ -207,7 +209,7 @@ class Evt
     private ?Collection $participations;
 
     #[ORM\Column(name: 'ngens_max_evt', type: 'integer', nullable: false, options: ['comment' => 'Nombre de gens pouvant y aller au total. Donnée "visuelle" uniquement, pas de calcul.'])]
-    #[Groups('event:details')]
+    #[Groups('event:read')]
     private ?int $ngensMax;
 
     #[ORM\OneToMany(mappedBy: 'evt', targetEntity: 'App\Entity\Article')]
