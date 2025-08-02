@@ -19,6 +19,8 @@ api_platform:
   error_formats:
     jsonproblem: ["application/problem+json"]
   defaults:
+    pagination_client_items_per_page: true
+    pagination_maximum_items_per_page: 30
     stateless: true
     cache_headers:
       vary: ["Content-Type", "Authorization", "Origin"]
@@ -33,6 +35,7 @@ api_platform:
         type: header
     swagger_ui_extra_configuration:
       persistAuthorization: true
+  
 
 when@prod:
   api_platform:
