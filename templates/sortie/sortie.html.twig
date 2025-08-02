@@ -625,11 +625,6 @@
                     <br style="clear:both"  />
 
                     {% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
-                        <p class="mini">
-                            <input type="checkbox" name="disablemails" />
-                            Ne pas envoyer les e-mails lors de la mise à jour (déconseillé, sauf après l'événement).
-                        </p>
-
                         <div style="text-align:center">
                             <br />
                             <button id="submit_update_participants" type="submit" style="cursor: pointer; border: none;" class="biglink" title="Enregistrer" formaction="{{ path('sortie_update_inscription', { id: event.id })}}">

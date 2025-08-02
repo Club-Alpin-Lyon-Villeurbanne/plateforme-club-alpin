@@ -35,8 +35,11 @@ use Twig\Environment;
 
 class SortieController extends AbstractController
 {
-    public function __construct(protected float $defaultLat, protected float $defaultLong)
-    {
+    public function __construct(
+        protected float $defaultLat,
+        protected float $defaultLong,
+        protected string $defaultAppointmentPlace,
+    ) {
     }
 
     #[Route(path: '/creer-une-sortie', name: 'creer_sortie', methods: ['GET', 'POST'])]
@@ -61,7 +64,7 @@ class SortieController extends AbstractController
                 null,
                 null,
                 null,
-                null,
+                $this->defaultAppointmentPlace,
                 $this->defaultLat,
                 $this->defaultLong,
                 null,
@@ -239,7 +242,7 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
         }
 
-        $event->setStatus(Evt::STATUS_LEGAL_VALIDE)->setStatusWho($this->getUser());
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($this->getUser());
         $em->flush();
 
         $messageBus->dispatch(new SortiePubliee($event->getId()));
@@ -338,7 +341,7 @@ class SortieController extends AbstractController
                 continue;
             }
 
-            if (($event->isFinished() && !\in_array($status, [EventParticipation::STATUS_ABSENT], true)) || 'on' === $request->request->get('disablemails')) {
+            if ($event->isFinished() && !\in_array($status, [EventParticipation::STATUS_ABSENT], true)) {
                 continue;
             }
 
@@ -416,7 +419,7 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
         }
 
-        $event->setStatus(Evt::STATUS_LEGAL_REFUSE)->setStatusWho($this->getUser());
+        $event->setStatus(Evt::STATUS_PUBLISHED_REFUSE)->setStatusWho($this->getUser());
         $em->flush();
 
         $mailer->send($event->getUser(), 'transactional/sortie-refusee', [

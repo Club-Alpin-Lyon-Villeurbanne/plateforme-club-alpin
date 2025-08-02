@@ -250,8 +250,12 @@
 
                                     <ul>
                                     {% if allowed('article_create') %}
+                                        {% set params = {} %}
+                                        {% if current_commission %}
+                                            {% set params = {'commission': current_commission} %}
+                                        {% endif %}
                                         <li>
-                                        <a href="/article/new{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                        <a href="{{ path('article_new', params) }}" title="">
                                             rédiger un article
                                         </a>
                                     </li>
