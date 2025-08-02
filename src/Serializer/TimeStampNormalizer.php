@@ -20,7 +20,6 @@ class TimeStampNormalizer implements NormalizerInterface
 
     public function getSupportedTypes(?string $format): array
     {
-        // TODO: Don't how to return the correct type here, as integer this is not a class. ['integer' => true] is not working
         return [
             '*' => true,
         ];
