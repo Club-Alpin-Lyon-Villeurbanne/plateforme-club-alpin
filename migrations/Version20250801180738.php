@@ -142,61 +142,60 @@ final class Version20250801180738 extends AbstractMigration
         ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
 
         // Ajout des clés étrangères
-        
         // formation_competence_referentiel
-        $this->addSql('ALTER TABLE formation_competence_referentiel 
-            ADD CONSTRAINT FK_FORM_COMP_REF_THEME 
-            FOREIGN KEY (theme_id) REFERENCES formation_competence_theme (id) 
+        $this->addSql('ALTER TABLE formation_competence_referentiel
+            ADD CONSTRAINT FK_FORM_COMP_REF_THEME
+            FOREIGN KEY (theme_id) REFERENCES formation_competence_theme (id)
             ON DELETE SET NULL');
 
         // formation_validation
-        $this->addSql('ALTER TABLE formation_validation 
-            ADD CONSTRAINT FK_FORM_VAL_USER 
-            FOREIGN KEY (user_id) REFERENCES caf_user (id_user) 
+        $this->addSql('ALTER TABLE formation_validation
+            ADD CONSTRAINT FK_FORM_VAL_USER
+            FOREIGN KEY (user_id) REFERENCES caf_user (id_user)
             ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE formation_validation 
-            ADD CONSTRAINT FK_FORM_VAL_REF 
-            FOREIGN KEY (code_formation) REFERENCES formation_referentiel (code_formation) 
+        $this->addSql('ALTER TABLE formation_validation
+            ADD CONSTRAINT FK_FORM_VAL_REF
+            FOREIGN KEY (code_formation) REFERENCES formation_referentiel (code_formation)
             ON DELETE SET NULL');
 
         // formation_competence_validation
-        $this->addSql('ALTER TABLE formation_competence_validation 
-            ADD CONSTRAINT FK_FORM_COMP_VAL_USER 
-            FOREIGN KEY (user_id) REFERENCES caf_user (id_user) 
+        $this->addSql('ALTER TABLE formation_competence_validation
+            ADD CONSTRAINT FK_FORM_COMP_VAL_USER
+            FOREIGN KEY (user_id) REFERENCES caf_user (id_user)
             ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE formation_competence_validation 
-            ADD CONSTRAINT FK_FORM_COMP_VAL_REF 
-            FOREIGN KEY (code_competence) REFERENCES formation_competence_referentiel (code_competence) 
+        $this->addSql('ALTER TABLE formation_competence_validation
+            ADD CONSTRAINT FK_FORM_COMP_VAL_REF
+            FOREIGN KEY (code_competence) REFERENCES formation_competence_referentiel (code_competence)
             ON DELETE RESTRICT');
 
         // formation_competence
-        $this->addSql('ALTER TABLE formation_competence 
-            ADD CONSTRAINT FK_FORM_COMP_FORMATION_REF 
-            FOREIGN KEY (code_formation) REFERENCES formation_referentiel (code_formation) 
+        $this->addSql('ALTER TABLE formation_competence
+            ADD CONSTRAINT FK_FORM_COMP_FORMATION_REF
+            FOREIGN KEY (code_formation) REFERENCES formation_referentiel (code_formation)
             ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE formation_competence 
-            ADD CONSTRAINT FK_FORM_COMP_COMPETENCE_REF 
-            FOREIGN KEY (code_competence) REFERENCES formation_competence_referentiel (code_competence) 
+        $this->addSql('ALTER TABLE formation_competence
+            ADD CONSTRAINT FK_FORM_COMP_COMPETENCE_REF
+            FOREIGN KEY (code_competence) REFERENCES formation_competence_referentiel (code_competence)
             ON DELETE CASCADE');
 
         // formation_niveau_competence
-        $this->addSql('ALTER TABLE formation_niveau_competence 
-            ADD CONSTRAINT FK_FORM_NIV_COMP_CURSUS 
-            FOREIGN KEY (cursus_niveau_id) REFERENCES formation_niveau_referentiel (id) 
+        $this->addSql('ALTER TABLE formation_niveau_competence
+            ADD CONSTRAINT FK_FORM_NIV_COMP_CURSUS
+            FOREIGN KEY (cursus_niveau_id) REFERENCES formation_niveau_referentiel (id)
             ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE formation_niveau_competence 
-            ADD CONSTRAINT FK_FORM_NIV_COMP_REF 
-            FOREIGN KEY (code_competence) REFERENCES formation_competence_referentiel (code_competence) 
+        $this->addSql('ALTER TABLE formation_niveau_competence
+            ADD CONSTRAINT FK_FORM_NIV_COMP_REF
+            FOREIGN KEY (code_competence) REFERENCES formation_competence_referentiel (code_competence)
             ON DELETE CASCADE');
 
         // formation_niveau_validation
-        $this->addSql('ALTER TABLE formation_niveau_validation 
-            ADD CONSTRAINT FK_FORM_NIV_VAL_USER 
-            FOREIGN KEY (user_id) REFERENCES caf_user (id_user) 
+        $this->addSql('ALTER TABLE formation_niveau_validation
+            ADD CONSTRAINT FK_FORM_NIV_VAL_USER
+            FOREIGN KEY (user_id) REFERENCES caf_user (id_user)
             ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE formation_niveau_validation 
-            ADD CONSTRAINT FK_FORM_NIV_VAL_REF 
-            FOREIGN KEY (cursus_niveau_id) REFERENCES formation_niveau_referentiel (id) 
+        $this->addSql('ALTER TABLE formation_niveau_validation
+            ADD CONSTRAINT FK_FORM_NIV_VAL_REF
+            FOREIGN KEY (cursus_niveau_id) REFERENCES formation_niveau_referentiel (id)
             ON DELETE RESTRICT');
 
         // Suppression des anciennes tables créées par la migration Version20250723071647
