@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[UniqueEntity(fields: ['evt', 'user'], message: 'Cette participation existe déjà')]
 #[ApiResource(
     operations: [],
-    normalizationContext: ['groups' => ['eventParticipation:read']],
+    normalizationContext: ['groups' => ['eventParticipation:read', 'user:read']],
 )]
 class EventParticipation implements \JsonSerializable
 {

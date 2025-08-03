@@ -26,7 +26,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     order: ['tsp' => 'DESC'],
     operations: [
         new Get(normalizationContext: ['groups' => ['article:read', 'media:read', 'article:details', 'user:read']]),
-        new GetCollection(normalizationContext: ['groups' => ['article:read', 'media:read']]),
+        new GetCollection(normalizationContext: ['groups' => ['article:read', 'media:read', 'user:read']]),
     ],
     security: "is_granted('ROLE_USER')",
 )]
