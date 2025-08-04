@@ -1,6 +1,6 @@
 api_platform:
-  title: Hello API Platform
-  version: 1.0.0
+  title: CAF API
+  version: "%env(API_VERSION)%"
   formats:
     jsonld: ["application/ld+json"]
     json: ["application/json"]
