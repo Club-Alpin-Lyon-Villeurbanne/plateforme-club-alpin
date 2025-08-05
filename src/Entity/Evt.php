@@ -193,7 +193,6 @@ class Evt
     private ?int $joinMax;
 
     #[ORM\OneToMany(mappedBy: 'evt', targetEntity: 'EventParticipation', cascade: ['persist'], orphanRemoval: true)]
-    #[Groups('eventParticipation:read')]
     private ?Collection $participations;
 
     #[ORM\Column(name: 'ngens_max_evt', type: 'integer', nullable: false, options: ['comment' => 'Nombre de gens pouvant y aller au total. Donnée "visuelle" uniquement, pas de calcul.'])]
@@ -414,6 +413,13 @@ class Evt
         });
     }
 
+    /** @return EventParticipation[] */
+    #[Groups('eventParticipation:read')]
+    public function getAllParticipations()
+    {
+        return $this->participations;
+    }
+
     public function clearRoleParticipations(string $role = EventParticipation::ROLE_BENEVOLE): void
     {
         $participations = $this->getParticipations([$role], null);
@@ -443,17 +449,6 @@ class Evt
         }
 
         return null;
-    }
-
-    #[Groups('event:read')]
-    public function getCurrentUserParticipation(): ?EventParticipation
-    {
-        $user = $this->getUser();
-        if (!$user) {
-            return null;
-        }
-
-        return $this->getParticipation($user);
     }
 
     public function getParticipationById(int $id): ?EventParticipation
