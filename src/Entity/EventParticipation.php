@@ -3,7 +3,10 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Post;
 use App\Repository\EventParticipationRepository;
+use App\State\EventParticipationProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -15,8 +18,13 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Entity(repositoryClass: EventParticipationRepository::class)]
 #[UniqueEntity(fields: ['evt', 'user'], message: 'Cette participation existe déjà')]
 #[ApiResource(
-    operations: [],
+    operations: [
+        new Post(securityPostDenormalize: "is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', object.getEvt())"),
+        new Delete(securityPostDenormalize: "is_granted('PARTICIPANT_ANNULATION')"),
+    ],
+    processor: EventParticipationProcessor::class,
     normalizationContext: ['groups' => ['eventParticipation:read', 'user:read']],
+    denormalizationContext: ['groups' => ['eventParticipation:write']],
 )]
 class EventParticipation implements \JsonSerializable
 {
@@ -61,6 +69,7 @@ class EventParticipation implements \JsonSerializable
 
     #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'participations', fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'evt_evt_join', nullable: false, referencedColumnName: 'id_evt', onDelete: 'CASCADE')]
+    #[Groups(['eventParticipation:read', 'eventParticipation:write'])]
     private ?Evt $evt;
 
     /**
@@ -68,7 +77,7 @@ class EventParticipation implements \JsonSerializable
      */
     #[ORM\ManyToOne(targetEntity: 'User', fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'user_evt_join', nullable: false, referencedColumnName: 'id_user', onDelete: 'CASCADE')]
-    #[Groups('eventParticipation:read')]
+    #[Groups(['eventParticipation:read', 'eventParticipation:write'])]
     private $user;
 
     /**
@@ -82,7 +91,7 @@ class EventParticipation implements \JsonSerializable
      * @var string
      */
     #[ORM\Column(name: 'role_evt_join', type: 'string', length: 20, nullable: false)]
-    #[Groups('eventParticipation:read')]
+    #[Groups(['eventParticipation:read', 'eventParticipation:write'])]
     private $role;
 
     /**
@@ -110,15 +119,6 @@ class EventParticipation implements \JsonSerializable
      */
     #[ORM\Column(name: 'is_covoiturage', type: 'boolean', nullable: true)]
     private $isCovoiturage;
-
-    public function __construct(Evt $event, User $user, string $role, int $status)
-    {
-        $this->evt = $event;
-        $this->user = $user;
-        $this->role = $role;
-        $this->status = $status;
-        $this->tsp = time();
-    }
 
     public function getId(): ?int
     {
