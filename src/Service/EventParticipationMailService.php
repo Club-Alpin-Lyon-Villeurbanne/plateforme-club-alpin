@@ -20,7 +20,7 @@ class EventParticipationMailService
        foreach ($supervisorsParticipations as $supervisorParticipation) {
            $supervisor = $supervisorParticipation->getUser();
            $this->mailer->send($supervisor->getEmail(), 'transactional/sortie-demande-inscription', [
-                'role' => $supervisorParticipation->getRole(),
+                'role' => $participation->getRole(),
                 'event_name' => $participation->getEvent()->getTitre(),
                 'event_url' => $this->getEventUrl($participation->getEvent()),
                 'event_date' => date('d/m/Y', $participation->getEvent()->getTsp()),
