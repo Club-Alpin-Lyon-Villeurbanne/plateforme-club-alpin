@@ -120,13 +120,13 @@ class EventParticipation implements \JsonSerializable
     #[ORM\Column(name: 'is_covoiturage', type: 'boolean', nullable: true)]
     private $isCovoiturage;
 
-    public function __construct(?Evt $event, ?User $user, ?string $role, ?int $status)
+    public static function create(?Evt $event, ?User $user, ?string $role, ?int $status): self
     {
-        $this->evt = $event;
-        $this->user = $user;
-        $this->role = $role;
-        $this->status = $status;
-        $this->tsp = time();
+        return (new self())->setEvt($event)
+            ->setUser($user)
+            ->setRole($role)
+            ->setStatus($status)
+            ->setTsp(time());
     }
 
     public function getId(): ?int

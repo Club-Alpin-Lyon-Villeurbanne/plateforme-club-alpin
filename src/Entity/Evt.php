@@ -384,7 +384,7 @@ class Evt
 
     public function addParticipation(User $user, string $role = EventParticipation::ROLE_INSCRIT, int $status = EventParticipation::STATUS_NON_CONFIRME): EventParticipation
     {
-        $participation = new EventParticipation($this, $user, $role, $status);
+        $participation = EventParticipation::create($this, $user, $role, $status);
         $this->participations->add($participation);
 
         return $participation;

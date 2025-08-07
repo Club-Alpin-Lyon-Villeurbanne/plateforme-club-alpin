@@ -81,7 +81,7 @@ class DevData implements FixtureInterface
                         continue;
                     }
 
-                    $participation = new EventParticipation($object, $user, $roles[array_rand($roles)], $status[array_rand($status)]);
+                    $participation = EventParticipation::create($object, $user, $roles[array_rand($roles)], $status[array_rand($status)]);
                     if (\in_array($participation->getRole(), [EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_BENEVOLE, EventParticipation::ROLE_COENCADRANT], true)) {
                         $participation->setStatus(EventParticipation::STATUS_VALIDE);
                     }
@@ -94,7 +94,7 @@ class DevData implements FixtureInterface
                 if ($owner = $object->getParticipation($object->getUser())) {
                     $owner->setRole(EventParticipation::ROLE_ENCADRANT);
                 } else {
-                    $participation = new EventParticipation($object, $object->getUser(), EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
+                    $participation = EventParticipation::create($object, $object->getUser(), EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
                     $manager->persist($participation);
                 }
             }

@@ -463,7 +463,7 @@ class SortieControllerTest extends WebTestCase
         $event = $this->createEvent($userOwner);
         $participant = $this->signup();
 
-        $participation = new EventParticipation($event, $participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_NON_CONFIRME);
+        $participation = EventParticipation::create($event, $participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_NON_CONFIRME);
         self::getContainer()->get(EntityManagerInterface::class)->persist($participation);
         self::getContainer()->get(EntityManagerInterface::class)->flush();
         self::getContainer()->get(EntityManagerInterface::class)->refresh($event);
@@ -497,7 +497,7 @@ class SortieControllerTest extends WebTestCase
         $event = $this->createEvent($userOwner);
         $participant = $this->signup();
 
-        $participation = new EventParticipation($event, $participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_NON_CONFIRME);
+        $participation = EventParticipation::create($event, $participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_NON_CONFIRME);
         self::getContainer()->get(EntityManagerInterface::class)->persist($participation);
         self::getContainer()->get(EntityManagerInterface::class)->flush();
         self::getContainer()->get(EntityManagerInterface::class)->refresh($event);
@@ -531,7 +531,7 @@ class SortieControllerTest extends WebTestCase
         $event = $this->createEvent($userOwner);
         $participant = $this->signup();
 
-        $participation = new EventParticipation($event, $participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $participation = EventParticipation::create($event, $participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
         self::getContainer()->get(EntityManagerInterface::class)->persist($participation);
         self::getContainer()->get(EntityManagerInterface::class)->flush();
         self::getContainer()->get(EntityManagerInterface::class)->refresh($event);
