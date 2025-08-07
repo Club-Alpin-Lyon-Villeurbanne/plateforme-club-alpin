@@ -78,7 +78,7 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
             <table style='width:560px'>
                 <thead>
                 <tr>
-                    <th colspan="3" style="text-align:center; font-size:17px"><small>FEUILLE DE SORTIE</small><br><?php echo html_utf8($evt['titre_evt']); ?></th>
+                    <th colspan="3" style="text-align:center; font-size:1rem"><small>FEUILLE DE SORTIE</small><br><?php echo html_utf8($evt['titre_evt']); ?></th>
                 </tr>
                 </thead>
                 <tbody>

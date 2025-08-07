@@ -1,5 +1,5 @@
 <div id="nav-alerte">
-	<p style="display:none; text-align:justify; font-size:12px; color:gray; line-height:16px;">
+	<p style="display:none; text-align:justify; color:gray; line-height:16px;">
 		<img style="float:right; padding:0 0 5px 5px; height:80px;" src="/img/base/html5.png" alt="HTML5" title="HTML5" />
 		<b>Attention :</b><br /> vous utilisez actuellement une version obsolète d'Internet Explorer.
 		Ce site internet est conçu en HTML5 pour des navigateurs modernes, et peut présenter des erreurs d'affichages sur des navigateurs
