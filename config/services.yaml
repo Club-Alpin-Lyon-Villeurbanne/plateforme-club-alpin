@@ -43,7 +43,10 @@ parameters:
   default_latitude: '%env(DEFAULT_LATITUDE)%'
   default_longitude: '%env(DEFAULT_LONGITUDE)%'
   default_appmt_place: '%env(DEFAULT_APPMT_PLACE)%'
-
+  app_instance_name: '%env(APP_INSTANCE_NAME)%'
+  mobile_app_deeplink_scheme: '%env(MOBILE_APP_DEEPLINK_SCHEME)%'
+  mobile_app_minimum_version: '%env(MOBILE_APP_MINIMUM_VERSION)%'
+  api_version: '%env(API_VERSION)%'
 services:
   # default configuration for services in *this* file
   _defaults:
@@ -257,3 +260,9 @@ services:
       $defaultLong: '%default_longitude%'
       $defaultAppointmentPlace: '%default_appmt_place%'
     tags: ['controller.service_arguments']
+
+  App\Service\PushNotificationService:
+    arguments:
+      $appInstanceName: '%app_instance_name%'
+      $appDeeplinkScheme: '%mobile_app_deeplink_scheme%'
+      $sitename: '%legacy_env_SITENAME%'

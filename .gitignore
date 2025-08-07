@@ -52,3 +52,7 @@ node_modules/
 /playwright/.cache/
 # Claude Code assistant files
 .claude/
+
+# Test reports
+test-results/
+playwright-report/
