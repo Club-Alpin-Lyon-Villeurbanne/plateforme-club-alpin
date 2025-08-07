@@ -18,6 +18,7 @@ class EventParticipationService {
     public function __construct(
         private Security $security,
         private EvtRepository $evtRepository,
+        private EventParticipationMailService $mailer
     ) {
     }
 
@@ -44,7 +45,8 @@ class EventParticipationService {
     }
 
     public function onAfterAddParticipation(EventParticipation $participation): void {
-        // Notify
+        $this->mailer->sendAddParticipationMailToSupervisors($participation);
+        $this->mailer->sendAddParticipationMailToParticipant($participation);
     }
 
     public function onBeforeRemoveParticipation(EventParticipation $participation): void {
