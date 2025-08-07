@@ -10,16 +10,15 @@ class EventParticipationMailService
 {
     public function __construct(private Mailer $mailer, private string $baseUrl)
     {
-   
     }
 
     public function sendAddParticipationMailToSupervisors(EventParticipation $participation): void
     {
-       $supervisorsParticipations = $participation->getEvent()->getParticipations([EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_COENCADRANT, EventParticipation::ROLE_STAGIAIRE]);
+        $supervisorsParticipations = $participation->getEvent()->getParticipations([EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_COENCADRANT, EventParticipation::ROLE_STAGIAIRE]);
 
-       foreach ($supervisorsParticipations as $supervisorParticipation) {
-           $supervisor = $supervisorParticipation->getUser();
-           $this->mailer->send($supervisor->getEmail(), 'transactional/sortie-demande-inscription', [
+        foreach ($supervisorsParticipations as $supervisorParticipation) {
+            $supervisor = $supervisorParticipation->getUser();
+            $this->mailer->send($supervisor->getEmail(), 'transactional/sortie-demande-inscription', [
                 'role' => $participation->getRole(),
                 'event_name' => $participation->getEvent()->getTitre(),
                 'event_url' => $this->getEventUrl($participation->getEvent()),
@@ -42,12 +41,12 @@ class EventParticipationMailService
                 'covoiturage' => false,
                 'dest_role' => $supervisorParticipation->getRole() ?? 'l\'auteur',
             ], [], null, $participation->getUser()->getEmail());
-       }
+        }
     }
 
     public function sendAddParticipationMailToParticipant(EventParticipation $participation): void
     {
-        if($participation->getEvent()->isAutoAccept()) {
+        if ($participation->getEvent()->isAutoAccept()) {
             $this->mailer->send($participation->getUser()->getEmail(), 'transactional/sortie-participation-confirmee', [
                 'role' => $participation->getRole(),
                 'event_name' => $participation->getEvent()->getTitre(),
@@ -75,7 +74,7 @@ class EventParticipationMailService
         }
     }
 
-    function getEventUrl(Evt $event): string
+    public function getEventUrl(Evt $event): string
     {
         return $this->baseUrl . '/sortie/' . $event->getCode() . '-' . $event->getId() . '.html';
     }
