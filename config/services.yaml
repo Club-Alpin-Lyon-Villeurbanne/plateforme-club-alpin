@@ -45,6 +45,7 @@ parameters:
   default_appmt_place: '%env(DEFAULT_APPMT_PLACE)%'
   app_deeplink_scheme: '%env(APP_DEEPLINK_SCHEME)%'
   app_instance_id: '%env(APP_INSTANCE_ID)%'
+  app_minimum_version: '%env(APP_MINIMUM_VERSION)%'
   api_version: '%env(API_VERSION)%'
 services:
   # default configuration for services in *this* file
