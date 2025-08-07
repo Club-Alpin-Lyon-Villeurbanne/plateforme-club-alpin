@@ -28,6 +28,7 @@ final readonly class PublishedArticleExtension implements QueryCollectionExtensi
         }
 
         $rootAlias = $queryBuilder->getRootAliases()[0];
-        $queryBuilder->andWhere(sprintf('%s.status = 1', $rootAlias));
+        $queryBuilder->andWhere(sprintf('%s.status = :status', $rootAlias))
+        ->setParameter('status', Article::STATUS_PUBLISHED);
     }
 }
