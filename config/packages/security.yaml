@@ -86,5 +86,5 @@ security:
         - { path: ^/api/$, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI
         - { path: ^/api/docs, roles: PUBLIC_ACCESS } # Allows accessing the Swagger UI docs
         - { path: ^/api/(auth|token/refresh), roles: PUBLIC_ACCESS }
-        - { path: ^/api/version$, roles: PUBLIC_ACCESS }
+        - { path: ^/api/config$, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

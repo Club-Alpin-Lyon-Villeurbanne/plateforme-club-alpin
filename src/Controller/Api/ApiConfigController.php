@@ -8,13 +8,14 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-class ApiVersionController extends AbstractController
+class ApiConfigController extends AbstractController
 {
-    #[Route(path: '/api/version', name: 'api_version', methods: ['GET'])]
-    public function getVersion(): Response
+    #[Route(path: '/api/config', name: 'api_config', methods: ['GET'])]
+    public function getConfig(): Response
     {
         $version = $this->getParameter('api_version');
+        $minimumAppVersion = $this->getParameter('app_minimum_version');
 
-        return $this->json(['version' => $version]);
+        return $this->json(['version' => $version, 'appVersion' => $minimumAppVersion]);
     }
 }
