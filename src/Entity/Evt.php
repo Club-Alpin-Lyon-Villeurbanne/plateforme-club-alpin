@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -167,6 +168,18 @@ class Evt
 
     #[ORM\Column(name: 'details_caches_evt', type: 'text', nullable: true)]
     private ?string $detailsCaches;
+
+    #[ORM\Column(name: 'has_hello_asso_form', type: Types::BOOLEAN, nullable: false)]
+    private bool $hasHelloAssoForm = false;
+
+    #[ORM\Column(name: 'hello_asso_form_slug', type: Types::STRING, length: 100, nullable: true)]
+    private ?string $helloAssoFormSlug;
+
+    #[ORM\Column(name: 'hello_asso_form_amount', type: Types::FLOAT, nullable: true)]
+    private ?float $helloAssoFormAmount;
+
+    #[ORM\Column(name: 'hello_asso_form_url', type: Types::STRING, length: 255, nullable: true)]
+    private ?string $helloAssoFormUrl;
 
     public function __construct(
         ?User $user,
@@ -806,6 +819,54 @@ class Evt
     public function setIsDraft(bool $isDraft): self
     {
         $this->isDraft = $isDraft;
+
+        return $this;
+    }
+
+    public function hasHelloAssoForm(): bool
+    {
+        return $this->hasHelloAssoForm;
+    }
+
+    public function setHasHelloAssoForm(bool $hasHelloAssoForm): self
+    {
+        $this->hasHelloAssoForm = $hasHelloAssoForm;
+
+        return $this;
+    }
+
+    public function getHelloAssoFormSlug(): ?string
+    {
+        return $this->helloAssoFormSlug;
+    }
+
+    public function setHelloAssoFormSlug(?string $helloAssoFormSlug): self
+    {
+        $this->helloAssoFormSlug = $helloAssoFormSlug;
+
+        return $this;
+    }
+
+    public function getHelloAssoFormUrl(): ?string
+    {
+        return $this->helloAssoFormUrl;
+    }
+
+    public function setHelloAssoFormUrl(?string $helloAssoFormUrl): self
+    {
+        $this->helloAssoFormUrl = $helloAssoFormUrl;
+
+        return $this;
+    }
+
+    public function getHelloAssoFormAmount(): ?float
+    {
+        return $this->helloAssoFormAmount;
+    }
+
+    public function setHelloAssoFormAmount(?float $helloAssoFormAmount): self
+    {
+        $this->helloAssoFormAmount = $helloAssoFormAmount;
 
         return $this;
     }

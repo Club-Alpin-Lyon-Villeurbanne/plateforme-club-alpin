@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mire d'autorisation Hello Asso{% endblock %}
+
+{% block body %}
+    <div id="hello-asso-mire">
+        <h1>Mire d'autorisation Hello Asso</h1>
+
+        {% if authorization_url is same as ('') and organization_token is not same as('') %}
+            <p class="hello-asso">
+                Tout est en place, vous n'avez rien à faire pour le moment.
+            </p>
+        {% else %}
+            <p class="hello-asso">
+                <span class="bold">Disclaimer :</span><br>
+                En cliquant sur le bouton ci-dessous, une page s'ouvrira qui vous invitera à vous connecter à votre compte administrateur Hello Asso (si ce n'est déjà fait) et choisir le club que souhaitez autoriser à utiliser l'API (bouton "Lier les comptes").
+                <br><br>
+                Cette manipulation ne devrait être faite qu'une seule fois, lors de l'initialisation de l'API Hello Asso. Si tout se passe bien, vous n'aurez jamais à refaire cette manipulation.
+            </p>
+            <p class="hello-asso-btn">
+                <a href="{{ authorization_url }}" class="HaAuthorizeButton">
+                    <img src="https://api.helloasso.com/v5/img/logo-ha.svg" alt="" class="HaAuthorizeButtonLogo" />
+                    <span class="HaAuthorizeButtonTitle">Mire d'autorisation HelloAsso</span>
+                </a>
+            </p>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .HaAuthorizeButton {
+            align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            background-color: #FFFFFF;
+            border: 0.0625rem solid #4B3FCF;
+            border-radius: 0.125rem;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            padding: 0;
+            margin: 0 auto;
+            width: 374px;
+            text-decoration: none;
+        }
+        .HaAuthorizeButton:disabled {
+            background-color: #4B3FCF;
+            border-color: transparent;
+            cursor: not-allowed;
+        }
+        .HaAuthorizeButton:not(:disabled):focus {
+            box-shadow: 0 0 0 0.25rem rgba(73, 211, 138, 0.25);
+            -webkit-box-shadow: 0 0 0 0.25rem rgba(73, 211, 138, 0.25);
+        }
+        .HaAuthorizeButtonLogo {
+            padding: 0 0.8rem;
+            width: 2.25rem;
+        }
+        .HaAuthorizeButtonTitle {
+            background-color: #4B3FCF;
+            color: #FFFFFF;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 0.78125rem 1.5rem;
+        }
+        .HaAuthorizeButton:disabled .HaAuthorizeButtonTitle {
+            background-color: #4B3FCF;
+            color: #9A9DA8;
+        }
+        .HaAuthorizeButton:not(:disabled):hover .HaAuthorizeButtonTitle,
+        .HaAuthorizeButton:not(:disabled):focus .HaAuthorizeButtonTitle {
+            background-color: #4B3FCF;
+            text-decoration: none !important;
+        }
+    </style>
+{% endblock %}
+
