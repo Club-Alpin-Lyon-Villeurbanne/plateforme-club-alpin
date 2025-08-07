@@ -28,6 +28,7 @@ final readonly class PublishedEventExtension implements QueryCollectionExtension
         }
 
         $rootAlias = $queryBuilder->getRootAliases()[0];
-        $queryBuilder->andWhere(sprintf('%s.status = 1', $rootAlias));
+        $queryBuilder->andWhere(sprintf('%s.status = :status', $rootAlias))
+        ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE);
     }
 }

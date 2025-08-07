@@ -14,7 +14,7 @@ class ApiConfigController extends AbstractController
     public function getConfig(): Response
     {
         $version = $this->getParameter('api_version');
-        $minimumAppVersion = $this->getParameter('app_minimum_version');
+        $minimumAppVersion = $this->getParameter('mobile_app_minimum_version');
 
         return $this->json(['version' => $version, 'appVersion' => $minimumAppVersion]);
     }
