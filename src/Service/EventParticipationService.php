@@ -51,7 +51,7 @@ class EventParticipationService
     public function onBeforeRemoveParticipation(EventParticipation $participation): void
     {
         $this->ensureEventIsValid($participation->getEvt());
-        if (EventParticipation::STATUS_REFUSE === $participation->getStatus()) {
+        if ($participation->isStatusRefuse()) {
             throw new BadRequestHttpException('Cette participation a été refusée et ne peut être annulée');
         }
     }
