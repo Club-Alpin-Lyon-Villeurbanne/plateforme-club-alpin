@@ -58,7 +58,7 @@ class EventParticipationService
 
     public function onAfterRemoveParticipation(EventParticipation $participation): void
     {
-        // Notify
+        $this->mailer->sendRemoveParticipationMailToSupervisors($participation, '');
     }
 
     public function ensureEventIsValid(Evt $event)

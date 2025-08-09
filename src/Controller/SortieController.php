@@ -13,6 +13,7 @@ use App\Messenger\Message\SortiePubliee;
 use App\Repository\CommissionRepository;
 use App\Repository\EventParticipationRepository;
 use App\Repository\UserRepository;
+use App\Service\EventParticipationMailService;
 use App\Twig\JavascriptGlobalsExtension;
 use App\UserRights;
 use App\Utils\ExcelExport;
@@ -557,7 +558,7 @@ class SortieController extends AbstractController
     }
 
     #[Route(name: 'sortie_remove_participant', path: '/sortie/remove-participant/{id}', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function removeParticipant(Request $request, EventParticipation $participation, EntityManagerInterface $em, Mailer $mailer)
+    public function removeParticipant(Request $request, EventParticipation $participation, EntityManagerInterface $em, EventParticipationMailService $eventParticipationMailService): RedirectResponse
     {
         $event = $participation->getEvt();
 
@@ -572,24 +573,9 @@ class SortieController extends AbstractController
         $em->remove($participation);
         $em->flush();
 
-        $user = $this->getUser();
-
         if ($participation->isStatusValide() || $participation->isStatusEnAttente()) {
             // notifier les encadrants
-            $encadrants = $event->getEncadrants();
-            $reason = $request->request->get('cancel_reason') ?? '';
-            foreach ($encadrants as $encadrant) {
-                $mailer->send($encadrant->getUser(), 'transactional/sortie-desinscription', [
-                    'username' => $participation->getUser()->getFirstname() . ' ' . $participation->getUser()->getLastname(),
-                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'event_name' => $event->getTitre(),
-                    'commission' => $event->getCommission()->getTitle(),
-                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
-                    'reason_explanation' => $reason,
-                    'user' => $user,
-                    'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $user->getId() . '.html',
-                ], [], null, $user->getEmail());
-            }
+            $eventParticipationMailService->sendRemoveParticipationMailToSupervisors($participation, $request->request->get('cancel_reason'));
         }
 
         $this->addFlash('info', 'La participation est annulée');
