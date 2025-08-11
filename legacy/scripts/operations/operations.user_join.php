@@ -157,13 +157,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 $count_row = $result->fetch_row();
                 $stmt->close();
                 $current_participants = $count_row[0];
-                
+
                 // Vérifier si on peut accepter au moins une nouvelle inscription
                 if ($current_participants < $ngens_max) {
                     $status_evt_join = 1;
                     $auto_accept = true;
                 }
-                // Si on a atteint la limite, ne pas accepter automatiquement
+            // Si on a atteint la limite, ne pas accepter automatiquement
             } else {
                 // Si pas de limite définie, accepter automatiquement
                 $status_evt_join = 1;
