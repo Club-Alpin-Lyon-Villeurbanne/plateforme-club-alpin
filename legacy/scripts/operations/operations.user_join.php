@@ -139,15 +139,36 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         // si on accepte les demandes automatiquement
         $status_evt_join = 0;
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT auto_accept FROM caf_evt WHERE id_evt = ? LIMIT 1');
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT auto_accept, ngens_max_evt FROM caf_evt WHERE id_evt = ? LIMIT 1');
         $stmt->bind_param('i', $id_evt);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_row();
         $stmt->close();
         if (1 === $row[0]) {
-            $status_evt_join = 1;
-            $auto_accept = true;
+            // Si auto_accept est activé, vérifier qu'on n'a pas atteint la limite
+            $ngens_max = $row[1];
+            if ($ngens_max && $ngens_max > 0) {
+                // Compter le nombre actuel de participants acceptés
+                $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join = ? AND status_evt_join = 1');
+                $stmt->bind_param('i', $id_evt);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $count_row = $result->fetch_row();
+                $stmt->close();
+                $current_participants = $count_row[0];
+
+                // Vérifier si on peut accepter au moins une nouvelle inscription
+                if ($current_participants < $ngens_max) {
+                    $status_evt_join = 1;
+                    $auto_accept = true;
+                }
+            // Si on a atteint la limite, ne pas accepter automatiquement
+            } else {
+                // Si pas de limite définie, accepter automatiquement
+                $status_evt_join = 1;
+                $auto_accept = true;
+            }
         }
 
         $evt = get_evt($id_evt);
