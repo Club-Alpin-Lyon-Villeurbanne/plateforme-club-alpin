@@ -52,7 +52,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      * @var string
      */
     #[ORM\Column(name: 'email_user', type: 'string', length: 200, nullable: true, unique: true)]
-    #[Groups('user:read')]
+    #[Groups('user:read', 'user:contact')]
     private $email;
 
     /**
@@ -116,14 +116,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      * @var string
      */
     #[ORM\Column(name: 'tel_user', type: 'string', length: 100, nullable: true)]
-    #[Groups('user:details')]
+    #[Groups(['user:details', 'user:contact'])]
     private $tel;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'tel2_user', type: 'string', length: 100, nullable: true)]
-    #[Groups('user:details')]
+    #[Groups(['user:details', 'user:contact'])]
     private $tel2;
 
     /**

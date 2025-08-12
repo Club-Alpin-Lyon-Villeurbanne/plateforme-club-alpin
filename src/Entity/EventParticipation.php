@@ -2,8 +2,11 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Repository\EventParticipationRepository;
 use App\State\EventParticipationProcessor;
@@ -19,6 +22,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[UniqueEntity(fields: ['evt', 'user'], message: 'Cette participation existe déjà')]
 #[ApiResource(
     operations: [
+        new GetCollection(normalizationContext: ['groups' => ['eventParticipation:read', 'user:read', 'user:contact']]),
         new Post(securityPostDenormalize: "is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', object.getEvt())"),
         new Delete(securityPostDenormalize: "is_granted('PARTICIPANT_ANNULATION')"),
     ],
@@ -26,6 +30,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
     normalizationContext: ['groups' => ['eventParticipation:read', 'user:read']],
     denormalizationContext: ['groups' => ['eventParticipation:write']],
 )]
+#[ApiFilter(SearchFilter::class, properties: ['evt' => 'exact', 'status' => 'exact'])]
 class EventParticipation implements \JsonSerializable
 {
     public const STATUS_NON_CONFIRME = 0;
