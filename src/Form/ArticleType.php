@@ -133,15 +133,15 @@ class ArticleType extends AbstractType
                 'required' => false,
             ])
             ->add('agreeEdito', CheckboxType::class, [
-                'label' => 'Je certifie que j\'ai pris connaissance de la <a href="https://docs.google.com/document/d/1-ncrWAzL2cH-xqcU3k5ro__RdT7Y5R-yOiOfaxXvPBA/edit?tab=t.0#heading=h.3d5p9gabuuee">ligne éditoriale du club</a> avant de poster mon article',
+                'label' => 'Je certifie que j\'ai pris connaissance de la <a href="https://docs.google.com/document/d/1-ncrWAzL2cH-xqcU3k5ro__RdT7Y5R-yOiOfaxXvPBA/edit?tab=t.0#heading=h.3d5p9gabuuee" target="_blank">ligne éditoriale du club</a> avant de poster mon article',
                 'label_html' => true,
                 'required' => true,
             ])
             ->add('imagesAuthorized', CheckboxType::class, [
-                'label' => 'Je certifie que j\'ai l\'autorisation des propriétaires de chaque image et chaque photo présente dans cet article sinon le club se risque à des amendes, <a href="https://docs.google.com/document/d/1cqDS86gtFWpfUMVzyWUzOIvuy85eZXsfoeM652YEQVg/edit?tab=t.0#heading=h.1pyse3gnh66u">voici l\'explication de cas déjà passés dans notre club</a>.',
+                'label' => 'Je certifie que j\'ai l\'autorisation des propriétaires de chaque image et chaque photo présente dans cet article sinon le club se risque à des amendes, <a href="https://docs.google.com/document/d/1cqDS86gtFWpfUMVzyWUzOIvuy85eZXsfoeM652YEQVg/edit?tab=t.0#heading=h.1pyse3gnh66u" target="_blank">voici l\'explication de cas déjà passés dans notre club</a>.',
                 'label_html' => true,
                 'required' => true,
-                'help' => 'Vous n\'êtes pas autorisé à utiliser des photos d\'internet, sauf si elles proviennent des plateformes : <a href="https://www.pexels.com/fr-fr/">Pexels</a>, <a href="https://pixabay.com/fr/">Pixabay</a>, <a href="https://unsplash.com/fr">Unsplash</a>',
+                'help' => 'Vous n\'êtes pas autorisé à utiliser des photos d\'internet, sauf si elles proviennent des plateformes : <a href="https://www.pexels.com/fr-fr/" target="_blank">Pexels</a>, <a href="https://pixabay.com/fr/" target="_blank">Pixabay</a>, <a href="https://unsplash.com/fr" target="_blank">Unsplash</a>',
                 'help_html' => true,
             ])
             ->add('articleDraftSave', SubmitType::class, [
