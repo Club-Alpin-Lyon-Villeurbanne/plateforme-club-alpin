@@ -55,7 +55,7 @@
         </div>
       </div>
   
-      <div class="tw-mt-6 tw-rounded-lg tw-bg-amber-50 tw-p-4">
+      <div v-if="expenseReport.status === ExpenseStatus.SUBMITTED || expenseReport.status === ExpenseStatus.APPROVED" class="tw-mt-6 tw-rounded-lg tw-bg-amber-50 tw-p-4">
         <p class="tw-text-sm tw-text-amber-800">
           Si vous avez fait une erreur et souhaitez modifier votre note de frais, merci d'en faire la demande auprès de la comptabilité: 
           <a href="mailto:comptabilite@clubalpinlyon.fr" class="tw-font-medium tw-underline hover:tw-text-amber-900">
