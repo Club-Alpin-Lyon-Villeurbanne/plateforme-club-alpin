@@ -165,10 +165,11 @@ class FfcamSynchronizer
         // Ne synchroniser que si au moins un service est configuré
         if (!$this->mailerLiteService && !$this->mailchimpService) {
             $this->logger->debug('Email marketing sync skipped: no service configured');
+
             return;
         }
 
-        $this->logger->info(sprintf('Synchronizing %d new members with email marketing services', count($newMembers)));
+        $this->logger->info(sprintf('Synchronizing %d new members with email marketing services', \count($newMembers)));
 
         if ($this->mailerLiteService) {
             try {

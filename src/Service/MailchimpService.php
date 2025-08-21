@@ -10,7 +10,7 @@ class MailchimpService
 {
     private const BATCH_SIZE = 500;
     private ?string $apiUrl = null;
-    
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly LoggerInterface $logger,
@@ -24,55 +24,57 @@ class MailchimpService
     }
 
     /**
-     * Synchroniser tous les nouveaux membres avec Mailchimp
+     * Synchroniser tous les nouveaux membres avec Mailchimp.
      */
     public function syncNewMembers(array $users): array
     {
         $results = [
-            'total' => count($users),
+            'total' => \count($users),
             'imported' => 0,
             'updated' => 0,
             'failed' => 0,
             'skipped' => 0,
         ];
-        
+
         if (!$this->apiUrl || !$this->listId) {
             $this->logger->info('Mailchimp sync disabled or not configured');
-            $results['skipped'] = count($users);
+            $results['skipped'] = \count($users);
+
             return $results;
         }
-        
+
         // Filtrer les users sans email
-        $usersWithEmail = array_filter($users, fn(User $user) => $user->getEmail());
-        $results['skipped'] = count($users) - count($usersWithEmail);
-        
+        $usersWithEmail = array_filter($users, fn (User $user) => $user->getEmail());
+        $results['skipped'] = \count($users) - \count($usersWithEmail);
+
         if (empty($usersWithEmail)) {
             $this->logger->info('No users with email to sync to Mailchimp');
+
             return $results;
         }
-        
+
         // Traiter par batches
         $batches = array_chunk($usersWithEmail, self::BATCH_SIZE);
-        
+
         foreach ($batches as $batchIndex => $batch) {
-            $this->logger->info(sprintf('Processing Mailchimp batch %d/%d', $batchIndex + 1, count($batches)));
-            
+            $this->logger->info(sprintf('Processing Mailchimp batch %d/%d', $batchIndex + 1, \count($batches)));
+
             $batchResults = $this->processBatch($batch);
-            
+
             if ($batchResults) {
                 $results['imported'] += $batchResults['new_members'] ?? 0;
                 $results['updated'] += $batchResults['updated_members'] ?? 0;
                 $results['failed'] += $batchResults['error_count'] ?? 0;
             } else {
-                $results['failed'] += count($batch);
+                $results['failed'] += \count($batch);
             }
-            
+
             // Pause entre les batches pour éviter le rate limiting
-            if ($batchIndex < count($batches) - 1) {
+            if ($batchIndex < \count($batches) - 1) {
                 sleep(1);
             }
         }
-        
+
         $this->logger->info(sprintf(
             'Mailchimp sync completed: %d imported, %d updated, %d failed, %d skipped (total: %d)',
             $results['imported'],
@@ -81,17 +83,17 @@ class MailchimpService
             $results['skipped'],
             $results['total']
         ));
-        
+
         return $results;
     }
-    
+
     /**
-     * Traiter un batch de membres
+     * Traiter un batch de membres.
      */
     private function processBatch(array $users): ?array
     {
         $members = [];
-        
+
         foreach ($users as $user) {
             $members[] = [
                 'email_address' => $user->getEmail(),
@@ -106,7 +108,7 @@ class MailchimpService
                 'timestamp_signup' => $user->getDateAdhesion()?->format('c') ?? (new \DateTime())->format('c'),
             ];
         }
-        
+
         try {
             // Utiliser l'endpoint de batch subscribe
             $response = $this->httpClient->request(
@@ -121,17 +123,17 @@ class MailchimpService
                     ],
                 ]
             );
-            
-            if ($response->getStatusCode() === 200) {
+
+            if (200 === $response->getStatusCode()) {
                 $data = $response->toArray();
-                
+
                 $this->logger->info(sprintf(
                     'Mailchimp batch processed: %d new, %d updated, %d errors',
                     $data['new_members'] ?? 0,
                     $data['updated_members'] ?? 0,
                     $data['error_count'] ?? 0
                 ));
-                
+
                 // Log des erreurs si présentes
                 if (!empty($data['errors'])) {
                     foreach ($data['errors'] as $error) {
@@ -142,17 +144,17 @@ class MailchimpService
                         ));
                     }
                 }
-                
+
                 return $data;
             }
-            
+
             $this->logger->error('Mailchimp batch failed with status: ' . $response->getStatusCode());
+
             return null;
-            
         } catch (\Exception $e) {
             $this->logger->error('Mailchimp API error: ' . $e->getMessage());
+
             return null;
         }
     }
-    
 }

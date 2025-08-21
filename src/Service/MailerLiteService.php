@@ -10,7 +10,7 @@ class MailerLiteService
 {
     private const API_URL = 'https://connect.mailerlite.com/api';
     private const BATCH_SIZE = 100;
-    
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly LoggerInterface $logger,
@@ -18,51 +18,52 @@ class MailerLiteService
         private readonly string $welcomeGroupId,
     ) {
     }
-    
+
     /**
-     * Synchroniser tous les nouveaux membres en masse
+     * Synchroniser tous les nouveaux membres en masse.
      */
     public function syncNewMembers(array $users): array
     {
         $results = [
-            'total' => count($users),
+            'total' => \count($users),
             'imported' => 0,
             'updated' => 0,
             'failed' => 0,
             'skipped' => 0,
         ];
-        
+
         // Filtrer les users sans email
-        $usersWithEmail = array_filter($users, fn(User $user) => $user->getEmail());
-        $results['skipped'] = count($users) - count($usersWithEmail);
-        
+        $usersWithEmail = array_filter($users, fn (User $user) => $user->getEmail());
+        $results['skipped'] = \count($users) - \count($usersWithEmail);
+
         if (empty($usersWithEmail)) {
             $this->logger->info('No users with email to sync to MailerLite');
+
             return $results;
         }
-        
+
         // Traiter par batches pour respecter les limites de l'API
         $batches = array_chunk($usersWithEmail, self::BATCH_SIZE);
-        
+
         foreach ($batches as $batchIndex => $batch) {
-            $this->logger->info(sprintf('Processing batch %d/%d', $batchIndex + 1, count($batches)));
-            
+            $this->logger->info(sprintf('Processing batch %d/%d', $batchIndex + 1, \count($batches)));
+
             $batchResults = $this->importBatch($batch);
-            
+
             if ($batchResults) {
                 $results['imported'] += $batchResults['imported'] ?? 0;
                 $results['updated'] += $batchResults['updated'] ?? 0;
                 $results['failed'] += $batchResults['failed'] ?? 0;
             } else {
-                $results['failed'] += count($batch);
+                $results['failed'] += \count($batch);
             }
-            
+
             // Pause entre les batches pour éviter le rate limiting
-            if ($batchIndex < count($batches) - 1) {
+            if ($batchIndex < \count($batches) - 1) {
                 sleep(1);
             }
         }
-        
+
         $this->logger->info(sprintf(
             'MailerLite sync completed: %d imported, %d updated, %d failed, %d skipped (total: %d)',
             $results['imported'],
@@ -71,17 +72,17 @@ class MailerLiteService
             $results['skipped'],
             $results['total']
         ));
-        
+
         return $results;
     }
-    
+
     /**
-     * Importer un batch de membres dans le groupe de bienvenue
+     * Importer un batch de membres dans le groupe de bienvenue.
      */
     private function importBatch(array $users): ?array
     {
         $subscribers = [];
-        
+
         foreach ($users as $user) {
             $subscribers[] = [
                 'email' => $user->getEmail(),
@@ -95,7 +96,7 @@ class MailerLiteService
                 ],
             ];
         }
-        
+
         try {
             $response = $this->httpClient->request(
                 'POST',
@@ -113,16 +114,17 @@ class MailerLiteService
                     ],
                 ]
             );
-            
-            if ($response->getStatusCode() === 200 || $response->getStatusCode() === 201) {
+
+            if (200 === $response->getStatusCode() || 201 === $response->getStatusCode()) {
                 return $response->toArray();
             }
-            
+
             $this->logger->error('MailerLite import failed with status: ' . $response->getStatusCode());
+
             return null;
-            
         } catch (\Exception $e) {
             $this->logger->error('MailerLite API error during import: ' . $e->getMessage());
+
             return null;
         }
     }
