@@ -2,28 +2,26 @@ api_platform:
   title: CAF API
   version: "%env(API_VERSION)%"
   formats:
-    jsonld: ["application/ld+json"]
     json: ["application/json"]
     multipart: ["multipart/form-data"]
   patch_formats:
     json: ["application/merge-patch+json", "application/json"]
-    jsonapi: ["application/vnd.api+json"]
   docs_formats:
-    jsonld: ["application/ld+json"]
     jsonopenapi: ["application/vnd.openapi+json"]
     html: ["text/html"]
   error_formats:
     jsonproblem: ["application/problem+json"]
   defaults:
+    pagination_enabled: true
+    pagination_client_enabled: true
     pagination_client_items_per_page: true
     pagination_maximum_items_per_page: 30
+    pagination_partial: false
     stateless: true
     cache_headers:
       vary: ["Content-Type", "Authorization", "Origin"]
     extra_properties:
   use_symfony_listeners: true
-  serializer:
-    hydra_prefix: true
   swagger:
     api_keys:
       JWT:
