@@ -55,7 +55,7 @@ class Commission
      * @var string
      */
     #[ORM\Column(name: 'title_commission', type: 'string', length: 30, nullable: false)]
-    #[Groups('commission:read')]
+    #[Groups(['commission:read', 'event:read'])]
     private $title;
 
     /**
