@@ -136,6 +136,19 @@ services:
       $defaultAlertArticlePrefix: "%env(ALERT_ARTICLE_PREFIX)%"
       $defaultAlertSortiePrefix: "%env(ALERT_SORTIE_PREFIX)%"
 
+  App\Service\MailerLiteService:
+    arguments:
+      $apiKey: "%env(MAILERLITE_API_KEY)%"
+      $welcomeGroupId: "159667990712813289"
+      
+  App\EventListener\NewMemberMailerLiteListener:
+    arguments:
+      $mailerLiteEnabled: "%env(MAILERLITE_ENABLED)%"
+      
+  App\Command\MailerLiteSyncCommand:
+    arguments:
+      $mailerLiteEnabled: "%env(MAILERLITE_ENABLED)%"
+
   App\Service\ExpenseReportCalculator:
     arguments:
       $config: '%expense_report%'
