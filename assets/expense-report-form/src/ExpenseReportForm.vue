@@ -16,16 +16,10 @@
     <div class="tw-py-4">
       <div v-if="isLoading">Chargement de la note de frais...</div>
       <div v-else-if="expenseReport">
-        <div v-if="expenseReport.status === ExpenseStatus.SUBMITTED">
-          <p>
-            <ExpenseReportSummary :expense-report="expenseReport" />
-          </p>
-        </div>
-        <div v-else-if="expenseReport.status === ExpenseStatus.APPROVED">
-          Votre note de frais a été acceptée.
-        </div>
-        <div v-else-if="expenseReport.status === ExpenseStatus.ACCOUNTED">
-          Votre note de frais a été intégrée dans l'outil de comptabilité et n'est donc plus modifiable.
+        <div v-if="expenseReport.status === ExpenseStatus.SUBMITTED || 
+                     expenseReport.status === ExpenseStatus.APPROVED || 
+                     expenseReport.status === ExpenseStatus.ACCOUNTED">
+          <ExpenseReportSummary :expense-report="expenseReport" />
         </div>
         <div v-else>
           <div
