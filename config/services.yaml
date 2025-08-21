@@ -154,6 +154,14 @@ services:
   App\Command\MailchimpSyncCommand:
     arguments:
       $mailchimpEnabled: "%env(MAILCHIMP_ENABLED)%"
+      
+  # Configuration conditionnelle de FfcamSynchronizer pour l'email marketing
+  # Les services sont optionnels (préfixe @?) et ne seront injectés que si configurés
+  # Activer uniquement pour Lyon avec EMAIL_MARKETING_SYNC_ENABLED=true dans .env.local
+  App\Service\FfcamSynchronizer:
+    arguments:
+      $mailerLiteService: '@?App\Service\MailerLiteService'
+      $mailchimpService: '@?App\Service\MailchimpService'
 
   App\Service\ExpenseReportCalculator:
     arguments:
