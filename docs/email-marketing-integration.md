@@ -2,153 +2,41 @@
 
 ## Vue d'ensemble
 
-Cette fonctionnalité permet de synchroniser automatiquement les nouveaux adhérents avec des services d'email marketing (MailerLite, Mailchimp) pour l'envoi automatique de mails de bienvenue.
+Synchronisation automatique des nouveaux adhérents avec MailerLite et Mailchimp pour l'envoi de mails de bienvenue.
 
-## Architecture
+## Fonctionnement
 
-L'intégration se fait via le processus de synchronisation FFCAM existant :
-
-```
-Cron Job (nuit) → FfcamFileSync → FfcamSynchronizer → MailerLite/Mailchimp
-```
-
-### Composants principaux
-
-- **FfcamSynchronizer** : Service principal qui collecte les nouveaux membres lors de la synchronisation FFCAM
-- **MailerLiteService** : Service d'intégration avec MailerLite (implémenté)
-- **MailchimpService** : Service d'intégration avec Mailchimp (stub, à implémenter)
-- **MailerLiteSyncCommand** : Commande pour synchroniser manuellement les membres récents
+La synchronisation se fait automatiquement chaque nuit via le cron FFCAM :
+1. Import des membres depuis le fichier FFCAM
+2. Collecte des nouveaux membres
+3. Envoi en batch vers MailerLite/Mailchimp
+4. Déclenchement automatique des mails de bienvenue
 
 ## Configuration
 
-### 1. Variables d'environnement
-
-Ajouter dans `.env.local` :
+Dans `.env.local` :
 
 ```bash
-# Activation générale de la synchronisation email marketing
-EMAIL_MARKETING_SYNC_ENABLED=true
-
-# Configuration MailerLite
+# MailerLite
 MAILERLITE_ENABLED=true
 MAILERLITE_API_KEY=your_api_key_here
-MAILERLITE_WELCOME_GROUP_ID=159667990712813289  # Groupe "Nouveaux adhérents"
+MAILERLITE_WELCOME_GROUP_ID=159667990712813289
 
-# Configuration Mailchimp (à implémenter)
-MAILCHIMP_ENABLED=false
-MAILCHIMP_API_KEY=
-MAILCHIMP_LIST_ID=
+# Mailchimp  
+MAILCHIMP_ENABLED=true
+MAILCHIMP_API_KEY=your_api_key_here
+MAILCHIMP_LIST_ID=your_list_id_here
 ```
 
-### 2. Configuration par instance
+Actif uniquement pour Lyon. Chambéry et Clermont gardent les valeurs par défaut (désactivé).
 
-- **Lyon** : Activer `EMAIL_MARKETING_SYNC_ENABLED=true`
-- **Chambéry** : Garder `EMAIL_MARKETING_SYNC_ENABLED=false` (par défaut)
-- **Clermont** : Garder `EMAIL_MARKETING_SYNC_ENABLED=false` (par défaut)
+## Champs synchronisés
 
-## Utilisation
-
-La synchronisation se fait automatiquement chaque nuit via le cron job FFCAM :
-- Les nouveaux membres sont collectés pendant l'import FFCAM
-- Ils sont envoyés en batch à MailerLite/Mailchimp
-- Les mails de bienvenue sont déclenchés automatiquement
-
-Il n'y a pas de synchronisation manuelle - tout se fait automatiquement via le cron FFCAM.
-
-## APIs d'intégration
-
-### MailerLite
-
-#### Endpoints utilisés
-- `POST /subscribers` : Créer/mettre à jour un abonné
-- `POST /subscribers/{id}/groups/{groupId}` : Ajouter à un groupe
-- `POST /groups/{groupId}/subscribers/import` : Import en masse
-- `GET /batch/{id}` : Vérifier le statut d'un import
-
-#### Champs synchronisés
-- `email` : Email de l'adhérent
-- `name` : Prénom
-- `last_name` : Nom
-- `caf_number` : Numéro CAF
-- `city` : Ville
-- `postal_code` : Code postal
-- `registration_date` : Date d'adhésion
-
-### Mailchimp
-
-#### Endpoints utilisés
-- `POST /lists/{list_id}` : Import en masse de membres
-- `PUT /lists/{list_id}/members/{hash}` : Ajouter/mettre à jour un membre unique
-
-#### Champs synchronisés (merge fields)
-- `FNAME` : Prénom
-- `LNAME` : Nom
-- `CAFNUM` : Numéro CAF
-- `CITY` : Ville
-- `ZIP` : Code postal
-- `timestamp_signup` : Date d'adhésion
-
-## Monitoring
-
-### Logs
-
-Les logs sont disponibles dans `var/log/dev.log` ou `var/log/prod.log` :
-
-```
-[info] Synchronizing 5 new members with email marketing services
-[info] MailerLite sync: 3 imported, 2 updated, 0 failed
-```
-
-### Vérification
-
-1. Vérifier que les nouveaux membres apparaissent dans MailerLite
-2. Vérifier qu'ils sont dans le groupe "Nouveaux adhérents"
-3. Vérifier que les mails de bienvenue sont envoyés
-
-## Sécurité
-
-- Les API keys sont stockées dans `.env.local` (non versionné)
-- Les erreurs d'API n'interrompent pas la synchronisation FFCAM
-- Les membres sans email sont ignorés silencieusement
-- Les désinscrits ne sont pas réinscrits (`resubscribe: false`)
-
-## Maintenance
-
-### Configurer Mailchimp
-
-L'intégration Mailchimp est maintenant complète. Pour l'activer :
-
-1. Obtenir une clé API depuis [Mailchimp Account Settings](https://admin.mailchimp.com/account/api/)
-2. Créer ou identifier la liste (audience) à utiliser
-3. Ajouter dans `.env.local` :
-   ```bash
-   MAILCHIMP_ENABLED=true
-   MAILCHIMP_API_KEY=xxxxx-us6  # Format: key-datacenter
-   MAILCHIMP_LIST_ID=abc123def4
-   ```
-4. Tester avec `php bin/console app:mailchimp:sync --dry-run`
-5. Activer en production
-
-### Désactiver temporairement
-
-Pour désactiver temporairement sans supprimer la configuration :
-
-```bash
-EMAIL_MARKETING_SYNC_ENABLED=false
-```
+**MailerLite** : name, last_name, caf_number, city, postal_code, registration_date  
+**Mailchimp** : FNAME, LNAME, CAFNUM, CITY, ZIP
 
 ## Limitations
 
-### MailerLite
-- Maximum 100 membres par batch
-- Pause de 1 seconde entre les batches (rate limiting)
-- Timeout de 60 secondes pour la vérification d'import
-
-### Mailchimp
-- Maximum 500 membres par batch
-- Authentification Basic Auth avec API key
-- Data center extrait automatiquement de l'API key
-
-### Général
-- Les membres manuels et nomades ne sont pas synchronisés
-- Les membres sans email sont ignorés
+- MailerLite : max 100 membres par batch
+- Mailchimp : max 500 membres par batch  
+- Les membres manuels, nomades et sans email sont ignorés
