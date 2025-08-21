@@ -146,14 +146,6 @@ services:
     arguments:
       $apiKey: "%env(MAILCHIMP_API_KEY)%"
       $listId: "%env(MAILCHIMP_LIST_ID)%"
-    
-  App\Command\MailerLiteSyncCommand:
-    arguments:
-      $mailerLiteEnabled: "%env(MAILERLITE_ENABLED)%"
-      
-  App\Command\MailchimpSyncCommand:
-    arguments:
-      $mailchimpEnabled: "%env(MAILCHIMP_ENABLED)%"
       
   # Configuration conditionnelle de FfcamSynchronizer pour l'email marketing
   # Les services sont optionnels (préfixe @?) et ne seront injectés que si configurés

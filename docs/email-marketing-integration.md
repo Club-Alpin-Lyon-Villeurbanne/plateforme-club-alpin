@@ -48,28 +48,12 @@ MAILCHIMP_LIST_ID=
 
 ## Utilisation
 
-### Synchronisation automatique
-
 La synchronisation se fait automatiquement chaque nuit via le cron job FFCAM :
 - Les nouveaux membres sont collectés pendant l'import FFCAM
 - Ils sont envoyés en batch à MailerLite/Mailchimp
 - Les mails de bienvenue sont déclenchés automatiquement
 
-### Synchronisation manuelle
-
-Pour synchroniser manuellement les membres des 7 derniers jours :
-
-#### MailerLite
-```bash
-php bin/console app:mailerlite:sync
-```
-
-#### Mailchimp
-```bash
-php bin/console app:mailchimp:sync
-```
-
-Ces commandes synchronisent automatiquement les nouveaux membres des 7 derniers jours si le service est activé dans la configuration.
+Il n'y a pas de synchronisation manuelle - tout se fait automatiquement via le cron FFCAM.
 
 ## APIs d'intégration
 
