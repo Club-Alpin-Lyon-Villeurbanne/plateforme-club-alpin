@@ -8,22 +8,18 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class MailchimpService
 {
-    private const BATCH_SIZE = 500; // Mailchimp permet jusqu'à 500 membres par batch
+    private const BATCH_SIZE = 500;
     private ?string $apiUrl = null;
-    private bool $enabled = false;
     
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly LoggerInterface $logger,
         private readonly ?string $apiKey = null,
         private readonly ?string $listId = null,
-        private readonly ?string $dataCenter = null,
     ) {
-        // Extraire le data center de l'API key (format: xxxxx-us6)
         if ($this->apiKey) {
             $parts = explode('-', $this->apiKey);
             $this->apiUrl = sprintf('https://%s.api.mailchimp.com/3.0', $parts[1] ?? 'us1');
-            $this->enabled = true;
         }
     }
 
@@ -40,7 +36,7 @@ class MailchimpService
             'skipped' => 0,
         ];
         
-        if (!$this->enabled || !$this->listId) {
+        if (!$this->apiUrl || !$this->listId) {
             $this->logger->info('Mailchimp sync disabled or not configured');
             $results['skipped'] = count($users);
             return $results;
@@ -159,50 +155,4 @@ class MailchimpService
         }
     }
     
-    /**
-     * Ajouter un membre unique (pour compatibilité future)
-     */
-    public function addNewMember(User $user): bool
-    {
-        if (!$this->enabled || !$this->listId || !$user->getEmail()) {
-            return false;
-        }
-        
-        try {
-            $subscriberHash = md5(strtolower($user->getEmail()));
-            
-            // Utiliser PUT pour add or update
-            $response = $this->httpClient->request(
-                'PUT',
-                $this->apiUrl . '/lists/' . $this->listId . '/members/' . $subscriberHash,
-                [
-                    'auth_basic' => ['anystring', $this->apiKey],
-                    'json' => [
-                        'email_address' => $user->getEmail(),
-                        'status' => 'subscribed',
-                        'merge_fields' => [
-                            'FNAME' => $user->getFirstname() ?? '',
-                            'LNAME' => $user->getLastname() ?? '',
-                            'CAFNUM' => $user->getCafnum() ?? '',
-                            'CITY' => $user->getVille() ?? '',
-                            'ZIP' => $user->getCp() ?? '',
-                        ],
-                        'timestamp_signup' => $user->getDateAdhesion()?->format('c') ?? (new \DateTime())->format('c'),
-                    ],
-                ]
-            );
-            
-            if ($response->getStatusCode() === 200) {
-                $this->logger->info('Mailchimp: Member added/updated for user ' . $user->getId());
-                return true;
-            }
-            
-            $this->logger->error('Mailchimp: Failed to add member for user ' . $user->getId());
-            return false;
-            
-        } catch (\Exception $e) {
-            $this->logger->error('Mailchimp error for user ' . $user->getId() . ': ' . $e->getMessage());
-            return false;
-        }
-    }
 }
