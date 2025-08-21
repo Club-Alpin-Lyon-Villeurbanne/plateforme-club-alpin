@@ -18,6 +18,8 @@ class FfcamSynchronizer
         private readonly UserRepository $userRepository,
         private readonly FfcamFileParser $fileParser,
         private readonly MemberMerger $memberMerger,
+        private readonly ?MailerLiteService $mailerLiteService = null,
+        private readonly ?MailchimpService $mailchimpService = null,
     ) {
         $today = new \DateTime();
         $startDate = new \DateTime($today->format('Y') . '-08-25');
@@ -53,6 +55,7 @@ class FfcamSynchronizer
     private function processMembers(\Generator $members): array
     {
         $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0];
+        $newMembers = [];
         $batchSize = 20;
         $i = 0;
 
@@ -89,6 +92,7 @@ class FfcamSynchronizer
                 $parsedUser->setTsInsert(time());
                 $parsedUser->setValid(false);
                 $this->entityManager->persist($parsedUser);
+                $newMembers[] = $parsedUser;
                 ++$stats['inserted'];
             }
 
@@ -106,6 +110,11 @@ class FfcamSynchronizer
             $this->entityManager->flush();
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
+        }
+
+        // Synchroniser les nouveaux membres avec les services d'email marketing
+        if (!empty($newMembers)) {
+            $this->syncEmailMarketing($newMembers);
         }
 
         return $stats;
@@ -144,6 +153,49 @@ class FfcamSynchronizer
             $zip->open($filename, \ZipArchive::CREATE);
             $zip->addFile($filePath, basename($filePath));
             $zip->close();
+        }
+    }
+
+    private function syncEmailMarketing(array $newMembers): void
+    {
+        if (empty($newMembers)) {
+            return;
+        }
+
+        // Ne synchroniser que si au moins un service est configuré
+        if (!$this->mailerLiteService && !$this->mailchimpService) {
+            $this->logger->debug('Email marketing sync skipped: no service configured');
+            return;
+        }
+
+        $this->logger->info(sprintf('Synchronizing %d new members with email marketing services', count($newMembers)));
+
+        if ($this->mailerLiteService) {
+            try {
+                $results = $this->mailerLiteService->syncNewMembers($newMembers);
+                $this->logger->info(sprintf(
+                    'MailerLite sync: %d imported, %d updated, %d failed',
+                    $results['imported'],
+                    $results['updated'],
+                    $results['failed']
+                ));
+            } catch (\Exception $e) {
+                $this->logger->error('MailerLite sync failed: ' . $e->getMessage());
+            }
+        }
+
+        if ($this->mailchimpService) {
+            try {
+                $results = $this->mailchimpService->syncNewMembers($newMembers);
+                $this->logger->info(sprintf(
+                    'Mailchimp sync: %d imported, %d updated, %d failed',
+                    $results['imported'],
+                    $results['updated'],
+                    $results['failed']
+                ));
+            } catch (\Exception $e) {
+                $this->logger->error('Mailchimp sync failed: ' . $e->getMessage());
+            }
         }
     }
 

@@ -136,18 +136,24 @@ services:
       $defaultAlertArticlePrefix: "%env(ALERT_ARTICLE_PREFIX)%"
       $defaultAlertSortiePrefix: "%env(ALERT_SORTIE_PREFIX)%"
 
+  # Email Marketing Services Configuration
   App\Service\MailerLiteService:
     arguments:
       $apiKey: "%env(MAILERLITE_API_KEY)%"
-      $welcomeGroupId: "159667990712813289"
-      
-  App\EventListener\NewMemberMailerLiteListener:
+      $welcomeGroupId: "%env(MAILERLITE_WELCOME_GROUP_ID)%"
+
+  App\Service\MailchimpService:
     arguments:
-      $mailerLiteEnabled: "%env(MAILERLITE_ENABLED)%"
-      
+      $apiKey: "%env(MAILCHIMP_API_KEY)%"
+      $listId: "%env(MAILCHIMP_LIST_ID)%"
+    
   App\Command\MailerLiteSyncCommand:
     arguments:
       $mailerLiteEnabled: "%env(MAILERLITE_ENABLED)%"
+      
+  App\Command\MailchimpSyncCommand:
+    arguments:
+      $mailchimpEnabled: "%env(MAILCHIMP_ENABLED)%"
 
   App\Service\ExpenseReportCalculator:
     arguments:

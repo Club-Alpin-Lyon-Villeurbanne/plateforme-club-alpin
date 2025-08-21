@@ -1,0 +1,18 @@
+# Configuration de l'intégration Email Marketing
+# Cette fonctionnalité permet de synchroniser automatiquement les nouveaux adhérents
+# avec des services d'email marketing comme MailerLite et Mailchimp
+#
+# Pour activer cette fonctionnalité sur une instance (ex: Lyon):
+# 1. Mettre EMAIL_MARKETING_SYNC_ENABLED=true dans .env.local
+# 2. Configurer MailerLite et/ou Mailchimp selon les besoins:
+#    - MAILERLITE_ENABLED=true et MAILERLITE_API_KEY=xxx
+#    - MAILCHIMP_ENABLED=true, MAILCHIMP_API_KEY=xxx et MAILCHIMP_LIST_ID=xxx
+
+services:
+    # Les services d'email marketing sont optionnels (utilisation du préfixe @?)
+    # Si les variables d'environnement ne sont pas configurées ou si EMAIL_MARKETING_SYNC_ENABLED=false,
+    # les services ne seront pas injectés et la synchronisation sera ignorée
+    App\Service\FfcamSynchronizer:
+        arguments:
+            $mailerLiteService: '@?App\Service\MailerLiteService'
+            $mailchimpService: '@?App\Service\MailchimpService'
