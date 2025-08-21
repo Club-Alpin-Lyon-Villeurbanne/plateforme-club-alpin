@@ -2,10 +2,12 @@
 
 namespace App\State;
 
+use ApiPlatform\Doctrine\Orm\Paginator;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Repository\ExpenseReportRepository;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
 use Symfony\Bundle\SecurityBundle\Security;
 
 class ExpenseReportProvider implements ProviderInterface
@@ -41,7 +43,18 @@ class ExpenseReportProvider implements ProviderInterface
                    ->setParameter('draftStatus', ExpenseReportStatusEnum::DRAFT->value);
             }
 
-            return $qb->getQuery()->getResult();
+            // Gérer la pagination
+            $page = (int) ($context['filters']['page'] ?? 1);
+            $itemsPerPage = (int) ($context['filters']['itemsPerPage'] ?? 30);
+            $firstResult = ($page - 1) * $itemsPerPage;
+            
+            $qb->setFirstResult($firstResult)
+               ->setMaxResults($itemsPerPage);
+            
+            $doctrinePaginator = new DoctrinePaginator($qb);
+            $doctrinePaginator->setUseOutputWalkers(false);
+            
+            return new Paginator($doctrinePaginator);
         }
 
         $criterias = [
