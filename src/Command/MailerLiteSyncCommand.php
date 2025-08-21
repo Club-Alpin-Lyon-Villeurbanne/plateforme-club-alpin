@@ -7,7 +7,6 @@ use App\Service\MailerLiteService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -27,30 +26,23 @@ class MailerLiteSyncCommand extends Command
     
     protected function configure(): void
     {
-        $this
-            ->addOption('days', 'd', InputOption::VALUE_REQUIRED, 'Nombre de jours en arrière pour chercher les nouveaux membres', 7)
-            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Mode simulation, n\'envoie pas vraiment à MailerLite')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force la synchronisation même si MailerLite est désactivé')
-        ;
+        // Pas d'options, commande simple
     }
     
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         
-        if ($this->mailerLiteEnabled !== 'true' && !$input->getOption('force')) {
-            $io->warning('MailerLite est désactivé. Utilisez --force pour forcer la synchronisation.');
+        if ($this->mailerLiteEnabled !== 'true') {
+            $io->warning('MailerLite est désactivé dans la configuration.');
             return Command::SUCCESS;
         }
         
-        $days = (int) $input->getOption('days');
-        $dryRun = $input->getOption('dry-run');
-        
         $io->title('Synchronisation des nouveaux adhérents avec MailerLite');
         
-        // Récupérer les nouveaux membres des X derniers jours
+        // Récupérer les nouveaux membres des 7 derniers jours
         $since = new \DateTime();
-        $since->modify("-{$days} days");
+        $since->modify('-7 days');
         $sinceTimestamp = $since->getTimestamp();
         
         $io->info(sprintf('Recherche des nouveaux membres depuis le %s', $since->format('Y-m-d H:i:s')));
@@ -74,29 +66,7 @@ class MailerLiteSyncCommand extends Command
             return Command::SUCCESS;
         }
         
-        $io->info(sprintf('%d nouveau(x) membre(s) avec email trouvé(s)', $count));
-        
-        if ($dryRun) {
-            $io->note('Mode simulation activé - aucune donnée ne sera envoyée à MailerLite');
-            
-            $rows = [];
-            foreach ($newMembers as $user) {
-                $rows[] = [
-                    $user->getId(),
-                    $user->getCafnum(),
-                    $user->getFirstname() . ' ' . $user->getLastname(),
-                    $user->getEmail(),
-                    date('Y-m-d H:i:s', $user->getTsInsert()),
-                ];
-            }
-            
-            $io->table(
-                ['ID', 'N° CAF', 'Nom', 'Email', 'Date inscription'],
-                $rows
-            );
-            
-            return Command::SUCCESS;
-        }
+        $io->info(sprintf('%d nouveau(x) membre(s) avec email trouvé(s)', $count))
         
         // Synchroniser avec MailerLite en utilisant l'import en masse
         $io->section('Synchronisation avec MailerLite');

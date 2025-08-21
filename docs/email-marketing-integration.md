@@ -57,24 +57,19 @@ La synchronisation se fait automatiquement chaque nuit via le cron job FFCAM :
 
 ### Synchronisation manuelle
 
-#### MailerLite
-Pour synchroniser manuellement les membres des 7 derniers jours avec MailerLite :
+Pour synchroniser manuellement les membres des 7 derniers jours :
 
+#### MailerLite
 ```bash
 php bin/console app:mailerlite:sync
 ```
 
 #### Mailchimp
-Pour synchroniser manuellement les membres des 7 derniers jours avec Mailchimp :
-
 ```bash
 php bin/console app:mailchimp:sync
 ```
 
-#### Options disponibles (pour les deux commandes)
-- `--days=N` : Nombre de jours en arrière (défaut: 7)
-- `--dry-run` : Mode simulation, affiche les membres sans synchroniser
-- `--force` : Force la synchronisation même si désactivée
+Ces commandes synchronisent automatiquement les nouveaux membres des 7 derniers jours si le service est activé dans la configuration.
 
 ## APIs d'intégration
 
