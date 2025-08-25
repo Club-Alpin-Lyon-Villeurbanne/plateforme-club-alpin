@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\EventParticipationRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 /**
  * EventParticipation.
@@ -12,6 +14,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\Table(name: 'caf_evt_join')]
 #[ORM\Entity(repositoryClass: EventParticipationRepository::class)]
 #[UniqueEntity(fields: ['evt', 'user'], message: 'Cette participation existe déjà')]
+#[ApiResource(
+    operations: [],
+    normalizationContext: ['groups' => ['eventParticipation:read', 'user:read']],
+)]
 class EventParticipation implements \JsonSerializable
 {
     public const STATUS_NON_CONFIRME = 0;
@@ -43,12 +49,14 @@ class EventParticipation implements \JsonSerializable
     #[ORM\Column(name: 'id_evt_join', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[Groups(['eventParticipation:read', 'user:read'])]
     private $id;
 
     /**
      * @var int
      */
     #[ORM\Column(name: 'status_evt_join', type: 'smallint', nullable: false, options: ['comment' => '0=non confirmé - 1=validé - 2=refusé'])]
+    #[Groups(['eventParticipation:read', 'user:read'])]
     private $status = self::STATUS_NON_CONFIRME;
 
     #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'participations', fetch: 'EAGER')]
@@ -60,6 +68,7 @@ class EventParticipation implements \JsonSerializable
      */
     #[ORM\ManyToOne(targetEntity: 'User', fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'user_evt_join', nullable: false, referencedColumnName: 'id_user', onDelete: 'CASCADE')]
+    #[Groups('eventParticipation:read')]
     private $user;
 
     /**
@@ -73,12 +82,14 @@ class EventParticipation implements \JsonSerializable
      * @var string
      */
     #[ORM\Column(name: 'role_evt_join', type: 'string', length: 20, nullable: false)]
+    #[Groups('eventParticipation:read')]
     private $role;
 
     /**
      * @var int
      */
     #[ORM\Column(name: 'tsp_evt_join', type: 'bigint', nullable: false)]
+    #[Groups('eventParticipation:read')]
     private $tsp;
 
     /**
