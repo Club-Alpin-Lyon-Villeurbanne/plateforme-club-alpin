@@ -80,7 +80,7 @@ class CommissionController extends AbstractController
         $commission = $doctrine->getRepository(Commission::class)->find($commissionId);
 
         $form = $formFactory->createBuilder()
-            ->add('event', EntityType::class, [
+            ->add('evt', EntityType::class, [
                 'class' => Evt::class,
                 'choices' => array_filter(
                     $eventRepository->getRecentPastEvents($commission),
