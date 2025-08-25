@@ -97,8 +97,12 @@ class ArticleController extends AbstractController
                 }
                 $article->setTopubly(!$isDraft);
 
-                if ('cr' == $form->get('articleType') && !$article->getEvt()) {
-                    $errors[] = 'Si cet article est un compte rendu de sortie, veuillez sélectionner la sortie liée.';
+                if ('cr' === $formData['articleType']) {
+                    if (!empty($formData['evt'])) {
+                        $article->setEvt($evtRepository->find($formData['evt']));
+                    } else {
+                        $errors[] = 'Si cet article est un compte rendu de sortie, veuillez sélectionner la sortie liée.';
+                    }
                 }
 
                 $mediaUploadId = $form->get('mediaUploadId')->getData();
