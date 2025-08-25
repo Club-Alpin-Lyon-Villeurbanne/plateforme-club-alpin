@@ -35,7 +35,7 @@ class ExpenseReportCalculator
      * - PERSONAL_VEHICLE : distance * taux + (tollFee / divisionPeage)
      * - CLUB_MINIBUS     : (distance * tauxMinibus + fuel + tollFee) / nbPassagers
      * - RENTAL_MINIBUS   : (rentalPrice + fuel + tollFee) / nbPassagers
-     * - PUBLIC_TRANSPORT : ticketPrice
+     * - PUBLIC_TRANSPORT : ticketPrice.
      *
      * @param array $transport Par ex. :
      *                         [
