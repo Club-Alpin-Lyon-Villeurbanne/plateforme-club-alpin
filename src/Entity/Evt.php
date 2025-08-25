@@ -103,15 +103,9 @@ class Evt
     private ?Groupe $groupe;
 
     #[ORM\Column(name: 'tsp_evt', type: 'bigint', nullable: true, options: ['comment' => 'timestamp du début du event'])]
-    #[Groups('event:read')]
-    #[SerializedName('dateDebut')]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     private ?int $tsp;
 
     #[ORM\Column(name: 'tsp_end_evt', type: 'bigint', nullable: true)]
-    #[Groups('event:read')]
-    #[SerializedName('dateFin')]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     private ?int $tspEnd;
 
     #[ORM\Column(name: 'tsp_crea_evt', type: 'bigint', nullable: false, options: ['comment' => "Création de l'entrée"])]
@@ -514,6 +508,20 @@ class Evt
         return $this;
     }
 
+    #[Groups('event:read')]
+    #[SerializedName('dateDebut')]
+    public function getDateDebut(): ?string
+    {
+        return $this->tsp ? date('Y-m-d H:i:s', $this->tsp) : null;
+    }
+
+    #[Groups('event:read')]
+    #[SerializedName('dateFin')]
+    public function getDateFin(): ?string
+    {
+        return $this->tspEnd ? date('Y-m-d H:i:s', $this->tspEnd) : null;
+    }
+
     public function isPublicStatusUnseen()
     {
         return self::STATUS_PUBLISHED_UNSEEN === $this->status;
@@ -564,12 +572,12 @@ class Evt
         return $this->tspEnd < time();
     }
 
-    public function getTspEnd(): ?string
+    public function getTspEnd(): ?int
     {
         return $this->tspEnd;
     }
 
-    public function setTspEnd(string $tspEnd): self
+    public function setTspEnd(int $tspEnd): self
     {
         $this->tspEnd = $tspEnd;
 
