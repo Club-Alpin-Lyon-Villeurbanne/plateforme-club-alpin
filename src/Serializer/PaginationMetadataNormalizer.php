@@ -13,7 +13,7 @@ final class PaginationMetadataNormalizer implements NormalizerInterface, Normali
 
     private const ALREADY_CALLED = 'PAGINATION_METADATA_NORMALIZER_ALREADY_CALLED';
 
-    public function normalize($object, string $format = null, array $context = []): array
+    public function normalize($object, ?string $format = null, array $context = []): array
     {
         $context[self::ALREADY_CALLED] = true;
 
@@ -33,7 +33,7 @@ final class PaginationMetadataNormalizer implements NormalizerInterface, Normali
         ];
     }
 
-    public function supportsNormalization($data, string $format = null, array $context = []): bool
+    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
     {
         return !isset($context[self::ALREADY_CALLED])
             && $data instanceof PaginatorInterface
