@@ -52,17 +52,23 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
 
         $rootAlias = $queryBuilder->getRootAliases()[0];
         $canValidateReport = $this->security->isGranted('validate_expense_report');
-
-        // Filtrer par utilisateur si pas les droits de validation
+        
+        // 1. Toujours filtrer par utilisateur (sauf pour les validateurs)
         if (!$canValidateReport) {
             $queryBuilder->andWhere(sprintf('%s.user = :current_user', $rootAlias))
                 ->setParameter('current_user', $this->security->getUser());
         }
 
-        // Exclure les brouillons sauf si inclure_brouillons=true
+        // 2. Pour les collections uniquement : exclure les brouillons par défaut
+        $isCollectionOperation = ($context['operation'] ?? null) instanceof \ApiPlatform\Metadata\GetCollection;
+        if (!$isCollectionOperation) {
+            return; // Pas de filtre sur le statut pour GET/PATCH/DELETE d'un item spécifique
+        }
+
+        // 3. Permettre d'inclure les brouillons avec ?inclure_brouillons=true
         $filters = $context['filters'] ?? [];
         $includeDrafts = isset($filters['inclure_brouillons']) && 'true' === $filters['inclure_brouillons'];
-
+        
         if (!$includeDrafts) {
             $queryBuilder->andWhere(sprintf('%s.status != :draft_status', $rootAlias))
                 ->setParameter('draft_status', ExpenseReportStatusEnum::DRAFT->value);
