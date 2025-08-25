@@ -2,17 +2,14 @@ api_platform:
   title: CAF API
   version: "%env(API_VERSION)%"
   formats:
-    jsonapi: ["application/vnd.api+json"]
     json: ["application/json"]
     multipart: ["multipart/form-data"]
   patch_formats:
-    jsonapi: ["application/vnd.api+json"]
     json: ["application/merge-patch+json", "application/json"]
   docs_formats:
     jsonopenapi: ["application/vnd.openapi+json"]
     html: ["text/html"]
   error_formats:
-    jsonapi: ["application/vnd.api+json"]
     jsonproblem: ["application/problem+json"]
   defaults:
     pagination_client_items_per_page: true

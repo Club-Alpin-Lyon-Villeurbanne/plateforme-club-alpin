@@ -11,18 +11,20 @@ use App\Controller\Api\ExpenseAttachmentController;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
+    shortName: 'piece-jointe',
     operations: [
         new Post(
-            uriTemplate: '/expense-reports/{expenseReportId}/attachments',
+            uriTemplate: '/notes-de-frais/{expenseReportId}/pieces-jointes',
             controller: ExpenseAttachmentController::class,
             read: false,
             deserialize: false
         ),
         new GetCollection(
-            uriTemplate: '/expense-reports/{expenseReportId}/attachments',
+            uriTemplate: '/notes-de-frais/{expenseReportId}/pieces-jointes',
             uriVariables: [
                 'expenseReportId' => new Link(
                     fromClass: ExpenseReport::class,
@@ -57,7 +59,7 @@ class ExpenseAttachment
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Groups(['attachment:read'])]
-
+    #[SerializedName('idDepense')]
     private string $expenseId;
 
     #[ORM\Column(length: 255)]
@@ -67,6 +69,7 @@ class ExpenseAttachment
     private string $filePath;
 
     #[Groups(['attachment:read'])]
+    #[SerializedName('urlFichier')]
     private string $fileUrl;
 
     private ?UploadedFile $file = null;

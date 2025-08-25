@@ -17,6 +17,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Serializer\Attribute\Context;
 
 /**
@@ -27,6 +28,7 @@ use Symfony\Component\Serializer\Attribute\Context;
 #[ORM\Index(columns: ['is_deleted', 'valid_user', 'doit_renouveler_user', 'nomade_user', 'lastname_user'], name: 'idx_user_admin_listing')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
+    shortName: 'utilisateur',
     operations: [
         new Get(normalizationContext: ['groups' => ['user:read', 'user:details']]),
         new Patch(normalizationContext: ['groups' => ['user:read', 'user:details']], denormalizationContext: ['groups' => ['user:write']]),
@@ -67,6 +69,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, nullable: true, unique: true, options: ['comment' => 'Numéro de licence'])]
     #[Groups('user:details')]
+    #[SerializedName('numeroLicence')]
     private $cafnum;
 
     /**
@@ -80,6 +83,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'firstname_user', type: 'string', length: 50, nullable: false)]
     #[Groups('user:read')]
+    #[SerializedName('prenom')]
     private $firstname;
 
     /**
@@ -87,6 +91,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'lastname_user', type: 'string', length: 50, nullable: false)]
     #[Groups('user:read')]
+    #[SerializedName('nom')]
     private $lastname;
 
     /**
@@ -94,6 +99,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'nickname_user', type: 'string', length: 20, nullable: false)]
     #[Groups('user:read')]
+    #[SerializedName('surnom')]
     private $nickname;
 
     /**
@@ -102,6 +108,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'created_user', type: 'bigint', nullable: false)]
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[Groups('user:details')]
+    #[SerializedName('dateCreation')]
     private $created;
 
     /**
@@ -110,6 +117,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'birthday_user', type: 'bigint', nullable: true)]
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[Groups('user:details')]
+    #[SerializedName('dateNaissance')]
     private $birthday;
 
     /**
@@ -117,6 +125,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'tel_user', type: 'string', length: 100, nullable: true)]
     #[Groups('user:details')]
+    #[SerializedName('telephone')]
     private $tel;
 
     /**
@@ -124,6 +133,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'tel2_user', type: 'string', length: 100, nullable: true)]
     #[Groups('user:details')]
+    #[SerializedName('telephoneSecondaire')]
     private $tel2;
 
     /**
@@ -138,6 +148,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'cp_user', type: 'string', length: 10, nullable: true)]
     #[Groups('user:details')]
+    #[SerializedName('codePostal')]
     private $cp;
 
     /**
@@ -159,6 +170,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'civ_user', type: 'string', length: 10, nullable: true)]
     #[Groups('user:details')]
+    #[SerializedName('civilite')]
     private $civ;
 
     /**
@@ -166,6 +178,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'moreinfo_user', type: 'string', length: 500, nullable: true, options: ['comment' => 'FORMATIONS ?'])]
     #[Groups('user:details')]
+    #[SerializedName('informationsSupplementaires')]
     private $moreinfo;
 
     /**
