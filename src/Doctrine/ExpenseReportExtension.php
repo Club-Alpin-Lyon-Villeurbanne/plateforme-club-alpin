@@ -11,6 +11,11 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 
+/**
+ * Applique les filtres de sécurité sur les notes de frais :
+ * - Filtre par utilisateur (sauf pour les validateurs)
+ * - Exclut les brouillons par défaut (sauf si include_drafts=true)
+ */
 final class ExpenseReportExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
     public function __construct(
@@ -54,9 +59,9 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
                 ->setParameter('current_user', $this->security->getUser());
         }
 
-        // Exclure les brouillons sauf si include_drafts=true
+        // Exclure les brouillons sauf si inclure_brouillons=true
         $filters = $context['filters'] ?? [];
-        $includeDrafts = isset($filters['include_drafts']) && 'true' === $filters['include_drafts'];
+        $includeDrafts = isset($filters['inclure_brouillons']) && 'true' === $filters['inclure_brouillons'];
         
         if (!$includeDrafts) {
             $queryBuilder->andWhere(sprintf('%s.status != :draft_status', $rootAlias))

@@ -160,7 +160,7 @@ GET /api/notes-de-frais
 
 **Paramètres de requête :**
 - `event` : Filtrer par ID de sortie
-- `include_drafts` : Inclure les brouillons (true/false)
+- `inclure_brouillons` : Inclure les brouillons (true/false)
 
 **Réponse exemple :**
 ```json
@@ -169,7 +169,7 @@ GET /api/notes-de-frais
     {
       "id": 1,
       "status": "submitted",
-      "remboursementRequis": true,
+      "refundRequired": true,
       "utilisateur": {
         "id": 42,
         "prenom": "Marie",
@@ -186,8 +186,8 @@ GET /api/notes-de-frais
       "piecesJointes": [
         {
           "id": 1,
-          "idDepense": "transport",
-          "urlFichier": "http://..."
+          "expenseId": "transport",
+          "fileUrl": "http://..."
         }
       ]
     }
@@ -411,7 +411,3 @@ echo "Total: " . $data['meta']['total'] . " sorties\n";
 ## Support et contact
 
 Pour toute question concernant l'API, contactez l'équipe technique du Club Alpin Lyon.
-
----
-
-*Documentation mise à jour le 02/01/2025*

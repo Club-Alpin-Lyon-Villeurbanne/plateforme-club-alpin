@@ -59,7 +59,6 @@ class ExpenseAttachment
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Groups(['attachment:read'])]
-    #[SerializedName('idDepense')]
     private string $expenseId;
 
     #[ORM\Column(length: 255)]
@@ -69,7 +68,6 @@ class ExpenseAttachment
     private string $filePath;
 
     #[Groups(['attachment:read'])]
-    #[SerializedName('urlFichier')]
     private string $fileUrl;
 
     private ?UploadedFile $file = null;

@@ -90,7 +90,6 @@ class ExpenseReport
 
     #[ORM\Column]
     #[Groups(['report:read'])]
-    #[SerializedName('remboursementRequis')]
     private ?bool $refundRequired = true;
 
     #[ORM\ManyToOne(inversedBy: 'expenseReports')]
