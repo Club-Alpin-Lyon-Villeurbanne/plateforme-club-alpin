@@ -80,7 +80,7 @@ class EvtRepository extends ServiceEntityRepository
             ->setParameter('status', Evt::STATUS_LEGAL_VALIDE)
             ->andWhere(':date <= e.tsp OR :date <= e.tspEnd')
             ->setParameter('date', $date->getTimestamp())
-            ->orderBy('CAST(FROM_UNIXTIME(e.tsp) as date)', 'asc')
+            ->orderBy('e.tsp', 'asc')
             ->addOrderBy('c.title', 'ASC')
             ->addOrderBy('e.titre', 'ASC')
             ->setMaxResults($options['limit'])
