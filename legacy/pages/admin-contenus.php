@@ -97,7 +97,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 						<select name="groupe_content_inline" style="min-width:150px;">
 							<!--<option value="0">- Aucun, en désordre</option>-->
 							<?php
-	                        // liste des groupes dans le tableau dessous
+                            // liste des groupes dans le tableau dessous
 	                        $tempGroup = 0; // id groupe
 	        for ($i = 0; $i < count($contGroupTab); ++$i) {
 	            if ($tempGroup != $contGroupTab[$i]['id_content_inline_group'] && $contGroupTab[$i]['id_content_inline_group']) {
@@ -126,9 +126,9 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 	if (isset($_POST['operation']) && 'addContentGroup' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
 	    echo '<div class="info">Nouveau groupe créé, et disponible dans la liste.</div>';
 	}
-    if (isset($_POST['operation']) && 'addContentGroup' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-        echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
-    } ?>
+	if (isset($_POST['operation']) && 'addContentGroup' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+	    echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
+	} ?>
 		<h4>Ajouter un groupe de contenu</h4>
 
 		<table>
@@ -150,8 +150,8 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 
 
 	<?php	// TABLEAU DES CONTENUS
-    if (count($contTab)) {
-        ?>
+	if (count($contTab)) {
+	    ?>
 		<br />
 		<table class="cont-table">
 			<tr class="th1">
@@ -161,42 +161,42 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 				<th></th>
 			</tr>
 			<?php
-            $tempGroup = 0; // id groupe
-        $tempElt = ''; // code element
-        $dejaVus = 0;
-        for ($i = 0; $i < count($contTab); ++$i) {
-            // GROUPES
-            // dev : a l'avenir, sortable grace à TBODY
-            if ($tempGroup != $contTab[$i]['id_content_inline_group'] && $contTab[$i]['id_content_inline_group']) {
-                echo '<tr><th colspan="3">' . $contTab[$i]['nom_content_inline_group'] . '</th></tr>';
-            }
+	        $tempGroup = 0; // id groupe
+	    $tempElt = ''; // code element
+	    $dejaVus = 0;
+	    for ($i = 0; $i < count($contTab); ++$i) {
+	        // GROUPES
+	        // dev : a l'avenir, sortable grace à TBODY
+	        if ($tempGroup != $contTab[$i]['id_content_inline_group'] && $contTab[$i]['id_content_inline_group']) {
+	            echo '<tr><th colspan="3">' . $contTab[$i]['nom_content_inline_group'] . '</th></tr>';
+	        }
 
-            if ($tempElt == $contTab[$i]['code_content_inline']) {
-                ++$dejaVus;
-            } else {
-                $dejaVus = 0;
-            }
+	        if ($tempElt == $contTab[$i]['code_content_inline']) {
+	            ++$dejaVus;
+	        } else {
+	            $dejaVus = 0;
+	        }
 
-            echo '<tr style="' . ($dejaVus ? 'display:none' : '') . '" id="ligne-' . (int) $contTab[$i]['id_content_inline'] . '">';
-            echo '<td class="cont-indice">' . $contTab[$i]['code_content_inline'] . '&nbsp;</td>';
-            echo '<td class="cont-edit">
+	        echo '<tr style="' . ($dejaVus ? 'display:none' : '') . '" id="ligne-' . (int) $contTab[$i]['id_content_inline'] . '">';
+	        echo '<td class="cont-indice">' . $contTab[$i]['code_content_inline'] . '&nbsp;</td>';
+	        echo '<td class="cont-edit">
 						<input type="hidden" class="jId" value="' . (int) $contTab[$i]['id_content_inline'] . '" />
 						<input type="text" style="display:none" class="jBase" id="base-' . (int) $contTab[$i]['id_content_inline'] . '" value="' . html_utf8($contTab[$i]['contenu_content_inline']) . '" />
 						<input type="text"   class="jVal" name="contenu-' . $contTab[$i]['code_content_inline'] . '-' . $dejaVus . '" value="' . html_utf8($contTab[$i]['contenu_content_inline']) . '" />
 					</td>';
-            echo '<td class="cont-save"><a href="javascript:void(0)" title="Sauvegarder cette ligne" rel="' . (int) $contTab[$i]['id_content_inline'] . '"><img src="/img/base/save.png" alt="Sauvegarder cette ligne" title="Sauvegarder cette ligne" class="upimage" style="height:20px; " /></a></td>';
-            echo '<td class="cont-versions">' . jour(date('N', $contTab[$i]['date_content_inline'])) . ' ' . date('d/m/y - H:i:s', $contTab[$i]['date_content_inline']) . '</td>';
-            echo '</tr>';
+	        echo '<td class="cont-save"><a href="javascript:void(0)" title="Sauvegarder cette ligne" rel="' . (int) $contTab[$i]['id_content_inline'] . '"><img src="/img/base/save.png" alt="Sauvegarder cette ligne" title="Sauvegarder cette ligne" class="upimage" style="height:20px; " /></a></td>';
+	        echo '<td class="cont-versions">' . jour(date('N', $contTab[$i]['date_content_inline'])) . ' ' . date('d/m/y - H:i:s', $contTab[$i]['date_content_inline']) . '</td>';
+	        echo '</tr>';
 
-            $tempGroup = $contTab[$i]['id_content_inline_group'];
-            $tempElt = $contTab[$i]['code_content_inline'];
-        } ?>
+	        $tempGroup = $contTab[$i]['id_content_inline_group'];
+	        $tempElt = $contTab[$i]['code_content_inline'];
+	    } ?>
 		</table>
 
 		<a href="javascript:void(0)" title="Tout sauvegarder" style="display:block; float:right; margin-top:5px;" id="saveAll">
 			<img src="/img/base/save.png" alt="Tout sauvegarder" title="Tout sauvegarder" class="upimage" style="height:80px; " /></a>
 		<?php
-    } ?>
+	} ?>
 	<br />
 
 	<script type="text/javascript" src="/js/jquery.urlEncode.js"></script>
@@ -319,11 +319,11 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 
 		// si on arrive sur la page depuis un bouton "manque de contenus", on focus sur le champ ciblé
 		<?php
-        if (isset($_POST['operation']) && 'forceAddContent' == $_POST['operation']) {
-            ?>
+	    if (isset($_POST['operation']) && 'forceAddContent' == $_POST['operation']) {
+	        ?>
 			$("input[name=contenu_content_inline]:first").focus();
 			<?php
-        } ?>
+	    } ?>
 	});
 
 	</script>

@@ -14,7 +14,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 /**
  * Applique les filtres de sécurité sur les notes de frais :
  * - Filtre par utilisateur (sauf pour les validateurs)
- * - Exclut les brouillons par défaut (sauf si include_drafts=true)
+ * - Exclut les brouillons par défaut (sauf si include_drafts=true).
  */
 final class ExpenseReportExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
@@ -46,13 +46,13 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
 
     private function addWhere(QueryBuilder $queryBuilder, string $resourceClass, array $context): void
     {
-        if ($resourceClass !== ExpenseReport::class) {
+        if (ExpenseReport::class !== $resourceClass) {
             return;
         }
 
         $rootAlias = $queryBuilder->getRootAliases()[0];
         $canValidateReport = $this->security->isGranted('validate_expense_report');
-        
+
         // Filtrer par utilisateur si pas les droits de validation
         if (!$canValidateReport) {
             $queryBuilder->andWhere(sprintf('%s.user = :current_user', $rootAlias))
@@ -62,7 +62,7 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
         // Exclure les brouillons sauf si inclure_brouillons=true
         $filters = $context['filters'] ?? [];
         $includeDrafts = isset($filters['inclure_brouillons']) && 'true' === $filters['inclure_brouillons'];
-        
+
         if (!$includeDrafts) {
             $queryBuilder->andWhere(sprintf('%s.status != :draft_status', $rootAlias))
                 ->setParameter('draft_status', ExpenseReportStatusEnum::DRAFT->value);

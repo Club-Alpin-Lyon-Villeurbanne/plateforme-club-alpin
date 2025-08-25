@@ -3,9 +3,9 @@
 namespace App\Serializer;
 
 use ApiPlatform\State\Pagination\PaginatorInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 final class PaginationMetadataNormalizer implements NormalizerInterface, NormalizerAwareInterface
 {
@@ -28,8 +28,8 @@ final class PaginationMetadataNormalizer implements NormalizerInterface, Normali
                 'page' => $object->getCurrentPage(),
                 'perPage' => $object->getItemsPerPage(),
                 'total' => $object->getTotalItems(),
-                'pages' => (int) ceil($object->getTotalItems() / $object->getItemsPerPage())
-            ]
+                'pages' => (int) ceil($object->getTotalItems() / $object->getItemsPerPage()),
+            ],
         ];
     }
 
@@ -37,13 +37,13 @@ final class PaginationMetadataNormalizer implements NormalizerInterface, Normali
     {
         return !isset($context[self::ALREADY_CALLED])
             && $data instanceof PaginatorInterface
-            && $format === 'json';
+            && 'json' === $format;
     }
 
     public function getSupportedTypes(?string $format): array
     {
         return [
-            PaginatorInterface::class => true
+            PaginatorInterface::class => true,
         ];
     }
 }
