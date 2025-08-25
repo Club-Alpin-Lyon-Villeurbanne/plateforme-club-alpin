@@ -512,14 +512,14 @@ class Evt
     #[SerializedName('dateDebut')]
     public function getDateDebut(): ?string
     {
-        return $this->tsp ? date('Y-m-d H:i:s', $this->tsp) : null;
+        return $this->tsp ? (new \DateTime())->setTimestamp($this->tsp)->format(\DateTime::ATOM) : null;
     }
 
     #[Groups('event:read')]
     #[SerializedName('dateFin')]
     public function getDateFin(): ?string
     {
-        return $this->tspEnd ? date('Y-m-d H:i:s', $this->tspEnd) : null;
+        return $this->tspEnd ? (new \DateTime())->setTimestamp($this->tspEnd)->format(\DateTime::ATOM) : null;
     }
 
     public function isPublicStatusUnseen()

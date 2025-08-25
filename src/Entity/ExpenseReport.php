@@ -106,7 +106,7 @@ class ExpenseReport
 
     #[ORM\Column]
     #[Groups(['report:read'])]
-    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => \DateTime::ATOM])]
     #[SerializedName('dateCreation')]
     private ?\DateTimeImmutable $createdAt = null;
 
