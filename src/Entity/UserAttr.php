@@ -135,4 +135,16 @@ class UserAttr
     {
         return \array_slice(explode(':', $this->getParams()), -1)[0];
     }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription($description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
 }
