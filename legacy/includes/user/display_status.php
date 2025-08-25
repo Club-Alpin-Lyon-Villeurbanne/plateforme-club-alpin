@@ -2,8 +2,12 @@
 <ul class="nice-list">
     <?php
     if (!empty($tmpUser['statuts']['club'])) {
-        foreach ($tmpUser['statuts']['club'] as $status) {
-            echo '<li>' . $status . '</li>';
+        foreach ($tmpUser['statuts']['club'] as $statusInfos) {
+            echo '<li>' . $statusInfos['title'];
+            if (!empty($statusInfos['desc'])) {
+                echo ' <img src="/img/base/info.png" title="' . $statusInfos['desc'] . '" />';
+            }
+            echo '</li>';
         }
     } else {
         echo '<li>N/A</li>';
@@ -15,10 +19,13 @@
 <ul class="nice-list">
     <?php
     if (!empty($tmpUser['statuts']['commissions'])) {
-        foreach ($tmpUser['statuts']['commissions'] as $status => $commissions) {
-            echo '<li>' . $status;
-            if (!empty($commissions) && is_array($commissions)) {
-                echo ' : ' . $commissions[0];
+        foreach ($tmpUser['statuts']['commissions'] as $commission => $statuses) {
+            echo '<li>' . $commission;
+            if (!empty($statuses) && is_array($statuses)) {
+                echo ' : ' . $statuses[0]['title'];
+                if (!empty($statuses[0]['desc'])) {
+                    echo ' <img src="/img/base/info.png" title="' . $statuses[0]['desc'] . '" />';
+                }
             }
             echo '</li>';
         }

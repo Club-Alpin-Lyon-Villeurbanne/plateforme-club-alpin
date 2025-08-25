@@ -51,7 +51,11 @@ if (user()) {
                 <?php
                 if (!empty($clubRoles)) {
                     foreach ($clubRoles as $attr) {
-                        echo '<li>' . $attr->getTitle() . '</li>';
+                        echo '<li>' . $attr->getTitle();
+                        if (!empty($attr->getDescription())) {
+                            echo ' <img src="/img/base/info.png" title="' . $attr->getDescription() . '" />';
+                        }
+                        echo '</li>';
                     }
                 } else {
                     echo '<li>N/A</li>';
@@ -65,7 +69,11 @@ if (user()) {
                 <?php
             if (!empty($commissionRoles)) {
                 foreach ($commissionRoles as $attr) {
-                    echo '<li>' . $commissionRepository->getCommissionNameByCode($attr->getCommission()) . ' : ' . $attr->getTitle() . '</li>';
+                    echo '<li>' . $commissionRepository->getCommissionNameByCode($attr->getCommission()) . ' : ' . $attr->getTitle();
+                    if (!empty($attr->getDescription())) {
+                        echo ' <img src="/img/base/info.png" title="' . $attr->getDescription() . '" />';
+                    }
+                    echo '</li>';
                 }
             } else {
                 echo '<li>N/A</li>';
