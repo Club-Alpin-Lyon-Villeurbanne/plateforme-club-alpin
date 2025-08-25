@@ -32,28 +32,11 @@ Le groupe "Nouveaux adhérents" est déjà configuré avec l'ID `159667990712813
 
 ### Synchronisation automatique
 
-Quand un nouvel adhérent est créé via la synchronisation FFCAM :
-1. L'event listener `NewMemberMailerLiteListener` détecte la création
-2. Si l'adhérent a un email, il est ajouté au groupe MailerLite
-3. MailerLite déclenche automatiquement l'envoi du mail de bienvenue
-
-### Synchronisation manuelle
-
-Pour synchroniser manuellement les adhérents récents :
-
-```bash
-# Synchroniser les nouveaux membres des 7 derniers jours
-php bin/console app:mailerlite:sync
-
-# Synchroniser les 30 derniers jours
-php bin/console app:mailerlite:sync --days=30
-
-# Mode simulation (dry-run)
-php bin/console app:mailerlite:sync --dry-run
-
-# Forcer même si désactivé
-php bin/console app:mailerlite:sync --force
-```
+La synchronisation se fait automatiquement chaque nuit via le cron FFCAM :
+1. Import des membres depuis le fichier FFCAM
+2. Collecte des nouveaux membres
+3. Si l'adhérent a un email, il est ajouté au groupe MailerLite
+4. MailerLite déclenche automatiquement l'envoi du mail de bienvenue
 
 ## Données synchronisées
 
@@ -87,7 +70,7 @@ tail -f var/log/prod.log | grep MailerLite
 
 ### Statistiques de synchronisation
 
-La commande affiche des statistiques détaillées :
+Les logs affichent des statistiques détaillées après chaque synchronisation :
 - Nombre d'adhérents importés (nouveaux)
 - Nombre d'adhérents mis à jour (existants)
 - Nombre d'échecs
@@ -122,6 +105,6 @@ Si vous avez beaucoup d'adhérents à synchroniser, l'API MailerLite peut impose
 Pour tester l'intégration :
 
 1. Créer un adhérent test avec email
-2. Lancer la synchronisation manuelle
+2. Attendre la synchronisation automatique nocturne (ou déclencher manuellement le cron FFCAM)
 3. Vérifier dans MailerLite que l'adhérent apparaît dans le groupe
 4. Vérifier que le mail de bienvenue est envoyé
