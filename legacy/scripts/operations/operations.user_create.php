@@ -81,6 +81,24 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $stmt->bind_param('ssssssisssssssss', $email_user, $mdp_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $current_time, $birthday_user, $tel_user, $tel2_user, $adresse_user, $cp_user, $ville_user, $pays_user, $civ_user, $auth_contact_user);
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur SQL';
+        } else {
+            // Synchroniser avec les services de marketing après création manuelle
+            $new_user_id = LegacyContainer::get('legacy_mysqli_handler')->insertId();
+            if ($new_user_id) {
+                try {
+                    $userRepository = LegacyContainer::get(App\Repository\UserRepository::class);
+                    $user = $userRepository->find($new_user_id);
+
+                    if ($user && $user->getEmail()) {
+                        $emailMarketingService = LegacyContainer::get(App\Service\EmailMarketingSyncService::class);
+                        $emailMarketingService->syncActivatedUser($user);
+                    }
+                } catch (Exception $e) {
+                    // Log l'erreur mais ne pas bloquer la création
+                    $logger = LegacyContainer::get('logger');
+                    $logger->error('Failed to sync manually created user with email marketing services: ' . $e->getMessage());
+                }
+            }
         }
         $stmt->close();
     }

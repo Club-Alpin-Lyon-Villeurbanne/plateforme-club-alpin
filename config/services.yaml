@@ -147,10 +147,10 @@ services:
       $apiKey: "%env(MAILCHIMP_API_KEY)%"
       $listId: "%env(MAILCHIMP_LIST_ID)%"
       
-  # Configuration conditionnelle de FfcamSynchronizer pour l'email marketing
+  # Service centralisé pour la synchronisation avec les services de marketing
   # Les services sont optionnels (préfixe @?) et ne seront injectés que si configurés
-  # Activer uniquement pour Lyon avec EMAIL_MARKETING_SYNC_ENABLED=true dans .env.local
-  App\Service\FfcamSynchronizer:
+  App\Service\EmailMarketingSyncService:
+    public: true
     arguments:
       $mailerLiteService: '@?App\Service\MailerLiteService'
       $mailchimpService: '@?App\Service\MailchimpService'

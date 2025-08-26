@@ -1,6 +1,8 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Repository\UserRepository;
+use App\Service\EmailMarketingSyncService;
 
 $id_user = null;
 
@@ -24,6 +26,21 @@ if ($p2) {
                     JOIN caf_user c2 ON c1.cafnum_parent_user = c2.cafnum_user
                     SET	c1.email_user=c2.email_user, c1.valid_user=1
                     WHERE c2.id_user=$id_user AND c1.valid_user=0 AND (c1.email_user IS NULL OR c1.email_user='')";
+
+                // Synchroniser l'utilisateur avec les services de marketing après activation
+                try {
+                    $userRepository = LegacyContainer::get(UserRepository::class);
+                    $user = $userRepository->find($id_user);
+
+                    if ($user && $user->getEmail()) {
+                        $emailMarketingService = LegacyContainer::get(EmailMarketingSyncService::class);
+                        $emailMarketingService->syncActivatedUser($user);
+                    }
+                } catch (Exception $e) {
+                    // Log l'erreur mais ne pas bloquer l'activation
+                    $logger = LegacyContainer::get('logger');
+                    $logger->error('Failed to sync user with email marketing services: ' . $e->getMessage());
+                }
             }
         }
     } else {
