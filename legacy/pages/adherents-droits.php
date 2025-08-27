@@ -99,7 +99,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
 			<input type="hidden" name="operation" value="user_attr_add" />
 			<input type="hidden" name="id_user" value="<?php echo $id_user; ?>" />
 
-			<h2>Ajouter un attribut à cet adhérent :</h2>
+			<h2>Ajouter un statut à cet adhérent :</h2>
 			<?php
             // message
         if (isset($_POST['operation']) && 'user_attr_add' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {

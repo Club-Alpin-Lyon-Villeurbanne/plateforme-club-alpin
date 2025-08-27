@@ -54,7 +54,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
 		<input type="hidden" name="operation" value="user_attr_add_admin" />
 		<input type="hidden" name="id_user" value="<?php echo $id_user; ?>" />
 
-		<h3>Ajouter un attribut à cet adhérent :</h3>
+		<h3>Ajouter un statut à cet adhérent :</h3>
 		<?php
         // message
         if (isset($_POST['operation']) && 'user_attr_add_admin' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
