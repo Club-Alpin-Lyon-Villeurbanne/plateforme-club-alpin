@@ -26,7 +26,10 @@ Actif uniquement pour Lyon. Chambéry et Clermont gardent les valeurs par défau
 
 ## Champs synchronisés
 
-**MailerLite** : name, last_name, caf_number, city, postal_code, registration_date
+**MailerLite** : 
+- `email` : Adresse email de l'utilisateur
+- `name` : Prénom de l'utilisateur
+- `last_name` : Nom de famille de l'utilisateur
 
 ## Limitations
 
