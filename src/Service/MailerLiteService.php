@@ -111,10 +111,6 @@ class MailerLiteService
                 'fields' => [
                     'name' => $user->getFirstname(),
                     'last_name' => $user->getLastname(),
-                    'caf_number' => $user->getCafnum(),
-                    'city' => $user->getVille(),
-                    'postal_code' => $user->getCp(),
-                    'registration_date' => $user->getDateAdhesion()?->format('Y-m-d'),
                 ],
             ];
         }
