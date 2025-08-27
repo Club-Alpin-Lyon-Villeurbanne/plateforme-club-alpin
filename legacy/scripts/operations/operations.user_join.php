@@ -30,11 +30,11 @@ if (!isset($_POST['confirm']) || 'on' != $_POST['confirm']) {
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
+    $role_evt_join = 'inscrit';
+
     // Bénévole
     if (isset($_POST['jeveuxetrebenevole']) && 'on' == $_POST['jeveuxetrebenevole']) {
         $role_evt_join = 'benevole';
-    } else {
-        $role_evt_join = 'inscrit';
     }
 
     // si filiations : création du tableau des joints et vérifications
@@ -201,7 +201,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 if (!$update || !in_array($id_user_tmp, $update, true)) {
                     $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO caf_evt_join(status_evt_join, evt_evt_join, user_evt_join, affiliant_user_join, role_evt_join, tsp_evt_join, is_covoiturage)
                               VALUES(?, ?, ?, ?, ?, ?, ?)');
-                    $stmt->bind_param('iiiiisi', $status_evt_join, $id_evt, $id_user_tmp, $id_user, $role_evt_join, $current_timestamp, $is_covoiturage);
+                    $stmt->bind_param('iiiisii', $status_evt_join, $id_evt, $id_user_tmp, $id_user, $role_evt_join, $current_timestamp, $is_covoiturage);
                     $success = $stmt->execute();
                     $stmt->close();
                 } elseif (in_array($id_user_tmp, $update, true)) {
