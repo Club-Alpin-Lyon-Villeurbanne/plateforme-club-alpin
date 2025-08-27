@@ -37,8 +37,8 @@ class MailerLiteService
             $this->logger->info('MailerLite sync disabled: missing API key or group ID', [
                 'hasApiKey' => !empty($this->apiKey),
                 'hasGroupId' => !empty($this->welcomeGroupId),
-                'apiKeyLength' => strlen($this->apiKey ?? ''),
-                'groupId' => $this->welcomeGroupId
+                'apiKeyLength' => \strlen($this->apiKey ?? ''),
+                'groupId' => $this->welcomeGroupId,
             ]);
             $results['skipped'] = \count($users);
 
@@ -46,9 +46,9 @@ class MailerLiteService
         }
 
         $this->logger->info('MailerLite configuration OK', [
-            'apiKeyLength' => strlen($this->apiKey),
+            'apiKeyLength' => \strlen($this->apiKey),
             'groupId' => $this->welcomeGroupId,
-            'usersCount' => \count($users)
+            'usersCount' => \count($users),
         ]);
 
         // Filtrer les users sans email
@@ -67,7 +67,7 @@ class MailerLiteService
         foreach ($batches as $batchIndex => $batch) {
             $this->logger->info(sprintf('Processing MailerLite batch %d/%d', $batchIndex + 1, \count($batches)), [
                 'batchSize' => \count($batch),
-                'batchEmails' => array_map(fn($user) => $user->getEmail(), $batch)
+                'batchEmails' => array_map(fn ($user) => $user->getEmail(), $batch),
             ]);
 
             $batchResults = $this->importBatch($batch);
@@ -119,7 +119,7 @@ class MailerLiteService
             $this->logger->info('Making MailerLite API request', [
                 'url' => self::API_URL . '/groups/' . $this->welcomeGroupId . '/subscribers/import',
                 'subscribersCount' => \count($subscribers),
-                'firstEmail' => $subscribers[0]['email'] ?? 'none'
+                'firstEmail' => $subscribers[0]['email'] ?? 'none',
             ]);
 
             $response = $this->httpClient->request(
@@ -143,14 +143,15 @@ class MailerLiteService
                 $responseData = $response->toArray();
                 $this->logger->info('MailerLite API response success', [
                     'statusCode' => $response->getStatusCode(),
-                    'responseData' => $responseData
+                    'responseData' => $responseData,
                 ]);
+
                 return $responseData;
             }
 
             $this->logger->error('MailerLite import failed', [
                 'statusCode' => $response->getStatusCode(),
-                'responseBody' => $response->getContent(false)
+                'responseBody' => $response->getContent(false),
             ]);
 
             return null;

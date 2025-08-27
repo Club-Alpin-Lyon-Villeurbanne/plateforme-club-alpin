@@ -1,7 +1,6 @@
 <?php
 
 use App\Legacy\LegacyContainer;
-use App\Repository\UserRepository;
 use App\Service\EmailMarketingSyncService;
 
 $id_user = null;
@@ -38,14 +37,14 @@ if ($p2) {
                     $stmt->close();
 
                     if ($userData && $userData['email_user']) {
-                        $emailMarketingService = LegacyContainer::get(App\Service\EmailMarketingSyncService::class);
-                        
+                        $emailMarketingService = LegacyContainer::get(EmailMarketingSyncService::class);
+
                         // Créer un objet User temporaire avec les données disponibles
                         $tempUser = new App\Entity\User();
                         $tempUser->setFirstname($userData['firstname_user']);
                         $tempUser->setLastname($userData['lastname_user']);
                         $tempUser->setEmail($userData['email_user']);
-                        
+
                         $emailMarketingService->syncUsers($tempUser);
                     }
                 } catch (Exception $e) {

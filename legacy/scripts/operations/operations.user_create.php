@@ -85,13 +85,13 @@ if (!isset($errTab) || 0 === count($errTab)) {
             // Synchroniser avec MailerLite après création manuelle
             try {
                 $emailMarketingService = LegacyContainer::get(App\Service\EmailMarketingSyncService::class);
-                
+
                 // Créer un objet User temporaire avec les données disponibles
                 $tempUser = new App\Entity\User();
                 $tempUser->setFirstname($firstname_user);
                 $tempUser->setLastname($lastname_user);
                 $tempUser->setEmail($email_user);
-                
+
                 $emailMarketingService->syncUsers($tempUser);
             } catch (Exception $e) {
                 // Log l'erreur mais ne pas bloquer la création
