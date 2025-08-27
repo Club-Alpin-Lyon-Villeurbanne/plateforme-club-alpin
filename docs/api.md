@@ -140,17 +140,6 @@ GET /api/utilisateurs/{id}
 }
 ```
 
-#### Modifier ses informations
-```http
-PATCH /api/utilisateurs/{id}
-Content-Type: application/merge-patch+json
-
-{
-  "telephone": "06 98 76 54 32",
-  "adresse": "456 avenue des Alpes"
-}
-```
-
 ### 💰 Notes de frais
 
 #### Liste des notes de frais
@@ -356,7 +345,7 @@ GET /api/sorties?order[dateDebut]=desc
 const token = 'votre-token-jwt';
 
 // Récupérer les sorties
-fetch('https://api.clubalpin.fr/api/sorties', {
+fetch('https://clubalpinlyon.fr/api/sorties', {
   headers: {
     'Authorization': `Bearer ${token}`,
     'Accept': 'application/json'
@@ -376,31 +365,16 @@ fetch('https://api.clubalpin.fr/api/sorties', {
 # Récupérer les notes de frais
 curl -H "Authorization: Bearer <token>" \
      -H "Accept: application/json" \
-     https://api.clubalpin.fr/api/notes-de-frais
+     https://clubalpinlyon.fr/api/notes-de-frais
 
 # Créer une note de frais
 curl -X POST \
      -H "Authorization: Bearer <token>" \
      -H "Content-Type: application/json" \
      -d '{"event": 11, "refundRequired": true}' \
-     https://api.clubalpin.fr/api/notes-de-frais
+     https://clubalpinlyon.fr/api/notes-de-frais
 ```
 
-### PHP
-```php
-$token = 'votre-token-jwt';
-$client = new \GuzzleHttp\Client();
-
-$response = $client->get('https://api.clubalpin.fr/api/sorties', [
-    'headers' => [
-        'Authorization' => 'Bearer ' . $token,
-        'Accept' => 'application/json',
-    ]
-]);
-
-$data = json_decode($response->getBody(), true);
-echo "Total: " . $data['meta']['total'] . " sorties\n";
-```
 
 ## Limites et quotas
 

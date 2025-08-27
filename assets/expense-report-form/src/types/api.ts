@@ -9,7 +9,6 @@ export interface Event {
   code: string;
   commission: any[];
   id: number;
-  lieuRendezVous: string;
   titre: string;
   dateDebut: string;
   dateFin: string;
