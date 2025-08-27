@@ -509,14 +509,14 @@ class Evt
     }
 
     #[Groups('event:read')]
-    #[SerializedName('dateDebut')]
+    #[SerializedName('heureRendezVous')]
     public function getDateDebut(): ?string
     {
         return $this->tsp ? (new \DateTime())->setTimestamp($this->tsp)->format(\DateTime::ATOM) : null;
     }
 
     #[Groups('event:read')]
-    #[SerializedName('dateFin')]
+    #[SerializedName('heureRetour')]
     public function getDateFin(): ?string
     {
         return $this->tspEnd ? (new \DateTime())->setTimestamp($this->tspEnd)->format(\DateTime::ATOM) : null;

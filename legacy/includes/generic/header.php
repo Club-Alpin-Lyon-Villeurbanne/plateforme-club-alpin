@@ -3,6 +3,7 @@
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 use App\Twig\JwtExtension;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 global $ogImage;
 $jwt = LegacyContainer::get(JwtExtension::class)->generateJwtToken();
@@ -79,7 +80,6 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 
 
 	<?php
-    use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) { ?>
 		<!-- script admin -->

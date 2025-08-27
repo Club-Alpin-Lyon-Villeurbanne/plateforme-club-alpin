@@ -14,7 +14,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 /**
  * Applique les filtres de sécurité sur les notes de frais :
  * - Filtre par utilisateur (sauf pour les validateurs)
- * - Exclut les brouillons par défaut (sauf si include_drafts=true).
+ * - Exclut les brouillons par défaut (sauf si inclure_brouillons=true).
  */
 final class ExpenseReportExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {

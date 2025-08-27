@@ -99,7 +99,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'nickname_user', type: 'string', length: 20, nullable: false)]
     #[Groups('user:read')]
-    #[SerializedName('surnom')]
+    #[SerializedName('pseudonyme')]
     private $nickname;
 
     /**
@@ -133,7 +133,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'tel2_user', type: 'string', length: 100, nullable: true)]
     #[Groups('user:details')]
-    #[SerializedName('telephoneSecondaire')]
+    #[SerializedName('telephoneSecours')]
     private $tel2;
 
     /**
