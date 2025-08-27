@@ -14,8 +14,8 @@ class MailerLiteService
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly LoggerInterface $logger,
-        private readonly string $apiKey,
-        private readonly string $welcomeGroupId,
+        private readonly ?string $apiKey = null,
+        private readonly ?string $welcomeGroupId = null,
     ) {
     }
 
@@ -32,6 +32,25 @@ class MailerLiteService
             'skipped' => 0,
         ];
 
+        // Vérifier la configuration
+        if (!$this->apiKey || !$this->welcomeGroupId) {
+            $this->logger->info('MailerLite sync disabled: missing API key or group ID', [
+                'hasApiKey' => !empty($this->apiKey),
+                'hasGroupId' => !empty($this->welcomeGroupId),
+                'apiKeyLength' => strlen($this->apiKey ?? ''),
+                'groupId' => $this->welcomeGroupId
+            ]);
+            $results['skipped'] = \count($users);
+
+            return $results;
+        }
+
+        $this->logger->info('MailerLite configuration OK', [
+            'apiKeyLength' => strlen($this->apiKey),
+            'groupId' => $this->welcomeGroupId,
+            'usersCount' => \count($users)
+        ]);
+
         // Filtrer les users sans email
         $usersWithEmail = array_filter($users, fn (User $user) => $user->getEmail());
         $results['skipped'] = \count($users) - \count($usersWithEmail);
@@ -46,7 +65,10 @@ class MailerLiteService
         $batches = array_chunk($usersWithEmail, self::BATCH_SIZE);
 
         foreach ($batches as $batchIndex => $batch) {
-            $this->logger->info(sprintf('Processing batch %d/%d', $batchIndex + 1, \count($batches)));
+            $this->logger->info(sprintf('Processing MailerLite batch %d/%d', $batchIndex + 1, \count($batches)), [
+                'batchSize' => \count($batch),
+                'batchEmails' => array_map(fn($user) => $user->getEmail(), $batch)
+            ]);
 
             $batchResults = $this->importBatch($batch);
 
@@ -98,6 +120,12 @@ class MailerLiteService
         }
 
         try {
+            $this->logger->info('Making MailerLite API request', [
+                'url' => self::API_URL . '/groups/' . $this->welcomeGroupId . '/subscribers/import',
+                'subscribersCount' => \count($subscribers),
+                'firstEmail' => $subscribers[0]['email'] ?? 'none'
+            ]);
+
             $response = $this->httpClient->request(
                 'POST',
                 self::API_URL . '/groups/' . $this->welcomeGroupId . '/subscribers/import',
@@ -116,10 +144,18 @@ class MailerLiteService
             );
 
             if (200 === $response->getStatusCode() || 201 === $response->getStatusCode()) {
-                return $response->toArray();
+                $responseData = $response->toArray();
+                $this->logger->info('MailerLite API response success', [
+                    'statusCode' => $response->getStatusCode(),
+                    'responseData' => $responseData
+                ]);
+                return $responseData;
             }
 
-            $this->logger->error('MailerLite import failed with status: ' . $response->getStatusCode());
+            $this->logger->error('MailerLite import failed', [
+                'statusCode' => $response->getStatusCode(),
+                'responseBody' => $response->getContent(false)
+            ]);
 
             return null;
         } catch (\Exception $e) {

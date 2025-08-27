@@ -82,22 +82,20 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur SQL';
         } else {
-            // Synchroniser avec les services de marketing après création manuelle
-            $new_user_id = LegacyContainer::get('legacy_mysqli_handler')->insertId();
-            if ($new_user_id) {
-                try {
-                    $userRepository = LegacyContainer::get(App\Repository\UserRepository::class);
-                    $user = $userRepository->find($new_user_id);
-
-                    if ($user && $user->getEmail()) {
-                        $emailMarketingService = LegacyContainer::get(App\Service\EmailMarketingSyncService::class);
-                        $emailMarketingService->syncActivatedUser($user);
-                    }
-                } catch (Exception $e) {
-                    // Log l'erreur mais ne pas bloquer la création
-                    $logger = LegacyContainer::get('logger');
-                    $logger->error('Failed to sync manually created user with email marketing services: ' . $e->getMessage());
-                }
+            // Synchroniser avec MailerLite après création manuelle
+            try {
+                $emailMarketingService = LegacyContainer::get(App\Service\EmailMarketingSyncService::class);
+                
+                // Créer un objet User temporaire avec les données disponibles
+                $tempUser = new App\Entity\User();
+                $tempUser->setFirstname($firstname_user);
+                $tempUser->setLastname($lastname_user);
+                $tempUser->setEmail($email_user);
+                
+                $emailMarketingService->syncUsers($tempUser);
+            } catch (Exception $e) {
+                // Log l'erreur mais ne pas bloquer la création
+                // Les logs seront automatiquement gérés par le service EmailMarketingSyncService
             }
         }
         $stmt->close();

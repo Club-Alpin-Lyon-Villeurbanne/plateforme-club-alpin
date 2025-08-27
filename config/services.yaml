@@ -95,6 +95,11 @@ services:
   App\Repository\CommissionRepository:
     public: true
 
+  App\Service\EmailMarketingSyncService:
+    public: true
+    arguments:
+      $mailerLiteService: '@?App\Service\MailerLiteService'
+
   App\Mailer\Mailer:
     arguments:
       $replyTo: "%env(MAIL_EMITTER_EMAIL)%"
@@ -142,17 +147,8 @@ services:
       $apiKey: "%env(MAILERLITE_API_KEY)%"
       $welcomeGroupId: "%env(MAILERLITE_WELCOME_GROUP_ID)%"
 
-  App\Service\MailchimpService:
-    arguments:
-      $apiKey: "%env(MAILCHIMP_API_KEY)%"
-      $listId: "%env(MAILCHIMP_LIST_ID)%"
       
-  # Service centralisé pour la synchronisation avec les services de marketing
-  # Les services sont optionnels (préfixe @?) et ne seront injectés que si configurés
-  App\Service\EmailMarketingSyncService:
-    arguments:
-      $mailerLiteService: '@?App\Service\MailerLiteService'
-      $mailchimpService: '@?App\Service\MailchimpService'
+
 
   App\Service\ExpenseReportCalculator:
     arguments:

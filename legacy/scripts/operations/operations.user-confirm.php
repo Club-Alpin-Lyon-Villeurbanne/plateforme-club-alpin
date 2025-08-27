@@ -29,12 +29,24 @@ if ($p2) {
 
                 // Synchroniser l'utilisateur avec les services de marketing après activation
                 try {
-                    $userRepository = LegacyContainer::get(UserRepository::class);
-                    $user = $userRepository->find($id_user);
+                    // Récupérer les données utilisateur directement depuis la base legacy
+                    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT firstname_user, lastname_user, email_user FROM caf_user WHERE id_user = ?');
+                    $stmt->bind_param('i', $id_user);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $userData = $result->fetch_assoc();
+                    $stmt->close();
 
-                    if ($user && $user->getEmail()) {
-                        $emailMarketingService = LegacyContainer::get(EmailMarketingSyncService::class);
-                        $emailMarketingService->syncActivatedUser($user);
+                    if ($userData && $userData['email_user']) {
+                        $emailMarketingService = LegacyContainer::get(App\Service\EmailMarketingSyncService::class);
+                        
+                        // Créer un objet User temporaire avec les données disponibles
+                        $tempUser = new App\Entity\User();
+                        $tempUser->setFirstname($userData['firstname_user']);
+                        $tempUser->setLastname($userData['lastname_user']);
+                        $tempUser->setEmail($userData['email_user']);
+                        
+                        $emailMarketingService->syncUsers($tempUser);
                     }
                 } catch (Exception $e) {
                     // Log l'erreur mais ne pas bloquer l'activation
