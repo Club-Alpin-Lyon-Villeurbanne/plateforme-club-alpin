@@ -84,7 +84,7 @@ class CommissionController extends AbstractController
                 'class' => Evt::class,
                 'choices' => array_filter(
                     $eventRepository->getRecentPastEvents($commission),
-                    fn (Evt $event) => $userRights->allowedOnCommission('evt_create', $event->getCommission())
+                    fn (Evt $event) => ($userRights->allowedOnCommission('article_create', $event->getCommission()) || $userRights->allowedOnCommission('evt_create', $event->getCommission()))
                 ),
                 'choice_label' => function (Evt $evt) use ($monthHelper) {
                     return date('d', $evt->getTsp()) . ' ' .
