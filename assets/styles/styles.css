@@ -473,3 +473,15 @@ h2.bleucaf {font-family:DINBold; font-weight: bold; margin: 20px 0 10px 0; text-
 .select-contact {
     display: none;
 }
+
+.main-type li p {
+    display: inline;
+}
+
+.main-type ul > ul {
+    margin-left: 20px;
+}
+
+.main-type ul > ul > ul {
+    margin-left: 40px;
+}
