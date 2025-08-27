@@ -147,9 +147,6 @@ services:
       $apiKey: "%env(MAILERLITE_API_KEY)%"
       $welcomeGroupId: "%env(MAILERLITE_WELCOME_GROUP_ID)%"
 
-      
-
-
   App\Service\ExpenseReportCalculator:
     arguments:
       $config: '%expense_report%'
