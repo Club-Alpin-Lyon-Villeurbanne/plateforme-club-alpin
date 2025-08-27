@@ -150,7 +150,6 @@ services:
   # Service centralisé pour la synchronisation avec les services de marketing
   # Les services sont optionnels (préfixe @?) et ne seront injectés que si configurés
   App\Service\EmailMarketingSyncService:
-    public: true
     arguments:
       $mailerLiteService: '@?App\Service\MailerLiteService'
       $mailchimpService: '@?App\Service\MailchimpService'

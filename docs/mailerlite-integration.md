@@ -11,9 +11,6 @@ Cette fonctionnalité permet d'envoyer automatiquement des emails de bienvenue a
 Ajouter dans votre fichier `.env.local` :
 
 ```env
-# Activer l'intégration (true/false)
-MAILERLITE_ENABLED=true
-
 # Clé API MailerLite
 MAILERLITE_API_KEY=votre_cle_api_ici
 ```
@@ -86,9 +83,8 @@ Les logs affichent des statistiques détaillées après chaque synchronisation :
 
 ### L'intégration ne fonctionne pas
 
-1. Vérifier que `MAILERLITE_ENABLED=true` dans `.env.local`
-2. Vérifier que la clé API est correcte
-3. Consulter les logs pour les erreurs
+1. Vérifier que la clé API est correcte
+2. Consulter les logs pour les erreurs
 
 ### Certains adhérents ne sont pas synchronisés
 

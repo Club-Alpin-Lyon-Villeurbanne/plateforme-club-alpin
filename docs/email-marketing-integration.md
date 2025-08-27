@@ -18,12 +18,10 @@ Dans `.env.local` :
 
 ```bash
 # MailerLite
-MAILERLITE_ENABLED=true
 MAILERLITE_API_KEY=your_api_key_here
 MAILERLITE_WELCOME_GROUP_ID=159667990712813289
 
 # Mailchimp  
-MAILCHIMP_ENABLED=true
 MAILCHIMP_API_KEY=your_api_key_here
 MAILCHIMP_LIST_ID=your_list_id_here
 ```
