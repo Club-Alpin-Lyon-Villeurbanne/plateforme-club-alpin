@@ -78,7 +78,7 @@ class ArticleType extends AbstractType
                 'class' => Evt::class,
                 'choices' => array_filter(
                     $this->eventRepository->getRecentPastEvents(),
-                    fn (Evt $event) => $this->userRights->allowedOnCommission('evt_create', $event->getCommission())
+                    fn (Evt $event) => ($this->userRights->allowedOnCommission('article_create', $event->getCommission()) || $this->userRights->allowedOnCommission('evt_create', $event->getCommission()))
                 ),
                 'choice_label' => function (Evt $evt) {
                     return date('d', $evt->getTsp()) . ' ' .
