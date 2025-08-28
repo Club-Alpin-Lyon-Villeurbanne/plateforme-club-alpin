@@ -170,21 +170,6 @@ if (user()) {
             </p>
             <input type="text" name="email_user_mailchange" class="type1" style="width:300px" value="<?php echo inputVal('email_user_mailchange'); ?>" placeholder="<?php echo html_utf8($tmpUser['email_user']); ?>" />
 
-            <?php
-            // Vérifier si l'email actuel de l'utilisateur correspond aux fournisseurs problématiques
-            $currentEmail = strtolower($tmpUser['email_user'] ?? '');
-    $problematicProviders = ['free.fr', 'orange.fr', 'wanadoo.fr'];
-    $hasProblematicEmail = false;
-
-    foreach ($problematicProviders as $provider) {
-        if (str_ends_with($currentEmail, '@' . $provider)) {
-            $hasProblematicEmail = true;
-            break;
-        }
-    }
-
-    if ($hasProblematicEmail) {
-        ?>
         <div class="alerte info-container" style="width: 90%; margin-top: 10px;">
             ⚠️
             <div class="text-container">
@@ -193,9 +178,6 @@ if (user()) {
                 Nous vous recommandons de vérifier si nous ne sommes pas dans vos spams sinon, de changer d'hébergeur.
             </div>
         </div>
-        <?php
-    }
-    ?>
 
             <hr style="margin: 20px 0" />
             <h2 id="edit-password"><span class="bleucaf">&gt;</span>Modifier mon mot de passe</h2>
