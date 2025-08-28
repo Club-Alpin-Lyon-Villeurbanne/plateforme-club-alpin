@@ -281,7 +281,7 @@
 
                         <br  style="clear:both" />
 
-                        {% if allowed('user_see_all') or allowed('user_create_manually') or allowed('user_updatefiles') %}
+                        {% if allowed('user_see_all') or allowed('user_create_manually') or allowed('user_updatefiles') or allowed('user_see_status_list') %}
                             <div class="nav-user">
                                 <p class="menutitle" style="padding-top:13px;">Adhérents</p>
                                 <ul>
@@ -297,6 +297,14 @@
                                     <li>
                                         <a href="/adherents-creer.html" title="">
                                         créer un adhérent/salarié
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                {% if allowed('user_see_status_list') %}
+                                    <li>
+                                        <a href="{{ path('user_status_list') }}" title="Responsabilités des adhérents sur le site">
+                                            responsabilités sur le site
                                         </a>
                                     </li>
                                 {% endif %}

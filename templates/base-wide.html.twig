@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ sitename }} - {% block title %}Accueil{% endblock %}</title>
+    <base href="{{ url('legacy_root') }}" />
+    <meta name="description" content="{% block meta_description %}Site officiel du {{ sitename }} : activités sportives été et hiver, alpinisme, randonnée, ski, refuges...{% endblock %}">
+    <meta name="viewport" content="width=1000">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ app.request.uri }}" />
+    <meta property="og:site_name" content="{{ sitename }}" />
+    {% block og_markup %}
+        <meta property="og:title" content="{{ sitename }}" />
+        <meta property="og:description" content="{{ block('meta_description') }}" />
+    {% endblock %}
+
+    {% if google_site_verification != "" %}
+        <meta name="google-site-verification" content="{{ google_site_verification }}" />
+    {% endif %}
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ url_site }}/rss.xml?mode=articles" />
+
+    {% block stylesheets %}
+        {% include 'stylesheets.html.twig' %}
+    {% endblock %}
+
+    <script>
+        localStorage.setItem('jwt', "{{ jwt_token()|e('js') }}")
+    </script>
+
+    {% block scripts %}
+        {% include 'javascripts.html.twig' %}
+    {% endblock %}
+    {% if display_banner %}
+        <style>
+            #container, .fancybox-opened {
+                margin-top: 50px !important;
+            }
+            #env-banner {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 30px;
+                background-color: #f44336;
+                color: #ffffff;
+                text-align: center;
+                z-index: 9999;
+                padding: 10px 0;
+                font-size: 16px;
+                font-weight: bold;
+            }
+        </style>
+    {% endif %}
+
+</head>
+<body>
+{% if display_banner %}
+    <div id="env-banner">
+        <p>Attention, vous vous trouvez sur un site de test. Veuillez
+            <a href="https://www.clubalpinlyon.fr">cliquer ici pour accéder au site de production</a>.</p>
+    </div>
+{% endif %}
+<div id="container">
+    <div id="siteHeight">
+        {% include 'header.html.twig' %}
+        {% set fond = fond_commission(current_commission is defined ? current_commission : null) %}
+        <div id="bigfond" {% if fond is defined and fond is not same as ('') %}style="background-image:url({{ fond }});"{% endif %}></div>
+        <div id="main" class="wide-site" role="main">
+            <div id="full">
+                {% block body %}{% endblock %}
+            </div>
+            <br style="clear:both" />
+        </div>
+        {% include 'footer.html.twig' %}
+    </div>
+</div>
+{% block javascripts %}
+    <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha.site_key }}"></script>
+{% endblock %}
+{% block trackers %}
+    {% if analytics_account != "" %}
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ analytics_account | e('js') }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', '{{ analytics_account | e('js') }}');
+        </script>
+    {% endif %}
+{% endblock %}
+
+{% include 'components/modal.html.twig' %}
+</body>
+</html>
