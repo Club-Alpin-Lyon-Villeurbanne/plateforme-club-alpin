@@ -11,7 +11,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
         echo 'Erreur : id invalide';
         exit;
     } ?>
-	<h2>Attribution des statuts à l'utilisateur : <?php echo html_utf8($_GET['nom']); ?></h2>
+	<h2>Attribution de responsabilités à l'adhérent : <?php echo html_utf8($_GET['nom']); ?></h2>
 	<?php
     // req sql : trouver les attributs liés à cet user
 
@@ -28,7 +28,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     }
 
     if (count($statsTab)) {
-        echo '<h3>Statuts actuels :</h3>'
+        echo '<h3>Responsabilités actuelles :</h3>'
             . '<ul>';
         foreach ($statsTab as $row) {
             echo '<li>'
@@ -54,7 +54,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
 		<input type="hidden" name="operation" value="user_attr_add_admin" />
 		<input type="hidden" name="id_user" value="<?php echo $id_user; ?>" />
 
-		<h3>Ajouter un statut à cet adhérent :</h3>
+        <h3>Ajouter une responsabilité à cet adhérent :</h3>
 		<?php
         // message
         if (isset($_POST['operation']) && 'user_attr_add_admin' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
@@ -87,7 +87,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     ?>
 		<br />
 		<br />
-		<input type="submit" value="Appliquer cet attribut" class="nice" />
+		<input type="submit" value="Appliquer" class="nice" />
 
 		<script type="text/javascript">
 			$().ready(function(){

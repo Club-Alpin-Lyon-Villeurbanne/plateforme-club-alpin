@@ -12,7 +12,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
     } ?>
 
 	<div style="text-align:left;">
-		<h1>Attribution des statuts à l'utilisateur : <?php echo html_utf8(stripslashes($_GET['nom'])); ?></h1><br />
+		<h1>Attribution de responsabilités à l'adhérent : <?php echo html_utf8(stripslashes($_GET['nom'])); ?></h1><br />
 		<?php
         // req sql : trouver les attributs liés à cet user
 
@@ -29,7 +29,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
     }
 
     if (count($statsTab)) {
-        echo '<h2>Statuts actuels :</h2>'
+        echo '<h2>Responsabilités actuelles :</h2>'
                 . '<ul>';
         foreach ($statsTab as $row) {
             echo '<li>
@@ -99,7 +99,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
 			<input type="hidden" name="operation" value="user_attr_add" />
 			<input type="hidden" name="id_user" value="<?php echo $id_user; ?>" />
 
-			<h2>Ajouter un statut à cet adhérent :</h2>
+			<h2>Ajouter une responsabilité à cet adhérent :</h2>
 			<?php
             // message
         if (isset($_POST['operation']) && 'user_attr_add' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
@@ -178,7 +178,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
     ?>
 			<br />
 			<br />
-			<input type="submit" value="Appliquer cet attribut" class="nice" />
+			<input type="submit" value="Appliquer" class="nice" />
 
 			<script type="text/javascript">
 				$().ready(function(){
