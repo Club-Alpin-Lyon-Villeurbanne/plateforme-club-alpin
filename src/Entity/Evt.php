@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Serializer\Attribute\Context;
 
 /**
@@ -23,6 +24,7 @@ use Symfony\Component\Serializer\Attribute\Context;
 #[ORM\Table(name: 'caf_evt')]
 #[ORM\Entity]
 #[ApiResource(
+    shortName: 'sortie',
     order: ['tsp' => 'ASC'],
     operations: [
         new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
@@ -101,13 +103,9 @@ class Evt
     private ?Groupe $groupe;
 
     #[ORM\Column(name: 'tsp_evt', type: 'bigint', nullable: true, options: ['comment' => 'timestamp du début du event'])]
-    #[Groups('event:read')]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     private ?int $tsp;
 
     #[ORM\Column(name: 'tsp_end_evt', type: 'bigint', nullable: true)]
-    #[Groups('event:read')]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     private ?int $tspEnd;
 
     #[ORM\Column(name: 'tsp_crea_evt', type: 'bigint', nullable: false, options: ['comment' => "Création de l'entrée"])]
@@ -137,6 +135,7 @@ class Evt
 
     #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage'])]
     #[Groups('event:read')]
+    #[SerializedName('lieuRendezVous')]
     private ?string $rdv;
 
     #[ORM\Column(name: 'tarif_evt', type: 'float', precision: 10, scale: 2, nullable: true)]
@@ -157,14 +156,17 @@ class Evt
 
     #[ORM\Column(name: 'lat_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
+    #[SerializedName('latitude')]
     private string|float|null $lat;
 
     #[ORM\Column(name: 'long_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
+    #[SerializedName('longitude')]
     private string|float|null $long;
 
     #[ORM\Column(name: 'matos_evt', type: 'text', nullable: true)]
     #[Groups('event:details')]
+    #[SerializedName('materiel')]
     private ?string $matos;
 
     #[ORM\Column(name: 'difficulte_evt', type: 'string', length: 50, nullable: true)]
@@ -190,6 +192,7 @@ class Evt
 
     #[ORM\Column(name: 'join_max_evt', type: 'integer', nullable: false, options: ['comment' => "Nombre max d'inscriptions spontanées sur le site, ET PAS d'inscrits total"])]
     #[Groups('event:read')]
+    #[SerializedName('inscriptionsMax')]
     private ?int $joinMax;
 
     #[ORM\OneToMany(mappedBy: 'evt', targetEntity: 'EventParticipation', cascade: ['persist'], orphanRemoval: true)]
@@ -197,6 +200,7 @@ class Evt
 
     #[ORM\Column(name: 'ngens_max_evt', type: 'integer', nullable: false, options: ['comment' => 'Nombre de gens pouvant y aller au total. Donnée "visuelle" uniquement, pas de calcul.'])]
     #[Groups('event:read')]
+    #[SerializedName('participantsMax')]
     private ?int $ngensMax;
 
     #[ORM\OneToMany(mappedBy: 'evt', targetEntity: 'App\Entity\Article')]
@@ -504,6 +508,20 @@ class Evt
         return $this;
     }
 
+    #[Groups('event:read')]
+    #[SerializedName('heureRendezVous')]
+    public function getDateDebut(): ?string
+    {
+        return $this->tsp ? (new \DateTime())->setTimestamp($this->tsp)->format(\DateTime::ATOM) : null;
+    }
+
+    #[Groups('event:read')]
+    #[SerializedName('heureRetour')]
+    public function getDateFin(): ?string
+    {
+        return $this->tspEnd ? (new \DateTime())->setTimestamp($this->tspEnd)->format(\DateTime::ATOM) : null;
+    }
+
     public function isPublicStatusUnseen()
     {
         return self::STATUS_PUBLISHED_UNSEEN === $this->status;
@@ -554,12 +572,12 @@ class Evt
         return $this->tspEnd < time();
     }
 
-    public function getTspEnd(): ?string
+    public function getTspEnd(): ?int
     {
         return $this->tspEnd;
     }
 
-    public function setTspEnd(string $tspEnd): self
+    public function setTspEnd(int $tspEnd): self
     {
         $this->tspEnd = $tspEnd;
 

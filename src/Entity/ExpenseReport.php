@@ -13,7 +13,6 @@ use App\Dto\ExpenseReportCreateDto;
 use App\Repository\ExpenseReportRepository;
 use App\State\ExpenseReportCloneProcessor;
 use App\State\ExpenseReportCreateProcessor;
-use App\State\ExpenseReportProvider;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Validator\ValidExpenseReport;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -23,39 +22,40 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Symfony\Component\Serializer\Annotation\Context;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ExpenseReportRepository::class)]
 #[ApiResource(
+    shortName: 'note-de-frais',
     operations: [
         new Post(
-            uriTemplate: '/expense-reports',
+            uriTemplate: '/notes-de-frais',
             input: ExpenseReportCreateDto::class,
             processor: ExpenseReportCreateProcessor::class,
             security: "is_granted('ROLE_USER')",
         ),
         new Post(
-            uriTemplate: '/expense-reports/{id}/clone',
+            uriTemplate: '/notes-de-frais/{id}/clone',
             processor: ExpenseReportCloneProcessor::class,
             security: "is_granted('ROLE_USER')",
             name: 'clone',
         ),
         new GetCollection(
-            uriTemplate: '/expense-reports',
+            uriTemplate: '/notes-de-frais',
             security: "is_granted('ROLE_USER')",
         ),
         new Get(
-            uriTemplate: '/expense-reports/{id}',
+            uriTemplate: '/notes-de-frais/{id}',
             security: "is_granted('ROLE_ADMIN') or object.getUser() == user",
         ),
         new Patch(
-            uriTemplate: '/expense-reports/{id}',
+            uriTemplate: '/notes-de-frais/{id}',
             security: 'object.getUser() == user or is_granted("validate_expense_report")',
             // normalizationContext: ['groups' => ['report:read', 'attachment:read', 'user:read', 'event:read']]
         ),
     ],
-    provider: ExpenseReportProvider::class,
     security: "is_granted('ROLE_USER')",
     normalizationContext: ['groups' => ['report:read', 'attachment:read', 'user:read', 'event:read', 'commission:read'], 'skip_null_values' => false],
 )]
@@ -90,23 +90,24 @@ class ExpenseReport
 
     #[ORM\Column]
     #[Groups(['report:read'])]
-
     private ?bool $refundRequired = true;
 
     #[ORM\ManyToOne(inversedBy: 'expenseReports')]
     #[ORM\JoinColumn(nullable: false, referencedColumnName: 'id_user')]
     #[Groups(['user:read'])]
+    #[SerializedName('utilisateur')]
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'expenseReports')]
     #[ORM\JoinColumn(nullable: false, referencedColumnName: 'id_evt')]
     #[Groups(['event:read'])]
+    #[SerializedName('sortie')]
     private ?Evt $event = null;
 
     #[ORM\Column]
     #[Groups(['report:read'])]
-    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
-
+    #[Context([DateTimeNormalizer::FORMAT_KEY => \DateTime::ATOM])]
+    #[SerializedName('dateCreation')]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
@@ -114,7 +115,7 @@ class ExpenseReport
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(['report:read'])]
-
+    #[SerializedName('commentaireStatut')]
     private ?string $statusComment = null;
 
     #[ORM\Column(type: Types::JSON, nullable: true)]
@@ -123,8 +124,8 @@ class ExpenseReport
     private ?string $details = null;
 
     #[ORM\OneToMany(mappedBy: 'expenseReport', targetEntity: ExpenseAttachment::class, cascade: ['persist', 'remove'])]
-
     #[Groups(['attachment:read'])]
+    #[SerializedName('piecesJointes')]
     private Collection $attachments;
 
     public function __construct()

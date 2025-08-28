@@ -277,3 +277,12 @@ services:
       $appInstanceName: '%app_instance_name%'
       $appDeeplinkScheme: '%mobile_app_deeplink_scheme%'
       $sitename: '%legacy_env_SITENAME%'
+
+  App\Serializer\PaginationMetadataNormalizer:
+    tags:
+      - { name: 'serializer.normalizer', priority: 64 }
+      
+  App\Doctrine\ExpenseReportExtension:
+    tags:
+      - { name: 'api_platform.doctrine.orm.query_extension.collection' }
+      - { name: 'api_platform.doctrine.orm.query_extension.item' }
