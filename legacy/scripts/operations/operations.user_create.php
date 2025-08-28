@@ -81,6 +81,22 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $stmt->bind_param('ssssssisssssssss', $email_user, $mdp_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $current_time, $birthday_user, $tel_user, $tel2_user, $adresse_user, $cp_user, $ville_user, $pays_user, $civ_user, $auth_contact_user);
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur SQL';
+        } else {
+            // Synchroniser avec MailerLite après création manuelle
+            try {
+                $emailMarketingService = LegacyContainer::get(App\Service\EmailMarketingSyncService::class);
+
+                // Créer un objet User temporaire avec les données disponibles
+                $tempUser = new App\Entity\User();
+                $tempUser->setFirstname($firstname_user);
+                $tempUser->setLastname($lastname_user);
+                $tempUser->setEmail($email_user);
+
+                $emailMarketingService->syncUsers($tempUser);
+            } catch (Exception $e) {
+                // Log l'erreur mais ne pas bloquer la création
+                // Les logs seront automatiquement gérés par le service EmailMarketingSyncService
+            }
         }
         $stmt->close();
     }
