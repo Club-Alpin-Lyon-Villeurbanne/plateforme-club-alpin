@@ -1,0 +1,15 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    {% if commission %}[{{ commission }}]{% endif %}[Statut supprimé] {{ right_name }}
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        Le statut "{{ right_name }}" vient d'être retiré à {{ user_name }}{% if by_who %} par {{ by_who }}{% endif %}{% if commission %} sur la commission "{{ commission }}"{% endif %}.
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+    Le statut "{{ right_name }}" vient d'être retiré à {{ user_name }}{% if by_who %} par {{ by_who }}{% endif %}{% if commission %} sur la commission "{{ commission }}"{% endif %}.
+{% endblock %}
