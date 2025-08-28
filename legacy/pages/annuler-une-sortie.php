@@ -171,7 +171,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                         echo '<tr>
                                             <td>
                                                 ' . userlink($tmpUser['id_user'], $tmpUser['nickname_user'])
-                            . (allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">' . strtoupper(html_utf8($tmpUser['lastname_user'])) . ' ' . ucfirst(html_utf8($tmpUser['firstname_user'])) . '</p>' : '')
+                            . (allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">' . html_utf8(strtoupper($tmpUser['lastname_user'])) . ' ' . html_utf8(ucfirst($tmpUser['firstname_user'])) . '</p>' : '')
                             . '</td>'
                             . '<td class="small">' . (allowed('user_read_private', $evt['code_commission']) ? $tmpUser['tel_user'] : '') . '</td>'
                             . ($tmpUser['nomade_user'] ?
