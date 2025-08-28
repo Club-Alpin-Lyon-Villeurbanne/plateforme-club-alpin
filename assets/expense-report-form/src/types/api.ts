@@ -10,8 +10,8 @@ export interface Event {
   commission: any[];
   id: number;
   titre: string;
-  dateDebut: string;
-  dateFin: string;
+  heureRdv: string;
+  heureRetour: string;
 }
 
 export interface User {
