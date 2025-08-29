@@ -116,7 +116,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
 		<thead>
 			<tr>
 				<th>Outils</th>
-				<th>n° CAF / Infos / DBID </th>
+				<th>n° licence FFCAM / Infos / DBID </th>
 				<th>Actif ?</th>
 				<th>Civ</th>
 				<th>Nom</th>

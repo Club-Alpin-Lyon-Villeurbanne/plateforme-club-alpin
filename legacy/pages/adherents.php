@@ -100,7 +100,7 @@ if (allowed('user_see_all')) {
 				<thead>
 					<tr>
 						<th>Outils</th>
-						<th>n° CAF / Infos</th>
+						<th>n° licence FFCAM / Infos</th>
 						<!-- <th>Actif ?</th> -->
 						<th>Civ</th>
 						<th>Nom</th>

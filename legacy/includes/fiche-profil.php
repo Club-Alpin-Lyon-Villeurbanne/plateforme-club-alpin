@@ -121,7 +121,7 @@ else {
 		        echo '<hr  />'
 		             . '<h3>Infos privées : </h3>'
 		             . '<ul class="nice-list">'
-		             . '<li>NUMÉRO DE LICENCE : ' . html_utf8($tmpUser['cafnum_user']) . '</a> </li>';
+		             . '<li>NUMÉRO DE LICENCE FFCAM : ' . html_utf8($tmpUser['cafnum_user']) . '</a> </li>';
 		        if (allowed('user_read_private') && $tmpUser['doit_renouveler_user']) {
 		            echo '<li class="red">LICENCE EXPIRÉE</li>';
 		        } elseif (allowed('user_read_private') && !empty($tmpUser['date_adhesion_user'])) {
