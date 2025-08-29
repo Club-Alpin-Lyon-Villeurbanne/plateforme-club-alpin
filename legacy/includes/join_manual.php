@@ -97,7 +97,7 @@ if (user()) {
 					<thead>
 						<tr>
 							<th></th>
-							<th>n° CAF</th>
+							<th>n° licence FFCAM</th>
 							<th>Civ</th>
 							<th>Nom</th>
 							<th>Prénom</th>
