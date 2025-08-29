@@ -1,0 +1,30 @@
+{% extends 'base-wide.html.twig' %}
+
+{% block title %}Responsabilités des adhérents sur le site{% endblock %}
+
+{% block body %}
+    <h2>Responsabilités des adhérents sur le site</h2>
+    <table class="wide-table">
+        <thead>
+            <tr>
+                {% for roleCode,roleName in roles %}
+                    <th>
+                        {{ roleName }}
+                        ({{ counts[roleCode] }})
+                    </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for roleCode,roleName in roles %}
+                    <td>
+                        {% for userId,userNickname in users[roleCode] %}
+                            <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ userId }}" class="fancyframe userlink">{{ userNickname }}</a><br>
+                        {% endfor %}
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}
