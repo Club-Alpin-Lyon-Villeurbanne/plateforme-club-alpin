@@ -6,7 +6,7 @@ use App\Entity\AlertType;
 
 class EmailAlerts
 {
-    public const DEFAULT_ALERTS = [
+    public const array DEFAULT_ALERTS = [
         'all' => [
             AlertType::ArticlePush->name => true,
         ],
@@ -21,5 +21,5 @@ class EmailAlerts
             AlertType::SortiePush->name => false,
         ],
     ];
-    public const DEFAULT_ALERTS_JSON = '{"all": {"ArticlePush": true},"vie-du-club":{"Article":true,"Sortie":true, "SortiePush": true},"formation":{"Article":true,"Sortie":true, "SortiePush": true}}';
+    public const string DEFAULT_ALERTS_JSON = '{"all": {"ArticlePush": true},"vie-du-club":{"Article":true,"Sortie":true, "SortiePush": true},"formation":{"Article":true,"Sortie":true, "SortiePush": true}}';
 }
