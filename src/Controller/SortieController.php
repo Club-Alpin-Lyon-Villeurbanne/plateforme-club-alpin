@@ -280,6 +280,15 @@ class SortieController extends AbstractController
             return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
         }
 
+        // reste-t-il assez de place ?
+        $nbJoinMax = $event->getNgensMax();
+        $currentParticipantNb = $event->getParticipationsCount();
+        $availableSpotNb = $nbJoinMax - $currentParticipantNb;
+        if ($availableSpotNb < 0) {
+            $availableSpotNb = 0;
+        }
+
+        $flush = true;
         foreach ($request->request->all('id_evt_join', []) as $participationId) {
             $status = $request->request->get('status_evt_join_' . $participationId);
             $role = $request->request->get('role_evt_join_' . $participationId);
@@ -316,6 +325,18 @@ class SortieController extends AbstractController
                 ->setLastchangeWhen(time())
                 ->setLastchangeWho($user)
             ;
+
+            // reste-t-il assez de place ?
+            if (EventParticipation::STATUS_VALIDE === $status) {
+                ++$currentParticipantNb;
+            }
+            if ($currentParticipantNb > $nbJoinMax && EventParticipation::STATUS_VALIDE === $status) {
+                $this->addFlash('error', 'Vous ne pouvez pas valider plus de participants que de places disponibles (' . $availableSpotNb . ').');
+                $flush = false;
+
+                // s'il n'y a plus de place, inutile de parcourir le reste, on sort de la boucle
+                break;
+            }
 
             if (!\in_array($status, [EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_REFUSE, EventParticipation::STATUS_ABSENT], true)) {
                 continue;
@@ -383,7 +404,9 @@ class SortieController extends AbstractController
             $mailer->send($toMail, $template, $context, replyTo: $replyTo);
         }
 
-        $em->flush();
+        if ($flush) {
+            $em->flush();
+        }
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }

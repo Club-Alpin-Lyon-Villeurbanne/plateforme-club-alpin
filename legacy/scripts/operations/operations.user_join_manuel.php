@@ -55,15 +55,34 @@ if (!is_array($_POST['id_user'])) {
 
 if (!isset($errTab) || 0 === count($errTab)) {
     // verification de la validité de la sortie
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_evt) FROM caf_evt WHERE id_evt = ? AND status_evt != 1 LIMIT 1');
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT ngens_max_evt FROM caf_evt WHERE id_evt = ? AND status_evt = 1 LIMIT 1');
     $stmt->bind_param('i', $id_evt);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_row();
-    if ($row[0]) {
-        $errTab[] = 'Cette sortie ne semble pas publiée, les inscriptions sont impossible';
+    if (!$row) {
+        $errTab[] = 'Cette sortie ne semble pas publiée, les inscriptions sont impossibles';
     }
+    $nbJoinMax = $row[0];
     $stmt->close();
+
+    // comptage des participants actuels
+    $stmt2 = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_evt_join) FROM caf_evt_join WHERE evt_evt_join = ? AND status_evt_join = 1 LIMIT 1');
+    $stmt2->bind_param('i', $id_evt);
+    $stmt2->execute();
+    $result2 = $stmt2->get_result();
+    $row2 = $result2->fetch_row();
+    $currentParticipantNb = $row2[0];
+    $stmt2->close();
+
+    // reste-t-il assez de place ?
+    if ((count($_POST['id_user']) + $currentParticipantNb) > $nbJoinMax) {
+        $availableSpotNb = $nbJoinMax - $currentParticipantNb;
+        if ($availableSpotNb < 0) {
+            $availableSpotNb = 0;
+        }
+        $errTab[] = 'Vous ne pouvez pas inscrire plus de participants que de places disponibles (' . $availableSpotNb . ').';
+    }
 
     // liste des encadrants
     $destinataires = [];
