@@ -162,7 +162,7 @@ class ArticleController extends AbstractController
             'current_commission' => $article->getCommission()?->getCode(),
             'comments' => $commentRepository->findByArticle($article),
             'article_url' => $this->generateUrl('article_view', ['id' => $article->getId(), 'code' => $article->getCode()], UrlGeneratorInterface::ABSOLUTE_URL),
-            'event_url' => $article->getEvt() ? $this->generateUrl('sortie', ['id' => $article->getEvt()->getId(), 'code' => $article->getEvt()->getCode()]) : '',
+            'event_url' => $article->getEvt() ? $this->generateUrl('sortie', ['id' => $article->getEvt()->getId(), 'code' => $article->getEvt()->getCode()], UrlGeneratorInterface::ABSOLUTE_URL) : '',
         ];
     }
 
@@ -203,7 +203,7 @@ class ArticleController extends AbstractController
             $this->addFlash('error', 'Par souci de pertinence, les commentaires doivent comporter au moins 10 caractères.');
         }
 
-        $articleViewRoute = $this->generateUrl('article_view', ['code' => $article->getCode(), 'id' => $article->getId()]) . '#comments';
+        $articleViewRoute = $this->generateUrl('article_view', ['code' => $article->getCode(), 'id' => $article->getId()], UrlGeneratorInterface::ABSOLUTE_URL) . '#comments';
         if (empty($errors)) {
             $comment = new Comment();
             $comment
