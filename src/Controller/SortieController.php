@@ -51,6 +51,7 @@ class SortieController extends AbstractController
         SluggerInterface $slugger,
         CommissionRepository $commissionRepository,
         UserRights $userRights,
+        Mailer $mailer,
         ?Evt $event = null,
         ?Commission $commission = null,
     ): array|RedirectResponse {
@@ -147,6 +148,9 @@ class SortieController extends AbstractController
                     && ($originalEntityData['ngensMax'] !== $event->getngensMax()
                     || $originalEntityData['encadrants'] !== $newEncadrants)) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
+                } else {
+                    // on envoie directement le mail de mise à jour de sortie
+                    $this->sendUpdateNotificationEmail($mailer, $event, false);
                 }
             }
 
@@ -254,31 +258,7 @@ class SortieController extends AbstractController
             'event_date' => date('d/m/Y', $event->getTsp()),
         ]);
 
-        foreach ($event->getParticipations() as $participation) {
-            if ($participation->getUser() === $event->getUser()) {
-                // mail already sent
-                continue;
-            }
-
-            if ($event->getTspCrea() === $event->getTspEdit()) {
-                $mailer->send($participation->getUser(), 'transactional/sortie-publiee-inscrit', [
-                    'author_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'voir-profil/' . $event->getUser()->getId() . '.html',
-                    'author_nickname' => $event->getUser()->getNickname(),
-                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'event_name' => $event->getTitre(),
-                    'commission' => $event->getCommission()->getTitle(),
-                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
-                    'role' => $participation->getRole(),
-                ], [], null, $event->getUser()->getEmail());
-            } else {
-                $mailer->send($participation->getUser(), 'transactional/sortie-modifiee', [
-                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'event_name' => $event->getTitre(),
-                    'commission' => $event->getCommission()->getTitle(),
-                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
-                ], [], null, $event->getUser()->getEmail());
-            }
-        }
+        $this->sendUpdateNotificationEmail($mailer, $event, $event->getTspCrea() === $event->getTspEdit());
 
         $this->addFlash('info', 'La sortie est publiée');
 
@@ -679,5 +659,34 @@ class SortieController extends AbstractController
     protected function getFilename(string $eventTitle, SluggerInterface $slugger): string
     {
         return substr($slugger->slug($eventTitle, '-'), 0, 20) . '.' . date('Y-m-d.H-i-s');
+    }
+
+    protected function sendUpdateNotificationEmail(Mailer $mailer, ?Evt $event = null, bool $isNewEvent = true): void
+    {
+        foreach ($event->getParticipations() as $participation) {
+            if ($participation->getUser() === $event->getUser()) {
+                // mail already sent
+                continue;
+            }
+
+            if ($isNewEvent) {
+                $mailer->send($participation->getUser(), 'transactional/sortie-publiee-inscrit', [
+                    'author_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'voir-profil/' . $event->getUser()->getId() . '.html',
+                    'author_nickname' => $event->getUser()->getNickname(),
+                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'event_name' => $event->getTitre(),
+                    'commission' => $event->getCommission()->getTitle(),
+                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                    'role' => $participation->getRole(),
+                ], [], null, $event->getUser()->getEmail());
+            } else {
+                $mailer->send($participation->getUser(), 'transactional/sortie-modifiee', [
+                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'event_name' => $event->getTitre(),
+                    'commission' => $event->getCommission()->getTitle(),
+                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                ], [], null, $event->getUser()->getEmail());
+            }
+        }
     }
 }
