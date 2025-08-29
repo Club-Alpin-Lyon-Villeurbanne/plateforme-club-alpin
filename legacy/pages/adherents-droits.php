@@ -76,7 +76,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
 
             if ($deleteRight) {
                 echo '
-							<form action="' . $versCettePage . '" method="post" onsubmit="return(confirm(\'Vraiment supprimer cet attribut ?\n Cet utilisateur ne sera plus ' . addslashes(html_utf8($row['title_usertype'])) . '\'))" style="display:inline;">
+							<form action="' . $versCettePage . '" method="post" onsubmit="return(confirm(\'Vraiment supprimer cette responsabilité ?\n Cet utilisateur ne sera plus ' . addslashes(html_utf8($row['title_usertype'])) . '\'))" style="display:inline;">
 								<input type="hidden" name="operation" value="user_attr_del" />
 								<input type="hidden" name="id_user_attr" value="' . $row['id_user_attr'] . '" />
 								<input type="image" src="/img/base/x.png" alt="DEL" title="Supprimer cet attribut" class="upfade" />
