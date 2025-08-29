@@ -331,7 +331,7 @@ class SortieController extends AbstractController
                 ++$currentParticipantNb;
             }
             if ($currentParticipantNb > $nbJoinMax && EventParticipation::STATUS_VALIDE === $status) {
-                $this->addFlash('error', 'Vous ne pouvez pas valider plus de participants que de places disponibles (' . $availableSpotNb . ').');
+                $this->addFlash('error', 'Vous ne pouvez pas valider plus de participants que de places disponibles (' . $availableSpotNb . '). Vous pouvez augmenter le nombre maximum de places pour ensuite rajouter des personnes.');
                 $flush = false;
 
                 // s'il n'y a plus de place, inutile de parcourir le reste, on sort de la boucle
