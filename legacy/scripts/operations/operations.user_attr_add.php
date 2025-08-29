@@ -99,6 +99,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
                 $errTab[] = 'Erreur SQL';
             }
+            LegacyContainer::get('legacy_user_right_service')->notifyUserAfterRightAdded($id_user, $id_usertype, $params_user_attr, getUser());
         }
     }
 }

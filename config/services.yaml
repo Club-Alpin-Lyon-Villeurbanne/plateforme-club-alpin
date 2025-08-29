@@ -286,3 +286,7 @@ services:
     tags:
       - { name: 'api_platform.doctrine.orm.query_extension.collection' }
       - { name: 'api_platform.doctrine.orm.query_extension.item' }
+
+  legacy_user_right_service:
+    public: true
+    alias: App\Service\UserRightService

@@ -150,17 +150,13 @@ elseif ('user_attr_add' == $operation) {
     require $operationsDir . 'operations.user_attr_add.php';
 }
 
-// USER : supression d'attribut
+// USER : suppression d'attribut
 elseif ('user_attr_del' == $operation) {
-    $errTab[] = 'tooddo';
     $id_user_attr = (int) $_POST['id_user_attr'];
     if (!$id_user_attr) {
         $errTab[] = 'No id';
     } else {
-        $req = "DELETE FROM caf_user_attr WHERE id_user_attr = $id_user_attr LIMIT 1;";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur SQL';
-        }
+        LegacyContainer::get('legacy_user_right_service')->removeRightAndNotify($id_user_attr, getUser());
     }
 }
 // USER : CREATE (manuel)
@@ -304,16 +300,13 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
         require $operationsDir . 'operations.user_attr_add_admin.php';
     }
 
-    // ADMIN : supression d'attribut
+    // ADMIN : suppression d'attribut
     elseif ('user_attr_del_admin' == $operation) {
         $id_user_attr = (int) $_POST['id_user_attr'];
         if (!$id_user_attr) {
             $errTab[] = 'No id';
         } else {
-            $req = "DELETE FROM caf_user_attr WHERE id_user_attr = $id_user_attr LIMIT 1;";
-            if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-                $errTab[] = 'Erreur SQL';
-            }
+            LegacyContainer::get('legacy_user_right_service')->removeRightAndNotify($id_user_attr, getUser());
         }
 
         // log admin
