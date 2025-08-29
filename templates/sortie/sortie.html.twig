@@ -9,7 +9,7 @@
         {% if my_status and not my_status.isCovoiturage %}
             {% set style = 'border:1px solid red; background:rgba(255,153,153,.4);' %}
         {% endif %}
-        <div style="text-align:center; padding:0 30px 0 0">
+        <div style="text-align:center;">
             <br />
             <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
             <span class="bleucaf">&gt;</span>
@@ -207,7 +207,7 @@
         {% if my_status and my_status.status == constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME') %}
             {% if not event.finished %}
                 {% if allowed('evt_unjoin') %}
-                    <div class="alerte info-container" style="margin-right:2rem !important">
+                    <div class="alerte info-container">
                         <img src="/img/inscrit-standby.png" alt="" title=""/>
                         <div class="text-container">
                             Vous avez demandé à participer à cette sortie, et votre demande est en attente de validation.<br />
@@ -219,7 +219,7 @@
                     {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id, 'my_status': my_status.status} %}
                 {% endif %}
             {% else %}
-                <div class="alerte info-container" style="margin-right:2rem !important">
+                <div class="alerte info-container">
                     <img src="/img/inscrit-standby.png" alt="" title=""/>
                     <div class="text-container">
                         Vous avez demandé à participer à cette sortie, mais votre demande est restée en attente.<br />
@@ -230,7 +230,7 @@
         {% endif %}
 
         {% if my_status and my_status.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
-            <div class="erreur info-container" style="margin-right:2rem !important">
+            <div class="erreur info-container">
                 <img src="/img/inscrit-cross.png" alt="" title=""/>
                 <div class="text-container">
                     Vous avez demandé à participer à cette sortie, mais l'organisateur a décliné votre inscription.
@@ -248,7 +248,7 @@
                         {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id, 'my_status': my_status.status} %}
                     {% endif %}
                 {% else %}
-                    <div class="info info-container" style="margin-right:2rem !important">
+                    <div class="info info-container">
                         <img src="/img/inscrit-encadrant.png" alt="" title=""/>
                         <div class="text-container">
                             Vous avez participé à cette sortie en tant que : {{ my_status.role }}.
@@ -264,7 +264,7 @@
                         {% if event.statusLegal %}
                             {% include 'vuejs/expense-report-form.twig' %}
                         {% else %}
-                            <div class="alerte info-container" style="margin-right:2rem !important; margin-bottom:2rem !important">
+                            <div class="alerte info-container" style="margin-bottom:2rem !important">
                                 <img src="/img/base/cross.png" alt="" title=""/>
                                 <div class="text-container">
                                     <b>Note de frais non disponible :</b><br />
@@ -282,7 +282,7 @@
                         {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id, 'my_status': my_status.status} %}
                     {% endif %}
                 {% else %}
-                    <div class="info info-container" style="margin-right:2rem !important">
+                    <div class="info info-container">
                         <img src="/img/inscrit-check.png" alt="" title=""/>
                         <div class="text-container">
                             Vous avez participé à cette sortie.
@@ -649,7 +649,7 @@
                     </a>
                     <br />
 
-                    <div id="contact-inscrits" style="display: none; border : 1px solid #eaeaea; box-shadow:0 0 20px -10px gray;; padding:10px; margin:10px 0 20px 0;; border-radius:10px">
+                    <div id="contact-inscrits" style="display: none; border : 1px solid #eaeaea; box-shadow:0 0 20px -10px gray; padding:10px; margin:10px 0 0 0; border-radius:10px">
                         <h2>Formulaire de contact</h2>
 
                         <div class="italic">
@@ -791,9 +791,19 @@
             {% if allowed('user_read_limited') %}
                 <ul class="nice-list">
                     <li><b>RDV :</b> {% if event.rdv is not same as ('') %}{{ event.rdv }}{% else %}Voir sur la carte ci-dessous{% endif %}</li>
+                    <li class="wide align-top"><b>S'Y RENDRE :</b></li>
+                </ul>
+                <div class="gps-apps">
+                    <a href="https://geovelo.app/fr/route/?c={{ geovelo_encoded_coord }}&to={{ geovelo_encoded_coord }}&z=15" target="_blank" title="S'y rendre avec GeoVélo"><img src="/img/gps/geovelo.png" height="50" alt="GeoVélo" /></a>
+{#                    <a href="https://citymapper.com/directions?endcoord={{ encoded_coord }}" target="_blank" title="S'y rendre avec CityMapper"><img src="/img/gps/citymapper.png" height="50" alt="CityMapper" /></a>#}
+                    <a href="https://maps.google.com/maps?q={{ event.lat|replace({',':'.'}) }},{{ event.long|replace({',':'.'}) }}" target="_blank" title="S'y rendre avec Google Maps"><img src="/img/gps/maps.png" height="50" alt="Google Maps" /></a>
+                    <a href="https://www.waze.com/fr/live-map/directions/?latlng={{ event.lat|replace({',':'.'}) }},{{ event.long|replace({',':'.'}) }}" target="_blank" title="S'y rendre avec Waze"><img src="/img/gps/waze.png" height="50" alt="Waze"/></a>
+                </div>
+
+                <ul class="nice-list">
                     <li class="wide"><b>POINT DE RENDEZ-VOUS SUR LA CARTE :</b> </li>
                 </ul>
-                <br style="clear:both" />
+                <div style="clear:both"></div>
                 <div id="map-fichesortie"></div>
                 <script>
                     $(function() {
@@ -955,7 +965,7 @@
             </p>
 
             {% if app.user and nInscritsTotal > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
-                <table class="big-lines-table" style="width:570px; margin-left:20px;">
+                <table class="big-lines-table" style="width:570px; margin: 0 auto;">
 
                     {% for inscrit in event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) | sort((a, b) => a.user.firstname <=> b.user.firstname) %}
                         <td>
