@@ -81,7 +81,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if ($availableSpotNb < 0) {
             $availableSpotNb = 0;
         }
-        $errTab[] = 'Vous ne pouvez pas inscrire plus de participants que de places restantes (' . $availableSpotNb . '). Vous pouvez augmenter le nombre maximum de places pour ensuite rajouter des personnes.';
+        $errTab[] = 'Vous ne pouvez pas inscrire plus de participants que de places disponibles (' . $availableSpotNb . '). Vous pouvez augmenter le nombre maximum de places pour ensuite rajouter des personnes.';
     }
 
     // liste des encadrants
