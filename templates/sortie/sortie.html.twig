@@ -1038,10 +1038,8 @@
 
                                     {{ easy_include('formalites-inscription', 'formalites') }}
 
-                                    <form id="join_sortie" action="{{ app.request.requestUri }}#inscription" method="post" class="loading">
-
-                                        <input type="hidden" name="operation" value="user_join" />
-                                        <input type="hidden" name="id_evt" value="{{ event.id }}" />
+                                    <form id="join_sortie" action="{{ path('join_event', {id: event.id}) }}" method="post" class="loading">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token('join_event') }}" />
 
                                         <div class="check-nice ">
                                             <p>
@@ -1094,7 +1092,7 @@
                                         </div>
 
                                         <p style="text-align:center">
-                                            <label for="name">Ajouter un message à votre demande (facultatif) :</label><br>
+                                            <label for="message">Ajouter un message à votre demande (facultatif) :</label><br>
                                             <textarea name="message" placeholder="Par exemple :
 - J'ai tel niveau et telle expérience
 - J'ai une voiture avec 4 places dispos

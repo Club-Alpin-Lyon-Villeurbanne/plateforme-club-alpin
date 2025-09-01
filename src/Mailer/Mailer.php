@@ -75,14 +75,6 @@ class Mailer
             return;
         }
 
-        if ($sender instanceof User) {
-            if ($this->isValid($sender->getEmail())) {
-                $sender = new Address($sender->getEmail(), $sender->getNickname() ?? '');
-            } else {
-                $sender = null;
-            }
-        }
-
         if ($replyTo instanceof User) {
             if ($this->isValid($replyTo->getEmail())) {
                 $replyTo = new Address($replyTo->getEmail(), $replyTo->getNickname() ?? '');

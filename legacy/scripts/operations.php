@@ -39,11 +39,6 @@ if (user()) {
         require $operationsDir . 'operations.user_join_del.php';
     }
 
-    // JOINS : USER / SORTIE : pré inscription + pré iscription affiliés
-    elseif ('user_join' == $operation) {
-        require $operationsDir . 'operations.user_join.php';
-    }
-
     // JOINS : USER / SORTIE : inscription manuelle de la part de l'organisateur de l'événemeent
     elseif ('user_join_manuel' == $operation) {
         require $operationsDir . 'operations.user_join_manuel.php';

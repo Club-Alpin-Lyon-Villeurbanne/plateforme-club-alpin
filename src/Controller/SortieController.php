@@ -679,6 +679,228 @@ class SortieController extends AbstractController
         return $excelExport->export(substr($slugger->slug($event->getTitre(), '-'), 0, 20), $datas, $rsm, $this->getFilename($event->getTitre(), $slugger));
     }
 
+    #[Route(path: '/sortie/{id}/rejoindre', name: 'join_event', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function join(
+        Request $request,
+        Evt $event,
+        EntityManagerInterface $em,
+        Mailer $mailer,
+        UserRepository $userRepository,
+    ): RedirectResponse {
+        if (!$this->isCsrfTokenValid('join_event', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        if (!$this->isGranted('JOIN_SORTIE', $event)) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+        }
+
+        $data = $request->request->all();
+        $user = $this->getUser();
+        $filiations = $userRepository->getFiliations($user);
+        $affiliatedUserIds = [];
+        foreach ($filiations as $filiation) {
+            $affiliatedUserIds[] = $filiation->getId();
+        }
+
+        $errTab = [];
+        $hasFiliations = false;
+        $affiliatedJoiningUsers = [];
+        $is_covoiturage = null;
+
+        // Filiations
+        $idUsersFiliations = !empty($data['id_user_filiation']) ? array_map('intval', $data['id_user_filiation']) : [];
+        if (isset($data['filiations']) && 'on' == $data['filiations']) {
+            $hasFiliations = true;
+            foreach ($idUsersFiliations as $id_user_tmp) {
+                $affiliatedJoiningUsers[] = $userRepository->find($id_user_tmp);
+            }
+        }
+
+        $joinMessage = $data['message'];
+
+        // CGUs
+        if (!isset($data['confirm']) || 'on' != $data['confirm']) {
+            $errTab[] = "Merci de cocher la case &laquo; J'ai lu les conditions...&raquo;";
+        }
+
+        // sortie publiée ?
+        if (Evt::STATUS_PUBLISHED_VALIDE !== $event->getStatus()) {
+            $errTab[] = 'Cette sortie ne semble pas publiée, les inscriptions sont impossibles';
+        }
+
+        // verification du timing de la sortie
+        if ($event->hasStarted()) {
+            $errTab[] = 'Cette sortie a déjà démarré';
+        }
+
+        // verification du timing de la sortie : inscriptions
+        if (!$event->joinHasStarted()) {
+            $errTab[] = 'Les inscriptions ne sont pas encore ouvertes';
+        }
+
+        if (!isset($errTab) || 0 === \count($errTab)) {
+            $role_evt_join = EventParticipation::ROLE_INSCRIT;
+
+            // Bénévole
+            if (isset($data['jeveuxetrebenevole']) && 'on' == $data['jeveuxetrebenevole']) {
+                $role_evt_join = EventParticipation::ROLE_BENEVOLE;
+            }
+
+            // si filiations : création du tableau des joints et vérifications
+            if ($hasFiliations) {
+                if (!\count($idUsersFiliations)) {
+                    $errTab[] = 'Merci de choisir au moins une personne à inscrire';
+                }
+            }
+
+            // pour chaque id envoyé
+            foreach ($idUsersFiliations as $id_user_tmp) {
+                // vérification que c'est bien mon affilié
+                // sauf moi-meme
+                if ($id_user_tmp != $user->getId()) {
+                    if (!\in_array($id_user_tmp, $affiliatedUserIds, true)) {
+                        $errTab[] = "ID '" . (int) $id_user_tmp . "' invalide pour l'inscription d'un adhérent affilié";
+                    }
+                }
+            }
+
+            // SI PAS DE PB, INTÉGRATION BDD
+            if (!isset($errTab) || 0 === \count($errTab)) {
+                $status_evt_join = EventParticipation::STATUS_NON_CONFIRME;
+                $auto_accept = false;
+                $nbNewJoins = 1;
+                if ($hasFiliations) {
+                    $nbNewJoins = \count($idUsersFiliations);
+                }
+
+                // Si auto_accept est activé, vérifier qu'on n'a pas atteint la limite
+                if ($event->isAutoAccept()) {
+                    $ngens_max = $event->getNgensMax();
+                    $current_participants = $event->getParticipationsCount();
+
+                    // Vérifier si on peut accepter assez d'inscriptions
+                    if (($current_participants + $nbNewJoins) < $ngens_max) {
+                        $status_evt_join = EventParticipation::STATUS_VALIDE;
+                        $auto_accept = true;
+                    } else {
+                        // Si pas de limite définie, accepter automatiquement
+                        $status_evt_join = EventParticipation::STATUS_VALIDE;
+                        $auto_accept = true;
+                    }
+                    // Si on a atteint la limite, ne pas accepter automatiquement
+                }
+
+                // normal
+                if (!$hasFiliations) {
+                    $event->addParticipation($user, $role_evt_join, $status_evt_join);
+                }
+                // filiations
+                else {
+                    foreach ($affiliatedJoiningUsers as $affiliatedJoiningUser) {
+                        $event->addParticipation($affiliatedJoiningUser, $role_evt_join, $status_evt_join);
+                    }
+                }
+                $em->flush();
+
+                // E-MAIL À L'ORGANISATEUR ET AUX ENCADRANTS
+                if (!isset($errTab) || 0 === \count($errTab)) {
+                    $destinataires = [];
+                    $destinataires[] = $event->getUser();
+                    foreach ($event->getEncadrants() as $encadrant) {
+                        $destinataires[] = $encadrant->getUser();
+                    }
+
+                    // infos sur la sortie
+                    $evtUrl = $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
+                    $evtName = $event->getTitre();
+                    $evtDate = date('d/m/Y', $event->getTsp());
+                    $commissionTitle = $event->getCommission()->getTitle();
+
+                    // infos sur le nouvel inscrit (et ses affiliés)
+                    $inscrits = [];
+                    if ($hasFiliations) {
+                        $inscrits = $affiliatedJoiningUsers;
+                    } else {
+                        $inscrits[] = $user;
+                    }
+
+                    $mailer->send($destinataires, 'transactional/sortie-demande-inscription', [
+                        'role' => $role_evt_join,
+                        'event_name' => $evtName,
+                        'event_url' => $evtUrl,
+                        'event_date' => $evtDate,
+                        'auto_accept' => $auto_accept,
+                        'commission' => $commissionTitle,
+                        'inscrits' => array_map(function ($cetinscrit) {
+                            return [
+                                'firstname' => ucfirst($cetinscrit->getFirstname()),
+                                'lastname' => strtoupper($cetinscrit->getLastname()),
+                                'nickname' => $cetinscrit->getNickname(),
+                                'email' => $cetinscrit->getEmail(),
+                                'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $cetinscrit->getId() . '.html',
+                            ];
+                        }, $inscrits),
+                        'firstname' => ucfirst($user->getFirstname()),
+                        'lastname' => strtoupper($user->getLastname()),
+                        'nickname' => $user->getNickname(),
+                        'message' => $joinMessage,
+                        'covoiturage' => $is_covoiturage,
+                    ], [], $user);
+
+                    // E-MAIL AU PRE-INSCRIT
+                    // inscription auto-acceptée
+                    if ($auto_accept) {
+                        $mailer->send($user, 'transactional/sortie-participation-confirmee', [
+                            'role' => $role_evt_join,
+                            'event_name' => $evtName,
+                            'event_url' => $evtUrl,
+                            'event_date' => $evtDate,
+                            'commission' => $commissionTitle,
+                        ]);
+                    } elseif ($hasFiliations) {
+                        $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
+                            'role' => $role_evt_join,
+                            'event_name' => $evtName,
+                            'event_url' => $evtUrl,
+                            'event_date' => $evtDate,
+                            'commission' => $commissionTitle,
+                            'inscrits' => array_map(function ($cetinscrit) {
+                                return [
+                                    'firstname' => ucfirst($cetinscrit->getFirstname()),
+                                    'lastname' => strtoupper($cetinscrit->getLastname()),
+                                    'nickname' => $cetinscrit->getNickname(),
+                                    'email' => $cetinscrit->getEmail(),
+                                ];
+                            }, $inscrits),
+                            'covoiturage' => $is_covoiturage,
+                        ]);
+                    } else {
+                        // inscription simple de moi à moi
+                        $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
+                            'role' => $role_evt_join,
+                            'event_name' => $evtName,
+                            'event_url' => $evtUrl,
+                            'event_date' => $evtDate,
+                            'commission' => $commissionTitle,
+                            'inscrits' => [
+                                [
+                                    'firstname' => ucfirst($user->getFirstname()),
+                                    'lastname' => strtoupper($user->getLastname()),
+                                    'nickname' => $user->getNickname(),
+                                    'email' => $user->getEmail(),
+                                ],
+                            ],
+                            'covoiturage' => $is_covoiturage,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return $this->redirectToRoute('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
+    }
+
     protected function getFilename(string $eventTitle, SluggerInterface $slugger): string
     {
         return substr($slugger->slug($eventTitle, '-'), 0, 20) . '.' . date('Y-m-d.H-i-s');
