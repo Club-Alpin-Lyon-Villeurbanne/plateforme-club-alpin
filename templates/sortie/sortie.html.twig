@@ -159,7 +159,7 @@
         {% endif %}
 
         {% if is_granted('FICHE_SORTIE', event) %}
-        <a href="/feuille-de-sortie/evt-{{ event.id }}.html" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2" target="_blank">
+        <a href="{{ path('feuille_sortie', {id: event.id}) }}" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2" target="_blank">
             <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
             Imprimer la fiche de sortie
         </a>

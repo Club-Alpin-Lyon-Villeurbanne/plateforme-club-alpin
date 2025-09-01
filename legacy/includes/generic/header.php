@@ -28,30 +28,16 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 	<!-- media="screen" -->
 	<!-- css COMMUNS SCREEN + PRINT -->
 	 <?php
-        if ('feuille-de-sortie' == $p1) {
-            ?>
-		<style type="text/css">
-		<?php
-                    include __DIR__ . '/../../../assets/styles/styles.css';
-            include __DIR__ . '/../../../assets/fonts/stylesheet.css';
-            include __DIR__ . '/../../../assets/styles/base.css';
-            include __DIR__ . '/../../../assets/styles/common.css';
-            include __DIR__ . '/../../../assets/styles/print.css';
-            ?>
-		</style>
-		<?php
-        } else {
             echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('styles');
-            echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('fonts');
-            echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles');
-            echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('common-styles');
-            ?>
+echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('fonts');
+echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles');
+echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('common-styles');
+?>
 		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" />
 		<!-- css PRINTS -->
         <?php
-            echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('print-styles', ['attr' => ['media' => 'print']]);
-            echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('modal_css');
-        }
+echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('print-styles', ['attr' => ['media' => 'print']]);
+echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('modal_css');
 ?>
 
 

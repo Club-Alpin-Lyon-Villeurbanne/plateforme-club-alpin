@@ -6,12 +6,14 @@ use App\Entity\Commission;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
+use App\Entity\UserAttr;
 use App\Form\EventType;
 use App\Legacy\LegacyContainer;
 use App\Mailer\Mailer;
 use App\Messenger\Message\SortiePubliee;
 use App\Repository\CommissionRepository;
 use App\Repository\EventParticipationRepository;
+use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
 use App\Twig\JavascriptGlobalsExtension;
 use App\UserRights;
@@ -227,6 +229,56 @@ class SortieController extends AbstractController
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participationRepository->getEmpietements($event),
             'current_commission' => $event->getCommission()->getCode(),
+        ];
+    }
+
+    #[Route(path: '/feuille-de-sortie/evt-{id}.html', name: 'feuille_sortie', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[Template('sortie/feuille-sortie.html.twig')]
+    public function sortieDetails(
+        Request $request,
+        Evt $event,
+        UserAttrRepository $userAttrRepository,
+    ): array {
+        if (!$this->isGranted('FICHE_SORTIE', $event)) {
+            throw new AccessDeniedHttpException('Not found');
+        }
+
+        $nAccepteesCalc = $event->getParticipationsCount();
+        $sortedParticipants = [
+            EventParticipation::ROLE_ENCADRANT => [],
+            EventParticipation::ROLE_STAGIAIRE => [],
+            EventParticipation::ROLE_COENCADRANT => [],
+            EventParticipation::ROLE_BENEVOLE => [],
+            EventParticipation::ROLE_INSCRIT => [],
+        ];
+        $participants = $event->getParticipations();
+        foreach ($participants as $participant) {
+            $role = $participant->getRole();
+            if (EventParticipation::ROLE_INSCRIT === $participant->getRole() || EventParticipation::ROLE_MANUEL === $participant->getRole()) {
+                $role = EventParticipation::ROLE_INSCRIT;
+            }
+            $sortedParticipants[$role][$participant->getUser()->getFullName()] = $participant;
+        }
+        foreach ($sortedParticipants as $role => $participants) {
+            ksort($sortedParticipants[$role]);
+        }
+        $allParticipants = array_merge(
+            $sortedParticipants[EventParticipation::ROLE_ENCADRANT],
+            $sortedParticipants[EventParticipation::ROLE_STAGIAIRE],
+            $sortedParticipants[EventParticipation::ROLE_COENCADRANT],
+            $sortedParticipants[EventParticipation::ROLE_BENEVOLE],
+            $sortedParticipants[EventParticipation::ROLE_INSCRIT],
+        );
+
+        return [
+            'event' => $event,
+            'nbAcceptes' => $nAccepteesCalc,
+            'logo' => LegacyContainer::get('legacy_content_inline')->getLogo(),
+            'presidents' => $userAttrRepository->listAllManagement([UserAttr::PRESIDENT]),
+            'vicepresidents' => $userAttrRepository->listAllManagement([UserAttr::VICE_PRESIDENT]),
+            'participants' => $allParticipants,
+            'totalLines' => $nAccepteesCalc + 5,
+            'hideBlankLines' => ('y' === $request->query->get('hide_blank')),
         ];
     }
 
@@ -490,6 +542,37 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
+    #[Route(path: '/sortie/{id}/annuler', name: 'cancel_event', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function cancel(
+        Request $request,
+        Evt $event,
+        EntityManagerInterface $em,
+        Mailer $mailer,
+    ): RedirectResponse {
+        if (!$this->isCsrfTokenValid('cancel_event', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        if (!$this->isGranted('SORTIE_CANCEL', $event)) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+        }
+
+        $em->flush();
+
+        $mailer->send($event->getUser(), 'transactional/sortie-publiee', [
+            'event_name' => $event->getTitre(),
+            'commission' => $event->getCommission()->getTitle(),
+            'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+            'event_date' => date('d/m/Y', $event->getTsp()),
+        ]);
+
+        $this->sendUpdateNotificationEmail($mailer, $event, $event->getTspCrea() === $event->getTspEdit());
+
+        $this->addFlash('info', 'La sortie est annulée');
+
+        return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
+    }
+
     #[Route(name: 'sortie_uncancel', path: '/sortie/{id}/uncancel', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieUncancel(Request $request, Evt $event, EntityManagerInterface $em)
     {
@@ -739,7 +822,7 @@ class SortieController extends AbstractController
             $errTab[] = 'Les inscriptions ne sont pas encore ouvertes';
         }
 
-        if (!isset($errTab) || 0 === \count($errTab)) {
+        if (empty($errTab)) {
             $role_evt_join = EventParticipation::ROLE_INSCRIT;
 
             // Bénévole
@@ -766,7 +849,7 @@ class SortieController extends AbstractController
             }
 
             // SI PAS DE PB, INTÉGRATION BDD
-            if (!isset($errTab) || 0 === \count($errTab)) {
+            if (empty($errTab)) {
                 $status_evt_join = EventParticipation::STATUS_NON_CONFIRME;
                 $auto_accept = false;
                 $nbNewJoins = 1;
@@ -804,33 +887,65 @@ class SortieController extends AbstractController
                 $em->flush();
 
                 // E-MAIL À L'ORGANISATEUR ET AUX ENCADRANTS
-                if (!isset($errTab) || 0 === \count($errTab)) {
-                    $destinataires = [];
-                    $destinataires[] = $event->getUser();
-                    foreach ($event->getEncadrants() as $encadrant) {
-                        $destinataires[] = $encadrant->getUser();
-                    }
+                $destinataires = [];
+                $destinataires[] = $event->getUser();
+                foreach ($event->getEncadrants() as $encadrant) {
+                    $destinataires[] = $encadrant->getUser();
+                }
 
-                    // infos sur la sortie
-                    $evtUrl = $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
-                    $evtName = $event->getTitre();
-                    $evtDate = date('d/m/Y', $event->getTsp());
-                    $commissionTitle = $event->getCommission()->getTitle();
+                // infos sur la sortie
+                $evtUrl = $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
+                $evtName = $event->getTitre();
+                $evtDate = date('d/m/Y', $event->getTsp());
+                $commissionTitle = $event->getCommission()->getTitle();
 
-                    // infos sur le nouvel inscrit (et ses affiliés)
-                    $inscrits = [];
-                    if ($hasFiliations) {
-                        $inscrits = $affiliatedJoiningUsers;
-                    } else {
-                        $inscrits[] = $user;
-                    }
+                // infos sur le nouvel inscrit (et ses affiliés)
+                $inscrits = [];
+                if ($hasFiliations) {
+                    $inscrits = $affiliatedJoiningUsers;
+                } else {
+                    $inscrits[] = $user;
+                }
 
-                    $mailer->send($destinataires, 'transactional/sortie-demande-inscription', [
+                $mailer->send($destinataires, 'transactional/sortie-demande-inscription', [
+                    'role' => $role_evt_join,
+                    'event_name' => $evtName,
+                    'event_url' => $evtUrl,
+                    'event_date' => $evtDate,
+                    'auto_accept' => $auto_accept,
+                    'commission' => $commissionTitle,
+                    'inscrits' => array_map(function ($cetinscrit) {
+                        return [
+                            'firstname' => ucfirst($cetinscrit->getFirstname()),
+                            'lastname' => strtoupper($cetinscrit->getLastname()),
+                            'nickname' => $cetinscrit->getNickname(),
+                            'email' => $cetinscrit->getEmail(),
+                            'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $cetinscrit->getId() . '.html',
+                        ];
+                    }, $inscrits),
+                    'firstname' => ucfirst($user->getFirstname()),
+                    'lastname' => strtoupper($user->getLastname()),
+                    'nickname' => $user->getNickname(),
+                    'message' => $joinMessage,
+                    'covoiturage' => $is_covoiturage,
+                ], [], $user);
+
+                // E-MAIL AU PRE-INSCRIT
+                // inscription auto-acceptée
+                if ($auto_accept) {
+                    $mailer->send($user, 'transactional/sortie-participation-confirmee', [
                         'role' => $role_evt_join,
                         'event_name' => $evtName,
                         'event_url' => $evtUrl,
                         'event_date' => $evtDate,
-                        'auto_accept' => $auto_accept,
+                        'commission' => $commissionTitle,
+                    ]);
+                } elseif ($hasFiliations) {
+                    $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
+                        'role' => $role_evt_join,
+                        'event_name' => $evtName,
+                        'event_url' => $evtUrl,
+                        'event_date' => $evtDate,
                         'commission' => $commissionTitle,
                         'inscrits' => array_map(function ($cetinscrit) {
                             return [
@@ -838,62 +953,28 @@ class SortieController extends AbstractController
                                 'lastname' => strtoupper($cetinscrit->getLastname()),
                                 'nickname' => $cetinscrit->getNickname(),
                                 'email' => $cetinscrit->getEmail(),
-                                'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $cetinscrit->getId() . '.html',
                             ];
                         }, $inscrits),
-                        'firstname' => ucfirst($user->getFirstname()),
-                        'lastname' => strtoupper($user->getLastname()),
-                        'nickname' => $user->getNickname(),
-                        'message' => $joinMessage,
                         'covoiturage' => $is_covoiturage,
-                    ], [], $user);
-
-                    // E-MAIL AU PRE-INSCRIT
-                    // inscription auto-acceptée
-                    if ($auto_accept) {
-                        $mailer->send($user, 'transactional/sortie-participation-confirmee', [
-                            'role' => $role_evt_join,
-                            'event_name' => $evtName,
-                            'event_url' => $evtUrl,
-                            'event_date' => $evtDate,
-                            'commission' => $commissionTitle,
-                        ]);
-                    } elseif ($hasFiliations) {
-                        $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
-                            'role' => $role_evt_join,
-                            'event_name' => $evtName,
-                            'event_url' => $evtUrl,
-                            'event_date' => $evtDate,
-                            'commission' => $commissionTitle,
-                            'inscrits' => array_map(function ($cetinscrit) {
-                                return [
-                                    'firstname' => ucfirst($cetinscrit->getFirstname()),
-                                    'lastname' => strtoupper($cetinscrit->getLastname()),
-                                    'nickname' => $cetinscrit->getNickname(),
-                                    'email' => $cetinscrit->getEmail(),
-                                ];
-                            }, $inscrits),
-                            'covoiturage' => $is_covoiturage,
-                        ]);
-                    } else {
-                        // inscription simple de moi à moi
-                        $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
-                            'role' => $role_evt_join,
-                            'event_name' => $evtName,
-                            'event_url' => $evtUrl,
-                            'event_date' => $evtDate,
-                            'commission' => $commissionTitle,
-                            'inscrits' => [
-                                [
-                                    'firstname' => ucfirst($user->getFirstname()),
-                                    'lastname' => strtoupper($user->getLastname()),
-                                    'nickname' => $user->getNickname(),
-                                    'email' => $user->getEmail(),
-                                ],
+                    ]);
+                } else {
+                    // inscription simple de moi à moi
+                    $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
+                        'role' => $role_evt_join,
+                        'event_name' => $evtName,
+                        'event_url' => $evtUrl,
+                        'event_date' => $evtDate,
+                        'commission' => $commissionTitle,
+                        'inscrits' => [
+                            [
+                                'firstname' => ucfirst($user->getFirstname()),
+                                'lastname' => strtoupper($user->getLastname()),
+                                'nickname' => $user->getNickname(),
+                                'email' => $user->getEmail(),
                             ],
-                            'covoiturage' => $is_covoiturage,
-                        ]);
-                    }
+                        ],
+                        'covoiturage' => $is_covoiturage,
+                    ]);
                 }
             }
         }
