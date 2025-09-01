@@ -6,13 +6,13 @@ export const schema = zod.object({
     zod.object({
       type: zod.literal(TransportType.RENTAL_MINIBUS),
       tollFee: zod.number().min(0).optional(),
-      fuelExpense: zod.number().min(1),
-      rentalPrice: zod.number().min(1),
+      fuelExpense: zod.number().min(0),
+      rentalPrice: zod.number().min(0),
       passengerCount: zod.number().min(1),
     }),
     zod.object({
       type: zod.literal(TransportType.PUBLIC_TRANSPORT),
-      ticketPrice: zod.number().min(1),
+      ticketPrice: zod.number().min(0),
     }),
     zod.object({
       type: zod.literal(TransportType.PERSONAL_VEHICLE),
@@ -22,7 +22,7 @@ export const schema = zod.object({
     zod.object({
       type: zod.literal(TransportType.CLUB_MINIBUS),
       tollFee: zod.number().min(0).optional(),
-      fuelExpense: zod.number().min(1),
+      fuelExpense: zod.number().min(0),
       distance: zod.number().min(1),
       passengerCount: zod.number().min(1),
     }),
