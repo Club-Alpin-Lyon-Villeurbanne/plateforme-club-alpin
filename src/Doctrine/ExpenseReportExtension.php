@@ -43,7 +43,7 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface
         $user = $this->security->getUser();
 
         // 1. Filtrage par utilisateur (sauf admin et gestionnaires de notes de frais)
-        if ($user 
+        if ($user
             && !$this->security->isGranted(SecurityConstants::ROLE_ADMIN)
             && !$this->security->isGranted('manage_expense_reports')) {
             $queryBuilder->andWhere(sprintf('%s.user = :current_user', $rootAlias))
