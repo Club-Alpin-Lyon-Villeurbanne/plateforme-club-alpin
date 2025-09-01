@@ -2,9 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use Doctrine\DBAL\Types\Types;
@@ -12,21 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ExpenseReportStatusHistoryRepository::class)]
-#[ApiResource(
-    operations: [
-        new GetCollection(
-            uriTemplate: '/expense-reports/{id}/history',
-            uriVariables: [
-                'id' => new Link(
-                    fromClass: ExpenseReport::class,
-                    toProperty: 'expenseReport'
-                ),
-            ],
-            normalizationContext: ['groups' => ['report:read']],
-            security: "is_granted('ROLE_USER')"
-        ),
-    ],
-)]
 class ExpenseReportStatusHistory
 {
     #[ORM\Id]
