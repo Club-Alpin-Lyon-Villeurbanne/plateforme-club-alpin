@@ -11,10 +11,10 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
         echo 'Erreur : id invalide';
         exit;
     } ?>
-	<h2>Attribution de responsabilités à l'adhérent : <?php echo html_utf8($_GET['nom']); ?></h2>
+
+	<h1>Attribution de responsabilités à l'adhérent : <?php echo html_utf8(stripslashes($_GET['nom'])); ?></h1>
 	<?php
     // req sql : trouver les attributs liés à cet user
-
     $req = 'SELECT title_usertype, code_usertype, params_user_attr, id_user_attr, description_user_attr
 	FROM caf_usertype, caf_user_attr
 	WHERE usertype_user_attr = id_usertype
@@ -28,7 +28,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     }
 
     if (count($statsTab)) {
-        echo '<h3>Responsabilités actuelles :</h3>'
+        echo '<h2>Responsabilités actuelles :</h2>'
             . '<ul>';
         foreach ($statsTab as $row) {
             echo '<li>'
@@ -54,7 +54,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
 		<input type="hidden" name="operation" value="user_attr_add_admin" />
 		<input type="hidden" name="id_user" value="<?php echo $id_user; ?>" />
 
-        <h3>Ajouter une responsabilité à cet adhérent :</h3>
+        <h2>Ajouter une responsabilité à cet adhérent :</h2>
 		<?php
         // message
         if (isset($_POST['operation']) && 'user_attr_add_admin' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
@@ -82,8 +82,9 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
         echo '<label for="commissions-pick-' . $row['id_commission'] . '"><input type="checkbox" name="commission[]" value="commission:' . html_utf8($row['code_commission']) . '" id="commissions-pick-' . $row['id_commission'] . '" /> ' . $row['title_commission'] . ' </label> ';
     }
     echo '</div>';
+
     // description de l'assignation
-    echo '<br /><br />Description / commentaire :<br /><textarea style="width:50%;height:60px;" name="description_user_attr" id="description_user_attr" maxlength="200"></textarea>';
+    echo '<br /><br />Description / commentaire :<br /><textarea style="width:50%;height:60px;" name="description_user_attr" id="description_user_attr" rows="2" cols="100" maxlength="200"></textarea>';
     ?>
 		<br />
 		<br />
@@ -106,8 +107,14 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
 			});
 		</script>
 	</form>
+    <br><br>
 
-
+    <div class="explain">
+        <h3>Lorsque vous attribuez ou retirez des responsabilités aux adhérents, des notifications automatiques sont envoyées :</h3>
+        <ul>
+            <li>un adhérent reçoit ou perd des responsabilités : l'adhérent reçoit un e-mail</li>
+            <li>s'il s'agit de responsabilité "encadrant", "co-enacadrant", "initiateur stagiaire" ou "responsable de commission" : les responsables (actuels) de la commission reçoivent un e-mail, ainsi que le président et les vices-président</li>
+        </ul>
+    </div>
 	<?php
 }
-?>
