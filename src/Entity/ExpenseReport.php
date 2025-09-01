@@ -48,7 +48,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new Get(
             uriTemplate: '/notes-de-frais/{id}',
-            security: "is_granted('ROLE_ADMIN') or object.getUser() == user",
+            security: "is_granted('ROLE_ADMIN') or object.getUser() == user or is_granted('validate_expense_report')",
         ),
         new Patch(
             uriTemplate: '/notes-de-frais/{id}',
