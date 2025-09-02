@@ -759,18 +759,28 @@ class SortieController extends AbstractController
         foreach ($filiations as $filiation) {
             $affiliatedUserIds[] = $filiation->getId();
         }
+        // on s'ajoute dans la liste pour gérer les mises à jour
+        $affiliatedUserIds[] = $user->getId();
 
         $errTab = [];
         $hasFiliations = false;
         $affiliatedJoiningUsers = [];
+        $affiliatedLeavingUsers = [];
         $is_covoiturage = null;
 
-        // Filiations
+        // affiliés qu'on inscrit
         $idUsersFiliations = !empty($data['id_user_filiation']) ? array_map('intval', $data['id_user_filiation']) : [];
         if (isset($data['filiations']) && 'on' == $data['filiations']) {
             $hasFiliations = true;
             foreach ($idUsersFiliations as $id_user_tmp) {
                 $affiliatedJoiningUsers[] = $userRepository->find($id_user_tmp);
+            }
+        }
+
+        // affiliés qu'on désinscrit
+        foreach ($affiliatedUserIds as $affiliatedUserId) {
+            if (!\in_array($affiliatedUserId, $idUsersFiliations, true)) {
+                $affiliatedLeavingUsers[] = $userRepository->find($affiliatedUserId);
             }
         }
 
@@ -813,9 +823,9 @@ class SortieController extends AbstractController
 
             // pour chaque id envoyé
             foreach ($idUsersFiliations as $id_user_tmp) {
-                // vérification que c'est bien mon affilié
                 // sauf moi-meme
                 if ($id_user_tmp != $user->getId()) {
+                    // vérification que c'est bien mon affilié
                     if (!\in_array($id_user_tmp, $affiliatedUserIds, true)) {
                         $errTab[] = "ID '" . (int) $id_user_tmp . "' invalide pour l'inscription d'un adhérent affilié";
                     }
@@ -855,7 +865,14 @@ class SortieController extends AbstractController
                 // filiations
                 else {
                     foreach ($affiliatedJoiningUsers as $affiliatedJoiningUser) {
-                        $event->addParticipation($affiliatedJoiningUser, $role_evt_join, $status_evt_join);
+                        // si déjà inscrit => on ne fait rien
+                        $joined = $event->getParticipation($affiliatedJoiningUser);
+                        if (!$joined) {
+                            $event->addParticipation($affiliatedJoiningUser, $role_evt_join, $status_evt_join);
+                        }
+                    }
+                    foreach ($affiliatedLeavingUsers as $affiliatedLeavingUser) {
+                        $event->removeParticipation($event->getParticipation($affiliatedLeavingUser));
                     }
                 }
                 $em->flush();
