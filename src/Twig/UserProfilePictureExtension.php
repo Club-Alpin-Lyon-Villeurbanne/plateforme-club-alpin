@@ -15,7 +15,7 @@ class UserProfilePictureExtension extends AbstractExtension
         ];
     }
 
-    public function getUserImage(User $user, string $style): string
+    public function getUserImage(?User $user, string $style): string
     {
         switch ($style) {
             case 'pic':
@@ -27,7 +27,9 @@ class UserProfilePictureExtension extends AbstractExtension
                 break;
         }
 
-        $rel = '/ftp/user/' . $user->getId() . '/' . $style . 'profil.jpg';
+        // If user is not provided (e.g., visitor not logged in), fallback to default image
+        $userId = $user?->getId() ?? 0;
+        $rel = '/ftp/user/' . $userId . '/' . $style . 'profil.jpg';
         if (!file_exists(__DIR__ . '/../../public' . $rel)) {
             $rel = '/ftp/user/0/' . $style . 'profil.jpg';
         }
