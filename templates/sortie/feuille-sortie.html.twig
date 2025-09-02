@@ -2,6 +2,15 @@
 
 {% block title %}Feuille de sortie - {{ event.titre }} - {{ event.tsp|intldate('cccc d MMMM yyyy') }}{% endblock %}
 
+{% block stylesheets %}
+    <style>
+        #feuille-de-sortie{padding:15px; text-align:left; background:white;}
+        #feuille-de-sortie table{margin:20px 0; width:900px;border-collapse:collapse; border-spacing:0;}
+        #feuille-de-sortie table td, #feuille-de-sortie table th{border:1px solid gray; padding:5px 10px; font-size:12px; font-family:Arial;}
+        #feuille-de-sortie table th{background:#e7e7e7;text-align:left;}
+    </style>
+{% endblock %}
+
 {% block body %}
     {% if event.status is same as(constant('App\\Entity\\Evt::STATUS_PUBLISHED_UNSEEN')) %}
         <div class="alerte">
@@ -182,5 +191,7 @@
     {% if hideBlankLines is same as (true) %}
         {% set hide = 'n' %}
     {% endif%}
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>[<a href="{{ path('feuille_sortie', {id: event.id, hide_blank: hide}) }}">{% if hideBlankLines is same as (true) %}Afficher{% else %}Masquer{% endif%} les lignes vides</a>]</small>
+    {% if pdf is same as (false) %}
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>[<a href="{{ path('feuille_sortie', {id: event.id, hide_blank: hide}) }}">{% if hideBlankLines is same as (true) %}Afficher{% else %}Masquer{% endif%} les lignes vides</a>]</small>
+    {% endif %}
 {% endblock %}

@@ -34,6 +34,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class SortieController extends AbstractController
 {
@@ -240,46 +243,10 @@ class SortieController extends AbstractController
         UserAttrRepository $userAttrRepository,
     ): array {
         if (!$this->isGranted('FICHE_SORTIE', $event)) {
-            throw new AccessDeniedHttpException('Not found');
+            throw new AccessDeniedHttpException('Not allowed');
         }
 
-        $nAccepteesCalc = $event->getParticipationsCount();
-        $sortedParticipants = [
-            EventParticipation::ROLE_ENCADRANT => [],
-            EventParticipation::ROLE_STAGIAIRE => [],
-            EventParticipation::ROLE_COENCADRANT => [],
-            EventParticipation::ROLE_BENEVOLE => [],
-            EventParticipation::ROLE_INSCRIT => [],
-        ];
-        $participants = $event->getParticipations();
-        foreach ($participants as $participant) {
-            $role = $participant->getRole();
-            if (EventParticipation::ROLE_INSCRIT === $participant->getRole() || EventParticipation::ROLE_MANUEL === $participant->getRole()) {
-                $role = EventParticipation::ROLE_INSCRIT;
-            }
-            $sortedParticipants[$role][$participant->getUser()->getFullName()] = $participant;
-        }
-        foreach ($sortedParticipants as $role => $participants) {
-            ksort($sortedParticipants[$role]);
-        }
-        $allParticipants = array_merge(
-            $sortedParticipants[EventParticipation::ROLE_ENCADRANT],
-            $sortedParticipants[EventParticipation::ROLE_STAGIAIRE],
-            $sortedParticipants[EventParticipation::ROLE_COENCADRANT],
-            $sortedParticipants[EventParticipation::ROLE_BENEVOLE],
-            $sortedParticipants[EventParticipation::ROLE_INSCRIT],
-        );
-
-        return [
-            'event' => $event,
-            'nbAcceptes' => $nAccepteesCalc,
-            'logo' => LegacyContainer::get('legacy_content_inline')->getLogo(),
-            'presidents' => $userAttrRepository->listAllManagement([UserAttr::PRESIDENT]),
-            'vicepresidents' => $userAttrRepository->listAllManagement([UserAttr::VICE_PRESIDENT]),
-            'participants' => $allParticipants,
-            'totalLines' => $nAccepteesCalc + 5,
-            'hideBlankLines' => ('y' === $request->query->get('hide_blank')),
-        ];
+        return $this->eventDetails($request, $event, $userAttrRepository);
     }
 
     #[Route(name: 'sortie_validate', path: '/sortie/{id}/validate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
@@ -735,19 +702,26 @@ class SortieController extends AbstractController
         return $this->redirectToRoute('modifier_sortie', ['event' => $newEvent->getId()]);
     }
 
-    #[Route(name: 'sortie_pdf', path: '/sortie/{id}/printPDF', requirements: ['id' => '\d+'])]
-    public function generatePdf(PdfGenerator $pdfGenerator, SluggerInterface $slugger, Evt $event): Response
-    {
-        $legacyDir = __DIR__ . '/../../legacy/';
-        $path = 'index.php';
-        $_GET['p1'] = 'feuille-de-sortie';
-        $_GET['p2'] = 'evt-' . $event->getId();
-        $_GET['titre_evt'] = $event->getTitre();
-        $_GET['tsp_evt'] = $event->getTsp();
+    /**
+     * @throws SyntaxError
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    #[Route(path: '/sortie/{id}/printPDF', name: 'sortie_pdf', requirements: ['id' => '\d+'])]
+    public function generatePdf(
+        PdfGenerator $pdfGenerator,
+        SluggerInterface $slugger,
+        Request $request,
+        Environment $twig,
+        UserAttrRepository $userAttrRepository,
+        Evt $event,
+    ): Response {
+        if (!$this->isGranted('FICHE_SORTIE', $event)) {
+            throw new AccessDeniedHttpException('Not allowed');
+        }
 
-        ob_start();
-        require $this->getParameter('kernel.project_dir') . '/legacy/' . $path;
-        $html = ob_get_clean();
+        $eventData = $this->eventDetails($request, $event, $userAttrRepository, true);
+        $html = $twig->render('sortie/feuille-sortie.html.twig', $eventData);
 
         return $pdfGenerator->generatePdf($html, $this->getFilename($event->getTitre(), $slugger) . '.pdf');
     }
@@ -1014,5 +988,51 @@ class SortieController extends AbstractController
                 ], [], null, $event->getUser()->getEmail());
             }
         }
+    }
+
+    protected function eventDetails(
+        Request $request,
+        Evt $event,
+        UserAttrRepository $userAttrRepository,
+        bool $isPdf = false
+    ): array {
+        $nAccepteesCalc = $event->getParticipationsCount();
+        $sortedParticipants = [
+            EventParticipation::ROLE_ENCADRANT => [],
+            EventParticipation::ROLE_STAGIAIRE => [],
+            EventParticipation::ROLE_COENCADRANT => [],
+            EventParticipation::ROLE_BENEVOLE => [],
+            EventParticipation::ROLE_INSCRIT => [],
+        ];
+        $participants = $event->getParticipations();
+        foreach ($participants as $participant) {
+            $role = $participant->getRole();
+            if (EventParticipation::ROLE_INSCRIT === $participant->getRole() || EventParticipation::ROLE_MANUEL === $participant->getRole()) {
+                $role = EventParticipation::ROLE_INSCRIT;
+            }
+            $sortedParticipants[$role][$participant->getUser()->getFullName()] = $participant;
+        }
+        foreach ($sortedParticipants as $role => $participants) {
+            ksort($sortedParticipants[$role]);
+        }
+        $allParticipants = array_merge(
+            $sortedParticipants[EventParticipation::ROLE_ENCADRANT],
+            $sortedParticipants[EventParticipation::ROLE_STAGIAIRE],
+            $sortedParticipants[EventParticipation::ROLE_COENCADRANT],
+            $sortedParticipants[EventParticipation::ROLE_BENEVOLE],
+            $sortedParticipants[EventParticipation::ROLE_INSCRIT],
+        );
+
+        return [
+            'event' => $event,
+            'nbAcceptes' => $nAccepteesCalc,
+            'logo' => LegacyContainer::get('legacy_content_inline')->getLogo(),
+            'presidents' => $userAttrRepository->listAllManagement([UserAttr::PRESIDENT]),
+            'vicepresidents' => $userAttrRepository->listAllManagement([UserAttr::VICE_PRESIDENT]),
+            'participants' => $allParticipants,
+            'totalLines' => $nAccepteesCalc + 5,
+            'hideBlankLines' => ('y' === $request->query->get('hide_blank')),
+            'pdf' => $isPdf,
+        ];
     }
 }
