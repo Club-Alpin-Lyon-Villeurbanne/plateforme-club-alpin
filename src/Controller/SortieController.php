@@ -726,7 +726,7 @@ class SortieController extends AbstractController
         return $pdfGenerator->generatePdf($html, $this->getFilename($event->getTitre(), $slugger) . '.pdf');
     }
 
-    #[Route(name: 'sortie_xlsx', path: '/sortie/{id}/printXLSX', requirements: ['id' => '\d+'])]
+    #[Route(path: '/sortie/{id}/printXLSX', name: 'sortie_xlsx', requirements: ['id' => '\d+'])]
     public function generateXLSX(ExcelExport $excelExport, Evt $event, EventParticipationRepository $participationRepository, SluggerInterface $slugger): Response
     {
         $datas = $participationRepository->getSortedParticipations($event, null, EventParticipation::STATUS_VALIDE, true);
