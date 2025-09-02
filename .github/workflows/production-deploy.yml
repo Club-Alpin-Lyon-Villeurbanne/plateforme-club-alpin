@@ -88,6 +88,10 @@ jobs:
             • *Dernier commit:* ${{ steps.commit-info.outputs.sha_short }}
             
             *<https://github.com/${{ github.repository }}/commit/${{ steps.commit-info.outputs.sha_full }}|Voir les changements sur GitHub>*
+            
+            *Rappel:*
+            Merci de mettre à jour le journal des changements:
+            <https://docs.google.com/document/d/1CzbCZnuNkAFWPn365V2vgJNvAouHgLD52IZ6fLw0du0/edit?pli=1&tab=t.0|Journal des changements (Google Docs)>
           SLACK_FOOTER: 'Clever Cloud Deployment'
           MSG_MINIMAL: false
           
