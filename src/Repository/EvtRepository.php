@@ -65,43 +65,6 @@ class EvtRepository extends ServiceEntityRepository
         ]);
     }
 
-    public function getEventsToLegalValidate(int $dateMax, int $first, int $perPage)
-    {
-        $qb = $this->getEventsToLegalValidateQueryBuilder($dateMax)
-            ->orderBy('e.tsp', 'ASC')
-        ;
-
-        return $this->getPaginatedResults($qb, $first, $perPage);
-    }
-
-    /**
-     * @throws NonUniqueResultException
-     * @throws NoResultException
-     */
-    public function getEventsToLegalValidateCount(int $dateMax): float|bool|int|string|null
-    {
-        return $this
-            ->getEventsToLegalValidateQueryBuilder($dateMax)
-            ->select('count(e)')
-            ->getQuery()
-            ->getSingleScalarResult()
-        ;
-    }
-
-    protected function getEventsToLegalValidateQueryBuilder(int $dateMax): QueryBuilder
-    {
-        return $this->createQueryBuilder('e')
-            ->where('e.status = :status')
-            ->andWhere('e.statusLegal = :legal')
-            ->andWhere('e.tsp > :dateNow')
-            ->andWhere('e.tsp < :dateMax')
-            ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
-            ->setParameter('legal', Evt::STATUS_LEGAL_UNSEEN)
-            ->setParameter('dateNow', time())
-            ->setParameter('dateMax', $dateMax)
-        ;
-    }
-
     /** @return Evt[] */
     public function getUpcomingEvents(?Commission $commission, array $options = [])
     {
@@ -251,6 +214,84 @@ class EvtRepository extends ServiceEntityRepository
         return $queryBuilder
             ->getQuery()
             ->getResult()
+        ;
+    }
+
+    public function getEventsToPublish(array $commissions, int $first, int $perPage)
+    {
+        $qb = $this->getEventsToPublishQueryBuilder($commissions)
+            ->orderBy('e.tsp', 'ASC')
+        ;
+
+        return $this->getPaginatedResults($qb, $first, $perPage);
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getEventsToPublishCount(array $commissions): float|bool|int|string|null
+    {
+        return $this
+            ->getEventsToPublishQueryBuilder($commissions)
+            ->select('count(e)')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
+    public function getEventsToLegalValidate(int $dateMax, int $first, int $perPage)
+    {
+        $qb = $this->getEventsToLegalValidateQueryBuilder($dateMax)
+            ->orderBy('e.tsp', 'ASC')
+        ;
+
+        return $this->getPaginatedResults($qb, $first, $perPage);
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getEventsToLegalValidateCount(int $dateMax): float|bool|int|string|null
+    {
+        return $this
+            ->getEventsToLegalValidateQueryBuilder($dateMax)
+            ->select('count(e)')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
+    protected function getEventsToPublishQueryBuilder(array $commissions): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->where('e.status = :status')
+            ->andWhere('e.isDraft = false')
+            ->andWhere('e.tsp IS NOT NULL')
+            ->setParameter('status', Evt::STATUS_PUBLISHED_UNSEEN)
+        ;
+        if (!empty($commissions)) {
+            $qb
+                ->andWhere('e.commission IN (:commissions)')
+                ->setParameter('commissions', $commissions)
+            ;
+        }
+
+        return $qb;
+    }
+
+    protected function getEventsToLegalValidateQueryBuilder(int $dateMax): QueryBuilder
+    {
+        return $this->createQueryBuilder('e')
+            ->where('e.status = :status')
+            ->andWhere('e.statusLegal = :legal')
+            ->andWhere('e.tsp > :dateNow')
+            ->andWhere('e.tsp < :dateMax')
+            ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
+            ->setParameter('legal', Evt::STATUS_LEGAL_UNSEEN)
+            ->setParameter('dateNow', time())
+            ->setParameter('dateMax', $dateMax)
         ;
     }
 

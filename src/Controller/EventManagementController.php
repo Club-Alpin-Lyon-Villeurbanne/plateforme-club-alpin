@@ -3,17 +3,58 @@
 namespace App\Controller;
 
 use App\Repository\EvtRepository;
+use App\UserRights;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class EventManagementController extends AbstractController
 {
-    public function __construct(protected string $maxTimestampForLegalValidation)
+    public function __construct(protected UserRights $userRights, protected string $maxTimestampForLegalValidation)
     {
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    #[Route(path: '/gestion-des-sorties.html', name: 'manage_events', methods: ['GET'], priority: 12)]
+    #[Template('sortie/gestion-sorties.html.twig')]
+    public function manageEvents(Request $request, EvtRepository $eventRepository): array
+    {
+        $validate = $this->userRights->allowed('evt_validate');
+        $validateAll = $this->userRights->allowed('evt_validate_all');
+
+        if (!$validate && !$validateAll) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+        }
+
+        // commissions pour lesquelles on a des droits
+        $commissions = [];
+        if ($validate && !$validateAll) {
+        }
+
+        $perPage = 30;
+        $page = $request->query->getInt('page', 1);
+        $total = $eventRepository->getEventsToPublishCount($commissions);
+        $pages = ceil($total / $perPage);
+        $first = $perPage * ($page - 1);
+
+        return [
+            'events' => $eventRepository->getEventsToPublish($commissions, $first, $perPage),
+            'title' => 'Publication des sorties',
+            'total' => $total,
+            'per_page' => $perPage,
+            'pages' => $pages,
+            'page' => $page,
+            'page_url' => $this->generateUrl('manage_events'),
+            'to_include' => 'gestion-des-sorties-main',
+            'action' => 'publication',
+        ];
     }
 
     /**
@@ -24,6 +65,10 @@ class EventManagementController extends AbstractController
     #[Template('sortie/gestion-sorties.html.twig')]
     public function legalManageEvents(Request $request, EvtRepository $eventRepository): array
     {
+        if (!$this->userRights->allowed('evt_legal_accept')) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+        }
+
         $perPage = 30;
         $dateMax = strtotime($this->maxTimestampForLegalValidation);
         $page = $request->query->getInt('page', 1);
@@ -40,6 +85,7 @@ class EventManagementController extends AbstractController
             'page' => $page,
             'page_url' => $this->generateUrl('legal_manage_events'),
             'to_include' => 'validation-des-sorties-main',
+            'action' => 'validation',
         ];
     }
 }
