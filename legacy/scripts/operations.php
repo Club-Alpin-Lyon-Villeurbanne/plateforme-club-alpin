@@ -49,11 +49,6 @@ if (user()) {
         require $operationsDir . 'operations.user_join_nomade.php';
     }
 
-    // SORTIE : suppression
-    elseif ('evt_del' == $operation) {
-        require $operationsDir . 'operations.evt_del.php';
-    }
-
     // ARTICLE : publication OU refus
     elseif ('article_validate' == $operation) {
         require $operationsDir . 'operations.article_validate.php';

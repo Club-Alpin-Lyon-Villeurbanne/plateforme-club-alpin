@@ -103,9 +103,26 @@
             {% endif %}
 
             {% if is_granted('SORTIE_DELETE', event) %}
-                <a class="nice2 noprint red" href="/supprimer-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Supprimer définitivement la sortie ci-dessous">
+                <a class="nice2 noprint red" onclick="modal.show($(this).next().html())" title="Supprimer définitivement cette sortie">
                     <img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie
                 </a>
+                <div style="display:none" id="supprimer-{{ event.id }}">
+                    <h2>Supprimer définitivement la sortie</h2>
+                    <p>
+                        Voulez-vous vraiment supprimer définitivement cette sortie ?<br>
+                        Cette action supprimera définitivement la sortie et les fichiers liés.<br>
+                        <strong>Attention</strong> : vous ne devriez jamais supprimer une sortie qui a été publiée sur le site car la conserver permet d'établir des statistiques, et l'URL de la page dédiée à cette sortie retournera une erreur 404 si des utilisateurs souhaitent y retourner.
+                    </p>
+                    {% if event.publicStatusValide %}
+                        <p class="alerte">Cette sortie est publiée sur le site. En la supprimant, vous créerez une page introuvable.</p>
+                    {% else %}
+                        <p class="info">Cette sortie n'est pas publiée sur le site. Vous pouvez la supprimer sereinement.</p>
+                    {% endif %}
+                    <form action="{{ path('delete_event', { id: event.id }) }}" method="post" class="loading">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token('delete_event') }}" />
+                        <input type="submit" value="Supprimer définitivement cette sortie" class="nice2 noprint red" title="Supprimer définitivement cette sortie" />
+                    </form>
+                </div>
             {% endif %}
 
             {% if is_granted('SORTIE_CANCEL', event) %}
@@ -114,13 +131,15 @@
                 </a>
                 <div style="display:none" id="annuler-{{ event.id }}">
                     <h2>Annuler la sortie</h2>
-                    <form action="{{ path('cancel_event', { id: event.id }) }}" method="post" class="loading">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token('cancel_event') }}" />
-                        Voulez-vous vraiment annuler la sortie ci-dessous ?
+                    <p>
+                        Voulez-vous vraiment annuler cette sortie ?
                         {% if event.publicStatusValide %}Celle-ci a déjà été publiée sur le site et des membres y sont inscrits, ils recevront donc automatiquement un e-mail pour les en avertir.{% endif %}
                         Vous devez ajouter un message pour expliquer la raison de l'annulation :
+                    </p>
+                    <form action="{{ path('cancel_event', { id: event.id }) }}" method="post" class="loading">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token('cancel_event') }}" />
                         <textarea class="type2" style="width:100%" name="msg" placeholder="ex : Sortie annulée pour cause de météo défavorable."></textarea>
-                        <input type="submit" value="Annuler définitivement cette sortie" class="nice2 noprint red" title="Annuler définitivement cette sortie" />
+                        <input type="submit" value="Annuler cette sortie" class="nice2 noprint red" title="Annuler cette sortie" />
                         {% if event.publicStatusValide %}et avertir {{ nInscritsTotal }} participant(s) inscrit(s).{% endif %}
                     </form>
                 </div>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Entity\Evt;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 
@@ -168,7 +169,7 @@ elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1
                                         . '<div class="evt-tools">'
 
                                             // apercu
-                                            . '<a class="nice2" href="/sortie/' . html_utf8($evt['code_evt']) . '-' . (int) $evt['id_evt'] . '.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
+                                            . '<a class="nice2" href="' . generateRoute('sortie', ['id' => (int) $evt['id_evt'], 'code' => $evt['code_evt']]) . '?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
 
                             // Modération
                             echo '
@@ -188,9 +189,26 @@ elseif (('adherents' == $p1 && allowed('user_see_all')) || ('admin-users' == $p1
 													<input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
 												</form>
 											</div>
-											<a class="nice2 noprint red" href="/supprimer-une-sortie/' . html_utf8($evt['code_evt']) . '-' . (int) $evt['id_evt'] . '.html" title="Supprimer définitivement la sortie"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie</a>
-											'
-                                        . '</div>';
+											<a class="nice2 noprint red" onclick="modal.show($(this).next().html())" title="Supprimer définitivement cette sortie"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer définitivement cette sortie</a>
+											<div style="display:none" id="supprimer-' . $evt['id_evt'] . '">
+                                                <h2>Supprimer définitivement la sortie</h2>
+                                                <p>
+                                                    Voulez-vous vraiment supprimer définitivement cette sortie ?<br>
+                                                    Cette action supprimera définitivement la sortie et les fichiers liés.<br>
+                                                    <strong>Attention</strong> : vous ne devriez jamais supprimer une sortie qui a été publiée sur le site car la conserver permet d\'établir des statistiques, et l\'URL de la page dédiée à cette sortie retournera une erreur 404 si des utilisateurs souhaitent y retourner.
+                                                </p>';
+                            if (Evt::STATUS_PUBLISHED_VALIDE == $evt['status_evt']) {
+                                echo '<p class="alerte">Cette sortie est publiée sur le site. En la supprimant, vous créerez une page introuvable.</p>';
+                            } else {
+                                echo '<p class="info">Cette sortie n\'est pas publiée sur le site. Vous pouvez la supprimer sereinement.</p>';
+                            }
+                            echo '
+                                            <form action="' . generateRoute('delete_event', ['id' => (int) $evt['id_evt']]) . '" method="post" class="loading">
+                                                <input type="hidden" name="csrf_token" value="' . csrfToken('delete_event') . '" />
+                                                <input type="submit" value="Supprimer définitivement cette sortie" class="nice2 noprint red" title="Supprimer définitivement cette sortie" />
+                                            </form>
+                                    </div>
+                            </div>';
 
                             require __DIR__ . '/../includes/agenda-evt-debut.php';
                             echo '</td>'

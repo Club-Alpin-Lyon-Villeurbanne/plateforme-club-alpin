@@ -509,6 +509,26 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
+    #[Route(path: '/sortie/{id}/supprimer', name: 'delete_event', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function delete(
+        Request $request,
+        Evt $event,
+        EntityManagerInterface $em,
+    ): RedirectResponse {
+        if (!$this->isGranted('SORTIE_DELETE', $event)) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+        }
+
+        if (!$this->isCsrfTokenValid('delete_event', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        $em->remove($event);
+        $em->flush();
+
+        return $this->redirect($this->generateUrl('profil_sorties_self'));
+    }
+
     #[Route(path: '/sortie/{id}/annuler', name: 'cancel_event', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function cancel(
         Request $request,
