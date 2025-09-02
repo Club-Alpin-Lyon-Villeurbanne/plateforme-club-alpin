@@ -1,17 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Un incident est survenu{% endblock %}
+{% block title %}Oups, un incident est survenu ✨{% endblock %}
 
 {% block body %}
-    <div class="vide" style="max-width:720px;margin:40px auto;">
-        <h2>Oups, une erreur s'est produite</h2>
-        <p>
-            Désolé, une erreur est survenue. Notre équipe a été informée.
-            Vous pouvez revenir à l'accueil ou réessayer dans quelques instants.
+    <div class="vide" style="max-width:780px;margin:56px auto 40px; text-align:center; line-height:1.6">
+        <div style="font-size:64px;">💡</div>
+        <h2 style="font-size:28px; margin:8px 0 12px;">Ce n'est pas de votre faute.</h2>
+        <p style="color:#4b5563;">
+            Une erreur est survenue pendant l'affichage de la page. Nous avons été prévenus et allons corriger cela.
         </p>
-        <p>
-            <a href="/" class="nice2">Retour à l'accueil</a>
-        </p>
+        <div style="margin-top:20px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <a href="/" class="nice2" style="min-width:200px;">⟵ Retour à l'accueil</a>
+            <a href="javascript:location.reload()" class="nice2" style="min-width:200px;">↻ Réessayer</a>
+        </div>
     </div>
 {% endblock %}
-
