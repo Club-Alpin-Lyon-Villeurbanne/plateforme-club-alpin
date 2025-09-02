@@ -15,7 +15,7 @@ if ($evt) {
         // on ne peut annuler une sortie que si elle est deja validée
         // et pas deja passée ni en cours
         // ni deja annulée
-        . (allowed('evt_cancel', 'commission:' . $evt['code_commission']) && 1 == $evt['status_evt'] && $evt['tsp_evt'] > time() && 0 == $evt['cancelled_evt'] ? '<a class="nice2 red" href="/annuler-une-sortie/' . html_utf8($evt['code_evt']) . '-' . (int) $evt['id_evt'] . '.html" title="Annuler la sortie ci-dessous">Annuler</a>' : '')
+        . (allowed('evt_cancel', 'commission:' . $evt['code_commission']) && 1 == $evt['status_evt'] && $evt['tsp_evt'] > time() && 0 == $evt['cancelled_evt'] ? '<a class="nice2 red" href="' . LegacyContainer::get('router')->generate('cancel_event', ['id' => (int) $evt['id_evt']]) . '" title="Annuler la sortie ci-dessous">Annuler</a>' : '')
 
         // SUPPRIMER
         // on ne peut supprimer que si elle n'est pas publiée OU annulée

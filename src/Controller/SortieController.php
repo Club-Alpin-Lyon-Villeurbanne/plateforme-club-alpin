@@ -516,31 +516,53 @@ class SortieController extends AbstractController
         EntityManagerInterface $em,
         Mailer $mailer,
     ): RedirectResponse {
-        if (!$this->isCsrfTokenValid('cancel_event', $request->request->get('csrf_token'))) {
-            throw new BadRequestException('Jeton de validation invalide.');
-        }
-
         if (!$this->isGranted('SORTIE_CANCEL', $event)) {
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
         }
 
+        if (!$this->isCsrfTokenValid('cancel_event', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        $message = $request->request->get('msg');
+        if (empty($message)) {
+            $this->addFlash('error', 'Veuillez indiquer la raison de l\'annulation');
+
+            return $this->redirectToRoute('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
+        }
+
+        $event
+            ->setCancelled(true)
+            ->setCancelledWhen(time())
+            ->setCancelledWho($this->getUser())
+        ;
+
+        // message aux participants si la sortie est annulée alors qu'elle est publiée
+        if ($event->isPublicStatusValide()) {
+            // désinscription des participants de la sortie
+            $participants = $event->getParticipations([EventParticipation::ROLE_MANUEL, EventParticipation::ROLE_INSCRIT, EventParticipation::ROLE_BENEVOLE]);
+            foreach ($participants as $participant) {
+                $event->removeParticipation($participant);
+
+                $mailer->send($participant->getUser(), 'transactional/sortie-annulation', [
+                    'event_name' => $event->getTitre(),
+                    'commission' => $event->getCommission()->getTitle(),
+                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'event_date' => date('d/m/Y', $event->getTsp()),
+                    'cancel_user_name' => $this->getUser()->getNickname(),
+                    'cancel_user_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'voir-profil/' . $this->getUser()->getId() . '.html',
+                    'message' => $message,
+                ]);
+            }
+        }
         $em->flush();
-
-        $mailer->send($event->getUser(), 'transactional/sortie-publiee', [
-            'event_name' => $event->getTitre(),
-            'commission' => $event->getCommission()->getTitle(),
-            'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-            'event_date' => date('d/m/Y', $event->getTsp()),
-        ]);
-
-        $this->sendUpdateNotificationEmail($mailer, $event, $event->getTspCrea() === $event->getTspEdit());
 
         $this->addFlash('info', 'La sortie est annulée');
 
-        return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
+        return $this->redirectToRoute('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
     }
 
-    #[Route(name: 'sortie_uncancel', path: '/sortie/{id}/uncancel', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
+    #[Route(path: '/sortie/{id}/uncancel', name: 'sortie_uncancel', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieUncancel(Request $request, Evt $event, EntityManagerInterface $em)
     {
         if (!$this->isCsrfTokenValid('sortie_uncancel', $request->request->get('csrf_token'))) {
@@ -557,7 +579,7 @@ class SortieController extends AbstractController
             ->setCancelledWho(null);
         $em->flush();
 
-        $this->addFlash('info', 'La sortie est re-activée');
+        $this->addFlash('info', 'La sortie est ré-activée');
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }

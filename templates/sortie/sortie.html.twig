@@ -34,6 +34,8 @@
         <div id="fiche-sortie">
 
             {% set closeDiv = false %}
+            {% set nInscritsHorsEncadrement = event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::ROLE_BENEVOLE'), constant('App\\Entity\\EventParticipation::ROLE_MANUEL')]) | length %}
+            {% set nInscritsTotal = nInscritsHorsEncadrement + event.participations([constant('App\\Entity\\EventParticipation::ROLE_COENCADRANT'), constant('App\\Entity\\EventParticipation::ROLE_STAGIAIRE'), constant('App\\Entity\\EventParticipation::ROLE_ENCADRANT')]) | length %}
 
             {% if event.publicStatusUnseen %}
                 {% set closeDiv = true %}
@@ -94,23 +96,35 @@
                     <b>Note :</b> Cette sortie est publiée et visible par les adhérents !<br />
             {% endif %}
 
-                {% if is_granted('SORTIE_UPDATE', event) %}
-                    <a href="{{ path('modifier_sortie', {'event': event.id}) }}" title="Vous êtes l'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
-                        <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie
-                    </a>
-                {% endif %}
+            {% if is_granted('SORTIE_UPDATE', event) %}
+                <a href="{{ path('modifier_sortie', {'event': event.id}) }}" title="Vous êtes l'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
+                    <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie
+                </a>
+            {% endif %}
 
-                {% if is_granted('SORTIE_DELETE', event) %}
-                    <a class="nice2 noprint red" href="/supprimer-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Supprimer définitivement la sortie ci-dessous">
-                        <img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie
-                    </a>
-                {% endif %}
+            {% if is_granted('SORTIE_DELETE', event) %}
+                <a class="nice2 noprint red" href="/supprimer-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Supprimer définitivement la sortie ci-dessous">
+                    <img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie
+                </a>
+            {% endif %}
 
-                {% if is_granted('SORTIE_CANCEL', event) %}
-                    <a class="nice2 noprint red" href="/annuler-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Annuler la sortie ci-dessous">
-                        <img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie
-                    </a>
-                {% endif %}
+            {% if is_granted('SORTIE_CANCEL', event) %}
+                <a class="nice2 noprint red" onclick="modal.show($(this).next().html())" title="Annuler cette sortie">
+                    <img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie
+                </a>
+                <div style="display:none" id="annuler-{{ event.id }}">
+                    <h2>Annuler la sortie</h2>
+                    <form action="{{ path('cancel_event', { id: event.id }) }}" method="post" class="loading">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token('cancel_event') }}" />
+                        Voulez-vous vraiment annuler la sortie ci-dessous ?
+                        {% if event.publicStatusValide %}Celle-ci a déjà été publiée sur le site et des membres y sont inscrits, ils recevront donc automatiquement un e-mail pour les en avertir.{% endif %}
+                        Vous devez ajouter un message pour expliquer la raison de l'annulation :
+                        <textarea class="type2" style="width:100%" name="msg" placeholder="ex : Sortie annulée pour cause de météo défavorable."></textarea>
+                        <input type="submit" value="Annuler définitivement cette sortie" class="nice2 noprint red" title="Annuler définitivement cette sortie" />
+                        {% if event.publicStatusValide %}et avertir {{ nInscritsTotal }} participant(s) inscrit(s).{% endif %}
+                    </form>
+                </div>
+            {% endif %}
 
             {% if closeDiv %}
                 </div><br />
@@ -923,8 +937,6 @@
         {% endif %}
 
         {% if not event.cancelled %}
-            {% set nInscritsHorsEncadrement = event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::ROLE_BENEVOLE'), constant('App\\Entity\\EventParticipation::ROLE_MANUEL')]) | length %}
-            {% set nInscritsTotal = nInscritsHorsEncadrement + event.participations([constant('App\\Entity\\EventParticipation::ROLE_COENCADRANT'), constant('App\\Entity\\EventParticipation::ROLE_STAGIAIRE'), constant('App\\Entity\\EventParticipation::ROLE_ENCADRANT')]) | length %}
             {% set nPlacesRestantesOnline = max(0, event.joinMax - event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::ROLE_BENEVOLE')]) | length) %}
             {% set nEnAttente = event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length %}
 

@@ -54,11 +54,6 @@ if (user()) {
         require $operationsDir . 'operations.evt_del.php';
     }
 
-    // SORTIE : annulation
-    elseif ('evt_cancel' == $operation) {
-        require $operationsDir . 'operations.evt_cancel.php';
-    }
-
     // ARTICLE : publication OU refus
     elseif ('article_validate' == $operation) {
         require $operationsDir . 'operations.article_validate.php';
