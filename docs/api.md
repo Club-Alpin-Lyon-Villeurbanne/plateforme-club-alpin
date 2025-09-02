@@ -297,13 +297,48 @@ GET /api/participation-sorties/{id}
 
 ## Pagination
 
-La pagination est disponible sur tous les endpoints de collection :
+La pagination est disponible sur tous les endpoints de collection avec des options de contrôle côté client :
+
+### Paramètres de pagination
 
 ```http
 GET /api/sorties?page=2&itemsPerPage=10
 ```
 
-Les métadonnées de pagination sont toujours incluses dans la réponse :
+**Paramètres disponibles :**
+- `page` : Numéro de la page à récupérer (défaut: 1)
+- `itemsPerPage` : Nombre d'éléments par page (défaut: 30, max: 30)
+- `pagination` : Active/désactive la pagination (défaut: true)
+
+### Désactiver la pagination
+
+Pour récupérer tous les résultats sans pagination :
+
+```http
+GET /api/sorties?pagination=false
+```
+
+⚠️ **Attention** : Désactiver la pagination peut retourner un grand nombre de résultats et impacter les performances.
+
+### Exemples d'utilisation
+
+```bash
+# 50 éléments par page (limité à 30 max)
+GET /api/notes-de-frais?itemsPerPage=50
+
+# Tous les résultats sans pagination
+GET /api/notes-de-frais?pagination=false
+
+# Page 3 avec 15 éléments par page
+GET /api/participation-sorties?page=3&itemsPerPage=15
+
+# Combiné avec des filtres
+GET /api/notes-de-frais?itemsPerPage=20&inclure_brouillons=true&page=2
+```
+
+### Métadonnées de pagination
+
+Les métadonnées de pagination sont toujours incluses dans la réponse (sauf si `pagination=false`) :
 - `page` : Page actuelle
 - `perPage` : Nombre d'éléments par page
 - `total` : Nombre total d'éléments
