@@ -232,7 +232,7 @@ class SortieController extends AbstractController
         ];
     }
 
-    #[Route(path: '/feuille-de-sortie/evt-{id}.html', name: 'feuille_sortie', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[Route(path: '/feuille-de-sortie/evt-{id}.html', name: 'feuille_sortie', requirements: ['id' => '\d+'], methods: ['GET'], priority: '11')]
     #[Template('sortie/feuille-sortie.html.twig')]
     public function sortieDetails(
         Request $request,
