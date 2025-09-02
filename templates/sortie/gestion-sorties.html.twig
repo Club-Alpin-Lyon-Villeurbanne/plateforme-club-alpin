@@ -33,20 +33,6 @@
                                     Du {{ start }}<br/>
                                     au {{ end }}
                                 {% endif %}
-
-                                {% if app.user == event.user %}
-                                    {% if event.isDraft %}
-                                        <p class="draft">Brouillon (non publiée)</p>
-                                    {% elseif event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
-                                        <p class="info">Publiée et validée par le président</p>
-                                    {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE') %}
-                                        <p class="alerte">Publiée non validée par le président</p>
-                                    {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_REFUSE') %}
-                                        <p class="erreur">Sortie refusée et non publiée</p>
-                                    {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_UNSEEN') %}
-                                        <p class="alerte">En attente de publication</p>
-                                    {% endif %}
-                                {% endif %}
                             </td>
                             <td>
                                 <div class="evt-tools">
