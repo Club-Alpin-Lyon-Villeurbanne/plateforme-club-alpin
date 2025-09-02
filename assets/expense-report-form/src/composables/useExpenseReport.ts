@@ -81,7 +81,7 @@ export function useExpenseReport(initialEventId: number) {
       } else {
         const createResponse = await axios.post<ExpenseReport>(
           config.endpoints.notesDeFrais,
-          { sortie: `/api/sorties/${eventId}` },
+          { eventId: eventId },
         );
         fetchedReport = createResponse.data;
       }
