@@ -8,21 +8,18 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class ExpenseReportVoter extends Voter
 {
-    public const FILL_EXPENSE_REPORT = 'fill_expense_report';
-    public const VALIDATE_EXPENSE_REPORT = 'validate_expense_report';
+    public const MANAGE_EXPENSE_REPORTS = 'manage_expense_reports';
 
-    private $authorizedToFillIds;
-    private $authorizedToValidateIds;
+    private array $authorizedManagerIds;
 
-    public function __construct(string $authorizedToFillIds, string $authorizedToValidateIds)
+    public function __construct(string $authorizedManagerIds)
     {
-        $this->authorizedToFillIds = explode(',', $authorizedToFillIds);
-        $this->authorizedToValidateIds = explode(',', $authorizedToValidateIds);
+        $this->authorizedManagerIds = explode(',', $authorizedManagerIds);
     }
 
     protected function supports($attribute, $subject): bool
     {
-        return \in_array($attribute, [self::VALIDATE_EXPENSE_REPORT, self::FILL_EXPENSE_REPORT], true);
+        return \in_array($attribute, [self::MANAGE_EXPENSE_REPORTS], true);
     }
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
@@ -34,19 +31,13 @@ class ExpenseReportVoter extends Voter
         }
 
         return match ($attribute) {
-            self::FILL_EXPENSE_REPORT => $this->canFillExpenseReport($user),
-            self::VALIDATE_EXPENSE_REPORT => $this->canValidateExpenseReport($user),
+            self::MANAGE_EXPENSE_REPORTS => $this->canManageExpenseReports($user),
             default => throw new \LogicException('This code should not be reached!')
         };
     }
 
-    private function canFillExpenseReport(User $user): bool
+    private function canManageExpenseReports(User $user): bool
     {
-        return \in_array((string) $user->getId(), $this->authorizedToFillIds, true);
-    }
-
-    private function canValidateExpenseReport(User $user): bool
-    {
-        return \in_array((string) $user->getId(), $this->authorizedToValidateIds, true);
+        return \in_array((string) $user->getId(), $this->authorizedManagerIds, true);
     }
 }
