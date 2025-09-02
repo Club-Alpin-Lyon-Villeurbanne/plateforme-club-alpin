@@ -3,6 +3,7 @@
 namespace App\Doctrine;
 
 use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
+use ApiPlatform\Doctrine\Orm\Extension\QueryItemExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
 use App\Entity\ExpenseReport;
@@ -16,7 +17,7 @@ use Symfony\Bundle\SecurityBundle\Security;
  * - Filtre par utilisateur (sauf pour les admins et gestionnaires de notes de frais)
  * - Exclut les brouillons par défaut (sauf si inclure_brouillons=true)
  */
-final class ExpenseReportExtension implements QueryCollectionExtensionInterface
+final class ExpenseReportExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
     public function __construct(
         private Security $security
@@ -35,6 +36,18 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface
         }
 
         $this->filterExpenseReports($queryBuilder, $context);
+    }
+
+    public function applyToItem(
+        QueryBuilder $queryBuilder,
+        QueryNameGeneratorInterface $queryNameGenerator,
+        string $resourceClass,
+        array $identifiers,
+        ?Operation $operation = null,
+        array $context = []
+    ): void {
+        // Pas de filtrage spécifique pour les items individuels
+        // Les permissions sont gérées par les voters
     }
 
     private function filterExpenseReports(QueryBuilder $queryBuilder, array $context): void
