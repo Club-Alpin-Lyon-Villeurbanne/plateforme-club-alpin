@@ -149,7 +149,7 @@
                                 {% if allowed('evt_legal_accept') %}
                                     {# valider juridiquement une sortie#}
                                     <li>
-                                        <a href="/validation-des-sorties.html" title="">
+                                        <a href="{{ path('legal_manage_events') }}" title="Valider légalement les sorties">
                                             {% set notif_president = notifications_counter_sorties_president() %}
                                             {% if notif_president > 0 %}<span class="notification">{{ notif_president }}</span>{% endif %}
                                             validation des sorties

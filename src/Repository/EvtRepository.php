@@ -65,6 +65,43 @@ class EvtRepository extends ServiceEntityRepository
         ]);
     }
 
+    public function getEventsToLegalValidate(int $dateMax, int $first, int $perPage)
+    {
+        $qb = $this->getEventsToLegalValidateQueryBuilder($dateMax)
+            ->orderBy('e.tsp', 'ASC')
+        ;
+
+        return $this->getPaginatedResults($qb, $first, $perPage);
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getEventsToLegalValidateCount(int $dateMax): float|bool|int|string|null
+    {
+        return $this
+            ->getEventsToLegalValidateQueryBuilder($dateMax)
+            ->select('count(e)')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
+    protected function getEventsToLegalValidateQueryBuilder(int $dateMax): QueryBuilder
+    {
+        return $this->createQueryBuilder('e')
+            ->where('e.status = :status')
+            ->andWhere('e.statusLegal = :legal')
+            ->andWhere('e.tsp > :dateNow')
+            ->andWhere('e.tsp < :dateMax')
+            ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
+            ->setParameter('legal', Evt::STATUS_LEGAL_UNSEEN)
+            ->setParameter('dateNow', time())
+            ->setParameter('dateMax', $dateMax)
+        ;
+    }
+
     /** @return Evt[] */
     public function getUpcomingEvents(?Commission $commission, array $options = [])
     {

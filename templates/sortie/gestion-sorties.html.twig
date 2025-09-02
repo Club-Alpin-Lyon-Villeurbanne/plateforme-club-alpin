@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+    <div id="left1">
+        <div class="main-type">
+            <h1>{{ title }}</h1>
+
+            {{ easy_include(to_include, '') }}
+
+            <h2>{{ total }} Sortie{% if total > 1 %}s{% endif %} non validée{% if total > 1 %}s{% endif %}, en attente de validation :</h2>
+
+            {% if total <= 0 %}
+                <p class="info">Aucune sortie n'est en attente de validation pour l'instant.</p>
+            {% else %}
+                <table id="agenda">
+                    {% for item in events %}
+                        {% if item is iterable %}
+                            {% set event = item.0 %}
+                        {% else %}
+                            {% set event = item %}
+                        {% endif %}
+                        <tr>
+                            <td class="agenda-gauche">
+                                {% set start = event.tsp | intldate('eee d MMM yyyy') | capitalize %}
+                                {% set end = event.tspEnd | intldate('eee d MMM yyyy') | capitalize %}
+
+                                {% if start == end %}
+                                    Le {{ start }}<br />
+                                    à {{ event.tsp | intldate('HH:mm') }}
+                                {% else %}
+                                    Du {{ start }}<br/>
+                                    au {{ end }}
+                                {% endif %}
+
+                                {% if app.user == event.user %}
+                                    {% if event.isDraft %}
+                                        <p class="draft">Brouillon (non publiée)</p>
+                                    {% elseif event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
+                                        <p class="info">Publiée et validée par le président</p>
+                                    {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE') %}
+                                        <p class="alerte">Publiée non validée par le président</p>
+                                    {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_REFUSE') %}
+                                        <p class="erreur">Sortie refusée et non publiée</p>
+                                    {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_UNSEEN') %}
+                                        <p class="alerte">En attente de publication</p>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="evt-tools">
+                                    <a class="nice2" href="{{ path('sortie', { code: event.code, id: event.id }) }}?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant validation" target="_blank">Aperçu / validation de la page</a>
+
+                                    <a class="agenda-evt-debut" target="_top" href="{{ path('sortie', { code: event.code, id: event.id }) }}?commission={{ event.commission.code }}" title="">
+
+                                        <!-- picto -->
+                                        <div class="picto">
+                                            <img src="{{ commission_picto(event.commission.code) }}" alt="" title="" class="picto-light" />
+                                            <img src="{{ commission_picto(event.commission.code, 'dark') }}" alt="" title="" class="picto-dark" />
+                                        </div>
+
+                                        <div class="droite">
+                                            <span title="{{ event | temoin_event_title }}" style="padding: 10px 10px 5px 5px;float:left;">
+                                                <span class="temoin-places-dispos"> {{ event | temoin_event_picto }}</span>
+                                            </span>
+
+                                            <h2 class="tw-flex tw-items-center tw-gap-2">
+                                                {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>{% endif %}
+                                                {{ event.titre }}
+                                            </h2>
+
+                                            <p class="tw-flex tw-justify-between tw-items-center">
+                                                <span>
+                                                    <b>{{ event.commission.title }}</b>
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <br style="clear:both" />
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+                </table>
+            {% endif %}
+
+            {% if total > per_page %}
+                <hr />
+                <nav class="pageSelect">
+                    {% for i in 1..pages %}
+                        <a href="{{ page_url }}?page={{ i }}" title="" class="{{ page == i ? 'up' : '' }}">p{{ i }}</a> {{ i < pages ? ' ' : '' }}
+                    {% endfor %}
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

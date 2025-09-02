@@ -284,3 +284,8 @@ services:
   legacy_user_right_service:
     public: true
     alias: App\Service\UserRightService
+
+  App\Controller\EventManagementController:
+    arguments:
+      $maxTimestampForLegalValidation: '%env(MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%'
+    tags: ['controller.service_arguments']
