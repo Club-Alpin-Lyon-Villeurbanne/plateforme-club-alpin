@@ -56,3 +56,4 @@ node_modules/
 # Test reports
 test-results/
 playwright-report/
+AGENTS.md

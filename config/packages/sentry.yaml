@@ -2,10 +2,9 @@ when@prod:
     sentry:
         dsn: '%env(SENTRY_DSN)%'
         options:
+            # Réduire le bruit: on ignore les erreurs attendues (404/403) côté Sentry
             ignore_exceptions:
-                - 'Symfony\Component\ErrorHandler\Error\FatalError'
-                - 'Symfony\Component\Debug\Exception\FatalErrorException'
-
-
+                - 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException'
+                - 'Symfony\Component\Security\Core\Exception\AccessDeniedException'
         register_error_listener: false
         register_error_handler: false
