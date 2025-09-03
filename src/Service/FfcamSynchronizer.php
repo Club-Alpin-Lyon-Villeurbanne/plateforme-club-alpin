@@ -21,7 +21,8 @@ class FfcamSynchronizer
     ) {
         $today = new \DateTime();
         $startDate = new \DateTime($today->format('Y') . '-08-25');
-        $endDate = new \DateTime($today->format('Y') . '-10-31');
+        // Align with legacy tolerance window: until 31 December
+        $endDate = new \DateTime($today->format('Y') . '-12-31');
 
         $this->hasTolerancyPeriodPassed = !($today >= $startDate && $today <= $endDate);
     }
@@ -127,11 +128,16 @@ class FfcamSynchronizer
             ->setNickname($parsedUser->getNickname())
             ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $this->hasTolerancyPeriodPassed)
             ->setAlerteRenouveler($parsedUser->getAlerteRenouveler())
-            ->setDateAdhesion($parsedUser->getDateAdhesion())
             ->setTsUpdate(time())
             ->setManuel(false)
             ->setNomade(false)
         ;
+
+        // Do not wipe adhesion date when the parsed user is expired (null adhesion).
+        // Keep existing adhesion date unless a new valid adhesion is provided.
+        if (null !== $parsedUser->getDateAdhesion()) {
+            $existingUser->setDateAdhesion($parsedUser->getDateAdhesion());
+        }
 
         $this->entityManager->persist($existingUser);
     }
