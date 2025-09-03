@@ -44,11 +44,6 @@ if (user()) {
         require $operationsDir . 'operations.user_join_manuel.php';
     }
 
-    // JOINS : USER / SORTIE : inscription de nomade + création s'il n'existe pas deja
-    elseif ('user_join_nomade' == $operation) {
-        require $operationsDir . 'operations.user_join_nomade.php';
-    }
-
     // ARTICLE : publication OU refus
     elseif ('article_validate' == $operation) {
         require $operationsDir . 'operations.article_validate.php';

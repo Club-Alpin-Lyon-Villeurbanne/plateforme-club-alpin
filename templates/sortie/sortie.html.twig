@@ -717,8 +717,8 @@
                                 Inscrire manuellement des adhérents du club
                             </a>
 
-                            <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_nomad.php&amp;id_evt={{ event.id }}" title="">
-                                Ajouter un adhérent "Nomade"
+                            <a class="nice2 blue fancyframe" href="{{ path('event_nomad_add', {event: event.id}) }}" title="">
+                                Ajouter un "Nomade"
                             </a>
                         {% else %}
                         <i>Vous pourrez ajouter des participants quand la sortie sera publiée</i>

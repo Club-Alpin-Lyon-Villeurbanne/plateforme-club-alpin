@@ -12,186 +12,188 @@
 {% endblock %}
 
 {% block body %}
-    {% if event.status is same as(constant('App\\Entity\\Evt::STATUS_PUBLISHED_UNSEEN')) %}
-        <div class="alerte">
-            <b>Note : Cette sortie n'est pas publiée sur le site</b>. Si vous voyez ce message apparaître, c'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n'ont pas accès aux informations ci-dessous.<br />
-        </div>
-    {% elseif event.status is same as(constant('App\\Entity\\Evt::STATUS_PUBLISHED_REFUSE')) %}
-        <div class="alerte">
-            <b>Note : Cette sortie a été refusée</b>. Si vous voyez ce message apparaître, c'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n'ont pas accès aux informations ci-dessous.<br /><br />
-        </div>
-    {% elseif event.cancelled %}
-        <div class="erreur">
-            <img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Sortie annulée :</b><br /> Cette sortie a été annulée le {{ event.cancelledWhen|date('d/m/Y à H:i') }}, par
-            <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.cancelledWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
-                {{ event.cancelledWho.nickname }}
-            </a>.<br />
-        </div>
-    {% endif %}
-
-    <table style="border:0; padding:0; margin:0;">
-        <tbody>
-        <tr>
-            <td style="border:0">
-                {% if event.statusLegal is same as (constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE')) %}
-                <img src="{{ logo }}" alt="" title="" style="float:left;max-width:100%; max-height:100%; object-fit:contain;" /><br><br><br><br><br>
-                <div style="padding-left:45px;">
-                    {{ easy_include('adresse-fiche-sortie', '') }}
-                </div>
-                {% else %}
-                    <p class="alerte">Cette sortie n'a pas été validée légalement par les dirigeants du {{ sitename }}.<br>La sortie se fait sous la responsabilité des organisateurs et des participants.</p>
-                {% endif %}
-            </td>
-            <td style="border:0">
-                <table style="width:560px">
-                    <thead>
-                    <tr>
-                        <th colspan="3" style="text-align:center; font-size:17px"><small>FEUILLE DE SORTIE</small><br>{{ event.titre }}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% if presidents %}
-                        <tr>
-                            <th colspan="3">PRESIDENT : </th>
-                        </tr>
-                        {% for pres in presidents %}
-                            <tr>
-                                <td>{{ pres.user.fullName }}</td>
-                                <th>TEL</th>
-                                <td>
-                                    {% if pres.user.tel %}
-                                        {{ pres.user.tel }}
-                                    {% elseif pres.user.tel2 %}
-                                        {{ pres.user.tel2 }}
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    {% endif %}
-                    {% if vicepresidents %}
-                        <tr>
-                            <th colspan="3">VICE PRESIDENT : </th>
-                        </tr>
-                        {% for pres in vicepresidents %}
-                            <tr>
-                                <td>{{ pres.user.fullName }}</td>
-                                <th>TEL</th>
-                                <td>
-                                    {% if pres.user.tel %}
-                                        {{ pres.user.tel }}
-                                    {% elseif pres.user.tel2 %}
-                                        {{ pres.user.tel2 }}
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    {% endif %}
-                    <tr>
-                        <th>COMMISSION : </th>
-                        <td colspan="2">{{ event.commission.title }}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <div style="width:900px;">
-        {{ easy_include('complement-contacts-specifiques-fiche', '') }}
-    </div>
-
-    <table>
-        <tbody>
-        <tr>
-            <th width='15%' style="width: fit-content">DATE :</th>
-            <td width='25%'>{{ event.tsp | date('d/m/Y') }}</td>
-            <th width='20%'>COURSE, LIEU : </th>
-            <td width='30%'>{{ event.titre }}</td>
-        </tr>
-        <tr>
-            <th style="width: fit-content">DISTANCE : </th>
-            <td>{% if event.distance %}{{ event.distance }}{% else %}...{% endif%} km</td>
-            <th>DENIVELE POSITIF :</th>
-            <td>{% if event.denivele %}{{ event.denivele }}{% else %}...{% endif%} m</td>
-        </tr>
-        <tr>
-            <th style="width: fit-content">NIVEAU :</th>
-            <td>{% if event.difficulte %}{{ event.difficulte }}{% else %}...{% endif%}</td>
-            <th>NB DE PARTICIPANTS :</th>
-            <td>{{ nbAcceptes }}</td>
-        </tr>
-        {% if event.matos %}
-        <tr>
-            <th style="width: fit-content">MATERIEL : </th>
-            <td colspan="3">{{ event.matos }}</td>
-        </tr>
+    <div id="pageAdmin" class="">
+        {% if event.status is same as(constant('App\\Entity\\Evt::STATUS_PUBLISHED_UNSEEN')) %}
+            <div class="alerte">
+                <b>Note : Cette sortie n'est pas publiée sur le site</b>. Si vous voyez ce message apparaître, c'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n'ont pas accès aux informations ci-dessous.<br />
+            </div>
+        {% elseif event.status is same as(constant('App\\Entity\\Evt::STATUS_PUBLISHED_REFUSE')) %}
+            <div class="alerte">
+                <b>Note : Cette sortie a été refusée</b>. Si vous voyez ce message apparaître, c'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n'ont pas accès aux informations ci-dessous.<br /><br />
+            </div>
+        {% elseif event.cancelled %}
+            <div class="erreur">
+                <img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Sortie annulée :</b><br /> Cette sortie a été annulée le {{ event.cancelledWhen|date('d/m/Y à H:i') }}, par
+                <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.cancelledWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
+                    {{ event.cancelledWho.nickname }}
+                </a>.<br />
+            </div>
         {% endif %}
-        {% if event.itineraire %}
-        <tr>
-            <th style="width: fit-content">ITINERAIRE PREVU : </th>
-            <td colspan="3">{{ event.itineraire }}</td>
-        </tr>
-        {% endif %}
-        <tr>
-            <th style="width: fit-content">EN CAS D'ACCIDENT : </th>
-            <td colspan="3">Contactez notre assurance WTW Montagne au 09 72 72 22 43. <br> Contactez le président ou vice-président (numéros ci-dessus). </td>
-        </tr>
-        </tbody>
-    </table>
 
-    <table>
-        <thead>
-        <tr>
-            <th></th>
-            <th>PARTICIPANTS (PRÉNOM, NOM)</th>
-            <th>LICENCE</th>
-            <th>AGE</th>
-            <th>TÉL.</th>
-            <th>TÉL. <abbr title="En cas d'urgence">SECOURS</abbr></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% set cpt = 1 %}
-        {% for participant in participants %}
+        <table style="border:0; padding:0; margin:0;">
+            <tbody>
             <tr>
-                <td>{{ cpt }}</td>
-                <td>
-                    {{ participant.user.civ }} {{ participant.user.firstname }} {{ participant.user.lastname|upper }}
-                    {% if participant.role in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT_ETENDU') %}
-                        ({{ participant.role }})
-                    {% endif %}
-                    {% if participant.user is same as (event.user) %}
-                        (organisateur)
+                <td style="border:0">
+                    {% if event.statusLegal is same as (constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE')) %}
+                    <img src="{{ logo }}" alt="" title="" style="float:left;max-width:100%; max-height:100%; object-fit:contain;" /><br><br><br><br><br>
+                    <div style="padding-left:45px;">
+                        {{ easy_include('adresse-fiche-sortie', '') }}
+                    </div>
+                    {% else %}
+                        <p class="alerte">Cette sortie n'a pas été validée légalement par les dirigeants du {{ sitename }}.<br>La sortie se fait sous la responsabilité des organisateurs et des participants.</p>
                     {% endif %}
                 </td>
-                <td>{{ participant.user.cafnum }}</td>
-                <td>{{ age_user(participant.user) }}</td>
-                <td>{{ participant.user.tel }}</td>
-                <td>{{ participant.user.tel2 }}</td>
+                <td style="border:0">
+                    <table style="width:560px">
+                        <thead>
+                        <tr>
+                            <th colspan="3" style="text-align:center; font-size:17px"><small>FEUILLE DE SORTIE</small><br>{{ event.titre }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% if presidents %}
+                            <tr>
+                                <th colspan="3">PRESIDENT : </th>
+                            </tr>
+                            {% for pres in presidents %}
+                                <tr>
+                                    <td>{{ pres.user.fullName }}</td>
+                                    <th>TEL</th>
+                                    <td>
+                                        {% if pres.user.tel %}
+                                            {{ pres.user.tel }}
+                                        {% elseif pres.user.tel2 %}
+                                            {{ pres.user.tel2 }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        {% if vicepresidents %}
+                            <tr>
+                                <th colspan="3">VICE PRESIDENT : </th>
+                            </tr>
+                            {% for pres in vicepresidents %}
+                                <tr>
+                                    <td>{{ pres.user.fullName }}</td>
+                                    <th>TEL</th>
+                                    <td>
+                                        {% if pres.user.tel %}
+                                            {{ pres.user.tel }}
+                                        {% elseif pres.user.tel2 %}
+                                            {{ pres.user.tel2 }}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                        <tr>
+                            <th>COMMISSION : </th>
+                            <td colspan="2">{{ event.commission.title }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
             </tr>
-            {% set cpt = cpt + 1 %}
-        {% endfor %}
-        {% if hideBlankLines is same as (false) %}
-            {% for i in cpt..totalLines %}
+            </tbody>
+        </table>
+
+        <div style="width:900px;">
+            {{ easy_include('complement-contacts-specifiques-fiche', '') }}
+        </div>
+
+        <table>
+            <tbody>
+            <tr>
+                <th width='15%' style="width: fit-content">DATE :</th>
+                <td width='25%'>{{ event.tsp | date('d/m/Y') }}</td>
+                <th width='20%'>COURSE, LIEU : </th>
+                <td width='30%'>{{ event.titre }}</td>
+            </tr>
+            <tr>
+                <th style="width: fit-content">DISTANCE : </th>
+                <td>{% if event.distance %}{{ event.distance }}{% else %}...{% endif%} km</td>
+                <th>DENIVELE POSITIF :</th>
+                <td>{% if event.denivele %}{{ event.denivele }}{% else %}...{% endif%} m</td>
+            </tr>
+            <tr>
+                <th style="width: fit-content">NIVEAU :</th>
+                <td>{% if event.difficulte %}{{ event.difficulte }}{% else %}...{% endif%}</td>
+                <th>NB DE PARTICIPANTS :</th>
+                <td>{{ nbAcceptes }}</td>
+            </tr>
+            {% if event.matos %}
+            <tr>
+                <th style="width: fit-content">MATERIEL : </th>
+                <td colspan="3">{{ event.matos }}</td>
+            </tr>
+            {% endif %}
+            {% if event.itineraire %}
+            <tr>
+                <th style="width: fit-content">ITINERAIRE PREVU : </th>
+                <td colspan="3">{{ event.itineraire }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th style="width: fit-content">EN CAS D'ACCIDENT : </th>
+                <td colspan="3">Contactez notre assurance WTW Montagne au 09 72 72 22 43. <br> Contactez le président ou vice-président (numéros ci-dessus). </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <table>
+            <thead>
+            <tr>
+                <th></th>
+                <th>PARTICIPANTS (PRÉNOM, NOM)</th>
+                <th>LICENCE</th>
+                <th>AGE</th>
+                <th>TÉL.</th>
+                <th>TÉL. <abbr title="En cas d'urgence">SECOURS</abbr></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set cpt = 1 %}
+            {% for participant in participants %}
                 <tr>
-                    <td>{{ i }}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>{{ cpt }}</td>
+                    <td>
+                        {{ participant.user.civ }} {{ participant.user.firstname }} {{ participant.user.lastname|upper }}
+                        {% if participant.role in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT_ETENDU') %}
+                            ({{ participant.role }})
+                        {% endif %}
+                        {% if participant.user is same as (event.user) %}
+                            (organisateur)
+                        {% endif %}
+                    </td>
+                    <td>{{ participant.user.cafnum }}</td>
+                    <td>{{ age_user(participant.user) }}</td>
+                    <td>{{ participant.user.tel }}</td>
+                    <td>{{ participant.user.tel2 }}</td>
                 </tr>
+                {% set cpt = cpt + 1 %}
             {% endfor %}
+            {% if hideBlankLines is same as (false) %}
+                {% for i in cpt..totalLines %}
+                    <tr>
+                        <td>{{ i }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+        Imprimé le {{ 'now'|date('d/m/Y à H:i') }}
+        {% set hide = 'y' %}
+        {% if hideBlankLines is same as (true) %}
+            {% set hide = 'n' %}
+        {% endif%}
+        {% if pdf is same as (false) %}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>[<a href="{{ path('feuille_sortie', {id: event.id, hide_blank: hide}) }}">{% if hideBlankLines is same as (true) %}Afficher{% else %}Masquer{% endif%} les lignes vides</a>]</small>
         {% endif %}
-        </tbody>
-    </table>
-    Imprimé le {{ 'now'|date('d/m/Y à H:i') }}
-    {% set hide = 'y' %}
-    {% if hideBlankLines is same as (true) %}
-        {% set hide = 'n' %}
-    {% endif%}
-    {% if pdf is same as (false) %}
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small>[<a href="{{ path('feuille_sortie', {id: event.id, hide_blank: hide}) }}">{% if hideBlankLines is same as (true) %}Afficher{% else %}Masquer{% endif%} les lignes vides</a>]</small>
-    {% endif %}
+    </div>
 {% endblock %}

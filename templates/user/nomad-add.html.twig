@@ -1,0 +1,140 @@
+{% extends 'base-print.html.twig' %}
+
+{% block title %}Inscrire un "nomade" à la sortie{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        #includer-stuff form label {
+            font-weight: bold;
+            display: block;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div id="includer-stuff">
+        <h1>Inscrire un "nomade" à cette sortie</h1>
+        {{ easy_include('explication-nomades', '') }}
+
+        {{ form_start(form, { attr: { class: 'loading' } }) }}
+
+        {% if form_errors(form) %}
+            <div class="erreur">
+                <ul>
+                    {% for error in form_errors(form) %}
+                        <li>{{ error.message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <hr>
+
+        <div>
+            {{ form_row(form.id_user) }}
+            <p class="mini">
+                Ceci a pour effet de remplacer les valeurs ci-dessous par un nomade ajouté antérieurement.<br>
+                Vous ne pouvez alors plus modifier les infos saisies.
+            </p>
+        </div>
+
+        <hr>
+
+        <div class="tiers clear">
+            {{ form_row(form.cafnum) }}
+        </div>
+
+        <div class="tiers clear">
+            {{ form_row(form.civ) }}
+        </div>
+
+        <div class="tiers clear">
+            {{ form_row(form.lastname) }}
+        </div>
+
+        <div class="tiers">
+            {{ form_row(form.firstname) }}
+        </div>
+
+        <div class="tiers clear">
+            {{ form_row(form.role_evt_join) }}
+        </div>
+
+        <div class="tiers">
+            {{ form_row(form.tel) }}
+        </div>
+
+        <div class="tiers">
+            {{ form_row(form.tel2) }}
+        </div>
+
+        <div class="tiers">
+            {{ form_row(form.email) }}
+        </div>
+
+        <br style="clear:both">
+        <br>
+
+        <button type="submit" class="biglink">
+            <span class="bleucaf">&gt;</span>
+            INSCRIRE CE "NOMADE" À MA SORTIE
+        </button>
+
+        {{ form_end(form) }}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const prefilled = [];
+
+            {% for nomad in nomads %}
+                prefilled['{{ nomad.id }}'] = {
+                    'civ_user': '{{ nomad.civ }}',
+                    'cafnum_user': '{{ nomad.cafnum }}',
+                    'firstname_user': '{{ nomad.firstname }}',
+                    'lastname_user': '{{ nomad.lastname }}',
+                    'tel_user': '{{ nomad.tel }}',
+                    'tel2_user': '{{ nomad.tel2 }}',
+                    'email_user': '{{ nomad.email }}'
+                };
+            {% endfor %}
+
+            const select = document.getElementById('nomade_id_user');
+            if (!select) return;
+
+            select.addEventListener('change', function () {
+                const id_user = parseInt(this.value, 10);
+                const tmpPrefilled = prefilled[id_user];
+
+                if (id_user > 0 && tmpPrefilled) {
+                    document.getElementById('nomade_civ').value = tmpPrefilled.civ_user;
+                    document.getElementById('nomade_civ').setAttribute('readonly', true);
+
+                    document.getElementById('nomade_cafnum').value = tmpPrefilled.cafnum_user;
+                    document.getElementById('nomade_cafnum').setAttribute('readonly', true);
+
+                    document.getElementById('nomade_firstname').value = tmpPrefilled.firstname_user;
+                    document.getElementById('nomade_firstname').setAttribute('readonly', true);
+
+                    document.getElementById('nomade_lastname').value = tmpPrefilled.lastname_user;
+                    document.getElementById('nomade_lastname').setAttribute('readonly', true);
+
+                    document.getElementById('nomade_tel').value = tmpPrefilled.tel_user;
+                    document.getElementById('nomade_tel').setAttribute('readonly', true);
+
+                    document.getElementById('nomade_tel2').value = tmpPrefilled.tel2_user;
+                    document.getElementById('nomade_tel2').setAttribute('readonly', true);
+
+                    document.getElementById('nomade_email').value = tmpPrefilled.email_user;
+                    document.getElementById('nomade_email').setAttribute('readonly', true);
+                } else {
+                    document.querySelectorAll('input').forEach(input => {
+                        input.value = '';
+                        input.removeAttribute('readonly');
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -100,6 +100,18 @@ SQL;
         ;
     }
 
+    public function getNomads(UserInterface $user)
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.valid = true')
+            ->andWhere('u.nomade = true')
+            ->andWhere('u.nomadeParent = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     public function blockExpiredAccounts(): void
     {
         $lastYear = (new \DateTime())->modify('-1 year')->format('Y');
