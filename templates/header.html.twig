@@ -138,7 +138,7 @@
                                 {% if allowed('evt_validate') %}
                                     {# publier une sortie (notification au besoin, variable définie dans SCRIPTS.'reqs.php') #}
                                     <li>
-                                        <a href="/gestion-des-sorties.html" title="">
+                                        <a href="{{ path('manage_events') }}" title="Publier les sorties en attente">
                                             {% set notif_sorties = notifications_counter_sorties() %}
                                             {% if notif_sorties > 0 %}<span class="notification">{{ notif_sorties }}</span>{% endif %}
                                             publication des sorties
