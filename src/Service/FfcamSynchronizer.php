@@ -132,8 +132,8 @@ class FfcamSynchronizer
             ->setNomade(false)
         ;
 
-        // Do not wipe adhesion date when the parsed user is expired (null adhesion).
-        // Keep existing adhesion date unless a new valid adhesion is provided.
+        // Ne pas effacer la date d'adhésion quand l'adhésion parsée est expirée (valeur nulle).
+        // Conserver la date d'adhésion existante sauf si une nouvelle adhésion valide est fournie.
         if (null !== $parsedUser->getDateAdhesion()) {
             $existingUser->setDateAdhesion($parsedUser->getDateAdhesion());
         }
