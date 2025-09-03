@@ -13,6 +13,7 @@ use App\Messenger\Message\SortiePubliee;
 use App\Repository\CommissionRepository;
 use App\Repository\EventParticipationRepository;
 use App\Repository\UserRepository;
+use App\Service\HelloAssoService;
 use App\Twig\JavascriptGlobalsExtension;
 use App\UserRights;
 use App\Utils\ExcelExport;
@@ -31,6 +32,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Twig\Environment;
 
 class SortieController extends AbstractController
@@ -89,6 +95,8 @@ class SortieController extends AbstractController
             foreach ($currentEncadrants as $currentEncadrant) {
                 $originalEntityData['encadrants'][$currentEncadrant->getUser()->getId()] = $currentEncadrant->getRole();
             }
+            $originalEntityData['hasHelloAsso'] = $event->hasHelloAssoForm();
+            $originalEntityData['helloAssoAmount'] = $event->getHelloAssoFormAmount();
         }
 
         $form = $this->createForm(EventType::class, $event);
@@ -146,6 +154,8 @@ class SortieController extends AbstractController
                 // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
                 if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()
                     && ($originalEntityData['ngensMax'] !== $event->getngensMax()
+                    || $originalEntityData['hasHelloAsso'] !== $event->hasHelloAssoForm()
+                    || $originalEntityData['helloAssoAmount'] !== $event->getHelloAssoFormAmount()
                     || $originalEntityData['encadrants'] !== $newEncadrants)) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
                 } else {
@@ -197,12 +207,20 @@ class SortieController extends AbstractController
         ];
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     #[Route(path: '/sortie/{code}-{id}.html', name: 'sortie', requirements: ['id' => '\d+', 'code' => '[a-z0-9-]+'], methods: ['GET'], priority: '10')]
     #[Template('sortie/sortie.html.twig')]
     public function sortie(
         Evt $event,
         UserRepository $repository,
         EventParticipationRepository $participationRepository,
+        HelloAssoService $helloAssoService,
         Environment $twig,
         $baseUrl = '/',
     ) {
@@ -210,6 +228,7 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Not found');
         }
 
+        /** @var User $user */
         $user = $this->getUser();
 
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
@@ -221,19 +240,41 @@ class SortieController extends AbstractController
             $baseUrl
         );
 
+        // l'utilisateur connecté peut-il voir le lien de paiment hello asso ?
+        $currentUserAccepted = false;
+        $myParticipation = $participationRepository->findOneBy(['user' => $user, 'evt' => $event]);
+        if ($myParticipation && EventParticipation::STATUS_VALIDE === $myParticipation->getStatus()) {
+            $currentUserAccepted = true;
+        }
+
+        // lister les paiements reçus sur le form de la sortie (liste des emails des payeurs)
+        $payers = [];
+        $currentUserHasPaid = false;
+        if ($user && $event->hasHelloAssoForm() && $event->getHelloAssoFormSlug()) {
+            $payers = $helloAssoService->getPaymentsForEvent($event);
+
+            if (\in_array($user->getEmail(), $payers, true)) {
+                $currentUserHasPaid = true;
+            }
+        }
+
         return [
             'event' => $event,
             'participations' => $participationRepository->getSortedParticipations($event, null, null),
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participationRepository->getEmpietements($event),
             'current_commission' => $event->getCommission()->getCode(),
+            'payers' => $payers,
+            'current_user_has_paid' => $currentUserHasPaid,
+            'current_user_accepted' => $currentUserAccepted,
         ];
     }
 
-    #[Route(name: 'sortie_validate', path: '/sortie/{id}/validate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
+    #[Route(path: '/sortie/{id}/validate', name: 'sortie_validate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieValidate(
         Request $request,
         Evt $event,
+        HelloAssoService $helloAssoService,
         EntityManagerInterface $em,
         Mailer $mailer,
         MessageBusInterface $messageBus,
@@ -247,6 +288,17 @@ class SortieController extends AbstractController
         }
 
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($this->getUser());
+
+        // créer la campagne hello asso si nécessaire
+        if ($event->hasHelloAssoForm() && !$event->getHelloAssoFormSlug()) {
+            $haFormData = $helloAssoService->createFormForEvent($event);
+            $event->setHelloAssoFormSlug($haFormData['formSlug']);
+            $event->setHelloAssoFormUrl($haFormData['publicUrl']);
+
+            // publier la campagne
+            $helloAssoService->publishFormForEvent($event);
+        }
+
         $em->flush();
 
         $messageBus->dispatch(new SortiePubliee($event->getId()));
