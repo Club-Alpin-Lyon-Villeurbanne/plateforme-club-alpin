@@ -15,7 +15,9 @@ JWT_CONF_DIR=config/jwt
 
 cat public/.htaccess.clever > public/.htaccess
 mv infrastructure/confs/.env.prod .
-mv infrastructure/confs/${DEPLOY_ENV}/robots.txt public/robots.txt
+# robots.txt est servi dynamiquement par Symfony (route /robots.txt)
+# On n'écrase pas la version dynamique par un fichier statique.
+if [ -f public/robots.txt ]; then rm -f public/robots.txt; fi
 
 mkdir -p ${JWT_CONF_DIR}
 echo "${JWT_SECRET_KEY}" > ${JWT_CONF_DIR}/private.pem
