@@ -149,19 +149,28 @@ SQL;
 
     public function findDuplicateUser(string $lastname, string $firstname, string $birthday, string $excludeCafnum): ?User
     {
-        return $this->createQueryBuilder('u')
+        // Assouplir la détection:
+        // - Comparer la date de naissance au JOUR (00:00:00 → 23:59:59)
+        // - Ne plus exiger "doitRenouveler = true" sur l'ancien profil
+        $birthTs = (int) $birthday;
+        $dayStart = (new \DateTimeImmutable('@' . $birthTs))->setTime(0, 0, 0)->getTimestamp();
+        $dayEnd = (new \DateTimeImmutable('@' . $birthTs))->setTime(23, 59, 59)->getTimestamp();
+
+        $qb = $this->createQueryBuilder('u');
+
+        return $qb
             ->where('u.lastname = :lastname')
             ->andWhere('u.firstname = :firstname')
-            ->andWhere('u.birthday = :birthday')
+            ->andWhere($qb->expr()->between('u.birthday', ':dayStart', ':dayEnd'))
             ->andWhere('u.cafnum != :excludeCafnum')
-            ->andWhere('u.doitRenouveler = true')
             ->andWhere('u.isDeleted = false')
             ->orderBy('u.tsInsert', 'DESC')
             ->setMaxResults(1)
             ->setParameters([
                 'lastname' => $lastname,
                 'firstname' => $firstname,
-                'birthday' => $birthday,
+                'dayStart' => $dayStart,
+                'dayEnd' => $dayEnd,
                 'excludeCafnum' => $excludeCafnum,
             ])
             ->getQuery()
