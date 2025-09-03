@@ -28,6 +28,7 @@ class HelloAssoService
     protected const string HELLO_ASSO_CAMPAIGN_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/action/quick-create';
     protected const string HELLO_ASSO_CAMPAIGN_PUBLISH_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/{formSlug}/state';
     protected const string HELLO_ASSO_PAYMENT_INFO_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/{formSlug}/payments';
+    protected const string HELLO_ASSO_DOMAIN_UPDATE_ENDPOINT = '/v5/partners/me/api-clients';
     // endregion
 
     // region attributes
@@ -82,6 +83,48 @@ class HelloAssoService
         }
 
         return $accessToken;
+    }
+
+    public function getAccessTokenFromAuthCode(string $authorizationCode, string $codeVerifier): string
+    {
+        $organizationAccessToken = '';
+
+        try {
+            $context = $this->router->getContext();
+            $context->setScheme('https');
+            $callbackUrl = $this->router->generate('mire_ha_callback', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            $response = $this->httpClient->request(
+                'POST',
+                $this->baseUrl . self::HELLO_ASSO_TOKEN_ENDPOINT,
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/x-www-form-urlencoded',
+                        'accept' => 'application/json',
+                    ],
+                    'body' => [
+                        'client_id' => $this->clientId,
+                        'client_secret' => $this->clientSecret,
+                        'grant_type' => 'authorization_code',
+                        'code' => $authorizationCode,
+                        'code_verifier' => $codeVerifier,
+                        'redirect_uri' => $callbackUrl,
+                    ],
+                ],
+            );
+            // stocker le refresh_token (valable 30 j) en bdd et l'access_token (valable 30 min) en session
+            $data = $response->toArray();
+            $organizationAccessToken = $data['access_token'];
+            $organizationRefreshToken = $data['refresh_token'];
+
+            // stocker le refresh token en bdd
+            $this->saveRefreshToken($organizationRefreshToken, 'organization');
+            $this->saveTokenGetDate();
+        } catch (\Exception $exception) {
+            $this->logger->error($exception->getMessage());
+        }
+
+        return $organizationAccessToken;
     }
 
     public function getAccessTokenFromRefreshToken(): string
@@ -253,6 +296,35 @@ class HelloAssoService
             }
         }
     }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    public function updatePartnerDomain(string $accessToken): void
+    {
+        $context = $this->router->getContext();
+        $context->setScheme('https');
+        $domain = $this->router->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        try {
+            $this->httpClient->request(
+                'PUT',
+                $this->baseUrl . self::HELLO_ASSO_DOMAIN_UPDATE_ENDPOINT,
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/*+json',
+                        'accept' => 'application/json',
+                        'Authorization' => 'Bearer ' . $accessToken,
+                    ],
+                    'json' => [
+                        'domain' => $domain,
+                    ],
+                ],
+            );
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+        }
+    }
     // endregion
 
     // region méthodes : config en bdd
@@ -276,6 +348,43 @@ class HelloAssoService
     public function saveTokenGetDate(): void
     {
         $this->configRepository->saveConfigValue('organization_token_get_date', (new \DateTime())->format('Y-m-d H:i:s'));
+    }
+    // endregion
+
+    // region méthodes : outils OAuth
+    public function getAuthorizationUrl(string $codeVerifier, string $state): string
+    {
+        $codeChallenge = PKCEUtils::generateCodeChallenge($codeVerifier);
+        $options = [
+            'code_challenge' => $codeChallenge,
+            'code_challenge_method' => 'S256',
+            'state' => $state,
+        ];
+
+        $context = $this->router->getContext();
+        $context->setScheme('https');
+        $callbackUrl = $this->router->generate('mire_ha_callback', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $this->provider = new GenericProvider([
+            'clientId' => $this->clientId,
+            'clientSecret' => '', // vide pour PKCE
+            'redirectUri' => $callbackUrl,
+            'urlAuthorize' => $this->authorizeUrl . self::HELLO_ASSO_AUTHORIZE_ENDPOINT,
+            'urlAccessToken' => $this->baseUrl . self::HELLO_ASSO_TOKEN_ENDPOINT,
+            'urlResourceOwnerDetails' => $this->baseUrl . self::HELLO_ASSO_RESOURCE_ENDPOINT,
+        ]);
+
+        return $this->provider->getAuthorizationUrl($options);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function generateState(int $length = 64): string
+    {
+        $baseString = PKCEUtils::generateCodeVerifier($length);
+
+        return PKCEUtils::generateCodeChallenge($baseString);
     }
     // endregion
 }

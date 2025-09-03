@@ -291,6 +291,14 @@ services:
     public: true
     alias: App\Service\UserRightService
 
+  App\Controller\HelloAssoController:
+    arguments:
+      $clientId: '%hello_asso_client_id%'
+      $clientSecret: '%hello_asso_client_secret%'
+      $organizationSlug: '%hello_asso_organization_slug%'
+      $baseUrl: '%hello_asso_api_base_url%'
+    tags: ['controller.service_arguments']
+
   App\Service\HelloAssoService:
     arguments:
       $clientId: '%hello_asso_client_id%'
