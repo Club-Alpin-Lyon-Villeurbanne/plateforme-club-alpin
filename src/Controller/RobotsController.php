@@ -19,9 +19,11 @@ class RobotsController
     {
         // In non-prod environments, disallow everything
         if ($this->kernelEnvironment !== 'prod') {
-            $content = "User-agent: *\nDisallow: /\n";
+            // Add a comment marker + header to easily verify this is served by the controller
+            $content = "# served-by: symfony-controller (env=" . $this->kernelEnvironment . ")\nUser-agent: *\nDisallow: /\n";
             $response = new Response($content);
             $response->headers->set('Content-Type', 'text/plain; charset=UTF-8');
+            $response->headers->set('X-Robots-Source', 'controller');
             $response->setPublic();
             $response->setMaxAge(300);
 
