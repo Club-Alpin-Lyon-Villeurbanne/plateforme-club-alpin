@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
 use App\UserRights;
 use Doctrine\ORM\NonUniqueResultException;
@@ -14,7 +15,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class EventManagementController extends AbstractController
 {
-    public function __construct(protected UserRights $userRights, protected string $maxTimestampForLegalValidation)
+    public function __construct(
+        protected UserRights $userRights,
+        protected CommissionRepository $commissionRepository,
+        protected string $maxTimestampForLegalValidation)
     {
     }
 
@@ -36,6 +40,8 @@ class EventManagementController extends AbstractController
         // commissions pour lesquelles on a des droits
         $commissions = [];
         if ($validate && !$validateAll) {
+            $commissionCodes = $this->userRights->getCommissionListForRight('evt_validate');
+            $commissions = $this->commissionRepository->findBy(['code' => $commissionCodes]);
         }
 
         $perPage = 30;
