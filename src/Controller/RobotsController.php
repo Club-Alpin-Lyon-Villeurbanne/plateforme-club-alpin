@@ -6,17 +6,19 @@ namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class RobotsController
 {
-    public function __construct(private readonly string $env = 'dev') {}
+    public function __construct(private readonly string $kernelEnvironment = 'dev') {}
 
     #[Route(path: '/robots.txt', name: 'robots_txt', methods: ['GET'])]
     public function __invoke(Request $request): Response
     {
         // In non-prod environments, disallow everything
-        if ($this->env !== 'prod') {
+        if ($this->kernelEnvironment !== 'prod') {
             $content = "User-agent: *\nDisallow: /\n";
             $response = new Response($content);
             $response->headers->set('Content-Type', 'text/plain; charset=UTF-8');
