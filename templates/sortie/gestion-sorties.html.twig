@@ -12,7 +12,7 @@
             <h2>{{ total }} Sortie{% if total > 1 %}s{% endif %} en attente de {{ action}} :</h2>
 
             {% if total <= 0 %}
-                <p class="info">Aucune sortie n'est en attente de validation pour l'instant.</p>
+                <p class="info">Aucune sortie n'est en attente de {{ action}} pour l'instant.</p>
             {% else %}
                 <table id="agenda">
                     {% for item in events %}
@@ -36,7 +36,7 @@
                             </td>
                             <td>
                                 <div class="evt-tools">
-                                    <a class="nice2" href="{{ path('sortie', { code: event.code, id: event.id }) }}?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant validation" target="_blank">
+                                    <a class="nice2" href="{{ path('sortie', { code: event.code, id: event.id }) }}?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la sortie" target="_blank">
                                         Aperçu{% if action is same as ('validation') %} / validation de la page{% endif %}
                                     </a>
 
@@ -46,7 +46,7 @@
                                             <input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
                                         </form>
 
-                                        <input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
+                                        <input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message à l'organisateur de la sortie." />
                                         <div style="display:none" id="refuser-{{ event.id }}">
                                             <form action="{{ path('sortie_refus', { id: event.id }) }}" method="post" class="loading">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_refus') }}" />
@@ -63,7 +63,7 @@
                                             <p>
                                                 Voulez-vous vraiment supprimer définitivement cette sortie ?<br>
                                                 Cette action supprimera définitivement la sortie et les fichiers liés.<br>
-                                                <strong>Attention</strong> : vous ne devriez jamais supprimer une sortie qui a été publiée sur le site car la conserver permet d\'établir des statistiques, et l\'URL de la page dédiée à cette sortie retournera une erreur 404 si des utilisateurs souhaitent y retourner.
+                                                <strong>Attention</strong> : vous ne devriez jamais supprimer une sortie qui a été publiée sur le site car la conserver permet d'établir des statistiques, et l'URL de la page dédiée à cette sortie retournera une erreur 404 si des utilisateurs souhaitent y retourner.
                                             </p>
                                             {% if event.publicStatusValide %}
                                                 <p class="alerte">Cette sortie est publiée sur le site. En la supprimant, vous créerez une page introuvable.</p>
