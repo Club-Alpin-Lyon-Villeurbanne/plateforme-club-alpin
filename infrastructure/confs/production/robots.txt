@@ -12,5 +12,4 @@ Disallow: /js/
 Disallow: /scripts/
 Disallow: /templates/
 Disallow: /tools/
-# The sitemap URL is injected at build time from BACKEND_URL
-Sitemap: {{SITEMAP_URL}}
+Sitemap: https://www.clubalpinlyon.fr/sitemap.xml
