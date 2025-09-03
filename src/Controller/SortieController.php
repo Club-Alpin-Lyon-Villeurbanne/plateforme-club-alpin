@@ -35,8 +35,11 @@ use Twig\Environment;
 
 class SortieController extends AbstractController
 {
-    public function __construct(protected float $defaultLat, protected float $defaultLong)
-    {
+    public function __construct(
+        protected float $defaultLat,
+        protected float $defaultLong,
+        protected string $defaultAppointmentPlace,
+    ) {
     }
 
     #[Route(path: '/creer-une-sortie', name: 'creer_sortie', methods: ['GET', 'POST'])]
@@ -48,6 +51,7 @@ class SortieController extends AbstractController
         SluggerInterface $slugger,
         CommissionRepository $commissionRepository,
         UserRights $userRights,
+        Mailer $mailer,
         ?Evt $event = null,
         ?Commission $commission = null,
     ): array|RedirectResponse {
@@ -61,7 +65,7 @@ class SortieController extends AbstractController
                 null,
                 null,
                 null,
-                null,
+                $this->defaultAppointmentPlace,
                 $this->defaultLat,
                 $this->defaultLong,
                 null,
@@ -77,6 +81,16 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à modifier cette sortie.');
         }
 
+        $originalEntityData = [];
+        if ($isUpdate) {
+            $originalEntityData['ngensMax'] = $event->getngensMax();
+            $originalEntityData['encadrants'] = [];
+            $currentEncadrants = $event->getEncadrants();
+            foreach ($currentEncadrants as $currentEncadrant) {
+                $originalEntityData['encadrants'][$currentEncadrant->getUser()->getId()] = $currentEncadrant->getRole();
+            }
+        }
+
         $form = $this->createForm(EventType::class, $event);
 
         $form->handleRequest($request);
@@ -90,13 +104,12 @@ class SortieController extends AbstractController
             $formData = $data['form'] ?? [];
             $formData = array_merge($eventData, $formData);
 
-            if (!$isUpdate) {
-                $event->setCode(strtolower(substr($slugger->slug($event->getTitre(), '-'), 0, 30)));
-            } elseif (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()) {
-                // sortie dépubliée à l'édition
-                $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
-                $event->setTspEdit((new \DateTime())->getTimestamp());
+            // brouillon ?
+            $isDraft = false;
+            if (\in_array('eventDraftSave', array_keys($formData), true)) {
+                $isDraft = true;
             }
+            $event->setIsDraft($isDraft);
 
             // encadrants & co
             $rolesMap = [
@@ -109,10 +122,12 @@ class SortieController extends AbstractController
                 // les bénévoles ne sont pas modifiables mais il ne faut pas les "perdre" à l'édition
                 unset($rolesMap[EventParticipation::ROLE_BENEVOLE]);
             }
+            $newEncadrants = [];
             foreach ($rolesMap as $role => $roleName) {
                 $event->clearRoleParticipations($role);
                 if (!empty($formData[$roleName])) {
                     foreach ($formData[$roleName] as $participantId) {
+                        $newEncadrants[$participantId] = $role;
                         $participant = $entityManager->getRepository(User::class)->find($participantId);
                         // si ce participant est déjà inscrit, on met à jour son statut de participation
                         if ($participation = $event->getParticipation($participant)) {
@@ -120,6 +135,22 @@ class SortieController extends AbstractController
                         }
                         $event->addParticipation($participant, $role, EventParticipation::STATUS_VALIDE);
                     }
+                }
+            }
+
+            if (!$isUpdate) {
+                $event->setCode(strtolower(substr($slugger->slug($event->getTitre(), '-'), 0, 30)));
+            } else {
+                $event->setTspEdit((new \DateTime())->getTimestamp());
+
+                // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
+                if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()
+                    && ($originalEntityData['ngensMax'] !== $event->getngensMax()
+                    || $originalEntityData['encadrants'] !== $newEncadrants)) {
+                    $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
+                } else {
+                    // on envoie directement le mail de mise à jour de sortie
+                    $this->sendUpdateNotificationEmail($mailer, $event, false);
                 }
             }
 
@@ -131,14 +162,17 @@ class SortieController extends AbstractController
             }
 
             // champs auto
-            if (empty($event->getJoinMax())) {
-                $event->setJoinMax($event->getNgensMax());
-            }
             if (empty($event->getJoinStart())) {
                 $event->setJoinStart(time());
             }
             if (empty($event->getRdv())) {
                 $event->setRdv('');
+            }
+            if (empty($event->getPlace())) {
+                $event->setPlace('');
+            }
+            if (null === $event->getJoinMax() || $event->getJoinMax() < 0) {
+                $event->setJoinMax($event->getNgensMax());
             }
 
             $entityManager->persist($event);
@@ -212,7 +246,7 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
         }
 
-        $event->setStatus(Evt::STATUS_LEGAL_VALIDE)->setStatusWho($this->getUser());
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($this->getUser());
         $em->flush();
 
         $messageBus->dispatch(new SortiePubliee($event->getId()));
@@ -224,22 +258,7 @@ class SortieController extends AbstractController
             'event_date' => date('d/m/Y', $event->getTsp()),
         ]);
 
-        foreach ($event->getParticipations() as $participation) {
-            if ($participation->getUser() === $event->getUser()) {
-                // mail already sent
-                continue;
-            }
-
-            $mailer->send($participation->getUser(), 'transactional/sortie-publiee-inscrit', [
-                'author_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'voir-profil/' . $event->getUser()->getId() . '.html',
-                'author_nickname' => $event->getUser()->getNickname(),
-                'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                'event_name' => $event->getTitre(),
-                'commission' => $event->getCommission()->getTitle(),
-                'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
-                'role' => $participation->getRole(),
-            ], [], null, $event->getUser()->getEmail());
-        }
+        $this->sendUpdateNotificationEmail($mailer, $event, $event->getTspCrea() === $event->getTspEdit());
 
         $this->addFlash('info', 'La sortie est publiée');
 
@@ -249,7 +268,7 @@ class SortieController extends AbstractController
     #[Route(name: 'sortie_update_inscription', path: '/sortie/{id}/update-inscriptions', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieUpdateInscriptions(#[CurrentUser] User $user, Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
     {
-        if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token'))) {
+        if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token_inscriptions'))) {
             $this->addFlash('error', 'Jeton de validation invalide.');
 
             return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
@@ -261,6 +280,15 @@ class SortieController extends AbstractController
             return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
         }
 
+        // reste-t-il assez de place ?
+        $nbJoinMax = $event->getNgensMax();
+        $currentParticipantNb = $event->getParticipationsCount();
+        $availableSpotNb = $nbJoinMax - $currentParticipantNb;
+        if ($availableSpotNb < 0) {
+            $availableSpotNb = 0;
+        }
+
+        $flush = true;
         foreach ($request->request->all('id_evt_join', []) as $participationId) {
             $status = $request->request->get('status_evt_join_' . $participationId);
             $role = $request->request->get('role_evt_join_' . $participationId);
@@ -298,11 +326,23 @@ class SortieController extends AbstractController
                 ->setLastchangeWho($user)
             ;
 
+            // reste-t-il assez de place ?
+            if (EventParticipation::STATUS_VALIDE === $status) {
+                ++$currentParticipantNb;
+            }
+            if ($currentParticipantNb > $nbJoinMax && EventParticipation::STATUS_VALIDE === $status) {
+                $this->addFlash('error', 'Vous ne pouvez pas valider plus de participants que de places disponibles (' . $availableSpotNb . '). Vous pouvez augmenter le nombre maximum de places pour ensuite rajouter des personnes.');
+                $flush = false;
+
+                // s'il n'y a plus de place, inutile de parcourir le reste, on sort de la boucle
+                break;
+            }
+
             if (!\in_array($status, [EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_REFUSE, EventParticipation::STATUS_ABSENT], true)) {
                 continue;
             }
 
-            if (($event->isFinished() && !\in_array($status, [EventParticipation::STATUS_ABSENT], true)) || 'on' === $request->request->get('disablemails')) {
+            if ($event->isFinished() && !\in_array($status, [EventParticipation::STATUS_ABSENT], true)) {
                 continue;
             }
 
@@ -364,7 +404,9 @@ class SortieController extends AbstractController
             $mailer->send($toMail, $template, $context, replyTo: $replyTo);
         }
 
-        $em->flush();
+        if ($flush) {
+            $em->flush();
+        }
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
@@ -380,7 +422,7 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
         }
 
-        $event->setStatus(Evt::STATUS_LEGAL_REFUSE)->setStatusWho($this->getUser());
+        $event->setStatus(Evt::STATUS_PUBLISHED_REFUSE)->setStatusWho($this->getUser());
         $em->flush();
 
         $mailer->send($event->getUser(), 'transactional/sortie-refusee', [
@@ -473,7 +515,7 @@ class SortieController extends AbstractController
     #[Route(name: 'contact_participants', path: '/sortie/{id}/contact-participants', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function contactParticipants(Request $request, Evt $event, Mailer $mailer)
     {
-        if (!$this->isCsrfTokenValid('contact_participants', $request->request->get('csrf_token'))) {
+        if (!$this->isCsrfTokenValid('contact_participants', $request->request->get('csrf_token_contact'))) {
             throw new BadRequestException('Jeton de validation invalide.');
         }
 
@@ -481,28 +523,24 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
         }
 
-        $status = $request->request->get('status_sendmail');
-        $status = ctype_digit($status) ? (int) $status : $status;
-
-        if (!\in_array($status, ['*', EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_ABSENT, EventParticipation::STATUS_NON_CONFIRME, EventParticipation::STATUS_REFUSE], true)) {
-            throw new BadRequestException(sprintf('Invalid status "%s".', $status));
-        }
-
+        $receivers = $request->request->all('contact_participant');
         $participations = $event
-            ->getParticipations(null, '*' === $status ? null : $status)
+            ->getParticipations(null, null)
+            ->filter(function ($participation) use ($receivers) {
+                return \in_array($participation->getId(), $receivers, false);
+            })
             ->map(fn (EventParticipation $participation) => $participation->getUser())
-            ->toArray();
+            ->toArray()
+        ;
 
         $replyToMode = $request->request->get('reply_to_option');
         $replyToAddresses = [];
         if ('everyone' === $replyToMode) {
             foreach ($event->getEncadrants() as $joined) {
                 $replyToAddresses[] = $joined->getUser()->getEmail();
-                $participations[] = $joined->getUser()->getEmail();
             }
         } elseif ('me_only' === $replyToMode) {
             $replyToAddresses = $this->getUser()->getEmail();
-            $participations[] = $this->getUser()->getEmail();
         }
 
         $mailer->send($participations, 'transactional/message-sortie', [
@@ -540,15 +578,21 @@ class SortieController extends AbstractController
         $user = $this->getUser();
 
         if ($participation->isStatusValide() || $participation->isStatusEnAttente()) {
-            $mailer->send($event->getUser(), 'transactional/sortie-desinscription', [
-                'username' => $participation->getUser()->getFirstname() . ' ' . $participation->getUser()->getLastname(),
-                'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                'event_name' => $event->getTitre(),
-                'commission' => $event->getCommission()->getTitle(),
-                'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
-                'user' => $user,
-                'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $user->getId() . '.html',
-            ], [], null, $user->getEmail());
+            // notifier les encadrants
+            $encadrants = $event->getEncadrants();
+            $reason = $request->request->get('cancel_reason') ?? '';
+            foreach ($encadrants as $encadrant) {
+                $mailer->send($encadrant->getUser(), 'transactional/sortie-desinscription', [
+                    'username' => $participation->getUser()->getFirstname() . ' ' . $participation->getUser()->getLastname(),
+                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'event_name' => $event->getTitre(),
+                    'commission' => $event->getCommission()->getTitle(),
+                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                    'reason_explanation' => $reason,
+                    'user' => $user,
+                    'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $user->getId() . '.html',
+                ], [], null, $user->getEmail());
+            }
         }
 
         $this->addFlash('info', 'La participation est annulée');
@@ -556,8 +600,8 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    #[Route(name: 'sortie_duplicate', path: '/sortie/{id}/duplicate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function sortieDuplicate(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
+    #[Route(path: '/sortie/{id}/duplicate/{mode}', name: 'sortie_duplicate', requirements: ['id' => '\d+', 'mode' => 'full|empty'], methods: ['POST'], priority: '10')]
+    public function sortieDuplicate(Request $request, Evt $event, EntityManagerInterface $em, string $mode = 'empty'): RedirectResponse
     {
         if (!$this->isGranted('SORTIE_DUPLICATE', $event)) {
             throw new AccessDeniedHttpException('Not allowed');
@@ -583,6 +627,7 @@ class SortieController extends AbstractController
             $event->getNgensMax()
         );
         $newEvent->setMassif($event->getMassif());
+        $newEvent->setPlace($event->getPlace());
         $newEvent->setTarif($event->getTarif());
         $newEvent->setTarifDetail($event->getTarifDetail());
         $newEvent->setDetailsCaches($event->getDetailsCaches());
@@ -595,17 +640,13 @@ class SortieController extends AbstractController
         $newEvent->setGroupe($event->getGroupe());
         $newEvent->setJoinStart(time());
 
-        $em->persist($newEvent);
-
-        foreach ($event->getParticipations() as $participation) {
-            if ($participation->getUser() === $newEvent->getUser()) {
-                continue;
+        if ('full' === $mode) {
+            foreach ($event->getParticipations() as $participation) {
+                $join = $newEvent->addParticipation($participation->getUser(), $participation->getRole(), $participation->getStatus());
+                $em->persist($join);
             }
-
-            $join = $newEvent->addParticipation($participation->getUser(), $participation->getRole(), $participation->getStatus());
-            $em->persist($join);
         }
-
+        $em->persist($newEvent);
         $em->flush();
 
         return $this->redirectToRoute('modifier_sortie', ['event' => $newEvent->getId()]);
@@ -625,16 +666,50 @@ class SortieController extends AbstractController
         require $this->getParameter('kernel.project_dir') . '/legacy/' . $path;
         $html = ob_get_clean();
 
-        return $pdfGenerator->generatePdf($html, $slugger->slug($event->getTitre()) . '.pdf');
+        return $pdfGenerator->generatePdf($html, $this->getFilename($event->getTitre(), $slugger) . '.pdf');
     }
 
     #[Route(name: 'sortie_xlsx', path: '/sortie/{id}/printXLSX', requirements: ['id' => '\d+'])]
-    public function generateXLSX(ExcelExport $excelExport, Evt $event, EventParticipationRepository $participationRepository): Response
+    public function generateXLSX(ExcelExport $excelExport, Evt $event, EventParticipationRepository $participationRepository, SluggerInterface $slugger): Response
     {
-        $datas = $participationRepository->getSortedParticipations($event);
+        $datas = $participationRepository->getSortedParticipations($event, null, EventParticipation::STATUS_VALIDE, true);
 
-        $rsm = [' ', 'PARTICIPANTS (PRÉNOM, NOM)', 'RÔLE', 'N°ADHÉRENT', 'AGE', "DATE D'ADHÉSION", 'TÉL.. PROFESSIONNEL', 'TÉL.. I.C.E', 'EMAIL'];
+        $rsm = [' ', 'PARTICIPANTS (PRÉNOM, NOM)', 'LICENCE', 'AGE', 'TÉL.', 'TÉL. SECOURS', 'EMAIL'];
 
-        return $excelExport->export(substr($event->getTitre(), 0, 3) . time(), $datas, $rsm);
+        return $excelExport->export(substr($slugger->slug($event->getTitre(), '-'), 0, 20), $datas, $rsm, $this->getFilename($event->getTitre(), $slugger));
+    }
+
+    protected function getFilename(string $eventTitle, SluggerInterface $slugger): string
+    {
+        return substr($slugger->slug($eventTitle, '-'), 0, 20) . '.' . date('Y-m-d.H-i-s');
+    }
+
+    protected function sendUpdateNotificationEmail(Mailer $mailer, ?Evt $event = null, bool $isNewEvent = true): void
+    {
+        foreach ($event->getParticipations() as $participation) {
+            if ($participation->getUser() === $event->getUser()) {
+                // mail already sent
+                continue;
+            }
+
+            if ($isNewEvent) {
+                $mailer->send($participation->getUser(), 'transactional/sortie-publiee-inscrit', [
+                    'author_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'voir-profil/' . $event->getUser()->getId() . '.html',
+                    'author_nickname' => $event->getUser()->getNickname(),
+                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'event_name' => $event->getTitre(),
+                    'commission' => $event->getCommission()->getTitle(),
+                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                    'role' => $participation->getRole(),
+                ], [], null, $event->getUser()->getEmail());
+            } else {
+                $mailer->send($participation->getUser(), 'transactional/sortie-modifiee', [
+                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'event_name' => $event->getTitre(),
+                    'commission' => $event->getCommission()->getTitle(),
+                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                ], [], null, $event->getUser()->getEmail());
+            }
+        }
     }
 }

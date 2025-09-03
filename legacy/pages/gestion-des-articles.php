@@ -1,6 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 $MAX_ARTICLES_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_VALIDATION');
 $notif_validerunarticle = 0;
@@ -15,15 +16,13 @@ if (allowed('article_validate_all')) { // pouvoir de valider les articles
     $tab = LegacyContainer::get('legacy_user_rights')->getCommissionListForRight('article_validate');
 
     $req = "SELECT COUNT(id_article)
-	FROM caf_commission c, caf_article a
+	FROM caf_article a
         LEFT JOIN caf_evt e ON (a.evt_article = e.id_evt)
-        LEFT JOIN caf_commission ce ON e.commission_evt = ce.id_commission
+        INNER JOIN caf_commission ce ON (e.commission_evt = ce.id_commission OR a.commission_article = ce.id_commission)
 	WHERE a.status_article=0
 	AND a.topubly_article=1
-	AND a.commission_article=c.id_commission
 	AND (
-	    c.code_commission IN ('" . implode("','", $tab) . "')
-	    OR (a.commission_article = -1 AND e.id_evt IS NOT NULL AND ce.code_commission IN ('" . implode("','", $tab) . "'))
+	    ce.code_commission IN ('" . implode("','", $tab) . "')
     )"; // condition OR pour toutes les commissions autorisées, et les compte-rendus de sorties (commission à -1) sur une commission ou j'ai acces
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -52,7 +51,8 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 					, id_user, nickname_user, lastname_user, firstname_user, code_commission, title_commission, media_upload_id, filename
 		FROM caf_article
 		LEFT JOIN media_upload ON caf_article.media_upload_id = media_upload.id
-		LEFT JOIN caf_commission ON (caf_commission.id_commission = caf_article.commission_article)
+        LEFT JOIN caf_evt e ON (caf_article.evt_article = e.id_evt)
+		INNER JOIN caf_commission ON (caf_commission.id_commission = caf_article.commission_article OR e.commission_evt = caf_commission.id_commission)
 		LEFT JOIN caf_user ON (caf_user.id_user = caf_article.user_article)
 		WHERE status_article=0
 	    AND topubly_article=1
@@ -65,15 +65,13 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
         // compte nb total articles
         $req = "SELECT COUNT(id_article)
-        FROM caf_commission c, caf_article a
+        FROM caf_article a
             LEFT JOIN caf_evt e ON (a.evt_article = e.id_evt)
-            LEFT JOIN caf_commission ce ON e.commission_evt = ce.id_commission
+            INNER JOIN caf_commission ce ON (e.commission_evt = ce.id_commission OR a.commission_article = ce.id_commission)
 		WHERE a.status_article=0
 	    AND a.topubly_article=1
-		AND a.commission_article = c.id_commission
 		AND (
-            c.code_commission IN ('" . implode("','", $tab) . "')
-            OR (a.commission_article = -1 AND e.id_evt IS NOT NULL AND ce.code_commission IN ('" . implode("','", $tab) . "'))
+            ce.code_commission IN ('" . implode("','", $tab) . "')
         ) "; // condition OR pour toutes les commissions autorisées
 
         $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -90,17 +88,17 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
         // articles à valider, selon la (les) commission dont nous sommes responsables
         $req = "SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
-					, id_user, nickname_user, lastname_user, firstname_user, c.code_commission, c.title_commission
-        FROM caf_commission c, caf_article a
+					, id_user, nickname_user, lastname_user, firstname_user, media_upload_id
+     , ce.code_commission, ce.title_commission, m.filename
+        FROM caf_article a
 		    LEFT JOIN caf_user u ON (u.id_user = a.user_article)
             LEFT JOIN caf_evt e ON (a.evt_article = e.id_evt)
-            LEFT JOIN caf_commission ce ON e.commission_evt = ce.id_commission
+            INNER JOIN caf_commission ce ON (e.commission_evt = ce.id_commission OR a.commission_article = ce.id_commission)
+            LEFT JOIN media_upload as m ON (a.media_upload_id = m.id)
 		WHERE status_article=0
         AND a.topubly_article = 1
-		AND a.commission_article = c.id_commission
 		AND (
-            c.code_commission IN ('" . implode("','", $tab) . "')
-            OR (a.commission_article = -1 AND e.id_evt IS NOT NULL AND ce.code_commission IN ('" . implode("','", $tab) . "'))
+            ce.code_commission IN ('" . implode("','", $tab) . "')
         ) " // condition OR pour toutes les commissions autorisées
         . 'AND u.id_user = a.user_article
 		ORDER BY topubly_article desc,  tsp_validate_article ASC
@@ -156,13 +154,13 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                         }
 
                         // type d'article : lié à l'id de la commission en fait
-                        if (0 == $article['commission_article']) {
-                            $type = 'Actualité du club (toutes les commissions)';
-                        } elseif (-1 == $article['commission_article']) {
+                        if (!empty($article['evt_article'])) {
                             $type = 'Compte rendu de sortie';
-                        } else {
+                        } elseif (!empty($article['commission_article'])) {
                             $type = 'Actualité « ' . $article['title_commission'] . ' »';
                         }
+
+                        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
 
                         // Aff
                         echo '<hr />'
@@ -170,7 +168,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                         . '<div class="article-tools-valid">'
 
                             // apercu
-                            . '<a class="nice2" href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
+                            . '<a class="nice2" href="' . $article_link . '" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
 
                         // Moderation
                         echo '
@@ -196,7 +194,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 							</div>';
                         echo '</div>'
 
-                            . '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">'
+                            . '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="' . $article_link . '" target="_blank">'
                                 // image liee
                                 . '<img src="' . $img . '" alt="" title="" style="width:100%; " />'
                             . '</a></div>'
@@ -204,7 +202,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                             // INFOS
                             . '<p style="padding:5px 5px; line-height:18px;">'
-                                . '<b><a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
+                                . '<b><a href="' . $article_link . '" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
                                 . '<b>Type d\'article :</b> ' . $type . '<br />'
                                 . '<span class="mini">Par ' . userlink($article['id_user'], $article['nickname_user']) . '</span> - '
                                 . '<span class="mini">Le ' . jour(date('N', $article['tsp_article']), 'short') . ' ' . date('d', $article['tsp_article']) . ' ' . mois(date('m', $article['tsp_article'])) . ' ' . date('Y', $article['tsp_article']) . ' à ' . date('H:i', $article['tsp_article']) . '<br />'
@@ -240,17 +238,19 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                             $type = 'Actualité « ' . $article['title_commission'] . ' »';
                         }
 
+                        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
+
                         // Aff
                         echo '<hr />'
                         // Boutons
                         . '<div class="article-tools-valid">'
 
                             // apercu
-                            . '<a class="nice2" href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
+                            . '<a class="nice2" href="' . $article_link . '" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">Aperçu</a> ';
 
                         // edition
                         if (allowed('article_edit_notmine') || allowed('article_edit', 'commission:' . $article['commission_article'])) {
-                            echo '<a href="/article/' . (int) $article['id_article'] . '/edit" title="" class="nice2 orange">
+                            echo '<a href="' . LegacyContainer::get('legacy_router')->generate('article_edit', ['id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL) . '" title="" class="nice2 orange">
 									Modifier
 								</a>';
                         }
@@ -273,7 +273,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                         echo '</div>';
 
-                        echo '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">'
+                        echo '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="' . $article_link . '" target="_blank">'
                                 // image liee
                                 . '<img src="' . $img . '" alt="" title="" style="width:100%; " />'
                             . '</a></div>'
@@ -281,7 +281,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                             // INFOS
                             . '<p style="padding:5px 5px; line-height:18px;">'
-                                . '<b><a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
+                                . '<b><a href="' . $article_link . '" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
                                 . '<b>Type d\'article :</b> ' . $type . '<br />'
                                 . '<span class="mini">Par ' . userlink($article['id_user'], $article['nickname_user']) . '</span> - '
                                 . '<span class="mini">Le ' . jour(date('N', $article['tsp_article']), 'short') . ' ' . date('d', $article['tsp_article']) . ' ' . mois(date('m', $article['tsp_article'])) . ' ' . date('Y', $article['tsp_article']) . ' à ' . date('H:i', $article['tsp_article']) . '<br />'

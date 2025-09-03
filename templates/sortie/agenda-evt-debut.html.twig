@@ -30,6 +30,9 @@
             {% if event.massif %}
                 - <b>{{ event.massif }}</b>
             {% endif %}
+            {% if event.place %}
+                - <b>{{ event.place }}</b>
+            {% endif %}
             {% if my_status %}
                 - Votre rôle : <b>{{ my_status.role }}</b>
             {% endif %}

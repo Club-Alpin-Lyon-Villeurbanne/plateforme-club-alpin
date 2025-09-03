@@ -35,6 +35,7 @@ export default defineConfig({
         "admin-login": "./assets/styles/loginadmin.css",
         participants: './assets/participants.js',
         commission_switch: './assets/commission-switch.js',
+        autocomplete_communes: './assets/autocomplete-communes.js',
       },
     },
   },

@@ -11,6 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Comment
 {
+    public const string ARTICLE_TYPE = 'article';
+
     /**
      * @var int
      */

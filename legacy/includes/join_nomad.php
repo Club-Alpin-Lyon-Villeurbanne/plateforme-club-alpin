@@ -90,7 +90,7 @@ if (user()) {
 
 
 			<div class="tiers clear">
-				<b>Numéro de licence CAF :</b><br />
+				<b>Numéro de licence FFCAM :</b><br />
 				<input type="text" name="cafnum_user" class="type1" value="<?php echo inputVal('cafnum_user', ''); ?>" placeholder="Requis" style="width:90%" />
 			</div>
 

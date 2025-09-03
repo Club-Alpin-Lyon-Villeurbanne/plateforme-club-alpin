@@ -24,6 +24,14 @@ class UserAttr
     public const SALARIE = 'salarie';
     public const BENEVOLE = 'benevole';
     public const COENCADRANT = 'coencadrant';
+    public const array COMMISSION_RELATED = [
+        self::RESPONSABLE_COMMISSION,
+        self::BENEVOLE,
+        self::ENCADRANT,
+        self::STAGIAIRE,
+        self::COENCADRANT,
+        self::REDACTEUR,
+    ];
 
     /**
      * @var int
@@ -126,5 +134,17 @@ class UserAttr
     public function getCommission()
     {
         return \array_slice(explode(':', $this->getParams()), -1)[0];
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription($description): self
+    {
+        $this->description = $description;
+
+        return $this;
     }
 }

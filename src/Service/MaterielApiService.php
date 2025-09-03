@@ -148,6 +148,9 @@ class MaterielApiService
                     'pseudo' => $pseudo,
                 ]);
 
+                // Mettre à jour les droits utilisateur pour permettre l'accès au planning
+                $this->updateUserGroup($userData['id']);
+
                 // Mettre à jour le statut dans la base de données locale
                 $user->setMaterielAccountCreatedAt(new \DateTime());
                 $this->entityManager->persist($user);
@@ -170,6 +173,52 @@ class MaterielApiService
                 'error' => $e->getMessage(),
             ]);
             throw new \RuntimeException('Failed to create beneficiary: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Mettre à jour le groupe d'un utilisateur pour lui donner accès au planning.
+     */
+    private function updateUserGroup(int $userId): void
+    {
+        if (!$this->jwtToken) {
+            $this->authenticate();
+        }
+
+        try {
+            $this->logger->info('Mise à jour des droits utilisateur', [
+                'userId' => $userId,
+            ]);
+
+            $response = $this->client->request('PUT', $this->apiBaseUrl . '/api/users/' . $userId, [
+                'headers' => [
+                    'accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . $this->jwtToken,
+                ],
+                'json' => [
+                    'group' => 'readonly-planning-self',
+                ],
+            ]);
+
+            $statusCode = $response->getStatusCode();
+
+            if (Response::HTTP_OK === $statusCode) {
+                $this->logger->info('Droits utilisateur mis à jour avec succès', [
+                    'userId' => $userId,
+                    'group' => 'readonly-planning-self',
+                ]);
+            } else {
+                $this->logger->error('Échec de la mise à jour des droits utilisateur', [
+                    'statusCode' => $statusCode,
+                    'response' => $response->getContent(false),
+                ]);
+                throw new \RuntimeException('Failed to update user group: ' . $response->getContent(false));
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Erreur lors de la mise à jour des droits utilisateur', [
+                'error' => $e->getMessage(),
+            ]);
+            throw new \RuntimeException('Failed to update user group: ' . $e->getMessage());
         }
     }
 

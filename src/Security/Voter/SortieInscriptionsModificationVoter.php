@@ -66,9 +66,9 @@ class SortieInscriptionsModificationVoter extends Voter
         if (
             (
                 $this->userRights->allowed('evt_join_notme')
-                || $this->userRights->allowed('evt_unjoin_notme')
-                || $this->userRights->allowed('evt_joining_accept')
-                || $this->userRights->allowed('evt_joining_refuse')
+                || $this->userRights->allowedOnCommission('evt_unjoin_notme', $subject->getCommission())
+                || $this->userRights->allowedOnCommission('evt_joining_accept', $subject->getCommission())
+                || $this->userRights->allowedOnCommission('evt_joining_refuse', $subject->getCommission())
             ) && $user->hasAttribute(UserAttr::RESPONSABLE_COMMISSION, $subject->getCommission())
         ) {
             return true;

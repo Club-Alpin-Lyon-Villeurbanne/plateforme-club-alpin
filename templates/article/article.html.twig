@@ -1,0 +1,211 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ article.titre }}{% endblock %}
+
+{% block body %}
+    <article id="fiche-article">
+        {% if article.mediaUpload is defined %}
+            <img src="{{ media_thumbnail(article.mediaUpload, 'wide_thumbnail') }}" alt="image article" title="{{ article.titre }}" class="wide-figure" />
+        {% endif %}
+        <div class="titleimage">
+            <h1>
+                {{ article.titre }}
+            </h1>
+            <div class="article-title-infos">
+                {% if article.commission %}
+                    <div class="article-title-commission">{{ article.commission.title }}</div>
+                {% elseif article.evt and article.evt.commission %}
+                    <div class="article-title-commission">{{ article.evt.commission.title }}</div>
+                {% endif %}
+                <div class="article-title-author">
+                    Rédigé par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.user.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.user.nickname }}</a>
+                    le {{ article.tspCrea|date('d/m/Y') }}<br>
+                    {% if article.lastEditWho %}
+                        Modifié par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.lastEditWho.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.lastEditWho.nickname }}</a>
+                        le {{ article.tspLastedit|date('d/m/Y') }}<br>
+                    {% endif %}
+                    {% if article.status is same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) and article.statusWho %}
+                        Publié par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.statusWho.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.statusWho.nickname }}</a>
+                        {% if article.tspValidate %}
+                            le {{ article.tspValidate|date('d/m/Y') }}
+                        {% endif %}
+                        <br>
+                    {% endif %}
+                    <a href="{{ article_url }}#comments">{{ comments|length }} commentaire{% if comments|length > 1 %}s{% endif %}</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="cont_article"><br />
+            {% if article.status is not same as (constant('App\\Entity\\Article::STATUS_PUBLISHED'))
+                or (
+                    article.commission and allowed('article_delete_notmine', 'commission:' ~ article.commission.code)
+                    or article.commission and allowed('article_edit_notmine', 'commission:' ~ article.commission.code)
+                    or allowed('article_delete') and app.user and article.user is same as (app.user)
+                    or allowed('article_edit') and app.user and article.user is same as (app.user)
+                )
+                and article.status is same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) %}
+                <div class="alerte noprint">
+            {% endif %}
+
+            {% if article.topubly is not same as (1) and article.status is not same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) %}
+                <b>Note :</b> Cet article est en cours de rédaction par <b><a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.user.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.user.nickname }}</a></b>. La publication n'a pas encore été demandée.<br />
+            {% elseif article.status is not same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) %}
+                <b>Note :</b> Cet article n'est pas publié sur le site. Si vous voyez ce message apparaître, c'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n'ont pas accès aux informations ci-dessous.<br />
+
+                {% if (article.commission and allowed('article_validate', 'commission:' ~ article.commission.code) or allowed('article_validate_all')) %}
+                    <form action="{{ article_url }}" method="post" style="display:inline" class="loading">
+                        <input type="hidden" name="operation" value="article_validate" />
+                        <input type="hidden" name="status_article" value="1" />
+                        <input type="hidden" name="id_article" value="{{ article.id }}" />
+                        <input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de l'article" />
+                    </form>
+
+                    <input type="button" value="Refuser" class="nice2 red" onclick="$.fancybox($(this).next().html())" title="Ne pas autoriser la publication de cet article. Vous devrez ajouter un message au rédacteur de l'article." />
+                    <div style="display:none" id="refuser-{{ article.id }}">
+                        <form action="{{ article_url }}" method="post" class="loading">
+                            <input type="hidden" name="operation" value="article_validate" />
+                            <input type="hidden" name="status_article" value="2" />
+                            <input type="hidden" name="id_article" value="{{ article.id }}" />
+
+                            <p>Laissez un message à l'auteur pour lui expliquer la raison du refus :</p>
+                            <input type="text" name="msg" class="type1" placeholder="ex : Décocher &laquo;A la Une&raquo;" />
+                            <input type="submit" value="Refuser la publication" class="nice2 red" />
+                            <input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
+                        </form>
+                    </div><br />
+                {% endif %}
+            {% endif %}
+
+            {% if (article.commission and allowed('article_delete_notmine', 'commission:' ~ article.commission.code)
+                or article.commission and allowed('article_edit_notmine', 'commission:' ~ article.commission.code)
+                or allowed('article_delete') and app.user and article.user is same as (app.user)
+                or allowed('article_edit') and app.user and article.user is same as (app.user))
+                and article.status is same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) %}
+                    <b>Note :</b> Cet article est publié (par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.statusWho.id }}&amp;id_article={{ article.id }}" class="fancyframe">{{ article.statusWho.nickname }}</a> le {{ article.tspValidate|date('d/m/Y') }}) sur le site et visible par les adhérents !<br />
+            {% endif %}
+
+            {% if article.commission and allowed('article_edit_notmine', 'commission:' ~ article.commission.code)
+                or allowed('article_edit') and app.user and article.user is same as (app.user) %}
+                    <a href="{{ path('article_edit', {'id': article.id}) }}" title="" class="nice2 orange">
+                        <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cet article
+                    </a>
+            {% endif %}
+                    
+            {% if article.status is not same as (constant('App\\Entity\\Article::STATUS_PUBLISHED'))
+                and (article.commission and allowed('article_delete_notmine', 'commission:' ~ article.commission.code)
+                or allowed('article_delete') and app.user and article.user is same as (app.user)) %}
+                <a href="javascript:$.fancybox($('#supprimer-form-{{ article.id }}').html());" title="" class="nice2 red">
+                    <img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cet article
+                </a>
+                <div id="supprimer-form-{{ article.id }}" style="display:none">
+                    <form action="{{ article_url }}" method="post" style="width:600px; text-align:left">
+                        <input type="hidden" name="operation" value="article_del" />
+                        <input type="hidden" name="id_article" value="{{ article.id }}" />
+                        <p>Voulez-vous vraiment supprimer définitivement cet article ? <br />Cette action est irréversible.</p>
+                        <input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
+                        <input type="submit" class="nice2 red" value="Supprimer cet article" />
+                    </form>
+                </div>
+            {% elseif allowed('article_validate_all')
+                or article.commission and allowed('article_validate', 'commission:' ~ article.commission.code)
+                or allowed('article_edit') and app.user and article.user is same as (app.user) %}
+                <a href="javascript:$.fancybox($('#depublier-form-{{ article.id }}').html());" title="" class="nice2 red" id="button-depublier">
+                    <img src="/img/base/pencil_delete.png" alt="" title="" style="" />&nbsp;&nbsp;Dépublier
+                </a>
+                <div id="depublier-form-{{ article.id }}" style="display:none">
+                    <form action="{{ article_url }}" method="post" style="width:600px; text-align:left">
+                        <input type="hidden" name="operation" value="article_depublier" />
+                        <input type="hidden" name="id_article" value="{{ article.id }}" />
+                        <p>Voulez-vous vraiment retirer cet article du site ? Il repassera en "Brouillon" et vous devrez à nouveau
+                            le faire publier par un responsable si vous désirez le publier à nouveau.</p>
+
+                        <input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
+                        <input type="submit" class="nice2 orange" value="Dépublier mon article" />
+                    </form>
+                </div>
+            {% endif %}
+                    
+            {% if allowed('article_validate_all') and article.status is same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) %}
+                <a id="renew_date_article" href="javascript:do_renew_date_article('{{ article.id }}');" class="nice2 green">
+                    <img src="/img/base/arrow_refresh_small.png" alt="" title="" style="" />&nbsp;&nbsp;Remonter en tête
+                </a>
+            {% endif %}
+
+            {% if article.status is not same as (constant('App\\Entity\\Article::STATUS_PUBLISHED'))
+                or (
+                    article.commission and allowed('article_delete_notmine', 'commission:' ~ article.commission.code)
+                    or article.commission and allowed('article_edit_notmine', 'commission:' ~ article.commission.code)
+                    or allowed('article_delete') and app.user and article.user is same as (app.user)
+                    or allowed('article_edit') and app.user and article.user is same as (app.user)
+                )
+                and article.status is same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) %}
+                </div>
+                <br>
+            {% endif %}
+
+            {% if article.evt %}
+                <p class="italic">
+                    📋 Ceci est un compte-rendu de la sortie &laquo; <a href="{{ event_url }}" title="Voir la sortie liée à cet article : &laquo; {{ article.evt.titre }} &raquo;">
+                        {{ article.evt.titre }}
+                    </a> &raquo;
+                </p>
+            {% endif %}
+            {{ article.cont|raw }}
+        </div>
+
+        {% if article.status is same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) %}
+            <aside>
+                <!-- partage -->
+                <hr />
+                <h2 class="share-h2">Pour partager cet article :</h2>
+                <div class="sharebox">
+                    <div>
+                        <a target="_blank" title="Twitter" href="https://twitter.com/share?url={{ article_url }}&text={{ article.titre }}&via=Club Alpin Français" rel="nofollow" onclick="window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;"><img width="30" height="30" src="/img/social/twitter.png" alt="Twitter" /></a>
+                        <a target="_blank" title="Facebook" href="https://www.facebook.com/sharer.php?u={{ article_url }}&t={{ article.titre }}" rel="nofollow" onclick="window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=500,width=700');return false;"><img width="30" height="30" src="/img/social/facebook.png" alt="Facebook" /></a>
+                        <a target="_blank" title="Envoyer par mail" href="mailto:?subject=Article : {{ article.titre }}&body={{ article_url }}" rel="nofollow"><img width="30" height="30" src="/img/social/email-blue.png" alt="email" /></a>
+                    </div>
+                </div>
+
+
+                <!-- commentaires -->
+                <hr id="comments" />
+                <h2 class="comments-h2"><span>{{ comments|length }}</span> Commentaires</h2>
+                <br />
+                {% include 'components/add-comment.html.twig' with {'article': article, 'article_url': article_url} %}
+
+                {% for comment in comments %}
+                    {% include 'components/comment.html.twig' with {'comment': comment} %}
+                {% endfor %}
+
+            </aside>
+        {% endif %}
+    </article>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        function do_renew_date_article (articleId) {
+            $.ajax({
+                type: "POST",
+                dataType : "json",
+                url: "/?ajx=operations",
+                data: { operation: "renew_date_article", id_article: articleId },
+                success: function(jsonMsg){
+                    if(jsonMsg.success){
+                        $.fancybox('<p class="info">'+jsonMsg.successmsg+'</p>');
+                    }
+                    else{
+                        $.fancybox('<p class="erreur">Erreur : <br />'+(jsonMsg.error).join(',<br />')+'</p>');
+                    }
+                }
+            });
+        };
+    </script>
+{% endblock %}
+
+{% block og_markup %}
+    <meta property="og:title" content="{{ article.titre }}" />
+    <meta property="og:image" content="{{ media_thumbnail(article.mediaUpload, 'wide_thumbnail') }}" />
+    <meta property="og:description" content="{{ article.cont|striptags|slice(0, 200) ~ '...' }}" />
+{% endblock %}

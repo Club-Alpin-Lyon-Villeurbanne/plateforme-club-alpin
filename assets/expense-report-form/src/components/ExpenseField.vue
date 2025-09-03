@@ -21,6 +21,7 @@ import { useAttachments } from "../composables/useAttachment";
 import { ExpenseReportKey } from "../composables/useExpenseReport";
 import { useRequiredAttachmentFields } from "../composables/useRequiredAttachmentFields";
 import { useField } from "vee-validate";
+import config from "../config/expense-reports.json";
 
 interface Props {
   name: string;
@@ -56,7 +57,7 @@ const handleFileChanged = async (file: File) => {
     }
 
     const response = await axios.post(
-      `/expense-reports/${expenseReport.value.id}/attachments`,
+      `${config.endpoints.notesDeFrais}/${expenseReport.value.id}/pieces-jointes`,
       formData,
       {
         headers: {

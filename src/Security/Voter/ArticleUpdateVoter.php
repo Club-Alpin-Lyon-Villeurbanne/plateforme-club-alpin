@@ -33,15 +33,15 @@ class ArticleUpdateVoter extends Voter
         if (!$subject instanceof Article) {
             throw new \InvalidArgumentException(sprintf('The voter "%s" requires an article subject', __CLASS__));
         }
+        $commission = $subject->getCommission();
+        if (null === $commission && $subject->getEvt()) {
+            $commission = $subject->getEvt()->getCommission();
+        }
 
-        if ($subject->getUser() === $user) {
+        if ($subject->getUser() === $user && $this->userRights->allowed('article_edit')) {
             return true;
         }
 
-        if ($this->userRights->allowed('article_edit_notmine')) {
-            return true;
-        }
-
-        return $this->userRights->allowedOnCommission('article_edit', $subject->getCommission());
+        return $this->userRights->allowedOnCommission('article_edit_notmine', $commission);
     }
 }

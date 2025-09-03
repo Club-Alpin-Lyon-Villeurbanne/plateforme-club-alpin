@@ -224,7 +224,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     if (is_array($userTab['articles'])) {
         $rowValue = [];
         foreach ($userTab['articles'] as $article) {
-            $rowValue[] = '<a href="/article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html?forceshow=true" target="_blank">' . date('d.m.Y', $article['tsp_validate_article']) . ' - ' . $article['titre_article'] . '</a>';
+            $rowValue[] = '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . date('d.m.Y', $article['tsp_validate_article']) . ' - ' . $article['titre_article'] . '</a>';
         }
         printTableRow('Articles :', '<font size="-1" >' . implode('<br />', $rowValue) . '</font>');
     }

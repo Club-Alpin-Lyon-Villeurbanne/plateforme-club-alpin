@@ -3,12 +3,17 @@
 namespace App\Controller;
 
 use App\Repository\ArticleRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 class LegacyController extends AbstractController
 {
+    public function __construct(protected ManagerRegistry $registry)
+    {
+    }
+
     #[Route(path: '/', name: 'legacy_root', methods: ['GET', 'POST'])]
     public function rootAction(): StreamedResponse
     {
@@ -108,5 +113,10 @@ class LegacyController extends AbstractController
                 ob_end_flush();
             }
         );
+    }
+
+    public function getRegistry(): ManagerRegistry
+    {
+        return $this->registry;
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 $MAX_ARTICLES_ACCUEIL = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_ACCUEIL');
 $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
@@ -32,19 +33,20 @@ if ($pagenum < 1) {
 } // les pages commencent à 1
 
 // premiere requete : défaut, ne considère pas les articles liés à une sortie, liée à la commission courante
-$select = 'id_article , status_article ,  status_who_article ,  tsp_article ,  user_article ,  titre_article ,  code_article ,  commission_article ,  evt_article ,  une_article ,  cont_article , media_upload_id, filename';
+$select = 'id_article , status_article ,  status_who_article ,  tsp_article ,  user_article ,  titre_article ,  code_article ,  evt_article ,  une_article ,  cont_article , media_upload_id, filename, c.code_commission, c.title_commission';
 $req = 'SELECT SQL_CALC_FOUND_ROWS ' . $select . '
 	FROM  caf_article
+    LEFT JOIN caf_evt as e ON (e.id_evt = caf_article.evt_article)
+    INNER JOIN caf_commission as c ON ((e.commission_evt = c.id_commission OR caf_article.commission_article = c.id_commission) ';
+if ($current_commission) {
+    $req .= ' AND c.id_commission = ' . (int) $comTab[$current_commission]['id_commission'];
+}
+$req .= ')
 	LEFT JOIN media_upload m ON caf_article.media_upload_id = m.id
 	WHERE  status_article =1
 	';
-
-if ($current_commission) {
-    // .($current_commission?" AND (commission_article = ".intval($comTab[$current_commission]['id_commission'])." OR commission_article = 0) ":'')
-    $req .= ' AND ((commission_article = 0 AND DATEDIFF(NOW(), tsp_lastedit)<30)
-			OR
-			(commission_article = ' . (int) $comTab[$current_commission]['id_commission'] . ')
-		) ';
+if (!$current_commission) {
+    $req .= ' AND DATEDIFF(NOW(), tsp_lastedit)<30 ';
 }
 // commission donnée : filtre (mais on inclut les actus club, commission=0)
 $req .= ' ORDER BY  tsp_validate_article DESC
@@ -57,17 +59,6 @@ $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
 $nbrPages = ceil($total / $limite);
 
 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-    // info de la commission liée
-    if ($handle['commission_article'] > 0) {
-        $req = 'SELECT * FROM caf_commission
-			WHERE id_commission = ' . (int) $handle['commission_article'] . '
-			LIMIT 1';
-        $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-        while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-            $handle['commission'] = $handle2;
-        }
-    }
-
     // info de la sortie liée && de la commission liée à la sortie liée (simple ou pas ?)
     if ($handle['evt_article'] > 0) {
         $req = 'SELECT
@@ -138,7 +129,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                         $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'wide_thumbnail');
                     }
 
-                    echo '<a href="/article/' . html_utf8($article['code_article'] . '-' . $article['id_article']) . '.html" class="slide" style="background-image:url(' . $img . ')" title="CLIQUEZ POUR VOIR L\'ARTICLE">
+                    echo '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL) . '" class="slide" style="background-image:url(' . $img . ')" title="CLIQUEZ POUR VOIR L\'ARTICLE">
                         <div class="bandeau-slider">
                             <p class="alaune">ARTICLE A LA UNE</p>
                             <h2>' . html_utf8($article['titre_article']) . '</h2>

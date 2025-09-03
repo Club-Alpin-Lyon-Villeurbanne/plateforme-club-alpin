@@ -10,7 +10,7 @@
         Il(elle) vient d'annuler sa participation.
     </p>
     <p>
-        Plus d'infos :
+        Plus d'infos : {{ reason_explanation }}
     </p>
     <ul>
         <li><b>Pseudo : </b> <a href="{{ profile_url }}">{{ user.nickname }}</a></li>
@@ -22,7 +22,7 @@
     {{ username }} était inscrit(e) ou en attente pour la sortie {{ event_name }} ({{ event_url }}).
     Il(elle) vient d'annuler sa participation.
 
-    Plus d'infos :
+    Plus d'infos : {{ reason_explanation }}
       - Pseudo : {{ user.nickname }}
       - Email : {{ user.email }}
       - Profil : {{ profile_url }}

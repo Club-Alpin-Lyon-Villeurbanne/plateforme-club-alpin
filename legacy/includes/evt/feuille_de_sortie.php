@@ -22,8 +22,10 @@ if (isGranted(SecurityConstants::ROLE_ADMIN)
         || (user() && getUser()->hasAttribute(UserAttr::SALARIE))
         || (
             (
-                allowed('evt_join_notme') || allowed('evt_unjoin_notme')
-                || allowed('evt_joining_accept') || allowed('evt_joining_refuse')
+                allowed('evt_join_notme')
+                || allowed('evt_unjoin_notme', 'commission:' . $evt['code_commission'])
+                || allowed('evt_joining_accept', 'commission:' . $evt['code_commission'])
+                || allowed('evt_joining_refuse', 'commission:' . $evt['code_commission'])
             ) && (
                 user() && getUser()->hasAttribute(UserAttr::RESPONSABLE_COMMISSION, $evt['code_commission'])
             )
@@ -86,7 +88,7 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
                         </tr>
                         <?php foreach ($president as $p) { ?>
                             <tr>
-                                <td><?php echo html_utf8(strtoupper($p['lastname_user']) . ', ' . ucfirst(strtolower($p['firstname_user']))); ?></td>
+                                <td><?php echo html_utf8(ucfirst(strtolower($p['firstname_user']) . ' ' . strtoupper($p['lastname_user']))); ?></td>
                                 <th>TEL</th>
                                 <td><?php
                                 if (!empty($p['tel_user'])) {
@@ -106,7 +108,7 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
                         </tr>
                         <?php foreach ($vicepresident as $vp) { ?>
                             <tr>
-                                <td><?php echo html_utf8(strtoupper($vp['lastname_user']) . ', ' . ucfirst(strtolower($vp['firstname_user']))); ?></td>
+                                <td><?php echo html_utf8(ucfirst(strtolower($vp['firstname_user']) . ' ' . strtoupper($vp['lastname_user']))); ?></td>
                                 <th>TEL</th>
                                 <td><?php
                             if (!empty($vp['tel_user'])) {

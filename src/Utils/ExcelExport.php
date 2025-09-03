@@ -2,6 +2,8 @@
 
 namespace App\Utils;
 
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,7 +40,7 @@ class ExcelExport
         return $date->diff($now)->y;
     }
 
-    public function export(string $title, $datas, $rsm): Response
+    public function export(string $title, $datas, $rsm, string $filename): Response
     {
         $streamedResponse = new StreamedResponse();
 
@@ -51,6 +53,17 @@ class ExcelExport
             $count = 1;
             $sheet->fromArray($rsm, null, 'A' . $count++);
 
+            // type des données
+            $types = [
+                DataType::TYPE_NUMERIC,
+                DataType::TYPE_STRING,
+                DataType::TYPE_STRING,
+                DataType::TYPE_STRING,
+                DataType::TYPE_STRING,
+                DataType::TYPE_STRING,
+                DataType::TYPE_STRING,
+            ];
+
             // Génération des données
             foreach ($datas as $data) {
                 $user = $data['liste']->getUser();
@@ -59,16 +72,29 @@ class ExcelExport
                 $array = [
                     $count - 1,
                     $name,
-                    $data['liste']->getRole() ?? ' ',
                     $user->getCafnum() ?? ' ',
                     $user->getBirthday() ? $this->getYearsSinceDate($user->getBirthday()) : ' ',
-                    $user->getDateAdhesion() ?? ' ',
                     $user->getTel() ? preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $user->getTel()) : ' ',
                     $user->getTel2() ? preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $user->getTel2()) : ' ',
                     $user->getEmail() ?? ' ',
                 ];
 
-                $sheet->fromArray($array, null, 'A' . $count);
+                $startCell = 'A' . $count;
+                if (!\is_array(end($array))) {
+                    $array = [$array];
+                }
+                [$startColumn, $startRow] = Coordinate::coordinateFromString($startCell);
+
+                foreach ($array as $rowData) {
+                    $currentColumn = $startColumn;
+                    foreach ($rowData as $cellKey => $cellValue) {
+                        if (null != $cellValue) {
+                            $sheet->getCell($currentColumn . $startRow)->setValueExplicit($cellValue, $types[$cellKey]);
+                        }
+                        ++$currentColumn;
+                    }
+                    ++$startRow;
+                }
                 ++$count;
             }
 
@@ -78,7 +104,7 @@ class ExcelExport
 
         // Configuration des headers
         $streamedResponse->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $streamedResponse->headers->set('Content-Disposition', 'attachment; filename="' . $title . '.xlsx"');
+        $streamedResponse->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '.xlsx"');
 
         return $streamedResponse;
     }

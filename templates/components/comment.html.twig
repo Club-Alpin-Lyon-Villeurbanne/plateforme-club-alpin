@@ -1,0 +1,27 @@
+<div class="comment">
+    <div class="left">
+        <img src="{{ user_image(comment.user, 'pic') }}" alt="Profil" title="{{ comment.user.nickname }}" />
+    </div>
+    <div class="right">
+        {% if (app.user and comment.user is same as (app.user) or allowed('comment_delete_any')) %}
+            <a href="/includer.php?p=includes/comment-del.php&amp;id_comment={{ comment.id }}" title="Supprimer ce commentaire" style="float:right" class="fancyframe">
+                <img src="/img/base/delete.png" alt="SUPPR" title="" />
+            </a>
+        {% endif %}
+        <p>
+            {% if comment.user %}
+                <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ comment.user.id }}" class="fancyframe userlink">{{ comment.user.nickname }}</a>
+            {% else %}
+                {{ comment.name }}
+            {% endif %}
+            <span class="mini" style="font-size:9px">
+                &nbsp;&nbsp;&nbsp;
+                le {{ comment.tsp|intldate('d MMMM YYYY') }}
+            </span>
+        </p>
+        <p class="cont_comment">
+            {{ comment.cont }}
+        </p>
+    </div>
+    <br style="clear:both" />
+</div>

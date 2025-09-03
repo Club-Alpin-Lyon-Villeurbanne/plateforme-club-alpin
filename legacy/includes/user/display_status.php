@@ -1,21 +1,36 @@
-<h3>Gestion du club :</h3>
+<h3>Responsabilité dans le club :</h3>
 <ul class="nice-list">
     <?php
-    foreach ($tmpUser['statuts']['club'] as $status) {
-        echo '<li style="">' . $status . '</li>';
+    if (!empty($tmpUser['statuts']['club'])) {
+        foreach ($tmpUser['statuts']['club'] as $statusInfos) {
+            echo '<li>' . $statusInfos['title'];
+            if (!empty($statusInfos['desc'])) {
+                echo ' <img src="/img/base/info.png" title="' . $statusInfos['desc'] . '" />';
+            }
+            echo '</li>';
+        }
+    } else {
+        echo '<li>N/A</li>';
     } ?>
 </ul>
 <br style="clear:left;" />
 
-<h3>Commissions :</h3>
+<h3>Responsabilité dans les commissions :</h3>
 <ul class="nice-list">
     <?php
-    foreach ($tmpUser['statuts']['commissions'] as $status => $commissions) {
-        echo '<li style="">' . $status;
-        if (!empty($commissions) && is_array($commissions)) {
-            echo ' : ' . $commissions[0];
+    if (!empty($tmpUser['statuts']['commissions'])) {
+        foreach ($tmpUser['statuts']['commissions'] as $commission => $statuses) {
+            echo '<li>' . $commission;
+            if (!empty($statuses) && is_array($statuses)) {
+                echo ' : ' . $statuses[0]['title'];
+                if (!empty($statuses[0]['desc'])) {
+                    echo ' <img src="/img/base/info.png" title="' . $statuses[0]['desc'] . '" />';
+                }
+            }
+            echo '</li>';
         }
-        echo '</li>';
+    } else {
+        echo '<li>N/A</li>';
     } ?>
 </ul>
 <br style="clear:left;" />

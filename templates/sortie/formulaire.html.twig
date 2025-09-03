@@ -13,20 +13,19 @@
             attr: {class: 'padded-form', 'id': 'event_form'}
         }) }}
 
-        {% if is_update and event.status is same as (1) %}
-            <p class="alerte">Attention : si vous modifiez cette sortie, elle devra à nouveau être validée par un responsable avant d'être affichée sur le site !</p><br />
-        {% endif %}
-
-        <span class="italic">Les champs marqués d'un <span class="required">*</span> sont obligatoires.</span><br>
+        <p class="italic">
+            Les champs marqués d'un <span class="required">*</span> sont obligatoires.
+            <br>Les champs marqués d'un <span class="revalidation">*</span> demanderont une réapprobation de la sortie par un responsable de commission si vous les modifiez.
+        </p>
 
         {% if form.vars.errors|length > 0 %}
             <br>
             <div class="alerte has-errors">
                 Le formulaire contient des erreurs, merci de vérifier votre saisie.<br><br>
                 <ul>
-                {% for error in form.vars.errors %}
-                    <li>{{ error.message }}</li>
-                {% endfor %}
+                    {% for error in form.vars.errors %}
+                        <li>{{ error.message }}</li>
+                    {% endfor %}
                 </ul>
             </div>
         {% endif %}
@@ -44,9 +43,6 @@
             {{ form_row(form.titre) }}
         </div>
         <br style="clear:both" /><br>
-        <div id="groupe">
-            {{ form_macros.display_group_form_field(form.groupe) }}
-        </div>
 
         <div id="individus">
             {{ form_macros.display_encadrement(form, is_update) }}
@@ -54,8 +50,6 @@
 
         <h2 class="clear trigger-h2">Informations :</h2>
         <div class="trigger-me">
-            {{ form_row(form.massif) }}<br />
-
             <div style="float:left; width:45%; padding:0 20px 5px 0;">
                 {{ form_row(form.rdv) }}
                 {{ form_row(form.lat) }}
@@ -82,6 +76,9 @@
                 {{ form_row(form.eventEndDate) }}
             </div>
             <br style="clear:both" />
+
+            {{ form_row(form.place) }}
+            <ul id="place_suggestions"></ul>
         </div>
 
         <h2 class="trigger-h2">Tarif :</h2>
@@ -109,6 +106,14 @@
             </div>
             <br style="clear:both" />
             {{ form_row(form.joinStartDate) }}
+            <br style="clear:both" /><br>
+            <div>
+                <label for="{{ form.autoAccept.vars.id }}" class="{% if form.autoAccept.vars.data %}up{% else %}down{% endif %}">
+                    {{ form_widget(form.autoAccept) }}
+                    {{ field_label(form.autoAccept) }}
+                </label>
+                {{ form_help(form.autoAccept) }}
+            </div>
         </div>
 
         <h2 class="trigger-h2">Difficulté / matériel :</h2>
@@ -130,7 +135,7 @@
             {{ form_row(form.matos) }}
         </div>
 
-        <h2 class="trigger-h2">Itinéraire :</h2>
+        <h2 class="trigger-h2">Itinéraire de l'activité :</h2>
         <div class="trigger-me">
             {{ form_row(form.itineraire) }}
         </div>
@@ -143,8 +148,8 @@
         <h2 class="trigger-h2">Description complète <span class="required">*</span> :</h2>
         <div class="trigger-me">
             <p>
-                Entrez ci-dessous toutes les informations qui ne figurent pas dans le formulaire.
-                N'hésitez pas à mettre un maximum<br>de détails, cet élément formera le corps de la page dédiée à cette sortie.
+                Entrez ci-dessous toutes les informations qui ne figurent pas dans le formulaire.<br>
+                N'hésitez pas à mettre un maximum de détails, cet élément formera le corps de la page dédiée à cette sortie.
             </p>
             <p>
                 <b>Attention :</b><br />Si vous copiez-collez du texte depuis un site, ou un document Word, cochez le bouton <img src="/img/texte-brut.png" title="Coller en tant que texte brut" alt="T" />
@@ -160,6 +165,7 @@
 
         <br /><br />
         <div style="text-align:center">
+            {{ form_widget(form.eventDraftSave) }}
             {{ form_widget(form.eventSave) }}
         </div>
 
@@ -183,6 +189,7 @@
     {{ parent() }}
     {{ vite_entry_script_tags('participants') }}
     {{ vite_entry_script_tags('commission_switch') }}
+    {{ vite_entry_script_tags('autocomplete_communes') }}
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
             integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
             crossorigin=""></script>
@@ -198,6 +205,7 @@
             {% else %}
                 switchCommission(document);
             {% endif %}
+            searchCommunes(document);
 
             // liste matériel
             document.querySelector('#predefinitions-matos-submit').addEventListener('click', (e) => {
@@ -225,40 +233,7 @@
                 contentField.removeAttribute('required');
             }
         });
-    </script>
-    <script type="text/javascript">
-        $().ready(function() {
-            const availableTags = [
-                "Aravis",
-                "Bauges",
-                "Beaufortain",
-                "Belledonne",
-                "Bornes",
-                "Chablais",
-                "Chartreuse",
-                "Devoluy",
-                "Diois",
-                "Ecrins",
-                "Grandes Rousses",
-                "Mercantour",
-                "Mont Blanc",
-                "Oisans",
-                "Trièves",
-                "Vanoise",
-                "Vercors",
-                "Vosges"
-            ];
-            $("input[id=event_massif]").autocomplete({
-                source: availableTags,
-                minLength: 0,
-                delay: 100
-            });
-            $("input[id=event_massif]").focus(function () {
-                $(this).trigger(jQuery.Event("keydown"));
-            });
-        });
-    </script>
-    <script language="javascript" type="text/javascript">
+
         tinyMCE.init({
             init_instance_callback: function() {
                 $(".mceIframeContainer iframe").webkitimageresize().webkittableresize().webkittdresize();
@@ -281,11 +256,10 @@
             theme_advanced_toolbar_location : "top",
             theme_advanced_toolbar_align : "left",
             theme_advanced_statusbar_location : "none",
-            theme_advanced_resizing : true,
 
             document_base_url: '{{ url('legacy_root') }}',
 
-            content_css: "{{ vite_entry_link_tags('base-styles') }},{{ vite_entry_link_tags('styles') }},{{ vite_entry_link_tags('fonts') }}",
+            content_css: "{{ vite_entry_link_ref('base-styles') }},{{ vite_entry_link_ref('styles') }},{{ vite_entry_link_ref('fonts') }}",
             body_id: "bodytinymce_user",
             body_class: "description_evt",
             theme_advanced_styles: "Entete Article=ArticleEntete;Titre de menu=menutitle;Bleu clair du CAF=bleucaf;Image flottante gauche=imgFloatLeft;Image flottante droite=imgFloatRight;Lien fancybox=fancybox;Mini=mini;Bloc alerte=erreur;Bloc info=info",
@@ -324,13 +298,12 @@
                 prefix = 'event';
             {% endif %}
 
-            // vérifier qu'au moins 1 encadrant est coché
+            // vérifier qu'au moins 1 encadrant ou stagiaire est coché
             const encadrants = document.querySelectorAll('input[name="' + prefix + '[encadrants][]"]:checked');
             const initiateurs = document.querySelectorAll('input[name="' + prefix + '[initiateurs][]"]:checked');
-            const coencadrants = document.querySelectorAll('input[name="' + prefix + '[coencadrants][]"]:checked');
-            const encadrement = encadrants.length + coencadrants.length + initiateurs.length;
+            const encadrement = encadrants.length + initiateurs.length;
             if (encadrement <= 0) {
-                alert('Veuillez sélectionner au moins un encadrant ou co-encadrant.');
+                alert('Veuillez sélectionner au moins un encadrant ou initiateur stagiaire.');
                 e.preventDefault();
 
                 return false;

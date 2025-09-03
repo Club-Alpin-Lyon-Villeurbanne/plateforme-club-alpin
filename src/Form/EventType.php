@@ -4,14 +4,13 @@ namespace App\Form;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
-use App\Entity\Groupe;
 use App\Repository\CommissionRepository;
 use App\Repository\UserAttrRepository;
 use App\Service\ParticipantService;
 use App\UserRights;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -38,9 +37,6 @@ class EventType extends AbstractType
         protected CommissionRepository $commissionRepository,
         protected UserRights $userRights,
         protected string $club,
-        protected float $defaultLat,
-        protected float $defaultLong,
-        protected string $defaultAppointmentPlace,
     ) {
     }
 
@@ -68,18 +64,10 @@ class EventType extends AbstractType
             $eventJoinStartDate->setTimestamp($event->getJoinStart());
         }
 
+        // lieu et coordonnées GPS (marqueur sur la carte)
         $appointment = $event->getRdv();
-        if (empty($appointment)) {
-            $appointment = $this->defaultAppointmentPlace;
-        }
         $lat = $event->getLat();
-        if (empty($lat)) {
-            $lat = $this->defaultLat;
-        }
         $long = $event->getLong();
-        if (empty($long)) {
-            $long = $this->defaultLong;
-        }
 
         $builder
             ->add('commission', EntityType::class, [
@@ -94,22 +82,6 @@ class EventType extends AbstractType
                 'attr' => [
                     'class' => 'type1 wide',
                     'style' => 'width: 100%',
-                ],
-            ])
-            ->add('groupe', EntityType::class, [
-                'class' => Groupe::class,
-                'query_builder' => function (EntityRepository $er) use ($commission) {
-                    return $er->createQueryBuilder('g')
-                        ->where('g.actif = 1')
-                        ->andWhere('g.idCommission = :commission')
-                        ->setParameters(['commission' => $commission])
-                        ->orderBy('g.nom', 'ASC')
-                    ;
-                },
-                'label' => 'Groupe concerné par cette sortie',
-                'required' => false,
-                'attr' => [
-                    'class' => 'type1 wide',
                 ],
             ])
             ->add('encadrants', ChoiceType::class, [
@@ -161,12 +133,16 @@ class EventType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('massif', TextType::class, [
-                'label' => 'Massif',
+            ->add('place', TextType::class, [
+                'label' => 'Lieu de départ de l\'activité encadrée',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => 'ex : Chartreuse',
+                    'placeholder' => 'ex : 69510 Messimy, 74400 Chamonix',
                     'class' => 'type2 wide',
+                ],
+                'help' => 'Code postal et ville. Permet de déduire le massif et d\'aider au calcul du bilan carbone.',
+                'help_attr' => [
+                    'class' => 'mini',
                 ],
             ])
             ->add('rdv', TextType::class, [
@@ -261,7 +237,7 @@ class EventType extends AbstractType
                 'scale' => 2,
                 'constraints' => [
                     new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
-                    new GreaterThan(0),
+                    new GreaterThanOrEqual(0),
                 ],
             ])
             ->add('tarifDetail', TextareaType::class, [
@@ -274,7 +250,8 @@ class EventType extends AbstractType
                 'required' => false,
             ])
             ->add('ngensMax', NumberType::class, [
-                'label' => 'Nombre maximum de personnes sur cette sortie (encadrement compris)',
+                'label' => 'Nombre maximum de personnes sur cette sortie (encadrement compris) <span class="revalidation">*</span>',
+                'label_html' => true,
                 'required' => true,
                 'html5' => true,
                 'attr' => [
@@ -299,7 +276,7 @@ class EventType extends AbstractType
                 'scale' => 0,
                 'constraints' => [
                     new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
-                    new GreaterThan(0),
+                    new GreaterThanOrEqual(0),
                 ],
             ])
             ->add('joinStartDate', DateTimeType::class, [
@@ -378,6 +355,7 @@ class EventType extends AbstractType
                 'attr' => [
                     'class' => 'type2 wide',
                     'rows' => 5,
+                    'placeholder' => 'ex: du parking 1540 Aussois à côté des remontées mécaniques du Grand Jeu, prendre NNE jusqu\'à Plan Aval puis suivre refuge de la Fournache 2333m par la Randolière',
                 ],
             ])
             ->add('details_caches', TextareaType::class, [
@@ -404,17 +382,33 @@ class EventType extends AbstractType
                 'attr' => [
                     'class' => 'type2 wide tinymce',
                     'rows' => 15,
-                    'style' => 'width:615px;',
+                    'style' => 'width:615px; min-height:300px',
                 ],
                 'constraints' => [
                     new NotBlank(),
+                ],
+            ])
+            ->add('autoAccept', CheckboxType::class, [
+                'label' => 'Accepter automatiquement les demandes d\'inscription',
+                'required' => false,
+                'help' => ' Si vous cochez cette case, les demandes d\'inscription seront automatiquement acceptées, sous votre responsabilité.<br>Rien ne change pour les emails, tout se déroulera comme si vous acceptiez manuellement.',
+                'help_attr' => [
+                    'class' => 'mini',
+                ],
+                'help_html' => true,
+            ])
+            ->add('eventDraftSave', SubmitType::class, [
+                'label' => '<span class="bleucaf">&gt;</span> ENREGISTRER COMME BROUILLON',
+                'label_html' => true,
+                'attr' => [
+                    'class' => 'mediumlink',
                 ],
             ])
             ->add('eventSave', SubmitType::class, [
                 'label' => '<span class="blanc">&gt;</span> ENREGISTRER ET DEMANDER LA PUBLICATION',
                 'label_html' => true,
                 'attr' => [
-                    'class' => 'biglink',
+                    'class' => 'mediumlink btn-blue blanc',
                 ],
             ])
             ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {

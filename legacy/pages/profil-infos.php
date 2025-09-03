@@ -1,8 +1,11 @@
 <?php
 
 use App\Entity\UserAttr;
+use App\Repository\CommissionRepository;
 
 if (user()) {
+    $em = $this->getRegistry();
+    $commissionRepository = new CommissionRepository($em);
     ?>
     <div class="main-type">
         <h1>Mon profil - Gestion de mon compte</h1>
@@ -26,17 +29,55 @@ if (user()) {
         <?php if (getUser()->hasAttribute()) { ?>
             <h2><span class="bleucaf">&gt;</span> Vos statuts :</h2>
             <?php inclure('infos-profil-statuts', 'vide'); ?>
-            <ul class="nice-list">
-                <?php
-                foreach (getUser()->getAttributes() as $attr) {
-                    if (UserAttr::RESPONSABLE_COMMISSION === $attr->getCode()) {
-                        echo '<li><a href="/commission-consulter.html?code_commission=' . $attr->getCommission() . '" title="Fiche commission">' . $attr->getTitle() . ', ' . $attr->getCommission() . '</a></li>';
-                    } elseif (in_array($attr->getCode(), [UserAttr::ENCADRANT, UserAttr::COENCADRANT], true)) {
-                        echo '<li>' . $attr->getTitle() . ', ' . $attr->getCommission() . '</li>';
-                    } else {
-                        echo '<li>' . $attr->getTitle() . '</li>';
+                <br><br>
+            <?php
+            $clubRoles = [];
+            $commissionRoles = [];
+            $attributes = getUser()->getAttributes();
+            foreach ($attributes as $attr) {
+                if (in_array($attr->getCode(), UserAttr::COMMISSION_RELATED, true)) {
+                    if (!isset($commissionRoles[$attr->getParams()])) {
+                        $commissionRoles[$attr->getParams()] = $attr;
+                    }
+                } else {
+                    if (!isset($clubRoles[$attr->getParams()])) {
+                        $clubRoles[$attr->getParams()] = $attr;
                     }
                 }
+            }
+            ?>
+            <h3>Responsabilité dans le club :</h3>
+            <ul class="nice-list">
+                <?php
+                if (!empty($clubRoles)) {
+                    foreach ($clubRoles as $attr) {
+                        echo '<li>' . $attr->getTitle();
+                        if (!empty($attr->getDescription())) {
+                            echo ' <img src="/img/base/info.png" title="' . $attr->getDescription() . '" />';
+                        }
+                        echo '</li>';
+                    }
+                } else {
+                    echo '<li>N/A</li>';
+                }
+            ?>
+            </ul>
+            <br style="clear:both" />
+
+            <h3>Responsabilité dans les commissions :</h3>
+            <ul class="nice-list">
+                <?php
+            if (!empty($commissionRoles)) {
+                foreach ($commissionRoles as $attr) {
+                    echo '<li>' . $commissionRepository->getCommissionNameByCode($attr->getCommission()) . ' : ' . $attr->getTitle();
+                    if (!empty($attr->getDescription())) {
+                        echo ' <img src="/img/base/info.png" title="' . $attr->getDescription() . '" />';
+                    }
+                    echo '</li>';
+                }
+            } else {
+                echo '<li>N/A</li>';
+            }
             ?>
             </ul>
             <br style="clear:both" />
@@ -50,7 +91,6 @@ if (user()) {
             <ul class="nice-list">
                 <?php
             foreach ($tmpUser['enfants'] as $enfant) {
-                // echo '<li>'.$enfant['firstname_user'].' '.$enfant['lastname_user'].'</li>';
                 echo '<li>' . userlink($enfant['id_user'], $enfant['nickname_user'], '', $enfant['firstname_user'], $enfant['lastname_user'], $style = 'full') . '</li>';
             }
             ?>
@@ -138,6 +178,15 @@ if (user()) {
             </p>
             <input type="text" name="email_user_mailchange" class="type1" style="width:300px" value="<?php echo inputVal('email_user_mailchange'); ?>" placeholder="<?php echo html_utf8($tmpUser['email_user']); ?>" />
 
+        <div class="alerte info-container" style="width: 90%; margin-top: 10px;">
+            ⚠️
+            <div class="text-container">
+                Nous avons identifié des problèmes de non réception avec certains fournisseurs de messagerie, notamment Wanadoo, Orange et Free (même si cela fonctionne chez certains utilisateurs).<br>
+                Après investigation et signalement du problème aux services concernés, nous ne sommes malheureusement pas en mesure d'y remédier de notre côté.<br>
+                Nous vous recommandons de vérifier si nous ne sommes pas dans vos spams sinon, de changer d'hébergeur.
+            </div>
+        </div>
+
             <hr style="margin: 20px 0" />
             <h2 id="edit-password"><span class="bleucaf">&gt;</span>Modifier mon mot de passe</h2>
             <p>
@@ -164,11 +213,11 @@ if (user()) {
                 Votre date d'adhésion ou de renouvellement :
                 <b>
                 <?php
-                                // notification d'alerte si l'user doit renouveler sa licence
+                        // notification d'alerte si l'user doit renouveler sa licence
 
-                                if ($tmpUser['alerte_renouveler_user']) {
-                                    echo '<span class="alerte">';
-                                }
+                        if ($tmpUser['alerte_renouveler_user']) {
+                            echo '<span class="alerte">';
+                        }
     if ($tmpUser['date_adhesion_user'] > 0) {
         echo date('d/m/Y', $tmpUser['date_adhesion_user']);
     } else {

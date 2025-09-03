@@ -1,0 +1,38 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    {% if commission %}[{{ commission }}]{% endif %}[Ajout manuel] Inscription à {{ event_name }} du {{ event_date }}
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        {{ inscrits|length }} adhérent{{ inscrits|length > 1 ? 's' : '' }} {{ inscrits|length > 1 ? 'viennent' : 'vient' }} d'être inscrit en manuel
+        à la sortie <a href="{{ event_url }}">{{ event_name }}</a>
+    </p>
+    <ul>
+        {% for inscrit in inscrits %}
+            <li>
+                <b>Nom :</b> <a href="{{ inscrit.profile_url }}">{{ inscrit.firstname }} {{ inscrit.lastname }}</a>
+            </li>
+        {% endfor %}
+        <li>
+            <b>Rôle :</b> {{ role }}
+        </li>
+    </ul>
+    <p>
+        Vous recevez ce message car vous êtes {{ dest_role }} sur cette sortie.
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+    {{ inscrits|length }} adhérent{{ inscrits|length > 1 ? 's' : '' }} {{ inscrits|length > 1 ? 'viennent' : 'vient' }} d'être inscrit en manuel
+    à la sortie {{ event_name }} ({{ event_url }}).
+
+    {% for inscrit in inscrits %}
+        Nom : {{ inscrit.firstname }} {{ inscrit.lastname }} - {{ inscrit.profile_url }}
+    {% endfor %}
+
+    Rôle : {{ role }}
+
+    Vous recevez ce message car vous êtes {{ dest_role }} sur cette sortie.
+{% endblock %}

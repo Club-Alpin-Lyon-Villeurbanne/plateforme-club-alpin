@@ -116,7 +116,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
 		<thead>
 			<tr>
 				<th>Outils</th>
-				<th>n° CAF / Infos / DBID </th>
+				<th>n° licence FFCAM / Infos / DBID </th>
 				<th>Actif ?</th>
 				<th>Civ</th>
 				<th>Nom</th>
@@ -184,8 +184,8 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
             . '</td>'
             . '<td>' . (int) $elt['valid_user'] . '</td>'
             . '<td>' . html_utf8($elt['civ_user']) . '</td>'
-            . '<td>' . strtoupper(html_utf8($elt['lastname_user'])) . '</td>'
-            . '<td>' . ucfirst(html_utf8($elt['firstname_user'])) . '</td>';
+            . '<td>' . html_utf8(strtoupper($elt['lastname_user'])) . '</td>'
+            . '<td>' . html_utf8(ucfirst($elt['firstname_user'])) . '</td>';
 
         if ($elt['doit_renouveler_user']) {
             echo '<td style="color:red">Licence expirée</td>';

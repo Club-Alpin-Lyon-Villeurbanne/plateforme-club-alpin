@@ -21,7 +21,7 @@ if (allowed('user_see_all')) {
         . ('notvalid' == $show ? ' AND valid_user=0 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
         . ('expired' == $show ? ' AND doit_renouveler_user=1 ' : '')
         . ('valid-expired' == $show ? ' AND valid_user=1 AND doit_renouveler_user=1 ' : '')
-        . ' ORDER BY lastname_user ASC, lastname_user ASC LIMIT 9000';			// , pays_user
+        . ' ORDER BY lastname_user ASC, firstname_user ASC LIMIT 9000';			// , pays_user
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $handleSql->fetch_assoc()) {
@@ -86,7 +86,7 @@ if (allowed('user_see_all')) {
 					$('#pagesLibres').dataTable({
 						"iDisplayLength": 100,
 						"aaSorting": [
-							[2, "desc"],
+							[3, "asc"],
 							[4, "asc"]
 						]
 					});
@@ -100,7 +100,7 @@ if (allowed('user_see_all')) {
 				<thead>
 					<tr>
 						<th>Outils</th>
-						<th>n° CAF / Infos</th>
+						<th>n° licence FFCAM / Infos</th>
 						<!-- <th>Actif ?</th> -->
 						<th>Civ</th>
 						<th>Nom</th>
@@ -138,7 +138,7 @@ if (allowed('user_see_all')) {
 
                 // gestion des droits
                 if ($isAllowed_user_giveright_1 || $isAllowed_user_giveright_2 || $isAllowed_user_givepresidence) {
-                    echo '<a href="/includer.php?p=pages/adherents-droits.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['civ_user'] . ' ' . $elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Voir / Attribuer des statuts à cet utilisateur"><img src="/img/base/user_star.png"></a> ';
+                    echo '<a href="/includer.php?p=pages/adherents-droits.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['civ_user'] . ' ' . $elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Voir / Attribuer des responsabilités à cet utilisateur"><img src="/img/base/user_star.png"></a> ';
                 }
 
                 // désactiver
@@ -184,8 +184,8 @@ if (allowed('user_see_all')) {
                     . '</td>'
                     // .'<td>'.intval($elt['valid_user']).'</td>'
                     . '<td>' . html_utf8($elt['civ_user']) . '</td>'
-                    . '<td>' . strtoupper(html_utf8($elt['lastname_user'])) . '</td>'
-                    . '<td>' . ucfirst(html_utf8($elt['firstname_user'])) . '</td>';
+                    . '<td>' . html_utf8(strtoupper($elt['lastname_user'])) . '</td>'
+                    . '<td>' . html_utf8(ucfirst($elt['firstname_user'])) . '</td>';
 
                 if ($elt['doit_renouveler_user']) {
                     echo '<td style="color:red">Licence expirée</td>';

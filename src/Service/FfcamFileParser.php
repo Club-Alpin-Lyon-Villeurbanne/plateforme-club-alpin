@@ -57,8 +57,8 @@ class FfcamFileParser
             ->setBirthday((string) $birthday)
             ->setCiv($this->normalizeNames(str_replace('MLLE', 'MME', trim($line[8]))))
             ->setCafnumParent((int) $line[5] > 0 ? trim($line[1] . $line[5]) : null)
-            ->setTel($this->normalizePhoneNumber(trim($line[27])))
-            ->setTel2($this->normalizePhoneNumber(trim($line[26])))
+            ->setTel(trim($line[27]))
+            ->setTel2(trim($line[26]))
             ->setAdresse(trim($line[11] . " \n" . $line[12] . " \n" . $line[13] . " \n" . $line[14]))
             ->setCp($this->normalizeNames(trim($line[15])))
             ->setVille($this->normalizeNames(trim($line[16])))
@@ -90,28 +90,6 @@ class FfcamFileParser
         ) {
             throw new \Exception("Can't process line $lineNumber : Multiple values are wrong");
         }
-    }
-
-    private function normalizePhoneNumber(string $phoneNumber): string
-    {
-        $normalizedPhoneNumber = $phoneNumber;
-        $normalizedPhoneNumber = str_ireplace('o', '0', $normalizedPhoneNumber);
-        $normalizedPhoneNumber = preg_replace('/(?:0033)/', '0', $normalizedPhoneNumber);
-        $normalizedPhoneNumber = preg_replace('/(?:\+?33)/', '0', $normalizedPhoneNumber);
-        $normalizedPhoneNumber = preg_replace('/[^\d]+/', '', $normalizedPhoneNumber);
-
-        $regex = '/(?:0[1-9](\d{2}){4})/';
-        if (false !== preg_match_all($regex, $normalizedPhoneNumber, $matches)) {
-            return $normalizedPhoneNumber;
-        }
-
-        foreach ($matches[0] as $number) {
-            if ('06' === substr($number, 0, 2) || '07' === substr($number, 0, 2)) {
-                return $number;
-            }
-        }
-
-        return $matches[0][0] ?? $phoneNumber;
     }
 
     private function normalizeNames(string $name): string

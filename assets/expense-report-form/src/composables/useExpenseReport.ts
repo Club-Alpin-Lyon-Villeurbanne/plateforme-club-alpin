@@ -6,6 +6,7 @@ import {
 } from "../types/api";
 import axios from "../services/axios";
 import { useAttachments } from "./useAttachment";
+import config from "../config/expense-reports.json";
 
 export interface ExpenseReportContext {
   expenseReport: Ref<ExpenseReport | null>;
@@ -35,7 +36,7 @@ export function useExpenseReport(initialEventId: number) {
     }
   
     await axios.patch<ExpenseReport>(
-      `/expense-reports/${expenseReport.value?.id}`,
+      `${config.endpoints.notesDeFrais}/${expenseReport.value?.id}`,
       body,
     );
   };
@@ -69,17 +70,17 @@ export function useExpenseReport(initialEventId: number) {
 
   const fetchOrCreateExpenseReport = async (eventId: number) => {
     try {
-      const response = await axios.get<ExpenseReport[]>(
-        `/expense-reports?include_drafts=true&event=${eventId}`,
+      const response = await axios.get<{ data: ExpenseReport[], meta: any }>(
+        `${config.endpoints.notesDeFrais}?inclure_brouillons=true&event=${eventId}`,
       );
 
       let fetchedReport: ExpenseReport;
 
-      if (response.data.length > 0) {
-        fetchedReport = response.data[0];
+      if (response.data.data.length > 0) {
+        fetchedReport = response.data.data[0];
       } else {
         const createResponse = await axios.post<ExpenseReport>(
-          "/expense-reports",
+          config.endpoints.notesDeFrais,
           { eventId: eventId },
         );
         fetchedReport = createResponse.data;
@@ -98,7 +99,7 @@ export function useExpenseReport(initialEventId: number) {
         ...fetchedReport,
         details: parsedDetails,
       };
-      setAttachments(expenseReport.value.attachments);
+      setAttachments(expenseReport.value.piecesJointes);
     } catch (error) {
       console.error(
         "Erreur lors de la récupération/création de la note de frais:",

@@ -1,5 +1,6 @@
 <?php
 
+use App\Entity\EventParticipation;
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -26,22 +27,38 @@ $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // on a le droit de supprimer cette page ?
-    if (allowed('evt_cancel', 'commission:' . $handle['code_commission'])) {
-        // participants:
-        $id_evt_forjoins = $handle['id_evt'];
+    $isCurrentUserEncadrant = false;
+    $idUser = 0;
+    if (user()) {
+        $idUser = getUser()->getId();
+    }
 
-        $handle['joins'] = [];
-        $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
+    // participants:
+    $id_evt_forjoins = $handle['id_evt'];
+
+    $handle['joins'] = [];
+    $req = "SELECT id_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, nomade_user
                 , role_evt_join
             FROM caf_evt_join, caf_user
             WHERE evt_evt_join = $id_evt_forjoins
             AND user_evt_join = id_user
             LIMIT 300";
-        $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-        while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-            $handle['joins'][] = $handle2;
+    $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+    while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
+        $handle['joins'][] = $handle2;
+    }
+    foreach ($handle['joins'] as $join) {
+        if (in_array($join['role_evt_join'], EventParticipation::ROLES_ENCADREMENT_ETENDU, true) && $join['id_user'] == $idUser) {
+            $isCurrentUserEncadrant = true;
+            break;
         }
+    }
 
+    if ($idUser == $handle['user_evt']
+        || $isCurrentUserEncadrant && allowed('evt_cancel_own')
+        || allowed('evt_cancel', 'commission:' . $handle['code_commission'])
+        || allowed('evt_cancel_any')
+    ) {
         // si la sortie est annulée, on recupère les details de "WHO" : qui l'a annulée
         if ('1' == $handle['cancelled_evt']) {
             $req = 'SELECT id_user, firstname_user, lastname_user, nickname_user
@@ -141,42 +158,39 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     }
                 } ?>
 
-
-
                 <br />
                 <hr />
                 <h2 style="text-align:center; background:white; padding:10px">INSCRITS :</h2>
                 <?php
-                // RESUME DE LA SORTIE
-                echo '<table class="big-lines-table" style="width:570px; margin-left:20px;">';
+                if (!empty($joins)) {
+                    // RESUME DE LA SORTIE
+                    echo '<table class="big-lines-table" style="width:570px; margin-left:20px;">';
 
-                // echo '<pre>';print_r($joins); echo '</pre>';
-
-                // inscrits en ligne via formulaire
-                foreach ($joins as $tmpUser) {
-                    echo '<tr>
-                                        <td>
-                                            ' . userlink($tmpUser['id_user'], $tmpUser['nickname_user'])
-                        . (allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">' . strtoupper(html_utf8($tmpUser['lastname_user'])) . ' ' . ucfirst(html_utf8($tmpUser['firstname_user'])) . '</p>' : '')
-                        . '</td>'
-                        . '<td class="small">' . (allowed('user_read_private', $evt['code_commission']) ? $tmpUser['tel_user'] : '') . '</td>'
-                        . ($tmpUser['nomade_user'] ?
-                            '<td class="small" colspan="3">
-                                                <p class="alerte">
-                                                    Attention ! Cet adhérent &laquo;nomade&raquo; ne recevra pas de message d\'annulation ! Vous devez
-                                                    le prévenir vous-même si la sortie n\'a pas lieu.
-                                                </p>
-                                            </td>'
-                            :
-                            '<td class="small">' . (allowed('user_read_private', $evt['code_commission']) ? $tmpUser['tel2_user'] : '') . '</td>
-                                            <td class="small">' . (allowed('user_read_private', $evt['code_commission']) ? '<a href="mailto:' . $tmpUser['email_user'] . '">' . $tmpUser['email_user'] . '</a>' : '') . '</td>
-                                            <td class="small">' . $tmpUser['role_evt_join'] . '</td>
-                                            '
-                        )
-                        . '</tr>';
+                    // inscrits en ligne via formulaire
+                    foreach ($joins as $tmpUser) {
+                        echo '<tr>
+                                            <td>
+                                                ' . userlink($tmpUser['id_user'], $tmpUser['nickname_user'])
+                            . (allowed('user_read_private', $evt['code_commission']) ? '<p class="mini">' . html_utf8(strtoupper($tmpUser['lastname_user'])) . ' ' . html_utf8(ucfirst($tmpUser['firstname_user'])) . '</p>' : '')
+                            . '</td>'
+                            . '<td class="small">' . (allowed('user_read_private', $evt['code_commission']) ? $tmpUser['tel_user'] : '') . '</td>'
+                            . ($tmpUser['nomade_user'] ?
+                                '<td class="small" colspan="3">
+                                                    <p class="alerte">
+                                                        Attention ! Cet adhérent &laquo;nomade&raquo; ne recevra pas de message d\'annulation ! Vous devez
+                                                        le prévenir vous-même si la sortie n\'a pas lieu.
+                                                    </p>
+                                                </td>'
+                                :
+                                '<td class="small">' . (allowed('user_read_private', $evt['code_commission']) ? $tmpUser['tel2_user'] : '') . '</td>
+                                                <td class="small">' . (allowed('user_read_private', $evt['code_commission']) ? '<a href="mailto:' . $tmpUser['email_user'] . '">' . $tmpUser['email_user'] . '</a>' : '') . '</td>
+                                                <td class="small">' . $tmpUser['role_evt_join'] . '</td>'
+                            )
+                            . '</tr>';
+                    }
+                    echo '</table>';
                 }
-                echo '</table>'; ?>
-
+                ?>
 
                 <br />
                 <hr />

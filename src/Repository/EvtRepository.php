@@ -33,7 +33,8 @@ class EvtRepository extends ServiceEntityRepository
             FROM caf_evt e
             INNER JOIN caf_commission c ON c.id_commission = e.commission_evt
             WHERE status_evt = \'0\'
-                AND tsp_evt IS NOT NULL';
+                AND tsp_evt IS NOT NULL
+                AND is_draft = 0';
 
         $params = [];
         $sqlPart = [];
@@ -79,7 +80,7 @@ class EvtRepository extends ServiceEntityRepository
             ->setParameter('status', Evt::STATUS_LEGAL_VALIDE)
             ->andWhere(':date <= e.tsp OR :date <= e.tspEnd')
             ->setParameter('date', $date->getTimestamp())
-            ->orderBy('CAST(FROM_UNIXTIME(e.tsp) as date)', 'asc')
+            ->orderBy('e.tsp', 'asc')
             ->addOrderBy('c.title', 'ASC')
             ->addOrderBy('e.titre', 'ASC')
             ->setMaxResults($options['limit'])
@@ -190,11 +191,11 @@ class EvtRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function getRecentPastEvents(): array
+    public function getRecentPastEvents(?Commission $commission = null): array
     {
         $limitDate = new \DateTime('last year');
 
-        return $this->createQueryBuilder('e')
+        $queryBuilder = $this->createQueryBuilder('e')
             ->where('e.status = :status')
             ->andWhere('e.tspEnd < :date')
             ->andWhere('e.tsp > :limitDate')
@@ -202,6 +203,15 @@ class EvtRepository extends ServiceEntityRepository
             ->setParameter('date', time())
             ->setParameter('limitDate', $limitDate->getTimestamp())
             ->orderBy('e.tsp', 'desc')
+        ;
+        if ($commission) {
+            $queryBuilder
+                ->andWhere('e.commission = :commission')
+                ->setParameter('commission', $commission)
+            ;
+        }
+
+        return $queryBuilder
             ->getQuery()
             ->getResult()
         ;

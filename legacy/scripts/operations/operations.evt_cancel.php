@@ -1,5 +1,6 @@
 <?php
 
+use App\Entity\EventParticipation;
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -28,7 +29,34 @@ $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
 if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // on a le droit d'annuler ?
-    if (!allowed('evt_cancel', 'commission:' . $handle['code_commission'])) {
+    $isCurrentUserEncadrant = false;
+    $idUser = 0;
+    if (user()) {
+        $idUser = getUser()->getId();
+    }
+
+    // participants:
+    $id_evt_forjoins = (int) $handle['id_evt'];
+
+    $handle['joins'] = [];
+    $req = "SELECT id_evt_join, id_user, email_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user
+            FROM caf_evt_join, caf_user
+            WHERE evt_evt_join = $id_evt_forjoins
+            AND user_evt_join = id_user
+            LIMIT 300";
+    $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+    foreach ($handle['joins'] as $join) {
+        if (in_array($join['role_evt_join'], EventParticipation::ROLES_ENCADREMENT_ETENDU, true) && $join['id_user'] == $idUser) {
+            $isCurrentUserEncadrant = true;
+            break;
+        }
+    }
+
+    if (!($idUser == $handle['user_evt']
+        || $isCurrentUserEncadrant && allowed('evt_cancel_own')
+        || allowed('evt_cancel', 'commission:' . $handle['code_commission'])
+        || allowed('evt_cancel_any')
+    )) {
         $errTab[] = 'Accès non autorisé';
     }
 
@@ -43,17 +71,6 @@ if ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 
     // message aux participants si la sortie est annulée alors qu'elle est publiée
     if ((!isset($errTab) || 0 === count($errTab)) && 1 == $handle['status_evt']) {
-        // participants:
-        $id_evt_forjoins = (int) $handle['id_evt'];
-
-        $handle['joins'] = [];
-        $req = "SELECT id_evt_join, id_user, email_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user
-            FROM caf_evt_join, caf_user
-            WHERE evt_evt_join = $id_evt_forjoins
-            AND user_evt_join = id_user
-            LIMIT 300";
-        $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-
         // desinscription des participants de la sortie
         if (!isset($errTab) || 0 === count($errTab)) {
             $req = "DELETE FROM caf_evt_join WHERE role_evt_join NOT IN ('encadrant', 'stagiaire', 'coencadrant') AND (caf_evt_join.evt_evt_join = $id_evt";

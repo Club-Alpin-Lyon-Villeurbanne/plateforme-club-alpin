@@ -43,7 +43,10 @@ parameters:
   default_latitude: '%env(DEFAULT_LATITUDE)%'
   default_longitude: '%env(DEFAULT_LONGITUDE)%'
   default_appmt_place: '%env(DEFAULT_APPMT_PLACE)%'
-
+  app_instance_name: '%env(APP_INSTANCE_NAME)%'
+  mobile_app_deeplink_scheme: '%env(MOBILE_APP_DEEPLINK_SCHEME)%'
+  mobile_app_minimum_version: '%env(MOBILE_APP_MINIMUM_VERSION)%'
+  api_version: '%env(API_VERSION)%'
 services:
   # default configuration for services in *this* file
   _defaults:
@@ -92,6 +95,11 @@ services:
   App\Repository\CommissionRepository:
     public: true
 
+  App\Service\EmailMarketingSyncService:
+    public: true
+    arguments:
+      $mailerLiteService: '@?App\Service\MailerLiteService'
+
   App\Mailer\Mailer:
     arguments:
       $replyTo: "%env(MAIL_EMITTER_EMAIL)%"
@@ -122,8 +130,7 @@ services:
 
   App\Security\Voter\ExpenseReportVoter:
     arguments:
-      $authorizedToFillIds: "%env(string:AUTHORIZED_IDS_FOR_EXPENSES_FILLING)%"
-      $authorizedToValidateIds: "%env(string:AUTHORIZED_IDS_FOR_EXPENSES_VALIDATION)%"
+      $authorizedManagerIds: "%env(string:AUTHORIZED_IDS_FOR_EXPENSE_MANAGEMENT)%"
 
   Symfony\Component\String\Slugger\SluggerInterface:
     class: Symfony\Component\String\Slugger\AsciiSlugger
@@ -133,15 +140,15 @@ services:
       $defaultAlertArticlePrefix: "%env(ALERT_ARTICLE_PREFIX)%"
       $defaultAlertSortiePrefix: "%env(ALERT_SORTIE_PREFIX)%"
 
+  # Email Marketing Services Configuration
+  App\Service\MailerLiteService:
+    arguments:
+      $apiKey: "%env(MAILERLITE_API_KEY)%"
+      $welcomeGroupId: "%env(MAILERLITE_WELCOME_GROUP_ID)%"
+
   App\Service\ExpenseReportCalculator:
     arguments:
       $config: '%expense_report%'
-
-  App\State\UserOwnedExtension:
-        arguments:
-            $security: '@security.helper'
-        tags:
-            - { name: 'api_platform.doctrine.orm.query_extension.collection' }
             
   # services used in legacy
   legacy_router:
@@ -249,13 +256,30 @@ services:
   App\Form\EventType:
     arguments:
       $club: '%env(CAF_ID)%'
-      $defaultLat: '%default_latitude%'
-      $defaultLong: '%default_longitude%'
-      $defaultAppointmentPlace: '%default_appmt_place%'
     tags: ['form.type']
 
   App\Controller\SortieController:
     arguments:
       $defaultLat: '%default_latitude%'
       $defaultLong: '%default_longitude%'
+      $defaultAppointmentPlace: '%default_appmt_place%'
     tags: ['controller.service_arguments']
+
+  App\Service\PushNotificationService:
+    arguments:
+      $appInstanceName: '%app_instance_name%'
+      $appDeeplinkScheme: '%mobile_app_deeplink_scheme%'
+      $sitename: '%legacy_env_SITENAME%'
+
+  App\Serializer\PaginationMetadataNormalizer:
+    tags:
+      - { name: 'serializer.normalizer', priority: 64 }
+      
+  App\Doctrine\ExpenseReportExtension:
+    tags:
+      - { name: 'api_platform.doctrine.orm.query_extension.collection' }
+      - { name: 'api_platform.doctrine.orm.query_extension.item' }
+
+  legacy_user_right_service:
+    public: true
+    alias: App\Service\UserRightService

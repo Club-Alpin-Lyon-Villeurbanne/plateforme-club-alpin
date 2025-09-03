@@ -2,11 +2,21 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Serializer\Filter\GroupFilter;
+use App\Serializer\TimeStampNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Serializer\Attribute\Context;
 
 /**
  * Evt.
@@ -14,8 +24,18 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Table(name: 'caf_evt')]
 #[ORM\Entity]
 #[ApiResource(
-    operations: []
+    shortName: 'sortie',
+    order: ['tsp' => 'ASC'],
+    operations: [
+        new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
+        new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:read', 'eventParticipation:read']]),
+    ],
+    security: "is_granted('ROLE_USER')",
 )]
+#[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', 'participations.user.id' => 'exact'])]
+#[ApiFilter(RangeFilter::class, properties: ['tsp'])]
+#[ApiFilter(GroupFilter::class, arguments: ['overrideDefaultGroups' => true])]
+#[ApiFilter(OrderFilter::class, properties: ['tsp'])]
 class Evt
 {
     public const STATUS_PUBLISHED_UNSEEN = 0;
@@ -36,13 +56,18 @@ class Evt
     #[Groups('event:read')]
     private int $status = 0;
 
+    #[ORM\Column(name: 'auto_accept', type: 'boolean', nullable: false, options: ['default' => false])]
+    private bool $autoAccept = false;
+
+    #[ORM\Column(name: 'is_draft', type: 'boolean', nullable: false, options: ['default' => true])]
+    private bool $isDraft = true;
+
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'status_who_evt', referencedColumnName: 'id_user', nullable: true)]
     private ?User $statusWho;
 
     #[ORM\Column(name: 'status_legal_evt', type: 'smallint', nullable: false, options: ['comment' => '0-unseen 1-ok 2-refused', 'default' => 0])]
     #[Groups('event:read')]
-
     private int $statusLegal = 0;
 
     #[ORM\ManyToOne(targetEntity: 'User')]
@@ -50,6 +75,7 @@ class Evt
     private ?User $statusLegalWho;
 
     #[ORM\Column(name: 'cancelled_evt', type: 'boolean', nullable: false, options: ['default' => false])]
+    #[Groups('event:read')]
     private bool $cancelled = false;
 
     #[ORM\ManyToOne(targetEntity: 'User')]
@@ -64,12 +90,12 @@ class Evt
 
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'user_evt', referencedColumnName: 'id_user', nullable: false)]
+    #[Groups('event:read')]
     private ?User $user;
 
     #[ORM\ManyToOne(targetEntity: 'Commission')]
     #[ORM\JoinColumn(name: 'commission_evt', referencedColumnName: 'id_commission', nullable: false)]
     #[Groups('event:read')]
-
     private ?Commission $commission;
 
     #[ORM\ManyToOne(targetEntity: 'Groupe', fetch: 'EAGER')]
@@ -77,27 +103,26 @@ class Evt
     private ?Groupe $groupe;
 
     #[ORM\Column(name: 'tsp_evt', type: 'bigint', nullable: true, options: ['comment' => 'timestamp du début du event'])]
-    #[Groups('event:read')]
-
     private ?int $tsp;
 
     #[ORM\Column(name: 'tsp_end_evt', type: 'bigint', nullable: true)]
-    #[Groups('event:read')]
-
     private ?int $tspEnd;
 
     #[ORM\Column(name: 'tsp_crea_evt', type: 'bigint', nullable: false, options: ['comment' => "Création de l'entrée"])]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[Groups('event:details')]
     private ?int $tspCrea;
 
     #[ORM\Column(name: 'tsp_edit_evt', type: 'bigint', nullable: true)]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     private ?int $tspEdit;
 
-    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage'])]
+    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de départ activité'])]
+    #[Groups('event:details')]
     private ?string $place;
 
     #[ORM\Column(name: 'titre_evt', type: 'string', length: 100, nullable: false)]
     #[Groups('event:read')]
-
     private ?string $titre;
 
     #[ORM\Column(name: 'code_evt', type: 'string', length: 30, nullable: false)]
@@ -105,56 +130,77 @@ class Evt
     private ?string $code;
 
     #[ORM\Column(name: 'massif_evt', type: 'string', length: 100, nullable: true)]
+    #[Groups('event:details')]
     private ?string $massif;
 
-    #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu détaillé du rdv'])]
+    #[ORM\Column(name: 'rdv_evt', type: 'string', length: 200, nullable: false, options: ['comment' => 'Lieu de RDV covoiturage'])]
     #[Groups('event:read')]
-
+    #[SerializedName('lieuRendezVous')]
     private ?string $rdv;
 
     #[ORM\Column(name: 'tarif_evt', type: 'float', precision: 10, scale: 2, nullable: true)]
+    #[Groups('event:details')]
     private ?float $tarif;
 
     #[ORM\Column(name: 'tarif_detail', type: 'text', nullable: true)]
+    #[Groups('event:details')]
     private ?string $tarifDetail;
 
     #[ORM\Column(name: 'denivele_evt', type: 'text', nullable: true)]
+    #[Groups('event:details')]
     private ?string $denivele;
 
     #[ORM\Column(name: 'distance_evt', type: 'text', nullable: true)]
+    #[Groups('event:details')]
     private ?string $distance;
 
     #[ORM\Column(name: 'lat_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
+    #[Groups('event:details')]
+    #[SerializedName('latitude')]
     private string|float|null $lat;
 
     #[ORM\Column(name: 'long_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
+    #[Groups('event:details')]
+    #[SerializedName('longitude')]
     private string|float|null $long;
 
     #[ORM\Column(name: 'matos_evt', type: 'text', nullable: true)]
+    #[Groups('event:details')]
+    #[SerializedName('materiel')]
     private ?string $matos;
 
     #[ORM\Column(name: 'difficulte_evt', type: 'string', length: 50, nullable: true)]
+    #[Groups('event:read')]
     private ?string $difficulte;
 
     #[ORM\Column(name: 'itineraire', type: 'text', nullable: true)]
+    #[Groups('event:details')]
     private ?string $itineraire;
 
     #[ORM\Column(name: 'description_evt', type: 'text', nullable: false)]
+    #[Groups('event:read')]
     private ?string $description;
 
     #[ORM\Column(name: 'need_benevoles_evt', type: 'boolean', nullable: false)]
+    #[Groups('event:details')]
     private bool $needBenevoles = false;
 
     #[ORM\Column(name: 'join_start_evt', type: 'integer', nullable: true, options: ['comment' => 'Timestamp de départ des inscriptions'])]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[Groups('event:details')]
     private ?int $joinStart;
 
     #[ORM\Column(name: 'join_max_evt', type: 'integer', nullable: false, options: ['comment' => "Nombre max d'inscriptions spontanées sur le site, ET PAS d'inscrits total"])]
+    #[Groups('event:read')]
+    #[SerializedName('inscriptionsMax')]
     private ?int $joinMax;
 
     #[ORM\OneToMany(mappedBy: 'evt', targetEntity: 'EventParticipation', cascade: ['persist'], orphanRemoval: true)]
     private ?Collection $participations;
 
     #[ORM\Column(name: 'ngens_max_evt', type: 'integer', nullable: false, options: ['comment' => 'Nombre de gens pouvant y aller au total. Donnée "visuelle" uniquement, pas de calcul.'])]
+    #[Groups('event:read')]
+    #[SerializedName('participantsMax')]
     private ?int $ngensMax;
 
     #[ORM\OneToMany(mappedBy: 'evt', targetEntity: 'App\Entity\Article')]
@@ -207,9 +253,7 @@ class Evt
         $this->expenseReports = new ArrayCollection();
         $this->tspCrea = time();
         $this->tspEdit = time();
-
-        // FIX ME fix encadrant
-        $this->participations->add(new EventParticipation($this, $user, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE));
+        $this->isDraft = false;
     }
 
     public function jsonSerialize(): mixed
@@ -263,7 +307,7 @@ class Evt
         return $this->statusWho;
     }
 
-    public function setStatusWho(User $statusWho): self
+    public function setStatusWho(?User $statusWho): self
     {
         $this->statusWho = $statusWho;
 
@@ -373,6 +417,13 @@ class Evt
         });
     }
 
+    /** @return EventParticipation[] */
+    #[Groups('eventParticipation:read')]
+    public function getAllParticipations()
+    {
+        return $this->participations;
+    }
+
     public function clearRoleParticipations(string $role = EventParticipation::ROLE_BENEVOLE): void
     {
         $participations = $this->getParticipations([$role], null);
@@ -416,7 +467,7 @@ class Evt
     }
 
     /** @return EventParticipation[] */
-    public function getEncadrants($types = [EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_STAGIAIRE, EventParticipation::ROLE_COENCADRANT]): Collection
+    public function getEncadrants($types = [EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_STAGIAIRE, EventParticipation::ROLE_COENCADRANT])
     {
         return $this->getParticipations($types, [EventParticipation::STATUS_VALIDE]);
     }
@@ -455,6 +506,20 @@ class Evt
         $this->tsp = $tsp;
 
         return $this;
+    }
+
+    #[Groups('event:read')]
+    #[SerializedName('heureRendezVous')]
+    public function getDateDebut(): ?string
+    {
+        return $this->tsp ? (new \DateTime())->setTimestamp($this->tsp)->format(\DateTime::ATOM) : null;
+    }
+
+    #[Groups('event:read')]
+    #[SerializedName('heureRetour')]
+    public function getDateFin(): ?string
+    {
+        return $this->tspEnd ? (new \DateTime())->setTimestamp($this->tspEnd)->format(\DateTime::ATOM) : null;
     }
 
     public function isPublicStatusUnseen()
@@ -507,12 +572,12 @@ class Evt
         return $this->tspEnd < time();
     }
 
-    public function getTspEnd(): ?string
+    public function getTspEnd(): ?int
     {
         return $this->tspEnd;
     }
 
-    public function setTspEnd(string $tspEnd): self
+    public function setTspEnd(int $tspEnd): self
     {
         $this->tspEnd = $tspEnd;
 
@@ -548,7 +613,7 @@ class Evt
         return $this->place;
     }
 
-    public function setPlace(string $place): self
+    public function setPlace(?string $place): self
     {
         $this->place = $place;
 
@@ -779,6 +844,30 @@ class Evt
     public function setDetailsCaches(?string $detailsCaches): self
     {
         $this->detailsCaches = $detailsCaches;
+
+        return $this;
+    }
+
+    public function isAutoAccept(): bool
+    {
+        return $this->autoAccept;
+    }
+
+    public function setAutoAccept(bool $autoAccept): self
+    {
+        $this->autoAccept = $autoAccept;
+
+        return $this;
+    }
+
+    public function isDraft(): bool
+    {
+        return $this->isDraft;
+    }
+
+    public function setIsDraft(bool $isDraft): self
+    {
+        $this->isDraft = $isDraft;
 
         return $this;
     }

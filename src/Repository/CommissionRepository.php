@@ -52,4 +52,9 @@ class CommissionRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleColumnResult();
     }
+
+    public function getCommissionNameByCode(string $code): ?string
+    {
+        return $this->findOneBy(['code' => $code])->getTitle();
+    }
 }

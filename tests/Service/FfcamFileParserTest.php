@@ -56,29 +56,6 @@ LINE;
         $parser->parse('/path/to/nonexistent/file.txt')->current();
     }
 
-    public function testNormalizePhoneNumberFormatsCorrectly()
-    {
-        $parser = new FfcamFileParser();
-        $method = new \ReflectionMethod($parser, 'normalizePhoneNumber');
-        $method->setAccessible(true);
-
-        $inputs = [
-            '06 12 34 56 78' => '0612345678',
-            '+33 6 12 34 56 78' => '0612345678',
-            '0033 6 12 34 56 78' => '0612345678',
-            'o6 12 34 56 78' => '0612345678', // letter o instead of zero
-            '06.12.34.56.78' => '0612345678',
-            '06-12-34-56-78' => '0612345678',
-            '06/12/34/56/78' => '0612345678',
-            '06,12,34,56,78' => '0612345678',
-        ];
-
-        foreach ($inputs as $input => $expected) {
-            $result = $method->invoke($parser, $input);
-            $this->assertEquals($expected, $result);
-        }
-    }
-
     public function testValidateLineThrowsOnBadData()
     {
         $parser = new FfcamFileParser();

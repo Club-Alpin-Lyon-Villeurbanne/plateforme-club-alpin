@@ -2,8 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Repository\UserRepository;
+use App\Serializer\TimeStampNormalizer;
 use App\Utils\EmailAlerts;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,14 +17,25 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Serializer\Annotation\SerializedName;
+use Symfony\Component\Serializer\Attribute\Context;
 
 /**
  * User.
  */
 #[ORM\Table(name: 'caf_user')]
-#[ORM\Index(name: 'id_user', columns: ['id_user'])]
+#[ORM\Index(columns: ['id_user'], name: 'id_user')]
+#[ORM\Index(columns: ['is_deleted', 'valid_user', 'doit_renouveler_user', 'nomade_user', 'lastname_user'], name: 'idx_user_admin_listing')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ApiResource(operations: [], normalizationContext: ['groups' => ['user:read']])]
+#[ApiResource(
+    shortName: 'utilisateur',
+    operations: [
+        new Get(normalizationContext: ['groups' => ['user:read', 'user:details']]),
+        new Patch(normalizationContext: ['groups' => ['user:read', 'user:details']], denormalizationContext: ['groups' => ['user:write']]),
+    ],
+    security: "is_granted('ROLE_USER') and object == user",
+)]
+#[ApiFilter(GroupFilter::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSerializable
 {
     /**
@@ -28,7 +44,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Id]
     #[ORM\Column(name: 'id_user', type: 'bigint', nullable: false)]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    #[Groups('user:read')]
+    #[Groups(['user:read'])]
     private $id;
 
     #[ORM\OneToMany(targetEntity: 'UserAttr', mappedBy: 'user', cascade: ['persist'])]
@@ -38,6 +54,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      * @var string
      */
     #[ORM\Column(name: 'email_user', type: 'string', length: 200, nullable: true, unique: true)]
+    #[Groups('user:read')]
     private $email;
 
     /**
@@ -51,7 +68,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      * @var string
      */
     #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, nullable: true, unique: true, options: ['comment' => 'Numéro de licence'])]
-
+    #[Groups('user:details')]
+    #[SerializedName('numeroLicence')]
     private $cafnum;
 
     /**
@@ -65,7 +83,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'firstname_user', type: 'string', length: 50, nullable: false)]
     #[Groups('user:read')]
-
+    #[SerializedName('prenom')]
     private $firstname;
 
     /**
@@ -73,73 +91,94 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'lastname_user', type: 'string', length: 50, nullable: false)]
     #[Groups('user:read')]
-
+    #[SerializedName('nom')]
     private $lastname;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'nickname_user', type: 'string', length: 20, nullable: false)]
+    #[Groups('user:read')]
+    #[SerializedName('pseudonyme')]
     private $nickname;
 
     /**
      * @var int
      */
     #[ORM\Column(name: 'created_user', type: 'bigint', nullable: false)]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[Groups('user:details')]
+    #[SerializedName('dateCreation')]
     private $created;
 
     /**
      * @var int|null
      */
     #[ORM\Column(name: 'birthday_user', type: 'bigint', nullable: true)]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[Groups('user:details')]
+    #[SerializedName('dateNaissance')]
     private $birthday;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'tel_user', type: 'string', length: 30, nullable: true)]
+    #[ORM\Column(name: 'tel_user', type: 'string', length: 100, nullable: true)]
+    #[Groups('user:details')]
+    #[SerializedName('telephone')]
     private $tel;
 
     /**
      * @var string
      */
-    #[ORM\Column(name: 'tel2_user', type: 'string', length: 30, nullable: true)]
+    #[ORM\Column(name: 'tel2_user', type: 'string', length: 100, nullable: true)]
+    #[Groups('user:details')]
+    #[SerializedName('telephoneSecours')]
     private $tel2;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'adresse_user', type: 'string', length: 100, nullable: true)]
+    #[Groups('user:details')]
     private $adresse;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'cp_user', type: 'string', length: 10, nullable: true)]
+    #[Groups('user:details')]
+    #[SerializedName('codePostal')]
     private $cp;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'ville_user', type: 'string', length: 30, nullable: true)]
+    #[Groups('user:details')]
     private $ville;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'pays_user', type: 'string', length: 50, nullable: true)]
+    #[Groups('user:details')]
     private $pays;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'civ_user', type: 'string', length: 10, nullable: true)]
+    #[Groups('user:details')]
+    #[SerializedName('civilite')]
     private $civ;
 
     /**
      * @var string
      */
     #[ORM\Column(name: 'moreinfo_user', type: 'string', length: 500, nullable: true, options: ['comment' => 'FORMATIONS ?'])]
+    #[Groups('user:details')]
+    #[SerializedName('informationsSupplementaires')]
     private $moreinfo;
 
     /**
@@ -183,6 +222,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      * @var int|null
      */
     #[ORM\Column(name: 'date_adhesion_user', type: 'bigint', nullable: true)]
+    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
+    #[Groups('user:details')]
     private $dateAdhesion;
 
     /**
@@ -216,6 +257,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private bool $isDeleted = false;
 
     #[ORM\Column(type: 'json', nullable: true)]
+    #[Groups(['user:details', 'user:write'])]
     private ?array $alerts = EmailAlerts::DEFAULT_ALERTS;
 
     #[ORM\Column(type: 'string', nullable: true)]
@@ -418,12 +460,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this;
     }
 
-    public function getBirthday(): ?string
+    public function getBirthday(): ?int
     {
         return $this->birthday;
     }
 
-    public function setBirthday(?string $birthday): self
+    public function setBirthday(?int $birthday): self
     {
         $this->birthday = $birthday;
 
@@ -598,12 +640,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this;
     }
 
-    public function getDateAdhesion(): ?string
+    public function getDateAdhesion(): ?int
     {
         return $this->dateAdhesion;
     }
 
-    public function setDateAdhesion(?string $dateAdhesion): self
+    public function setDateAdhesion(?int $dateAdhesion): self
     {
         $this->dateAdhesion = $dateAdhesion;
 

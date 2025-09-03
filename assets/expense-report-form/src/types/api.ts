@@ -9,16 +9,15 @@ export interface Event {
   code: string;
   commission: any[];
   id: number;
-  rdv: string;
   titre: string;
-  tsp: string;
-  tspEnd: string;
+  heureRdv: string;
+  heureRetour: string;
 }
 
 export interface User {
-  firstname: string;
+  prenom: string;
   id: number;
-  lastname: string;
+  nom: string;
 }
 
 export interface Accommodation {
@@ -40,15 +39,15 @@ export interface ExpenseDetails {
 }
 
 export interface ExpenseReport {
-  attachments: Attachment[];
-  createdAt: string;
+  piecesJointes: Attachment[];
+  dateCreation: string;
   details: ExpenseDetails;
-  event: Event;
+  sortie: Event;
   id: number;
   refundRequired: boolean;
   status: string;
-  statusComment: string;
-  user: User;
+  commentaireStatut: string;
+  utilisateur: User;
 }
 
 export interface ExpenseReportPayload {

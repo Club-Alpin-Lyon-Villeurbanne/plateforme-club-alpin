@@ -93,12 +93,20 @@ class FfcamSynchronizer
             }
 
             if (0 === ++$i % $batchSize) {
-                $this->entityManager->flush();
-                $this->entityManager->clear();
+                try {
+                    $this->entityManager->flush();
+                    $this->entityManager->clear();
+                } catch (\Exception $exception) {
+                    $this->logger->error($exception->getMessage());
+                }
             }
         }
 
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->flush();
+        } catch (\Exception $exception) {
+            $this->logger->error($exception->getMessage());
+        }
 
         return $stats;
     }

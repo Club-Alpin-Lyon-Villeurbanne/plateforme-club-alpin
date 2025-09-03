@@ -71,7 +71,7 @@
 					<input type="text" name="cafnum_user" class="type1" value="<?php echo inputVal('cafnum_user', ''); ?>" placeholder="" />
 					<br />
 
-					Date de naissance :<br />
+					Date de naissance* :<br />
 					<input type="text" name="birthday_user" class="type1" value="<?php echo inputVal('birthday_user', ''); ?>" placeholder="jj/mm/aaaa" />
 					<br />
 
