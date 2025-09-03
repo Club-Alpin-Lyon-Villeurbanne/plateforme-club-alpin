@@ -21,7 +21,6 @@ class FfcamSynchronizer
     ) {
         $today = new \DateTime();
         $startDate = new \DateTime($today->format('Y') . '-08-25');
-        // Tolerance window stops at 31 October
         $endDate = new \DateTime($today->format('Y') . '-10-31');
 
         $this->hasTolerancyPeriodPassed = !($today >= $startDate && $today <= $endDate);
