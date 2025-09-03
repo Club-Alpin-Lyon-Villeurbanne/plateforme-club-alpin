@@ -3,8 +3,8 @@
     {
       "app_id": "app_9621fbc8-3bbc-4a15-a48c-cca8f8051557",
       "org_id": "orga_ad557a52-c460-4455-88b0-8acd46733724",
-      "deploy_url": "https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon.git",
-      "git_ssh_url": "https://github.com/Club-Alpin-Lyon-Villeurbanne/caflyon.git",
+      "deploy_url": "https://github.com/Club-Alpin-Lyon-Villeurbanne/plateforme-club-alpin.git",
+      "git_ssh_url": "https://github.com/Club-Alpin-Lyon-Villeurbanne/plateforme-club-alpin.git",
       "name": "web-staging",
       "alias": "web-staging"
     },

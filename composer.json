@@ -1,7 +1,7 @@
 {
-    "name": "plateforme-club-alpin/clubalpinlyon.fr",
+    "name": "plateforme-club-alpin/plateforme-club-alpin",
     "type": "project",
-    "description": "Club Alpin Français de Lyon",
+    "description": "Plateforme Club Alpin (multi-clubs)",
     "license": "proprietary",
     "minimum-stability": "stable",
     "prefer-stable": true,
