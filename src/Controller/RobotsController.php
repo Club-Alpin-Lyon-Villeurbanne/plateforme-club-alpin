@@ -10,9 +10,22 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RobotsController
 {
+    public function __construct(private readonly string $env = 'dev') {}
+
     #[Route(path: '/robots.txt', name: 'robots_txt', methods: ['GET'])]
     public function __invoke(Request $request): Response
     {
+        // In non-prod environments, disallow everything
+        if ($this->env !== 'prod') {
+            $content = "User-agent: *\nDisallow: /\n";
+            $response = new Response($content);
+            $response->headers->set('Content-Type', 'text/plain; charset=UTF-8');
+            $response->setPublic();
+            $response->setMaxAge(300);
+
+            return $response;
+        }
+
         $baseUrl = rtrim($request->getSchemeAndHttpHost(), '/');
 
         $lines = [
@@ -43,4 +56,3 @@ class RobotsController
         return $response;
     }
 }
-
