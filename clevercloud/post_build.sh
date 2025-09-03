@@ -15,7 +15,15 @@ JWT_CONF_DIR=config/jwt
 
 cat public/.htaccess.clever > public/.htaccess
 mv infrastructure/confs/.env.prod .
-mv infrastructure/confs/${DEPLOY_ENV}/robots.txt public/robots.txt
+# Build robots.txt with the right sitemap URL for the current club
+SITEMAP_URL="${BACKEND_URL%/}/sitemap.xml"
+if [ -f infrastructure/confs/${DEPLOY_ENV}/robots.txt ]; then
+  if grep -q "{{SITEMAP_URL}}" infrastructure/confs/${DEPLOY_ENV}/robots.txt; then
+    sed "s#{{SITEMAP_URL}}#${SITEMAP_URL}#g" infrastructure/confs/${DEPLOY_ENV}/robots.txt > public/robots.txt
+  else
+    sed -E "s#^Sitemap: .*#Sitemap: ${SITEMAP_URL}#g" infrastructure/confs/${DEPLOY_ENV}/robots.txt > public/robots.txt
+  fi
+fi
 
 mkdir -p ${JWT_CONF_DIR}
 echo "${JWT_SECRET_KEY}" > ${JWT_CONF_DIR}/private.pem
@@ -36,3 +44,9 @@ bin/console messenger:setup-transports
 
 # Frontend build
 npm install && npm run build
+
+# Patch sitemap.xml to use the current domain instead of the default Lyon one
+if [ -n "${BACKEND_URL}" ] && [ -f public/sitemap.xml ]; then
+  BASE="${BACKEND_URL%/}"
+  sed -E "s#https://www\\.clubalpinlyon\\.fr#${BASE}#g" public/sitemap.xml > public/sitemap.xml.tmp && mv public/sitemap.xml.tmp public/sitemap.xml
+fi
