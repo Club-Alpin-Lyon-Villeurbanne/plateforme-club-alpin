@@ -47,12 +47,17 @@ class SitemapController
         // Accueil
         $add('/');
 
-        // Pages fixes (publiques, non admin)
-        foreach ($this->pageRepository->findBy(['vis' => true, 'admin' => false, 'superadmin' => false], ['ordreMenu' => 'ASC']) as $page) {
+        // Pages fixes (publiques, non admin) – uniquement celles présentes dans le menu principal
+        foreach ($this->pageRepository->findBy(['vis' => true, 'admin' => false, 'superadmin' => false, 'menu' => true], ['ordreMenu' => 'ASC']) as $page) {
             $code = method_exists($page, 'getCode') ? $page->getCode() : null;
             if ($code) {
                 $add('/pages/' . $code . '.html');
             }
+        }
+
+        // Pages fixes présentes dans le footer (whitelist explicite)
+        foreach (['responsables', 'nos-partenaires-prives', 'nos-partenaires-publics', 'mentions-legales'] as $footerCode) {
+            $add('/pages/' . $footerCode . '.html');
         }
 
         // Commissions visibles
@@ -86,4 +91,3 @@ class SitemapController
         return $response;
     }
 }
-
