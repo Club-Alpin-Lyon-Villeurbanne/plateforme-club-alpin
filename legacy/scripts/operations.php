@@ -39,11 +39,6 @@ if (user()) {
         require $operationsDir . 'operations.user_join_del.php';
     }
 
-    // JOINS : USER / SORTIE : inscription manuelle de la part de l'organisateur de l'événemeent
-    elseif ('user_join_manuel' == $operation) {
-        require $operationsDir . 'operations.user_join_manuel.php';
-    }
-
     // ARTICLE : publication OU refus
     elseif ('article_validate' == $operation) {
         require $operationsDir . 'operations.article_validate.php';

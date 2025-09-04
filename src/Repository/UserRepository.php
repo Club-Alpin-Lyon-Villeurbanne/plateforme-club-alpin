@@ -179,4 +179,20 @@ SQL;
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function findUsersToRegister(array $participants, string $show = 'valid')
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->where('u NOT IN (:users)')
+            ->setParameter('users', $participants)
+        ;
+        if ('valid' === $show) {
+            $qb
+                ->andWhere('u.doitRenouveler = false')
+                ->andWhere('u.nomade = false')
+            ;
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

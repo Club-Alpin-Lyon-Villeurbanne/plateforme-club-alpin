@@ -713,7 +713,7 @@
 
                     {% if allowed('user_see_all') or allowed('evt_join_notme') or allowed('evt_join_doall') %}
                         {% if not event.publicStatusUnseen %}
-                            <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_manual.php&amp;id_evt={{ event.id }}" title="">
+                            <a class="nice2 blue fancyframe" href="{{ path('event_manual_add_select', {event: event.id}) }}" title="">
                                 Inscrire manuellement des adhérents du club
                             </a>
 
