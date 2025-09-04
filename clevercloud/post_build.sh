@@ -36,3 +36,4 @@ bin/console messenger:setup-transports
 
 # Frontend build
 npm install && npm run build
+

@@ -7,7 +7,8 @@
 # Then enjoy `sf cache:clear`, `composer install` like before and stop
 # worrying about Dockerish things
 
-php_container=www_caflyon
+# Default PHP container name for the platform (previously www_caflyon)
+php_container=www_pca
 
 alias sf="docker exec -it ${php_container} php bin/console"
 alias composer="docker exec -it ${php_container} composer"
