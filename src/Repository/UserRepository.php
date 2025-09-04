@@ -160,8 +160,7 @@ SQL;
             ->setParameters([
                 'lastname' => $lastname,
                 'firstname' => $firstname,
-                'dayStart' => $dayStart,
-                'dayEnd' => $dayEnd,
+                'birthday' => $birthday,
                 'excludeCafnum' => $excludeCafnum,
             ])
             ->getQuery()
