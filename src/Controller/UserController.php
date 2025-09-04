@@ -10,8 +10,8 @@ use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -25,7 +25,7 @@ class UserController extends AbstractController
         EntityManagerInterface $entityManager,
         UserRepository $userRepository,
         ?User $nomad = null,
-    ): array|RedirectResponse {
+    ): array|Response {
         if (!$this->isGranted('EVENT_JOINING_ADD', $event)) {
             throw new AccessDeniedHttpException('Not allowed');
         }
@@ -42,34 +42,42 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var User $nomad */
-            $nomad = $form->getData();
             $data = $request->request->all();
             $userData = $data['nomade'] ?? [];
             $formData = $data['form'] ?? [];
             $formData = array_merge($userData, $formData);
-            $nomad
-                ->setNickname(NicknameGenerator::generateNickname($nomad->getFirstname(), $nomad->getLastname()))
-                ->setNomade(true)
-                ->setValid(true)
-                ->setManuel(false)
-                ->setNomadeParent($this->getUser()->getId())
-                ->setDoitRenouveler(false)
-                ->setAlerteRenouveler(false)
-                ->setCookietoken('')
-                ->setAuthContact('none')
-                ->setAlertSortiePrefix('')
-                ->setAlertArticlePrefix('')
-            ;
 
-            $entityManager->persist($nomad);
+            /* @var User $nomad */
+            if (!empty($formData['id_user'])) {
+                $nomad = $userRepository->find($formData['id_user']);
+            } else {
+                $nomad = $form->getData();
+                $nomad
+                    ->setNickname(NicknameGenerator::generateNickname($nomad->getFirstname(), $nomad->getLastname()))
+                    ->setNomade(true)
+                    ->setValid(true)
+                    ->setManuel(false)
+                    ->setNomadeParent($this->getUser()->getId())
+                    ->setDoitRenouveler(false)
+                    ->setAlerteRenouveler(false)
+                    ->setCookietoken('')
+                    ->setAuthContact('none')
+                    ->setAlertSortiePrefix('')
+                    ->setAlertArticlePrefix('')
+                ;
+                $entityManager->persist($nomad);
+            }
+
             $event->addParticipation($nomad, $formData['role_evt_join']);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Le membre nomade a bien été inscrit à la sortie.');
+            $this->addFlash('success', 'Le "nomade" a bien été inscrit à la sortie.');
 
-            return $this->redirectToRoute('sortie', ['id' => $event->getId(), 'code' => $event->getCode()]);
-            /* @todo fermer la modale et rafraichir la page de derrière */
+            return new Response(
+                '<script>
+                    window.parent.location.reload();
+                </script>'
+            );
         }
 
         return [

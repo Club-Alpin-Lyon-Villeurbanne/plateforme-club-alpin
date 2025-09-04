@@ -109,25 +109,25 @@
 
                 if (id_user > 0 && tmpPrefilled) {
                     document.getElementById('nomade_civ').value = tmpPrefilled.civ_user;
-                    document.getElementById('nomade_civ').setAttribute('readonly', true);
+                    document.getElementById('nomade_civ').setAttribute('readonly', 'readonly');
 
                     document.getElementById('nomade_cafnum').value = tmpPrefilled.cafnum_user;
-                    document.getElementById('nomade_cafnum').setAttribute('readonly', true);
+                    document.getElementById('nomade_cafnum').setAttribute('readonly', 'readonly');
 
                     document.getElementById('nomade_firstname').value = tmpPrefilled.firstname_user;
-                    document.getElementById('nomade_firstname').setAttribute('readonly', true);
+                    document.getElementById('nomade_firstname').setAttribute('readonly', 'readonly');
 
                     document.getElementById('nomade_lastname').value = tmpPrefilled.lastname_user;
-                    document.getElementById('nomade_lastname').setAttribute('readonly', true);
+                    document.getElementById('nomade_lastname').setAttribute('readonly', 'readonly');
 
                     document.getElementById('nomade_tel').value = tmpPrefilled.tel_user;
-                    document.getElementById('nomade_tel').setAttribute('readonly', true);
+                    document.getElementById('nomade_tel').setAttribute('readonly', 'readonly');
 
                     document.getElementById('nomade_tel2').value = tmpPrefilled.tel2_user;
-                    document.getElementById('nomade_tel2').setAttribute('readonly', true);
+                    document.getElementById('nomade_tel2').setAttribute('readonly', 'readonly');
 
                     document.getElementById('nomade_email').value = tmpPrefilled.email_user;
-                    document.getElementById('nomade_email').setAttribute('readonly', true);
+                    document.getElementById('nomade_email').setAttribute('readonly', 'readonly');
                 } else {
                     document.querySelectorAll('input').forEach(input => {
                         input.value = '';
