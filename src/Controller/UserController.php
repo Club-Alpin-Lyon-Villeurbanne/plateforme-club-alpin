@@ -155,7 +155,7 @@ class UserController extends AbstractController
             // envoi des mails aux encadrants
             foreach ($destinataires as $destinataire) {
                 $mailer->send($destinataire, 'transactional/sortie-inscription-manuelle', [
-                    'role' => $role,
+                    'role' => 'manuel',
                     'event_name' => $evtName,
                     'event_url' => $evtUrl,
                     'event_date' => $evtDate,
