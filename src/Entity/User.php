@@ -807,9 +807,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this->alertSortiePrefix;
     }
 
-    public function setAlertSortiePrefix(string $alertSortiePrefix): void
+    public function setAlertSortiePrefix(string $alertSortiePrefix): self
     {
         $this->alertSortiePrefix = $alertSortiePrefix;
+
+        return $this;
     }
 
     public function getAlertArticlePrefix(): ?string
@@ -817,9 +819,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this->alertArticlePrefix;
     }
 
-    public function setAlertArticlePrefix(string $alertArticlePrefix): void
+    public function setAlertArticlePrefix(string $alertArticlePrefix): self
     {
         $this->alertArticlePrefix = $alertArticlePrefix;
+
+        return $this;
     }
 
     public function getMaterielAccountCreatedAt(): ?\DateTimeInterface

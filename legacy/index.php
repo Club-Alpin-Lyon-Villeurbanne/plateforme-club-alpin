@@ -33,9 +33,6 @@ if (!empty($evt) && is_array($evt) && array_key_exists('tsp_evt', $evt) && !empt
     <meta charset="utf-8">
     <title>
     <?php echo html_utf8($meta_title); ?>
-    <?php if ('feuille-de-sortie' == $p1) { ?>
-        - Feuille de sortie - <?php echo html_utf8($eventTitle); ?> - <?php echo date('d.m.Y', $eventTimestamp); ?>
-    <?php } ?>
     </title>
     <base href="<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>" />
     <meta name="description" content="<?php echo html_utf8($meta_description); ?>">
@@ -103,7 +100,7 @@ if (is_array($p_addJs)) {
         }
 ?>
 </head>
-<body <?php if ('feuille-de-sortie' == $p1) { ?>id="feuille-de-sortie"<?php } ?>>
+<body>
     <?php
     if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
         ?>
@@ -122,17 +119,8 @@ if (is_array($p_addJs)) {
         }
 
 // _________________________________________________ CONTENU IMPRESSION FEUILLE SORTIE
-if ('feuille-de-sortie' == $p1) {
-    echo '<div id="pageAdmin" class="">';
-    if (file_exists(__DIR__ . '/pages/' . $p1 . '.php')) {
-        require __DIR__ . '/pages/' . $p1 . '.php';
-    } else {
-        require __DIR__ . '/pages/404.php';
-    }
-    echo '</div>';
-}
 // _________________________________________________ CONTENU COMMUN AUX PAGES PUBLIQUES
-elseif (!$p_pageadmin || !isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
+if (!$p_pageadmin || !isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     // include page
     require __DIR__ . '/includes/generic/top.php';
     require __DIR__ . '/includes/bigfond.php';

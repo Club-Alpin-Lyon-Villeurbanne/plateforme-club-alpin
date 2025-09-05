@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Repository\EventParticipationRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
@@ -123,7 +124,7 @@ class EventParticipation implements \JsonSerializable
     #[SerializedName('proposeCovoiturage')]
     private $isCovoiturage;
 
-    public function __construct(Evt $event, User $user, string $role, int $status)
+    public function __construct(Evt $event, UserInterface $user, string $role, int $status)
     {
         $this->evt = $event;
         $this->user = $user;

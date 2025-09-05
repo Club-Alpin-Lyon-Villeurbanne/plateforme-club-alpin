@@ -9,6 +9,7 @@ use App\Entity\Usertype;
 use App\Mailer\Mailer;
 use App\Repository\UserAttrRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 
 class UserRightService
 {
@@ -16,6 +17,7 @@ class UserRightService
         protected Mailer $mailer,
         protected EntityManagerInterface $manager,
         protected UserAttrRepository $attrRepository,
+        protected LoggerInterface $logger,
     ) {
     }
 
@@ -25,18 +27,23 @@ class UserRightService
         $this->manager->remove($userRight);
         $this->manager->flush();
 
-        $this->sendNotificationToUser(
-            'suppression-utilisateur',
-            $userRight->getUser(),
-            $userRight->getUserType()->getTitle(),
-            $userRight->getCommission(),
-            $whoUser->getFullName()
-        );
-        $this->sendNotificationToManagement(
-            'suppression-responsables',
-            $userRight,
-            $whoUser->getFullName()
-        );
+        try {
+            $this->sendNotificationToUser(
+                'suppression-utilisateur',
+                $userRight->getUser(),
+                $userRight->getUserType()->getTitle(),
+                $userRight->getCommission(),
+                $whoUser->getFullName()
+            );
+            $this->sendNotificationToManagement(
+                'suppression-responsables',
+                $userRight,
+                $whoUser->getFullName()
+            );
+        } catch (\Exception $exception) {
+            $this->logger->error('Impossible d\'envoyer les notifications de retrait de responsabilité');
+            $this->logger->error($exception->getMessage());
+        }
     }
 
     public function notifyUserAfterRightAdded(int $idUser, int $idUserType, string $params, ?User $whoUser): void
@@ -45,18 +52,23 @@ class UserRightService
         $userType = $this->manager->getRepository(Usertype::class)->find($idUserType);
         $userRight = $this->manager->getRepository(UserAttr::class)->findOneBy(['user' => $user, 'userType' => $userType, 'params' => $params]);
 
-        $this->sendNotificationToUser(
-            'ajout-utilisateur',
-            $userRight->getUser(),
-            $userRight->getUserType()->getTitle(),
-            $userRight->getCommission(),
-            $whoUser->getFullName()
-        );
-        $this->sendNotificationToManagement(
-            'ajout-responsables',
-            $userRight,
-            $whoUser->getFullName()
-        );
+        try {
+            $this->sendNotificationToUser(
+                'ajout-utilisateur',
+                $userRight->getUser(),
+                $userRight->getUserType()->getTitle(),
+                $userRight->getCommission(),
+                $whoUser->getFullName()
+            );
+            $this->sendNotificationToManagement(
+                'ajout-responsables',
+                $userRight,
+                $whoUser->getFullName()
+            );
+        } catch (\Exception $exception) {
+            $this->logger->error('Impossible d\'envoyer les notifications d\'ajout de responsabilité');
+            $this->logger->error($exception->getMessage());
+        }
     }
 
     public function sendNotificationToUser(string $mailTemplate, User $user, string $rightLabel, ?string $commissionCode, ?string $by_who_name): void

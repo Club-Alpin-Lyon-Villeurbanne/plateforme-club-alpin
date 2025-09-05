@@ -14,6 +14,7 @@ use App\Serializer\TimeStampNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Serializer\Attribute\Context;
@@ -386,7 +387,7 @@ class Evt
         return $this;
     }
 
-    public function addParticipation(User $user, string $role = EventParticipation::ROLE_INSCRIT, int $status = EventParticipation::STATUS_NON_CONFIRME): EventParticipation
+    public function addParticipation(UserInterface $user, string $role = EventParticipation::ROLE_INSCRIT, int $status = EventParticipation::STATUS_NON_CONFIRME): EventParticipation
     {
         $participation = new EventParticipation($this, $user, $role, $status);
         $this->participations->add($participation);
@@ -433,9 +434,9 @@ class Evt
     }
 
     #[Groups('event:read')]
-    public function getParticipationsCount(): int
+    public function getParticipationsCount($roles = null, $status = EventParticipation::STATUS_VALIDE): int
     {
-        $participations = $this->getParticipations();
+        $participations = $this->getParticipations($roles, $status);
 
         return \count($participations);
     }
