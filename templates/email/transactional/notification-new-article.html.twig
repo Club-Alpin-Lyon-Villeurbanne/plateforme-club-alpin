@@ -8,7 +8,7 @@
 
 {% block inner_html %}
     <p>
-        Un {% if entity.evt %}nouveau compte-rendu{% else %}nouvel article{% endif %} <a href="{{ url_site }}/article/{{ entity.code }}-{{ entity.id }}.html">"{{ entity.titre }}"</a> vient d'être publié sur le site du Club Alpin Français Lyon-Villeurbanne{% if entity.commission %} dans la commission <b>{{ entity.commission.title }}</b>{% endif %}.
+        Un {% if entity.evt %}nouveau compte-rendu{% else %}nouvel article{% endif %} <a href="{{ url_site }}/article/{{ entity.code }}-{{ entity.id }}.html">"{{ entity.titre }}"</a> vient d'être publié sur le site du {{ site }}{% if entity.commission %} dans la commission <b>{{ entity.commission.title }}</b>{% endif %}.
     </p>
     <p>
         Vous pouvez gérer vos alertes depuis <a href="{{ url('profil_alertes') }}">votre espace "mes alertes"</a>.
@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block inner_txt %}
-    Un {% if entity.evt %}nouveau compte-rendu{% else %}nouvel article{% endif %} "{{ entity.titre }}" vient d'être publié sur le site du Club Alpin Français Lyon-Villeurbanne{% if entity.commission %} dans la commission {{ entity.commission.title }}{% endif %}.
+    Un {% if entity.evt %}nouveau compte-rendu{% else %}nouvel article{% endif %} "{{ entity.titre }}" vient d'être publié sur le site du {{ site }}{% if entity.commission %} dans la commission {{ entity.commission.title }}{% endif %}.
     Lire l'article ({{ url_site }}/article/{{ entity.code }}-{{ entity.id }}.html)
 
     Vous pouvez gérer vos alertes depuis votre espace "mes alertes" ({{ url('profil_alertes') }}).
