@@ -9,6 +9,7 @@ use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\UnitOfWork;
+use Psr\Log\LoggerInterface;
 
 #[AsDoctrineListener(event: Events::onFlush)]
 class ExpenseReportStatusChangeSubscriber
@@ -16,6 +17,7 @@ class ExpenseReportStatusChangeSubscriber
     public function __construct(
         private readonly Mailer $mailer,
         private readonly ExpenseReportCalculator $calculator,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -57,11 +59,16 @@ class ExpenseReportStatusChangeSubscriber
                 'status' => $newStatus,
             ]);
 
-            $this->mailer->send(
-                $entity->getUser(),
-                'transactional/expense-report-status-email',
-                $params
-            );
+            try {
+                $this->mailer->send(
+                    $entity->getUser(),
+                    'transactional/expense-report-status-email',
+                    $params
+                );
+            } catch (\Exception $exception) {
+                $this->logger->error('Impossible d\'envoyer l\'email de note de frais');
+                $this->logger->error($exception->getMessage());
+            }
         }
     }
 }
