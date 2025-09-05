@@ -574,6 +574,7 @@ class SortieController extends AbstractController
         Evt $event,
         EntityManagerInterface $em,
         Mailer $mailer,
+        LoggerInterface $logger,
     ): RedirectResponse {
         if (!$this->isGranted('SORTIE_CANCEL', $event)) {
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
@@ -603,15 +604,20 @@ class SortieController extends AbstractController
             foreach ($participants as $participant) {
                 $event->removeParticipation($participant);
 
-                $mailer->send($participant->getUser(), 'transactional/sortie-annulation', [
-                    'event_name' => $event->getTitre(),
-                    'commission' => $event->getCommission()->getTitle(),
-                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'event_date' => date('d/m/Y', $event->getTsp()),
-                    'cancel_user_name' => $this->getUser()->getNickname(),
-                    'cancel_user_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'voir-profil/' . $this->getUser()->getId() . '.html',
-                    'message' => $message,
-                ]);
+                try {
+                    $mailer->send($participant->getUser(), 'transactional/sortie-annulation', [
+                        'event_name' => $event->getTitre(),
+                        'commission' => $event->getCommission()->getTitle(),
+                        'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                        'event_date' => date('d/m/Y', $event->getTsp()),
+                        'cancel_user_name' => $this->getUser()->getNickname(),
+                        'cancel_user_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'voir-profil/' . $this->getUser()->getId() . '.html',
+                        'message' => $message,
+                    ]);
+                } catch (\Exception $exception) {
+                    $logger->error('Impossible de notifier les participants de l\'annulation de la sortie');
+                    $logger->error($exception->getMessage());
+                }
             }
         }
         $em->flush();
@@ -828,6 +834,7 @@ class SortieController extends AbstractController
         Evt $event,
         EntityManagerInterface $em,
         Mailer $mailer,
+        LoggerInterface $logger,
         UserRepository $userRepository,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('join_event', $request->request->get('csrf_token'))) {
@@ -984,45 +991,13 @@ class SortieController extends AbstractController
                     $inscrits[] = $user;
                 }
 
-                $mailer->send($destinataires, 'transactional/sortie-demande-inscription', [
-                    'role' => $role_evt_join,
-                    'event_name' => $evtName,
-                    'event_url' => $evtUrl,
-                    'event_date' => $evtDate,
-                    'auto_accept' => $auto_accept,
-                    'commission' => $commissionTitle,
-                    'inscrits' => array_map(function ($cetinscrit) {
-                        return [
-                            'firstname' => ucfirst($cetinscrit->getFirstname()),
-                            'lastname' => strtoupper($cetinscrit->getLastname()),
-                            'nickname' => $cetinscrit->getNickname(),
-                            'email' => $cetinscrit->getEmail(),
-                            'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $cetinscrit->getId() . '.html',
-                        ];
-                    }, $inscrits),
-                    'firstname' => ucfirst($user->getFirstname()),
-                    'lastname' => strtoupper($user->getLastname()),
-                    'nickname' => $user->getNickname(),
-                    'message' => $joinMessage,
-                    'covoiturage' => $is_covoiturage,
-                ], [], $user);
-
-                // E-MAIL AU PRE-INSCRIT
-                // inscription auto-acceptée
-                if ($auto_accept) {
-                    $mailer->send($user, 'transactional/sortie-participation-confirmee', [
+                try {
+                    $mailer->send($destinataires, 'transactional/sortie-demande-inscription', [
                         'role' => $role_evt_join,
                         'event_name' => $evtName,
                         'event_url' => $evtUrl,
                         'event_date' => $evtDate,
-                        'commission' => $commissionTitle,
-                    ]);
-                } elseif ($hasFiliations) {
-                    $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
-                        'role' => $role_evt_join,
-                        'event_name' => $evtName,
-                        'event_url' => $evtUrl,
-                        'event_date' => $evtDate,
+                        'auto_accept' => $auto_accept,
                         'commission' => $commissionTitle,
                         'inscrits' => array_map(function ($cetinscrit) {
                             return [
@@ -1030,28 +1005,80 @@ class SortieController extends AbstractController
                                 'lastname' => strtoupper($cetinscrit->getLastname()),
                                 'nickname' => $cetinscrit->getNickname(),
                                 'email' => $cetinscrit->getEmail(),
+                                'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $cetinscrit->getId() . '.html',
                             ];
                         }, $inscrits),
+                        'firstname' => ucfirst($user->getFirstname()),
+                        'lastname' => strtoupper($user->getLastname()),
+                        'nickname' => $user->getNickname(),
+                        'message' => $joinMessage,
                         'covoiturage' => $is_covoiturage,
-                    ]);
+                    ], [], $user);
+                } catch (\Exception $exception) {
+                    $logger->error('Impossible de notifier l\'auteur de la sortie d\'une nouvelle préinscription');
+                    $logger->error($exception->getMessage());
+                }
+
+                // E-MAIL AU PRE-INSCRIT
+                // inscription auto-acceptée
+                if ($auto_accept) {
+                    try {
+                        $mailer->send($user, 'transactional/sortie-participation-confirmee', [
+                            'role' => $role_evt_join,
+                            'event_name' => $evtName,
+                            'event_url' => $evtUrl,
+                            'event_date' => $evtDate,
+                            'commission' => $commissionTitle,
+                        ]);
+                    } catch (\Exception $exception) {
+                        $logger->error('Impossible de notifier l\'adhérent de sa participation');
+                        $logger->error($exception->getMessage());
+                    }
+                } elseif ($hasFiliations) {
+                    try {
+                        $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
+                            'role' => $role_evt_join,
+                            'event_name' => $evtName,
+                            'event_url' => $evtUrl,
+                            'event_date' => $evtDate,
+                            'commission' => $commissionTitle,
+                            'inscrits' => array_map(function ($cetinscrit) {
+                                return [
+                                    'firstname' => ucfirst($cetinscrit->getFirstname()),
+                                    'lastname' => strtoupper($cetinscrit->getLastname()),
+                                    'nickname' => $cetinscrit->getNickname(),
+                                    'email' => $cetinscrit->getEmail(),
+                                ];
+                            }, $inscrits),
+                            'covoiturage' => $is_covoiturage,
+                        ]);
+                    } catch (\Exception $exception) {
+                        $logger->error('Impossible de notifier l\'adhérent de sa préinscription (+ affiliés éventuels)');
+                        $logger->error($exception->getMessage());
+                    }
                 } else {
                     // inscription simple de moi à moi
-                    $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
-                        'role' => $role_evt_join,
-                        'event_name' => $evtName,
-                        'event_url' => $evtUrl,
-                        'event_date' => $evtDate,
-                        'commission' => $commissionTitle,
-                        'inscrits' => [
-                            [
-                                'firstname' => ucfirst($user->getFirstname()),
-                                'lastname' => strtoupper($user->getLastname()),
-                                'nickname' => $user->getNickname(),
-                                'email' => $user->getEmail(),
+                    try {
+                        $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
+                            'role' => $role_evt_join,
+                            'event_name' => $evtName,
+                            'event_url' => $evtUrl,
+                            'event_date' => $evtDate,
+                            'commission' => $commissionTitle,
+                            'inscrits' => [
+                                [
+                                    'firstname' => ucfirst($user->getFirstname()),
+                                    'lastname' => strtoupper($user->getLastname()),
+                                    'nickname' => $user->getNickname(),
+                                    'email' => $user->getEmail(),
+                                ],
                             ],
-                        ],
-                        'covoiturage' => $is_covoiturage,
-                    ]);
+                            'covoiturage' => $is_covoiturage,
+                        ]);
+                    } catch (\Exception $exception) {
+                        $logger->error('Impossible de notifier l\'adhérent de sa préinscription');
+                        $logger->error($exception->getMessage());
+                    }
                 }
             }
         }
