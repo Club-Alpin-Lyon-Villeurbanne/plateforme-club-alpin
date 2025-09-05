@@ -98,5 +98,11 @@ class MemberMerger
         ->setCafnumParent($newCafUser->getCafnumParent())
         ->setDoitRenouveler($newCafUser->getDoitRenouveler())
         ->setAlerteRenouveler($newCafUser->getAlerteRenouveler());
+
+        // Mettre à jour la date d'adhésion uniquement si elle est valide
+        // Cela évite d'écraser une date existante avec NULL lors du renouvellement
+        if (null !== $newCafUser->getDateAdhesion()) {
+            $oldCafUser->setDateAdhesion($newCafUser->getDateAdhesion());
+        }
     }
 }
