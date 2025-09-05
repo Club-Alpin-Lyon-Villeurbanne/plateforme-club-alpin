@@ -203,7 +203,7 @@ if (user()) {
                                 . '</td>'
                                 . '<td>'
                                     . '<select name="role_evt_join[]">'
-                                        . '<option value="manuel">Inscrit (par défaut)</option>'
+                                        . '<option value="inscrit">Inscrit (par défaut)</option>'
                                         . (1 == $sortie['need_benevoles_evt'] ? '<option value="benevole">Bénévole</option>' : '')
                                     . '</select>'
                                 . '</td>';
