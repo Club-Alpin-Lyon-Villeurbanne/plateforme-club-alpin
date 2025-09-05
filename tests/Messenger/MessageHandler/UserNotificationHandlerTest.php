@@ -30,9 +30,9 @@ class UserNotificationHandlerTest extends WebTestCase
             self::getContainer()->get(UserNotificationRepository::class),
             self::getContainer()->get(EntityManagerInterface::class),
             self::getContainer()->get(Mailer::class),
-
             '[CAF-Sortie]',
             '[CAF-Article]',
+            'CAF de test',
         );
 
         $handler(new UserNotification(AlertType::Article, 25000000, $user->getId()));
@@ -55,6 +55,7 @@ class UserNotificationHandlerTest extends WebTestCase
     {
         $defaultAlertSortiePrefix = '[CAF-Sortie]';
         $defaultAlertArticlePrefix = '[CAF-Article]';
+        $siteName = 'CAF de test';
 
         $userOwner = $this->signup();
         $otherUserSubscribed = $this->signup();
@@ -73,6 +74,7 @@ class UserNotificationHandlerTest extends WebTestCase
             self::getContainer()->get(Mailer::class),
             $defaultAlertArticlePrefix,
             $defaultAlertSortiePrefix,
+            $siteName,
         );
 
         $handler(new UserNotification(AlertType::Sortie, $evt->getId(), $userOwner->getId()));
@@ -119,6 +121,7 @@ class UserNotificationHandlerTest extends WebTestCase
     {
         $defaultAlertSortiePrefix = '[CAF-Sortie]';
         $defaultAlertArticlePrefix = '[CAF-Article]';
+        $siteName = 'CAF de test';
 
         $userOwner = $this->signup();
         $otherUserSubscribed = $this->signup();
@@ -136,6 +139,7 @@ class UserNotificationHandlerTest extends WebTestCase
             self::getContainer()->get(Mailer::class),
             $defaultAlertArticlePrefix,
             $defaultAlertSortiePrefix,
+            $siteName,
         );
 
         $handler(new UserNotification(AlertType::Article, $article->getId(), $userOwner->getId()));
