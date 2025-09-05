@@ -129,7 +129,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
                                         echo '<p class="info">Le contenu ci-dessous a été chargé depuis une version antérieure, mais n\'a pas encore été sauvegardé.</p>';
                                     } ?>
 									<div style="background:#c0c0c0; ">
-										<textarea id="edition1" class="<?php echo $_GET['class']; ?>" name="contenu_content_html" style="width:100%; min-height:300px"><?php
+										<textarea id="edition1" class="<?php echo $_GET['class']; ?> tinymce" name="contenu_content_html" style="width:100%; min-height:300px"><?php
                                             // affichage contenu courant
                                             echo !empty($runningVersion['contenu_content_html']) ? $runningVersion['contenu_content_html'] : ''; ?>
 										</textarea>
