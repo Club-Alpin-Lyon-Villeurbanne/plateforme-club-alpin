@@ -485,3 +485,17 @@ h2.bleucaf {font-family:DINBold; font-weight: bold; margin: 20px 0 10px 0; text-
 .main-type ul > ul > ul {
     margin-left: 40px;
 }
+
+.image {
+    display: table;
+    clear: both;
+    text-align: center;
+    margin: 1em auto;
+}
+.image img {
+    max-width: 100%;
+    height: auto;
+}
+.image_resized img {
+    width: 100%;
+}

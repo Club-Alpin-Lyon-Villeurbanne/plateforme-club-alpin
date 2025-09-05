@@ -88,7 +88,7 @@ class ArticleType extends AbstractType
                            $evt->getTitre();
                 },
                 'placeholder' => 'Sélectionner',
-                'required' => true,
+                'required' => false,
                 'label' => 'Lier cet article à une sortie',
                 'attr' => [
                     'class' => 'type1 wide',
