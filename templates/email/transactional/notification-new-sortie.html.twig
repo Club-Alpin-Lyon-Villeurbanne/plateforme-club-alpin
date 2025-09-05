@@ -10,7 +10,7 @@
 
 {% block inner_html %}
     <p>
-        Une nouvelle sortie <a href="{{ url('sortie', {code: entity.code, id: entity.id}) }}">"{{ entity.titre }}"</a> vient d'être publiée sur le site du Club Alpin Français Lyon-Villeurbanne dans la commission <b>{{ entity.commission.title }}</b>.
+        Une nouvelle sortie <a href="{{ url('sortie', {code: entity.code, id: entity.id}) }}">"{{ entity.titre }}"</a> vient d'être publiée sur le site du {{ site }} dans la commission <b>{{ entity.commission.title }}</b>.
     </p>
     <p>
         Vous pouvez gérer vos alertes depuis <a href="{{ url('profil_alertes') }}">votre espace "mes alertes"</a>.
@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% block inner_txt %}
-    Une nouvelle sortie "{{ entity.titre }}" vient d'être publiée sur le site du Club Alpin Français Lyon-Villeurbanne dans la commission {{ entity.commission.title }}.
+    Une nouvelle sortie "{{ entity.titre }}" vient d'être publiée sur le site du {{ site }} dans la commission {{ entity.commission.title }}.
     Voir la sortie ({{ url('sortie', {code: entity.code, id: entity.id}) }}).
 
     Vous pouvez gérer vos alertes depuis votre espace "mes alertes" ({{ url('profil_alertes') }}).
