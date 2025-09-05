@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Table(name: 'caf_competence')]
+#[ORM\Index(columns: ['code_competence'], name: 'idx_code_competence')]
 #[ORM\Entity(repositoryClass: CompetenceRepository::class)]
 class Competence
 {
@@ -30,7 +31,7 @@ class Competence
     #[ORM\Column(name: 'code_competence', type: Types::STRING, length: 15, nullable: false)]
     private string $code;
 
-    #[ORM\Column(name: 'titre', type: Types::STRING, length: 255, nullable: true)]
+    #[ORM\Column(name: 'titre_competence', type: Types::STRING, length: 255, nullable: true)]
     private string $titre;
 
     public function getId(): int
