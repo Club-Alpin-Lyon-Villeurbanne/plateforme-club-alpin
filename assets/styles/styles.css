@@ -485,3 +485,26 @@ h2.bleucaf {font-family:DINBold; font-weight: bold; margin: 20px 0 10px 0; text-
 .main-type ul > ul > ul {
     margin-left: 40px;
 }
+
+#main.wide-site {
+    width: 95% !important;
+    padding: 20px 10px;
+}
+table.wide-table {
+    background-color: white;
+    width: 100%;
+    margin: 20px 0;
+    border: 1px solid #999;
+    border-right: none;
+}
+table.wide-table th, table.wide-table td {
+    padding: 3px 5px;
+    border-right: 1px solid #999;
+}
+table.wide-table th {
+    border-bottom: 1px solid #999;
+    background-color: #E2E4FF;
+}
+.wide-table td {
+    vertical-align: top;
+}
