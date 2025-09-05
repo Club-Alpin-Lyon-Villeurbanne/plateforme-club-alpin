@@ -11,6 +11,7 @@ use App\Mailer\Mailer;
 use App\Repository\UserRepository;
 use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -63,6 +64,7 @@ class UserController extends AbstractController
         UserRepository $userRepository,
         Mailer $mailer,
         EntityManagerInterface $em,
+        LoggerInterface $logger,
     ): array|Response {
         if (!$this->isCsrfTokenValid('event_manual_add', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -142,37 +144,47 @@ class UserController extends AbstractController
 
                 // envoi des emails
                 // envoi du mail à l'adhérent
-                $mailer->send($user, 'transactional/sortie-inscription', [
-                    'role' => 'manuel' === $role ? null : $role,
-                    'event_name' => $evtName,
-                    'event_url' => $evtUrl,
-                    'event_date' => $evtDate,
-                    'commission' => $commissionTitle,
-                ]);
+                try {
+                    $mailer->send($user, 'transactional/sortie-inscription', [
+                        'role' => 'manuel' === $role ? null : $role,
+                        'event_name' => $evtName,
+                        'event_url' => $evtUrl,
+                        'event_date' => $evtDate,
+                        'commission' => $commissionTitle,
+                    ]);
+                } catch (\Exception $exception) {
+                    $logger->error('Impossible de notifier l\'adhérent manuel de sa préinscription');
+                    $logger->error($exception->getMessage());
+                }
             }
             $em->flush();
 
             // envoi des mails aux encadrants
-            foreach ($destinataires as $destinataire) {
-                $mailer->send($destinataire, 'transactional/sortie-inscription-manuelle', [
-                    'role' => 'manuel',
-                    'event_name' => $evtName,
-                    'event_url' => $evtUrl,
-                    'event_date' => $evtDate,
-                    'commission' => $commissionTitle,
-                    'inscrits' => array_map(function ($cetinscrit) {
-                        return [
-                            'firstname' => ucfirst($cetinscrit->getFirstname()),
-                            'lastname' => strtoupper($cetinscrit->getLastname()),
-                            'nickname' => $cetinscrit->getNickname(),
-                            'email' => $cetinscrit->getEmail(),
-                            'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $cetinscrit->getId() . '.html',
-                        ];
-                    }, $inscrits),
-                    'firstname' => ucfirst($this->getUser()->getFirstname()),
-                    'lastname' => strtoupper($this->getUser()->getLastname()),
-                    'nickname' => $this->getUser()->getNickname(),
-                ], [], null, $this->getUser()->getEmail());
+            try {
+                foreach ($destinataires as $destinataire) {
+                    $mailer->send($destinataire, 'transactional/sortie-inscription-manuelle', [
+                        'role' => 'manuel',
+                        'event_name' => $evtName,
+                        'event_url' => $evtUrl,
+                        'event_date' => $evtDate,
+                        'commission' => $commissionTitle,
+                        'inscrits' => array_map(function ($cetinscrit) {
+                            return [
+                                'firstname' => ucfirst($cetinscrit->getFirstname()),
+                                'lastname' => strtoupper($cetinscrit->getLastname()),
+                                'nickname' => $cetinscrit->getNickname(),
+                                'email' => $cetinscrit->getEmail(),
+                                'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $cetinscrit->getId() . '.html',
+                            ];
+                        }, $inscrits),
+                        'firstname' => ucfirst($this->getUser()->getFirstname()),
+                        'lastname' => strtoupper($this->getUser()->getLastname()),
+                        'nickname' => $this->getUser()->getNickname(),
+                    ], [], null, $this->getUser()->getEmail());
+                }
+            } catch (\Exception $exception) {
+                $logger->error('Impossible de notifier les encadrants de l\'inscription manuelle d\'adhérents');
+                $logger->error($exception->getMessage());
             }
 
             $this->addFlash('success', 'Les adhérents sélectionnés ont bien été inscrits à la sortie.');

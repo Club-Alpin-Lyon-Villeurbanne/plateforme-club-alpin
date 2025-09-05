@@ -12,6 +12,7 @@ use App\Repository\CommentRepository;
 use App\Repository\EvtRepository;
 use App\UserRights;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -167,7 +168,7 @@ class ArticleController extends AbstractController
     }
 
     #[Route('/article/{id}/commenter', name: 'article_comment', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function addComment(Request $request, EntityManagerInterface $em, UserRights $userRights, Mailer $mailer, ?Article $article = null): RedirectResponse
+    public function addComment(Request $request, EntityManagerInterface $em, UserRights $userRights, Mailer $mailer, LoggerInterface $logger, ?Article $article = null): RedirectResponse
     {
         $errors = 0;
         $type = Comment::ARTICLE_TYPE;
@@ -220,11 +221,16 @@ class ArticleController extends AbstractController
             $em->flush();
 
             // prévenir l'auteur de l'article
-            $mailer->send($article->getUser(), 'transactional/article-comment', [
-                'article_name' => $article->getTitre(),
-                'article_url' => $articleViewRoute,
-                'message' => $content,
-            ], [], null, $this->getUser()->getEmail());
+            try {
+                $mailer->send($article->getUser(), 'transactional/article-comment', [
+                    'article_name' => $article->getTitre(),
+                    'article_url' => $articleViewRoute,
+                    'message' => $content,
+                ], [], null, $this->getUser()->getEmail());
+            } catch (\Exception $exception) {
+                $logger->error('Impossible de notifier l\'auteur de l\'article d\'un nouveau commentaire');
+                $logger->error($exception->getMessage());
+            }
 
             $this->addFlash('info', 'Commentaire déposé');
         }
