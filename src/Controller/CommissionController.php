@@ -95,7 +95,7 @@ class CommissionController extends AbstractController
                     ;
                 },
                 'placeholder' => 'Sélectionner',
-                'required' => true,
+                'required' => false,
                 'label' => 'Lier cet article à une sortie',
                 'attr' => [
                     'class' => 'type1 wide',

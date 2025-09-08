@@ -61,7 +61,6 @@
     </style>
 {% endblock %}
 
-
 {% block body %}
     <!-- MAIN -->
     <h1 class="page-h1">{% if article.id %}<b>Modifier</b> cet article{% else %}Nouvel <b>article</b>{% endif %}</h1>
@@ -312,25 +311,7 @@
                 contentField.removeAttribute('required');
             }
 
-            // sortie liée non obligatoire si pas CR
-            const sortieLiee = document.getElementById('{{ form.evt.vars.id }}');
-            const articleType = document.querySelector('input[name="article[articleType]"]:checked');
-            if (articleType && articleType.value !== 'cr' || !is_update) {
-                sortieLiee.removeAttribute('required');
-            }
-
-            const radios = document.querySelectorAll('input[name="article[articleType]"]');
-            radios.forEach(function(radio) {
-                radio.addEventListener('change', function() {
-                    if (this.value === 'cr') {
-                        document.getElementById('sortie-liee').style.display = 'block';
-                        sortieLiee.setAttribute('required', true);
-                    } else {
-                        document.getElementById('sortie-liee').style.display = 'none';
-                        sortieLiee.removeAttribute('required');
-                    }
-                });
-            });
+            let sortieLiee = document.getElementById('{{ form.evt.vars.id }}');
 
             // sorties de la commission choisie
             document.getElementById('article_commission').addEventListener('change', function() {
@@ -345,6 +326,21 @@
                 .then(response => response.text())
                 .then(html => {
                     document.querySelector('#sortie-liee').innerHTML = html;
+                    sortieLiee = document.getElementById('form_evt');
+                });
+
+                // sortie liée non obligatoire si pas CR
+                const radios = document.querySelectorAll('input[name="article[articleType]"]');
+                radios.forEach(function(radio) {
+                    radio.addEventListener('change', function() {
+                        if (this.value === 'cr') {
+                            document.getElementById('sortie-liee').style.display = 'block';
+                            sortieLiee.setAttribute('required', 'required');
+                        } else {
+                            document.getElementById('sortie-liee').style.display = 'none';
+                            sortieLiee.removeAttribute('required');
+                        }
+                    });
                 });
             });
 

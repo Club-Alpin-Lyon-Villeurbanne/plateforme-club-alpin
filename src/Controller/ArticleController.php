@@ -121,6 +121,10 @@ class ArticleController extends AbstractController
                     $errors[] = 'Une image est obligatoire pour les articles à la une.';
                 }
 
+                if (empty($article->getCont())) {
+                    $errors[] = 'Veuillez renseigner le contenu de votre article.';
+                }
+
                 if (empty($errors)) {
                     $entityManager->persist($article);
                     $entityManager->flush();
