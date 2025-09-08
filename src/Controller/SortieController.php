@@ -453,6 +453,9 @@ class SortieController extends AbstractController
                 'commission' => $event->getCommission()->getTitle(),
                 'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
             ];
+            if ($event->hasHelloAssoForm() && $event->isHasHelloAssoSendMail()) {
+                $context['hello_asso_url'] = $event->getHelloAssoFormUrl();
+            }
 
             $template = match ($status) {
                 EventParticipation::STATUS_VALIDE => 'transactional/sortie-participation-confirmee',

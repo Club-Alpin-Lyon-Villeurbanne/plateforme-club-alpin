@@ -228,6 +228,9 @@ class Evt
     #[ORM\Column(name: 'hello_asso_form_url', type: Types::STRING, length: 255, nullable: true)]
     private ?string $helloAssoFormUrl;
 
+    #[ORM\Column(name: 'has_hello_asso_send_mail', type: Types::BOOLEAN, nullable: false, options: ['default' => true])]
+    private bool $hasHelloAssoSendMail = true;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -959,6 +962,18 @@ class Evt
     public function setHelloAssoFormAmount(?float $helloAssoFormAmount): self
     {
         $this->helloAssoFormAmount = $helloAssoFormAmount;
+
+        return $this;
+    }
+
+    public function isHasHelloAssoSendMail(): bool
+    {
+        return $this->hasHelloAssoSendMail;
+    }
+
+    public function setHasHelloAssoSendMail(bool $hasHelloAssoSendMail): self
+    {
+        $this->hasHelloAssoSendMail = $hasHelloAssoSendMail;
 
         return $this;
     }

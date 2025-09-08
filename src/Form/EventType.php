@@ -46,7 +46,7 @@ class EventType extends AbstractType
     {
         $displayHelloAssoFields = false;
         $authorizedUserIds = explode(',', $this->authorizedUserIds);
-        if (\in_array($options['user']->getId(), $authorizedUserIds, true)) {
+        if (\in_array($options['user']->getId(), $authorizedUserIds, false)) {
             $displayHelloAssoFields = true;
         }
 
@@ -445,6 +445,14 @@ class EventType extends AbstractType
                     'constraints' => [
                         new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
                         new GreaterThanOrEqual(0),
+                    ],
+                ])
+                ->add('hasHelloAssoSendMail', CheckboxType::class, [
+                    'label' => 'Envoyer le lien de paiement à l\'acceptation des participants',
+                    'required' => false,
+                    'help' => 'Cette option permet d\'envoyer automatiquement le lien de paiement HelloAsso aux participants lorsqu\'ils sont acceptés.',
+                    'help_attr' => [
+                        'class' => 'mini',
                     ],
                 ])
             ;
