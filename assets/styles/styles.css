@@ -309,7 +309,7 @@ a.agenda-evt-courant:hover, a.agenda-evt-courant:focus{background:#f0f1f4;}
 #evt-list a .cancelled{color:#c80000; background:url(../../public/img/base/bullet_error.png) no-repeat top left; padding-left:17px;}
 #evt-list a h2{font-weight:100; font-size:15px; font-family:DIN; text-transform:none; line-height:15px; padding:5px 0 3px 0;}
 #evt-list a:hover, #evt-list a:focus{text-decoration:none; color:black; border-left:1px dotted rgba(0,0,0,0.1)}
-#fiche-sortie{padding:20px 0 40px 40px;}
+#fiche-sortie{padding:20px 30px 40px 40px;}
 #fiche-sortie h1{text-transform:uppercase; font-weight:100; font-family:DINBold; padding:5px 0 15px 0;}
 #fiche-sortie h1 .commission{display:block; color:#50B7E4; font-size:12px;}
 #fiche-sortie h1 .date{white-space:nowrap; color:#666666}
@@ -320,9 +320,9 @@ table.big-lines-table{background:#eeeff4; margin:10px 0 10px 0; font-size:12px; 
 table.big-lines-table td, table.big-lines-table th{padding:7px 10px; border-bottom:3px solid #f7f8fc;}
 table.big-lines-table td.small{font-size:10px; color:gray;}
 table.big-lines-table td a{font-weight:inherit; color:inherit;}
-#inscription {background:white; box-shadow:0 0 15px -8px black; padding:15px; margin:20px 30px 0 0;}
-#inscription-annuler {background:white; box-shadow:0 0 15px -8px black; padding:15px; margin:0px 30px 0 0;}
-#inscription-gestion {background:white; box-shadow:0 0 15px -8px black; padding:15px; margin:0px 30px 0 0;}
+#inscription {background:white; box-shadow:0 0 15px -8px black; padding:15px; margin-top:20px}
+#inscription-annuler {background:white; box-shadow:0 0 15px -8px black; padding:15px;}
+#inscription-gestion {background:white; box-shadow:0 0 15px -8px black; padding:15px;}
 .joinlabels {line-height:17px;}
 .joinlabels label{display:block; white-space:nowrap;}
 tr.status0 {border-top:1px solid #d3d3d3;background-image:url(../../public/img/base/braies-ultralight.png)}
@@ -472,6 +472,17 @@ h2.bleucaf {font-family:DINBold; font-weight: bold; margin: 20px 0 10px 0; text-
 
 .select-contact {
     display: none;
+}
+
+.align-top {
+    vertical-align: top;
+}
+.gps-apps {
+    display: flex;
+    text-align: center;
+}
+.gps-apps a {
+    flex-grow: 1;
 }
 
 .main-type li p {

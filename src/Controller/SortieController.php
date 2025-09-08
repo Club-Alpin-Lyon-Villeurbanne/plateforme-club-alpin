@@ -227,6 +227,8 @@ class SortieController extends AbstractController
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participationRepository->getEmpietements($event),
             'current_commission' => $event->getCommission()->getCode(),
+            'encoded_coord' => urlencode($event->getLat() . ',' . $event->getLong()),
+            'geovelo_encoded_coord' => urlencode($event->getLong() . ',' . $event->getLat()),
         ];
     }
 
