@@ -326,13 +326,16 @@
                         // changement des stats
                         var nAcceptees=0;
                         var nRefusees=0;
+                        var nAttente=0;
                         $('.joinlabels input:checked[type=radio]').each(function(){
+                            if($(this).val()==0) 	nAttente++;
                             if($(this).val()==1) 	nAcceptees++;
                             if($(this).val()==2) 	nRefusees++;
 
                         });
                         $('#nAcceptees').html(nAcceptees);
                         $('#nRefusees').html(nRefusees);
+                        $('#nAttente').html(nAttente);
                     });
 
                 });
