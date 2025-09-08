@@ -6,14 +6,7 @@
     <div id="left1">
         <h1 class="page-h1">Minibus</h1>
         <div class="main-type">
-            <p>Un minibus est mis à disposition des encadrants et bénévoles du club pour une utilisation exclusive dans le cadre des sorties</p>
-            <p>
-                L'utilisation du minibus requiert de la part de ses usagers :
-            </p>
-            <ul>
-                <li>l'acceptation de la <a href="https://docs.google.com/document/d/1MyctEQEK9DXWeEhhaMKnjx2mIFrtSTu8wJLxRx-gsP8/edit" target="_blank">charte de fonctionnement du minibus</a></li>
-                <li>une participation financière</li>
-            </ul>
+            {{ easy_include('minivan-presentation') }}
             <hr />
             <p>
                 La participation est de 0.30 €/km (Ne comprends pas le carburant ni les péages). Le paiement s'effectue via
@@ -36,25 +29,7 @@
             </p>
 
             <hr />
-            <h1><span class="bleucaf">Réservation</span></h1>
-            <p>
-                Etape 1: <a href="https://docs.google.com/document/d/1MyctEQEK9DXWeEhhaMKnjx2mIFrtSTu8wJLxRx-gsP8/edit" target="_blank">Lire la charte</a>
-            </p>
-            <p>
-                Etape 2: <a href="https://forms.gle/7evfr5YcTXupVAPK6" target="_blank">Accepter la charte</a>
-            </p>
-            <p>
-                Etape 3: <a href="https://forms.gle/viKQybTHPQ7zoeRFA" target="_blank">Faire la demande de réservation</a>
-            </p>
-            <p>
-                Etape 4: <a href="https://forms.gle/xfcBBCpvKv2MGh7w8" target="_blank">Remplir le formulaire de restitution</a>
-            </p>
-            <p>
-                Etape 5: <a href="https://www.helloasso.com/associations/club-alpin-francais-de-lyon-villeurbanne/evenements/remboursement-location-minibus-caf-lyon" target="_blank">Payer vos frais uniquement via Hello Asso</a>
-            </p>
-            <p>
-                Pour tout renseignement, commentaire ou problème, contactez {{ 'minibus@clubalpinlyon.fr' | mail_this }}.
-            </p>
+            {{ easy_include('minivan-reservation') }}
 
             <hr />
             <h1><span class="bleucaf">Agenda des demandes</span></h1>
