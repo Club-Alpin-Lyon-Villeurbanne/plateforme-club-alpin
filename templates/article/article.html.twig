@@ -172,7 +172,9 @@
                 <hr id="comments" />
                 <h2 class="comments-h2"><span>{{ comments|length }}</span> Commentaires</h2>
                 <br />
-                {% include 'components/add-comment.html.twig' with {'article': article, 'article_url': article_url} %}
+                {% if app.user %}
+                    {% include 'components/add-comment.html.twig' with {'article': article, 'article_url': article_url} %}
+                {% endif %}
 
                 {% for comment in comments %}
                     {% include 'components/comment.html.twig' with {'comment': comment} %}
