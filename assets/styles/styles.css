@@ -519,3 +519,14 @@ table.wide-table th {
 .wide-table td {
     vertical-align: top;
 }
+
+#form-event .alerte {
+    color: #856404;
+    padding: 10px;
+    background-color: #fff3cd;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+.info-container label {
+    display: inline !important;
+}

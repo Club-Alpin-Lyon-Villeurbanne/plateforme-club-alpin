@@ -145,6 +145,30 @@
             {{ form_row(form.details_caches) }}
         </div>
 
+        <br>
+        <div class="alerte info-container" style="width: 93%;">
+            ⚠️
+            <div class="text-container">
+                <div>
+                    <label for="{{ form.imagesAuthorized.vars.id }}">
+                        {{ form_widget(form.imagesAuthorized) }}
+                        {{ form_label(form.imagesAuthorized) }}
+                    </label>
+                    <br><br>
+                    {{ form_help(form.imagesAuthorized) }}
+                </div>
+                <br><br>
+                <div>
+                    <label for="{{ form.agreeEdito.vars.id }}">
+                        {{ form_widget(form.agreeEdito) }}
+                        {{ form_label(form.agreeEdito) }}
+                    </label>
+                    <br>
+                    {{ form_help(form.agreeEdito) }}
+                </div>
+            </div>
+        </div>
+
         <h2 class="trigger-h2">Description complète <span class="required">*</span> :</h2>
         <div class="trigger-me">
             <p>

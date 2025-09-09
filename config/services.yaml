@@ -265,6 +265,8 @@ services:
       $defaultLat: '%default_latitude%'
       $defaultLong: '%default_longitude%'
       $defaultAppointmentPlace: '%default_appmt_place%'
+      $editoLineLink: '%env(EDITO_LINE_LINK)%'
+      $imageRightLink: '%env(IMAGE_RIGHT_LINK)%'
     tags: ['controller.service_arguments']
 
   App\Service\PushNotificationService:
