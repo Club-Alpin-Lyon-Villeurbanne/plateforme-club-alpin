@@ -119,4 +119,18 @@ class UserAttrRepository extends ServiceEntityRepository
             $seen[$id] = true;
         }
     }
+
+    public function listAllUsersByRole(Usertype $usertype)
+    {
+        $queryBuilder = $this->createQueryBuilder('ua')
+             ->where('ua.userType = :type')
+             ->setParameter('type', $usertype)
+             ->orderBy('ua.user', 'asc')
+        ;
+
+        return $queryBuilder
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
