@@ -17,7 +17,7 @@ En environnement local, vous pouvez utiliser ces identifiants :
 ### Comment gérer les conflits d'images Docker ?
 Après une migration vers un nouveau setup, exécutez :
 ```bash
-docker stop www_caflyon && docker rm www_caflyon
+docker stop www_pca && docker rm www_pca
 ```
 
 ### Comment résoudre les problèmes de permissions Docker sous Windows ?
