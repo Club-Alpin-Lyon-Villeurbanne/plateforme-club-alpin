@@ -139,6 +139,7 @@ services:
     arguments:
       $defaultAlertArticlePrefix: "%env(ALERT_ARTICLE_PREFIX)%"
       $defaultAlertSortiePrefix: "%env(ALERT_SORTIE_PREFIX)%"
+      $siteName: '%env(SITENAME)%'
 
   # Email Marketing Services Configuration
   App\Service\MailerLiteService:
