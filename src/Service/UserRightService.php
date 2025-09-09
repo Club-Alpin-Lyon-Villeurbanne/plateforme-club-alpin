@@ -107,7 +107,7 @@ class UserRightService
                 foreach ($commissionResp as $resp) {
                     $receivers[] = $resp;
                 }
-                $presidents = $this->attrRepository->listAllManagement();
+                $presidents = $this->attrRepository->listAllManagement([UserAttr::PRESIDENT]);
                 foreach ($presidents as $president) {
                     $receivers[] = $president;
                 }

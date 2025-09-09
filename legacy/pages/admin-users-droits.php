@@ -113,7 +113,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
         <h3>Lorsque vous attribuez ou retirez des responsabilités aux adhérents, des notifications automatiques sont envoyées :</h3>
         <ul>
             <li>un adhérent reçoit ou perd des responsabilités : l'adhérent reçoit un e-mail</li>
-            <li>s'il s'agit de responsabilité "encadrant", "co-enacadrant", "initiateur stagiaire" ou "responsable de commission" : les responsables (actuels) de la commission reçoivent un e-mail, ainsi que le président et les vices-président</li>
+            <li>s'il s'agit de responsabilité "encadrant", "co-enacadrant", "initiateur stagiaire" ou "responsable de commission" : les responsables (actuels) de la commission reçoivent un e-mail, ainsi que le président</li>
         </ul>
     </div>
 	<?php
