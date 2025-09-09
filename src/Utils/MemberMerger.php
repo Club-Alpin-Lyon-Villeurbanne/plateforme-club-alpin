@@ -47,7 +47,7 @@ class MemberMerger
             $cafnum = $newCafUser->getCafnum();
 
             $newCafUser->setCafnum('obs_' . $cafnum)
-            ->setEmail('obs_' . time())
+            ->setEmail('obs_' . time() . '_' . bin2hex(random_bytes(8)))
             ->setIsDeleted(true);
             $this->entityManager->flush();
 
