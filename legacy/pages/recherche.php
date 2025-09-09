@@ -2,6 +2,8 @@
 
 use App\Legacy\LegacyContainer;
 
+$searchResultsPerPage = LegacyContainer::getParameter('legacy_env_SEARCH_RESULTS_PER_PAGE');
+
 if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
     // vérification des caractères
     $safeStr = substr(html_utf8(stripslashes($_GET['str'])), 0, 80);
@@ -36,7 +38,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
             ) '
 
         . ' ORDER BY  `tsp_validate_article` DESC
-            LIMIT 10';
+            LIMIT ' . $searchResultsPerPage;
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($req);
         if ($current_commission) {
             $id_commission = (int) $comTab[$current_commission]['id_commission'];
@@ -92,7 +94,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
                     OR	nickname_user LIKE ?
             ) '
         . ' ORDER BY tsp_evt DESC
-            LIMIT 10';
+            LIMIT ' . $searchResultsPerPage;
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($req);
         if ($current_commission) {
             $id_commission = (int) $comTab[$current_commission]['id_commission'];
@@ -135,7 +137,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
                     OR i.contenu_content_inline LIKE ?
             )
             ORDER BY created_page DESC
-            LIMIT 10';
+            LIMIT ' . $searchResultsPerPage;
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($req);
         $stmt->bind_param('sss', $safeStrSqlWildCard, $safeStrSqlWildCard, $safeStrSqlWildCard);
         $stmt->execute();
