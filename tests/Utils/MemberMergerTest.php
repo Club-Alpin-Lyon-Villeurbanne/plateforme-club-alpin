@@ -53,4 +53,116 @@ class MemberMergerTest extends WebTestCase
 
         $this->assertSame($userNewLicense->getId(), $user1->getId());
     }
+
+    public function testMergeExistingMembersUpdatesDateAdhesion(): void
+    {
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $memberMerger = static::getContainer()->get(MemberMerger::class);
+
+        $user1 = $this->signup();
+        $oldDateAdhesion = new \DateTime('2020-01-15');
+        $user1->setDateAdhesion($oldDateAdhesion);
+        $entityManager->flush();
+
+        $user2 = $this->signup();
+        $newDateAdhesion = new \DateTime('2024-06-20');
+        $user2->setDateAdhesion($newDateAdhesion);
+        $entityManager->flush();
+
+        $oldLicense = $user1->getCafnum();
+        $newLicense = $user2->getCafnum();
+
+        $memberMerger->mergeExistingMembers($oldLicense, $newLicense);
+
+        $mergedUser = $entityManager->getRepository(User::class)->findOneByLicenseNumber($newLicense);
+        
+        $this->assertNotNull($mergedUser->getDateAdhesion());
+        $this->assertEquals($newDateAdhesion->format('Y-m-d'), $mergedUser->getDateAdhesion()->format('Y-m-d'));
+    }
+
+    public function testMergeExistingMembersPreservesDateAdhesionWhenNewIsNull(): void
+    {
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $memberMerger = static::getContainer()->get(MemberMerger::class);
+
+        $user1 = $this->signup();
+        $oldDateAdhesion = new \DateTime('2020-01-15');
+        $user1->setDateAdhesion($oldDateAdhesion);
+        $entityManager->flush();
+
+        $user2 = $this->signup();
+        $user2->setDateAdhesion(null);
+        $entityManager->flush();
+
+        $oldLicense = $user1->getCafnum();
+        $newLicense = $user2->getCafnum();
+
+        $memberMerger->mergeExistingMembers($oldLicense, $newLicense);
+
+        $mergedUser = $entityManager->getRepository(User::class)->findOneByLicenseNumber($newLicense);
+        
+        $this->assertNotNull($mergedUser->getDateAdhesion());
+        $this->assertEquals($oldDateAdhesion->format('Y-m-d'), $mergedUser->getDateAdhesion()->format('Y-m-d'));
+    }
+
+    public function testMergeNewMemberUpdatesDateAdhesion(): void
+    {
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $memberMerger = static::getContainer()->get(MemberMerger::class);
+
+        $user1 = $this->signup();
+        $oldDateAdhesion = new \DateTime('2020-01-15');
+        $user1->setDateAdhesion($oldDateAdhesion);
+        $entityManager->flush();
+
+        $user2 = new User();
+        $user2Cafnum = mt_rand(100000000000, 999999999999);
+        $newDateAdhesion = new \DateTime('2024-06-20');
+        $user2->setEmail('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr')
+            ->setCafnum($user2Cafnum)
+            ->setFirstname('prenom')
+            ->setLastname('nom')
+            ->setDoitRenouveler(false)
+            ->setAlerteRenouveler(false)
+            ->setDateAdhesion($newDateAdhesion);
+
+        $oldLicense = $user1->getCafnum();
+
+        $memberMerger->mergeNewMember($oldLicense, $user2);
+
+        $mergedUser = $entityManager->getRepository(User::class)->findOneByLicenseNumber($user2Cafnum);
+        
+        $this->assertNotNull($mergedUser->getDateAdhesion());
+        $this->assertEquals($newDateAdhesion->format('Y-m-d'), $mergedUser->getDateAdhesion()->format('Y-m-d'));
+    }
+
+    public function testMergeNewMemberPreservesDateAdhesionWhenNewIsNull(): void
+    {
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $memberMerger = static::getContainer()->get(MemberMerger::class);
+
+        $user1 = $this->signup();
+        $oldDateAdhesion = new \DateTime('2020-01-15');
+        $user1->setDateAdhesion($oldDateAdhesion);
+        $entityManager->flush();
+
+        $user2 = new User();
+        $user2Cafnum = mt_rand(100000000000, 999999999999);
+        $user2->setEmail('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr')
+            ->setCafnum($user2Cafnum)
+            ->setFirstname('prenom')
+            ->setLastname('nom')
+            ->setDoitRenouveler(false)
+            ->setAlerteRenouveler(false)
+            ->setDateAdhesion(null);
+
+        $oldLicense = $user1->getCafnum();
+
+        $memberMerger->mergeNewMember($oldLicense, $user2);
+
+        $mergedUser = $entityManager->getRepository(User::class)->findOneByLicenseNumber($user2Cafnum);
+        
+        $this->assertNotNull($mergedUser->getDateAdhesion());
+        $this->assertEquals($oldDateAdhesion->format('Y-m-d'), $mergedUser->getDateAdhesion()->format('Y-m-d'));
+    }
 }
