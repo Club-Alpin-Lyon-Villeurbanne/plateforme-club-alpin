@@ -87,7 +87,6 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 
 						<div class="onglets-admin-contenu">
 
-							<!-- TINYMCE + OPTIONS -->
 							<div class="onglets-admin-item">
 								<form action="editElt.php?retour=<?php echo isset($_GET['retour']) ? $_GET['retour'] : ''; ?>&amp;parent=<?php echo isset($_GET['parent']) ? $_GET['parent'] : ''; ?>" method="POST">
 									<input type="hidden" name="etape" value="enregistrement" />

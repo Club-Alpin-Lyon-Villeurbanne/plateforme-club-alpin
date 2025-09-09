@@ -299,4 +299,4 @@ const editorConfig = {
 	translations: [translations]
 };
 
-ClassicEditor.create(document.querySelector('.tinymce'), editorConfig);
+ClassicEditor.create(document.querySelector('.ckeditor'), editorConfig);
