@@ -75,7 +75,7 @@ class MemberMergerTest extends WebTestCase
         $memberMerger->mergeExistingMembers($oldLicense, $newLicense);
 
         $mergedUser = $entityManager->getRepository(User::class)->findOneByLicenseNumber($newLicense);
-        
+
         $this->assertNotNull($mergedUser->getDateAdhesion());
         $this->assertEquals($newDateAdhesion->format('Y-m-d'), $mergedUser->getDateAdhesion()->format('Y-m-d'));
     }
@@ -100,7 +100,7 @@ class MemberMergerTest extends WebTestCase
         $memberMerger->mergeExistingMembers($oldLicense, $newLicense);
 
         $mergedUser = $entityManager->getRepository(User::class)->findOneByLicenseNumber($newLicense);
-        
+
         $this->assertNotNull($mergedUser->getDateAdhesion());
         $this->assertEquals($oldDateAdhesion->format('Y-m-d'), $mergedUser->getDateAdhesion()->format('Y-m-d'));
     }
@@ -131,7 +131,7 @@ class MemberMergerTest extends WebTestCase
         $memberMerger->mergeNewMember($oldLicense, $user2);
 
         $mergedUser = $entityManager->getRepository(User::class)->findOneByLicenseNumber($user2Cafnum);
-        
+
         $this->assertNotNull($mergedUser->getDateAdhesion());
         $this->assertEquals($newDateAdhesion->format('Y-m-d'), $mergedUser->getDateAdhesion()->format('Y-m-d'));
     }
@@ -161,7 +161,7 @@ class MemberMergerTest extends WebTestCase
         $memberMerger->mergeNewMember($oldLicense, $user2);
 
         $mergedUser = $entityManager->getRepository(User::class)->findOneByLicenseNumber($user2Cafnum);
-        
+
         $this->assertNotNull($mergedUser->getDateAdhesion());
         $this->assertEquals($oldDateAdhesion->format('Y-m-d'), $mergedUser->getDateAdhesion()->format('Y-m-d'));
     }
