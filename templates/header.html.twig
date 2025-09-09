@@ -190,11 +190,6 @@
                             <p class="menutitle">Outils</p>
                             <ul>
                             {% if caf_id == 'lyon' %}
-                                <li>
-                                    <a href="https://www.clubalpinlyon.fr/ftp/telechargements/livretaccueil-v3.pdf" title="">
-                                    livret d'accueil des adhérents
-                                    </a>
-                                </li>
                                 {% if allowed('user_read_private') %} {# utilisation d'une permission existante données uniquement aux co-encadrants, encadrants et stagiaires #}
                                 <li>
                                     <a href="/pages/boite-outils-des-encadrants.html" title="">
