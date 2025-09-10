@@ -350,7 +350,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return false;
     }
 
-    public function getAttribute($attribute = null, $commission = null): ?UserAttr
+    public function getAttribute(?string $attribute = null, ?string $commission = null): ?UserAttr
     {
         if (null === $attribute) {
             return null;
