@@ -45,7 +45,7 @@ class EventType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $displayHelloAssoFields = false;
-        $authorizedUserIds = explode(',', $this->authorizedUserIds);
+        $authorizedUserIds = explode(',', trim($this->authorizedUserIds));
         if (\in_array($options['user']->getId(), $authorizedUserIds, false)) {
             $displayHelloAssoFields = true;
         }

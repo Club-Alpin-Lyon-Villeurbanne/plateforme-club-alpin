@@ -44,7 +44,9 @@ class ConfigRepository extends ServiceEntityRepository
     public function removeConfigValue(string $code): void
     {
         $existingConfig = $this->findOneBy(['code' => $code]);
-        $this->manager->remove($existingConfig);
-        $this->manager->flush();
+        if ($existingConfig instanceof Config) {
+            $this->manager->remove($existingConfig);
+            $this->manager->flush();
+        }
     }
 }

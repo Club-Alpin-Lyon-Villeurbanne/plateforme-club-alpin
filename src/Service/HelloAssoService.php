@@ -136,7 +136,7 @@ class HelloAssoService
                             'Authorization' => 'Bearer ' . $organizationAccessToken,
                         ],
                         'query' => [
-                            'pageSize' => 100,
+                            'pageSize' => 100,      // @todo gérer la pagination si > 100
                         ],
                     ],
                 );

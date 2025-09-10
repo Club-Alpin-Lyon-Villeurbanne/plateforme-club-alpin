@@ -76,10 +76,7 @@ class HelloAssoServiceTest extends TestCase
             ->method('getValue')
             ->willReturnOnConsecutiveCalls('refresh123', $date->format('Y-m-d H:i:s'))
         ;
-        $repo = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['findOneBy'])
-            ->getMock()
-        ;
+        $repo = $this->createMock(ConfigRepository::class);
         $repo->method('findOneBy')->willReturn($config);
 
         $this->entityManager->method('getRepository')->willReturn($repo);
