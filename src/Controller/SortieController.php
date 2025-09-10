@@ -39,6 +39,8 @@ class SortieController extends AbstractController
         protected float $defaultLat,
         protected float $defaultLong,
         protected string $defaultAppointmentPlace,
+        protected string $editoLineLink,
+        protected string $imageRightLink,
     ) {
     }
 
@@ -75,6 +77,10 @@ class SortieController extends AbstractController
             );
             $event->setJoinStart((new \DateTime())->getTimestamp());
             $isUpdate = false;
+        } else {
+            // reset des cases obligatoires pour être bien sûr que c'est toujours OK même en cas de modification de la sortie
+            $event->setAgreeEdito(false);
+            $event->setImagesAuthorized(false);
         }
 
         if (!$this->isGranted('SORTIE_UPDATE', $event)) {
@@ -91,7 +97,7 @@ class SortieController extends AbstractController
             }
         }
 
-        $form = $this->createForm(EventType::class, $event);
+        $form = $this->createForm(EventType::class, $event, ['editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
