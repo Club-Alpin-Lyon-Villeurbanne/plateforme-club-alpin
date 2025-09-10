@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\UserAttr;
 use App\Entity\Usertype;
 use App\Repository\UserAttrRepository;
+use App\UserRights;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,8 +15,12 @@ class UserController extends AbstractController
 {
     #[Route(path: '/statuts-adherents', name: 'user_status_list', methods: ['GET'])]
     #[Template('user/status-list.html.twig')]
-    public function userStatusList(EntityManagerInterface $manager, UserAttrRepository $userAttrRepository): array
+    public function userStatusList(EntityManagerInterface $manager, UserAttrRepository $userAttrRepository, UserRights $userRights): array
     {
+        if (!$userRights->allowed('user_see_status_list')) {
+            throw $this->createAccessDeniedException('Not allowed');
+        }
+
         $ignoredRoles = [UserAttr::VISITEUR, UserAttr::ADHERENT, UserAttr::DEVELOPPEUR];
         $listedRoles = [];
         $listedUsers = [];

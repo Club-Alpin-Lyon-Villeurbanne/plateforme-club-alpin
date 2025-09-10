@@ -1,6 +1,7 @@
 <?php
 
 use App\Entity\UserAttr;
+use App\Legacy\LegacyContainer;
 use App\Repository\CommissionRepository;
 
 if (user()) {
@@ -27,7 +28,7 @@ if (user()) {
 
         <!-- Infos : statuts -->
         <?php if (getUser()->hasAttribute()) { ?>
-            <h2><span class="bleucaf">&gt;</span> Vos statuts :</h2>
+            <h2><span class="bleucaf">&gt;</span> Vos responsabilités :</h2>
             <?php inclure('infos-profil-statuts', 'vide'); ?>
                 <br><br>
             <?php
@@ -55,6 +56,8 @@ if (user()) {
                         if (!empty($attr->getDescription())) {
                             echo ' <img src="/img/base/info.png" title="' . $attr->getDescription() . '" />';
                         }
+                        echo '&nbsp;<a href="' . LegacyContainer::get('router')->generate('user_right_auto_remove', ['type' => $attr->getUserType()->getCode()]) . '" onclick="return confirm(\'Êtes-vous sûr de vouloir vous retirer cette responsabilité ? Les responsables du site seront prévenus\')">';
+                        echo '<img src="/img/base/delete.png" alt="Enlever" title="Me retirer cette responsabilité" /></a>';
                         echo '</li>';
                     }
                 } else {
@@ -73,6 +76,8 @@ if (user()) {
                     if (!empty($attr->getDescription())) {
                         echo ' <img src="/img/base/info.png" title="' . $attr->getDescription() . '" />';
                     }
+                    echo '&nbsp;<a href="' . LegacyContainer::get('router')->generate('user_right_auto_remove', ['type' => $attr->getUserType()->getCode(), 'commission' => $attr->getCommission()]) . '" onclick="return confirm(\'Êtes-vous sûr de vouloir vous retirer cette responsabilité ? Les responsables de la commission seront prévenus\')">';
+                    echo '<img src="/img/base/delete.png" alt="Enlever" title="Me retirer cette responsabilité" /></a>';
                     echo '</li>';
                 }
             } else {

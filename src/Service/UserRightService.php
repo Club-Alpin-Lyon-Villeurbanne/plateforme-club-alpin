@@ -25,18 +25,7 @@ class UserRightService
         $this->manager->remove($userRight);
         $this->manager->flush();
 
-        $this->sendNotificationToUser(
-            'suppression-utilisateur',
-            $userRight->getUser(),
-            $userRight->getUserType()->getTitle(),
-            $userRight->getCommission(),
-            $whoUser->getFullName()
-        );
-        $this->sendNotificationToManagement(
-            'suppression-responsables',
-            $userRight,
-            $whoUser->getFullName()
-        );
+        $this->notify($userRight, 'suppression', $whoUser);
     }
 
     public function notifyUserAfterRightAdded(int $idUser, int $idUserType, string $params, ?User $whoUser): void
@@ -45,21 +34,28 @@ class UserRightService
         $userType = $this->manager->getRepository(Usertype::class)->find($idUserType);
         $userRight = $this->manager->getRepository(UserAttr::class)->findOneBy(['user' => $user, 'userType' => $userType, 'params' => $params]);
 
-        $this->sendNotificationToUser(
-            'ajout-utilisateur',
-            $userRight->getUser(),
-            $userRight->getUserType()->getTitle(),
-            $userRight->getCommission(),
-            $whoUser->getFullName()
-        );
-        $this->sendNotificationToManagement(
-            'ajout-responsables',
-            $userRight,
-            $whoUser->getFullName()
-        );
+        $this->notify($userRight, 'ajout', $whoUser);
     }
 
-    public function sendNotificationToUser(string $mailTemplate, User $user, string $rightLabel, ?string $commissionCode, ?string $by_who_name): void
+    public function notify(UserAttr $userRight, string $type, ?User $whoUser): void
+    {
+        if (\in_array($type, ['ajout', 'suppression'], true)) {
+            $this->sendNotificationToUser(
+                $type . '-utilisateur',
+                $userRight->getUser(),
+                $userRight->getUserType()->getTitle(),
+                $userRight->getCommission(),
+                $whoUser->getFullName()
+            );
+            $this->sendNotificationToManagement(
+                $type . '-responsables',
+                $userRight,
+                $whoUser->getFullName()
+            );
+        }
+    }
+
+    protected function sendNotificationToUser(string $mailTemplate, User $user, string $rightLabel, ?string $commissionCode, ?string $by_who_name): void
     {
         $commissionLabel = '';
         if (!empty($commissionCode)) {
@@ -72,7 +68,7 @@ class UserRightService
         ]);
     }
 
-    public function sendNotificationToManagement(string $mailTemplate, ?UserAttr $userRight, ?string $by_who_name): void
+    protected function sendNotificationToManagement(string $mailTemplate, ?UserAttr $userRight, ?string $by_who_name): void
     {
         $commissionLabel = '';
         if (!empty($userRight->getCommission())) {
@@ -120,7 +116,10 @@ class UserRightService
                 break;
 
             default:
-                // pas d'email pour l'instant
+                $presidents = $this->attrRepository->listAllManagement([UserAttr::PRESIDENT]);
+                foreach ($presidents as $president) {
+                    $receivers[] = $president;
+                }
                 break;
         }
 
