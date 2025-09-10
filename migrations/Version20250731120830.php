@@ -11,7 +11,7 @@ final class Version20250731120830 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Adds new tables to store FFCAM skills and levels for users';
     }
 
     public function up(Schema $schema): void
