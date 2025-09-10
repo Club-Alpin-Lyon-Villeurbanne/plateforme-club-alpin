@@ -61,7 +61,10 @@ class UserRightService
 
     public function sendNotificationToUser(string $mailTemplate, User $user, string $rightLabel, ?string $commissionCode, ?string $by_who_name): void
     {
-        $commissionLabel = $this->findCommission($commissionCode)->getTitle();
+        $commissionLabel = '';
+        if (!empty($commissionCode)) {
+            $commissionLabel = $this->findCommission($commissionCode)?->getTitle();
+        }
         $this->mailer->send($user, 'transactional/droits/' . $mailTemplate, [
             'right_name' => $rightLabel,
             'commission' => $commissionLabel,
@@ -71,7 +74,10 @@ class UserRightService
 
     public function sendNotificationToManagement(string $mailTemplate, ?UserAttr $userRight, ?string $by_who_name): void
     {
-        $commissionLabel = $this->findCommission($userRight->getCommission())->getTitle();
+        $commissionLabel = '';
+        if (!empty($userRight->getCommission())) {
+            $commissionLabel = $this->findCommission($userRight->getCommission())?->getTitle();
+        }
         $receivers = $this->getReceivers($userRight);
 
         /** @var UserAttr $receiver */
