@@ -2,7 +2,12 @@
 
 ## Configuration technique
 ### Clés d'API
-Il faut récupérer ou générer des identifiants API dans son compte Hello Asso. L'identifiant doit disposer du droit `OrganizationAdmin` (demander à Hello Asso de l'attribuer, si nécessaire).
+Il faut récupérer ou générer des identifiants API depuis son compte Hello Asso. L'identifiant doit disposer du droit `OrganizationAdmin` (demander à Hello Asso de l'attribuer, si nécessaire).
+
+Pour générer ou récupérer les identifiants, se connecter sur Hello Asso.
+1. En haut à droite, cliquer sur son nom, puis sur le club souhaité (si vous en avez plusieurs)
+2. Dans le menu de gauche, cliquer sur "Mon compte", puis sur "Integrations et API"
+3. Copier "Mon clientId" et "Mon clientSecret" ou cliquer sur "Générer ma clé API" pour en créer une.
 
 Les identifiants ainsi récupérés sont à définir en variables d'environnement (`HELLO_ASSO_CLIENT_ID` et `HELLO_ASSO_CLIENT_SECRET`).
 
