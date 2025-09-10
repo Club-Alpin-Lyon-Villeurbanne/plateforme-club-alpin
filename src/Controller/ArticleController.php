@@ -25,6 +25,12 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ArticleController extends AbstractController
 {
+    public function __construct(
+        protected string $editoLineLink,
+        protected string $imageRightLink,
+    ) {
+    }
+
     #[Route('/article/new', name: 'article_new')]
     #[Route('/article/{id}/edit', name: 'article_edit', requirements: ['id' => '\d+'])]
     public function new(
@@ -54,7 +60,7 @@ class ArticleController extends AbstractController
             $article->setImagesAuthorized(false);
         }
 
-        $form = $this->createForm(ArticleType::class, $article);
+        $form = $this->createForm(ArticleType::class, $article, ['editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink]);
 
         if (!$article->getId() && 'cr' == $form->get('articleType')) {
             $evtId = $request->query->get('evt_article');

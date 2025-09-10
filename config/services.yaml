@@ -285,3 +285,9 @@ services:
   legacy_user_right_service:
     public: true
     alias: App\Service\UserRightService
+
+  App\Controller\ArticleController:
+    arguments:
+      $editoLineLink: '%env(EDITO_LINE_LINK)%'
+      $imageRightLink: '%env(IMAGE_RIGHT_LINK)%'
+    tags: ['controller.service_arguments']
