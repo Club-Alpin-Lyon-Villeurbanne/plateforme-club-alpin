@@ -373,10 +373,6 @@ tr.status-1 {border-top:1px solid #d3d3d3;background-image:url(../../public/img/
 #commissions-gestion .item-2{width:420px; float:right;}
 #commissions-gestion h2{width:360px; padding-bottom:10px}
 #commissions-gestion .nice2{font-size:13px; margin:4px 0 0 0;}
-#feuille-de-sortie{padding:15px; text-align:left; background:white;}
-#feuille-de-sortie table{margin:20px 0; width:900px;}
-#feuille-de-sortie table td, #feuille-de-sortie table th{border:1px solid gray; padding:5px 10px; font-size:12px; font-family:Arial;}
-#feuille-de-sortie table th{background:#e7e7e7;}
 #slides{display:none;text-align: center;}
 #slides img{max-width:250px;}
 .niveau  {position:relative; border:1px solid #ccc; padding:5px;margin:5px;}
