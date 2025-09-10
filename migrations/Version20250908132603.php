@@ -74,5 +74,7 @@ final class Version20250908132603 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql('DELETE FROM caf_content_html WHERE code_content_html = \'local-club-description\'');
+        $this->addSql('DELETE FROM caf_content_html WHERE code_content_html = \'minivan-presentation\'');
+        $this->addSql('DELETE FROM caf_content_html WHERE code_content_html = \'minivan-reservation\'');
     }
 }
