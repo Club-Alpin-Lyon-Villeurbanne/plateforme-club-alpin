@@ -111,6 +111,7 @@ class SortieController extends AbstractController
             $currentCoencadrants = $event->getEncadrants([EventParticipation::ROLE_COENCADRANT]);
             $originalEntityData['hasPaymentForm'] = $event->hasPaymentForm();
             $originalEntityData['paymentAmount'] = $event->getPaymentAmount();
+            $originalEntityData['place'] = $event->getPlace();
         }
 
         $form = $this->createForm(EventType::class, $event, ['is_edit' => $isUpdate, 'editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'user' => $user]);
@@ -202,6 +203,7 @@ class SortieController extends AbstractController
                     && ($originalEntityData['ngensMax'] !== $event->getngensMax()
                     || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
                     || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
+                    || $originalEntityData['place'] !== $event->getPlace()
                     || $originalEntityData['encadrants'] !== $newEncadrants['encadrants'])) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
                 } else {
