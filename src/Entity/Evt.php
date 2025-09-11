@@ -218,7 +218,7 @@ class Evt
 
     #[ORM\Column(name: 'main_transport_mode', type: Types::STRING, length: 50, nullable: true, enumType: TransportModeEnum::class)]
     #[Groups('event:read')]
-    private ?TransportModeEnum $mainTransportMode;
+    private ?TransportModeEnum $mainTransportMode = null;
 
     public function __construct(
         ?User $user,
