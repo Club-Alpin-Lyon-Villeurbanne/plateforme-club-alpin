@@ -232,6 +232,10 @@ class Evt
     #[ORM\Column(name: 'has_payment_send_mail', type: Types::BOOLEAN, nullable: false, options: ['default' => true])]
     private bool $hasPaymentSendMail = true;
 
+    #[ORM\Column(name: 'main_transport_mode', type: Types::STRING, length: 50, nullable: true, enumType: TransportModeEnum::class)]
+    #[Groups('event:read')]
+    private ?TransportModeEnum $mainTransportMode;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -915,6 +919,18 @@ class Evt
     public function setImagesAuthorized(bool $imagesAuthorized): self
     {
         $this->imagesAuthorized = $imagesAuthorized;
+
+        return $this;
+    }
+
+    public function getMainTransportMode(): ?TransportModeEnum
+    {
+        return $this->mainTransportMode;
+    }
+
+    public function setMainTransportMode(?TransportModeEnum $mainTransportMode): self
+    {
+        $this->mainTransportMode = $mainTransportMode;
 
         return $this;
     }
