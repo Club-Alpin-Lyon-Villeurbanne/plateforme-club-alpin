@@ -129,7 +129,7 @@
                     document.getElementById('nomade_email').value = tmpPrefilled.email_user;
                     document.getElementById('nomade_email').setAttribute('readonly', 'readonly');
                 } else {
-                    document.querySelectorAll('input').forEach(input => {
+                    document.querySelectorAll('#includer-stuff input').forEach(input => {
                         input.value = '';
                         input.removeAttribute('readonly');
                     });

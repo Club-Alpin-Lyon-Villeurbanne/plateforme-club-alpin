@@ -828,7 +828,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this->alertSortiePrefix;
     }
 
-    public function setAlertSortiePrefix(string $alertSortiePrefix): self
+    public function setAlertSortiePrefix(?string $alertSortiePrefix): self
     {
         $this->alertSortiePrefix = $alertSortiePrefix;
 
@@ -840,7 +840,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this->alertArticlePrefix;
     }
 
-    public function setAlertArticlePrefix(string $alertArticlePrefix): self
+    public function setAlertArticlePrefix(?string $alertArticlePrefix): self
     {
         $this->alertArticlePrefix = $alertArticlePrefix;
 
