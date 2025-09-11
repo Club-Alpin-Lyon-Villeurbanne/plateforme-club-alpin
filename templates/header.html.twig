@@ -307,7 +307,7 @@
                             </div>
                         {% endif %}
 
-                        {% if allowed('comm_create') or allowed('comm_edit') or allowed('comm_desactivate') or allowed('comm_delete') %}
+                        {% if allowed('comm_create') or allowed('comm_edit') or allowed('comm_desactivate') or allowed('comm_delete') or allowed('commission_list') %}
                             <div class="nav-user">
                                 <p class="menutitle" style="padding-top:13px;">Commissions</p>
                                 <ul>
@@ -326,6 +326,14 @@
                                         </a>
                                     </li>
                                 {% endif %}
+
+                                    {% if allowed('commission_list') %}
+                                        <li>
+                                            <a href="{{ path('commission_index') }}" title="">
+                                                gérer mes commissions
+                                            </a>
+                                        </li>
+                                    {% endif %}
                                 </ul>
                             </div>
                         {% endif %}

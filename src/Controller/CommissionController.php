@@ -5,16 +5,21 @@ namespace App\Controller;
 use App\Entity\Commission;
 use App\Entity\Evt;
 use App\Helper\MonthHelper;
+use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
 use App\Service\ParticipantService;
 use App\UserRights;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class CommissionController extends AbstractController
@@ -112,5 +117,44 @@ class CommissionController extends AbstractController
         return $this->render('form/field_events.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/commissions/liste', name: 'commission_index')]
+    #[Template('commission/index.html.twig')]
+    public function index(UserRights $userRights, CommissionRepository $commissionRepository): array
+    {
+        if (!$userRights->allowed('commission_list')) {
+            throw new AccessDeniedHttpException('Not allowed');
+        }
+
+        $myCommissionsCodes = $userRights->getCommissionListForRight('commission_config');
+
+        return [
+            'commissions' => $commissionRepository->findBy(['code' => $myCommissionsCodes], ['title' => 'ASC']),
+        ];
+    }
+
+    #[Route('/commission/{id}/configuration', name: 'commission_configuration', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    #[Template('commission/configuration.html.twig')]
+    public function configuration(Commission $commission, Request $request, EntityManagerInterface $entityManager): array|RedirectResponse
+    {
+        if (!$this->isGranted('COMMISSION_CONFIG', $commission)) {
+            throw new AccessDeniedHttpException('Not allowed');
+        }
+
+        if ('POST' === $request->getMethod() && !$this->isCsrfTokenValid('commission_configuration', $request->request->get('csrf_token_inscriptions'))) {
+            $this->addFlash('error', 'Jeton de validation invalide.');
+
+            return $this->redirectToRoute('commission_configuration', ['id' => $commission->getId()]);
+        }
+
+        $data = $request->request->all();
+        dd($data);
+
+        return [
+            'commission' => $commission,
+            'checked_fields' => explode(',', $commission->getMandatoryFields()),
+            'fields' => explode(',', Evt::CONFIGURABLE_FIELDS),
+        ];
     }
 }
