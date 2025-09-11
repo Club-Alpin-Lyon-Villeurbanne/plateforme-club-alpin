@@ -95,6 +95,7 @@ class SortieController extends AbstractController
             foreach ($currentEncadrants as $currentEncadrant) {
                 $originalEntityData['encadrants'][$currentEncadrant->getUser()->getId()] = $currentEncadrant->getRole();
             }
+            $originalEntityData['place'] = $event->getPlace();
         }
 
         $form = $this->createForm(EventType::class, $event, ['editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink]);
@@ -152,7 +153,8 @@ class SortieController extends AbstractController
                 // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
                 if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()
                     && ($originalEntityData['ngensMax'] !== $event->getngensMax()
-                    || $originalEntityData['encadrants'] !== $newEncadrants)) {
+                    || $originalEntityData['encadrants'] !== $newEncadrants)
+                    || $originalEntityData['place'] !== $event->getPlace()) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
                 } else {
                     // on envoie directement le mail de mise à jour de sortie
