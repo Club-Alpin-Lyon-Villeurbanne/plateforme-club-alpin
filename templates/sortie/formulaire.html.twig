@@ -31,7 +31,7 @@
         {% endif %}
         <br class="clear">
 
-        <div style="float:left; padding:0 20px 10px 0">
+        <div style="float:left; width: 42%; padding:0 0 10px 0;margin: 0">
             {% if is_update %}
                 Sortie liée à la commission :<br />
                 <b>{{ commission }}</b>
@@ -39,10 +39,10 @@
                 {{ form_row(form.commission) }}
             {% endif %}
         </div>
-        <div style="float:right;margin-right:20px;">
+        <div style="float:left; width: 42%; margin: 0 20px;">
             {{ form_row(form.titre) }}
         </div>
-        <br style="clear:both" /><br>
+        <br class="clear">
 
         <div id="individus">
             {{ form_macros.display_encadrement(form, is_update) }}
@@ -58,7 +58,7 @@
 
             <div style="float:left; width:45%; padding:0 20px 0 0;">
                 <label>Précisez sur la carte <span class="required">*</span></label>
-                <button name="codeAddress" class="biglink btn-marker" style="border-radius:5px; cursor:pointer;"><span class="bleucaf">&gt;</span> PLACER LE MARQUEUR</button><br>
+                <button name="codeAddress" class="biglink btn-marker" style="cursor:pointer;"><span class="bleucaf">&gt;</span> PLACER LE MARQUEUR</button><br>
                 <div class="mini help-text">
                     Cliquez ci-dessus pour placer le marqueur sur la carte, puis déplacez ce dernier sur le <span style="text-decoration: underline;">lieu exact du RDV</span>. Vous pouvez zoomer / dézoomer.
                 </div>
@@ -114,6 +114,11 @@
                 </label>
                 {{ form_help(form.autoAccept) }}
             </div>
+        </div>
+
+        <h2 class="trigger-h2">Mode de transport :</h2>
+        <div class="trigger-me">
+            {{ form_row(form.mainTransportMode) }}
         </div>
 
         <h2 class="trigger-h2">Difficulté / matériel :</h2>
@@ -207,6 +212,12 @@
           integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
           crossorigin="" />
     <link rel="stylesheet" href="/css/ui-cupertino/jquery-ui-1.8.18.custom.css" type="text/css"  media="screen" />
+    <style>
+        #map-creersortie {
+            width: 96%;
+            margin: 0;
+        }
+    </style>
 {% endblock %}
 
 {% block javascripts %}

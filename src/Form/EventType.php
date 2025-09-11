@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
+use App\Entity\TransportModeEnum;
 use App\Repository\CommissionRepository;
 use App\Repository\UserAttrRepository;
 use App\Service\ParticipantService;
@@ -13,6 +14,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -80,7 +82,7 @@ class EventType extends AbstractType
                 'placeholder' => 'Choisissez une commission',
                 'required' => true,
                 'attr' => [
-                    'class' => 'type1 wide',
+                    'class' => 'type2 wide',
                     'style' => 'width: 100%',
                 ],
             ])
@@ -122,7 +124,7 @@ class EventType extends AbstractType
                     'placeholder' => 'ex : Escalade du Grand Som',
                     'minlength' => 10,
                     'maxlength' => 100,
-                    'class' => 'type1',
+                    'class' => 'type2',
                     'style' => 'width:320px',
                 ],
                 'constraints' => [
@@ -134,13 +136,27 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('place', TextType::class, [
-                'label' => 'Lieu de départ de l\'activité encadrée',
-                'required' => false,
+                'label' => 'Lieu de départ de l\'activité encadrée <span class="revalidation">*</span>',
+                'label_html' => true,
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : 69510 Messimy, 74400 Chamonix',
                     'class' => 'type2 wide',
                 ],
                 'help' => 'Code postal et ville. Permet de déduire le massif et d\'aider au calcul du bilan carbone.',
+                'help_attr' => [
+                    'class' => 'mini',
+                ],
+            ])
+            ->add('mainTransportMode', EnumType::class, [
+                'label' => 'Mode de transport principal',
+                'required' => true,
+                'class' => TransportModeEnum::class,
+                'attr' => [
+                    'class' => 'type2 wide',
+                    'style' => 'width: 97%',
+                ],
+                'help' => 'Permet d\'aider au calcul du bilan carbone.',
                 'help_attr' => [
                     'class' => 'mini',
                 ],
