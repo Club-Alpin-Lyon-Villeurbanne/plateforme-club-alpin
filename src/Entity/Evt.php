@@ -233,6 +233,10 @@ class Evt
     #[Groups('event:read')]
     private ?\DateTimeImmutable $legalStatusChangeDate = null;
 
+    #[ORM\Column(name: 'main_transport_mode', type: Types::STRING, length: 50, nullable: true, enumType: TransportModeEnum::class)]
+    #[Groups('event:read')]
+    private ?TransportModeEnum $mainTransportMode;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -901,6 +905,18 @@ class Evt
     public function setLegalStatusChangeDate(?\DateTimeImmutable $legalStatusChangeDate): self
     {
         $this->legalStatusChangeDate = $legalStatusChangeDate;
+
+        return $this;
+    }
+
+    public function getMainTransportMode(): ?TransportModeEnum
+    {
+        return $this->mainTransportMode;
+    }
+
+    public function setMainTransportMode(?TransportModeEnum $mainTransportMode): self
+    {
+        $this->mainTransportMode = $mainTransportMode;
 
         return $this;
     }

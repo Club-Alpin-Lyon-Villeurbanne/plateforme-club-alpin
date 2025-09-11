@@ -108,6 +108,7 @@ class SortieController extends AbstractController
             }
             $originalEntityData['hasPaymentForm'] = $event->hasPaymentForm();
             $originalEntityData['paymentAmount'] = $event->getPaymentAmount();
+            $originalEntityData['place'] = $event->getPlace();
         }
 
         $form = $this->createForm(EventType::class, $event, ['is_edit' => $isUpdate, 'editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'user' => $user]);
@@ -172,7 +173,8 @@ class SortieController extends AbstractController
                     && ($originalEntityData['ngensMax'] !== $event->getngensMax()
                     || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
                     || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
-                    || $originalEntityData['encadrants'] !== $newEncadrants)) {
+                    || $originalEntityData['encadrants'] !== $newEncadrants)
+                    || $originalEntityData['place'] !== $event->getPlace()) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
                 } else {
                     // on envoie directement le mail de mise à jour de sortie
