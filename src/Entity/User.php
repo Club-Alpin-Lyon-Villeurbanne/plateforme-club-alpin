@@ -350,7 +350,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return false;
     }
 
-    public function addAttribute(Usertype $userType, $params = null)
+    public function getAttribute(?string $attribute = null, ?string $commission = null): ?UserAttr
+    {
+        if (null === $attribute) {
+            return null;
+        }
+
+        foreach ($this->attrs as $cafUserAttr) {
+            /** @var UserAttr $cafUserAttr */
+            if (\in_array($cafUserAttr->getUserType()->getCode(), (array) $attribute, true)) {
+                if (null === $commission) {
+                    return $cafUserAttr;
+                }
+                if ($commission === \array_slice(explode(':', $cafUserAttr->getParams()), -1)[0]) {
+                    return $cafUserAttr;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public function addAttribute(Usertype $userType, ?string $params = null): void
     {
         if ($userType->getLimitedToComm() && null === $params) {
             throw new \InvalidArgumentException('User type is limited to commission.');

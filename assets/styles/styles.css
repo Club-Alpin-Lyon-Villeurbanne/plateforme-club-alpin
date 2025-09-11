@@ -530,3 +530,7 @@ table.wide-table th {
 .info-container label {
     display: inline !important;
 }
+
+.nice-list li img {
+    vertical-align: middle;
+}
