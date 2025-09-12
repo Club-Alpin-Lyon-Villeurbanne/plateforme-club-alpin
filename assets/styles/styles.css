@@ -536,3 +536,17 @@ table.wide-table th {
 }
 
 .btn-marker {margin:6px 3px 3px 0;}
+
+.image {
+    display: table;
+    clear: both;
+    text-align: center;
+    margin: 1em auto;
+}
+.image img {
+    max-width: 100%;
+    height: auto;
+}
+.image_resized img {
+    width: 100%;
+}
