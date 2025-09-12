@@ -37,7 +37,7 @@ class UserJoinSortieVoter extends Voter
         if (!$subject->joinHasStarted()) {
             return false;
         }
-        
+
         // Vérifier que l'utilisateur a une licence valide
         if ($user->getDoitRenouveler()) {
             return false;
