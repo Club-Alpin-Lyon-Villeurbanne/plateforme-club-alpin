@@ -38,6 +38,11 @@ class UserJoinSortieVoter extends Voter
             return false;
         }
 
+        // Vérifier que l'utilisateur a une licence valide
+        if ($user->getDoitRenouveler()) {
+            return false;
+        }
+
         return null === $subject->getParticipation($user) || \count($this->userRepo->getFiliations($user)) > 0;
     }
 }
