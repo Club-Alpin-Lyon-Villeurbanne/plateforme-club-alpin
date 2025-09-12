@@ -13,6 +13,7 @@ use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Serializer\TimeStampNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
@@ -214,6 +215,21 @@ class Evt
 
     #[ORM\Column(name: 'images_authorized', type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $imagesAuthorized = false;
+
+    #[ORM\Column(name: 'has_hello_asso_form', type: Types::BOOLEAN, nullable: false, options: ['default' => false])]
+    private bool $hasHelloAssoForm = false;
+
+    #[ORM\Column(name: 'hello_asso_form_slug', type: Types::STRING, length: 100, nullable: true)]
+    private ?string $helloAssoFormSlug;
+
+    #[ORM\Column(name: 'hello_asso_form_amount', type: Types::FLOAT, nullable: true)]
+    private ?float $helloAssoFormAmount;
+
+    #[ORM\Column(name: 'hello_asso_form_url', type: Types::STRING, length: 255, nullable: true)]
+    private ?string $helloAssoFormUrl;
+
+    #[ORM\Column(name: 'has_hello_asso_send_mail', type: Types::BOOLEAN, nullable: false, options: ['default' => true])]
+    private bool $hasHelloAssoSendMail = true;
 
     public function __construct(
         ?User $user,
@@ -898,6 +914,66 @@ class Evt
     public function setImagesAuthorized(bool $imagesAuthorized): self
     {
         $this->imagesAuthorized = $imagesAuthorized;
+
+        return $this;
+    }
+
+    public function hasHelloAssoForm(): bool
+    {
+        return $this->hasHelloAssoForm;
+    }
+
+    public function setHasHelloAssoForm(bool $hasHelloAssoForm): self
+    {
+        $this->hasHelloAssoForm = $hasHelloAssoForm;
+
+        return $this;
+    }
+
+    public function getHelloAssoFormSlug(): ?string
+    {
+        return $this->helloAssoFormSlug;
+    }
+
+    public function setHelloAssoFormSlug(?string $helloAssoFormSlug): self
+    {
+        $this->helloAssoFormSlug = $helloAssoFormSlug;
+
+        return $this;
+    }
+
+    public function getHelloAssoFormUrl(): ?string
+    {
+        return $this->helloAssoFormUrl;
+    }
+
+    public function setHelloAssoFormUrl(?string $helloAssoFormUrl): self
+    {
+        $this->helloAssoFormUrl = $helloAssoFormUrl;
+
+        return $this;
+    }
+
+    public function getHelloAssoFormAmount(): ?float
+    {
+        return $this->helloAssoFormAmount;
+    }
+
+    public function setHelloAssoFormAmount(?float $helloAssoFormAmount): self
+    {
+        $this->helloAssoFormAmount = $helloAssoFormAmount;
+
+        return $this;
+    }
+
+    public function isHasHelloAssoSendMail(): bool
+    {
+        return $this->hasHelloAssoSendMail;
+    }
+
+    public function setHasHelloAssoSendMail(bool $hasHelloAssoSendMail): self
+    {
+        $this->hasHelloAssoSendMail = $hasHelloAssoSendMail;
 
         return $this;
     }
