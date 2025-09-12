@@ -201,7 +201,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
             if (0 === count($errTabMail)) {
                 // envoi du mail à l'adhérent
                 LegacyContainer::get('legacy_mailer')->send($toMail, 'transactional/sortie-inscription', [
-                    'role' => 'manuel' === $role_evt_join ? null : $role_evt_join,
+                    'role' => 'inscrit' === $role_evt_join ? null : $role_evt_join,
                     'event_name' => $evtName,
                     'event_url' => $evtUrl,
                     'event_date' => $evtDate,
