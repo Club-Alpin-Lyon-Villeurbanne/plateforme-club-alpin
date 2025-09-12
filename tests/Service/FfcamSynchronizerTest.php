@@ -117,7 +117,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-10-15'));
+        ClockMock::freeze(new \DateTime('2024-09-15'));
 
         $existingUser = $this->signup();
         $existingUser
@@ -156,7 +156,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-11-15'));
+        ClockMock::freeze(new \DateTime('2024-10-15'));
 
         $existingUser = $this->signup();
         $existingUser
@@ -195,7 +195,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-11-01'));
+        ClockMock::freeze(new \DateTime('2024-10-01'));
 
         $expiredUser = $this->signup();
         $expiredUser
