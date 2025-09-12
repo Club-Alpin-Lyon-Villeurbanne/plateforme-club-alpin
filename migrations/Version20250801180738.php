@@ -51,7 +51,6 @@ final class Version20250801180738 extends AbstractMigration
             id INT AUTO_INCREMENT NOT NULL,
             user_id BIGINT NOT NULL,
             code_formation VARCHAR(50) DEFAULT NULL,
-            cafnum_user VARCHAR(20) NOT NULL,
             lieu_formation VARCHAR(255) NOT NULL,
             date_debut_formation DATE NOT NULL,
             date_fin_formation DATE NOT NULL,
@@ -65,8 +64,8 @@ final class Version20250801180738 extends AbstractMigration
             updated_at DATETIME NOT NULL,
             INDEX IDX_FORM_VAL_USER (user_id),
             INDEX IDX_FORM_VAL_CODE (code_formation),
-            INDEX IDX_FORM_VAL_CAFNUM (cafnum_user),
             INDEX IDX_FORM_VAL_DATE (date_validation),
+            INDEX IDX_FORM_VAL_DATES (date_debut_formation, date_fin_formation),
             PRIMARY KEY(id)
         ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
 
@@ -74,16 +73,15 @@ final class Version20250801180738 extends AbstractMigration
         $this->addSql('CREATE TABLE formation_competence_validation (
             id INT AUTO_INCREMENT NOT NULL,
             user_id BIGINT NOT NULL,
-            cafnum_user VARCHAR(20) NOT NULL,
             code_competence VARCHAR(15) NOT NULL,
             date_validation DATETIME DEFAULT NULL,
             source_formation VARCHAR(50) DEFAULT NULL,
             created_at DATETIME NOT NULL,
             updated_at DATETIME NOT NULL,
             INDEX IDX_FORM_COMP_VAL_USER (user_id),
-            INDEX IDX_FORM_COMP_VAL_CAFNUM (cafnum_user),
             INDEX IDX_FORM_COMP_VAL_CODE (code_competence),
             INDEX IDX_FORM_COMP_VAL_DATE (date_validation),
+            INDEX IDX_FORM_COMP_VAL_SOURCE (source_formation),
             UNIQUE KEY UNIQ_FORM_USER_COMP (user_id, code_competence),
             PRIMARY KEY(id)
         ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -130,7 +128,6 @@ final class Version20250801180738 extends AbstractMigration
         $this->addSql('CREATE TABLE formation_niveau_validation (
             id INT AUTO_INCREMENT NOT NULL,
             user_id BIGINT NOT NULL,
-            cafnum_user VARCHAR(20) NOT NULL,
             cursus_niveau_id INT NOT NULL,
             code_competence VARCHAR(15) DEFAULT NULL,
             date_validation DATETIME DEFAULT NULL,
@@ -138,7 +135,6 @@ final class Version20250801180738 extends AbstractMigration
             created_at DATETIME NOT NULL,
             updated_at DATETIME NOT NULL,
             INDEX IDX_FORM_NIV_VAL_USER (user_id),
-            INDEX IDX_FORM_NIV_VAL_CAFNUM (cafnum_user),
             INDEX IDX_FORM_NIV_VAL_CURSUS (cursus_niveau_id),
             INDEX IDX_FORM_NIV_VAL_CODE_COMP (code_competence),
             INDEX IDX_FORM_NIV_VAL_DATE (date_validation),
