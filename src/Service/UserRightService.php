@@ -9,6 +9,7 @@ use App\Entity\Usertype;
 use App\Mailer\Mailer;
 use App\Repository\UserAttrRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 
 class UserRightService
 {
@@ -16,6 +17,7 @@ class UserRightService
         protected Mailer $mailer,
         protected EntityManagerInterface $manager,
         protected UserAttrRepository $attrRepository,
+        protected LoggerInterface $logger,
     ) {
     }
 
@@ -25,7 +27,12 @@ class UserRightService
         $this->manager->remove($userRight);
         $this->manager->flush();
 
-        $this->notify($userRight, 'suppression', $whoUser);
+        try {
+            $this->notify($userRight, 'suppression', $whoUser);
+        } catch (\Exception $exception) {
+            $this->logger->error('Impossible d\'envoyer les notifications de retrait de responsabilité');
+            $this->logger->error($exception->getMessage());
+        }
     }
 
     public function notifyUserAfterRightAdded(int $idUser, int $idUserType, string $params, ?User $whoUser): void
@@ -34,7 +41,12 @@ class UserRightService
         $userType = $this->manager->getRepository(Usertype::class)->find($idUserType);
         $userRight = $this->manager->getRepository(UserAttr::class)->findOneBy(['user' => $user, 'userType' => $userType, 'params' => $params]);
 
-        $this->notify($userRight, 'ajout', $whoUser);
+        try {
+            $this->notify($userRight, 'ajout', $whoUser);
+        } catch (\Exception $exception) {
+            $this->logger->error('Impossible d\'envoyer les notifications d\'ajout de responsabilité');
+            $this->logger->error($exception->getMessage());
+        }
     }
 
     public function notify(UserAttr $userRight, string $type, ?User $whoUser): void

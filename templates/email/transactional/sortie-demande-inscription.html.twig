@@ -7,7 +7,7 @@
 {% block inner_html %}
     <p>
         {{ inscrits|length }} adhérent{{ inscrits|length > 1 ? 's' : '' }} {{ inscrits|length > 1 ? 'viennent' : 'vient' }} de se préinscrire
-        à la sortie <a href="{{ event_url }}">{{ event_name }}</a>
+        à la sortie <a href="{{ event_url }}">{{ event_name }}</a>.
     </p>
     <ul>
         {% for inscrit in inscrits %}
@@ -30,7 +30,7 @@
         </p>
     {% endif %}
     <p>
-        Vous recevez ce message car vous êtes {{ dest_role }} sur cette sortie.
+        Vous recevez ce message car vous êtes responsable ou auteur de cette sortie.
     </p>
 {% endblock %}
 
@@ -52,5 +52,5 @@
         Comme vous l'avez paramétré, {{ inscrits|length > 1 ? 'les ' : 'l\'' }}adhérent{{ inscrits|length > 1 ? 's ont' : ' a' }} été accepté{{ inscrits|length > 1 ? 's' : '' }} automatiquement.
     {% endif %}
 
-    Vous recevez ce message car vous êtes {{ dest_role }} sur cette sortie.
+    Vous recevez ce message car vous êtes responsable ou auteur de cette sortie.
 {% endblock %}
