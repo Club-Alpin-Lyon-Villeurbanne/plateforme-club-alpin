@@ -176,28 +176,33 @@ class UserController extends AbstractController
             $inscrits = [];
             foreach ($data['id_user'] as $key => $userId) {
                 $user = $userRepository->find($userId);
-                $role = $data['role_evt_join'][$key] ?? 'manuel';
-                $status = EventParticipation::STATUS_NON_CONFIRME;
-                if ($this->getUser() === $event->getUser() || $isCurrentUserEncadrant) {
-                    $status = EventParticipation::STATUS_VALIDE;
-                }
 
-                $event->addParticipation($user, $role, $status);
-                $inscrits[] = $user;
+                if (!$user->getDoitRenouveler()) {
+                    $role = $data['role_evt_join'][$key] ?? 'manuel';
+                    $status = EventParticipation::STATUS_NON_CONFIRME;
+                    if ($this->getUser() === $event->getUser() || $isCurrentUserEncadrant) {
+                        $status = EventParticipation::STATUS_VALIDE;
+                    }
 
-                // envoi des emails
-                // envoi du mail à l'adhérent
-                try {
-                    $mailer->send($user, 'transactional/sortie-inscription', [
-                        'role' => 'manuel' === $role ? null : $role,
-                        'event_name' => $evtName,
-                        'event_url' => $evtUrl,
-                        'event_date' => $evtDate,
-                        'commission' => $commissionTitle,
-                    ]);
-                } catch (\Exception $exception) {
-                    $logger->error('Impossible de notifier l\'adhérent manuel de sa préinscription');
-                    $logger->error($exception->getMessage());
+                    $event->addParticipation($user, $role, $status);
+                    $inscrits[] = $user;
+
+                    // envoi des emails
+                    // envoi du mail à l'adhérent
+                    try {
+                        $mailer->send($user, 'transactional/sortie-inscription', [
+                            'role' => 'manuel' === $role ? null : $role,
+                            'event_name' => $evtName,
+                            'event_url' => $evtUrl,
+                            'event_date' => $evtDate,
+                            'commission' => $commissionTitle,
+                        ]);
+                    } catch (\Exception $exception) {
+                        $logger->error('Impossible de notifier l\'adhérent manuel de sa préinscription');
+                        $logger->error($exception->getMessage());
+                    }
+                } else {
+                    $this->addFlash('error', 'La licence de ' . $user->getFullName() . ' a expiré. L\'adhésion doit être renouvelée avant l\'inscription.');
                 }
             }
             $em->flush();

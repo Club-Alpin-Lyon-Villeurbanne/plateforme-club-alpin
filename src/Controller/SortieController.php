@@ -935,6 +935,7 @@ class SortieController extends AbstractController
 
             // SI PAS DE PB, INTÉGRATION BDD
             if (empty($errTab)) {
+                $inscrits = [];
                 $status_evt_join = EventParticipation::STATUS_NON_CONFIRME;
                 $auto_accept = false;
                 $nbNewJoins = 1;
@@ -945,12 +946,14 @@ class SortieController extends AbstractController
                 // Si auto_accept est activé, vérifier qu'on n'a pas atteint la limite
                 if ($event->isAutoAccept()) {
                     $ngens_max = $event->getNgensMax();
-                    $current_participants = $event->getParticipationsCount();
+                    if ($ngens_max && $ngens_max > 0) {
+                        $current_participants = $event->getParticipationsCount();
 
-                    // Vérifier si on peut accepter assez d'inscriptions
-                    if (($current_participants + $nbNewJoins) < $ngens_max) {
-                        $status_evt_join = EventParticipation::STATUS_VALIDE;
-                        $auto_accept = true;
+                        // Vérifier si on peut accepter assez d'inscriptions
+                        if (($current_participants + $nbNewJoins) < $ngens_max) {
+                            $status_evt_join = EventParticipation::STATUS_VALIDE;
+                            $auto_accept = true;
+                        }
                     } else {
                         // Si pas de limite définie, accepter automatiquement
                         $status_evt_join = EventParticipation::STATUS_VALIDE;
@@ -961,7 +964,12 @@ class SortieController extends AbstractController
 
                 // normal
                 if (!$hasFiliations) {
-                    $event->addParticipation($user, $role_evt_join, $status_evt_join);
+                    if (!$user->getDoitRenouveler()) {
+                        $event->addParticipation($user, $role_evt_join, $status_evt_join);
+                        $inscrits[] = $user;
+                    } else {
+                        $this->addFlash('error', 'Votre licence a expiré. Veuillez renouveler votre adhésion avant de vous inscrire à une sortie.');
+                    }
                 }
                 // filiations
                 else {
@@ -969,7 +977,12 @@ class SortieController extends AbstractController
                         // si déjà inscrit => on ne fait rien
                         $joined = $event->getParticipation($affiliatedJoiningUser);
                         if (!$joined) {
-                            $event->addParticipation($affiliatedJoiningUser, $role_evt_join, $status_evt_join);
+                            if (!$affiliatedJoiningUser->getDoitRenouveler()) {
+                                $event->addParticipation($affiliatedJoiningUser, $role_evt_join, $status_evt_join);
+                                $inscrits[] = $affiliatedJoiningUser;
+                            } else {
+                                $this->addFlash('error', sprintf('La licence de %s a expiré. L\'adhésion doit être renouvelée avant l\'inscription.', $affiliatedJoiningUser->getFullName()));
+                            }
                         }
                     }
                     foreach ($affiliatedLeavingUsers as $affiliatedLeavingUser) {
@@ -992,13 +1005,6 @@ class SortieController extends AbstractController
                 $commissionTitle = $event->getCommission()->getTitle();
 
                 // infos sur le nouvel inscrit (et ses affiliés)
-                $inscrits = [];
-                if ($hasFiliations) {
-                    $inscrits = $affiliatedJoiningUsers;
-                } else {
-                    $inscrits[] = $user;
-                }
-
                 try {
                     $mailer->send($destinataires, 'transactional/sortie-demande-inscription', [
                         'role' => $role_evt_join,
