@@ -16,7 +16,7 @@ class CommissionConfigVoter extends Voter
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return $attribute === 'COMMISSION_CONFIG';
+        return 'COMMISSION_CONFIG' === $attribute;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool

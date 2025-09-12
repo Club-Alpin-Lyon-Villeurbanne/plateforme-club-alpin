@@ -55,10 +55,11 @@ class SortieController extends AbstractController
         UserRights $userRights,
         Mailer $mailer,
         ?Evt $event = null,
-        ?Commission $commission = null,
     ): array|RedirectResponse {
         $user = $this->getUser();
         $isUpdate = true;
+        $commission = $commissionRepository->findOneBy(['code' => $request->query->get('commission')]);
+
         if (!$event instanceof Evt) {
             $event = new Evt(
                 $user,
@@ -97,7 +98,15 @@ class SortieController extends AbstractController
             }
         }
 
-        $form = $this->createForm(EventType::class, $event, ['editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink]);
+        $mandatoryFields = [];
+        if ($commission instanceof Commission) {
+            $mandatoryFields = explode(',', $commission->getMandatoryFields());
+        }
+        $form = $this->createForm(
+            EventType::class,
+            $event,
+            ['editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'mandatoryFields' => $mandatoryFields]
+        );
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

@@ -290,9 +290,15 @@ class EventType extends AbstractType
                     'class' => 'type2 wide',
                 ],
             ])
+        ;
+        $difficulteRequired = false;
+        if (\in_array('difficulte', $options['mandatoryFields'], true)) {
+            $difficulteRequired = true;
+        }
+        $builder
             ->add('difficulte', TextType::class, [
                 'label' => 'Difficulté, niveau',
-                'required' => false,
+                'required' => $difficulteRequired,
                 'attr' => [
                     'placeholder' => 'ex : PD, 5d+, exposé, ...',
                     'maxlength' => 50,
@@ -304,9 +310,15 @@ class EventType extends AbstractType
                     ]),
                 ],
             ])
+        ;
+        $deniveleRequired = false;
+        if (\in_array('denivele', $options['mandatoryFields'], true)) {
+            $deniveleRequired = true;
+        }
+        $builder
             ->add('denivele', TextType::class, [
                 'label' => 'Dénivelé positif',
-                'required' => false,
+                'required' => $deniveleRequired,
                 'attr' => [
                     'placeholder' => 'ex : 1200',
                     'maxlength' => 50,
@@ -322,9 +334,15 @@ class EventType extends AbstractType
                     ]),
                 ],
             ])
+        ;
+        $distanceRequired = false;
+        if (\in_array('distance', $options['mandatoryFields'], true)) {
+            $distanceRequired = true;
+        }
+        $builder
             ->add('distance', TextType::class, [
                 'label' => 'Distance',
-                'required' => false,
+                'required' => $distanceRequired,
                 'attr' => [
                     'placeholder' => 'ex : 13.50',
                     'maxlength' => 50,
@@ -340,6 +358,8 @@ class EventType extends AbstractType
                     ]),
                 ],
             ])
+        ;
+        $builder
             ->add('matos', TextareaType::class, [
                 'label' => 'Matériel nécessaire',
                 'attr' => [
@@ -462,6 +482,7 @@ class EventType extends AbstractType
             'data_class' => Evt::class,
             'editoLineLink' => '',
             'imageRightLink' => '',
+            'mandatoryFields' => [],
         ]);
     }
 

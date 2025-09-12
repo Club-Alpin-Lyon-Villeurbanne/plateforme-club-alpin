@@ -142,19 +142,37 @@ class CommissionController extends AbstractController
             throw new AccessDeniedHttpException('Not allowed');
         }
 
-        if ('POST' === $request->getMethod() && !$this->isCsrfTokenValid('commission_configuration', $request->request->get('csrf_token_inscriptions'))) {
+        $configurableFields = explode(',', Evt::CONFIGURABLE_FIELDS);
+
+        if ('POST' === $request->getMethod() && !$this->isCsrfTokenValid('commission_configuration', $request->request->get('csrf_token'))) {
             $this->addFlash('error', 'Jeton de validation invalide.');
 
             return $this->redirectToRoute('commission_configuration', ['id' => $commission->getId()]);
         }
 
-        $data = $request->request->all();
-        dd($data);
+        if ('POST' === $request->getMethod()) {
+            $data = $request->request->all();
+
+            $commissionMandatoryFields = [];
+            foreach ($configurableFields as $fieldName) {
+                if (isset($data[$fieldName]) && 'on' === $data[$fieldName]) {
+                    $commissionMandatoryFields[] = $fieldName;
+                }
+            }
+
+            $commission->setMandatoryFields($commissionMandatoryFields ? implode(',', $commissionMandatoryFields) : '');
+            $entityManager->persist($commission);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Les champs obligatoires ont bien été enregistrés pour ' . $commission->getTitle() . '.');
+
+            return $this->redirectToRoute('commission_configuration', ['id' => $commission->getId()]);
+        }
 
         return [
             'commission' => $commission,
             'checked_fields' => explode(',', $commission->getMandatoryFields()),
-            'fields' => explode(',', Evt::CONFIGURABLE_FIELDS),
+            'fields' => $configurableFields,
         ];
     }
 }
