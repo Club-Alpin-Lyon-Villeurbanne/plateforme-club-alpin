@@ -29,10 +29,12 @@ final class Version20250801180738 extends AbstractMigration
         $this->addSql('CREATE TABLE formation_competence_referentiel (
             id INT AUTO_INCREMENT NOT NULL,
             code_competence VARCHAR(15) NOT NULL,
+            titre_competence VARCHAR(255) DEFAULT NULL,
             intitule VARCHAR(255) NOT NULL,
             niveau VARCHAR(100) NOT NULL,
             theme_id INT DEFAULT NULL,
             UNIQUE KEY UNIQ_FORM_COMP_CODE (code_competence),
+            INDEX IDX_FORM_COMP_CODE (code_competence),
             INDEX IDX_FORM_COMP_THEME (theme_id),
             PRIMARY KEY(id)
         ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -130,12 +132,15 @@ final class Version20250801180738 extends AbstractMigration
             user_id BIGINT NOT NULL,
             cafnum_user VARCHAR(20) NOT NULL,
             cursus_niveau_id INT NOT NULL,
+            code_competence VARCHAR(15) DEFAULT NULL,
             date_validation DATETIME DEFAULT NULL,
+            validation_par VARCHAR(255) DEFAULT NULL,
             created_at DATETIME NOT NULL,
             updated_at DATETIME NOT NULL,
             INDEX IDX_FORM_NIV_VAL_USER (user_id),
             INDEX IDX_FORM_NIV_VAL_CAFNUM (cafnum_user),
             INDEX IDX_FORM_NIV_VAL_CURSUS (cursus_niveau_id),
+            INDEX IDX_FORM_NIV_VAL_CODE_COMP (code_competence),
             INDEX IDX_FORM_NIV_VAL_DATE (date_validation),
             UNIQUE KEY UNIQ_FORM_USER_NIV (user_id, cursus_niveau_id),
             PRIMARY KEY(id)
