@@ -115,7 +115,7 @@ $().ready(function() {
 	// AU LANCEMENT
 	if(map_initialize()) {
 		// clic sur le bouton pour placer la marker par rapport à l'adresse donnée
-		$('input[name=codeAddress]').click(function() {
+		$('#codeAddress').click(function() {
 			codeAddress($('input[id=event_rdv]').val());	
 		});
 		// si les input lat et long contiennent une info, on place le marker dessus
