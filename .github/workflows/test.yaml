@@ -3,16 +3,71 @@ on: [pull_request]
 
 jobs:
   php-cs:
-    name: php-cs-fixer
+    name: PHP CS Fixer
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Prepare environment
-        uses: ./.github/actions/prepare
-        
-      - name: Run php-cs
-        run: make args=--diff php-cs
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Important pour avoir l'historique git complet
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
+          coverage: none
+          tools: cs2pr, phive
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Cache PHP-CS-Fixer
+        uses: actions/cache@v4
+        with:
+          path: .php-cs-fixer.cache
+          key: ${{ runner.os }}-php-cs-fixer-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-php-cs-fixer-
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Install PHP tools
+        run: phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E,CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
+
+      # Pour les PR : analyse seulement les fichiers modifiés
+      - name: Get changed PHP files
+        id: changed-files
+        run: |
+          CHANGED_FILES=$(git diff --name-only --diff-filter=ACMRTUXB ${{ github.event.pull_request.base.sha }} | grep -E '\.php$' | xargs -r ls 2>/dev/null | paste -sd " " || true)
+          echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No PHP files changed"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "PHP files changed: $CHANGED_FILES"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run PHP-CS-Fixer on changed files
+        if: steps.changed-files.outputs.has_changes == 'true'
+        run: |
+          echo "Running PHP-CS-Fixer with parallel processing..."
+          ./bin/tools/php-cs-fixer fix --dry-run --diff --format=checkstyle ${{ steps.changed-files.outputs.files }} | cs2pr
+
+      - name: Run PHP-CS-Fixer (no changes)
+        if: steps.changed-files.outputs.has_changes == 'false'
+        run: echo "✅ No PHP files to check"
 
   phpstan:
     name: phpstan

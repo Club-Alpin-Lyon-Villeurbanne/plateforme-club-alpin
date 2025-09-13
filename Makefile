@@ -42,6 +42,16 @@ php-cs-fix: bin/tools/php-cs-fixer ## Analyze and fix PHP code with php-cs-fixer
 	@$(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php $(args)
 .PHONY: php-cs-fix
 
+php-cs-changed: bin/tools/php-cs-fixer ## Check only changed PHP files (for PRs)
+	@echo "Checking changed PHP files..."
+	@git diff --name-only --cached --diff-filter=ACMRTUXB | grep -E '\.php$$' | xargs -r $(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff || echo "No PHP files to check"
+.PHONY: php-cs-changed
+
+php-cs-fix-changed: bin/tools/php-cs-fixer ## Fix only changed PHP files
+	@echo "Fixing changed PHP files..."
+	@git diff --name-only --cached --diff-filter=ACMRTUXB | grep -E '\.php$$' | xargs -r $(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php || echo "No PHP files to fix"
+.PHONY: php-cs-fix-changed
+
 phpstan: bin/tools/phpstan ## Analyze PHP code with phpstan
 	$(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse legacy public src tests -c phpstan.neon -l 1
 .PHONY: phpstan
