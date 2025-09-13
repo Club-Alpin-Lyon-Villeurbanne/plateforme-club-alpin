@@ -75,7 +75,7 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_CHANNEL: deployments
           SLACK_COLOR: good
-          SLACK_ICON: https://clever-cloud.com/favicon.ico
+          SLACK_ICON_EMOJI: ':rocket:'
           SLACK_TITLE: '✅ Déploiement réussi sur Production - Clermont-Ferrand'
           SLACK_MESSAGE: |
             *Changements déployés:*
@@ -103,7 +103,7 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_CHANNEL: deployments
           SLACK_COLOR: danger
-          SLACK_ICON: https://clever-cloud.com/favicon.ico
+          SLACK_ICON_EMOJI: ':rocket:'
           SLACK_TITLE: '❌ Échec du déploiement sur Production - Clermont-Ferrand'
           SLACK_MESSAGE: |
             *Changements en attente:*
