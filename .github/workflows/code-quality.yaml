@@ -77,9 +77,6 @@ jobs:
       
       - name: Prepare environment
         uses: ./.github/actions/prepare
-      
-      - name: Setup phpunit
-        run: make phpunit-setup
         
       - name: Run phpstan
         run: make phpstan
