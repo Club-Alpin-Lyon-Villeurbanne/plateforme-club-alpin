@@ -18,6 +18,8 @@ return (new PhpCsFixer\Config())
         '@Symfony:risky' => true,
         '@DoctrineAnnotation' => true,
         'trailing_comma_in_multiline' => false, // Désactive l'ajout de virgules en fin d'array
+        'native_function_invocation' => false, // Désactive l'ajout de \ devant les fonctions natives
+        'native_constant_invocation' => false, // Désactive l'ajout de \ devant les constantes natives
         'no_useless_return' => true,
         'no_useless_else' => true,
         'no_closing_tag' => true,
