@@ -4,8 +4,7 @@
 # Utilise Restic pour le chiffrement et la gestion des backups
 # Exécuté quotidiennement via cron Clever Cloud
 
-# Source common utilities for healthcheck monitoring
-source ${ROOT}/clevercloud/crons/common.sh
+set -euo pipefail
 
 # Configuration
 readonly SCRIPT_NAME="backup-database"
@@ -20,9 +19,13 @@ log() {
     echo "${LOG_PREFIX} $1"
 }
 
-# Fonction de gestion d'erreur
+# Fonction de gestion d'erreur avec notification healthchecks.io
 error_exit() {
     log "ERROR: $1"
+    # Envoyer le ping d'échec à healthchecks.io si configuré
+    if [[ -n "${HEALTHCHECK_BACKUP_DB:-}" ]]; then
+        curl -fsS --retry 3 "https://hc-ping.com/${HEALTHCHECK_BACKUP_DB}/fail" &
+    fi
     cleanup
     exit 1
 }
@@ -189,10 +192,6 @@ check_repository_integrity() {
 
 # Fonction principale
 main() {
-    # Initialize healthcheck monitoring
-    # Requires HEALTHCHECK_BACKUP_DB env var to be set with healthchecks.io UUID
-    init_healthcheck "HEALTHCHECK_BACKUP_DB" "backup-database"
-    
     # Configuration des trap pour gérer les interruptions
     trap 'error_exit "Script interrupted"' INT TERM
     trap cleanup EXIT
@@ -200,6 +199,12 @@ main() {
     log "========================================="
     log "Starting database backup process..."
     log "========================================="
+    
+    # Notification de début à healthchecks.io si configuré
+    if [[ -n "${HEALTHCHECK_BACKUP_DB:-}" ]]; then
+        curl -fsS --retry 3 "https://hc-ping.com/${HEALTHCHECK_BACKUP_DB}/start" &
+        log "Healthcheck monitoring enabled"
+    fi
     
     # Se déplacer dans le répertoire de l'application
     cd "${APP_HOME}"
@@ -244,6 +249,12 @@ main() {
     log "========================================="
     log "Database backup process completed successfully"
     log "========================================="
+    
+    # Notification de succès à healthchecks.io si configuré
+    if [[ -n "${HEALTHCHECK_BACKUP_DB:-}" ]]; then
+        curl -fsS --retry 3 "https://hc-ping.com/${HEALTHCHECK_BACKUP_DB}" &
+        log "Healthcheck success signal sent"
+    fi
     
     # Le cleanup sera fait automatiquement via trap EXIT
 }
