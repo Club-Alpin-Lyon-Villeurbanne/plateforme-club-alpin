@@ -1,4 +1,4 @@
-name: Test
+name: Code Quality
 on: [pull_request]
 
 jobs:
@@ -70,7 +70,7 @@ jobs:
         run: echo "✅ No PHP files to check"
 
   phpstan:
-    name: phpstan
+    name: PHPStan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -83,18 +83,3 @@ jobs:
         
       - name: Run phpstan
         run: make phpstan
-
-  tests:
-    name: phpunit
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Prepare environment
-        uses: ./.github/actions/prepare
-        
-      - name: Initialise the database
-        run: |
-          make database-init-test
-      - name: Run tests
-        run: make tests
