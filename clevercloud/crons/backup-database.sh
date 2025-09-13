@@ -4,7 +4,8 @@
 # Utilise Restic pour le chiffrement et la gestion des backups
 # Exécuté quotidiennement via cron Clever Cloud
 
-set -euo pipefail
+# Source common utilities for healthcheck monitoring
+source ${ROOT}/clevercloud/crons/common.sh
 
 # Configuration
 readonly SCRIPT_NAME="backup-database"
@@ -19,13 +20,9 @@ log() {
     echo "${LOG_PREFIX} $1"
 }
 
-# Fonction de gestion d'erreur avec notification healthchecks.io
+# Fonction de gestion d'erreur
 error_exit() {
     log "ERROR: $1"
-    # Envoyer le ping d'échec à healthchecks.io
-    if [[ -n "${HEALTHCHECK_BACKUP_DB:-}" ]]; then
-        curl -fsS --retry 3 "https://hc-ping.com/${HEALTHCHECK_BACKUP_DB}/fail" &
-    fi
     cleanup
     exit 1
 }
@@ -76,20 +73,36 @@ init_restic_repo() {
 
 # Téléchargement du backup depuis Clever Cloud
 download_backup() {
-    log "Downloading latest MySQL backup from Clever Cloud..."
+    log "Fetching latest MySQL backup from Clever Cloud..."
     mkdir -p "${TEMP_DIR}"
     cd "${TEMP_DIR}"
     
-    # Utiliser le CLI Clever pour télécharger le backup
-    clever download-backup \
-        --app "${APP_ID}" \
-        --addon "${MYSQL_ADDON_UUID}" \
-        --output . || error_exit "Failed to download backup from Clever Cloud"
+    # Récupérer la liste des backups en JSON
+    local backups_json=$(clever database backups "${MYSQL_ADDON_UUID}" -F json 2>/dev/null)
+    if [[ -z "${backups_json}" ]]; then
+        error_exit "Failed to fetch backup list from Clever Cloud"
+    fi
     
-    # Trouver le fichier téléchargé (format: *.sql.gz)
-    local backup_file=$(ls -t *.sql.gz 2>/dev/null | head -1)
-    if [[ -z "${backup_file}" ]]; then
-        error_exit "No backup file found after download"
+    # Extraire l'ID du dernier backup (le plus récent - dernier élément du tableau)
+    local backup_id=$(echo "${backups_json}" | jq -r '.[-1].backupId' 2>/dev/null)
+    if [[ -z "${backup_id}" ]] || [[ "${backup_id}" == "null" ]]; then
+        error_exit "No backup found in Clever Cloud"
+    fi
+    
+    local backup_date=$(echo "${backups_json}" | jq -r '.[-1].creationDate' 2>/dev/null)
+    log "Found backup: ${backup_id} from ${backup_date}"
+    
+    # Télécharger le backup
+    local backup_file="backup-${backup_id}.sql.gz"
+    log "Downloading backup to ${backup_file}..."
+    
+    clever database backups download \
+        --output "${backup_file}" \
+        "${MYSQL_ADDON_UUID}" \
+        "${backup_id}" || error_exit "Failed to download backup from Clever Cloud"
+    
+    if [[ ! -f "${backup_file}" ]]; then
+        error_exit "Backup file not found after download"
     fi
     
     log "Downloaded backup: ${backup_file}"
@@ -176,6 +189,10 @@ check_repository_integrity() {
 
 # Fonction principale
 main() {
+    # Initialize healthcheck monitoring
+    # Requires HEALTHCHECK_BACKUP_DB env var to be set with healthchecks.io UUID
+    init_healthcheck "HEALTHCHECK_BACKUP_DB" "backup-database"
+    
     # Configuration des trap pour gérer les interruptions
     trap 'error_exit "Script interrupted"' INT TERM
     trap cleanup EXIT
@@ -183,11 +200,6 @@ main() {
     log "========================================="
     log "Starting database backup process..."
     log "========================================="
-    
-    # Notification de début à healthchecks.io
-    if [[ -n "${HEALTHCHECK_BACKUP_DB:-}" ]]; then
-        curl -fsS --retry 3 "https://hc-ping.com/${HEALTHCHECK_BACKUP_DB}/start" &
-    fi
     
     # Se déplacer dans le répertoire de l'application
     cd "${APP_HOME}"
@@ -205,9 +217,6 @@ main() {
         error_exit "Missing RESTIC_PASSWORD environment variable"
     fi
     
-    if [[ -z "${HEALTHCHECK_BACKUP_DB:-}" ]]; then
-        log "WARNING: HEALTHCHECK_BACKUP_DB not set, monitoring disabled"
-    fi
     
     # Étapes du backup
     install_restic
@@ -235,11 +244,6 @@ main() {
     log "========================================="
     log "Database backup process completed successfully"
     log "========================================="
-    
-    # Notification de succès à healthchecks.io
-    if [[ -n "${HEALTHCHECK_BACKUP_DB:-}" ]]; then
-        curl -fsS --retry 3 "https://hc-ping.com/${HEALTHCHECK_BACKUP_DB}" &
-    fi
     
     # Le cleanup sera fait automatiquement via trap EXIT
 }
