@@ -3,5 +3,6 @@
   "57 * * * * $ROOT/clevercloud/crons/save-images.sh",
   "54 5 * * * $ROOT/clevercloud/crons/send-reminders.sh",
   "54 8 * * * $ROOT/clevercloud/crons/clean-alerts.sh",
-  "36 6 * * * $ROOT/clevercloud/crons/google-groups-sync.sh"
+  "36 6 * * * $ROOT/clevercloud/crons/google-groups-sync.sh",
+  "15 4 * * * $ROOT/clevercloud/crons/backup-database.sh"
 ]
