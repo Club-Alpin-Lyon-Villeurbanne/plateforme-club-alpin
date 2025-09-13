@@ -4,6 +4,13 @@ parameters:
     - legacy
     - src
     - tests
+  
+  # Cache pour améliorer les performances
+  resultCachePath: %tmpDir%/resultCache.php
+  
+  # Traitement parallèle
+  parallel:
+    maximumNumberOfProcesses: 4
 
   ignoreErrors:
     - '#Variable \$p[0-9_]+ might not be defined#'

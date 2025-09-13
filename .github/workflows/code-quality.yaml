@@ -74,9 +74,46 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Pour l'analyse différentielle
       
       - name: Prepare environment
         uses: ./.github/actions/prepare
-        
-      - name: Run phpstan
+      
+      - name: Cache PHPStan result cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/phpstan
+          key: ${{ runner.os }}-phpstan-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-phpstan-
+            ${{ runner.os }}-
+      
+      # Pour les PR : analyse seulement les fichiers modifiés
+      - name: Get changed PHP files for PHPStan
+        id: changed-php-files
+        if: github.event_name == 'pull_request'
+        run: |
+          CHANGED_FILES=$(git diff --name-only --diff-filter=ACMRTUXB ${{ github.event.pull_request.base.sha }} | grep -E '\.php$' | grep -E '^(src|tests|legacy)/' | xargs -r ls 2>/dev/null | paste -sd " " || true)
+          echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No relevant PHP files changed for PHPStan"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "PHP files changed: $CHANGED_FILES"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Run PHPStan on changed files
+        if: github.event_name == 'pull_request' && steps.changed-php-files.outputs.has_changes == 'true'
+        run: |
+          echo "Running PHPStan on changed files with parallel processing..."
+          $(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse ${{ steps.changed-php-files.outputs.files }} -c phpstan.neon
+      
+      - name: Run PHPStan (full analysis)
+        if: github.event_name != 'pull_request'
         run: make phpstan
+      
+      - name: Skip PHPStan (no changes)
+        if: github.event_name == 'pull_request' && steps.changed-php-files.outputs.has_changes == 'false'
+        run: echo "✅ No relevant PHP files to analyze"
