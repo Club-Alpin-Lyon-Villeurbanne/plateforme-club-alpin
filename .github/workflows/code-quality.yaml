@@ -63,7 +63,7 @@ jobs:
         if: steps.changed-files.outputs.has_changes == 'true'
         run: |
           echo "Running PHP-CS-Fixer with parallel processing..."
-          ./bin/tools/php-cs-fixer fix --dry-run --diff --format=checkstyle ${{ steps.changed-files.outputs.files }} | cs2pr
+          ./bin/tools/php-cs-fixer fix --dry-run --diff --format=checkstyle --config=.php-cs-fixer.dist.php ${{ steps.changed-files.outputs.files }} | cs2pr
 
       - name: Run PHP-CS-Fixer (no changes)
         if: steps.changed-files.outputs.has_changes == 'false'
@@ -88,7 +88,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-phpstan-
             ${{ runner.os }}-
-      
+
+      - name: Install PHPStan
+        run: |
+          mkdir -p bin/tools
+          curl -L https://github.com/phpstan/phpstan/releases/latest/download/phpstan.phar -o bin/tools/phpstan
+          chmod +x bin/tools/phpstan
+
       # Pour les PR : analyse seulement les fichiers modifiés
       - name: Get changed PHP files for PHPStan
         id: changed-php-files
@@ -108,7 +114,7 @@ jobs:
         if: github.event_name == 'pull_request' && steps.changed-php-files.outputs.has_changes == 'true'
         run: |
           echo "Running PHPStan on changed files with parallel processing..."
-          $(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse ${{ steps.changed-php-files.outputs.files }} -c phpstan.neon
+          ./bin/tools/phpstan analyse ${{ steps.changed-php-files.outputs.files }} -c phpstan.neon
       
       - name: Run PHPStan (full analysis)
         if: github.event_name != 'pull_request'

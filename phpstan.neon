@@ -17,17 +17,11 @@ parameters:
     - '#Variable \$p_[a-z_]+ might not be defined#'
 
   excludePaths:
-    - legacy/scripts/operations/operations.bus_update.php
-    - legacy/scripts/operations/operations.contact.php
-    - legacy/scripts/operations/operations.dest_create.php
-    - legacy/scripts/operations/operations.dest_update.php
-    - legacy/htmLawed/htmLawed.php
     - legacy/pages
     - legacy/includes
     - legacy/index.php
     - legacy/app/ajax/pages_reorder.php
     - legacy/app/ajax/get_content_html.php
-    - legacy/admin/retouches-ajax.php
     - legacy/admin/ftp.php
     - var/cache
 
