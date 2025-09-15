@@ -1,0 +1,19 @@
+name: Tests
+on: [pull_request]
+
+jobs:
+  phpunit:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Prepare environment
+        uses: ./.github/actions/prepare
+        
+      - name: Initialise the database
+        run: |
+          make database-init-test
+          
+      - name: Run tests
+        run: make tests

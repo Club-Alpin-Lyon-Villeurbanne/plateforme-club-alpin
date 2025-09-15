@@ -1,23 +1,25 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
-    ->in(__DIR__)
-    ->exclude([
-        'vendor',
-        'var',
-        'db',
-    ])
-    ->name('console')
-    ->notPath('cron_fichier_adherent.php')
-;
+    ->in(['src', 'tests'])
+    ->exclude('var')
+    ->exclude('vendor')
+    ->exclude('node_modules')
+    ->notPath('src/Kernel.php') // Fichier auto-généré Symfony
+    ->notName('*.xml')
+    ->notName('*.yml')
+    ->notName('*.yaml');
 
 return (new PhpCsFixer\Config())
-    ->setFinder($finder)
     ->setRiskyAllowed(true)
+    ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
     ->setRules([
         '@Symfony' => true,
         '@Symfony:risky' => true,
         '@DoctrineAnnotation' => true,
+        'trailing_comma_in_multiline' => false, // Désactive l'ajout de virgules en fin d'array
+        'native_function_invocation' => false, // Désactive l'ajout de \ devant les fonctions natives
+        'native_constant_invocation' => false, // Désactive l'ajout de \ devant les constantes natives
         'no_useless_return' => true,
         'no_useless_else' => true,
         'no_closing_tag' => true,
@@ -47,4 +49,6 @@ return (new PhpCsFixer\Config())
         'no_whitespace_in_blank_line' => true,
         'no_spaces_around_offset' => true,
     ])
+    ->setFinder($finder)
+    ->setCacheFile('.php-cs-fixer.cache')
     ->setLineEnding("\n");
