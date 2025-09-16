@@ -14,9 +14,9 @@ jobs:
       environment: production
       deployment_label: Production - Lyon
       clever_alias: web-prod
-      last_deployed_variable: LAST_DEPLOYED_SHA
-      failure_logs_url: https://console.clever-cloud.com/organisations/orga_ad557a52-c460-4455-88b0-8acd46733724/applications/app_a79768fb-5fc1-457e-acbe-77d16dbf5689/logs
+      last_deployed_variable: LYON_LAST_DEPLOYED_SHA
+      failure_logs_url: ${{ vars.LYON_FAILURE_LOGS_URL }}
     secrets:
-      clever_token: ${{ secrets.CLEVER_TOKEN }}
-      clever_secret: ${{ secrets.CLEVER_SECRET }}
+      clever_token: ${{ secrets.LYON_CLEVER_TOKEN }}
+      clever_secret: ${{ secrets.LYON_CLEVER_SECRET }}
       slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -14,8 +14,9 @@ jobs:
       environment: production-clermont
       deployment_label: Production - Clermont-Ferrand
       clever_alias: web-prod-clermont
-      last_deployed_variable: LAST_DEPLOYED_SHA_CLERMONT
+      last_deployed_variable: CLERMONT_LAST_DEPLOYED_SHA
+      failure_logs_url: ${{ vars.CLERMONT_FAILURE_LOGS_URL }}
     secrets:
-      clever_token: ${{ secrets.CLEVER_TOKEN_CLERMONT }}
-      clever_secret: ${{ secrets.CLEVER_SECRET_CLERMONT }}
+      clever_token: ${{ secrets.CLERMONT_CLEVER_TOKEN }}
+      clever_secret: ${{ secrets.CLERMONT_CLEVER_SECRET }}
       slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}

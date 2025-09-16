@@ -14,8 +14,9 @@ jobs:
       environment: production-chambery
       deployment_label: Production - Chambéry
       clever_alias: web-prod-chambery
-      last_deployed_variable: LAST_DEPLOYED_SHA_CHAMBERY
+      last_deployed_variable: CHAMBERY_LAST_DEPLOYED_SHA
+      failure_logs_url: ${{ vars.CHAMBERY_FAILURE_LOGS_URL }}
     secrets:
-      clever_token: ${{ secrets.CLEVER_TOKEN_CHAMBERY }}
-      clever_secret: ${{ secrets.CLEVER_SECRET_CHAMBERY }}
+      clever_token: ${{ secrets.CHAMBERY_CLEVER_TOKEN }}
+      clever_secret: ${{ secrets.CHAMBERY_CLEVER_SECRET }}
       slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
