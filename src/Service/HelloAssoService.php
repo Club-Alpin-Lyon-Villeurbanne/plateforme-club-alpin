@@ -127,6 +127,47 @@ class HelloAssoService
         return $organizationAccessToken;
     }
 
+//    public function getAccessTokenFromRefreshToken(): string
+//    {
+//        $accessToken = '';
+//        $today = new \DateTime();
+//        $refreshToken = $this->getRefreshToken('organization');
+//        $tokenGetDate = $this->getTokenGetDate();
+//
+//        // si pas de refresh token ou expiré
+//        if (!$refreshToken || !$tokenGetDate || $tokenGetDate->diff($today)->d >= (self::HELLO_ASSO_REFRESH_TOKEN_DURATION_IN_DAYS - 2)) {
+//            return $this->login();
+//        }
+//
+//        try {
+//            $response = $this->httpClient->request(
+//                'POST',
+//                $this->baseUrl . self::HELLO_ASSO_TOKEN_ENDPOINT,
+//                [
+//                    'headers' => [
+//                        'Content-Type' => 'application/x-www-form-urlencoded',
+//                        'accept' => 'application/json',
+//                    ],
+//                    'body' => [
+//                        'refresh_token' => $refreshToken,
+//                        'grant_type' => 'refresh_token',
+//                    ],
+//                ],
+//            );
+//            $data = $response->toArray();
+//            $accessToken = $data['access_token'];
+//            $refreshToken = $data['refresh_token'];
+//
+//            // stocker le refresh token en bdd ainsi que sa date d'obtention
+//            $this->saveRefreshToken($refreshToken, 'organization');
+//            $this->saveTokenGetDate();
+//        } catch (\Exception $e) {
+//            $this->logger->error($e->getMessage());
+//        }
+//
+//        return $accessToken;
+//    }
+
     public function getAccessTokenFromRefreshToken(): string
     {
         $accessToken = '';
