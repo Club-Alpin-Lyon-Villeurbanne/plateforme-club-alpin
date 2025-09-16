@@ -11,10 +11,6 @@ on:
         description: Human readable label used in Slack titles
         required: true
         type: string
-      clever_alias:
-        description: Clever Cloud application alias (deprecated when app_id is provided)
-        required: false
-        type: string
       clever_app_id:
         description: Clever Cloud application ID (app_...)
         required: false
@@ -103,7 +99,6 @@ jobs:
         id: deploy
         uses: 47ng/actions-clever-cloud@v2.0.0
         with:
-          alias: ${{ inputs.clever_alias }}
           appID: ${{ inputs.clever_app_id }}
           force: true
         env:
@@ -139,7 +134,7 @@ jobs:
             *Informations:*
             • *Branch:* ${{ github.ref_name }}
             • *Déclenché par:* ${{ github.actor }}
-            • *Application:* ${{ inputs.clever_alias }}
+            • *Application:* ${{ inputs.clever_app_id }}
             • *Dernier commit:* ${{ steps.commit-info.outputs.sha_short }}
 
             *<https://github.com/${{ github.repository }}/commit/${{ steps.commit-info.outputs.sha_full }}|Voir les changements sur GitHub>*
@@ -166,7 +161,7 @@ jobs:
             *Informations:*
             • *Branch:* ${{ github.ref_name }}
             • *Déclenché par:* ${{ github.actor }}
-            • *Application:* ${{ inputs.clever_alias }}
+            • *Application:* ${{ inputs.clever_app_id }}
             • *Dernier commit:* ${{ steps.commit-info.outputs.sha_short }}
 
             ${{ inputs.failure_logs_url != '' && format('*Pour plus de détails, consultez les logs Clever Cloud:* {0}', inputs.failure_logs_url) || '*Pour plus de détails, consultez les logs Clever Cloud*' }}

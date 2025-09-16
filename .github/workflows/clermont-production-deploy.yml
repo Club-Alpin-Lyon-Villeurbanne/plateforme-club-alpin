@@ -14,7 +14,6 @@ jobs:
       environment: production-clermont
       deployment_label: Production - Clermont-Ferrand
       clever_app_id: ${{ vars.CLERMONT_CLEVER_APP_ID }}
-      clever_alias: ''
       last_deployed_variable: CLERMONT_LAST_DEPLOYED_SHA
       failure_logs_url: ${{ vars.CLERMONT_FAILURE_LOGS_URL }}
     secrets:
