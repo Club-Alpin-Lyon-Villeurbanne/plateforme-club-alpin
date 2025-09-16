@@ -98,7 +98,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 										<?php if (empty($runningVersion['vis_content_html'])) { ?>
 											<span style="color:#974e00">[<img src="/img/base/bullet_key.png" alt="MASQUÉ" title="Cet élément est actuellement masqué aux visiteurs du site" style="vertical-align:middle; position:relative; bottom:2px " />]</span>&nbsp;
 										<?php } ?>
-										Vous modifiez l'élément <strong style="font-size:13px;"><?php echo $_GET['p']; ?></strong>
+										Vous modifiez l'élément <strong style="font-size: 0.8rem;"><?php echo $_GET['p']; ?></strong>
 										- en langue <b><img src="/img/base/flag-fr-up.gif" alt="" title="" style="height:10px;" /> FR</b>
 										- classe <b><?php echo $_GET['class']; ?></b>
 									</p>
@@ -106,7 +106,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 									<!-- choix versions -->
 									<div style="float:right">
 										Charger une version précédente (<?php echo $MAX_VERSIONS; ?> max.) :
-										<select name="versions" style="font-size:11px; ">
+										<select name="versions">
 											<?php
                                             foreach ($contentVersionsTab as $version) {
                                                 echo '<option value="' . $version['id_content_html'] . '" ' . ($version['id_content_html'] == $id_content_html ? 'selected="selected"' : '') . '>' . jour(date('N', $version['date_content_html'])) . ' ' . date('d/m/y à H:i:s', $version['date_content_html']) . '</option>';

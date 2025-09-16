@@ -17,12 +17,12 @@
     <form action="{{ path('admin_login') }}" method="post" style="" class="bloc">
         <input
                 type="text"
-                style="width:240px;height:17px;background:#34383c;border:1px solid #34383c;padding:3px;margin:0px 0px 3px 0px; color:#a7a7a7; font-size:11px"
+                style="width:240px;height:17px;background:#34383c;border:1px solid #34383c;padding:3px;margin:0px 0px 3px 0px; color:#a7a7a7"
                 name="username" placeholder="Votre identifiant" />
         <br />
         <input
                 type="password"
-                style="width:207px;height:17px;background:#34383c;border:1px solid #34383c;padding:3px;margin:0px 0px 3px 0px; color:#a7a7a7; font-size:11px;"
+                style="width:207px;height:17px;background:#34383c;border:1px solid #34383c;padding:3px;margin:0px 0px 3px 0px; color:#a7a7a7"
                 name="password"
                 placeholder="Votre mot de passe" />
         
@@ -31,7 +31,7 @@
         <input type="hidden" name="_csrf_token" value="{{ csrf_token(CSRF_ADMIN_TOKEN_ID) }}">
         <input type="submit" name="admin_connect" value="OK"/>
         <br />
-        <a href="/" title="" style="font-size:9px;color:#a7a7a7;text-decoration:none">Retour</a>
+        <a href="/" title="" style="font-size: 0.6rem;color:#a7a7a7;text-decoration:none">Retour</a>
     </form>
 </body>
 </html>

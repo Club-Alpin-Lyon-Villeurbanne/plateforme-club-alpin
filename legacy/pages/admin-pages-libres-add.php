@@ -23,7 +23,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 
 		<div style="float:left; width:430px; padding-right:20px;">
 			<b>Titre de la page :</b><br />
-			<p style="width:350px; font-size:10px; line-height:9px;">META titles : ce titre apparaît dans le menu supérieur du navigateur, et dans les résultats de recherche Google</p>
+			<p style="width:350px; font-size: 0.7rem; line-height:9px;">META titles : ce titre apparaît dans le menu supérieur du navigateur, et dans les résultats de recherche Google</p>
 			<input type="text" name="default_name_page" class="type1 getcodefrom" value="<?php echo html_utf8(stripslashes($_POST['default_name_page'] ?? '')); ?>" placeholder="" />
 			<br />
 			<br />
@@ -32,7 +32,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 
 		<div style="float:left; width:430px; padding-right:20px;">
 			<b>Code de la page, affiché dans l'URL :</b><br />
-			<p style="width:350px; font-size:10px; line-height:9px;">
+			<p style="width:350px; font-size: 0.7rem; line-height:9px;">
 				En minuscules, lettres, chiffres et tirets<br />
 				Utilisez le bouton &laquo;Générer&raquo; pour gagner du temps.
 			</p>
@@ -45,7 +45,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 		<hr style="margin:10px 0; clear:both" />
 
 		<b>META Description (facultatif) :</b><br />
-		<p style="font-size:10px; line-height:9px;">
+		<p style="font-size: 0.7rem; line-height:9px;">
 			Ce texte de 160 caractères maximum apparaît dans les résultats des moteurs de recherche et résume le contenu de la page.
 			Par défaut, la description du site est utilisée.
 		</p>

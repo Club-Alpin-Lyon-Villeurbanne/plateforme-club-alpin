@@ -66,7 +66,7 @@
                                     </span>
 
                                     <h2 class="tw-flex tw-items-center tw-gap-2">
-                                        {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>{% endif %}
+                                        {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-family:Arial">ANNULÉE - </span>{% endif %}
                                         {{ event.titre }}
 
                                         {% set participation = event.participation(app.user) %}
