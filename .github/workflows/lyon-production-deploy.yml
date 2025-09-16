@@ -1,121 +1,23 @@
 name: Deploy on Production - Lyon 🚀
+
 on:
   workflow_dispatch:
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
-  deploy-to-clevercloud:
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix-prod-')
-    environment: production
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          
-      # Obtention des informations sur les commits pour les inclure dans la notification
-      - name: Get commit info
-        id: commit-info
-        run: |
-          # Récupération du hash du dernier commit déployé depuis les variables d'environnement
-          LAST_DEPLOYED_SHA=${{ vars.LAST_DEPLOYED_SHA }}
-          
-          if [ -n "$LAST_DEPLOYED_SHA" ] && git rev-parse --verify "$LAST_DEPLOYED_SHA" >/dev/null 2>&1; then
-            # Si un hash existe et est valide, on récupère les commits depuis ce hash
-            CHANGES=$(git log "$LAST_DEPLOYED_SHA..HEAD" --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | tr '\n' '\\n')
-            echo "changes=$CHANGES" >> $GITHUB_OUTPUT
-          else
-            # Sinon, on récupère les 5 derniers commits
-            CHANGES=$(git log -5 --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | tr '\n' '\\n')
-            echo "changes=$CHANGES" >> $GITHUB_OUTPUT
-          fi
-          
-          # Informations sur le commit actuel
-          echo "author=$(git log -1 --pretty=format:'%an')" >> $GITHUB_OUTPUT
-          echo "message=$(git log -1 --pretty=format:'%s')" >> $GITHUB_OUTPUT
-          echo "sha_short=$(git log -1 --pretty=format:'%h')" >> $GITHUB_OUTPUT
-          echo "sha_full=$(git log -1 --pretty=format:'%H')" >> $GITHUB_OUTPUT
-          
-      # Validation des changements
-      - name: Validate changes
-        run: |
-          if [ -z "${{ steps.commit-info.outputs.changes }}" ]; then
-            echo "Aucun changement détecté depuis le dernier déploiement"
-            exit 1
-          fi
-          
-      # Déploiement sur Clever Cloud
-      - name: Deploy to Clever Cloud
-        id: deploy
-        uses: 47ng/actions-clever-cloud@v2.0.0
-        with:
-          alias: web-prod
-          force: true
-        env:
-          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
-          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-          
-      # Mise à jour du hash du dernier commit déployé
-      - name: Update last deployed SHA
-        if: success()
-        run: |
-          # Mise à jour de la variable LAST_DEPLOYED_SHA
-          curl -X PATCH \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -d "{\"value\":\"${{ steps.commit-info.outputs.sha_full }}\"}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/variables/LAST_DEPLOYED_SHA"
-          
-      # Notification Slack en cas de succès
-      - name: Slack notification - Success
-        if: success()
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_CHANNEL: deployments
-          SLACK_COLOR: good
-          SLACK_ICON_EMOJI: ':rocket:'
-          SLACK_TITLE: '✅ Déploiement réussi sur Production - Lyon'
-          SLACK_MESSAGE: |
-            *Changements déployés:*
-            ${{ steps.commit-info.outputs.changes }}
-            
-            *Informations:*
-            • *Branch:* ${{ github.ref_name }}
-            • *Déclenché par:* ${{ github.actor }}
-            • *Application:* web-prod
-            • *Dernier commit:* ${{ steps.commit-info.outputs.sha_short }}
-            
-            *<https://github.com/${{ github.repository }}/commit/${{ steps.commit-info.outputs.sha_full }}|Voir les changements sur GitHub>*
-            
-            *Rappel:*
-            Merci de mettre à jour le journal des changements:
-            <https://docs.google.com/document/d/1CzbCZnuNkAFWPn365V2vgJNvAouHgLD52IZ6fLw0du0/edit?pli=1&tab=t.0|Journal des changements (Google Docs)>
-          SLACK_FOOTER: 'Clever Cloud Deployment'
-          MSG_MINIMAL: false
-          
-      # Notification Slack en cas d'échec
-      - name: Slack notification - Failure
-        if: failure()
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_CHANNEL: deployments
-          SLACK_COLOR: danger
-          SLACK_ICON_EMOJI: ':rocket:'
-          SLACK_TITLE: '❌ Échec du déploiement sur Production - Lyon'
-          SLACK_MESSAGE: |
-            *Changements en attente:*
-            ${{ steps.commit-info.outputs.changes }}
-            
-            *Informations:*
-            • *Branch:* ${{ github.ref_name }}
-            • *Déclenché par:* ${{ github.actor }}
-            • *Application:* web-prod
-            • *Dernier commit:* ${{ steps.commit-info.outputs.sha_short }}
-            
-            *Pour plus de détails, consultez les logs Clever Cloud:*
-            https://console.clever-cloud.com/organisations/orga_ad557a52-c460-4455-88b0-8acd46733724/applications/app_a79768fb-5fc1-457e-acbe-77d16dbf5689/logs
-          SLACK_FOOTER: 'Clever Cloud Deployment'
-          MSG_MINIMAL: false
+  deploy:
+    uses: ./.github/workflows/deploy-production.yml
+    with:
+      environment: production
+      deployment_label: Production - Lyon
+      clever_alias: web-prod
+      last_deployed_variable: LAST_DEPLOYED_SHA
+      failure_logs_url: https://console.clever-cloud.com/organisations/orga_ad557a52-c460-4455-88b0-8acd46733724/applications/app_a79768fb-5fc1-457e-acbe-77d16dbf5689/logs
+    secrets:
+      clever_token: ${{ secrets.CLEVER_TOKEN }}
+      clever_secret: ${{ secrets.CLEVER_SECRET }}
+      slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+      last_deployed_sha: ${{ vars.LAST_DEPLOYED_SHA }}
