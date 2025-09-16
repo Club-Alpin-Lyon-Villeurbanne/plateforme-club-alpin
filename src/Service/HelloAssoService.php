@@ -28,48 +28,6 @@ class HelloAssoService
     // endregion
 
     // region méthodes : appels API
-    public function getPaymentsForEvent(Evt $event): array
-    {
-        $payers = [];
-
-        $organizationSlug = $this->organizationSlug;
-        $formSlug = $event->getHelloAssoFormSlug();
-        if (!empty($organizationSlug) && !empty($formSlug)) {
-            $apiEndpoint = self::HELLO_ASSO_PAYMENT_INFO_ENDPOINT;
-            $apiEndpoint = str_replace('{organizationSlug}', $organizationSlug, $apiEndpoint);
-            $apiEndpoint = str_replace('{formSlug}', $formSlug, $apiEndpoint);
-
-            $organizationAccessToken = $this->helloAssoClient->login();
-
-            try {
-                $response = $this->httpClient->request(
-                    'GET',
-                    $this->baseUrl . $apiEndpoint,
-                    [
-                        'headers' => [
-                            'accept' => 'application/json',
-                            'Authorization' => 'Bearer ' . $organizationAccessToken,
-                        ],
-                        'query' => [
-                            'pageSize' => 100,      // @todo gérer la pagination si > 100
-                        ],
-                    ],
-                );
-                $data = $response->toArray();
-
-                foreach ($data['data'] as $payment) {
-                    if ('Authorized' === $payment['state']) {
-                        $payers[] = $payment['payer']['email'];
-                    }
-                }
-            } catch (\Exception $e) {
-                $this->logger->error($e->getMessage());
-            }
-        }
-
-        return $payers;
-    }
-
     public function createFormForEvent(Evt $event): array
     {
         $return = [];
