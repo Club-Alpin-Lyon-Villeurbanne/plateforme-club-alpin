@@ -57,3 +57,5 @@ node_modules/
 test-results/
 playwright-report/
 AGENTS.md
+
+.clever.json
