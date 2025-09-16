@@ -7,7 +7,7 @@
 
 /* version 2 du dossier FTP */
 #frameFtp{ min-height:300px; }
-#ftp-2{ text-align:left; font-size:11px; line-height:12px; }
+#ftp-2{ text-align:left; line-height:12px; }
 	#ftp-2-arbo{ float:left; width:20%; overflow:hidden; white-space:nowrap; border-right:1px solid silver; padding:0 10px 0 0; margin:0 10px 0 0; }
 	#ftp-2-arbo .level{ 
 	padding-left:2px; margin:0 0 0 7px; border-left:1px solid silver; overflow:hidden; 
@@ -105,7 +105,7 @@
 .onglets-admin{  }
 	.onglets-admin .onglets-admin-nav {  }
 	.onglets-admin .onglets-admin-nav a{ 
-	display:block; float:left; background:#eaeaea; font-size:14px; line-height:15px; padding:7px 15px; margin-right:10px; color:#636363;
+	display:block; float:left; background:#eaeaea; font-size: 0.9rem; line-height:15px; padding:7px 15px; margin-right:10px; color:#636363;
 	position:relative; top:1px; 
 	-webkit-border-top-left-radius: 6px;
 	-webkit-border-top-right-radius: 6px;
@@ -137,7 +137,7 @@
 html{
 }
 body{
-font-size:11px;
+font-size:0.8rem;
 font-family:Arial;
 text-align:left;
 background:#eeeeee;
@@ -182,9 +182,9 @@ background:url(../../public/img/base/braies.png) #e1e1e1;
 	#pageAdmin .userList .infosUser{ float:left; padding:1%; }
 	#pageAdmin .userList .tools { float:right; margin-right:3px; }
 
-h1{ font-size:27px; font-weight:100; padding:25px 0px 10px 0px;}
-h2{ font-size:20px; font-weight:100; padding:15px 0px 10px 0px;}
-h3{ font-size:17px; font-weight:100; padding:2px 0px 5px 0px;}
+h1{ font-size:1.5rem; font-weight:100; padding:25px 0px 10px 0px;}
+h2{ font-size:1.2rem; font-weight:100; padding:15px 0px 10px 0px;}
+h3{ font-size:1rem; font-weight:100; padding:2px 0px 5px 0px;}
 
 a{ text-decoration:none; color:black; }
 	a:hover, a:focus{ text-decoration:underline; }

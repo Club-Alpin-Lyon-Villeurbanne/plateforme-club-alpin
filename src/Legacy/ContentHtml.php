@@ -43,13 +43,13 @@ class ContentHtml implements ServiceSubscriberInterface
         if ($this->locator->get(AuthorizationCheckerInterface::class)->isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             $ret .= '<div id="' . $elt . '" class="contenuEditable ' . $style . '">' .
                 '<div class="editHtmlTools" style="text-align:left;">' .
-                '<a href="editElt.php?p=' . $elt . '&amp;class=' . $style . '" title="Modifier l\'élément ' . $elt . '" class="edit fancyframeadmin" style="color:white; font-weight:100; padding:2px 3px 2px 1px; font-size:11px; font-family:Arial;">' .
+                '<a href="editElt.php?p=' . $elt . '&amp;class=' . $style . '" title="Modifier l\'élément ' . $elt . '" class="edit fancyframeadmin" style="color:white; font-weight:100; padding:2px 3px 2px 1px; font-family:Arial;">' .
                 '<img src="/img/base/page_edit.png" id="imgEdit' . $elt . '" alt="EDIT" title="Modifier l\'élément ' . $elt . '" />' .
                 'Modifier' .
                 '</a>';
 
             if ($editVis) {
-                $ret .= '<a href="javascript:void(0)" onclick="window.document.majVisBlock(this, \'' . $elt . '\')" rel="' . ($content ? $content->getVis() : '') . '" title="Activer / Masquer ce bloc de contenu" class="edit" style="color:white; font-weight:100; padding:2px 3px 2px 1px; font-size:11px; font-family:Arial; ">
+                $ret .= '<a href="javascript:void(0)" onclick="window.document.majVisBlock(this, \'' . $elt . '\')" rel="' . ($content ? $content->getVis() : '') . '" title="Activer / Masquer ce bloc de contenu" class="edit" style="color:white; font-weight:100; padding:2px 3px 2px 1px; font-family:Arial; ">
                             <img src="/img/base/page_white_key.png" alt="VIS" title="Activer / Masquer ce bloc de contenu" />Visibilité</a>';
             }
 

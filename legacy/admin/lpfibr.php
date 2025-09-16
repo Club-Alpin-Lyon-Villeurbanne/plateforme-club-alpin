@@ -148,7 +148,7 @@ if (isGranted(SecurityConstants::ROLE_ADMIN) || isGranted(SecurityConstants::ROL
     if ('file' == $type) {
         echo "
                                     Déposez ici les fichiers que vous souhaitez proposer en téléchargement.<br />
-                                    Ext. autorisées : <span style='font-size:9px'>" . implode(', ', FtpFile::getAllowedExtensions()) . '</span>
+                                    Ext. autorisées : <span style='font-size: 0.6rem'>" . implode(', ', FtpFile::getAllowedExtensions()) . '</span>
                                     ';
     } ?>
                 </p>

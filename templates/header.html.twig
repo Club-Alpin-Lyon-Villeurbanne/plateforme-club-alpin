@@ -359,13 +359,13 @@
                         <img src="{{ user_picto(app.user, 'min') }}" alt="" title="" style="float:left; padding:0 10px 0 0;" />
 
                         {% if is_granted('IS_IMPERSONATOR') %}
-                            <p style="border: 2px solid red; border-radius: 5px; font-size:14px; padding:10px;">
+                            <p style="border: 2px solid red; border-radius: 5px; font-size: 0.9rem; padding:10px;">
                                 En cours d'impersonification <a href="/?_switch_user=_exit">Quitter</a>
                             </p>
                         {% endif %}
-                        <p style="font-family:DIN; font-size:18px; line-height:20px; white-space:nowrap; padding-top:10px;">
+                        <p style="font-family:DIN; font-size: 1.1rem; line-height:20px; white-space:nowrap; padding-top:10px;">
                             Mon pseudonyme : <br />
-                            <span style="font-family:DINBold; font-size:21px;">{{ app.user.getNickname() }}</span>
+                            <span style="font-family:DINBold; font-size: 1.2rem;">{{ app.user.getNickname() }}</span>
                         </p>
 
                         {# deconn #}

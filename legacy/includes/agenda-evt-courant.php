@@ -28,7 +28,7 @@ use App\Entity\EventParticipation;
 
 		<!-- titre -->
 		<h2 class="tw-flex tw-items-center tw-gap-2"><?php if ($evt['cancelled_evt']) {
-		    echo ' <span style="padding:1px 3px ; color:red; font-size:11px;  font-family:Arial">ANNULÉE - </span> ';
+		    echo ' <span style="padding:1px 3px ; color:red; font-family:Arial">ANNULÉE - </span> ';
 		}
 echo html_utf8($evt['titre_evt'] . ($evt['jourN'] ? ' [jour ' . $evt['jourN'] . ']' : ''));
 

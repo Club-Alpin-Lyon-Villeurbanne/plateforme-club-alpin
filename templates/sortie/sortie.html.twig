@@ -394,7 +394,7 @@
                                     {% set class = 'absent' %}
                                 {% endif %}
 
-                                <tr class="status{{ participation.status }}" style="color:gray; font-size:10px;">
+                                <tr class="status{{ participation.status }}" style="color:gray; font-size:0.8rem;">
                                     <td class="select-contact">
                                         <input type="checkbox" id="contact_participant_{{ participation.id }}" name="contact_participant[{{ participation.id }}]" value="{{ participation.id }}" class="contact-cb {{ class }}" />
                                     </td>
@@ -957,7 +957,7 @@
                 <span title="{{ event | temoin_event_title }}" style="padding: 10px 10px 5px 5px;float:left;">
                     <span class="temoin-places-dispos"> {{ event | temoin_event_picto }}</span>
                 </span>
-                <span style="font-size:14px; font-family:DINBold; color:#666666">
+                <span style="font-size: 0.9rem; font-family:DINBold; color:#666666">
                     {{ nInscritsTotal }} PARTICIPANT{{ nInscritsTotal > 1 ? 'S' : '' }} INSCRIT{{ nInscritsTotal > 1 ? 'S' : '' }}
                     SUR  {{ event.ngensMax }} PLACE{{ event.ngensMax ? 'S' : '' }} AU TOTAL
                     ({{ event.ngensMax > 0 ? (100 * nInscritsTotal / event.ngensMax) | round : 0 }}%)
