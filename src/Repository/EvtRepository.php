@@ -73,13 +73,34 @@ class EvtRepository extends ServiceEntityRepository
         ], $options);
         $date = new \DateTime('today');
 
+        $limitDateStart = null;
+        $limitEndDate = null;
+        if (isset($options['start_in_days']) && \is_int($options['start_in_days'])) {
+            $limitDateStart = new \DateTime();
+            $limitDateStart->modify('+' . $options['start_in_days'] . ' days');
+            $limitDateStart->setTime(0, 0, 0);
+
+            $limitEndDate = new \DateTime();
+            $limitEndDate->modify('+' . $options['start_in_days'] . ' days');
+            $limitEndDate->setTime(23, 59, 59);
+        }
+
         $qb = $this->createQueryBuilder('e')
             ->select('e, c')
             ->leftJoin('e.commission', 'c')
             ->where('e.status = :status')
-            ->setParameter('status', Evt::STATUS_LEGAL_VALIDE)
+            ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
             ->andWhere(':date <= e.tsp OR :date <= e.tspEnd')
             ->setParameter('date', $date->getTimestamp())
+        ;
+        if ($limitDateStart) {
+            $qb
+                ->andWhere('e.tsp >= :limitDate AND e.tsp <= :limitDateEnd')
+                ->setParameter('limitDate', $limitDateStart->getTimestamp())
+                ->setParameter('limitDateEnd', $limitEndDate->getTimestamp())
+            ;
+        }
+        $qb
             ->orderBy('e.tsp', 'asc')
             ->addOrderBy('c.title', 'ASC')
             ->addOrderBy('e.titre', 'ASC')
@@ -87,13 +108,16 @@ class EvtRepository extends ServiceEntityRepository
         ;
 
         if ($commission) {
-            $qb = $qb->andWhere('c.id = :commission_id')
-                ->setParameter('commission_id', $commission->getId());
+            $qb
+                ->andWhere('c.id = :commission_id')
+                ->setParameter('commission_id', $commission->getId())
+            ;
         }
 
         return $qb
             ->getQuery()
-            ->getResult();
+            ->getResult()
+        ;
     }
 
     /** @return Evt[] */
