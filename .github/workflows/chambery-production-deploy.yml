@@ -13,7 +13,8 @@ jobs:
     with:
       environment: production-chambery
       deployment_label: Production - Chambéry
-      clever_alias: web-prod-chambery
+      clever_app_id: ${{ vars.CHAMBERY_CLEVER_APP_ID }}
+      clever_alias: ''
       last_deployed_variable: CHAMBERY_LAST_DEPLOYED_SHA
       failure_logs_url: ${{ vars.CHAMBERY_FAILURE_LOGS_URL }}
     secrets:

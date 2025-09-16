@@ -13,7 +13,8 @@ jobs:
     with:
       environment: production
       deployment_label: Production - Lyon
-      clever_alias: web-prod
+      clever_app_id: ${{ vars.LYON_CLEVER_APP_ID }}
+      clever_alias: ''
       last_deployed_variable: LYON_LAST_DEPLOYED_SHA
       failure_logs_url: ${{ vars.LYON_FAILURE_LOGS_URL }}
     secrets:

@@ -12,8 +12,12 @@ on:
         required: true
         type: string
       clever_alias:
-        description: Clever Cloud application alias
-        required: true
+        description: Clever Cloud application alias (deprecated when app_id is provided)
+        required: false
+        type: string
+      clever_app_id:
+        description: Clever Cloud application ID (app_...)
+        required: false
         type: string
       last_deployed_variable:
         description: Name of the repository variable storing the last deployed SHA
@@ -100,6 +104,7 @@ jobs:
         uses: 47ng/actions-clever-cloud@v2.0.0
         with:
           alias: ${{ inputs.clever_alias }}
+          appID: ${{ inputs.clever_app_id }}
           force: true
         env:
           CLEVER_TOKEN: ${{ secrets.clever_token }}
