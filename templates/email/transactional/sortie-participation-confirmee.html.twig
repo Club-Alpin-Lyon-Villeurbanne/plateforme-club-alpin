@@ -8,8 +8,16 @@
     <p>
         Vous venez d'être confirmé(e) comme {{ role }} à la sortie <a href={{ event_url }}>{{ event_name }}</a>.
     </p>
+    {% if hello_asso_url is defined %}
+        <p>
+            Voici le lien pour régler vos frais de participation sur HelloAsso : <a href="{{ hello_asso_url }}">payer</a>.
+        </p>
+    {% endif %}
 {% endblock %}
 
 {% block inner_txt %}
 Vous venez d'être confirmé(e) comme {{ role }} à la sortie {{ event_name }} ({{ event_url }}).
+{% if hello_asso_url is defined %}
+    Voici le lien pour régler vos frais de participation sur HelloAsso : {{ hello_asso_url }}.
+{% endif %}
 {% endblock %}
