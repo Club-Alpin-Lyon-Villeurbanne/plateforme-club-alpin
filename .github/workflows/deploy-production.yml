@@ -36,9 +36,6 @@ on:
       github_token:
         description: Token used to update repository variables (defaults to github.token)
         required: false
-      last_deployed_sha:
-        description: Previously deployed commit SHA
-        required: false
 
 jobs:
   deploy-to-clevercloud:
@@ -50,10 +47,32 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Fetch last deployed SHA
+        id: last-deployed-sha
+        env:
+          TARGET_VARIABLE: ${{ inputs.last_deployed_variable }}
+          GITHUB_TOKEN: ${{ secrets.github_token != '' && secrets.github_token || github.token }}
+        run: |
+          tmp=$(mktemp)
+          status=$(curl -sS \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -o "$tmp" -w "%{http_code}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/variables/$TARGET_VARIABLE")
+
+          if [ "$status" -eq 200 ]; then
+            value=$(jq -r '.value // ""' "$tmp")
+          else
+            value=""
+          fi
+
+          rm -f "$tmp"
+          echo "sha=$value" >> "$GITHUB_OUTPUT"
+
       - name: Get commit info
         id: commit-info
         env:
-          LAST_DEPLOYED_SHA: ${{ secrets.last_deployed_sha }}
+          LAST_DEPLOYED_SHA: ${{ steps.last-deployed-sha.outputs.sha }}
         run: |
           LAST_DEPLOYED_SHA="${LAST_DEPLOYED_SHA:-}"
 

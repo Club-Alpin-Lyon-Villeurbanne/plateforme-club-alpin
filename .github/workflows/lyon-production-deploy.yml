@@ -20,4 +20,3 @@ jobs:
       clever_token: ${{ secrets.CLEVER_TOKEN }}
       clever_secret: ${{ secrets.CLEVER_SECRET }}
       slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-      last_deployed_sha: ${{ vars.LAST_DEPLOYED_SHA }}
