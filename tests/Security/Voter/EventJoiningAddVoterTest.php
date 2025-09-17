@@ -15,7 +15,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class EventJoiningAddVoterTest extends TestCase
 {
-    private function makeToken($user): TokenInterface
+    private function getToken($user): TokenInterface
     {
         $token = $this->createMock(TokenInterface::class);
         $token->method('getUser')->willReturn($user);
@@ -30,7 +30,7 @@ class EventJoiningAddVoterTest extends TestCase
         $voter = new EventJoiningAddVoter($userRights, $security);
 
         // non connecté
-        $token = $this->makeToken(null);
+        $token = $this->getToken(null);
         $event = $this->getMockBuilder('App\\Entity\\Evt')->disableOriginalConstructor()->onlyMethods(['getCancelled'])->getMock();
         $event->method('getCancelled')->willReturn(false);
 
@@ -46,7 +46,7 @@ class EventJoiningAddVoterTest extends TestCase
         $voter = new EventJoiningAddVoter($userRights, $security);
 
         $user = $this->createMock(User::class);
-        $token = $this->makeToken($user);
+        $token = $this->getToken($user);
         $event = $this->getMockBuilder('App\\Entity\\Evt')->disableOriginalConstructor()->onlyMethods(['getCancelled'])->getMock();
         $event->method('getCancelled')->willReturn(false);
 
@@ -61,7 +61,7 @@ class EventJoiningAddVoterTest extends TestCase
         $voter = new EventJoiningAddVoter($userRights, $security);
 
         $user = $this->createMock(User::class);
-        $token = $this->makeToken($user);
+        $token = $this->getToken($user);
         $event = $this->getMockBuilder('App\\Entity\\Evt')->disableOriginalConstructor()->onlyMethods(['getCancelled'])->getMock();
         $event->method('getCancelled')->willReturn(true);
 
@@ -76,7 +76,7 @@ class EventJoiningAddVoterTest extends TestCase
         $voter = new EventJoiningAddVoter($userRights, $security);
 
         $user = $this->createMock(User::class);
-        $token = $this->makeToken($user);
+        $token = $this->getToken($user);
 
         $event = $this->getMockBuilder('App\\Entity\\Evt')->disableOriginalConstructor()->onlyMethods(['getCancelled', 'getUser'])->getMock();
         $event->method('getCancelled')->willReturn(false);
@@ -94,7 +94,7 @@ class EventJoiningAddVoterTest extends TestCase
 
         $user = $this->createMock(User::class);
         $user->method('hasAttribute')->with(UserAttr::SALARIE)->willReturn(true);
-        $token = $this->makeToken($user);
+        $token = $this->getToken($user);
 
         $event = $this->getMockBuilder('App\\Entity\\Evt')->disableOriginalConstructor()->onlyMethods(['getCancelled', 'getUser'])->getMock();
         $event->method('getCancelled')->willReturn(false);
@@ -111,7 +111,7 @@ class EventJoiningAddVoterTest extends TestCase
         $voter = new EventJoiningAddVoter($userRights, $security);
 
         $user = $this->createMock(User::class);
-        $token = $this->makeToken($user);
+        $token = $this->getToken($user);
 
         $participation = new class($user) {
             public function __construct(private $u)
@@ -141,7 +141,7 @@ class EventJoiningAddVoterTest extends TestCase
         $voter = new EventJoiningAddVoter($userRights, $security);
 
         $user = $this->createMock(User::class);
-        $token = $this->makeToken($user);
+        $token = $this->getToken($user);
         $event = $this->getMockBuilder('App\\Entity\\Evt')->disableOriginalConstructor()->onlyMethods(['getCancelled', 'getUser', 'getEncadrants'])->getMock();
         $event->method('getCancelled')->willReturn(false);
         $event->method('getUser')->willReturn($this->createMock(User::class));
@@ -171,7 +171,7 @@ class EventJoiningAddVoterTest extends TestCase
 
             return false;
         });
-        $token = $this->makeToken($user);
+        $token = $this->getToken($user);
 
         $participation = new class($user) {
             public function __construct(private $u)
