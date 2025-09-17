@@ -5,6 +5,7 @@ namespace App\Mailer;
 use App\Entity\User;
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\MessageIDValidation;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -12,23 +13,16 @@ use Symfony\Component\Mime\Email;
 
 class Mailer
 {
-    private MailerInterface $mailer;
-    private MailerRenderer $renderer;
-    private EmailValidator $emailValidator;
-    private string $replyTo;
     private string $mailEmitter;
 
     public function __construct(
-        MailerInterface $mailer,
-        MailerRenderer $renderer,
-        EmailValidator $emailValidator,
-        string $replyTo,
+        protected MailerInterface $mailer,
+        protected MailerRenderer $renderer,
+        protected EmailValidator $emailValidator,
+        protected LoggerInterface $logger,
+        protected string $replyTo,
         string $nameEmitter
     ) {
-        $this->mailer = $mailer;
-        $this->renderer = $renderer;
-        $this->emailValidator = $emailValidator;
-        $this->replyTo = $replyTo;
         $this->mailEmitter = sprintf('%s <%s>', $nameEmitter, $replyTo);
     }
 
@@ -75,14 +69,6 @@ class Mailer
             return;
         }
 
-        if ($sender instanceof User) {
-            if ($this->isValid($sender->getEmail())) {
-                $sender = new Address($sender->getEmail(), $sender->getNickname() ?? '');
-            } else {
-                $sender = null;
-            }
-        }
-
         if ($replyTo instanceof User) {
             if ($this->isValid($replyTo->getEmail())) {
                 $replyTo = new Address($replyTo->getEmail(), $replyTo->getNickname() ?? '');
@@ -125,7 +111,12 @@ class Mailer
             }
         }
 
-        $this->mailer->send($email);
+        try {
+            $this->mailer->send($email);
+        } catch (\Exception $exception) {
+            $this->logger->error('Mailer : Erreur envoi du mail "' . $subject . '"');
+            $this->logger->error($exception->getMessage());
+        }
     }
 
     private function isValid(?string $email): bool

@@ -25,7 +25,6 @@ class LicenseRenewReminderCommand extends Command
         protected UserLicenseChecker $licenseChecker,
         protected Mailer $mailer,
         protected UrlGeneratorInterface $urlGenerator,
-        protected LoggerInterface $logger,
     ) {
         parent::__construct();
     }
@@ -43,42 +42,36 @@ class LicenseRenewReminderCommand extends Command
                 $participant = $participation->getUser();
 
                 // vérifier si la licence de chaque participant est à renouveler
-                if (!$this->licenseChecker->isLicenseValidForEvent($participant, $event)) {
-                    $notifyOrganizer = true;
-
-                    // envoyer un email de rappel au participant si nécessaire
-                    try {
-                        $this->mailer->send($participant, 'transactional/licence-expiree-participant', [
-                            'event_name' => $event->getTitre(),
-                            'event_url' => $this->urlGenerator->generate('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                            'event_date' => date('d/m/Y', $event->getTsp()),
-                        ]);
-                    } catch (\Exception $exception) {
-                        $this->logger->error('Erreur lors de l\'envoi du mail de rappel de renouvellement de licence au participant ' . $participant->getId() . ' pour la sortie ' . $event->getId());
-                        $this->logger->error($exception->getMessage());
-                    }
+                if ($this->licenseChecker->isLicenseValidForEvent($participant, $event)) {
+                    continue;
                 }
+
+                // envoyer un email de rappel au participant si nécessaire
+                $this->mailer->send($participant, 'transactional/licence-expiree-participant', [
+                    'event_name' => $event->getTitre(),
+                    'event_url' => $this->urlGenerator->generate('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'event_date' => date('d/m/Y', $event->getTsp()),
+                ]);
+                $notifyOrganizer = true;
+            }
+
+            if (!$notifyOrganizer) {
+                continue;
+            }
+
+            // liste des encadrants
+            $destinataires = [];
+            $destinataires[] = $event->getUser();
+            foreach ($event->getEncadrants() as $encadrant) {
+                $destinataires[] = $encadrant->getUser();
             }
 
             // prévenir l'encadrement si nécessaire
-            if ($notifyOrganizer) {
-                // liste des encadrants
-                $destinataires = [];
-                $destinataires[] = $event->getUser();
-                foreach ($event->getEncadrants() as $encadrant) {
-                    $destinataires[] = $encadrant->getUser();
-                }
-                try {
-                    $this->mailer->send($destinataires, 'transactional/licence-expiree-encadrement', [
-                        'event_name' => $event->getTitre(),
-                        'event_url' => $this->urlGenerator->generate('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                        'event_date' => date('d/m/Y', $event->getTsp()),
-                    ]);
-                } catch (\Exception $exception) {
-                    $this->logger->error('Erreur lors de l\'envoi du mail de licence expirée à l\'organisateur de la sortie ' . $event->getId());
-                    $this->logger->error($exception->getMessage());
-                }
-            }
+            $this->mailer->send($destinataires, 'transactional/licence-expiree-encadrement', [
+                'event_name' => $event->getTitre(),
+                'event_url' => $this->urlGenerator->generate('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                'event_date' => date('d/m/Y', $event->getTsp()),
+            ]);
         }
 
         return Command::SUCCESS;
