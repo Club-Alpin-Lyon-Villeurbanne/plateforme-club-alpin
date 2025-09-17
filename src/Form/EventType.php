@@ -69,6 +69,24 @@ class EventType extends AbstractType
         $lat = $event->getLat();
         $long = $event->getLong();
 
+        // champs obligatoires selon la commission
+        $mandatoryFields = [];
+        if ($commission instanceof Commission) {
+            $mandatoryFields = explode(',', $commission->getMandatoryFields());
+        }
+        $difficulteRequired = false;
+        $deniveleRequired = false;
+        $distanceRequired = false;
+        if (\in_array('distance', $mandatoryFields, true)) {
+            $distanceRequired = true;
+        }
+        if (\in_array('denivele', $mandatoryFields, true)) {
+            $deniveleRequired = true;
+        }
+        if (\in_array('difficulte', $mandatoryFields, true)) {
+            $difficulteRequired = true;
+        }
+
         $builder
             ->add('commission', EntityType::class, [
                 'class' => Commission::class,
@@ -292,7 +310,7 @@ class EventType extends AbstractType
             ])
             ->add('difficulte', TextType::class, [
                 'label' => 'Difficulté, niveau',
-                'required' => false,
+                'required' => $difficulteRequired,
                 'attr' => [
                     'placeholder' => 'ex : PD, 5d+, exposé, ...',
                     'maxlength' => 50,
@@ -306,7 +324,7 @@ class EventType extends AbstractType
             ])
             ->add('denivele', TextType::class, [
                 'label' => 'Dénivelé positif',
-                'required' => false,
+                'required' => $deniveleRequired,
                 'attr' => [
                     'placeholder' => 'ex : 1200',
                     'maxlength' => 50,
@@ -324,7 +342,7 @@ class EventType extends AbstractType
             ])
             ->add('distance', TextType::class, [
                 'label' => 'Distance',
-                'required' => false,
+                'required' => $distanceRequired,
                 'attr' => [
                     'placeholder' => 'ex : 13.50',
                     'maxlength' => 50,
