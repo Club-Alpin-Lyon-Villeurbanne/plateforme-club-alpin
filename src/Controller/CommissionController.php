@@ -4,25 +4,22 @@ namespace App\Controller;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
+use App\Helper\EventFormHelper;
 use App\Helper\MonthHelper;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
-use App\Service\ParticipantService;
 use App\UserRights;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Length;
 
 class CommissionController extends AbstractController
 {
@@ -30,47 +27,17 @@ class CommissionController extends AbstractController
     public function participantsByCommission(
         Request $request,
         ManagerRegistry $doctrine,
-        ParticipantService $participantService,
-        FormFactoryInterface $formFactory
+        FormFactoryInterface $formFactory,
+        EventFormHelper $eventFormHelper,
     ): Response {
         $commissionId = $request->query->get('commission');
         $commission = $doctrine->getRepository(Commission::class)->find($commissionId);
-        $participantService->buildManagersLists($commission, null);
 
-        $form = $formFactory->createBuilder()
-            ->add('encadrants', ChoiceType::class, [
-                'label' => false,
-                'choices' => array_flip($participantService->getEncadrants()),
-                'mapped' => false,
-                'multiple' => true,
-                'expanded' => true,
-            ])
-            ->add('coencadrants', ChoiceType::class, [
-                'label' => false,
-                'choices' => array_flip($participantService->getCoencadrants()),
-                'mapped' => false,
-                'multiple' => true,
-                'expanded' => true,
-            ])
-            ->add('initiateurs', ChoiceType::class, [
-                'label' => false,
-                'choices' => array_flip($participantService->getInitiateurs()),
-                'mapped' => false,
-                'multiple' => true,
-                'expanded' => true,
-            ])
-            ->add('benevoles', ChoiceType::class, [
-                'label' => false,
-                'choices' => array_flip($participantService->getBenevoles()),
-                'mapped' => false,
-                'multiple' => true,
-                'expanded' => true,
-            ])
-            ->getForm()
-        ;
+        $builder = $formFactory->createBuilder();
+        $builder = $eventFormHelper->encadrementFields($builder, $commission);
 
         return $this->render('form/field_participants.html.twig', [
-            'form' => $form->createView(),
+            'form' => $builder->getForm()->createView(),
         ]);
     }
 
@@ -78,84 +45,17 @@ class CommissionController extends AbstractController
     public function fieldsByCommission(
         Request $request,
         ManagerRegistry $doctrine,
-        FormFactoryInterface $formFactory
+        FormFactoryInterface $formFactory,
+        EventFormHelper $eventFormHelper,
     ): Response {
-        $mandatoryFields = [];
         $commissionId = $request->query->get('commission');
         $commission = $doctrine->getRepository(Commission::class)->find($commissionId);
-        if ($commission instanceof Commission) {
-            $mandatoryFields = explode(',', $commission->getMandatoryFields());
-        }
 
-        $difficulteRequired = false;
-        $deniveleRequired = false;
-        $distanceRequired = false;
-        if (\in_array('difficulte', $mandatoryFields, true)) {
-            $difficulteRequired = true;
-        }
-        if (\in_array('denivele', $mandatoryFields, true)) {
-            $deniveleRequired = true;
-        }
-        if (\in_array('distance', $mandatoryFields, true)) {
-            $distanceRequired = true;
-        }
-
-        $form = $formFactory->createBuilder()
-            ->add('difficulte', TextType::class, [
-                'label' => 'Difficulté, niveau',
-                'required' => $difficulteRequired,
-                'attr' => [
-                    'placeholder' => 'ex : PD, 5d+, exposé, ...',
-                    'maxlength' => 50,
-                    'class' => 'type2',
-                ],
-                'constraints' => [
-                    new Length([
-                        'max' => 50,
-                    ]),
-                ],
-            ])
-            ->add('distance', TextType::class, [
-                'label' => 'Distance',
-                'required' => $distanceRequired,
-                'attr' => [
-                    'placeholder' => 'ex : 13.50',
-                    'maxlength' => 50,
-                    'class' => 'type2',
-                ],
-                'help' => 'km',
-                'help_attr' => [
-                    'class' => 'mini',
-                ],
-                'constraints' => [
-                    new Length([
-                        'max' => 50,
-                    ]),
-                ],
-            ])
-            ->add('denivele', TextType::class, [
-                'label' => 'Dénivelé positif',
-                'required' => $deniveleRequired,
-                'attr' => [
-                    'placeholder' => 'ex : 1200',
-                    'maxlength' => 50,
-                    'class' => 'type2',
-                ],
-                'help' => 'm',
-                'help_attr' => [
-                    'class' => 'mini',
-                ],
-                'constraints' => [
-                    new Length([
-                        'max' => 50,
-                    ]),
-                ],
-            ])
-            ->getForm()
-        ;
+        $builder = $formFactory->createBuilder();
+        $builder = $eventFormHelper->specificMandatoryFields($builder, $commission);
 
         return $this->render('form/commission_specific_fields.html.twig', [
-            'form' => $form->createView(),
+            'form' => $builder->getForm()->createView(),
         ]);
     }
 

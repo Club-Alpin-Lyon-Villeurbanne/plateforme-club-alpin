@@ -14,7 +14,7 @@
         <form method="post" name="commission_configuration" id="commission_configuration">
             <input type="hidden" name="csrf_token" value="{{ csrf_token('commission_configuration') }}" />
             {% for field in fields %}
-                <input type="checkbox" id="{{ field }}" name="{{ field }}" {% if field in checked_fields %} class="up" checked="checked" {% endif %}>
+                <input type="checkbox" id="{{ field }}" name="{{ field }}"{% if field in checked_fields %} class="up" checked="checked"{% endif %}>
                 <label for="{{ field }}">rendre obligatoire le remplissage de "{{ field }}"</label><br>
             {% endfor %}
             <br>

@@ -4,9 +4,8 @@ namespace App\Form;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
+use App\Helper\EventFormHelper;
 use App\Repository\CommissionRepository;
-use App\Repository\UserAttrRepository;
-use App\Service\ParticipantService;
 use App\UserRights;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -32,10 +31,9 @@ use Symfony\Component\Validator\Constraints\Type;
 class EventType extends AbstractType
 {
     public function __construct(
-        protected UserAttrRepository $userAttrRepository,
-        protected ParticipantService $participantService,
         protected CommissionRepository $commissionRepository,
         protected UserRights $userRights,
+        protected EventFormHelper $eventFormHelper,
         protected string $club,
     ) {
     }
@@ -45,7 +43,6 @@ class EventType extends AbstractType
         /** @var Evt $event */
         $event = $options['data'];
         $commission = $event->getCommission();
-        $this->participantService->buildManagersLists($commission, $event);
 
         // timestamps to datetimes
         $eventStartDate = null;
@@ -69,24 +66,6 @@ class EventType extends AbstractType
         $lat = $event->getLat();
         $long = $event->getLong();
 
-        // champs obligatoires selon la commission
-        $mandatoryFields = [];
-        if ($commission instanceof Commission) {
-            $mandatoryFields = explode(',', $commission->getMandatoryFields());
-        }
-        $difficulteRequired = false;
-        $deniveleRequired = false;
-        $distanceRequired = false;
-        if (\in_array('distance', $mandatoryFields, true)) {
-            $distanceRequired = true;
-        }
-        if (\in_array('denivele', $mandatoryFields, true)) {
-            $deniveleRequired = true;
-        }
-        if (\in_array('difficulte', $mandatoryFields, true)) {
-            $difficulteRequired = true;
-        }
-
         $builder
             ->add('commission', EntityType::class, [
                 'class' => Commission::class,
@@ -102,37 +81,10 @@ class EventType extends AbstractType
                     'style' => 'width: 100%',
                 ],
             ])
-            ->add('encadrants', ChoiceType::class, [
-                'label' => false,
-                'choices' => array_flip($this->participantService->getEncadrants()),
-                'data' => $this->participantService->getCurrentEncadrants(),
-                'mapped' => false,
-                'multiple' => true,
-                'expanded' => true,
-            ])
-            ->add('coencadrants', ChoiceType::class, [
-                'label' => false,
-                'choices' => array_flip($this->participantService->getCoencadrants()),
-                'data' => $this->participantService->getCurrentCoencadrants(),
-                'mapped' => false,
-                'multiple' => true,
-                'expanded' => true,
-            ])
-            ->add('initiateurs', ChoiceType::class, [
-                'label' => false,
-                'choices' => array_flip($this->participantService->getInitiateurs()),
-                'data' => $this->participantService->getCurrentInitiateurs(),
-                'mapped' => false,
-                'multiple' => true,
-                'expanded' => true,
-            ])
-            ->add('benevoles', ChoiceType::class, [
-                'label' => false,
-                'choices' => array_flip($this->participantService->getBenevoles()),
-                'mapped' => false,
-                'multiple' => true,
-                'expanded' => true,
-            ])
+        ;
+        // encadrement
+        $builder = $this->eventFormHelper->encadrementFields($builder, $commission);
+        $builder
             ->add('titre', TextType::class, [
                 'label' => 'Titre',
                 'required' => true,
@@ -308,56 +260,10 @@ class EventType extends AbstractType
                     'class' => 'type2 wide',
                 ],
             ])
-            ->add('difficulte', TextType::class, [
-                'label' => 'Difficulté, niveau',
-                'required' => $difficulteRequired,
-                'attr' => [
-                    'placeholder' => 'ex : PD, 5d+, exposé, ...',
-                    'maxlength' => 50,
-                    'class' => 'type2',
-                ],
-                'constraints' => [
-                    new Length([
-                        'max' => 50,
-                    ]),
-                ],
-            ])
-            ->add('denivele', TextType::class, [
-                'label' => 'Dénivelé positif',
-                'required' => $deniveleRequired,
-                'attr' => [
-                    'placeholder' => 'ex : 1200',
-                    'maxlength' => 50,
-                    'class' => 'type2',
-                ],
-                'help' => 'm',
-                'help_attr' => [
-                    'class' => 'mini',
-                ],
-                'constraints' => [
-                    new Length([
-                        'max' => 50,
-                    ]),
-                ],
-            ])
-            ->add('distance', TextType::class, [
-                'label' => 'Distance',
-                'required' => $distanceRequired,
-                'attr' => [
-                    'placeholder' => 'ex : 13.50',
-                    'maxlength' => 50,
-                    'class' => 'type2',
-                ],
-                'help' => 'km',
-                'help_attr' => [
-                    'class' => 'mini',
-                ],
-                'constraints' => [
-                    new Length([
-                        'max' => 50,
-                    ]),
-                ],
-            ])
+        ;
+        // champs obligatoires selon la commission
+        $builder = $this->eventFormHelper->specificMandatoryFields($builder, $commission);
+        $builder
             ->add('matos', TextareaType::class, [
                 'label' => 'Matériel nécessaire',
                 'attr' => [
