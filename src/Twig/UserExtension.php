@@ -2,16 +2,23 @@
 
 namespace App\Twig;
 
+use App\Entity\Evt;
 use App\Entity\User;
+use App\Service\UserLicenseChecker;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 class UserExtension extends AbstractExtension
 {
+    public function __construct(protected UserLicenseChecker $licenseChecker)
+    {
+    }
+
     public function getFunctions(): array
     {
         return [
             new TwigFunction('age_user', [$this, 'getUserAge']),
+            new TwigFunction('is_license_valid_for_event', [$this, 'isLicenseValidForEvent']),
         ];
     }
 
@@ -27,5 +34,10 @@ class UserExtension extends AbstractExtension
         }
 
         return $age;
+    }
+
+    public function isLicenseValidForEvent(User $user, Evt $event): bool
+    {
+        return $this->licenseChecker->isLicenseValidForEvent($user, $event);
     }
 }
