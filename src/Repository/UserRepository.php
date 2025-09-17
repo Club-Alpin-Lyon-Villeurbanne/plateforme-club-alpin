@@ -154,7 +154,6 @@ SQL;
             ->andWhere('u.firstname = :firstname')
             ->andWhere('u.birthday = :birthday')
             ->andWhere('u.cafnum != :excludeCafnum')
-            ->andWhere('u.doitRenouveler = true')
             ->andWhere('u.isDeleted = false')
             ->orderBy('u.tsInsert', 'DESC')
             ->setMaxResults(1)

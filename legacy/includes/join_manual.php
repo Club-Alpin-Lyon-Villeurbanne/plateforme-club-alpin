@@ -97,7 +97,7 @@ if (user()) {
 					<thead>
 						<tr>
 							<th></th>
-							<th>n° CAF</th>
+							<th>n° licence FFCAM</th>
 							<th>Civ</th>
 							<th>Nom</th>
 							<th>Prénom</th>
@@ -123,8 +123,8 @@ if (user()) {
                                     . html_utf8($elt['cafnum_user'])
                                 . '</td>'
                                 . '<td>' . html_utf8($elt['civ_user']) . '</td>'
-                                . '<td>' . strtoupper(html_utf8($elt['lastname_user'])) . '</td>'
-                                . '<td>' . ucfirst(html_utf8($elt['firstname_user'])) . '</td>'
+                                . '<td>' . html_utf8(strtoupper($elt['lastname_user'])) . '</td>'
+                                . '<td>' . html_utf8(ucfirst($elt['firstname_user'])) . '</td>'
                                 . '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
                                 . '<td>' . getYearsSinceDate($elt['birthday_user']) . '</td>'
                                 . '<td>' . ($elt['valid_user'] ? 'oui' : '<span style="color: red;" title="Les comptes non activés ne reçoivent pas les e-mails">⚠️ non</span>') . '</td>'
@@ -178,11 +178,11 @@ if (user()) {
 						<?php
                 } ?>
 
-					<table class="big-lines-table" style="font-size:12px;">
+					<table class="big-lines-table">
 						<thead>
-							<th style="font-size:12px; text-align:left">Nom</th>
-							<th style="font-size:12px; text-align:left">Pseudo</th>
-							<th style="font-size:12px; text-align:left">Rôle</th>
+							<th style="text-align:left">Nom</th>
+							<th style="text-align:left">Pseudo</th>
+							<th style="text-align:left">Rôle</th>
 						</thead>
 						<tbody>
 							<?php
@@ -195,8 +195,8 @@ if (user()) {
                                     . '<input type="hidden" name="firstname_user[]" value="' . html_utf8(stripslashes($_POST['firstname_user'][$i] ?? '')) . '" />'
                                     . '<input type="hidden" name="nickname_user[]" value="' . html_utf8(stripslashes($_POST['nickname_user'][$i] ?? '')) . '" />'
                                     . html_utf8(stripslashes($_POST['civ_user'][$i] ?? '')) . ' '
-                                    . ucfirst(html_utf8(stripslashes($_POST['firstname_user'][$i] ?? ''))) . ' '
-                                    . strtoupper(html_utf8(stripslashes($_POST['lastname_user'][$i] ?? ''))) . ' '
+                                    . html_utf8(ucfirst(stripslashes($_POST['firstname_user'][$i] ?? ''))) . ' '
+                                    . html_utf8(strtoupper(stripslashes($_POST['lastname_user'][$i] ?? ''))) . ' '
                                 . '</td>'
                                 . '<td>'
                                     . html_utf8(stripslashes($_POST['nickname_user'][$i] ?? ''))

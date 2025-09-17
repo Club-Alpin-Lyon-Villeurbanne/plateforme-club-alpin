@@ -43,7 +43,7 @@ if (isset($currentPage['admin_page']) && $currentPage['admin_page'] && !isGrante
 
         $req = "SELECT contenu_content_inline FROM  `caf_content_inline` WHERE  `code_content_inline` LIKE 'meta-title-" . $handle['code_page'] . "' AND lang_content_inline LIKE 'fr' ORDER BY  `date_content_inline` DESC LIMIT 1";
         $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-        $tmp = '<i style="font-size:9px; color:red;">non défini</i>';
+        $tmp = '<i style="font-size: 0.6rem; color:red;">non défini</i>';
 
         while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
             $tmp = $handle2['contenu_content_inline'];

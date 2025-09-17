@@ -209,6 +209,12 @@ class Evt
     #[ORM\Column(name: 'details_caches_evt', type: 'text', nullable: true)]
     private ?string $detailsCaches;
 
+    #[ORM\Column(name: 'agree_edito', type: 'boolean', nullable: false, options: ['default' => false])]
+    private bool $agreeEdito = false;
+
+    #[ORM\Column(name: 'images_authorized', type: 'boolean', nullable: false, options: ['default' => false])]
+    private bool $imagesAuthorized = false;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -868,6 +874,30 @@ class Evt
     public function setIsDraft(bool $isDraft): self
     {
         $this->isDraft = $isDraft;
+
+        return $this;
+    }
+
+    public function isAgreeEdito(): bool
+    {
+        return $this->agreeEdito;
+    }
+
+    public function setAgreeEdito(bool $agreeEdito): self
+    {
+        $this->agreeEdito = $agreeEdito;
+
+        return $this;
+    }
+
+    public function isImagesAuthorized(): bool
+    {
+        return $this->imagesAuthorized;
+    }
+
+    public function setImagesAuthorized(bool $imagesAuthorized): self
+    {
+        $this->imagesAuthorized = $imagesAuthorized;
 
         return $this;
     }

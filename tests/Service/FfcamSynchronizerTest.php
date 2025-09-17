@@ -117,7 +117,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-10-15'));
+        ClockMock::freeze(new \DateTime('2024-09-15'));
 
         $existingUser = $this->signup();
         $existingUser
@@ -156,7 +156,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-11-15'));
+        ClockMock::freeze(new \DateTime('2024-10-15'));
 
         $existingUser = $this->signup();
         $existingUser
@@ -195,7 +195,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-11-01'));
+        ClockMock::freeze(new \DateTime('2024-10-01'));
 
         $expiredUser = $this->signup();
         $expiredUser
@@ -296,7 +296,7 @@ class FfcamSynchronizerTest extends WebTestCase
         $this->assertNull($duplicateUser);
     }
 
-    public function testSynchronizeDoesNotMergeNonExpiredUsers(): void
+    public function testSynchronizeMergesEvenIfNonExpiredUsers(): void
     {
         $identifiant1 = rand(100000000000, 999999999999);
         $identifiant2 = rand(100000000000, 999999999999);
@@ -329,12 +329,13 @@ class FfcamSynchronizerTest extends WebTestCase
         $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
         $synchronizer->synchronize($filePath);
 
-        $user1 = self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($identifiant1);
-        $user2 = self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($identifiant2);
+        $em->refresh($existingUser);
 
-        $this->assertNotNull($user1);
-        $this->assertNotNull($user2);
-        $this->assertNotEquals($user1->getId(), $user2->getId());
+        // Le compte existant doit être fusionné avec le nouveau numéro même si "doit_renouveler" est à false
+        $this->assertEquals($identifiant2, $existingUser->getCafnum());
+        // Et aucun doublon ne doit être créé avec l'ancien numéro
+        $duplicate = self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($identifiant1);
+        $this->assertNull($duplicate);
     }
 
     public function testSynchronizeSelectsMostRecentDuplicate(): void

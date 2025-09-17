@@ -15,7 +15,6 @@ JWT_CONF_DIR=config/jwt
 
 cat public/.htaccess.clever > public/.htaccess
 mv infrastructure/confs/.env.prod .
-mv infrastructure/confs/${DEPLOY_ENV}/robots.txt public/robots.txt
 
 mkdir -p ${JWT_CONF_DIR}
 echo "${JWT_SECRET_KEY}" > ${JWT_CONF_DIR}/private.pem
@@ -36,3 +35,4 @@ bin/console messenger:setup-transports
 
 # Frontend build
 npm install && npm run build
+

@@ -190,11 +190,6 @@
                             <p class="menutitle">Outils</p>
                             <ul>
                             {% if caf_id == 'lyon' %}
-                                <li>
-                                    <a href="https://www.clubalpinlyon.fr/ftp/telechargements/livretaccueil-v3.pdf" title="">
-                                    livret d'accueil des adhérents
-                                    </a>
-                                </li>
                                 {% if allowed('user_read_private') %} {# utilisation d'une permission existante données uniquement aux co-encadrants, encadrants et stagiaires #}
                                 <li>
                                     <a href="/pages/boite-outils-des-encadrants.html" title="">
@@ -281,7 +276,7 @@
 
                         <br  style="clear:both" />
 
-                        {% if allowed('user_see_all') or allowed('user_create_manually') or allowed('user_updatefiles') %}
+                        {% if allowed('user_see_all') or allowed('user_create_manually') or allowed('user_updatefiles') or allowed('user_see_status_list') %}
                             <div class="nav-user">
                                 <p class="menutitle" style="padding-top:13px;">Adhérents</p>
                                 <ul>
@@ -297,6 +292,14 @@
                                     <li>
                                         <a href="/adherents-creer.html" title="">
                                         créer un adhérent/salarié
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                {% if allowed('user_see_status_list') %}
+                                    <li>
+                                        <a href="{{ path('user_status_list') }}" title="Responsabilités des adhérents sur le site">
+                                            responsabilités sur le site
                                         </a>
                                     </li>
                                 {% endif %}
@@ -356,13 +359,13 @@
                         <img src="{{ user_picto(app.user, 'min') }}" alt="" title="" style="float:left; padding:0 10px 0 0;" />
 
                         {% if is_granted('IS_IMPERSONATOR') %}
-                            <p style="border: 2px solid red; border-radius: 5px; font-size:14px; padding:10px;">
+                            <p style="border: 2px solid red; border-radius: 5px; font-size: 0.9rem; padding:10px;">
                                 En cours d'impersonification <a href="/?_switch_user=_exit">Quitter</a>
                             </p>
                         {% endif %}
-                        <p style="font-family:DIN; font-size:18px; line-height:20px; white-space:nowrap; padding-top:10px;">
+                        <p style="font-family:DIN; font-size: 1.1rem; line-height:20px; white-space:nowrap; padding-top:10px;">
                             Mon pseudonyme : <br />
-                            <span style="font-family:DINBold; font-size:21px;">{{ app.user.getNickname() }}</span>
+                            <span style="font-family:DINBold; font-size: 1.2rem;">{{ app.user.getNickname() }}</span>
                         </p>
 
                         {# deconn #}

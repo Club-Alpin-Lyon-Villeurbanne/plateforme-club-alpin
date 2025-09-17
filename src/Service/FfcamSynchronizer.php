@@ -21,7 +21,7 @@ class FfcamSynchronizer
     ) {
         $today = new \DateTime();
         $startDate = new \DateTime($today->format('Y') . '-08-25');
-        $endDate = new \DateTime($today->format('Y') . '-10-31');
+        $endDate = new \DateTime($today->format('Y') . '-09-30');
 
         $this->hasTolerancyPeriodPassed = !($today >= $startDate && $today <= $endDate);
     }
@@ -127,11 +127,16 @@ class FfcamSynchronizer
             ->setNickname($parsedUser->getNickname())
             ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $this->hasTolerancyPeriodPassed)
             ->setAlerteRenouveler($parsedUser->getAlerteRenouveler())
-            ->setDateAdhesion($parsedUser->getDateAdhesion())
             ->setTsUpdate(time())
             ->setManuel(false)
             ->setNomade(false)
         ;
+
+        // Ne pas effacer la date d'adhésion quand l'adhésion parsée est expirée (valeur nulle).
+        // Conserver la date d'adhésion existante sauf si une nouvelle adhésion valide est fournie.
+        if (null !== $parsedUser->getDateAdhesion()) {
+            $existingUser->setDateAdhesion($parsedUser->getDateAdhesion());
+        }
 
         $this->entityManager->persist($existingUser);
     }

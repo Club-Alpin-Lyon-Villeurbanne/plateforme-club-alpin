@@ -47,7 +47,7 @@ class MemberMerger
             $cafnum = $newCafUser->getCafnum();
 
             $newCafUser->setCafnum('obs_' . $cafnum)
-            ->setEmail('obs_' . time())
+            ->setEmail('obs_' . time() . '_' . bin2hex(random_bytes(8)))
             ->setIsDeleted(true);
             $this->entityManager->flush();
 
@@ -98,5 +98,11 @@ class MemberMerger
         ->setCafnumParent($newCafUser->getCafnumParent())
         ->setDoitRenouveler($newCafUser->getDoitRenouveler())
         ->setAlerteRenouveler($newCafUser->getAlerteRenouveler());
+
+        // Mettre à jour la date d'adhésion uniquement si elle est valide
+        // Cela évite d'écraser une date existante avec NULL lors du renouvellement
+        if (null !== $newCafUser->getDateAdhesion()) {
+            $oldCafUser->setDateAdhesion($newCafUser->getDateAdhesion());
+        }
     }
 }

@@ -1,13 +1,3 @@
-/* css communs admin/public */
-/* 
-// EX
-.article{ width:600px; color:#58585A; }
-	.article h2{ font-size:21px; line-height:23px; text-transform:uppercase; }
-	.article p{ font-size:12px; line-height:23px; }
-*/
-
-
-
 /* TABLEAU D'ATTRIBUTION DES DROITS AUX TYPES D'UTILISATEURS */
 .user-right-edit-table  { margin:0; width:100%; border-collapse:collapse; color:black; }
 .user-right-edit-table th, .user-right-edit-table td{ padding:2px 7px; }

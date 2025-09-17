@@ -39,6 +39,8 @@ class SortieController extends AbstractController
         protected float $defaultLat,
         protected float $defaultLong,
         protected string $defaultAppointmentPlace,
+        protected string $editoLineLink,
+        protected string $imageRightLink,
     ) {
     }
 
@@ -75,6 +77,10 @@ class SortieController extends AbstractController
             );
             $event->setJoinStart((new \DateTime())->getTimestamp());
             $isUpdate = false;
+        } else {
+            // reset des cases obligatoires pour être bien sûr que c'est toujours OK même en cas de modification de la sortie
+            $event->setAgreeEdito(false);
+            $event->setImagesAuthorized(false);
         }
 
         if (!$this->isGranted('SORTIE_UPDATE', $event)) {
@@ -91,7 +97,7 @@ class SortieController extends AbstractController
             }
         }
 
-        $form = $this->createForm(EventType::class, $event);
+        $form = $this->createForm(EventType::class, $event, ['editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -227,6 +233,8 @@ class SortieController extends AbstractController
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participationRepository->getEmpietements($event),
             'current_commission' => $event->getCommission()->getCode(),
+            'encoded_coord' => urlencode($event->getLat() . ',' . $event->getLong()),
+            'geovelo_encoded_coord' => urlencode($event->getLong() . ',' . $event->getLat()),
         ];
     }
 
@@ -331,7 +339,7 @@ class SortieController extends AbstractController
                 ++$currentParticipantNb;
             }
             if ($currentParticipantNb > $nbJoinMax && EventParticipation::STATUS_VALIDE === $status) {
-                $this->addFlash('error', 'Vous ne pouvez pas valider plus de participants que de places disponibles (' . $availableSpotNb . ').');
+                $this->addFlash('error', 'Vous ne pouvez pas valider plus de participants que de places disponibles (' . $availableSpotNb . '). Vous pouvez augmenter le nombre maximum de places pour ensuite rajouter des personnes.');
                 $flush = false;
 
                 // s'il n'y a plus de place, inutile de parcourir le reste, on sort de la boucle

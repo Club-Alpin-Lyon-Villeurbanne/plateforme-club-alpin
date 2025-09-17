@@ -6,7 +6,7 @@
 
 Après une migration vers un nouveau setup, exécutez :
 ```bash
-docker stop www_caflyon && docker rm www_caflyon
+docker stop www_pca && docker rm www_pca
 ```
 pour éviter les conflits d'images Docker.
 
@@ -31,7 +31,7 @@ Docker version X.X.X, build xxxxxxx
    - Solution : Ajoutez votre utilisateur dans le groupe `docker` : `$ sudo usermod -a -G docker $USER`
    - Puis relancez WSL ([voir SO](https://stackoverflow.com/a/48450294))
 
-2. Le conteneur `db_caflyon` ne démarre pas
+2. Le conteneur `db_pca` ne démarre pas
    - Vérifiez les logs avec `$ docker compose logs cafdb`
    - Si l'erreur `Could not set file permission for ca-key.pem` apparaît :
      1. Démarrez les conteneurs depuis Powershell (`> docker compose up`)

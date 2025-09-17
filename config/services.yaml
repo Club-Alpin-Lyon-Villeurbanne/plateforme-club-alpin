@@ -16,6 +16,7 @@ parameters:
   legacy_env_MAX_SORTIES_VALIDATION: "%env(int:MAX_SORTIES_VALIDATION)%"
   legacy_env_MAX_ARTICLES_ADHERENT: "%env(int:MAX_ARTICLES_ADHERENT)%"
   legacy_env_MAX_ARTICLES_ACCUEIL: "%env(int:MAX_ARTICLES_ACCUEIL)%"
+  legacy_env_SEARCH_RESULTS_PER_PAGE: "%env(int:SEARCH_RESULTS_PER_PAGE)%"
   legacy_env_MAX_IMAGE_SIZE: "%env(int:MAX_IMAGE_SIZE)%"
   legacy_env_DISPLAY_BANNER: "%env(bool:DISPLAY_BANNER)%"
   legacy_env_DISPLAY_NOTES_DE_FRAIS: "%env(bool:DISPLAY_NOTES_DE_FRAIS)%"
@@ -130,7 +131,7 @@ services:
 
   App\Security\Voter\ExpenseReportVoter:
     arguments:
-      $authorizedToValidateIds: "%env(string:AUTHORIZED_IDS_FOR_EXPENSES_VALIDATION)%"
+      $authorizedManagerIds: "%env(string:AUTHORIZED_IDS_FOR_EXPENSE_MANAGEMENT)%"
 
   Symfony\Component\String\Slugger\SluggerInterface:
     class: Symfony\Component\String\Slugger\AsciiSlugger
@@ -139,6 +140,7 @@ services:
     arguments:
       $defaultAlertArticlePrefix: "%env(ALERT_ARTICLE_PREFIX)%"
       $defaultAlertSortiePrefix: "%env(ALERT_SORTIE_PREFIX)%"
+      $siteName: '%env(SITENAME)%'
 
   # Email Marketing Services Configuration
   App\Service\MailerLiteService:
@@ -263,6 +265,8 @@ services:
       $defaultLat: '%default_latitude%'
       $defaultLong: '%default_longitude%'
       $defaultAppointmentPlace: '%default_appmt_place%'
+      $editoLineLink: '%env(EDITO_LINE_LINK)%'
+      $imageRightLink: '%env(IMAGE_RIGHT_LINK)%'
     tags: ['controller.service_arguments']
 
   App\Service\PushNotificationService:
@@ -283,3 +287,9 @@ services:
   legacy_user_right_service:
     public: true
     alias: App\Service\UserRightService
+
+  App\Controller\ArticleController:
+    arguments:
+      $editoLineLink: '%env(EDITO_LINE_LINK)%'
+      $imageRightLink: '%env(IMAGE_RIGHT_LINK)%'
+    tags: ['controller.service_arguments']

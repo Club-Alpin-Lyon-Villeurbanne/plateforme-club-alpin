@@ -86,6 +86,7 @@ $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt
             , id_commission, code_commission
         FROM caf_evt, caf_commission
         WHERE status_evt = 0
+        AND is_draft = 0
         AND tsp_evt IS NOT NULL
         AND commission_evt = id_commission '
         . 'ORDER BY tsp_crea_evt ASC ';
@@ -170,6 +171,7 @@ $req = 'SELECT id_evt, code_evt, titre_evt, tsp_evt
         AND tsp_evt > ' . time() . '
         AND tsp_evt < ' . $MAX_TIMESTAMP_FOR_LEGAL_VALIDATION . '
         AND status_evt = 1
+        AND is_draft = 0
         ORDER BY tsp_evt ASC ';
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($evt = $handleSql->fetch_array(\MYSQLI_ASSOC)) {

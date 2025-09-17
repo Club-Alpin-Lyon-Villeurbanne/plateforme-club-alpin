@@ -81,7 +81,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         if ($availableSpotNb < 0) {
             $availableSpotNb = 0;
         }
-        $errTab[] = 'Vous ne pouvez pas inscrire plus de participants que de places disponibles (' . $availableSpotNb . ').';
+        $errTab[] = 'Vous ne pouvez pas inscrire plus de participants que de places disponibles (' . $availableSpotNb . '). Vous pouvez augmenter le nombre maximum de places pour ensuite rajouter des personnes.';
     }
 
     // liste des encadrants
@@ -138,6 +138,18 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $role_evt_join = stripslashes($_POST['role_evt_join'][$i]);
         if (!$role_evt_join) {
             $role_evt_join = 'inscrit';
+        }
+
+        // Vérifier que l'utilisateur a une licence valide
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT firstname_user, lastname_user, doit_renouveler_user FROM caf_user WHERE id_user = ? LIMIT 1');
+        $stmt->bind_param('i', $id_user);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        if ($row && 1 == $row['doit_renouveler_user']) {
+            $errTab[] = 'La licence de ' . $row['firstname_user'] . ' ' . $row['lastname_user'] . " a expiré. L'adhésion doit être renouvelée avant l'inscription.";
+            continue; // Passer au suivant sans inscrire celui-ci
         }
 
         // si pas de pb, intégration

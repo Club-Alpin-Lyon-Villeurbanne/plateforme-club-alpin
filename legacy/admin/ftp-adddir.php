@@ -98,7 +98,7 @@ if (count($errTab) > 0) {
                     <input type="hidden" name="lock" value="locked" />
                     <br />
 
-                    <span style="font-size:14px; font-weight:100; color:silver;">ftp/<?php echo html_utf8(substr($target, 7)); ?></span>
+                    <span style="font-size: 0.9rem; font-weight:100; color:silver;">ftp/<?php echo html_utf8(substr($target, 7)); ?></span>
                     <input type="text" class="nice" name="nouveauDossier" value=""placeholder="nom-du-dossier" />
                     <br />
                     <br />

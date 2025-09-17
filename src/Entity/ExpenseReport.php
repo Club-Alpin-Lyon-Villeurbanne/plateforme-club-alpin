@@ -48,11 +48,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new Get(
             uriTemplate: '/notes-de-frais/{id}',
-            security: "is_granted('ROLE_ADMIN') or object.getUser() == user or is_granted('validate_expense_report')",
+            security: "is_granted('ROLE_ADMIN') or object.getUser() == user or is_granted('manage_expense_reports')",
         ),
         new Patch(
             uriTemplate: '/notes-de-frais/{id}',
-            security: 'object.getUser() == user or is_granted("validate_expense_report")',
+            security: 'object.getUser() == user or is_granted("manage_expense_reports")',
             // normalizationContext: ['groups' => ['report:read', 'attachment:read', 'user:read', 'event:read']]
         ),
     ],

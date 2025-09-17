@@ -100,7 +100,7 @@ if (allowed('user_see_all')) {
 				<thead>
 					<tr>
 						<th>Outils</th>
-						<th>n° CAF / Infos</th>
+						<th>n° licence FFCAM / Infos</th>
 						<!-- <th>Actif ?</th> -->
 						<th>Civ</th>
 						<th>Nom</th>
@@ -184,8 +184,8 @@ if (allowed('user_see_all')) {
                     . '</td>'
                     // .'<td>'.intval($elt['valid_user']).'</td>'
                     . '<td>' . html_utf8($elt['civ_user']) . '</td>'
-                    . '<td>' . strtoupper(html_utf8($elt['lastname_user'])) . '</td>'
-                    . '<td>' . ucfirst(html_utf8($elt['firstname_user'])) . '</td>';
+                    . '<td>' . html_utf8(strtoupper($elt['lastname_user'])) . '</td>'
+                    . '<td>' . html_utf8(ucfirst($elt['firstname_user'])) . '</td>';
 
                 if ($elt['doit_renouveler_user']) {
                     echo '<td style="color:red">Licence expirée</td>';

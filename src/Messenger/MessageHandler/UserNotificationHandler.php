@@ -25,6 +25,7 @@ class UserNotificationHandler
         private readonly Mailer $mailer,
         private readonly string $defaultAlertArticlePrefix,
         private readonly string $defaultAlertSortiePrefix,
+        private readonly string $siteName,
     ) {
     }
 
@@ -64,6 +65,6 @@ class UserNotificationHandler
             AlertType::Sortie => $user->getAlertSortiePrefix() ?? $this->defaultAlertSortiePrefix,
         };
 
-        $this->mailer->send($user, $template, ['entity' => $entity, 'prefix' => $prefix]);
+        $this->mailer->send($user, $template, ['entity' => $entity, 'prefix' => $prefix, 'site' => $this->siteName]);
     }
 }

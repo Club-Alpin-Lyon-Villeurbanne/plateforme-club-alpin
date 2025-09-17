@@ -90,4 +90,47 @@ class UserAttrRepository extends ServiceEntityRepository
             $seen[$id] = true;
         }
     }
+
+    public function listAllManagement(array $types = [UserAttr::VICE_PRESIDENT, UserAttr::PRESIDENT]): \Generator
+    {
+        $dql = 'SELECT a
+                FROM ' . User::class . ' u, ' . Usertype::class . ' t, ' . UserAttr::class . ' a
+                WHERE
+                    a.user = u.id
+                    AND t.code IN (:types)
+                    AND a.userType = t.id
+                    AND u.doitRenouveler = 0
+                ORDER BY t.hierarchie DESC, u.firstname ASC, u.lastname ASC
+        ';
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $query->setParameter('types', $types);
+
+        $seen[] = [];
+        foreach ($query->getResult() as $res) {
+            $id = $res->getUser()->getId();
+
+            if (isset($seen[$id])) {
+                continue;
+            }
+
+            yield $res;
+
+            $seen[$id] = true;
+        }
+    }
+
+    public function listAllUsersByRole(Usertype $usertype)
+    {
+        $queryBuilder = $this->createQueryBuilder('ua')
+             ->where('ua.userType = :type')
+             ->setParameter('type', $usertype)
+             ->orderBy('ua.user', 'asc')
+        ;
+
+        return $queryBuilder
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

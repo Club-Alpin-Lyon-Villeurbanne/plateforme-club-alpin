@@ -155,7 +155,7 @@ $min_year = (int) date('Y') - 3;
                     echo ' : ' . $comTab[$current_commission]['title_commission'];
                 }
 ?>
-				<span style="font-size:12px; color:silver">
+				<span style="color:silver">
 					<?php
                     // echo sizeof($agendaTab)?' - '.sizeof($agendaTab).' sorties':'';
 ?>

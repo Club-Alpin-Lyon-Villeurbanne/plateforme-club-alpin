@@ -14,7 +14,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * Gère le filtrage des notes de frais :
- * - Filtre par utilisateur (sauf pour les admins et validateurs)
+ * - Filtre par utilisateur (sauf pour les admins et gestionnaires de notes de frais)
  * - Exclut les brouillons par défaut (sauf si inclure_brouillons=true)
  */
 final class ExpenseReportExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
@@ -38,15 +38,27 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
         $this->filterExpenseReports($queryBuilder, $context);
     }
 
+    public function applyToItem(
+        QueryBuilder $queryBuilder,
+        QueryNameGeneratorInterface $queryNameGenerator,
+        string $resourceClass,
+        array $identifiers,
+        ?Operation $operation = null,
+        array $context = []
+    ): void {
+        // Pas de filtrage spécifique pour les items individuels
+        // Les permissions sont gérées par les voters
+    }
+
     private function filterExpenseReports(QueryBuilder $queryBuilder, array $context): void
     {
         $rootAlias = $queryBuilder->getRootAliases()[0];
         $user = $this->security->getUser();
 
-        // 1. Filtrage par utilisateur (sauf admin et validateurs)
-        if ($user 
+        // 1. Filtrage par utilisateur (sauf admin et gestionnaires de notes de frais)
+        if ($user
             && !$this->security->isGranted(SecurityConstants::ROLE_ADMIN)
-            && !$this->security->isGranted('validate_expense_report')) {
+            && !$this->security->isGranted('manage_expense_reports')) {
             $queryBuilder->andWhere(sprintf('%s.user = :current_user', $rootAlias))
                 ->setParameter('current_user', $user);
         }
@@ -59,18 +71,5 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
             $queryBuilder->andWhere(sprintf('%s.status != :draft_status', $rootAlias))
                 ->setParameter('draft_status', ExpenseReportStatusEnum::DRAFT->value);
         }
-    }
-
-    public function applyToItem(
-        QueryBuilder $queryBuilder,
-        QueryNameGeneratorInterface $queryNameGenerator,
-        string $resourceClass,
-        array $identifiers,
-        ?Operation $operation = null,
-        array $context = []
-    ): void {
-        // Pour les items individuels, on ne filtre PAS par statut
-        // pour permettre l'accès aux brouillons
-        // Le filtrage par utilisateur est géré par les annotations de sécurité sur l'entité
     }
 }

@@ -59,7 +59,7 @@ if (!isset($_GET['dossier'])) {
 
 	</head>
 	<!--  if(parent.adjustIFrameSize)parent.adjustIFrameSize(window); -->
-	<body style="background:#DEDEDE; border:none; font-size:12px;">
+	<body style="background:#DEDEDE; border:none;">
 		<div id="ftp-2">
 
 			<!-- A gauche : l'arborescence -->
@@ -184,7 +184,7 @@ arbo_read($ftpPath, '', 0);
 			<br style="clear:both" />
 			<br />
 			<br />
-			<p style="color:gray; font-size:10px; line-height:11px; border-top:1px solid silver; padding-top:5px;">
+			<p style="color:gray; font-size:0.7rem; line-height:11px; border-top:1px solid silver; padding-top:5px;">
 				Aide : Le dossier FTP est le disque dur de votre site internet.
 				Vous pouvez y déposer des fichiers pour les proposer en téléchargement, ou des images à intégrer dans les pages du site.<br />
 				A gauche, la navigation rapide vous permet de vous déplacer avec fluidité dans les dossiers et sous-dossiers.<br />

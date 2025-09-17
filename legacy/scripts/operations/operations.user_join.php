@@ -29,6 +29,17 @@ if (!isset($_POST['confirm']) || 'on' != $_POST['confirm']) {
     $errTab[] = "Merci de cocher la case &laquo; J'ai lu les conditions...&raquo;";
 }
 
+// Vérification de la licence valide de l'utilisateur principal
+$stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT doit_renouveler_user FROM caf_user WHERE id_user = ? LIMIT 1');
+$stmt->bind_param('i', $id_user);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_row();
+$stmt->close();
+if ($row && 1 == $row[0]) {
+    $errTab[] = 'Votre licence a expiré. Veuillez renouveler votre adhésion avant de vous inscrire à une sortie.';
+}
+
 if (!isset($errTab) || 0 === count($errTab)) {
     $role_evt_join = 'inscrit';
 
@@ -56,6 +67,17 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 if (!$row[0]) {
                     $errTab[] = "ID '" . (int) $id_user_tmp . "' invalide pour l'inscription d'un adhérent affilié";
                 }
+            }
+
+            // Vérifier que l'affilié a une licence valide
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT firstname_user, lastname_user, doit_renouveler_user FROM caf_user WHERE id_user = ? LIMIT 1');
+            $stmt->bind_param('i', $id_user_tmp);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $stmt->close();
+            if ($row && 1 == $row['doit_renouveler_user']) {
+                $errTab[] = 'La licence de ' . $row['firstname_user'] . ' ' . $row['lastname_user'] . " a expiré. L'adhésion doit être renouvelée avant l'inscription.";
             }
         }
     }

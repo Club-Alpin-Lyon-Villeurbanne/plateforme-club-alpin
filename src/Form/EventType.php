@@ -376,11 +376,23 @@ class EventType extends AbstractType
                     'placeholder' => '- Listes prédéfinies',
                 ],
             ])
+            ->add('agreeEdito', CheckboxType::class, [
+                'label' => 'Je certifie que j\'ai pris connaissance de la <a href="' . htmlspecialchars($options['editoLineLink'], \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8') . '" target="_blank" rel="noopener">ligne éditoriale du club</a> avant de déposer ma sortie',
+                'label_html' => true,
+                'required' => true,
+            ])
+            ->add('imagesAuthorized', CheckboxType::class, [
+                'label' => 'Je certifie que j\'ai l\'autorisation des propriétaires de chaque image et chaque photo présente dans cet article sinon le club se risque à des amendes, <a href="' . htmlspecialchars($options['imageRightLink'], \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8') . '" target="_blank" rel="noopener">voici l\'explication de cas déjà passés dans notre club</a>.',
+                'label_html' => true,
+                'required' => true,
+                'help' => 'Vous n\'êtes pas autorisé à utiliser des photos d\'internet, sauf si elles proviennent des plateformes : <a href="https://www.pexels.com/fr-fr/" target="_blank" rel="noopener">Pexels</a>, <a href="https://pixabay.com/fr/" target="_blank" rel="noopener">Pixabay</a>, <a href="https://unsplash.com/fr" target="_blank" rel="noopener">Unsplash</a>',
+                'help_html' => true,
+            ])
             ->add('description', TextareaType::class, [
                 'label' => false,
                 'required' => true,
                 'attr' => [
-                    'class' => 'type2 wide tinymce',
+                    'class' => 'type2 wide ckeditor',
                     'rows' => 15,
                     'style' => 'width:615px; min-height:300px',
                 ],
@@ -448,6 +460,8 @@ class EventType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Evt::class,
+            'editoLineLink' => '',
+            'imageRightLink' => '',
         ]);
     }
 

@@ -121,11 +121,17 @@ else {
 		        echo '<hr  />'
 		             . '<h3>Infos privées : </h3>'
 		             . '<ul class="nice-list">'
-		             . '<li>NUMÉRO DE LICENCE : ' . html_utf8($tmpUser['cafnum_user']) . '</a> </li>';
+		             . '<li>NUMÉRO DE LICENCE FFCAM : ' . html_utf8($tmpUser['cafnum_user']) . '</a> </li>';
 		        if (allowed('user_read_private') && $tmpUser['doit_renouveler_user']) {
 		            echo '<li class="red">LICENCE EXPIRÉE</li>';
-		        } elseif (allowed('user_read_private') && !empty($tmpUser['date_adhesion_user'])) {
-		            echo '<li>DATE D\'ADHÉSION : <span class="green">' . date('d/m/Y', $tmpUser['date_adhesion_user']) . '</span></li>';
+		        } elseif (allowed('user_read_private')) {
+		            echo '<li>DATE D\'ADHÉSION : ';
+		            if (!empty($tmpUser['date_adhesion_user'])) {
+		                echo '<span class="green">' . date('d/m/Y', $tmpUser['date_adhesion_user']) . '</span>';
+		            } else {
+		                echo 'inconnue';
+		            }
+		            echo '</li>';
 		        }
 		        echo '<li><a href="mailto:' . html_utf8($tmpUser['email_user']) . '" title="Contact direct">' . html_utf8($tmpUser['email_user']) . '</a> </li>'
 		             . '</ul>'

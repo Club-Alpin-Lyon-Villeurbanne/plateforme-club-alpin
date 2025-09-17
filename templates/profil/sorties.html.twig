@@ -39,10 +39,10 @@
                             {% if app.user == event.user %}
                                 {% if event.isDraft %}
                                     <p class="draft">Brouillon (non publiée)</p>
-                                {% elseif event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
-                                    <p class="info">Publiée et validée par le président</p>
                                 {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_UNSEEN') %}
                                     <p class="alerte">En attente de publication</p>
+                                {% elseif event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
+                                    <p class="info">Publiée et validée par le président</p>
                                 {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE') %}
                                     <p class="alerte">Publiée non validée par le président</p>
                                 {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_REFUSE') %}
@@ -66,7 +66,7 @@
                                     </span>
 
                                     <h2 class="tw-flex tw-items-center tw-gap-2">
-                                        {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>{% endif %}
+                                        {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-family:Arial">ANNULÉE - </span>{% endif %}
                                         {{ event.titre }}
 
                                         {% set participation = event.participation(app.user) %}
