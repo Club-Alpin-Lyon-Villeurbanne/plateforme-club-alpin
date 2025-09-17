@@ -12,6 +12,7 @@ use App\Service\UserRightService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class UserRightServiceTest extends TestCase
 {
@@ -58,8 +59,9 @@ class UserRightServiceTest extends TestCase
         $encadrantType = $this->buildUsertype(UserAttr::ENCADRANT, 'Encadrant', 5, true);
         $userRight = new UserAttr($target, $encadrantType, 'commission:ALPI');
 
-        $commission = $this->buildCommission('ALPI', 'Alpinisme');
+        $logger = $this->createMock(LoggerInterface::class);
 
+        $commission = $this->buildCommission('ALPI', 'Alpinisme');
         $commissionRepo = $this->createMock(ObjectRepository::class);
         $commissionRepo->method('findOneBy')->with(['code' => 'ALPI'])->willReturn($commission);
 
@@ -91,7 +93,7 @@ class UserRightServiceTest extends TestCase
             $sendCalls[] = [$to, $template, $context];
         });
 
-        $service = new UserRightService($mailer, $em, $attrRepo);
+        $service = new UserRightService($mailer, $em, $attrRepo, $logger);
         $service->notify($userRight, 'ajout', $actor);
 
         $this->assertCount(3, $sendCalls, 'Expected three emails to be sent');
@@ -133,13 +135,15 @@ class UserRightServiceTest extends TestCase
         $attrRepo = $this->createMock(UserAttrRepository::class);
         $attrRepo->method('listAllManagement')->willReturn($this->createGenerator([$presAttr]));
 
+        $logger = $this->createMock(LoggerInterface::class);
+
         $sendCalls = [];
         $mailer = $this->createMock(Mailer::class);
         $mailer->method('send')->willReturnCallback(function ($to, string $template, array $context) use (&$sendCalls) {
             $sendCalls[] = [$to, $template, $context];
         });
 
-        $service = new UserRightService($mailer, $em, $attrRepo);
+        $service = new UserRightService($mailer, $em, $attrRepo, $logger);
         $service->notify($userRight, 'suppression', $actor);
 
         $this->assertCount(2, $sendCalls);

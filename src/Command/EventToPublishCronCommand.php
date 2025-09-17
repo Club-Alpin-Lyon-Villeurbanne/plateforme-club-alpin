@@ -53,9 +53,13 @@ class EventToPublishCronCommand extends Command
         }
 
         foreach ($responsables as $userEmail => $infos) {
-            $this->mailer->send($infos['responsable'], 'transactional/rappel-sortie-a-valider-resp-commission', [
-                'sorties' => $infos['events'],
-            ]);
+            try {
+                $this->mailer->send($infos['responsable'], 'transactional/rappel-sortie-a-valider-resp-commission', [
+                    'sorties' => $infos['events'],
+                ]);
+            } catch (\Exception $exception) {
+                $this->logger->error($exception->getMessage());
+            }
         }
 
         $this->logger->info('Email reminder: no (more) event to publish');
