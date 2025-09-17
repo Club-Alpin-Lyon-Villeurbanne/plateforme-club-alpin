@@ -126,7 +126,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                         $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'wide_thumbnail');
                     }
 
-                    echo '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL) . '" class="slide" style="background-image:url(' . $img . ')" title="CLIQUEZ POUR VOIR L\'ARTICLE">
+                    echo '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $article['code_article'], 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL) . '" class="slide" style="background-image:url(' . $img . ')" title="CLIQUEZ POUR VOIR L\'ARTICLE">
                         <div class="bandeau-slider">
                             <p class="alaune">ARTICLE A LA UNE</p>
                             <h2>' . html_utf8($article['titre_article']) . '</h2>

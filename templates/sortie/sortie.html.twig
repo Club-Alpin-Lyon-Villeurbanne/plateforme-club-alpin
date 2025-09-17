@@ -116,7 +116,7 @@
                 </div><br />
             {% endif %}
         {% for article in event.articles %}
-        <a style="float:right; font-family:DIN, Arial; font-weight:normal; display:block; padding:5px 20px 0 0;" href="/article/{{ article.code }}-{{ article.id }}.html" title="{{ article.titre }}">
+        <a style="float:right; font-family:DIN, Arial; font-weight:normal; display:block; padding:5px 20px 0 0;" href="{{ path('article_view', {'code': article.code, 'id': article.id }) }}" title="{{ article.titre }}">
             <span class="bleucaf">></span> Voir le compte rendu de sortie "{{ article.titre }}"
         </a>
         {% endfor %}
@@ -152,7 +152,7 @@
         </div>
 
         {% if app.user and event.user.id == app.user.id and event.isFinished %}
-            <a href="/article/new?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
+            <a href="{{ path('article_new') }}?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
                 <img src="/img/base/pencil_add.png" alt="" title="" style="" />
                 Compte rendu
             </a><br>
