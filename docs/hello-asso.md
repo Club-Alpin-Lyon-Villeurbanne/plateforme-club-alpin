@@ -22,16 +22,18 @@ Enfin, le slug de l'association est à récupérer dans Hello Asso (dans l'URL) 
 ### Fonctionnelle
 L'API est utilisée pour :
 1. Créer une campagne associée à une sortie qui est configurée pour. La campagne se créée lors de l'approbation et publication de la sortie.
-2. Lister les gens qui ont payé à l'affichage de la sortie.
+2. Publier la campagne sur Hello Asso.
 
 ### Technique
 Définir la variable d'environnement `HELLO_ASSO_ACTIVITY_TYPE_ID` pour définir l'id du type "Sortie" (ex : 2907 en sand box).
 
 Lors de la création de la campagne (= form dans le jargon Hello Asso), on stocke, au retour de l'appel API, l'URL de la billetterie et le slug. Ces informations sont stockées dans 2 nouveaux champs de la table `caf_evt` (`hello_asso_form_slug` et `payment_url`).
 
+Lors d'un paiement, Hello Asso appelle un webhook (à configurer dans Hello Asso) qui valide le paiement (si l'email correspond). Les paiements sont stockés dans la table `caf_evt_join` (`has_paid`). \
+Pour cela, il faut définir la variable d'environnement `HELLO_ASSO_WEBHOOK_SIGNATURE_KEY` ainsi que l'IP d'origine de l'appel webhook (`HELLO_ASSO_SERVER_IP`).
+
 ### Limitations connues
 1. Il ne semble pas possible de supprimer une campagne ou de la modifier via API, que faire en cas de modification de sortie si on souhaite enlever la billetterie ou modifier le montant des frais ?
-2. Le nombre de payeurs récupérés est limité à 100 / page => pour les très grosses sorties (plus de 100 participants), il faudra faire plusieurs appels API pour utiliser leur système de pagination
 
 ## Ressources utiles
 
@@ -39,3 +41,4 @@ Lors de la création de la campagne (= form dans le jargon Hello Asso), on stock
 - Doc API de Hello Asso : https://dev.helloasso.com/reference
 - Créer une campagne : https://dev.helloasso.com/reference/post_organizations-organizationslug-forms-formtype-action-quick-create
 - Lister les paiements : https://dev.helloasso.com/reference/get_organizations-organizationslug-forms-formtype-formslug-payments
+- Webhook : https://dev.helloasso.com/docs/secure-webhook

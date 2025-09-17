@@ -44,14 +44,22 @@ class EventType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        /** @var Evt $event */
+        $event = $options['data'];
+
+        // affichage des champs HelloAsso uniquement pour les utilisateurs autorisés et dans certains cas
         $displayHelloAssoFields = false;
+        $isUserAuthorizeToUseHelloAsso = false;
         $helloAssoAuthorizedUserIds = explode(',', trim($this->helloAssoAuthorizedUserIds));
         if (\in_array($options['user']->getId(), $helloAssoAuthorizedUserIds, false)) {
+            $isUserAuthorizeToUseHelloAsso = true;
+        }
+
+        // si on modifie la sortie et qu'elle n'a pas encore de paiement HelloAsso, on peut afficher les champs HelloAsso
+        if (!$options['is_edit'] || !$event->hasPaymentForm()) {
             $displayHelloAssoFields = true;
         }
 
-        /** @var Evt $event */
-        $event = $options['data'];
         $commission = $event->getCommission();
         $this->participantService->buildManagersLists($commission, $event);
 
@@ -418,7 +426,7 @@ class EventType extends AbstractType
                 'help_html' => true,
             ])
         ;
-        if ($displayHelloAssoFields && !$options['is_edit']) {
+        if ($displayHelloAssoFields && $isUserAuthorizeToUseHelloAsso) {
             $builder
                 ->add('hasPaymentForm', CheckboxType::class, [
                     'label' => 'Créer un événement HelloAsso pour cette sortie',

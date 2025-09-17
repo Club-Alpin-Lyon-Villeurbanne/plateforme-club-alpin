@@ -101,6 +101,8 @@ class SortieController extends AbstractController
             foreach ($currentEncadrants as $currentEncadrant) {
                 $originalEntityData['encadrants'][$currentEncadrant->getUser()->getId()] = $currentEncadrant->getRole();
             }
+            $originalEntityData['hasPaymentForm'] = $event->hasPaymentForm();
+            $originalEntityData['paymentAmount'] = $event->getPaymentAmount();
         }
 
         $form = $this->createForm(EventType::class, $event, ['is_edit' => $isUpdate, 'editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'user' => $user]);
@@ -158,6 +160,8 @@ class SortieController extends AbstractController
                 // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
                 if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()
                     && ($originalEntityData['ngensMax'] !== $event->getngensMax()
+                    || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
+                    || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
                     || $originalEntityData['encadrants'] !== $newEncadrants)) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
                 } else {
