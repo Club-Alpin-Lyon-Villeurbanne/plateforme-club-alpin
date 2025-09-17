@@ -5,7 +5,6 @@ namespace App\Command;
 use App\Mailer\Mailer;
 use App\Repository\EvtRepository;
 use App\Service\UserLicenseChecker;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
