@@ -91,6 +91,20 @@ class UserAttrRepository extends ServiceEntityRepository
         }
     }
 
+    public function getResponsablesByCommission(Commission $commission)
+    {
+        return $this->createQueryBuilder('ua')
+            ->innerJoin('ua.user', 'u')
+            ->innerJoin('ua.userType', 'ut')
+            ->where('ua.params = :commission')
+            ->andWhere('ut.code = :type')
+            ->setParameter('commission', 'commission:' . $commission->getCode())
+            ->setParameter('type', UserAttr::RESPONSABLE_COMMISSION)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     public function listAllManagement(array $types = [UserAttr::VICE_PRESIDENT, UserAttr::PRESIDENT]): \Generator
     {
         $dql = 'SELECT a

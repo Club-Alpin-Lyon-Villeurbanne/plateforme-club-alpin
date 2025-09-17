@@ -34,6 +34,8 @@
         <div id="fiche-sortie">
 
             {% set closeDiv = false %}
+            {% set nInscritsHorsEncadrement = event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::ROLE_BENEVOLE'), constant('App\\Entity\\EventParticipation::ROLE_MANUEL')]) | length %}
+            {% set nInscritsTotal = nInscritsHorsEncadrement + event.participations([constant('App\\Entity\\EventParticipation::ROLE_COENCADRANT'), constant('App\\Entity\\EventParticipation::ROLE_STAGIAIRE'), constant('App\\Entity\\EventParticipation::ROLE_ENCADRANT')]) | length %}
 
             {% if event.publicStatusUnseen %}
                 {% set closeDiv = true %}
@@ -94,23 +96,54 @@
                     <b>Note :</b> Cette sortie est publiée et visible par les adhérents !<br />
             {% endif %}
 
-                {% if is_granted('SORTIE_UPDATE', event) %}
-                    <a href="{{ path('modifier_sortie', {'event': event.id}) }}" title="Vous êtes l'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
-                        <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie
-                    </a>
-                {% endif %}
+            {% if is_granted('SORTIE_UPDATE', event) %}
+                <a href="{{ path('modifier_sortie', {'event': event.id}) }}" title="Vous êtes l'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
+                    <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie
+                </a>
+            {% endif %}
 
-                {% if is_granted('SORTIE_DELETE', event) %}
-                    <a class="nice2 noprint red" href="/supprimer-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Supprimer définitivement la sortie ci-dessous">
-                        <img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie
-                    </a>
-                {% endif %}
+            {% if is_granted('SORTIE_DELETE', event) %}
+                <a class="nice2 noprint red" onclick="modal.show($(this).next().html())" title="Supprimer définitivement cette sortie">
+                    <img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer cette sortie
+                </a>
+                <div style="display:none" id="supprimer-{{ event.id }}">
+                    <h2>Supprimer définitivement la sortie</h2>
+                    <p>
+                        Voulez-vous vraiment supprimer définitivement cette sortie ?<br>
+                        Cette action supprimera définitivement la sortie et les fichiers liés.<br>
+                        <strong>Attention</strong> : vous ne devriez jamais supprimer une sortie qui a été publiée sur le site car la conserver permet d'établir des statistiques, et l'URL de la page dédiée à cette sortie retournera une erreur 404 si des utilisateurs souhaitent y retourner.
+                    </p>
+                    {% if event.publicStatusValide %}
+                        <p class="alerte">Cette sortie est publiée sur le site. En la supprimant, vous créerez une page introuvable.</p>
+                    {% else %}
+                        <p class="info">Cette sortie n'est pas publiée sur le site. Vous pouvez la supprimer sereinement.</p>
+                    {% endif %}
+                    <form action="{{ path('delete_event', { id: event.id }) }}" method="post" class="loading">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token('delete_event') }}" />
+                        <input type="submit" value="Supprimer définitivement cette sortie" class="nice2 noprint red" title="Supprimer définitivement cette sortie" />
+                    </form>
+                </div>
+            {% endif %}
 
-                {% if is_granted('SORTIE_CANCEL', event) %}
-                    <a class="nice2 noprint red" href="/annuler-une-sortie/{{ event.code }}-{{ event.id }}.html" title="Annuler la sortie ci-dessous">
-                        <img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie
-                    </a>
-                {% endif %}
+            {% if is_granted('SORTIE_CANCEL', event) %}
+                <a class="nice2 noprint red" onclick="modal.show($(this).next().html())" title="Annuler cette sortie">
+                    <img src="/img/base/delete.png" alt="" title="" style="" />&nbsp;&nbsp;Annuler cette sortie
+                </a>
+                <div style="display:none" id="annuler-{{ event.id }}">
+                    <h2>Annuler la sortie</h2>
+                    <p>
+                        Voulez-vous vraiment annuler cette sortie ?
+                        {% if event.publicStatusValide %}Celle-ci a déjà été publiée sur le site et des membres y sont inscrits, ils recevront donc automatiquement un e-mail pour les en avertir.{% endif %}
+                        Vous devez ajouter un message pour expliquer la raison de l'annulation :
+                    </p>
+                    <form action="{{ path('cancel_event', { id: event.id }) }}" method="post" class="loading">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token('cancel_event') }}" />
+                        <textarea class="type2" style="width:100%" name="msg" placeholder="ex : Sortie annulée pour cause de météo défavorable."></textarea>
+                        <input type="submit" value="Annuler cette sortie" class="nice2 noprint red" title="Annuler cette sortie" />
+                        {% if event.publicStatusValide %}et avertir {{ nInscritsTotal }} participant(s) inscrit(s).{% endif %}
+                    </form>
+                </div>
+            {% endif %}
 
             {% if closeDiv %}
                 </div><br />
@@ -159,7 +192,7 @@
         {% endif %}
 
         {% if is_granted('FICHE_SORTIE', event) %}
-        <a href="/feuille-de-sortie/evt-{{ event.id }}.html" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2" target="_blank">
+        <a href="{{ path('feuille_sortie', {id: event.id}) }}" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2" target="_blank">
             <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
             Imprimer la fiche de sortie
         </a>
@@ -684,15 +717,17 @@
                     </div>
                     {% endif %}
 
-                    {% if allowed('user_see_all') or allowed('evt_join_notme') or allowed('evt_join_doall') %}
+                    {% if allowed('user_see_all') or allowed('evt_join_notme') or allowed('evt_join_doall') or is_granted('EVENT_NOMAD_JOINING_ADD', event) %}
                         {% if not event.publicStatusUnseen %}
-                            <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_manual.php&amp;id_evt={{ event.id }}" title="">
+                            <a class="nice2 blue fancyframe" href="{{ path('event_manual_add_select', {event: event.id}) }}" title="">
                                 Inscrire manuellement des adhérents du club
                             </a>
 
-                            <a class="nice2 blue fancyframe" href="/includer.php?p=includes/join_nomad.php&amp;id_evt={{ event.id }}" title="">
-                                Ajouter un adhérent "Nomade"
-                            </a>
+                            {% if is_granted('EVENT_NOMAD_JOINING_ADD', event) %}
+                                <a class="nice2 blue fancyframe" href="{{ path('event_nomad_add', {event: event.id}) }}" title="">
+                                    Ajouter un "Nomade"
+                                </a>
+                            {% endif %}
                         {% else %}
                         <i>Vous pourrez ajouter des participants quand la sortie sera publiée</i>
                         {% endif %}
@@ -939,8 +974,6 @@
         {% endif %}
 
         {% if not event.cancelled %}
-            {% set nInscritsHorsEncadrement = event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::ROLE_BENEVOLE'), constant('App\\Entity\\EventParticipation::ROLE_MANUEL')]) | length %}
-            {% set nInscritsTotal = nInscritsHorsEncadrement + event.participations([constant('App\\Entity\\EventParticipation::ROLE_COENCADRANT'), constant('App\\Entity\\EventParticipation::ROLE_STAGIAIRE'), constant('App\\Entity\\EventParticipation::ROLE_ENCADRANT')]) | length %}
             {% set nPlacesRestantesOnline = max(0, event.joinMax - event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::ROLE_BENEVOLE')]) | length) %}
             {% set nEnAttente = event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length %}
 
@@ -1054,10 +1087,8 @@
 
                                     {{ easy_include('formalites-inscription', 'formalites') }}
 
-                                    <form id="join_sortie" action="{{ app.request.requestUri }}#inscription" method="post" class="loading">
-
-                                        <input type="hidden" name="operation" value="user_join" />
-                                        <input type="hidden" name="id_evt" value="{{ event.id }}" />
+                                    <form id="join_sortie" action="{{ path('join_event', {id: event.id}) }}" method="post" class="loading">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token('join_event') }}" />
 
                                         <div class="check-nice ">
                                             <p>
@@ -1110,8 +1141,8 @@
                                         </div>
 
                                         <p style="text-align:center">
-                                            <label for="name">Ajouter un message à votre demande (facultatif) :</label><br>
-                                            <textarea name="message" placeholder="Par exemple :
+                                            <label for="message">Ajouter un message à votre demande (facultatif) :</label><br>
+                                            <textarea id="message" name="message" placeholder="Par exemple :
 - J'ai tel niveau et telle expérience
 - J'ai une voiture avec 4 places dispos
 - Je n'ai pas de crampons, ce n'est pas mentionné, est-ce critique ?" class="type1" style="width:50%; height:100px"></textarea>

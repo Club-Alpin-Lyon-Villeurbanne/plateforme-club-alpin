@@ -9,6 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -85,7 +86,7 @@ SQL;
         }
     }
 
-    public function getFiliations(User $user)
+    public function getFiliations(UserInterface $user)
     {
         if (!$user->getCafnum()) {
             return [];
@@ -94,6 +95,18 @@ SQL;
         return $this->createQueryBuilder('u')
             ->where('u.cafnumParent = :cafNum')
             ->setParameter('cafNum', $user->getCafnum())
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function getNomads(UserInterface $user)
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.valid = true')
+            ->andWhere('u.nomade = true')
+            ->andWhere('u.nomadeParent = :user')
+            ->setParameter('user', $user)
             ->getQuery()
             ->getResult()
         ;
@@ -165,5 +178,21 @@ SQL;
             ])
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function findUsersToRegister(array $participants, string $show = 'valid')
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->where('u NOT IN (:users)')
+            ->setParameter('users', $participants)
+        ;
+        if ('valid' === $show) {
+            $qb
+                ->andWhere('u.doitRenouveler = false')
+                ->andWhere('u.nomade = false')
+            ;
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }
