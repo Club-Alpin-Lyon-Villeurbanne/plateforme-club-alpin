@@ -6,17 +6,6 @@ $evt = false;
 $id_evt = null;
 $errPage = false; // message d'erreur spécifique à la page courante si besoin
 
-if ('feuille-de-sortie' == $p1) {
-    $type = strstr($p2, '-', true);
-    switch ($type) {
-        case 'evt':
-            $id_evt = (int) substr(strrchr($p2, '-'), 1);
-            break;
-        default:
-            break;
-    }
-}
-
 if ($id_evt) {
     // selection complete, non conditionnelle par rapport au statut
     $req = "SELECT

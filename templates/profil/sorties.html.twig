@@ -43,6 +43,8 @@
                                     <p class="alerte">En attente de publication</p>
                                 {% elseif event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
                                     <p class="info">Publiée et validée par le président</p>
+                                {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_UNSEEN') %}
+                                    <p class="alerte">En attente de publication</p>
                                 {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE') %}
                                     <p class="alerte">Publiée non validée par le président</p>
                                 {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_REFUSE') %}

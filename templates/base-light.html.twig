@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ sitename }} - {% block title %}Accueil{% endblock %}</title>
+    <base href="{{ url('legacy_root') }}" />
+    <meta name="description" content="{% block meta_description %}Site officiel du {{ sitename }} : activités sportives été et hiver, alpinisme, randonnée, ski, refuges...{% endblock %}">
+    <meta name="viewport" content="width=1000">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ app.request.uri }}" />
+    <meta property="og:site_name" content="{{ sitename }}" />
+    {% block og_markup %}
+        <meta property="og:title" content="{{ sitename }}" />
+        <meta property="og:description" content="{{ block('meta_description') }}" />
+    {% endblock %}
+
+    {% if google_site_verification != "" %}
+        <meta name="google-site-verification" content="{{ google_site_verification }}" />
+    {% endif %}
+
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ url_site }}/rss.xml?mode=articles" />
+
+    {% block stylesheets %}
+        {% include 'stylesheets.html.twig' %}
+    {% endblock %}
+
+    <script>
+        localStorage.setItem('jwt', "{{ jwt_token()|e('js') }}")
+    </script>
+
+    {% block scripts %}
+        {% include 'javascripts.html.twig' %}
+    {% endblock %}
+</head>
+<body id="feuille-de-sortie">
+    {% block body %}{% endblock %}
+</body>
+</html>

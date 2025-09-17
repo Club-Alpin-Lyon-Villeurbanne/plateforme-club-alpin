@@ -5,4 +5,4 @@
 # https://developers.clever-cloud.com/doc/administrate/cron/#access-environment-variables
 
 cd ${APP_HOME}
-bin/console rappels
+bin/console event-to-publish-reminder-cron
