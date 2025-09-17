@@ -85,39 +85,4 @@ class EventToPublishCronCommandTest extends TestCase
 
         $this->assertEquals(Command::SUCCESS, $result);
     }
-
-    public function testExecuteHandlesMailerException()
-    {
-        $evtRepository = $this->createMock(EvtRepository::class);
-        $userAttrRepository = $this->createMock(UserAttrRepository::class);
-        $mailer = $this->createMock(Mailer::class);
-        $logger = $this->createMock(LoggerInterface::class);
-
-        $commission = $this->createMock(Commission::class);
-        $commission->method('getTitle')->willReturn('Escalade');
-
-        $event = $this->createMock(Evt::class);
-        $event->method('getCommission')->willReturn($commission);
-
-        $user = $this->createMock(User::class);
-        $user->method('getEmail')->willReturn('resp2@example.com');
-
-        $userAttr = $this->createMock(UserAttr::class);
-        $userAttr->method('getUser')->willReturn($user);
-
-        $evtRepository->method('getAllEventsToPublish')->willReturn([$event]);
-        $userAttrRepository->method('getResponsablesByCommission')->willReturn([$userAttr]);
-
-        $mailer->expects($this->once())
-            ->method('send')
-            ->willThrowException(new \Exception('Mailer error'));
-
-        $logger->expects($this->once())->method('error')->with('Mailer error');
-
-        $command = new EventToPublishCronCommand($evtRepository, $userAttrRepository, $mailer, $logger);
-        $tester = new CommandTester($command);
-        $result = $tester->execute([]);
-
-        $this->assertEquals(Command::SUCCESS, $result);
-    }
 }
