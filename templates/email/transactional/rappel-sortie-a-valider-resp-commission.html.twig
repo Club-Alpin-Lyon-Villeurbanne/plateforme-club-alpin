@@ -9,16 +9,16 @@
         Vous êtes responsable de commission, et il y a {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} en attente de publication.
     </p>
     <p>
-        Prenez soin de vous rendre sur <a href="{{ url('legacy_root') }}gestion-des-sorties.html">votre page de gestion</a>,
+        Prenez soin de vous rendre sur <a href="{{ url('manage_events') }}">votre page de gestion</a>,
         et de vérifier attentivement toutes les informations liées à chaque sortie en attente de publication.
     </p>
     <p>
-        Vous disposez d'un accès réservé à chaque fiche évènement avant la publication.
+        Vous disposez d'un accès réservé à chaque page de sortie avant la publication.
     </p>
     <h2>Sorties en attente :</h2>
     <ul>
         {% for sortie in sorties %}
-            <li><a href="{{ sortie.url }}">{{ sortie.name }}</a></li>
+            <li><a href="{{ url('sortie', {'code': sortie.code, 'id': sortie.id}) }}">{{ sortie.titre }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}
@@ -26,13 +26,13 @@
 {% block inner_txt %}
     Vous êtes responsable de commission, et il y a {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} en attente de publication.
 
-    Prenez soin de vous rendre sur votre page de gestion [{{ url('legacy_root') }}gestion-des-sorties.html],
+    Prenez soin de vous rendre sur votre page de gestion [{{ url('manage_events') }}],
     et de vérifier attentivement toutes les informations liées à chaque sortie en attente de publication.
 
-    Vous disposez d'un accès réservé à chaque fiche évènement avant la publication.
+    Vous disposez d'un accès réservé à chaque page de sortie avant la publication.
 
     Sorties en attente :
     {% for sortie in sorties %}
-        - {{ sortie.name }}[sortie.url]
+        - {{ sortie.titre }}[{{ url('sortie', {'code': sortie.code, 'id': sortie.id}) }}]
     {% endfor %}
 {% endblock %}
