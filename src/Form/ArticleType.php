@@ -123,7 +123,7 @@ class ArticleType extends AbstractType
                 'label' => 'Contenu',
                 'required' => true,
                 'attr' => [
-                    'class' => 'type1 wide ckeditor',
+                    'class' => 'type1 wide tinymce ckeditor',
                     'rows' => 15,
                     'style' => 'width: 615px; min-height:300px',
                 ],
