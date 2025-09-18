@@ -293,3 +293,13 @@ services:
       $editoLineLink: '%env(EDITO_LINE_LINK)%'
       $imageRightLink: '%env(IMAGE_RIGHT_LINK)%'
     tags: ['controller.service_arguments']
+
+  App\Helper\CarbonCostHelper:
+    arguments:
+      $trainRate: '%env(TRAIN_CARBON_COST_RATE)%'
+      $thermicCoachRate: '%env(THERMIC_COACH_CARBON_COST_RATE)%'
+      $bikeRate: '%env(BIKE_CARBON_COST_RATE)%'
+      $walkRate: '%env(WALK_CARBON_COST_RATE)%'
+      $thermicCarpoolingRate: '%env(THERMIC_CARPOOLING_CARBON_COST_RATE)%'
+      $electricCarpoolingRate: '%env(ELECTRIC_CARPOOLING_CARBON_COST_RATE)%'
+      $planeRate: '%env(PLANE_CARBON_COST_RATE)%'

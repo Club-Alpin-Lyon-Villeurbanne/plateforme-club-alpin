@@ -953,6 +953,14 @@
                 <li><b>NOMBRE TOTAL DE PLACES :</b> {{ event.ngensMax }}
                 <li><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}
             </ul>
+            <hr />
+
+            <ul class="nice-list">
+                {% if event.mainTransportMode %}
+                    <li class="wide"><b>MODE DE TRANSPORT :</b> {{ event.mainTransportMode|trans }}</li>
+                    <li class="wide"><b>COÛT CO2e / PERSONNE :</b> {{ event.carbonCost }}</li>
+                {% endif %}
+            </ul>
 
             <br style="clear:both" /><hr />
 
