@@ -58,7 +58,7 @@ if (!$civ_user) {
 }
 if (!$cafnum_user) {
     $errTab[] = "Numéro d'adhérent manquant ou invalide";
-} else {
+} elseif (!$id_user) {
     $reqmail = 'SELECT COUNT(*) FROM caf_user WHERE cafnum_user = ?';
     $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($reqmail);
     $stmt->bind_param('s', $cafnum_user);
@@ -78,7 +78,7 @@ if (!$lastname_user) {
 }
 if ($email_user && !filter_var($email_user, \FILTER_VALIDATE_EMAIL)) {
     $errTab[] = "L'adresse email est invalide";
-} else {
+} elseif (!$id_user) {
     $reqmail = 'SELECT COUNT(*) FROM caf_user WHERE email_user = ?';
     $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($reqmail);
     $stmt->bind_param('s', $email_user);
