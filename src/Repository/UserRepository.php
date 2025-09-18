@@ -150,8 +150,8 @@ SQL;
     public function findDuplicateUser(string $lastname, string $firstname, string $birthday, string $excludeCafnum): ?User
     {
         return $this->createQueryBuilder('u')
-            ->where('u.lastname like :lastname')
-            ->andWhere('u.firstname like :firstname')
+            ->where('LOWER(u.lastname) = LOWER(:lastname)')
+            ->andWhere('LOWER(u.firstname) = LOWER(:firstname)')
             ->andWhere('u.birthday = :birthday')
             ->andWhere('u.cafnum != :excludeCafnum')
             ->andWhere('u.isDeleted = false')
