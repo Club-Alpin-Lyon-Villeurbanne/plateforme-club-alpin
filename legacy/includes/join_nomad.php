@@ -60,7 +60,7 @@ if (user()) {
 					} ?>>- Non merci, créer un nouvel adhérent nomade</option>
 					<?php
 					            // liste des adhérents (table user) créés par moi
-					$req = 'SELECT  id_user, cafnum_user, firstname_user, lastname_user, civ_user
+					$req = 'SELECT  id_user, cafnum_user, firstname_user, lastname_user, birthday_user, civ_user
 								, created_user, tel_user, tel2_user, email_user
 						FROM  caf_user
 						WHERE valid_user=1
@@ -80,6 +80,7 @@ if (user()) {
 								"lastname_user": ' . json_encode(strtoupper($row['lastname_user']), \JSON_THROW_ON_ERROR) . ',
 								"tel_user": ' . json_encode($row['tel_user'], \JSON_THROW_ON_ERROR) . ',
 								"tel2_user": ' . json_encode($row['tel2_user'], \JSON_THROW_ON_ERROR) . ',
+								"birthday_user": ' . json_encode(date('d/m/Y', $row['birthday_user']), \JSON_THROW_ON_ERROR) . ',
 								"email_user": ' . json_encode($row['email_user'], \JSON_THROW_ON_ERROR) . '
 							};
 						</script>';
@@ -90,7 +91,7 @@ if (user()) {
 
 
 			<div class="tiers clear">
-				<b>Numéro de licence FFCAM :</b><br />
+				<b>Numéro de licence FFCAM * :</b><br />
 				<input type="text" name="cafnum_user" class="type1" value="<?php echo inputVal('cafnum_user', ''); ?>" placeholder="Requis" style="width:90%" />
 			</div>
 
@@ -107,13 +108,17 @@ if (user()) {
 			</div>
 
 			<div class="tiers clear">
-				<b>Nom :</b><br />
+				<b>Nom * :</b><br />
 				<input type="text" name="lastname_user" class="type1" value="<?php echo inputVal('lastname_user', ''); ?>" placeholder="Requis" style="width:90%" />
 			</div>
 			<div class="tiers">
-				<b>Prenom :</b><br />
+				<b>Prénom * :</b><br />
 				<input type="text" name="firstname_user" class="type1" value="<?php echo inputVal('firstname_user', ''); ?>" placeholder="Requis" style="width:90%" />
 			</div>
+            <div class="tiers">
+                <b>Date de naissance * :</b><br />
+                <input type="text" name="birthday_user" class="type1" value="<?php echo inputVal('birthday_user', ''); ?>" placeholder="jj/mm/aaaa" style="width:90%" />
+            </div>
 
 			<div class="tiers clear">
 				<b>Rôle sur cette sortie :</b><br />
@@ -167,6 +172,7 @@ if (user()) {
 					$('input[name=tel_user]').val(			tmpPrefilled.tel_user 		)			.attr('readonly', 'readonly');
 					$('input[name=tel2_user]').val(			tmpPrefilled.tel2_user 		)			.attr('readonly', 'readonly');
 					$('input[name=email_user]').val(		tmpPrefilled.email_user 		)		.attr('readonly', 'readonly');
+                    $('input[name=birthday_user]').val(		tmpPrefilled.birthday_user 		)		.attr('readonly', 'readonly');
 				}
 				// sinon : raz
 				else{
