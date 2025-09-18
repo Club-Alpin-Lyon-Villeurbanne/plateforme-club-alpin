@@ -95,6 +95,22 @@ jobs:
             exit 1
           fi
 
+      # Déploiement sur Clever Cloud
+      # ⚠️ IMPORTANT - TOKEN CLEVER CLOUD:
+      # - Le token est NOMINATIF et lié à un compte personnel (pas de compte service)
+      # - Le token est PARTAGÉ pour TOUS les clubs ET tous les environnements (dev, staging, prod)
+      # - Validité: 1 AN seulement - RENOUVELLEMENT OBLIGATOIRE avant expiration
+      # - À renouveler IMMÉDIATEMENT si la personne quitte le projet
+      #
+      # Pour renouveler le token:
+      # 1. Se connecter sur https://console.clever-cloud.com
+      # 2. Aller dans Profile > Tokens
+      # 3. Créer un nouveau token et noter la date d'expiration
+      # 4. Mettre à jour les secrets CLEVER_TOKEN et CLEVER_SECRET dans GitHub
+      # 5. Documenter le changement et la nouvelle date d'expiration
+      #
+      # Date d'expiration actuelle: À DOCUMENTER
+      # Responsable du token: À DOCUMENTER
       - name: Deploy to Clever Cloud
         id: deploy
         uses: 47ng/actions-clever-cloud@v2.0.0
