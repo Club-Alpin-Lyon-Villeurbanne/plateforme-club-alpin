@@ -14,6 +14,7 @@ $tel_user = stripslashes($_POST['tel_user']);
 $tel2_user = stripslashes($_POST['tel2_user']);
 $email_user = stripslashes($_POST['email_user']);
 $role_evt_join = stripslashes($_POST['role_evt_join']);
+$birthday_user = trim(stripslashes($_POST['birthday_user']));
 
 // suis-je encadrant sur cette sortie ?
 $suis_encadrant = false;
@@ -93,22 +94,29 @@ if ($email_user && !filter_var($email_user, \FILTER_VALIDATE_EMAIL)) {
 if (!$role_evt_join) {
     $errTab[] = 'Merci de renseigner le champ <i>rôle</i>';
 }
+// date de naissance :
+if (!preg_match('#[0-9]{2}/[0-9]{2}/[0-9]{4}#', $birthday_user)) {
+    $errTab[] = 'La date de naissance doit être au format jj/mm/aaaa.';
+}
 
 if (!isset($errTab) || 0 === count($errTab)) {
     // si pas d'ID user spécifié, on crée ce nomade
     if (!$id_user) {
         $nickname_user = NicknameGenerator::generateNickname($firstname_user, $lastname_user);
 
+        $tab = explode('/', $birthday_user);
+        $birthday_user = mktime(0, 0, 0, $tab[1], $tab[0], $tab[2]);
+
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO caf_user(
             email_user, mdp_user, cafnum_user, firstname_user, lastname_user, nickname_user, created_user, birthday_user, tel_user, tel2_user, adresse_user, cp_user, ville_user, pays_user, civ_user, moreinfo_user, auth_contact_user, valid_user, cookietoken_user, manuel_user, nomade_user, nomade_parent_user, cafnum_parent_user, doit_renouveler_user, alerte_renouveler_user
         ) VALUES (
             ?,
             \'\',
-            ?, ?, ?, ?, ?, NULL, ?, ?, \'\', \'\', \'\', \'\', ?, \'\', \'none\', 1, \'\', 0, 1, ?, NULL, 0, 0
+            ?, ?, ?, ?, ?, ?, ?, ?, \'\', \'\', \'\', \'\', ?, \'\', \'none\', 1, \'\', 0, 1, ?, NULL, 0, 0
         )');
         $current_time = time();
         $parent_id = getUser()->getId();
-        $stmt->bind_param('sssssisssi', $email_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $current_time, $tel_user, $tel2_user, $civ_user, $parent_id);
+        $stmt->bind_param('sssssiisssi', $email_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $current_time, $birthday_user, $tel_user, $tel2_user, $civ_user, $parent_id);
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur SQL';
         } else {
