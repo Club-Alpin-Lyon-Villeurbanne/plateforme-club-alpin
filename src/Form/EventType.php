@@ -392,7 +392,7 @@ class EventType extends AbstractType
                 'label' => false,
                 'required' => true,
                 'attr' => [
-                    'class' => 'type2 wide ckeditor',
+                    'class' => 'type2 wide tinymce ckeditor',
                     'rows' => 15,
                     'style' => 'width:615px; min-height:300px',
                 ],
