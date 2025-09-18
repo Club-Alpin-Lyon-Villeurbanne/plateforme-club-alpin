@@ -1,6 +1,6 @@
 {% extends 'base-light.html.twig' %}
 
-{% block title %}Inscrire un "nomade" à la sortie{% endblock %}
+{% block title %}Inscrire un non-adhérent à la sortie{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -14,7 +14,7 @@
 
 {% block body %}
     <div id="includer-stuff">
-        <h1>Inscrire un "nomade" à cette sortie</h1>
+        <h1>Inscrire un non-adhérent à cette sortie</h1>
         {{ easy_include('explication-nomades', '') }}
 
         {{ form_start(form, { attr: { class: 'loading' } }) }}
@@ -46,10 +46,6 @@
         </div>
 
         <div class="tiers clear">
-            {{ form_row(form.civ) }}
-        </div>
-
-        <div class="tiers clear">
             {{ form_row(form.lastname) }}
         </div>
 
@@ -57,8 +53,12 @@
             {{ form_row(form.firstname) }}
         </div>
 
+        <div class="tiers">
+            {{ form_row(form.birthdate) }}
+        </div>
+
         <div class="tiers clear">
-            {{ form_row(form.role_evt_join) }}
+            {{ form_row(form.email) }}
         </div>
 
         <div class="tiers">
@@ -69,16 +69,12 @@
             {{ form_row(form.tel2) }}
         </div>
 
-        <div class="tiers">
-            {{ form_row(form.email) }}
-        </div>
-
         <br style="clear:both">
         <br>
 
         <button type="submit" class="biglink">
             <span class="bleucaf">&gt;</span>
-            INSCRIRE CE "NOMADE" À MA SORTIE
+            INSCRIRE CE NON-ADHÉRENT À MA SORTIE
         </button>
 
         {{ form_end(form) }}
@@ -90,7 +86,7 @@
 
             {% for nomad in nomads %}
                 prefilled['{{ nomad.id }}'] = {
-                    'civ_user': '{{ nomad.civ }}',
+                    'birthday_user': '{{ nomad.birthday | date('d/m/Y') }}',
                     'cafnum_user': '{{ nomad.cafnum }}',
                     'firstname_user': '{{ nomad.firstname }}',
                     'lastname_user': '{{ nomad.lastname }}',
@@ -108,8 +104,8 @@
                 const tmpPrefilled = prefilled[id_user];
 
                 if (id_user > 0 && tmpPrefilled) {
-                    document.getElementById('nomade_civ').value = tmpPrefilled.civ_user;
-                    document.getElementById('nomade_civ').setAttribute('readonly', 'readonly');
+                    document.getElementById('nomade_birthdate').value = tmpPrefilled.birthday_user;
+                    document.getElementById('nomade_birthdate').setAttribute('readonly', 'readonly');
 
                     document.getElementById('nomade_cafnum').value = tmpPrefilled.cafnum_user;
                     document.getElementById('nomade_cafnum').setAttribute('readonly', 'readonly');
