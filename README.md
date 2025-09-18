@@ -8,6 +8,18 @@
 ![Database](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+## ⚠️ TOKEN CLEVER CLOUD - ATTENTION CRITIQUE
+
+**🔴 UN SEUL TOKEN PARTAGÉ POUR TOUS LES CLUBS (Lyon, Chambéry, Clermont, etc.)**
+- **Token nominatif** lié à un compte personnel (pas de compte service)
+- **Expire après 1 AN** - Renouveler IMPÉRATIVEMENT avant expiration
+- **Si le détenteur quitte le projet** : Renouveler IMMÉDIATEMENT
+- **Impact** : Une expiration bloque TOUS les déploiements de TOUS les clubs
+
+**Secrets GitHub à maintenir :**
+- `CLEVER_TOKEN` : Token partagé unique
+- `CLEVER_SECRET` : Secret associé
+
 ## 🏔️ À propos
 
 Application web permettant de gérer un Club Alpin Francais! Ce projet est utilisé par plusieurs clubs alpins pour gérer leurs activités, adhérents et sorties.

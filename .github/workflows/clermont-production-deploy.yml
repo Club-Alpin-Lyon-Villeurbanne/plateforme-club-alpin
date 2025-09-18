@@ -1,0 +1,25 @@
+name: Deploy on Production - Clermont-Ferrand 🚀
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy-production.yml
+    with:
+      environment: production-clermont
+      deployment_label: Production - Clermont-Ferrand
+      clever_app_id: ${{ vars.CLERMONT_CLEVER_APP_ID }}
+      last_deployed_variable: CLERMONT_LAST_DEPLOYED_SHA
+      failure_logs_url: ${{ vars.CLERMONT_FAILURE_LOGS_URL }}
+    secrets:
+      # ⚠️ TOKEN PARTAGÉ - Un seul token pour TOUS les clubs (Lyon, Chambéry, Clermont, etc.)
+      # Token nominatif qui expire après 1 AN - Renouveler AVANT expiration
+      # Si le détenteur quitte le projet, renouveler IMMÉDIATEMENT
+      clever_token: ${{ secrets.CLEVER_TOKEN }}
+      clever_secret: ${{ secrets.CLEVER_SECRET }}
+      slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
