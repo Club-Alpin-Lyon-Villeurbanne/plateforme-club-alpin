@@ -71,7 +71,6 @@ const editorConfig = {
 			'redo',
 			'|',
 			'heading',
-			'style',
 			'|',
 			'fontSize',
 			'fontFamily',
