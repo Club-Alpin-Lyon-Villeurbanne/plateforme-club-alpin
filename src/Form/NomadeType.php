@@ -26,10 +26,10 @@ class NomadeType extends AbstractType
                 'placeholder' => '- Non merci, créer un nouvel adhérent nomade',
                 'choices' => $options['existing_users'],
                 'choice_label' => fn ($user) => sprintf(
-                    '%s - %s %s - le %s',
-                    $user->getCafnum(),
-                    ucfirst($user->getFirstname()),
+                    '%s %s - %s - le %s',
                     strtoupper($user->getLastname()),
+                    ucfirst($user->getFirstname()),
+                    $user->getCafnum(),
                     date('d/m/y', $user->getCreated())
                 ),
                 'choice_value' => fn ($user) => $user?->getId(),
