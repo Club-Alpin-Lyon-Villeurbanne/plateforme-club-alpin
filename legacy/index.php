@@ -7,7 +7,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 require __DIR__ . '/app/includes.php';
 
 // ________________________________________________ TRAITEMENT AJAX
-if (isset($_GET['ajx'])) {
+if (isset($_GET['ajx']) && !strpos($_GET['ajx'], '../')) {
     require __DIR__ . '/app/ajax/' . $_GET['ajx'] . '.php';
     exit;
 }
