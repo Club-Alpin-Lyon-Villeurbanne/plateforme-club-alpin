@@ -33,9 +33,13 @@ on:
       slack_webhook:
         description: Slack webhook URL
         required: true
-      github_token:
-        description: Token used to update repository variables (defaults to github.token)
+      gh_pat:
+        description: Personal Access Token for updating repository variables (optional)
         required: false
+
+permissions:
+  contents: read
+  actions: write
 
 jobs:
   deploy-to-clevercloud:
@@ -47,15 +51,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Récupération du dernier SHA déployé
       - name: Fetch last deployed SHA
         id: last-deployed-sha
         env:
           TARGET_VARIABLE: ${{ inputs.last_deployed_variable }}
-          GITHUB_TOKEN: ${{ secrets.github_token != '' && secrets.github_token || github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           tmp=$(mktemp)
           status=$(curl -sS \
-            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             -o "$tmp" -w "%{http_code}" \
             "https://api.github.com/repos/${{ github.repository }}/actions/variables/$TARGET_VARIABLE")
@@ -69,6 +74,7 @@ jobs:
           rm -f "$tmp"
           echo "sha=$value" >> "$GITHUB_OUTPUT"
 
+      # Obtention des informations sur les commits pour les inclure dans la notification
       - name: Get commit info
         id: commit-info
         env:
@@ -77,17 +83,28 @@ jobs:
           LAST_DEPLOYED_SHA="${LAST_DEPLOYED_SHA:-}"
 
           if [ -n "$LAST_DEPLOYED_SHA" ] && git rev-parse --verify "$LAST_DEPLOYED_SHA" >/dev/null 2>&1; then
-            CHANGES=$(git log "$LAST_DEPLOYED_SHA..HEAD" --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | tr '\n' '\\n')
+            # Si un hash existe et est valide, on récupère les commits depuis ce hash
+            CHANGES=$(git log "$LAST_DEPLOYED_SHA..HEAD" --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g')
+            # Utiliser une méthode plus fiable pour gérer les sauts de ligne
+            echo "changes<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           else
-            CHANGES=$(git log -5 --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | tr '\n' '\\n')
+            # Sinon, on récupère les 5 derniers commits
+            CHANGES=$(git log -5 --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g')
+            # Utiliser une méthode plus fiable pour gérer les sauts de ligne
+            echo "changes<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           fi
 
-          echo "changes=$CHANGES" >> "$GITHUB_OUTPUT"
-          echo "author=$(git log -1 --pretty=format:'%an')" >> "$GITHUB_OUTPUT"
-          echo "message=$(git log -1 --pretty=format:'%s')" >> "$GITHUB_OUTPUT"
-          echo "sha_short=$(git log -1 --pretty=format:'%h')" >> "$GITHUB_OUTPUT"
-          echo "sha_full=$(git log -1 --pretty=format:'%H')" >> "$GITHUB_OUTPUT"
+          # Informations sur le commit actuel
+          echo "author=$(git log -1 --pretty=format:'%an')" >> $GITHUB_OUTPUT
+          echo "message=$(git log -1 --pretty=format:'%s')" >> $GITHUB_OUTPUT
+          echo "sha_short=$(git log -1 --pretty=format:'%h')" >> $GITHUB_OUTPUT
+          echo "sha_full=$(git log -1 --pretty=format:'%H')" >> $GITHUB_OUTPUT
 
+      # Validation des changements
       - name: Validate changes
         run: |
           if [ -z "${{ steps.commit-info.outputs.changes }}" ]; then
@@ -108,9 +125,6 @@ jobs:
       # 3. Créer un nouveau token et noter la date d'expiration
       # 4. Mettre à jour les secrets CLEVER_TOKEN et CLEVER_SECRET dans GitHub
       # 5. Documenter le changement et la nouvelle date d'expiration
-      #
-      # Date d'expiration actuelle: À DOCUMENTER
-      # Responsable du token: À DOCUMENTER
       - name: Deploy to Clever Cloud
         id: deploy
         uses: 47ng/actions-clever-cloud@v2.0.0
@@ -121,19 +135,24 @@ jobs:
           CLEVER_TOKEN: ${{ secrets.clever_token }}
           CLEVER_SECRET: ${{ secrets.clever_secret }}
 
+      # Mise à jour du hash du dernier commit déployé
+      # NOTE: Cette étape nécessite un Personal Access Token avec les permissions 'repo' et 'actions:write'
+      # Le github.token par défaut n'a pas les permissions pour modifier les variables
       - name: Update last deployed SHA
         if: success()
         env:
           TARGET_VARIABLE: ${{ inputs.last_deployed_variable }}
           SHA: ${{ steps.commit-info.outputs.sha_full }}
-          GITHUB_TOKEN: ${{ secrets.github_token != '' && secrets.github_token || github.token }}
+          GITHUB_TOKEN: ${{ secrets.gh_pat || github.token }}
         run: |
+          # Mise à jour de la variable
           curl -X PATCH \
-            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             -d "{\"value\":\"$SHA\"}" \
             "https://api.github.com/repos/${{ github.repository }}/actions/variables/$TARGET_VARIABLE"
 
+      # Notification Slack en cas de succès
       - name: Slack notification - Success
         if: success()
         uses: rtCamp/action-slack-notify@v2
@@ -141,7 +160,7 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
           SLACK_CHANNEL: deployments
           SLACK_COLOR: good
-          SLACK_ICON_EMOJI: ':rocket:'
+          SLACK_ICON: https://clever-cloud.com/favicon.ico
           SLACK_TITLE: ${{ format('✅ Déploiement réussi sur {0}', inputs.deployment_label) }}
           SLACK_MESSAGE: |
             *Changements déployés:*
@@ -161,6 +180,7 @@ jobs:
           SLACK_FOOTER: 'Clever Cloud Deployment'
           MSG_MINIMAL: false
 
+      # Notification Slack en cas d'échec
       - name: Slack notification - Failure
         if: failure()
         uses: rtCamp/action-slack-notify@v2
@@ -168,7 +188,7 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.slack_webhook }}
           SLACK_CHANNEL: deployments
           SLACK_COLOR: danger
-          SLACK_ICON_EMOJI: ':rocket:'
+          SLACK_ICON: https://clever-cloud.com/favicon.ico
           SLACK_TITLE: ${{ format('❌ Échec du déploiement sur {0}', inputs.deployment_label) }}
           SLACK_MESSAGE: |
             *Changements en attente:*
