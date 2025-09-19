@@ -1,9 +1,15 @@
 name: Deploy on Production - Lyon Villeurbanne 🚀
 on:
   workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   deploy-to-clevercloud:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix-prod-')
@@ -23,12 +29,18 @@ jobs:
           
           if [ -n "$LAST_DEPLOYED_SHA" ] && git rev-parse --verify "$LAST_DEPLOYED_SHA" >/dev/null 2>&1; then
             # Si un hash existe et est valide, on récupère les commits depuis ce hash
-            CHANGES=$(git log "$LAST_DEPLOYED_SHA..HEAD" --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | tr '\n' '\\n')
-            echo "changes=$CHANGES" >> $GITHUB_OUTPUT
+            CHANGES=$(git log "$LAST_DEPLOYED_SHA..HEAD" --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g')
+            # Utiliser une méthode plus fiable pour gérer les sauts de ligne
+            echo "changes<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           else
             # Sinon, on récupère les 5 derniers commits
-            CHANGES=$(git log -5 --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g' | tr '\n' '\\n')
-            echo "changes=$CHANGES" >> $GITHUB_OUTPUT
+            CHANGES=$(git log -5 --pretty=format:"• %h - %s (%an)" | sed 's/"/\\"/g')
+            # Utiliser une méthode plus fiable pour gérer les sauts de ligne
+            echo "changes<<EOF" >> $GITHUB_OUTPUT
+            echo "$CHANGES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           fi
           
           # Informations sur le commit actuel
@@ -57,12 +69,14 @@ jobs:
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
           
       # Mise à jour du hash du dernier commit déployé
+      # NOTE: Cette étape nécessite un Personal Access Token avec les permissions 'repo' et 'actions:write'
+      # Le github.token par défaut n'a pas les permissions pour modifier les variables
       - name: Update last deployed SHA
-        if: success()
+        if: success() && secrets.GH_PAT != ''
         run: |
           # Mise à jour de la variable LAST_DEPLOYED_SHA
           curl -X PATCH \
-            -H "Authorization: token ${{ github.token }}" \
+            -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
             -H "Accept: application/vnd.github.v3+json" \
             -d "{\"value\":\"${{ steps.commit-info.outputs.sha_full }}\"}" \
             "https://api.github.com/repos/${{ github.repository }}/actions/variables/LAST_DEPLOYED_SHA"
