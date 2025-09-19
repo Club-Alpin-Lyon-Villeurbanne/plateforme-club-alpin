@@ -15,7 +15,6 @@ use App\Security\SecurityConstants;
 	<script type="text/javascript" src="/js/jquery-ui-1.8.16.full.min.js"></script>
 	<script type="text/javascript" src="/js/jquery.easing.1.3.js"></script>
 	<script type="text/javascript" src="/js/jquery.color.js"></script>
-	<script type="text/javascript" src="/js/jquery.pngFix.pack.js"></script>
 	<!-- fancybox -->
     <script type="text/javascript" src="/tools/_fancybox/jquery.fancybox-1.3.4.pack.js"></script>
 	<script type="text/javascript" src="/tools/_fancybox/jquery.mousewheel-3.0.4.pack.js"></script>

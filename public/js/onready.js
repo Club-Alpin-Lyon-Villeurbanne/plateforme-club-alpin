@@ -90,9 +90,7 @@ $().ready(function() {
 	$(spt).after('<a href="mailto:'+addr+'" title="Send an email">'+ addr +'</a>')
 	.hover(function(){window.status="Send a letter!";}, function(){window.status="";});
 	$(spt).remove();
-	// pngfix
-	$(document).pngFix();
-	
+
 	// modif honteuse des liens blank
 	$('a.blank').mouseenter(function(){				$(this).attr("target","blank");			});
 	$('a.blank').mouseleave(function(){				$(this).removeAttr("target");			});

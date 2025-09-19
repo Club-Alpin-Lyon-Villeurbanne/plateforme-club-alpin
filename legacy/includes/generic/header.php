@@ -61,13 +61,7 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="/js/jquery-1.8.min.js">\x3C/script>')</script>
 	<script type="text/javascript" src="/js/jquery.easing.1.3.js"></script>
-	<script type="text/javascript" src="/js/jquery.pngFix.pack.js"></script>
 	<script type="text/javascript" src="/js/jquery.color.js"></script>
-	<!-- au besoin
-	<script type="text/javascript" src="/js/jquery.animate-shadow-min.js"></script>
-	<script type="text/javascript" src="/js/jquery-1.5.2.min.js"></script>
-	<script type="text/javascript" src="/js/jquery.backgroundPosition.js"></script>
-	-->
 	<!-- fancybox -->
     <script type="text/javascript" src="/tools/fancybox/jquery.fancybox.pack.js"></script>
 	<!-- <script type="text/javascript" src="/tools/fancybox/jquery.mousewheel-3.0.4.pack.js"></script> -->
