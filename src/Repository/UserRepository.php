@@ -107,6 +107,9 @@ SQL;
             ->andWhere('u.nomade = true')
             ->andWhere('u.nomadeParent = :user')
             ->setParameter('user', $user)
+            ->orderBy('u.lastname', 'ASC')
+            ->addOrderBy('u.firstname', 'ASC')
+            ->addOrderBy('u.created', 'DESC')
             ->getQuery()
             ->getResult()
         ;

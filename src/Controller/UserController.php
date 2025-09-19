@@ -286,18 +286,26 @@ class UserController extends AbstractController
                     ->setNomadeParent($this->getUser()->getId())
                     ->setDoitRenouveler(false)
                     ->setAlerteRenouveler(false)
+                    ->setCreated(time())
+                    ->setTsInsert(time())
+                    ->setTsUpdate(time())
                     ->setCookietoken('')
                     ->setAuthContact('none')
                     ->setAlertSortiePrefix('')
                     ->setAlertArticlePrefix('')
                 ;
+                $nomad->setBirthday(\DateTime::createFromFormat('d/m/Y', $formData['birthdate'])?->getTimestamp());
+                // forcer null pour éviter de pêter la contrainte d'unicité
+                if (empty($nomad->getEmail())) {
+                    $nomad->setEmail(null);
+                }
                 $entityManager->persist($nomad);
             }
 
-            $event->addParticipation($nomad, $formData['role_evt_join']);
+            $event->addParticipation($nomad, EventParticipation::ROLE_MANUEL);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Le "nomade" a bien été inscrit à la sortie.');
+            $this->addFlash('success', 'Le non-adhérent a bien été inscrit à la sortie.');
 
             return new Response(
                 '<script>
