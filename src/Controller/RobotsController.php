@@ -36,17 +36,6 @@ class RobotsController
             'User-agent: *',
             '',
             'Disallow: /admin/',
-            'Disallow: /app/',
-            'Disallow: /config/',
-            'Disallow: /css/',
-            'Disallow: /fonts/',
-            'Disallow: /ftp/',
-            'Disallow: /img/',
-            'Disallow: /IMG/',
-            'Disallow: /js/',
-            'Disallow: /scripts/',
-            'Disallow: /templates/',
-            'Disallow: /tools/',
             'Sitemap: ' . $baseUrl . '/sitemap.xml',
         ];
 
