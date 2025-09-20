@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$is_covoiturage = $evtUrl = $evtName = $inscrits = $evtDate = $commissionTitle = null;
+$is_covoiturage = $evtUrl = $evtName = $inscrits = $evtDate = $commissionTitle = $paymentUrl = null;
 $auto_accept = false;
 
 // Filiations
@@ -278,7 +278,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
         // infos sur la sortie
         $evt = [];
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_evt, code_evt, titre_evt, tsp_evt, title_commission '
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_evt, code_evt, titre_evt, tsp_evt, title_commission, has_payment_form, has_payment_send_mail, payment_url '
         . 'FROM caf_evt AS e '
         . 'INNER JOIN caf_commission AS c ON (c.id_commission = e.commission_evt) '
         . 'WHERE id_evt = ? '
@@ -295,6 +295,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $evtName = $evt['titre_evt'];
         $evtDate = date('d/m/Y', $evt['tsp_evt']);
         $commissionTitle = $evt['title_commission'];
+        if ($evt['has_payment_form'] && $evt['has_payment_send_mail']) {
+            $paymentUrl = $evt['payment_url'];
+        }
 
         // infos sur ce nouvel inscrit
         $inscrits = [];
@@ -368,6 +371,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
                 'event_url' => $evtUrl,
                 'event_date' => $evtDate,
                 'commission' => $commissionTitle,
+                'hello_asso_url' => $paymentUrl,
             ]);
         } elseif (!$filiations) {
             // inscription simple de moi à moi

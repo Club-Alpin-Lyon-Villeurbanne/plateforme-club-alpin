@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\EventParticipationRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -123,12 +124,16 @@ class EventParticipation implements \JsonSerializable
     #[SerializedName('proposeCovoiturage')]
     private $isCovoiturage;
 
+    #[ORM\Column(name: 'has_paid', type: Types::BOOLEAN, nullable: false, options: ['default' => false])]
+    private bool $hasPaid = false;
+
     public function __construct(Evt $event, User $user, string $role, int $status)
     {
         $this->evt = $event;
         $this->user = $user;
         $this->role = $role;
         $this->status = $status;
+        $this->hasPaid = false;
         $this->tsp = time();
     }
 
@@ -300,6 +305,18 @@ class EventParticipation implements \JsonSerializable
         return $this;
     }
 
+    public function hasPaid(): bool
+    {
+        return $this->hasPaid;
+    }
+
+    public function setHasPaid(bool $hasPaid): self
+    {
+        $this->hasPaid = $hasPaid;
+
+        return $this;
+    }
+
     public function jsonSerialize(): mixed
     {
         return [
@@ -309,6 +326,7 @@ class EventParticipation implements \JsonSerializable
             'role' => $this->role,
             'status' => $this->status,
             'isCovoiturage' => $this->isCovoiturage,
+            'hasPaid' => $this->hasPaid,
         ];
     }
 }
