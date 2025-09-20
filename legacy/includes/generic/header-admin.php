@@ -11,7 +11,7 @@ use App\Security\SecurityConstants;
 	<link rel="stylesheet" href="/tools/_fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 
     <!-- jquery -->
-	<script type="text/javascript" src="/js/jquery-1.8.min.js"></script>
+	<script type="text/javascript" src="/js/jquery-1.12.4.min.js"></script>
 	<script type="text/javascript" src="/js/jquery-ui-1.8.16.full.min.js"></script>
 	<script type="text/javascript" src="/js/jquery.easing.1.3.js"></script>
 	<script type="text/javascript" src="/js/jquery.color.js"></script>

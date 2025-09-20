@@ -25,7 +25,7 @@ $targetAbs = LegacyContainer::get('legacy_router')->generate('legacy_root', [], 
             <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('admin-styles'); ?>
             <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>
 			<!-- jquery -->
-			<script type="text/javascript" src="/js/jquery-1.8.min.js"></script>
+			<script type="text/javascript" src="/js/jquery-1.12.4.min.js"></script>
 
 		</head>
 		<body class="ftp-frame">
