@@ -29,12 +29,5 @@ use App\Security\SecurityConstants;
 		<!-- script admin -->
 		<script src="/js/fonctionsAdmin.js" type="text/javascript"></script>
 	<?php } ?>
-	<!-- cufon
-    <script type="text/javascript">
-		// CUFON
-		Cufon.replace('h1:not(.nocufon)', { fontFamily: 'Myriad Pro' });
-		Cufon.replace('.cufon');
-    </script>
-	-->
 	<!-- on ready -->
     <script src="/js/onready.js" type="text/javascript"></script>
