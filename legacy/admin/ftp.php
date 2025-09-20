@@ -45,7 +45,7 @@ if (!isset($_GET['dossier'])) {
 		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
 
 		<!-- jquery -->
-		<script type="text/javascript" src="/js/jquery-1.5.2.min.js"></script>
+		<script type="text/javascript" src="/js/jquery-1.8.min.js"></script>
 		<script type="text/javascript" src="/js/fonctionsAdmin.js"></script>
 		<script type="text/javascript" src="/admin/ftp.js"></script>
 		<!-- fancybox -->

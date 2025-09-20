@@ -185,7 +185,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
         // OUTIL : MONTRER/AFFIHCER
 
         // action lors du submit
-        $('.ajaxform').live('submit', function(){
+        $(document).on('submit', '.ajaxform', function(){
 
             // vars
             var datas='';

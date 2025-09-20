@@ -59,7 +59,7 @@ if (isGranted(SecurityConstants::ROLE_ADMIN) || isGranted(SecurityConstants::ROL
             <script type="text/javascript" src="/tools/tinymce/tiny_mce_popup.js"></script>
 
             <!-- jquery
-            <script type="text/javascript" src="/js/jquery-1.5.2.min.js"></script>
+            <script type="text/javascript" src="/js/jquery-1.8.min.js"></script>
             -->
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
             <script type="text/javascript" src="/js/fonctionsAdmin.js"></script>

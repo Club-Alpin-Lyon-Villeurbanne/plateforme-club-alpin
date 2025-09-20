@@ -207,7 +207,7 @@ $().ready(function() {
 	});
 	
 	// FORMULAIRES EN AJAX
-	$('.ajaxform').live('submit', function(){
+	$(document).on('submit', '.ajaxform', function(){
 		var form=$(this);
 		form.find('.erreur').fadeOut();
 		

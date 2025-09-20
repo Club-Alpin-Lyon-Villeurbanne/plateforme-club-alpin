@@ -225,7 +225,7 @@ $(window).load(function(){
 		});
 		
 		// CLICK SUR LIENS DROITE : update toute la frame : reload
-		$('#ftp-2-fichiers .line-dir a').live('click', function(){
+		$(document).on('click', '#ftp-2-fichiers .line-dir a', function(){
 			document.location.href='ftp.php?dossier='+encodeURIComponent($(this).attr('href')+'/');
 			return false;
 		});
