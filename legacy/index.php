@@ -7,8 +7,30 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 require __DIR__ . '/app/includes.php';
 
 // ________________________________________________ TRAITEMENT AJAX
-if (isset($_GET['ajx']) && !strpos($_GET['ajx'], '../')) {
-    require __DIR__ . '/app/ajax/' . $_GET['ajx'] . '.php';
+if (isset($_GET['ajx'])) {
+    // Whitelist des fichiers AJAX autorisés
+    $allowed_ajax_files = [
+        'content_html_updatevis',
+        'contenus_save',
+        'formater',
+        'get_content_html',
+        'operations',
+        'pages_reorder',
+        'traductions_save'
+    ];
+
+    // Extraire uniquement le nom du fichier (protection path traversal)
+    // et retirer l'extension .php si présente
+    $ajax_file = basename($_GET['ajx'], '.php');
+
+    // Vérifier que le fichier est dans la whitelist
+    if (!in_array($ajax_file, $allowed_ajax_files, true)) {
+        http_response_code(403);
+        exit('Forbidden');
+    }
+
+    // Inclure le fichier
+    require __DIR__ . '/app/ajax/' . $ajax_file . '.php';
     exit;
 }
 
