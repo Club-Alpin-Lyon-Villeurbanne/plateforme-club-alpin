@@ -123,10 +123,8 @@ if (user()) {
 			<div class="tiers clear">
 				<b>Rôle sur cette sortie :</b><br />
 				<select name="role_evt_join" class="type1" style="width:90%">
-					<option value="manuel">Inscrit (par défaut)</option>
+					<option value="inscrit">Inscrit (par défaut)</option>
 					<option value="benevole">Bénévole</option>
-					<!-- <option value="coencadrant">Co-encadrant</option>
-					<option value="encadrant">Encadrant</option> -->
 				</select>
 			</div>
 			<div class="tiers">
