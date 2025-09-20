@@ -1,0 +1,126 @@
+{% extends 'base-light.html.twig' %}
+
+{% block title %}Inscrire manuellement des adhérents à la sortie{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        tr{			cursor:pointer;	color:gray; background-image:url(img/label-down.png) top left;	}
+        tr.up{		color:black; text-shadow: -1px 0 0px white; outline:1px solid silver;	}
+        tr:hover{	outline:1px solid silver;	}
+        tr input{	display:none;	}
+        tr .tick{	display:none;	}
+        tr .cross{	display:block;	}
+        tr.up .tick{	display:block;	}
+        tr.up .cross{	display:none;	}
+    </style>
+    <link rel="stylesheet" href="/tools/datatables/media/css/jquery.dataTables.sobre.css" type="text/css" media="screen" />
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="/tools/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.datatables').dataTable({
+                "iDisplayLength": 9000,
+                "aLengthMenu": [[-1], ["Tout"]],
+                "aaSorting": [
+                    [3, "asc"],
+                    [4, "asc"]
+                ],
+                "sDom": 'T<"clear">lfrtip'
+            });
+
+            $('tr').live('click', function(){
+                const checkbox = $(this).find('input[type=checkbox]');
+                checkbox.attr('checked', !checkbox.attr('checked'));
+                if(checkbox.attr('checked'))	$(this).find('input[type=hidden]').removeAttr('disabled');
+                else							$(this).find('input[type=hidden]').attr('disabled', 'disabled');
+                $(this).toggleClass('up');
+                return false;
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div id="includer-stuff">
+        <h1>Inscrire manuellement des adhérents à cette sortie</h1>
+
+        <p>
+            <a href="{{ path('event_manual_add_select', {event: event.id, show: 'valid'}) }}"
+               class="boutonFancy"
+               {% if show is same as ('valid') %}style="background:#d3d6ff"{% endif %}>
+            ✔️ Licence valide
+            </a>&nbsp;
+
+            <a href="{{ path('event_manual_add_select', {event: event.id, show: 'all'}) }}"
+               class="boutonFancy"
+               {% if show is same as ('all') %}style="background:#d3d6ff"{% endif %}>
+            📋 Tous les adhérents
+            </a>
+        </p>
+        <br />
+
+        <form action="{{ path('event_manual_add', {event: event.id}) }}" method="post" enctype="multipart/form-data" class="loading">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token('event_manual_add') }}" />
+            <table class="datatables" style="width:100%;">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>n° licence FFCAM</th>
+                    <th>Civ</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Pseudo</th>
+                    <th>Age</th>
+                    <th>Compte activé ?</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    {% set class = 'vis-off' %}
+                    {% if user.valid %}
+                        {% set class = 'vis-on' %}
+                    {% endif %}
+                    <tr id="tr-{{ user.id }}" class="{{ class }}">
+                    <td>
+                        <img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />
+                        <img src="/img/label-down.png" class="cross" alt="OFF" title="" />
+                        <input type="checkbox" name="id_user[]" value="{{ user.id }}" />
+                        <input type="hidden" disabled="disabled" name="civ_user[]" value="{{ user.civ }}" />
+                        <input type="hidden" disabled="disabled" name="lastname_user[]" value="{{ user.lastname }}" />
+                        <input type="hidden" disabled="disabled" name="firstname_user[]" value="{{ user.firstname }}" />
+                        <input type="hidden" disabled="disabled" name="nickname_user[]" value="{{ user.nickname }}" />
+                    </td>
+                    <td>{{ user.cafnum}} </td>
+                    <td>{{ user.civ }}</td>
+                    <td>{{ user.lastname|upper }}</td>
+                    <td>{{ user.firstname }}</td>
+                    <td>
+                        <a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ user.id }}" title="Voir la fiche">
+                            {{ user.nickname }}
+                        </a>
+                    </td>
+                    <td>{{ age_user(user) }}</td>
+                    <td>
+                        {% if user.valid %}
+                            oui
+                        {% else %}
+                            <span style="color: red;" title="Les comptes non activés ne reçoivent pas les e-mails">⚠️ non</span>
+                        {% endif %}
+                    </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <br style="clear:both" />
+            <br />
+            <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+                <span class="bleucaf">&gt;</span>
+                Étape suivante : attribuer les rôles
+            </a>
+        </form>
+    </div>
+{% endblock %}

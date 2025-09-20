@@ -6,12 +6,14 @@ use App\Entity\Commission;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
+use App\Entity\UserAttr;
 use App\Form\EventType;
 use App\Legacy\LegacyContainer;
 use App\Mailer\Mailer;
 use App\Messenger\Message\SortiePubliee;
 use App\Repository\CommissionRepository;
 use App\Repository\EventParticipationRepository;
+use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
 use App\Twig\JavascriptGlobalsExtension;
 use App\UserRights;
@@ -32,6 +34,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class SortieController extends AbstractController
 {
@@ -238,6 +243,20 @@ class SortieController extends AbstractController
         ];
     }
 
+    #[Route(path: '/feuille-de-sortie/evt-{id}.html', name: 'feuille_sortie', requirements: ['id' => '\d+'], methods: ['GET'], priority: '11')]
+    #[Template('sortie/feuille-sortie.html.twig')]
+    public function sortieDetails(
+        Request $request,
+        Evt $event,
+        UserAttrRepository $userAttrRepository,
+    ): array {
+        if (!$this->isGranted('FICHE_SORTIE', $event)) {
+            throw new AccessDeniedHttpException('Not allowed');
+        }
+
+        return $this->eventDetails($request, $event, $userAttrRepository);
+    }
+
     #[Route(name: 'sortie_validate', path: '/sortie/{id}/validate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieValidate(
         Request $request,
@@ -273,9 +292,14 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    #[Route(name: 'sortie_update_inscription', path: '/sortie/{id}/update-inscriptions', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function sortieUpdateInscriptions(#[CurrentUser] User $user, Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
-    {
+    #[Route(path: '/sortie/{id}/update-inscriptions', name: 'sortie_update_inscription', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
+    public function sortieUpdateInscriptions(
+        #[CurrentUser] User $user,
+        Request $request,
+        Evt $event,
+        EntityManagerInterface $em,
+        Mailer $mailer,
+    ): RedirectResponse {
         if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token_inscriptions'))) {
             $this->addFlash('error', 'Jeton de validation invalide.');
 
@@ -419,8 +443,8 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    #[Route(name: 'sortie_refus', path: '/sortie/{id}/refus', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function sortieRefus(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
+    #[Route(path: '/sortie/{id}/refus', name: 'sortie_refus', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
+    public function sortieRefus(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer): RedirectResponse
     {
         if (!$this->isCsrfTokenValid('sortie_refus', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -446,8 +470,8 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    #[Route(name: 'sortie_legal_validate', path: '/sortie/{id}/legal-validate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function sortieLegalValidate(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
+    #[Route(path: '/sortie/{id}/legal-validate', name: 'sortie_legal_validate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
+    public function sortieLegalValidate(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer): RedirectResponse
     {
         if (!$this->isCsrfTokenValid('sortie_legal_validate', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -472,8 +496,8 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    #[Route(name: 'sortie_legal_refus', path: '/sortie/{id}/legal-refus', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function sortieLegalRefus(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer)
+    #[Route(path: '/sortie/{id}/legal-refus', name: 'sortie_legal_refus', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
+    public function sortieLegalRefus(Request $request, Evt $event, EntityManagerInterface $em, Mailer $mailer): RedirectResponse
     {
         if (!$this->isCsrfTokenValid('sortie_legal_refus', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -498,7 +522,80 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    #[Route(name: 'sortie_uncancel', path: '/sortie/{id}/uncancel', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
+    #[Route(path: '/sortie/{id}/supprimer', name: 'delete_event', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function delete(
+        Request $request,
+        Evt $event,
+        EntityManagerInterface $em,
+    ): RedirectResponse {
+        if (!$this->isGranted('SORTIE_DELETE', $event)) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+        }
+
+        if (!$this->isCsrfTokenValid('delete_event', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        $em->remove($event);
+        $em->flush();
+
+        return $this->redirect($this->generateUrl('profil_sorties_self'));
+    }
+
+    #[Route(path: '/sortie/{id}/annuler', name: 'cancel_event', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function cancel(
+        Request $request,
+        Evt $event,
+        EntityManagerInterface $em,
+        Mailer $mailer,
+    ): RedirectResponse {
+        if (!$this->isGranted('SORTIE_CANCEL', $event)) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+        }
+
+        if (!$this->isCsrfTokenValid('cancel_event', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        $message = $request->request->get('msg');
+        if (empty($message)) {
+            $this->addFlash('error', 'Veuillez indiquer la raison de l\'annulation');
+
+            return $this->redirectToRoute('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
+        }
+
+        $event
+            ->setCancelled(true)
+            ->setCancelledWhen(time())
+            ->setCancelledWho($this->getUser())
+        ;
+
+        // message aux participants si la sortie est annulée alors qu'elle est publiée
+        if ($event->isPublicStatusValide()) {
+            // désinscription des participants de la sortie
+            $participants = $event->getParticipations([EventParticipation::ROLE_MANUEL, EventParticipation::ROLE_INSCRIT, EventParticipation::ROLE_BENEVOLE]);
+            foreach ($participants as $participant) {
+                $event->removeParticipation($participant);
+
+                $mailer->send($participant->getUser(), 'transactional/sortie-annulation', [
+                    'event_name' => $event->getTitre(),
+                    'commission' => $event->getCommission()->getTitle(),
+                    'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'event_date' => date('d/m/Y', $event->getTsp()),
+                    'cancel_user_name' => $this->getUser()->getNickname(),
+                    'cancel_user_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'voir-profil/' . $this->getUser()->getId() . '.html',
+                    'message' => $message,
+                ]);
+            }
+        }
+        $em->flush();
+
+        $this->addFlash('info', 'La sortie est annulée');
+
+        return $this->redirectToRoute('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
+    }
+
+    #[Route(path: '/sortie/{id}/uncancel', name: 'sortie_uncancel', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieUncancel(Request $request, Evt $event, EntityManagerInterface $em)
     {
         if (!$this->isCsrfTokenValid('sortie_uncancel', $request->request->get('csrf_token'))) {
@@ -515,13 +612,13 @@ class SortieController extends AbstractController
             ->setCancelledWho(null);
         $em->flush();
 
-        $this->addFlash('info', 'La sortie est re-activée');
+        $this->addFlash('info', 'La sortie est ré-activée');
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    #[Route(name: 'contact_participants', path: '/sortie/{id}/contact-participants', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function contactParticipants(Request $request, Evt $event, Mailer $mailer)
+    #[Route(path: '/sortie/{id}/contact-participants', name: 'contact_participants', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
+    public function contactParticipants(Request $request, Evt $event, Mailer $mailer): RedirectResponse
     {
         if (!$this->isCsrfTokenValid('contact_participants', $request->request->get('csrf_token_contact'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -567,8 +664,8 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    #[Route(name: 'sortie_remove_participant', path: '/sortie/remove-participant/{id}', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function removeParticipant(Request $request, EventParticipation $participation, EntityManagerInterface $em, Mailer $mailer)
+    #[Route(path: '/sortie/remove-participant/{id}', name: 'sortie_remove_participant', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
+    public function removeParticipant(Request $request, EventParticipation $participation, EntityManagerInterface $em, Mailer $mailer): RedirectResponse
     {
         $event = $participation->getEvt();
 
@@ -660,24 +757,31 @@ class SortieController extends AbstractController
         return $this->redirectToRoute('modifier_sortie', ['event' => $newEvent->getId()]);
     }
 
-    #[Route(name: 'sortie_pdf', path: '/sortie/{id}/printPDF', requirements: ['id' => '\d+'])]
-    public function generatePdf(PdfGenerator $pdfGenerator, SluggerInterface $slugger, Evt $event): Response
-    {
-        $legacyDir = __DIR__ . '/../../legacy/';
-        $path = 'index.php';
-        $_GET['p1'] = 'feuille-de-sortie';
-        $_GET['p2'] = 'evt-' . $event->getId();
-        $_GET['titre_evt'] = $event->getTitre();
-        $_GET['tsp_evt'] = $event->getTsp();
+    /**
+     * @throws SyntaxError
+     * @throws RuntimeError
+     * @throws LoaderError
+     */
+    #[Route(path: '/sortie/{id}/printPDF', name: 'sortie_pdf', requirements: ['id' => '\d+'])]
+    public function generatePdf(
+        PdfGenerator $pdfGenerator,
+        SluggerInterface $slugger,
+        Request $request,
+        Environment $twig,
+        UserAttrRepository $userAttrRepository,
+        Evt $event,
+    ): Response {
+        if (!$this->isGranted('FICHE_SORTIE', $event)) {
+            throw new AccessDeniedHttpException('Not allowed');
+        }
 
-        ob_start();
-        require $this->getParameter('kernel.project_dir') . '/legacy/' . $path;
-        $html = ob_get_clean();
+        $eventData = $this->eventDetails($request, $event, $userAttrRepository, true);
+        $html = $twig->render('sortie/feuille-sortie.html.twig', $eventData);
 
         return $pdfGenerator->generatePdf($html, $this->getFilename($event->getTitre(), $slugger) . '.pdf');
     }
 
-    #[Route(name: 'sortie_xlsx', path: '/sortie/{id}/printXLSX', requirements: ['id' => '\d+'])]
+    #[Route(path: '/sortie/{id}/printXLSX', name: 'sortie_xlsx', requirements: ['id' => '\d+'])]
     public function generateXLSX(ExcelExport $excelExport, Evt $event, EventParticipationRepository $participationRepository, SluggerInterface $slugger): Response
     {
         $datas = $participationRepository->getSortedParticipations($event, null, EventParticipation::STATUS_VALIDE, true);
@@ -685,6 +789,249 @@ class SortieController extends AbstractController
         $rsm = [' ', 'PARTICIPANTS (PRÉNOM, NOM)', 'LICENCE', 'AGE', 'TÉL.', 'TÉL. SECOURS', 'EMAIL'];
 
         return $excelExport->export(substr($slugger->slug($event->getTitre(), '-'), 0, 20), $datas, $rsm, $this->getFilename($event->getTitre(), $slugger));
+    }
+
+    #[Route(path: '/sortie/{id}/rejoindre', name: 'join_event', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function join(
+        Request $request,
+        Evt $event,
+        EntityManagerInterface $em,
+        Mailer $mailer,
+        UserRepository $userRepository,
+    ): RedirectResponse {
+        if (!$this->isCsrfTokenValid('join_event', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        if (!$this->isGranted('JOIN_SORTIE', $event)) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+        }
+
+        $data = $request->request->all();
+        $user = $this->getUser();
+        $filiations = $userRepository->getFiliations($user);
+        $affiliatedUserIds = [];
+        foreach ($filiations as $filiation) {
+            $affiliatedUserIds[] = $filiation->getId();
+        }
+        // on s'ajoute dans la liste pour gérer les mises à jour
+        $affiliatedUserIds[] = $user->getId();
+
+        $errTab = [];
+        $hasFiliations = false;
+        $affiliatedJoiningUsers = [];
+        $affiliatedLeavingUsers = [];
+        $is_covoiturage = null;
+
+        // affiliés qu'on inscrit
+        $idUsersFiliations = !empty($data['id_user_filiation']) ? array_map('intval', $data['id_user_filiation']) : [];
+        if (isset($data['filiations']) && 'on' == $data['filiations']) {
+            $hasFiliations = true;
+            foreach ($idUsersFiliations as $id_user_tmp) {
+                $affiliatedJoiningUsers[] = $userRepository->find($id_user_tmp);
+            }
+        }
+
+        // affiliés qu'on désinscrit
+        foreach ($affiliatedUserIds as $affiliatedUserId) {
+            if (!\in_array($affiliatedUserId, $idUsersFiliations, true)) {
+                $affiliatedLeavingUsers[] = $userRepository->find($affiliatedUserId);
+            }
+        }
+
+        $joinMessage = $data['message'];
+
+        // CGUs
+        if (!isset($data['confirm']) || 'on' != $data['confirm']) {
+            $errTab[] = "Merci de cocher la case &laquo; J'ai lu les conditions...&raquo;";
+        }
+
+        // sortie publiée ?
+        if (Evt::STATUS_PUBLISHED_VALIDE !== $event->getStatus()) {
+            $errTab[] = 'Cette sortie ne semble pas publiée, les inscriptions sont impossibles';
+        }
+
+        // verification du timing de la sortie
+        if ($event->hasStarted()) {
+            $errTab[] = 'Cette sortie a déjà démarré';
+        }
+
+        // verification du timing de la sortie : inscriptions
+        if (!$event->joinHasStarted()) {
+            $errTab[] = 'Les inscriptions ne sont pas encore ouvertes';
+        }
+
+        if (empty($errTab)) {
+            $role_evt_join = EventParticipation::ROLE_INSCRIT;
+
+            // Bénévole
+            if (isset($data['jeveuxetrebenevole']) && 'on' == $data['jeveuxetrebenevole']) {
+                $role_evt_join = EventParticipation::ROLE_BENEVOLE;
+            }
+
+            // si filiations : création du tableau des joints et vérifications
+            if ($hasFiliations) {
+                if (!\count($idUsersFiliations)) {
+                    $errTab[] = 'Merci de choisir au moins une personne à inscrire';
+                }
+            }
+
+            // pour chaque id envoyé
+            foreach ($idUsersFiliations as $id_user_tmp) {
+                // sauf moi-meme
+                if ($id_user_tmp != $user->getId()) {
+                    // vérification que c'est bien mon affilié
+                    if (!\in_array($id_user_tmp, $affiliatedUserIds, true)) {
+                        $errTab[] = "ID '" . (int) $id_user_tmp . "' invalide pour l'inscription d'un adhérent affilié";
+                    }
+                }
+            }
+
+            // SI PAS DE PB, INTÉGRATION BDD
+            if (empty($errTab)) {
+                $inscrits = [];
+                $status_evt_join = EventParticipation::STATUS_NON_CONFIRME;
+                $auto_accept = false;
+                $nbNewJoins = 1;
+                if ($hasFiliations) {
+                    $nbNewJoins = \count($idUsersFiliations);
+                }
+
+                // Si auto_accept est activé, vérifier qu'on n'a pas atteint la limite
+                if ($event->isAutoAccept()) {
+                    $ngens_max = $event->getNgensMax();
+                    if ($ngens_max && $ngens_max > 0) {
+                        $current_participants = $event->getParticipationsCount();
+
+                        // Vérifier si on peut accepter assez d'inscriptions
+                        if (($current_participants + $nbNewJoins) < $ngens_max) {
+                            $status_evt_join = EventParticipation::STATUS_VALIDE;
+                            $auto_accept = true;
+                        }
+                    } else {
+                        // Si pas de limite définie, accepter automatiquement
+                        $status_evt_join = EventParticipation::STATUS_VALIDE;
+                        $auto_accept = true;
+                    }
+                    // Si on a atteint la limite, ne pas accepter automatiquement
+                }
+
+                // normal
+                if (!$hasFiliations) {
+                    if (!$user->getDoitRenouveler()) {
+                        $event->addParticipation($user, $role_evt_join, $status_evt_join);
+                        $inscrits[] = $user;
+                    } else {
+                        $this->addFlash('error', 'Votre licence a expiré. Veuillez renouveler votre adhésion avant de vous inscrire à une sortie.');
+                    }
+                }
+                // filiations
+                else {
+                    foreach ($affiliatedJoiningUsers as $affiliatedJoiningUser) {
+                        // si déjà inscrit => on ne fait rien
+                        $joined = $event->getParticipation($affiliatedJoiningUser);
+                        if (!$joined) {
+                            if (!$affiliatedJoiningUser->getDoitRenouveler()) {
+                                $event->addParticipation($affiliatedJoiningUser, $role_evt_join, $status_evt_join);
+                                $inscrits[] = $affiliatedJoiningUser;
+                            } else {
+                                $this->addFlash('error', sprintf('La licence de %s a expiré. L\'adhésion doit être renouvelée avant l\'inscription.', $affiliatedJoiningUser->getFullName()));
+                            }
+                        }
+                    }
+                    foreach ($affiliatedLeavingUsers as $affiliatedLeavingUser) {
+                        $event->removeParticipation($event->getParticipation($affiliatedLeavingUser));
+                    }
+                }
+                $em->flush();
+
+                // E-MAIL À L'ORGANISATEUR ET AUX ENCADRANTS
+                $destinataires = [];
+                $destinataires[] = $event->getUser();
+                foreach ($event->getEncadrants() as $encadrant) {
+                    $destinataires[] = $encadrant->getUser();
+                }
+
+                // infos sur la sortie
+                $evtUrl = $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
+                $evtName = $event->getTitre();
+                $evtDate = date('d/m/Y', $event->getTsp());
+                $commissionTitle = $event->getCommission()->getTitle();
+
+                // infos sur le nouvel inscrit (et ses affiliés)
+                $mailer->send($destinataires, 'transactional/sortie-demande-inscription', [
+                    'role' => $role_evt_join,
+                    'event_name' => $evtName,
+                    'event_url' => $evtUrl,
+                    'event_date' => $evtDate,
+                    'auto_accept' => $auto_accept,
+                    'commission' => $commissionTitle,
+                    'inscrits' => array_map(function ($cetinscrit) {
+                        return [
+                            'firstname' => ucfirst($cetinscrit->getFirstname()),
+                            'lastname' => strtoupper($cetinscrit->getLastname()),
+                            'nickname' => $cetinscrit->getNickname(),
+                            'email' => $cetinscrit->getEmail(),
+                            'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $cetinscrit->getId() . '.html',
+                        ];
+                    }, $inscrits),
+                    'firstname' => ucfirst($user->getFirstname()),
+                    'lastname' => strtoupper($user->getLastname()),
+                    'nickname' => $user->getNickname(),
+                    'message' => $joinMessage,
+                    'covoiturage' => $is_covoiturage,
+                ], [], $user);
+
+                // E-MAIL AU PRE-INSCRIT
+                // inscription auto-acceptée
+                if ($auto_accept) {
+                    $mailer->send($user, 'transactional/sortie-participation-confirmee', [
+                        'role' => $role_evt_join,
+                        'event_name' => $evtName,
+                        'event_url' => $evtUrl,
+                        'event_date' => $evtDate,
+                        'commission' => $commissionTitle,
+                    ]);
+                } elseif ($hasFiliations) {
+                    $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
+                        'role' => $role_evt_join,
+                        'event_name' => $evtName,
+                        'event_url' => $evtUrl,
+                        'event_date' => $evtDate,
+                        'commission' => $commissionTitle,
+                        'inscrits' => array_map(function ($cetinscrit) {
+                            return [
+                                'firstname' => ucfirst($cetinscrit->getFirstname()),
+                                'lastname' => strtoupper($cetinscrit->getLastname()),
+                                'nickname' => $cetinscrit->getNickname(),
+                                'email' => $cetinscrit->getEmail(),
+                            ];
+                        }, $inscrits),
+                        'covoiturage' => $is_covoiturage,
+                    ]);
+                } else {
+                    // inscription simple de moi à moi
+                    $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
+                        'role' => $role_evt_join,
+                        'event_name' => $evtName,
+                        'event_url' => $evtUrl,
+                        'event_date' => $evtDate,
+                        'commission' => $commissionTitle,
+                        'inscrits' => [
+                            [
+                                'firstname' => ucfirst($user->getFirstname()),
+                                'lastname' => strtoupper($user->getLastname()),
+                                'nickname' => $user->getNickname(),
+                                'email' => $user->getEmail(),
+                            ],
+                        ],
+                        'covoiturage' => $is_covoiturage,
+                    ]);
+                }
+            }
+        }
+
+        return $this->redirectToRoute('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
     }
 
     protected function getFilename(string $eventTitle, SluggerInterface $slugger): string
@@ -719,5 +1066,51 @@ class SortieController extends AbstractController
                 ], [], null, $event->getUser()->getEmail());
             }
         }
+    }
+
+    protected function eventDetails(
+        Request $request,
+        Evt $event,
+        UserAttrRepository $userAttrRepository,
+        bool $isPdf = false
+    ): array {
+        $nAccepteesCalc = $event->getParticipationsCount();
+        $sortedParticipants = [
+            EventParticipation::ROLE_ENCADRANT => [],
+            EventParticipation::ROLE_STAGIAIRE => [],
+            EventParticipation::ROLE_COENCADRANT => [],
+            EventParticipation::ROLE_BENEVOLE => [],
+            EventParticipation::ROLE_INSCRIT => [],
+        ];
+        $participants = $event->getParticipations();
+        foreach ($participants as $participant) {
+            $role = $participant->getRole();
+            if (EventParticipation::ROLE_INSCRIT === $participant->getRole() || EventParticipation::ROLE_MANUEL === $participant->getRole()) {
+                $role = EventParticipation::ROLE_INSCRIT;
+            }
+            $sortedParticipants[$role][$participant->getUser()->getFullName()] = $participant;
+        }
+        foreach ($sortedParticipants as $role => $participants) {
+            ksort($sortedParticipants[$role]);
+        }
+        $allParticipants = array_merge(
+            $sortedParticipants[EventParticipation::ROLE_ENCADRANT],
+            $sortedParticipants[EventParticipation::ROLE_STAGIAIRE],
+            $sortedParticipants[EventParticipation::ROLE_COENCADRANT],
+            $sortedParticipants[EventParticipation::ROLE_BENEVOLE],
+            $sortedParticipants[EventParticipation::ROLE_INSCRIT],
+        );
+
+        return [
+            'event' => $event,
+            'nbAcceptes' => $nAccepteesCalc,
+            'logo' => LegacyContainer::get('legacy_content_inline')->getLogo(),
+            'presidents' => $userAttrRepository->listAllManagement([UserAttr::PRESIDENT]),
+            'vicepresidents' => $userAttrRepository->listAllManagement([UserAttr::VICE_PRESIDENT]),
+            'participants' => $allParticipants,
+            'totalLines' => $nAccepteesCalc + 5,
+            'hideBlankLines' => ('y' === $request->query->get('hide_blank')),
+            'pdf' => $isPdf,
+        ];
     }
 }
