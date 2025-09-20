@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CommissionRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
@@ -64,6 +65,9 @@ class Commission
     #[ORM\Column(type: 'string', length: 30, nullable: true)]
     #[Groups('commission:read')]
     private $googleDriveId;
+
+    #[ORM\Column(type: Types::STRING, length: 30, nullable: false, options: ['default' => Evt::CONFIGURABLE_FIELDS])]
+    private string $mandatoryFields = Evt::CONFIGURABLE_FIELDS;
 
     public function __construct(string $title, string $code, int $ordre)
     {
@@ -138,6 +142,18 @@ class Commission
     public function setGoogleDriveId(string $googleDriveId): self
     {
         $this->googleDriveId = $googleDriveId;
+
+        return $this;
+    }
+
+    public function getMandatoryFields(): string
+    {
+        return $this->mandatoryFields;
+    }
+
+    public function setMandatoryFields(string $mandatoryFields): self
+    {
+        $this->mandatoryFields = $mandatoryFields;
 
         return $this;
     }

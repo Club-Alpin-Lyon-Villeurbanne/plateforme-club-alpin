@@ -46,6 +46,8 @@ class Evt
     public const STATUS_LEGAL_VALIDE = 1;
     public const STATUS_LEGAL_REFUSE = 2;
 
+    public const string CONFIGURABLE_FIELDS = 'difficulte,distance,denivele';
+
     #[ORM\Column(name: 'id_evt', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
