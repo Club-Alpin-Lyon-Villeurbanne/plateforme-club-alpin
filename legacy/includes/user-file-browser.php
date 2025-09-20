@@ -63,16 +63,12 @@ if (user()) {
 		<!-- commnuicate with window arbo-->
 		<script type="text/javascript" src="/tools/tinymce/tiny_mce_popup.js"></script>
 
-		<!-- jquery
-		<script type="text/javascript" src="/js/jquery-1.5.2.min.js"></script>
-		-->
-		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 		<script type="text/javascript" src="/js/fonctionsAdmin.js"></script>
 
 		<!-- fancybox -->
 		<link rel="stylesheet" href="/tools/fancybox/jquery.fancybox.css" type="text/css" media="screen" />
 		<script type="text/javascript" src="/tools/fancybox/jquery.fancybox.pack.js" charset="utf-8"></script>
-		<!--<script type="text/javascript" src="/tools/fancybox/jquery.mousewheel-3.0.4.pack.js" charset="utf-8"></script>-->
 
 		<!-- Datatables -->
 		<link rel="stylesheet" href="/tools/datatables/media/css/jquery.dataTables.sobre.css" type="text/css" media="screen" />

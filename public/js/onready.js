@@ -1,16 +1,5 @@
 $().ready(function() {
-	
-	// débug ie8 et older : placeholders
-	if($.browser.msie && $.browser.version < 9){
-		$('input[type!=password],textarea').each(function(){
-			var phval=$(this).attr('placeholder');
-			if(phval){
-				if(!$(this).val())
-					$(this).val(phval);
-			}
-		});
-	}
-	
+
 	// frermer / ouvrir les contenus de fieldset
 	$(".legendToggle").click(function(){		$(this).siblings('.toggleZone').fadeToggle(300);	});
 	// loadings sur formulaires
@@ -59,10 +48,7 @@ $().ready(function() {
 		// beforeClose: function(){ alert('beforeClose'); return false; }
 	});
 	// upimage
-	if($.browser.msie){	userAgent = $.browser.version -0;	}
-	else userAgent=false;
-	if(!userAgent || userAgent>7){
-		$(".upimage").mouseenter(function(){
+	$(".upimage").mouseenter(function(){
 			if(!$(this).attr("src").match("-up")){
 				var strlen = $(this).attr("src").length; // debug IE
 				var ext= $(this).attr("src").substr(strlen-3, strlen);
@@ -76,7 +62,6 @@ $().ready(function() {
 				$(this).attr("src", src);
 			}
 		});
-	}
 	// fermeur de messages
 	$(".msgCloser").click(function(){
 		$(this).parent().fadeOut(150);
@@ -90,9 +75,7 @@ $().ready(function() {
 	$(spt).after('<a href="mailto:'+addr+'" title="Send an email">'+ addr +'</a>')
 	.hover(function(){window.status="Send a letter!";}, function(){window.status="";});
 	$(spt).remove();
-	// pngfix
-	$(document).pngFix();
-	
+
 	// modif honteuse des liens blank
 	$('a.blank').mouseenter(function(){				$(this).attr("target","blank");			});
 	$('a.blank').mouseleave(function(){				$(this).removeAttr("target");			});
