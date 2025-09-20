@@ -74,9 +74,6 @@ if (is_array($p_addJs)) {
 }
 
 ?>
-    <!--[if lt IE 9]>
-        <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
     <?php
         if (LegacyContainer::getParameter('legacy_env_DISPLAY_BANNER')) {
             ?>

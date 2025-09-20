@@ -54,9 +54,6 @@ $p_sitename = LegacyContainer::getParameter('legacy_env_SITENAME');
         }
 ?>
 
-
-    <!-- html5shiv -->
-	<script type="text/javascript" src="/js/html5shiv.js"></script>
     <!-- jquery -->
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="/js/jquery-1.8.min.js">\x3C/script>')</script>
