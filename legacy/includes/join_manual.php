@@ -61,7 +61,7 @@ if (user()) {
 					"sDom": 'T<"clear">lfrtip'
 				});
 
-				$('tr').live('click', function(){
+				$(document).on('click', 'tr', function(){
                     const checkbox = $(this).find('input[type=checkbox]');
                     checkbox.attr('checked', !checkbox.attr('checked'));
 					if(checkbox.attr('checked'))	$(this).find('input[type=hidden]').removeAttr('disabled');

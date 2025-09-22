@@ -185,7 +185,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
         // OUTIL : MONTRER/AFFIHCER
 
         // action lors du submit
-        $('.ajaxform').live('submit', function(){
+        $(document).on('submit', '.ajaxform', function(){
 
             // vars
             var datas='';
@@ -230,7 +230,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
         });
 
         // action : mise à jour VISIBILITE
-        $('a.majVis').bind('click', function(){
+        $(document).on('click', 'a.majVis', function(){
             var tab=$(this).attr('rel').split('|');
             var id=parseInt(tab[0]);
             var edit=parseInt(tab[1]);
@@ -249,7 +249,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
         });
 
         // action au clic sur le bouton
-        $('a.delete').bind('click', function(){
+        $(document).on('click', 'a.delete', function(){
             var tab=$(this).attr('rel').split('|');
             var id=parseInt(tab[0]);
             // var code=parseInt(tab[1]);
