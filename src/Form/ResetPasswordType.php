@@ -15,7 +15,7 @@ class ResetPasswordType extends AbstractType
         $builder
             ->add('email', EmailType::class, [
                 'label' => ' ',
-                'attr' => ['class' => 'type1', 'placeholder' => 'Votre addresse e-mail'],
+                'attr' => ['class' => 'type1', 'placeholder' => 'Votre adresse e-mail'],
                 'required' => true,
             ])
             ->add('recaptcha', HiddenType::class, [
