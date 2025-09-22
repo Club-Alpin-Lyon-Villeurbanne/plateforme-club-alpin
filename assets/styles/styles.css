@@ -26,7 +26,7 @@ abbr{border-bottom:1px dotted silver;}
 .imgFloatRight img{float:right;}
 .upfade{opacity:0.6}
 .upfade:hover, .upfade:focus{opacity:1;}
-.mini p, .mini{color:#727272; line-height:12px; padding:1px 0;}
+.mini p, .mini{color:#727272; font-size: 0.8rem;}
 .mini strong, .mini b{font-weight:100; color:black;}
 a.mini, .mini a{font-weight:100; color:black;}
 .rond{display:inline-block; width:36px; height:36px; background:#4eb4ea; opacity:0.8; color:white; text-align:center; border:none; font-weight:600; border-radius:18px; cursor:pointer; font-family:DINBold; font-size: 1rem;}
