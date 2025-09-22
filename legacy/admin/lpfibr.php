@@ -58,10 +58,9 @@ if (isGranted(SecurityConstants::ROLE_ADMIN) || isGranted(SecurityConstants::ROL
             <!-- commnuicate with window arbo-->
             <script type="text/javascript" src="/tools/tinymce/tiny_mce_popup.js"></script>
 
-            <!-- jquery
-            <script type="text/javascript" src="/js/jquery-1.12.4.min.js"></script>
-            -->
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+            <!-- jquery -->
+            <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+            <script>window.jQuery || document.write('<script src="/js/jquery-1.12.4.min.js">\x3C/script>')</script>
             <script type="text/javascript" src="/js/fonctionsAdmin.js"></script>
 
             <!-- fancybox -->

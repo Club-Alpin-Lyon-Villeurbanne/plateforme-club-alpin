@@ -78,7 +78,8 @@ if (count($errTab) > 0) {
                     <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('admin-styles'); ?>
                     <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>
 					<!-- jquery -->
-					<script type="text/javascript" src="/js/jquery-1.12.4.min.js"></script>
+					<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+					<script>window.jQuery || document.write('<script src="/js/jquery-1.12.4.min.js">\x3C/script>')</script>
 
             </head>
             <body class="ftp-frame" onload="$('form input[type=submit]').focus();">

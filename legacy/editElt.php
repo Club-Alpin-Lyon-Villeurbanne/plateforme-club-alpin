@@ -55,7 +55,8 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 					<meta charset="utf-8">
 					<title>Modifier un element</title>
 					<!-- jquery -->
-					<script type="text/javascript" src="/js/jquery-1.12.4.min.js"></script>
+					<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+					<script>window.jQuery || document.write('<script src="/js/jquery-1.12.4.min.js">\x3C/script>')</script>
 					<script language="javascript" type="text/javascript" src="/js/fonctions.js"></script>
 					<script language="javascript" type="text/javascript" src="/js/onready-admin.js"></script>
 					<!-- persos -->
