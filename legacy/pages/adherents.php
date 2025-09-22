@@ -78,8 +78,8 @@ if (allowed('user_see_all')) {
 			<!-- AFFICHAGE DU TABLEAU -->
 			<br />
 			<br />
-			<link rel="stylesheet" href="/tools/datatables/extras/TableTools/media/css/TableTools.css" type="text/css" media="screen" />
-			<script type="text/javascript" src="/tools/datatables/extras/TableTools/media/js/TableTools.min.js"></script>
+			<link rel="stylesheet" href="/tools/datatables/media/css/jquery.dataTables.css" type="text/css" media="screen" />
+			<script type="text/javascript" src="/tools/datatables/media/js/jquery.dataTables.min.js"></script>
 
 			<script type="text/javascript">
 				$(document).ready(function() {
