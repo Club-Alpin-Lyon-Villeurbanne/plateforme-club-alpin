@@ -56,6 +56,10 @@ phpstan: bin/tools/phpstan ## Analyze PHP code with phpstan
 	$(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse legacy public src tests -c phpstan.neon -l 1
 .PHONY: phpstan
 
+phpstan-files: bin/tools/phpstan ## Analyze specific PHP files with phpstan
+	$(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse $(FILES) -c phpstan.neon
+.PHONY: phpstan-files
+
 ## —— ✅ Test ——
 .PHONY: tests
 tests: ## Run all tests

@@ -100,13 +100,31 @@ jobs:
         id: changed-php-files
         if: github.event_name == 'pull_request'
         run: |
-          CHANGED_FILES=$(git diff --name-only --diff-filter=ACMRTUXB ${{ github.event.pull_request.base.sha }} | grep -E '\.php$' | grep -E '^(src|tests|legacy)/' | xargs -r ls 2>/dev/null | paste -sd " " || true)
-          echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
-          if [ -z "$CHANGED_FILES" ]; then
-            echo "No relevant PHP files changed for PHPStan"
+          # Récupérer les fichiers PHP modifiés
+          CHANGED_FILES=$(git diff --name-only --diff-filter=ACMRTUXB ${{ github.event.pull_request.base.sha }} | grep -E '\.php$' | grep -E '^(src|tests|legacy)/' || true)
+
+          # Filtrer les fichiers exclus par PHPStan
+          FILTERED_FILES=""
+          for file in $CHANGED_FILES; do
+            # Exclure les fichiers/dossiers configurés dans phpstan.neon
+            if echo "$file" | grep -qE '^(legacy/pages/|legacy/includes/|legacy/index\.php|legacy/app/ajax/pages_reorder\.php|legacy/app/ajax/get_content_html\.php|legacy/admin/ftp\.php|var/cache/)'; then
+              echo "Excluding from PHPStan: $file"
+            else
+              if [ -f "$file" ]; then
+                FILTERED_FILES="$FILTERED_FILES $file"
+              fi
+            fi
+          done
+
+          # Retirer les espaces en début/fin
+          FILTERED_FILES=$(echo "$FILTERED_FILES" | xargs)
+
+          echo "files=$FILTERED_FILES" >> $GITHUB_OUTPUT
+          if [ -z "$FILTERED_FILES" ]; then
+            echo "No relevant PHP files changed for PHPStan (all files are excluded or don't exist)"
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
-            echo "PHP files changed: $CHANGED_FILES"
+            echo "PHP files to analyze: $FILTERED_FILES"
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
       
@@ -114,7 +132,7 @@ jobs:
         if: github.event_name == 'pull_request' && steps.changed-php-files.outputs.has_changes == 'true'
         run: |
           echo "Running PHPStan on changed files with parallel processing..."
-          ./bin/tools/phpstan analyse ${{ steps.changed-php-files.outputs.files }} -c phpstan.neon
+          make phpstan-files FILES="${{ steps.changed-php-files.outputs.files }}"
       
       - name: Run PHPStan (full analysis)
         if: github.event_name != 'pull_request'
