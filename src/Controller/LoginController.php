@@ -138,9 +138,9 @@ class LoginController extends AbstractController
     #[Template('login/change_password.html.twig')]
     public function changePasswordAction(Request $request, PasswordHasherFactoryInterface $hasherFactory, Mailer $mailer, EntityManagerInterface $em)
     {
-        $url = $request->getSession()->get('user_password.target', $this->generateUrl('legacy_root'));
+        $url = $this->generateUrl('app_logout');
         $form = $this->createForm(ChangePasswordType::class);
-        $form->add('submit', SubmitType::class, ['label' => 'Ré-initialiser', 'attr' => ['class' => 'nice2']]);
+        $form->add('submit', SubmitType::class, ['label' => 'Mettre à jour', 'attr' => ['class' => 'nice2']]);
         if ($form->handleRequest($request)->isSubmitted() && $form->isValid()) {
             /** @var User $user */
             $user = $this->getUser();
@@ -152,7 +152,7 @@ class LoginController extends AbstractController
 
             $em->flush();
 
-            $this->addFlash('success', 'Mot de passe mis à jour avec succès!');
+            $this->addFlash('success', 'Mot de passe mis à jour avec succès !');
             $mailer->send($user, 'transactional/set_password-account-confirmation');
 
             return $this->redirect($url);
@@ -171,8 +171,6 @@ class LoginController extends AbstractController
                 $this->generateUrl('login'),
                 $this->generateUrl('session_logout'),
                 $this->generateUrl('session_password_lost'),
-                //                $this->generateUrl('2fa_login'),
-                //                $this->generateUrl('2fa_login_check'),
             ], true);
     }
 }

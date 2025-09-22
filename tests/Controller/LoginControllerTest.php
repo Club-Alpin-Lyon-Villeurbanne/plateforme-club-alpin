@@ -138,7 +138,7 @@ class LoginControllerTest extends WebTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(302);
-        $this->assertResponseRedirects('/');
+        $this->assertResponseRedirects('/logout');
 
         $emails = $this->getMailerMessages();
         $this->assertCount(1, $emails);
