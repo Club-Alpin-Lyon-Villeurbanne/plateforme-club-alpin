@@ -100,12 +100,12 @@ if (!preg_match('#[0-9]{2}/[0-9]{2}/[0-9]{4}#', $birthday_user)) {
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
+    $tab = explode('/', $birthday_user);
+    $birthday_user = mktime(0, 0, 0, $tab[1], $tab[0], $tab[2]);
+
     // si pas d'ID user spécifié, on crée ce nomade
     if (!$id_user) {
         $nickname_user = NicknameGenerator::generateNickname($firstname_user, $lastname_user);
-
-        $tab = explode('/', $birthday_user);
-        $birthday_user = mktime(0, 0, 0, $tab[1], $tab[0], $tab[2]);
 
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO caf_user(
             email_user, mdp_user, cafnum_user, firstname_user, lastname_user, nickname_user, created_user, birthday_user, tel_user, tel2_user, adresse_user, cp_user, ville_user, pays_user, civ_user, moreinfo_user, auth_contact_user, valid_user, cookietoken_user, manuel_user, nomade_user, nomade_parent_user, cafnum_parent_user, doit_renouveler_user, alerte_renouveler_user
@@ -121,6 +121,20 @@ if (!isset($errTab) || 0 === count($errTab)) {
             $errTab[] = 'Erreur SQL';
         } else {
             $id_user = LegacyContainer::get('legacy_mysqli_handler')->insertId();
+        }
+        $stmt->close();
+    } else {
+        // sinon, on met à jour les infos de l'user
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_user SET
+            email_user = ?,
+            birthday_user = ?,
+            tel_user = ?,
+            tel2_user = ?
+            WHERE id_user = ?
+            LIMIT 1');
+        $stmt->bind_param('sissi', $email_user, $birthday_user, $tel_user, $tel2_user, $id_user);
+        if (!$stmt->execute()) {
+            $errTab[] = 'Erreur SQL';
         }
         $stmt->close();
     }

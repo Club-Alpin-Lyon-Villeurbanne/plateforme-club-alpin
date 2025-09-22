@@ -49,7 +49,7 @@ if (user()) {
 				<b>- Reprendre un nomade déja créé :</b><br />
 				<p class="mini">
 					Ceci a pour effet de remplacer les valeurs ci-dessous par un nomade ajouté antérieurement.<br />
-					Vous ne pouvez alors plus modifier les infos saisies.
+					Vous ne pouvez alors modifier que certaines infos (date de naissance, e-mail, téléphones x 2).
 				</p>
 				<script type="text/javascript">
 					var prefilled = new Array();
@@ -71,6 +71,10 @@ if (user()) {
         while ($row = $result->fetch_assoc()) {
             echo '<option value="' . (int) $row['id_user'] . '">' . html_utf8($row['cafnum_user'] . ' - ' . ucfirst($row['firstname_user']) . ' ' . strtoupper($row['lastname_user'])) . ' - le ' . date('d/m/y', $row['created_user']) . '</option>';
 
+            $birthdate = '';
+            if (!empty($row['birthday_user']) && is_numeric($row['birthday_user'])) {
+                $birthdate = date('d/m/Y', $row['birthday_user']);
+            }
             echo '
 						<script type="text/javascript">
 							prefilled[prefilled.length] = {
@@ -80,7 +84,7 @@ if (user()) {
 								"lastname_user": ' . json_encode(strtoupper($row['lastname_user']), \JSON_THROW_ON_ERROR) . ',
 								"tel_user": ' . json_encode($row['tel_user'], \JSON_THROW_ON_ERROR) . ',
 								"tel2_user": ' . json_encode($row['tel2_user'], \JSON_THROW_ON_ERROR) . ',
-								"birthday_user": ' . json_encode(date('d/m/Y', $row['birthday_user']), \JSON_THROW_ON_ERROR) . ',
+								"birthday_user": ' . json_encode($birthdate, \JSON_THROW_ON_ERROR) . ',
 								"email_user": ' . json_encode($row['email_user'], \JSON_THROW_ON_ERROR) . '
 							};
 						</script>';
@@ -125,8 +129,6 @@ if (user()) {
 				<select name="role_evt_join" class="type1" style="width:90%">
 					<option value="manuel">Inscrit (par défaut)</option>
 					<option value="benevole">Bénévole</option>
-					<!-- <option value="coencadrant">Co-encadrant</option>
-					<option value="encadrant">Encadrant</option> -->
 				</select>
 			</div>
 			<div class="tiers">
@@ -155,8 +157,6 @@ if (user()) {
 		<!-- JS d'ergonomie -->
 		<script type="text/javascript">
 		$().ready(function(){
-			// console.log(prefilled);
-
 			// autofill des champs
 			$('select[name=id_user]').bind('change', function(){
 				var id_user = $(this).val();
@@ -169,10 +169,10 @@ if (user()) {
 					$('input[name=cafnum_user]').val(		tmpPrefilled.cafnum_user 		)		.attr('readonly', 'readonly');
 					$('input[name=firstname_user]').val(	tmpPrefilled.firstname_user 		)	.attr('readonly', 'readonly');
 					$('input[name=lastname_user]').val(		tmpPrefilled.lastname_user 		)		.attr('readonly', 'readonly');
-					$('input[name=tel_user]').val(			tmpPrefilled.tel_user 		)			.attr('readonly', 'readonly');
-					$('input[name=tel2_user]').val(			tmpPrefilled.tel2_user 		)			.attr('readonly', 'readonly');
-					$('input[name=email_user]').val(		tmpPrefilled.email_user 		)		.attr('readonly', 'readonly');
-                    $('input[name=birthday_user]').val(		tmpPrefilled.birthday_user 		)		.attr('readonly', 'readonly');
+					$('input[name=tel_user]').val(			tmpPrefilled.tel_user 		);
+					$('input[name=tel2_user]').val(			tmpPrefilled.tel2_user 		);
+					$('input[name=email_user]').val(		tmpPrefilled.email_user 		);
+                    $('input[name=birthday_user]').val(		tmpPrefilled.birthday_user 		);
 				}
 				// sinon : raz
 				else{
