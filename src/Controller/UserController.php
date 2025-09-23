@@ -276,6 +276,9 @@ class UserController extends AbstractController
             /* @var User $nomad */
             if (!empty($formData['id_user'])) {
                 $nomad = $userRepository->find($formData['id_user']);
+                $nomad->setEmail($formData['email'] ?? null);
+                $nomad->setTel($formData['tel'] ?? null);
+                $nomad->setTel2($formData['tel2'] ?? null);
             } else {
                 $nomad = $form->getData();
                 $nomad
@@ -286,18 +289,29 @@ class UserController extends AbstractController
                     ->setNomadeParent($this->getUser()->getId())
                     ->setDoitRenouveler(false)
                     ->setAlerteRenouveler(false)
+                    ->setCreated(time())
+                    ->setTsInsert(time())
+                    ->setTsUpdate(time())
                     ->setCookietoken('')
                     ->setAuthContact('none')
                     ->setAlertSortiePrefix('')
                     ->setAlertArticlePrefix('')
                 ;
-                $entityManager->persist($nomad);
             }
+            $birthdate = \DateTime::createFromFormat('d/m/Y', $formData['birthdate']);
+            if ($birthdate instanceof \DateTime) {
+                $nomad->setBirthday($birthdate->getTimestamp());
+            }
+            // forcer null pour éviter de pêter la contrainte d'unicité
+            if (empty($nomad->getEmail())) {
+                $nomad->setEmail(null);
+            }
+            $entityManager->persist($nomad);
 
-            $event->addParticipation($nomad, $formData['role_evt_join']);
+            $event->addParticipation($nomad, EventParticipation::ROLE_MANUEL);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Le "nomade" a bien été inscrit à la sortie.');
+            $this->addFlash('success', 'Le non-adhérent a bien été inscrit à la sortie.');
 
             return new Response(
                 '<script>

@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -19,16 +20,16 @@ class NomadeType extends AbstractType
         /* @var User $user */
         $builder
             ->add('id_user', ChoiceType::class, [
-                'label' => '- Reprendre un nomade déjà créé',
+                'label' => '- Reprendre un non-adhérent déjà créé',
                 'required' => false,
                 'mapped' => false,
-                'placeholder' => '- Non merci, créer un nouvel adhérent nomade',
+                'placeholder' => '- Non merci, créer un nouveau non-adhérent',
                 'choices' => $options['existing_users'],
                 'choice_label' => fn ($user) => sprintf(
-                    '%s - %s %s - le %s',
-                    $user->getCafnum(),
-                    ucfirst($user->getFirstname()),
+                    '%s %s - %s - le %s',
                     strtoupper($user->getLastname()),
+                    ucfirst($user->getFirstname()),
+                    $user->getCafnum(),
                     date('d/m/y', $user->getCreated())
                 ),
                 'choice_value' => fn ($user) => $user?->getId(),
@@ -52,16 +53,6 @@ class NomadeType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('civ', ChoiceType::class, [
-                'label' => 'Civilité',
-                'choices' => [
-                    'M.' => 'M.',
-                    'Mme.' => 'Mme.',
-                ],
-                'attr' => [
-                    'class' => 'type1',
-                ],
-            ])
             ->add('lastname', TextType::class, [
                 'label' => 'Nom',
                 'required' => true,
@@ -78,17 +69,6 @@ class NomadeType extends AbstractType
                     'placeholder' => 'Requis',
                 ],
             ])
-            ->add('role_evt_join', ChoiceType::class, [
-                'label' => 'Rôle sur cette sortie',
-                'choices' => [
-                    'Inscrit (par défaut)' => 'manuel',
-                    'Bénévole' => 'benevole',
-                ],
-                'mapped' => false,
-                'attr' => [
-                    'class' => 'type1',
-                ],
-            ])
             ->add('tel', TelType::class, [
                 'label' => 'Téléphone',
                 'required' => false,
@@ -97,16 +77,29 @@ class NomadeType extends AbstractType
                     'placeholder' => 'Facultatif',
                 ],
             ])
-            ->add('tel2', TelType::class, [
-                'label' => 'Téléphone sécurité',
-                'required' => false,
+            ->add('birthdate', DateType::class, [
+                'label' => 'Date de naissance',
+                'required' => true,
+                'mapped' => false,
+                'widget' => 'single_text',
+                'format' => 'dd/MM/yyyy',
+                'html5' => false,
                 'attr' => [
                     'class' => 'type1',
-                    'placeholder' => 'Facultatif',
+                    'placeholder' => 'jj/mm/aaaa',
+                    'autocomplete' => 'off',
+                ],
+            ])
+            ->add('tel2', TelType::class, [
+                'label' => 'Téléphone de secours',
+                'required' => true,
+                'attr' => [
+                    'class' => 'type1',
+                    'placeholder' => 'Requis',
                 ],
             ])
             ->add('email', EmailType::class, [
-                'label' => 'Adresse email',
+                'label' => 'Adresse e-mail',
                 'required' => false,
                 'attr' => [
                     'class' => 'type1',
