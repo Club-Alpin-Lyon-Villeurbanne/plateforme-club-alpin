@@ -174,7 +174,7 @@ class FfcamSynchronizerTest extends WebTestCase
         $em = self::getContainer()->get(EntityManagerInterface::class);
         $em->refresh($existingUser);
 
-        $this->assertTrue($existingUser->getAlerteRenouveler());
+        $this->assertFalse($existingUser->getAlerteRenouveler());
         $this->assertTrue($existingUser->getDoitRenouveler());
 
         ClockMock::reset();

@@ -20,10 +20,9 @@ class FfcamSynchronizer
         private readonly MemberMerger $memberMerger,
     ) {
         $today = new \DateTime();
-        $startDate = new \DateTime($today->format('Y') . '-08-25');
-        $endDate = new \DateTime($today->format('Y') . '-09-30');
+        $endDate = new \DateTime($today->format('Y') . '-09-30 23:59:59');
 
-        $this->hasTolerancyPeriodPassed = !($today >= $startDate && $today <= $endDate);
+        $this->hasTolerancyPeriodPassed = $today > $endDate;
     }
 
     public function synchronize(?string $ffcamFilePath = null): void
@@ -126,7 +125,7 @@ class FfcamSynchronizer
             ->setVille($parsedUser->getVille())
             ->setNickname($parsedUser->getNickname())
             ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $this->hasTolerancyPeriodPassed)
-            ->setAlerteRenouveler($parsedUser->getAlerteRenouveler())
+            ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$this->hasTolerancyPeriodPassed)
             ->setTsUpdate(time())
             ->setManuel(false)
             ->setNomade(false)
