@@ -112,7 +112,7 @@ select.type1{border-color:#eaeaea; padding-top:5px; padding-bottom:6px;}
 #mainHeader{background:#fff; height:110px; box-shadow:0 0 17px -5px #7a7a7a; position:relative; z-index:80;}
 #logo{float:left; display:block; width:290px; height:71px; margin:30px 30px 5px 20px;}
 #logo img{max-width:100%; max-height:100%; object-fit:contain;}
-a.toptrigger{height:72px; font-weight:100; display:block; position:relative; z-index:80; color:#898989; line-height:22px; background:#ffffff; overflow:visible; text-decoration:none;}
+a.toptrigger{height:72px; font-weight:100; font-size: 0.8rem; display:block; position:relative; z-index:80; color:#898989; line-height:22px; background:#ffffff; overflow:visible; text-decoration:none;}
 a.toptrigger.up{color:black;}
 a.toptrigger b{color:#000; display:block; overflow:hidden; text-transform:uppercase; font-size: 1rem; position:relative; bottom:5px; font-family:DINBold; font-weight:100; white-space:nowrap;}
 a.toptrigger .opener{display:block; float:right; height:0px; width:45px; position:relative; top:64px; z-index:90;}
