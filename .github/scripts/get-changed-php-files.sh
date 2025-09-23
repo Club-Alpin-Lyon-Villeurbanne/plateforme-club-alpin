@@ -11,6 +11,8 @@ BASE_SHA=$1
 
 if [ -z "$BASE_SHA" ]; then
     echo "Error: BASE_SHA is required as first argument"
+    echo "Usage: $0 <base-sha>"
+    echo "Example: $0 HEAD"
     exit 1
 fi
 
