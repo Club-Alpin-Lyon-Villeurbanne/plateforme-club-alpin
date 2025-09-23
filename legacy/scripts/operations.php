@@ -39,31 +39,6 @@ if (user()) {
         require $operationsDir . 'operations.user_join_del.php';
     }
 
-    // JOINS : USER / SORTIE : pré inscription + pré iscription affiliés
-    elseif ('user_join' == $operation) {
-        require $operationsDir . 'operations.user_join.php';
-    }
-
-    // JOINS : USER / SORTIE : inscription manuelle de la part de l'organisateur de l'événemeent
-    elseif ('user_join_manuel' == $operation) {
-        require $operationsDir . 'operations.user_join_manuel.php';
-    }
-
-    // JOINS : USER / SORTIE : inscription de nomade + création s'il n'existe pas deja
-    elseif ('user_join_nomade' == $operation) {
-        require $operationsDir . 'operations.user_join_nomade.php';
-    }
-
-    // SORTIE : suppression
-    elseif ('evt_del' == $operation) {
-        require $operationsDir . 'operations.evt_del.php';
-    }
-
-    // SORTIE : annulation
-    elseif ('evt_cancel' == $operation) {
-        require $operationsDir . 'operations.evt_cancel.php';
-    }
-
     // ARTICLE : publication OU refus
     elseif ('article_validate' == $operation) {
         require $operationsDir . 'operations.article_validate.php';

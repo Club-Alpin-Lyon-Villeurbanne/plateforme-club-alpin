@@ -1,0 +1,66 @@
+{% extends 'base-light.html.twig' %}
+
+{% block title %}Inscrire manuellement des adhérents à la sortie{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .big-lines-table th {text-align:left}
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div id="includer-stuff">
+        <h1>Inscrire manuellement des adhérents à cette sortie</h1>
+
+        <p>
+            Choisissez le rôle et les éventuelles options individuelles de chacun, puis validez pour confirmer. Attention : chaque utilisateur recevra un e-mail pour
+            être averti de son inscription.<br /><br />
+            <a href="{{ path('event_manual_add_select', {event: event.id}) }}" title="">&lt; Annuler / retour</a>
+        </p>
+        <br />
+
+        <form method="post" enctype="multipart/form-data" class="loading">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token('event_manual_add') }}" />
+            <table class="big-lines-table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Pseudo</th>
+                        <th>Rôle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for key,user_id in user_ids %}
+                    <tr>
+                        <td>
+                            <input type="hidden" name="id_user[]" value="{{ user_id }}" />
+                            <input type="hidden" name="civ_user[]" value="{{ user_civ[key] }}" />
+                            <input type="hidden" name="lastname_user[]" value="{{ user_lastnames[key] }}" />
+                            <input type="hidden" name="firstname_user[]" value="{{ user_firstnames[key] }}" />
+                            <input type="hidden" name="nickname_user[]" value="{{ user_nicknames[key] }}" />
+                            {{ user_civ[key] }} {{ user_firstnames[key] }} {{ user_lastnames[key]|upper }}
+                        </td>
+                        <td>
+                            {{ user_nicknames[key] }}
+                        </td>
+                        <td>
+                            <select name="role_evt_join[]">
+                                <option value="manuel">Inscrit (par défaut)</option>
+                                {% if event.needBenevoles %}
+                                    <option value="benevole">Bénévole</option>
+                                {% endif %}
+                            </select>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+                <span class="bleucaf">&gt;</span>
+                CONFIRMER LES INSCRIPTIONS ET ENVOYER LES E-MAILS AUTOMATIQUES
+            </a>
+        </form>
+    </div>
+{% endblock %}

@@ -293,3 +293,8 @@ services:
       $editoLineLink: '%env(EDITO_LINE_LINK)%'
       $imageRightLink: '%env(IMAGE_RIGHT_LINK)%'
     tags: ['controller.service_arguments']
+
+  App\Controller\EventManagementController:
+    arguments:
+      $maxTimestampForLegalValidation: '%env(MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%'
+    tags: ['controller.service_arguments']

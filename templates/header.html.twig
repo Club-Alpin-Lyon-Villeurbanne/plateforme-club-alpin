@@ -138,7 +138,7 @@
                                 {% if allowed('evt_validate') %}
                                     {# publier une sortie (notification au besoin, variable définie dans SCRIPTS.'reqs.php') #}
                                     <li>
-                                        <a href="/gestion-des-sorties.html" title="">
+                                        <a href="{{ path('manage_events') }}" title="Publier les sorties en attente">
                                             {% set notif_sorties = notifications_counter_sorties() %}
                                             {% if notif_sorties > 0 %}<span class="notification">{{ notif_sorties }}</span>{% endif %}
                                             publication des sorties
@@ -149,7 +149,7 @@
                                 {% if allowed('evt_legal_accept') %}
                                     {# valider juridiquement une sortie#}
                                     <li>
-                                        <a href="/validation-des-sorties.html" title="">
+                                        <a href="{{ path('legal_manage_events') }}" title="Valider légalement les sorties">
                                             {% set notif_president = notifications_counter_sorties_president() %}
                                             {% if notif_president > 0 %}<span class="notification">{{ notif_president }}</span>{% endif %}
                                             validation des sorties
