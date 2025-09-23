@@ -821,10 +821,10 @@
             {% endif %}
 
             <ul class="nice-list">
-                <li>
+                <li class="wide">
                     <b>DÉPART :</b> Le {{ event.tsp | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tsp|date('H:i') }}{% endif %}
                 </li>
-                <li>
+                <li class="wide">
                     <b>RETOUR :</b> Le {{ event.tspEnd | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tspEnd|date('H:i') }} (heure estimée){% endif %}
                 </li>
             </ul>
@@ -858,7 +858,7 @@
                 </script>
             {% else %}
                 <ul class="nice-list">
-                    <li><b>RDV :</b> lieu et heures visibles après connexion</li>
+                    <li class="wide"><b>RDV :</b> lieu et heures visibles après connexion</li>
                 </ul>
             {% endif %}
             <hr />
@@ -983,8 +983,8 @@
 
             <hr />
             <ul class="nice-list">
-                <li><b>NOMBRE TOTAL DE PLACES :</b> {{ event.ngensMax }}
-                <li><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}
+                <li class="wide"><b>NOMBRE TOTAL DE PLACES :</b> {{ event.ngensMax }}
+                <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}
             </ul>
 
             <br style="clear:both" /><hr />
