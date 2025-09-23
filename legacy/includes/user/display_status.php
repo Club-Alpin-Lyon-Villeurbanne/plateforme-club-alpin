@@ -1,4 +1,4 @@
-<h3>Responsabilité dans le club :</h3>
+<h3>Responsabilité sur le site :</h3>
 <ul class="nice-list">
     <?php
     if (!empty($tmpUser['statuts']['club'])) {
