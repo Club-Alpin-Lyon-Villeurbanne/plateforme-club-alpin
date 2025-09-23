@@ -114,9 +114,9 @@ SQL;
 
     public function blockExpiredAccounts(): void
     {
-        $lastYear = (new \DateTime())->modify('-1 year')->format('Y');
-        $expiryDate = strtotime("$lastYear-08-31");
-        $tenDaysAgo = strtotime('-10 days');
+        $today = new \DateTime();
+        $year = ($today->format('m') <= 9) ? (int) $today->format('Y') - 1 : $today->format('Y');
+        $expiryDate = strtotime("$year-08-31");
 
         $qb = $this->createQueryBuilder('u');
 
@@ -125,19 +125,13 @@ SQL;
             ->where('u.id != :adminId')
             ->andWhere('u.nomade = :isNomade')
             ->andWhere('u.manuelUser = :isManual')
-            ->andWhere(
-                $qb->expr()->orX(
-                    'u.dateAdhesion <= :expiryDate',
-                    'u.tsUpdate <= :tenDaysAgo'
-                )
-            )
+            ->andWhere('u.dateAdhesion <= :expiryDate')
             ->setParameters([
                 'shouldRenew' => true,
                 'adminId' => 1,
                 'isNomade' => false,
                 'isManual' => false,
                 'expiryDate' => $expiryDate,
-                'tenDaysAgo' => $tenDaysAgo,
             ])
             ->getQuery()
             ->execute();
