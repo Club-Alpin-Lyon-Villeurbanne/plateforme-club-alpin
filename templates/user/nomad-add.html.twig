@@ -1,6 +1,6 @@
 {% extends 'base-light.html.twig' %}
 
-{% block title %}Inscrire un "nomade" à la sortie{% endblock %}
+{% block title %}Inscrire un non-adhérent à la sortie{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -14,7 +14,7 @@
 
 {% block body %}
     <div id="includer-stuff">
-        <h1>Inscrire un "nomade" à cette sortie</h1>
+        <h1>Inscrire un non-adhérent à cette sortie</h1>
         {{ easy_include('explication-nomades', '') }}
 
         {{ form_start(form, { attr: { class: 'loading' } }) }}
@@ -35,7 +35,7 @@
             {{ form_row(form.id_user) }}
             <p class="mini">
                 Ceci a pour effet de remplacer les valeurs ci-dessous par un nomade ajouté antérieurement.<br>
-                Vous ne pouvez alors plus modifier les infos saisies.
+                Seules certaines informations seront modifiables : date de naissance, e-mail, téléphone et téléphone de secours.
             </p>
         </div>
 
@@ -46,10 +46,6 @@
         </div>
 
         <div class="tiers clear">
-            {{ form_row(form.civ) }}
-        </div>
-
-        <div class="tiers clear">
             {{ form_row(form.lastname) }}
         </div>
 
@@ -57,8 +53,12 @@
             {{ form_row(form.firstname) }}
         </div>
 
+        <div class="tiers">
+            {{ form_row(form.birthdate) }}
+        </div>
+
         <div class="tiers clear">
-            {{ form_row(form.role_evt_join) }}
+            {{ form_row(form.email) }}
         </div>
 
         <div class="tiers">
@@ -69,16 +69,12 @@
             {{ form_row(form.tel2) }}
         </div>
 
-        <div class="tiers">
-            {{ form_row(form.email) }}
-        </div>
-
         <br style="clear:both">
         <br>
 
         <button type="submit" class="biglink">
             <span class="bleucaf">&gt;</span>
-            INSCRIRE CE "NOMADE" À MA SORTIE
+            INSCRIRE CE NON-ADHÉRENT À MA SORTIE
         </button>
 
         {{ form_end(form) }}
@@ -89,8 +85,12 @@
             const prefilled = [];
 
             {% for nomad in nomads %}
+                {% set birthdate = '' %}
+                {% if nomad.birthday is not same as ('') and nomad.birthday is not same as (null) %}
+                    {% set birthdate = nomad.birthday|date('d/m/Y') %}
+                {% endif %}
                 prefilled['{{ nomad.id }}'] = {
-                    'civ_user': '{{ nomad.civ }}',
+                    'birthday_user': '{{ birthdate }}',
                     'cafnum_user': '{{ nomad.cafnum }}',
                     'firstname_user': '{{ nomad.firstname }}',
                     'lastname_user': '{{ nomad.lastname }}',
@@ -108,8 +108,7 @@
                 const tmpPrefilled = prefilled[id_user];
 
                 if (id_user > 0 && tmpPrefilled) {
-                    document.getElementById('nomade_civ').value = tmpPrefilled.civ_user;
-                    document.getElementById('nomade_civ').setAttribute('readonly', 'readonly');
+                    document.getElementById('nomade_birthdate').value = tmpPrefilled.birthday_user;
 
                     document.getElementById('nomade_cafnum').value = tmpPrefilled.cafnum_user;
                     document.getElementById('nomade_cafnum').setAttribute('readonly', 'readonly');
@@ -121,13 +120,10 @@
                     document.getElementById('nomade_lastname').setAttribute('readonly', 'readonly');
 
                     document.getElementById('nomade_tel').value = tmpPrefilled.tel_user;
-                    document.getElementById('nomade_tel').setAttribute('readonly', 'readonly');
 
                     document.getElementById('nomade_tel2').value = tmpPrefilled.tel2_user;
-                    document.getElementById('nomade_tel2').setAttribute('readonly', 'readonly');
 
                     document.getElementById('nomade_email').value = tmpPrefilled.email_user;
-                    document.getElementById('nomade_email').setAttribute('readonly', 'readonly');
                 } else {
                     document.querySelectorAll('#includer-stuff input').forEach(input => {
                         input.value = '';
