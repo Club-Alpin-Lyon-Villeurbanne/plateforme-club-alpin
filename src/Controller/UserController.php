@@ -298,7 +298,10 @@ class UserController extends AbstractController
                     ->setAlertArticlePrefix('')
                 ;
             }
-            $nomad->setBirthday(\DateTime::createFromFormat('d/m/Y', $formData['birthdate'])?->getTimestamp());
+            $birthdate = \DateTime::createFromFormat('d/m/Y', $formData['birthdate']);
+            if ($birthdate instanceof \DateTime) {
+                $nomad->setBirthday(\DateTime::createFromFormat('d/m/Y', $formData['birthdate'])?->getTimestamp());
+            }
             // forcer null pour éviter de pêter la contrainte d'unicité
             if (empty($nomad->getEmail())) {
                 $nomad->setEmail(null);
