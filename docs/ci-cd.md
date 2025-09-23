@@ -16,20 +16,7 @@ Le projet utilise GitHub Actions pour automatiser les tests et la qualité du co
 
 ## Test local avant de pusher
 
-### Méthode 1 : Scripts de test rapide
-
-```bash
-# Tester les changements de votre branche actuelle vs main
-make ci-test-local
-
-# Ou directement
-./scripts/test-ci-locally.sh
-
-# Tester vs une autre branche
-make ci-test-branch BRANCH=develop
-```
-
-### Méthode 2 : Utiliser `act` pour exécuter GitHub Actions localement
+### Utiliser `act` pour exécuter GitHub Actions localement
 
 [Act](https://github.com/nektos/act) permet d'exécuter les GitHub Actions localement dans Docker.
 

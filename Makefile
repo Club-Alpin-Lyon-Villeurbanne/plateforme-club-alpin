@@ -60,15 +60,6 @@ phpstan-files: bin/tools/phpstan ## Analyze specific PHP files with phpstan
 	$(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse $(FILES) -c phpstan.neon
 .PHONY: phpstan-files
 
-ci-test-local: ## Test CI checks locally for current branch changes
-	@echo "🧪 Testing CI checks locally..."
-	@./scripts/test-ci-locally.sh
-.PHONY: ci-test-local
-
-ci-test-branch: ## Test CI checks for changes against a specific branch
-	@echo "🧪 Testing CI checks against branch $(BRANCH)..."
-	@./scripts/test-ci-locally.sh $(BRANCH)
-.PHONY: ci-test-branch
 
 ## —— ✅ Test ——
 .PHONY: tests
