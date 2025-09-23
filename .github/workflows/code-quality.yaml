@@ -99,22 +99,13 @@ jobs:
       - name: Get changed PHP files for PHPStan
         id: changed-php-files
         if: github.event_name == 'pull_request'
-        run: |
-          CHANGED_FILES=$(git diff --name-only --diff-filter=ACMRTUXB ${{ github.event.pull_request.base.sha }} | grep -E '\.php$' | grep -E '^(src|tests|legacy)/' | xargs -r ls 2>/dev/null | paste -sd " " || true)
-          echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
-          if [ -z "$CHANGED_FILES" ]; then
-            echo "No relevant PHP files changed for PHPStan"
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            echo "PHP files changed: $CHANGED_FILES"
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          fi
+        run: ./.github/scripts/get-changed-php-files.sh ${{ github.event.pull_request.base.sha }}
       
       - name: Run PHPStan on changed files
         if: github.event_name == 'pull_request' && steps.changed-php-files.outputs.has_changes == 'true'
         run: |
           echo "Running PHPStan on changed files with parallel processing..."
-          ./bin/tools/phpstan analyse ${{ steps.changed-php-files.outputs.files }} -c phpstan.neon
+          make phpstan-files FILES="${{ steps.changed-php-files.outputs.files }}"
       
       - name: Run PHPStan (full analysis)
         if: github.event_name != 'pull_request'

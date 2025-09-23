@@ -4,7 +4,11 @@ parameters:
     - legacy
     - src
     - tests
-  
+
+  # Autoloaders pour résoudre les classes
+  bootstrapFiles:
+    - vendor/autoload.php
+
   # Cache pour améliorer les performances
   resultCachePath: %tmpDir%/resultCache.php
   
