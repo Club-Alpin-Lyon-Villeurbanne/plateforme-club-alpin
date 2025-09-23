@@ -109,45 +109,13 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
             } ?>
 
 			<br />
-			E-mail* :<br />
+			E-mail * :<br />
 			<input type="text" name="email_user" class="type1" value="<?php echo $userEmail; ?>" placeholder="" />
 			<br />
 
-			Mot de passe :<br />
-			<input type="text" name="mdp_user" class="type1" value="" placeholder="" /> (pour ne pas le modifier, laisser vide)
-			<br />
-			<!--
-			Confirmer le mot de passe* :<br />
-			<input type="password" name="mdp_user_confirm" class="type1" value="" placeholder="" />
-			<br />
- -->
 			Numéro de licence :<br />
 			<input type="text" name="cafnum_user" class="type1" value="<?php echo $cafnumUser; ?>" readonly />
 			<br />
-
-			<!--
-			Date de naissance :<br />
-			<input type="text" name="birthday_user" class="type1" value="<?php echo $birthdayUser; ?>" placeholder="jj/mm/aaaa" />
-			<br />
-
-			Numéro de téléphone personnel :<br />
-			<input type="text" name="tel_user" class="type1" value="<?php echo $telUser; ?>" placeholder="" />
-
-			<br />
-			Numéro de téléphone de sécurité :<br />
-			<input type="text" name="tel2_user" class="type1" value="<?php echo $telSecuUser; ?>" placeholder="" />
-
-			<br />
-			Adresse <br />
-			<input type="text" name="adresse_user" class="type1" value="<?php echo $adresseUser; ?>" placeholder="Numéro, rue..." /><br />
-			<input type="text" name="cp_user" style="width:70px" class="type1" value="<?php echo $cpUser; ?>" placeholder="Code postal" />
-			<input type="text" name="ville_user" class="type1" value="<?php echo $villeUser; ?>" placeholder="Ville" /><br />
-			<input type="text" name="pays_user" class="type1" value="<?php echo $paysUser; ?>" placeholder="Pays" /><br />
-
-
-
-			-->
-
 
 			<br />
 			Qui peut le / la contacter sur le site, via un formulaire de contact (adresse e-mail jamais dévoilée) ?<br />
