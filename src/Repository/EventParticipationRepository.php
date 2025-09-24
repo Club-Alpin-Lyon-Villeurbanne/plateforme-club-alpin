@@ -32,6 +32,7 @@ class EventParticipationRepository extends ServiceEntityRepository
             ->setParameter('status_refuse', EventParticipation::STATUS_REFUSE)
             ->andWhere('p.status != :status_absent')
             ->setParameter('status_absent', EventParticipation::STATUS_ABSENT)
+            ->andWhere('e.isDraft = false')
             ->andWhere('e.id != :id')
             ->setParameter('id', $event->getId())
             ->andWhere('e.status != :event_status')
