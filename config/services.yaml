@@ -48,6 +48,12 @@ parameters:
   mobile_app_deeplink_scheme: '%env(MOBILE_APP_DEEPLINK_SCHEME)%'
   mobile_app_minimum_version: '%env(MOBILE_APP_MINIMUM_VERSION)%'
   api_version: '%env(API_VERSION)%'
+  hello_asso_client_id: '%env(HELLO_ASSO_CLIENT_ID)%'
+  hello_asso_client_secret: '%env(HELLO_ASSO_CLIENT_SECRET)%'
+  hello_asso_organization_slug: '%env(HELLO_ASSO_ORGANIZATION_SLUG)%'
+  hello_asso_api_base_url: '%env(HELLO_ASSO_API_BASE_URL)%'
+  hello_asso_activity_type_id: '%env(int:HELLO_ASSO_ACTIVITY_TYPE_ID)%'
+
 services:
   # default configuration for services in *this* file
   _defaults:
@@ -266,6 +272,7 @@ services:
   App\Form\EventType:
     arguments:
       $club: '%env(CAF_ID)%'
+      $helloAssoAuthorizedUserIds: '%env(AUTHORIZED_IDS_FOR_HELLO_ASSO)%'
     tags: ['form.type']
 
   App\Controller\SortieController:
@@ -286,7 +293,7 @@ services:
   App\Serializer\PaginationMetadataNormalizer:
     tags:
       - { name: 'serializer.normalizer', priority: 64 }
-      
+
   App\Doctrine\ExpenseReportExtension:
     tags:
       - { name: 'api_platform.doctrine.orm.query_extension.collection' }
@@ -310,3 +317,21 @@ services:
   App\Notifications:
     arguments:
       $maxTimestampForLegalValidation: '%env(MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%'
+
+  App\Controller\HelloAssoWebhookController:
+    arguments:
+      $helloAssoServerIp: '%env(HELLO_ASSO_SERVER_IP)%'
+      $helloAssoSignatureKey: '%env(HELLO_ASSO_WEBHOOK_SIGNATURE_KEY)%'
+    tags: ['controller.service_arguments']
+
+  App\Service\HelloAssoClient:
+    arguments:
+      $clientId: '%hello_asso_client_id%'
+      $clientSecret: '%hello_asso_client_secret%'
+      $baseUrl: '%hello_asso_api_base_url%'
+
+  App\Service\HelloAssoService:
+    arguments:
+      $organizationSlug: '%hello_asso_organization_slug%'
+      $baseUrl: '%hello_asso_api_base_url%'
+      $activityTypeId: '%hello_asso_activity_type_id%'
