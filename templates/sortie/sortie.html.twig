@@ -629,12 +629,23 @@
                                         {{ participation.tsp | date('à H:i') }}
                                     </td>
                                     <td>
-                                        {% if participation.user.valid %}
-                                            <a href="mailto:{{ participation.user.email }}">{{ participation.user.email | u.truncate(15, '...') }}</a><br />
+                                        {% if participation.user.isDeleted %}
+                                            <span style="color: red; font-weight: bold">
+                                                <img
+                                                        src="/img/base/bullet_error.png"
+                                                        alt="!"
+                                                        style="vertical-align:top"
+                                                />
+                                                compte supprimé
+                                            </span><br />
                                         {% else %}
-                                            <span style="color: red; font-weight: bold" title="Les comptes non activés ne reçoivent pas les e-mails">compte non activé</span><br />
+                                            {% if participation.user.valid %}
+                                                <a href="mailto:{{ participation.user.email }}">{{ participation.user.email | u.truncate(15, '...') }}</a><br />
+                                            {% else %}
+                                                <span style="color: red; font-weight: bold" title="Les comptes non activés ne reçoivent pas les e-mails">compte non activé</span><br />
+                                            {% endif %}
+                                            {{ participation.user.tel }}
                                         {% endif %}
-                                        {{ participation.user.tel }}
                                     </td>
                                 </tr>
                             {% endfor %}

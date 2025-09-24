@@ -37,6 +37,7 @@ class UserAttrRepository extends ServiceEntityRepository
                     AND t.code IN (:types)
                     AND a.userType = t.id
                     AND u.doitRenouveler = 0
+                    AND u.isDeleted = 0
                     AND a.params LIKE \'commission:' . $commission->getCode() . '\'
                 ORDER BY t.hierarchie DESC, u.firstname ASC, u.lastname ASC
         ';
@@ -137,7 +138,9 @@ class UserAttrRepository extends ServiceEntityRepository
     public function listAllUsersByRole(Usertype $usertype)
     {
         $queryBuilder = $this->createQueryBuilder('ua')
+            ->innerJoin('ua.user', 'u')
              ->where('ua.userType = :type')
+            ->andWhere('u.isDeleted = false')
              ->setParameter('type', $usertype)
              ->orderBy('ua.user', 'asc')
         ;

@@ -794,6 +794,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this;
     }
 
+    public function isDeleted(): bool
+    {
+        return $this->isDeleted;
+    }
+
     public function setIsDeleted(bool $isDeleted)
     {
         $this->isDeleted = $isDeleted;
