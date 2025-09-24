@@ -4,16 +4,16 @@ namespace App\Tests\Service;
 
 use App\Entity\Evt;
 use App\Entity\User;
-use App\Service\UserLicenseChecker;
+use App\Service\UserLicenseHelper;
 use PHPUnit\Framework\TestCase;
 
 class UserLicenseCheckerTest extends TestCase
 {
-    private UserLicenseChecker $userLicenseChecker;
+    private UserLicenseHelper $userLicenseChecker;
 
     protected function setUp(): void
     {
-        $this->userLicenseChecker = new UserLicenseChecker();
+        $this->userLicenseChecker = new UserLicenseHelper();
     }
 
     /**

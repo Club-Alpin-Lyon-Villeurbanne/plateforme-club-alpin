@@ -18,18 +18,21 @@ class FfcamSynchronizer
         private readonly UserRepository $userRepository,
         private readonly FfcamFileParser $fileParser,
         private readonly MemberMerger $memberMerger,
+        private readonly UserLicenseHelper $licenseHelper,
     ) {
         $today = new \DateTime();
-        $endDate = new \DateTime($today->format('Y') . '-09-30 23:59:59');
+        $endDate = new \DateTime($today->format('Y') . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
 
         $this->hasTolerancyPeriodPassed = $today > $endDate;
     }
 
     public function synchronize(?string $ffcamFilePath = null): void
     {
+        $licenseExpirationDate = $this->licenseHelper->getLicenseExpirationTimestamp();
+
         if (!$this->isFileValid($ffcamFilePath)) {
             $this->logger->warning("File {$ffcamFilePath} not found. Can't import new members");
-            $this->userRepository->blockExpiredAccounts();
+            $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
             $this->userRepository->removeExpiredFiliations();
 
             return;
@@ -40,7 +43,7 @@ class FfcamSynchronizer
         $this->archiveFile($ffcamFilePath, $stats);
         $this->logResults($ffcamFilePath, $stats);
 
-        $this->userRepository->blockExpiredAccounts();
+        $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
         $this->userRepository->removeExpiredFiliations();
     }
 

@@ -4,13 +4,13 @@ namespace App\Twig;
 
 use App\Entity\Evt;
 use App\Entity\User;
-use App\Service\UserLicenseChecker;
+use App\Service\UserLicenseHelper;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 class UserExtension extends AbstractExtension
 {
-    public function __construct(protected UserLicenseChecker $licenseChecker)
+    public function __construct(protected UserLicenseHelper $licenseChecker)
     {
     }
 

@@ -4,7 +4,7 @@ namespace App\Command;
 
 use App\Mailer\Mailer;
 use App\Repository\EvtRepository;
-use App\Service\UserLicenseChecker;
+use App\Service\UserLicenseHelper;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,7 +21,7 @@ class LicenseRenewReminderCommand extends Command
 
     public function __construct(
         protected EvtRepository $eventRepository,
-        protected UserLicenseChecker $licenseChecker,
+        protected UserLicenseHelper $licenseChecker,
         protected Mailer $mailer,
         protected UrlGeneratorInterface $urlGenerator,
     ) {
