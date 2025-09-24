@@ -46,6 +46,7 @@ foreach ($comTab as $code => $data) {
 					AND usertype_user_attr = id_usertype
 					AND user_user_attr = id_user
 					AND doit_renouveler_user = 0
+                    AND is_deleted = 0
 					AND params_user_attr LIKE 'commission:" . $code . "'
 					ORDER BY hierarchie_usertype DESC, firstname_user ASC
 					";

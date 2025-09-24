@@ -175,6 +175,11 @@ class UserController extends AbstractController
             foreach ($data['id_user'] as $key => $userId) {
                 $user = $userRepository->find($userId);
 
+                if ($user->isDeleted()) {
+                    $this->addFlash('error', 'Le compte de ' . $user->getFullName() . ' est supprimé. Impossible de l\'inscrire.');
+                    continue;
+                }
+
                 if (!$user->getDoitRenouveler()) {
                     $role = $data['role_evt_join'][$key] ?? 'manuel';
                     $status = EventParticipation::STATUS_NON_CONFIRME;

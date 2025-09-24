@@ -105,6 +105,7 @@ SQL;
         return $this->createQueryBuilder('u')
             ->where('u.valid = true')
             ->andWhere('u.nomade = true')
+            ->andWhere('u.isDeleted = false')
             ->andWhere('u.nomadeParent = :user')
             ->setParameter('user', $user)
             ->orderBy('u.lastname', 'ASC')
@@ -181,6 +182,7 @@ SQL;
     {
         $qb = $this->createQueryBuilder('u')
             ->where('u NOT IN (:users)')
+            ->andWhere('u.isDeleted = false')
             ->setParameter('users', $participants)
         ;
         if ('valid' === $show) {
