@@ -441,8 +441,7 @@
                                         {% endif %}
                                         {% if participation.user.doitRenouveler %}
                                             <p style="color:red">&#9888;&#65039; Licence expirée</p>
-                                        {% endif %}
-                                        {% if is_license_valid_for_event(participation.user, event) is same as (false) %}
+                                        {% elseif is_license_valid_for_event(participation.user, event) is same as (false) %}
                                             <p style="color:orange" title="A la date de la sortie, la licence de cet adhérent sera expirée s'il ne renouvelle pas d'ici là">Licence à renouveler (exp. 30/09)</p>
                                         {% endif %}
                                     </td>
