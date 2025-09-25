@@ -32,6 +32,7 @@ class ArticleType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        /** @var Article $article */
         $article = $options['data'] ?? null;
         $defaultArticleType = '';
 
@@ -136,6 +137,9 @@ class ArticleType extends AbstractType
                 'label' => 'Je certifie que j\'ai pris connaissance de la <a href="' . htmlspecialchars($options['editoLineLink'], \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8') . '" target="_blank" rel="noopener">ligne éditoriale du club</a> avant de poster mon article',
                 'label_html' => true,
                 'required' => true,
+                'attr' => [
+                    'checked' => $article->isAgreeEdito() ? 'checked' : '',
+                ],
             ])
             ->add('imagesAuthorized', CheckboxType::class, [
                 'label' => 'Je certifie que j\'ai l\'autorisation des propriétaires de chaque image et chaque photo présente dans cet article sinon le club se risque à des amendes, <a href="' . htmlspecialchars($options['imageRightLink'], \ENT_QUOTES | \ENT_SUBSTITUTE, 'UTF-8') . '" target="_blank" rel="noopener">voici l\'explication de cas déjà passés dans notre club</a>.',
@@ -143,6 +147,9 @@ class ArticleType extends AbstractType
                 'required' => true,
                 'help' => 'Vous n\'êtes pas autorisé à utiliser des photos d\'internet, sauf si elles proviennent des plateformes : <a href="https://www.pexels.com/fr-fr/" target="_blank" rel="noopener">Pexels</a>, <a href="https://pixabay.com/fr/" target="_blank" rel="noopener">Pixabay</a>, <a href="https://unsplash.com/fr" target="_blank" rel="noopener">Unsplash</a>',
                 'help_html' => true,
+                'attr' => [
+                    'checked' => $article->isImagesAuthorized() ? 'checked' : '',
+                ],
             ])
             ->add('articleDraftSave', SubmitType::class, [
                 'label' => '<span class="bleucaf">&gt;</span> ENREGISTRER COMME BROUILLON',
