@@ -1,4 +1,5 @@
 parameters:
+  tmpDir: ./.phpstan-tmp
   level: 0
   paths:
     - legacy
