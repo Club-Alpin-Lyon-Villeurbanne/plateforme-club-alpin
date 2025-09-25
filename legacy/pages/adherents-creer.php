@@ -36,17 +36,6 @@
             } else {
                 ?>
 
-					Civilité* :<br />
-					<select name="civ_user">
-						<option value="M" <?php if (isset($_POST['civ_user']) && 'M' == $_POST['civ_user']) {
-						    echo 'selected="selected"';
-						} ?>>M.</option>
-						<option value="MME" <?php if (isset($_POST['civ_user']) && 'MME' == $_POST['civ_user']) {
-						    echo 'selected="selected"';
-						} ?>>Mme.</option>
-					</select>
-					<br />
-
 					Prénom* :<br />
 					<input type="text" name="firstname_user" class="type1" value="<?php echo inputVal('firstname_user', ''); ?>" placeholder="" />
 					<br />

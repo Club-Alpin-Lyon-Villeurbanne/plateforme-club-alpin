@@ -159,20 +159,6 @@ if (user()) {
             <b>Modifier votre photo :</b> <span class="mini">Format .jpg, 5Mo maximum !</span><br />
             <input type="file" name="photo" />
             <br />
-
-            <!--
-            <div>
-                <label for="gender_male"><input type="radio" name="civ_user" value="M." id="gender_m" <?php if ('M.' == $tmpUser['civ_user']) {
-                    echo 'checked="checked"';
-                } ?> />M.</label>
-                <label for="gender_mm"><input type="radio" name="civ_user" value="Mme." id="gender_mm" <?php if ('Mme.' == $tmpUser['civ_user'] || 'Mlle.' == $tmpUser['civ_user']) {
-                    echo 'checked="checked"';
-                } ?> />Mme.</label>
-                <label for="gender_unknown"><input type="radio" name="civ_user" value="..." id="gender_unknown" <?php if ('...' == $tmpUser['civ_user']) {
-                    echo 'checked="checked"';
-                } ?> />...</label>
-            </div>
-            -->
             <br style="clear:both" />
 
             <hr style="margin: 20px 0" />

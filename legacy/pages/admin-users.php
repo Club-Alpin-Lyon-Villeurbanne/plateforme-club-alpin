@@ -88,7 +88,8 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
 				"iDisplayLength": 100,
 				"aaSorting": [
 					[2, "desc"],
-					[4, "asc"]
+					[3, "asc"],
+                    [4, "asc"]
 				],
 				"sDom": 'T<"clear">lfrtip',
 				"oTableTools": {
@@ -116,15 +117,14 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
 		<thead>
 			<tr>
 				<th>Outils</th>
-				<th>n° licence FFCAM / Infos / DBID </th>
+				<th>n° licence FFCAM / Infos</th>
 				<th>Actif ?</th>
-				<th>Civ</th>
 				<th>Nom</th>
 				<th>Prénom</th>
 				<th>Adhésion</th>
 				<th>Pseudo</th>
 				<th>Age</th>
-				<th>Tel / Tel2</th>
+				<th>Tél / Tél secours</th>
 				<th>E-mail</th>
 				<!-- <th>Adresse</th> -->
 				<th>CP</th>
@@ -148,21 +148,21 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
             . '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user=' . (int) $elt['id_user'] . '" class="fancyframe" title="Consulter cet adhérent"><img src="/img/base/report.png"></a> '
 
             // gestion des droits
-            . '<a href="/includer.php?admin=true&amp;p=pages/admin-users-droits.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['civ_user'] . ' ' . $elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Voir / Attribuer des statuts à cet utilisateur"><img src="/img/base/user_star.png"></a> ';
+            . '<a href="/includer.php?admin=true&amp;p=pages/admin-users-droits.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Voir / Attribuer des statuts à cet utilisateur"><img src="/img/base/user_star.png"></a> ';
 
         // désactiver
         if (allowed('user_desactivate_any') && '1' == $elt['valid_user']) {
-            echo '<a href="/includer.php?p=pages/adherents-desactiver.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['civ_user'] . ' ' . $elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Désactiver le compte de cet utilisateur"><img src="/img/base/user_unvalidate.png"></a> ';
+            echo '<a href="/includer.php?p=pages/adherents-desactiver.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Désactiver le compte de cet utilisateur"><img src="/img/base/user_unvalidate.png"></a> ';
         }
 
         // réactiver
         if (allowed('user_reactivate') && '2' == $elt['valid_user']) {
-            echo '<a href="/includer.php?p=pages/adherents-reactiver.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['civ_user'] . ' ' . $elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Réactiver le compte de cet utilisateur"><img src="/img/base/user_revalidate.png"></a> ';
+            echo '<a href="/includer.php?p=pages/adherents-reactiver.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Réactiver le compte de cet utilisateur"><img src="/img/base/user_revalidate.png"></a> ';
         }
 
         // reset user
         if (allowed('user_reset')) {
-            echo '<a href="/includer.php?p=pages/adherents-reset.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['civ_user'] . ' ' . $elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Remettre à zéro, réinitialiser le compte de cet utilisateur"><img src="/img/base/user_reset.png"></a> ';
+            echo '<a href="/includer.php?p=pages/adherents-reset.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Remettre à zéro, réinitialiser le compte de cet utilisateur"><img src="/img/base/user_reset.png"></a> ';
         }
 
         // edit user
@@ -183,7 +183,6 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
             . (int) $elt['id_user'] . ' '
             . '</td>'
             . '<td>' . (int) $elt['valid_user'] . '</td>'
-            . '<td>' . html_utf8($elt['civ_user']) . '</td>'
             . '<td>' . html_utf8(strtoupper($elt['lastname_user'])) . '</td>'
             . '<td>' . html_utf8(ucfirst($elt['firstname_user'])) . '</td>';
 

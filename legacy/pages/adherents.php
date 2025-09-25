@@ -86,8 +86,8 @@ if (allowed('user_see_all')) {
 					$('#pagesLibres').dataTable({
 						"iDisplayLength": 100,
 						"aaSorting": [
-							[3, "asc"],
-							[4, "asc"]
+							[2, "asc"],
+							[3, "asc"]
 						]
 					});
 					$('span.br').html('<br />');
@@ -101,14 +101,12 @@ if (allowed('user_see_all')) {
 					<tr>
 						<th>Outils</th>
 						<th>n° licence FFCAM / Infos</th>
-						<!-- <th>Actif ?</th> -->
-						<th>Civ</th>
 						<th>Nom</th>
 						<th>Prénom</th>
 						<th>Adhésion</th>
 						<th>Pseudo</th>
 						<th>Age</th>
-						<th>Tel</th>
+						<th>Tél</th>
 						<th>E-mail</th>
 					</tr>
 				</thead>
@@ -138,21 +136,21 @@ if (allowed('user_see_all')) {
 
                 // gestion des droits
                 if ($isAllowed_user_giveright_1 || $isAllowed_user_giveright_2 || $isAllowed_user_givepresidence) {
-                    echo '<a href="/includer.php?p=pages/adherents-droits.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['civ_user'] . ' ' . $elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Voir / Attribuer des responsabilités à cet utilisateur"><img src="/img/base/user_star.png"></a> ';
+                    echo '<a href="/includer.php?p=pages/adherents-droits.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Voir / Attribuer des responsabilités à cet utilisateur"><img src="/img/base/user_star.png"></a> ';
                 }
 
                 // désactiver
                 if ($isAllowed_user_desactivate_any && '1' == $elt['valid_user']) {
-                    echo '<a href="/includer.php?p=pages/adherents-desactiver.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['civ_user'] . ' ' . $elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Désactiver le compte de cet utilisateur"><img src="/img/base/user_unvalidate.png"></a> ';
+                    echo '<a href="/includer.php?p=pages/adherents-desactiver.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Désactiver le compte de cet utilisateur"><img src="/img/base/user_unvalidate.png"></a> ';
                 }
                 // réactiver
                 if ($isAlowed_user_reactivate && '2' == $elt['valid_user']) {
-                    echo '<a href="/includer.php?p=pages/adherents-reactiver.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['civ_user'] . ' ' . $elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Réactiver le compte de cet utilisateur"><img src="/img/base/user_revalidate.png"></a> ';
+                    echo '<a href="/includer.php?p=pages/adherents-reactiver.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Réactiver le compte de cet utilisateur"><img src="/img/base/user_revalidate.png"></a> ';
                 }
 
                 // reset user
                 if ($isAllowed_user_reset) {
-                    echo '<a href="/includer.php?p=pages/adherents-reset.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['civ_user'] . ' ' . $elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Remettre à zéro, réinitialiser le compte de cet utilisateur"><img src="/img/base/user_reset.png"></a> ';
+                    echo '<a href="/includer.php?p=pages/adherents-reset.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Remettre à zéro, réinitialiser le compte de cet utilisateur"><img src="/img/base/user_reset.png"></a> ';
                 }
 
                 // edit user
@@ -182,8 +180,6 @@ if (allowed('user_see_all')) {
                     . ($elt['nomade_user'] ? '<img src="/img/base/nomade_user.png" alt="NOMADE" title="Utilisateur nomade" /> ' : '')
                     . ('2' == $elt['valid_user'] ? '<img src="/img/base/user_desactive.png" alt="DESACTIVE" title="Utilisateur désactivé manuellement" /> ' : '')
                     . '</td>'
-                    // .'<td>'.intval($elt['valid_user']).'</td>'
-                    . '<td>' . html_utf8($elt['civ_user']) . '</td>'
                     . '<td>' . html_utf8(strtoupper($elt['lastname_user'])) . '</td>'
                     . '<td>' . html_utf8(ucfirst($elt['firstname_user'])) . '</td>';
 

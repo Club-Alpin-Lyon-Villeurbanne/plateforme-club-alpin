@@ -93,9 +93,9 @@ function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user =
     switch ($style) {
         case 'public': 	$return = html_utf8($nickname_user);
             break;
-        case 'short': 	$return = html_utf8($civ_user) . ' ' . html_utf8(ucfirst($firstname_user)) . ' ' . strtoupper(substr(trim($lastname_user), 0, 1));
+        case 'short': 	$return = html_utf8(ucfirst($firstname_user)) . ' ' . strtoupper(substr(trim($lastname_user), 0, 1));
             break;
-        case 'full': 	$return = html_utf8($civ_user) . ' ' . html_utf8(ucfirst($firstname_user)) . ' ' . html_utf8(strtoupper($lastname_user));
+        case 'full': 	$return = html_utf8(ucfirst($firstname_user)) . ' ' . html_utf8(strtoupper($lastname_user));
             break;
         default:		return;
     }
