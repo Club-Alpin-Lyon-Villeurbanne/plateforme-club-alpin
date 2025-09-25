@@ -15,19 +15,19 @@ class UserLicenseHelper
     {
         $isLicenseValid = true;
 
+        if (!$user->getDateAdhesion()) {
+            return false;
+        }
+
+        $adhesionDate = (new \DateTime())->setTimestamp($user->getDateAdhesion());
+        $year = ($adhesionDate->format('m') >= self::LICENSE_TOLERANCY_PERIOD_END_MONTH) ? (int) $adhesionDate->format('Y') + 1 : $adhesionDate->format('Y');
+
+        $endAdhesionDate = clone $adhesionDate;
+        $endAdhesionDate->setTimestamp(strtotime("$year-" . self::LICENSE_TOLERANCY_PERIOD_END));
+
         // on considère la date fin de sortie pour les sorties sur plusieurs jours
         $eventEndDate = (new \DateTime())->setTimestamp($event->getTspEnd());
-        if ($user->getDateAdhesion()) {
-            $adhesionDate = (new \DateTime())->setTimestamp($user->getDateAdhesion());
-            $year = ($adhesionDate->format('m') >= self::LICENSE_TOLERANCY_PERIOD_END_MONTH) ? (int) $adhesionDate->format('Y') + 1 : $adhesionDate->format('Y');
-
-            $endAdhesionDate = clone $adhesionDate;
-            $endAdhesionDate->setTimestamp(strtotime("$year-" . self::LICENSE_TOLERANCY_PERIOD_END));
-
-            if ($endAdhesionDate < $eventEndDate) {
-                $isLicenseValid = false;
-            }
-        } else {
+        if ($endAdhesionDate < $eventEndDate) {
             $isLicenseValid = false;
         }
 
