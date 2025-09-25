@@ -6,18 +6,18 @@
 import {
 	ClassicEditor,
 	Alignment,
+	Autoformat,
 	AutoImage,
 	AutoLink,
 	Autosave,
+	BalloonToolbar,
 	BlockQuote,
 	Bold,
-	Code,
 	Essentials,
 	FontBackgroundColor,
 	FontColor,
 	FontFamily,
 	FontSize,
-	GeneralHtmlSupport,
 	Heading,
 	Highlight,
 	HorizontalLine,
@@ -39,13 +39,13 @@ import {
 	Link,
 	LinkImage,
 	List,
+	ListProperties,
 	MediaEmbed,
 	Paragraph,
 	PasteFromOffice,
 	RemoveFormat,
 	SimpleUploadAdapter,
 	Strikethrough,
-	Style,
 	Subscript,
 	Superscript,
 	Table,
@@ -54,6 +54,8 @@ import {
 	TableColumnResize,
 	TableProperties,
 	TableToolbar,
+	TextTransformation,
+	TodoList,
 	Underline
 } from 'ckeditor5';
 
@@ -83,7 +85,6 @@ const editorConfig = {
 			'strikethrough',
 			'subscript',
 			'superscript',
-			'code',
 			'removeFormat',
 			'|',
 			'horizontalLine',
@@ -99,6 +100,7 @@ const editorConfig = {
 			'|',
 			'bulletedList',
 			'numberedList',
+			'todoList',
 			'outdent',
 			'indent'
 		],
@@ -106,18 +108,18 @@ const editorConfig = {
 	},
 	plugins: [
 		Alignment,
+		Autoformat,
 		AutoImage,
 		AutoLink,
 		Autosave,
+		BalloonToolbar,
 		BlockQuote,
 		Bold,
-		Code,
 		Essentials,
 		FontBackgroundColor,
 		FontColor,
 		FontFamily,
 		FontSize,
-		GeneralHtmlSupport,
 		Heading,
 		Highlight,
 		HorizontalLine,
@@ -139,13 +141,13 @@ const editorConfig = {
 		Link,
 		LinkImage,
 		List,
+		ListProperties,
 		MediaEmbed,
 		Paragraph,
 		PasteFromOffice,
 		RemoveFormat,
 		SimpleUploadAdapter,
 		Strikethrough,
-		Style,
 		Subscript,
 		Superscript,
 		Table,
@@ -154,8 +156,11 @@ const editorConfig = {
 		TableColumnResize,
 		TableProperties,
 		TableToolbar,
+		TextTransformation,
+		TodoList,
 		Underline
 	],
+	balloonToolbar: ['bold', 'italic', '|', 'link', 'insertImage', '|', 'bulletedList', 'numberedList'],
 	fontFamily: {
 		supportAllValues: true
 	},
@@ -208,16 +213,6 @@ const editorConfig = {
 			}
 		]
 	},
-	htmlSupport: {
-		allow: [
-			{
-				name: /^.*$/,
-				styles: true,
-				attributes: true,
-				classes: true
-			}
-		]
-	},
 	image: {
 		toolbar: [
 			'toggleImageCaption',
@@ -245,52 +240,15 @@ const editorConfig = {
 			}
 		}
 	},
+	list: {
+		properties: {
+			styles: true,
+			startIndex: true,
+			reversed: true
+		}
+	},
 	menuBar: {
 		isVisible: true
-	},
-	style: {
-		definitions: [
-			{
-				name: 'Article category',
-				element: 'h3',
-				classes: ['category']
-			},
-			{
-				name: 'Title',
-				element: 'h2',
-				classes: ['document-title']
-			},
-			{
-				name: 'Subtitle',
-				element: 'h3',
-				classes: ['document-subtitle']
-			},
-			{
-				name: 'Info box',
-				element: 'p',
-				classes: ['info-box']
-			},
-			{
-				name: 'CTA Link Primary',
-				element: 'a',
-				classes: ['button', 'button--green']
-			},
-			{
-				name: 'CTA Link Secondary',
-				element: 'a',
-				classes: ['button', 'button--black']
-			},
-			{
-				name: 'Marker',
-				element: 'span',
-				classes: ['marker']
-			},
-			{
-				name: 'Spoiler',
-				element: 'span',
-				classes: ['spoiler']
-			}
-		]
 	},
 	table: {
 		contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
