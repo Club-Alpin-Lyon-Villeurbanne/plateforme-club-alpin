@@ -66,6 +66,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
                     <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('base-styles'); ?>
                     <?php echo LegacyContainer::get('legacy_entrypoint_renderer')->renderViteLinkTags('common-styles'); ?>
                     <link rel="stylesheet" href="/js/ckeditor5/ckeditor5.css">
+                    <script src="/js/upload-adapter.js"></script>
                     <script type="importmap">
                         {
                             "imports": {
