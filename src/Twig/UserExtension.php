@@ -10,7 +10,7 @@ use Twig\TwigFunction;
 
 class UserExtension extends AbstractExtension
 {
-    public function __construct(protected UserLicenseHelper $licenseChecker)
+    public function __construct(protected UserLicenseHelper $userLicenseHelper)
     {
     }
 
@@ -38,6 +38,6 @@ class UserExtension extends AbstractExtension
 
     public function isLicenseValidForEvent(User $user, Evt $event): bool
     {
-        return $this->licenseChecker->isLicenseValidForEvent($user, $event);
+        return $this->userLicenseHelper->isLicenseValidForEvent($user, $event);
     }
 }

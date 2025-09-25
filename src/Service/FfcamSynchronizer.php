@@ -18,7 +18,7 @@ class FfcamSynchronizer
         private readonly UserRepository $userRepository,
         private readonly FfcamFileParser $fileParser,
         private readonly MemberMerger $memberMerger,
-        private readonly UserLicenseHelper $licenseHelper,
+        private readonly UserLicenseHelper $userLicenseHelper,
     ) {
         $today = new \DateTime();
         $endDate = new \DateTime($today->format('Y') . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
@@ -28,7 +28,7 @@ class FfcamSynchronizer
 
     public function synchronize(?string $ffcamFilePath = null): void
     {
-        $licenseExpirationDate = $this->licenseHelper->getLicenseExpirationTimestamp();
+        $licenseExpirationDate = $this->userLicenseHelper->getLicenseExpirationTimestamp();
 
         if (!$this->isFileValid($ffcamFilePath)) {
             $this->logger->warning("File {$ffcamFilePath} not found. Can't import new members");

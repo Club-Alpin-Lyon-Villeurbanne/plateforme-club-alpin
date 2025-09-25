@@ -21,7 +21,7 @@ class LicenseRenewReminderCommand extends Command
 
     public function __construct(
         protected EvtRepository $eventRepository,
-        protected UserLicenseHelper $licenseChecker,
+        protected UserLicenseHelper $userLicenseHelper,
         protected Mailer $mailer,
         protected UrlGeneratorInterface $urlGenerator,
     ) {
@@ -41,7 +41,7 @@ class LicenseRenewReminderCommand extends Command
                 $participant = $participation->getUser();
 
                 // vérifier si la licence de chaque participant est à renouveler
-                if ($this->licenseChecker->isLicenseValidForEvent($participant, $event)) {
+                if ($this->userLicenseHelper->isLicenseValidForEvent($participant, $event)) {
                     continue;
                 }
 

@@ -7,13 +7,13 @@ use App\Entity\User;
 use App\Service\UserLicenseHelper;
 use PHPUnit\Framework\TestCase;
 
-class UserLicenseCheckerTest extends TestCase
+class UserLicenseHelperTest extends TestCase
 {
-    private UserLicenseHelper $userLicenseChecker;
+    private UserLicenseHelper $userLicenseHelper;
 
     protected function setUp(): void
     {
-        $this->userLicenseChecker = new UserLicenseHelper();
+        $this->userLicenseHelper = new UserLicenseHelper();
     }
 
     /**
@@ -27,7 +27,7 @@ class UserLicenseCheckerTest extends TestCase
         $user = $this->createMockUser($adhesionTimestamp);
         $event = $this->createMockEvent($eventEndTimestamp);
 
-        $result = $this->userLicenseChecker->isLicenseValidForEvent($user, $event);
+        $result = $this->userLicenseHelper->isLicenseValidForEvent($user, $event);
 
         $this->assertEquals($expectedResult, $result);
     }
@@ -83,7 +83,7 @@ class UserLicenseCheckerTest extends TestCase
         $user = $this->createMockUser(null);
         $event = $this->createMockEvent(strtotime('2025-06-15'));
 
-        $result = $this->userLicenseChecker->isLicenseValidForEvent($user, $event);
+        $result = $this->userLicenseHelper->isLicenseValidForEvent($user, $event);
 
         $this->assertFalse($result, 'Un utilisateur sans date d\'adhésion ne devrait pas avoir une licence valide');
     }
@@ -93,7 +93,7 @@ class UserLicenseCheckerTest extends TestCase
         $user = $this->createMockUser(strtotime('2023-11-15'));
         $event = $this->createMockEvent(strtotime('2024-09-15'));
 
-        $result = $this->userLicenseChecker->isLicenseValidForEvent($user, $event);
+        $result = $this->userLicenseHelper->isLicenseValidForEvent($user, $event);
 
         $this->assertTrue($result, 'Une adhésion en novembre 2023 devrait être valide jusqu\'au 30 septembre 2024');
     }
@@ -103,7 +103,7 @@ class UserLicenseCheckerTest extends TestCase
         $user = $this->createMockUser(strtotime('2024-03-16'));
         $event = $this->createMockEvent(strtotime('2024-09-15'));
 
-        $result = $this->userLicenseChecker->isLicenseValidForEvent($user, $event);
+        $result = $this->userLicenseHelper->isLicenseValidForEvent($user, $event);
 
         $this->assertTrue($result, 'Une adhésion en mars 2024 devrait être valide jusqu\'au 30 septembre 2024');
     }
@@ -117,12 +117,12 @@ class UserLicenseCheckerTest extends TestCase
         $eventJustAfter = $this->createMockEvent(strtotime('2025-10-02'));
 
         $this->assertTrue(
-            $this->userLicenseChecker->isLicenseValidForEvent($user, $eventJustBefore),
+            $this->userLicenseHelper->isLicenseValidForEvent($user, $eventJustBefore),
             'La licence devrait être valide pour événement le 29 septembre 2025'
         );
 
         $this->assertFalse(
-            $this->userLicenseChecker->isLicenseValidForEvent($user, $eventJustAfter),
+            $this->userLicenseHelper->isLicenseValidForEvent($user, $eventJustAfter),
             'La licence ne devrait pas être valide pour événement le 2 octobre 2025'
         );
     }
