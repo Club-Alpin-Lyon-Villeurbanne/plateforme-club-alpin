@@ -289,13 +289,16 @@ class UserController extends AbstractController
             } else {
                 $nomad = $form->getData();
 
-                $existingUserWithSameEmail = $userRepository->findOneBy(['email' => $nomad->getEmail()]);
-                if ($existingUserWithSameEmail && !empty($nomad->getEmail())) {
+                $existingUserWithSameEmail = null;
+                if (!empty($nomad->getEmail())) {
+                    $existingUserWithSameEmail = $userRepository->findOneBy(['email' => $nomad->getEmail()]);
+                }
+                if ($existingUserWithSameEmail instanceof User) {
                     ++$errors;
                     $form->get('email')->addError(new FormError('Un utilisateur existe déjà avec cette adresse e-mail.'));
                 }
                 $existingUserWithSameCafnum = $userRepository->findOneBy(['cafnum' => $nomad->getCafnum()]);
-                if ($existingUserWithSameCafnum) {
+                if ($existingUserWithSameCafnum instanceof User) {
                     ++$errors;
                     $form->get('cafnum')->addError(new FormError('Un utilisateur existe déjà avec ce numéro de licence.'));
                 }
