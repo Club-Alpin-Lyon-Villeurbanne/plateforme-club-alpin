@@ -841,7 +841,7 @@
 
             {% if allowed('user_read_limited') %}
                 <ul class="nice-list">
-                    <li><b>RDV :</b> {% if event.rdv is not same as ('') %}{{ event.rdv }}{% else %}Voir sur la carte ci-dessous{% endif %}</li>
+                    <li class="wide"><b>RDV :</b> {% if event.rdv is not same as ('') %}{{ event.rdv }}{% else %}Voir sur la carte ci-dessous{% endif %}</li>
                     <li class="wide align-top"><b>S'Y RENDRE :</b></li>
                 </ul>
                 <div class="gps-apps">
