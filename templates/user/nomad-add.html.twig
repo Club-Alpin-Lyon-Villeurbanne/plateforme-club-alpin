@@ -17,17 +17,7 @@
         <h1>Inscrire un non-adhérent à cette sortie</h1>
         {{ easy_include('explication-nomades', '') }}
 
-        {{ form_start(form, { attr: { class: 'loading' } }) }}
-
-        {% if form_errors(form) %}
-            <div class="erreur">
-                <ul>
-                    {% for error in form_errors(form) %}
-                        <li>{{ error.message }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+        {{ form_start(form, { attr: { class: 'loading nomad-form' } }) }}
 
         <hr>
 
