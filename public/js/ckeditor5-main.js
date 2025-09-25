@@ -9,7 +9,6 @@ import {
 	AutoImage,
 	AutoLink,
 	Autosave,
-	Base64UploadAdapter,
 	BlockQuote,
 	Bold,
 	Code,
@@ -44,6 +43,7 @@ import {
 	Paragraph,
 	PasteFromOffice,
 	RemoveFormat,
+	SimpleUploadAdapter,
 	Strikethrough,
 	Style,
 	Subscript,
@@ -109,7 +109,6 @@ const editorConfig = {
 		AutoImage,
 		AutoLink,
 		Autosave,
-		Base64UploadAdapter,
 		BlockQuote,
 		Bold,
 		Code,
@@ -144,6 +143,7 @@ const editorConfig = {
 		Paragraph,
 		PasteFromOffice,
 		RemoveFormat,
+		SimpleUploadAdapter,
 		Strikethrough,
 		Style,
 		Subscript,
@@ -298,4 +298,11 @@ const editorConfig = {
 	translations: [translations]
 };
 
-ClassicEditor.create(document.querySelector('.ckeditor'), editorConfig);
+ClassicEditor
+	.create(document.querySelector('.ckeditor'), editorConfig)
+	.then(editor => {
+		editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+			return new UploadAdapter(loader);
+		};
+	})
+;
