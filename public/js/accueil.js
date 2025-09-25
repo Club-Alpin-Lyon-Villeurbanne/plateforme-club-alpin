@@ -5,10 +5,10 @@ $().ready(function() {
 	// *** SLIDER
 	var sliderIndex=0;
 	function slideTo(index){
-		if(typeof(index)=="undefined") sliderIndex++; // pas d�fini, incrementation
+		if(typeof(index)=="undefined") sliderIndex++; // pas defini, incrementation
 		else if(index=="plus"){  sliderIndex++; clearInterval(sliderInterval); } // incrementation (bouton vers la droite, ou molette)
 		else if(index=="moins"){ sliderIndex--; clearInterval(sliderInterval); } // decrementation (bouton vers la gauche, ou molette)
-		else{					 sliderIndex=parseInt(index); clearInterval(sliderInterval); } // index donn� (navigation)
+		else{					 sliderIndex=parseInt(index); clearInterval(sliderInterval); } // index donne (navigation)
 		
 		var sliderSpeed=700;
 		var sliderEase='easeInOutQuad';
