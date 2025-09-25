@@ -116,12 +116,8 @@ SQL;
         ;
     }
 
-    public function blockExpiredAccounts(): void
+    public function blockExpiredAccounts(int $expiryDate): void
     {
-        $today = new \DateTime();
-        $year = ($today->format('m') <= 9) ? (int) $today->format('Y') - 1 : $today->format('Y');
-        $expiryDate = strtotime("$year-08-31");
-
         $qb = $this->createQueryBuilder('u');
 
         $qb->update()
