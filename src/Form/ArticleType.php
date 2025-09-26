@@ -138,7 +138,7 @@ class ArticleType extends AbstractType
                 'label_html' => true,
                 'required' => true,
                 'attr' => [
-                    'checked' => $article->isAgreeEdito() ? 'checked' : '',
+                    'checked' => $article->isAgreeEdito() ? 'checked' : false,
                 ],
             ])
             ->add('imagesAuthorized', CheckboxType::class, [
@@ -148,7 +148,7 @@ class ArticleType extends AbstractType
                 'help' => 'Vous n\'êtes pas autorisé à utiliser des photos d\'internet, sauf si elles proviennent des plateformes : <a href="https://www.pexels.com/fr-fr/" target="_blank" rel="noopener">Pexels</a>, <a href="https://pixabay.com/fr/" target="_blank" rel="noopener">Pixabay</a>, <a href="https://unsplash.com/fr" target="_blank" rel="noopener">Unsplash</a>',
                 'help_html' => true,
                 'attr' => [
-                    'checked' => $article->isImagesAuthorized() ? 'checked' : '',
+                    'checked' => $article->isImagesAuthorized() ? 'checked' : false,
                 ],
             ])
             ->add('articleDraftSave', SubmitType::class, [
