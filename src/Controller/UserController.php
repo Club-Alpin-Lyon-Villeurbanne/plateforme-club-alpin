@@ -156,6 +156,12 @@ class UserController extends AbstractController
                     $availableSpotNb = 0;
                 }
                 $this->addFlash('error', 'Vous ne pouvez pas inscrire plus de participants que de places disponibles (' . $availableSpotNb . '). Vous pouvez augmenter le nombre maximum de places pour ensuite rajouter des personnes.');
+
+                return new Response(
+                    '<script>
+                    window.parent.location.reload();
+                </script>'
+                );
             }
 
             // liste des encadrants
