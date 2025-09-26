@@ -3,7 +3,6 @@
 use App\Legacy\LegacyContainer;
 use App\Utils\NicknameGenerator;
 
-$civ_user = trim(stripslashes($_POST['civ_user']));
 $firstname_user = ucfirst(trim(stripslashes($_POST['firstname_user'])));
 $lastname_user = strtoupper(trim(stripslashes($_POST['lastname_user'])));
 $nickname_user = NicknameGenerator::generateNickname($firstname_user, $lastname_user);
@@ -20,9 +19,6 @@ $pays_user = trim(stripslashes($_POST['pays_user']));
 $auth_contact_user = trim(stripslashes($_POST['auth_contact_user'] ?? null));
 
 // vérification du format des données
-if ('' === $civ_user) {
-    $errTab[] = "Merci d'entrer la civilité";
-}
 if (strlen($firstname_user) < 2) {
     $errTab[] = "Merci d'entrer un prenom valide";
 }
@@ -75,10 +71,10 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if ($row[0]) {
         $errTab[] = 'Un compte validé existe déjà avec cette adresse e-mail. Avez-vous <a href="' . generateRoute('session_password_lost') . '" class="fancyframe" title="">oublié le mot de passe ?</a>';
     } else {
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO `caf_user` (`email_user`, `mdp_user`, `cafnum_user`, `firstname_user`, `lastname_user`, `nickname_user`, `created_user`, `birthday_user`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `civ_user`, `moreinfo_user`, `auth_contact_user`, `valid_user`, `cookietoken_user`, `manuel_user`, cafnum_parent_user, nomade_user, nomade_parent_user, doit_renouveler_user, alerte_renouveler_user)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, '1', '', '1', null, '0', '0', '0', '0')");
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO `caf_user` (`email_user`, `mdp_user`, `cafnum_user`, `firstname_user`, `lastname_user`, `nickname_user`, `created_user`, `birthday_user`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `moreinfo_user`, `auth_contact_user`, `valid_user`, `cookietoken_user`, `manuel_user`, cafnum_parent_user, nomade_user, nomade_parent_user, doit_renouveler_user, alerte_renouveler_user)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, '1', '', '1', null, '0', '0', '0', '0')");
         $current_time = time();
-        $stmt->bind_param('ssssssisssssssss', $email_user, $mdp_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $current_time, $birthday_user, $tel_user, $tel2_user, $adresse_user, $cp_user, $ville_user, $pays_user, $civ_user, $auth_contact_user);
+        $stmt->bind_param('ssssssissssssss', $email_user, $mdp_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $current_time, $birthday_user, $tel_user, $tel2_user, $adresse_user, $cp_user, $ville_user, $pays_user, $auth_contact_user);
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur SQL';
         } else {

@@ -26,8 +26,8 @@
                 "iDisplayLength": 9000,
                 "aLengthMenu": [[-1], ["Tout"]],
                 "aaSorting": [
-                    [3, "asc"],
-                    [4, "asc"]
+                    [2, "asc"],
+                    [3, "asc"]
                 ],
                 "sDom": 'T<"clear">lfrtip'
             });
@@ -70,7 +70,6 @@
                 <tr>
                     <th></th>
                     <th>n° licence FFCAM</th>
-                    <th>Civ</th>
                     <th>Nom</th>
                     <th>Prénom</th>
                     <th>Pseudo</th>
@@ -95,7 +94,6 @@
                         <input type="hidden" disabled="disabled" name="nickname_user[]" value="{{ user.nickname }}" />
                     </td>
                     <td>{{ user.cafnum}} </td>
-                    <td>{{ user.civ }}</td>
                     <td>{{ user.lastname|upper }}</td>
                     <td>{{ user.firstname }}</td>
                     <td>

@@ -24,7 +24,6 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
         $userTab[$key] = inputVal($key, $userTab[$key]);
     }
 
-    $civUser = $userTab['civ_user'] ?? '';
     $firstnameUser = ucfirst($userTab['firstname_user']);
     $lastnameUser = strtoupper($userTab['lastname_user']);
     $nicknameUser = $userTab['nickname_user'];
@@ -78,7 +77,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 						<h1>
 							<?php
 
-                            echo $civUser . ' ' . ucfirst($firstnameUser) . ' ' . strtoupper($lastnameUser) . '<br/>
+                            echo ucfirst($firstnameUser) . ' ' . strtoupper($lastnameUser) . '<br/>
                             (<a href="/user-full/' . $idUser . '.html" title="Fiche profil" target="_top">' . $nicknameUser . '</a>)'; ?>
 						</h1>
 					</td>

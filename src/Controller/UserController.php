@@ -181,7 +181,7 @@ class UserController extends AbstractController
                 }
 
                 if (!$user->getDoitRenouveler()) {
-                    $role = $data['role_evt_join'][$key] ?? 'manuel';
+                    $role = $data['role_evt_join'][$key] ?? EventParticipation::ROLE_MANUEL;
                     $status = EventParticipation::STATUS_NON_CONFIRME;
                     if ($this->getUser() === $event->getUser() || $isCurrentUserEncadrant) {
                         $status = EventParticipation::STATUS_VALIDE;
