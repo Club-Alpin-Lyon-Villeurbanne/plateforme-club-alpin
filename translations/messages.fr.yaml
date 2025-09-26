@@ -1,6 +1,6 @@
 encadrant: encadrant
 coencadrant: co-encadrant
-stagiaire: encadrant
-benevole: bénévole
+stagiaire: initiateur stagiaire
+benevole: participant bénévole
 manuel: manuel
 inscrit: participant
