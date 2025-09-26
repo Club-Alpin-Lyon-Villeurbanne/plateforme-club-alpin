@@ -60,10 +60,11 @@ class SortieController extends AbstractController
         UserRights $userRights,
         Mailer $mailer,
         ?Evt $event = null,
-        ?Commission $commission = null,
     ): array|RedirectResponse {
         $user = $this->getUser();
         $isUpdate = true;
+        $commission = $commissionRepository->findOneBy(['code' => $request->query->get('commission')]);
+
         if (!$event instanceof Evt) {
             $event = new Evt(
                 $user,
@@ -148,6 +149,11 @@ class SortieController extends AbstractController
                     }
                 }
             }
+
+            // champs obligatoires selon la commission
+            $event->setDifficulte($formData['difficulte']);
+            $event->setDenivele($formData['denivele']);
+            $event->setDistance($formData['distance']);
 
             if (!$isUpdate) {
                 $event->setCode(strtolower(substr($slugger->slug($event->getTitre(), '-'), 0, 30)));

@@ -31,7 +31,7 @@
         {% endif %}
         <br class="clear">
 
-        <div style="float:left; padding:0 20px 10px 0">
+        <div style="float:left; width: 42%; padding:0 0 10px 0;margin: 0">
             {% if is_update %}
                 Sortie liée à la commission :<br />
                 <b>{{ commission }}</b>
@@ -39,10 +39,10 @@
                 {{ form_row(form.commission) }}
             {% endif %}
         </div>
-        <div style="float:right;margin-right:20px;">
+        <div style="float:left; width: 42%; margin: 0 20px;">
             {{ form_row(form.titre) }}
         </div>
-        <br style="clear:both" /><br>
+        <br class="clear">
 
         <div id="individus">
             {{ form_macros.display_encadrement(form, is_update) }}
@@ -58,7 +58,7 @@
 
             <div style="float:left; width:45%; padding:0 20px 0 0;">
                 <label>Précisez sur la carte <span class="required">*</span></label>
-                <button type="button" name="codeAddress" id="codeAddress" class="biglink btn-marker" style="border-radius:5px; cursor:pointer;"><span class="bleucaf">&gt;</span> PLACER LE MARQUEUR</button><br>
+                <button type="button" name="codeAddress" id="codeAddress" class="biglink btn-marker" style="cursor:pointer;"><span class="bleucaf">&gt;</span> PLACER LE MARQUEUR</button><br>
                 <div class="mini help-text">
                     Cliquez ci-dessus pour placer le marqueur sur la carte, puis déplacez ce dernier sur le <span style="text-decoration: underline;">lieu exact du RDV</span>. Vous pouvez zoomer / dézoomer.
                 </div>
@@ -118,17 +118,19 @@
 
         <h2 class="trigger-h2">Difficulté / matériel :</h2>
         <div class="trigger-me">
-            {{ form_row(form.difficulte) }}<br />
-            <div>
-                {{ form_label(form.denivele) }}
-                {{ form_errors(form.denivele) }}
-                {{ form_widget(form.denivele) }} m
-            </div><br />
-            <div>
-                {{ form_label(form.distance) }}
-                {{ form_errors(form.distance) }}
-                {{ form_widget(form.distance) }} km
-            </div><br />
+            <div id="commission-specific-fields">
+                {{ form_row(form.difficulte) }}<br />
+                <div>
+                    {{ form_label(form.denivele) }}
+                    {{ form_errors(form.denivele) }}
+                    {{ form_widget(form.denivele) }} m
+                </div><br />
+                <div>
+                    {{ form_label(form.distance) }}
+                    {{ form_errors(form.distance) }}
+                    {{ form_widget(form.distance) }} km
+                </div><br />
+            </div>
             <div style="float:right; padding-right:20px;">
                 {{ form_widget(form.stuff_list) }} <input type="button" value="appliquer" class="nice" id="predefinitions-matos-submit" />
             </div>
@@ -206,6 +208,12 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
           integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
           crossorigin="" />
+    <style>
+        #map-creersortie {
+            width: 96%;
+            margin: 0;
+        }
+    </style>
 {% endblock %}
 
 {% block javascripts %}
