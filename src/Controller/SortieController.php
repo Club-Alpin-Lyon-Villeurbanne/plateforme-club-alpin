@@ -952,7 +952,7 @@ class SortieController extends AbstractController
                 $join_max = $event->getJoinMax();
                 $current_participants = $event->getParticipationsCount();
                 $waitingList = false;
-                if ($join_max > $ngens_max) {
+                if ($join_max > $ngens_max && $current_participants >= $ngens_max) {
                     $waitingList = true;
                 }
 
