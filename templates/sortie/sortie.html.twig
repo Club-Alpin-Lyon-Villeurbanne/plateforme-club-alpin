@@ -2,7 +2,7 @@
 
 {% block title %}{{ event.titre }}{% endblock %}
 
-{% macro user_inscription_button(event, filiations, my_status) %}
+{% macro user_inscription_button(event, filiations, my_status, nInscritsTotal) %}
 
     {% if event.joinMax > 0 %}
         {% set style = '' %}
@@ -14,7 +14,8 @@
             <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
             <span class="bleucaf">&gt;</span>
             {% if not my_status %}
-            JE SOUHAITE REJOINDRE CETTE SORTIE
+            JE SOUHAITE REJOINDRE {% if event.joinMax > event.ngensMax and nInscritsTotal >= event.ngensMax %}LA FILE D'ATTENTE{% else %}CETTE SORTIE{% endif %}
+            {% elseif my_status.isCovoiturage %}
             {% else %}
             JE METS A JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
             {% endif %}
@@ -1027,17 +1028,13 @@
         {% endif %}
 
         {% if not event.cancelled %}
-            {% set nPlacesRestantesOnline = max(0, event.joinMax - event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::ROLE_BENEVOLE')]) | length) %}
+            {% set nPlacesRestantesOnline = max(0, event.joinMax - nInscritsTotal) %}
             {% set nEnAttente = event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length %}
-
-            {% if nPlacesRestantesOnline > event.ngensMax - nInscritsTotal %}
-                {% set nPlacesRestantesOnline = max(0, event.ngensMax - nInscritsTotal) %}
-            {% endif %}
 
             <hr />
             <ul class="nice-list">
-                <li class="wide"><b>NOMBRE TOTAL DE PLACES :</b> {{ event.ngensMax }}
-                <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}
+                <li class="wide"><b>NOMBRE MAXIMUM DE PLACES :</b> {{ event.ngensMax }}
+                <li class="wide"><b>DISPONIBLES (y compris file d'attente) :</b> {{ nPlacesRestantesOnline }}
             </ul>
 
             <br style="clear:both" /><hr />
@@ -1048,11 +1045,11 @@
                 </span>
                 <span style="font-size: 0.9rem; font-family:DINBold; color:#666666">
                     {{ nInscritsTotal }} PARTICIPANT{{ nInscritsTotal > 1 ? 'S' : '' }} INSCRIT{{ nInscritsTotal > 1 ? 'S' : '' }}
-                    SUR  {{ event.ngensMax }} PLACE{{ event.ngensMax ? 'S' : '' }} AU TOTAL
+                    SUR  {{ event.ngensMax }} PLACE{{ event.ngensMax ? 'S' : '' }} MAXIMUM
                     ({{ event.ngensMax > 0 ? (100 * nInscritsTotal / event.ngensMax) | round : 0 }}%)
                 </span><br />
                 {{ nPlacesRestantesOnline }} place{{ nPlacesRestantesOnline > 1 ? 's' : '' }} restante{{ nPlacesRestantesOnline > 1 ? 's' : '' }}
-                pour les inscriptions en ligne
+                (y compris file d'attente)
                 {{ nEnAttente > 0 ? ' et '~nEnAttente~' inscription'~ (nEnAttente > 1 ? 's' : '' ) ~' en attente de confirmation' : '' }}
             </p>
 
@@ -1134,7 +1131,7 @@
                         {% if not event.hasStarted %}
                             {% if event.joinHasStarted %}
                                 {% if is_granted('JOIN_SORTIE', event) %}
-                                    {{ _self.user_inscription_button(event, filiations, my_status) }}
+                                    {{ _self.user_inscription_button(event, filiations, my_status, nInscritsTotal) }}
 
                                     <div id="inscription" style="display:none">
 

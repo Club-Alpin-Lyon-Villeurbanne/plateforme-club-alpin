@@ -15,9 +15,6 @@
                 <b>Nom :</b> <a href="{{ inscrit.profile_url }}">{{ inscrit.firstname }} {{ inscrit.lastname }}</a>
             </li>
         {% endfor %}
-        <li>
-            <b>Rôle :</b> {{ role }}
-        </li>
         {% if message %}
         <li>
             <b>Message :</b> {{ message }}
@@ -41,8 +38,6 @@
     {% for inscrit in inscrits %}
         Nom : {{ inscrit.firstname }} {{ inscrit.lastname }} - {{ inscrit.profile_url }}
     {% endfor %}
-
-    Rôle : {{ role }}
 
     {% if message %}
         Message : {{ message }}
