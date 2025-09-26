@@ -288,11 +288,11 @@ GET /api/participation-sorties/{id}
 - `3` : Absent
 
 ### Rôles de participation
-- `inscrit` : Participant inscrit
+- `inscrit` : Participant
 - `encadrant` : Encadrant
 - `coencadrant` : Co-encadrant
 - `stagiaire` : Stagiaire
-- `benevole` : Bénévole
+- `benevole` : Participant bénévole
 - `manuel` : Inscription manuelle
 
 ## Pagination

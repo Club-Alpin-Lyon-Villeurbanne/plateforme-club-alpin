@@ -572,7 +572,7 @@
                                     </td>
                                     <td class="mini" >
                                         {% if participation.user.nomade %}
-                                            <br />
+                                            {{ participation | participation_role_name }}<br />
                                             {% if not participation.user.email %}
                                                 <img
                                                     src="/img/base/bullet_error.png"
@@ -603,7 +603,7 @@
                                                     id="role_join_{{ participation.id }}_i"
                                                     value="inscrit"
                                                 />
-                                                Inscrit
+                                                Participant
                                             </label>
                                             <label style="display:block; white-space:nowrap;" for="role_join_{{ participation.id }}_b">
                                                 <input
@@ -613,7 +613,7 @@
                                                     id="role_join_{{ participation.id }}_b"
                                                     value="benevole"
                                                 />
-                                                Bénévole
+                                                Participant bénévole
                                             </label>
                                         {% else %}
                                             {{ participation | participation_role_name }}<br />
@@ -640,7 +640,7 @@
                                             </span><br />
                                         {% else %}
                                             {% if participation.user.valid %}
-                                                <a href="mailto:{{ participation.user.email }}">{{ participation.user.email | u.truncate(15, '...') }}</a><br />
+                                                <a href="mailto:{{ participation.user.email }}">{{ participation.user.email | u.truncate(12, '...') }}</a><br />
                                             {% else %}
                                                 <span style="color: red; font-weight: bold" title="Les comptes non activés ne reçoivent pas les e-mails">compte non activé</span><br />
                                             {% endif %}
