@@ -17,6 +17,7 @@ use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -271,6 +272,7 @@ class UserController extends AbstractController
         ]);
 
         $form->handleRequest($request);
+        $errors = 0;
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $request->request->all();
@@ -286,6 +288,21 @@ class UserController extends AbstractController
                 $nomad->setTel2($formData['tel2'] ?? null);
             } else {
                 $nomad = $form->getData();
+
+                $existingUserWithSameEmail = null;
+                if (!empty($nomad->getEmail())) {
+                    $existingUserWithSameEmail = $userRepository->findOneBy(['email' => $nomad->getEmail()]);
+                }
+                if ($existingUserWithSameEmail instanceof User) {
+                    ++$errors;
+                    $form->get('email')->addError(new FormError('Un utilisateur existe déjà avec cette adresse e-mail.'));
+                }
+                $existingUserWithSameCafnum = $userRepository->findOneBy(['cafnum' => $nomad->getCafnum()]);
+                if ($existingUserWithSameCafnum instanceof User) {
+                    ++$errors;
+                    $form->get('cafnum')->addError(new FormError('Un utilisateur existe déjà avec ce numéro de licence.'));
+                }
+
                 $nomad
                     ->setNickname(NicknameGenerator::generateNickname($nomad->getFirstname(), $nomad->getLastname()))
                     ->setNomade(true)
@@ -311,18 +328,21 @@ class UserController extends AbstractController
             if (empty($nomad->getEmail())) {
                 $nomad->setEmail(null);
             }
-            $entityManager->persist($nomad);
 
-            $event->addParticipation($nomad, EventParticipation::ROLE_MANUEL);
-            $entityManager->flush();
+            if (empty($errors)) {
+                $entityManager->persist($nomad);
 
-            $this->addFlash('success', 'Le non-adhérent a bien été inscrit à la sortie.');
+                $event->addParticipation($nomad, EventParticipation::ROLE_MANUEL);
+                $entityManager->flush();
 
-            return new Response(
-                '<script>
-                    window.parent.location.reload();
-                </script>'
-            );
+                $this->addFlash('success', 'Le non-adhérent a bien été inscrit à la sortie.');
+
+                return new Response(
+                    '<script>
+                        window.parent.location.reload();
+                    </script>'
+                );
+            }
         }
 
         return [

@@ -550,3 +550,5 @@ table.wide-table th {
 @media (max-width: 780px) {
     body{font-size: 1.2rem;}
 }
+
+.nomad-form li {color: red}
