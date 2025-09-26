@@ -9,6 +9,10 @@
         ariaLabel="Informations sur le transport"
       />
     </div>
+    <p class="tw-text-sm tw-leading-6 tw-text-gray-600">
+      Si vous avez plusieurs justificatifs, vous pouvez les fusionner en un seul
+      avant de les joindre.
+    </p>
     <div class="tw-mt-5 tw-flex tw-gap-10">
       <div class="tw-relative">
         <label class="tw-block tw-text-sm tw-leading-6 tw-text-gray-900"
