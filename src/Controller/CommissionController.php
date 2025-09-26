@@ -4,17 +4,21 @@ namespace App\Controller;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
+use App\Helper\EventFormHelper;
 use App\Helper\MonthHelper;
+use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
-use App\Service\ParticipantService;
 use App\UserRights;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class CommissionController extends AbstractController
@@ -23,47 +27,35 @@ class CommissionController extends AbstractController
     public function participantsByCommission(
         Request $request,
         ManagerRegistry $doctrine,
-        ParticipantService $participantService,
-        FormFactoryInterface $formFactory
+        FormFactoryInterface $formFactory,
+        EventFormHelper $eventFormHelper,
     ): Response {
         $commissionId = $request->query->get('commission');
         $commission = $doctrine->getRepository(Commission::class)->find($commissionId);
-        $participantService->buildManagersLists($commission, null);
 
-        $form = $formFactory->createBuilder()
-            ->add('encadrants', ChoiceType::class, [
-                'label' => false,
-                'choices' => array_flip($participantService->getEncadrants()),
-                'mapped' => false,
-                'multiple' => true,
-                'expanded' => true,
-            ])
-            ->add('coencadrants', ChoiceType::class, [
-                'label' => false,
-                'choices' => array_flip($participantService->getCoencadrants()),
-                'mapped' => false,
-                'multiple' => true,
-                'expanded' => true,
-            ])
-            ->add('initiateurs', ChoiceType::class, [
-                'label' => false,
-                'choices' => array_flip($participantService->getInitiateurs()),
-                'mapped' => false,
-                'multiple' => true,
-                'expanded' => true,
-            ])
-            ->add('benevoles', ChoiceType::class, [
-                'label' => false,
-                'choices' => array_flip($participantService->getBenevoles()),
-                'mapped' => false,
-                'multiple' => true,
-                'expanded' => true,
-            ])
-            ->getForm()
-        ;
+        $builder = $formFactory->createBuilder();
+        $builder = $eventFormHelper->encadrementFields($builder, $commission);
 
         return $this->render('form/field_participants.html.twig', [
-            'form' => $form->createView(),
+            'form' => $builder->getForm()->createView(),
+        ]);
+    }
+
+    #[Route('/champs-parametrables-par-commission', name: 'specific_fields_by_commission')]
+    public function fieldsByCommission(
+        Request $request,
+        ManagerRegistry $doctrine,
+        FormFactoryInterface $formFactory,
+        EventFormHelper $eventFormHelper,
+    ): Response {
+        $commissionId = $request->query->get('commission');
+        $commission = $doctrine->getRepository(Commission::class)->find($commissionId);
+
+        $builder = $formFactory->createBuilder();
+        $builder = $eventFormHelper->specificMandatoryFields($builder, $commission);
+
+        return $this->render('form/commission_specific_fields.html.twig', [
+            'form' => $builder->getForm()->createView(),
         ]);
     }
 
@@ -112,5 +104,62 @@ class CommissionController extends AbstractController
         return $this->render('form/field_events.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/commissions', name: 'commission_index')]
+    #[Template('commission/index.html.twig')]
+    public function index(UserRights $userRights, CommissionRepository $commissionRepository): array
+    {
+        if (!$userRights->allowed('commission_list')) {
+            throw new AccessDeniedHttpException('Not allowed');
+        }
+
+        $myCommissionsCodes = $userRights->getCommissionListForRight('commission_config');
+
+        return [
+            'commissions' => $commissionRepository->findBy(['code' => $myCommissionsCodes], ['title' => 'ASC']),
+        ];
+    }
+
+    #[Route('/commissions/{id}/configuration', name: 'commission_configuration', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    #[Template('commission/configuration.html.twig')]
+    public function configuration(Commission $commission, Request $request, EntityManagerInterface $entityManager): array|RedirectResponse
+    {
+        if (!$this->isGranted('COMMISSION_CONFIG', $commission)) {
+            throw new AccessDeniedHttpException('Not allowed');
+        }
+
+        $configurableFields = Commission::CONFIGURABLE_FIELDS;
+
+        if ('POST' === $request->getMethod() && !$this->isCsrfTokenValid('commission_configuration', $request->request->get('csrf_token'))) {
+            $this->addFlash('error', 'Jeton de validation invalide.');
+
+            return $this->redirectToRoute('commission_configuration', ['id' => $commission->getId()]);
+        }
+
+        if ('POST' === $request->getMethod()) {
+            $data = $request->request->all();
+
+            $commissionMandatoryFields = [];
+            foreach ($configurableFields as $fieldName) {
+                if (isset($data[$fieldName]) && 'on' === $data[$fieldName]) {
+                    $commissionMandatoryFields[] = $fieldName;
+                }
+            }
+
+            $commission->setMandatoryFields($commissionMandatoryFields);
+            $entityManager->persist($commission);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Les champs obligatoires ont bien été enregistrés pour ' . $commission->getTitle() . '.');
+
+            return $this->redirectToRoute('commission_configuration', ['id' => $commission->getId()]);
+        }
+
+        return [
+            'commission' => $commission,
+            'checked_fields' => $commission->getMandatoryFields(),
+            'fields' => $configurableFields,
+        ];
     }
 }

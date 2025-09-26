@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CommissionRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
@@ -15,13 +16,15 @@ use Symfony\Component\Serializer\Attribute\Groups;
 #[ORM\Table(name: 'caf_commission')]
 #[ORM\Entity(repositoryClass: CommissionRepository::class)]
 #[ApiResource(
-    order: ['ordre' => 'ASC'],
     operations: [new Get(), new GetCollection()],
     normalizationContext: ['groups' => ['commission:read']],
+    order: ['ordre' => 'ASC'],
     security: "is_granted('ROLE_USER')",
 )]
 class Commission
 {
+    public const array CONFIGURABLE_FIELDS = ['difficulte', 'distance', 'denivele'];
+
     /**
      * @var int
      */
@@ -64,6 +67,9 @@ class Commission
     #[ORM\Column(type: 'string', length: 30, nullable: true)]
     #[Groups('commission:read')]
     private $googleDriveId;
+
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private array $mandatoryFields = self::CONFIGURABLE_FIELDS;
 
     public function __construct(string $title, string $code, int $ordre)
     {
@@ -138,6 +144,18 @@ class Commission
     public function setGoogleDriveId(string $googleDriveId): self
     {
         $this->googleDriveId = $googleDriveId;
+
+        return $this;
+    }
+
+    public function getMandatoryFields(): array
+    {
+        return $this->mandatoryFields;
+    }
+
+    public function setMandatoryFields(array $mandatoryFields): self
+    {
+        $this->mandatoryFields = $mandatoryFields;
 
         return $this;
     }

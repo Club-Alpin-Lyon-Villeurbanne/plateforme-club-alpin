@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gérer la commission - {{ commission.title }}{% endblock %}
+
+{% block body %}
+<div id="left1">
+    <div class="main-type">
+        <h1>Configurer les champs obligatoires pour {{ commission.title }}</h1>
+
+        <p>
+            {{ easy_include('commission_config_fields', '') }}
+        </p>
+
+        <form method="post" name="commission_configuration" id="commission_configuration">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token('commission_configuration') }}" />
+            {% for field in fields %}
+                <input type="checkbox" id="{{ field }}" name="{{ field }}"{% if field in checked_fields %} class="up" checked="checked"{% endif %}>
+                <label for="{{ field }}">rendre obligatoire le remplissage de "{{ field }}"</label><br>
+            {% endfor %}
+            <br>
+            <button type="submit" class="mediumlink"><span class="bleucaf">&gt;</span> ENREGISTRER</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
