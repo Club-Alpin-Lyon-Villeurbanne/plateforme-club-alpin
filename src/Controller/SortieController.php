@@ -82,10 +82,6 @@ class SortieController extends AbstractController
             );
             $event->setJoinStart((new \DateTime())->getTimestamp());
             $isUpdate = false;
-        } else {
-            // reset des cases obligatoires pour être bien sûr que c'est toujours OK même en cas de modification de la sortie
-            $event->setAgreeEdito(false);
-            $event->setImagesAuthorized(false);
         }
 
         if (!$this->isGranted('SORTIE_UPDATE', $event)) {
