@@ -381,7 +381,7 @@ class EventType extends AbstractType
                 'label_html' => true,
                 'required' => true,
                 'attr' => [
-                    'checked' => $event->isAgreeEdito() ? 'checked' : '',
+                    'checked' => $event->isAgreeEdito() ? 'checked' : false,
                 ],
             ])
             ->add('imagesAuthorized', CheckboxType::class, [
@@ -391,7 +391,7 @@ class EventType extends AbstractType
                 'help' => 'Vous n\'êtes pas autorisé à utiliser des photos d\'internet, sauf si elles proviennent des plateformes : <a href="https://www.pexels.com/fr-fr/" target="_blank" rel="noopener">Pexels</a>, <a href="https://pixabay.com/fr/" target="_blank" rel="noopener">Pixabay</a>, <a href="https://unsplash.com/fr" target="_blank" rel="noopener">Unsplash</a>',
                 'help_html' => true,
                 'attr' => [
-                    'checked' => $event->isImagesAuthorized() ? 'checked' : '',
+                    'checked' => $event->isImagesAuthorized() ? 'checked' : false,
                 ],
             ])
             ->add('description', TextareaType::class, [
