@@ -572,7 +572,7 @@
                                     </td>
                                     <td class="mini" >
                                         {% if participation.user.nomade %}
-                                            <br />
+                                            {{ participation | participation_role_name }}<br />
                                             {% if not participation.user.email %}
                                                 <img
                                                     src="/img/base/bullet_error.png"
