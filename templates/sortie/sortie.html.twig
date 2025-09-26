@@ -640,7 +640,7 @@
                                             </span><br />
                                         {% else %}
                                             {% if participation.user.valid %}
-                                                <a href="mailto:{{ participation.user.email }}">{{ participation.user.email | u.truncate(15, '...') }}</a><br />
+                                                <a href="mailto:{{ participation.user.email }}">{{ participation.user.email | u.truncate(12, '...') }}</a><br />
                                             {% else %}
                                                 <span style="color: red; font-weight: bold" title="Les comptes non activés ne reçoivent pas les e-mails">compte non activé</span><br />
                                             {% endif %}
