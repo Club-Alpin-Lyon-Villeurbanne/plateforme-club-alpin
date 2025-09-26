@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
+use App\Entity\User;
 use App\Repository\CommissionRepository;
 use App\Repository\UserAttrRepository;
 use App\Service\ParticipantService;
@@ -37,6 +38,7 @@ class EventType extends AbstractType
         protected CommissionRepository $commissionRepository,
         protected UserRights $userRights,
         protected string $club,
+        protected string $helloAssoAuthorizedUserIds,
     ) {
     }
 
@@ -44,6 +46,20 @@ class EventType extends AbstractType
     {
         /** @var Evt $event */
         $event = $options['data'];
+
+        // affichage des champs HelloAsso uniquement pour les utilisateurs autorisés et dans certains cas
+        $displayHelloAssoFields = false;
+        $isUserAuthorizeToUseHelloAsso = false;
+        $helloAssoAuthorizedUserIds = explode(',', trim($this->helloAssoAuthorizedUserIds));
+        if (\in_array($options['user']->getId(), $helloAssoAuthorizedUserIds, false)) {
+            $isUserAuthorizeToUseHelloAsso = true;
+        }
+
+        // si on modifie la sortie et qu'elle n'a pas encore de paiement HelloAsso, on peut afficher les champs HelloAsso
+        if (!$options['is_edit'] || !$event->hasPaymentForm()) {
+            $displayHelloAssoFields = true;
+        }
+
         $commission = $event->getCommission();
         $this->participantService->buildManagersLists($commission, $event);
 
@@ -415,6 +431,47 @@ class EventType extends AbstractType
                 ],
                 'help_html' => true,
             ])
+        ;
+        if ($displayHelloAssoFields && $isUserAuthorizeToUseHelloAsso) {
+            $builder
+                ->add('hasPaymentForm', CheckboxType::class, [
+                    'label' => 'Créer un événement HelloAsso pour cette sortie',
+                    'required' => false,
+                    'help' => 'Cette option permet de créer automatiquement un événement dans HelloAsso pour les paiements en ligne.',
+                    'help_attr' => [
+                        'class' => 'mini',
+                    ],
+                ])
+                ->add('paymentAmount', NumberType::class, [
+                    'label' => 'Montant de l\'événement HelloAsso <span class="revalidation">*</span>',
+                    'label_html' => true,
+                    'attr' => [
+                        'placeholder' => 'ex : 35.50',
+                        'class' => 'type2',
+                    ],
+                    'help' => 'Ce montant sera demandé aux participants lors de leur inscription sur HelloAsso',
+                    'help_attr' => [
+                        'class' => 'mini',
+                    ],
+                    'required' => true,
+                    'html5' => true,
+                    'scale' => 2,
+                    'constraints' => [
+                        new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
+                        new GreaterThanOrEqual(0),
+                    ],
+                ])
+                ->add('hasPaymentSendMail', CheckboxType::class, [
+                    'label' => 'Envoyer le lien de paiement à l\'acceptation des participants',
+                    'required' => false,
+                    'help' => 'Cette option permet d\'envoyer automatiquement le lien de paiement HelloAsso aux participants lorsqu\'ils sont acceptés.',
+                    'help_attr' => [
+                        'class' => 'mini',
+                    ],
+                ])
+            ;
+        }
+        $builder
             ->add('eventDraftSave', SubmitType::class, [
                 'label' => '<span class="bleucaf">&gt;</span> ENREGISTRER COMME BROUILLON',
                 'label_html' => true,
@@ -466,8 +523,11 @@ class EventType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Evt::class,
+            'is_edit' => false,
             'editoLineLink' => '',
             'imageRightLink' => '',
+            'user' => User::class,
+            'csrf_protection' => true,
         ]);
     }
 
