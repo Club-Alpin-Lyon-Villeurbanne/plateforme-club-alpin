@@ -566,10 +566,10 @@ class SortieController extends AbstractController
             ->setCancelledWho($this->getUser())
         ;
 
-        // message aux participants si la sortie est annulée alors qu'elle est publiée
+        // message aux (pré-)inscrits si la sortie est annulée alors qu'elle était publiée
         if ($event->isPublicStatusValide()) {
             // désinscription des participants de la sortie
-            $participants = $event->getParticipations([EventParticipation::ROLE_MANUEL, EventParticipation::ROLE_INSCRIT, EventParticipation::ROLE_BENEVOLE]);
+            $participants = $event->getParticipations([EventParticipation::ROLE_MANUEL, EventParticipation::ROLE_INSCRIT, EventParticipation::ROLE_BENEVOLE], null);
             foreach ($participants as $participant) {
                 $event->removeParticipation($participant);
 
