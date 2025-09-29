@@ -1,0 +1,35 @@
+Rapport de synchronisation FFCAM du {{ date }}
+
+La synchronisation automatique des adhérents FFCAM s'est exécutée avec succès.
+
+RÉSUMÉ DE LA SYNCHRONISATION
+=============================
+Date d'exécution : {{ startTime|date('d/m/Y à H:i:s') }}
+Durée totale : {{ duration }}
+Total traité : {{ total }} adhérent(s)
+
+DÉTAIL DES OPÉRATIONS
+======================
+✅ Nouveaux adhérents : {{ stats.inserted }}
+🔄 Adhérents mis à jour : {{ stats.updated }}
+🔗 Adhérents fusionnés : {{ stats.merged }}
+⏰ Adhérents avec licence expirée : {{ stats.blocked|default(0) }}
+
+{% if stats.inserted > 0 %}
+{{ stats.inserted }} nouveau(x) adhérent(s) ont été ajoutés à la base de données.
+Ces comptes sont en attente de validation et devront confirmer leur adresse email.
+{% endif %}
+
+{% if stats.merged > 0 %}
+{{ stats.merged }} doublon(s) détecté(s) : des adhérents existants ont été trouvés
+avec un nouveau numéro de licence. Les comptes ont été fusionnés automatiquement.
+{% endif %}
+
+{% if stats.blocked|default(0) > 0 %}
+{{ stats.blocked }} adhérent(s) avec licence expirée : ces adhérents n'étaient pas dans le fichier FFCAM
+et leur licence a expiré. Ils ne pourront pas s'inscrire aux sorties tant qu'ils n'auront pas renouvelé leur adhésion.
+{% endif %}
+
+---
+Ce rapport est généré automatiquement après chaque synchronisation FFCAM.
+En cas de problème, veuillez consulter les logs détaillés dans l'interface d'administration.

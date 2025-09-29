@@ -1,0 +1,109 @@
+{% extends 'email/transactional/layout.html.twig' %}
+
+{% block subject %}Rapport de synchronisation FFCAM du {{ date }}{% endblock %}
+
+{% block inner_html %}
+    <h2>Synchronisation des adhérents terminée</h2>
+
+    <p>La synchronisation automatique des adhérents FFCAM s'est exécutée avec succès.</p>
+
+    <h3>📊 Résumé de la synchronisation</h3>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f8f8;">
+                <strong>Date d'exécution</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd;">
+                {{ startTime|date('d/m/Y à H:i:s') }}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f8f8;">
+                <strong>Durée totale</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd;">
+                {{ duration }}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f8f8;">
+                <strong>Total traité</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd;">
+                <strong style="font-size: 1.2em; color: #2da1bf;">{{ total }}</strong> adhérent(s)
+            </td>
+        </tr>
+    </table>
+
+    <h3>📈 Détail des opérations</h3>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #d4f4dd;">
+                <strong>✅ Nouveaux adhérents</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.2em;">
+                <strong>{{ stats.inserted }}</strong>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #ffeaa7;">
+                <strong>🔄 Adhérents mis à jour</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.2em;">
+                <strong>{{ stats.updated }}</strong>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #dfe6e9;">
+                <strong>🔗 Adhérents fusionnés</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.2em;">
+                <strong>{{ stats.merged }}</strong>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #ffcccc;">
+                <strong>⏰ Adhérents avec licence expirée</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.2em;">
+                <strong>{{ stats.blocked|default(0) }}</strong>
+            </td>
+        </tr>
+    </table>
+
+    {% if stats.inserted > 0 %}
+    <div style="padding: 15px; background-color: #d4f4dd; border-radius: 5px; margin: 20px 0;">
+        <p style="margin: 0;">
+            <strong>{{ stats.inserted }} nouveau(x) adhérent(s)</strong> ont été ajoutés à la base de données.
+            Ces comptes sont en attente de validation et devront confirmer leur adresse email.
+        </p>
+    </div>
+    {% endif %}
+
+    {% if stats.merged > 0 %}
+    <div style="padding: 15px; background-color: #dfe6e9; border-radius: 5px; margin: 20px 0;">
+        <p style="margin: 0;">
+            <strong>{{ stats.merged }} doublon(s) détecté(s)</strong> : des adhérents existants ont été trouvés
+            avec un nouveau numéro de licence. Les comptes ont été fusionnés automatiquement.
+        </p>
+    </div>
+    {% endif %}
+
+    {% if stats.blocked|default(0) > 0 %}
+    <div style="padding: 15px; background-color: #ffcccc; border-radius: 5px; margin: 20px 0;">
+        <p style="margin: 0;">
+            <strong>{{ stats.blocked }} adhérent(s) avec licence expirée</strong> : ces adhérents n'étaient pas dans le fichier FFCAM
+            et leur licence a expiré. Ils ne pourront pas s'inscrire aux sorties tant qu'ils n'auront pas renouvelé leur adhésion.
+        </p>
+    </div>
+    {% endif %}
+
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+
+    <p style="color: #666; font-size: 0.9em;">
+        Ce rapport est généré automatiquement après chaque synchronisation FFCAM.
+        En cas de problème, veuillez consulter les logs détaillés dans l'interface d'administration.
+    </p>
+{% endblock %}

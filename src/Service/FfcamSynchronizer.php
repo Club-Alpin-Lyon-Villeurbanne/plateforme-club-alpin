@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Utils\MemberMerger;
+use App\Utils\UserLicenseHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -19,6 +20,7 @@ class FfcamSynchronizer
         private readonly FfcamFileParser $fileParser,
         private readonly MemberMerger $memberMerger,
         private readonly UserLicenseHelper $userLicenseHelper,
+        private readonly ?SyncReportMailer $syncReportMailer = null,
     ) {
         $today = new \DateTime();
         $endDate = new \DateTime($today->format('Y') . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
@@ -28,11 +30,12 @@ class FfcamSynchronizer
 
     public function synchronize(?string $ffcamFilePath = null): void
     {
+        $startTime = new \DateTime();
         $licenseExpirationDate = $this->userLicenseHelper->getLicenseExpirationTimestamp();
 
         if (!$this->isFileValid($ffcamFilePath)) {
             $this->logger->warning("File {$ffcamFilePath} not found. Can't import new members");
-            $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
+            $blockedCount = $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
             $this->userRepository->removeExpiredFiliations();
 
             return;
@@ -43,8 +46,17 @@ class FfcamSynchronizer
         $this->archiveFile($ffcamFilePath, $stats);
         $this->logResults($ffcamFilePath, $stats);
 
-        $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
+        $blockedCount = $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
         $this->userRepository->removeExpiredFiliations();
+
+        $stats['blocked'] = $blockedCount;
+
+        $endTime = new \DateTime();
+
+        // Envoyer le mail de récapitulatif si le service est disponible
+        if ($this->syncReportMailer) {
+            $this->syncReportMailer->sendSyncReport($stats, $startTime, $endTime);
+        }
     }
 
     private function isFileValid(string $filePath): bool
@@ -157,9 +169,10 @@ class FfcamSynchronizer
     private function logResults(string $filePath, array $stats): void
     {
         $this->logger->info(sprintf(
-            'Members synchronization finished. New members : %d, Updated members : %d',
+            'Members synchronization finished. New members : %d, Updated members : %d, Merged members : %d',
             $stats['inserted'],
-            $stats['updated']
+            $stats['updated'],
+            $stats['merged'] ?? 0
         ));
 
         try {
@@ -168,9 +181,10 @@ class FfcamSynchronizer
                 VALUES ('import-ffcam', :description, '127.0.0.1', :date)",
                 [
                     'description' => sprintf(
-                        'INSERT: %d, UPDATE: %d, fichier %s',
+                        'INSERT: %d, UPDATE: %d, MERGE: %d, fichier %s',
                         $stats['inserted'],
                         $stats['updated'],
+                        $stats['merged'] ?? 0,
                         basename($filePath)
                     ),
                     'date' => time(),

@@ -116,7 +116,7 @@ SQL;
         ;
     }
 
-    public function blockExpiredAccounts(int $expiryDate): void
+    public function blockExpiredAccounts(int $expiryDate): int
     {
         $qb = $this->createQueryBuilder('u');
 
@@ -126,15 +126,17 @@ SQL;
             ->andWhere('u.nomade = :isNomade')
             ->andWhere('u.manuelUser = :isManual')
             ->andWhere('u.dateAdhesion <= :expiryDate')
+            ->andWhere('u.doitRenouveler = :currentShouldRenew')
             ->setParameters([
                 'shouldRenew' => true,
+                'currentShouldRenew' => false,
                 'adminId' => 1,
                 'isNomade' => false,
                 'isManual' => false,
                 'expiryDate' => $expiryDate,
-            ])
-            ->getQuery()
-            ->execute();
+            ]);
+
+        return $qb->getQuery()->execute();
     }
 
     public function removeExpiredFiliations(): void
