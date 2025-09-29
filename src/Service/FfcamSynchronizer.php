@@ -67,44 +67,68 @@ class FfcamSynchronizer
 
     private function processMembers(\Generator $members): array
     {
-        $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0];
+        $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0, 'errors' => 0, 'error_details' => []];
         $batchSize = 20;
         $i = 0;
 
         foreach ($members as $parsedUser) {
-            $this->logger->info("Processing CAF member {$parsedUser->getCafnum()}");
+            try {
+                $this->logger->info("Processing CAF member {$parsedUser->getCafnum()}");
 
-            $existingUser = $this->userRepository->findOneByLicenseNumber($parsedUser->getCafnum());
+                $existingUser = $this->userRepository->findOneByLicenseNumber($parsedUser->getCafnum());
 
-            if ($existingUser) {
-                $this->updateExistingUser($existingUser, $parsedUser);
-                ++$stats['updated'];
-                continue;
-            }
+                if ($existingUser) {
+                    $this->updateExistingUser($existingUser, $parsedUser);
+                    ++$stats['updated'];
+                    continue;
+                }
 
-            $potentialDuplicate = $this->userRepository->findDuplicateUser(
-                $parsedUser->getLastname(),
-                $parsedUser->getFirstname(),
-                $parsedUser->getBirthday(),
-                $parsedUser->getCafnum()
-            );
-
-            if ($potentialDuplicate) {
-                $this->logger->info(sprintf(
-                    'Found duplicate member %s %s (old license: %s, new license: %s)',
+                $potentialDuplicate = $this->userRepository->findDuplicateUser(
                     $parsedUser->getLastname(),
                     $parsedUser->getFirstname(),
-                    $potentialDuplicate->getCafnum(),
+                    $parsedUser->getBirthday(),
                     $parsedUser->getCafnum()
+                );
+
+                if ($potentialDuplicate) {
+                    $this->logger->info(sprintf(
+                        'Found duplicate member %s %s (old license: %s, new license: %s)',
+                        $parsedUser->getLastname(),
+                        $parsedUser->getFirstname(),
+                        $potentialDuplicate->getCafnum(),
+                        $parsedUser->getCafnum()
+                    ));
+
+                    $this->memberMerger->mergeNewMember($potentialDuplicate->getCafnum(), $parsedUser);
+                    ++$stats['merged'];
+                } else {
+                    $parsedUser->setTsInsert(time());
+                    $parsedUser->setValid(false);
+                    $this->entityManager->persist($parsedUser);
+                    ++$stats['inserted'];
+                }
+            } catch (\Exception $exception) {
+                $cafnum = $parsedUser->getCafnum() ?? 'inconnu';
+                $errorMessage = $exception->getMessage();
+
+                $this->logger->error(sprintf(
+                    'Error processing member %s: %s',
+                    $cafnum,
+                    $errorMessage
                 ));
 
-                $this->memberMerger->mergeNewMember($potentialDuplicate->getCafnum(), $parsedUser);
-                ++$stats['merged'];
-            } else {
-                $parsedUser->setTsInsert(time());
-                $parsedUser->setValid(false);
-                $this->entityManager->persist($parsedUser);
-                ++$stats['inserted'];
+                ++$stats['errors'];
+
+                // Stocker les détails de l'erreur (max 10 pour éviter un email trop long)
+                if (count($stats['error_details']) < 10) {
+                    $stats['error_details'][] = [
+                        'cafnum' => $cafnum,
+                        'message' => substr($errorMessage, 0, 100) // Limiter la longueur du message
+                    ];
+                }
+
+                // Continue avec le prochain membre
+                continue;
             }
 
             if (0 === ++$i % $batchSize) {
@@ -112,7 +136,10 @@ class FfcamSynchronizer
                     $this->entityManager->flush();
                     $this->entityManager->clear();
                 } catch (\Exception $exception) {
-                    $this->logger->error($exception->getMessage());
+                    $this->logger->error('Batch flush error: ' . $exception->getMessage());
+                    ++$stats['errors'];
+                    // Clear l'entity manager pour continuer le traitement
+                    $this->entityManager->clear();
                 }
             }
         }
@@ -120,7 +147,8 @@ class FfcamSynchronizer
         try {
             $this->entityManager->flush();
         } catch (\Exception $exception) {
-            $this->logger->error($exception->getMessage());
+            $this->logger->error('Final flush error: ' . $exception->getMessage());
+            ++$stats['errors'];
         }
 
         return $stats;

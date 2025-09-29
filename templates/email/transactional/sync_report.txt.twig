@@ -15,6 +15,7 @@ DÉTAIL DES OPÉRATIONS
 🔗 Adhérents fusionnés : {{ stats.merged }}
 ⏰ Adhérents avec licence expirée : {{ stats.blocked|default(0) }}
 👥 Filiations parentales supprimées : {{ stats.filiations_removed|default(0) }}
+{% if stats.errors|default(0) > 0 %}❌ Erreurs de traitement : {{ stats.errors }}{% endif %}
 
 {% if stats.inserted > 0 %}
 {{ stats.inserted }} nouveau(x) adhérent(s) ont été ajoutés à la base de données.
@@ -34,6 +35,23 @@ et leur licence a expiré. Ils ne pourront pas s'inscrire aux sorties tant qu'il
 {% if stats.filiations_removed|default(0) > 0 %}
 {{ stats.filiations_removed }} filiation(s) parentale(s) supprimée(s) : les liens parent-enfant ont été supprimés
 pour les comptes non mis à jour depuis plus de 200 jours.
+{% endif %}
+
+{% if stats.errors|default(0) > 0 %}
+⚠️ ATTENTION : {{ stats.errors }} erreur(s) lors du traitement !
+Certains adhérents n'ont pas pu être traités correctement.
+
+{% if stats.error_details|default([]) %}
+Détails des erreurs{% if stats.errors > 10 %} (10 premières affichées){% endif %} :
+{% for error in stats.error_details %}
+- Licence {{ error.cafnum }} : {{ error.message }}
+{% endfor %}
+{% if stats.errors > 10 %}
+- ... et {{ stats.errors - 10 }} autre(s) erreur(s)
+{% endif %}
+
+Ces adhérents devront être vérifiés manuellement.
+{% endif %}
 {% endif %}
 
 ---
