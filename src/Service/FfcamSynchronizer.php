@@ -67,7 +67,7 @@ class FfcamSynchronizer
 
     private function processMembers(\Generator $members): array
     {
-        $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0, 'errors' => 0, 'error_details' => []];
+        $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0, 'errors' => 0, 'error_details' => [], 'merged_details' => []];
         $batchSize = 20;
         $i = 0;
 
@@ -101,6 +101,15 @@ class FfcamSynchronizer
 
                     $this->memberMerger->mergeNewMember($potentialDuplicate->getCafnum(), $parsedUser);
                     ++$stats['merged'];
+
+                    // Stocker les détails de la fusion (max 20 pour éviter un email trop long)
+                    if (count($stats['merged_details']) < 20) {
+                        $stats['merged_details'][] = [
+                            'old_cafnum' => $potentialDuplicate->getCafnum(),
+                            'new_cafnum' => $parsedUser->getCafnum(),
+                            'name' => sprintf('%s %s', $parsedUser->getFirstname(), $parsedUser->getLastname())
+                        ];
+                    }
                 } else {
                     $parsedUser->setTsInsert(time());
                     $parsedUser->setValid(false);

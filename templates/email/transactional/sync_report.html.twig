@@ -106,14 +106,32 @@
             <strong>{{ stats.merged }} doublon(s) détecté(s)</strong> : des adhérents existants ont été trouvés
             avec un nouveau numéro de licence. Les comptes ont été fusionnés automatiquement.
         </p>
+
+        {% if stats.merged_details|default([]) %}
+        <p style="margin: 10px 0 5px 0; font-weight: bold;">
+            Détail des fusions{% if stats.merged > 20 %} (20 premières affichées){% endif %} :
+        </p>
+        <ul style="margin: 5px 0; padding-left: 20px;">
+            {% for merge in stats.merged_details %}
+            <li style="margin: 3px 0;">
+                <strong>{{ merge.name }}</strong> : {{ merge.old_cafnum }} → {{ merge.new_cafnum }}
+            </li>
+            {% endfor %}
+            {% if stats.merged > 20 %}
+            <li style="margin: 5px 0; font-style: italic;">
+                ... et {{ stats.merged - 20 }} autre(s) fusion(s)
+            </li>
+            {% endif %}
+        </ul>
+        {% endif %}
     </div>
     {% endif %}
 
     {% if stats.blocked|default(0) > 0 %}
     <div style="padding: 15px; background-color: #ffcccc; border-radius: 5px; margin: 20px 0;">
         <p style="margin: 0;">
-            <strong>{{ stats.blocked }} adhérent(s) avec licence expirée</strong> : ces adhérents n'étaient pas dans le fichier FFCAM
-            et leur licence a expiré. Ils ne pourront pas s'inscrire aux sorties tant qu'ils n'auront pas renouvelé leur adhésion.
+            <strong>{{ stats.blocked }} adhérent(s) avec licence expirée</strong> : leur adhésion n'a pas été renouvelée pour la saison en cours.
+            Ils ne pourront pas s'inscrire aux sorties tant qu'ils n'auront pas renouvelé leur adhésion.
         </p>
     </div>
     {% endif %}

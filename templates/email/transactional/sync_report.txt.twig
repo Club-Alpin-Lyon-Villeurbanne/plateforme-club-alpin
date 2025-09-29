@@ -25,11 +25,21 @@ Ces comptes sont en attente de validation et devront confirmer leur adresse emai
 {% if stats.merged > 0 %}
 {{ stats.merged }} doublon(s) détecté(s) : des adhérents existants ont été trouvés
 avec un nouveau numéro de licence. Les comptes ont été fusionnés automatiquement.
+
+{% if stats.merged_details|default([]) %}
+Détail des fusions{% if stats.merged > 20 %} (20 premières affichées){% endif %} :
+{% for merge in stats.merged_details %}
+- {{ merge.name }} : {{ merge.old_cafnum }} → {{ merge.new_cafnum }}
+{% endfor %}
+{% if stats.merged > 20 %}
+- ... et {{ stats.merged - 20 }} autre(s) fusion(s)
+{% endif %}
+{% endif %}
 {% endif %}
 
 {% if stats.blocked|default(0) > 0 %}
-{{ stats.blocked }} adhérent(s) avec licence expirée : ces adhérents n'étaient pas dans le fichier FFCAM
-et leur licence a expiré. Ils ne pourront pas s'inscrire aux sorties tant qu'ils n'auront pas renouvelé leur adhésion.
+{{ stats.blocked }} adhérent(s) avec licence expirée : leur adhésion n'a pas été renouvelée pour la saison en cours.
+Ils ne pourront pas s'inscrire aux sorties tant qu'ils n'auront pas renouvelé leur adhésion.
 {% endif %}
 
 {% if stats.filiations_removed|default(0) > 0 %}
