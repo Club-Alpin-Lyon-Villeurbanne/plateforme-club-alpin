@@ -19,8 +19,17 @@ class SyncReportMailer
         try {
             $duration = $endTime->diff($startTime);
 
+            // Limiter les détails pour l'email (garder tous les détails dans $stats pour debug)
+            $limitedStats = $stats;
+            if (isset($limitedStats['merged_details'])) {
+                $limitedStats['merged_details'] = array_slice($limitedStats['merged_details'], 0, 20);
+            }
+            if (isset($limitedStats['error_details'])) {
+                $limitedStats['error_details'] = array_slice($limitedStats['error_details'], 0, 10);
+            }
+
             $context = [
-                'stats' => $stats,
+                'stats' => $limitedStats,
                 'startTime' => $startTime,
                 'endTime' => $endTime,
                 'duration' => $duration->format('%H:%I:%S'),

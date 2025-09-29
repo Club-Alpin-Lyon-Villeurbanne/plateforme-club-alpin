@@ -101,14 +101,12 @@ class FfcamSynchronizer
                     $this->memberMerger->mergeNewMember($potentialDuplicate->getCafnum(), $parsedUser);
                     ++$stats['merged'];
 
-                    // Stocker les détails de la fusion (max 20 pour éviter un email trop long)
-                    if (count($stats['merged_details']) < 20) {
-                        $stats['merged_details'][] = [
-                            'old_cafnum' => $potentialDuplicate->getCafnum(),
-                            'new_cafnum' => $parsedUser->getCafnum(),
-                            'name' => sprintf('%s %s', $parsedUser->getFirstname(), $parsedUser->getLastname())
-                        ];
-                    }
+                    // Stocker les détails de la fusion (tous pour debug)
+                    $stats['merged_details'][] = [
+                        'old_cafnum' => $potentialDuplicate->getCafnum(),
+                        'new_cafnum' => $parsedUser->getCafnum(),
+                        'name' => sprintf('%s %s', $parsedUser->getFirstname(), $parsedUser->getLastname())
+                    ];
                 } else {
                     $parsedUser->setTsInsert(time());
                     $parsedUser->setValid(false);
@@ -127,13 +125,11 @@ class FfcamSynchronizer
 
                 ++$stats['errors'];
 
-                // Stocker les détails de l'erreur (max 10 pour éviter un email trop long)
-                if (count($stats['error_details']) < 10) {
-                    $stats['error_details'][] = [
-                        'cafnum' => $cafnum,
-                        'message' => substr($errorMessage, 0, 100) // Limiter la longueur du message
-                    ];
-                }
+                // Stocker les détails de l'erreur (tous pour debug)
+                $stats['error_details'][] = [
+                    'cafnum' => $cafnum,
+                    'message' => substr($errorMessage, 0, 100) // Limiter la longueur du message
+                ];
 
                 // Continue avec le prochain membre
                 continue;
