@@ -30,8 +30,6 @@ function switchUserJoin(checkbox) {
                     field.removeAttribute('disabled');
                     if (parent.tagName.toLowerCase() === 'label') {
                         parent.classList.remove('off');
-                        parent.classList.add('up');
-                        parent.classList.remove('down');
                     }
                 }
             }
