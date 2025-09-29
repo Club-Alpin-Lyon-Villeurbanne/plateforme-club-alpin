@@ -298,3 +298,7 @@ services:
     arguments:
       $maxTimestampForLegalValidation: '%env(MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%'
     tags: ['controller.service_arguments']
+
+  App\Notifications:
+    arguments:
+      $maxTimestampForLegalValidation: '%env(MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%'
