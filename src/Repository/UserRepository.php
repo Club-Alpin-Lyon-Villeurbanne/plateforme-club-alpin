@@ -151,6 +151,7 @@ SQL;
             return $qb->getQuery()->execute();
         } catch (\Exception $exc) {
             \Sentry\captureException($exc);
+
             return 0;
         }
     }

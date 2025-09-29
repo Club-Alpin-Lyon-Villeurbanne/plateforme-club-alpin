@@ -4,7 +4,6 @@ namespace App\Service;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Service\UserLicenseHelper;
 use App\Utils\MemberMerger;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
