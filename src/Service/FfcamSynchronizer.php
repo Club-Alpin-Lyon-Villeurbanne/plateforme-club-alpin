@@ -19,7 +19,7 @@ class FfcamSynchronizer
         private readonly FfcamFileParser $fileParser,
         private readonly MemberMerger $memberMerger,
         private readonly UserLicenseHelper $userLicenseHelper,
-        private readonly ?SyncReportMailer $syncReportMailer = null,
+        private readonly ?FfcamSyncReportMailer $syncReportMailer = null,
     ) {
         $today = new \DateTime();
         $endDate = new \DateTime($today->format('Y') . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);

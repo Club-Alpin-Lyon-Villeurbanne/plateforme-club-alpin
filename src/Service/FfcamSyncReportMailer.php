@@ -5,12 +5,12 @@ namespace App\Service;
 use App\Mailer\Mailer;
 use Psr\Log\LoggerInterface;
 
-class SyncReportMailer
+class FfcamSyncReportMailer
 {
     public function __construct(
         private readonly Mailer $mailer,
         private readonly LoggerInterface $logger,
-        private readonly string $adminEmail,
+        private readonly string $adminEmails,
     ) {
     }
 
@@ -66,7 +66,7 @@ class SyncReportMailer
 
         if (!empty($this->adminEmails)) {
             // Support de plusieurs emails séparés par des virgules
-            $emails = array_map('trim', explode(',', $this->adminEmail));
+            $emails = array_map('trim', explode(',', $this->adminEmails));
             foreach ($emails as $email) {
                 if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     $recipients[] = $email;
