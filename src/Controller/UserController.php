@@ -150,12 +150,18 @@ class UserController extends AbstractController
             }
 
             // reste-t-il assez de place ?
-            if ((\count($_POST['id_user']) + $currentParticipantNb) > $nbJoinMax) {
+            if ((\count($data['id_user']) + $currentParticipantNb) > $nbJoinMax) {
                 $availableSpotNb = $nbJoinMax - $currentParticipantNb;
                 if ($availableSpotNb < 0) {
                     $availableSpotNb = 0;
                 }
                 $this->addFlash('error', 'Vous ne pouvez pas inscrire plus de participants que de places disponibles (' . $availableSpotNb . '). Vous pouvez augmenter le nombre maximum de places pour ensuite rajouter des personnes.');
+
+                return new Response(
+                    '<script>
+                        window.parent.location.reload();
+                    </script>'
+                );
             }
 
             // liste des encadrants
