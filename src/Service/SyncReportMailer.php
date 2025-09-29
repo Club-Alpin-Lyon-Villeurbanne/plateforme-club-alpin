@@ -33,7 +33,7 @@ class SyncReportMailer
 
             $this->mailer->send(
                 $recipients,
-                'sync_report',
+                'transactional/sync_report',
                 $context
             );
 
