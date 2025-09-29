@@ -71,6 +71,14 @@
                 <strong>{{ stats.blocked|default(0) }}</strong>
             </td>
         </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f5f3f0;">
+                <strong>👥 Filiations parentales supprimées</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.2em;">
+                <strong>{{ stats.filiations_removed|default(0) }}</strong>
+            </td>
+        </tr>
     </table>
 
     {% if stats.inserted > 0 %}
@@ -96,6 +104,15 @@
         <p style="margin: 0;">
             <strong>{{ stats.blocked }} adhérent(s) avec licence expirée</strong> : ces adhérents n'étaient pas dans le fichier FFCAM
             et leur licence a expiré. Ils ne pourront pas s'inscrire aux sorties tant qu'ils n'auront pas renouvelé leur adhésion.
+        </p>
+    </div>
+    {% endif %}
+
+    {% if stats.filiations_removed|default(0) > 0 %}
+    <div style="padding: 15px; background-color: #f5f3f0; border-radius: 5px; margin: 20px 0;">
+        <p style="margin: 0;">
+            <strong>{{ stats.filiations_removed }} filiation(s) parentale(s) supprimée(s)</strong> : les liens parent-enfant ont été supprimés
+            pour les comptes non mis à jour depuis plus de 200 jours.
         </p>
     </div>
     {% endif %}

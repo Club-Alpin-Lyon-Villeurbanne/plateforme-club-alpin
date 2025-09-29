@@ -126,10 +126,8 @@ SQL;
             ->andWhere('u.nomade = :isNomade')
             ->andWhere('u.manuelUser = :isManual')
             ->andWhere('u.dateAdhesion <= :expiryDate')
-            ->andWhere('u.doitRenouveler = :currentShouldRenew')
             ->setParameters([
                 'shouldRenew' => true,
-                'currentShouldRenew' => false,
                 'adminId' => 1,
                 'isNomade' => false,
                 'isManual' => false,
@@ -139,7 +137,7 @@ SQL;
         return $qb->getQuery()->execute();
     }
 
-    public function removeExpiredFiliations(): void
+    public function removeExpiredFiliations(): int
     {
         $expiryDate = new \DateTime('-200 days');
 
@@ -150,9 +148,10 @@ SQL;
             ->setParameter('expiryDate', $expiryDate->getTimestamp());
 
         try {
-            $qb->getQuery()->execute();
+            return $qb->getQuery()->execute();
         } catch (\Exception $exc) {
             \Sentry\captureException($exc);
+            return 0;
         }
     }
 

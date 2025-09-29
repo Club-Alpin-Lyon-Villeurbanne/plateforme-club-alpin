@@ -14,6 +14,7 @@ DÉTAIL DES OPÉRATIONS
 🔄 Adhérents mis à jour : {{ stats.updated }}
 🔗 Adhérents fusionnés : {{ stats.merged }}
 ⏰ Adhérents avec licence expirée : {{ stats.blocked|default(0) }}
+👥 Filiations parentales supprimées : {{ stats.filiations_removed|default(0) }}
 
 {% if stats.inserted > 0 %}
 {{ stats.inserted }} nouveau(x) adhérent(s) ont été ajoutés à la base de données.
@@ -28,6 +29,11 @@ avec un nouveau numéro de licence. Les comptes ont été fusionnés automatique
 {% if stats.blocked|default(0) > 0 %}
 {{ stats.blocked }} adhérent(s) avec licence expirée : ces adhérents n'étaient pas dans le fichier FFCAM
 et leur licence a expiré. Ils ne pourront pas s'inscrire aux sorties tant qu'ils n'auront pas renouvelé leur adhésion.
+{% endif %}
+
+{% if stats.filiations_removed|default(0) > 0 %}
+{{ stats.filiations_removed }} filiation(s) parentale(s) supprimée(s) : les liens parent-enfant ont été supprimés
+pour les comptes non mis à jour depuis plus de 200 jours.
 {% endif %}
 
 ---

@@ -36,7 +36,7 @@ class FfcamSynchronizer
         if (!$this->isFileValid($ffcamFilePath)) {
             $this->logger->warning("File {$ffcamFilePath} not found. Can't import new members");
             $blockedCount = $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
-            $this->userRepository->removeExpiredFiliations();
+            $filiationsRemoved = $this->userRepository->removeExpiredFiliations();
 
             return;
         }
@@ -47,9 +47,10 @@ class FfcamSynchronizer
         $this->logResults($ffcamFilePath, $stats);
 
         $blockedCount = $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
-        $this->userRepository->removeExpiredFiliations();
+        $filiationsRemoved = $this->userRepository->removeExpiredFiliations();
 
         $stats['blocked'] = $blockedCount;
+        $stats['filiations_removed'] = $filiationsRemoved;
 
         $endTime = new \DateTime();
 
