@@ -133,7 +133,9 @@ class EvtRepository extends ServiceEntityRepository
     public function getUserCreatedEvents(User $user, int $first, int $perPage): array
     {
         $qb = $this->getEventsCreatedByUserDql($user)
-            ->orderBy('e.tsp', 'desc')
+            ->addSelect('CASE WHEN e.tsp IS NULL THEN 1 ELSE 0 END as HIDDEN tsp_is_null')
+            ->orderBy('tsp_is_null', 'desc')
+            ->addOrderBy('e.tsp', 'desc')
         ;
 
         return $this->getPaginatedResults($qb, $first, $perPage);
@@ -191,6 +193,7 @@ class EvtRepository extends ServiceEntityRepository
         return $this->getEventsByUserDql($user, [Evt::STATUS_LEGAL_VALIDE])
             ->addSelect('er.status as exp_status')
             ->leftJoin(ExpenseReport::class, 'er', 'WITH', 'er.event = e.id AND er.user = :user')
+            ->andWhere('e.tsp IS NOT NULL')
             ->andWhere('e.tspEnd < :date')
             ->setParameter('date', $date->getTimestamp())
             ->setParameter('user', $user)
@@ -348,6 +351,7 @@ class EvtRepository extends ServiceEntityRepository
             ->leftJoin('e.commission', 'c')
             ->leftJoin('e.participations', 'p')
             ->where('p.user = :user')
+            ->andWhere('e.tsp IS NOT NULL')
             ->setParameter('user', $user)
         ;
 
