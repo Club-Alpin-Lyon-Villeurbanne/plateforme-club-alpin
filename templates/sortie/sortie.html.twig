@@ -481,7 +481,7 @@
                                         </div>
                                     {% endif %}
 
-                                    {% if participation.role != 'encadrant' %}
+                                    {% if participation.role != 'encadrant' and participation.role != 'stagiaire' %}
                                         <span style="display:none">{{ participation.status }}</span>
                                         <input type="hidden" name="id_evt_join[]" value="{{ participation.id }}" />
 

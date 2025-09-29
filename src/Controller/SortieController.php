@@ -343,10 +343,9 @@ class SortieController extends AbstractController
             }
 
             // there can be no role passed in the request
-            if (!$role) {
-                $role = 'inscrit';
+            if (!$participation->getRole()) {
+                $participation->setRole(EventParticipation::ROLE_INSCRIT);
             }
-            $participation->setRole($role);
 
             $participation
                 ->setStatus($status)
