@@ -740,7 +740,10 @@ class SortieController extends AbstractController
         $newEvent->setNeedBenevoles($event->getNeedBenevoles());
         $newEvent->setGroupe($event->getGroupe());
         $newEvent->setJoinStart(time());
+        $newEvent->setAutoAccept($event->isAutoAccept());
+        $newEvent->setIsDraft(true);
 
+        // dupliquer les participants ?
         if ('full' === $mode) {
             foreach ($event->getParticipations() as $participation) {
                 $join = $newEvent->addParticipation($participation->getUser(), $participation->getRole(), $participation->getStatus());
