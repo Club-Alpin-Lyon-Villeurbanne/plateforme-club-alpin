@@ -388,7 +388,7 @@ class SortieController extends AbstractController
 
                 if (!$participation->getUser()->getEmail()) {
                     $this->addFlash('warning', sprintf('%s %s n\'a pas d\'email et ' .
-                        'doit être prévenu par téléphone de son nouveau statut : %s. Son téléphone: %s', $participation->getUser()->getFirstname(), $participation->getUser()->getLastname(), $statusName, $participation->getUser()->getTel()));
+                        'doit être prévenu par téléphone de son nouveau statut : %s. Son téléphone : %s', $participation->getUser()->getFirstname(), $participation->getUser()->getLastname(), $statusName, $participation->getUser()->getTel()));
 
                     continue;
                 }
@@ -903,7 +903,7 @@ class SortieController extends AbstractController
                         $current_participants = $event->getParticipationsCount();
 
                         // Vérifier si on peut accepter assez d'inscriptions
-                        if (($current_participants + $nbNewJoins) < $ngens_max) {
+                        if (($current_participants + $nbNewJoins) <= $ngens_max) {
                             $status_evt_join = EventParticipation::STATUS_VALIDE;
                             $auto_accept = true;
                         }
@@ -939,7 +939,10 @@ class SortieController extends AbstractController
                         }
                     }
                     foreach ($affiliatedLeavingUsers as $affiliatedLeavingUser) {
-                        $event->removeParticipation($event->getParticipation($affiliatedLeavingUser));
+                        $participation = $event->getParticipation($affiliatedLeavingUser);
+                        if ($participation) {
+                            $event->removeParticipation($participation);
+                        }
                     }
                 }
                 $em->flush();
