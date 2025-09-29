@@ -55,7 +55,7 @@ class SyncReportMailer
         // On pourrait étendre pour récupérer tous les admins depuis la base
         $recipients = [];
 
-        if (!empty($this->adminEmail)) {
+        if (!empty($this->adminEmails)) {
             // Support de plusieurs emails séparés par des virgules
             $emails = array_map('trim', explode(',', $this->adminEmail));
             foreach ($emails as $email) {

@@ -243,7 +243,7 @@ services:
 
   App\Service\SyncReportMailer:
     arguments:
-      $adminEmail: "%env(SYNC_REPORT_RECIPIENTS)%"
+      $adminEmails: "%env(SYNC_REPORT_RECIPIENTS)%"
 
   App\Service\FfcamSynchronizer:
     arguments:
