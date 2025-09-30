@@ -3,43 +3,53 @@
 namespace App;
 
 use App\Repository\ArticleRepository;
+use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 
 class Notifications
 {
-    private EvtRepository $evtRepository;
-    private ArticleRepository $cafArticleRepository;
-    private UserRights $userRights;
-
-    public function __construct(EvtRepository $evtRepository, ArticleRepository $cafArticleRepository, UserRights $userRights)
-    {
-        $this->evtRepository = $evtRepository;
-        $this->cafArticleRepository = $cafArticleRepository;
-        $this->userRights = $userRights;
+    public function __construct(
+        protected EvtRepository $evtRepository,
+        protected ArticleRepository $cafArticleRepository,
+        protected UserRights $userRights,
+        protected CommissionRepository $commissionRepository,
+        protected readonly string $maxTimestampForLegalValidation
+    ) {
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function getValidationSortie(): int
     {
-        if ($this->userRights->allowed('evt_validate_all')) {
-            return $this->evtRepository->getUnvalidatedEvt();
+        $validate = $this->userRights->allowed('evt_validate');
+        $validateAll = $this->userRights->allowed('evt_validate_all');
+
+        $commissions = [];
+        if ($validate && !$validateAll) {
+            $commissionCodes = $this->userRights->getCommissionListForRight('evt_validate');
+            $commissions = $this->commissionRepository->findBy(['code' => $commissionCodes]);
         }
 
-        if ($this->userRights->allowed('evt_validate')) {
-            $commissions = $this->userRights->getCommissionListForRight('evt_validate');
-
-            return $this->evtRepository->getUnvalidatedEvt($commissions);
-        }
-
-        return 0;
+        return $this->evtRepository->getEventsToPublishCount($commissions);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function getValidationSortiePresident(): int
     {
         if (!$this->userRights->allowed('evt_legal_accept')) {
             return 0;
         }
 
-        return $this->evtRepository->getUnvalidatedPresidentEvt();
+        $dateMax = (int) strtotime($this->maxTimestampForLegalValidation);
+
+        return $this->evtRepository->getEventsToLegalValidateCount($dateMax);
     }
 
     public function getValidationArticle(): int
