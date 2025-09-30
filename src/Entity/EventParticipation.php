@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Repository\EventParticipationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -30,6 +31,8 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 )]
 class EventParticipation implements \JsonSerializable
 {
+    use TimestampableEntity;
+
     public const STATUS_NON_CONFIRME = 0;
     public const STATUS_VALIDE = 1;
     public const STATUS_REFUSE = 2;
