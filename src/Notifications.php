@@ -54,7 +54,7 @@ class Notifications
             return 0;
         }
 
-        $dateMax = strtotime($this->maxTimestampForLegalValidation);
+        $dateMax = (int) strtotime($this->maxTimestampForLegalValidation);
 
         return $this->evtRepository->getEventsToLegalValidateCount($dateMax);
     }

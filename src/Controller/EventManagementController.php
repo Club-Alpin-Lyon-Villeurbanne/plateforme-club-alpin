@@ -77,7 +77,7 @@ class EventManagementController extends AbstractController
         }
 
         $perPage = 30;
-        $dateMax = strtotime($this->maxTimestampForLegalValidation);
+        $dateMax = (int) strtotime($this->maxTimestampForLegalValidation);
         $page = $request->query->getInt('page', 1);
         $total = $this->eventRepository->getEventsToLegalValidateCount($dateMax);
         $pages = ceil($total / $perPage);
