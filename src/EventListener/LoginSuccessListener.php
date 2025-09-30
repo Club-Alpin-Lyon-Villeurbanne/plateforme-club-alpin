@@ -20,8 +20,9 @@ readonly class LoginSuccessListener
         /** @var User $user */
         $user = $event->getUser();
 
-        if (method_exists($user, 'setLastLoginDate')) {
+        if ($user instanceof User) {
             $user->setLastLoginDate(new \DateTimeImmutable());
+            $this->entityManager->persist($user);
             $this->entityManager->flush();
         }
     }
