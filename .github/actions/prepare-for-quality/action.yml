@@ -1,0 +1,58 @@
+name: 'Prepare Environment for Quality'
+description: 'Prepares the environment for quality checks'
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
+        coverage: none
+        tools: cs2pr, phive
+
+    - name: Get Composer Cache Directory
+      shell: bash
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache Composer dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ runner.os }}-composer-
+    
+    # Quality tools are cached without suffix because Phive decides the version to install
+    # Updating them would need to invalidate the cache manually on Github Actions
+    - name: Cache quality tools
+      id: cache-quality-tools
+      uses: actions/cache@v4
+      with:
+        path: ./bin/tools
+        key: ${{ runner.os }}-quality-tools
+        restore-keys: ${{ runner.os }}-quality-tools-
+
+    - name: Cache Vendor
+      id: cache-vendor
+      uses: actions/cache@v4
+      with:
+        path: vendor
+        key: ${{ runner.os }}-vendor-${{ hashFiles('composer.lock') }}
+
+    - name: Install dependencies
+      shell: bash
+      if: ${{ steps.cache-vendor.outputs.cache-hit != 'true' }}
+      run: composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-uopz
+
+    - name: Install PHP tools
+      shell: bash
+      if: ${{ steps.cache-quality-tools.outputs.cache-hit != 'true' }}
+      run: phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E,CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
+
+      # Installation is done automatically by Symfony when the script is run
+    - name: Install PHPUnit for assertions autoloading
+      shell: bash
+      run: ./bin/phpunit --version
+
+  
