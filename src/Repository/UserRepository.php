@@ -116,7 +116,7 @@ SQL;
         ;
     }
 
-    public function blockExpiredAccounts(int $expiryDate): void
+    public function blockExpiredAccounts(int $expiryDate): int
     {
         $qb = $this->createQueryBuilder('u');
 
@@ -132,12 +132,12 @@ SQL;
                 'isNomade' => false,
                 'isManual' => false,
                 'expiryDate' => $expiryDate,
-            ])
-            ->getQuery()
-            ->execute();
+            ]);
+
+        return $qb->getQuery()->execute();
     }
 
-    public function removeExpiredFiliations(): void
+    public function removeExpiredFiliations(): int
     {
         $expiryDate = new \DateTime('-200 days');
 
@@ -148,9 +148,11 @@ SQL;
             ->setParameter('expiryDate', $expiryDate->getTimestamp());
 
         try {
-            $qb->getQuery()->execute();
+            return $qb->getQuery()->execute();
         } catch (\Exception $exc) {
             \Sentry\captureException($exc);
+
+            return 0;
         }
     }
 

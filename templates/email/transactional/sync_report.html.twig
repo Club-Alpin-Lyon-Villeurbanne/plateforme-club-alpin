@@ -1,0 +1,183 @@
+{% extends 'email/transactional/layout.html.twig' %}
+
+{% block subject %}Rapport de synchronisation FFCAM du {{ date }}{% endblock %}
+
+{% block inner_html %}
+    <h2>Synchronisation des adhérents terminée</h2>
+
+    <p>La synchronisation automatique des adhérents FFCAM s'est exécutée avec succès.</p>
+
+    <h3>📊 Résumé de la synchronisation</h3>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f8f8;">
+                <strong>Date d'exécution</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd;">
+                {{ startTime|date('d/m/Y à H:i:s') }}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f8f8;">
+                <strong>Durée totale</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd;">
+                {{ duration }}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f8f8;">
+                <strong>Total traité</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd;">
+                <strong style="font-size: 1.2em; color: #2da1bf;">{{ total }}</strong> adhérent(s)
+            </td>
+        </tr>
+    </table>
+
+    <h3>📈 Détail des opérations</h3>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #d4f4dd;">
+                <strong>✅ Nouveaux adhérents</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.2em;">
+                <strong>{{ stats.inserted }}</strong>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #ffeaa7;">
+                <strong>🔄 Adhérents mis à jour</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.2em;">
+                <strong>{{ stats.updated }}</strong>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #dfe6e9;">
+                <strong>🔗 Adhérents fusionnés</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.2em;">
+                <strong>{{ stats.merged }}</strong>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #ffcccc;">
+                <strong>⏰ Adhérents avec licence expirée</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.2em;">
+                <strong>{{ stats.blocked|default(0) }}</strong>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f5f3f0;">
+                <strong>👥 Filiations parentales supprimées</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.2em;">
+                <strong>{{ stats.filiations_removed|default(0) }}</strong>
+            </td>
+        </tr>
+        {% if stats.errors|default(0) > 0 %}
+        <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; background-color: #ff6b6b; color: white;">
+                <strong>❌ Erreurs de traitement</strong>
+            </td>
+            <td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 1.2em; background-color: #ffe0e0;">
+                <strong style="color: #d00;">{{ stats.errors }}</strong>
+            </td>
+        </tr>
+        {% endif %}
+    </table>
+
+    {% if stats.inserted > 0 %}
+    <div style="padding: 15px; background-color: #d4f4dd; border-radius: 5px; margin: 20px 0;">
+        <p style="margin: 0;">
+            <strong>{{ stats.inserted }} nouveau(x) adhérent(s)</strong> ont été ajoutés à la base de données.
+            Ces comptes sont en attente de validation et devront confirmer leur adresse email.
+        </p>
+    </div>
+    {% endif %}
+
+    {% if stats.merged > 0 %}
+    <div style="padding: 15px; background-color: #dfe6e9; border-radius: 5px; margin: 20px 0;">
+        <p style="margin: 0;">
+            <strong>{{ stats.merged }} doublon(s) détecté(s)</strong> : des adhérents existants ont été trouvés
+            avec un nouveau numéro de licence. Les comptes ont été fusionnés automatiquement.
+        </p>
+
+        {% if stats.merged_details|default([]) %}
+        <p style="margin: 10px 0 5px 0; font-weight: bold;">
+            Détail des fusions{% if stats.merged > 20 %} (20 premières affichées){% endif %} :
+        </p>
+        <ul style="margin: 5px 0; padding-left: 20px;">
+            {% for merge in stats.merged_details %}
+            <li style="margin: 3px 0;">
+                <strong>{{ merge.name }}</strong> : {{ merge.old_cafnum }} → {{ merge.new_cafnum }}
+            </li>
+            {% endfor %}
+            {% if stats.merged > 20 %}
+            <li style="margin: 5px 0; font-style: italic;">
+                ... et {{ stats.merged - 20 }} autre(s) fusion(s)
+            </li>
+            {% endif %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if stats.blocked|default(0) > 0 %}
+    <div style="padding: 15px; background-color: #ffcccc; border-radius: 5px; margin: 20px 0;">
+        <p style="margin: 0;">
+            <strong>{{ stats.blocked }} adhérent(s) avec licence expirée</strong> : leur adhésion n'a pas été renouvelée pour la saison en cours.
+            Ils ne pourront pas s'inscrire aux sorties tant qu'ils n'auront pas renouvelé leur adhésion.
+        </p>
+    </div>
+    {% endif %}
+
+    {% if stats.filiations_removed|default(0) > 0 %}
+    <div style="padding: 15px; background-color: #f5f3f0; border-radius: 5px; margin: 20px 0;">
+        <p style="margin: 0;">
+            <strong>{{ stats.filiations_removed }} filiation(s) parentale(s) supprimée(s)</strong> : les liens parent-enfant ont été supprimés
+            pour les comptes non mis à jour depuis plus de 200 jours.
+        </p>
+    </div>
+    {% endif %}
+
+    {% if stats.errors|default(0) > 0 %}
+    <div style="padding: 15px; background-color: #ffe0e0; border: 2px solid #ff6b6b; border-radius: 5px; margin: 20px 0;">
+        <p style="margin: 0; color: #d00;">
+            <strong>⚠️ {{ stats.errors }} erreur(s) lors du traitement</strong> : certains adhérents n'ont pas pu être traités correctement.
+        </p>
+
+        {% if stats.error_details|default([]) %}
+        <p style="margin: 10px 0 5px 0; color: #d00; font-weight: bold;">
+            Détails des erreurs{% if stats.errors > 10 %} (10 premières affichées){% endif %} :
+        </p>
+        <ul style="margin: 5px 0; padding-left: 20px; color: #333;">
+            {% for error in stats.error_details %}
+            <li style="margin: 3px 0;">
+                <strong>Licence {{ error.cafnum }}</strong> : {{ error.message }}
+            </li>
+            {% endfor %}
+            {% if stats.errors > 10 %}
+            <li style="margin: 5px 0; font-style: italic;">
+                ... et {{ stats.errors - 10 }} autre(s) erreur(s)
+            </li>
+            {% endif %}
+        </ul>
+        <p style="margin: 10px 0 0 0; color: #666; font-size: 0.9em;">
+            Ces adhérents devront être vérifiés manuellement.
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+
+    <p style="color: #666; font-size: 0.9em;">
+        Ce rapport est généré automatiquement après chaque synchronisation FFCAM.
+        En cas de problème, veuillez consulter les logs détaillés dans l'interface d'administration.
+    </p>
+{% endblock %}

@@ -241,6 +241,14 @@ services:
     arguments:
       $ffcamFilePath: "%env(FFCAM_FILE_PATH)%"
 
+  App\Service\FfcamSyncReportMailer:
+    arguments:
+      $adminEmails: "%env(SYNC_REPORT_RECIPIENTS)%"
+
+  App\Service\FfcamSynchronizer:
+    arguments:
+      $syncReportMailer: '@App\Service\FfcamSyncReportMailer'
+
   App\EventListener\ExpenseReportStatusListener:
     tags:
       - { name: doctrine.event_listener, event: preUpdate }

@@ -1,0 +1,69 @@
+Rapport de synchronisation FFCAM du {{ date }}
+
+La synchronisation automatique des adhérents FFCAM s'est exécutée avec succès.
+
+RÉSUMÉ DE LA SYNCHRONISATION
+=============================
+Date d'exécution : {{ startTime|date('d/m/Y à H:i:s') }}
+Durée totale : {{ duration }}
+Total traité : {{ total }} adhérent(s)
+
+DÉTAIL DES OPÉRATIONS
+======================
+✅ Nouveaux adhérents : {{ stats.inserted }}
+🔄 Adhérents mis à jour : {{ stats.updated }}
+🔗 Adhérents fusionnés : {{ stats.merged }}
+⏰ Adhérents avec licence expirée : {{ stats.blocked|default(0) }}
+👥 Filiations parentales supprimées : {{ stats.filiations_removed|default(0) }}
+{% if stats.errors|default(0) > 0 %}❌ Erreurs de traitement : {{ stats.errors }}{% endif %}
+
+{% if stats.inserted > 0 %}
+{{ stats.inserted }} nouveau(x) adhérent(s) ont été ajoutés à la base de données.
+Ces comptes sont en attente de validation et devront confirmer leur adresse email.
+{% endif %}
+
+{% if stats.merged > 0 %}
+{{ stats.merged }} doublon(s) détecté(s) : des adhérents existants ont été trouvés
+avec un nouveau numéro de licence. Les comptes ont été fusionnés automatiquement.
+
+{% if stats.merged_details|default([]) %}
+Détail des fusions{% if stats.merged > 20 %} (20 premières affichées){% endif %} :
+{% for merge in stats.merged_details %}
+- {{ merge.name }} : {{ merge.old_cafnum }} → {{ merge.new_cafnum }}
+{% endfor %}
+{% if stats.merged > 20 %}
+- ... et {{ stats.merged - 20 }} autre(s) fusion(s)
+{% endif %}
+{% endif %}
+{% endif %}
+
+{% if stats.blocked|default(0) > 0 %}
+{{ stats.blocked }} adhérent(s) avec licence expirée : leur adhésion n'a pas été renouvelée pour la saison en cours.
+Ils ne pourront pas s'inscrire aux sorties tant qu'ils n'auront pas renouvelé leur adhésion.
+{% endif %}
+
+{% if stats.filiations_removed|default(0) > 0 %}
+{{ stats.filiations_removed }} filiation(s) parentale(s) supprimée(s) : les liens parent-enfant ont été supprimés
+pour les comptes non mis à jour depuis plus de 200 jours.
+{% endif %}
+
+{% if stats.errors|default(0) > 0 %}
+⚠️ ATTENTION : {{ stats.errors }} erreur(s) lors du traitement !
+Certains adhérents n'ont pas pu être traités correctement.
+
+{% if stats.error_details|default([]) %}
+Détails des erreurs{% if stats.errors > 10 %} (10 premières affichées){% endif %} :
+{% for error in stats.error_details %}
+- Licence {{ error.cafnum }} : {{ error.message }}
+{% endfor %}
+{% if stats.errors > 10 %}
+- ... et {{ stats.errors - 10 }} autre(s) erreur(s)
+{% endif %}
+
+Ces adhérents devront être vérifiés manuellement.
+{% endif %}
+{% endif %}
+
+---
+Ce rapport est généré automatiquement après chaque synchronisation FFCAM.
+En cas de problème, veuillez consulter les logs détaillés dans l'interface d'administration.

@@ -19,6 +19,7 @@ class FfcamSynchronizer
         private readonly FfcamFileParser $fileParser,
         private readonly MemberMerger $memberMerger,
         private readonly UserLicenseHelper $userLicenseHelper,
+        private readonly ?FfcamSyncReportMailer $syncReportMailer = null,
     ) {
         $today = new \DateTime();
         $endDate = new \DateTime($today->format('Y') . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
@@ -28,12 +29,13 @@ class FfcamSynchronizer
 
     public function synchronize(?string $ffcamFilePath = null): void
     {
+        $startTime = new \DateTime();
         $licenseExpirationDate = $this->userLicenseHelper->getLicenseExpirationTimestamp();
 
         if (!$this->isFileValid($ffcamFilePath)) {
             $this->logger->warning("File {$ffcamFilePath} not found. Can't import new members");
-            $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
-            $this->userRepository->removeExpiredFiliations();
+            $blockedCount = $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
+            $filiationsRemoved = $this->userRepository->removeExpiredFiliations();
 
             return;
         }
@@ -43,8 +45,18 @@ class FfcamSynchronizer
         $this->archiveFile($ffcamFilePath, $stats);
         $this->logResults($ffcamFilePath, $stats);
 
-        $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
-        $this->userRepository->removeExpiredFiliations();
+        $blockedCount = $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
+        $filiationsRemoved = $this->userRepository->removeExpiredFiliations();
+
+        $stats['blocked'] = $blockedCount;
+        $stats['filiations_removed'] = $filiationsRemoved;
+
+        $endTime = new \DateTime();
+
+        // Envoyer le mail de récapitulatif si le service est disponible
+        if ($this->syncReportMailer) {
+            $this->syncReportMailer->sendSyncReport($stats, $startTime, $endTime);
+        }
     }
 
     private function isFileValid(string $filePath): bool
@@ -54,44 +66,73 @@ class FfcamSynchronizer
 
     private function processMembers(\Generator $members): array
     {
-        $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0];
+        $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0, 'errors' => 0, 'error_details' => [], 'merged_details' => []];
         $batchSize = 20;
         $i = 0;
 
         foreach ($members as $parsedUser) {
-            $this->logger->info("Processing CAF member {$parsedUser->getCafnum()}");
+            try {
+                $this->logger->info("Processing CAF member {$parsedUser->getCafnum()}");
 
-            $existingUser = $this->userRepository->findOneByLicenseNumber($parsedUser->getCafnum());
+                $existingUser = $this->userRepository->findOneByLicenseNumber($parsedUser->getCafnum());
 
-            if ($existingUser) {
-                $this->updateExistingUser($existingUser, $parsedUser);
-                ++$stats['updated'];
-                continue;
-            }
+                if ($existingUser) {
+                    $this->updateExistingUser($existingUser, $parsedUser);
+                    ++$stats['updated'];
+                    continue;
+                }
 
-            $potentialDuplicate = $this->userRepository->findDuplicateUser(
-                $parsedUser->getLastname(),
-                $parsedUser->getFirstname(),
-                $parsedUser->getBirthday(),
-                $parsedUser->getCafnum()
-            );
-
-            if ($potentialDuplicate) {
-                $this->logger->info(sprintf(
-                    'Found duplicate member %s %s (old license: %s, new license: %s)',
+                $potentialDuplicate = $this->userRepository->findDuplicateUser(
                     $parsedUser->getLastname(),
                     $parsedUser->getFirstname(),
-                    $potentialDuplicate->getCafnum(),
+                    $parsedUser->getBirthday(),
                     $parsedUser->getCafnum()
+                );
+
+                if ($potentialDuplicate) {
+                    $this->logger->info(sprintf(
+                        'Found duplicate member %s %s (old license: %s, new license: %s)',
+                        $parsedUser->getLastname(),
+                        $parsedUser->getFirstname(),
+                        $potentialDuplicate->getCafnum(),
+                        $parsedUser->getCafnum()
+                    ));
+
+                    $this->memberMerger->mergeNewMember($potentialDuplicate->getCafnum(), $parsedUser);
+                    ++$stats['merged'];
+
+                    // Stocker les détails de la fusion (tous pour debug)
+                    $stats['merged_details'][] = [
+                        'old_cafnum' => $potentialDuplicate->getCafnum(),
+                        'new_cafnum' => $parsedUser->getCafnum(),
+                        'name' => sprintf('%s %s', $parsedUser->getFirstname(), $parsedUser->getLastname())
+                    ];
+                } else {
+                    $parsedUser->setTsInsert(time());
+                    $parsedUser->setValid(false);
+                    $this->entityManager->persist($parsedUser);
+                    ++$stats['inserted'];
+                }
+            } catch (\Exception $exception) {
+                $cafnum = $parsedUser->getCafnum() ?? 'inconnu';
+                $errorMessage = $exception->getMessage();
+
+                $this->logger->error(sprintf(
+                    'Error processing member %s: %s',
+                    $cafnum,
+                    $errorMessage
                 ));
 
-                $this->memberMerger->mergeNewMember($potentialDuplicate->getCafnum(), $parsedUser);
-                ++$stats['merged'];
-            } else {
-                $parsedUser->setTsInsert(time());
-                $parsedUser->setValid(false);
-                $this->entityManager->persist($parsedUser);
-                ++$stats['inserted'];
+                ++$stats['errors'];
+
+                // Stocker les détails de l'erreur (tous pour debug)
+                $stats['error_details'][] = [
+                    'cafnum' => $cafnum,
+                    'message' => substr($errorMessage, 0, 100) // Limiter la longueur du message
+                ];
+
+                // Continue avec le prochain membre
+                continue;
             }
 
             if (0 === ++$i % $batchSize) {
@@ -99,7 +140,10 @@ class FfcamSynchronizer
                     $this->entityManager->flush();
                     $this->entityManager->clear();
                 } catch (\Exception $exception) {
-                    $this->logger->error($exception->getMessage());
+                    $this->logger->error('Batch flush error: ' . $exception->getMessage());
+                    ++$stats['errors'];
+                    // Clear l'entity manager pour continuer le traitement
+                    $this->entityManager->clear();
                 }
             }
         }
@@ -107,7 +151,8 @@ class FfcamSynchronizer
         try {
             $this->entityManager->flush();
         } catch (\Exception $exception) {
-            $this->logger->error($exception->getMessage());
+            $this->logger->error('Final flush error: ' . $exception->getMessage());
+            ++$stats['errors'];
         }
 
         return $stats;
@@ -157,9 +202,10 @@ class FfcamSynchronizer
     private function logResults(string $filePath, array $stats): void
     {
         $this->logger->info(sprintf(
-            'Members synchronization finished. New members : %d, Updated members : %d',
+            'Members synchronization finished. New members : %d, Updated members : %d, Merged members : %d',
             $stats['inserted'],
-            $stats['updated']
+            $stats['updated'],
+            $stats['merged'] ?? 0
         ));
 
         try {
@@ -168,9 +214,10 @@ class FfcamSynchronizer
                 VALUES ('import-ffcam', :description, '127.0.0.1', :date)",
                 [
                     'description' => sprintf(
-                        'INSERT: %d, UPDATE: %d, fichier %s',
+                        'INSERT: %d, UPDATE: %d, MERGE: %d, fichier %s',
                         $stats['inserted'],
                         $stats['updated'],
+                        $stats['merged'] ?? 0,
                         basename($filePath)
                     ),
                     'date' => time(),
