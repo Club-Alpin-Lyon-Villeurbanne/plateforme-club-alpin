@@ -67,7 +67,7 @@ class ExcelExport
             // Génération des données
             foreach ($datas as $data) {
                 $user = $data['liste']->getUser();
-                $name = $user->getCiv() . ' ' . ucfirst(strtolower($user->getFirstname())) . ' ' . strtoupper($user->getLastname());
+                $name = ucfirst(strtolower($user->getFirstname())) . ' ' . strtoupper($user->getLastname());
 
                 $array = [
                     $count - 1,

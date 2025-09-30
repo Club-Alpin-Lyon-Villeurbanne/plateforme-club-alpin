@@ -159,7 +159,7 @@
                 <tr>
                     <td>{{ cpt }}</td>
                     <td>
-                        {{ participant.user.civ }} {{ participant.user.firstname }} {{ participant.user.lastname|upper }}
+                        {{ participant.user.firstname }} {{ participant.user.lastname|upper }}
                         {% if participant.role in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT_ETENDU') %}
                             ({{ participant.role }})
                         {% endif %}
