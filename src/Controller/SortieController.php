@@ -355,7 +355,7 @@ class SortieController extends AbstractController
 
             $participation
                 ->setStatus($status)
-                ->setLastchangeWhen(time())
+                ->setUpdatedAt(new \DateTime())
                 ->setLastchangeWho($user)
             ;
 

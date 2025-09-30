@@ -98,7 +98,7 @@ class EventParticipationRepository extends ServiceEntityRepository
         $qb
             ->addOrderBy('inscrit.firstname', 'ASC')
             ->addOrderBy('inscrit.lastname', 'ASC')
-            ->addOrderBy('ej.tsp', 'ASC')
+            ->addOrderBy('ej.createdAt', 'ASC')
         ;
 
         if ($roles) {
