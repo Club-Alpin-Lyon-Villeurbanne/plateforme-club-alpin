@@ -13,7 +13,9 @@ use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Serializer\TimeStampNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
@@ -26,11 +28,11 @@ use Symfony\Component\Serializer\Attribute\Context;
 #[ORM\Entity]
 #[ApiResource(
     shortName: 'sortie',
-    order: ['tsp' => 'ASC'],
     operations: [
         new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
         new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:read', 'eventParticipation:read']]),
     ],
+    order: ['tsp' => 'ASC'],
     security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', 'participations.user.id' => 'exact'])]
@@ -39,6 +41,8 @@ use Symfony\Component\Serializer\Attribute\Context;
 #[ApiFilter(OrderFilter::class, properties: ['tsp'])]
 class Evt
 {
+    use TimestampableEntity;
+
     public const STATUS_PUBLISHED_UNSEEN = 0;
     public const STATUS_PUBLISHED_VALIDE = 1;
     public const STATUS_PUBLISHED_REFUSE = 2;
@@ -216,20 +220,37 @@ class Evt
     #[ORM\Column(name: 'images_authorized', type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $imagesAuthorized = false;
 
+    #[ORM\Column(name: 'event_start_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date et heure de début'])]
+    #[Groups('event:read')]
+    private ?\DateTimeImmutable $eventStartDate;
+
+    #[ORM\Column(name: 'event_end_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date et heure de fin'])]
+    #[Groups('event:read')]
+    private ?\DateTimeImmutable $eventEndDate;
+
+    #[ORM\Column(name: 'join_start_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date du début des inscriptions'])]
+    #[Groups('event:read')]
+    private ?\DateTimeImmutable $joinStartDate;
+
+    #[ORM\Column(name: 'cancellation_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date d\'annulation'])]
+    #[Groups('event:read')]
+    private ?\DateTimeImmutable $cancellationDate = null;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
         ?string $titre,
         ?string $code,
-        ?\DateTime $dateStart,
-        ?\DateTime $dateEnd,
+        ?\DateTimeImmutable $dateStart,
+        ?\DateTimeImmutable $dateEnd,
         ?string $rdv,
         ?float $rdvLat,
         ?float $rdvLong,
         ?string $description,
         ?int $demarrageInscriptions,
         ?int $maxInscriptions,
-        ?int $maxParticipants
+        ?int $maxParticipants,
+        ?\DateTimeImmutable $joinStartDate,
     ) {
         $this->user = $user;
         $this->titre = $titre;
@@ -261,6 +282,11 @@ class Evt
         $this->tspCrea = time();
         $this->tspEdit = time();
         $this->isDraft = false;
+        $this->setCreatedAt(new \DateTime());
+        $this->setUpdatedAt(new \DateTime());
+        $this->eventStartDate = $dateStart;
+        $this->eventEndDate = $dateEnd;
+        $this->joinStartDate = $joinStartDate;
     }
 
     public function jsonSerialize(): mixed
@@ -899,6 +925,54 @@ class Evt
     public function setImagesAuthorized(bool $imagesAuthorized): self
     {
         $this->imagesAuthorized = $imagesAuthorized;
+
+        return $this;
+    }
+
+    public function getEventStartDate(): ?\DateTimeImmutable
+    {
+        return $this->eventStartDate;
+    }
+
+    public function setEventStartDate(?\DateTimeImmutable $eventStartDate): self
+    {
+        $this->eventStartDate = $eventStartDate;
+
+        return $this;
+    }
+
+    public function getEventEndDate(): ?\DateTimeImmutable
+    {
+        return $this->eventEndDate;
+    }
+
+    public function setEventEndDate(?\DateTimeImmutable $eventEndDate): self
+    {
+        $this->eventEndDate = $eventEndDate;
+
+        return $this;
+    }
+
+    public function getJoinStartDate(): ?\DateTimeImmutable
+    {
+        return $this->joinStartDate;
+    }
+
+    public function setJoinStartDate(?\DateTimeImmutable $joinStartDate): self
+    {
+        $this->joinStartDate = $joinStartDate;
+
+        return $this;
+    }
+
+    public function getCancellationDate(): ?\DateTimeImmutable
+    {
+        return $this->cancellationDate;
+    }
+
+    public function setCancellationDate(?\DateTimeImmutable $cancellationDate): self
+    {
+        $this->cancellationDate = $cancellationDate;
 
         return $this;
     }

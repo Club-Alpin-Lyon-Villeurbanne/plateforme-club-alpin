@@ -167,6 +167,10 @@ database-diff: ## Create doctrine migrations
 	$(SYMFONY_CONSOLE) doctrine:migrations:diff --no-interaction
 .PHONY: database-diff
 
+database-migration-down: ## Make migration
+	$(SYMFONY_CONSOLE) doctrine:migrations:migrate prev --no-interaction
+.PHONY: database-migration-down
+
 database-fixtures-load: ## Load fixtures
 ifeq ($(args),)
 	$(eval args="--env=dev")

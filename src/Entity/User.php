@@ -12,7 +12,9 @@ use App\Serializer\TimeStampNormalizer;
 use App\Utils\EmailAlerts;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -38,6 +40,8 @@ use Symfony\Component\Serializer\Attribute\Context;
 #[ApiFilter(GroupFilter::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSerializable
 {
+    use TimestampableEntity;
+
     /**
      * @var int
      */
@@ -271,6 +275,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     #[ORM\Column(name: 'last_login_date', type: 'datetime', nullable: true, options: ['comment' => 'Date de dernière connexion'])]
     private ?\DateTimeInterface $lastLoginDate = null;
+
+    #[ORM\Column(name: 'birthdate', type: Types::DATE_IMMUTABLE, nullable: true, options: ['comment' => 'Date de naissance'])]
+    private ?\DateTimeInterface $birthdate = null;
+
+    #[ORM\Column(name: 'join_date', type: Types::DATE_IMMUTABLE, nullable: true, options: ['comment' => 'Date adhésion'])]
+    private ?\DateTimeInterface $joinDate = null;
 
     public function __construct(?int $id = null)
     {
@@ -880,6 +890,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setLastLoginDate(?\DateTimeInterface $lastLoginDate): self
     {
         $this->lastLoginDate = $lastLoginDate;
+
+        return $this;
+    }
+
+    public function getBirthdate(): ?\DateTimeInterface
+    {
+        return $this->birthdate;
+    }
+
+    public function setBirthdate(?\DateTimeInterface $birthdate): self
+    {
+        $this->birthdate = $birthdate;
+
+        return $this;
+    }
+
+    public function getJoinDate(): ?\DateTimeInterface
+    {
+        return $this->joinDate;
+    }
+
+    public function setJoinDate(?\DateTimeInterface $joinDate): self
+    {
+        $this->joinDate = $joinDate;
 
         return $this;
     }

@@ -10,7 +10,9 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Serializer\TimeStampNormalizer;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -19,15 +21,15 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * Article.
  */
 #[ORM\Table(name: 'caf_article')]
-#[ORM\Index(name: 'id_article', columns: ['id_article'])]
+#[ORM\Index(columns: ['id_article'], name: 'id_article')]
 #[ORM\Entity]
 #[Vich\Uploadable]
 #[ApiResource(
-    order: ['tsp' => 'DESC'],
     operations: [
         new Get(normalizationContext: ['groups' => ['article:read', 'media:read', 'article:details', 'user:read']]),
         new GetCollection(normalizationContext: ['groups' => ['article:read', 'media:read', 'user:read']]),
     ],
+    order: ['tsp' => 'DESC'],
     security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact'])]
@@ -35,6 +37,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ApiFilter(GroupFilter::class)]
 class Article
 {
+    use TimestampableEntity;
+
     public const int STATUS_PENDING = 0;
     public const int STATUS_PUBLISHED = 1;
     public const int STATUS_REFUSED = 2;
@@ -158,6 +162,10 @@ class Article
 
     #[ORM\Column(name: 'images_authorized', type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $imagesAuthorized = false;
+
+    #[ORM\Column(name: 'validation_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date de publication de l\'article'])]
+    #[Groups('event:read')]
+    private ?\DateTimeImmutable $validationDate = null;
 
     public function getId(): ?int
     {
@@ -388,6 +396,18 @@ class Article
     public function setImagesAuthorized(bool $imagesAuthorized): self
     {
         $this->imagesAuthorized = $imagesAuthorized;
+
+        return $this;
+    }
+
+    public function getValidationDate(): ?\DateTimeImmutable
+    {
+        return $this->validationDate;
+    }
+
+    public function setValidationDate(?\DateTimeImmutable $validationDate): self
+    {
+        $this->validationDate = $validationDate;
 
         return $this;
     }
