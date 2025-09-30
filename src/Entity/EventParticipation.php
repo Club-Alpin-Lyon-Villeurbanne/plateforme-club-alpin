@@ -101,20 +101,6 @@ class EventParticipation implements \JsonSerializable
     private $role;
 
     /**
-     * @var int
-     */
-    #[ORM\Column(name: 'tsp_evt_join', type: 'bigint', nullable: false)]
-    #[Groups('eventParticipation:read')]
-    #[SerializedName('dateInscription')]
-    private $tsp;
-
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'lastchange_when_evt_join', type: 'bigint', nullable: true, options: ['comment' => 'Quand a été modifié cet élément'])]
-    private $lastchangeWhen;
-
-    /**
      * @var User
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
@@ -138,7 +124,8 @@ class EventParticipation implements \JsonSerializable
         $this->role = $role;
         $this->status = $status;
         $this->hasPaid = false;
-        $this->tsp = time();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -257,30 +244,6 @@ class EventParticipation implements \JsonSerializable
     public function setRole(string $role): self
     {
         $this->role = $role;
-
-        return $this;
-    }
-
-    public function getTsp(): ?string
-    {
-        return $this->tsp;
-    }
-
-    public function setTsp(string $tsp): self
-    {
-        $this->tsp = $tsp;
-
-        return $this;
-    }
-
-    public function getLastchangeWhen(): ?string
-    {
-        return $this->lastchangeWhen;
-    }
-
-    public function setLastchangeWhen(string $lastchangeWhen): self
-    {
-        $this->lastchangeWhen = $lastchangeWhen;
 
         return $this;
     }

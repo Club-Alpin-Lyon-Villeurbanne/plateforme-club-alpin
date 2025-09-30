@@ -644,9 +644,9 @@
 
                                     </td>
                                     <td style="white-space:nowrap">
-                                        <span style="display:none">{{ participation.tsp }}</span>
-                                        {{ participation.tsp | date('d/m') }}<br />
-                                        {{ participation.tsp | date('à H:i') }}
+                                        <span style="display:none">{{ participation.createdAt.timestamp }}</span>
+                                        {{ participation.createdAt | date('d/m') }}<br />
+                                        {{ participation.createdAt | date('à H:i') }}
                                     </td>
 
                                     {% if event.hasPaymentForm %}
