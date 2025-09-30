@@ -10,20 +10,13 @@ use Doctrine\ORM\NoResultException;
 
 class Notifications
 {
-    private EvtRepository $evtRepository;
-    private ArticleRepository $cafArticleRepository;
-    private UserRights $userRights;
-
     public function __construct(
-        EvtRepository $evtRepository,
-        ArticleRepository $cafArticleRepository,
-        UserRights $userRights,
-        private CommissionRepository $commissionRepository,
-        private readonly string $maxTimestampForLegalValidation
+        protected EvtRepository $evtRepository,
+        protected ArticleRepository $cafArticleRepository,
+        protected UserRights $userRights,
+        protected CommissionRepository $commissionRepository,
+        protected readonly string $maxTimestampForLegalValidation
     ) {
-        $this->evtRepository = $evtRepository;
-        $this->cafArticleRepository = $cafArticleRepository;
-        $this->userRights = $userRights;
     }
 
     /**
