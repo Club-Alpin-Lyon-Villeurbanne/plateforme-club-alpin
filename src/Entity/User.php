@@ -264,7 +264,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function __construct(?int $id = null)
     {
         $this->attrs = new ArrayCollection();
-        $this->created = time();
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
         if ($id) {
@@ -458,18 +457,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setNickname(string $nickname): self
     {
         $this->nickname = $nickname;
-
-        return $this;
-    }
-
-    public function getCreated(): ?int
-    {
-        return $this->created;
-    }
-
-    public function setCreated(?int $created): self
-    {
-        $this->created = $created;
 
         return $this;
     }

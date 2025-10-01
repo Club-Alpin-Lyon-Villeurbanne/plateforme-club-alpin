@@ -110,7 +110,7 @@ SQL;
             ->setParameter('user', $user)
             ->orderBy('u.lastname', 'ASC')
             ->addOrderBy('u.firstname', 'ASC')
-            ->addOrderBy('u.created', 'DESC')
+            ->addOrderBy('u.createdAt', 'DESC')
             ->getQuery()
             ->getResult()
         ;
