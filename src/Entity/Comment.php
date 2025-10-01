@@ -31,12 +31,6 @@ class Comment
     private $status = 1;
 
     /**
-     * @var int
-     */
-    #[ORM\Column(name: 'tsp_comment', type: 'bigint', nullable: false)]
-    private $tsp;
-
-    /**
      * @var User
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
@@ -86,18 +80,6 @@ class Comment
     public function setStatus(int $status): self
     {
         $this->status = $status;
-
-        return $this;
-    }
-
-    public function getTsp(): ?string
-    {
-        return $this->tsp;
-    }
-
-    public function setTsp(string $tsp): self
-    {
-        $this->tsp = $tsp;
 
         return $this;
     }
