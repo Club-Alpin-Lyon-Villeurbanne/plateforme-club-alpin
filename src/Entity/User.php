@@ -469,12 +469,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this;
     }
 
-    public function getCreated(): ?string
+    public function getCreated(): ?int
     {
         return $this->created;
     }
 
-    public function setCreated(string $created): self
+    public function setCreated(?int $created): self
     {
         $this->created = $created;
 
