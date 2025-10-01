@@ -212,14 +212,11 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
         printTableRow('Nomade :', 'OUI&nbsp;&nbsp;&nbsp;<img src="/img/base/nomade_user.png">');
     }
     printTableRow('Statut compte internet :', (1 == $userTab['valid_user']) ? 'ACTIF' : ((2 == $userTab['valid_user']) ? 'DESACTIVE' : 'NON ACTIF'));
-    if ($userTab['created_user']) {
-        printTableRow('Création du compte :', date('d/m/Y', $userTab['created_user']));
+    if ($userTab['created_at']) {
+        printTableRow('Insertion en base :', $userTab['created_at']->format('d/m/Y'));
     }
-    if ($userTab['ts_insert_user']) {
-        printTableRow('Insertion en base :', date('d/m/Y', $userTab['ts_insert_user']));
-    }
-    if ($userTab['ts_update_user']) {
-        printTableRow('Mise à jour en base :', date('d/m/Y', $userTab['ts_update_user']));
+    if ($userTab['updated_at']) {
+        printTableRow('Mise à jour en base :', $userTab['updated_at']->format('d/m/Y'));
     }
     if (is_array($userTab['articles'])) {
         $rowValue = [];

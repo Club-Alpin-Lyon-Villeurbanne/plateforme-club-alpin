@@ -30,6 +30,7 @@ final class Version20250930142956 extends AbstractMigration
         $this->addSql('UPDATE caf_evt SET created_at = FROM_UNIXTIME(tsp_crea_evt), updated_at = (CASE WHEN tsp_edit_evt IS NOT NULL THEN FROM_UNIXTIME(tsp_edit_evt) ELSE NOW() END)');
         $this->addSql('UPDATE caf_evt_join SET created_at = FROM_UNIXTIME(tsp_evt_join), updated_at = (CASE WHEN lastchange_when_evt_join IS NOT NULL THEN FROM_UNIXTIME(lastchange_when_evt_join) ELSE NOW() END)');
         $this->addSql('UPDATE caf_user SET created_at = FROM_UNIXTIME(ts_insert_user), updated_at = (CASE WHEN ts_update_user IS NOT NULL THEN FROM_UNIXTIME(ts_update_user) ELSE NOW() END)');
+        $this->addSql('UPDATE caf_user SET birthdate = FROM_UNIXTIME(birthday_user), join_date = (CASE WHEN date_adhesion_user IS NOT NULL THEN FROM_UNIXTIME(date_adhesion_user) ELSE NULL END)');
 
         // mettre à jour les champs non nullables
         $this->addSql('ALTER TABLE caf_article CHANGE created_at created_at DATETIME NOT NULL, CHANGE updated_at updated_at DATETIME NOT NULL');
