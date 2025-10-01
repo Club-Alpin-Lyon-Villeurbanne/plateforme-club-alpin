@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\Entity\ExpenseAttachment;
 use App\Entity\ExpenseReport;
+use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,9 +34,18 @@ class ExpenseReportCloneProcessor implements ProcessorInterface
             throw new \RuntimeException('Expense report not found');
         }
 
+        /** @var User $currentUser */
         $currentUser = $this->security->getUser();
         if (!$currentUser) {
             throw new AccessDeniedHttpException('User not authenticated');
+        }
+
+        $existingReport = $this->entityManager->getRepository(ExpenseReport::class)
+            ->getExpenseReportByEventAndUser($originalReport->getEvent()->getId(), $currentUser->getId());
+
+        if ($existingReport) {
+            $this->entityManager->remove($existingReport);
+            $this->entityManager->flush();
         }
 
         $clonedReport = new ExpenseReport();
