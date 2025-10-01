@@ -124,8 +124,8 @@ class EventParticipation implements \JsonSerializable
         $this->role = $role;
         $this->status = $status;
         $this->hasPaid = false;
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
     }
 
     public function getId(): ?int

@@ -70,7 +70,7 @@ function display_articles($id_user, $limit = 10, $title = '')
         LEFT JOIN media_upload m ON a.media_upload_id = m.id
         WHERE status_article=1
         AND user_article = ' . $id_user
-        . ' ORDER BY  `tsp_article` DESC
+        . ' ORDER BY a.`updated_at` DESC
         LIMIT ' . $limit;
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);

@@ -72,7 +72,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
         }
 
         // NOMBRE ARTICLES
-        $req = "SELECT id_article, code_article, titre_article, tsp_validate_article FROM caf_article WHERE user_article='" . $id_user . "' AND status_article=1 ORDER BY id_article DESC";
+        $req = "SELECT id_article, code_article, titre_article, tsp_article FROM caf_article WHERE user_article='" . $id_user . "' AND status_article=1 ORDER BY id_article DESC";
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $userTab['articles'] = [];
         if ($result->num_rows > 0) {
@@ -224,7 +224,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     if (is_array($userTab['articles'])) {
         $rowValue = [];
         foreach ($userTab['articles'] as $article) {
-            $rowValue[] = '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . date('d.m.Y', $article['tsp_validate_article']) . ' - ' . $article['titre_article'] . '</a>';
+            $rowValue[] = '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . $article['created_at']?->format('d/m/Y') . ' - ' . $article['titre_article'] . '</a>';
         }
         printTableRow('Articles :', '<font size="-1" >' . implode('<br />', $rowValue) . '</font>');
     }

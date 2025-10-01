@@ -20,7 +20,7 @@ if ($current_commission) {
         AND  `une_article` =0 '
         // commission donnée : filtre (mais on inclut les actus club, commission=0)
         . ($current_commission ? ' AND (commission_article = ' . (int) $comTab[$current_commission]['id_commission'] . ' OR commission_article = 0) ' : '')
-        . 'ORDER BY  `tsp_validate_article` DESC
+        . 'ORDER BY `updated_at` DESC
         LIMIT 16';
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
@@ -66,7 +66,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         <p class="commission-title">
 
             <?php
-        echo date('d.m.y - ', $article['tsp_article']); ?>
+        echo $article['tsp_article']?->format('d/m/Y'); ?> -
 
 
             <?php

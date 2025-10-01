@@ -29,7 +29,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
         new Get(normalizationContext: ['groups' => ['article:read', 'media:read', 'article:details', 'user:read']]),
         new GetCollection(normalizationContext: ['groups' => ['article:read', 'media:read', 'user:read']]),
     ],
-    order: ['tsp' => 'DESC'],
+    order: ['createdAt' => 'DESC'],
     security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact'])]
@@ -71,28 +71,10 @@ class Article
     /**
      * @var int
      */
-    #[ORM\Column(name: 'tsp_crea_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp de création de l'article"])]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    private $tspCrea;
-
-    #[ORM\Column(name: 'tsp_validate_article', type: 'integer', nullable: true)]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    private ?int $tspValidate;
-
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'tsp_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp affiché de l'article"])]
     #[Groups('article:read')]
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     private $tsp;
-
-    /**
-     * @var \DateTime
-     */
-    #[ORM\Column(name: 'tsp_lastedit', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP', 'comment' => 'Date de dernière modif'])]
-    #[Groups('article:read')]
-    private $tspLastedit = 'CURRENT_TIMESTAMP';
 
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'lastedit_who', referencedColumnName: 'id_user', nullable: true, options: ['comment' => 'User de la dernière modif'])]
@@ -167,6 +149,14 @@ class Article
     #[Groups('event:read')]
     private ?\DateTimeImmutable $validationDate = null;
 
+    public function __construct()
+    {
+        $this->tsp = time();
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
+        $this->topubly = 0;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -204,54 +194,6 @@ class Article
     public function setTopubly(int $topubly): self
     {
         $this->topubly = $topubly;
-
-        return $this;
-    }
-
-    public function getTspCrea(): ?int
-    {
-        return $this->tspCrea;
-    }
-
-    public function setTspCrea(int $tspCrea): self
-    {
-        $this->tspCrea = $tspCrea;
-
-        return $this;
-    }
-
-    public function getTspValidate(): ?int
-    {
-        return $this->tspValidate;
-    }
-
-    public function setTspValidate(?int $tspValidate): self
-    {
-        $this->tspValidate = $tspValidate;
-
-        return $this;
-    }
-
-    public function getTsp(): ?int
-    {
-        return $this->tsp;
-    }
-
-    public function setTsp(int $tsp): self
-    {
-        $this->tsp = $tsp;
-
-        return $this;
-    }
-
-    public function getTspLastedit(): ?\DateTimeInterface
-    {
-        return $this->tspLastedit;
-    }
-
-    public function setTspLastedit(\DateTimeInterface $tspLastedit): self
-    {
-        $this->tspLastedit = $tspLastedit;
 
         return $this;
     }

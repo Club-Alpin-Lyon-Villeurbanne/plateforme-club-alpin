@@ -51,7 +51,7 @@ if ('infos' == $p2 && getUser()) {
     $req = 'SELECT SQL_CALC_FOUND_ROWS * FROM caf_article
             LEFT JOIN media_upload m ON caf_article.media_upload_id = m.id
 			WHERE user_article = ' . getUser()->getId() . '
-			ORDER BY tsp_crea_article DESC LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
+			ORDER BY updated_at DESC LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     // calcul du total grâce à SQL_CALC_FOUND_ROWS
