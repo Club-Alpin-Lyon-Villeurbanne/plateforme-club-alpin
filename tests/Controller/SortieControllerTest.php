@@ -418,7 +418,7 @@ class SortieControllerTest extends WebTestCase
 
         $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
             'csrf_token_contact' => $this->generateCsrfToken($this->client, 'contact_participants'),
-            'contact_participant' => [17861268532135512851588522 => '17861268532135512851588522'],
+            'contact_participant' => [17861268532135 => '17861268532135'],
             'objet' => 'un objet de culte',
             'message' => 'tirelipimpon',
         ]);
