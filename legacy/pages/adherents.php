@@ -65,7 +65,7 @@ if (allowed('user_see_all')) {
                     <a href="/adherents.html?show=nomade"
                     class="boutonFancy"
                     <?php if ('nomade' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
-                        🌍 Nomades
+                        🌍 Non-adhérents
                     </a>&nbsp;
 
                     <a href="/adherents.html?show=all"
