@@ -30,9 +30,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
     $stmt->close();
 
-    $stmt2 = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_article SET validation_date=? WHERE caf_article.id_article=?');
-    $current_time = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
-    $stmt2->bind_param('si', $current_time, $id_article);
+    $stmt2 = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_article SET validation_date= NOW() WHERE caf_article.id_article=?');
+    $stmt2->bind_param('i', $id_article);
     if (!$stmt2->execute()) {
         $errTab[] = 'Erreur SQL';
     }
