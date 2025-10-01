@@ -151,9 +151,6 @@ abstract class WebTestCase extends BaseWebTestCase
         $article->setUser($user);
         $article->setTitre('titre');
         $article->setCommission($commission);
-        $article->setTsp(time());
-        $article->setTspCrea(time());
-        $article->setTspLastedit(new \DateTime());
         $article->setTopubly(1);
         $article->setCode(bin2hex(random_bytes(5)));
         $article->setCont('');

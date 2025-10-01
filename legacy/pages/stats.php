@@ -516,7 +516,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 			<?php
             while ($article = $result->fetch_assoc()) {
                 echo '<tr id="tr-' . $article['id_article'] . '" class="vis-on">'
-                . '<td>' . date('d.m.Y', $article['tsp_validate_article']) . '</td>'
+                . '<td>' . $article['validation_date'] . '</td>'
                 . '<td><a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . $article['titre_article'] . '</a></td>'
                 . '<td>' . userlink($article['id_user'], ucfirst(mb_strtolower($article['firstname_user'], 'UTF-8')) . ' ' . $article['lastname_user']) . '</td>'
                 . '<td>' . html_utf8($article['title_commission']) . '</td>'

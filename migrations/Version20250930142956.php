@@ -25,6 +25,7 @@ final class Version20250930142956 extends AbstractMigration
 
         // mettre des données dans les champs à partir des anciens timestamps
         $this->addSql('UPDATE caf_article SET created_at = FROM_UNIXTIME(tsp_crea_article), updated_at = (CASE WHEN tsp_lastedit IS NOT NULL THEN tsp_lastedit ELSE NOW() END)');
+        $this->addSql('UPDATE caf_article SET validation_date = (CASE WHEN tsp_validate_article IS NOT NULL THEN FROM_UNIXTIME(tsp_validate_article) ELSE NULL END)');
         $this->addSql('UPDATE caf_comment SET created_at = FROM_UNIXTIME(tsp_comment), updated_at = (CASE WHEN tsp_comment IS NOT NULL THEN FROM_UNIXTIME(tsp_comment) ELSE NOW() END)');
         $this->addSql('UPDATE caf_evt SET created_at = FROM_UNIXTIME(tsp_crea_evt), updated_at = (CASE WHEN tsp_edit_evt IS NOT NULL THEN FROM_UNIXTIME(tsp_edit_evt) ELSE NOW() END)');
         $this->addSql('UPDATE caf_evt_join SET created_at = FROM_UNIXTIME(tsp_evt_join), updated_at = (CASE WHEN lastchange_when_evt_join IS NOT NULL THEN FROM_UNIXTIME(lastchange_when_evt_join) ELSE NOW() END)');

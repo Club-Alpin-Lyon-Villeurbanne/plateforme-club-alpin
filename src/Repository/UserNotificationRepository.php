@@ -61,9 +61,7 @@ class UserNotificationRepository extends ServiceEntityRepository
                 FROM caf_article
                 WHERE
                     status_article = 1
-                    AND DATE(
-                        FROM_UNIXTIME(tsp_validate_article)
-                    ) < \'' . $date->format('Y-m-d') . '\'
+                    AND validation_date < \'' . $date->format('Y-m-d') . '\'
             )
         ';
 

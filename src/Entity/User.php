@@ -286,6 +286,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     {
         $this->attrs = new ArrayCollection();
         $this->created = time();
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
         if ($id) {
             $this->id = $id;
         }
