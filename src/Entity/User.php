@@ -697,24 +697,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this;
     }
 
-    public function getTsInsert(): ?string
+    public function getTsInsert(): ?int
     {
         return $this->tsInsert;
     }
 
-    public function setTsInsert(?string $tsInsert): self
+    public function setTsInsert(?int $tsInsert): self
     {
         $this->tsInsert = $tsInsert;
 
         return $this;
     }
 
-    public function getTsUpdate(): ?string
+    public function getTsUpdate(): ?int
     {
         return $this->tsUpdate;
     }
 
-    public function setTsUpdate(?string $tsUpdate): self
+    public function setTsUpdate(?int $tsUpdate): self
     {
         $this->tsUpdate = $tsUpdate;
 
