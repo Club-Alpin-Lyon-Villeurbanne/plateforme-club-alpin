@@ -85,7 +85,8 @@ class SortieController extends AbstractController
                 null,
                 null,
                 null,
-                null
+                null,
+                new \DateTimeImmutable()
             );
             $event->setJoinStart((new \DateTime())->getTimestamp());
             $isUpdate = false;
@@ -775,7 +776,8 @@ class SortieController extends AbstractController
             $event->getDescription(),
             null,
             $event->getJoinMax(),
-            $event->getNgensMax()
+            $event->getNgensMax(),
+            new \DateTimeImmutable()
         );
         $newEvent->setMassif($event->getMassif());
         $newEvent->setPlace($event->getPlace());
