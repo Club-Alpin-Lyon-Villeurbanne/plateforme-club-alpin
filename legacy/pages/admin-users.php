@@ -14,7 +14,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     }
     $show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
 
-    $req = 'SELECT id_user , email_user , cafnum_user , firstname_user , lastname_user , nickname_user , created_user , birthday_user , tel_user , tel2_user , adresse_user, cp_user ,  ville_user ,  civ_user , valid_user , manuel_user, nomade_user, date_adhesion_user, doit_renouveler_user
+    $req = 'SELECT id_user , email_user , cafnum_user , firstname_user , lastname_user , nickname_user , created_at , updated_at , birthday_user , tel_user , tel2_user , adresse_user, cp_user ,  ville_user ,  civ_user , valid_user , manuel_user, nomade_user, date_adhesion_user, doit_renouveler_user
 		FROM  `caf_user` WHERE is_deleted=0'
         . ('dels' == $show ? ' AND valid_user=2 ' : '')
         . ('manual' == $show ? ' AND manuel_user=1 ' : '')

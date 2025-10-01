@@ -174,7 +174,7 @@ class FfcamSynchronizer
             ->setNickname($parsedUser->getNickname())
             ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $this->hasTolerancyPeriodPassed)
             ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$this->hasTolerancyPeriodPassed)
-            ->setTsUpdate(time())
+            ->setUpdatedAt(new \DateTime())
             ->setManuel(false)
             ->setNomade(false)
         ;

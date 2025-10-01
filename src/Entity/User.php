@@ -107,15 +107,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private $nickname;
 
     /**
-     * @var int
-     */
-    #[ORM\Column(name: 'created_user', type: 'bigint', nullable: false)]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[Groups('user:details')]
-    #[SerializedName('dateCreation')]
-    private $created;
-
-    /**
      * @var int|null
      */
     #[ORM\Column(name: 'birthday_user', type: 'bigint', nullable: true)]
@@ -242,18 +233,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'alerte_renouveler_user', type: 'boolean', nullable: false, options: ['comment' => "Si sur 1 : une alerte s'affiche pour annoncer que l'adhérent doit renouveler sa licence"])]
     private $alerteRenouveler = '0';
 
-    /**
-     * @var int|null
-     */
-    #[ORM\Column(name: 'ts_insert_user', type: 'bigint', nullable: true, options: ['comment' => 'timestamp 1ere insertion'])]
-    private $tsInsert;
-
-    /**
-     * @var int|null
-     */
-    #[ORM\Column(name: 'ts_update_user', type: 'bigint', nullable: true, options: ['comment' => 'timestamp derniere maj'])]
-    private $tsUpdate;
-
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ExpenseReport::class, orphanRemoval: false)]
     private Collection $expenseReports;
 
@@ -306,8 +285,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
             'firstname' => $this->getFirstname(),
             'lastname' => $this->getLastname(),
             'nickname' => $this->getNickname(),
-            'created' => $this->getCreated(),
-            'birthday' => $this->getBirthday(),
             'tel' => $this->getTel(),
             'tel2' => $this->getTel2(),
             'adresse' => $this->getAdresse(),
@@ -321,11 +298,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
             'manuel' => $this->getManuel(),
             'nomade' => $this->getNomade(),
             'nomadeParent' => $this->getNomadeParent(),
-            'dateAdhesion' => $this->getDateAdhesion(),
             'doitRenouveler' => $this->getDoitRenouveler(),
             'alerteRenouveler' => $this->getAlerteRenouveler(),
-            'tsInsert' => $this->getTsInsert(),
-            'tsUpdate' => $this->getTsUpdate(),
+            'createdAt' => $this->getCreatedAt(),
+            'updatedAt' => $this->getUpdatedAt(),
+            'joinDate' => $this->getJoinDate(),
+            'birthdate' => $this->getBirthdate(),
         ];
     }
 
@@ -708,30 +686,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setAlerteRenouveler(bool $alerteRenouveler): self
     {
         $this->alerteRenouveler = $alerteRenouveler;
-
-        return $this;
-    }
-
-    public function getTsInsert(): ?int
-    {
-        return $this->tsInsert;
-    }
-
-    public function setTsInsert(?int $tsInsert): self
-    {
-        $this->tsInsert = $tsInsert;
-
-        return $this;
-    }
-
-    public function getTsUpdate(): ?int
-    {
-        return $this->tsUpdate;
-    }
-
-    public function setTsUpdate(?int $tsUpdate): self
-    {
-        $this->tsUpdate = $tsUpdate;
 
         return $this;
     }

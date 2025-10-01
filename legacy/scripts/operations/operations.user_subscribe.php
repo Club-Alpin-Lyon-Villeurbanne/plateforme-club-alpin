@@ -129,9 +129,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // intégration des valeurs données et du token nécessaire à la confirmation par email
     if (!isset($errTab) || 0 === count($errTab)) {
         $cookietoken_user = bin2hex(random_bytes(16));
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_user SET email_user = ?, mdp_user = ?, nickname_user = ?, created_user = ?, cookietoken_user = ? WHERE id_user = ? LIMIT 1');
-        $created_user = time();
-        $stmt->bind_param('sssssi', $email_user, $mdp_user, $nickname_user, $created_user, $cookietoken_user, $id_user);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_user SET email_user = ?, mdp_user = ?, nickname_user = ?, updated_at = NOW(), cookietoken_user = ? WHERE id_user = ? LIMIT 1');
+        $stmt->bind_param('sssssi', $email_user, $mdp_user, $nickname_user, $cookietoken_user, $id_user);
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur de sauvegarde';
         }

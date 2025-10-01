@@ -347,13 +347,17 @@ class FfcamSynchronizerTest extends WebTestCase
         $lastname1 = $this->faker->lastName();
         $firstname1 = $this->faker->firstName();
 
+        $now = new \DateTime();
+        $minusOneHour = (clone $now)->modify('-1 hour');
+
         $existingUser1 = $this->signup();
         $existingUser1
             ->setCafnum($identifiant1)
             ->setFirstname($firstname1)
             ->setLastname($lastname1)
             ->setBirthday('631152000') // 1990-01-01
-            ->setTsInsert(time() - 3600)
+            ->setCreatedAt($minusOneHour)
+            ->setUpdatedAt($minusOneHour)
             ->setDoitRenouveler(true);
 
         $existingUser2 = $this->signup();
@@ -362,7 +366,8 @@ class FfcamSynchronizerTest extends WebTestCase
             ->setFirstname($firstname1)
             ->setLastname($lastname1)
             ->setBirthday('631152000') // 1990-01-01
-            ->setTsInsert(time())
+            ->setCreatedAt($now)
+            ->setUpdatedAt($now)
             ->setDoitRenouveler(true);
 
         $em = self::getContainer()->get(EntityManagerInterface::class);
