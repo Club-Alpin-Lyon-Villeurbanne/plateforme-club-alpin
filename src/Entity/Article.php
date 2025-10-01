@@ -68,14 +68,6 @@ class Article
     #[ORM\Column(name: 'topubly_article', type: 'integer', nullable: false, options: ['comment' => 'Demander la publication ? Ou laisser en standby'])]
     private $topubly;
 
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'tsp_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp affiché de l'article"])]
-    #[Groups('article:read')]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    private $tsp;
-
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'lastedit_who', referencedColumnName: 'id_user', nullable: true, options: ['comment' => 'User de la dernière modif'])]
     #[Groups('article:read')]
@@ -151,7 +143,6 @@ class Article
 
     public function __construct()
     {
-        $this->tsp = time();
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
         $this->topubly = 0;
