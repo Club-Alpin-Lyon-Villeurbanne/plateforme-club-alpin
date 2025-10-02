@@ -325,7 +325,7 @@ class SortieControllerTest extends WebTestCase
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setCancelled(true)
-            ->setCancelledWhen(time())
+            ->setCancellationDate(new \DateTimeImmutable())
             ->setCancelledWho($userOwner);
 
         $this->signin($userOwner);
@@ -340,7 +340,7 @@ class SortieControllerTest extends WebTestCase
         $em->refresh($event);
 
         $this->assertFalse($event->getCancelled());
-        $this->assertNull($event->getCancelledWhen());
+        $this->assertNull($event->getCancellationDate());
         $this->assertNull($event->getCancelledWho());
     }
 
@@ -349,7 +349,7 @@ class SortieControllerTest extends WebTestCase
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setCancelled(true)
-            ->setCancelledWhen(time())
+            ->setCancellationDate(new \DateTimeImmutable())
             ->setCancelledWho($userOwner);
 
         $this->signin($userOwner);
@@ -367,7 +367,7 @@ class SortieControllerTest extends WebTestCase
         $anotherUser = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setCancelled(true)
-            ->setCancelledWhen(time())
+            ->setCancellationDate(new \DateTimeImmutable())
             ->setCancelledWho($userOwner);
         $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
 

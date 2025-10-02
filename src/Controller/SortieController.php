@@ -88,7 +88,7 @@ class SortieController extends AbstractController
                 null,
                 new \DateTimeImmutable()
             );
-            $event->setJoinStart((new \DateTime())->getTimestamp());
+            $event->setJoinStartDate(new \DateTimeImmutable());
             $isUpdate = false;
         }
 
@@ -163,7 +163,7 @@ class SortieController extends AbstractController
             if (!$isUpdate) {
                 $event->setCode(strtolower(substr($slugger->slug($event->getTitre(), '-'), 0, 30)));
             } else {
-                $event->setTspEdit((new \DateTime())->getTimestamp());
+                $event->setUpdatedAt(new \DateTime());
 
                 // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
                 if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()
@@ -178,16 +178,9 @@ class SortieController extends AbstractController
                 }
             }
 
-            // anciens timestamps
-            $event->setTsp(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['eventStartDate'])?->getTimestamp());
-            $event->setTspEnd(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['eventEndDate'])?->getTimestamp());
-            if ($formData['joinStartDate']) {
-                $event->setJoinStart(\DateTime::createFromFormat('Y-m-d\TH:i', $formData['joinStartDate'])?->getTimestamp());
-            }
-
             // champs auto
-            if (empty($event->getJoinStart())) {
-                $event->setJoinStart(time());
+            if (empty($event->getJoinStartDate())) {
+                $event->setJoinStartDate(new \DateTimeImmutable());
             }
             if (empty($event->getRdv())) {
                 $event->setRdv('');
@@ -330,7 +323,7 @@ class SortieController extends AbstractController
             'event_date' => date('d/m/Y', $event->getTsp()),
         ]);
 
-        $this->sendUpdateNotificationEmail($mailer, $event, $event->getTspCrea() === $event->getTspEdit());
+        $this->sendUpdateNotificationEmail($mailer, $event, $event->getCreatedAt() === $event->getUpdatedAt());
 
         $this->addFlash('info', 'La sortie est publiée');
 
@@ -613,7 +606,7 @@ class SortieController extends AbstractController
 
         $event
             ->setCancelled(true)
-            ->setCancelledWhen(time())
+            ->setCancellationDate(new \DateTimeImmutable())
             ->setCancelledWho($this->getUser())
         ;
 
@@ -655,7 +648,7 @@ class SortieController extends AbstractController
 
         $event
             ->setCancelled(false)
-            ->setCancelledWhen(null)
+            ->setCancellationDate(null)
             ->setCancelledWho(null);
         $em->flush();
 
@@ -791,7 +784,7 @@ class SortieController extends AbstractController
         $newEvent->setItineraire($event->getItineraire());
         $newEvent->setNeedBenevoles($event->getNeedBenevoles());
         $newEvent->setGroupe($event->getGroupe());
-        $newEvent->setJoinStart(time());
+        $newEvent->setJoinStartDate(new \DateTimeImmutable());
         $newEvent->setAutoAccept($event->isAutoAccept());
         $newEvent->setIsDraft(true);
 

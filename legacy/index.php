@@ -37,16 +37,10 @@ if (isset($_GET['ajx'])) {
 // lien vers cette page (pour formulaires, ou ancres)
 $versCettePage = $p1 . ($p2 ? '/' . $p2 : '') . ($p3 ? '/' . $p3 : '') . ($p4 ? '/' . $p4 : '') . '.html';			// multilangue / une langue
 $eventTitle = '';
-$eventTimestamp = 0;
 if (!empty($evt) && is_array($evt) && array_key_exists('titre_evt', $evt) && !empty($evt['titre_evt'])) {
     $eventTitle = $evt['titre_evt'];
 } elseif (!empty($_GET['titre_evt'])) {
     $eventTitle = $_GET['titre_evt'];
-}
-if (!empty($evt) && is_array($evt) && array_key_exists('tsp_evt', $evt) && !empty($evt['tsp_evt'])) {
-    $eventTimestamp = $evt['tsp_evt'];
-} elseif (!empty($_GET['tsp_evt'])) {
-    $eventTimestamp = $_GET['tsp_evt'];
 }
 
 ?><!doctype html>

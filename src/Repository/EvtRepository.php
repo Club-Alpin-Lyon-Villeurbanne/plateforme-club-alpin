@@ -33,7 +33,7 @@ class EvtRepository extends ServiceEntityRepository
             FROM caf_evt e
             INNER JOIN caf_commission c ON c.id_commission = e.commission_evt
             WHERE status_evt = \'0\'
-                AND tsp_evt IS NOT NULL
+                AND event_start_date IS NOT NULL
                 AND is_draft = 0';
 
         $params = [];
@@ -56,12 +56,15 @@ class EvtRepository extends ServiceEntityRepository
         $sql = 'SELECT count(id_evt) FROM caf_evt
             WHERE status_legal_evt = 0
                 AND status_evt = 1
-                AND tsp_evt > :datemin
-                AND tsp_evt < :datemax';
+                AND event_start_date > :datemin
+                AND event_start_date < :datemax';
+
+        $now = new \DateTime();
+        $max = (clone $now)->modify('+8 days');
 
         return $this->_em->getConnection()->fetchOne($sql, [
-            'datemin' => time(),
-            'datemax' => strtotime('midnight +8 days'),
+            'datemin' => $now,
+            'datemax' => $max,
         ]);
     }
 
@@ -90,18 +93,18 @@ class EvtRepository extends ServiceEntityRepository
             ->leftJoin('e.commission', 'c')
             ->where('e.status = :status')
             ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
-            ->andWhere(':date <= e.tsp OR :date <= e.tspEnd')
-            ->setParameter('date', $date->getTimestamp())
+            ->andWhere(':date <= e.eventStartDate OR :date <= e.eventEndDate')
+            ->setParameter('date', $date)
         ;
         if ($limitDateStart) {
             $qb
-                ->andWhere('e.tsp >= :limitDate AND e.tsp <= :limitDateEnd')
-                ->setParameter('limitDate', $limitDateStart->getTimestamp())
-                ->setParameter('limitDateEnd', $limitEndDate->getTimestamp())
+                ->andWhere('e.eventStartDate >= :limitDate AND e.eventStartDate <= :limitDateEnd')
+                ->setParameter('limitDate', $limitDateStart)
+                ->setParameter('limitDateEnd', $limitEndDate)
             ;
         }
         $qb
-            ->orderBy('e.tsp', 'asc')
+            ->orderBy('e.eventStartDate', 'asc')
             ->addOrderBy('c.title', 'ASC')
             ->addOrderBy('e.titre', 'ASC')
             ->setMaxResults($options['limit'])
@@ -193,11 +196,11 @@ class EvtRepository extends ServiceEntityRepository
         return $this->getEventsByUserDql($user, [Evt::STATUS_LEGAL_VALIDE])
             ->addSelect('er.status as exp_status')
             ->leftJoin(ExpenseReport::class, 'er', 'WITH', 'er.event = e.id AND er.user = :user')
-            ->andWhere('e.tsp IS NOT NULL')
-            ->andWhere('e.tspEnd < :date')
-            ->setParameter('date', $date->getTimestamp())
+            ->andWhere('e.eventStartDate IS NOT NULL')
+            ->andWhere('e.eventEndDate < :date')
+            ->setParameter('date', $date)
             ->setParameter('user', $user)
-            ->orderBy('e.tsp', 'desc')
+            ->orderBy('e.eventStartDate', 'desc')
         ;
     }
 
@@ -224,12 +227,12 @@ class EvtRepository extends ServiceEntityRepository
 
         $queryBuilder = $this->createQueryBuilder('e')
             ->where('e.status = :status')
-            ->andWhere('e.tspEnd < :date')
-            ->andWhere('e.tsp > :limitDate')
+            ->andWhere('e.eventEndDate < :date')
+            ->andWhere('e.eventStartDate > :limitDate')
             ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
             ->setParameter('date', time())
-            ->setParameter('limitDate', $limitDate->getTimestamp())
-            ->orderBy('e.tsp', 'desc')
+            ->setParameter('limitDate', $limitDate)
+            ->orderBy('e.eventStartDate', 'desc')
         ;
         if ($commission) {
             $queryBuilder
@@ -336,9 +339,9 @@ class EvtRepository extends ServiceEntityRepository
         $date = new \DateTime('today');
 
         return $this->getEventsByUserDql($user, [Evt::STATUS_LEGAL_VALIDE])
-            ->andWhere('e.tspEnd >= :date')
-            ->setParameter('date', $date->getTimestamp())
-            ->orderBy('e.tsp', 'asc')
+            ->andWhere('e.eventEndDate >= :date')
+            ->setParameter('date', $date)
+            ->orderBy('e.eventStartDate', 'asc')
         ;
     }
 
