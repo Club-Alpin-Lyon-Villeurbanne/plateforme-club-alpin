@@ -161,7 +161,7 @@ SQL;
         return $this->createQueryBuilder('u')
             ->where('LOWER(u.lastname) = LOWER(:lastname)')
             ->andWhere('LOWER(u.firstname) = LOWER(:firstname)')
-            ->andWhere('u.birthday = :birthday')
+            ->andWhere('u.birthdate = :birthday')
             ->andWhere('u.cafnum != :excludeCafnum')
             ->andWhere('u.isDeleted = false')
             ->orderBy('u.tsInsert', 'DESC')

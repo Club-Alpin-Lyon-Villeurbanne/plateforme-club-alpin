@@ -85,7 +85,7 @@ class FfcamSynchronizer
                 $potentialDuplicate = $this->userRepository->findDuplicateUser(
                     $parsedUser->getLastname(),
                     $parsedUser->getFirstname(),
-                    $parsedUser->getBirthday(),
+                    $parsedUser->getBirthdate(),
                     $parsedUser->getCafnum()
                 );
 
@@ -163,7 +163,7 @@ class FfcamSynchronizer
         $existingUser
             ->setFirstname($parsedUser->getFirstname())
             ->setLastname($parsedUser->getLastname())
-            ->setBirthday($parsedUser->getBirthday())
+            ->setBirthdate($parsedUser->getBirthdate())
             ->setCiv($parsedUser->getCiv())
             ->setCafnumParent($parsedUser->getCafnumParent())
             ->setTel($parsedUser->getTel())

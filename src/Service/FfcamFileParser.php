@@ -44,7 +44,9 @@ class FfcamFileParser
         $lastname = strtoupper($this->normalizeNames(trim($line[9])));
 
         $datePart = explode('-', $line[6]);
-        $birthday = mktime(1, 0, 0, $datePart[1], $datePart[2], $datePart[0]);
+        $birthday = mktime(12, 0, 0, $datePart[1], $datePart[2], $datePart[0]);
+        $birthdate = new \DateTime();
+        $birthdate->setTimestamp($birthday);
 
         $datePart = explode('-', $line[7]);
         $isLicenceExpired = '0000-00-00' === $line[7];
@@ -54,7 +56,7 @@ class FfcamFileParser
             ->setCafnum(trim($line[0]))
             ->setFirstname($firstname)
             ->setLastname($lastname)
-            ->setBirthday((string) $birthday)
+            ->setBirthdate($birthdate)
             ->setCiv($this->normalizeNames(str_replace('MLLE', 'MME', trim($line[8]))))
             ->setCafnumParent((int) $line[5] > 0 ? trim($line[1] . $line[5]) : null)
             ->setTel(trim($line[27]))

@@ -77,7 +77,7 @@ class ExcelExportTest extends TestCase
         $user->method('getCiv')->willReturn('M.');
         $user->method('getLastname')->willReturn('DOE');
         $user->method('getFirstname')->willReturn('John');
-        $user->method('getBirthday')->willReturn(631182937);
+        $user->method('getBirthdate')->willReturn(new \DateTime('1990-01-01'));
         $user->method('getCafnum')->willReturn('12345');
         $user->method('getDateAdhesion')->willReturn(1672562818);
         $user->method('getTel')->willReturn('0123456789');

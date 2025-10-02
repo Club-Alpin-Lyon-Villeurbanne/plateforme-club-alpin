@@ -327,7 +327,7 @@ class UserController extends AbstractController
             }
             $birthdate = \DateTime::createFromFormat('d/m/Y', $formData['birthdate']);
             if ($birthdate instanceof \DateTime) {
-                $nomad->setBirthday($birthdate->getTimestamp());
+                $nomad->setBirthdate($birthdate);
             }
             // forcer null pour éviter de pêter la contrainte d'unicité
             if (empty($nomad->getEmail())) {
