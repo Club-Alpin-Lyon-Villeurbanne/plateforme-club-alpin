@@ -16,7 +16,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $id_user = getUser()->getId();
     $tel_user = trim(stripslashes($_POST['tel_user'] ?? ''));
     $tel2_user = trim(stripslashes($_POST['tel2_user'] ?? ''));
-    $birthday_user = trim(stripslashes($_POST['birthday_user'] ?? ''));
     $adresse_user = trim(stripslashes($_POST['adresse_user'] ?? ''));
     $cp_user = trim(stripslashes($_POST['cp_user'] ?? ''));
     $ville_user = trim(stripslashes($_POST['ville_user'] ?? ''));

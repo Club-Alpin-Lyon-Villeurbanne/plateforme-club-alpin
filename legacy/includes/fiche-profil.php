@@ -26,11 +26,6 @@ if (!$connectedUser) {
 $req = "SELECT * FROM caf_user WHERE id_user = $id_user AND is_deleted = 0 LIMIT 1";
 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($row = $result->fetch_assoc()) {
-    // debug
-    if (1 == $row['birthday_user']) {
-        $row['birthday_user'] = 0;
-    }
-
     require __DIR__ . '/../includes/user/statuts.php';
 
     $tmpUser = $row;

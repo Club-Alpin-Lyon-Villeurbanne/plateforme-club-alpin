@@ -181,8 +181,10 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 
     printTableRow('Date d\'adhésion (renouvellement) :', $rowValue);
 
-    if ($userTab['birthday_user']) {
-        printTableRow('Date de naissance :', date('d/m/Y', $userTab['birthday_user']) . '&nbsp;&nbsp;&nbsp;(' . getYearsSinceDate($userTab['birthday_user']) . ' ans)');
+    if ($userTab['birthdate']) {
+        $birthdate = new \DateTime($userTab['birthdate']);
+        $age = $birthdate->diff(new \DateTime())->y;
+        printTableRow('Date de naissance :', $birthdate->format('d/m/Y') . '&nbsp;&nbsp;&nbsp;(' . $age > 0 ? $age. ' ans' : '?' . ')');
     }
     if ($userTab['email_user']) {
         printTableRow('E-mail :', '<a href="mailto:' . $userTab['email_user'] . '">' . $userTab['email_user'] . '</a>');

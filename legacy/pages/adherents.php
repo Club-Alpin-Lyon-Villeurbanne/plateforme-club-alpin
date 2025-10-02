@@ -11,7 +11,7 @@ if (allowed('user_see_all')) {
     }
     $show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
 
-    $req = 'SELECT id_user , email_user , cafnum_user , firstname_user , lastname_user , nickname_user , created_at , updated_at , birthday_user , tel_user , tel2_user , adresse_user, cp_user ,  ville_user ,  civ_user , valid_user , manuel_user, nomade_user, date_adhesion_user, doit_renouveler_user
+    $req = 'SELECT id_user , email_user , cafnum_user , firstname_user , lastname_user , nickname_user , created_at , updated_at , birthdate , tel_user , tel2_user , adresse_user, cp_user ,  ville_user ,  civ_user , valid_user , manuel_user, nomade_user, date_adhesion_user, doit_renouveler_user
 		FROM  `caf_user` WHERE is_deleted=0'
         . ('dels' == $show ? ' AND valid_user=2 ' : '')
         . ('manual' == $show ? ' AND manuel_user=1 ' : '')
@@ -25,12 +25,9 @@ if (allowed('user_see_all')) {
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $handleSql->fetch_assoc()) {
-        if ('0' == $row['birthday_user'] || '1' == $row['birthday_user'] || '' == $row['birthday_user']) {
-            // dans ces cas, bug très probable
-            $row['birthday_user'] = 0;
-        } else { // la date de naissance est remplacée par l'age (avec zéros inutiles, pour tri de la colonne)
-            $row['birthday_user'] = sprintf('%03d', getYearsSinceDate($row['birthday_user']));
-        }
+        $birthdate = new \DateTime($row['birthdate']);
+        $age = $birthdate->diff(new \DateTime())->y;
+        $row['birthday_user'] = sprintf('%03d', $age);
 
         $userTab[] = $row;
     }
