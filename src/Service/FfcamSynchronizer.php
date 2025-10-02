@@ -108,7 +108,7 @@ class FfcamSynchronizer
                         'name' => sprintf('%s %s', $parsedUser->getFirstname(), $parsedUser->getLastname())
                     ];
                 } else {
-                    $parsedUser->setTsInsert(time());
+                    $parsedUser->setCreatedAt(new \DateTime());
                     $parsedUser->setValid(false);
                     $this->entityManager->persist($parsedUser);
                     ++$stats['inserted'];
@@ -181,8 +181,8 @@ class FfcamSynchronizer
 
         // Ne pas effacer la date d'adhésion quand l'adhésion parsée est expirée (valeur nulle).
         // Conserver la date d'adhésion existante sauf si une nouvelle adhésion valide est fournie.
-        if (null !== $parsedUser->getDateAdhesion()) {
-            $existingUser->setDateAdhesion($parsedUser->getDateAdhesion());
+        if (null !== $parsedUser->getJoinDate()) {
+            $existingUser->setJoinDate($parsedUser->getJoinDate());
         }
 
         $this->entityManager->persist($existingUser);

@@ -129,8 +129,18 @@ class UserLicenseHelperTest extends TestCase
 
     private function createMockUser(?int $dateAdhesion): User
     {
+        dump($dateAdhesion);
         $user = $this->createMock(User::class);
-        $user->method('getDateAdhesion')->willReturn($dateAdhesion);
+        if (null === $dateAdhesion) {
+            $user->method('getJoinDate')->willReturn(null);
+
+            return $user;
+        }
+
+        $joinDate = new \DateTimeImmutable();
+        $joinDate->setTimestamp($dateAdhesion);
+        $user->method('getJoinDate')->willReturn($joinDate);
+        dump($user->getJoinDate()->format('Y-m-d'));
 
         return $user;
     }

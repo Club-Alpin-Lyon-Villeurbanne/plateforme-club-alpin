@@ -208,8 +208,8 @@ if (user()) {
                         if ($tmpUser['alerte_renouveler_user']) {
                             echo '<span class="alerte">';
                         }
-    if ($tmpUser['date_adhesion_user'] > 0) {
-        echo date('d/m/Y', $tmpUser['date_adhesion_user']);
+    if (!empty($tmpUser['join_date'])) {
+        echo (new \DateTimeImmutable($tmpUser['join_date']))?->format('d/m/Y');
     } else {
         echo 'aucune date connue.';
     }

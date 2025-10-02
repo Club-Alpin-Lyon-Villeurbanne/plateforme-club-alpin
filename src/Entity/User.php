@@ -8,7 +8,6 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Repository\UserRepository;
-use App\Serializer\TimeStampNormalizer;
 use App\Utils\EmailAlerts;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,7 +19,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\Ignore;
 use Symfony\Component\Serializer\Annotation\SerializedName;
-use Symfony\Component\Serializer\Attribute\Context;
 
 /**
  * User.
@@ -205,14 +203,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private $nomadeParent;
 
     /**
-     * @var int|null
-     */
-    #[ORM\Column(name: 'date_adhesion_user', type: 'bigint', nullable: true)]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[Groups('user:details')]
-    private $dateAdhesion;
-
-    /**
      * @var bool
      */
     #[ORM\Column(name: 'doit_renouveler_user', type: 'boolean', nullable: false)]
@@ -293,10 +283,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
             'nomadeParent' => $this->getNomadeParent(),
             'doitRenouveler' => $this->getDoitRenouveler(),
             'alerteRenouveler' => $this->getAlerteRenouveler(),
-            'createdAt' => $this->getCreatedAt(),
-            'updatedAt' => $this->getUpdatedAt(),
-            'joinDate' => $this->getJoinDate(),
-            'birthdate' => $this->getBirthdate(),
+            'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->getUpdatedAt()->format('Y-m-d H:i:s'),
+            'joinDate' => $this->getJoinDate()->format('Y-m-d'),
+            'birthdate' => $this->getBirthdate()->format('Y-m-d'),
         ];
     }
 
@@ -619,18 +609,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setNomadeParent(int $nomadeParent): self
     {
         $this->nomadeParent = $nomadeParent;
-
-        return $this;
-    }
-
-    public function getDateAdhesion(): ?int
-    {
-        return $this->dateAdhesion;
-    }
-
-    public function setDateAdhesion(?int $dateAdhesion): self
-    {
-        $this->dateAdhesion = $dateAdhesion;
 
         return $this;
     }
