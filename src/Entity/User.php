@@ -269,6 +269,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'materiel_account_created_at', type: 'datetime', nullable: true, options: ['comment' => 'Date de création du compte sur la plateforme de matériel'])]
     private ?\DateTimeInterface $materielAccountCreatedAt = null;
 
+    #[ORM\Column(name: 'last_login_date', type: 'datetime', nullable: true, options: ['comment' => 'Date de dernière connexion'])]
+    private ?\DateTimeInterface $lastLoginDate = null;
+
     public function __construct(?int $id = null)
     {
         $this->attrs = new ArrayCollection();
@@ -867,5 +870,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function hasMaterielAccount(): bool
     {
         return null !== $this->materielAccountCreatedAt;
+    }
+
+    public function getLastLoginDate(): ?\DateTimeInterface
+    {
+        return $this->lastLoginDate;
+    }
+
+    public function setLastLoginDate(?\DateTimeInterface $lastLoginDate): self
+    {
+        $this->lastLoginDate = $lastLoginDate;
+
+        return $this;
     }
 }
