@@ -31,7 +31,7 @@ class ExcelExport
             throw new \InvalidArgumentException('Invalid date format', 0, $e);
         }
 
-        $now = new \DateTimeImmutable();
+        $now = new \DateTime();
 
         if ($date > $now) {
             throw new \InvalidArgumentException('Future dates are not allowed');

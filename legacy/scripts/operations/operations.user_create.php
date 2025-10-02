@@ -52,7 +52,7 @@ if ($row[0] > 0) {
 $stmt->close();
 
 // formatage date anniversaire
-$birthDate = new \DateTime();
+$birthDate = new \DateTimeImmutable();
 if (!isset($errTab) || 0 === count($errTab)) {
     // tsp de début
     $tab = explode('/', $birthday_user);

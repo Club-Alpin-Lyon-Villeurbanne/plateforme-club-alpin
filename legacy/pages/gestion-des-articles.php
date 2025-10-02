@@ -274,6 +274,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                         echo '</div>';
 
+                        $creationDate = new \DateTime($article['created_at']);
                         echo '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="' . $article_link . '" target="_blank">'
                                 // image liee
                                 . '<img src="' . $img . '" alt="" title="" style="width:100%; " />'
@@ -285,7 +286,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                                 . '<b><a href="' . $article_link . '" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
                                 . '<b>Type d\'article :</b> ' . $type . '<br />'
                                 . '<span class="mini">Par ' . userlink($article['id_user'], $article['nickname_user']) . '</span> - '
-                                . '<span class="mini">Le ' . $article['created_at']->format('d') . ' ' . mois($article['created_at']->format('m')) . ' ' . $article['created_at']->format('Y') . ' à ' . $article['created_at']->format('H:i') . '<br />'
+                                . '<span class="mini">Le ' . $creationDate->format('d') . ' ' . mois($creationDate->format('m')) . ' ' . $creationDate->format('Y') . ' à ' . $creationDate->format('H:i') . '<br />'
                                 . ($article['une_article'] ? '<span class="mini"><b><img src="/img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d\'accueil !</span>' : '')
                             . '</ul>'
 
