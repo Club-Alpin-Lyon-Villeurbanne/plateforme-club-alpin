@@ -325,8 +325,8 @@ class UserController extends AbstractController
                     ->setAlertArticlePrefix('')
                 ;
             }
-            $birthdate = \DateTime::createFromFormat('d/m/Y', $formData['birthdate']);
-            if ($birthdate instanceof \DateTime) {
+            $birthdate = \DateTimeImmutable::createFromFormat('d/m/Y', $formData['birthdate']);
+            if ($birthdate instanceof \DateTimeImmutable) {
                 $nomad->setBirthdate($birthdate);
             }
             // forcer null pour éviter de pêter la contrainte d'unicité
