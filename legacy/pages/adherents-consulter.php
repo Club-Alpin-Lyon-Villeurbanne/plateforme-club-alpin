@@ -165,8 +165,8 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 
     $rowValue = 'NC';
 
-    if ($userTab['date_adhesion_user'] > 0) {
-        $rowValue = date('d/m/Y', $userTab['date_adhesion_user']);
+    if (!empty($userTab['join_date'])) {
+        $rowValue = (new \DateTimeImmutable($userTab['join_date']))?->format('d/m/Y');
     }
 
     if ($userTab['alerte_renouveler_user'] || $userTab['doit_renouveler_user']) {
@@ -175,14 +175,14 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
             // $rowValue .= '   (expirée)';
             $rowValue .= '&nbsp;&nbsp;&nbsp;<img src="/img/base/delete.png">';
         }
-    } elseif ($userTab['date_adhesion_user']) {
+    } elseif (!empty($userTab['join_date'])) {
         $rowValue .= '&nbsp;&nbsp;&nbsp;<img src="/img/base/tick2.png">';
     }
 
     printTableRow('Date d\'adhésion (renouvellement) :', $rowValue);
 
     if ($userTab['birthdate']) {
-        $birthdate = new \DateTime($userTab['birthdate']);
+        $birthdate = new \DateTimeImmutable($userTab['birthdate']);
         $age = $birthdate->diff(new \DateTime())->y;
         printTableRow('Date de naissance :', $birthdate->format('d/m/Y') . '&nbsp;&nbsp;&nbsp;(' . $age > 0 ? $age. ' ans' : '?' . ')');
     }
@@ -215,10 +215,10 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     }
     printTableRow('Statut compte internet :', (1 == $userTab['valid_user']) ? 'ACTIF' : ((2 == $userTab['valid_user']) ? 'DESACTIVE' : 'NON ACTIF'));
     if ($userTab['created_at']) {
-        printTableRow('Insertion en base :', $userTab['created_at']->format('d/m/Y'));
+        printTableRow('Insertion en base :', (new \DateTime($userTab['created_at']))?->format('d/m/Y'));
     }
     if ($userTab['updated_at']) {
-        printTableRow('Mise à jour en base :', $userTab['updated_at']->format('d/m/Y'));
+        printTableRow('Mise à jour en base :', (new \DateTime($userTab['updated_at']))?->format('d/m/Y'));
     }
     if (is_array($userTab['articles'])) {
         $rowValue = [];

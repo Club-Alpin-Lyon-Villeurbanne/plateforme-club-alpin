@@ -121,8 +121,8 @@ else {
 		            echo '<li class="red">LICENCE EXPIRÉE</li>';
 		        } elseif (allowed('user_read_private')) {
 		            echo '<li>DATE D\'ADHÉSION : ';
-		            if (!empty($tmpUser['date_adhesion_user'])) {
-		                echo '<span class="green">' . date('d/m/Y', $tmpUser['date_adhesion_user']) . '</span>';
+		            if (!empty($tmpUser['join_date'])) {
+		                echo '<span class="green">' . (new \DateTimeImmutable($tmpUser['join_date']))?->format('d/m/Y') . '</span>';
 		            } else {
 		                echo 'inconnue';
 		            }

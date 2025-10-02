@@ -119,19 +119,20 @@ SQL;
     public function blockExpiredAccounts(int $expiryDate): int
     {
         $qb = $this->createQueryBuilder('u');
+        $expirationDate = (new \DateTimeImmutable())->setTimestamp($expiryDate);
 
         $qb->update()
             ->set('u.doitRenouveler', ':shouldRenew')
             ->where('u.id != :adminId')
             ->andWhere('u.nomade = :isNomade')
             ->andWhere('u.manuelUser = :isManual')
-            ->andWhere('u.dateAdhesion <= :expiryDate')
+            ->andWhere('u.joinDate <= :expiryDate')
             ->setParameters([
                 'shouldRenew' => true,
                 'adminId' => 1,
                 'isNomade' => false,
                 'isManual' => false,
-                'expiryDate' => $expiryDate,
+                'expiryDate' => $expirationDate,
             ]);
 
         return $qb->getQuery()->execute();
@@ -144,8 +145,9 @@ SQL;
         $qb = $this->createQueryBuilder('u')
             ->update()
             ->set('u.cafnumParent', 'NULL')
-            ->where('u.tsUpdate < :expiryDate')
-            ->setParameter('expiryDate', $expiryDate->getTimestamp());
+            ->where('u.updatedAt < :expiryDate')
+            ->setParameter('expiryDate', $expiryDate)
+        ;
 
         try {
             return $qb->getQuery()->execute();
@@ -164,7 +166,7 @@ SQL;
             ->andWhere('u.birthdate = :birthday')
             ->andWhere('u.cafnum != :excludeCafnum')
             ->andWhere('u.isDeleted = false')
-            ->orderBy('u.tsInsert', 'DESC')
+            ->orderBy('u.createdAt', 'DESC')
             ->setMaxResults(1)
             ->setParameters([
                 'lastname' => $lastname,

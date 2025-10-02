@@ -269,7 +269,8 @@ class FfcamSynchronizerTest extends WebTestCase
             ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
             ->setDoitRenouveler(true)
             ->setEmail($email1)
-            ->setPassword('hashedpassword');
+            ->setPassword('hashedpassword')
+        ;
 
         $em = self::getContainer()->get(EntityManagerInterface::class);
         $em->persist($existingUser);

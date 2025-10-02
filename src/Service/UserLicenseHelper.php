@@ -15,18 +15,18 @@ class UserLicenseHelper
     {
         $isLicenseValid = true;
 
-        if (!$user->getDateAdhesion()) {
+        if (!$user->getJoinDate() instanceof \DateTimeImmutable) {
             return false;
         }
 
-        $adhesionDate = (new \DateTime())->setTimestamp($user->getDateAdhesion());
+        $adhesionDate = $user->getJoinDate();
         $year = ($adhesionDate->format('m') >= self::LICENSE_TOLERANCY_PERIOD_END_MONTH) ? (int) $adhesionDate->format('Y') + 1 : $adhesionDate->format('Y');
 
         $endAdhesionDate = clone $adhesionDate;
         $endAdhesionDate->setTimestamp(strtotime("$year-" . self::LICENSE_TOLERANCY_PERIOD_END));
 
         // on considère la date fin de sortie pour les sorties sur plusieurs jours
-        $eventEndDate = (new \DateTime())->setTimestamp($event->getTspEnd());
+        $eventEndDate = (new \DateTimeImmutable())->setTimestamp($event->getTspEnd());
         if ($endAdhesionDate < $eventEndDate) {
             $isLicenseValid = false;
         }

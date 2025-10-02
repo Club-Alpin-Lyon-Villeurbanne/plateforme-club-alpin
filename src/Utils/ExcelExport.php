@@ -11,22 +11,27 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExcelExport
 {
-    private function getYearsSinceDate(\DateTime|int|string $date): int
+    /**
+     * Calculate years between a given date and now.
+     *
+     * @param string|int|\DateTimeImmutable $date
+     */
+    private function getYearsSinceDate(mixed $date): int
     {
         try {
             if (is_numeric($date)) {
                 // Handle Unix timestamp
-                $date = (new \DateTime())->setTimestamp((int) $date);
+                $date = (new \DateTimeImmutable())->setTimestamp((int) $date);
             } elseif (\is_string($date)) {
-                $date = new \DateTime($date);
-            } elseif (!$date instanceof \DateTime) {
+                $date = new \DateTimeImmutable($date);
+            } elseif (!$date instanceof \DateTimeImmutable) {
                 throw new \InvalidArgumentException('Invalid date format');
             }
         } catch (\Exception $e) {
             throw new \InvalidArgumentException('Invalid date format', 0, $e);
         }
 
-        $now = new \DateTime();
+        $now = new \DateTimeImmutable();
 
         if ($date > $now) {
             throw new \InvalidArgumentException('Future dates are not allowed');
