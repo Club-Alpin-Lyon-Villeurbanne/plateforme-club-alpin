@@ -31,7 +31,7 @@ if (allowed('user_see_all') or isGranted(SecurityConstants::ROLE_ADMIN)) {
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $handleSql->fetch_assoc()) {
-        $birthdate = new \DateTime($row['birthdate']);
+        $birthdate = new \DateTimeImmutable($row['birthdate']);
         $age = $birthdate->diff(new \DateTime())->y;
         $row['birthday_user'] = $age;
 
