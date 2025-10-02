@@ -45,7 +45,7 @@ class FfcamFileParser
 
         $datePart = explode('-', $line[6]);
         $birthday = mktime(12, 0, 0, $datePart[1], $datePart[2], $datePart[0]);
-        $birthdate = new \DateTime();
+        $birthdate = new \DateTimeImmutable();
         $birthdate->setTimestamp($birthday);
 
         $datePart = explode('-', $line[7]);
