@@ -118,12 +118,12 @@ class UserLicenseHelperTest extends TestCase
 
         $this->assertTrue(
             $this->userLicenseHelper->isLicenseValidForEvent($user, $eventJustBefore),
-            'La licence devrait être valide pour événement le 29 septembre 2025'
+            'La licence devrait être valide pour une sortie le 29 septembre 2025'
         );
 
         $this->assertFalse(
             $this->userLicenseHelper->isLicenseValidForEvent($user, $eventJustAfter),
-            'La licence ne devrait pas être valide pour événement le 2 octobre 2025'
+            'La licence ne devrait pas être valide pour une sortie le 2 octobre 2025'
         );
     }
 
@@ -136,8 +136,7 @@ class UserLicenseHelperTest extends TestCase
             return $user;
         }
 
-        $joinDate = new \DateTimeImmutable();
-        $joinDate->setTimestamp($dateAdhesion);
+        $joinDate = (new \DateTimeImmutable())->setTimestamp($dateAdhesion);
         $user->method('getJoinDate')->willReturn($joinDate);
 
         return $user;
