@@ -10,7 +10,6 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Serializer\Filter\GroupFilter;
-use App\Serializer\TimeStampNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -19,7 +18,6 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
-use Symfony\Component\Serializer\Attribute\Context;
 
 /**
  * Evt.
@@ -32,13 +30,13 @@ use Symfony\Component\Serializer\Attribute\Context;
         new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
         new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:read', 'eventParticipation:read']]),
     ],
-    order: ['tsp' => 'ASC'],
+    order: ['eventStartDate' => 'ASC'],
     security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', 'participations.user.id' => 'exact'])]
-#[ApiFilter(RangeFilter::class, properties: ['tsp'])]
+#[ApiFilter(RangeFilter::class, properties: ['eventStartDate'])]
 #[ApiFilter(GroupFilter::class, arguments: ['overrideDefaultGroups' => true])]
-#[ApiFilter(OrderFilter::class, properties: ['tsp'])]
+#[ApiFilter(OrderFilter::class, properties: ['eventStartDate'])]
 class Evt
 {
     use TimestampableEntity;
@@ -110,18 +108,6 @@ class Evt
     #[ORM\Column(name: 'tsp_evt', type: 'bigint', nullable: true, options: ['comment' => 'timestamp du début du event'])]
     private ?int $tsp;
 
-    #[ORM\Column(name: 'tsp_end_evt', type: 'bigint', nullable: true)]
-    private ?int $tspEnd;
-
-    #[ORM\Column(name: 'tsp_crea_evt', type: 'bigint', nullable: false, options: ['comment' => "Création de l'entrée"])]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[Groups('event:details')]
-    private ?int $tspCrea;
-
-    #[ORM\Column(name: 'tsp_edit_evt', type: 'bigint', nullable: true)]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    private ?int $tspEdit;
-
     #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de départ activité'])]
     #[Groups('event:details')]
     private ?string $place;
@@ -190,11 +176,6 @@ class Evt
     #[Groups('event:details')]
     private bool $needBenevoles = false;
 
-    #[ORM\Column(name: 'join_start_evt', type: 'integer', nullable: true, options: ['comment' => 'Timestamp de départ des inscriptions'])]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[Groups('event:details')]
-    private ?int $joinStart;
-
     #[ORM\Column(name: 'join_max_evt', type: 'integer', nullable: false, options: ['comment' => "Nombre max d'inscriptions spontanées sur le site, ET PAS d'inscrits total"])]
     #[Groups('event:read')]
     #[SerializedName('inscriptionsMax')]
@@ -255,14 +236,11 @@ class Evt
         $this->user = $user;
         $this->titre = $titre;
         $this->code = $code;
-        $this->tsp = $dateStart ? $dateStart->getTimestamp() : null;
-        $this->tspEnd = $dateEnd ? $dateEnd->getTimestamp() : null;
         $this->place = ''; // unused, must be dropped
         $this->rdv = $rdv;
         $this->lat = $rdvLat;
         $this->long = $rdvLong;
         $this->description = $description;
-        $this->joinStart = $demarrageInscriptions;
         $this->joinMax = $maxInscriptions;
         $this->ngensMax = $maxParticipants;
         $this->commission = $commission;
@@ -279,8 +257,6 @@ class Evt
         $this->participations = new ArrayCollection();
         $this->articles = new ArrayCollection();
         $this->expenseReports = new ArrayCollection();
-        $this->tspCrea = time();
-        $this->tspEdit = time();
         $this->isDraft = false;
         $this->setCreatedAt(new \DateTime());
         $this->setUpdatedAt(new \DateTime());
@@ -296,20 +272,21 @@ class Evt
             'user' => $this->user->getId(),
             'titre' => $this->titre,
             'code' => $this->code,
-            'tsp' => $this->tsp,
-            'tspEnd' => $this->tspEnd,
             'place' => $this->place,
             'rdv' => $this->rdv,
             'lat' => $this->lat,
             'long' => $this->long,
             'description' => $this->description,
-            'joinStart' => $this->joinStart,
             'joinMax' => $this->joinMax,
             'ngensMax' => $this->ngensMax,
             'commission' => $this->commission->getId(),
             'participations' => $this->participations,
             'articles' => $this->articles,
-            'tspCrea' => $this->tspCrea,
+            'start' => $this->getEventStartDate()->format('Y-m-d H:i:s'),
+            'end' => $this->getEventEndDate()->format('Y-m-d H:i:s'),
+            'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->getUpdatedAt()->format('Y-m-d H:i:s'),
+            'joinStartDate' => $this->getJoinStartDate()?->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -391,18 +368,6 @@ class Evt
     public function setCancelledWho(?User $cancelledWho): self
     {
         $this->cancelledWho = $cancelledWho;
-
-        return $this;
-    }
-
-    public function getCancelledWhen(): ?int
-    {
-        return $this->cancelledWhen;
-    }
-
-    public function setCancelledWhen(?int $cancelledWhen): self
-    {
-        $this->cancelledWhen = $cancelledWhen;
 
         return $this;
     }
@@ -545,14 +510,14 @@ class Evt
     #[SerializedName('heureRendezVous')]
     public function getDateDebut(): ?string
     {
-        return $this->tsp ? (new \DateTime())->setTimestamp($this->tsp)->format(\DateTime::ATOM) : null;
+        return $this->eventStartDate?->format(\DateTime::ATOM);
     }
 
     #[Groups('event:read')]
     #[SerializedName('heureRetour')]
     public function getDateFin(): ?string
     {
-        return $this->tspEnd ? (new \DateTime())->setTimestamp($this->tspEnd)->format(\DateTime::ATOM) : null;
+        return $this->eventEndDate?->format(\DateTime::ATOM);
     }
 
     public function isPublicStatusUnseen()
@@ -587,7 +552,7 @@ class Evt
 
     public function hasStarted(): bool
     {
-        return $this->tsp < time();
+        return $this->eventStartDate < new \DateTime();
     }
 
     public function startsAfter(string $when): bool
@@ -597,48 +562,12 @@ class Evt
 
     public function joinHasStarted(): bool
     {
-        return $this->joinStart < time();
+        return $this->joinStartDate < new \DateTime();
     }
 
     public function isFinished(): bool
     {
-        return $this->tspEnd < time();
-    }
-
-    public function getTspEnd(): ?int
-    {
-        return $this->tspEnd;
-    }
-
-    public function setTspEnd(int $tspEnd): self
-    {
-        $this->tspEnd = $tspEnd;
-
-        return $this;
-    }
-
-    public function getTspCrea(): ?string
-    {
-        return $this->tspCrea;
-    }
-
-    public function setTspCrea(string $tspCrea): self
-    {
-        $this->tspCrea = $tspCrea;
-
-        return $this;
-    }
-
-    public function getTspEdit(): ?string
-    {
-        return $this->tspEdit;
-    }
-
-    public function setTspEdit(string $tspEdit): self
-    {
-        $this->tspEdit = $tspEdit;
-
-        return $this;
+        return $this->eventEndDate < new \DateTime();
     }
 
     public function getPlace(): ?string
@@ -829,18 +758,6 @@ class Evt
     public function setNeedBenevoles(bool $needBenevoles): self
     {
         $this->needBenevoles = $needBenevoles;
-
-        return $this;
-    }
-
-    public function getJoinStart(): ?int
-    {
-        return $this->joinStart;
-    }
-
-    public function setJoinStart(?int $joinStart): self
-    {
-        $this->joinStart = $joinStart;
 
         return $this;
     }

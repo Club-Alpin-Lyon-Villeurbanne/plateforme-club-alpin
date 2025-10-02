@@ -28,6 +28,8 @@ final class Version20250930142956 extends AbstractMigration
         $this->addSql('UPDATE caf_article SET validation_date = (CASE WHEN tsp_validate_article IS NOT NULL THEN FROM_UNIXTIME(tsp_validate_article) ELSE NULL END)');
         $this->addSql('UPDATE caf_comment SET created_at = FROM_UNIXTIME(tsp_comment), updated_at = (CASE WHEN tsp_comment IS NOT NULL THEN FROM_UNIXTIME(tsp_comment) ELSE NOW() END)');
         $this->addSql('UPDATE caf_evt SET created_at = FROM_UNIXTIME(tsp_crea_evt), updated_at = (CASE WHEN tsp_edit_evt IS NOT NULL THEN FROM_UNIXTIME(tsp_edit_evt) ELSE NOW() END)');
+        $this->addSql('UPDATE caf_evt SET event_start_date = (CASE WHEN tsp_evt IS NOT NULL THEN FROM_UNIXTIME(tsp_evt) ELSE NULL END), event_end_date = (CASE WHEN tsp_end_evt IS NOT NULL THEN FROM_UNIXTIME(tsp_end_evt) ELSE NULL END)');
+        $this->addSql('UPDATE caf_evt SET join_start_date = (CASE WHEN join_start_evt IS NOT NULL THEN FROM_UNIXTIME(join_start_evt) ELSE NULL END), cancellation_date = (CASE WHEN cancelled_when_evt IS NOT NULL THEN FROM_UNIXTIME(cancelled_when_evt) ELSE NULL END)');
         $this->addSql('UPDATE caf_evt_join SET created_at = FROM_UNIXTIME(tsp_evt_join), updated_at = (CASE WHEN lastchange_when_evt_join IS NOT NULL THEN FROM_UNIXTIME(lastchange_when_evt_join) ELSE NOW() END)');
         $this->addSql('UPDATE caf_user SET created_at = FROM_UNIXTIME(ts_insert_user), updated_at = (CASE WHEN ts_update_user IS NOT NULL THEN FROM_UNIXTIME(ts_update_user) ELSE NOW() END)');
         $this->addSql('UPDATE caf_user SET birthdate = FROM_UNIXTIME(birthday_user), join_date = (CASE WHEN date_adhesion_user IS NOT NULL THEN FROM_UNIXTIME(date_adhesion_user) ELSE NULL END)');

@@ -25,7 +25,7 @@ class UserLicenseHelper
         $endAdhesionDate = (clone $adhesionDate)->setTimestamp(strtotime("$year-" . self::LICENSE_TOLERANCY_PERIOD_END));
 
         // on considère la date fin de sortie pour les sorties sur plusieurs jours
-        $eventEndDate = (new \DateTime())->setTimestamp($event->getTspEnd());
+        $eventEndDate = $event->getEventEndDate();
         if ($endAdhesionDate < $eventEndDate) {
             $isLicenseValid = false;
         }

@@ -145,7 +145,8 @@ class UserLicenseHelperTest extends TestCase
     private function createMockEvent(int $tspEnd): Evt
     {
         $event = $this->createMock(Evt::class);
-        $event->method('getTspEnd')->willReturn($tspEnd);
+        $date = (new \DateTimeImmutable())->setTimestamp($tspEnd);
+        $event->method('getEventEndDate')->willReturn($date);
 
         return $event;
     }
