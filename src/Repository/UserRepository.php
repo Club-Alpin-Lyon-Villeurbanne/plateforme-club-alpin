@@ -156,7 +156,7 @@ SQL;
         }
     }
 
-    public function findDuplicateUser(string $lastname, string $firstname, string $birthday, string $excludeCafnum): ?User
+    public function findDuplicateUser(string $lastname, string $firstname, \DateTimeImmutable $birthday, string $excludeCafnum): ?User
     {
         return $this->createQueryBuilder('u')
             ->where('LOWER(u.lastname) = LOWER(:lastname)')
