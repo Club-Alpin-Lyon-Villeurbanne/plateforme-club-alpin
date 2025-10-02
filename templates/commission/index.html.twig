@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des commissions{% endblock %}
+
+{% block body %}
+<div id="left1">
+    <div class="main-type">
+        <h1>Liste des commissions</h1>
+        <ul>
+            {% for commission in commissions %}
+                <li>
+                    <a href="{{ path('commission_configuration', {'id': commission.id}) }}" title="Configurer les champs obligatoires pour {{ commission.title }}">
+                        ⚙️ {{ commission.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
