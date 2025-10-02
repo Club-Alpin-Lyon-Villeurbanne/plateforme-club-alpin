@@ -149,8 +149,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
                     AND tsp_evt > $tspMin
                     AND tsp_evt < $tspMax
                     AND id_user = user_evt_join
-                    AND birthday_user > (tsp_evt - " . (18 * 365 * 24 * 60 * 60) . ')
-                    ';
+                    AND birthdate > DATEDIFF(event_start_date, 18) 
+                    ";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
             $comTab[$key]['stats']['join_total_mineurs'] = $row[0];

@@ -54,10 +54,7 @@ $stmt->close();
 // formatage date anniversaire
 $birthDate = new \DateTimeImmutable();
 if (!isset($errTab) || 0 === count($errTab)) {
-    // tsp de début
-    $tab = explode('/', $birthday_user);
-    $birthday_user = mktime(1, 0, 0, $tab[1], $tab[0], $tab[2]);
-    $birthDate->setTimestamp($birthday_user);
+    $birthDate = \DateTimeImmutable::createFromFormat('d/m/Y', $birthday_user);
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
@@ -76,7 +73,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO `caf_user` (`email_user`, `mdp_user`, `cafnum_user`, `firstname_user`, `lastname_user`, `nickname_user`, `birthdate`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `moreinfo_user`, `auth_contact_user`, `valid_user`, `cookietoken_user`, `manuel_user`, cafnum_parent_user, nomade_user, nomade_parent_user, doit_renouveler_user, alerte_renouveler_user, created_at, updated_at)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, '1', '', '1', null, '0', '0', '0', '0', ?, ?)");
         $currentDateTime = (new \DateTime())->format('Y-m-d H:i:s');
-        $stmt->bind_param('ssssssssssssssss', $email_user, $mdp_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $birthDate->format('Y-m-d'), $tel_user, $tel2_user, $adresse_user, $cp_user, $ville_user, $pays_user, $auth_contact_user, $currentDateTime, $currentDateTime);
+        $stmt->bind_param('ssssssssssssssss', $email_user, $mdp_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $birthDate?->format('Y-m-d'), $tel_user, $tel2_user, $adresse_user, $cp_user, $ville_user, $pays_user, $auth_contact_user, $currentDateTime, $currentDateTime);
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur SQL';
         } else {
