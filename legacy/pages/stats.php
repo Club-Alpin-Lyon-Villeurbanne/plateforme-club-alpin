@@ -149,14 +149,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
                     AND tsp_evt > $tspMin
                     AND tsp_evt < $tspMax
 
-                    AND id_user = user_evt_join
-                    AND birthday_user > (tsp_evt - " . (18 * 365 * 24 * 60 * 60) . ')
-                    ';
-            $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            $row = $result->fetch_row();
-            $comTab[$key]['stats']['join_total_mineurs'] = $row[0];
-
-            // Nombre de participations confirmés
+            // Nombre de participations confirmées
             // NOTE : temps = de la sortie et pas de la réza
             $req = 'SELECT COUNT(id_evt_join)
 					FROM caf_evt, caf_evt_join

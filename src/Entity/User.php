@@ -107,15 +107,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private $nickname;
 
     /**
-     * @var int|null
-     */
-    #[ORM\Column(name: 'birthday_user', type: 'bigint', nullable: true)]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[Groups('user:details')]
-    #[SerializedName('dateNaissance')]
-    private $birthday;
-
-    /**
      * @var string
      */
     #[ORM\Column(name: 'tel_user', type: 'string', length: 100, nullable: true)]
@@ -256,9 +247,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private ?\DateTimeInterface $lastLoginDate = null;
 
     #[ORM\Column(name: 'birthdate', type: Types::DATE_IMMUTABLE, nullable: true, options: ['comment' => 'Date de naissance'])]
+    #[Groups('user:details')]
+    #[SerializedName('dateNaissance')]
     private ?\DateTimeInterface $birthdate = null;
 
     #[ORM\Column(name: 'join_date', type: Types::DATE_IMMUTABLE, nullable: true, options: ['comment' => 'Date adhésion'])]
+    #[Groups('user:details')]
     private ?\DateTimeInterface $joinDate = null;
 
     public function __construct(?int $id = null)
@@ -457,18 +451,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setNickname(string $nickname): self
     {
         $this->nickname = $nickname;
-
-        return $this;
-    }
-
-    public function getBirthday(): ?int
-    {
-        return $this->birthday;
-    }
-
-    public function setBirthday(?int $birthday): self
-    {
-        $this->birthday = $birthday;
 
         return $this;
     }
