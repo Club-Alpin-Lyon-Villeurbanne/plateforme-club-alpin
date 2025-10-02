@@ -29,7 +29,6 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     $nicknameUser = $userTab['nickname_user'];
     $alerteRenouvelerUser = $userTab['alerte_renouveler_user'];
     $dateAdhesionUser = $userTab['date_adhesion_user'];
-    $birthdayUser = $userTab['birthday_user'];
     $telUser = $userTab['tel_user'];
     $telSecuUser = $userTab['tel2_user'];
     $adresseUser = $userTab['adresse_user'];
