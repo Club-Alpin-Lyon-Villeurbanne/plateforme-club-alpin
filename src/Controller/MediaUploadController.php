@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -43,20 +44,20 @@ class MediaUploadController extends AbstractController
     {
         return $this->upload($request, $validator, new File([
             'maxSize' => '5M',
-            'extensions' => ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'],
+            'extensions' => ['pdf', 'gpx', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'],
         ]));
     }
 
-    public function upload(Request $request, ValidatorInterface $validator, File $fileConstraints): Response
+    public function upload(Request $request, ValidatorInterface $validator, File $fileConstraints): Response|JsonResponse
     {
         $user = $this->security->getUser();
         if (!$user) {
-            throw $this->createAccessDeniedException('User must be logged in');
+            return new JsonResponse(['uploaded' => 0, 'error' => ['message' => 'User must be logged in']], Response::HTTP_UNAUTHORIZED);
         }
 
         $file = $request->files->get('file');
         if (!$file) {
-            throw new BadRequestHttpException('File is required');
+            return new JsonResponse(['uploaded' => 0, 'error' => ['message' => 'File is required']], Response::HTTP_BAD_REQUEST);
         }
 
         $errors = $validator->validate($file, $fileConstraints);
@@ -82,6 +83,7 @@ class MediaUploadController extends AbstractController
             'id' => $mediaUpload->getId(),
             'filename' => $mediaUpload->getFilename(),
             'url' => $imagePath,
+            'uploaded' => 1,
             'createdAt' => $mediaUpload->getCreatedAt()->format('c'),
         ], Response::HTTP_CREATED);
     }

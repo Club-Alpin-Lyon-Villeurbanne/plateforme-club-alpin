@@ -592,19 +592,20 @@
                                                         id="role_join_{{ participation.id }}_m"
                                                         value="manuel"
                                                     />
-                                                    Manuel
+                                                    Participant
+                                                </label>
+                                            {% else %}
+                                                <label style="display:block; white-space:nowrap;" for="role_join_{{ participation.id }}_i">
+                                                    <input
+                                                        {% if participation.isRoleInscrit %}checked="checked"{% endif%}
+                                                        name="role_evt_join_{{ participation.id }}"
+                                                        type="radio"
+                                                        id="role_join_{{ participation.id }}_i"
+                                                        value="inscrit"
+                                                    />
+                                                    Participant
                                                 </label>
                                             {% endif %}
-                                            <label style="display:block; white-space:nowrap;" for="role_join_{{ participation.id }}_i">
-                                                <input
-                                                    {% if participation.isRoleInscrit %}checked="checked"{% endif%}
-                                                    name="role_evt_join_{{ participation.id }}"
-                                                    type="radio"
-                                                    id="role_join_{{ participation.id }}_i"
-                                                    value="inscrit"
-                                                />
-                                                Participant
-                                            </label>
                                             <label style="display:block; white-space:nowrap;" for="role_join_{{ participation.id }}_b">
                                                 <input
                                                     {% if participation.isRoleBenevole %}checked="checked"{% endif%}
