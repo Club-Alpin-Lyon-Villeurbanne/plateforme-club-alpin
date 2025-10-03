@@ -14,7 +14,7 @@
             <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
             <span class="bleucaf">&gt;</span>
             {% if not my_status %}
-            JE SOUHAITE REJOINDRE {% if event.joinMax > event.ngensMax and nInscritsTotal >= event.ngensMax %}LA FILE D'ATTENTE{% else %}CETTE SORTIE{% endif %}
+            JE SOUHAITE REJOINDRE {% if event.isWaitingList(nInscritsTotal) %}LA FILE D'ATTENTE{% else %}CETTE SORTIE{% endif %}
             {% elseif my_status.isCovoiturage %}
             {% else %}
             JE METS A JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
