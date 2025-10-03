@@ -1,7 +1,6 @@
 <?php
 
 use App\Legacy\LegacyContainer;
-use DateTimeImmutable;
 
 /*
     Récupération des sorties d'un utilisateur
