@@ -1,6 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use DateTimeImmutable;
 
 /*
     Récupération des sorties d'un utilisateur
@@ -47,7 +48,7 @@ function display_sorties($id_user, $limit = 10, $title = '')
             $evt = $handle;
 
             echo '<tr>'
-                    . '<td class="agenda-gauche">' . (new \DateTimeImmutable($evt['event_start_date']))?->format('d/m/Y') . '</td>'
+                    . '<td class="agenda-gauche">' . (new DateTimeImmutable($evt['event_start_date']))?->format('d/m/Y') . '</td>'
                     . '<td>';
             require __DIR__ . '/../includes/agenda-evt-debut.php';
             echo '</td>'
