@@ -285,8 +285,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
             'alerteRenouveler' => $this->getAlerteRenouveler(),
             'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
             'updatedAt' => $this->getUpdatedAt()->format('Y-m-d H:i:s'),
-            'joinDate' => $this->getJoinDate()->format('Y-m-d'),
-            'birthdate' => $this->getBirthdate()->format('Y-m-d'),
+            'joinDate' => $this->getJoinDate()?->format('Y-m-d'),
+            'birthdate' => $this->getBirthdate()?->format('Y-m-d'),
         ];
     }
 

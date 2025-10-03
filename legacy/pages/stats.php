@@ -154,7 +154,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					AND event_start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 
                     AND id_user = user_evt_join
-                    AND birthdate > DATEDIFF(event_start_date, 18) 
+                    AND DATE_ADD(birthdate, INTERVAL 18 YEAR) > event_start_date 
                     ";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
