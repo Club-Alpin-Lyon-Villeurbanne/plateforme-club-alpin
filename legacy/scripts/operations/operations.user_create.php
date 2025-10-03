@@ -52,9 +52,9 @@ if ($row[0] > 0) {
 $stmt->close();
 
 // formatage date anniversaire
-$birthDate = new \DateTimeImmutable();
+$birthDate = new DateTimeImmutable();
 if (!isset($errTab) || 0 === count($errTab)) {
-    $birthDate = \DateTimeImmutable::createFromFormat('d/m/Y', $birthday_user);
+    $birthDate = DateTimeImmutable::createFromFormat('d/m/Y', $birthday_user);
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {
