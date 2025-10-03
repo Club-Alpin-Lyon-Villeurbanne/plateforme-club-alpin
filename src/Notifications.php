@@ -28,6 +28,10 @@ class Notifications
         $validate = $this->userRights->allowed('evt_validate');
         $validateAll = $this->userRights->allowed('evt_validate_all');
 
+        if (!$validate && !$validateAll) {
+            return 0;
+        }
+
         $commissions = [];
         if ($validate && !$validateAll) {
             $commissionCodes = $this->userRights->getCommissionListForRight('evt_validate');
