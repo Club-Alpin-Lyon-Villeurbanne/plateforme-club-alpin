@@ -226,6 +226,10 @@ class Evt
     #[Groups('event:read')]
     private ?\DateTimeImmutable $cancellationDate = null;
 
+    #[ORM\Column(name: 'legal_status_change_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date de validation ou refus légal'])]
+    #[Groups('event:read')]
+    private ?\DateTimeImmutable $legalStatusChangeDate = null;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -881,6 +885,18 @@ class Evt
     public function setCancellationDate(?\DateTimeImmutable $cancellationDate): self
     {
         $this->cancellationDate = $cancellationDate;
+
+        return $this;
+    }
+
+    public function getLegalStatusChangeDate(): ?\DateTimeImmutable
+    {
+        return $this->legalStatusChangeDate;
+    }
+
+    public function setLegalStatusChangeDate(?\DateTimeImmutable $legalStatusChangeDate): self
+    {
+        $this->legalStatusChangeDate = $legalStatusChangeDate;
 
         return $this;
     }
