@@ -983,7 +983,7 @@ class Evt
     {
         $isWaitingList = false;
 
-        if ($this->joinMax > $this->ngensMax && $nInscritsTotal >= $this->ngensMax){
+        if ($this->joinMax > $this->ngensMax && $nInscritsTotal >= $this->ngensMax) {
             $isWaitingList = true;
         }
 
