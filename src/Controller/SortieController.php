@@ -949,12 +949,8 @@ class SortieController extends AbstractController
 
                 // vérification nombre de places restantes et présence de liste d'attente
                 $ngens_max = $event->getNgensMax();
-                $join_max = $event->getJoinMax();
                 $current_participants = $event->getParticipationsCount();
-                $waitingList = false;
-                if ($event->isWaitingList($current_participants)) {
-                    $waitingList = true;
-                }
+                $waitingList = $event->isWaitingList($current_participants);
 
                 // Si auto_accept est activé, vérifier qu'on n'a pas atteint la limite
                 if ($event->isAutoAccept()) {
