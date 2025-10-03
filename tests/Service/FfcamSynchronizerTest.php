@@ -266,7 +266,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ->setCafnum($identifiant1)
             ->setFirstname($firstname1)
             ->setLastname($lastname1)
-            ->setBirthday('631152000') // 1990-01-01
+            ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
             ->setDoitRenouveler(true)
             ->setEmail($email1)
             ->setPassword('hashedpassword');
@@ -309,7 +309,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ->setCafnum($identifiant1)
             ->setFirstname($firstname1)
             ->setLastname($lastname1)
-            ->setBirthday('631152000') // 1990-01-01
+            ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
             ->setDoitRenouveler(false)
             ->setAlerteRenouveler(false);
 
@@ -347,13 +347,17 @@ class FfcamSynchronizerTest extends WebTestCase
         $lastname1 = $this->faker->lastName();
         $firstname1 = $this->faker->firstName();
 
+        $now = new \DateTime();
+        $minusOneHour = (clone $now)->modify('-1 hour');
+
         $existingUser1 = $this->signup();
         $existingUser1
             ->setCafnum($identifiant1)
             ->setFirstname($firstname1)
             ->setLastname($lastname1)
-            ->setBirthday('631152000') // 1990-01-01
-            ->setTsInsert(time() - 3600)
+            ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
+            ->setCreatedAt($minusOneHour)
+            ->setUpdatedAt($minusOneHour)
             ->setDoitRenouveler(true);
 
         $existingUser2 = $this->signup();
@@ -361,8 +365,9 @@ class FfcamSynchronizerTest extends WebTestCase
             ->setCafnum($identifiant2)
             ->setFirstname($firstname1)
             ->setLastname($lastname1)
-            ->setBirthday('631152000') // 1990-01-01
-            ->setTsInsert(time())
+            ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
+            ->setCreatedAt($now)
+            ->setUpdatedAt($now)
             ->setDoitRenouveler(true);
 
         $em = self::getContainer()->get(EntityManagerInterface::class);
@@ -404,7 +409,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ->setCafnum($identifiant1)
             ->setFirstname($firstname1)
             ->setLastname($lastname1)
-            ->setBirthday('631152000') // 1990-01-01
+            ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
             ->setTel('0606060606');
 
         $user2 = $this->signup();
@@ -412,7 +417,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ->setCafnum($identifiant2)
             ->setFirstname($firstname1)
             ->setLastname($lastname1)
-            ->setBirthday('631152000') // 1990-01-01
+            ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
             ->setTel('0606060606');
 
         $em = self::getContainer()->get(EntityManagerInterface::class);

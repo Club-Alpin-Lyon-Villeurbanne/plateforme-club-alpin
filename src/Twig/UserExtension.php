@@ -26,9 +26,8 @@ class UserExtension extends AbstractExtension
     {
         $age = null;
 
-        if (!empty($user->getBirthday())) {
-            $birthdate = new \DateTime();
-            $birthdate->setTimestamp($user->getBirthday());
+        if (!empty($user->getBirthdate())) {
+            $birthdate = $user->getBirthdate();
             $diff = $birthdate->diff(new \DateTime());
             $age = $diff->y;
         }

@@ -43,18 +43,16 @@ class FfcamFileParser
         $firstname = ucfirst($this->normalizeNames(trim($line[10])));
         $lastname = strtoupper($this->normalizeNames(trim($line[9])));
 
-        $datePart = explode('-', $line[6]);
-        $birthday = mktime(1, 0, 0, $datePart[1], $datePart[2], $datePart[0]);
+        $birthdate = new \DateTimeImmutable($line[6]);
 
-        $datePart = explode('-', $line[7]);
         $isLicenceExpired = '0000-00-00' === $line[7];
-        $adhesionDate = $isLicenceExpired ? null : mktime(1, 0, 0, $datePart[1], $datePart[2], $datePart[0]);
+        $joinDate = $isLicenceExpired ? null : new \DateTimeImmutable($line[7]);
 
         $user
             ->setCafnum(trim($line[0]))
             ->setFirstname($firstname)
             ->setLastname($lastname)
-            ->setBirthday((string) $birthday)
+            ->setBirthdate($birthdate)
             ->setCiv($this->normalizeNames(str_replace('MLLE', 'MME', trim($line[8]))))
             ->setCafnumParent((int) $line[5] > 0 ? trim($line[1] . $line[5]) : null)
             ->setTel(trim($line[27]))
@@ -65,7 +63,7 @@ class FfcamFileParser
             ->setNickname(NicknameGenerator::generateNickname($firstname, $lastname))
             ->setDoitRenouveler($isLicenceExpired)
             ->setAlerteRenouveler($isLicenceExpired)
-            ->setDateAdhesion($adhesionDate ? (string) $adhesionDate : null)
+            ->setJoinDate($joinDate)
         ;
 
         return $user;

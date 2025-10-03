@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\EventParticipationRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -29,6 +30,8 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 )]
 class EventParticipation implements \JsonSerializable
 {
+    use TimestampableEntity;
+
     public const STATUS_NON_CONFIRME = 0;
     public const STATUS_VALIDE = 1;
     public const STATUS_REFUSE = 2;
@@ -97,20 +100,6 @@ class EventParticipation implements \JsonSerializable
     private $role;
 
     /**
-     * @var int
-     */
-    #[ORM\Column(name: 'tsp_evt_join', type: 'bigint', nullable: false)]
-    #[Groups('eventParticipation:read')]
-    #[SerializedName('dateInscription')]
-    private $tsp;
-
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'lastchange_when_evt_join', type: 'bigint', nullable: true, options: ['comment' => 'Quand a été modifié cet élément'])]
-    private $lastchangeWhen;
-
-    /**
      * @var User
      */
     #[ORM\ManyToOne(targetEntity: 'User')]
@@ -130,7 +119,8 @@ class EventParticipation implements \JsonSerializable
         $this->user = $user;
         $this->role = $role;
         $this->status = $status;
-        $this->tsp = time();
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
     }
 
     public function getId(): ?int
@@ -249,30 +239,6 @@ class EventParticipation implements \JsonSerializable
     public function setRole(string $role): self
     {
         $this->role = $role;
-
-        return $this;
-    }
-
-    public function getTsp(): ?string
-    {
-        return $this->tsp;
-    }
-
-    public function setTsp(string $tsp): self
-    {
-        $this->tsp = $tsp;
-
-        return $this;
-    }
-
-    public function getLastchangeWhen(): ?string
-    {
-        return $this->lastchangeWhen;
-    }
-
-    public function setLastchangeWhen(string $lastchangeWhen): self
-    {
-        $this->lastchangeWhen = $lastchangeWhen;
 
         return $this;
     }

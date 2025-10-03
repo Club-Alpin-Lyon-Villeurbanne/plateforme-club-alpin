@@ -30,16 +30,15 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
     $stmt->close();
 
-    $stmt2 = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_article SET tsp_validate_article=? WHERE caf_article.id_article=? AND (tsp_validate_article=0 OR tsp_validate_article IS NULL)'); // premiere validation
-    $current_time = time();
-    $stmt2->bind_param('ii', $current_time, $id_article);
+    $stmt2 = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_article SET validation_date= NOW() WHERE caf_article.id_article=?');
+    $stmt2->bind_param('i', $id_article);
     if (!$stmt2->execute()) {
         $errTab[] = 'Erreur SQL';
     }
     $stmt2->close();
 
     // récupération des infos user et article
-    $stmt3 = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_article, titre_article, code_article, tsp_crea_article, tsp_article FROM caf_user, caf_article WHERE id_user=user_article AND id_article=? LIMIT 1');
+    $stmt3 = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT id_user, civ_user, firstname_user, lastname_user, nickname_user, email_user, id_article, titre_article, code_article FROM caf_user, caf_article WHERE id_user=user_article AND id_article=? LIMIT 1');
     $stmt3->bind_param('i', $id_article);
     $stmt3->execute();
     $result = $stmt3->get_result();
@@ -57,7 +56,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if ($result && $row = $result->fetch_assoc()) {
         $limit = max(0, $row['total']);
 
-        $sql = 'UPDATE caf_article SET une_article = 0 WHERE status_article = 1 AND une_article = 1 ORDER BY tsp_article ASC LIMIT ' . $limit;
+        $sql = 'UPDATE caf_article SET une_article = 0 WHERE status_article = 1 AND une_article = 1 LIMIT ' . $limit;
         LegacyContainer::get('legacy_mysqli_handler')->query($sql);
     }
 }

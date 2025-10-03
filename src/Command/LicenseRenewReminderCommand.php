@@ -49,7 +49,7 @@ class LicenseRenewReminderCommand extends Command
                 $this->mailer->send($participant, 'transactional/licence-expiree-participant', [
                     'event_name' => $event->getTitre(),
                     'event_url' => $this->urlGenerator->generate('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'event_date' => date('d/m/Y', $event->getTsp()),
+                    'event_date' => $event->getEventStartDate()->format('d/m/Y'),
                 ]);
                 $notifyOrganizer = true;
             }
@@ -69,7 +69,7 @@ class LicenseRenewReminderCommand extends Command
             $this->mailer->send($destinataires, 'transactional/licence-expiree-encadrement', [
                 'event_name' => $event->getTitre(),
                 'event_url' => $this->urlGenerator->generate('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                'event_date' => date('d/m/Y', $event->getTsp()),
+                'event_date' => $event->getEventStartDate()->format('d/m/Y'),
             ]);
         }
 

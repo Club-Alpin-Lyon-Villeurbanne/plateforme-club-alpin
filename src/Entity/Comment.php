@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 /**
  * Comment.
@@ -11,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Comment
 {
+    use TimestampableEntity;
+
     public const string ARTICLE_TYPE = 'article';
 
     /**
@@ -26,12 +29,6 @@ class Comment
      */
     #[ORM\Column(name: 'status_comment', type: 'integer', nullable: false, options: ['default' => '1'])]
     private $status = 1;
-
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'tsp_comment', type: 'bigint', nullable: false)]
-    private $tsp;
 
     /**
      * @var User
@@ -83,18 +80,6 @@ class Comment
     public function setStatus(int $status): self
     {
         $this->status = $status;
-
-        return $this;
-    }
-
-    public function getTsp(): ?string
-    {
-        return $this->tsp;
-    }
-
-    public function setTsp(string $tsp): self
-    {
-        $this->tsp = $tsp;
 
         return $this;
     }

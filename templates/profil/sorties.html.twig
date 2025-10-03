@@ -25,12 +25,12 @@
                     {% endif %}
                     <tr>
                         <td class="agenda-gauche">
-                            {% set start = event.tsp | intldate('eee d MMM yyyy') | capitalize %}
-                            {% set end = event.tspEnd | intldate('eee d MMM yyyy') | capitalize %}
+                            {% set start = event.eventStartDate | intldate('eee d MMM yyyy') | capitalize %}
+                            {% set end = event.eventEndDate | intldate('eee d MMM yyyy') | capitalize %}
 
                             {% if start == end %}
                                 Le {{ start }}<br />
-                                à {{ event.tsp | intldate('HH:mm') }}
+                                à {{ event.eventStartDate | intldate('HH:mm') }}
                             {% else %}
                                 Du {{ start }}<br/>
                                 au {{ end }}
