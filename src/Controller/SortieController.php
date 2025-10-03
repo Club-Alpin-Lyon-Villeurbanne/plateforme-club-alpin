@@ -475,7 +475,11 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
         }
 
-        $event->setStatusLegal(Evt::STATUS_LEGAL_VALIDE)->setStatusLegalWho($this->getUser());
+        $event
+            ->setStatusLegal(Evt::STATUS_LEGAL_VALIDE)
+            ->setStatusLegalWho($this->getUser())
+            ->setLegalStatusChangeDate(new \DateTimeImmutable())
+        ;
         $em->flush();
 
         $mailer->send($event->getUser(), 'transactional/sortie-president-validee', [
@@ -501,7 +505,11 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
         }
 
-        $event->setStatusLegal(Evt::STATUS_LEGAL_REFUSE)->setStatusLegalWho($this->getUser());
+        $event
+            ->setStatusLegal(Evt::STATUS_LEGAL_REFUSE)
+            ->setStatusLegalWho($this->getUser())
+            ->setLegalStatusChangeDate(new \DateTimeImmutable())
+        ;
         $em->flush();
 
         $this->addFlash('info', 'La sortie n\'est pas validée légalement');
