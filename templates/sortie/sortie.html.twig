@@ -15,7 +15,6 @@
             <span class="bleucaf">&gt;</span>
             {% if not my_status %}
             JE SOUHAITE REJOINDRE {% if event.isWaitingList(nInscritsTotal) %}LA FILE D'ATTENTE{% else %}CETTE SORTIE{% endif %}
-            {% elseif my_status.isCovoiturage %}
             {% else %}
             JE METS A JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
             {% endif %}
