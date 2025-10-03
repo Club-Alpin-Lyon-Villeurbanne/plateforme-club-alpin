@@ -85,7 +85,6 @@ class SortieController extends AbstractController
                 null,
                 null,
                 null,
-                null,
                 new \DateTimeImmutable()
             );
             $event->setJoinStartDate(new \DateTimeImmutable());
@@ -320,7 +319,7 @@ class SortieController extends AbstractController
             'event_name' => $event->getTitre(),
             'commission' => $event->getCommission()->getTitle(),
             'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-            'event_date' => date('d/m/Y', $event->getTsp()),
+            'event_date' => $event->getEventStartDate()->format('d/m/Y'),
         ]);
 
         $this->sendUpdateNotificationEmail($mailer, $event, $event->getCreatedAt() === $event->getUpdatedAt());
@@ -460,7 +459,7 @@ class SortieController extends AbstractController
                 'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 'event_name' => $event->getTitre(),
                 'commission' => $event->getCommission()->getTitle(),
-                'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                'event_date' => $event->getEventStartDate()->format('d/m/Y'),
             ];
             if ($event->hasPaymentForm() && $event->hasPaymentSendMail()) {
                 $context['hello_asso_url'] = $event->getPaymentUrl();
@@ -502,7 +501,7 @@ class SortieController extends AbstractController
             'event_name' => $event->getTitre(),
             'commission' => $event->getCommission()->getTitle(),
             'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-            'event_date' => date('d/m/Y', $event->getTsp()),
+            'event_date' => $event->getEventStartDate()->format('d/m/Y'),
         ]);
 
         $this->addFlash('info', 'La sortie est refusée');
@@ -528,7 +527,7 @@ class SortieController extends AbstractController
             'event_name' => $event->getTitre(),
             'commission' => $event->getCommission()->getTitle(),
             'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-            'event_date' => date('d/m/Y', $event->getTsp()),
+            'event_date' => $event->getEventStartDate()->format('d/m/Y'),
         ]);
 
         $this->addFlash('info', 'La sortie est validée légalement');
@@ -556,7 +555,7 @@ class SortieController extends AbstractController
             'event_name' => $event->getTitre(),
             'commission' => $event->getCommission()->getTitle(),
             'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-            'event_date' => date('d/m/Y', $event->getTsp()),
+            'event_date' => $event->getEventStartDate()->format('d/m/Y'),
         ]);
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
@@ -621,7 +620,7 @@ class SortieController extends AbstractController
                     'event_name' => $event->getTitre(),
                     'commission' => $event->getCommission()->getTitle(),
                     'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'event_date' => date('d/m/Y', $event->getTsp()),
+                    'event_date' => $event->getEventStartDate()->format('d/m/Y'),
                     'cancel_user_name' => $this->getUser()->getNickname(),
                     'cancel_user_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'voir-profil/' . $this->getUser()->getId() . '.html',
                     'message' => $message,
@@ -694,7 +693,7 @@ class SortieController extends AbstractController
             'url_sortie' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'name_sortie' => $event->getTitre(),
             'commission' => $event->getCommission()->getTitle(),
-            'date_sortie' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+            'date_sortie' => $event->getEventStartDate()?->format('d/m/Y'),
             'message' => $request->request->get('message'),
             'message_author_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $this->getUser()->getId() . '.html',
         ], [], $this->getUser(), $replyToAddresses);
@@ -732,7 +731,7 @@ class SortieController extends AbstractController
                     'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'event_name' => $event->getTitre(),
                     'commission' => $event->getCommission()->getTitle(),
-                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                    'event_date' => $event->getEventStartDate()->format('d/m/Y'),
                     'reason_explanation' => $reason,
                     'user' => $user,
                     'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $user->getId() . '.html',
@@ -767,7 +766,6 @@ class SortieController extends AbstractController
             $event->getLat(),
             $event->getLong(),
             $event->getDescription(),
-            null,
             $event->getJoinMax(),
             $event->getNgensMax(),
             new \DateTimeImmutable()
@@ -1005,7 +1003,7 @@ class SortieController extends AbstractController
                 // infos sur la sortie
                 $evtUrl = $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
                 $evtName = $event->getTitre();
-                $evtDate = date('d/m/Y', $event->getTsp());
+                $evtDate = $event->getEventStartDate()->format('d/m/Y');
                 $commissionTitle = $event->getCommission()->getTitle();
                 if ($event->hasPaymentForm() && $event->hasPaymentSendMail()) {
                     $paymentUrl = $event->getPaymentUrl();
@@ -1110,7 +1108,7 @@ class SortieController extends AbstractController
                     'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'event_name' => $event->getTitre(),
                     'commission' => $event->getCommission()->getTitle(),
-                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                    'event_date' => $event->getEventStartDate()->format('d/m/Y'),
                     'role' => $participation->getRole(),
                 ], [], null, $event->getUser()->getEmail());
             } else {
@@ -1118,7 +1116,7 @@ class SortieController extends AbstractController
                     'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'event_name' => $event->getTitre(),
                     'commission' => $event->getCommission()->getTitle(),
-                    'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
+                    'event_date' => $event->getEventStartDate()->format('d/m/Y'),
                 ], [], null, $event->getUser()->getEmail());
             }
         }

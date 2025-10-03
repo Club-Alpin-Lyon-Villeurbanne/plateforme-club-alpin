@@ -127,7 +127,7 @@ class EvtRepository extends ServiceEntityRepository
     public function getUserEvents(User $user, int $first, int $perPage)
     {
         $qb = $this->getUserEventsDql($user)
-            ->orderBy('e.tsp', 'desc');
+            ->orderBy('e.eventStartDate', 'desc');
 
         return $this->getPaginatedResults($qb, $first, $perPage);
     }
@@ -136,9 +136,9 @@ class EvtRepository extends ServiceEntityRepository
     public function getUserCreatedEvents(User $user, int $first, int $perPage): array
     {
         $qb = $this->getEventsCreatedByUserDql($user)
-            ->addSelect('CASE WHEN e.tsp IS NULL THEN 1 ELSE 0 END as HIDDEN tsp_is_null')
-            ->orderBy('tsp_is_null', 'desc')
-            ->addOrderBy('e.tsp', 'desc')
+            ->addSelect('CASE WHEN e.eventStartDate IS NULL THEN 1 ELSE 0 END as HIDDEN date_is_null')
+            ->orderBy('date_is_null', 'desc')
+            ->addOrderBy('e.eventStartDate', 'desc')
         ;
 
         return $this->getPaginatedResults($qb, $first, $perPage);
@@ -250,7 +250,7 @@ class EvtRepository extends ServiceEntityRepository
     public function getEventsToPublish(array $commissions, int $first, int $perPage)
     {
         $qb = $this->getEventsToPublishQueryBuilder($commissions)
-            ->orderBy('e.tsp', 'ASC')
+            ->orderBy('e.eventStartDate', 'ASC')
         ;
 
         return $this->getPaginatedResults($qb, $first, $perPage);
@@ -282,7 +282,7 @@ class EvtRepository extends ServiceEntityRepository
     public function getEventsToLegalValidate(int $dateMax, int $first, int $perPage)
     {
         $qb = $this->getEventsToLegalValidateQueryBuilder($dateMax)
-            ->orderBy('e.tsp', 'ASC')
+            ->orderBy('e.eventStartDate', 'ASC')
         ;
 
         return $this->getPaginatedResults($qb, $first, $perPage);
@@ -307,7 +307,7 @@ class EvtRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('e')
             ->where('e.status = :status')
             ->andWhere('e.isDraft = false')
-            ->andWhere('e.tsp IS NOT NULL')
+            ->andWhere('e.eventStartDate IS NOT NULL')
             ->setParameter('status', Evt::STATUS_PUBLISHED_UNSEEN)
         ;
         if (!empty($commissions)) {
@@ -325,12 +325,12 @@ class EvtRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('e')
             ->where('e.status = :status')
             ->andWhere('e.statusLegal = :legal')
-            ->andWhere('e.tsp > :dateNow')
-            ->andWhere('e.tsp < :dateMax')
+            ->andWhere('e.eventStartDate > :dateNow')
+            ->andWhere('e.eventStartDate < :dateMax')
             ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
             ->setParameter('legal', Evt::STATUS_LEGAL_UNSEEN)
-            ->setParameter('dateNow', time())
-            ->setParameter('dateMax', $dateMax)
+            ->setParameter('dateNow', new \DateTimeImmutable())
+            ->setParameter('dateMax', (new \DateTimeImmutable())->setTimestamp($dateMax))
         ;
     }
 
@@ -354,7 +354,7 @@ class EvtRepository extends ServiceEntityRepository
             ->leftJoin('e.commission', 'c')
             ->leftJoin('e.participations', 'p')
             ->where('p.user = :user')
-            ->andWhere('e.tsp IS NOT NULL')
+            ->andWhere('e.eventStartDate IS NOT NULL')
             ->setParameter('user', $user)
         ;
 

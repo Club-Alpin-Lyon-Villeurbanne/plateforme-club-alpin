@@ -102,9 +102,6 @@ class Evt
     #[ORM\JoinColumn(name: 'id_groupe', referencedColumnName: 'id', nullable: true)]
     private ?Groupe $groupe;
 
-    #[ORM\Column(name: 'tsp_evt', type: 'bigint', nullable: true, options: ['comment' => 'timestamp du début du event'])]
-    private ?int $tsp;
-
     #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de départ activité'])]
     #[Groups('event:details')]
     private ?string $place;
@@ -240,7 +237,6 @@ class Evt
         ?float $rdvLat,
         ?float $rdvLong,
         ?string $description,
-        ?int $demarrageInscriptions,
         ?int $maxInscriptions,
         ?int $maxParticipants,
         ?\DateTimeImmutable $joinStartDate,
@@ -506,18 +502,6 @@ class Evt
         return $this;
     }
 
-    public function getTsp(): ?int
-    {
-        return $this->tsp;
-    }
-
-    public function setTsp(int $tsp): self
-    {
-        $this->tsp = $tsp;
-
-        return $this;
-    }
-
     #[Groups('event:read')]
     #[SerializedName('heureRendezVous')]
     public function getDateDebut(): ?string
@@ -564,22 +548,17 @@ class Evt
 
     public function hasStarted(): bool
     {
-        return $this->eventStartDate < new \DateTime();
-    }
-
-    public function startsAfter(string $when): bool
-    {
-        return $this->tsp > strtotime($when);
+        return $this->eventStartDate < new \DateTimeImmutable();
     }
 
     public function joinHasStarted(): bool
     {
-        return $this->joinStartDate < new \DateTime();
+        return $this->joinStartDate < new \DateTimeImmutable();
     }
 
     public function isFinished(): bool
     {
-        return $this->eventEndDate < new \DateTime();
+        return $this->eventEndDate < new \DateTimeImmutable();
     }
 
     public function getPlace(): ?string
