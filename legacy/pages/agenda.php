@@ -112,7 +112,8 @@ while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         while ($bool) {
             // Nième jour de cet event :
             $tmpDay = mktime(23, 59, 59, $month, $i, $year); // jour ciblé ici
-            $handle['jourN'] = ceil($tmpDay - ((new \DateTimeImmutable($handle['event_start_date']))->getTimestamp() / 86400)); // nombre de jours d'ecart
+            $eventTsp = (new \DateTimeImmutable($handle['event_start_date']))->getTimestamp();
+            $handle['jourN'] = ceil(($tmpDay - $eventTsp) / 86400); // nombre de jours d'ecart
 
             // si ce jour dépasse le nombre de jours du mois, on s'arrête là
             if ($i > $nDays) {
@@ -124,7 +125,7 @@ while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             }
 
             if ($bool || 1 == $i) {
-                // jour N si l'event est sur plusieur jours
+                // jour N si l'event est sur plusieurs jours
                 $agendaTab[$i]['courant'][] = $handle;
             }
             ++$i; // incrémenation d'un jour

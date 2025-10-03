@@ -36,9 +36,9 @@ elseif ((new \DateTimeImmutable()) > new \DateTimeImmutable($handle['event_start
 }
 
 // inscriptions pas encore commencées
-elseif (new \DateTimeImmutable() < new \DateTimeImmutable($handle['event_start_date'])) {
+elseif (new \DateTimeImmutable() < new \DateTimeImmutable($handle['join_start_date'])) {
     $handle['temoin'] = 'waiting';
-    $handle['temoin-title'] = 'Les inscriptions pour cette sortie commenceront le ' . (new \DateTimeImmutable($handle['event_start_date']))?->format('d/m/y');
+    $handle['temoin-title'] = 'Les inscriptions pour cette sortie commenceront le ' . (new \DateTimeImmutable($handle['join_start_date']))?->format('d/m/y');
 } else {
     // inscriptions pleines
     if (isset($handle['ngens_max_evt']) && $count >= $handle['ngens_max_evt']) {// inscriptions max
