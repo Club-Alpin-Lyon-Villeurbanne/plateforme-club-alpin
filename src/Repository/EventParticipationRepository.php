@@ -40,7 +40,7 @@ class EventParticipationRepository extends ServiceEntityRepository
             ->andWhere('(e.eventStartDate >= :start AND e.eventStartDate <= :end) OR (e.eventEndDate >= :start AND e.eventEndDate <= :end) OR (e.eventStartDate <= :start AND e.eventEndDate >= :end)')
             ->setParameter('start', $event->getEventStartDate())
             ->setParameter('end', $event->getEventEndDate())
-            ->orderBy('e.tsp', 'asc')
+            ->orderBy('e.eventStartDate', 'asc')
         ;
 
         if ($user) {

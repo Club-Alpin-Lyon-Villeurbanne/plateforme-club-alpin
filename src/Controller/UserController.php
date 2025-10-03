@@ -174,7 +174,7 @@ class UserController extends AbstractController
             // infos sur la sortie
             $evtUrl = $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
             $evtName = $event->getTitre();
-            $evtDate = date('d/m/Y', $event->getTsp());
+            $evtDate = $event->getEventStartDate()->format('d/m/Y');
             $commissionTitle = $event->getCommission()->getTitle();
 
             // enregistrement
