@@ -15,9 +15,6 @@
                 <b>Nom :</b> <a href="{{ inscrit.profile_url }}">{{ inscrit.firstname }} {{ inscrit.lastname }}</a>
             </li>
         {% endfor %}
-        <li>
-            <b>Rôle :</b> {{ role }}
-        </li>
     </ul>
     <p>
         Vous recevez ce message car vous êtes responsable ou auteur de cette sortie.
@@ -31,8 +28,6 @@
     {% for inscrit in inscrits %}
         Nom : {{ inscrit.firstname }} {{ inscrit.lastname }} - {{ inscrit.profile_url }}
     {% endfor %}
-
-    Rôle : {{ role }}
 
     Vous recevez ce message car vous êtes responsable ou auteur de cette sortie.
 {% endblock %}
