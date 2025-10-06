@@ -585,3 +585,25 @@ blockquote {
     color: #dc3545;
     background: none;
 }
+
+.bold {font-weight:bold;}
+.btn-white {background-color: #fff;color: #53B4E4;}
+
+.hello-asso-payment {background-color: #53B4E4;padding: 20px; border-radius: 10px; width: 90%; margin: 15px 0}
+.hello-asso-payment h3 {font-size:1.1rem;}
+.hello-asso-notice {display: flex; margin-top: 15px}
+.payment-explain, .payment-button {font-size: 0.9rem}
+span.request {font-size: 1.1rem;}
+.payment-button {text-align: center;}
+.ha-pay-btn {display: inline-block; border-radius: 10px; padding: 10px;text-decoration: none !important;}
+.ha-notice {border-radius: 5px; padding: 10px;background-color: #E2F3FC;width: 95%}
+
+#hello-asso-mire {
+    width: auto;
+    padding: 25px;
+}
+.hello-asso-btn {
+    width: 100%;
+    margin: 20px auto;
+    text-align: center;
+}

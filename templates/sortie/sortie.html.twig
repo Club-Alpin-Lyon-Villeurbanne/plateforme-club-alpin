@@ -163,6 +163,22 @@
             <span class="date"> / {{ event.tsp | intldate('cccc d MMMM yyyy') }}</span>
         </h1>
 
+        {% if event.publicStatusValide and event.hasPaymentForm and event.paymentAmount and event.paymentUrl and current_user_has_paid is same as(false) and current_user_accepted is same as(true) %}
+            <div class="hello-asso-payment">
+                <h3>💳 Paiement attendu pour cette sortie</h3>
+                <div class="hello-asso-notice">
+                    <div class="payment-explain">
+                        <span class="request">Le règlement de <span class="bold">{{ event.paymentAmount }} €</span> est requis pour valider votre inscription</span><br><br>
+                        Paiement sécurisé via HelloAsso par CB
+                    </div>
+                    <div class="payment-button">
+                        <a class="ha-pay-btn btn-white bleu-caf" href="{{ event.paymentUrl }}" target="_blank">Payer maintenant ➞</a><br><br>
+                        Paiement 100% sécurisé
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
         <div class="tw-flex tw-gap-4">
             {% if is_granted('SORTIE_DUPLICATE', event) %}
             <form action="{{ path('sortie_duplicate', { id: event.id, mode: 'full' }) }}" method="post" class="loading">
@@ -410,6 +426,9 @@
                                 <th width='15%'>Statut</th>
                                 <th width='15%'>Rôle</th>
                                 <th width='10%'>Date</th>
+                                {% if event.hasPaymentForm %}
+                                    <th>Paiement</th>
+                                {% endif %}
                                 <th>Contact</th>
                             </tr>
                         </thead>
@@ -629,6 +648,29 @@
                                         {{ participation.tsp | date('d/m') }}<br />
                                         {{ participation.tsp | date('à H:i') }}
                                     </td>
+
+                                    {% if event.hasPaymentForm %}
+                                        <td>
+                                            {% if participation.hasPaid %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                    Payé
+                                                </span>
+                                            {% else %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                    Non payé
+                                                </span>
+                                            {% endif %}
+                                            <br>
+                                            HelloAsso
+                                        </td>
+                                    {% endif %}
+
                                     <td>
                                         {% if participation.user.isDeleted %}
                                             <span style="color: red; font-weight: bold">
