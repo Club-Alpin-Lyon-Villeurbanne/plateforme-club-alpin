@@ -2,7 +2,7 @@
     {{ form_errors(form) }}
     {% for child in form %}
         {% set custom_id = child.vars.unique_block_prefix ~ '_' ~ child.vars.value %}
-        <label for="{{ child.vars.id }}" class="{% if child.vars.data %}up{% else %}down{% endif %}">
+        <label for="{{ child.vars.id }}" class="{% if child.vars.checked %}up{% else %}down{% endif %}">
             {{ form_widget(child, { attr: { 'data-id': custom_id } }) }}
             {{ field_label(child) }}
             <a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ field_value(child) }}" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>

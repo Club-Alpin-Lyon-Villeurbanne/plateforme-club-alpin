@@ -83,7 +83,7 @@ class EventType extends AbstractType
             ])
         ;
         // encadrement
-        $builder = $this->eventFormHelper->encadrementFields($builder, $commission);
+        $builder = $this->eventFormHelper->encadrementFields($builder, $commission, $event);
         $builder
             ->add('titre', TextType::class, [
                 'label' => 'Titre',
