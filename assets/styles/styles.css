@@ -581,6 +581,7 @@ blockquote {
 .marker-green {
     background-color: #62F962;
 }
-oembed {
-    display: block;
+.pen-red {
+    color: #dc3545;
+    background: none;
 }
