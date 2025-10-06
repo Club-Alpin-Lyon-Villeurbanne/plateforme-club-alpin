@@ -57,9 +57,9 @@ import {
 	TextTransformation,
 	TodoList,
 	Underline
-} from 'ckeditor5';
+} from './ckeditor5/ckeditor5.js';
 
-import translations from 'ckeditor5/translations/fr.js';
+import translations from './ckeditor5/translations/fr.js';
 
 /**
  * Create a free account with a trial: https://portal.ckeditor.com/checkout?plan=free
