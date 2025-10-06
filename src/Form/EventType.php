@@ -386,7 +386,7 @@ class EventType extends AbstractType
                     ],
                 ])
                 ->add('hasPaymentSendMail', CheckboxType::class, [
-                    'label' => 'Envoyer le lien de paiement à l\'acceptation des participants',
+                    'label' => 'Envoyer le lien de paiement automatiquement',
                     'required' => false,
                     'help' => 'Cette option permet d\'envoyer automatiquement le lien de paiement HelloAsso aux participants lorsqu\'ils sont acceptés.',
                     'help_attr' => [
