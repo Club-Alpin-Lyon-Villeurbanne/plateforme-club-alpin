@@ -295,6 +295,16 @@
                 contentField.removeAttribute('required');
             }
 
+            // date de retour pré-rempli
+            const startDateField = document.getElementById('{{ form.eventStartDate.vars.id }}');
+            const endDateField = document.getElementById('{{ form.eventEndDate.vars.id }}');
+            startDateField.addEventListener('change', (e) => {
+                if (endDateField.value === '') {
+                    let startDateTime = startDateField.value;
+                    endDateField.value = startDateTime.substring(0, 10) + ' 23:59rrivait pas vraiment à un résultat viable)types de ';
+                }
+            });
+
             // champ montant hello asso pas obligatoire si hello asso pas coché
             {% if form.hasPaymentForm is defined and form.paymentAmount is defined %}
                 const helloAssoAmountField = document.getElementById('{{ form.paymentAmount.vars.id }}');
