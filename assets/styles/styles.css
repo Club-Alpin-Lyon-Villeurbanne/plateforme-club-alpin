@@ -552,3 +552,35 @@ table.wide-table th {
 }
 
 .nomad-form li {color: red}
+
+figure.table table {
+    width: 100%;
+}
+figure.table table, figure.table table th, figure.table table td {
+    border: 1px solid black;
+}
+
+blockquote {
+    border-left: 4px solid #ccc;
+    margin: 1.5em 10px;
+    padding: 0.5em 10px;
+    color: #666;
+    background-color: #e9e9e9;
+}
+
+.marker-pink {
+    background-color: #ff69b4;
+}
+.pen-green {
+    color: #28a745;
+    background: none;
+}
+.marker-blue {
+    background-color: #72CCFD;
+}
+.marker-green {
+    background-color: #62F962;
+}
+oembed {
+    display: block;
+}
