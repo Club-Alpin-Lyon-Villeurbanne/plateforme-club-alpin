@@ -4,9 +4,9 @@ namespace App\Form;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
+use App\Entity\TransportModeEnum;
 use App\Entity\User;
 use App\Helper\EventFormHelper;
-use App\Entity\TransportModeEnum;
 use App\Repository\CommissionRepository;
 use App\UserRights;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
