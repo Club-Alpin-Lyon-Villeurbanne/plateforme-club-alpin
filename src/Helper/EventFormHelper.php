@@ -3,6 +3,7 @@
 namespace App\Helper;
 
 use App\Entity\Commission;
+use App\Entity\Evt;
 use App\Service\ParticipantService;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -15,14 +16,15 @@ class EventFormHelper
     {
     }
 
-    public function encadrementFields(FormBuilderInterface $builder, ?Commission $commission): FormBuilderInterface
+    public function encadrementFields(FormBuilderInterface $builder, ?Commission $commission = null, ?Evt $event = null): FormBuilderInterface
     {
-        $this->participantService->buildManagersLists($commission, null);
+        $this->participantService->buildManagersLists($commission, $event);
 
         $builder
             ->add('encadrants', ChoiceType::class, [
                 'label' => false,
                 'choices' => array_flip($this->participantService->getEncadrants()),
+                'data' => $this->participantService->getCurrentEncadrants(),
                 'mapped' => false,
                 'multiple' => true,
                 'expanded' => true,
@@ -30,6 +32,7 @@ class EventFormHelper
             ->add('coencadrants', ChoiceType::class, [
                 'label' => false,
                 'choices' => array_flip($this->participantService->getCoencadrants()),
+                'data' => $this->participantService->getCurrentCoencadrants(),
                 'mapped' => false,
                 'multiple' => true,
                 'expanded' => true,
@@ -37,6 +40,7 @@ class EventFormHelper
             ->add('initiateurs', ChoiceType::class, [
                 'label' => false,
                 'choices' => array_flip($this->participantService->getInitiateurs()),
+                'data' => $this->participantService->getCurrentInitiateurs(),
                 'mapped' => false,
                 'multiple' => true,
                 'expanded' => true,

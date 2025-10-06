@@ -165,7 +165,6 @@ if (user()) {
             <h2 id="edit-email"><span class="bleucaf">&gt;</span>Modifier mon e-mail</h2>
             <p>
                 Laissez ce champ vide si vous ne voulez pas modifier votre adresse e-mail.
-                Cette modification ne prendra effet qu'après avoir cliqué sur le lien qui vous sera envoyé à la nouvelle adresse e-mail.
             </p>
             <input type="text" name="email_user_mailchange" class="type1" style="width:300px" value="<?php echo inputVal('email_user_mailchange'); ?>" placeholder="<?php echo html_utf8($tmpUser['email_user']); ?>" />
 
