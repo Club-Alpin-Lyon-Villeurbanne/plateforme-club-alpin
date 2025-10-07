@@ -153,7 +153,7 @@ if (user()) {
 
             <b>Votre pseudonyme :</b>
             <br />
-            <h2><a href="/includer.php?p=includes/fiche-profil.php&id_user=<?php echo getUser()->getId(); ?>" class="fancyframe" title="Aperçu de votre fiche"><?php echo html_utf8($tmpUser['nickname_user']); ?></a></h2>
+            <a href="/includer.php?p=includes/fiche-profil.php&id_user=<?php echo getUser()->getId(); ?>" class="fancyframe" title="Aperçu de votre fiche"><?php echo html_utf8($tmpUser['nickname_user']); ?></a><br />
 
             <br />
             <b>Modifier votre photo :</b> <span class="mini">Format .jpg, 5Mo maximum !</span><br />
