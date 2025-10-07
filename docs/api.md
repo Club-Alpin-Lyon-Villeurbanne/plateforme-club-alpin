@@ -292,6 +292,7 @@ GET /api/participation-sorties/{id}
 - `encadrant` : Encadrant
 - `coencadrant` : Co-encadrant
 - `stagiaire` : Stagiaire
+- `benevole_encadrement` : Bénévole d'encadrement
 - `benevole` : Participant bénévole
 - `manuel` : Inscription manuelle
 
