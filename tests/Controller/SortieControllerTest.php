@@ -486,7 +486,7 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $participant->getNickname(), $participant->getEmail()));
-        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Accepté] Votre inscription à ' . $event->getTitre() . ' du ' . date('d/m/Y', $event->getTsp()));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Accepté] Votre préinscription à ' . $event->getTitre() . ' du ' . date('d/m/Y', $event->getTsp()));
         $this->assertEmailTextBodyContains($emails[0], 'confirmé(e)');
         $this->assertEmailHtmlBodyContains($emails[0], 'confirmé(e)');
     }
@@ -520,7 +520,7 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $participant->getNickname(), $participant->getEmail()));
-        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Refusé] Votre inscription à ' . $event->getTitre() . ' du ' . date('d/m/Y', $event->getTsp()));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Refusé] Votre préinscription à ' . $event->getTitre() . ' du ' . date('d/m/Y', $event->getTsp()));
         $this->assertEmailTextBodyContains($emails[0], 'déclinée');
         $this->assertEmailHtmlBodyContains($emails[0], 'déclinée');
     }
