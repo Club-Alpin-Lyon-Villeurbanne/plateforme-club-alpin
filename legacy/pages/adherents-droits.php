@@ -159,7 +159,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
     echo '</select>';
 
     // liste des commissions
-    $req = 'SELECT * FROM caf_commission ORDER BY ordre_commission ASC ';
+    $req = 'SELECT * FROM caf_commission WHERE vis_commission = 1 ORDER BY ordre_commission ASC ';
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     echo '<div id="commissions-pick" class="nice-checkboxes">';
