@@ -34,8 +34,8 @@
         <div id="fiche-sortie">
 
             {% set closeDiv = false %}
-            {% set nInscritsHorsEncadrement = event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::ROLE_BENEVOLE'), constant('App\\Entity\\EventParticipation::ROLE_MANUEL')]) | length %}
-            {% set nInscritsTotal = nInscritsHorsEncadrement + event.participations([constant('App\\Entity\\EventParticipation::ROLE_COENCADRANT'), constant('App\\Entity\\EventParticipation::ROLE_STAGIAIRE'), constant('App\\Entity\\EventParticipation::ROLE_ENCADRANT')]) | length %}
+            {% set nInscritsHorsEncadrement = event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::BENEVOLE'), constant('App\\Entity\\EventParticipation::ROLE_MANUEL')]) | length %}
+            {% set nInscritsTotal = nInscritsHorsEncadrement + event.participations(constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT_ETENDU')) | length %}
 
             {% if event.publicStatusUnseen %}
                 {% set closeDiv = true %}
@@ -290,9 +290,9 @@
         {% endif %}
 
         {% if my_status and my_status.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
-            {% if my_status.role == 'encadrant' or my_status.role == 'stagiaire' or my_status.role == 'coencadrant' or my_status.role == 'benevole' %}
+            {% if my_status.role in (constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT_ETENDU')) %}
                 {% if not event.finished %}
-                    {% if allowed('evt_unjoin') and (my_status.role == 'coencadrant' or my_status.role == 'benevole') %}
+                    {% if allowed('evt_unjoin') and (my_status.role == 'coencadrant' or my_status.role == 'benevole_encadrement') %}
                         {{ block_macros.display_confirmed_cancel_block(my_status.role) }}
                         {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id, 'my_status': my_status.status} %}
                     {% endif %}
@@ -491,10 +491,10 @@
                                             {% for empietement in empietements[participation.user.id] %}
                                                 {% if empietement.status == constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME') %}
                                                     <br />- Adhérent pré-inscrit sur
-                                                    <br /><a href="{{ path('sortie', { code : empietement.event.code, id: empietement.event.id }) }}">{{ empietement.event.titre }}</a>
+                                                    <br /><a href="{{ path('sortie', { code : empietement.event.code, id: empietement.event.id }) }}">{{ empietement.event.titre }}</a><br />
                                                 {% elseif empietement.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
-                                                    <br />- Adhérent <span style="color:red">confirmé</span> sur <br />
-                                                    <br /><a href="{{ path('sortie', { code : empietement.event.code, id: empietement.event.id }) }}">{{ empietement.event.titre }}</a>
+                                                    <br />- Adhérent <span style="color:red">confirmé</span> sur
+                                                    <br /><a href="{{ path('sortie', { code : empietement.event.code, id: empietement.event.id }) }}">{{ empietement.event.titre }}</a><br />
                                                 {% endif %}
                                             {% endfor %}
                                         </div>
@@ -601,7 +601,7 @@
                                                 />
                                             {% endif %}
                                             <br />
-                                        {% elseif participation.isRoleManuel or participation.isRoleInscrit or participation.isRoleBenevole %}
+                                        {% elseif participation.isRoleManuel or participation.isRoleInscrit or participation.isBenevole %}
                                             {% if participation.isRoleManuel %}
                                                 <label style="display:block; white-space:nowrap;" for="role_join_{{ participation.id }}_m">
                                                     <input
@@ -627,7 +627,7 @@
                                             {% endif %}
                                             <label style="display:block; white-space:nowrap;" for="role_join_{{ participation.id }}_b">
                                                 <input
-                                                    {% if participation.isRoleBenevole %}checked="checked"{% endif%}
+                                                    {% if participation.isBenevole %}checked="checked"{% endif%}
                                                     name="role_evt_join_{{ participation.id }}"
                                                     type="radio"
                                                     id="role_join_{{ participation.id }}_b"
@@ -975,9 +975,9 @@
                 <br style="clear:both" />
             {% endif %}
 
-            {% if event.encadrants('benevole') | length > 0 %}
-                <li class="wide"><b>BÉNÉVOLES :</b>
-                    {% for encadrant in event.encadrants('benevole') %}
+            {% if event.encadrants('benevole_encadrement') | length > 0 %}
+                <li class="wide"><b>BÉNÉVOLES D'ENCADREMENT :</b>
+                    {% for encadrant in event.encadrants('benevole_encadrement') %}
                         {% if loop.index > 1 %}, {% endif %}
                         <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
                             {{ encadrant.user.nickname }}
