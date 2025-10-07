@@ -106,10 +106,10 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
             return 'Cette sortie est annulée';
         }
         if ($event->isFinished() || $event->hasStarted()) {
-            return 'Les inscriptions sont terminées';
+            return 'Les préinscriptions sont terminées';
         }
         if (!$event->joinHasStarted()) {
-            return sprintf('Les inscriptions pour cette sortie commenceront le %s', date('d/m/y', $event->getJoinStart()));
+            return sprintf('Les préinscriptions pour cette sortie commenceront le %s', date('d/m/y', $event->getJoinStart()));
         }
         if ($event->getNgensMax() <= $event->getParticipationsCount()) {
             return sprintf('Les %d places libres ont été réservées', $event->getNgensMax());

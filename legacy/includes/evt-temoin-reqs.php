@@ -32,13 +32,13 @@ elseif (isset($handle['cancelled_evt']) && $handle['cancelled_evt']) {
 // trop tard ?
 elseif (time() > $handle['tsp_evt']) { // date max d'inscri. 24 h
     $handle['temoin'] = 'finished';
-    $handle['temoin-title'] = 'Les inscriptions sont terminées';
+    $handle['temoin-title'] = 'Les préinscriptions sont terminées';
 }
 
 // inscriptions pas encore commencées
 elseif (time() < $handle['join_start_evt']) {
     $handle['temoin'] = 'waiting';
-    $handle['temoin-title'] = 'Les inscriptions pour cette sortie commenceront le ' . date('d/m/y', $handle['join_start_evt']);
+    $handle['temoin-title'] = 'Les préinscriptions pour cette sortie commenceront le ' . date('d/m/y', $handle['join_start_evt']);
 } else {
     // inscriptions pleines
     if (isset($handle['ngens_max_evt']) && $count >= $handle['ngens_max_evt']) {// inscriptions max

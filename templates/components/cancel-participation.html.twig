@@ -1,7 +1,7 @@
 <br>
 {% set wording = 'participation' %}
 {% if my_status is same as (constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) %}
-    {% set wording = 'demande d\'inscription' %}
+    {% set wording = 'demande de préinscription' %}
 {% endif %}
 <div id="inscription-annuler" style="display: none;">
     <h2>Annuler votre {{ wording }}</h2>

@@ -898,7 +898,7 @@ class SortieController extends AbstractController
 
         // sortie publiée ?
         if (Evt::STATUS_PUBLISHED_VALIDE !== $event->getStatus()) {
-            $errTab[] = 'Cette sortie ne semble pas publiée, les inscriptions sont impossibles';
+            $errTab[] = 'Cette sortie ne semble pas publiée, les préinscriptions sont impossibles';
         }
 
         // verification du timing de la sortie
@@ -908,7 +908,7 @@ class SortieController extends AbstractController
 
         // verification du timing de la sortie : inscriptions
         if (!$event->joinHasStarted()) {
-            $errTab[] = 'Les inscriptions ne sont pas encore ouvertes';
+            $errTab[] = 'Les préinscriptions ne sont pas encore ouvertes';
         }
 
         if (empty($errTab)) {
