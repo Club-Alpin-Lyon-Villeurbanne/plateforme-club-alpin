@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 class FfcamFileParserTest extends TestCase
 {
     private string $validLine = <<<LINE
-123456;7890;3456;;0;0;1990-05-20;2022-06-15;;DOE;John;1 Rue Test;Complément;75000;Paris;75000;Paris;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+123456;7890;3456;;0;0;1990-05-20;2022-06-15;;DOE;John;1 Rue Test;Complément;75000;Paris;75000;Paris;;;;;;;;;;;;;;0000-00-00;;;;;;;;;;;;;;;;;;;
 LINE;
 
     private string $invalidLine = 'invalid;line;data;;;;';

@@ -12,6 +12,7 @@ use App\Serializer\TimeStampNormalizer;
 use App\Utils\EmailAlerts;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -271,6 +272,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     #[ORM\Column(name: 'last_login_date', type: 'datetime', nullable: true, options: ['comment' => 'Date de dernière connexion'])]
     private ?\DateTimeInterface $lastLoginDate = null;
+
+    #[ORM\Column(name: 'radiation_date', type: Types::DATE_IMMUTABLE, nullable: true, options: ['comment' => 'Date de radiation FFCAM'])]
+    private ?\DateTimeInterface $radiationDate = null;
+
+    #[ORM\Column(type: Types::STRING, nullable: true, options: ['comment' => 'Motif de radiation FFCAM'])]
+    private ?string $radiationReason = null;
 
     public function __construct(?int $id = null)
     {
@@ -880,6 +887,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setLastLoginDate(?\DateTimeInterface $lastLoginDate): self
     {
         $this->lastLoginDate = $lastLoginDate;
+
+        return $this;
+    }
+
+    public function getRadiationDate(): ?\DateTimeInterface
+    {
+        return $this->radiationDate;
+    }
+
+    public function setRadiationDate(?\DateTimeInterface $radiationDate): self
+    {
+        $this->radiationDate = $radiationDate;
+
+        return $this;
+    }
+
+    public function getRadiationReason(): ?string
+    {
+        return $this->radiationReason;
+    }
+
+    public function setRadiationReason(?string $radiationReason): self
+    {
+        $this->radiationReason = $radiationReason;
 
         return $this;
     }
