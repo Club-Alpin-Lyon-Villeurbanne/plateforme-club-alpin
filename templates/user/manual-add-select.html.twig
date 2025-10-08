@@ -103,7 +103,7 @@
                     </td>
                     <td>{{ age_user(user) }}</td>
                     <td>
-                        {% if user.valid %}
+                        {% if user.valid and user.email %}
                             oui
                         {% else %}
                             <span style="color: red;" title="Les comptes non activés ne reçoivent pas les e-mails">⚠️ non</span>
