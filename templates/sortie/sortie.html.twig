@@ -14,7 +14,7 @@
             <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
             <span class="bleucaf">&gt;</span>
             {% if not my_status %}
-            JE SOUHAITE REJOINDRE {% if event.isWaitingList(nInscritsTotal) %}LA FILE D'ATTENTE{% else %}CETTE SORTIE{% endif %}
+            JE SOUHAITE REJOINDRE CETTE SORTIE
             {% else %}
             JE METS A JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
             {% endif %}
@@ -1033,7 +1033,7 @@
             <hr />
             <ul class="nice-list">
                 <li class="wide"><b>NOMBRE MAXIMUM DE PLACES :</b> {{ event.ngensMax }}
-                <li class="wide"><b>DISPONIBLES (y compris file d'attente) :</b> {{ nPlacesRestantesOnline }}
+                <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}
             </ul>
 
             <br style="clear:both" /><hr />
@@ -1048,7 +1048,7 @@
                     ({{ event.ngensMax > 0 ? (100 * nInscritsTotal / event.ngensMax) | round : 0 }}%)
                 </span><br />
                 {{ nPlacesRestantesOnline }} place{{ nPlacesRestantesOnline > 1 ? 's' : '' }} restante{{ nPlacesRestantesOnline > 1 ? 's' : '' }}
-                (y compris file d'attente)
+                pour les inscriptions en ligne
                 {{ nEnAttente > 0 ? ' et '~nEnAttente~' inscription'~ (nEnAttente > 1 ? 's' : '' ) ~' en attente de confirmation' : '' }}
             </p>
 
