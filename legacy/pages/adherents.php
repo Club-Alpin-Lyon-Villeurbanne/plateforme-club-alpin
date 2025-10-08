@@ -222,10 +222,13 @@ if (allowed('user_see_all') or isGranted(SecurityConstants::ROLE_ADMIN)) {
                 $img_lock = '<img src="/img/base/lock_gray.png" alt="caché"  title="Vous devez disposer de droits supérieurs pour afficher cette information" />';
 
                 $emailCol = '';
+                $activatedCol = '';
                 if (1 == $elt['valid_user'] && $elt['email_user']) {
                     $emailCol = ($isAllowed_user_read_private ? '<a href="mailto:' . html_utf8($elt['email_user']) . '" title="Contact direct">' . html_utf8($elt['email_user']) . '</a>' : $img_lock);
+                    $activatedCol = 'oui';
                 } else {
                     $emailCol = '<span style="color: red;" title="Les comptes non activés ne reçoivent pas les e-mails">⚠️ compte non activé</span>';
+                    $activatedCol = '<span style="color: red;" title="Les comptes non activés ne reçoivent pas les e-mails">non</span>';
                 }
 
                 // INFOS
@@ -252,7 +255,8 @@ if (allowed('user_see_all') or isGranted(SecurityConstants::ROLE_ADMIN)) {
                     echo '<br />' . html_utf8($elt['tel2_user']);
                 }
                 echo '</td>'
-                . '<td>' . $emailCol . '</td>';
+                . '<td>' . $emailCol . '</td>'
+                . '<td>' . $activatedCol . '</td>';
                 if (isGranted(SecurityConstants::ROLE_ADMIN)) {
                     echo '<td>' . html_utf8($elt['cp_user']) . '</td>'
                         . '<td>' . html_utf8($elt['ville_user']) . '</td>'
