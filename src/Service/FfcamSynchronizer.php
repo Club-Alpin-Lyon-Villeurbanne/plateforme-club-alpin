@@ -90,23 +90,28 @@ class FfcamSynchronizer
                 );
 
                 if ($potentialDuplicate) {
+                    $oldCafNum = $potentialDuplicate->getCafnum();
                     $this->logger->info(sprintf(
                         'Found duplicate member %s %s (old license: %s, new license: %s)',
                         $parsedUser->getLastname(),
                         $parsedUser->getFirstname(),
-                        $potentialDuplicate->getCafnum(),
+                        $oldCafNum,
                         $parsedUser->getCafnum()
                     ));
 
-                    $this->memberMerger->mergeNewMember($potentialDuplicate->getCafnum(), $parsedUser);
-                    ++$stats['merged'];
+                    $this->memberMerger->mergeNewMember($oldCafNum, $parsedUser);
 
-                    // Stocker les détails de la fusion (tous pour debug)
-                    $stats['merged_details'][] = [
-                        'old_cafnum' => $potentialDuplicate->getCafnum(),
-                        'new_cafnum' => $parsedUser->getCafnum(),
-                        'name' => sprintf('%s %s', $parsedUser->getFirstname(), $parsedUser->getLastname())
-                    ];
+                    // ne pas mettre le cas Thibault M. (qui est en double dans le fichier FFCAM (2 numéros de licence dont 1 avec date nulle) ) dans le rapport
+                    if (null !== $parsedUser->getDateAdhesion()) {
+                        ++$stats['merged'];
+
+                        // Stocker les détails de la fusion (tous pour debug)
+                        $stats['merged_details'][] = [
+                            'old_cafnum' => $oldCafNum,
+                            'new_cafnum' => $parsedUser->getCafnum(),
+                            'name' => sprintf('%s %s', $parsedUser->getFirstname(), $parsedUser->getLastname())
+                        ];
+                    }
                 } else {
                     $parsedUser->setTsInsert(time());
                     $parsedUser->setValid(false);
