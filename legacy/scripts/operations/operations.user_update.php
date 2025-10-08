@@ -33,8 +33,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // 04/09/2013 - gmn - desactivation car import FFCAM => E.HENKE : on doit malgré tout pouvoir enregistrer les infos personnelles de contact
     if (!isset($errTab) || 0 === count($errTab)) {
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE `caf_user` SET `auth_contact_user` = ?, email_user = ? WHERE `id_user` = ? LIMIT 1');
-        $stmt->bind_param('ssi', $auth_contact_user, $email_user_mailchange, $id_user);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE `caf_user` SET `auth_contact_user` = ? WHERE `id_user` = ? LIMIT 1');
+        $stmt->bind_param('si', $auth_contact_user, $id_user);
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur SQL';
         }
