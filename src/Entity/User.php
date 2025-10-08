@@ -239,6 +239,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[Groups('user:details')]
     private ?\DateTimeInterface $joinDate = null;
 
+    #[ORM\Column(name: 'radiation_date', type: Types::DATE_IMMUTABLE, nullable: true, options: ['comment' => 'Date de radiation FFCAM'])]
+    private ?\DateTimeInterface $radiationDate = null;
+
+    #[ORM\Column(type: Types::STRING, nullable: true, options: ['comment' => 'Motif de radiation FFCAM'])]
+    private ?string $radiationReason = null;
+
     public function __construct(?int $id = null)
     {
         $this->attrs = new ArrayCollection();
@@ -798,6 +804,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setJoinDate(?\DateTimeInterface $joinDate): self
     {
         $this->joinDate = $joinDate;
+
+        return $this;
+    }
+
+    public function getRadiationDate(): ?\DateTimeInterface
+    {
+        return $this->radiationDate;
+    }
+
+    public function setRadiationDate(?\DateTimeInterface $radiationDate): self
+    {
+        $this->radiationDate = $radiationDate;
+
+        return $this;
+    }
+
+    public function getRadiationReason(): ?string
+    {
+        return $this->radiationReason;
+    }
+
+    public function setRadiationReason(?string $radiationReason): self
+    {
+        $this->radiationReason = $radiationReason;
 
         return $this;
     }

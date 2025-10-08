@@ -48,6 +48,12 @@ class FfcamFileParser
         $isLicenceExpired = '0000-00-00' === $line[7];
         $joinDate = $isLicenceExpired ? null : new \DateTimeImmutable($line[7]);
 
+        $radiationDate = null;
+        $radiationReason = trim($line[31]);
+        if ('0000-00-00' !== $line[30]) {
+            $radiationDate = \DateTimeImmutable::createFromFormat('Y-m-d', $line[30]);
+        }
+
         $user
             ->setCafnum(trim($line[0]))
             ->setFirstname($firstname)
@@ -64,7 +70,13 @@ class FfcamFileParser
             ->setDoitRenouveler($isLicenceExpired)
             ->setAlerteRenouveler($isLicenceExpired)
             ->setJoinDate($joinDate)
+            ->setRadiationDate($radiationDate)
+            ->setRadiationReason($radiationReason ?: null)
         ;
+        if (null !== $radiationDate) {
+            // Si l'utilisateur est radié, on le "supprime"
+            $user->setIsDeleted(true);
+        }
 
         return $user;
     }
