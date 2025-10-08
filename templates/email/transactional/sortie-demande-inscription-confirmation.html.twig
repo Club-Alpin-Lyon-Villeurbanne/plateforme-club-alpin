@@ -13,11 +13,6 @@
         {% endif %}
         à la sortie <a href="{{ event_url }}">{{ event_name }}</a>.
     </p>
-    {% if in_waiting_list is same as (true) %}
-    <p>
-        Vous êtes en liste d'attente.
-    </p>
-    {% endif %}
     <p>
         <b>Participant{{ inscrits|length > 1 ? 's' : ''}} :</b>
     </p>
@@ -41,10 +36,6 @@
         Vous venez de vous préinscrire
     {% endif %}
     à la sortie <a href="{{ event_url }}">{{ event_name }}</a>.
-
-    {% if in_waiting_list is same as (true) %}
-        Vous êtes en liste d'attente.
-    {% endif %}
 
     Participant{{ inscrits|length > 1 ? 's' : ''}} :
 

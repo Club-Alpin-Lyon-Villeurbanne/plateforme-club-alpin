@@ -947,10 +947,9 @@ class SortieController extends AbstractController
                     $nbNewJoins = \count($idUsersFiliations);
                 }
 
-                // vérification nombre de places restantes et présence de liste d'attente
+                // vérification nombre de places restantes
                 $ngens_max = $event->getNgensMax();
                 $current_participants = $event->getParticipationsCount();
-                $waitingList = $event->isWaitingList($current_participants);
 
                 // Si auto_accept est activé, vérifier qu'on n'a pas atteint la limite
                 if ($event->isAutoAccept()) {
@@ -1067,7 +1066,6 @@ class SortieController extends AbstractController
                             ];
                         }, $inscrits),
                         'covoiturage' => $is_covoiturage,
-                        'in_waiting_list' => $waitingList,
                     ]);
                 } else {
                     // inscription simple de moi à moi
@@ -1086,7 +1084,6 @@ class SortieController extends AbstractController
                             ],
                         ],
                         'covoiturage' => $is_covoiturage,
-                        'in_waiting_list' => $waitingList,
                     ]);
                 }
             }
