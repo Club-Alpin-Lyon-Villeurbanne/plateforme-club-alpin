@@ -184,7 +184,7 @@ if (allowed('user_see_all')) {
                     . '<td>' . html_utf8(ucfirst($elt['firstname_user'])) . '</td>';
 
                 if ($elt['doit_renouveler_user']) {
-                    echo '<td style="color:red">Licence expirée</td>';
+                    echo '<td style="color:red" title="' . ($isAllowed_user_read_private ? ($elt['date_adhesion_user'] ? date('Y-m-d', $elt['date_adhesion_user']) : '') : '') . '">Licence expirée</td>';
                 } else {
                     echo '<td>' . ($isAllowed_user_read_private ? ($elt['date_adhesion_user'] ? date('Y-m-d', $elt['date_adhesion_user']) : '-') : $img_lock) . '</td>';
                 }
