@@ -136,9 +136,10 @@
             <div style="width:50%; float:left">
                 {{ form_row(form.joinMax) }}
             </div>
-            <br style="clear:both" />
-            {{ form_row(form.joinStartDate) }}
             <br style="clear:both" /><br>
+
+            {{ form_row(form.joinStartDate) }}
+            <br style="clear:both" />
             <div>
                 <label for="{{ form.autoAccept.vars.id }}" class="{% if form.autoAccept.vars.data %}up{% else %}down{% endif %}">
                     {{ form_widget(form.autoAccept) }}
