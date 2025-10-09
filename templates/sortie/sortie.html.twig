@@ -14,7 +14,12 @@
             <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
             <span class="bleucaf">&gt;</span>
             {% if not my_status %}
-            JE SOUHAITE ME PRÉ-INSCRIRE À CETTE SORTIE
+                {% if nInscritsTotal >= event.ngensMax %}
+                    JE SOUHAITE REJOINDRE LA FILE D'ATTENTE
+                {% else %}
+                    JE SOUHAITE ME PRÉ-INSCRIRE À CETTE SORTIE
+                {% endif %}
+            {% elseif my_status.isCovoiturage %}
             {% else %}
             JE METS À JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
             {% endif %}
@@ -34,8 +39,7 @@
         <div id="fiche-sortie">
 
             {% set closeDiv = false %}
-            {% set nInscritsHorsEncadrement = event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::BENEVOLE'), constant('App\\Entity\\EventParticipation::ROLE_MANUEL')]) | length %}
-            {% set nInscritsTotal = nInscritsHorsEncadrement + event.participations(constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT_ETENDU')) | length %}
+            {% set nInscritsTotal = event.participations() | length %}
 
             {% if event.publicStatusUnseen %}
                 {% set closeDiv = true %}
@@ -998,13 +1002,23 @@
         {% endif %}
 
         {% if not event.cancelled %}
+            {% set isRegistrationPossible = true %}
             {% set nPlacesRestantesOnline = max(0, event.joinMax - nInscritsTotal) %}
             {% set nEnAttente = event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length %}
+            {% set nbWaitingListAvailableSpot = max(0, event.joinMax - event.ngensMax - nEnAttente) %}
+
+            {% if nPlacesRestantesOnline <= 0 or event.withWaitingList() and nbWaitingListAvailableSpot <= 0 %}
+                {% set isRegistrationPossible = false %}
+            {% endif %}
 
             <hr />
             <ul class="nice-list">
                 <li class="wide"><b>NOMBRE MAXIMUM DE PLACES :</b> {{ event.ngensMax }}
-                <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}
+                {% if event.withWaitingList() and nbWaitingListAvailableSpot <= (event.joinMax - event.ngensMax) %}
+                    <li class="wide"><b>DISPONIBLES EN FILE D'ATTENTE :</b> {{ nbWaitingListAvailableSpot }}</li>
+                {% else %}
+                    <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}
+                {% endif %}
             </ul>
 
             <br style="clear:both" /><hr />
@@ -1018,9 +1032,7 @@
                     SUR  {{ event.ngensMax }} PLACE{{ event.ngensMax ? 'S' : '' }} MAXIMUM
                     ({{ event.ngensMax > 0 ? (100 * nInscritsTotal / event.ngensMax) | round : 0 }}%)
                 </span><br />
-                {{ nPlacesRestantesOnline }} place{{ nPlacesRestantesOnline > 1 ? 's' : '' }} restante{{ nPlacesRestantesOnline > 1 ? 's' : '' }}
-                pour les inscriptions en ligne
-                {{ nEnAttente > 0 ? ' et '~nEnAttente~' inscription'~ (nEnAttente > 1 ? 's' : '' ) ~' en attente de confirmation' : '' }}
+                {{ nEnAttente > 0 ? nEnAttente~' inscription'~ (nEnAttente > 1 ? 's' : '' ) ~' en attente de confirmation' : '' }}
             </p>
 
             {% if app.user and nInscritsTotal > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
@@ -1063,7 +1075,7 @@
             {% endif %}
 
             {# si utilisateur est inscrit, il a accès #}
-            {% if nPlacesRestantesOnline > 0 or event.participation(app.user) %}
+            {% if isRegistrationPossible or event.participation(app.user) %}
 
                 {% if allowed('evt_join') %}
 
@@ -1183,7 +1195,7 @@
                 {% endif %}
 
             {% else %}
-                <p>Le nombre de places disponibles à la réservation depuis internet est atteint.</p>
+                <p>Le nombre de places disponibles à la réservation depuis internet ou en file d'attente est atteint.</p>
             {% endif %}
         {% endif %}
     </div>

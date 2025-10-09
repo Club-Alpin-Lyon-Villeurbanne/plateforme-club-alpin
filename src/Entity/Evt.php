@@ -988,4 +988,20 @@ class Evt
 
         return $this;
     }
+
+    public function withWaitingList(): bool
+    {
+        return $this->joinMax > $this->ngensMax;
+    }
+
+    public function isInWaitingList(int $nInscritsTotal): bool
+    {
+        $isWaitingList = false;
+
+        if ($this->withWaitingList() && $nInscritsTotal >= $this->ngensMax && $nInscritsTotal < $this->joinMax) {
+            $isWaitingList = true;
+        }
+
+        return $isWaitingList;
+    }
 }
