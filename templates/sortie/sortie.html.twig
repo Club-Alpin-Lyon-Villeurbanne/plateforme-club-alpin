@@ -1014,7 +1014,7 @@
             <hr />
             <ul class="nice-list">
                 <li class="wide"><b>NOMBRE MAXIMUM DE PLACES :</b> {{ event.ngensMax }}
-                {% if event.withWaitingList() and nbWaitingListAvailableSpot <= (event.joinMax - event.ngensMax) %}
+                {% if event.withWaitingList() and nInscritsTotal >= event.ngensMax %}
                     <li class="wide"><b>DISPONIBLES EN FILE D'ATTENTE :</b> {{ nbWaitingListAvailableSpot }}</li>
                 {% else %}
                     <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}
