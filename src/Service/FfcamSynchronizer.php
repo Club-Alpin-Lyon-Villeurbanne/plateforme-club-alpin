@@ -101,17 +101,14 @@ class FfcamSynchronizer
 
                     $this->memberMerger->mergeNewMember($oldCafNum, $parsedUser);
 
-                    // ne pas mettre le cas Thibault M. (qui est en double dans le fichier FFCAM (2 numéros de licence dont 1 avec date nulle) ) dans le rapport
-                    if (null !== $parsedUser->getDateAdhesion()) {
-                        ++$stats['merged'];
+                    ++$stats['merged'];
 
-                        // Stocker les détails de la fusion (tous pour debug)
-                        $stats['merged_details'][] = [
-                            'old_cafnum' => $oldCafNum,
-                            'new_cafnum' => $parsedUser->getCafnum(),
-                            'name' => sprintf('%s %s', $parsedUser->getFirstname(), $parsedUser->getLastname())
-                        ];
-                    }
+                    // Stocker les détails de la fusion (tous pour debug)
+                    $stats['merged_details'][] = [
+                        'old_cafnum' => $oldCafNum,
+                        'new_cafnum' => $parsedUser->getCafnum(),
+                        'name' => sprintf('%s %s', $parsedUser->getFirstname(), $parsedUser->getLastname())
+                    ];
                 } else {
                     $parsedUser->setTsInsert(time());
                     $parsedUser->setValid(false);
