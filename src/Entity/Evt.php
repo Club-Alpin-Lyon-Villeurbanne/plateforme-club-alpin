@@ -27,11 +27,11 @@ use Symfony\Component\Serializer\Attribute\Context;
 #[ORM\Entity]
 #[ApiResource(
     shortName: 'sortie',
-    order: ['tsp' => 'ASC'],
     operations: [
         new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
         new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:read', 'eventParticipation:read']]),
     ],
+    order: ['tsp' => 'ASC'],
     security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', 'participations.user.id' => 'exact'])]
@@ -119,7 +119,7 @@ class Evt
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     private ?int $tspEdit;
 
-    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de départ activité'])]
+    #[ORM\Column(name: 'place_evt', type: 'string', length: 255, nullable: false, options: ['comment' => 'Lieu de départ activité'])]
     #[Groups('event:details')]
     private ?string $place;
 
