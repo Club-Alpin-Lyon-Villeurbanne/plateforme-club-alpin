@@ -27,11 +27,11 @@ use Symfony\Component\Serializer\Attribute\Context;
 #[ORM\Entity]
 #[ApiResource(
     shortName: 'sortie',
-    order: ['tsp' => 'ASC'],
     operations: [
         new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
         new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:read', 'eventParticipation:read']]),
     ],
+    order: ['tsp' => 'ASC'],
     security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', 'participations.user.id' => 'exact'])]
