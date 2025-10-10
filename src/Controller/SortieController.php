@@ -1037,7 +1037,7 @@ class SortieController extends AbstractController
                     'nickname' => $user->getNickname(),
                     'message' => $joinMessage,
                     'covoiturage' => $is_covoiturage,
-                ], [], $user);
+                ], [], $user, $user);
 
                 // E-MAIL AU PRE-INSCRIT
                 // inscription auto-acceptée
