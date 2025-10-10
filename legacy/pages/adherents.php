@@ -131,8 +131,6 @@ if (allowed('user_see_all')) {
 
                     // OUTILS
                     . '<td style="white-space:nowrap;">';
-                // seulement ceux valides
-                //								if($elt['valid_user']){
 
                 // gestion des droits
                 if ($isAllowed_user_giveright_1 || $isAllowed_user_giveright_2 || $isAllowed_user_givepresidence) {
@@ -170,7 +168,7 @@ if (allowed('user_see_all')) {
                 if (1 == $elt['valid_user'] && $elt['email_user']) {
                     $emailCol = ($isAllowed_user_read_private ? '<a href="mailto:' . html_utf8($elt['email_user']) . '" title="Contact direct">' . html_utf8($elt['email_user']) . '</a>' : $img_lock);
                 } else {
-                    $emailCol = '<span style="color: red;" title="Les comptes non activés ne reçoivent pas les e-mails">⚠️ compte non activé</span>';
+                    $emailCol = '<span style="color: darkorange; font-weight: bold" title="Les comptes non activés ne reçoivent pas les e-mails">⚠️ compte non activé</span>';
                 }
 
                 // INFOS
