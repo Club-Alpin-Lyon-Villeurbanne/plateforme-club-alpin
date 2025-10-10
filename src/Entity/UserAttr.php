@@ -22,7 +22,7 @@ class UserAttr
     public const VICE_PRESIDENT = 'vice-president';
     public const ADMINISTRATEUR = 'administrateur';
     public const SALARIE = 'salarie';
-    public const BENEVOLE = 'benevole';
+    public const BENEVOLE = 'benevole_encadrement';
     public const COENCADRANT = 'coencadrant';
     public const array COMMISSION_RELATED = [
         self::RESPONSABLE_COMMISSION,

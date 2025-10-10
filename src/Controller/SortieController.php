@@ -8,6 +8,7 @@ use App\Entity\Evt;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Form\EventType;
+use App\Helper\RoleHelper;
 use App\Legacy\LegacyContainer;
 use App\Mailer\Mailer;
 use App\Messenger\Message\SortiePubliee;
@@ -343,6 +344,7 @@ class SortieController extends AbstractController
         Evt $event,
         EntityManagerInterface $em,
         Mailer $mailer,
+        RoleHelper $roleHelper,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token_inscriptions'))) {
             $this->addFlash('error', 'Jeton de validation invalide.');
@@ -391,6 +393,7 @@ class SortieController extends AbstractController
             }
 
             // there can be no role passed in the request
+            $participation->setRole($role);
             if (!$participation->getRole()) {
                 $participation->setRole(EventParticipation::ROLE_INSCRIT);
             }
@@ -447,19 +450,7 @@ class SortieController extends AbstractController
                 continue;
             }
 
-            switch ($participation->getRole()) {
-                case EventParticipation::ROLE_ENCADRANT:
-                case EventParticipation::ROLE_COENCADRANT:
-                    $roleName = $participation->getRole() . '(e)';
-                    break;
-                case EventParticipation::ROLE_BENEVOLE:
-                case EventParticipation::ROLE_STAGIAIRE:
-                    $roleName = $participation->getRole();
-                    break;
-                default:
-                    $roleName = 'participant(e)';
-                    break;
-            }
+            $roleName = strtolower($roleHelper->getParticipationRoleName($participation));
 
             $context = [
                 'role' => $roleName,
@@ -619,7 +610,7 @@ class SortieController extends AbstractController
         // message aux (pré-)inscrits si la sortie est annulée alors qu'elle était publiée
         if ($event->isPublicStatusValide()) {
             // désinscription des participants de la sortie
-            $participants = $event->getParticipations([EventParticipation::ROLE_MANUEL, EventParticipation::ROLE_INSCRIT, EventParticipation::ROLE_BENEVOLE], null);
+            $participants = $event->getParticipations([EventParticipation::ROLE_MANUEL, EventParticipation::ROLE_INSCRIT, EventParticipation::BENEVOLE], null);
             foreach ($participants as $participant) {
                 $event->removeParticipation($participant);
 
@@ -916,7 +907,7 @@ class SortieController extends AbstractController
 
             // Bénévole
             if (isset($data['jeveuxetrebenevole']) && 'on' == $data['jeveuxetrebenevole']) {
-                $role_evt_join = EventParticipation::ROLE_BENEVOLE;
+                $role_evt_join = EventParticipation::BENEVOLE;
             }
 
             // si filiations : création du tableau des joints et vérifications
@@ -1138,6 +1129,7 @@ class SortieController extends AbstractController
             EventParticipation::ROLE_STAGIAIRE => [],
             EventParticipation::ROLE_COENCADRANT => [],
             EventParticipation::ROLE_BENEVOLE => [],
+            EventParticipation::BENEVOLE => [],
             EventParticipation::ROLE_INSCRIT => [],
         ];
         $participants = $event->getParticipations();
@@ -1156,6 +1148,7 @@ class SortieController extends AbstractController
             $sortedParticipants[EventParticipation::ROLE_STAGIAIRE],
             $sortedParticipants[EventParticipation::ROLE_COENCADRANT],
             $sortedParticipants[EventParticipation::ROLE_BENEVOLE],
+            $sortedParticipants[EventParticipation::BENEVOLE],
             $sortedParticipants[EventParticipation::ROLE_INSCRIT],
         );
 

@@ -62,7 +62,7 @@ if (!(isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) || allowed('comm_edit')
 						";
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $benvoles_emails = [];
-        echo '<h1>BENEVOLES</h1>';
+        echo '<h1>BÉNÉVOLES D\'ENCADREMENT</h1>';
         echo '<table class="big-lines-table"><tbody>';
         while ($row = $result->fetch_assoc()) {
             echo '<tr>

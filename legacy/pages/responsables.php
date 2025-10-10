@@ -41,7 +41,7 @@ foreach ($comTab as $code => $data) {
 							|| code_usertype LIKE 'encadrant'
 							|| code_usertype LIKE 'stagiaire'
 							|| code_usertype LIKE 'coencadrant'
-							|| code_usertype LIKE 'benevole'
+							|| code_usertype LIKE 'benevole_encadrement'
 						)
 					AND usertype_user_attr = id_usertype
 					AND user_user_attr = id_user

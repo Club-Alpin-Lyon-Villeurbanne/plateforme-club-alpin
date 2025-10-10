@@ -38,7 +38,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
             $deleteRight = false;
 
             // user_giveright_1 : dépend de la commission, pasée ici dans $row['params_user_attr']
-            if ('benevole' == $row['code_usertype'] && allowed('user_giveright_1', $row['params_user_attr'])) {
+            if ('benevole_encadrement' == $row['code_usertype'] && allowed('user_giveright_1', $row['params_user_attr'])) {
                 $deleteRight = true;
             }
             if ('encadrant' == $row['code_usertype'] && allowed('comm_delier_encadrant', $row['params_user_attr'])) {
@@ -116,7 +116,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
         $afficher = false;
 
         // user_giveright_1
-        if ('benevole' == $row['code_usertype'] && allowed('user_giveright_1')) {
+        if ('benevole_encadrement' == $row['code_usertype'] && allowed('user_giveright_1')) {
             $afficher = true;
         }
         if ('coencadrant' == $row['code_usertype'] && allowed('user_giveright_1')) {
