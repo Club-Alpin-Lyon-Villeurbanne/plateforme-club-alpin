@@ -357,9 +357,9 @@ class SortieController extends AbstractController
         }
 
         // reste-t-il assez de place ?
-        $nbJoinMax = $event->getNgensMax();
+        $nbPeopleMax = $event->getNgensMax();
         $currentParticipantNb = $event->getParticipationsCount();
-        $availableSpotNb = $nbJoinMax - $currentParticipantNb;
+        $availableSpotNb = $nbPeopleMax - $currentParticipantNb;
         if ($availableSpotNb < 0) {
             $availableSpotNb = 0;
         }
@@ -405,7 +405,7 @@ class SortieController extends AbstractController
             if (EventParticipation::STATUS_VALIDE === $status) {
                 ++$currentParticipantNb;
             }
-            if ($currentParticipantNb > $nbJoinMax && EventParticipation::STATUS_VALIDE === $status) {
+            if ($currentParticipantNb > $nbPeopleMax && EventParticipation::STATUS_VALIDE === $status) {
                 $this->addFlash('error', 'Vous ne pouvez pas valider plus de participants que de places disponibles (' . $availableSpotNb . '). Vous pouvez augmenter le nombre maximum de places pour ensuite rajouter des personnes.');
                 $flush = false;
 
@@ -939,7 +939,6 @@ class SortieController extends AbstractController
 
             // SI PAS DE PB, INTÉGRATION BDD
             if (empty($errTab)) {
-                $inscrits = [];
                 $status_evt_join = EventParticipation::STATUS_NON_CONFIRME;
                 $auto_accept = false;
                 $nbNewJoins = 1;
@@ -950,6 +949,7 @@ class SortieController extends AbstractController
                 // vérification nombre de places restantes
                 $ngens_max = $event->getNgensMax();
                 $current_participants = $event->getParticipationsCount();
+                $waitingList = $event->isInWaitingList($current_participants);
 
                 // Si auto_accept est activé, vérifier qu'on n'a pas atteint la limite
                 if ($event->isAutoAccept()) {
@@ -968,6 +968,7 @@ class SortieController extends AbstractController
                 }
 
                 // normal
+                $inscrits = [];
                 if (!$hasFiliations) {
                     if (!$user->getDoitRenouveler()) {
                         $event->addParticipation($user, $role_evt_join, $status_evt_join);
@@ -1066,6 +1067,7 @@ class SortieController extends AbstractController
                             ];
                         }, $inscrits),
                         'covoiturage' => $is_covoiturage,
+                        'in_waiting_list' => $waitingList,
                     ]);
                 } else {
                     // inscription simple de moi à moi
@@ -1084,6 +1086,7 @@ class SortieController extends AbstractController
                             ],
                         ],
                         'covoiturage' => $is_covoiturage,
+                        'in_waiting_list' => $waitingList,
                     ]);
                 }
             }
