@@ -109,10 +109,16 @@ class EventType extends AbstractType
                 'attr' => [
                     'placeholder' => 'ex : 69510 Messimy, 74400 Chamonix',
                     'class' => 'type2 wide',
+                    'maxlength' => 255,
                 ],
                 'help' => 'Code postal et ville. Permet de déduire le massif et d\'aider au calcul du bilan carbone.',
                 'help_attr' => [
                     'class' => 'mini',
+                ],
+                'constraints' => [
+                    new Length([
+                        'max' => 255,
+                    ]),
                 ],
             ])
             ->add('rdv', TextType::class, [
