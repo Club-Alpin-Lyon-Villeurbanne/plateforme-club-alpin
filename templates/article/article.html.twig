@@ -5,7 +5,7 @@
 {% block body %}
     <article id="fiche-article">
         {% if article.mediaUpload is defined %}
-            <img src="{{ media_thumbnail(article.mediaUpload, 'wide_thumbnail') }}" alt="image article" title="{{ article.titre }}" class="wide-figure" />
+            <img src="{{ media_thumbnail(article.mediaUpload, 'fullwide_thumbnail') }}" alt="image article" title="{{ article.titre }}" class="wide-figure" />
         {% endif %}
         <div class="titleimage">
             <h1>
