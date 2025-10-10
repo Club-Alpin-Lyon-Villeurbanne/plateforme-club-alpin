@@ -377,7 +377,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this->mdp;
     }
 
-    public function setMdp(string $mdp): self
+    public function setMdp(?string $mdp): self
     {
         $this->mdp = $mdp;
 

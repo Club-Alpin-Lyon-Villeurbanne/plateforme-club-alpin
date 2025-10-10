@@ -75,7 +75,11 @@ class FfcamFileParser
         ;
         if (null !== $radiationDate) {
             // Si l'utilisateur est radié, on le "supprime"
-            $user->setIsDeleted(true);
+            // et on vide son mot de passe (pour qu'il ne puisse plus se connecter au site)
+            $user
+                ->setIsDeleted(true)
+                ->setMdp(null)
+            ;
         }
 
         return $user;
