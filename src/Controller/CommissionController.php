@@ -4,10 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
+use App\Entity\UserAttr;
 use App\Helper\EventFormHelper;
 use App\Helper\MonthHelper;
+use App\Legacy\LegacyContainer;
+use App\Mailer\Mailer;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
+use App\Repository\UserAttrRepository;
 use App\UserRights;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -20,6 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class CommissionController extends AbstractController
 {
@@ -123,8 +128,13 @@ class CommissionController extends AbstractController
 
     #[Route('/commissions/{id}/configuration', name: 'commission_configuration', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     #[Template('commission/configuration.html.twig')]
-    public function configuration(Commission $commission, Request $request, EntityManagerInterface $entityManager): array|RedirectResponse
-    {
+    public function configuration(
+        Commission $commission,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserAttrRepository $userAttrRepository,
+        Mailer $mailer,
+    ): array|RedirectResponse {
         if (!$this->isGranted('COMMISSION_CONFIG', $commission)) {
             throw new AccessDeniedHttpException('Not allowed');
         }
@@ -152,6 +162,23 @@ class CommissionController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Les champs obligatoires ont bien été enregistrés pour ' . $commission->getTitle() . '.');
+
+            // prévenir les resp. de comm
+            $responsables = $userAttrRepository->getResponsablesByCommission($commission);
+            /** @var UserAttr $responsable */
+            foreach ($responsables as $responsable) {
+                if ($this->getUser() !== $responsable->getUser()) {
+                    $mailer->send(
+                        $responsable->getUser(),
+                        'transactional/commission-champs-obligatoires-modifies',
+                        [
+                            'commission' => $commission->getTitle(),
+                            'user' => $this->getUser()->getFullName(),
+                            'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $this->getUser()->getId() . '.html',
+                        ]
+                    );
+                }
+            }
 
             return $this->redirectToRoute('commission_configuration', ['id' => $commission->getId()]);
         }
