@@ -43,7 +43,7 @@ class ExpenseReportCloneProcessor implements ProcessorInterface
         $existingReport = $this->entityManager->getRepository(ExpenseReport::class)
             ->getExpenseReportByEventAndUser($originalReport->getEvent()->getId(), $currentUser->getId());
 
-        if ($existingReport) {
+        if ($existingReport && $existingReport->getStatus() === ExpenseReportStatusEnum::DRAFT) {
             $this->entityManager->remove($existingReport);
             $this->entityManager->flush();
         }
