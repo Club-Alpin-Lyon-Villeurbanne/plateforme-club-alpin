@@ -47,7 +47,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
         $nbrPages = ceil($compte / $limite);
 
         // articles à valider, selon la (les) commission dont nous sommes responsables
-        $req = 'SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
+        $req = 'SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  caf_article.created_at ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
 					, id_user, nickname_user, lastname_user, firstname_user, code_commission, title_commission, media_upload_id, filename
 		FROM caf_article
 		LEFT JOIN media_upload ON caf_article.media_upload_id = media_upload.id
@@ -57,7 +57,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 		WHERE status_article=0
 	    AND topubly_article=1
 		AND id_user = user_article
-		ORDER BY topubly_article desc,  tsp_validate_article ASC
+		ORDER BY topubly_article desc, caf_article.created_at ASC
 		LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
     } elseif (allowed('article_validate')) { // commission non précisée ici = autorisation passée
         // recuperation des commissions sous notre joug
@@ -87,7 +87,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
         $nbrPages = ceil($compte / $limite);
 
         // articles à valider, selon la (les) commission dont nous sommes responsables
-        $req = "SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  `tsp_crea_article` ,  `tsp_article` ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
+        $req = "SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  a.created_at ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
 					, id_user, nickname_user, lastname_user, firstname_user, media_upload_id
      , ce.code_commission, ce.title_commission, m.filename
         FROM caf_article a
@@ -101,7 +101,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
             ce.code_commission IN ('" . implode("','", $tab) . "')
         ) " // condition OR pour toutes les commissions autorisées
         . 'AND u.id_user = a.user_article
-		ORDER BY topubly_article desc,  tsp_validate_article ASC
+		ORDER BY topubly_article desc, a.created_at ASC
 		LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
     }
     $articleStandby = $articleStandbyRedac = [];
@@ -192,6 +192,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 									<input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
 								</form>
 							</div>';
+                        $creationDate = new \DateTime($article['created_at']);
                         echo '</div>'
 
                             . '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="' . $article_link . '" target="_blank">'
@@ -205,7 +206,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                                 . '<b><a href="' . $article_link . '" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
                                 . '<b>Type d\'article :</b> ' . $type . '<br />'
                                 . '<span class="mini">Par ' . userlink($article['id_user'], $article['nickname_user']) . '</span> - '
-                                . '<span class="mini">Le ' . jour(date('N', $article['tsp_article']), 'short') . ' ' . date('d', $article['tsp_article']) . ' ' . mois(date('m', $article['tsp_article'])) . ' ' . date('Y', $article['tsp_article']) . ' à ' . date('H:i', $article['tsp_article']) . '<br />'
+                                . '<span class="mini">Le ' . $creationDate->format('d') . ' ' . mois($creationDate->format('m')) . ' ' . $creationDate->format('Y') . ' à ' . $creationDate->format('H:i') . '<br />'
                                 . ($article['une_article'] ? '<span class="mini"><b><img src="/img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d\'accueil !</span>' : '')
                             . '</ul>'
 
@@ -273,6 +274,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                         echo '</div>';
 
+                        $creationDate = new \DateTime($article['created_at']);
                         echo '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="' . $article_link . '" target="_blank">'
                                 // image liee
                                 . '<img src="' . $img . '" alt="" title="" style="width:100%; " />'
@@ -284,7 +286,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                                 . '<b><a href="' . $article_link . '" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
                                 . '<b>Type d\'article :</b> ' . $type . '<br />'
                                 . '<span class="mini">Par ' . userlink($article['id_user'], $article['nickname_user']) . '</span> - '
-                                . '<span class="mini">Le ' . jour(date('N', $article['tsp_article']), 'short') . ' ' . date('d', $article['tsp_article']) . ' ' . mois(date('m', $article['tsp_article'])) . ' ' . date('Y', $article['tsp_article']) . ' à ' . date('H:i', $article['tsp_article']) . '<br />'
+                                . '<span class="mini">Le ' . $creationDate->format('d') . ' ' . mois($creationDate->format('m')) . ' ' . $creationDate->format('Y') . ' à ' . $creationDate->format('H:i') . '<br />'
                                 . ($article['une_article'] ? '<span class="mini"><b><img src="/img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d\'accueil !</span>' : '')
                             . '</ul>'
 

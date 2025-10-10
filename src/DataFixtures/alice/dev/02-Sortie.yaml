@@ -1,6 +1,6 @@
 App\Entity\Evt:
     sortie{1..10}:
-        __construct: ['@user1', '@commission_alpinisme', '<sentence(4)>', '<word()>', '<dateTime("+5 days")>', '<dateTime("+8 days")>', '<address()>', '<latitude()>', '<longitude()>', '<paragraph()>', 200, 10, 10]
+        __construct: ['@user1', '@commission_alpinisme', '<sentence(4)>', '<word()>', '<(new \DateTimeImmutable("+5 days"))>', '<(new \DateTimeImmutable("+8 days"))>', '<address()>', '<latitude()>', '<longitude()>', '<paragraph()>', 10, 10, '<(new \DateTimeImmutable())>']
         user: '@user1'
         titre: '<sentence(4)>'
         place: '<address()>'

@@ -208,8 +208,8 @@ if (user()) {
                         if ($tmpUser['alerte_renouveler_user']) {
                             echo '<span class="alerte">';
                         }
-    if ($tmpUser['date_adhesion_user'] > 0) {
-        echo date('d/m/Y', $tmpUser['date_adhesion_user']);
+    if (!empty($tmpUser['join_date'])) {
+        echo (new \DateTimeImmutable($tmpUser['join_date']))?->format('d/m/Y');
     } else {
         echo 'aucune date connue.';
     }
@@ -235,8 +235,7 @@ if (user()) {
 
             <div style="float:left; width:45%; padding-right:5%; margin-top:10px">
                 Votre date de naissance :<br />
-                <!-- <input type="text" name="birthday_user" class="type1" value="<?php echo date('d/m/Y', $tmpUser['birthday_user']); ?>" placeholder="" /> -->
-                <b><?php echo date('d/m/Y', $tmpUser['birthday_user']); ?></b>
+                <b><?php echo (new \DateTime($tmpUser['birthdate']))?->format('d/m/Y'); ?></b>
             </div>
 
             <br style="clear:both" /><br style="clear:both" />
@@ -249,14 +248,6 @@ if (user()) {
     echo html_utf8($tmpUser['ville_user']);
     echo '&nbsp;&nbsp;&nbsp;';
     echo html_utf8($tmpUser['pays_user']); ?></b>
-
-            <?php // Les infos suivantes sont gérées par l'update automatique script ffcam
-            /*
-            <input type="text" style="width:388px" name="adresse_user" class="type1" value="<?php echo html_utf8($tmpUser['adresse_user']);?>" placeholder="Numéro, rue..." /><br />
-            <input type="text" style="width:50px" name="cp_user" class="type1" value="<?php echo html_utf8($tmpUser['cp_user']);?>" placeholder="Code postal" />
-            <input type="text" style="width:150px" name="ville_user" class="type1" value="<?php echo html_utf8($tmpUser['ville_user']);?>" placeholder="Ville" />
-            <input type="text" style="width:150px" name="pays_user" class="type1" value="<?php echo html_utf8($tmpUser['pays_user']);?>" placeholder="Pays" /><br />
-            */ ?>
 
             <hr style="margin: 20px 0" />
             Qui peut vous contacter sur le site, via un formulaire de contact ? Votre adresse e-mail n'est jamais dévoilée, excepté aux responsables du club ou aux organisateurs des sorties auxquelles vous êtes inscrit.<br />
