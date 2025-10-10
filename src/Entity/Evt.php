@@ -996,12 +996,6 @@ class Evt
 
     public function isInWaitingList(int $nInscritsTotal): bool
     {
-        $isWaitingList = false;
-
-        if ($this->withWaitingList() && $nInscritsTotal >= $this->ngensMax && $nInscritsTotal < $this->joinMax) {
-            $isWaitingList = true;
-        }
-
-        return $isWaitingList;
+        return $this->withWaitingList() && $nInscritsTotal >= $this->ngensMax && $nInscritsTotal < $this->joinMax;
     }
 }
