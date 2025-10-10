@@ -177,6 +177,8 @@ class FfcamSynchronizer
             ->setTsUpdate(time())
             ->setManuel(false)
             ->setNomade(false)
+            ->setRadiationDate($parsedUser->getRadiationDate())
+            ->setRadiationReason($parsedUser->getRadiationReason())
         ;
 
         // Ne pas effacer la date d'adhésion quand l'adhésion parsée est expirée (valeur nulle).
