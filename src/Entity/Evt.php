@@ -232,6 +232,16 @@ class Evt
     #[ORM\Column(name: 'has_payment_send_mail', type: Types::BOOLEAN, nullable: false, options: ['default' => true])]
     private bool $hasPaymentSendMail = true;
 
+    #[ORM\Column(name: 'main_transport_mode', type: Types::STRING, length: 50, nullable: true, enumType: TransportModeEnum::class)]
+    #[Groups('event:read')]
+    private ?TransportModeEnum $mainTransportMode = null;
+
+    #[ORM\Column(name: 'nb_km', type: Types::FLOAT, nullable: true)]
+    private ?float $nbKm = null;
+
+    #[ORM\Column(name: 'carbon_cost', type: Types::FLOAT, nullable: true)]
+    private ?float $carbonCost = null;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -915,6 +925,42 @@ class Evt
     public function setImagesAuthorized(bool $imagesAuthorized): self
     {
         $this->imagesAuthorized = $imagesAuthorized;
+
+        return $this;
+    }
+
+    public function getMainTransportMode(): ?TransportModeEnum
+    {
+        return $this->mainTransportMode;
+    }
+
+    public function setMainTransportMode(?TransportModeEnum $mainTransportMode): self
+    {
+        $this->mainTransportMode = $mainTransportMode;
+
+        return $this;
+    }
+
+    public function getNbKm(): ?float
+    {
+        return $this->nbKm;
+    }
+
+    public function setNbKm(?float $nbKm): self
+    {
+        $this->nbKm = $nbKm;
+
+        return $this;
+    }
+
+    public function getCarbonCost(): ?float
+    {
+        return $this->carbonCost;
+    }
+
+    public function setCarbonCost(?float $carbonCost): self
+    {
+        $this->carbonCost = $carbonCost;
 
         return $this;
     }

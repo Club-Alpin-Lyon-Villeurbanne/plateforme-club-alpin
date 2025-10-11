@@ -148,6 +148,11 @@
             </div>
         </div>
 
+        <h2 class="trigger-h2">Mode de transport :</h2>
+        <div class="trigger-me">
+            {{ form_row(form.mainTransportMode) }}
+        </div>
+
         <h2 class="trigger-h2">Difficulté / matériel :</h2>
         <div class="trigger-me">
             <div id="commission-specific-fields">
@@ -238,6 +243,12 @@
         }
     </style>
     <link rel="stylesheet" href="/js/ckeditor5/ckeditor5.css">
+    <style>
+        #map-creersortie {
+            width: 96%;
+            margin: 0;
+        }
+    </style>
 {% endblock %}
 
 {% block javascripts %}
