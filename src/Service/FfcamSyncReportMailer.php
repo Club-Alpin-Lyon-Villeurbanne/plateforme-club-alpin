@@ -17,6 +17,15 @@ class FfcamSyncReportMailer
     public function sendSyncReport(array $stats, \DateTime $startTime, \DateTime $endTime): void
     {
         try {
+            // Récupérer les destinataires dès le début
+            $recipients = $this->getAdminRecipients();
+
+            // Si aucun destinataire configuré, ne rien envoyer
+            if (empty($recipients)) {
+                $this->logger->info('Sync report not sent: no recipients configured (SYNC_REPORT_RECIPIENTS is empty)');
+                return;
+            }
+
             $duration = $endTime->diff($startTime);
 
             // Limiter les détails pour l'email (garder tous les détails dans $stats pour debug)
@@ -36,9 +45,6 @@ class FfcamSyncReportMailer
                 'date' => $startTime->format('d/m/Y'),
                 'total' => $stats['inserted'] + $stats['updated'] + $stats['merged'],
             ];
-
-            // Envoyer aux administrateurs
-            $recipients = $this->getAdminRecipients();
 
             $this->mailer->send(
                 $recipients,
