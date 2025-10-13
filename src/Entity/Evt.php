@@ -845,6 +845,66 @@ class Evt
         return $this;
     }
 
+    public function getEventStartDate(): ?\DateTimeImmutable
+    {
+        return $this->eventStartDate;
+    }
+
+    public function setEventStartDate(?\DateTimeImmutable $eventStartDate): self
+    {
+        $this->eventStartDate = $eventStartDate;
+
+        return $this;
+    }
+
+    public function getEventEndDate(): ?\DateTimeImmutable
+    {
+        return $this->eventEndDate;
+    }
+
+    public function setEventEndDate(?\DateTimeImmutable $eventEndDate): self
+    {
+        $this->eventEndDate = $eventEndDate;
+
+        return $this;
+    }
+
+    public function getJoinStartDate(): ?\DateTimeImmutable
+    {
+        return $this->joinStartDate;
+    }
+
+    public function setJoinStartDate(?\DateTimeImmutable $joinStartDate): self
+    {
+        $this->joinStartDate = $joinStartDate;
+
+        return $this;
+    }
+
+    public function getCancellationDate(): ?\DateTimeImmutable
+    {
+        return $this->cancellationDate;
+    }
+
+    public function setCancellationDate(?\DateTimeImmutable $cancellationDate): self
+    {
+        $this->cancellationDate = $cancellationDate;
+
+        return $this;
+    }
+
+    public function getLegalStatusChangeDate(): ?\DateTimeImmutable
+    {
+        return $this->legalStatusChangeDate;
+    }
+
+    public function setLegalStatusChangeDate(?\DateTimeImmutable $legalStatusChangeDate): self
+    {
+        $this->legalStatusChangeDate = $legalStatusChangeDate;
+
+        return $this;
+    }
+
     public function getStartDate(): ?\DateTimeImmutable
     {
         return $this->startDate;
