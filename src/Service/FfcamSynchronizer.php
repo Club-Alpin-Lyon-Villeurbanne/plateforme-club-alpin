@@ -90,20 +90,22 @@ class FfcamSynchronizer
                 );
 
                 if ($potentialDuplicate) {
+                    $oldCafNum = $potentialDuplicate->getCafnum();
                     $this->logger->info(sprintf(
                         'Found duplicate member %s %s (old license: %s, new license: %s)',
                         $parsedUser->getLastname(),
                         $parsedUser->getFirstname(),
-                        $potentialDuplicate->getCafnum(),
+                        $oldCafNum,
                         $parsedUser->getCafnum()
                     ));
 
-                    $this->memberMerger->mergeNewMember($potentialDuplicate->getCafnum(), $parsedUser);
+                    $this->memberMerger->mergeNewMember($oldCafNum, $parsedUser);
+
                     ++$stats['merged'];
 
                     // Stocker les détails de la fusion (tous pour debug)
                     $stats['merged_details'][] = [
-                        'old_cafnum' => $potentialDuplicate->getCafnum(),
+                        'old_cafnum' => $oldCafNum,
                         'new_cafnum' => $parsedUser->getCafnum(),
                         'name' => sprintf('%s %s', $parsedUser->getFirstname(), $parsedUser->getLastname())
                     ];
