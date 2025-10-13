@@ -845,26 +845,26 @@ class Evt
         return $this;
     }
 
-    public function getEventStartDate(): ?\DateTimeImmutable
+    public function getStartDate(): ?\DateTimeImmutable
     {
-        return $this->eventStartDate;
+        return $this->startDate;
     }
 
-    public function setEventStartDate(?\DateTimeImmutable $eventStartDate): self
+    public function setStartDate(?\DateTimeImmutable $startDate): self
     {
-        $this->eventStartDate = $eventStartDate;
+        $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getEventEndDate(): ?\DateTimeImmutable
+    public function getEndDate(): ?\DateTimeImmutable
     {
-        return $this->eventEndDate;
+        return $this->endDate;
     }
 
-    public function setEventEndDate(?\DateTimeImmutable $eventEndDate): self
+    public function setEndDate(?\DateTimeImmutable $endDate): self
     {
-        $this->eventEndDate = $eventEndDate;
+        $this->endDate = $endDate;
 
         return $this;
     }
