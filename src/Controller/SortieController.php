@@ -22,6 +22,7 @@ use App\Utils\ExcelExport;
 use App\Utils\PdfGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -297,7 +298,8 @@ class SortieController extends AbstractController
         EntityManagerInterface $em,
         Mailer $mailer,
         MessageBusInterface $messageBus,
-    ) {
+        LoggerInterface $logger,
+    ): RedirectResponse {
         if (!$this->isCsrfTokenValid('sortie_validate', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
         }
@@ -310,12 +312,16 @@ class SortieController extends AbstractController
 
         // créer la campagne hello asso si nécessaire
         if ($event->hasPaymentForm() && !$event->getHelloAssoFormSlug()) {
-            $haFormData = $helloAssoService->createFormForEvent($event);
-            $event->setHelloAssoFormSlug($haFormData['formSlug']);
-            $event->setPaymentUrl($haFormData['publicUrl']);
+            try {
+                $haFormData = $helloAssoService->createFormForEvent($event);
+                $event->setHelloAssoFormSlug($haFormData['formSlug']);
+                $event->setPaymentUrl($haFormData['publicUrl']);
 
-            // publier la campagne
-            $helloAssoService->publishFormForEvent($event);
+                // publier la campagne
+                $helloAssoService->publishFormForEvent($event);
+            } catch (\Exception $exception) {
+                $logger->error('Unable to create or publish HelloAsso form: ' . $exception->getMessage());
+            }
         }
 
         $em->flush();
