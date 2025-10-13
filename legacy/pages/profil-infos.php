@@ -235,7 +235,7 @@ if (user()) {
 
             <div style="float:left; width:45%; padding-right:5%; margin-top:10px">
                 Votre date de naissance :<br />
-                <b><?php echo (new \DateTime($tmpUser['birthdate']))?->format('d/m/Y'); ?></b>
+                <b><?php echo (new \DateTimeImmutable($tmpUser['birthdate']))?->format('d/m/Y'); ?></b>
             </div>
 
             <br style="clear:both" /><br style="clear:both" />

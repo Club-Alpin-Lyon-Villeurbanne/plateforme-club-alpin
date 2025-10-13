@@ -3,7 +3,7 @@
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 
-if (allowed('user_see_all') or isGranted(SecurityConstants::ROLE_ADMIN)) {
+if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
     $userTab = [];
     if (allowed('user_see_all')) {
         $show = 'allvalid';
