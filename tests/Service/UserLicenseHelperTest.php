@@ -146,7 +146,7 @@ class UserLicenseHelperTest extends TestCase
     {
         $event = $this->createMock(Evt::class);
         $date = (new \DateTimeImmutable())->setTimestamp($tspEnd);
-        $event->method('getEventEndDate')->willReturn($date);
+        $event->method('getEndDate')->willReturn($date);
 
         return $event;
     }

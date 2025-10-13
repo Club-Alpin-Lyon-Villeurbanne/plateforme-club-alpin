@@ -1,6 +1,6 @@
 {% extends 'base-light.html.twig' %}
 
-{% block title %}Feuille de sortie - {{ event.titre }} - {{ event.eventStartDate|intldate('cccc d MMMM yyyy') }}{% endblock %}
+{% block title %}Feuille de sortie - {{ event.titre }} - {{ event.startDate|intldate('cccc d MMMM yyyy') }}{% endblock %}
 
 {% block stylesheets %}
     <style>
@@ -107,7 +107,7 @@
             <tbody>
             <tr>
                 <th width='15%' style="width: fit-content">DATE :</th>
-                <td width='25%'>{{ event.eventStartDate | date('d/m/Y') }}</td>
+                <td width='25%'>{{ event.startDate | date('d/m/Y') }}</td>
                 <th width='20%'>COURSE, LIEU : </th>
                 <td width='30%'>{{ event.titre }}</td>
             </tr>

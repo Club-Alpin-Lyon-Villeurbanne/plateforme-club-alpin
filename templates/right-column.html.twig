@@ -81,7 +81,7 @@
                     {% set nInscritsTotal = event.participations() | length %}
                     {% set nPlacesRestantesTotal = max(0, event.ngensMax - nInscritsTotal) %}
                     <a href="/sortie/{{ event.code }}-{{ event.id }}.html?commission={{ event.commission.code }}" title="Voir la sortie">
-                        <span style="color:#000">{{ event.eventStartDate | intldate('ccc d/MM') | capitalize }} </span> |
+                        <span style="color:#000">{{ event.startDate | intldate('ccc d/MM') | capitalize }} </span> |
                         {% if event.cancelled %}
                             <span class="cancelled">Sortie annulée</span>
                         {% else %}

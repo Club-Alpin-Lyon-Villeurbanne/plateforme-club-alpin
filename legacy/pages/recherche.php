@@ -74,7 +74,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
 
         $req = 'SELECT
                 SQL_CALC_FOUND_ROWS
-                id_evt, code_evt, commission_evt, event_start_date, caf_evt.created_at, titre_evt, massif_evt, place_evt, join_start_date, ngens_max_evt, cancelled_evt, is_draft
+                id_evt, code_evt, commission_evt, start_date, caf_evt.created_at, titre_evt, massif_evt, place_evt, join_start_date, ngens_max_evt, cancelled_evt, is_draft
                 , title_commission, code_commission
             FROM caf_evt, caf_commission, caf_user
             WHERE id_commission = commission_evt
@@ -93,7 +93,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
                     OR	description_evt LIKE ?
                     OR	nickname_user LIKE ?
             ) '
-        . ' ORDER BY event_start_date DESC
+        . ' ORDER BY start_date DESC
             LIMIT ' . $searchResultsPerPage;
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare($req);
         if ($current_commission) {
@@ -203,7 +203,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
                         $evt = $evtTab[$i];
 
                         echo '<tr>'
-                                . '<td class="agenda-gauche">' . (new \DateTimeImmutable($evt['event_start_date']))?->format('d/m/Y') . '</td>'
+                                . '<td class="agenda-gauche">' . (new \DateTimeImmutable($evt['start_date']))?->format('d/m/Y') . '</td>'
                                 . '<td>';
                         require __DIR__ . '/../includes/agenda-evt-debut.php';
                         echo '</td>'

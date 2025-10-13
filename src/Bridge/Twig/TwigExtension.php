@@ -159,7 +159,7 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
     {
         $time = strtotime($this->maxTimestampForLegalValidation);
 
-        return $event->getEventStartDate()->getTimestamp() < $time;
+        return $event->getStartDate()->getTimestamp() < $time;
     }
 
     public function slugify(string $string)
@@ -179,7 +179,7 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
     public function getPaiementTitle(Evt $event, User $user): string
     {
         $title = $this->locator->get(SluggerInterface::class)->slug($event->getTitre());
-        $compl = ' du ' . $event->getEventStartDate()->format('d/m/Y') . ' ' . ucfirst($user->getFirstname()) . ' ' . strtoupper($user->getLastname());
+        $compl = ' du ' . $event->getStartDate()->format('d/m/Y') . ' ' . ucfirst($user->getFirstname()) . ' ' . strtoupper($user->getLastname());
         $size_compl = \strlen($compl);
 
         return substr($title, 0, 64 - $size_compl) . $compl;

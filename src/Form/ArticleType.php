@@ -82,9 +82,9 @@ class ArticleType extends AbstractType
                     fn (Evt $event) => ($this->userRights->allowedOnCommission('article_create', $event->getCommission()) || $this->userRights->allowedOnCommission('evt_create', $event->getCommission()))
                 ),
                 'choice_label' => function (Evt $event) {
-                    return $event->getEventStartDate()->format('d') . ' ' .
-                        $this->monthHelper->getMonthName($event->getEventStartDate()->format('m')) . ' ' .
-                        $event->getEventStartDate()->format('Y') . ' | ' .
+                    return $event->getStartDate()->format('d') . ' ' .
+                        $this->monthHelper->getMonthName($event->getStartDate()->format('m')) . ' ' .
+                        $event->getStartDate()->format('Y') . ' | ' .
                         $event->getCommission()->getTitle() . ' | ' .
                         $event->getTitre()
                     ;

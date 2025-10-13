@@ -63,8 +63,8 @@ class EventType extends AbstractType
 
         $commission = $event->getCommission();
 
-        $eventStartDate = $event->getEventStartDate();
-        $eventEndDate = $event->getEventEndDate();
+        $eventStartDate = $event->getStartDate();
+        $eventEndDate = $event->getEndDate();
         $eventJoinStartDate = $event->getJoinStartDate();
 
         // lieu et coordonnées GPS (marqueur sur la carte)
@@ -168,7 +168,7 @@ class EventType extends AbstractType
                     new GreaterThan(0),
                 ],
             ])
-            ->add('eventStartDate', DateTimeType::class, [
+            ->add('startDate', DateTimeType::class, [
                 'label' => 'Date et heure de RDV / covoiturage',
                 'required' => true,
                 'data' => $eventStartDate,
@@ -185,7 +185,7 @@ class EventType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('eventEndDate', DateTimeType::class, [
+            ->add('endDate', DateTimeType::class, [
                 'label' => 'Date et heure (estimée) de retour',
                 'required' => true,
                 'data' => $eventEndDate,
@@ -408,10 +408,10 @@ class EventType extends AbstractType
                 $data = $form->getData();
 
                 // cohérence dates début et fin
-                $startDate = $form->get('eventStartDate')->getData();
-                $endDate = $form->get('eventEndDate')->getData();
+                $startDate = $form->get('startDate')->getData();
+                $endDate = $form->get('endDate')->getData();
                 if ($startDate && $endDate && $endDate <= $startDate) {
-                    $form->get('eventStartDate')->addError(new FormError(
+                    $form->get('startDate')->addError(new FormError(
                         'La date de RDV / covoiturage doit être antérieure à la date de retour.'
                     ));
                 }

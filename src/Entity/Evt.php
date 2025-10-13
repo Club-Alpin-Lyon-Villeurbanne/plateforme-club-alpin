@@ -30,13 +30,13 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
         new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
         new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:read', 'eventParticipation:read']]),
     ],
-    order: ['eventStartDate' => 'ASC'],
+    order: ['startDate' => 'ASC'],
     security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', 'participations.user.id' => 'exact'])]
-#[ApiFilter(RangeFilter::class, properties: ['eventStartDate'])]
+#[ApiFilter(RangeFilter::class, properties: ['startDate'])]
 #[ApiFilter(GroupFilter::class, arguments: ['overrideDefaultGroups' => true])]
-#[ApiFilter(OrderFilter::class, properties: ['eventStartDate'])]
+#[ApiFilter(OrderFilter::class, properties: ['startDate'])]
 class Evt
 {
     use TimestampableEntity;
@@ -213,13 +213,13 @@ class Evt
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: 'EventUnrecognizedPayer', cascade: ['persist'], orphanRemoval: true)]
     private ?Collection $unrecognizedPayers = null;
 
-    #[ORM\Column(name: 'event_start_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date et heure de début'])]
+    #[ORM\Column(name: 'start_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date et heure de début'])]
     #[Groups('event:read')]
-    private ?\DateTimeImmutable $eventStartDate;
+    private ?\DateTimeImmutable $startDate;
 
-    #[ORM\Column(name: 'event_end_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date et heure de fin'])]
+    #[ORM\Column(name: 'end_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date et heure de fin'])]
     #[Groups('event:read')]
-    private ?\DateTimeImmutable $eventEndDate;
+    private ?\DateTimeImmutable $endDate;
 
     #[ORM\Column(name: 'join_start_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date du début des inscriptions'])]
     #[Groups('event:read')]
@@ -276,8 +276,8 @@ class Evt
         $this->unrecognizedPayers = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
         $this->setUpdatedAt(new \DateTime());
-        $this->eventStartDate = $dateStart;
-        $this->eventEndDate = $dateEnd;
+        $this->startDate = $dateStart;
+        $this->endDate = $dateEnd;
         $this->joinStartDate = $joinStartDate;
     }
 
@@ -298,8 +298,8 @@ class Evt
             'commission' => $this->commission->getId(),
             'participations' => $this->participations,
             'articles' => $this->articles,
-            'start' => $this->getEventStartDate()?->format('Y-m-d H:i:s'),
-            'end' => $this->getEventEndDate()?->format('Y-m-d H:i:s'),
+            'start' => $this->getStartDate()?->format('Y-m-d H:i:s'),
+            'end' => $this->getEndDate()?->format('Y-m-d H:i:s'),
             'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
             'updatedAt' => $this->getUpdatedAt()->format('Y-m-d H:i:s'),
             'joinStartDate' => $this->getJoinStartDate()?->format('Y-m-d H:i:s'),
@@ -514,14 +514,14 @@ class Evt
     #[SerializedName('heureRendezVous')]
     public function getDateDebut(): ?string
     {
-        return $this->eventStartDate?->format(\DateTime::ATOM);
+        return $this->startDate?->format(\DateTime::ATOM);
     }
 
     #[Groups('event:read')]
     #[SerializedName('heureRetour')]
     public function getDateFin(): ?string
     {
-        return $this->eventEndDate?->format(\DateTime::ATOM);
+        return $this->endDate?->format(\DateTime::ATOM);
     }
 
     public function isPublicStatusUnseen()
@@ -556,7 +556,7 @@ class Evt
 
     public function hasStarted(): bool
     {
-        return $this->eventStartDate < new \DateTimeImmutable();
+        return $this->startDate < new \DateTimeImmutable();
     }
 
     public function joinHasStarted(): bool
@@ -566,7 +566,7 @@ class Evt
 
     public function isFinished(): bool
     {
-        return $this->eventEndDate < new \DateTimeImmutable();
+        return $this->endDate < new \DateTimeImmutable();
     }
 
     public function getPlace(): ?string
@@ -845,26 +845,26 @@ class Evt
         return $this;
     }
 
-    public function getEventStartDate(): ?\DateTimeImmutable
+    public function getStartDate(): ?\DateTimeImmutable
     {
-        return $this->eventStartDate;
+        return $this->startDate;
     }
 
-    public function setEventStartDate(?\DateTimeImmutable $eventStartDate): self
+    public function setStartDate(?\DateTimeImmutable $startDate): self
     {
-        $this->eventStartDate = $eventStartDate;
+        $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getEventEndDate(): ?\DateTimeImmutable
+    public function getEndDate(): ?\DateTimeImmutable
     {
-        return $this->eventEndDate;
+        return $this->endDate;
     }
 
-    public function setEventEndDate(?\DateTimeImmutable $eventEndDate): self
+    public function setEndDate(?\DateTimeImmutable $endDate): self
     {
-        $this->eventEndDate = $eventEndDate;
+        $this->endDate = $endDate;
 
         return $this;
     }

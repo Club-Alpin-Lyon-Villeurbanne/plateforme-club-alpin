@@ -66,8 +66,8 @@ class DevData implements FixtureInterface
                 $start = time() + mt_rand(-60, 74) * 86400;
                 $startDate = (new \DateTimeImmutable())->setTimestamp($start);
                 $endDate = (new \DateTimeImmutable())->setTimestamp($start + mt_rand(1, 4) * 86400);
-                $object->setEventStartDate($startDate);
-                $object->setEventEndDate($endDate);
+                $object->setStartDate($startDate);
+                $object->setEndDate($endDate);
                 $object->setJoinStartDate($startDate);
                 $object->setJoinMax(10);
                 $object->setNgensMax(10);

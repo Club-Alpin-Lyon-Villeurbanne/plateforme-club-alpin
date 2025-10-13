@@ -84,9 +84,9 @@ class CommissionController extends AbstractController
                     fn (Evt $event) => ($userRights->allowedOnCommission('article_create', $event->getCommission()) || $userRights->allowedOnCommission('evt_create', $event->getCommission()))
                 ),
                 'choice_label' => function (Evt $event) use ($monthHelper) {
-                    return $event->getEventStartDate()->format('d') . ' ' .
-                        $monthHelper->getMonthName($event->getEventStartDate()->format('m')) . ' ' .
-                        $event->getEventStartDate()->format('Y') . ' | ' .
+                    return $event->getStartDate()->format('d') . ' ' .
+                        $monthHelper->getMonthName($event->getStartDate()->format('m')) . ' ' .
+                        $event->getStartDate()->format('Y') . ' | ' .
                         $event->getCommission()->getTitle() . ' | ' .
                         $event->getTitre()
                     ;

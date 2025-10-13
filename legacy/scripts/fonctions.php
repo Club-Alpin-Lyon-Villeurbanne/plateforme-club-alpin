@@ -10,7 +10,7 @@ function display_sorties($id_user, $limit = 10, $title = '')
 {
     $req = '
         SELECT SQL_CALC_FOUND_ROWS
-            id_evt, code_evt, status_evt, status_evt_join, status_legal_evt, cancelled_evt, user_evt, commission_evt, event_start_date, event_end_date, caf_evt.created_at, caf_evt.updated_at, place_evt, rdv_evt, titre_evt, tarif_evt, join_max_evt, join_start_date, ngens_max_evt, is_draft
+            id_evt, code_evt, status_evt, status_evt_join, status_legal_evt, cancelled_evt, user_evt, commission_evt, start_date, end_date, caf_evt.created_at, caf_evt.updated_at, place_evt, rdv_evt, titre_evt, tarif_evt, join_max_evt, join_start_date, ngens_max_evt, is_draft
             , nickname_user
             , title_commission, code_commission
             , role_evt_join
@@ -25,7 +25,7 @@ function display_sorties($id_user, $limit = 10, $title = '')
         . 'AND evt_evt_join = id_evt
         AND user_evt_join = ' . $id_user
         // de la plus récente a la plus ancienne
-        . ' ORDER BY  `event_start_date` DESC
+        . ' ORDER BY  `start_date` DESC
         LIMIT ' . $limit;
     // echo $req;
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -47,7 +47,7 @@ function display_sorties($id_user, $limit = 10, $title = '')
             $evt = $handle;
 
             echo '<tr>'
-                    . '<td class="agenda-gauche">' . (new DateTimeImmutable($evt['event_start_date']))?->format('d/m/Y') . '</td>'
+                    . '<td class="agenda-gauche">' . (new DateTimeImmutable($evt['start_date']))?->format('d/m/Y') . '</td>'
                     . '<td>';
             require __DIR__ . '/../includes/agenda-evt-debut.php';
             echo '</td>'

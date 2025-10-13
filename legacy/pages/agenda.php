@@ -36,7 +36,7 @@ $userId = null;
 if (user()) {
     $userId = getUser()->getId();
 }
-$req = 'SELECT  e.id_evt, e.cancelled_evt, e.code_evt, e.event_start_date, e.event_end_date, e.created_at, e.commission_evt, e.titre_evt, e.massif_evt, e.place_evt, e.difficulte_evt, e.user_evt, e.is_draft ';
+$req = 'SELECT  e.id_evt, e.cancelled_evt, e.code_evt, e.start_date, e.end_date, e.created_at, e.commission_evt, e.titre_evt, e.massif_evt, e.place_evt, e.difficulte_evt, e.user_evt, e.is_draft ';
 if (null !== $userId) {
     $req .= ', j.status_evt_join';
 }
@@ -54,13 +54,13 @@ $req .= 'WHERE id_commission = e.commission_evt
 // truc des dates :
 . ' AND ( '
     // la fin de l'événement est comprise dans ce mois
-    . " ( e.event_end_date > '" . $startDate->format('Y-m-d H:i:s') . "' AND e.event_end_date < '" . $endDate->format('Y-m-d H:i:s') . "' ) "
+    . " ( e.end_date > '" . $startDate->format('Y-m-d H:i:s') . "' AND e.end_date < '" . $endDate->format('Y-m-d H:i:s') . "' ) "
     // OU le début de l'événement est compris dans ce mois
-    . " OR ( e.event_start_date > '" . $startDate->format('Y-m-d H:i:s') . "' AND e.event_start_date < '" . $endDate->format('Y-m-d H:i:s') . "' ) "
+    . " OR ( e.start_date > '" . $startDate->format('Y-m-d H:i:s') . "' AND e.start_date < '" . $endDate->format('Y-m-d H:i:s') . "' ) "
     // OU l'événement comprend l'intégralité du mois
-    . " OR ( e.event_start_date < '" . $startDate->format('Y-m-d H:i:s') . "' AND e.event_end_date > '" . $endDate->format('Y-m-d H:i:s') . "' ) "
+    . " OR ( e.start_date < '" . $startDate->format('Y-m-d H:i:s') . "' AND e.end_date > '" . $endDate->format('Y-m-d H:i:s') . "' ) "
 . ' ) '
-. ' ORDER BY e.cancelled_evt ASC , e.event_start_date ASC';
+. ' ORDER BY e.cancelled_evt ASC , e.start_date ASC';
 
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
@@ -69,14 +69,14 @@ while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     $handle['groupe'] = get_groupe($handle['id_groupe']);
 
     // dates utiles pour ranger cet evenement dans le tableau
-    $eventStartDate = new \DateTimeImmutable($handle['event_start_date']);
-    $eventEndDate = new \DateTimeImmutable($handle['event_end_date']);
-    $tmpStartD = $eventStartDate->format('d'); // jour de cet evt de 1 à 28-30-31
-    $tmpStartM = $eventStartDate->format('m'); // mois de cet evt
-    $tmpStartY = $eventStartDate->format('Y'); // annee de cet evt
-    $tmpEndD = $eventEndDate->format('d'); // Jour de fin
-    $tmpEndM = $eventEndDate->format('m'); // Mois de fin
-    $tmpEndY = $eventEndDate->format('Y'); // annee de fin
+    $startDate = new \DateTimeImmutable($handle['start_date']);
+    $endDate = new \DateTimeImmutable($handle['end_date']);
+    $tmpStartD = $startDate->format('d'); // jour de cet evt de 1 à 28-30-31
+    $tmpStartM = $startDate->format('m'); // mois de cet evt
+    $tmpStartY = $startDate->format('Y'); // annee de cet evt
+    $tmpEndD = $endDate->format('d'); // Jour de fin
+    $tmpEndM = $endDate->format('m'); // Mois de fin
+    $tmpEndY = $endDate->format('Y'); // annee de fin
 
     $handle['jourN'] = false; // compte des jours à afficher ?
 
@@ -112,7 +112,7 @@ while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         while ($bool) {
             // Nième jour de cet event :
             $tmpDay = mktime(23, 59, 59, $month, $i, $year); // jour ciblé ici
-            $eventTsp = (new \DateTimeImmutable($handle['event_start_date']))->getTimestamp();
+            $eventTsp = (new \DateTimeImmutable($handle['start_date']))->getTimestamp();
             $handle['jourN'] = ceil(($tmpDay - $eventTsp) / 86400); // nombre de jours d'ecart
 
             // si ce jour dépasse le nombre de jours du mois, on s'arrête là

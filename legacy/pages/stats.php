@@ -99,8 +99,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					AND cancelled_evt = 0
 					AND commission_evt =' . (int) $comm['id_commission'] . "
 
-					AND event_start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
-					AND event_start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 					";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -114,8 +114,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
                     AND status_evt_join = 1
                     AND commission_evt =' . (int) $comm['id_commission'] . "
 
-					AND event_start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
-					AND event_start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 
                     AND id_user = user_evt_join
                     AND civ_user LIKE 'M'
@@ -132,8 +132,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
                     AND status_evt_join = 1
                     AND commission_evt =' . (int) $comm['id_commission'] . "
 
-					AND event_start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
-					AND event_start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 
                     AND id_user = user_evt_join
                     AND civ_user NOT LIKE 'M'
@@ -150,11 +150,11 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
                     AND status_evt_join = 1
                     AND commission_evt =' . (int) $comm['id_commission'] . "
 
-					AND event_start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
-					AND event_start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 
                     AND id_user = user_evt_join
-                    AND DATE_ADD(birthdate, INTERVAL 18 YEAR) > event_start_date 
+                    AND DATE_ADD(birthdate, INTERVAL 18 YEAR) > start_date 
                     ";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -169,8 +169,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					AND commission_evt =' . (int) $comm['id_commission'] . "
 					AND cancelled_evt = 0
 
-					AND event_start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
-					AND event_start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 					";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -185,8 +185,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					AND commission_evt =' . (int) $comm['id_commission'] . "
 					AND cancelled_evt = 0
 
-					AND event_start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
-					AND event_start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 					";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -201,8 +201,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					AND commission_evt =' . (int) $comm['id_commission'] . "
 					AND cancelled_evt = 0
 
-					AND event_start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
-					AND event_start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 					";
 
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -289,8 +289,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
             $req = 'SELECT COUNT(id_evt)
 						FROM caf_evt
 						WHERE commission_evt=' . $comm['id_commission'] . "
-                        AND event_start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
-                        AND event_start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
+                        AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+                        AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 						";
 
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -302,8 +302,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 						FROM caf_evt
 						WHERE commission_evt=' . $comm['id_commission'] . "
 						AND status_evt = 1
-                        AND event_start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
-                        AND event_start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
+                        AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+                        AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 						";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -314,8 +314,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 						FROM caf_evt
 						WHERE commission_evt=' . $comm['id_commission'] . "
 						AND status_evt = 2
-                        AND event_start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
-                        AND event_start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
+                        AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+                        AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 						";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -326,8 +326,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 						FROM caf_evt
 						WHERE commission_evt=' . $comm['id_commission'] . "
 						AND status_legal_evt = 1
-                        AND event_start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
-                        AND event_start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
+                        AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+                        AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 						";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -338,8 +338,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 						FROM caf_evt
 						WHERE commission_evt=' . $comm['id_commission'] . "
 						AND status_legal_evt = 0
-                        AND event_start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
-                        AND event_start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
+                        AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+                        AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 						";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();

@@ -44,7 +44,7 @@ class UserNotificationRepository extends ServiceEntityRepository
                 FROM caf_evt
                 WHERE
                     status_evt = 1
-                    AND event_end_date < \'' . $date->format('Y-m-d') . '\'
+                    AND end_date < \'' . $date->format('Y-m-d') . '\'
             )
         ';
 

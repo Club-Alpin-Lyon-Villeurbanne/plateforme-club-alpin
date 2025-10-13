@@ -105,7 +105,7 @@ class RssController extends AbstractController
                 if ($event->getNeedBenevoles()) {
                     $entry['description'] .= ('' !== $entry['description'] ? ' | ' : '') . 'bénévoles appréciés';
                 }
-                $entry['timestamp'] = $event->getEventStartDate()->getTimestamp();
+                $entry['timestamp'] = $event->getStartDate()->getTimestamp();
                 $entry['img'] = false;
 
                 $entryTab[] = $entry;

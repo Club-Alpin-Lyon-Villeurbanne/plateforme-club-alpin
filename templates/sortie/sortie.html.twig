@@ -160,7 +160,7 @@
             {% if event.groupe %}
                 <small> ({{ event.groupe.nom }}) </small>
             {% endif %}
-            <span class="date"> / {{ event.eventStartDate | intldate('cccc d MMMM yyyy') }}</span>
+            <span class="date"> / {{ event.startDate | intldate('cccc d MMMM yyyy') }}</span>
         </h1>
 
         {% if event.publicStatusValide and event.hasPaymentForm and event.paymentAmount and event.paymentUrl and current_user_has_paid is same as(false) and current_user_accepted is same as(true) %}
@@ -230,10 +230,10 @@
                 <script>
                 const config = {
                     name: "{{ event.titre }}",
-                    startDate: "{{ event.eventStartDate | intldate('yyyy-MM-dd') }}",
-                    startTime: "{{ event.eventStartDate | date('H:i') }}",
-                    endDate: "{{ event.eventEndDate | intldate('yyyy-MM-dd') }}",
-                    endTime: "{{ event.eventEndDate | date('H:i') }}",
+                    startDate: "{{ event.startDate | intldate('yyyy-MM-dd') }}",
+                    startTime: "{{ event.startDate | date('H:i') }}",
+                    endDate: "{{ event.endDate | intldate('yyyy-MM-dd') }}",
+                    endTime: "{{ event.endDate | date('H:i') }}",
                     location: "{{ event.rdv }}",
                     options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
                     timeZone: "Europe/Paris",
@@ -765,7 +765,7 @@
 
                         <br />
                         <label for="objet">Objet :</label><br />
-                        <input id="contact_subject" type="text" name="objet" class="type1" style="width:95%" value="Note importante pour la sortie du {{ event.eventStartDate | date('d/m') }}" /><br />
+                        <input id="contact_subject" type="text" name="objet" class="type1" style="width:95%" value="Note importante pour la sortie du {{ event.startDate | date('d/m') }}" /><br />
                         <br />
 
                         <label>Répondre à ?</label><br />
@@ -888,10 +888,10 @@
 
             <ul class="nice-list">
                 <li class="wide">
-                    <b>DÉPART :</b> Le {{ event.eventStartDate | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.eventStartDate|date('H:i') }}{% endif %}
+                    <b>DÉPART :</b> Le {{ event.startDate | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.startDate|date('H:i') }}{% endif %}
                 </li>
                 <li class="wide">
-                    <b>RETOUR :</b> Le {{ event.eventEndDate | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.eventEndDate|date('H:i') }} (heure estimée){% endif %}
+                    <b>RETOUR :</b> Le {{ event.endDate | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.endDate|date('H:i') }} (heure estimée){% endif %}
                 </li>
             </ul>
 

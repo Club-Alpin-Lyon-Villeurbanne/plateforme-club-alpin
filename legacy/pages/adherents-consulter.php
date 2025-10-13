@@ -30,7 +30,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 
         // NOMBRE DE SORTIES
         $req = "
-					SELECT id_evt, code_evt, status_evt, status_legal_evt, cancelled_evt, user_evt, commission_evt, event_start_date, event_end_date, caf_evt.created_at, caf_evt.updated_at, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, join_max_evt, join_start_date
+					SELECT id_evt, code_evt, status_evt, status_legal_evt, cancelled_evt, user_evt, commission_evt, start_date, end_date, caf_evt.created_at, caf_evt.updated_at, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, join_max_evt, join_start_date
 						, nickname_user
 						, title_commission, code_commission
 						, role_evt_join
@@ -45,7 +45,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 					AND status_evt_join = 1
 					AND user_evt_join = $id_user "
                     // de la plus récente a la plus ancienne
-                    . 'ORDER BY  `event_start_date` DESC
+                    . 'ORDER BY  `start_date` DESC
 					LIMIT 200';
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $userTab['sorties'] = [];
@@ -234,7 +234,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
             if (allowed('evt_validate') && 1 != $evt['status_evt']) {
                 $row .= '&forceshow=true';
             }
-            $row .= '" title="">' . (new \DateTimeImmutable($evt['event_start_date']))?->format('d/m/Y') . ' - ' . html_utf8($evt['title_commission']) . ' - ' . html_utf8($evt['titre_evt']) . '</a>';
+            $row .= '" title="">' . (new \DateTimeImmutable($evt['start_date']))?->format('d/m/Y') . ' - ' . html_utf8($evt['title_commission']) . ' - ' . html_utf8($evt['titre_evt']) . '</a>';
             $rowValue[] = $row;
         }
         arsort($rowValueHeader);

@@ -37,10 +37,10 @@ class EventParticipationRepository extends ServiceEntityRepository
             ->setParameter('id', $event->getId())
             ->andWhere('e.status != :event_status')
             ->setParameter('event_status', Evt::STATUS_LEGAL_REFUSE)
-            ->andWhere('(e.eventStartDate >= :start AND e.eventStartDate <= :end) OR (e.eventEndDate >= :start AND e.eventEndDate <= :end) OR (e.eventStartDate <= :start AND e.eventEndDate >= :end)')
-            ->setParameter('start', $event->getEventStartDate())
-            ->setParameter('end', $event->getEventEndDate())
-            ->orderBy('e.eventStartDate', 'asc')
+            ->andWhere('(e.startDate >= :start AND e.startDate <= :end) OR (e.endDate >= :start AND e.endDate <= :end) OR (e.startDate <= :start AND e.endDate >= :end)')
+            ->setParameter('start', $event->getStartDate())
+            ->setParameter('end', $event->getEndDate())
+            ->orderBy('e.startDate', 'asc')
         ;
 
         if ($user) {

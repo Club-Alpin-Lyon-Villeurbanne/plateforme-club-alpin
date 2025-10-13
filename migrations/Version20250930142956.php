@@ -19,7 +19,7 @@ final class Version20250930142956 extends AbstractMigration
         // création les champs datetime nullable
         $this->addSql('ALTER TABLE caf_article ADD validation_date DATETIME DEFAULT NULL COMMENT \'date de publication de l\'\'article(DC2Type:datetime_immutable)\', ADD created_at DATETIME DEFAULT NULL, ADD updated_at DATETIME DEFAULT NULL');
         $this->addSql('ALTER TABLE caf_comment ADD created_at DATETIME DEFAULT NULL, ADD updated_at DATETIME DEFAULT NULL');
-        $this->addSql('ALTER TABLE caf_evt ADD event_start_date DATETIME DEFAULT NULL COMMENT \'date et heure de début(DC2Type:datetime_immutable)\', ADD event_end_date DATETIME DEFAULT NULL COMMENT \'date et heure de fin(DC2Type:datetime_immutable)\', ADD join_start_date DATETIME DEFAULT NULL COMMENT \'date du début des inscriptions(DC2Type:datetime_immutable)\', ADD cancellation_date DATETIME DEFAULT NULL COMMENT \'date d\'\'annulation(DC2Type:datetime_immutable)\', ADD created_at DATETIME DEFAULT NULL, ADD updated_at DATETIME DEFAULT NULL');
+        $this->addSql('ALTER TABLE caf_evt ADD start_date DATETIME DEFAULT NULL COMMENT \'date et heure de début(DC2Type:datetime_immutable)\', ADD end_date DATETIME DEFAULT NULL COMMENT \'date et heure de fin(DC2Type:datetime_immutable)\', ADD join_start_date DATETIME DEFAULT NULL COMMENT \'date du début des inscriptions(DC2Type:datetime_immutable)\', ADD cancellation_date DATETIME DEFAULT NULL COMMENT \'date d\'\'annulation(DC2Type:datetime_immutable)\', ADD created_at DATETIME DEFAULT NULL, ADD updated_at DATETIME DEFAULT NULL');
         $this->addSql('ALTER TABLE caf_evt_join ADD created_at DATETIME DEFAULT NULL, ADD updated_at DATETIME DEFAULT NULL');
         $this->addSql('ALTER TABLE caf_user ADD birthdate DATE DEFAULT NULL COMMENT \'Date de naissance(DC2Type:date_immutable)\', ADD join_date DATE DEFAULT NULL COMMENT \'Date adhésion(DC2Type:date_immutable)\', ADD created_at DATETIME DEFAULT NULL, ADD updated_at DATETIME DEFAULT NULL');
 
@@ -28,7 +28,7 @@ final class Version20250930142956 extends AbstractMigration
         $this->addSql('UPDATE caf_article SET validation_date = (CASE WHEN tsp_validate_article IS NOT NULL THEN FROM_UNIXTIME(tsp_validate_article) ELSE NULL END)');
         $this->addSql('UPDATE caf_comment SET created_at = FROM_UNIXTIME(tsp_comment), updated_at = (CASE WHEN tsp_comment IS NOT NULL THEN FROM_UNIXTIME(tsp_comment) ELSE NOW() END)');
         $this->addSql('UPDATE caf_evt SET created_at = FROM_UNIXTIME(tsp_crea_evt), updated_at = (CASE WHEN tsp_edit_evt IS NOT NULL THEN FROM_UNIXTIME(tsp_edit_evt) ELSE NOW() END)');
-        $this->addSql('UPDATE caf_evt SET event_start_date = (CASE WHEN tsp_evt IS NOT NULL THEN FROM_UNIXTIME(tsp_evt) ELSE NULL END), event_end_date = (CASE WHEN tsp_end_evt IS NOT NULL THEN FROM_UNIXTIME(tsp_end_evt) ELSE NULL END)');
+        $this->addSql('UPDATE caf_evt SET start_date = (CASE WHEN tsp_evt IS NOT NULL THEN FROM_UNIXTIME(tsp_evt) ELSE NULL END), end_date = (CASE WHEN tsp_end_evt IS NOT NULL THEN FROM_UNIXTIME(tsp_end_evt) ELSE NULL END)');
         $this->addSql('UPDATE caf_evt SET join_start_date = (CASE WHEN join_start_evt IS NOT NULL THEN FROM_UNIXTIME(join_start_evt) ELSE NULL END), cancellation_date = (CASE WHEN cancelled_when_evt IS NOT NULL THEN FROM_UNIXTIME(cancelled_when_evt) ELSE NULL END)');
         $this->addSql('UPDATE caf_evt_join SET created_at = FROM_UNIXTIME(tsp_evt_join), updated_at = (CASE WHEN lastchange_when_evt_join IS NOT NULL THEN FROM_UNIXTIME(lastchange_when_evt_join) ELSE NOW() END)');
         $this->addSql('UPDATE caf_user SET created_at = FROM_UNIXTIME(ts_insert_user), updated_at = (CASE WHEN ts_update_user IS NOT NULL THEN FROM_UNIXTIME(ts_update_user) ELSE NOW() END)');
@@ -45,7 +45,7 @@ final class Version20250930142956 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE caf_article DROP validation_date, DROP created_at, DROP updated_at');
         $this->addSql('ALTER TABLE caf_comment DROP created_at, DROP updated_at');
-        $this->addSql('ALTER TABLE caf_evt DROP event_start_date, DROP event_end_date, DROP join_start_date, DROP cancellation_date, DROP created_at, DROP updated_at');
+        $this->addSql('ALTER TABLE caf_evt DROP start_date, DROP end_date, DROP join_start_date, DROP cancellation_date, DROP created_at, DROP updated_at');
         $this->addSql('ALTER TABLE caf_evt_join DROP created_at, DROP updated_at');
         $this->addSql('ALTER TABLE caf_user DROP birthdate, DROP join_date, DROP created_at, DROP updated_at');
     }

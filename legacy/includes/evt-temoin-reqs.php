@@ -30,7 +30,7 @@ elseif (isset($handle['cancelled_evt']) && $handle['cancelled_evt']) {
 }
 
 // trop tard ?
-elseif ((new \DateTimeImmutable()) > new \DateTimeImmutable($handle['event_start_date'])) { // date max d'inscri. 24 h
+elseif ((new \DateTimeImmutable()) > new \DateTimeImmutable($handle['start_date'])) { // date max d'inscri. 24 h
     $handle['temoin'] = 'finished';
     $handle['temoin-title'] = 'Les inscriptions sont terminées';
 }
