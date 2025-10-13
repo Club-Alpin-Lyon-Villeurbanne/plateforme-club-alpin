@@ -299,8 +299,7 @@ class SortieController extends AbstractController
         Mailer $mailer,
         MessageBusInterface $messageBus,
         LoggerInterface $logger,
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         if (!$this->isCsrfTokenValid('sortie_validate', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
         }
