@@ -21,38 +21,7 @@
         {% endif %}
 
         <div class="right-light-in">
-            {% set partenaires = list_partenaires() %}
-
-            {% if partenaires | length > 0 %}
-                <h1 class="partenaires-h1"><a href="/pages/nos-partenaires-prives.html" title="nos partenaires">nos partenaires</a></h1>
-                <div id="slider-partenaires">
-
-                    <div id="slides">
-                        {% for partenaire in partenaires %}
-                            <a target="_blank" href="{{ partenaire.getUrl }}">
-                                <img src="/ftp/partenaires/{{ partenaire.getImage }}" alt="{{ partenaire.getName }}">
-                            </a>
-                        {% endfor %}
-                    </div>
-
-                    <script type="text/javascript">
-                        $(function(){
-                            if ($("#slides > a").length > 1) {
-                                $("#slides").slidesjs({
-                                    start: 1,
-                                    width: 270,
-                                    height: 110,
-                                    navigation: {active: false},
-                                    pagination: {active: false},
-                                    play: {active: false,effect: "slide",auto: true}
-                                });
-                            } else {
-                                $("#slides").show();
-                            }
-                        });
-                    </script>
-                </div>
-            {% endif %}
+            {{ easy_include('bloc-partenaires') }}
         </div>
 
         <form action="/recherche.html" id="recherche-form" class="right-light-in" method="get">
