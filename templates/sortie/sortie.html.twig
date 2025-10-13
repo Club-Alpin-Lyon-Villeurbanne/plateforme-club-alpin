@@ -75,7 +75,7 @@
                 {% set closeDiv = true %}
                 <div class="erreur">
                     <img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" />
-                    <b>Sortie annulée :</b><br /> Cette sortie a été annulée le {{ event.cancelledWhen | date('d/m/Y à H:i') }}
+                    <b>Sortie annulée :</b><br /> Cette sortie a été annulée le {{ event.cancellationDate | date('d/m/Y à H:i') }}
 
                 {% if event.cancelledWho %}
                     , par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.cancelledWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ event.cancelledWho.nickname }}</a>
@@ -160,7 +160,7 @@
             {% if event.groupe %}
                 <small> ({{ event.groupe.nom }}) </small>
             {% endif %}
-            <span class="date"> / {{ event.tsp | intldate('cccc d MMMM yyyy') }}</span>
+            <span class="date"> / {{ event.eventStartDate | intldate('cccc d MMMM yyyy') }}</span>
         </h1>
 
         {% if event.publicStatusValide and event.hasPaymentForm and event.paymentAmount and event.paymentUrl and current_user_has_paid is same as(false) and current_user_accepted is same as(true) %}
@@ -230,10 +230,10 @@
                 <script>
                 const config = {
                     name: "{{ event.titre }}",
-                    startDate: "{{ event.tsp | intldate('yyyy-MM-dd') }}",
-                    startTime: "{{ event.tsp | date('H:i') }}",
-                    endDate: "{{ event.tspEnd | intldate('yyyy-MM-dd') }}",
-                    endTime: "{{ event.tspEnd | date('H:i') }}",
+                    startDate: "{{ event.eventStartDate | intldate('yyyy-MM-dd') }}",
+                    startTime: "{{ event.eventStartDate | date('H:i') }}",
+                    endDate: "{{ event.eventEndDate | intldate('yyyy-MM-dd') }}",
+                    endTime: "{{ event.eventEndDate | date('H:i') }}",
                     location: "{{ event.rdv }}",
                     options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
                     timeZone: "Europe/Paris",
@@ -644,9 +644,9 @@
 
                                     </td>
                                     <td style="white-space:nowrap">
-                                        <span style="display:none">{{ participation.tsp }}</span>
-                                        {{ participation.tsp | date('d/m') }}<br />
-                                        {{ participation.tsp | date('à H:i') }}
+                                        <span style="display:none">{{ participation.createdAt.timestamp }}</span>
+                                        {{ participation.createdAt | date('d/m') }}<br />
+                                        {{ participation.createdAt | date('à H:i') }}
                                     </td>
 
                                     {% if event.hasPaymentForm %}
@@ -765,7 +765,7 @@
 
                         <br />
                         <label for="objet">Objet :</label><br />
-                        <input id="contact_subject" type="text" name="objet" class="type1" style="width:95%" value="Note importante pour la sortie du {{ event.tsp | date('d/m') }}" /><br />
+                        <input id="contact_subject" type="text" name="objet" class="type1" style="width:95%" value="Note importante pour la sortie du {{ event.eventStartDate | date('d/m') }}" /><br />
                         <br />
 
                         <label>Répondre à ?</label><br />
@@ -888,10 +888,10 @@
 
             <ul class="nice-list">
                 <li class="wide">
-                    <b>DÉPART :</b> Le {{ event.tsp | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tsp|date('H:i') }}{% endif %}
+                    <b>DÉPART :</b> Le {{ event.eventStartDate | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.eventStartDate|date('H:i') }}{% endif %}
                 </li>
                 <li class="wide">
-                    <b>RETOUR :</b> Le {{ event.tspEnd | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tspEnd|date('H:i') }} (heure estimée){% endif %}
+                    <b>RETOUR :</b> Le {{ event.eventEndDate | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.eventEndDate|date('H:i') }} (heure estimée){% endif %}
                 </li>
             </ul>
 
@@ -937,7 +937,7 @@
                     {{ event.user.nickname }}
                 </a>
                 <span class="mini">
-                - le {{ event.tspCrea | date('d/m/y') }}{% if event.tspEdit %}, modifiée le {{ event.tspEdit | date('d/m/y à H:i') }} {% endif %}
+                - le {{ event.createdAt | date('d/m/y') }}{% if event.updatedAt %}, modifiée le {{ event.updatedAt | date('d/m/y à H:i') }} {% endif %}
             </span>
             </li>
 
@@ -1242,7 +1242,7 @@
                             {% else %}
                                 <hr />
                                 <h2>Inscriptions :</h2>
-                                <p>Les inscriptions pour cette sortie commenceront le {{ event.joinStart | date('d/m/y') }}</p>
+                                <p>Les inscriptions pour cette sortie commenceront le {{ event.joinStartDate | date('d/m/y') }}</p>
                             {% endif %}
                         {% else %}
                             {{ easy_include('info-inscription-passee', 'vide') }}

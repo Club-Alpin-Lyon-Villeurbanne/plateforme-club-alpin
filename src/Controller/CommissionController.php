@@ -83,12 +83,12 @@ class CommissionController extends AbstractController
                     $eventRepository->getRecentPastEvents($commission),
                     fn (Evt $event) => ($userRights->allowedOnCommission('article_create', $event->getCommission()) || $userRights->allowedOnCommission('evt_create', $event->getCommission()))
                 ),
-                'choice_label' => function (Evt $evt) use ($monthHelper) {
-                    return date('d', $evt->getTsp()) . ' ' .
-                       $monthHelper->getMonthName(date('m', $evt->getTsp())) . ' ' .
-                       date('Y', $evt->getTsp()) . ' | ' .
-                       $evt->getCommission()->getTitle() . ' | ' .
-                       $evt->getTitre()
+                'choice_label' => function (Evt $event) use ($monthHelper) {
+                    return $event->getEventStartDate()->format('d') . ' ' .
+                        $monthHelper->getMonthName($event->getEventStartDate()->format('m')) . ' ' .
+                        $event->getEventStartDate()->format('Y') . ' | ' .
+                        $event->getCommission()->getTitle() . ' | ' .
+                        $event->getTitre()
                     ;
                 },
                 'placeholder' => 'Sélectionner',

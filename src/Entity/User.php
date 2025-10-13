@@ -8,17 +8,17 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Repository\UserRepository;
-use App\Serializer\TimeStampNormalizer;
 use App\Utils\EmailAlerts;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\Ignore;
 use Symfony\Component\Serializer\Annotation\SerializedName;
-use Symfony\Component\Serializer\Attribute\Context;
 
 /**
  * User.
@@ -38,6 +38,8 @@ use Symfony\Component\Serializer\Attribute\Context;
 #[ApiFilter(GroupFilter::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSerializable
 {
+    use TimestampableEntity;
+
     /**
      * @var int
      */
@@ -101,24 +103,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[Groups('user:read')]
     #[SerializedName('pseudonyme')]
     private $nickname;
-
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'created_user', type: 'bigint', nullable: false)]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[Groups('user:details')]
-    #[SerializedName('dateCreation')]
-    private $created;
-
-    /**
-     * @var int|null
-     */
-    #[ORM\Column(name: 'birthday_user', type: 'bigint', nullable: true)]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[Groups('user:details')]
-    #[SerializedName('dateNaissance')]
-    private $birthday;
 
     /**
      * @var string
@@ -213,14 +197,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private $nomadeParent;
 
     /**
-     * @var int|null
-     */
-    #[ORM\Column(name: 'date_adhesion_user', type: 'bigint', nullable: true)]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[Groups('user:details')]
-    private $dateAdhesion;
-
-    /**
      * @var bool
      */
     #[ORM\Column(name: 'doit_renouveler_user', type: 'boolean', nullable: false)]
@@ -231,18 +207,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
      */
     #[ORM\Column(name: 'alerte_renouveler_user', type: 'boolean', nullable: false, options: ['comment' => "Si sur 1 : une alerte s'affiche pour annoncer que l'adhérent doit renouveler sa licence"])]
     private $alerteRenouveler = '0';
-
-    /**
-     * @var int|null
-     */
-    #[ORM\Column(name: 'ts_insert_user', type: 'bigint', nullable: true, options: ['comment' => 'timestamp 1ere insertion'])]
-    private $tsInsert;
-
-    /**
-     * @var int|null
-     */
-    #[ORM\Column(name: 'ts_update_user', type: 'bigint', nullable: true, options: ['comment' => 'timestamp derniere maj'])]
-    private $tsUpdate;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ExpenseReport::class, orphanRemoval: false)]
     private Collection $expenseReports;
@@ -266,10 +230,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'last_login_date', type: 'datetime', nullable: true, options: ['comment' => 'Date de dernière connexion'])]
     private ?\DateTimeInterface $lastLoginDate = null;
 
+    #[ORM\Column(name: 'birthdate', type: Types::DATE_IMMUTABLE, nullable: true, options: ['comment' => 'Date de naissance'])]
+    #[Groups('user:details')]
+    #[SerializedName('dateNaissance')]
+    private ?\DateTimeInterface $birthdate = null;
+
+    #[ORM\Column(name: 'join_date', type: Types::DATE_IMMUTABLE, nullable: true, options: ['comment' => 'Date adhésion'])]
+    #[Groups('user:details')]
+    private ?\DateTimeInterface $joinDate = null;
+
     public function __construct(?int $id = null)
     {
         $this->attrs = new ArrayCollection();
-        $this->created = time();
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
         if ($id) {
             $this->id = $id;
         }
@@ -288,8 +262,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
             'firstname' => $this->getFirstname(),
             'lastname' => $this->getLastname(),
             'nickname' => $this->getNickname(),
-            'created' => $this->getCreated(),
-            'birthday' => $this->getBirthday(),
             'tel' => $this->getTel(),
             'tel2' => $this->getTel2(),
             'adresse' => $this->getAdresse(),
@@ -302,11 +274,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
             'manuel' => $this->getManuel(),
             'nomade' => $this->getNomade(),
             'nomadeParent' => $this->getNomadeParent(),
-            'dateAdhesion' => $this->getDateAdhesion(),
             'doitRenouveler' => $this->getDoitRenouveler(),
             'alerteRenouveler' => $this->getAlerteRenouveler(),
-            'tsInsert' => $this->getTsInsert(),
-            'tsUpdate' => $this->getTsUpdate(),
+            'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->getUpdatedAt()->format('Y-m-d H:i:s'),
+            'joinDate' => $this->getJoinDate()?->format('Y-m-d'),
+            'birthdate' => $this->getBirthdate()?->format('Y-m-d'),
         ];
     }
 
@@ -461,30 +434,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setNickname(string $nickname): self
     {
         $this->nickname = $nickname;
-
-        return $this;
-    }
-
-    public function getCreated(): ?int
-    {
-        return $this->created;
-    }
-
-    public function setCreated(?int $created): self
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
-    public function getBirthday(): ?int
-    {
-        return $this->birthday;
-    }
-
-    public function setBirthday(?int $birthday): self
-    {
-        $this->birthday = $birthday;
 
         return $this;
     }
@@ -645,18 +594,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this;
     }
 
-    public function getDateAdhesion(): ?int
-    {
-        return $this->dateAdhesion;
-    }
-
-    public function setDateAdhesion(?int $dateAdhesion): self
-    {
-        $this->dateAdhesion = $dateAdhesion;
-
-        return $this;
-    }
-
     public function getDoitRenouveler(): ?bool
     {
         return $this->doitRenouveler;
@@ -677,30 +614,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setAlerteRenouveler(bool $alerteRenouveler): self
     {
         $this->alerteRenouveler = $alerteRenouveler;
-
-        return $this;
-    }
-
-    public function getTsInsert(): ?int
-    {
-        return $this->tsInsert;
-    }
-
-    public function setTsInsert(?int $tsInsert): self
-    {
-        $this->tsInsert = $tsInsert;
-
-        return $this;
-    }
-
-    public function getTsUpdate(): ?int
-    {
-        return $this->tsUpdate;
-    }
-
-    public function setTsUpdate(?int $tsUpdate): self
-    {
-        $this->tsUpdate = $tsUpdate;
 
         return $this;
     }
@@ -861,6 +774,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setLastLoginDate(?\DateTimeInterface $lastLoginDate): self
     {
         $this->lastLoginDate = $lastLoginDate;
+
+        return $this;
+    }
+
+    public function getBirthdate(): ?\DateTimeInterface
+    {
+        return $this->birthdate;
+    }
+
+    public function setBirthdate(?\DateTimeInterface $birthdate): self
+    {
+        $this->birthdate = $birthdate;
+
+        return $this;
+    }
+
+    public function getJoinDate(): ?\DateTimeInterface
+    {
+        return $this->joinDate;
+    }
+
+    public function setJoinDate(?\DateTimeInterface $joinDate): self
+    {
+        $this->joinDate = $joinDate;
 
         return $this;
     }

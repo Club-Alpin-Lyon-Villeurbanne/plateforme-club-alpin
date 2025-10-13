@@ -60,13 +60,13 @@ class MemberMergerTest extends WebTestCase
         $memberMerger = static::getContainer()->get(MemberMerger::class);
 
         $user1 = $this->signup();
-        $oldDateAdhesion = new \DateTime('2020-01-15');
-        $user1->setDateAdhesion($oldDateAdhesion->getTimestamp());
+        $oldDateAdhesion = new \DateTimeImmutable('2020-01-15');
+        $user1->setJoinDate($oldDateAdhesion);
         $entityManager->flush();
 
         $user2 = $this->signup();
-        $newDateAdhesion = new \DateTime('2024-06-20');
-        $user2->setDateAdhesion($newDateAdhesion->getTimestamp());
+        $newDateAdhesion = new \DateTimeImmutable('2024-06-20');
+        $user2->setJoinDate($newDateAdhesion);
         $entityManager->flush();
 
         $oldLicense = $user1->getCafnum();
@@ -76,8 +76,8 @@ class MemberMergerTest extends WebTestCase
 
         $mergedUser = $entityManager->getRepository(User::class)->findOneByLicenseNumber($newLicense);
 
-        $this->assertNotNull($mergedUser->getDateAdhesion());
-        $this->assertEquals($newDateAdhesion->getTimestamp(), $mergedUser->getDateAdhesion());
+        $this->assertNotNull($mergedUser->getJoinDate());
+        $this->assertEquals($newDateAdhesion, $mergedUser->getJoinDate());
     }
 
     public function testMergeExistingMembersPreservesDateAdhesionWhenNewIsNull(): void
@@ -86,12 +86,12 @@ class MemberMergerTest extends WebTestCase
         $memberMerger = static::getContainer()->get(MemberMerger::class);
 
         $user1 = $this->signup();
-        $oldDateAdhesion = new \DateTime('2020-01-15');
-        $user1->setDateAdhesion($oldDateAdhesion->getTimestamp());
+        $oldDateAdhesion = new \DateTimeImmutable('2020-01-15');
+        $user1->setJoinDate($oldDateAdhesion);
         $entityManager->flush();
 
         $user2 = $this->signup();
-        $user2->setDateAdhesion(null);
+        $user2->setJoinDate(null);
         $entityManager->flush();
 
         $oldLicense = $user1->getCafnum();
@@ -101,8 +101,8 @@ class MemberMergerTest extends WebTestCase
 
         $mergedUser = $entityManager->getRepository(User::class)->findOneByLicenseNumber($newLicense);
 
-        $this->assertNotNull($mergedUser->getDateAdhesion());
-        $this->assertEquals($oldDateAdhesion->getTimestamp(), $mergedUser->getDateAdhesion());
+        $this->assertNotNull($mergedUser->getJoinDate());
+        $this->assertEquals($oldDateAdhesion, $mergedUser->getJoinDate());
     }
 
     public function testMergeNewMemberUpdatesDateAdhesion(): void
@@ -111,20 +111,21 @@ class MemberMergerTest extends WebTestCase
         $memberMerger = static::getContainer()->get(MemberMerger::class);
 
         $user1 = $this->signup();
-        $oldDateAdhesion = new \DateTime('2020-01-15');
-        $user1->setDateAdhesion($oldDateAdhesion->getTimestamp());
+        $oldDateAdhesion = new \DateTimeImmutable('2020-01-15');
+        $user1->setJoinDate($oldDateAdhesion);
         $entityManager->flush();
 
         $user2 = new User();
         $user2Cafnum = mt_rand(100000000000, 999999999999);
-        $newDateAdhesion = new \DateTime('2024-06-20');
+        $newDateAdhesion = new \DateTimeImmutable('2024-06-20');
         $user2->setEmail('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr')
             ->setCafnum($user2Cafnum)
             ->setFirstname('prenom')
             ->setLastname('nom')
             ->setDoitRenouveler(false)
             ->setAlerteRenouveler(false)
-            ->setDateAdhesion($newDateAdhesion->getTimestamp());
+            ->setJoinDate($newDateAdhesion)
+        ;
 
         $oldLicense = $user1->getCafnum();
 
@@ -132,8 +133,8 @@ class MemberMergerTest extends WebTestCase
 
         $mergedUser = $entityManager->getRepository(User::class)->findOneByLicenseNumber($user2Cafnum);
 
-        $this->assertNotNull($mergedUser->getDateAdhesion());
-        $this->assertEquals($newDateAdhesion->getTimestamp(), $mergedUser->getDateAdhesion());
+        $this->assertNotNull($mergedUser->getJoinDate());
+        $this->assertEquals($newDateAdhesion, $mergedUser->getJoinDate());
     }
 
     public function testMergeNewMemberPreservesDateAdhesionWhenNewIsNull(): void
@@ -142,8 +143,8 @@ class MemberMergerTest extends WebTestCase
         $memberMerger = static::getContainer()->get(MemberMerger::class);
 
         $user1 = $this->signup();
-        $oldDateAdhesion = new \DateTime('2020-01-15');
-        $user1->setDateAdhesion($oldDateAdhesion->getTimestamp());
+        $oldDateAdhesion = new \DateTimeImmutable('2020-01-15');
+        $user1->setJoinDate($oldDateAdhesion);
         $entityManager->flush();
 
         $user2 = new User();
@@ -154,7 +155,8 @@ class MemberMergerTest extends WebTestCase
             ->setLastname('nom')
             ->setDoitRenouveler(false)
             ->setAlerteRenouveler(false)
-            ->setDateAdhesion(null);
+            ->setJoinDate(null)
+        ;
 
         $oldLicense = $user1->getCafnum();
 
@@ -162,7 +164,7 @@ class MemberMergerTest extends WebTestCase
 
         $mergedUser = $entityManager->getRepository(User::class)->findOneByLicenseNumber($user2Cafnum);
 
-        $this->assertNotNull($mergedUser->getDateAdhesion());
-        $this->assertEquals($oldDateAdhesion->getTimestamp(), $mergedUser->getDateAdhesion());
+        $this->assertNotNull($mergedUser->getJoinDate());
+        $this->assertEquals($oldDateAdhesion, $mergedUser->getJoinDate());
     }
 }

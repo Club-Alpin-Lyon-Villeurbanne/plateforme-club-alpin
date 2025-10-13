@@ -16,7 +16,7 @@
             {% endif %}
             <span class="mini" style="font-size:9px">
                 &nbsp;&nbsp;&nbsp;
-                le {{ comment.tsp|intldate('d MMMM YYYY') }}
+                le {{ comment.createdAt|date('d/m/Y') }}
             </span>
         </p>
         <p class="cont_comment">

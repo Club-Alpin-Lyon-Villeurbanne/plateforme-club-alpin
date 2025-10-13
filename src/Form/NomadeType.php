@@ -30,7 +30,7 @@ class NomadeType extends AbstractType
                     strtoupper($user->getLastname()),
                     ucfirst($user->getFirstname()),
                     $user->getCafnum(),
-                    date('d/m/y', $user->getCreated())
+                    $user->getCreatedAt()?->format('d/m/Y')
                 ),
                 'choice_value' => fn ($user) => $user?->getId(),
                 'attr' => [

@@ -11,13 +11,13 @@ $articlesTab = [];
 
 // *******************
 // articles dans le slider
-$req = 'SELECT a.`id_article`, a.`tsp_crea_article`, a.`tsp_article`, a.`user_article`, a.`titre_article`,
+$req = 'SELECT a.`id_article`, a.`created_at`, a.`user_article`, a.`titre_article`,
         a.`code_article`, a.`commission_article`, a.`media_upload_id`, m.`filename`
 	FROM `caf_article` a
 	LEFT JOIN `media_upload` m ON a.`media_upload_id` = m.`id`
 	WHERE a.`status_article` = 1
 	AND a.`une_article` = 1
-	ORDER BY a.`tsp_validate_article` DESC
+	ORDER BY a.`updated_at` DESC
 	LIMIT 0, 5';
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -33,7 +33,7 @@ if ($pagenum < 1) {
 } // les pages commencent à 1
 
 // premiere requete : défaut, ne considère pas les articles liés à une sortie, liée à la commission courante
-$select = 'id_article , status_article ,  status_who_article ,  tsp_article ,  user_article ,  titre_article ,  code_article ,  evt_article ,  une_article ,  cont_article , media_upload_id, filename, c.code_commission, c.title_commission';
+$select = 'id_article , status_article ,  status_who_article ,  caf_article.created_at ,  user_article ,  titre_article ,  code_article ,  evt_article ,  une_article ,  cont_article , media_upload_id, filename, c.code_commission, c.title_commission';
 $req = 'SELECT SQL_CALC_FOUND_ROWS ' . $select . '
 	FROM  caf_article
     LEFT JOIN caf_evt as e ON (e.id_evt = caf_article.evt_article)
@@ -46,7 +46,7 @@ $req .= ')
 	WHERE  status_article =1
 	';
 // commission donnée : filtre (mais on inclut les actus club, commission=0)
-$req .= ' ORDER BY  tsp_article DESC
+$req .= ' ORDER BY caf_article.updated_at DESC
 	LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 

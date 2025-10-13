@@ -14,17 +14,17 @@ class ExcelExport
     /**
      * Calculate years between a given date and now.
      *
-     * @param string|int|\DateTime $date
+     * @param string|int|\DateTimeImmutable $date
      */
-    private function getYearsSinceDate($date): int
+    private function getYearsSinceDate(mixed $date): int
     {
         try {
             if (is_numeric($date)) {
                 // Handle Unix timestamp
-                $date = (new \DateTime())->setTimestamp((int) $date);
+                $date = (new \DateTimeImmutable())->setTimestamp((int) $date);
             } elseif (\is_string($date)) {
-                $date = new \DateTime($date);
-            } elseif (!$date instanceof \DateTime) {
+                $date = new \DateTimeImmutable($date);
+            } elseif (!$date instanceof \DateTimeImmutable) {
                 throw new \InvalidArgumentException('Invalid date format');
             }
         } catch (\Exception $e) {
@@ -73,7 +73,7 @@ class ExcelExport
                     $count - 1,
                     $name,
                     $user->getCafnum() ?? ' ',
-                    $user->getBirthday() ? $this->getYearsSinceDate($user->getBirthday()) : ' ',
+                    $user->getBirthdate() ? $this->getYearsSinceDate($user->getBirthdate()) : ' ',
                     $user->getTel() ? preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $user->getTel()) : ' ',
                     $user->getTel2() ? preg_replace('/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1 $2 $3 $4 $5', $user->getTel2()) : ' ',
                     $user->getEmail() ?? ' ',

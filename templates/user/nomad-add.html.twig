@@ -76,8 +76,8 @@
 
             {% for nomad in nomads %}
                 {% set birthdate = '' %}
-                {% if nomad.birthday is not same as ('') and nomad.birthday is not same as (null) %}
-                    {% set birthdate = nomad.birthday|date('d/m/Y') %}
+                {% if nomad.birthdate is not same as ('') and nomad.birthdate is not same as (null) %}
+                    {% set birthdate = nomad.birthdate|date('d/m/Y') %}
                 {% endif %}
                 prefilled['{{ nomad.id }}'] = {
                     'birthday_user': '{{ birthdate }}',

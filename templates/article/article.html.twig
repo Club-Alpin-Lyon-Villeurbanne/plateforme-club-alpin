@@ -19,15 +19,15 @@
                 {% endif %}
                 <div class="article-title-author">
                     Rédigé par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.user.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.user.nickname }}</a>
-                    le {{ article.tspCrea|date('d/m/Y') }}<br>
+                    le {{ article.createdAt|date('d/m/Y') }}<br>
                     {% if article.lastEditWho %}
                         Modifié par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.lastEditWho.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.lastEditWho.nickname }}</a>
-                        le {{ article.tspLastedit|date('d/m/Y') }}<br>
+                        le {{ article.updatedAt|date('d/m/Y') }}<br>
                     {% endif %}
                     {% if article.status is same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) and article.statusWho %}
                         Publié par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.statusWho.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.statusWho.nickname }}</a>
-                        {% if article.tspValidate %}
-                            le {{ article.tspValidate|date('d/m/Y') }}
+                        {% if article.validationDate %}
+                            le {{ article.validationDate|date('d/m/Y') }}
                         {% endif %}
                         <br>
                     {% endif %}
@@ -82,7 +82,7 @@
                 or allowed('article_delete') and app.user and article.user is same as (app.user)
                 or allowed('article_edit') and app.user and article.user is same as (app.user))
                 and article.status is same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) %}
-                    <b>Note :</b> Cet article est publié (par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.statusWho.id }}&amp;id_article={{ article.id }}" class="fancyframe">{{ article.statusWho.nickname }}</a> le {{ article.tspValidate|date('d/m/Y') }}) sur le site et visible par les adhérents !<br />
+                    <b>Note :</b> Cet article est publié (par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.statusWho.id }}&amp;id_article={{ article.id }}" class="fancyframe">{{ article.statusWho.nickname }}</a> le {{ article.validationDate|date('d/m/Y') }}) sur le site et visible par les adhérents !<br />
             {% endif %}
 
             {% if article.commission and allowed('article_edit_notmine', 'commission:' ~ article.commission.code)

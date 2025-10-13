@@ -81,12 +81,13 @@ class ArticleType extends AbstractType
                     $this->eventRepository->getRecentPastEvents(),
                     fn (Evt $event) => ($this->userRights->allowedOnCommission('article_create', $event->getCommission()) || $this->userRights->allowedOnCommission('evt_create', $event->getCommission()))
                 ),
-                'choice_label' => function (Evt $evt) {
-                    return date('d', $evt->getTsp()) . ' ' .
-                           $this->monthHelper->getMonthName(date('m', $evt->getTsp())) . ' ' .
-                           date('Y', $evt->getTsp()) . ' | ' .
-                           $evt->getCommission()->getTitle() . ' | ' .
-                           $evt->getTitre();
+                'choice_label' => function (Evt $event) {
+                    return $event->getEventStartDate()->format('d') . ' ' .
+                        $this->monthHelper->getMonthName($event->getEventStartDate()->format('m')) . ' ' .
+                        $event->getEventStartDate()->format('Y') . ' | ' .
+                        $event->getCommission()->getTitle() . ' | ' .
+                        $event->getTitre()
+                    ;
                 },
                 'placeholder' => 'Sélectionner',
                 'required' => false,

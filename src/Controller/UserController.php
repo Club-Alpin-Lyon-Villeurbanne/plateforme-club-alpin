@@ -174,7 +174,7 @@ class UserController extends AbstractController
             // infos sur la sortie
             $evtUrl = $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
             $evtName = $event->getTitre();
-            $evtDate = date('d/m/Y', $event->getTsp());
+            $evtDate = $event->getEventStartDate()->format('d/m/Y');
             $commissionTitle = $event->getCommission()->getTitle();
 
             // enregistrement
@@ -317,17 +317,16 @@ class UserController extends AbstractController
                     ->setNomadeParent($this->getUser()->getId())
                     ->setDoitRenouveler(false)
                     ->setAlerteRenouveler(false)
-                    ->setCreated(time())
-                    ->setTsInsert(time())
-                    ->setTsUpdate(time())
+                    ->setCreatedAt(new \DateTime())
+                    ->setUpdatedAt(new \DateTime())
                     ->setCookietoken('')
                     ->setAlertSortiePrefix('')
                     ->setAlertArticlePrefix('')
                 ;
             }
-            $birthdate = \DateTime::createFromFormat('d/m/Y', $formData['birthdate']);
-            if ($birthdate instanceof \DateTime) {
-                $nomad->setBirthday($birthdate->getTimestamp());
+            $birthdate = \DateTimeImmutable::createFromFormat('d/m/Y', $formData['birthdate']);
+            if ($birthdate instanceof \DateTimeImmutable) {
+                $nomad->setBirthdate($birthdate);
             }
             // forcer null pour éviter de pêter la contrainte d'unicité
             if (empty($nomad->getEmail())) {

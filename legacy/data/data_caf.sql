@@ -201,7 +201,6 @@ INSERT INTO `caf_page` (`id_page`, `parent_page`, `admin_page`, `superadmin_page
 (3, 0, 1, 0, 1, 0, 0, 0, 1, 2, 'admin-traductions', 'Traduction des contenus', 1, 0, 0.0, '', '', 0, 0, 0),
 (4, 0, 1, 0, 1, 0, 0, 0, 1, 5, 'admin-pages-libres', 'Pages libres', 1, 0, 0.0, '', '', 0, 0, 0),
 (5, 0, 1, 0, 1, 0, 0, 0, 1, 1, 'admin-matrice-droits', 'Matrice des droits', 1, 0, 0.0, '', '', 0, 0, 0),
-(6, 0, 1, 0, 1, 0, 0, 0, 1, 5, 'admin-users', 'Gestion des membres / droits', 1, 0, 0.0, '', '', 0, 0, 0),
 (7, 0, 0, 0, 1, 0, 0, 0, 0, 0, '404', 'Erreur 404', 0, 0, 0.0, '', '', 1, 0, 0),
 (8, 0, 0, 0, 1, 1, 1, 0, 0, 0, 'accueil', 'Accueil', 0, 0, 0.5, '', '/js/accueil.js', 1, 0, 0),
 (9, 0, 0, 0, 1, 0, 1, 5, 0, 0, 'contact', '', 0, 0, 0.0, '', '', 0, 0, 0),

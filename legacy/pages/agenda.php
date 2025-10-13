@@ -20,10 +20,8 @@ if (isset($_GET['month']) && $_GET['month'] > 0 && $_GET['month'] < 13) {
 $nDays = date('t', strtotime("$year-$month-10"));
 
 // timestamp minimal et maximal
-$start_tsp = mktime(0, 0, 0, $month, 1, $year); // premiere seconde du premier jour du mois
-$end_tsp = mktime(23, 59, 59, $month, $nDays, $year); // derniere seconde du dernier jour
-
-// echo 'start_tsp='.$start_tsp.'<hr />end_tsp='.$end_tsp.'<hr /><hr />';
+$startDate = new \DateTimeImmutable("$year-$month-01 00:00:00");
+$endDate = new \DateTimeImmutable("$year-$month-$nDays 23:59:59");
 
 // le tableau couvre tous les jours du mois
 $agendaTab = [];
@@ -38,11 +36,11 @@ $userId = null;
 if (user()) {
     $userId = getUser()->getId();
 }
-$req = 'SELECT  e.id_evt, e.cancelled_evt, e.code_evt, e.tsp_evt, e.tsp_end_evt, e.tsp_crea_evt, e.commission_evt, e.titre_evt, e.massif_evt, e.place_evt, e.difficulte_evt, e.user_evt, e.is_draft ';
+$req = 'SELECT  e.id_evt, e.cancelled_evt, e.code_evt, e.event_start_date, e.event_end_date, e.created_at, e.commission_evt, e.titre_evt, e.massif_evt, e.place_evt, e.difficulte_evt, e.user_evt, e.is_draft ';
 if (null !== $userId) {
     $req .= ', j.status_evt_join';
 }
-$req .= ', e.join_max_evt, e.ngens_max_evt, e.join_start_evt, e.id_groupe
+$req .= ', e.join_max_evt, e.ngens_max_evt, e.join_start_date, e.id_groupe
             , c.title_commission, c.code_commission
     FROM caf_evt AS e
     INNER JOIN caf_commission as c ON (c.id_commission = e.commission_evt) ';
@@ -56,13 +54,13 @@ $req .= 'WHERE id_commission = e.commission_evt
 // truc des dates :
 . ' AND ( '
     // la fin de l'événement est comprise dans ce mois
-    . " ( e.tsp_end_evt > $start_tsp AND e.tsp_end_evt < $end_tsp ) "
+    . " ( e.event_end_date > '" . $startDate->format('Y-m-d H:i:s') . "' AND e.event_end_date < '" . $endDate->format('Y-m-d H:i:s') . "' ) "
     // OU le début de l'événement est compris dans ce mois
-    . " OR ( e.tsp_evt > $start_tsp AND e.tsp_evt < $end_tsp ) "
+    . " OR ( e.event_start_date > '" . $startDate->format('Y-m-d H:i:s') . "' AND e.event_start_date < '" . $endDate->format('Y-m-d H:i:s') . "' ) "
     // OU l'événement comprend l'intégralité du mois
-    . " OR ( e.tsp_evt < $start_tsp AND e.tsp_end_evt > $end_tsp ) "
+    . " OR ( e.event_start_date < '" . $startDate->format('Y-m-d H:i:s') . "' AND e.event_end_date > '" . $endDate->format('Y-m-d H:i:s') . "' ) "
 . ' ) '
-. ' ORDER BY e.cancelled_evt ASC , e.tsp_evt ASC';
+. ' ORDER BY e.cancelled_evt ASC , e.event_start_date ASC';
 
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
@@ -70,13 +68,15 @@ $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     $handle['groupe'] = get_groupe($handle['id_groupe']);
 
-    // dates utiles pour ranger cet evenemtn dans le tableau
-    $tmpStartD = date('d', $handle['tsp_evt']); // jour de cet evt de 1 à 28-30-31
-    $tmpStartM = date('m', $handle['tsp_evt']); // mois de cet evt
-    $tmpStartY = date('Y', $handle['tsp_evt']); // annee de cet evt
-    $tmpEndD = date('d', $handle['tsp_end_evt']); // Jour de fin
-    $tmpEndM = date('m', $handle['tsp_end_evt']); // Mois de fin
-    $tmpEndY = date('Y', $handle['tsp_end_evt']); // annee de fin
+    // dates utiles pour ranger cet evenement dans le tableau
+    $eventStartDate = new \DateTimeImmutable($handle['event_start_date']);
+    $eventEndDate = new \DateTimeImmutable($handle['event_end_date']);
+    $tmpStartD = $eventStartDate->format('d'); // jour de cet evt de 1 à 28-30-31
+    $tmpStartM = $eventStartDate->format('m'); // mois de cet evt
+    $tmpStartY = $eventStartDate->format('Y'); // annee de cet evt
+    $tmpEndD = $eventEndDate->format('d'); // Jour de fin
+    $tmpEndM = $eventEndDate->format('m'); // Mois de fin
+    $tmpEndY = $eventEndDate->format('Y'); // annee de fin
 
     $handle['jourN'] = false; // compte des jours à afficher ?
 
@@ -112,7 +112,8 @@ while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         while ($bool) {
             // Nième jour de cet event :
             $tmpDay = mktime(23, 59, 59, $month, $i, $year); // jour ciblé ici
-            $handle['jourN'] = ceil(($tmpDay - $handle['tsp_evt']) / 86400); // nombre de jours d'ecart
+            $eventTsp = (new \DateTimeImmutable($handle['event_start_date']))->getTimestamp();
+            $handle['jourN'] = ceil(($tmpDay - $eventTsp) / 86400); // nombre de jours d'ecart
 
             // si ce jour dépasse le nombre de jours du mois, on s'arrête là
             if ($i > $nDays) {
@@ -124,7 +125,7 @@ while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             }
 
             if ($bool || 1 == $i) {
-                // jour N si l'event est sur plusieur jours
+                // jour N si l'event est sur plusieurs jours
                 $agendaTab[$i]['courant'][] = $handle;
             }
             ++$i; // incrémenation d'un jour

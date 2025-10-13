@@ -85,7 +85,7 @@ class FfcamSynchronizer
                 $potentialDuplicate = $this->userRepository->findDuplicateUser(
                     $parsedUser->getLastname(),
                     $parsedUser->getFirstname(),
-                    $parsedUser->getBirthday(),
+                    $parsedUser->getBirthdate(),
                     $parsedUser->getCafnum()
                 );
 
@@ -109,7 +109,7 @@ class FfcamSynchronizer
                         'name' => sprintf('%s %s', $parsedUser->getFirstname(), $parsedUser->getLastname())
                     ];
                 } else {
-                    $parsedUser->setTsInsert(time());
+                    $parsedUser->setCreatedAt(new \DateTime());
                     $parsedUser->setValid(false);
                     $this->entityManager->persist($parsedUser);
                     ++$stats['inserted'];
@@ -164,7 +164,7 @@ class FfcamSynchronizer
         $existingUser
             ->setFirstname($parsedUser->getFirstname())
             ->setLastname($parsedUser->getLastname())
-            ->setBirthday($parsedUser->getBirthday())
+            ->setBirthdate($parsedUser->getBirthdate())
             ->setCiv($parsedUser->getCiv())
             ->setCafnumParent($parsedUser->getCafnumParent())
             ->setTel($parsedUser->getTel())
@@ -175,15 +175,15 @@ class FfcamSynchronizer
             ->setNickname($parsedUser->getNickname())
             ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $this->hasTolerancyPeriodPassed)
             ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$this->hasTolerancyPeriodPassed)
-            ->setTsUpdate(time())
+            ->setUpdatedAt(new \DateTime())
             ->setManuel(false)
             ->setNomade(false)
         ;
 
         // Ne pas effacer la date d'adhésion quand l'adhésion parsée est expirée (valeur nulle).
         // Conserver la date d'adhésion existante sauf si une nouvelle adhésion valide est fournie.
-        if (null !== $parsedUser->getDateAdhesion()) {
-            $existingUser->setDateAdhesion($parsedUser->getDateAdhesion());
+        if (null !== $parsedUser->getJoinDate()) {
+            $existingUser->setJoinDate($parsedUser->getJoinDate());
         }
 
         $this->entityManager->persist($existingUser);

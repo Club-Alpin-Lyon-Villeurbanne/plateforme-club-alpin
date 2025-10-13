@@ -78,15 +78,13 @@ class ArticleController extends AbstractController
 
                 if ($isNew) {
                     $article->setUser($this->getUser());
-                    $article->setTspCrea(time());
                     $article->setCode($this->generateArticleCode($article->getTitre(), $slugger));
                 } else {
                     $article->setStatus(0);
                     $article->setLastEditWho($this->getUser());
                 }
 
-                $article->setTsp(time());
-                $article->setTspLastedit(new \DateTime());
+                $article->setUpdatedAt(new \DateTime());
 
                 // brouillon ?
                 $data = $request->request->all();
@@ -216,7 +214,8 @@ class ArticleController extends AbstractController
                 ->setParentType($type)
                 ->setParent($article->getId())
                 ->setUser($this->getUser())
-                ->setTsp(time())
+                ->setCreatedAt(new \DateTime())
+                ->setUpdatedAt(new \DateTime())
                 ->setStatus(1)
                 ->setName('')
                 ->setEmail('')
