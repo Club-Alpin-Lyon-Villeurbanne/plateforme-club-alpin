@@ -119,7 +119,7 @@ class Evt
     #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     private ?int $tspEdit;
 
-    #[ORM\Column(name: 'place_evt', type: 'string', length: 100, nullable: false, options: ['comment' => 'Lieu de départ activité'])]
+    #[ORM\Column(name: 'place_evt', type: 'string', length: 255, nullable: false, options: ['comment' => 'Lieu de départ activité'])]
     #[Groups('event:details')]
     private ?string $place;
 
