@@ -609,10 +609,10 @@ span.request {font-size: 1.1rem;}
     text-align: center;
 }
 
-.right-light-in {
+.right-light-in.partners {
     text-align: center;
 }
-.right-light-in h1 {
+.right-light-in.partners h1 {
     text-align: left;
 }
 .right-light-in .private, .right-light-in .public {
