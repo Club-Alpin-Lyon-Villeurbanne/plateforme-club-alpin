@@ -21,6 +21,7 @@ class FfcamSyncReportMailer
 
             if (empty($recipients)) {
                 $this->logger->info('Sync report not sent: no recipients configured (SYNC_REPORT_RECIPIENTS is empty)');
+
                 return;
             }
 
