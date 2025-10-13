@@ -1,0 +1,40 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    Nouveau signalement reçu
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        Un nouveau signalement a été déposé via le formulaire du site.
+    </p>
+    <p>Voici les détails :</p>
+    <ul>
+        <li>Je suis {{ contact_state }}</li>
+        <li>Type de signalement : {{ object }}</li>
+        {% if contact_email is not same as (null) or contact_phone is not same as (null) %}
+            {% if contact_email is not same as (null) %}<li>Adresse e-mail : {{ contact_email }}</li>{% endif %}
+            {% if contact_phone is not same as (null) %}<li>Téléphone : {{ contact_phone }}</li>{% endif %}
+        {% endif %}
+        <li>Témoignage :</li>
+    </ul>
+    <p>
+        {{ message | converturls | nl2br }}
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+    Un nouveau signalement a été déposé via le formulaire du site.
+
+    Voici les détails :
+    Je suis {{ contact_state }}
+    Type de signalement : {{ object }}
+    {% if contact_email is not same as (null) or contact_phone is not same as (null) %}
+        {% if contact_email is not same as (null) %}Adresse e-mail : {{ contact_email }}{% endif %}
+        {% if contact_phone is not same as (null) %}Téléphone : {{ contact_phone }}{% endif %}
+    {% endif %}
+
+    Témoignage :
+    {{ message }}
+
+{% endblock %}
