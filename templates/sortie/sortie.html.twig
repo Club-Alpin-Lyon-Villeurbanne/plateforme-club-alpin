@@ -1007,7 +1007,7 @@
             {% set nEnAttente = event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length %}
             {% set nbWaitingListAvailableSpot = max(0, event.joinMax - event.ngensMax - nEnAttente) %}
 
-            {% if nPlacesRestantesOnline <= 0 or event.withWaitingList() and nbWaitingListAvailableSpot <= 0 %}
+            {% if nPlacesRestantesOnline <= 0 or event.isInWaitingList(nInscritsTotal) and nbWaitingListAvailableSpot <= 0 %}
                 {% set isRegistrationPossible = false %}
             {% endif %}
 
