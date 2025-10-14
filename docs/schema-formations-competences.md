@@ -3,8 +3,6 @@
 ## Vue d'ensemble
 Ce document décrit le schéma de base de données pour la gestion des formations et niveaux de pratique des adhérents du Club Alpin Français (CAF).
 
-> **Note importante** : Le module de gestion des compétences n'est pas inclus dans cette version. Voir `schema-competences-futur.md` pour le schéma prévu des compétences.
-
 ## Tables de référentiel (données maîtres FFCAM)
 
 ### 1. `formation_referentiel`
