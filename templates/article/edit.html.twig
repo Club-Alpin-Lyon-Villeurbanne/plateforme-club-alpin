@@ -283,12 +283,13 @@
 
             document.getElementById('article_form').addEventListener('submit', function (e) {
                 // vérifier que le contenu est rempli
-                const editorContent = document.querySelector('.ck-editor__editable > p').innerHTML.trim();
+                const editorContent = document.querySelector('.ck-editor__editable').innerHTML.trim();
+                const cleanedContent = editorContent.replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/<br data-cke-filler="true">/g, '');
                 const tempDiv = document.createElement("div");
-                tempDiv.innerHTML = editorContent;
+                tempDiv.innerHTML = cleanedContent;
                 const text = tempDiv.textContent.replace(/\u00A0/g, "").trim();
 
-                if (text.length <= 3) {
+                if (text.length < 3) {
                     const hasMedia = tempDiv.querySelector("img, video, iframe, table, embed");
                     if (!hasMedia) {
                         alert('Veuillez renseigner le contenu de votre article.');
