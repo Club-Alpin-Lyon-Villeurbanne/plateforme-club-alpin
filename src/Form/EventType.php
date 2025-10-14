@@ -49,7 +49,10 @@ class EventType extends AbstractType
         $displayHelloAssoFields = false;
         $isUserAuthorizeToUseHelloAsso = false;
         $helloAssoAuthorizedUserIds = explode(',', trim($this->helloAssoAuthorizedUserIds));
-        if (\in_array($options['user']->getId(), $helloAssoAuthorizedUserIds, false)) {
+        if (
+            empty(trim($this->helloAssoAuthorizedUserIds))
+            || \in_array($options['user']->getId(), $helloAssoAuthorizedUserIds, false)
+        ) {
             $isUserAuthorizeToUseHelloAsso = true;
         }
 
