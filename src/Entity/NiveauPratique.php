@@ -10,6 +10,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Table(name: 'caf_niveau_pratique')]
 #[ORM\Index(columns: ['cafnum_user'], name: 'idx_cafnum')]
 #[ORM\Index(columns: ['code_activite'], name: 'idx_code_activite')]
+#[ORM\Index(columns: ['code_competence'], name: 'idx_code_competence')]
 #[ORM\Index(columns: ['date_validation'], name: 'idx_date_validation')]
 #[ORM\Entity(repositoryClass: NiveauPratiqueRepository::class)]
 class NiveauPratique
@@ -39,6 +40,9 @@ class NiveauPratique
 
     #[ORM\Column(name: 'activite', type: Types::STRING, length: 100, nullable: false)]
     private string $activite;
+
+    #[ORM\Column(name: 'code_competence', type: Types::STRING, length: 15, nullable: false)]
+    private string $codeCompetence;
 
     #[ORM\Column(name: 'niveau', type: Types::STRING, length: 255, nullable: false)]
     private string $niveau;
@@ -165,6 +169,18 @@ class NiveauPratique
     public function setValidationPar(string $validationPar): self
     {
         $this->validationPar = $validationPar;
+
+        return $this;
+    }
+
+    public function getCodeCompetence(): string
+    {
+        return $this->codeCompetence;
+    }
+
+    public function setCodeCompetence(string $codeCompetence): self
+    {
+        $this->codeCompetence = $codeCompetence;
 
         return $this;
     }
