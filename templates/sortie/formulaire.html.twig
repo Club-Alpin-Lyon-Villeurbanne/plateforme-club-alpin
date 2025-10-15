@@ -306,17 +306,21 @@
 
             // champ montant hello asso pas obligatoire si hello asso pas coché
             {% if form.hasPaymentForm is defined and form.paymentAmount is defined %}
+                const helloAssoBlock = document.getElementById('form-hello-asso');
                 const helloAssoAmountField = document.getElementById('{{ form.paymentAmount.vars.id }}');
                 helloAssoAmountField.removeAttribute('required');
+
+                {% if form.hasPaymentForm.vars.data %}
+                    helloAssoBlock.style.display = 'block';
+                    helloAssoAmountField.setAttribute('required', 'required');
+                {% endif %}
 
                 // si hello asso coché, remettre le montant obligatoire
                 const helloAssoCheckbox = document.getElementById('{{ form.hasPaymentForm.vars.id }}');
                 helloAssoCheckbox.addEventListener('change', (e) => {
-                    const helloAssoBlock = document.getElementById('form-hello-asso');
-
                     if (helloAssoCheckbox.checked) {
                         helloAssoBlock.style.display = 'block';
-                        helloAssoAmountField.setAttribute('required', true);
+                        helloAssoAmountField.setAttribute('required', 'required');
                     } else {
                         helloAssoBlock.style.display = 'none';
                         helloAssoAmountField.removeAttribute('required');
