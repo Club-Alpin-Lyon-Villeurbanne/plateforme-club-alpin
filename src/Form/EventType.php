@@ -57,7 +57,7 @@ class EventType extends AbstractType
         }
 
         // si on modifie la sortie et qu'elle n'a pas encore de paiement HelloAsso, on peut afficher les champs HelloAsso
-        if (!$options['is_edit'] || !$event->hasPaymentForm()) {
+        if (!$options['is_edit'] || empty($event->getPaymentUrl())) {
             $displayHelloAssoFields = true;
         }
 
