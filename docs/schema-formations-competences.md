@@ -41,7 +41,6 @@ Formations suivies et validées par les adhérents.
 | id | INT | PK, AUTO_INCREMENT | Identifiant unique |
 | user_id | BIGINT | NOT NULL, FK → caf_user(id_user) | ID de l'utilisateur |
 | code_formation | VARCHAR(50) | FK → formation_referentiel | Code de la formation |
-| lieu_formation | VARCHAR(255) | NOT NULL | Lieu de la formation |
 | date_debut_formation | DATE | NOT NULL | Date de début |
 | date_fin_formation | DATE | NOT NULL | Date de fin |
 | valide | TINYINT(1) | NOT NULL | Formation validée (0/1) |

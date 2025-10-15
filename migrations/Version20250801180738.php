@@ -28,7 +28,6 @@ final class Version20250801180738 extends AbstractMigration
             id INT AUTO_INCREMENT NOT NULL,
             user_id BIGINT NOT NULL,
             code_formation VARCHAR(50) DEFAULT NULL,
-            lieu_formation VARCHAR(255) NOT NULL,
             date_debut_formation DATE NOT NULL,
             date_fin_formation DATE NOT NULL,
             valide TINYINT(1) NOT NULL,
