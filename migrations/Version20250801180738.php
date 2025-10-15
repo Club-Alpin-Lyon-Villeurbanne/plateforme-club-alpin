@@ -31,7 +31,7 @@ final class Version20250801180738 extends AbstractMigration
             valide TINYINT(1) NOT NULL,
             date_validation DATE DEFAULT NULL,
             numero_formation VARCHAR(50) DEFAULT NULL,
-            formateur VARCHAR(255) DEFAULT NULL,
+            validateur VARCHAR(255) DEFAULT NULL,
             id_interne VARCHAR(20) DEFAULT NULL,
             intitule_formation VARCHAR(255) DEFAULT NULL,
             created_at DATETIME NOT NULL,

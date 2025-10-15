@@ -44,7 +44,7 @@ Formations suivies et validées par les adhérents.
 | valide | TINYINT(1) | NOT NULL | Formation validée (0/1) |
 | date_validation | DATE | NULL | Date de validation |
 | numero_formation | VARCHAR(50) | NULL | Numéro FFCAM de la session |
-| formateur | VARCHAR(255) | NULL | Nom du formateur |
+| validateur | VARCHAR(255) | NULL | Personne ayant validé la formation |
 | id_interne | VARCHAR(20) | NULL | ID interne FFCAM |
 | intitule_formation | VARCHAR(255) | NULL | Intitulé tel qu'affiché sur l'extranet |
 | created_at | DATETIME | NOT NULL | Date de création |
