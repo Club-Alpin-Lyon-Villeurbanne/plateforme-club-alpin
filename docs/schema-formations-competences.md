@@ -41,8 +41,6 @@ Formations suivies et validées par les adhérents.
 | id | INT | PK, AUTO_INCREMENT | Identifiant unique |
 | user_id | BIGINT | NOT NULL, FK → caf_user(id_user) | ID de l'utilisateur |
 | code_formation | VARCHAR(50) | FK → formation_referentiel | Code de la formation |
-| date_debut_formation | DATE | NOT NULL | Date de début |
-| date_fin_formation | DATE | NOT NULL | Date de fin |
 | valide | TINYINT(1) | NOT NULL | Formation validée (0/1) |
 | date_validation | DATE | NULL | Date de validation |
 | numero_formation | VARCHAR(50) | NULL | Numéro FFCAM de la session |
@@ -54,7 +52,6 @@ Formations suivies et validées par les adhérents.
 
 **Index:**
 - INDEX: user_id, code_formation, date_validation
-- INDEX: (date_debut_formation, date_fin_formation)
 
 ### 4. `formation_niveau_validation`
 Niveaux de pratique validés par les adhérents.

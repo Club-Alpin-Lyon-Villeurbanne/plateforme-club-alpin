@@ -28,8 +28,6 @@ final class Version20250801180738 extends AbstractMigration
             id INT AUTO_INCREMENT NOT NULL,
             user_id BIGINT NOT NULL,
             code_formation VARCHAR(50) DEFAULT NULL,
-            date_debut_formation DATE NOT NULL,
-            date_fin_formation DATE NOT NULL,
             valide TINYINT(1) NOT NULL,
             date_validation DATE DEFAULT NULL,
             numero_formation VARCHAR(50) DEFAULT NULL,
@@ -41,7 +39,6 @@ final class Version20250801180738 extends AbstractMigration
             INDEX IDX_FORM_VAL_USER (user_id),
             INDEX IDX_FORM_VAL_CODE (code_formation),
             INDEX IDX_FORM_VAL_DATE (date_validation),
-            INDEX IDX_FORM_VAL_DATES (date_debut_formation, date_fin_formation),
             PRIMARY KEY(id)
         ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
 
