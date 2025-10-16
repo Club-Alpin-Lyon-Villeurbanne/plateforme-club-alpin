@@ -62,13 +62,8 @@ elseif (!$tmpUser) {
 }// droits !
 else {
     // j'ai le droit de le contacter ?
-    $auth_contact_user = false;
-    if ('all' == $tmpUser['auth_contact_user']) {
-        $auth_contact_user = true;
-    }
-    if ('users' == $tmpUser['auth_contact_user'] & user()) {
-        $auth_contact_user = true;
-    } ?>
+    $auth_contact_user = true;
+    ?>
 
 	<!-- AVATAR-->
 	<div style="float:left; padding:0 20px 30px 0; width:150px; overflow:hidden; text-align:center;">

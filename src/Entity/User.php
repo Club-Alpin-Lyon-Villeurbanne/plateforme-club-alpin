@@ -182,12 +182,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private $moreinfo;
 
     /**
-     * @var string
-     */
-    #[ORM\Column(name: 'auth_contact_user', type: 'string', length: 10, nullable: false, options: ['default' => 'users', 'comment' => 'QUI peut me contacter via formulaire'])]
-    private $authContact = 'users';
-
-    /**
      * @var bool
      */
     #[ORM\Column(name: 'valid_user', type: 'boolean', nullable: false, options: ['comment' => "0=l'user n'a pas activé son compte   1=activé    2=bloqué"])]
@@ -304,7 +298,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
             'pays' => $this->getPays(),
             'civ' => $this->getCiv(),
             'moreinfo' => $this->getMoreinfo(),
-            'authContact' => $this->getAuthContact(),
             'valid' => $this->getValid(),
             'manuel' => $this->getManuel(),
             'nomade' => $this->getNomade(),
@@ -588,18 +581,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setMoreinfo(string $moreinfo): self
     {
         $this->moreinfo = $moreinfo;
-
-        return $this;
-    }
-
-    public function getAuthContact(): ?string
-    {
-        return $this->authContact;
-    }
-
-    public function setAuthContact(string $authContact): self
-    {
-        $this->authContact = $authContact;
 
         return $this;
     }
