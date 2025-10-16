@@ -35,7 +35,7 @@ class EventManagementController extends AbstractController
         $validateAll = $this->userRights->allowed('evt_validate_all');
 
         if (!$validate && !$validateAll) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         // commissions pour lesquelles on a des droits
@@ -73,7 +73,7 @@ class EventManagementController extends AbstractController
     public function legalManageEvents(Request $request): array
     {
         if (!$this->userRights->allowed('evt_legal_accept')) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $perPage = 30;
