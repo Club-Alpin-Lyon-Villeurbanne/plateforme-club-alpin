@@ -305,7 +305,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_VALIDATE', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($this->getUser());
@@ -357,7 +357,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_INSCRIPTIONS_MODIFICATION', $event)) {
-            $this->addFlash('error', 'Vous n\'êtes pas autorisé à celà.');
+            $this->addFlash('error', 'Vous n\'êtes pas autorisé à cela.');
 
             return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
         }
@@ -503,7 +503,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_VALIDATE', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $event->setStatus(Evt::STATUS_PUBLISHED_REFUSE)->setStatusWho($this->getUser());
@@ -530,7 +530,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_LEGAL_VALIDATION', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $event->setStatusLegal(Evt::STATUS_LEGAL_VALIDE)->setStatusLegalWho($this->getUser());
@@ -556,7 +556,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_LEGAL_VALIDATION', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $event->setStatusLegal(Evt::STATUS_LEGAL_REFUSE)->setStatusLegalWho($this->getUser());
@@ -581,7 +581,7 @@ class SortieController extends AbstractController
         EntityManagerInterface $em,
     ): RedirectResponse {
         if (!$this->isGranted('SORTIE_DELETE', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         if (!$this->isCsrfTokenValid('delete_event', $request->request->get('csrf_token'))) {
@@ -602,7 +602,7 @@ class SortieController extends AbstractController
         Mailer $mailer,
     ): RedirectResponse {
         if (!$this->isGranted('SORTIE_CANCEL', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         if (!$this->isCsrfTokenValid('cancel_event', $request->request->get('csrf_token'))) {
@@ -655,7 +655,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_UNCANCEL', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $event
@@ -677,7 +677,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_CONTACT_PARTICIPANTS', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $receivers = $request->request->all('contact_participant');
@@ -726,7 +726,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('PARTICIPANT_ANNULATION', $participation)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $em->remove($participation);
@@ -859,7 +859,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('JOIN_SORTIE', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $data = $request->request->all();
