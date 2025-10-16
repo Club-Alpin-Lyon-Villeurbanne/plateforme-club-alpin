@@ -321,7 +321,6 @@ class UserController extends AbstractController
                     ->setTsInsert(time())
                     ->setTsUpdate(time())
                     ->setCookietoken('')
-                    ->setAuthContact('none')
                     ->setAlertSortiePrefix('')
                     ->setAlertArticlePrefix('')
                 ;

@@ -250,23 +250,7 @@ if (user()) {
     echo '&nbsp;&nbsp;&nbsp;';
     echo html_utf8($tmpUser['pays_user']); ?></b>
 
-            <?php // Les infos suivantes sont gérées par l'update automatique script ffcam
-            /*
-            <input type="text" style="width:388px" name="adresse_user" class="type1" value="<?php echo html_utf8($tmpUser['adresse_user']);?>" placeholder="Numéro, rue..." /><br />
-            <input type="text" style="width:50px" name="cp_user" class="type1" value="<?php echo html_utf8($tmpUser['cp_user']);?>" placeholder="Code postal" />
-            <input type="text" style="width:150px" name="ville_user" class="type1" value="<?php echo html_utf8($tmpUser['ville_user']);?>" placeholder="Ville" />
-            <input type="text" style="width:150px" name="pays_user" class="type1" value="<?php echo html_utf8($tmpUser['pays_user']);?>" placeholder="Pays" /><br />
-            */ ?>
-
-            <hr style="margin: 20px 0" />
-            Qui peut vous contacter sur le site, via un formulaire de contact ? Votre adresse e-mail n'est jamais dévoilée, excepté aux responsables du club ou aux organisateurs des sorties auxquelles vous êtes inscrit.<br />
-
-            <?php $whocan_selected = $tmpUser['auth_contact_user']; ?>
-            <?php $whocan_table = true; ?>
-            <?php require __DIR__ . '/../includes/user/whocan_contact.php'; ?>
-
-            <hr />
-            <br />
+            <br /><br />
             <div style="text-align:center">
                 <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
                     <span class="bleucaf">&gt;</span>

@@ -39,7 +39,6 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     $validUser = $userTab['valid_user'];
     $cafnumUserNew = $userTab['cafnum_user_new'] ?? null;
     $cafnumUser = $userTab['cafnum_user'];
-    $authContactUser = $userTab['auth_contact_user'];
     $userEmail = $userTab['email_user'];
 
     ?>
@@ -117,13 +116,9 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 			<br />
 
 			<br />
-			Qui peut le / la contacter sur le site, via un formulaire de contact (adresse e-mail jamais dévoilée) ?<br />
-			<?php $whocan_selected = $authContactUser; ?>
-			<?php $whocan_table = false; ?>
-			<?php require __DIR__ . '/../includes/user/whocan_contact.php'; ?>
 
 			<a href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
-				<img src="/img/base/save.png" alt="Enregistrer" title="Enregistrer" style="height:35px;" />
+				<img src="/img/base/save.png" alt="Enregistrer" title="Enregistrer" style="height:35px; vertical-align: middle" />
 				Enregistrer
 			</a>
 		<?php

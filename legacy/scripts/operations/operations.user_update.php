@@ -21,7 +21,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $cp_user = trim(stripslashes($_POST['cp_user'] ?? ''));
     $ville_user = trim(stripslashes($_POST['ville_user'] ?? ''));
     $pays_user = trim(stripslashes($_POST['pays_user'] ?? ''));
-    $auth_contact_user = trim(stripslashes($_POST['auth_contact_user'] ?? ''));
     $email_user_mailchange = trim(stripslashes($_POST['email_user_mailchange'] ?? ''));
 
     if (!$id_user) {
@@ -29,16 +28,6 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
     if (!isMail($email_user_mailchange) && '' !== $email_user_mailchange) {
         $errTab[] = 'Vous avez demandé à remplacer votre adresse e-mail, mais elle semble invalide.';
-    }
-
-    // 04/09/2013 - gmn - desactivation car import FFCAM => E.HENKE : on doit malgré tout pouvoir enregistrer les infos personnelles de contact
-    if (!isset($errTab) || 0 === count($errTab)) {
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE `caf_user` SET `auth_contact_user` = ? WHERE `id_user` = ? LIMIT 1');
-        $stmt->bind_param('si', $auth_contact_user, $id_user);
-        if (!$stmt->execute()) {
-            $errTab[] = 'Erreur SQL';
-        }
-        $stmt->close();
     }
 }
 

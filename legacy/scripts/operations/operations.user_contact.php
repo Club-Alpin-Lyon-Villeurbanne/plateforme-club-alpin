@@ -59,7 +59,7 @@ else {
 if (!isset($errTab) || 0 === count($errTab)) {
     $destinataire = false;
     // ce user autorise t-il le contact
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT civ_user, firstname_user, lastname_user, auth_contact_user, email_user
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT civ_user, firstname_user, lastname_user, email_user
         FROM caf_user
         WHERE id_user = ?');
     $stmt->bind_param('i', $id_user);
@@ -97,17 +97,6 @@ if (!empty($idArticle)) {
         $article = $articleRow;
     }
     $stmt->close();
-}
-
-// contact autorisé ? antipiratage
-if (!isset($errTab) || 0 === count($errTab)) {
-    $auth_contact_user = false;
-    if ('none' == $destinataire['auth_contact_user']) {
-        $errTab[] = 'Ce destinataire a désactivé le contact par e-mail.';
-    }
-    if ('users' == $destinataire['auth_contact_user'] && !user()) {
-        $errTab[] = 'Vous devez être connecté pour contacter cette personne.';
-    }
 }
 
 if (!isset($errTab) || 0 === count($errTab)) {

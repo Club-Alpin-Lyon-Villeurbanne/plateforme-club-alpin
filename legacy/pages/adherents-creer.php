@@ -80,13 +80,9 @@
 					<input type="text" name="pays_user" class="type1" value="<?php echo inputVal('pays_user'); ?>" placeholder="Pays" /><br />
 
 					<br />
-					Qui peut le / la contacter sur le site, via un formulaire de contact (adresse e-mail jamais dévoilée) ?<br />
-                    <?php $whocan_selected = $tmpUser['auth_contact_user'] ?? null; ?>
-                    <?php $whocan_table = true; ?>
-                    <?php require __DIR__ . '/../includes/user/whocan_contact.php'; ?>
 
 					<a href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
-						<img src="/img/base/save.png" alt="Enregistrer" title="Enregistrer" style="height:35px;" />
+						<img src="/img/base/save.png" alt="Enregistrer" title="Enregistrer" style="height:35px; vertical-align: middle" />
 						Enregistrer
 					</a>
 					<?php
