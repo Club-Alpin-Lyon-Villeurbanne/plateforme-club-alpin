@@ -338,7 +338,7 @@ class SortieController extends AbstractController
 
         $this->sendUpdateNotificationEmail($mailer, $event, $event->getCreatedAt() === $event->getUpdatedAt());
 
-        $this->addFlash('info', 'La sortie est publiée');
+        $this->addFlash('info', 'La sortie est approuvée');
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }

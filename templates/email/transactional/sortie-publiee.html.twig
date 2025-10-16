@@ -1,17 +1,17 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    {% if commission %}[{{ commission }}]{% endif %}[Sortie publiée] {{ event_name }} du {{ event_date }}
+    {% if commission %}[{{ commission }}]{% endif %}[Sortie approuvée] {{ event_name }} du {{ event_date }}
 {%- endblock %}
 
 {% block inner_html %}
     <p>
         Félicitations, votre sortie <a href="{{ event_url }}">{{ event_name }}</a>, prévue pour le {{ event_date }}
-        a été publiée par les responsables.
+        a été approuvée par les responsables.
     </p>
 {% endblock %}
 
 {% block inner_txt %}
 Félicitations, votre sortie {{ event_name }} ({{ event_url }}, prévue pour le {{ event_date }}
-a été publiée par les responsables.
+a été approuvée par les responsables.
 {% endblock %}

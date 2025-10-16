@@ -53,14 +53,14 @@ class EventManagementController extends AbstractController
 
         return [
             'events' => $this->eventRepository->getEventsToPublish($commissions, $first, $perPage),
-            'title' => 'Publication des sorties',
+            'title' => 'Approbation des sorties',
             'total' => $total,
             'per_page' => $perPage,
             'pages' => $pages,
             'page' => $page,
             'page_url' => $this->generateUrl('manage_events'),
             'to_include' => 'gestion-des-sorties-main',
-            'action' => 'publication',
+            'action' => 'approbation',
         ];
     }
 

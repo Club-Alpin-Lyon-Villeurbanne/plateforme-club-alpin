@@ -6,11 +6,11 @@
 
 {% block inner_html %}
     <p>
-        Vous êtes responsable de commission, et il y a {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} en attente de publication.
+        Vous êtes responsable de commission, et il y a {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} en attente d'approbation.
     </p>
     <p>
         Prenez soin de vous rendre sur <a href="{{ manage_events_url }}">votre page de gestion</a>,
-        et de vérifier attentivement toutes les informations liées à chaque sortie en attente de publication.
+        et de vérifier attentivement toutes les informations liées à chaque sortie en attente d'approbation.
     </p>
     <p>
         Vous disposez d'un accès réservé à chaque page de sortie avant la publication.
@@ -24,10 +24,10 @@
 {% endblock %}
 
 {% block inner_txt %}
-    Vous êtes responsable de commission, et il y a {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} en attente de publication.
+    Vous êtes responsable de commission, et il y a {{ sorties | length }} sortie{{ sorties | length > 1 ? 's' : '' }} en attente d'approbation.
 
     Prenez soin de vous rendre sur votre page de gestion [{{ manage_events_url }}],
-    et de vérifier attentivement toutes les informations liées à chaque sortie en attente de publication.
+    et de vérifier attentivement toutes les informations liées à chaque sortie en attente d'approbation.
 
     Vous disposez d'un accès réservé à chaque page de sortie avant la publication.
 
