@@ -1,15 +1,15 @@
 App\Entity\Evt:
     sortie{1..10}:
-        __construct: ['@user1', '@commission_alpinisme', '<sentence(4)>', '<word()>', '<(new \DateTimeImmutable("+5 days"))>', '<(new \DateTimeImmutable("+8 days"))>', '<address()>', '<latitude()>', '<longitude()>', '<paragraph()>', 10, 10, '<(new \DateTimeImmutable())>']
-        user: '@user1'
-        titre: '<sentence(4)>'
+        __construct: ['@user_encadrant', '@commission_famille', '<sentence(4)>', '<word()>', '<(new \DateTimeImmutable("+5 days"))>', '<(new \DateTimeImmutable("+6 days"))>', '<address()>', '<latitude()>', '<longitude()>', '<paragraph()>', 10, 10, '<(new \DateTimeImmutable())>']
         place: '<address()>'
         code: '<word()>'
-        rdv: '<address()>'
-        lat: '<latitude()>'
-        long: '<longitude()>'
-        description: '<paragraph()>'
-
-        massif: '<word()>'
         matos: '<sentence(12)>'
         difficulte: '<word()>'
+        distance: '<numberBetween(2000, 6000)>'
+        denivele: '<numberBetween(450, 1200)>'
+        status: 1
+        autoAccept: true
+        isDraft: false
+        statusWho: '@user_resp_comm'
+        agreeEdito: true
+        imagesAuthorized: true

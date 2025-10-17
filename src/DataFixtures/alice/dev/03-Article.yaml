@@ -1,0 +1,12 @@
+App\Entity\Article:
+    article_{1..5}:
+        status: 1
+        user: '@user_redacteur'
+        statusWho: '@user_resp_comm'
+        titre: '<sentence(15)>'
+        code: '<word()>'
+        commission: '@commission_famille'
+        cont: '<paragraph()>'
+        agreeEdito: true
+        imagesAuthorized: true
+        validationDate: '<(new \DateTimeImmutable())>'

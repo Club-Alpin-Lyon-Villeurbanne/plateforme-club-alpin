@@ -1,3 +1,33 @@
 App\Entity\Commission:
     commission_alpinisme:
         __construct: ['Alpinisme', 'alpinisme', 2]
+    commission_vtt:
+        __construct: ['VTT / VDM', 'vtt', 15]
+    commission_famille:
+        __construct: ['Sorties familles', 'sorties-familles', 1]
+    commission_ski:
+        __construct: ['Ski alpin / Snowboard', 'ski-alpin', 3]
+    commission_ecole_aventure:
+        __construct: ['École d''aventure', 'ecole-d-aventure', 4]
+    commission_ecole_ski:
+        __construct: ['École de ski', 'ecole-de-ski', 6]
+    commission_escalade:
+        __construct: ['Escalade', 'escalade', 7]
+    commission_handicaf:
+        __construct: ['Handicaf', 'handicaf', 9]
+    commission_formation:
+        __construct: ['Formation', 'formation', 14]
+    commission_ski_randonnee:
+        __construct: ['Ski de randonnée', 'ski-de-randonnee', 12]
+    commission_escalade_competition:
+        __construct: ['Escalade compétition', 'escalade-competition', 8]
+    commission_randonnee_pedestre:
+        __construct: ['Randonnée pédestre', 'randonnee-pedestre', 10]
+    commission_randonnee_raquette:
+        __construct: ['Randonnée raquette', 'randonnee-raquette', 11]
+    commission_protection_montagne:
+        __construct: ['Protection de la montagne', 'protection-de-la-montagne', 13]
+    commission_ecole_escalade:
+        __construct: ['École d''escalade', 'ecole-d-escalade', 5]
+    commission_vie_club:
+        __construct: ['Vie du club', 'vie-du-club', 16]

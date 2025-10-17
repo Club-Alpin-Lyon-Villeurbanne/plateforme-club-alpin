@@ -3,7 +3,7 @@ import { login } from './helpers/auth';
 
 // Variables globales
 const BASE_URL = 'http://127.0.0.1:8000/';
-const USER_EMAIL = 'test@clubalpinlyon.fr';
+const USER_EMAIL = 'encadrant@test-clubalpinlyon.fr';
 const USER_PASSWORD = 'test';
 const RDV_LIEU = 'bron';
 const NGENS_MAX = '9';
