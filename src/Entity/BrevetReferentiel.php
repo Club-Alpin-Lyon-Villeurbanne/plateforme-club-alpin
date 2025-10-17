@@ -7,7 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Table(name: 'formation_brevet_referentiel')]
-#[ORM\Index(columns: ['code_brevet'], name: 'idx_code_brevet', unique: true)]
+#[ORM\UniqueConstraint(name: 'UNIQ_CODE_BREVET', columns: ['code_brevet'])]
 #[ORM\Entity(repositoryClass: BrevetReferentielRepository::class)]
 class BrevetReferentiel
 {
@@ -16,7 +16,7 @@ class BrevetReferentiel
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private int $id;
 
-    #[ORM\Column(name: 'code_brevet', type: Types::STRING, length: 50, nullable: false, unique: true)]
+    #[ORM\Column(name: 'code_brevet', type: Types::STRING, length: 50, nullable: false)]
     private string $codeBrevet;
 
     #[ORM\Column(name: 'intitule', type: Types::STRING, length: 255)]
