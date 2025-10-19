@@ -24,11 +24,15 @@ class MysqliHandler
         $this->requestStack = $requestStack;
         $this->kernelEnvironment = $kernelEnvironment;
         $this->params = $params;
-        $this->initializeConnection();
+        // Lazy loading: connection will be initialized on first use
     }
 
-    private function initializeConnection()
+    private function initializeConnection(): void
     {
+        if ($this->mysqli instanceof \mysqli) {
+            return; // Already connected
+        }
+
         $dbname = $this->params->get('legacy_env_DB_NAME');
 
         if ('test' === $this->kernelEnvironment) {
@@ -46,6 +50,7 @@ class MysqliHandler
 
     public function query(string $sql)
     {
+        $this->initializeConnection();
         $result = $this->mysqli->query($sql);
 
         if ($this->mysqli->errno > 0) {
@@ -82,26 +87,39 @@ class MysqliHandler
 
     public function prepare($query)
     {
+        $this->initializeConnection();
         return $this->mysqli->prepare($query);
     }
 
     public function escapeString($value)
     {
+        $this->initializeConnection();
         return $this->mysqli->real_escape_string($value);
     }
 
     public function insertId()
     {
+        $this->initializeConnection();
         return $this->mysqli->insert_id;
     }
 
     public function lastError()
     {
+        $this->initializeConnection();
         return $this->mysqli->error;
     }
 
     public function affectedRows()
     {
+        $this->initializeConnection();
         return $this->mysqli->affected_rows;
+    }
+
+    public function __destruct()
+    {
+        if ($this->mysqli instanceof \mysqli) {
+            $this->mysqli->close();
+            $this->mysqli = null;
+        }
     }
 }

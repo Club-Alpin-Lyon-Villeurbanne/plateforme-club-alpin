@@ -1,0 +1,32 @@
+name: Check Email Templates URLs
+
+on:
+  pull_request:
+    paths:
+      - 'templates/email/**/*.twig'
+
+jobs:
+  check-relative-urls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for relative URLs in email templates
+        run: |
+          # Rechercher les usages de url() dans les templates d'emails
+          RELATIVE_URLS=$(grep -r "{{ url(" templates/email/transactional/ || true)
+
+          if [ ! -z "$RELATIVE_URLS" ]; then
+            echo "❌ ERREUR: Des URLs relatives ont été trouvées dans les templates d'emails"
+            echo ""
+            echo "Les templates d'emails doivent utiliser des URLs absolues générées"
+            echo "depuis le contrôleur avec UrlGeneratorInterface::ABSOLUTE_URL"
+            echo ""
+            echo "Fichiers concernés:"
+            echo "$RELATIVE_URLS"
+            echo ""
+            echo "Voir docs/EMAIL_DEVELOPMENT_GUIDE.md pour plus d'informations"
+            exit 1
+          fi
+
+          echo "✅ Aucune URL relative trouvée dans les templates d'emails"

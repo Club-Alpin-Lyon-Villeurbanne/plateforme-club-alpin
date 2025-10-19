@@ -55,6 +55,11 @@ class AuthenticationListener implements EventSubscriberInterface, ServiceSubscri
 
     public function onResponse(ResponseEvent $responseEvent)
     {
+        // Skip DB operations for non-successful responses (404, 500, etc.)
+        if (!$responseEvent->getResponse()->isSuccessful()) {
+            return;
+        }
+
         if ($this->setCookie) {
             if ($token = $this->locator->get(TokenStorageInterface::class)->getToken()) {
                 $user = $token->getUser();

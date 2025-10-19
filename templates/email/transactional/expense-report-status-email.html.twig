@@ -11,7 +11,7 @@
 {% block inner_html %}
 <div>
     <p>
-        Votre note de frais {% if report.event %}pour <a href="{{ url('sortie', {code: report.event.code, id: report.event.id}) }}">"{{ report.event.titre }}"</a>{% endif %} 
+        Votre note de frais {% if report.event and event_url is defined %}pour <a href="{{ event_url }}">"{{ report.event.titre }}"</a>{% elseif report.event %}pour "{{ report.event.titre }}"{% endif %}
         a été traitée et
             {%- if status == 'submitted' %} est envoyée à la comptabilité
             {%- elseif status == 'rejected' %} a été refusée
@@ -157,7 +157,7 @@ Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif
     {%- elseif status == 'accounted' %} a été intégrée dans l'outil de comptabilité et n'est donc plus modifiable
     {%- else %} a été acceptée{% endif %}.
 
-    {% if report.event %}({{ url('sortie', {code: report.event.code, id: report.event.id}) }}){% endif %}
+    {% if report.event and event_url is defined %}({{ event_url }}){% endif %}
 
     {% if status == 'rejected' and report.statusComment %}
 Message laissé par la comptabilité : "{{ report.statusComment }}"
