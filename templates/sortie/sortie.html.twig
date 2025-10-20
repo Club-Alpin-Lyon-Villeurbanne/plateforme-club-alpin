@@ -930,13 +930,13 @@
 
             {% if event.publicStatusValide and (is_granted('SORTIE_UPDATE', event) or is_granted('SORTIE_DELETE', event) or is_granted('SORTIE_CANCEL', event)) %}
             <li class="wide">
-                <b>SORTIE PUBLIÉE PAR :</b>
+                <b>SORTIE APPROUVÉE PAR :</b>
                 {% if event.status is same as (constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE')) and event.statusWho %}
                     <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.statusWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
                         {{ event.statusWho.nickname }}
                     </a>
                 {% else %}
-                    <span class="mini">non publiée</span>
+                    <span class="mini">non approuvée</span>
                 {% endif %}
             </li>
             {% endif %}
