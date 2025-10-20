@@ -120,7 +120,6 @@ class HelloAssoWebhookController extends AbstractController
             ;
             $event->addUnrecognizedPayer($payer);
             $this->entityManager->persist($event);
-            //            $this->entityManager->persist($payer);
             $this->entityManager->flush();
 
             $this->logger->error('HelloAsso Webhook - Unknown payer', [
