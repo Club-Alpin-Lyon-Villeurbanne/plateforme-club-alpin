@@ -232,6 +232,9 @@ class Evt
     #[ORM\Column(name: 'has_payment_send_mail', type: Types::BOOLEAN, nullable: false, options: ['default' => true])]
     private bool $hasPaymentSendMail = true;
 
+    #[ORM\OneToMany(mappedBy: 'evt', targetEntity: 'EventUnrecognizedPayer', cascade: ['persist'], orphanRemoval: true)]
+    private ?Collection $unrecognizedPayers = null;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -277,6 +280,7 @@ class Evt
         $this->tspCrea = time();
         $this->tspEdit = time();
         $this->isDraft = false;
+        $this->unrecognizedPayers = new ArrayCollection();
     }
 
     public function jsonSerialize(): mixed
@@ -975,6 +979,30 @@ class Evt
     public function setHasPaymentSendMail(bool $hasPaymentSendMail): self
     {
         $this->hasPaymentSendMail = $hasPaymentSendMail;
+
+        return $this;
+    }
+
+    public function getUnrecognizedPayers(): ?Collection
+    {
+        return $this->unrecognizedPayers;
+    }
+
+    public function addUnrecognizedPayer(EventUnrecognizedPayer $eventUnrecognizedPayer): self
+    {
+        $this->unrecognizedPayers->add($eventUnrecognizedPayer);
+
+        return $this;
+    }
+
+    public function removeUnrecognizedPayer(EventUnrecognizedPayer $eventUnrecognizedPayer): void
+    {
+        $this->unrecognizedPayers->removeElement($eventUnrecognizedPayer);
+    }
+
+    public function setUnrecognizedPayers(?Collection $unrecognizedPayers): self
+    {
+        $this->unrecognizedPayers = $unrecognizedPayers;
 
         return $this;
     }

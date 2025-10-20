@@ -14,6 +14,7 @@ use App\Mailer\Mailer;
 use App\Messenger\Message\SortiePubliee;
 use App\Repository\CommissionRepository;
 use App\Repository\EventParticipationRepository;
+use App\Repository\EventUnrecognizedPayerRepository;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
 use App\Service\HelloAssoService;
@@ -235,7 +236,7 @@ class SortieController extends AbstractController
         Evt $event,
         UserRepository $repository,
         EventParticipationRepository $participationRepository,
-        HelloAssoService $helloAssoService,
+        EventUnrecognizedPayerRepository $unrecognizedPayerRepository,
         Environment $twig,
         $baseUrl = '/',
     ) {
@@ -255,6 +256,8 @@ class SortieController extends AbstractController
             $baseUrl
         );
 
+        $unrecognizedPayersEmails = $unrecognizedPayerRepository->getAllPayerEmailForEvent($event);
+
         // l'utilisateur connecté peut-il voir le lien de paiement hello asso ?
         $currentUserAccepted = false;
         $currentUserHasPaid = false;
@@ -263,10 +266,14 @@ class SortieController extends AbstractController
             $currentUserAccepted = true;
             $currentUserHasPaid = $myParticipation->hasPaid();
         }
+        if (\in_array($user->getEmail(), $unrecognizedPayersEmails, true)) {
+            $currentUserHasPaid = true;
+        }
 
         return [
             'event' => $event,
             'participations' => $participationRepository->getSortedParticipations($event, null, null),
+            'unrecognized_payers' => $unrecognizedPayerRepository->findBy(['event' => $event, 'hasPaid' => true], ['lastname' => 'asc']),
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participationRepository->getEmpietements($event),
             'current_commission' => $event->getCommission()->getCode(),
