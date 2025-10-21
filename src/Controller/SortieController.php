@@ -266,7 +266,7 @@ class SortieController extends AbstractController
             $currentUserAccepted = true;
             $currentUserHasPaid = $myParticipation->hasPaid();
         }
-        if (\in_array($user->getEmail(), $unrecognizedPayersEmails, true)) {
+        if ($user && \in_array($user->getEmail(), $unrecognizedPayersEmails, true)) {
             $currentUserHasPaid = true;
         }
 
