@@ -100,7 +100,6 @@ class FfcamSynchronizer
                     ));
 
                     $this->memberMerger->mergeNewMember($oldCafNum, $parsedUser);
-
                     ++$stats['merged'];
 
                     // Stocker les détails de la fusion (tous pour debug)
