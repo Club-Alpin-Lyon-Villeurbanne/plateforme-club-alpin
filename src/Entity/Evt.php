@@ -905,66 +905,6 @@ class Evt
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeImmutable
-    {
-        return $this->startDate;
-    }
-
-    public function setStartDate(?\DateTimeImmutable $startDate): self
-    {
-        $this->startDate = $startDate;
-
-        return $this;
-    }
-
-    public function getEndDate(): ?\DateTimeImmutable
-    {
-        return $this->endDate;
-    }
-
-    public function setEndDate(?\DateTimeImmutable $endDate): self
-    {
-        $this->endDate = $endDate;
-
-        return $this;
-    }
-
-    public function getJoinStartDate(): ?\DateTimeImmutable
-    {
-        return $this->joinStartDate;
-    }
-
-    public function setJoinStartDate(?\DateTimeImmutable $joinStartDate): self
-    {
-        $this->joinStartDate = $joinStartDate;
-
-        return $this;
-    }
-
-    public function getCancellationDate(): ?\DateTimeImmutable
-    {
-        return $this->cancellationDate;
-    }
-
-    public function setCancellationDate(?\DateTimeImmutable $cancellationDate): self
-    {
-        $this->cancellationDate = $cancellationDate;
-
-        return $this;
-    }
-
-    public function getLegalStatusChangeDate(): ?\DateTimeImmutable
-    {
-        return $this->legalStatusChangeDate;
-    }
-
-    public function setLegalStatusChangeDate(?\DateTimeImmutable $legalStatusChangeDate): self
-    {
-        $this->legalStatusChangeDate = $legalStatusChangeDate;
-
-        return $this;
-    }
-
     public function hasPaymentForm(): bool
     {
         return $this->hasPaymentForm;
