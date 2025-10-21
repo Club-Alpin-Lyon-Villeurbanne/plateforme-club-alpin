@@ -34,13 +34,8 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                 echo '<br /><br /><p class="erreur">Cet utilisateur est introuvable.</p>';
             } else {
                 // j'ai le droit de le contacter ?
-                $auth_contact_user = false;
-                if ('all' == $tmpUser['auth_contact_user']) {
-                    $auth_contact_user = true;
-                }
-                if ('users' == $tmpUser['auth_contact_user'] & user()) {
-                    $auth_contact_user = true;
-                } ?>
+                $auth_contact_user = true;
+                ?>
 
 				<!-- AVATAR-->
 				<img src="<?php echo userImg($id_user, 'big'); ?>" alt="" title="" style="float:left; width:35%; box-shadow: 0 0 12px -5px gray; border: 1px solid white;" />

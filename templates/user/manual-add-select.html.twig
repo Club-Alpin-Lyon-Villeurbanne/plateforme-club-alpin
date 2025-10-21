@@ -5,6 +5,8 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
+        #includer-stuff {float: none; width: 95%}
+        table.datatables {width: 100%}
         tr{			cursor:pointer;	color:gray; background-image:url(img/label-down.png) top left;	}
         tr.up{		color:black; text-shadow: -1px 0 0px white; outline:1px solid silver;	}
         tr:hover{	outline:1px solid silver;	}
@@ -14,7 +16,7 @@
         tr.up .tick{	display:block;	}
         tr.up .cross{	display:none;	}
     </style>
-    <link rel="stylesheet" href="/tools/datatables/media/css/jquery.dataTables.sobre.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/tools/datatables/media/css/jquery.dataTables.css" type="text/css" media="screen" />
 {% endblock %}
 
 {% block scripts %}
@@ -65,7 +67,7 @@
 
         <form action="{{ path('event_manual_add', {event: event.id}) }}" method="post" enctype="multipart/form-data" class="loading">
             <input type="hidden" name="csrf_token" value="{{ csrf_token('event_manual_add') }}" />
-            <table class="datatables" style="width:100%;">
+            <table class="datatables">
                 <thead>
                 <tr>
                     <th></th>
@@ -103,10 +105,10 @@
                     </td>
                     <td>{{ age_user(user) }}</td>
                     <td>
-                        {% if user.valid %}
+                        {% if user.valid and user.email %}
                             oui
                         {% else %}
-                            <span style="color: red;" title="Les comptes non activés ne reçoivent pas les e-mails">⚠️ non</span>
+                            <span style="color: darkorange;" title="Les comptes non activés ne reçoivent pas les e-mails">⚠️ non</span>
                         {% endif %}
                     </td>
                     </tr>

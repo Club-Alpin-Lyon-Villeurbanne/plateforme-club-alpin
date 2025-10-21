@@ -13,6 +13,7 @@ use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Serializer\TimeStampNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -26,11 +27,11 @@ use Symfony\Component\Serializer\Attribute\Context;
 #[ORM\Entity]
 #[ApiResource(
     shortName: 'sortie',
-    order: ['tsp' => 'ASC'],
     operations: [
         new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
         new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:read', 'eventParticipation:read']]),
     ],
+    order: ['tsp' => 'ASC'],
     security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', 'participations.user.id' => 'exact'])]
@@ -216,6 +217,24 @@ class Evt
     #[ORM\Column(name: 'images_authorized', type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $imagesAuthorized = false;
 
+    #[ORM\Column(name: 'has_payment_form', type: Types::BOOLEAN, nullable: false, options: ['default' => false])]
+    private bool $hasPaymentForm = false;
+
+    #[ORM\Column(name: 'hello_asso_form_slug', type: Types::STRING, length: 100, nullable: true)]
+    private ?string $helloAssoFormSlug;
+
+    #[ORM\Column(name: 'payment_amount', type: Types::FLOAT, nullable: true)]
+    private ?float $paymentAmount;
+
+    #[ORM\Column(name: 'payment_url', type: Types::STRING, length: 255, nullable: true)]
+    private ?string $paymentUrl;
+
+    #[ORM\Column(name: 'has_payment_send_mail', type: Types::BOOLEAN, nullable: false, options: ['default' => true])]
+    private bool $hasPaymentSendMail = true;
+
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: 'EventUnrecognizedPayer', cascade: ['persist'], orphanRemoval: true)]
+    private ?Collection $unrecognizedPayers = null;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -261,6 +280,7 @@ class Evt
         $this->tspCrea = time();
         $this->tspEdit = time();
         $this->isDraft = false;
+        $this->unrecognizedPayers = new ArrayCollection();
     }
 
     public function jsonSerialize(): mixed
@@ -899,6 +919,90 @@ class Evt
     public function setImagesAuthorized(bool $imagesAuthorized): self
     {
         $this->imagesAuthorized = $imagesAuthorized;
+
+        return $this;
+    }
+
+    public function hasPaymentForm(): bool
+    {
+        return $this->hasPaymentForm;
+    }
+
+    public function setHasPaymentForm(bool $hasPaymentForm): self
+    {
+        $this->hasPaymentForm = $hasPaymentForm;
+
+        return $this;
+    }
+
+    public function getHelloAssoFormSlug(): ?string
+    {
+        return $this->helloAssoFormSlug;
+    }
+
+    public function setHelloAssoFormSlug(?string $helloAssoFormSlug): self
+    {
+        $this->helloAssoFormSlug = $helloAssoFormSlug;
+
+        return $this;
+    }
+
+    public function getPaymentAmount(): ?float
+    {
+        return $this->paymentAmount;
+    }
+
+    public function setPaymentAmount(?float $paymentAmount): self
+    {
+        $this->paymentAmount = $paymentAmount;
+
+        return $this;
+    }
+
+    public function getPaymentUrl(): ?string
+    {
+        return $this->paymentUrl;
+    }
+
+    public function setPaymentUrl(?string $paymentUrl): self
+    {
+        $this->paymentUrl = $paymentUrl;
+
+        return $this;
+    }
+
+    public function hasPaymentSendMail(): bool
+    {
+        return $this->hasPaymentSendMail;
+    }
+
+    public function setHasPaymentSendMail(bool $hasPaymentSendMail): self
+    {
+        $this->hasPaymentSendMail = $hasPaymentSendMail;
+
+        return $this;
+    }
+
+    public function getUnrecognizedPayers(): ?Collection
+    {
+        return $this->unrecognizedPayers;
+    }
+
+    public function addUnrecognizedPayer(EventUnrecognizedPayer $eventUnrecognizedPayer): self
+    {
+        $this->unrecognizedPayers->add($eventUnrecognizedPayer);
+
+        return $this;
+    }
+
+    public function removeUnrecognizedPayer(EventUnrecognizedPayer $eventUnrecognizedPayer): void
+    {
+        $this->unrecognizedPayers->removeElement($eventUnrecognizedPayer);
+    }
+
+    public function setUnrecognizedPayers(?Collection $unrecognizedPayers): self
+    {
+        $this->unrecognizedPayers = $unrecognizedPayers;
 
         return $this;
     }

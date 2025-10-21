@@ -133,6 +133,7 @@ a#toolbar-commission.toptrigger b{white-space:normal;}
 #toolbar-commission-hidden a:hover .picto img, #toolbar-commission-hidden a:focus .picto img{opacity:0;}
 #toolbar-navigation {border-left:1px solid #e6e6e6; float:left; padding:35px 10px 0px 20px; width:170px; height:75px;}
 #toolbar-navigation-hidden{background:url(../../public/img/shadow-bigmenu.png) repeat-x top left #f7931e; z-index:50; position:absolute; top:110px; left:0; width:100%; padding:20px 0 40px 0; color: #201100}
+#toolbar-navigation-hidden * {font-size: 0.85rem;}
 #toolbar-user{border-left:1px solid #e6e6e6; float:left; padding:35px 10px 0px 20px; width:172px; height:75px;}
 #toolbar-user.up .picto{/* background:url(../../public/img/toolbox-up.png) no-repeat left top; */}
 #toolbar-user-hidden{background:url(../../public/img/shadow-bigmenu.png) repeat-x top left #8cc63f; color: #152200; z-index:50; position:absolute; top:110px; left:0; width:100%; padding:20px 0 20px 0;}
@@ -153,7 +154,7 @@ a#toolbar-commission.toptrigger b{white-space:normal;}
 #top-openers{position:absolute; z-index:80;left:0px; width:100%;}
 #top-openers .opener{position:relative; z-index:80; bottom:6px;}
 #top-hider{display:none; position:absolute; top:0px; left:0px; z-index:60; height:100%; width:100%; background:rgba(26, 26, 26, 0.8); cursor:default;}
-.menutitle{font-family:DIN; text-transform:uppercase; font-size: 1rem; padding:2px 0 5px 0;}
+.menutitle, .nav-menu p{font-family:DIN; text-transform:uppercase; font-size: 1rem; padding:2px 0 5px 0;}
 #toolbar-commission-hidden .menutitle {color: #00191E}
 #toolbar-navigation-hidden .menutitle {color: #201100}
 #toolbar-user-hidden .menutitle {color: #152200}
@@ -584,4 +585,26 @@ blockquote {
 .pen-red {
     color: #dc3545;
     background: none;
+}
+
+.bold {font-weight:bold;}
+.btn-white {background-color: #fff;color: #53B4E4;}
+
+.hello-asso-payment {background-color: #53B4E4;padding: 20px; border-radius: 10px; width: 90%; margin: 15px 0}
+.hello-asso-payment h3 {font-size:1.1rem;}
+.hello-asso-notice {display: flex; margin-top: 15px}
+.payment-explain, .payment-button {font-size: 0.9rem}
+span.request {font-size: 1.1rem;}
+.payment-button {text-align: center;}
+.ha-pay-btn {display: inline-block; border-radius: 10px; padding: 10px;text-decoration: none !important;}
+.ha-notice {border-radius: 5px; padding: 10px;background-color: #E2F3FC;width: 95%}
+
+#hello-asso-mire {
+    width: auto;
+    padding: 25px;
+}
+.hello-asso-btn {
+    width: 100%;
+    margin: 20px auto;
+    text-align: center;
 }

@@ -92,6 +92,38 @@
             {{ form_row(form.tarifDetail) }}
         </div>
 
+        {% if form.hasPaymentForm is defined and form.paymentAmount is defined %}
+            <h2 class="trigger-h2">Billetterie HelloAsso : <span class="revalidation">*</span></h2>
+            <div class="trigger-me">
+                <div>
+                    <label for="{{ form.hasPaymentForm.vars.id }}" class="{% if form.hasPaymentForm.vars.data %}up{% else %}down{% endif %}">
+                        {{ form_widget(form.hasPaymentForm) }}
+                        {{ field_label(form.hasPaymentForm) }} <span class="revalidation">*</span>
+                    </label>
+                    {{ form_help(form.hasPaymentForm) }}
+                </div>
+                <div id="form-hello-asso" style="display:none">
+                    <br>
+                    <div>
+                        {{ form_label(form.paymentAmount) }}
+                        {{ form_errors(form.paymentAmount) }}
+                        {{ form_widget(form.paymentAmount) }} €<br />
+                        {{ form_help(form.paymentAmount) }}
+                    </div><br />
+                    <div>
+                        <label for="{{ form.hasPaymentSendMail.vars.id }}" class="{% if form.hasPaymentSendMail.vars.data %}up{% else %}down{% endif %}">
+                            {{ form_widget(form.hasPaymentSendMail) }}
+                            {{ field_label(form.hasPaymentSendMail) }}
+                        </label>
+                        {{ form_help(form.hasPaymentSendMail) }}
+                    </div><br />
+                    <div class="ha-notice">
+                        <span class="bold">Note :</span> L'événement HelloAsso sera créé automatiquement après approbation et publication de la sortie. Les participants pourront s'inscrire et payer directement en ligne.
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
         <h2 class="trigger-h2">Inscriptions :</h2>
         <div class="trigger-me">
             <div style="width:45%; padding-right:3%; float:left">
@@ -262,6 +294,39 @@
             if (contentField) {
                 contentField.removeAttribute('required');
             }
+
+            // date de retour pré-filtrée sur la date de départ
+            const startDateField = document.getElementById('{{ form.eventStartDate.vars.id }}');
+            const endDateField = document.getElementById('{{ form.eventEndDate.vars.id }}');
+            startDateField.addEventListener('change', (e) => {
+                if (endDateField.value === '') {
+                    endDateField.min = startDateField.value;
+                }
+            });
+
+            // champ montant hello asso pas obligatoire si hello asso pas coché
+            {% if form.hasPaymentForm is defined and form.paymentAmount is defined %}
+                const helloAssoBlock = document.getElementById('form-hello-asso');
+                const helloAssoAmountField = document.getElementById('{{ form.paymentAmount.vars.id }}');
+                helloAssoAmountField.removeAttribute('required');
+
+                {% if form.hasPaymentForm.vars.data %}
+                    helloAssoBlock.style.display = 'block';
+                    helloAssoAmountField.setAttribute('required', 'required');
+                {% endif %}
+
+                // si hello asso coché, remettre le montant obligatoire
+                const helloAssoCheckbox = document.getElementById('{{ form.hasPaymentForm.vars.id }}');
+                helloAssoCheckbox.addEventListener('change', (e) => {
+                    if (helloAssoCheckbox.checked) {
+                        helloAssoBlock.style.display = 'block';
+                        helloAssoAmountField.setAttribute('required', 'required');
+                    } else {
+                        helloAssoBlock.style.display = 'none';
+                        helloAssoAmountField.removeAttribute('required');
+                    }
+                });
+            {% endif %}
         });
 
         document.getElementById('event_form').addEventListener('submit', function (e) {
@@ -282,12 +347,13 @@
             }
 
             // vérifier que la description est remplie
-            const editorContent = document.querySelector('.ck-editor__editable > p').innerHTML.trim();
+            const editorContent = document.querySelector('.ck-editor__editable').innerHTML.trim();
+            const cleanedContent = editorContent.replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/<br data-cke-filler="true">/g, '');
             const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = editorContent;
+            tempDiv.innerHTML = cleanedContent;
             const text = tempDiv.textContent.replace(/\u00A0/g, "").trim();
 
-            if (text.length <= 3) {
+            if (text.length < 3) {
                 const hasMedia = tempDiv.querySelector("img, video, iframe, table, embed");
                 if (!hasMedia) {
                     alert('Veuillez renseigner une description pour cette sortie.');

@@ -189,6 +189,10 @@ SQL;
                 ->andWhere('u.nomade = false')
             ;
         }
+        $qb
+            ->orderBy('u.lastname', 'asc')
+            ->addOrderBy('u.firstname', 'asc')
+        ;
 
         return $qb->getQuery()->getResult();
     }

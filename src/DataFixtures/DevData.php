@@ -50,7 +50,9 @@ class DevData implements FixtureInterface
             EventParticipation::ROLE_BENEVOLE,
             EventParticipation::ROLE_COENCADRANT,
             EventParticipation::ROLE_MANUEL,
-            EventParticipation::ROLE_BENEVOLE,
+            EventParticipation::ROLE_STAGIAIRE,
+            EventParticipation::ROLE_INSCRIT,
+            EventParticipation::BENEVOLE,
         ];
         $status = [
             EventParticipation::STATUS_VALIDE,
@@ -82,7 +84,7 @@ class DevData implements FixtureInterface
                     }
 
                     $participation = new EventParticipation($object, $user, $roles[array_rand($roles)], $status[array_rand($status)]);
-                    if (\in_array($participation->getRole(), [EventParticipation::ROLE_ENCADRANT, EventParticipation::ROLE_BENEVOLE, EventParticipation::ROLE_COENCADRANT], true)) {
+                    if (\in_array($participation->getRole(), EventParticipation::ROLES_ENCADREMENT_ETENDU, true)) {
                         $participation->setStatus(EventParticipation::STATUS_VALIDE);
                     }
                     $manager->persist($participation);

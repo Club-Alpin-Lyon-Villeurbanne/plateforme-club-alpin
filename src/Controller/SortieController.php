@@ -8,19 +8,23 @@ use App\Entity\Evt;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Form\EventType;
+use App\Helper\RoleHelper;
 use App\Legacy\LegacyContainer;
 use App\Mailer\Mailer;
 use App\Messenger\Message\SortiePubliee;
 use App\Repository\CommissionRepository;
 use App\Repository\EventParticipationRepository;
+use App\Repository\EventUnrecognizedPayerRepository;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
+use App\Service\HelloAssoService;
 use App\Twig\JavascriptGlobalsExtension;
 use App\UserRights;
 use App\Utils\ExcelExport;
 use App\Utils\PdfGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -33,6 +37,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -97,9 +106,11 @@ class SortieController extends AbstractController
             foreach ($currentEncadrants as $currentEncadrant) {
                 $originalEntityData['encadrants'][$currentEncadrant->getUser()->getId()] = $currentEncadrant->getRole();
             }
+            $originalEntityData['hasPaymentForm'] = $event->hasPaymentForm();
+            $originalEntityData['paymentAmount'] = $event->getPaymentAmount();
         }
 
-        $form = $this->createForm(EventType::class, $event, ['editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink]);
+        $form = $this->createForm(EventType::class, $event, ['is_edit' => $isUpdate, 'editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'user' => $user]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -159,6 +170,8 @@ class SortieController extends AbstractController
                 // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
                 if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()
                     && ($originalEntityData['ngensMax'] !== $event->getngensMax()
+                    || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
+                    || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
                     || $originalEntityData['encadrants'] !== $newEncadrants)) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
                 } else {
@@ -210,12 +223,20 @@ class SortieController extends AbstractController
         ];
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     #[Route(path: '/sortie/{code}-{id}.html', name: 'sortie', requirements: ['id' => '\d+', 'code' => '[a-z0-9-]+'], methods: ['GET'], priority: '10')]
     #[Template('sortie/sortie.html.twig')]
     public function sortie(
         Evt $event,
         UserRepository $repository,
         EventParticipationRepository $participationRepository,
+        EventUnrecognizedPayerRepository $unrecognizedPayerRepository,
         Environment $twig,
         $baseUrl = '/',
     ) {
@@ -223,6 +244,7 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Not found');
         }
 
+        /** @var User $user */
         $user = $this->getUser();
 
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal(
@@ -234,14 +256,31 @@ class SortieController extends AbstractController
             $baseUrl
         );
 
+        $unrecognizedPayersEmails = $unrecognizedPayerRepository->getAllPayerEmailForEvent($event);
+
+        // l'utilisateur connecté peut-il voir le lien de paiement hello asso ?
+        $currentUserAccepted = false;
+        $currentUserHasPaid = false;
+        $myParticipation = $participationRepository->findOneBy(['user' => $user, 'evt' => $event]);
+        if ($myParticipation && EventParticipation::STATUS_VALIDE === $myParticipation->getStatus()) {
+            $currentUserAccepted = true;
+            $currentUserHasPaid = $myParticipation->hasPaid();
+        }
+        if ($user && \in_array($user->getEmail(), $unrecognizedPayersEmails, true)) {
+            $currentUserHasPaid = true;
+        }
+
         return [
             'event' => $event,
             'participations' => $participationRepository->getSortedParticipations($event, null, null),
+            'unrecognized_payers' => $unrecognizedPayerRepository->findBy(['event' => $event, 'hasPaid' => true], ['lastname' => 'asc']),
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participationRepository->getEmpietements($event),
             'current_commission' => $event->getCommission()->getCode(),
             'encoded_coord' => urlencode($event->getLat() . ',' . $event->getLong()),
             'geovelo_encoded_coord' => urlencode($event->getLong() . ',' . $event->getLat()),
+            'current_user_has_paid' => $currentUserHasPaid,
+            'current_user_accepted' => $currentUserAccepted,
         ];
     }
 
@@ -259,23 +298,40 @@ class SortieController extends AbstractController
         return $this->eventDetails($request, $event, $userAttrRepository);
     }
 
-    #[Route(name: 'sortie_validate', path: '/sortie/{id}/validate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
+    #[Route(path: '/sortie/{id}/validate', name: 'sortie_validate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function sortieValidate(
         Request $request,
         Evt $event,
+        HelloAssoService $helloAssoService,
         EntityManagerInterface $em,
         Mailer $mailer,
         MessageBusInterface $messageBus,
-    ) {
+        LoggerInterface $logger,
+    ): RedirectResponse {
         if (!$this->isCsrfTokenValid('sortie_validate', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
         }
 
         if (!$this->isGranted('SORTIE_VALIDATE', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($this->getUser());
+
+        // créer la campagne hello asso si nécessaire
+        if ($event->hasPaymentForm() && !$event->getHelloAssoFormSlug()) {
+            try {
+                $haFormData = $helloAssoService->createFormForEvent($event);
+                $event->setHelloAssoFormSlug($haFormData['formSlug']);
+                $event->setPaymentUrl($haFormData['publicUrl']);
+
+                // publier la campagne
+                $helloAssoService->publishFormForEvent($event);
+            } catch (\Exception $exception) {
+                $logger->error('Unable to create or publish HelloAsso form: ' . $exception->getMessage());
+            }
+        }
+
         $em->flush();
 
         $messageBus->dispatch(new SortiePubliee($event->getId()));
@@ -301,6 +357,7 @@ class SortieController extends AbstractController
         Evt $event,
         EntityManagerInterface $em,
         Mailer $mailer,
+        RoleHelper $roleHelper,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token_inscriptions'))) {
             $this->addFlash('error', 'Jeton de validation invalide.');
@@ -309,7 +366,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_INSCRIPTIONS_MODIFICATION', $event)) {
-            $this->addFlash('error', 'Vous n\'êtes pas autorisé à celà.');
+            $this->addFlash('error', 'Vous n\'êtes pas autorisé à cela.');
 
             return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
         }
@@ -349,8 +406,8 @@ class SortieController extends AbstractController
             }
 
             // there can be no role passed in the request
-            if (!$participation->getRole()) {
-                $participation->setRole(EventParticipation::ROLE_INSCRIT);
+            if ($role) {
+                $participation->setRole($role);
             }
 
             $participation
@@ -405,19 +462,7 @@ class SortieController extends AbstractController
                 continue;
             }
 
-            switch ($participation->getRole()) {
-                case EventParticipation::ROLE_ENCADRANT:
-                case EventParticipation::ROLE_COENCADRANT:
-                    $roleName = $participation->getRole() . '(e)';
-                    break;
-                case EventParticipation::ROLE_BENEVOLE:
-                case EventParticipation::ROLE_STAGIAIRE:
-                    $roleName = $participation->getRole();
-                    break;
-                default:
-                    $roleName = 'participant(e)';
-                    break;
-            }
+            $roleName = strtolower($roleHelper->getParticipationRoleName($participation));
 
             $context = [
                 'role' => $roleName,
@@ -426,6 +471,9 @@ class SortieController extends AbstractController
                 'commission' => $event->getCommission()->getTitle(),
                 'event_date' => $event->getTsp() ? date('d/m/Y', $event->getTsp()) : '',
             ];
+            if ($event->hasPaymentForm() && $event->hasPaymentSendMail()) {
+                $context['hello_asso_url'] = $event->getPaymentUrl();
+            }
 
             $template = match ($status) {
                 EventParticipation::STATUS_VALIDE => 'transactional/sortie-participation-confirmee',
@@ -452,7 +500,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_VALIDATE', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $event->setStatus(Evt::STATUS_PUBLISHED_REFUSE)->setStatusWho($this->getUser());
@@ -479,7 +527,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_LEGAL_VALIDATION', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $event->setStatusLegal(Evt::STATUS_LEGAL_VALIDE)->setStatusLegalWho($this->getUser());
@@ -505,7 +553,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_LEGAL_VALIDATION', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $event->setStatusLegal(Evt::STATUS_LEGAL_REFUSE)->setStatusLegalWho($this->getUser());
@@ -530,7 +578,7 @@ class SortieController extends AbstractController
         EntityManagerInterface $em,
     ): RedirectResponse {
         if (!$this->isGranted('SORTIE_DELETE', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         if (!$this->isCsrfTokenValid('delete_event', $request->request->get('csrf_token'))) {
@@ -551,7 +599,7 @@ class SortieController extends AbstractController
         Mailer $mailer,
     ): RedirectResponse {
         if (!$this->isGranted('SORTIE_CANCEL', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         if (!$this->isCsrfTokenValid('cancel_event', $request->request->get('csrf_token'))) {
@@ -574,7 +622,7 @@ class SortieController extends AbstractController
         // message aux (pré-)inscrits si la sortie est annulée alors qu'elle était publiée
         if ($event->isPublicStatusValide()) {
             // désinscription des participants de la sortie
-            $participants = $event->getParticipations([EventParticipation::ROLE_MANUEL, EventParticipation::ROLE_INSCRIT, EventParticipation::ROLE_BENEVOLE], null);
+            $participants = $event->getParticipations([EventParticipation::ROLE_MANUEL, EventParticipation::ROLE_INSCRIT, EventParticipation::BENEVOLE], null);
             foreach ($participants as $participant) {
                 $event->removeParticipation($participant);
 
@@ -604,7 +652,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_UNCANCEL', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $event
@@ -626,7 +674,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('SORTIE_CONTACT_PARTICIPANTS', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $receivers = $request->request->all('contact_participant');
@@ -675,7 +723,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('PARTICIPANT_ANNULATION', $participation)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $em->remove($participation);
@@ -808,7 +856,7 @@ class SortieController extends AbstractController
         }
 
         if (!$this->isGranted('JOIN_SORTIE', $event)) {
-            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à celà.');
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
         $data = $request->request->all();
@@ -826,6 +874,7 @@ class SortieController extends AbstractController
         $affiliatedJoiningUsers = [];
         $affiliatedLeavingUsers = [];
         $is_covoiturage = null;
+        $paymentUrl = null;
 
         // affiliés qu'on inscrit
         $idUsersFiliations = !empty($data['id_user_filiation']) ? array_map('intval', $data['id_user_filiation']) : [];
@@ -870,7 +919,7 @@ class SortieController extends AbstractController
 
             // Bénévole
             if (isset($data['jeveuxetrebenevole']) && 'on' == $data['jeveuxetrebenevole']) {
-                $role_evt_join = EventParticipation::ROLE_BENEVOLE;
+                $role_evt_join = EventParticipation::BENEVOLE;
             }
 
             // si filiations : création du tableau des joints et vérifications
@@ -901,12 +950,13 @@ class SortieController extends AbstractController
                     $nbNewJoins = \count($idUsersFiliations);
                 }
 
+                // vérification nombre de places restantes
+                $ngens_max = $event->getNgensMax();
+                $current_participants = $event->getParticipationsCount();
+
                 // Si auto_accept est activé, vérifier qu'on n'a pas atteint la limite
                 if ($event->isAutoAccept()) {
-                    $ngens_max = $event->getNgensMax();
                     if ($ngens_max && $ngens_max > 0) {
-                        $current_participants = $event->getParticipationsCount();
-
                         // Vérifier si on peut accepter assez d'inscriptions
                         if (($current_participants + $nbNewJoins) <= $ngens_max) {
                             $status_evt_join = EventParticipation::STATUS_VALIDE;
@@ -964,6 +1014,9 @@ class SortieController extends AbstractController
                 $evtName = $event->getTitre();
                 $evtDate = date('d/m/Y', $event->getTsp());
                 $commissionTitle = $event->getCommission()->getTitle();
+                if ($event->hasPaymentForm() && $event->hasPaymentSendMail()) {
+                    $paymentUrl = $event->getPaymentUrl();
+                }
 
                 // infos sur le nouvel inscrit (et ses affiliés)
                 $mailer->send($destinataires, 'transactional/sortie-demande-inscription', [
@@ -987,7 +1040,7 @@ class SortieController extends AbstractController
                     'nickname' => $user->getNickname(),
                     'message' => $joinMessage,
                     'covoiturage' => $is_covoiturage,
-                ], [], $user);
+                ], [], $user, $user);
 
                 // E-MAIL AU PRE-INSCRIT
                 // inscription auto-acceptée
@@ -998,6 +1051,7 @@ class SortieController extends AbstractController
                         'event_url' => $evtUrl,
                         'event_date' => $evtDate,
                         'commission' => $commissionTitle,
+                        'hello_asso_url' => $paymentUrl,
                     ]);
                 } elseif ($hasFiliations) {
                     $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
@@ -1087,6 +1141,7 @@ class SortieController extends AbstractController
             EventParticipation::ROLE_STAGIAIRE => [],
             EventParticipation::ROLE_COENCADRANT => [],
             EventParticipation::ROLE_BENEVOLE => [],
+            EventParticipation::BENEVOLE => [],
             EventParticipation::ROLE_INSCRIT => [],
         ];
         $participants = $event->getParticipations();
@@ -1105,6 +1160,7 @@ class SortieController extends AbstractController
             $sortedParticipants[EventParticipation::ROLE_STAGIAIRE],
             $sortedParticipants[EventParticipation::ROLE_COENCADRANT],
             $sortedParticipants[EventParticipation::ROLE_BENEVOLE],
+            $sortedParticipants[EventParticipation::BENEVOLE],
             $sortedParticipants[EventParticipation::ROLE_INSCRIT],
         );
 

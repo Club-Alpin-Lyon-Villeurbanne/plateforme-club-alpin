@@ -17,9 +17,16 @@ class FfcamSyncReportMailer
     public function sendSyncReport(array $stats, \DateTime $startTime, \DateTime $endTime): void
     {
         try {
+            $recipients = $this->getAdminRecipients();
+
+            if (empty($recipients)) {
+                $this->logger->info('Sync report not sent: no recipients configured (SYNC_REPORT_RECIPIENTS is empty)');
+
+                return;
+            }
+
             $duration = $endTime->diff($startTime);
 
-            // Limiter les détails pour l'email (garder tous les détails dans $stats pour debug)
             $limitedStats = $stats;
             if (isset($limitedStats['merged_details'])) {
                 $limitedStats['merged_details'] = array_slice($limitedStats['merged_details'], 0, 20);
@@ -36,9 +43,6 @@ class FfcamSyncReportMailer
                 'date' => $startTime->format('d/m/Y'),
                 'total' => $stats['inserted'] + $stats['updated'] + $stats['merged'],
             ];
-
-            // Envoyer aux administrateurs
-            $recipients = $this->getAdminRecipients();
 
             $this->mailer->send(
                 $recipients,
@@ -60,12 +64,9 @@ class FfcamSyncReportMailer
 
     private function getAdminRecipients(): array
     {
-        // Pour l'instant on utilise l'email admin configuré
-        // On pourrait étendre pour récupérer tous les admins depuis la base
         $recipients = [];
 
         if (!empty($this->adminEmails)) {
-            // Support de plusieurs emails séparés par des virgules
             $emails = array_map('trim', explode(',', $this->adminEmails));
             foreach ($emails as $email) {
                 if (filter_var($email, FILTER_VALIDATE_EMAIL)) {

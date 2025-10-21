@@ -195,16 +195,6 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     }
     printTableRow('Adresse :', $userTab['adresse_user'] . '<br />' . $userTab['cp_user'] . ' ' . $userTab['ville_user'] . ' ' . $userTab['pays_user']);
 
-    $rowValue = '';
-    switch ($userTab['auth_contact_user']) {
-        case 'all': $rowValue .= 'Tous les visiteurs du site';
-            break;
-        case 'users': $rowValue .= 'Tous les adhérents, inscrits et connectés sur ce site';
-            break;
-        case 'none': $rowValue .= 'Responsables du club uniquement';
-            break;
-    }
-    printTableRow('Qui peut me contacter sur le site, via un formulaire de contact (adresse e-mail jamais dévoilée) ? :', $rowValue);
     if ($userTab['manuel_user']) {
         printTableRow('Créé manuellement :', 'OUI&nbsp;&nbsp;&nbsp;<img src="/img/base/user_manuel.png">');
     }

@@ -38,7 +38,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
             $deleteRight = false;
 
             // user_giveright_1 : dépend de la commission, pasée ici dans $row['params_user_attr']
-            if ('benevole' == $row['code_usertype'] && allowed('user_giveright_1', $row['params_user_attr'])) {
+            if ('benevole_encadrement' == $row['code_usertype'] && allowed('user_giveright_1', $row['params_user_attr'])) {
                 $deleteRight = true;
             }
             if ('encadrant' == $row['code_usertype'] && allowed('comm_delier_encadrant', $row['params_user_attr'])) {
@@ -116,7 +116,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
         $afficher = false;
 
         // user_giveright_1
-        if ('benevole' == $row['code_usertype'] && allowed('user_giveright_1')) {
+        if ('benevole_encadrement' == $row['code_usertype'] && allowed('user_giveright_1')) {
             $afficher = true;
         }
         if ('coencadrant' == $row['code_usertype'] && allowed('user_giveright_1')) {
@@ -159,7 +159,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
     echo '</select>';
 
     // liste des commissions
-    $req = 'SELECT * FROM caf_commission ORDER BY ordre_commission ASC ';
+    $req = 'SELECT * FROM caf_commission WHERE vis_commission = 1 ORDER BY ordre_commission ASC ';
     $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
     echo '<div id="commissions-pick" class="nice-checkboxes">';
@@ -201,7 +201,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
         <h3>Lorsque vous attribuez ou retirez des responsabilités aux adhérents, des notifications automatiques sont envoyées :</h3>
         <ul>
             <li>un adhérent reçoit ou perd des responsabilités : l'adhérent reçoit un e-mail</li>
-            <li>s'il s'agit de responsabilité "encadrant", "co-enacadrant", "initiateur stagiaire" ou "responsable de commission" : les responsables (actuels) de la commission reçoivent un e-mail, ainsi que le président</li>
+            <li>s'il s'agit de responsabilité "encadrant", "co-encadrant", "initiateur stagiaire" ou "responsable de commission" : les responsables (actuels) de la commission reçoivent un e-mail, ainsi que le président</li>
         </ul>
     </div>
 	<?php

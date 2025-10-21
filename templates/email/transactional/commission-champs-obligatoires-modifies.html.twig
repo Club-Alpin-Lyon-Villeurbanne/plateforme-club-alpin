@@ -1,0 +1,15 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{% block subject -%}
+    {% if commission %}[{{ commission }}]{% endif %} Champs obligatoires modifiés
+{%- endblock %}
+
+{% block inner_html %}
+    <p>
+        <a href="{{ profile_url }}">{{ user }}</a> a mis à jour les champs obligatoires pour la commission {% if commission %}{{ commission }}{% endif %}.
+    </p>
+{% endblock %}
+
+{% block inner_txt %}
+    {{ user }} a mis à jour les champs obligatoires pour la commission {% if commission %}{{ commission }}{% endif %}.
+{% endblock %}

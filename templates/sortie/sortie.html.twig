@@ -2,7 +2,7 @@
 
 {% block title %}{{ event.titre }}{% endblock %}
 
-{% macro user_inscription_button(event, filiations, my_status) %}
+{% macro user_inscription_button(event, filiations, my_status, nInscritsTotal) %}
 
     {% if event.joinMax > 0 %}
         {% set style = '' %}
@@ -34,8 +34,8 @@
         <div id="fiche-sortie">
 
             {% set closeDiv = false %}
-            {% set nInscritsHorsEncadrement = event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::ROLE_BENEVOLE'), constant('App\\Entity\\EventParticipation::ROLE_MANUEL')]) | length %}
-            {% set nInscritsTotal = nInscritsHorsEncadrement + event.participations([constant('App\\Entity\\EventParticipation::ROLE_COENCADRANT'), constant('App\\Entity\\EventParticipation::ROLE_STAGIAIRE'), constant('App\\Entity\\EventParticipation::ROLE_ENCADRANT')]) | length %}
+            {% set nInscritsHorsEncadrement = event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::BENEVOLE'), constant('App\\Entity\\EventParticipation::ROLE_MANUEL')]) | length %}
+            {% set nInscritsTotal = nInscritsHorsEncadrement + event.participations(constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT_ETENDU')) | length %}
 
             {% if event.publicStatusUnseen %}
                 {% set closeDiv = true %}
@@ -163,6 +163,22 @@
             <span class="date"> / {{ event.tsp | intldate('cccc d MMMM yyyy') }}</span>
         </h1>
 
+        {% if event.publicStatusValide and event.hasPaymentForm and event.paymentAmount and event.paymentUrl and current_user_has_paid is same as(false) and current_user_accepted is same as(true) %}
+            <div class="hello-asso-payment">
+                <h3>💳 Paiement attendu pour cette sortie</h3>
+                <div class="hello-asso-notice">
+                    <div class="payment-explain">
+                        <span class="request">Le règlement de <span class="bold">{{ event.paymentAmount }} €</span> est requis pour valider votre inscription</span><br><br>
+                        Paiement sécurisé via HelloAsso par CB
+                    </div>
+                    <div class="payment-button">
+                        <a class="ha-pay-btn btn-white bleu-caf" href="{{ event.paymentUrl }}" target="_blank">Payer maintenant ➞</a><br><br>
+                        Paiement 100% sécurisé
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
         <div class="tw-flex tw-gap-4">
             {% if is_granted('SORTIE_DUPLICATE', event) %}
             <form action="{{ path('sortie_duplicate', { id: event.id, mode: 'full' }) }}" method="post" class="loading">
@@ -274,9 +290,9 @@
         {% endif %}
 
         {% if my_status and my_status.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
-            {% if my_status.role == 'encadrant' or my_status.role == 'stagiaire' or my_status.role == 'coencadrant' or my_status.role == 'benevole' %}
+            {% if my_status.role in (constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT_ETENDU')) %}
                 {% if not event.finished %}
-                    {% if allowed('evt_unjoin') and (my_status.role == 'coencadrant' or my_status.role == 'benevole') %}
+                    {% if allowed('evt_unjoin') and (my_status.role == 'coencadrant' or my_status.role == 'benevole_encadrement') %}
                         {{ block_macros.display_confirmed_cancel_block(my_status.role) }}
                         {% include 'components/cancel-participation.html.twig' with {'my_status_id': my_status.id, 'my_status': my_status.status} %}
                     {% endif %}
@@ -410,6 +426,9 @@
                                 <th width='15%'>Statut</th>
                                 <th width='15%'>Rôle</th>
                                 <th width='10%'>Date</th>
+                                {% if event.hasPaymentForm %}
+                                    <th>Paiement</th>
+                                {% endif %}
                                 <th>Contact</th>
                             </tr>
                         </thead>
@@ -472,10 +491,10 @@
                                             {% for empietement in empietements[participation.user.id] %}
                                                 {% if empietement.status == constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME') %}
                                                     <br />- Adhérent pré-inscrit sur
-                                                    <br /><a href="{{ path('sortie', { code : empietement.event.code, id: empietement.event.id }) }}">{{ empietement.event.titre }}</a>
+                                                    <br /><a href="{{ path('sortie', { code : empietement.event.code, id: empietement.event.id }) }}">{{ empietement.event.titre }}</a><br />
                                                 {% elseif empietement.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
-                                                    <br />- Adhérent <span style="color:red">confirmé</span> sur <br />
-                                                    <br /><a href="{{ path('sortie', { code : empietement.event.code, id: empietement.event.id }) }}">{{ empietement.event.titre }}</a>
+                                                    <br />- Adhérent <span style="color:red">confirmé</span> sur
+                                                    <br /><a href="{{ path('sortie', { code : empietement.event.code, id: empietement.event.id }) }}">{{ empietement.event.titre }}</a><br />
                                                 {% endif %}
                                             {% endfor %}
                                         </div>
@@ -582,7 +601,7 @@
                                                 />
                                             {% endif %}
                                             <br />
-                                        {% elseif participation.isRoleManuel or participation.isRoleInscrit or participation.isRoleBenevole %}
+                                        {% elseif participation.isRoleManuel or participation.isRoleInscrit or participation.isBenevole %}
                                             {% if participation.isRoleManuel %}
                                                 <label style="display:block; white-space:nowrap;" for="role_join_{{ participation.id }}_m">
                                                     <input
@@ -608,13 +627,13 @@
                                             {% endif %}
                                             <label style="display:block; white-space:nowrap;" for="role_join_{{ participation.id }}_b">
                                                 <input
-                                                    {% if participation.isRoleBenevole %}checked="checked"{% endif%}
+                                                    {% if participation.isBenevole %}checked="checked"{% endif%}
                                                     name="role_evt_join_{{ participation.id }}"
                                                     type="radio"
                                                     id="role_join_{{ participation.id }}_b"
                                                     value="benevole"
                                                 />
-                                                Participant bénévole
+                                                Participant<br />bénévole
                                             </label>
                                         {% else %}
                                             {{ participation | participation_role_name }}<br />
@@ -629,6 +648,29 @@
                                         {{ participation.tsp | date('d/m') }}<br />
                                         {{ participation.tsp | date('à H:i') }}
                                     </td>
+
+                                    {% if event.hasPaymentForm %}
+                                        <td>
+                                            {% if participation.hasPaid or participation.user.email in unrecognized_payers %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                    </svg>
+                                                    Payé
+                                                </span>
+                                            {% else %}
+                                                <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
+                                                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                    Non payé
+                                                </span>
+                                            {% endif %}
+                                            <br>
+                                            HelloAsso
+                                        </td>
+                                    {% endif %}
+
                                     <td>
                                         {% if participation.user.isDeleted %}
                                             <span style="color: red; font-weight: bold">
@@ -640,10 +682,10 @@
                                                 compte supprimé
                                             </span><br />
                                         {% else %}
-                                            {% if participation.user.valid %}
+                                            {% if participation.user.valid and participation.user.email %}
                                                 <a href="mailto:{{ participation.user.email }}">{{ participation.user.email | u.truncate(12, '...') }}</a><br />
                                             {% else %}
-                                                <span style="color: red; font-weight: bold" title="Les comptes non activés ne reçoivent pas les e-mails">compte non activé</span><br />
+                                                <span style="color: darkorange;" title="Les comptes non activés ne reçoivent pas les e-mails">compte non activé</span><br />
                                             {% endif %}
                                             {{ participation.user.tel }}
                                         {% endif %}
@@ -652,6 +694,7 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                    <br>
 
                     <!-- stats affichées -->
                     <p>Stats :</p>
@@ -676,7 +719,6 @@
 
                     {% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
                         <div style="text-align:center">
-                            <br />
                             <button id="submit_update_participants" type="submit" style="cursor: pointer; border: none;" class="biglink" title="Enregistrer" formaction="{{ path('sortie_update_inscription', { id: event.id })}}">
                                 <span class="bleucaf">&gt;</span>
                                 ENREGISTRER LES STATUTS CI-DESSUS
@@ -686,8 +728,22 @@
                         <p class="mini">{{ event.participation(app.user) | participation_status_name }} : Vous ne pouvez pas modifier les inscriptions</p>
                     {% endif %}
                     <br />
-                    <br />
                 <hr />
+
+                {% if unrecognized_payers|length > 0 %}
+                    <h3>Payeurs non reconnus :</h3>
+                    <table style="width: 100%">
+                        {% for payer in unrecognized_payers %}
+                            <tr>
+                                <td>{{ payer.email }}</td>
+                                <td>{{ payer.firstname }}</td>
+                                <td>{{ payer.lastname }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <br><br>
+                    <hr />
+                {% endif %}
 
                 {% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
                     <h2 id="autresoptions">Autres options :</h2>
@@ -745,8 +801,7 @@
                     {% endif %}
                 {% endif %}
             </form>
-            <br style="clear:both"  /><br />
-
+            <br style="clear:both"  />
         </div>
         <br />
         <hr />
@@ -933,9 +988,9 @@
                 <br style="clear:both" />
             {% endif %}
 
-            {% if event.encadrants('benevole') | length > 0 %}
-                <li class="wide"><b>BÉNÉVOLES :</b>
-                    {% for encadrant in event.encadrants('benevole') %}
+            {% if event.encadrants('benevole_encadrement') | length > 0 %}
+                <li class="wide"><b>BÉNÉVOLES D'ENCADREMENT :</b>
+                    {% for encadrant in event.encadrants('benevole_encadrement') %}
                         {% if loop.index > 1 %}, {% endif %}
                         <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
                             {{ encadrant.user.nickname }}
@@ -985,16 +1040,12 @@
         {% endif %}
 
         {% if not event.cancelled %}
-            {% set nPlacesRestantesOnline = max(0, event.joinMax - event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::ROLE_BENEVOLE')]) | length) %}
+            {% set nPlacesRestantesOnline = max(0, event.joinMax - nInscritsTotal) %}
             {% set nEnAttente = event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length %}
-
-            {% if nPlacesRestantesOnline > event.ngensMax - nInscritsTotal %}
-                {% set nPlacesRestantesOnline = max(0, event.ngensMax - nInscritsTotal) %}
-            {% endif %}
 
             <hr />
             <ul class="nice-list">
-                <li class="wide"><b>NOMBRE TOTAL DE PLACES :</b> {{ event.ngensMax }}
+                <li class="wide"><b>NOMBRE MAXIMUM DE PLACES :</b> {{ event.ngensMax }}
                 <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}
             </ul>
 
@@ -1006,7 +1057,7 @@
                 </span>
                 <span style="font-size: 0.9rem; font-family:DINBold; color:#666666">
                     {{ nInscritsTotal }} PARTICIPANT{{ nInscritsTotal > 1 ? 'S' : '' }} INSCRIT{{ nInscritsTotal > 1 ? 'S' : '' }}
-                    SUR  {{ event.ngensMax }} PLACE{{ event.ngensMax ? 'S' : '' }} AU TOTAL
+                    SUR  {{ event.ngensMax }} PLACE{{ event.ngensMax ? 'S' : '' }} MAXIMUM
                     ({{ event.ngensMax > 0 ? (100 * nInscritsTotal / event.ngensMax) | round : 0 }}%)
                 </span><br />
                 {{ nPlacesRestantesOnline }} place{{ nPlacesRestantesOnline > 1 ? 's' : '' }} restante{{ nPlacesRestantesOnline > 1 ? 's' : '' }}
@@ -1092,7 +1143,7 @@
                         {% if not event.hasStarted %}
                             {% if event.joinHasStarted %}
                                 {% if is_granted('JOIN_SORTIE', event) %}
-                                    {{ _self.user_inscription_button(event, filiations, my_status) }}
+                                    {{ _self.user_inscription_button(event, filiations, my_status, nInscritsTotal) }}
 
                                     <div id="inscription" style="display:none">
 

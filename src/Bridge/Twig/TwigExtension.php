@@ -6,6 +6,7 @@ use App\Entity\AlertType;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
+use App\Helper\RoleHelper;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
@@ -15,13 +16,11 @@ use Twig\TwigFunction;
 
 class TwigExtension extends AbstractExtension implements ServiceSubscriberInterface
 {
-    private ContainerInterface $locator;
-    private string $maxTimestampForLegalValidation;
-
-    public function __construct(ContainerInterface $locator, string $maxTimestampForLegalValidation)
-    {
-        $this->locator = $locator;
-        $this->maxTimestampForLegalValidation = $maxTimestampForLegalValidation;
+    public function __construct(
+        private readonly ContainerInterface $locator,
+        private readonly RoleHelper $roleHelper,
+        private readonly string $maxTimestampForLegalValidation
+    ) {
     }
 
     public static function getSubscribedServices(): array
@@ -140,24 +139,7 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
 
     public function getParticipationRoleName(?EventParticipation $participation): string
     {
-        if (!$participation) {
-            return '';
-        }
-
-        switch ($participation->getRole()) {
-            case EventParticipation::ROLE_BENEVOLE:
-                return 'Participant bénévole';
-            case EventParticipation::ROLE_STAGIAIRE:
-                return 'Initiateur stagiaire';
-            case EventParticipation::ROLE_COENCADRANT:
-                return 'Co-encadrant';
-            case EventParticipation::ROLE_ENCADRANT:
-                return 'Encadrant';
-            default:
-                return 'Participant';
-        }
-
-        return '';
+        return $this->roleHelper->getParticipationRoleName($participation);
     }
 
     public function formatDate($date, string $format = 'd/MM/YYYY')
