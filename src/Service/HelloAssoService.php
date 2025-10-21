@@ -36,9 +36,10 @@ class HelloAssoService
      */
     public function createFormForEvent(Evt $event): array
     {
+        $eventDate = (new \DateTime())->setTimestamp($event->getTsp());
         $params = [
-            'title' => $event->getTitre(),
-            'description' => 'Frais d\'inscription pour la sortie ' . $event->getTitre(),
+            'title' => '[' . $eventDate->format('Y-m-d') . '] ' . $event->getTitre(),
+            'description' => 'Frais d\'inscription pour la sortie ' . $event->getTitre() . ' du ' . $eventDate->format('d/m/Y'),
             'amountVisible' => true,
             'maxEntries' => (int) $event->getNgensMax(),
             'generateTickets' => true,
