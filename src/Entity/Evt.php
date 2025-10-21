@@ -915,42 +915,6 @@ class Evt
         return $this;
     }
 
-    public function getMainTransportMode(): ?TransportModeEnum
-    {
-        return $this->mainTransportMode;
-    }
-
-    public function setMainTransportMode(?TransportModeEnum $mainTransportMode): self
-    {
-        $this->mainTransportMode = $mainTransportMode;
-
-        return $this;
-    }
-
-    public function getNbKm(): ?float
-    {
-        return $this->nbKm;
-    }
-
-    public function setNbKm(?float $nbKm): self
-    {
-        $this->nbKm = $nbKm;
-
-        return $this;
-    }
-
-    public function getCarbonCost(): ?float
-    {
-        return $this->carbonCost;
-    }
-
-    public function setCarbonCost(?float $carbonCost): self
-    {
-        $this->carbonCost = $carbonCost;
-
-        return $this;
-    }
-
     public function hasPaymentForm(): bool
     {
         return $this->hasPaymentForm;
@@ -1031,6 +995,42 @@ class Evt
     public function setUnrecognizedPayers(?Collection $unrecognizedPayers): self
     {
         $this->unrecognizedPayers = $unrecognizedPayers;
+
+        return $this;
+    }
+
+    public function getMainTransportMode(): ?TransportModeEnum
+    {
+        return $this->mainTransportMode;
+    }
+
+    public function setMainTransportMode(?TransportModeEnum $mainTransportMode): self
+    {
+        $this->mainTransportMode = $mainTransportMode;
+
+        return $this;
+    }
+
+    public function getNbKm(): ?float
+    {
+        return $this->nbKm;
+    }
+
+    public function setNbKm(?float $nbKm): self
+    {
+        $this->nbKm = $nbKm;
+
+        return $this;
+    }
+
+    public function getCarbonCost(): ?float
+    {
+        return $this->carbonCost;
+    }
+
+    public function setCarbonCost(?float $carbonCost): self
+    {
+        $this->carbonCost = $carbonCost;
 
         return $this;
     }
