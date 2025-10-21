@@ -232,7 +232,7 @@ class Evt
     #[ORM\Column(name: 'has_payment_send_mail', type: Types::BOOLEAN, nullable: false, options: ['default' => true])]
     private bool $hasPaymentSendMail = true;
 
-    #[ORM\OneToMany(mappedBy: 'evt', targetEntity: 'EventUnrecognizedPayer', cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: 'EventUnrecognizedPayer', cascade: ['persist'], orphanRemoval: true)]
     private ?Collection $unrecognizedPayers = null;
 
     public function __construct(
