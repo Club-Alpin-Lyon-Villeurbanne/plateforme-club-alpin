@@ -118,19 +118,26 @@ class UserLicenseHelperTest extends TestCase
 
         $this->assertTrue(
             $this->userLicenseHelper->isLicenseValidForEvent($user, $eventJustBefore),
-            'La licence devrait être valide pour événement le 29 septembre 2025'
+            'La licence devrait être valide pour une sortie le 29 septembre 2025'
         );
 
         $this->assertFalse(
             $this->userLicenseHelper->isLicenseValidForEvent($user, $eventJustAfter),
-            'La licence ne devrait pas être valide pour événement le 2 octobre 2025'
+            'La licence ne devrait pas être valide pour une sortie le 2 octobre 2025'
         );
     }
 
     private function createMockUser(?int $dateAdhesion): User
     {
         $user = $this->createMock(User::class);
-        $user->method('getDateAdhesion')->willReturn($dateAdhesion);
+        if (null === $dateAdhesion) {
+            $user->method('getJoinDate')->willReturn(null);
+
+            return $user;
+        }
+
+        $joinDate = (new \DateTimeImmutable())->setTimestamp($dateAdhesion);
+        $user->method('getJoinDate')->willReturn($joinDate);
 
         return $user;
     }
@@ -138,7 +145,8 @@ class UserLicenseHelperTest extends TestCase
     private function createMockEvent(int $tspEnd): Evt
     {
         $event = $this->createMock(Evt::class);
-        $event->method('getTspEnd')->willReturn($tspEnd);
+        $date = (new \DateTimeImmutable())->setTimestamp($tspEnd);
+        $event->method('getEndDate')->willReturn($date);
 
         return $event;
     }

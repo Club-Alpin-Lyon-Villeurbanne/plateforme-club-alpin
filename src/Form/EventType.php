@@ -63,22 +63,9 @@ class EventType extends AbstractType
 
         $commission = $event->getCommission();
 
-        // timestamps to datetimes
-        $eventStartDate = null;
-        $eventEndDate = null;
-        $eventJoinStartDate = null;
-        if (!empty($event->getTsp())) {
-            $eventStartDate = new \DateTime();
-            $eventStartDate->setTimestamp($event->getTsp());
-        }
-        if (!empty($event->getTspEnd())) {
-            $eventEndDate = new \DateTime();
-            $eventEndDate->setTimestamp($event->getTspEnd());
-        }
-        if (!empty($event->getJoinStart())) {
-            $eventJoinStartDate = new \DateTime();
-            $eventJoinStartDate->setTimestamp($event->getJoinStart());
-        }
+        $eventStartDate = $event->getStartDate();
+        $eventEndDate = $event->getEndDate();
+        $eventJoinStartDate = $event->getJoinStartDate();
 
         // lieu et coordonnées GPS (marqueur sur la carte)
         $appointment = $event->getRdv();
@@ -181,10 +168,9 @@ class EventType extends AbstractType
                     new GreaterThan(0),
                 ],
             ])
-            ->add('eventStartDate', DateTimeType::class, [
+            ->add('startDate', DateTimeType::class, [
                 'label' => 'Date et heure de RDV / covoiturage',
                 'required' => true,
-                'mapped' => false,
                 'data' => $eventStartDate,
                 'widget' => 'single_text',
                 'html5' => true,
@@ -199,10 +185,9 @@ class EventType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('eventEndDate', DateTimeType::class, [
+            ->add('endDate', DateTimeType::class, [
                 'label' => 'Date et heure (estimée) de retour',
                 'required' => true,
-                'mapped' => false,
                 'data' => $eventEndDate,
                 'widget' => 'single_text',
                 'html5' => true,
@@ -277,7 +262,6 @@ class EventType extends AbstractType
             ->add('joinStartDate', DateTimeType::class, [
                 'label' => 'Les inscriptions démarrent le',
                 'required' => false,
-                'mapped' => false,
                 'data' => $eventJoinStartDate,
                 'widget' => 'single_text',
                 'html5' => true,
@@ -424,10 +408,10 @@ class EventType extends AbstractType
                 $data = $form->getData();
 
                 // cohérence dates début et fin
-                $startDate = $form->get('eventStartDate')->getData();
-                $endDate = $form->get('eventEndDate')->getData();
+                $startDate = $form->get('startDate')->getData();
+                $endDate = $form->get('endDate')->getData();
                 if ($startDate && $endDate && $endDate <= $startDate) {
-                    $form->get('eventStartDate')->addError(new FormError(
+                    $form->get('startDate')->addError(new FormError(
                         'La date de RDV / covoiturage doit être antérieure à la date de retour.'
                     ));
                 }

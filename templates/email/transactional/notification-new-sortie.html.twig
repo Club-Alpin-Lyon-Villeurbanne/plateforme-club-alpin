@@ -2,11 +2,11 @@
 
 {% block subject -%}
 
-    {{ prefix }}[{{ entity.commission.title }}] {{ entity.titre }} / {{ entity.tsp | intldate('cccc d MMMM') }}
+    {{ prefix }}[{{ entity.commission.title }}] {{ entity.titre }} / {{ entity.startDate | intldate('cccc d MMMM') }}
 
 {%- endblock %}
 
-{% block rappel_objet 'Nouvelle sortie: ' ~ entity.titre ~ ' / ' ~ entity.tsp | intldate('cccc d MMMM') %}
+{% block rappel_objet 'Nouvelle sortie: ' ~ entity.titre ~ ' / ' ~ entity.startDate | intldate('cccc d MMMM') %}
 
 {% block inner_html %}
     <p>

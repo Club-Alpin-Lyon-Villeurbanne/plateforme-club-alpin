@@ -10,15 +10,14 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Serializer\Filter\GroupFilter;
-use App\Serializer\TimeStampNormalizer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
-use Symfony\Component\Serializer\Attribute\Context;
 
 /**
  * Evt.
@@ -31,15 +30,17 @@ use Symfony\Component\Serializer\Attribute\Context;
         new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
         new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:read', 'eventParticipation:read']]),
     ],
-    order: ['tsp' => 'ASC'],
+    order: ['startDate' => 'ASC'],
     security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', 'participations.user.id' => 'exact'])]
-#[ApiFilter(RangeFilter::class, properties: ['tsp'])]
+#[ApiFilter(RangeFilter::class, properties: ['startDate'])]
 #[ApiFilter(GroupFilter::class, arguments: ['overrideDefaultGroups' => true])]
-#[ApiFilter(OrderFilter::class, properties: ['tsp'])]
+#[ApiFilter(OrderFilter::class, properties: ['startDate'])]
 class Evt
 {
+    use TimestampableEntity;
+
     public const STATUS_PUBLISHED_UNSEEN = 0;
     public const STATUS_PUBLISHED_VALIDE = 1;
     public const STATUS_PUBLISHED_REFUSE = 2;
@@ -84,9 +85,6 @@ class Evt
     #[ORM\JoinColumn(name: 'cancelled_who_evt', referencedColumnName: 'id_user', nullable: true)]
     private ?User $cancelledWho;
 
-    #[ORM\Column(name: 'cancelled_when_evt', type: 'bigint', nullable: true, options: ['comment' => 'Timestamp annulation'])]
-    private ?int $cancelledWhen;
-
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: ExpenseReport::class)]
     private ?Collection $expenseReports;
 
@@ -103,21 +101,6 @@ class Evt
     #[ORM\ManyToOne(targetEntity: 'Groupe', fetch: 'EAGER')]
     #[ORM\JoinColumn(name: 'id_groupe', referencedColumnName: 'id', nullable: true)]
     private ?Groupe $groupe;
-
-    #[ORM\Column(name: 'tsp_evt', type: 'bigint', nullable: true, options: ['comment' => 'timestamp du début du event'])]
-    private ?int $tsp;
-
-    #[ORM\Column(name: 'tsp_end_evt', type: 'bigint', nullable: true)]
-    private ?int $tspEnd;
-
-    #[ORM\Column(name: 'tsp_crea_evt', type: 'bigint', nullable: false, options: ['comment' => "Création de l'entrée"])]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[Groups('event:details')]
-    private ?int $tspCrea;
-
-    #[ORM\Column(name: 'tsp_edit_evt', type: 'bigint', nullable: true)]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    private ?int $tspEdit;
 
     #[ORM\Column(name: 'place_evt', type: 'string', length: 255, nullable: false, options: ['comment' => 'Lieu de départ activité'])]
     #[Groups('event:details')]
@@ -187,11 +170,6 @@ class Evt
     #[Groups('event:details')]
     private bool $needBenevoles = false;
 
-    #[ORM\Column(name: 'join_start_evt', type: 'integer', nullable: true, options: ['comment' => 'Timestamp de départ des inscriptions'])]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    #[Groups('event:details')]
-    private ?int $joinStart;
-
     #[ORM\Column(name: 'join_max_evt', type: 'integer', nullable: false, options: ['comment' => "Nombre max d'inscriptions spontanées sur le site, ET PAS d'inscrits total"])]
     #[Groups('event:read')]
     #[SerializedName('inscriptionsMax')]
@@ -235,32 +213,49 @@ class Evt
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: 'EventUnrecognizedPayer', cascade: ['persist'], orphanRemoval: true)]
     private ?Collection $unrecognizedPayers = null;
 
+    #[ORM\Column(name: 'start_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date et heure de début'])]
+    #[Groups('event:read')]
+    private ?\DateTimeImmutable $startDate;
+
+    #[ORM\Column(name: 'end_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date et heure de fin'])]
+    #[Groups('event:read')]
+    private ?\DateTimeImmutable $endDate;
+
+    #[ORM\Column(name: 'join_start_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date du début des inscriptions'])]
+    #[Groups('event:read')]
+    private ?\DateTimeImmutable $joinStartDate;
+
+    #[ORM\Column(name: 'cancellation_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date d\'annulation'])]
+    #[Groups('event:read')]
+    private ?\DateTimeImmutable $cancellationDate = null;
+
+    #[ORM\Column(name: 'legal_status_change_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date de validation ou refus légal'])]
+    #[Groups('event:read')]
+    private ?\DateTimeImmutable $legalStatusChangeDate = null;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
         ?string $titre,
         ?string $code,
-        ?\DateTime $dateStart,
-        ?\DateTime $dateEnd,
+        ?\DateTimeImmutable $dateStart,
+        ?\DateTimeImmutable $dateEnd,
         ?string $rdv,
         ?float $rdvLat,
         ?float $rdvLong,
         ?string $description,
-        ?int $demarrageInscriptions,
         ?int $maxInscriptions,
-        ?int $maxParticipants
+        ?int $maxParticipants,
+        ?\DateTimeImmutable $joinStartDate,
     ) {
         $this->user = $user;
         $this->titre = $titre;
         $this->code = $code;
-        $this->tsp = $dateStart ? $dateStart->getTimestamp() : null;
-        $this->tspEnd = $dateEnd ? $dateEnd->getTimestamp() : null;
         $this->place = ''; // unused, must be dropped
         $this->rdv = $rdv;
         $this->lat = $rdvLat;
         $this->long = $rdvLong;
         $this->description = $description;
-        $this->joinStart = $demarrageInscriptions;
         $this->joinMax = $maxInscriptions;
         $this->ngensMax = $maxParticipants;
         $this->commission = $commission;
@@ -277,10 +272,13 @@ class Evt
         $this->participations = new ArrayCollection();
         $this->articles = new ArrayCollection();
         $this->expenseReports = new ArrayCollection();
-        $this->tspCrea = time();
-        $this->tspEdit = time();
         $this->isDraft = false;
         $this->unrecognizedPayers = new ArrayCollection();
+        $this->setCreatedAt(new \DateTime());
+        $this->setUpdatedAt(new \DateTime());
+        $this->startDate = $dateStart;
+        $this->endDate = $dateEnd;
+        $this->joinStartDate = $joinStartDate;
     }
 
     public function jsonSerialize(): mixed
@@ -290,20 +288,21 @@ class Evt
             'user' => $this->user->getId(),
             'titre' => $this->titre,
             'code' => $this->code,
-            'tsp' => $this->tsp,
-            'tspEnd' => $this->tspEnd,
             'place' => $this->place,
             'rdv' => $this->rdv,
             'lat' => $this->lat,
             'long' => $this->long,
             'description' => $this->description,
-            'joinStart' => $this->joinStart,
             'joinMax' => $this->joinMax,
             'ngensMax' => $this->ngensMax,
             'commission' => $this->commission->getId(),
             'participations' => $this->participations,
             'articles' => $this->articles,
-            'tspCrea' => $this->tspCrea,
+            'start' => $this->getStartDate()?->format('Y-m-d H:i:s'),
+            'end' => $this->getEndDate()?->format('Y-m-d H:i:s'),
+            'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->getUpdatedAt()->format('Y-m-d H:i:s'),
+            'joinStartDate' => $this->getJoinStartDate()?->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -385,18 +384,6 @@ class Evt
     public function setCancelledWho(?User $cancelledWho): self
     {
         $this->cancelledWho = $cancelledWho;
-
-        return $this;
-    }
-
-    public function getCancelledWhen(): ?int
-    {
-        return $this->cancelledWhen;
-    }
-
-    public function setCancelledWhen(?int $cancelledWhen): self
-    {
-        $this->cancelledWhen = $cancelledWhen;
 
         return $this;
     }
@@ -523,30 +510,18 @@ class Evt
         return $this;
     }
 
-    public function getTsp(): ?int
-    {
-        return $this->tsp;
-    }
-
-    public function setTsp(int $tsp): self
-    {
-        $this->tsp = $tsp;
-
-        return $this;
-    }
-
     #[Groups('event:read')]
     #[SerializedName('heureRendezVous')]
     public function getDateDebut(): ?string
     {
-        return $this->tsp ? (new \DateTime())->setTimestamp($this->tsp)->format(\DateTime::ATOM) : null;
+        return $this->startDate?->format(\DateTime::ATOM);
     }
 
     #[Groups('event:read')]
     #[SerializedName('heureRetour')]
     public function getDateFin(): ?string
     {
-        return $this->tspEnd ? (new \DateTime())->setTimestamp($this->tspEnd)->format(\DateTime::ATOM) : null;
+        return $this->endDate?->format(\DateTime::ATOM);
     }
 
     public function isPublicStatusUnseen()
@@ -581,58 +556,17 @@ class Evt
 
     public function hasStarted(): bool
     {
-        return $this->tsp < time();
-    }
-
-    public function startsAfter(string $when): bool
-    {
-        return $this->tsp > strtotime($when);
+        return $this->startDate < new \DateTimeImmutable();
     }
 
     public function joinHasStarted(): bool
     {
-        return $this->joinStart < time();
+        return $this->joinStartDate < new \DateTimeImmutable();
     }
 
     public function isFinished(): bool
     {
-        return $this->tspEnd < time();
-    }
-
-    public function getTspEnd(): ?int
-    {
-        return $this->tspEnd;
-    }
-
-    public function setTspEnd(int $tspEnd): self
-    {
-        $this->tspEnd = $tspEnd;
-
-        return $this;
-    }
-
-    public function getTspCrea(): ?string
-    {
-        return $this->tspCrea;
-    }
-
-    public function setTspCrea(string $tspCrea): self
-    {
-        $this->tspCrea = $tspCrea;
-
-        return $this;
-    }
-
-    public function getTspEdit(): ?string
-    {
-        return $this->tspEdit;
-    }
-
-    public function setTspEdit(string $tspEdit): self
-    {
-        $this->tspEdit = $tspEdit;
-
-        return $this;
+        return $this->endDate < new \DateTimeImmutable();
     }
 
     public function getPlace(): ?string
@@ -827,18 +761,6 @@ class Evt
         return $this;
     }
 
-    public function getJoinStart(): ?int
-    {
-        return $this->joinStart;
-    }
-
-    public function setJoinStart(?int $joinStart): self
-    {
-        $this->joinStart = $joinStart;
-
-        return $this;
-    }
-
     public function getJoinMax(): ?int
     {
         return $this->joinMax;
@@ -919,6 +841,66 @@ class Evt
     public function setImagesAuthorized(bool $imagesAuthorized): self
     {
         $this->imagesAuthorized = $imagesAuthorized;
+
+        return $this;
+    }
+
+    public function getStartDate(): ?\DateTimeImmutable
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(?\DateTimeImmutable $startDate): self
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    public function getEndDate(): ?\DateTimeImmutable
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(?\DateTimeImmutable $endDate): self
+    {
+        $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    public function getJoinStartDate(): ?\DateTimeImmutable
+    {
+        return $this->joinStartDate;
+    }
+
+    public function setJoinStartDate(?\DateTimeImmutable $joinStartDate): self
+    {
+        $this->joinStartDate = $joinStartDate;
+
+        return $this;
+    }
+
+    public function getCancellationDate(): ?\DateTimeImmutable
+    {
+        return $this->cancellationDate;
+    }
+
+    public function setCancellationDate(?\DateTimeImmutable $cancellationDate): self
+    {
+        $this->cancellationDate = $cancellationDate;
+
+        return $this;
+    }
+
+    public function getLegalStatusChangeDate(): ?\DateTimeImmutable
+    {
+        return $this->legalStatusChangeDate;
+    }
+
+    public function setLegalStatusChangeDate(?\DateTimeImmutable $legalStatusChangeDate): self
+    {
+        $this->legalStatusChangeDate = $legalStatusChangeDate;
 
         return $this;
     }

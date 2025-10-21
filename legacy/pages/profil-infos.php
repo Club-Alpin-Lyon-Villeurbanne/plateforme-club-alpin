@@ -208,8 +208,8 @@ if (user()) {
                         if ($tmpUser['alerte_renouveler_user']) {
                             echo '<span class="alerte">';
                         }
-    if ($tmpUser['date_adhesion_user'] > 0) {
-        echo date('d/m/Y', $tmpUser['date_adhesion_user']);
+    if (!empty($tmpUser['join_date'])) {
+        echo (new \DateTimeImmutable($tmpUser['join_date']))?->format('d/m/Y');
     } else {
         echo 'aucune date connue.';
     }
@@ -235,8 +235,7 @@ if (user()) {
 
             <div style="float:left; width:45%; padding-right:5%; margin-top:10px">
                 Votre date de naissance :<br />
-                <!-- <input type="text" name="birthday_user" class="type1" value="<?php echo date('d/m/Y', $tmpUser['birthday_user']); ?>" placeholder="" /> -->
-                <b><?php echo date('d/m/Y', $tmpUser['birthday_user']); ?></b>
+                <b><?php echo (new \DateTimeImmutable($tmpUser['birthdate']))?->format('d/m/Y'); ?></b>
             </div>
 
             <br style="clear:both" /><br style="clear:both" />

@@ -81,6 +81,10 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
     $tspMin = strtotime(str_replace('/', '-', $dateMin));
     $tspMax = strtotime(str_replace('/', '-', $dateMax) . ' 23:59');
 
+    // filtres date
+    $dateMin = \DateTimeImmutable::createFromFormat('d/m/Y', $dateMin);
+    $dateMax = \DateTimeImmutable::createFromFormat('d/m/Y', $dateMax);
+
     /*** USERS **/
 
     if ('users' == $p2 && isset($key)) {
@@ -95,8 +99,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					AND cancelled_evt = 0
 					AND commission_evt =' . (int) $comm['id_commission'] . "
 
-					AND tsp_evt > $tspMin
-					AND tsp_evt < $tspMax
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 					";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -110,8 +114,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
                     AND status_evt_join = 1
                     AND commission_evt =' . (int) $comm['id_commission'] . "
 
-                    AND tsp_evt > $tspMin
-                    AND tsp_evt < $tspMax
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 
                     AND id_user = user_evt_join
                     AND civ_user LIKE 'M'
@@ -128,8 +132,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
                     AND status_evt_join = 1
                     AND commission_evt =' . (int) $comm['id_commission'] . "
 
-                    AND tsp_evt > $tspMin
-                    AND tsp_evt < $tspMax
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 
                     AND id_user = user_evt_join
                     AND civ_user NOT LIKE 'M'
@@ -146,17 +150,17 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
                     AND status_evt_join = 1
                     AND commission_evt =' . (int) $comm['id_commission'] . "
 
-                    AND tsp_evt > $tspMin
-                    AND tsp_evt < $tspMax
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 
                     AND id_user = user_evt_join
-                    AND birthday_user > (tsp_evt - " . (18 * 365 * 24 * 60 * 60) . ')
-                    ';
+                    AND DATE_ADD(birthdate, INTERVAL 18 YEAR) > start_date 
+                    ";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
             $comTab[$key]['stats']['join_total_mineurs'] = $row[0];
 
-            // Nombre de participations confirmés
+            // Nombre de participations confirmées
             // NOTE : temps = de la sortie et pas de la réza
             $req = 'SELECT COUNT(id_evt_join)
 					FROM caf_evt, caf_evt_join
@@ -165,8 +169,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					AND commission_evt =' . (int) $comm['id_commission'] . "
 					AND cancelled_evt = 0
 
-					AND tsp_evt > $tspMin
-					AND tsp_evt < $tspMax
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 					";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -181,8 +185,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					AND commission_evt =' . (int) $comm['id_commission'] . "
 					AND cancelled_evt = 0
 
-					AND tsp_evt > $tspMin
-					AND tsp_evt < $tspMax
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 					";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -197,8 +201,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 					AND commission_evt =' . (int) $comm['id_commission'] . "
 					AND cancelled_evt = 0
 
-					AND tsp_evt > $tspMin
-					AND tsp_evt < $tspMax
+					AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+					AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 					";
 
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -285,8 +289,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
             $req = 'SELECT COUNT(id_evt)
 						FROM caf_evt
 						WHERE commission_evt=' . $comm['id_commission'] . "
-						AND tsp_evt > $tspMin
-						AND tsp_evt < $tspMax
+                        AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+                        AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 						";
 
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
@@ -298,8 +302,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 						FROM caf_evt
 						WHERE commission_evt=' . $comm['id_commission'] . "
 						AND status_evt = 1
-						AND tsp_evt > $tspMin
-						AND tsp_evt < $tspMax
+                        AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+                        AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 						";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -310,8 +314,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 						FROM caf_evt
 						WHERE commission_evt=' . $comm['id_commission'] . "
 						AND status_evt = 2
-						AND tsp_evt > $tspMin
-						AND tsp_evt < $tspMax
+                        AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+                        AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 						";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -322,8 +326,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 						FROM caf_evt
 						WHERE commission_evt=' . $comm['id_commission'] . "
 						AND status_legal_evt = 1
-						AND tsp_evt > $tspMin
-						AND tsp_evt < $tspMax
+                        AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+                        AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 						";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -334,8 +338,8 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 						FROM caf_evt
 						WHERE commission_evt=' . $comm['id_commission'] . "
 						AND status_legal_evt = 0
-						AND tsp_evt > $tspMin
-						AND tsp_evt < $tspMax
+                        AND start_date > '" . $dateMin->format('Y-m-d H:i:s') . "'
+                        AND start_date < '" . $dateMax->format('Y-m-d H:i:s') . "'
 						";
             $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
             $row = $result->fetch_row();
@@ -516,7 +520,7 @@ if ((allowed('stats_commissions_read') || allowed('stats_users_read')) && ('comm
 			<?php
             while ($article = $result->fetch_assoc()) {
                 echo '<tr id="tr-' . $article['id_article'] . '" class="vis-on">'
-                . '<td>' . date('d.m.Y', $article['tsp_validate_article']) . '</td>'
+                . '<td>' . (new \DateTimeImmutable($article['validation_date']))?->format('d/m/Y') . '</td>'
                 . '<td><a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . $article['titre_article'] . '</a></td>'
                 . '<td>' . userlink($article['id_user'], ucfirst(mb_strtolower($article['firstname_user'], 'UTF-8')) . ' ' . $article['lastname_user']) . '</td>'
                 . '<td>' . html_utf8($article['title_commission']) . '</td>'

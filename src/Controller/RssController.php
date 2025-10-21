@@ -59,7 +59,7 @@ class RssController extends AbstractController
                 $entry['title'] = $article->getTitre();
                 $entry['link'] = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'article/' . $article->getCode() . '-' . $article->getId() . '.html';
                 $entry['description'] = $article->getCont();
-                $entry['timestamp'] = $article->getTsp();
+                $entry['timestamp'] = $article->getCreatedAt()->getTimestamp();
 
                 if ($article->getMediaUpload()) {
                     $entry['img'] = $cacheManager->getBrowserPath('uploads/files/' . $article->getMediaUpload()->getFilename(), 'wide_thumbnail');
@@ -105,7 +105,7 @@ class RssController extends AbstractController
                 if ($event->getNeedBenevoles()) {
                     $entry['description'] .= ('' !== $entry['description'] ? ' | ' : '') . 'bénévoles appréciés';
                 }
-                $entry['timestamp'] = $event->getTsp();
+                $entry['timestamp'] = $event->getStartDate()->getTimestamp();
                 $entry['img'] = false;
 
                 $entryTab[] = $entry;

@@ -108,7 +108,7 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
             return 'Les inscriptions sont terminées';
         }
         if (!$event->joinHasStarted()) {
-            return sprintf('Les inscriptions pour cette sortie commenceront le %s', date('d/m/y', $event->getJoinStart()));
+            return sprintf('Les inscriptions pour cette sortie commenceront le %s', $event->getJoinStartDate()?->format('d/m/y'));
         }
         if ($event->getNgensMax() <= $event->getParticipationsCount()) {
             return sprintf('Les %d places libres ont été réservées', $event->getNgensMax());
@@ -155,11 +155,11 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         ))->format($date);
     }
 
-    public function isLegalValidable(Evt $event)
+    public function isLegalValidable(Evt $event): bool
     {
         $time = strtotime($this->maxTimestampForLegalValidation);
 
-        return $event->getTsp() < $time;
+        return $event->getStartDate()->getTimestamp() < $time;
     }
 
     public function slugify(string $string)
@@ -176,10 +176,10 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
         return $items[array_rand($items)];
     }
 
-    public function getPaiementTitle(Evt $event, User $user)
+    public function getPaiementTitle(Evt $event, User $user): string
     {
         $title = $this->locator->get(SluggerInterface::class)->slug($event->getTitre());
-        $compl = ' du ' . date('d-m-Y', $event->getTsp()) . ' ' . ucfirst($user->getFirstname()) . ' ' . strtoupper($user->getLastname());
+        $compl = ' du ' . $event->getStartDate()->format('d/m/Y') . ' ' . ucfirst($user->getFirstname()) . ' ' . strtoupper($user->getLastname());
         $size_compl = \strlen($compl);
 
         return substr($title, 0, 64 - $size_compl) . $compl;

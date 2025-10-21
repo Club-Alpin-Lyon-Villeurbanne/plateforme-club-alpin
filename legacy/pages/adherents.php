@@ -1,17 +1,23 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Security\SecurityConstants;
 
-if (allowed('user_see_all')) {
+if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
     $userTab = [];
-    $show = 'allvalid';
+    if (allowed('user_see_all')) {
+        $show = 'allvalid';
+    }
+    if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+        $show = 'valid';
+    }
     // fonctions disponibles
     if (isset($_GET['show']) && in_array($_GET['show'], ['all', 'manual', 'notvalid', 'nomade', 'dels', 'expired', 'valid-expired'], true)) {
         $show = $_GET['show'];
     }
     $show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
 
-    $req = 'SELECT id_user , email_user , cafnum_user , firstname_user , lastname_user , nickname_user , created_user , birthday_user , tel_user , tel2_user , adresse_user, cp_user ,  ville_user ,  civ_user , valid_user , manuel_user, nomade_user, date_adhesion_user, doit_renouveler_user
+    $req = 'SELECT id_user , email_user , cafnum_user , firstname_user , lastname_user , nickname_user , created_at , updated_at , birthdate , tel_user , tel2_user , adresse_user, cp_user ,  ville_user ,  civ_user , valid_user , manuel_user, nomade_user, join_date, doit_renouveler_user
 		FROM  `caf_user` WHERE is_deleted=0'
         . ('dels' == $show ? ' AND valid_user=2 ' : '')
         . ('manual' == $show ? ' AND manuel_user=1 ' : '')
@@ -21,16 +27,13 @@ if (allowed('user_see_all')) {
         . ('notvalid' == $show ? ' AND valid_user=0 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
         . ('expired' == $show ? ' AND doit_renouveler_user=1 ' : '')
         . ('valid-expired' == $show ? ' AND valid_user=1 AND doit_renouveler_user=1 ' : '')
-        . ' ORDER BY lastname_user ASC, firstname_user ASC LIMIT 9000';			// , pays_user
+        . ' ORDER BY lastname_user ASC, firstname_user ASC LIMIT 9000';
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $handleSql->fetch_assoc()) {
-        if ('0' == $row['birthday_user'] || '1' == $row['birthday_user'] || '' == $row['birthday_user']) {
-            // dans ces cas, bug très probable
-            $row['birthday_user'] = 0;
-        } else { // la date de naissance est remplacée par l'age (avec zéros inutiles, pour tri de la colonne)
-            $row['birthday_user'] = sprintf('%03d', getYearsSinceDate($row['birthday_user']));
-        }
+        $birthdate = new \DateTimeImmutable($row['birthdate']);
+        $age = $birthdate->diff(new \DateTime())->y;
+        $row['birthday_user'] = $age;
 
         $userTab[] = $row;
     }
@@ -41,12 +44,24 @@ if (allowed('user_see_all')) {
 <div id="main" role="main" style="width:100%">
 	<div style="padding:20px 10px;">
 		<?php
-        if (!allowed('user_see_all')) {
+        if (!allowed('user_see_all') && !isGranted(SecurityConstants::ROLE_ADMIN)) {
             echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour accéder à cette page</p>';
         } else {
             ?>
             <div>
-                <h2>Gestion des adhérents</h2>
+                <h1>Gestion des adhérents</h1>
+                <p>
+                    <img src="/img/base/magnifier.png" style="vertical-align:middle" />
+                    Le champ "<i>Search</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
+                    <?php if (isGranted(SecurityConstants::ROLE_ADMIN)) { ?>
+                    <img src="/img/base/database_go.png" style="vertical-align:middle" />
+                    Les boutons de droite vous permettent d'exporter le tableau courant, le plus utile étant l'exportation en .csv.<br />
+                    <?php } ?>
+                    <img src="/img/base/info.png" style="vertical-align:middle" />
+                    Vous pouvez trier les résultats selon différents critères en même temps, en pressant la touche <i>Maj / Shift</i> en cliquant sur les titres des colonnes.<br />
+                </p>
+                <br>
+
                 <h3>Afficher les adhérents par statut :</h3>
                 <div>
 
@@ -68,10 +83,23 @@ if (allowed('user_see_all')) {
                         🌍 Non-adhérents
                     </a>&nbsp;
 
+                    <?php if (isGranted(SecurityConstants::ROLE_ADMIN)) { ?>
+                    <a href="/adherents.html?show=manual"
+                    class="boutonFancy"
+                    <?php if ('manual' == $show) { echo 'style="background:#d3d6ff"'; } ?>>
+                        Créés manuellement
+                    </a>&nbsp;
+                    <a href="/adherents.html?show=dels"
+                       class="boutonFancy"
+                        <?php if ('dels' == $show) { echo 'style="background:#d3d6ff"'; } ?>>
+                        Désactivés manuellement
+                    </a>&nbsp;
+                    <?php } ?>
+
                     <a href="/adherents.html?show=all"
                     class="boutonFancy"
                     <?php if ('all' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
-                        📋 Tous les adhérents
+                        📋 Tous les adhérents (+ long)
                     </a>
                 </div>
             </div>
@@ -88,7 +116,22 @@ if (allowed('user_see_all')) {
 						"aaSorting": [
 							[2, "asc"],
 							[3, "asc"]
-						]
+						],
+                        "sDom": 'T<"clear">lfrtip',
+                        "oTableTools": {
+                            "sSwfPath": "/tools/datatables/extras/TableTools/media/swf/copy_csv_xls_pdf.swf",
+                            "aButtons": [
+                                "copy",
+                                "csv",
+                                "xls",
+                                {
+                                    "sExtends": "pdf",
+                                    "sPdfOrientation": "landscape"
+                                    // "sPdfMessage": "Your custom message would go here."
+                                },
+                                "print"
+                            ]
+                        }
 					});
 					$('span.br').html('<br />');
 				});
@@ -106,8 +149,14 @@ if (allowed('user_see_all')) {
 						<th>Adhésion</th>
 						<th>Pseudo</th>
 						<th>Age</th>
-						<th>Tél</th>
+						<th>Tél<?php if (isGranted(SecurityConstants::ROLE_ADMIN)) { ?> / Tél secours<?php } ?></th>
 						<th>E-mail</th>
+                        <?php if (isGranted(SecurityConstants::ROLE_ADMIN)) { ?>
+                        <th>CP</th>
+                        <th>Ville</th>
+                        <th>Actif ?</th>
+                        <th>Licence</th>
+                        <?php } ?>
 					</tr>
 				</thead>
 				<tbody>
@@ -132,8 +181,15 @@ if (allowed('user_see_all')) {
                     // OUTILS
                     . '<td style="white-space:nowrap;">';
 
+                // view user
+                if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+                    echo '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user=' . (int) $elt['id_user'] . '" class="fancyframe" title="Consulter cet adhérent"><img src="/img/base/report.png"></a> ';
+                }
+
                 // gestion des droits
-                if ($isAllowed_user_giveright_1 || $isAllowed_user_giveright_2 || $isAllowed_user_givepresidence) {
+                if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+                    echo '<a href="/includer.php?admin=true&amp;p=pages/admin-users-droits.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Voir / Attribuer des statuts à cet utilisateur"><img src="/img/base/user_star.png"></a> ';
+                } elseif ($isAllowed_user_giveright_1 || $isAllowed_user_giveright_2 || $isAllowed_user_givepresidence) {
                     echo '<a href="/includer.php?p=pages/adherents-droits.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Voir / Attribuer des responsabilités à cet utilisateur"><img src="/img/base/user_star.png"></a> ';
                 }
 
@@ -141,6 +197,7 @@ if (allowed('user_see_all')) {
                 if ($isAllowed_user_desactivate_any && '1' == $elt['valid_user']) {
                     echo '<a href="/includer.php?p=pages/adherents-desactiver.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Désactiver le compte de cet utilisateur"><img src="/img/base/user_unvalidate.png"></a> ';
                 }
+
                 // réactiver
                 if ($isAlowed_user_reactivate && '2' == $elt['valid_user']) {
                     echo '<a href="/includer.php?p=pages/adherents-reactiver.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Réactiver le compte de cet utilisateur"><img src="/img/base/user_revalidate.png"></a> ';
@@ -165,15 +222,18 @@ if (allowed('user_see_all')) {
                 $img_lock = '<img src="/img/base/lock_gray.png" alt="caché"  title="Vous devez disposer de droits supérieurs pour afficher cette information" />';
 
                 $emailCol = '';
+                $activatedCol = '';
                 if (1 == $elt['valid_user'] && $elt['email_user']) {
                     $emailCol = ($isAllowed_user_read_private ? '<a href="mailto:' . html_utf8($elt['email_user']) . '" title="Contact direct">' . html_utf8($elt['email_user']) . '</a>' : $img_lock);
+                    $activatedCol = 'oui';
                 } else {
                     $emailCol = '<span style="color: darkorange; font-weight: bold" title="Les comptes non activés ne reçoivent pas les e-mails">⚠️ compte non activé</span>';
+                    $activatedCol = '<span style="color: darkorange; font-weight: bold;" title="Les comptes non activés ne reçoivent pas les e-mails">non</span>';
                 }
 
                 // INFOS
                 echo '<td>'
-                    . html_utf8($elt['cafnum_user']) . ' '
+                    . html_utf8($elt['cafnum_user']) . '<br />'
                     . ($elt['manuel_user'] ? '<img src="/img/base/user_manuel.png" alt="MANUEL" title="Utilisateur créé manuellement" /> ' : '')
                     . ($elt['nomade_user'] ? '<img src="/img/base/nomade_user.png" alt="NOMADE" title="Utilisateur nomade" /> ' : '')
                     . ('2' == $elt['valid_user'] ? '<img src="/img/base/user_desactive.png" alt="DESACTIVE" title="Utilisateur désactivé manuellement" /> ' : '')
@@ -184,14 +244,26 @@ if (allowed('user_see_all')) {
                 if ($elt['doit_renouveler_user']) {
                     echo '<td style="color:red" title="' . ($isAllowed_user_read_private ? ($elt['date_adhesion_user'] ? date('Y-m-d', $elt['date_adhesion_user']) : '') : '') . '">Licence expirée</td>';
                 } else {
-                    echo '<td>' . ($isAllowed_user_read_private ? ($elt['date_adhesion_user'] ? date('Y-m-d', $elt['date_adhesion_user']) : '-') : $img_lock) . '</td>';
+                    $joinDate = new \DateTimeImmutable($elt['join_date']);
+                    echo '<td>' . ($isAllowed_user_read_private ? (!empty($elt['join_date']) ? $joinDate?->format('d/m/Y') : '-') : $img_lock) . '</td>';
                 }
 
                 echo '<td>' . userlink($elt['id_user'], $elt['nickname_user']) . '</td>'
-                . '<td>' . ($isAllowed_user_read_private ? '<span style="display:none">' . $elt['birthday_user'] . '</span>' . ($elt['birthday_user'] ? (int) ($elt['birthday_user']) . ' ans' : '...') : $img_lock) . '</td>'
-                . '<td>' . ($isAllowed_user_read_private ? html_utf8($elt['tel_user']) : $img_lock) . '</td>'
+                . '<td>' . ($isAllowed_user_read_private ? '<span style="display:none">' . $elt['birthday_user'] . '</span>' . ($elt['birthday_user'] > 0 ? $elt['birthday_user'] . ' ans' : '...') : $img_lock) . '</td>'
+                . '<td>' . ($isAllowed_user_read_private ? html_utf8($elt['tel_user']) : $img_lock);
+                if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+                    echo '<br />' . html_utf8($elt['tel2_user']);
+                }
+                echo '</td>'
                 . '<td>' . $emailCol . '</td>'
-                . '</tr>';
+                . '<td>' . $activatedCol . '</td>';
+                if (isGranted(SecurityConstants::ROLE_ADMIN)) {
+                    echo '<td>' . html_utf8($elt['cp_user']) . '</td>'
+                        . '<td>' . html_utf8($elt['ville_user']) . '</td>'
+                        . '<td>' . (int) $elt['valid_user'] . '</td>'
+                        . '<td>' . ($elt['doit_renouveler_user'] ? 'expirée' : 'valide') . ' ' . (!$elt['doit_renouveler_user'] && isset($elt['alerte_renouveler_user']) && $elt['alerte_renouveler_user'] ? '<span style="color:red">* Doit renouveler</span>' : '') . '</td>';
+                }
+                echo '</tr>';
             } ?>
 				</tbody>
 			</table>
@@ -200,5 +272,6 @@ if (allowed('user_see_all')) {
         }
 ?>
 		<br style="clear:both" />
+        <br style="clear:both" />
 	</div>
 </div>

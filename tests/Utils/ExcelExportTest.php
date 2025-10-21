@@ -42,11 +42,11 @@ class ExcelExportTest extends TestCase
 
         return [
             'DateTime object' => [
-                new \DateTime("$currentYear-01-01"),
+                new \DateTimeImmutable("$currentYear-01-01"),
                 0,
             ],
             'DateTime object 20 years ago' => [
-                new \DateTime(($currentYear - 20) . '-01-01'),
+                new \DateTimeImmutable(($currentYear - 20) . '-01-01'),
                 20,
             ],
             'Unix timestamp' => [
@@ -77,9 +77,9 @@ class ExcelExportTest extends TestCase
         $user->method('getCiv')->willReturn('M.');
         $user->method('getLastname')->willReturn('DOE');
         $user->method('getFirstname')->willReturn('John');
-        $user->method('getBirthday')->willReturn(631182937);
+        $user->method('getBirthdate')->willReturn(new \DateTimeImmutable('1990-01-01'));
         $user->method('getCafnum')->willReturn('12345');
-        $user->method('getDateAdhesion')->willReturn(1672562818);
+        $user->method('getJoinDate')->willReturn(new \DateTimeImmutable('2023-01-01'));
         $user->method('getTel')->willReturn('0123456789');
         $user->method('getTel2')->willReturn('0987654321');
         $user->method('getEmail')->willReturn('john.doe@example.com');

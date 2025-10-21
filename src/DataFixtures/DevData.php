@@ -64,9 +64,11 @@ class DevData implements FixtureInterface
             if ($object instanceof Evt) {
                 $object->setStatus(mt_rand(0, 2));
                 $start = time() + mt_rand(-60, 74) * 86400;
-                $object->setTsp($start);
-                $object->setTspEnd($start + mt_rand(1, 4) * 86400);
-                $object->setJoinStart(time());
+                $startDate = (new \DateTimeImmutable())->setTimestamp($start);
+                $endDate = (new \DateTimeImmutable())->setTimestamp($start + mt_rand(1, 4) * 86400);
+                $object->setStartDate($startDate);
+                $object->setEndDate($endDate);
+                $object->setJoinStartDate($startDate);
                 $object->setJoinMax(10);
                 $object->setNgensMax(10);
                 $object->setCommission($comm);

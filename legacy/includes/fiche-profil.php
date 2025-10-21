@@ -26,11 +26,6 @@ if (!$connectedUser) {
 $req = "SELECT * FROM caf_user WHERE id_user = $id_user AND is_deleted = 0 LIMIT 1";
 $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($row = $result->fetch_assoc()) {
-    // debug
-    if (1 == $row['birthday_user']) {
-        $row['birthday_user'] = 0;
-    }
-
     require __DIR__ . '/../includes/user/statuts.php';
 
     $tmpUser = $row;
@@ -121,8 +116,8 @@ else {
 		            echo '<li class="red">LICENCE EXPIRÉE</li>';
 		        } elseif (allowed('user_read_private')) {
 		            echo '<li>DATE D\'ADHÉSION : ';
-		            if (!empty($tmpUser['date_adhesion_user'])) {
-		                echo '<span class="green">' . date('d/m/Y', $tmpUser['date_adhesion_user']) . '</span>';
+		            if (!empty($tmpUser['join_date'])) {
+		                echo '<span class="green">' . (new \DateTimeImmutable($tmpUser['join_date']))?->format('d/m/Y') . '</span>';
 		            } else {
 		                echo 'inconnue';
 		            }
