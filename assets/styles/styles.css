@@ -608,3 +608,23 @@ span.request {font-size: 1.1rem;}
     margin: 20px auto;
     text-align: center;
 }
+
+.right-light-in.partners {
+    text-align: center;
+}
+.right-light-in.partners h1 {
+    text-align: left;
+}
+.right-light-in .private, .right-light-in .public {
+    display: inline-block;
+    text-align: center;
+    padding: 10px;
+    border-radius: 15px;
+    margin: 10px auto;
+}
+.right-light-in .private {
+    background-color: #f7931e; color: #201100;
+}
+.right-light-in .public {
+    background-color: #50b7e4; color: #00191E;
+}
