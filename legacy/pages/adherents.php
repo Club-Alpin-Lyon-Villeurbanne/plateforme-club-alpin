@@ -31,8 +31,11 @@ if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($row = $handleSql->fetch_assoc()) {
-        $birthdate = new \DateTimeImmutable($row['birthdate']);
-        $age = $birthdate->diff(new \DateTime())->y;
+        $age = null;
+        if (!empty($row['birthdate'])) {
+            $birthdate = new \DateTimeImmutable($row['birthdate']);
+            $age = $birthdate->diff(new \DateTime())->y;
+        }
         $row['birthday_user'] = $age;
 
         $userTab[] = $row;
@@ -151,10 +154,10 @@ if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
 						<th>Age</th>
 						<th>Tél<?php if (isGranted(SecurityConstants::ROLE_ADMIN)) { ?> / Tél secours<?php } ?></th>
 						<th>E-mail</th>
+                        <th>Compte activé ?</th>
                         <?php if (isGranted(SecurityConstants::ROLE_ADMIN)) { ?>
                         <th>CP</th>
                         <th>Ville</th>
-                        <th>Actif ?</th>
                         <th>Licence</th>
                         <?php } ?>
 					</tr>
@@ -242,7 +245,8 @@ if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
                     . '<td>' . html_utf8(ucfirst($elt['firstname_user'])) . '</td>';
 
                 if ($elt['doit_renouveler_user']) {
-                    echo '<td style="color:red" title="' . ($isAllowed_user_read_private ? ($elt['date_adhesion_user'] ? date('Y-m-d', $elt['date_adhesion_user']) : '') : '') . '">Licence expirée</td>';
+                    $joinDate = new \DateTimeImmutable($elt['join_date']);
+                    echo '<td style="color:red" title="' . ($isAllowed_user_read_private ? (!empty($elt['join_date']) ? $joinDate?->format('d/m/Y') : '') : '') . '">Licence expirée</td>';
                 } else {
                     $joinDate = new \DateTimeImmutable($elt['join_date']);
                     echo '<td>' . ($isAllowed_user_read_private ? (!empty($elt['join_date']) ? $joinDate?->format('d/m/Y') : '-') : $img_lock) . '</td>';
@@ -260,7 +264,6 @@ if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
                 if (isGranted(SecurityConstants::ROLE_ADMIN)) {
                     echo '<td>' . html_utf8($elt['cp_user']) . '</td>'
                         . '<td>' . html_utf8($elt['ville_user']) . '</td>'
-                        . '<td>' . (int) $elt['valid_user'] . '</td>'
                         . '<td>' . ($elt['doit_renouveler_user'] ? 'expirée' : 'valide') . ' ' . (!$elt['doit_renouveler_user'] && isset($elt['alerte_renouveler_user']) && $elt['alerte_renouveler_user'] ? '<span style="color:red">* Doit renouveler</span>' : '') . '</td>';
                 }
                 echo '</tr>';
