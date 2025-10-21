@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\EventParticipation;
+use App\Entity\EventUnrecognizedPayer;
 use App\Entity\Evt;
 use App\Entity\User;
 use App\Repository\EvtRepository;
@@ -67,8 +68,7 @@ class HelloAssoWebhookController extends AbstractController
             \in_array('payer', array_keys($requestData), true)
             && \in_array('items', array_keys($requestData), true)
             && \in_array('eventType', array_keys($requestContent), true)
-            && ('Order' === $requestContent['eventType'] && \in_array('formSlug', array_keys($requestData), true)
-                || 'Payment' === $requestContent['eventType'] && \in_array('order', array_keys($requestData), true))
+            && 'Payment' === $requestContent['eventType'] && \in_array('order', array_keys($requestData), true)
         )) {
             $this->logger->error('HelloAsso Webhook - Invalid payload', [
                 'payload' => $requestContent,
@@ -95,21 +95,38 @@ class HelloAssoWebhookController extends AbstractController
 
         // slug de la campagne pour trouver la sortie
         $eventSlug = null;
-        if ('Order' === $requestContent['eventType'] && \in_array('formSlug', array_keys($requestData), true)) {
-            $eventSlug = $requestData['formSlug'];
-        } elseif ('Payment' === $requestContent['eventType'] && \in_array('order', array_keys($requestData), true)
-            && \in_array('formSlug', array_keys($requestData['order']), true)) {
+        if (\in_array('formSlug', array_keys($requestData['order']), true)) {
             $eventSlug = $requestData['order']['formSlug'];
         }
         $event = $this->eventRepository->findOneBy(['helloAssoFormSlug' => $eventSlug]);
 
-        if (!$event instanceof Evt || !$user instanceof User) {
-            $this->logger->error('HelloAsso Webhook - Unknown payer or form', [
-                'eventSlug' => $eventSlug,
+        if (!$user instanceof User) {
+            if (!$event instanceof Evt) {
+                $this->logger->error('HelloAsso Webhook - Unknown form', [
+                    'eventSlug' => $eventSlug,
+                ]);
+
+                return new Response('Unknown form', Response::HTTP_OK);
+            }
+
+            // enregistrer dans les payeurs non reconnus
+            $payer = new EventUnrecognizedPayer();
+            $payer
+                ->setEvent($event)
+                ->setEmail($payerEmail ?: '')
+                ->setLastname($requestData['payer']['lastName'])
+                ->setFirstname($requestData['payer']['firstName'])
+                ->setHasPaid(true)
+            ;
+            $event->addUnrecognizedPayer($payer);
+            $this->entityManager->persist($event);
+            $this->entityManager->flush();
+
+            $this->logger->error('HelloAsso Webhook - Unknown payer', [
                 'payerEmail' => $payerEmail,
             ]);
 
-            return new Response('Unknown payer or form', Response::HTTP_OK);
+            return new Response('Unknown payer', Response::HTTP_OK);
         }
 
         $participation = $event->getParticipation($user);

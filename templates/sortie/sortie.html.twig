@@ -651,7 +651,7 @@
 
                                     {% if event.hasPaymentForm %}
                                         <td>
-                                            {% if participation.hasPaid %}
+                                            {% if participation.hasPaid or participation.user.email in unrecognized_payers %}
                                                 <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
                                                     <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -694,6 +694,7 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                    <br>
 
                     <!-- stats affichées -->
                     <p>Stats :</p>
@@ -718,7 +719,6 @@
 
                     {% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
                         <div style="text-align:center">
-                            <br />
                             <button id="submit_update_participants" type="submit" style="cursor: pointer; border: none;" class="biglink" title="Enregistrer" formaction="{{ path('sortie_update_inscription', { id: event.id })}}">
                                 <span class="bleucaf">&gt;</span>
                                 ENREGISTRER LES STATUTS CI-DESSUS
@@ -728,8 +728,22 @@
                         <p class="mini">{{ event.participation(app.user) | participation_status_name }} : Vous ne pouvez pas modifier les inscriptions</p>
                     {% endif %}
                     <br />
-                    <br />
                 <hr />
+
+                {% if unrecognized_payers|length > 0 %}
+                    <h3>Payeurs non reconnus :</h3>
+                    <table style="width: 100%">
+                        {% for payer in unrecognized_payers %}
+                            <tr>
+                                <td>{{ payer.email }}</td>
+                                <td>{{ payer.firstname }}</td>
+                                <td>{{ payer.lastname }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <br><br>
+                    <hr />
+                {% endif %}
 
                 {% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
                     <h2 id="autresoptions">Autres options :</h2>
@@ -787,8 +801,7 @@
                     {% endif %}
                 {% endif %}
             </form>
-            <br style="clear:both"  /><br />
-
+            <br style="clear:both"  />
         </div>
         <br />
         <hr />
