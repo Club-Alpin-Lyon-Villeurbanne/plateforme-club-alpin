@@ -97,6 +97,7 @@ final class Version20250801180738 extends AbstractMigration
         // Suppression des anciennes tables créées par la migration Version20250723071647
         $this->addSql('DROP TABLE IF EXISTS caf_formation_validee');
         $this->addSql('DROP TABLE IF EXISTS caf_niveau_pratique');
+        $this->addSql('DROP TABLE IF EXISTS caf_competence');
         $this->addSql('DROP TABLE IF EXISTS caf_last_sync');
 
         // Création de la nouvelle table de suivi de synchronisation

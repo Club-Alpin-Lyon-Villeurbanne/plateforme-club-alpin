@@ -9,7 +9,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'formation_brevet')]
 #[ORM\Index(columns: ['cafnum_user'], name: 'idx_cafnum')]
-#[ORM\Index(columns: ['code_brevet'], name: 'idx_code_brevet')]
+#[ORM\Index(columns: ['brevet_id'], name: 'idx_brevet_id')]
 #[ORM\Index(columns: ['date_obtention'], name: 'idx_date_obtention')]
 #[ORM\Entity(repositoryClass: BrevetAdherentRepository::class)]
 class BrevetAdherent
@@ -29,7 +29,7 @@ class BrevetAdherent
     private string $cafnum;
 
     #[ORM\ManyToOne(targetEntity: BrevetReferentiel::class)]
-    #[ORM\JoinColumn(name: 'code_brevet', referencedColumnName: 'code_brevet', nullable: false)]
+    #[ORM\JoinColumn(name: 'brevet_id', referencedColumnName: 'id', nullable: false)]
     private BrevetReferentiel $brevet;
 
     #[ORM\Column(name: 'date_obtention', type: Types::DATETIME_IMMUTABLE, nullable: true)]
