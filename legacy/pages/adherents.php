@@ -12,34 +12,22 @@ if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
         $show = 'valid';
     }
     // fonctions disponibles
-    if (isset($_GET['show']) && in_array($_GET['show'], ['all', 'manual', 'notvalid', 'nomade', 'dels', 'expired', 'valid-expired'], true)) {
+    if (isset($_GET['show']) && in_array($_GET['show'], ['all', 'manual', 'valid', 'nomade', 'dels', 'expired', 'allvalid'], true)) {
         $show = $_GET['show'];
     }
     $show = LegacyContainer::get('legacy_mysqli_handler')->escapeString($show);
 
-    $req = 'SELECT id_user , email_user , cafnum_user , firstname_user , lastname_user , nickname_user , created_at , updated_at , birthdate , tel_user , tel2_user , adresse_user, cp_user ,  ville_user ,  civ_user , valid_user , manuel_user, nomade_user, join_date, doit_renouveler_user
+    $req = 'SELECT id_user , email_user , cafnum_user , firstname_user , lastname_user , nickname_user , created_at , updated_at , birthdate , tel_user , tel2_user , adresse_user, cp_user ,  ville_user ,  civ_user , valid_user , manuel_user, nomade_user, join_date, doit_renouveler_user, alerte_renouveler_user
 		FROM  `caf_user` WHERE is_deleted=0'
         . ('dels' == $show ? ' AND valid_user=2 ' : '')
         . ('manual' == $show ? ' AND manuel_user=1 ' : '')
         . ('nomade' == $show ? ' AND nomade_user=1 ' : '')
         . ('valid' == $show ? ' AND valid_user=1 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
         . ('allvalid' == $show ? ' AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
-        . ('notvalid' == $show ? ' AND valid_user=0 AND doit_renouveler_user=0 AND nomade_user=0 ' : '')
         . ('expired' == $show ? ' AND doit_renouveler_user=1 ' : '')
-        . ('valid-expired' == $show ? ' AND valid_user=1 AND doit_renouveler_user=1 ' : '')
         . ' ORDER BY lastname_user ASC, firstname_user ASC LIMIT 9000';
 
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($row = $handleSql->fetch_assoc()) {
-        $age = null;
-        if (!empty($row['birthdate'])) {
-            $birthdate = new \DateTimeImmutable($row['birthdate']);
-            $age = $birthdate->diff(new \DateTime())->y;
-        }
-        $row['birthday_user'] = $age;
-
-        $userTab[] = $row;
-    }
 }
 ?>
 
@@ -67,7 +55,6 @@ if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
 
                 <h3>Afficher les adhérents par statut :</h3>
                 <div>
-
                     <a href="/adherents.html"
                     class="boutonFancy"
                     <?php if ('allvalid' === $show) { ?>style="background:#d3d6ff"<?php } ?>>
@@ -164,8 +151,6 @@ if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
 				</thead>
 				<tbody>
 					<?php
-                    $total = 0;
-
             $isAllowed_user_giveright_1 = allowed('user_giveright_1');
             $isAllowed_user_giveright_2 = allowed('user_giveright_2');
             $isAllowed_user_givepresidence = allowed('user_givepresidence');
@@ -176,8 +161,15 @@ if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
             $isAllowed_user_read_private = allowed('user_read_private');
             $isGranted_role_allowed_to_switch = isGranted('ROLE_ALLOWED_TO_SWITCH');
 
-            for ($i = 0; $i < count($userTab); ++$i) {
-                $elt = $userTab[$i];
+            $img_lock = '<img src="/img/base/lock_gray.png" alt="caché"  title="Vous devez disposer de droits supérieurs pour afficher cette information" />';
+
+            while ($elt = $handleSql->fetch_assoc()) {
+                $age = null;
+                if (!empty($elt['birthdate'])) {
+                    $birthdate = new \DateTimeImmutable($elt['birthdate']);
+                    $age = $birthdate->diff(new \DateTime())->y;
+                }
+                $elt['birthday_user'] = $age;
 
                 echo '<tr id="tr-' . $elt['id_user'] . '" class="' . ($elt['valid_user'] ? 'vis-on' : 'vis-off') . '">'
 
@@ -221,8 +213,6 @@ if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
                 }
 
                 echo '</td>';
-
-                $img_lock = '<img src="/img/base/lock_gray.png" alt="caché"  title="Vous devez disposer de droits supérieurs pour afficher cette information" />';
 
                 $emailCol = '';
                 $activatedCol = '';
