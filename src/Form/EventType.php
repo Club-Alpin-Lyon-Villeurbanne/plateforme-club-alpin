@@ -7,6 +7,7 @@ use App\Entity\Evt;
 use App\Entity\User;
 use App\Helper\EventFormHelper;
 use App\Repository\CommissionRepository;
+use App\Service\HelloAssoService;
 use App\UserRights;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -35,6 +36,7 @@ class EventType extends AbstractType
         protected CommissionRepository $commissionRepository,
         protected UserRights $userRights,
         protected EventFormHelper $eventFormHelper,
+        protected HelloAssoService $helloAssoService,
         protected string $club,
         protected string $helloAssoAuthorizedUserIds,
     ) {
@@ -50,8 +52,9 @@ class EventType extends AbstractType
         $isUserAuthorizeToUseHelloAsso = false;
         $helloAssoAuthorizedUserIds = explode(',', trim($this->helloAssoAuthorizedUserIds));
         if (
-            empty(trim($this->helloAssoAuthorizedUserIds))
-            || \in_array($options['user']->getId(), $helloAssoAuthorizedUserIds, false)
+            (empty(trim($this->helloAssoAuthorizedUserIds))
+            || \in_array($options['user']->getId(), $helloAssoAuthorizedUserIds, false))
+            && $this->helloAssoService->isConfigSet()
         ) {
             $isUserAuthorizeToUseHelloAsso = true;
         }

@@ -76,4 +76,13 @@ class HelloAssoService
             $this->helloAssoClient->publishForm($apiEndpoint);
         }
     }
+
+    public function isConfigSet(): bool
+    {
+        return $this->helloAssoClient->areCredentialsSet()
+            && !empty($this->organizationSlug)
+            && !empty($this->activityTypeId)
+            && !empty($this->baseUrl)
+        ;
+    }
 }
