@@ -70,23 +70,23 @@ class HelloAssoWebhookController extends AbstractController
             && \in_array('eventType', array_keys($requestContent), true)
             && 'Payment' === $requestContent['eventType'] && \in_array('order', array_keys($requestData), true)
         )) {
-            $this->logger->error('HelloAsso Webhook - Invalid payload', [
+            $this->logger->info('HelloAsso Webhook - Notification type not handled', [
                 'payload' => $requestContent,
             ]);
 
-            return new Response('Invalid payload', Response::HTTP_OK);
+            return new Response('Notification type not handled', Response::HTTP_OK);
         }
 
         $notificationType = $requestData['items'][0]['type'] ?? null;
         $status = $requestData['items'][0]['state'] ?? null;
 
         if ('Registration' !== $notificationType || 'Processed' !== $status) {
-            $this->logger->error('HelloAsso Webhook - Notification type or status not handled', [
+            $this->logger->info('HelloAsso Webhook - Payment notification type or status not handled', [
                 'notificationType' => $notificationType,
                 'state' => $status,
             ]);
 
-            return new Response('Notification type not handled', Response::HTTP_OK);
+            return new Response('Payment notification type not handled', Response::HTTP_OK);
         }
 
         // email du payeur pour trouver l'adhérent
@@ -100,15 +100,15 @@ class HelloAssoWebhookController extends AbstractController
         }
         $event = $this->eventRepository->findOneBy(['helloAssoFormSlug' => $eventSlug]);
 
+        if (!$event instanceof Evt) {
+            $this->logger->error('HelloAsso Webhook - Unknown form', [
+                'eventSlug' => $eventSlug,
+            ]);
+
+            return new Response('Unknown form', Response::HTTP_OK);
+        }
+
         if (!$user instanceof User) {
-            if (!$event instanceof Evt) {
-                $this->logger->error('HelloAsso Webhook - Unknown form', [
-                    'eventSlug' => $eventSlug,
-                ]);
-
-                return new Response('Unknown form', Response::HTTP_OK);
-            }
-
             // enregistrer dans les payeurs non reconnus
             $payer = new EventUnrecognizedPayer();
             $payer
