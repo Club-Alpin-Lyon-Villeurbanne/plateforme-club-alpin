@@ -177,6 +177,10 @@
                     </div>
                 </div>
             </div>
+        {% elseif event.publicStatusUnseen and event.hasPaymentForm and event.paymentAmount %}
+            <div class="hello-asso-payment">
+                💳 Une billetterie HelloAsso de <span class="bold">{{ event.paymentAmount }} €</span> sera créée pour cette sortie si vous l'approuvez et la publiez.
+            </div>
         {% endif %}
 
         <div class="tw-flex tw-gap-4">
