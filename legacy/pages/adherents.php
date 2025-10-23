@@ -183,7 +183,7 @@ if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
 
                 // gestion des droits
                 if (isGranted(SecurityConstants::ROLE_ADMIN)) {
-                    echo '<a href="/includer.php?admin=true&amp;p=pages/admin-users-droits.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Voir / Attribuer des statuts à cet utilisateur"><img src="/img/base/user_star.png"></a> ';
+                    echo '<a href="/includer.php?admin=true&amp;p=pages/admin-users-droits.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Voir / Attribuer des responsabilités à cet utilisateur"><img src="/img/base/user_star.png"></a> ';
                 } elseif ($isAllowed_user_giveright_1 || $isAllowed_user_giveright_2 || $isAllowed_user_givepresidence) {
                     echo '<a href="/includer.php?p=pages/adherents-droits.php&amp;id_user=' . (int) $elt['id_user'] . '&amp;nom=' . urlencode($elt['firstname_user'] . ' ' . $elt['lastname_user']) . '" class="fancyframe" title="Voir / Attribuer des responsabilités à cet utilisateur"><img src="/img/base/user_star.png"></a> ';
                 }
@@ -208,6 +208,7 @@ if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
                     echo '<a href="/includer.php?p=pages/adherents-modifier.php&amp;id_user=' . (int) $elt['id_user'] . '" class="fancyframe" title="Modifier cet adhérent"><img src="/img/base/user_edit.png"></a> ';
                 }
 
+                // impersonate user
                 if ($isGranted_role_allowed_to_switch) {
                     echo (1 == $elt['valid_user'] && $elt['email_user']) ? ' <a href="/profil.html?_switch_user=' . urlencode($elt['email_user']) . '" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png"></a> ' : '';
                 }
