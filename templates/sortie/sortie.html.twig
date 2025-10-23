@@ -1170,7 +1170,7 @@
                             {% else %}
                                 <hr />
                                 <h2>Inscriptions :</h2>
-                                <p>Les inscriptions pour cette sortie commenceront le {{ event.joinStartDate | date('d/m/y') }}</p>
+                                <p>Les inscriptions pour cette sortie commenceront le {{ event.joinStartDate | date('d/m/Y à H:i') }}</p>
                             {% endif %}
                         {% else %}
                             {{ easy_include('info-inscription-passee', 'vide') }}
