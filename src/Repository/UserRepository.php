@@ -3,8 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\AlertType;
+use App\Entity\Article;
+use App\Entity\Comment;
+use App\Entity\EventParticipation;
+use App\Entity\Evt;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -194,6 +199,27 @@ SQL;
         $qb
             ->orderBy('u.lastname', 'asc')
             ->addOrderBy('u.firstname', 'asc')
+        ;
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findUsersToDelete(?\DateTime $end)
+    {
+        $qb = $this
+            ->createQueryBuilder('u')
+            ->leftJoin(Article::class, 'a', Join::WITH, 'u.id = a.user')
+            ->leftJoin(Comment::class, 'c', Join::WITH, 'u.id = c.user')
+            ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
+            ->leftJoin(EventParticipation::class, 'p', Join::WITH, 'u.id = p.user')
+            ->where('u.isDeleted = false')
+            ->andWhere('u.id != 1')     // super admin
+            ->andWhere('u.joinDate <= :end')
+            ->andWhere('a.id is null')
+            ->andWhere('c.id is null')
+            ->andWhere('e.id is null')
+            ->andWhere('p.id is null')
+            ->setParameter('end', $end)
         ;
 
         return $qb->getQuery()->getResult();

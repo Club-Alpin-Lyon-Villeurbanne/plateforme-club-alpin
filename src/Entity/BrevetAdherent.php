@@ -22,7 +22,7 @@ class BrevetAdherent
     private int $id;
 
     #[ORM\ManyToOne(targetEntity: 'User')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id_user', nullable: false)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id_user', nullable: false, onDelete: 'CASCADE')]
     private ?User $user;
 
     #[ORM\Column(name: 'cafnum_user', type: Types::STRING, length: 20, nullable: false)]
