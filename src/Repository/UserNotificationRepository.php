@@ -65,4 +65,15 @@ class UserNotificationRepository extends ServiceEntityRepository
 
         $this->_em->getConnection()->executeQuery($sql);
     }
+
+    public function deleteByUser(User $user): void
+    {
+        $this->createQueryBuilder('un')
+            ->delete()
+            ->where('un.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->execute()
+        ;
+    }
 }
