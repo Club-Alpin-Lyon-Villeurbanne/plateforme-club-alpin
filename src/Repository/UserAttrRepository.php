@@ -150,4 +150,15 @@ class UserAttrRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+    public function deleteByUser(User $user): void
+    {
+        $this->createQueryBuilder('ua')
+            ->delete()
+            ->where('ua.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->execute()
+        ;
+    }
 }
