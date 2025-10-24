@@ -110,11 +110,6 @@ elseif ('user_update' == $operation) {
     require $operationsDir . 'operations.user_update.php';
 }
 
-// USER : UPDATE NIVEAU SPORTIF par commission
-elseif ('user_update' == $operation || 'niveau_update' == $operation) {
-    require $operationsDir . 'operations.user_niveau_update.php';
-}
-
 // USER : TENTATIVE D'INSCRIPTION
 elseif ('user_subscribe' == $operation) {
     require $operationsDir . 'operations.user_subscribe.php';
