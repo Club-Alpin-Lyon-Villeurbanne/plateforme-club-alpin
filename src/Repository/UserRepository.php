@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\AlertType;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -197,5 +198,131 @@ SQL;
         ;
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function getUsers(string $type, int $first = 1, int $perPage = 100, string $searchText = '', array $order = [])
+    {
+        $qb = $this->getQueryBuilder($type, $searchText);
+        if (!empty($order)) {
+            foreach ($order as $field) {
+                $dir = $field['dir'];
+                // si tri par âge, inverser le sens car on trie sur la date de naissance en bdd
+                if (6 === (int) $field['column']) {
+                    if ('asc' === $dir) {
+                        $dir = 'desc';
+                    } else {
+                        $dir = 'asc';
+                    }
+                }
+                $qb->addOrderBy($this->getAttributeByColNumber($field['column']), $dir);
+            }
+        } else {
+            $qb
+                ->orderBy('u.lastname', 'asc')
+                ->addOrderBy('u.firstname', 'asc')
+            ;
+        }
+
+        return $this->getPaginatedResults($qb, $first, $perPage);
+    }
+
+    public function getUsersCount(string $type, string $searchText = ''): int
+    {
+        return $this
+            ->getQueryBuilder($type, $searchText)
+            ->select('count(u)')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
+    protected function getQueryBuilder(string $type, string $searchText = ''): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        switch ($type) {
+            case 'all':
+                $qb
+                    ->andWhere('u.isDeleted = false')
+                ;
+                break;
+            case 'deleted':
+                $qb
+                    ->andWhere('u.isDeleted = true')
+                ;
+                break;
+            case 'manual':
+                $qb
+                    ->andWhere('u.isDeleted = false')
+                    ->andWhere('u.manuelUser = true')
+                ;
+                break;
+            case 'nomade':
+                $qb
+                    ->andWhere('u.isDeleted = false')
+                    ->andWhere('u.nomade = true')
+                ;
+                break;
+            case 'expired':
+                $qb
+                    ->andWhere('u.isDeleted = false')
+                    ->andWhere('u.doitRenouveler = true')
+                ;
+                break;
+            case 'valid':
+                $qb
+                    ->andWhere('u.isDeleted = false')
+                    ->andWhere('u.valid = :valid')
+                    ->andWhere('u.nomade = false')
+                    ->setParameter('valid', User::VALID_CONFIRMED)
+                ;
+                break;
+            case 'allvalid':
+            default:
+                $qb
+                    ->andWhere('u.doitRenouveler = false')
+                    ->andWhere('u.isDeleted = false')
+                    ->andWhere('u.nomade = false')
+                    ->andWhere('u.manuelUser = false')
+                ;
+                break;
+        }
+
+        if (!empty($searchText)) {
+            $qb
+                ->andWhere('u.lastname LIKE :search OR u.firstname LIKE :search OR u.nickname LIKE :search OR u.cafnum LIKE :search')
+                ->setParameter('search', '%' . $searchText . '%')
+            ;
+        }
+
+        return $qb;
+    }
+
+    protected function getPaginatedResults(QueryBuilder $qb, int $first, int $perPage)
+    {
+        return $qb->setFirstResult($first)
+            ->setMaxResults($perPage)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    private function getAttributeByColNumber(int $colNumber): string
+    {
+        return match ($colNumber) {
+            1 => 'u.cafnum',
+            3 => 'u.firstname',
+            4 => 'u.joinDate',
+            5 => 'u.nickname',
+            6 => 'u.birthdate',
+            7 => 'u.tel',
+            8 => 'u.email',
+            9 => 'u.valid',
+            10 => 'u.isDeleted',
+            11 => 'u.cp',
+            12 => 'u.ville',
+            13 => 'u.doitRenouveler',
+            default => 'u.lastname',
+        };
     }
 }

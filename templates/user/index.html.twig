@@ -1,0 +1,220 @@
+{% extends 'base-wide.html.twig' %}
+
+{% block title %}Gestion des adhérents{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="/tools/datatables/media/css/jquery.dataTables.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+{% endblock %}
+
+{% block body %}
+    <div style="padding:20px 10px;">
+        <div>
+            <h1>Gestion des adhérents</h1>
+            <p>
+                <img src="/img/base/magnifier.png" style="vertical-align:middle"  alt="loupe" />
+                Le champ "<i>Rechercher</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
+                {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
+                    <img src="/img/base/database_go.png" style="vertical-align:middle"  alt="go" />
+                    Les boutons en haut à gauche du tableau vous permettent d'exporter le tableau courant, le plus utile étant l'exportation en .csv.<br />
+                {% endif %}
+                <img src="/img/base/info.png" style="vertical-align:middle" alt="info" />
+                Vous pouvez trier les résultats selon différents critères en même temps, en pressant la touche <i>Maj / Shift</i> et en cliquant sur les titres des colonnes.<br />
+            </p>
+            <br>
+
+            <h3>Afficher les adhérents par statut :</h3>
+            <div>
+                <a href="{{ path('user_list', {'show': 'allvalid'}) }}"
+                   class="boutonFancy"
+                {%if show is same as ('allvalid') or show is same as ('valid') %}style="background:#d3d6ff"{% endif %}>
+                ✔️ Licence valide
+                </a>&nbsp;
+
+                <a href="{{ path('user_list', {'show': 'expired'}) }}"
+                   class="boutonFancy"
+                   {%if show is same as ('expired') %}style="background:#d3d6ff"{% endif %}>
+                📅 Licence expirée
+                </a>&nbsp;
+
+                <a href="{{ path('user_list', {'show': 'nomade'}) }}"
+                   class="boutonFancy"
+                   {%if show is same as ('nomade') %}style="background:#d3d6ff"{% endif %}>
+                🌍 Non-adhérents
+                </a>&nbsp;
+
+                <a href="{{ path('user_list', {'show': 'manual'}) }}"
+                   class="boutonFancy"
+                   {%if show is same as ('manual') %}style="background:#d3d6ff"{% endif %}>
+                    Créés manuellement
+                </a>&nbsp;
+
+                <a href="{{ path('user_list', {'show': 'deleted'}) }}"
+                   class="boutonFancy"
+                   {%if show is same as ('deleted') %}style="background:#d3d6ff"{% endif %}>
+                    ❌ Supprimés
+                </a>&nbsp;
+
+                <a href="{{ path('user_list', {'show': 'all'}) }}"
+                   class="boutonFancy"
+                   {%if show is same as ('all') %}style="background:#d3d6ff"{% endif %}>
+                📋 Tous les adhérents (+ long)
+                </a>
+            </div>
+        </div>
+        <!-- AFFICHAGE DU TABLEAU -->
+        <br />
+        <br />
+        <br />
+        {% set img_lock = '<img src="/img/base/lock_gray.png" alt="caché"  title="Vous devez disposer de droits supérieurs pour afficher cette information" />' %}
+        <table id="pagesLibres" class="datatables display">
+            <thead>
+            <tr>
+                <th>Outils</th>
+                <th>n° licence FFCAM / Infos</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Adhésion</th>
+                <th>Pseudo</th>
+                <th>Âge</th>
+                <th>Tél{% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %} / Tél secours{% endif %}</th>
+                <th>E-mail</th>
+                <th>Compte activé ?</th>
+                <th>Supprimé ?</th>
+                {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
+                    <th>CP</th>
+                    <th>Ville</th>
+                    <th>Licence</th>
+                {% endif %}
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <br style="clear:both" />
+    <br style="clear:both" />
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <!-- Buttons -->
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
+    <!-- JSZip pour CSV/Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- (optionnel) PDFMake pour export PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#pagesLibres').dataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{{ path('users_data', {'show': show}) }}',
+                columns: [
+                    { data: 'tools' },
+                    { data: 'cafnum' },
+                    { data: 'lastname' },
+                    { data: 'firstname' },
+                    { data: 'renew' },
+                    { data: 'nickname' },
+                    { data: 'age' },
+                    { data: 'tel' },
+                    { data: 'email' },
+                    { data: 'active' },
+                    { data: 'deleted' },
+                    {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
+                        { data: 'cp' },
+                        { data: 'ville' },
+                        { data: 'license' },
+                    {% endif %}
+                ],
+                createdRow: function(row, data, dataIndex) {
+                    $(row).attr('id', 'tr-' + data.id);
+                    $(row).addClass(data.valid ? 'vis-on' : 'vis-off');
+                },
+                columnDefs: [
+                    {
+                        targets: 0,
+                        createdCell: function(td, cellData, rowData, row, col) {
+                            $(td)
+                                .attr('style', 'white-space:nowrap;')
+                            ;
+                        }
+                    }
+                ],
+                language: {
+                    processing:     "Chargement en cours...",
+                    search:         "Rechercher&nbsp;:&nbsp;",
+                    lengthMenu:     "Afficher _MENU_ adhérents par page",
+                    info:           "Affichage de _START_ à _END_ sur _TOTAL_ adhérents",
+                    infoEmpty:      "Affichage de 0 à 0 sur 0 adhérent",
+                    infoFiltered:   "(filtré de _MAX_ adhérents au total)",
+                    loadingRecords: "Chargement en cours...",
+                    zeroRecords:    "Aucun adhérent à afficher",
+                    emptyTable:     "Aucune donnée disponible dans le tableau",
+                    paginate: {
+                        first:      "Premier",
+                        previous:   "Précédent",
+                        next:       "Suivant",
+                        last:       "Dernier"
+                    },
+                    aria: {
+                        sortAscending:  ": activer pour trier la colonne par ordre croissant",
+                        sortDescending: ": activer pour trier la colonne par ordre décroissant"
+                    }
+                },
+                pageLength: 100,
+                "iDisplayLength": 100,
+                "aaSorting": [
+                    [2, "asc"],
+                    [3, "asc"]
+                ],
+                dom: 'Bfrtip', // active la barre ded boutons
+                buttons: [
+                    {
+                        extend: 'csvHtml5',
+                        text: 'Exporter en CSV',
+                        className: 'btn btn-outline-primary',
+                        fieldSeparator: ';', // pour CSV français
+                        bom: true, // encodage UTF-8 correct pour accents
+                        title: 'Liste_des_utilisateurs'
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Exporter en Excel',
+                        className: 'btn btn-outline-success',
+                        title: 'Liste_des_utilisateurs'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: 'Exporter en PDF',
+                        className: 'btn btn-outline-danger',
+                        title: 'Liste_des_utilisateurs',
+                        orientation: 'landscape', // ou 'portrait'
+                        pageSize: 'A4',
+                        exportOptions: {
+                            columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13] // colonnes à exporter
+                        },
+                        customize: function(doc) {
+                            doc.styles.tableHeader.fillColor = '#50b7e4'; // header bleu
+                            doc.styles.tableHeader.color = 'white';
+                            doc.styles.tableHeader.alignment = 'center';
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        text: 'Imprimer',
+                        className: 'btn btn-outline-secondary'
+                    }
+                ]
+            });
+            $('span.br').html('<br />');
+        });
+    </script>
+{% endblock %}
