@@ -15,10 +15,8 @@
             <p>
                 <img src="/img/base/magnifier.png" style="vertical-align:middle"  alt="loupe" />
                 Le champ "<i>Rechercher</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
-                {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
-                    <img src="/img/base/database_go.png" style="vertical-align:middle"  alt="go" />
-                    Les boutons en haut à gauche du tableau vous permettent d'exporter le tableau courant, le plus utile étant l'exportation en .csv.<br />
-                {% endif %}
+                <img src="/img/base/database_go.png" style="vertical-align:middle"  alt="go" />
+                Les boutons en haut à gauche du tableau vous permettent d'exporter le tableau courant, le plus utile étant l'exportation en .csv.<br />
                 <img src="/img/base/info.png" style="vertical-align:middle" alt="info" />
                 Vous pouvez trier les résultats selon différents critères en même temps, en pressant la touche <i>Maj / Shift</i> et en cliquant sur les titres des colonnes.<br />
             </p>
@@ -28,38 +26,38 @@
             <div>
                 <a href="{{ path('user_list', {'show': 'allvalid'}) }}"
                    class="boutonFancy"
-                {%if show is same as ('allvalid') or show is same as ('valid') %}style="background:#d3d6ff"{% endif %}>
+                   {% if show is same as ('allvalid') or show is same as ('valid') %}style="background:#d3d6ff"{% endif %}>
                 ✔️ Licence valide
                 </a>&nbsp;
 
                 <a href="{{ path('user_list', {'show': 'expired'}) }}"
                    class="boutonFancy"
-                   {%if show is same as ('expired') %}style="background:#d3d6ff"{% endif %}>
+                   {% if show is same as ('expired') %}style="background:#d3d6ff"{% endif %}>
                 📅 Licence expirée
                 </a>&nbsp;
 
                 <a href="{{ path('user_list', {'show': 'nomade'}) }}"
                    class="boutonFancy"
-                   {%if show is same as ('nomade') %}style="background:#d3d6ff"{% endif %}>
+                   {% if show is same as ('nomade') %}style="background:#d3d6ff"{% endif %}>
                 🌍 Non-adhérents
                 </a>&nbsp;
 
                 <a href="{{ path('user_list', {'show': 'manual'}) }}"
                    class="boutonFancy"
-                   {%if show is same as ('manual') %}style="background:#d3d6ff"{% endif %}>
-                    Créés manuellement
+                   {% if show is same as ('manual') %}style="background:#d3d6ff"{% endif %}>
+                ✍️ Créés manuellement
                 </a>&nbsp;
 
                 <a href="{{ path('user_list', {'show': 'deleted'}) }}"
                    class="boutonFancy"
-                   {%if show is same as ('deleted') %}style="background:#d3d6ff"{% endif %}>
-                    ❌ Supprimés
+                   {% if show is same as ('deleted') %}style="background:#d3d6ff"{% endif %}>
+                ❌ Supprimés
                 </a>&nbsp;
 
                 <a href="{{ path('user_list', {'show': 'all'}) }}"
                    class="boutonFancy"
-                   {%if show is same as ('all') %}style="background:#d3d6ff"{% endif %}>
-                📋 Tous les adhérents (+ long)
+                   {% if show is same as ('all') %}style="background:#d3d6ff"{% endif %}>
+                📋 Tous les adhérents
                 </a>
             </div>
         </div>
@@ -81,11 +79,11 @@
                 <th>Tél{% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %} / Tél secours{% endif %}</th>
                 <th>E-mail</th>
                 <th>Compte activé ?</th>
-                <th>Supprimé ?</th>
                 {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
                     <th>CP</th>
                     <th>Ville</th>
                     <th>Licence</th>
+                    <th>Supprimé ?</th>
                 {% endif %}
             </tr>
             </thead>
@@ -127,11 +125,11 @@
                     { data: 'tel' },
                     { data: 'email' },
                     { data: 'active' },
-                    { data: 'deleted' },
                     {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
                         { data: 'cp' },
                         { data: 'ville' },
                         { data: 'license' },
+                        { data: 'deleted' },
                     {% endif %}
                 ],
                 createdRow: function(row, data, dataIndex) {
