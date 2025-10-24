@@ -5,7 +5,6 @@ namespace App\Command;
 use App\Entity\User;
 use App\Repository\BrevetAdherentRepository;
 use App\Repository\UserAttrRepository;
-use App\Repository\UserNiveauRepository;
 use App\Repository\UserNotificationRepository;
 use App\Repository\UserRepository;
 use App\Service\UserLicenseHelper;
@@ -24,7 +23,6 @@ class UserDeletionCronCommand extends Command
 {
     public function __construct(
         protected UserRepository $userRepository,
-        protected UserNiveauRepository $userNiveauRepository,
         protected BrevetAdherentRepository $brevetAdherentRepository,
         protected UserNotificationRepository $userNotificationRepository,
         protected UserAttrRepository $userAttrRepository,
@@ -50,7 +48,6 @@ class UserDeletionCronCommand extends Command
         $deleted = 0;
         /** @var User $user */
         foreach ($usersToDelete as $user) {
-            $this->userNiveauRepository->deleteByUser($user);
             $this->brevetAdherentRepository->deleteByUser($user);
 
             $this->manager->remove($user);
@@ -66,7 +63,6 @@ class UserDeletionCronCommand extends Command
         /** @var User $user */
         foreach ($usersToAnonymize as $user) {
             // nettoyage des tables liées
-            $this->userNiveauRepository->deleteByUser($user);
             $this->brevetAdherentRepository->deleteByUser($user);
             $this->userNotificationRepository->deleteByUser($user);
             $this->userAttrRepository->deleteByUser($user);
