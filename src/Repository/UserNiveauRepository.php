@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\UserNiveau;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -17,5 +18,16 @@ class UserNiveauRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, UserNiveau::class);
+    }
+
+    public function deleteByUser(User $user): void
+    {
+        $this->createQueryBuilder('un')
+            ->delete()
+            ->where('un.idUser = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->execute()
+        ;
     }
 }
