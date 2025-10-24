@@ -235,11 +235,10 @@ if (allowed('user_see_all') || isGranted(SecurityConstants::ROLE_ADMIN)) {
                     . '<td>' . html_utf8(strtoupper($elt['lastname_user'])) . '</td>'
                     . '<td>' . html_utf8(ucfirst($elt['firstname_user'])) . '</td>';
 
+                $joinDate = !empty($elt['join_date']) ? \DateTimeImmutable::createFromFormat('Y-m-d', $elt['join_date']) : null;
                 if ($elt['doit_renouveler_user']) {
-                    $joinDate = new \DateTimeImmutable($elt['join_date']);
                     echo '<td style="color:red" title="' . ($isAllowed_user_read_private ? (!empty($elt['join_date']) ? $joinDate?->format('d/m/Y') : '') : '') . '">Licence expirée</td>';
                 } else {
-                    $joinDate = new \DateTimeImmutable($elt['join_date']);
                     echo '<td>' . ($isAllowed_user_read_private ? (!empty($elt['join_date']) ? $joinDate?->format('d/m/Y') : '-') : $img_lock) . '</td>';
                 }
 
