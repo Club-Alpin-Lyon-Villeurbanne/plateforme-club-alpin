@@ -12,6 +12,7 @@ use App\Legacy\LegacyContainer;
 use App\Mailer\Mailer;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
+use App\Security\SecurityConstants;
 use App\UserRights;
 use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,6 +20,7 @@ use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -353,5 +355,163 @@ class UserController extends AbstractController
             'form' => $form,
             'nomads' => $myNomads,
         ];
+    }
+
+    #[Route(path: '/adherents/{show}', name: 'user_list')]
+    #[Template('user/index.html.twig')]
+    public function index(
+        UserRights $userRights,
+        ?string $show = null,
+    ): array {
+        if (!$userRights->allowed('user_see_all')) {
+            throw $this->createAccessDeniedException('Not allowed');
+        }
+
+        if (!$show) {
+            $show = 'allvalid';
+        }
+
+        return [
+            'show' => $show,
+        ];
+    }
+
+    #[Route('/users/data/{show}', name: 'users_data')]
+    public function data(
+        Request $request,
+        UserRights $userRights,
+        UserRepository $userRepository,
+        ?string $show = null
+    ): JsonResponse {
+        if (!$userRights->allowed('user_see_all')) {
+            throw $this->createAccessDeniedException('Not allowed');
+        }
+
+        if (!$show) {
+            $show = 'allvalid';
+        }
+        $start = $request->query->getInt('start', 0);
+        $length = $request->query->getInt('length', 100);
+        $searchText = $request->query->all()['search']['value'] ?? null;
+        $order = $request->query->all()['order'] ?? null;
+
+        $recordsFiltered = $userRepository->getUsersCount($show, $searchText);
+        $recordsTotal = $userRepository->getUsersCount($show);
+        $data = $userRepository->getUsers($show, $start, $length, $searchText, $order);
+
+        $img_lock = '<img src="/img/base/lock_gray.png" alt="caché"  title="Vous devez disposer de droits supérieurs pour afficher cette information" />';
+
+        $results = [];
+        /** @var User $user */
+        foreach ($data as $user) {
+            $tools = '';
+            // view user
+            if ($this->isGranted(SecurityConstants::ROLE_ADMIN)) {
+                $tools .= '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user=' . $user->getId() . '" class="fancyframe" title="Consulter cet adhérent"><img src="/img/base/report.png" alt="consulter" /></a> ';
+            }
+            // gestion des droits
+            if ($this->isGranted(SecurityConstants::ROLE_ADMIN)) {
+                $tools .= '<a href="/includer.php?admin=true&amp;p=pages/admin-users-droits.php&amp;id_user=' . $user->getId() . '&amp;nom=' . urlencode($user->getFullName()) . '" class="fancyframe" title="Voir / Attribuer des responsabilités à cet utilisateur"><img src="/img/base/user_star.png" alt="droits" /></a> ';
+            } elseif ($userRights->allowed('user_giveright_1') || $userRights->allowed('user_giveright_2') || $userRights->allowed('user_givepresidence')) {
+                $tools .= '<a href="/includer.php?p=pages/adherents-droits.php&amp;id_user=' . $user->getId() . '&amp;nom=' . urlencode($user->getFullName()) . '" class="fancyframe" title="Voir / Attribuer des responsabilités à cet utilisateur"><img src="/img/base/user_star.png" alt="droits" /></a> ';
+            }
+            // edit user
+            if ($userRights->allowed('user_edit_notme')) {
+                $tools .= '<a href="/includer.php?p=pages/adherents-modifier.php&amp;id_user=' . $user->getId() . '" class="fancyframe" title="Modifier cet adhérent"><img src="/img/base/user_edit.png" alt="modifier" /></a> ';
+            }
+            // impersonate user
+            if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
+                $tools .= (User::VALID_CONFIRMED === $user->getValid() && !empty($user->getEmail())) ? ' <a href="/profil.html?_switch_user=' . urlencode($user->getEmail()) . '" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png" alt="impersonifier" /></a> ' : '';
+            }
+
+            // âge
+            if ($userRights->allowed('user_read_private')) {
+                if (!empty($user->getBirthdate())) {
+                    $birthdate = $user->getBirthdate();
+                    $age = $birthdate->diff(new \DateTime())->y . ' ans';
+                } else {
+                    $age = '...';
+                }
+            } else {
+                $age = $img_lock;
+            }
+
+            // tél x 2
+            if ($userRights->allowed('user_read_private')) {
+                $tel = $user->getTel();
+                if ($this->isGranted(SecurityConstants::ROLE_ADMIN)) {
+                    $tel .= '<br />' . $user->getTel2();
+                }
+            } else {
+                $tel = $img_lock;
+            }
+
+            // cafnum + infos
+            $cafnum = $user->getCafnum() . '<br />';
+            if ($user->getNomade()) {
+                $cafnum .= '<img src="/img/base/nomade_user.png" alt="NOMADE" title="Utilisateur nomade" />';
+            }
+            if ($user->getManuel()) {
+                $cafnum .= '<img src="/img/base/user_manuel.png" alt="MANUEL" title="Utilisateur créé manuellement" />';
+            }
+
+            // adhésion
+            $joinDate = $user->getJoinDate();
+            if ($user->getDoitRenouveler()) {
+                $renew = '<span  style="color:red" title="' . ($userRights->allowed('user_read_private') ? (!empty($joinDate) ? $joinDate->format('d/m/Y') : '') : '') . '">Licence expirée</span>';
+            } else {
+                $renew = ($userRights->allowed('user_read_private') ? (!empty($joinDate) ? $joinDate->format('d/m/Y') : '-') : $img_lock);
+            }
+
+            // compte activé ?
+            if (User::VALID_CONFIRMED === $user->getValid()) {
+                $valid = 'oui';
+            } else {
+                $valid = '<span style="color: darkorange; font-weight: bold;" title="Les comptes non activés ne reçoivent pas les e-mails">non</span>';
+            }
+
+            // e-mail
+            if (!empty($user->getEmail())) {
+                $email = ($userRights->allowed('user_read_private') ? '<a href="mailto:' . $user->getEmail() . '" title="Contact direct">' . $user->getEmail() . '</a>' : $img_lock);
+            } else {
+                $email = '';
+            }
+
+            // licence
+            $license = ($user->getDoitRenouveler() ? 'expirée' : 'valide') . ' ' . (!$user->getDoitRenouveler() && $user->getAlerteRenouveler() ? '<span style="color:red">* Doit renouveler</span>' : '');
+
+            // compte supprimé ?
+            if ($user->isDeleted()) {
+                $deleted = 'oui';
+            } else {
+                $deleted = 'non';
+            }
+
+            $results[] = [
+                'id' => $user->getId(),
+                'tools' => $tools,
+                'cafnum' => $cafnum,
+                'lastname' => strtoupper($user->getLastname()),
+                'firstname' => ucfirst($user->getFirstname()),
+                'renew' => $renew,
+                'nickname' => '<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . $user->getId() . '" class="fancyframe userlink">' . $user->getNickname() . '</a>',
+                'age' => $age,
+                'tel' => $tel,
+                'email' => $email,
+                'active' => $valid,
+                'cp' => $user->getCp(),
+                'ville' => $user->getVille(),
+                'license' => $license,
+                'valid' => $user->getValid(),
+                'deleted' => $deleted,
+            ];
+        }
+
+        return new JsonResponse([
+            'draw' => $request->query->getInt('draw'),
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $results,
+        ]);
     }
 }
