@@ -40,9 +40,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 {
     use TimestampableEntity;
 
-    public const int VALID_UNCONFIRMED = 0;
-    public const int VALID_CONFIRMED = 1;
-
     /**
      * @var int
      */
@@ -168,11 +165,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[SerializedName('informationsSupplementaires')]
     private $moreinfo;
 
-    /**
-     * @var bool
-     */
     #[ORM\Column(name: 'valid_user', type: 'boolean', nullable: false, options: ['comment' => "0=l'user n'a pas activé son compte   1=activé    2=bloqué"])]
-    private $valid = '0';
+    private bool $valid = false;
 
     /**
      * @var string
@@ -181,17 +175,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[Ignore]
     private $cookietoken;
 
-    /**
-     * @var bool
-     */
     #[ORM\Column(name: 'manuel_user', type: 'boolean', nullable: false, options: ['comment' => 'User créé à la mano sur le site ?'])]
-    private $manuelUser = '0';
+    private bool $manuelUser = false;
 
-    /**
-     * @var bool
-     */
     #[ORM\Column(name: 'nomade_user', type: 'boolean', nullable: false)]
-    private $nomade = '0';
+    private bool $nomade = false;
 
     /**
      * @var int
@@ -199,17 +187,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'nomade_parent_user', type: 'integer', nullable: true, options: ['comment' => "Dans le cas d'un user NOMADE, l'ID de son créateur"])]
     private $nomadeParent;
 
-    /**
-     * @var bool
-     */
     #[ORM\Column(name: 'doit_renouveler_user', type: 'boolean', nullable: false)]
-    private $doitRenouveler = '0';
+    private bool $doitRenouveler = false;
 
-    /**
-     * @var bool
-     */
     #[ORM\Column(name: 'alerte_renouveler_user', type: 'boolean', nullable: false, options: ['comment' => "Si sur 1 : une alerte s'affiche pour annoncer que l'adhérent doit renouveler sa licence"])]
-    private $alerteRenouveler = '0';
+    private bool $alerteRenouveler = false;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ExpenseReport::class, orphanRemoval: false)]
     private Collection $expenseReports;
