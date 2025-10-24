@@ -42,7 +42,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     public const int VALID_UNCONFIRMED = 0;
     public const int VALID_CONFIRMED = 1;
-    public const int VALID_BLOCKED = 2;
 
     /**
      * @var int

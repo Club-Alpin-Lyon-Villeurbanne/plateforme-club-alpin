@@ -251,13 +251,6 @@ SQL;
                     ->andWhere('u.isDeleted = true')
                 ;
                 break;
-            case 'dels':
-                $qb
-                    ->andWhere('u.isDeleted = false')
-                    ->andWhere('u.valid = :valid')
-                    ->setParameter('valid', User::VALID_BLOCKED)
-                ;
-                break;
             case 'manual':
                 $qb
                     ->andWhere('u.isDeleted = false')
