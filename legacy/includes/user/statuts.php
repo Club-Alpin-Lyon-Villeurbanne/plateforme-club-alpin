@@ -16,7 +16,11 @@ $req = 'SELECT title_usertype, params_user_attr, description_user_attr
         LIMIT 50';
 $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($row2 = $handleSql2->fetch_assoc()) {
-    $commissionCode = substr(strrchr($row2['params_user_attr'], ':'), 1);
+    $params = '';
+    if (!empty($row2['params_user_attr'])) {
+        $params = $row2['params_user_attr'];
+    }
+    $commissionCode = substr(strrchr($params, ':'), 1);
     if (!empty($commissionCode)) {
         $commission = '';
 
