@@ -165,7 +165,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[SerializedName('informationsSupplementaires')]
     private $moreinfo;
 
-    #[ORM\Column(name: 'valid_user', type: 'boolean', nullable: false, options: ['comment' => "0=l'user n'a pas activé son compte   1=activé    2=bloqué"])]
+    #[ORM\Column(name: 'valid_user', type: 'boolean', nullable: false, options: ['comment' => "0=l'user n'a pas activé son compte   1=activé"])]
     private bool $valid = false;
 
     /**

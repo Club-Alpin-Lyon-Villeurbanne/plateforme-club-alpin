@@ -174,23 +174,6 @@ elseif ('user_delete' == $operation) {
         mylog('user_delete', "Suppression definitive user $id_user", false);
     }
 }
-
-// USER : DESACTIVER
-elseif ('user_desactiver' == $operation) {
-    $id_user = (int) $_POST['id_user'];
-    if (!$id_user) {
-        $errTab[] = 'No id';
-    } elseif (!allowed('user_desactivate_any')) {
-        $errTab[] = "Vous n'avez pas les droits necessaires";
-    } else {
-        $req = "UPDATE `caf_user` SET  `valid_user` =  '2' WHERE  `caf_user`.`id_user` =$id_user";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur SQL';
-        }
-
-        mylog('user_desactiver', "desactivation user $id_user", false);
-    }
-}
 // USER : REACTIVER
 elseif ('user_reactiver' == $operation) {
     $id_user = (int) $_POST['id_user'];

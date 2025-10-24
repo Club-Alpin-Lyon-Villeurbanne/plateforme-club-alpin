@@ -24,19 +24,6 @@ if (strlen($mdp_user) < 8 || strlen($mdp_user) > 128) {
 if (!isset($errTab) || 0 === count($errTab)) {
     $mdp_user = LegacyContainer::get('legacy_hasher_factory')->getPasswordHasher('login_form')->hash($mdp_user);
 
-    // Si ce compte a été désactivé
-    if (!isset($errTab) || 0 === count($errTab)) {
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE cafnum_user = ? AND valid_user = 2 LIMIT 1');
-        $stmt->bind_param('s', $cafnum_user);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_row();
-        $stmt->close();
-        if ($row[0]) {
-            $errTab[] = "Le compte lié à ce numéro d'adhérent a été désactivé manuellement par un responsable. Nous vous invitons à contacter le Président, ou vice-Président du club pour en savoir plus.";
-        }
-    }
-
     // Si ce compte est déjà existant et activé avec ce numéro de licence
     if (!isset($errTab) || 0 === count($errTab)) {
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE cafnum_user = ? AND valid_user = 1 LIMIT 1');

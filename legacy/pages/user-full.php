@@ -10,7 +10,6 @@ $connectedUser = getUser();
 
 $req = "SELECT * FROM caf_user WHERE id_user = $id_user AND is_deleted = 0 LIMIT 1";
 
-// AND valid_user = 1
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     require __DIR__ . '/../includes/user/statuts.php';
