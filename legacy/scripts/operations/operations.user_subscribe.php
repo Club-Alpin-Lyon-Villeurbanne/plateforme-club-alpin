@@ -46,7 +46,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $row = $result->fetch_row();
         $stmt->close();
         if ($row[0]) {
-            $errTab[] = "Ce numéro d'adhérent correspond déjà à une inscription sur le site. Si vous avez perdu vos identifiants, utilisez le lien <i>Mot de passe oublié</i> ci-contre à droite.";
+            $errTab[] = "Ce numéro d'adhérent correspond déjà à un compte sur le site. Si vous avez perdu vos identifiants, utilisez le lien <i>Mot de passe oublié</i> ci-contre à droite.";
         }
     }
 
@@ -59,7 +59,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $row = $result->fetch_row();
         $stmt->close();
         if ($row[0]) {
-            $errTab[] = 'Cette adresse e-mail correspond déjà à une inscription sur le site. Si vous avez perdu vos identifiants, utilisez le lien <i>Mot de passe oublié</i> ci-contre à droite.';
+            $errTab[] = 'Cette adresse e-mail correspond déjà à un compte sur le site. Si vous avez perdu vos identifiants, utilisez le lien <i>Mot de passe oublié</i> ci-contre à droite.';
         }
     }
 

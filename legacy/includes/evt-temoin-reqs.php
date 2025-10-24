@@ -32,13 +32,13 @@ elseif (isset($handle['cancelled_evt']) && $handle['cancelled_evt']) {
 // trop tard ?
 elseif ((new \DateTimeImmutable()) > new \DateTimeImmutable($handle['start_date'])) { // date max d'inscri. 24 h
     $handle['temoin'] = 'finished';
-    $handle['temoin-title'] = 'Les inscriptions sont terminées';
+    $handle['temoin-title'] = 'Les demandes d\'inscription sont terminées';
 }
 
 // inscriptions pas encore commencées
 elseif (new \DateTimeImmutable() < new \DateTimeImmutable($handle['join_start_date'])) {
     $handle['temoin'] = 'waiting';
-    $handle['temoin-title'] = 'Les inscriptions pour cette sortie commenceront le ' . (new \DateTimeImmutable($handle['join_start_date']))?->format('d/m/Y à H:i');
+    $handle['temoin-title'] = 'Les demandes d\'inscription pour cette sortie commenceront le ' . (new \DateTimeImmutable($handle['join_start_date']))?->format('d/m/Y à H:i');
 } else {
     // inscriptions pleines
     if (isset($handle['ngens_max_evt']) && $count >= $handle['ngens_max_evt']) {// inscriptions max

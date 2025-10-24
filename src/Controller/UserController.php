@@ -128,7 +128,7 @@ class UserController extends AbstractController
         if (!empty($data['role_evt_join'])) {
             // verification de la validité de la sortie
             if (!$event->isPublicStatusValide()) {
-                $this->addFlash('error', 'Cette sortie ne semble pas publiée, les inscriptions sont impossibles');
+                $this->addFlash('error', 'Cette sortie ne semble pas publiée, les préinscriptions sont impossibles');
 
                 return new Response(
                     '<script>
