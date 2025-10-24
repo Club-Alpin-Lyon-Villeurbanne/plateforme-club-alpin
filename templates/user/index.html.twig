@@ -48,11 +48,13 @@
                 ✍️ Créés manuellement
                 </a>&nbsp;
 
-                <a href="{{ path('user_list', {'show': 'deleted'}) }}"
-                   class="boutonFancy"
-                   {% if show is same as ('deleted') %}style="background:#d3d6ff"{% endif %}>
-                ❌ Supprimés
-                </a>&nbsp;
+                {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
+                    <a href="{{ path('user_list', {'show': 'deleted'}) }}"
+                       class="boutonFancy"
+                       {% if show is same as ('deleted') %}style="background:#d3d6ff"{% endif %}>
+                    ❌ Supprimés
+                    </a>&nbsp;
+                {% endif %}
 
                 <a href="{{ path('user_list', {'show': 'all'}) }}"
                    class="boutonFancy"
