@@ -342,8 +342,7 @@ INSERT INTO `caf_usertype` (`id_usertype`, `hierarchie_usertype`, `code_usertype
 (8, 100, 'administrateur', 'Administrateur', 0),
 (9, 20, 'salarie', 'Salarié', 0),
 (10, 30, 'benevole', 'Bénévole', 1),
-(11, 50, 'coencadrant', 'Co-encadrant', 1),
-(12, 55, 'stagiaire', 'Stagiaire', 1);
+(11, 50, 'coencadrant', 'Co-encadrant', 1);
 
 -- --------------------------------------------------------
 
