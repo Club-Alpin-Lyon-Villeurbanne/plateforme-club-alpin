@@ -9,6 +9,7 @@ use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\UnitOfWork;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[AsDoctrineListener(event: Events::onFlush)]
 class ExpenseReportStatusChangeSubscriber
@@ -16,6 +17,7 @@ class ExpenseReportStatusChangeSubscriber
     public function __construct(
         private readonly Mailer $mailer,
         private readonly ExpenseReportCalculator $calculator,
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -56,6 +58,15 @@ class ExpenseReportStatusChangeSubscriber
                 'tauxKilometriqueMinibus' => $this->calculator->getTauxKilometriqueMinibus(),
                 'status' => $newStatus,
             ]);
+
+            // Générer l'URL absolue de la sortie si elle existe
+            if ($entity->getEvent()) {
+                $params['event_url'] = $this->urlGenerator->generate(
+                    'sortie',
+                    ['code' => $entity->getEvent()->getCode(), 'id' => $entity->getEvent()->getId()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
+            }
 
             $this->mailer->send(
                 $entity->getUser(),

@@ -14,6 +14,7 @@ use App\Tests\VarDumperTestTrait;
 use App\Tests\WebTestCase;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class UserNotificationHandlerTest extends WebTestCase
 {
@@ -30,8 +31,9 @@ class UserNotificationHandlerTest extends WebTestCase
             self::getContainer()->get(UserNotificationRepository::class),
             self::getContainer()->get(EntityManagerInterface::class),
             self::getContainer()->get(Mailer::class),
-            '[CAF-Sortie]',
+            self::getContainer()->get(UrlGeneratorInterface::class),
             '[CAF-Article]',
+            '[CAF-Sortie]',
             'CAF de test',
         );
 
@@ -72,6 +74,7 @@ class UserNotificationHandlerTest extends WebTestCase
             self::getContainer()->get(UserNotificationRepository::class),
             self::getContainer()->get(EntityManagerInterface::class),
             self::getContainer()->get(Mailer::class),
+            self::getContainer()->get(UrlGeneratorInterface::class),
             $defaultAlertArticlePrefix,
             $defaultAlertSortiePrefix,
             $siteName,
@@ -137,6 +140,7 @@ class UserNotificationHandlerTest extends WebTestCase
             self::getContainer()->get(UserNotificationRepository::class),
             self::getContainer()->get(EntityManagerInterface::class),
             self::getContainer()->get(Mailer::class),
+            self::getContainer()->get(UrlGeneratorInterface::class),
             $defaultAlertArticlePrefix,
             $defaultAlertSortiePrefix,
             $siteName,

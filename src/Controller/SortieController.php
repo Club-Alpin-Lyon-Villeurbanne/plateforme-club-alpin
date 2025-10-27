@@ -1011,7 +1011,7 @@ class SortieController extends AbstractController
                 }
 
                 // infos sur la sortie
-                $evtUrl = $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
+                $evtUrl = $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
                 $evtName = $event->getTitre();
                 $evtDate = $event->getStartDate()->format('d/m/Y');
                 $commissionTitle = $event->getCommission()->getTitle();

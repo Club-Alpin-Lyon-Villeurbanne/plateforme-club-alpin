@@ -12,6 +12,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[AsCommand(
     name: 'event-to-publish-reminder-cron',
@@ -24,6 +25,7 @@ class EventToPublishCronCommand extends Command
         protected UserAttrRepository $userAttrRepository,
         protected Mailer $mailer,
         protected LoggerInterface $logger,
+        protected UrlGeneratorInterface $urlGenerator,
     ) {
         parent::__construct();
     }
@@ -53,8 +55,17 @@ class EventToPublishCronCommand extends Command
         }
 
         foreach ($responsables as $userEmail => $infos) {
+            // Générer les URLs absolues pour chaque sortie
+            $sortiesWithUrls = array_map(function (Evt $sortie) {
+                return [
+                    'titre' => $sortie->getTitre(),
+                    'url' => $this->urlGenerator->generate('sortie', ['code' => $sortie->getCode(), 'id' => $sortie->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                ];
+            }, $infos['events']);
+
             $this->mailer->send($infos['responsable'], 'transactional/rappel-sortie-a-valider-resp-commission', [
-                'sorties' => $infos['events'],
+                'sorties' => $sortiesWithUrls,
+                'manage_events_url' => $this->urlGenerator->generate('manage_events', [], UrlGeneratorInterface::ABSOLUTE_URL),
             ]);
         }
 
