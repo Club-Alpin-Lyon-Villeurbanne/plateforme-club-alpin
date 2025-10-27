@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[AsCommand(
     name: 'event-to-publish-reminder-cron',
-    description: 'Cron de rappel des sorties en attention de publication'
+    description: 'Cron de rappel des sorties en attention d\'approbation'
 )]
 class EventToPublishCronCommand extends Command
 {

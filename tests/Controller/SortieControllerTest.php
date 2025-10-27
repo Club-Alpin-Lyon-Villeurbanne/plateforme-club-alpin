@@ -115,9 +115,9 @@ class SortieControllerTest extends WebTestCase
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
         $this->assertEmailTextBodyContains($emails[0], 'Félicitations, votre sortie');
-        $this->assertEmailTextBodyContains($emails[0], 'a été publiée par les responsables.');
+        $this->assertEmailTextBodyContains($emails[0], 'a été approuvée par les responsables.');
         $this->assertEmailHtmlBodyContains($emails[0], 'Félicitations, votre sortie');
-        $this->assertEmailHtmlBodyContains($emails[0], 'a été publiée par les responsables.');
+        $this->assertEmailHtmlBodyContains($emails[0], 'a été approuvée par les responsables.');
 
         $messages = self::getContainer()->get(MessageBusInterface::class)->getDispatchedMessages();
         $this->assertCount(2, $messages);

@@ -50,15 +50,15 @@
                     <div>
                         <form action="{{ path('sortie_validate', { id: event.id }) }}" method="post" class="loading" style="display:inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_validate') }}" />
-                            <input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
+                            <input type="submit" value="Approuver &amp; publier" class="nice2 green" title="Approuve instantanément la sortie et la publie" />
                         </form>
-                        <input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
+                        <input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Refuser cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
                         <div style="display:none" id="refuser-{{ event.id }}">
                             <form action="{{ path('sortie_refus', { id: event.id }) }}" method="post" class="loading">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_refus') }}" />
                                 <p>Laissez un message à l'auteur pour lui expliquer la raison du refus :</p>
                                 <input type="text" name="msg" class="type1" placeholder="ex: Mauvais point de RDV" />
-                                <input type="submit" value="Refuser la publication" class="nice2 red" />
+                                <input type="submit" value="Refuser la sortie" class="nice2 red" />
                                 <input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
                             </form>
                         </div>
@@ -93,7 +93,7 @@
                 {% set closeDiv = true %}
 
                 <div class="alerte">
-                    <b>Note :</b> Cette sortie est publiée et visible par les adhérents !<br />
+                    <b>Note :</b> Cette sortie est approuvée et visible par les adhérents !<br />
             {% endif %}
 
             {% if is_granted('SORTIE_UPDATE', event) %}
@@ -800,7 +800,7 @@
                                 </a>
                             {% endif %}
                         {% else %}
-                        <i>Vous pourrez ajouter des participants quand la sortie sera publiée</i>
+                        <i>Vous pourrez ajouter des participants quand la sortie sera approuvée</i>
                         {% endif %}
                     {% endif %}
                 {% endif %}
