@@ -421,7 +421,7 @@ class UserController extends AbstractController
             }
             // impersonate user
             if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
-                $tools .= (User::VALID_CONFIRMED === $user->getValid() && !empty($user->getEmail())) ? ' <a href="/profil.html?_switch_user=' . urlencode($user->getEmail()) . '" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png" alt="impersonifier" /></a> ' : '';
+                $tools .= ($user->getValid() && !empty($user->getEmail())) ? ' <a href="/profil.html?_switch_user=' . urlencode($user->getEmail()) . '" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png" alt="impersonifier" /></a> ' : '';
             }
 
             // âge
@@ -464,7 +464,7 @@ class UserController extends AbstractController
             }
 
             // compte activé ?
-            if (User::VALID_CONFIRMED === $user->getValid()) {
+            if ($user->getValid()) {
                 $valid = 'oui';
             } else {
                 $valid = '<span style="color: darkorange; font-weight: bold;" title="Les comptes non activés ne reçoivent pas les e-mails">non</span>';

@@ -269,14 +269,6 @@ SQL;
                     ->andWhere('u.doitRenouveler = true')
                 ;
                 break;
-            case 'valid':
-                $qb
-                    ->andWhere('u.isDeleted = false')
-                    ->andWhere('u.valid = :valid')
-                    ->andWhere('u.nomade = false')
-                    ->setParameter('valid', User::VALID_CONFIRMED)
-                ;
-                break;
             case 'allvalid':
             default:
                 $qb
