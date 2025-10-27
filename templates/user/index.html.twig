@@ -15,8 +15,9 @@
             <p>
                 <img src="/img/base/magnifier.png" style="vertical-align:middle"  alt="loupe" />
                 Le champ "<i>Rechercher</i>" en haut à droite du tableau vous permet de rechercher n'importe quelle valeur instantanément.<br />
-                <img src="/img/base/database_go.png" style="vertical-align:middle"  alt="go" />
-                Les boutons en haut à gauche du tableau vous permettent d'exporter le tableau courant, le plus utile étant l'exportation en .csv.<br />
+                {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
+                    <img src="ven haut à gauche du tableau vous permettent d'exporter le tableau courant, le plus utile étant l'exportation en .csv.<br />
+                {% endif %}
                 <img src="/img/base/info.png" style="vertical-align:middle" alt="info" />
                 Vous pouvez trier les résultats selon différents critères en même temps, en pressant la touche <i>Maj / Shift</i> et en cliquant sur les titres des colonnes.<br />
             </p>
@@ -169,50 +170,52 @@
                         sortDescending: ": activer pour trier la colonne par ordre décroissant"
                     }
                 },
+                {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
+                    dom: 'Bfrtip', // active la barre des boutons
+                    buttons: [
+                        {
+                            extend: 'csvHtml5',
+                            text: 'Exporter en CSV',
+                            className: 'btn btn-outline-primary',
+                            fieldSeparator: ';', // pour CSV français
+                            bom: true, // encodage UTF-8 correct pour accents
+                            title: 'Liste_des_utilisateurs'
+                        },
+                        {
+                            extend: 'excelHtml5',
+                            text: 'Exporter en Excel',
+                            className: 'btn btn-outline-success',
+                            title: 'Liste_des_utilisateurs'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            text: 'Exporter en PDF',
+                            className: 'btn btn-outline-danger',
+                            title: 'Liste_des_utilisateurs',
+                            orientation: 'landscape', // ou 'portrait'
+                            pageSize: 'A4',
+                            exportOptions: {
+                                columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13] // colonnes à exporter
+                            },
+                            customize: function(doc) {
+                                doc.styles.tableHeader.fillColor = '#50b7e4'; // header bleu
+                                doc.styles.tableHeader.color = 'white';
+                                doc.styles.tableHeader.alignment = 'center';
+                            }
+                        },
+                        {
+                            extend: 'print',
+                            text: 'Imprimer',
+                            className: 'btn btn-outline-secondary'
+                        }
+                    ],
+                {% endif %}
                 pageLength: 100,
                 "iDisplayLength": 100,
                 "aaSorting": [
                     [2, "asc"],
                     [3, "asc"]
                 ],
-                dom: 'Bfrtip', // active la barre ded boutons
-                buttons: [
-                    {
-                        extend: 'csvHtml5',
-                        text: 'Exporter en CSV',
-                        className: 'btn btn-outline-primary',
-                        fieldSeparator: ';', // pour CSV français
-                        bom: true, // encodage UTF-8 correct pour accents
-                        title: 'Liste_des_utilisateurs'
-                    },
-                    {
-                        extend: 'excelHtml5',
-                        text: 'Exporter en Excel',
-                        className: 'btn btn-outline-success',
-                        title: 'Liste_des_utilisateurs'
-                    },
-                    {
-                        extend: 'pdfHtml5',
-                        text: 'Exporter en PDF',
-                        className: 'btn btn-outline-danger',
-                        title: 'Liste_des_utilisateurs',
-                        orientation: 'landscape', // ou 'portrait'
-                        pageSize: 'A4',
-                        exportOptions: {
-                            columns: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13] // colonnes à exporter
-                        },
-                        customize: function(doc) {
-                            doc.styles.tableHeader.fillColor = '#50b7e4'; // header bleu
-                            doc.styles.tableHeader.color = 'white';
-                            doc.styles.tableHeader.alignment = 'center';
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        text: 'Imprimer',
-                        className: 'btn btn-outline-secondary'
-                    }
-                ]
             });
             $('span.br').html('<br />');
         });
