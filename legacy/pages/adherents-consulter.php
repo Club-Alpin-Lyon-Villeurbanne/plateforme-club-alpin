@@ -203,7 +203,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     if ($userTab['nomade_user']) {
         printTableRow('Nomade :', 'OUI&nbsp;&nbsp;&nbsp;<img src="/img/base/nomade_user.png">');
     }
-    printTableRow('Statut compte internet :', (1 == $userTab['valid_user']) ? 'ACTIF' : ((2 == $userTab['valid_user']) ? 'DESACTIVE' : 'NON ACTIF'));
+    printTableRow('Statut compte internet :', (1 == $userTab['valid_user']) ? 'ACTIVÉ' : 'NON ACTIVÉ');
     if ($userTab['created_at']) {
         printTableRow('Insertion en base :', (new \DateTime($userTab['created_at']))?->format('d/m/Y'));
     }
