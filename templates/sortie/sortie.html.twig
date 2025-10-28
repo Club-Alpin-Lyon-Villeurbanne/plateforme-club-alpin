@@ -1030,7 +1030,7 @@
                         <tr>
                         <td>
                             {% if allowed('user_read_private', event.commission.code) %}
-                                <p class="mini">{{ inscrit.user.lastname|upper }}, {{ inscrit.user.firstname|capitalize }}</p>
+                                <p class="mini">{{ inscrit.user.firstname|capitalize }} {{ inscrit.user.lastname|upper }}</p>
                             {% endif %}
                             <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
                         </td>
