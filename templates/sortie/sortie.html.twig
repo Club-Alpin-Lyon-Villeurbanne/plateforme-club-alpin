@@ -14,18 +14,18 @@
             <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
             <span class="bleucaf">&gt;</span>
             {% if not my_status %}
-            JE SOUHAITE REJOINDRE CETTE SORTIE
+            JE SOUHAITE ME PRÉ-INSCRIRE À CETTE SORTIE
             {% else %}
-            JE METS A JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
+            JE METS À JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
             {% endif %}
 
             {% if filiations|length > 0 %}
-                <span class="bleucaf">&nbsp; / &nbsp;</span> INSCRIRE DES ADHÉRENTS AFFILIÉS
+                <span class="bleucaf">&nbsp; / &nbsp;</span> PRÉ-INSCRIRE DES ADHÉRENTS AFFILIÉS
             {% endif %}
             </a>
         </div>
     {% else %}
-        <hr /><div class="alerte">Pas d'inscription par internet</div>
+        <hr /><div class="alerte">Pas de préinscription par internet</div>
     {% endif %}
 {% endmacro %}
 
@@ -286,7 +286,7 @@
             <div class="erreur info-container">
                 <img src="/img/inscrit-cross.png" alt="" title=""/>
                 <div class="text-container">
-                    Vous avez demandé à participer à cette sortie, mais l'organisateur a décliné votre inscription.
+                    Vous avez demandé à participer à cette sortie, mais l'organisateur a décliné votre demande.
                     N'hésitez pas à le contacter pour en savoir plus.
                 </div>
             </div>
@@ -1170,7 +1170,7 @@
                             {% else %}
                                 <hr />
                                 <h2>Inscriptions :</h2>
-                                <p>Les inscriptions pour cette sortie commenceront le {{ event.joinStartDate | date('d/m/Y à H:i') }}</p>
+                                <p>Les demandes d'inscription pour cette sortie commenceront le {{ event.joinStartDate | date('d/m/Y à H:i') }}</p>
                             {% endif %}
                         {% else %}
                             {{ easy_include('info-inscription-passee', 'vide') }}
