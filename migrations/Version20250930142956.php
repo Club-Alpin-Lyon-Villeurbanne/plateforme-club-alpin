@@ -43,13 +43,13 @@ final class Version20250930142956 extends AbstractMigration
         $this->addSql('ALTER TABLE caf_evt_join CHANGE created_at created_at DATETIME NOT NULL, CHANGE updated_at updated_at DATETIME NOT NULL');
         $this->addSql('ALTER TABLE caf_user CHANGE created_at created_at DATETIME NOT NULL, CHANGE updated_at updated_at DATETIME NOT NULL');
 
-//        // suppression anciens champs
-//        $this->addSql('ALTER TABLE caf_evt_join DROP tsp_evt_join, DROP lastchange_when_evt_join');
-//        $this->addSql('ALTER TABLE caf_article DROP tsp_crea_article, DROP tsp_validate_article, DROP tsp_article, DROP tsp_lastedit');
-//        $this->addSql('ALTER TABLE caf_comment DROP tsp_comment');
-//        $this->addSql('ALTER TABLE caf_evt DROP cancelled_when_evt, DROP tsp_evt, DROP tsp_end_evt, DROP tsp_crea_evt, DROP tsp_edit_evt, DROP join_start_evt');
-//        $this->addSql('ALTER TABLE caf_user DROP date_adhesion_user, DROP birthday_user');
-//        $this->addSql('ALTER TABLE caf_user DROP created_user, DROP ts_insert_user, DROP ts_update_user');
+        // suppression anciens champs
+        $this->addSql('ALTER TABLE caf_evt_join DROP tsp_evt_join, DROP lastchange_when_evt_join');
+        $this->addSql('ALTER TABLE caf_article DROP tsp_crea_article, DROP tsp_validate_article, DROP tsp_article, DROP tsp_lastedit');
+        $this->addSql('ALTER TABLE caf_comment DROP tsp_comment');
+        $this->addSql('ALTER TABLE caf_evt DROP cancelled_when_evt, DROP tsp_evt, DROP tsp_end_evt, DROP tsp_crea_evt, DROP tsp_edit_evt, DROP join_start_evt');
+        $this->addSql('ALTER TABLE caf_user DROP date_adhesion_user, DROP birthday_user');
+        $this->addSql('ALTER TABLE caf_user DROP created_user, DROP ts_insert_user, DROP ts_update_user');
     }
 
     public function down(Schema $schema): void
