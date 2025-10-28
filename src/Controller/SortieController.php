@@ -8,6 +8,7 @@ use App\Entity\Evt;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Form\EventType;
+use App\Helper\CarbonCostHelper;
 use App\Helper\RoleHelper;
 use App\Legacy\LegacyContainer;
 use App\Mailer\Mailer;
@@ -68,6 +69,7 @@ class SortieController extends AbstractController
         CommissionRepository $commissionRepository,
         UserRights $userRights,
         Mailer $mailer,
+        CarbonCostHelper $carbonCostHelper,
         ?Evt $event = null,
     ): array|RedirectResponse {
         $user = $this->getUser();
@@ -108,6 +110,7 @@ class SortieController extends AbstractController
             }
             $originalEntityData['hasPaymentForm'] = $event->hasPaymentForm();
             $originalEntityData['paymentAmount'] = $event->getPaymentAmount();
+            $originalEntityData['place'] = $event->getPlace();
         }
 
         $form = $this->createForm(EventType::class, $event, ['is_edit' => $isUpdate, 'editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'user' => $user]);
@@ -172,7 +175,8 @@ class SortieController extends AbstractController
                     && ($originalEntityData['ngensMax'] !== $event->getngensMax()
                     || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
                     || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
-                    || $originalEntityData['encadrants'] !== $newEncadrants)) {
+                    || $originalEntityData['encadrants'] !== $newEncadrants)
+                    || $originalEntityData['place'] !== $event->getPlace()) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
                 } else {
                     // on envoie directement le mail de mise à jour de sortie
@@ -193,6 +197,16 @@ class SortieController extends AbstractController
             if (null === $event->getJoinMax() || $event->getJoinMax() < 0) {
                 $event->setJoinMax($event->getNgensMax());
             }
+
+            // bilan carbone
+            // @todo calculer distance
+            $nbKm = 274;
+            $carbonCost = $carbonCostHelper->calculate(
+                $nbKm,
+                $event->getMainTransportMode(),
+            );
+            $event->setNbKm($nbKm);
+            $event->setCarbonCost($carbonCost);
 
             $entityManager->persist($event);
             $entityManager->flush();
