@@ -249,7 +249,7 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('joinMax', NumberType::class, [
-                'label' => 'Inscriptions maximum via internet (hors encadrement)',
+                'label' => 'Inscriptions maximum via internet (y compris file d\'attente)',
                 'required' => false,
                 'html5' => true,
                 'attr' => [
@@ -424,15 +424,6 @@ class EventType extends AbstractType
                 if ($startDate && $joinStartDate && $joinStartDate >= $startDate) {
                     $form->get('joinStartDate')->addError(new FormError(
                         'La date de démarrage des inscriptions doit être antérieure à la date de RDV / covoiturage.'
-                    ));
-                }
-
-                // cohérence nombre de places totales / en ligne
-                $totalParticipants = $data->getNgensMax();
-                $onlineParticipants = $data->getJoinMax();
-                if ($totalParticipants && $onlineParticipants && $totalParticipants < $onlineParticipants) {
-                    $form->get('ngensMax')->addError(new FormError(
-                        'Il devrait y avoir davantage de places totales que de possibilités d\'inscription via internet.'
                     ));
                 }
             })

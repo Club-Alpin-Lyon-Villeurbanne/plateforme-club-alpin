@@ -140,7 +140,7 @@ class UserController extends AbstractController
             }
 
             // comptage des participants actuels
-            $nbJoinMax = $event->getNgensMax();
+            $nbPeopleMax = $event->getNgensMax();
             $currentParticipantNb = $event->getParticipationsCount();
 
             $isCurrentUserEncadrant = false;
@@ -152,8 +152,8 @@ class UserController extends AbstractController
             }
 
             // reste-t-il assez de place ?
-            if ((\count($data['id_user']) + $currentParticipantNb) > $nbJoinMax) {
-                $availableSpotNb = $nbJoinMax - $currentParticipantNb;
+            if ((\count($data['id_user']) + $currentParticipantNb) > $nbPeopleMax) {
+                $availableSpotNb = $nbPeopleMax - $currentParticipantNb;
                 if ($availableSpotNb < 0) {
                     $availableSpotNb = 0;
                 }
