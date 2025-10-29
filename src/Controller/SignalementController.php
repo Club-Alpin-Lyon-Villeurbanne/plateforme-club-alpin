@@ -23,6 +23,12 @@ class SignalementController extends AbstractController
         Mailer $mailer,
     ): array {
         $confirmMessage = null;
+        $receivers = $this->getMailRecipients();
+        if (empty($receivers)) {
+            $this->addFlash('info', 'Le signalement n\'est pas disponible pour l\'instant');
+            $this->redirectToRoute('legacy_root');
+        }
+
         $form = $this->createForm(SignalementType::class);
 
         $form->handleRequest($request);
@@ -30,8 +36,6 @@ class SignalementController extends AbstractController
             $data = $request->request->all();
 
             // envoi du mail
-            $receivers = $this->getMailRecipients();
-
             $mailer->send(
                 $receivers,
                 'transactional/signalement', [
