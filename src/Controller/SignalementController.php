@@ -6,6 +6,7 @@ use App\Form\SignalementType;
 use App\Mailer\Mailer;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -21,12 +22,13 @@ class SignalementController extends AbstractController
     public function form(
         Request $request,
         Mailer $mailer,
-    ): array {
+    ): array|RedirectResponse {
         $confirmMessage = null;
         $receivers = $this->getMailRecipients();
         if (empty($receivers)) {
             $this->addFlash('info', 'Le signalement n\'est pas disponible pour l\'instant');
-            $this->redirectToRoute('legacy_root');
+
+            return $this->redirect('/');
         }
 
         $form = $this->createForm(SignalementType::class);
