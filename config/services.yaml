@@ -340,3 +340,7 @@ services:
     arguments:
       $recipientsEmail: '%env(SIGNALEMENT_FORM_RECIPIENTS)%'
     tags: ['controller.service_arguments']
+
+  App\Command\AutoRenewSpecialAccounts:
+    arguments:
+      $specialAccountsIds: '%env(SPECIAL_ACCOUNTS_IDS)%'
