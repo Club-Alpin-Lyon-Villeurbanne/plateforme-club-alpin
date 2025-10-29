@@ -24,7 +24,7 @@ final class Version20250930142956 extends AbstractMigration
         $this->addSql('ALTER TABLE caf_user ADD birthdate DATE DEFAULT NULL COMMENT \'Date de naissance(DC2Type:date_immutable)\', ADD join_date DATE DEFAULT NULL COMMENT \'Date adhésion(DC2Type:date_immutable)\', ADD created_at DATETIME DEFAULT NULL, ADD updated_at DATETIME DEFAULT NULL');
 
         // mettre des données dans les champs à partir des anciens timestamps
-        $this->addSql('SET time_zone=\'Europe/Paris\'');
+        $this->addSql('SET time_zone=\'+01:00\'');
         $this->addSql('UPDATE caf_article SET created_at = FROM_UNIXTIME(tsp_crea_article), updated_at = (CASE WHEN tsp_lastedit IS NOT NULL THEN tsp_lastedit ELSE NOW() END)');
         $this->addSql('UPDATE caf_article SET validation_date = (CASE WHEN tsp_validate_article IS NOT NULL THEN FROM_UNIXTIME(tsp_validate_article) ELSE NULL END)');
         $this->addSql('UPDATE caf_comment SET created_at = FROM_UNIXTIME(tsp_comment), updated_at = (CASE WHEN tsp_comment IS NOT NULL THEN FROM_UNIXTIME(tsp_comment) ELSE NOW() END)');
