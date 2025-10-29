@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\AlertType;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -110,7 +111,7 @@ SQL;
             ->setParameter('user', $user)
             ->orderBy('u.lastname', 'ASC')
             ->addOrderBy('u.firstname', 'ASC')
-            ->addOrderBy('u.created', 'DESC')
+            ->addOrderBy('u.createdAt', 'DESC')
             ->getQuery()
             ->getResult()
         ;
@@ -119,19 +120,20 @@ SQL;
     public function blockExpiredAccounts(int $expiryDate): int
     {
         $qb = $this->createQueryBuilder('u');
+        $expirationDate = (new \DateTimeImmutable())->setTimestamp($expiryDate);
 
         $qb->update()
             ->set('u.doitRenouveler', ':shouldRenew')
             ->where('u.id != :adminId')
             ->andWhere('u.nomade = :isNomade')
             ->andWhere('u.manuelUser = :isManual')
-            ->andWhere('u.dateAdhesion <= :expiryDate')
+            ->andWhere('u.joinDate <= :expiryDate')
             ->setParameters([
                 'shouldRenew' => true,
                 'adminId' => 1,
                 'isNomade' => false,
                 'isManual' => false,
-                'expiryDate' => $expiryDate,
+                'expiryDate' => $expirationDate,
             ]);
 
         return $qb->getQuery()->execute();
@@ -144,8 +146,9 @@ SQL;
         $qb = $this->createQueryBuilder('u')
             ->update()
             ->set('u.cafnumParent', 'NULL')
-            ->where('u.tsUpdate < :expiryDate')
-            ->setParameter('expiryDate', $expiryDate->getTimestamp());
+            ->where('u.updatedAt < :expiryDate')
+            ->setParameter('expiryDate', $expiryDate)
+        ;
 
         try {
             return $qb->getQuery()->execute();
@@ -156,15 +159,15 @@ SQL;
         }
     }
 
-    public function findDuplicateUser(string $lastname, string $firstname, string $birthday, string $excludeCafnum): ?User
+    public function findDuplicateUser(string $lastname, string $firstname, \DateTimeImmutable $birthday, string $excludeCafnum): ?User
     {
         return $this->createQueryBuilder('u')
             ->where('LOWER(u.lastname) = LOWER(:lastname)')
             ->andWhere('LOWER(u.firstname) = LOWER(:firstname)')
-            ->andWhere('u.birthday = :birthday')
+            ->andWhere('u.birthdate = :birthday')
             ->andWhere('u.cafnum != :excludeCafnum')
             ->andWhere('u.isDeleted = false')
-            ->orderBy('u.tsInsert', 'DESC')
+            ->orderBy('u.createdAt', 'DESC')
             ->setMaxResults(1)
             ->setParameters([
                 'lastname' => $lastname,
@@ -195,5 +198,123 @@ SQL;
         ;
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function getUsers(string $type, int $first = 1, int $perPage = 100, string $searchText = '', array $order = [])
+    {
+        $qb = $this->getQueryBuilder($type, $searchText);
+        if (!empty($order)) {
+            foreach ($order as $field) {
+                $dir = $field['dir'];
+                // si tri par âge, inverser le sens car on trie sur la date de naissance en bdd
+                if (6 === (int) $field['column']) {
+                    if ('asc' === $dir) {
+                        $dir = 'desc';
+                    } else {
+                        $dir = 'asc';
+                    }
+                }
+                $qb->addOrderBy($this->getAttributeByColNumber($field['column']), $dir);
+            }
+        } else {
+            $qb
+                ->orderBy('u.lastname', 'asc')
+                ->addOrderBy('u.firstname', 'asc')
+            ;
+        }
+
+        return $this->getPaginatedResults($qb, $first, $perPage);
+    }
+
+    public function getUsersCount(string $type, string $searchText = ''): int
+    {
+        return $this
+            ->getQueryBuilder($type, $searchText)
+            ->select('count(u)')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
+    protected function getQueryBuilder(string $type, string $searchText = ''): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        switch ($type) {
+            case 'all':
+                $qb
+                    ->andWhere('u.isDeleted = false')
+                ;
+                break;
+            case 'deleted':
+                $qb
+                    ->andWhere('u.isDeleted = true')
+                ;
+                break;
+            case 'manual':
+                $qb
+                    ->andWhere('u.isDeleted = false')
+                    ->andWhere('u.manuelUser = true')
+                ;
+                break;
+            case 'nomade':
+                $qb
+                    ->andWhere('u.isDeleted = false')
+                    ->andWhere('u.nomade = true')
+                ;
+                break;
+            case 'expired':
+                $qb
+                    ->andWhere('u.isDeleted = false')
+                    ->andWhere('u.doitRenouveler = true')
+                ;
+                break;
+            case 'allvalid':
+            default:
+                $qb
+                    ->andWhere('u.doitRenouveler = false')
+                    ->andWhere('u.isDeleted = false')
+                    ->andWhere('u.nomade = false')
+                    ->andWhere('u.manuelUser = false')
+                ;
+                break;
+        }
+
+        if (!empty($searchText)) {
+            $qb
+                ->andWhere('u.lastname LIKE :search OR u.firstname LIKE :search OR u.nickname LIKE :search OR u.cafnum LIKE :search')
+                ->setParameter('search', '%' . $searchText . '%')
+            ;
+        }
+
+        return $qb;
+    }
+
+    protected function getPaginatedResults(QueryBuilder $qb, int $first, int $perPage)
+    {
+        return $qb->setFirstResult($first)
+            ->setMaxResults($perPage)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    private function getAttributeByColNumber(int $colNumber): string
+    {
+        return match ($colNumber) {
+            1 => 'u.cafnum',
+            3 => 'u.firstname',
+            4 => 'u.joinDate',
+            5 => 'u.nickname',
+            6 => 'u.birthdate',
+            7 => 'u.tel',
+            8 => 'u.email',
+            9 => 'u.valid',
+            10 => 'u.isDeleted',
+            11 => 'u.cp',
+            12 => 'u.ville',
+            13 => 'u.doitRenouveler',
+            default => 'u.lastname',
+        };
     }
 }

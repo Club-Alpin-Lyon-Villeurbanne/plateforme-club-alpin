@@ -82,7 +82,7 @@ if (!allowed('user_giveright_1') && !allowed('user_giveright_2') && !allowed('us
                 ;
             }
 
-            echo strlen($row['description_user_attr']) > 0 ?
+            echo !empty($row['description_user_attr']) ?
                 ('<em>(' . addslashes(html_utf8($row['description_user_attr'])) . ')</em>')
             : '';
 

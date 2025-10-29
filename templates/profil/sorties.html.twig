@@ -25,12 +25,12 @@
                     {% endif %}
                     <tr>
                         <td class="agenda-gauche">
-                            {% set start = event.tsp | intldate('eee d MMM yyyy') | capitalize %}
-                            {% set end = event.tspEnd | intldate('eee d MMM yyyy') | capitalize %}
+                            {% set start = event.startDate | intldate('eee d MMM yyyy') | capitalize %}
+                            {% set end = event.endDate | intldate('eee d MMM yyyy') | capitalize %}
 
                             {% if start == end %}
                                 Le {{ start }}<br />
-                                à {{ event.tsp | intldate('HH:mm') }}
+                                à {{ event.startDate | intldate('HH:mm') }}
                             {% else %}
                                 Du {{ start }}<br/>
                                 au {{ end }}
@@ -40,13 +40,13 @@
                                 {% if event.isDraft %}
                                     <p class="draft">Brouillon (non publiée)</p>
                                 {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_UNSEEN') %}
-                                    <p class="alerte">En attente de publication</p>
+                                    <p class="alerte">En attente d'approbation</p>
                                 {% elseif event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
                                     <p class="info">Publiée et validée par le président</p>
                                 {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE') %}
                                     <p class="alerte">Publiée non validée par le président</p>
                                 {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_REFUSE') %}
-                                    <p class="erreur">Sortie refusée et non publiée</p>
+                                    <p class="erreur">Sortie refusée (non publiée)</p>
                                 {% endif %}
                             {% endif %}
                         </td>

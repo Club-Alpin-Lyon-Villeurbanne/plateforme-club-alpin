@@ -1,7 +1,7 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    {% if commission %}[{{ commission }}]{% endif %}[Ajout manuel] Inscription à {{ event_name }} du {{ event_date }}
+    {% if commission %}[{{ commission }}]{% endif %}[Ajout manuel] Préinscription à {{ event_name }} du {{ event_date }}
 {%- endblock %}
 
 {% block inner_html %}

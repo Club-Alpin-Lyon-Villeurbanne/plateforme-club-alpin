@@ -30,7 +30,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 
         // NOMBRE DE SORTIES
         $req = "
-					SELECT id_evt, code_evt, status_evt, status_legal_evt, cancelled_evt, user_evt, commission_evt, tsp_evt, tsp_end_evt, tsp_crea_evt, tsp_edit_evt, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, join_max_evt, join_start_evt
+					SELECT id_evt, code_evt, status_evt, status_legal_evt, cancelled_evt, user_evt, commission_evt, start_date, end_date, caf_evt.created_at, caf_evt.updated_at, place_evt, rdv_evt,titre_evt, massif_evt, tarif_evt, join_max_evt, join_start_date
 						, nickname_user
 						, title_commission, code_commission
 						, role_evt_join
@@ -45,7 +45,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 					AND status_evt_join = 1
 					AND user_evt_join = $id_user "
                     // de la plus récente a la plus ancienne
-                    . 'ORDER BY  `tsp_evt` DESC
+                    . 'ORDER BY  `start_date` DESC
 					LIMIT 200';
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $userTab['sorties'] = [];
@@ -72,7 +72,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
         }
 
         // NOMBRE ARTICLES
-        $req = "SELECT id_article, code_article, titre_article, tsp_validate_article FROM caf_article WHERE user_article='" . $id_user . "' AND status_article=1 ORDER BY id_article DESC";
+        $req = "SELECT id_article, code_article, titre_article, created_at FROM caf_article WHERE user_article='" . $id_user . "' AND status_article=1 ORDER BY id_article DESC";
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $userTab['articles'] = [];
         if ($result->num_rows > 0) {
@@ -165,8 +165,8 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 
     $rowValue = 'NC';
 
-    if ($userTab['date_adhesion_user'] > 0) {
-        $rowValue = date('d/m/Y', $userTab['date_adhesion_user']);
+    if (!empty($userTab['join_date'])) {
+        $rowValue = (new \DateTimeImmutable($userTab['join_date']))?->format('d/m/Y');
     }
 
     if ($userTab['alerte_renouveler_user'] || $userTab['doit_renouveler_user']) {
@@ -175,14 +175,16 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
             // $rowValue .= '   (expirée)';
             $rowValue .= '&nbsp;&nbsp;&nbsp;<img src="/img/base/delete.png">';
         }
-    } elseif ($userTab['date_adhesion_user']) {
+    } elseif (!empty($userTab['join_date'])) {
         $rowValue .= '&nbsp;&nbsp;&nbsp;<img src="/img/base/tick2.png">';
     }
 
     printTableRow('Date d\'adhésion (renouvellement) :', $rowValue);
 
-    if ($userTab['birthday_user']) {
-        printTableRow('Date de naissance :', date('d/m/Y', $userTab['birthday_user']) . '&nbsp;&nbsp;&nbsp;(' . getYearsSinceDate($userTab['birthday_user']) . ' ans)');
+    if ($userTab['birthdate']) {
+        $birthdate = new \DateTimeImmutable($userTab['birthdate']);
+        $age = $birthdate->diff(new \DateTime())->y;
+        printTableRow('Date de naissance :', $birthdate->format('d/m/Y') . '&nbsp;&nbsp;&nbsp;(' . $age > 0 ? $age . ' ans' : '?' . ')');
     }
     if ($userTab['email_user']) {
         printTableRow('E-mail :', '<a href="mailto:' . $userTab['email_user'] . '">' . $userTab['email_user'] . '</a>');
@@ -201,20 +203,17 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     if ($userTab['nomade_user']) {
         printTableRow('Nomade :', 'OUI&nbsp;&nbsp;&nbsp;<img src="/img/base/nomade_user.png">');
     }
-    printTableRow('Statut compte internet :', (1 == $userTab['valid_user']) ? 'ACTIF' : ((2 == $userTab['valid_user']) ? 'DESACTIVE' : 'NON ACTIF'));
-    if ($userTab['created_user']) {
-        printTableRow('Création du compte :', date('d/m/Y', $userTab['created_user']));
+    printTableRow('Statut compte internet :', (1 == $userTab['valid_user']) ? 'ACTIVÉ' : 'NON ACTIVÉ');
+    if ($userTab['created_at']) {
+        printTableRow('Insertion en base :', (new \DateTime($userTab['created_at']))?->format('d/m/Y'));
     }
-    if ($userTab['ts_insert_user']) {
-        printTableRow('Insertion en base :', date('d/m/Y', $userTab['ts_insert_user']));
-    }
-    if ($userTab['ts_update_user']) {
-        printTableRow('Mise à jour en base :', date('d/m/Y', $userTab['ts_update_user']));
+    if ($userTab['updated_at']) {
+        printTableRow('Mise à jour en base :', (new \DateTime($userTab['updated_at']))?->format('d/m/Y'));
     }
     if (is_array($userTab['articles'])) {
         $rowValue = [];
         foreach ($userTab['articles'] as $article) {
-            $rowValue[] = '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . date('d.m.Y', $article['tsp_validate_article']) . ' - ' . $article['titre_article'] . '</a>';
+            $rowValue[] = '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . (new \DateTime($article['created_at']))?->format('d/m/Y') . ' - ' . $article['titre_article'] . '</a>';
         }
         printTableRow('Articles :', '<font size="-1" >' . implode('<br />', $rowValue) . '</font>');
     }
@@ -235,7 +234,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
             if (allowed('evt_validate') && 1 != $evt['status_evt']) {
                 $row .= '&forceshow=true';
             }
-            $row .= '" title="">' . date('d.m.Y', $evt['tsp_evt']) . ' - ' . html_utf8($evt['title_commission']) . ' - ' . html_utf8($evt['titre_evt']) . '</a>';
+            $row .= '" title="">' . (new \DateTimeImmutable($evt['start_date']))?->format('d/m/Y') . ' - ' . html_utf8($evt['title_commission']) . ' - ' . html_utf8($evt['titre_evt']) . '</a>';
             $rowValue[] = $row;
         }
         arsort($rowValueHeader);

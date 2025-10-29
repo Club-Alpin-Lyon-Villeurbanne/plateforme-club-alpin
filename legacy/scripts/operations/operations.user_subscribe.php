@@ -24,19 +24,6 @@ if (strlen($mdp_user) < 8 || strlen($mdp_user) > 128) {
 if (!isset($errTab) || 0 === count($errTab)) {
     $mdp_user = LegacyContainer::get('legacy_hasher_factory')->getPasswordHasher('login_form')->hash($mdp_user);
 
-    // Si ce compte a été désactivé
-    if (!isset($errTab) || 0 === count($errTab)) {
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE cafnum_user = ? AND valid_user = 2 LIMIT 1');
-        $stmt->bind_param('s', $cafnum_user);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_row();
-        $stmt->close();
-        if ($row[0]) {
-            $errTab[] = "Le compte lié à ce numéro d'adhérent a été désactivé manuellement par un responsable. Nous vous invitons à contacter le Président, ou vice-Président du club pour en savoir plus.";
-        }
-    }
-
     // Si ce compte est déjà existant et activé avec ce numéro de licence
     if (!isset($errTab) || 0 === count($errTab)) {
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE cafnum_user = ? AND valid_user = 1 LIMIT 1');
@@ -46,7 +33,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $row = $result->fetch_row();
         $stmt->close();
         if ($row[0]) {
-            $errTab[] = "Ce numéro d'adhérent correspond déjà à une inscription sur le site. Si vous avez perdu vos identifiants, utilisez le lien <i>Mot de passe oublié</i> ci-contre à droite.";
+            $errTab[] = "Ce numéro d'adhérent correspond déjà à un compte sur le site. Si vous avez perdu vos identifiants, utilisez le lien <i>Mot de passe oublié</i> ci-contre à droite.";
         }
     }
 
@@ -59,7 +46,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         $row = $result->fetch_row();
         $stmt->close();
         if ($row[0]) {
-            $errTab[] = 'Cette adresse e-mail correspond déjà à une inscription sur le site. Si vous avez perdu vos identifiants, utilisez le lien <i>Mot de passe oublié</i> ci-contre à droite.';
+            $errTab[] = 'Cette adresse e-mail correspond déjà à un compte sur le site. Si vous avez perdu vos identifiants, utilisez le lien <i>Mot de passe oublié</i> ci-contre à droite.';
         }
     }
 
@@ -129,9 +116,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     // intégration des valeurs données et du token nécessaire à la confirmation par email
     if (!isset($errTab) || 0 === count($errTab)) {
         $cookietoken_user = bin2hex(random_bytes(16));
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_user SET email_user = ?, mdp_user = ?, nickname_user = ?, created_user = ?, cookietoken_user = ? WHERE id_user = ? LIMIT 1');
-        $created_user = time();
-        $stmt->bind_param('sssssi', $email_user, $mdp_user, $nickname_user, $created_user, $cookietoken_user, $id_user);
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE caf_user SET email_user = ?, mdp_user = ?, nickname_user = ?, updated_at = NOW(), cookietoken_user = ? WHERE id_user = ? LIMIT 1');
+        $stmt->bind_param('sssssi', $email_user, $mdp_user, $nickname_user, $cookietoken_user, $id_user);
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur de sauvegarde';
         }

@@ -1,6 +1,6 @@
 {% extends 'base-light.html.twig' %}
 
-{% block title %}Feuille de sortie - {{ event.titre }} - {{ event.tsp|intldate('cccc d MMMM yyyy') }}{% endblock %}
+{% block title %}Feuille de sortie - {{ event.titre }} - {{ event.startDate|intldate('cccc d MMMM yyyy') }}{% endblock %}
 
 {% block stylesheets %}
     <style>
@@ -24,7 +24,7 @@
             </div>
         {% elseif event.cancelled %}
             <div class="erreur">
-                <img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Sortie annulée :</b><br /> Cette sortie a été annulée le {{ event.cancelledWhen|date('d/m/Y à H:i') }}, par
+                <img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Sortie annulée :</b><br /> Cette sortie a été annulée le {{ event.cancellationDate|date('d/m/Y à H:i') }}, par
                 <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.cancelledWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
                     {{ event.cancelledWho.nickname }}
                 </a>.<br />
@@ -107,7 +107,7 @@
             <tbody>
             <tr>
                 <th width='15%' style="width: fit-content">DATE :</th>
-                <td width='25%'>{{ event.tsp | date('d/m/Y') }}</td>
+                <td width='25%'>{{ event.startDate | date('d/m/Y') }}</td>
                 <th width='20%'>COURSE, LIEU : </th>
                 <td width='30%'>{{ event.titre }}</td>
             </tr>

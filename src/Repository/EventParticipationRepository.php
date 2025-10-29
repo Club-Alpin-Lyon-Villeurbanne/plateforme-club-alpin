@@ -37,10 +37,10 @@ class EventParticipationRepository extends ServiceEntityRepository
             ->setParameter('id', $event->getId())
             ->andWhere('e.status != :event_status')
             ->setParameter('event_status', Evt::STATUS_LEGAL_REFUSE)
-            ->andWhere('(e.tsp >= :start AND e.tsp <= :end) OR (e.tspEnd >= :start AND e.tspEnd <= :end) OR (e.tsp <= :start AND e.tspEnd >= :end)')
-            ->setParameter('start', $event->getTsp())
-            ->setParameter('end', $event->getTspEnd())
-            ->orderBy('e.tsp', 'asc')
+            ->andWhere('(e.startDate >= :start AND e.startDate <= :end) OR (e.endDate >= :start AND e.endDate <= :end) OR (e.startDate <= :start AND e.endDate >= :end)')
+            ->setParameter('start', $event->getStartDate())
+            ->setParameter('end', $event->getEndDate())
+            ->orderBy('e.startDate', 'asc')
         ;
 
         if ($user) {
@@ -98,7 +98,7 @@ class EventParticipationRepository extends ServiceEntityRepository
         $qb
             ->addOrderBy('inscrit.firstname', 'ASC')
             ->addOrderBy('inscrit.lastname', 'ASC')
-            ->addOrderBy('ej.tsp', 'ASC')
+            ->addOrderBy('ej.createdAt', 'ASC')
         ;
 
         if ($roles) {

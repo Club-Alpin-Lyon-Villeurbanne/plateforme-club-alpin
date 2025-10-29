@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class EventToPublishCronCommandTest extends TestCase
 {
@@ -23,12 +24,16 @@ class EventToPublishCronCommandTest extends TestCase
         $userAttrRepository = $this->createMock(UserAttrRepository::class);
         $mailer = $this->createMock(Mailer::class);
         $logger = $this->createMock(LoggerInterface::class);
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
 
         $commission = $this->createMock(Commission::class);
         $commission->method('getTitle')->willReturn('Alpinisme');
 
         $event = $this->createMock(Evt::class);
         $event->method('getCommission')->willReturn($commission);
+        $event->method('getCode')->willReturn('test-event');
+        $event->method('getId')->willReturn(123);
+        $event->method('getTitre')->willReturn('Test Event');
 
         $user = $this->createMock(User::class);
         $user->method('getEmail')->willReturn('resp@example.com');
@@ -39,20 +44,26 @@ class EventToPublishCronCommandTest extends TestCase
         $evtRepository->method('getAllEventsToPublish')->willReturn([$event]);
         $userAttrRepository->method('getResponsablesByCommission')->willReturn([$userAttr]);
 
+        $urlGenerator->method('generate')->willReturn('https://example.com/test-url');
+
         $mailer->expects($this->once())
             ->method('send')
             ->with(
                 $user,
                 'transactional/rappel-sortie-a-valider-resp-commission',
-                $this->callback(function ($params) use ($event) {
-                    return isset($params['sorties']) && \in_array($event, $params['sorties'], true);
+                $this->callback(function ($params) {
+                    return isset($params['sorties'])
+                        && is_array($params['sorties'])
+                        && isset($params['sorties'][0]['titre'])
+                        && isset($params['sorties'][0]['url'])
+                        && isset($params['manage_events_url']);
                 })
             );
 
         $logger->expects($this->any())->method('info');
         $logger->expects($this->any())->method('error');
 
-        $command = new EventToPublishCronCommand($evtRepository, $userAttrRepository, $mailer, $logger);
+        $command = new EventToPublishCronCommand($evtRepository, $userAttrRepository, $mailer, $logger, $urlGenerator);
         $tester = new CommandTester($command);
         $result = $tester->execute([]);
 
@@ -65,6 +76,7 @@ class EventToPublishCronCommandTest extends TestCase
         $userAttrRepository = $this->createMock(UserAttrRepository::class);
         $mailer = $this->createMock(Mailer::class);
         $logger = $this->createMock(LoggerInterface::class);
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
 
         $commission = $this->createMock(Commission::class);
         $commission->method('getTitle')->willReturn('Ski');
@@ -79,7 +91,7 @@ class EventToPublishCronCommandTest extends TestCase
         $logger->expects($this->once())->method('error')
             ->with('Email reminder: no responsable for commission Ski');
 
-        $command = new EventToPublishCronCommand($evtRepository, $userAttrRepository, $mailer, $logger);
+        $command = new EventToPublishCronCommand($evtRepository, $userAttrRepository, $mailer, $logger, $urlGenerator);
         $tester = new CommandTester($command);
         $result = $tester->execute([]);
 

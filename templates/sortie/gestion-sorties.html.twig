@@ -7,7 +7,7 @@
         <div class="main-type">
             <h1>{{ title }}</h1>
 
-            {{ easy_include(to_include, '') }}
+            {{ easy_include(to_include, '') }}<br>
 
             <h2>{{ total }} Sortie{% if total > 1 %}s{% endif %} en attente de {{ action}} :</h2>
 
@@ -23,12 +23,12 @@
                         {% endif %}
                         <tr>
                             <td class="agenda-gauche">
-                                {% set start = event.tsp | intldate('eee d MMM yyyy') | capitalize %}
-                                {% set end = event.tspEnd | intldate('eee d MMM yyyy') | capitalize %}
+                                {% set start = event.startDate | intldate('eee d MMM yyyy') | capitalize %}
+                                {% set end = event.endDate | intldate('eee d MMM yyyy') | capitalize %}
 
                                 {% if start == end %}
                                     Le {{ start }}<br />
-                                    à {{ event.tsp | intldate('HH:mm') }}
+                                    à {{ event.startDate | intldate('HH:mm') }}
                                 {% else %}
                                     Du {{ start }}<br/>
                                     au {{ end }}
@@ -40,20 +40,20 @@
                                         Aperçu{% if action is same as ('validation') %} / validation de la page{% endif %}
                                     </a>
 
-                                    {% if action is same as ('publication') %}
+                                    {% if action is same as ('approbation') %}
                                         <form action="{{ path('sortie_validate', { id: event.id }) }}" method="post" style="display:inline" class="loading">
                                             <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_validate') }}" />
-                                            <input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
+                                            <input type="submit" value="Approuver &amp; publier" class="nice2 green" title="Approuve instantanément la sortie et la publie" />
                                         </form>
 
-                                        <input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message à l'organisateur de la sortie." />
+                                        <input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Refuser cette sortie. Vous devrez ajouter un message à l'organisateur de la sortie." />
                                         <div style="display:none" id="refuser-{{ event.id }}">
                                             <form action="{{ path('sortie_refus', { id: event.id }) }}" method="post" class="loading">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_refus') }}" />
 
                                                 <p>Laissez un message à l'auteur pour lui expliquer la raison du refus :</p>
                                                 <input type="text" name="msg" class="type1" placeholder="ex: Mauvais point de RDV" />
-                                                <input type="submit" value="Refuser la publication" class="nice2 red" />
+                                                <input type="submit" value="Refuser la sortie" class="nice2 red" />
                                                 <input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
                                             </form>
                                         </div>

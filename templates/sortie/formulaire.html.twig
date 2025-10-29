@@ -70,10 +70,10 @@
             <br style="clear:both" />
 
             <div style="width:45%; padding-right:3%; float:left">
-                {{ form_row(form.eventStartDate) }}
+                {{ form_row(form.startDate) }}
             </div>
             <div style="width:50%; float:left">
-                {{ form_row(form.eventEndDate) }}
+                {{ form_row(form.endDate) }}
             </div>
             <br style="clear:both" />
 
@@ -136,9 +136,10 @@
             <div style="width:50%; float:left">
                 {{ form_row(form.joinMax) }}
             </div>
-            <br style="clear:both" />
-            {{ form_row(form.joinStartDate) }}
             <br style="clear:both" /><br>
+
+            {{ form_row(form.joinStartDate) }}
+            <br style="clear:both" />
             <div>
                 <label for="{{ form.autoAccept.vars.id }}" class="{% if form.autoAccept.vars.data %}up{% else %}down{% endif %}">
                     {{ form_widget(form.autoAccept) }}
@@ -296,8 +297,8 @@
             }
 
             // date de retour pré-filtrée sur la date de départ
-            const startDateField = document.getElementById('{{ form.eventStartDate.vars.id }}');
-            const endDateField = document.getElementById('{{ form.eventEndDate.vars.id }}');
+            const startDateField = document.getElementById('{{ form.startDate.vars.id }}');
+            const endDateField = document.getElementById('{{ form.endDate.vars.id }}');
             startDateField.addEventListener('change', (e) => {
                 if (endDateField.value === '') {
                     endDateField.min = startDateField.value;

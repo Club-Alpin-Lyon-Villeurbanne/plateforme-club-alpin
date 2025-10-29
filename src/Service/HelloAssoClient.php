@@ -110,4 +110,9 @@ class HelloAssoClient
             $this->logger->error($e->getMessage());
         }
     }
+
+    public function areCredentialsSet(): bool
+    {
+        return !empty($this->clientId) && !empty($this->clientSecret);
+    }
 }

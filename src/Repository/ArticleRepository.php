@@ -58,7 +58,7 @@ class ArticleRepository extends ServiceEntityRepository
             ->select('a, c')
             ->leftJoin('a.commission', 'c')
             ->where('a.status > 0')
-            ->orderBy('a.tspValidate', 'DESC')
+            ->orderBy('a.validationDate', 'DESC')
             ->setMaxResults($options['limit'])
         ;
 

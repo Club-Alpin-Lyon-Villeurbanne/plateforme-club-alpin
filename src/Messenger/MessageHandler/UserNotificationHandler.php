@@ -12,6 +12,7 @@ use App\Repository\UserNotificationRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[AsMessageHandler]
 class UserNotificationHandler
@@ -23,6 +24,7 @@ class UserNotificationHandler
         private readonly UserNotificationRepository $userNotificationRepository,
         private readonly EntityManagerInterface $em,
         private readonly Mailer $mailer,
+        private readonly UrlGeneratorInterface $urlGenerator,
         private readonly string $defaultAlertArticlePrefix,
         private readonly string $defaultAlertSortiePrefix,
         private readonly string $siteName,
@@ -65,6 +67,28 @@ class UserNotificationHandler
             AlertType::Sortie => $user->getAlertSortiePrefix() ?? $this->defaultAlertSortiePrefix,
         };
 
-        $this->mailer->send($user, $template, ['entity' => $entity, 'prefix' => $prefix, 'site' => $this->siteName]);
+        // Générer les URLs absolues
+        $context = [
+            'entity' => $entity,
+            'prefix' => $prefix,
+            'site' => $this->siteName,
+            'profil_alertes_url' => $this->urlGenerator->generate('profil_alertes', [], UrlGeneratorInterface::ABSOLUTE_URL),
+        ];
+
+        if (AlertType::Sortie === $message->alertType) {
+            $context['entity_url'] = $this->urlGenerator->generate(
+                'sortie',
+                ['code' => $entity->getCode(), 'id' => $entity->getId()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+        } elseif (AlertType::Article === $message->alertType) {
+            $context['entity_url'] = $this->urlGenerator->generate(
+                'article_view',
+                ['code' => $entity->getCode(), 'id' => $entity->getId()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+        }
+
+        $this->mailer->send($user, $template, $context);
     }
 }

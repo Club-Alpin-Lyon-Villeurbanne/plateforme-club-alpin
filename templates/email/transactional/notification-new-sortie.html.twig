@@ -2,24 +2,24 @@
 
 {% block subject -%}
 
-    {{ prefix }}[{{ entity.commission.title }}] {{ entity.titre }} / {{ entity.tsp | intldate('cccc d MMMM') }}
+    {{ prefix }}[{{ entity.commission.title }}] {{ entity.titre }} / {{ entity.startDate | intldate('cccc d MMMM') }}
 
 {%- endblock %}
 
-{% block rappel_objet 'Nouvelle sortie: ' ~ entity.titre ~ ' / ' ~ entity.tsp | intldate('cccc d MMMM') %}
+{% block rappel_objet 'Nouvelle sortie: ' ~ entity.titre ~ ' / ' ~ entity.startDate | intldate('cccc d MMMM') %}
 
 {% block inner_html %}
     <p>
-        Une nouvelle sortie <a href="{{ url('sortie', {code: entity.code, id: entity.id}) }}">"{{ entity.titre }}"</a> vient d'être publiée sur le site du {{ site }} dans la commission <b>{{ entity.commission.title }}</b>.
+        Une nouvelle sortie <a href="{{ entity_url }}">"{{ entity.titre }}"</a> vient d'être publiée sur le site du {{ site }} dans la commission <b>{{ entity.commission.title }}</b>.
     </p>
     <p>
-        Vous pouvez gérer vos alertes depuis <a href="{{ url('profil_alertes') }}">votre espace "mes alertes"</a>.
+        Vous pouvez gérer vos alertes depuis <a href="{{ profil_alertes_url }}">votre espace "mes alertes"</a>.
     </p>
 {% endblock %}
 
 {% block inner_txt %}
     Une nouvelle sortie "{{ entity.titre }}" vient d'être publiée sur le site du {{ site }} dans la commission {{ entity.commission.title }}.
-    Voir la sortie ({{ url('sortie', {code: entity.code, id: entity.id}) }}).
+    Voir la sortie ({{ entity_url }}).
 
-    Vous pouvez gérer vos alertes depuis votre espace "mes alertes" ({{ url('profil_alertes') }}).
+    Vous pouvez gérer vos alertes depuis votre espace "mes alertes" ({{ profil_alertes_url }}).
 {% endblock %}

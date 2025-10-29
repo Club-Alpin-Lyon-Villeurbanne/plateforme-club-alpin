@@ -14,18 +14,23 @@
             <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
             <span class="bleucaf">&gt;</span>
             {% if not my_status %}
-            JE SOUHAITE REJOINDRE CETTE SORTIE
+                {% if nInscritsTotal >= event.ngensMax %}
+                    JE SOUHAITE REJOINDRE LA FILE D'ATTENTE
+                {% else %}
+                    JE SOUHAITE ME PRÉ-INSCRIRE À CETTE SORTIE
+                {% endif %}
+            {% elseif my_status.isCovoiturage %}
             {% else %}
-            JE METS A JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
+            JE METS À JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
             {% endif %}
 
             {% if filiations|length > 0 %}
-                <span class="bleucaf">&nbsp; / &nbsp;</span> INSCRIRE DES ADHÉRENTS AFFILIÉS
+                <span class="bleucaf">&nbsp; / &nbsp;</span> PRÉ-INSCRIRE DES ADHÉRENTS AFFILIÉS
             {% endif %}
             </a>
         </div>
     {% else %}
-        <hr /><div class="alerte">Pas d'inscription par internet</div>
+        <hr /><div class="alerte">Pas de préinscription par internet</div>
     {% endif %}
 {% endmacro %}
 
@@ -34,8 +39,7 @@
         <div id="fiche-sortie">
 
             {% set closeDiv = false %}
-            {% set nInscritsHorsEncadrement = event.participations([constant('App\\Entity\\EventParticipation::ROLE_INSCRIT'), constant('App\\Entity\\EventParticipation::BENEVOLE'), constant('App\\Entity\\EventParticipation::ROLE_MANUEL')]) | length %}
-            {% set nInscritsTotal = nInscritsHorsEncadrement + event.participations(constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT_ETENDU')) | length %}
+            {% set nInscritsTotal = event.participations() | length %}
 
             {% if event.publicStatusUnseen %}
                 {% set closeDiv = true %}
@@ -50,15 +54,15 @@
                     <div>
                         <form action="{{ path('sortie_validate', { id: event.id }) }}" method="post" class="loading" style="display:inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_validate') }}" />
-                            <input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de la sortie" />
+                            <input type="submit" value="Approuver &amp; publier" class="nice2 green" title="Approuve instantanément la sortie et la publie" />
                         </form>
-                        <input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Ne pas autoriser la publication de cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
+                        <input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Refuser cette sortie. Vous devrez ajouter un message au créateur de la sortie." />
                         <div style="display:none" id="refuser-{{ event.id }}">
                             <form action="{{ path('sortie_refus', { id: event.id }) }}" method="post" class="loading">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_refus') }}" />
                                 <p>Laissez un message à l'auteur pour lui expliquer la raison du refus :</p>
                                 <input type="text" name="msg" class="type1" placeholder="ex: Mauvais point de RDV" />
-                                <input type="submit" value="Refuser la publication" class="nice2 red" />
+                                <input type="submit" value="Refuser la sortie" class="nice2 red" />
                                 <input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
                             </form>
                         </div>
@@ -75,7 +79,7 @@
                 {% set closeDiv = true %}
                 <div class="erreur">
                     <img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" />
-                    <b>Sortie annulée :</b><br /> Cette sortie a été annulée le {{ event.cancelledWhen | date('d/m/Y à H:i') }}
+                    <b>Sortie annulée :</b><br /> Cette sortie a été annulée le {{ event.cancellationDate | date('d/m/Y à H:i') }}
 
                 {% if event.cancelledWho %}
                     , par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.cancelledWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ event.cancelledWho.nickname }}</a>
@@ -93,7 +97,7 @@
                 {% set closeDiv = true %}
 
                 <div class="alerte">
-                    <b>Note :</b> Cette sortie est publiée et visible par les adhérents !<br />
+                    <b>Note :</b> Cette sortie est approuvée et visible par les adhérents !<br />
             {% endif %}
 
             {% if is_granted('SORTIE_UPDATE', event) %}
@@ -160,7 +164,7 @@
             {% if event.groupe %}
                 <small> ({{ event.groupe.nom }}) </small>
             {% endif %}
-            <span class="date"> / {{ event.tsp | intldate('cccc d MMMM yyyy') }}</span>
+            <span class="date"> / {{ event.startDate | intldate('cccc d MMMM yyyy') }}</span>
         </h1>
 
         {% if event.publicStatusValide and event.hasPaymentForm and event.paymentAmount and event.paymentUrl and current_user_has_paid is same as(false) and current_user_accepted is same as(true) %}
@@ -176,6 +180,10 @@
                         Paiement 100% sécurisé
                     </div>
                 </div>
+            </div>
+        {% elseif event.publicStatusUnseen and event.hasPaymentForm and event.paymentAmount %}
+            <div class="hello-asso-payment">
+                💳 Une billetterie HelloAsso de <span class="bold">{{ event.paymentAmount }} €</span> sera créée pour cette sortie si vous l'approuvez et la publiez.
             </div>
         {% endif %}
 
@@ -230,10 +238,10 @@
                 <script>
                 const config = {
                     name: "{{ event.titre }}",
-                    startDate: "{{ event.tsp | intldate('yyyy-MM-dd') }}",
-                    startTime: "{{ event.tsp | date('H:i') }}",
-                    endDate: "{{ event.tspEnd | intldate('yyyy-MM-dd') }}",
-                    endTime: "{{ event.tspEnd | date('H:i') }}",
+                    startDate: "{{ event.startDate | intldate('yyyy-MM-dd') }}",
+                    startTime: "{{ event.startDate | date('H:i') }}",
+                    endDate: "{{ event.endDate | intldate('yyyy-MM-dd') }}",
+                    endTime: "{{ event.endDate | date('H:i') }}",
                     location: "{{ event.rdv }}",
                     options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
                     timeZone: "Europe/Paris",
@@ -282,7 +290,7 @@
             <div class="erreur info-container">
                 <img src="/img/inscrit-cross.png" alt="" title=""/>
                 <div class="text-container">
-                    Vous avez demandé à participer à cette sortie, mais l'organisateur a décliné votre inscription.
+                    Vous avez demandé à participer à cette sortie, mais l'organisateur a décliné votre demande.
                     N'hésitez pas à le contacter pour en savoir plus.
                 </div>
             </div>
@@ -644,9 +652,9 @@
 
                                     </td>
                                     <td style="white-space:nowrap">
-                                        <span style="display:none">{{ participation.tsp }}</span>
-                                        {{ participation.tsp | date('d/m') }}<br />
-                                        {{ participation.tsp | date('à H:i') }}
+                                        <span style="display:none">{{ participation.createdAt.timestamp }}</span>
+                                        {{ participation.createdAt | date('d/m') }}<br />
+                                        {{ participation.createdAt | date('à H:i') }}
                                     </td>
 
                                     {% if event.hasPaymentForm %}
@@ -765,7 +773,7 @@
 
                         <br />
                         <label for="objet">Objet :</label><br />
-                        <input id="contact_subject" type="text" name="objet" class="type1" style="width:95%" value="Note importante pour la sortie du {{ event.tsp | date('d/m') }}" /><br />
+                        <input id="contact_subject" type="text" name="objet" class="type1" style="width:95%" value="Note importante pour la sortie du {{ event.startDate | date('d/m') }}" /><br />
                         <br />
 
                         <label>Répondre à ?</label><br />
@@ -796,7 +804,7 @@
                                 </a>
                             {% endif %}
                         {% else %}
-                        <i>Vous pourrez ajouter des participants quand la sortie sera publiée</i>
+                        <i>Vous pourrez ajouter des participants quand la sortie sera approuvée</i>
                         {% endif %}
                     {% endif %}
                 {% endif %}
@@ -888,10 +896,10 @@
 
             <ul class="nice-list">
                 <li class="wide">
-                    <b>DÉPART :</b> Le {{ event.tsp | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tsp|date('H:i') }}{% endif %}
+                    <b>DÉPART :</b> Le {{ event.startDate | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.startDate|date('H:i') }}{% endif %}
                 </li>
                 <li class="wide">
-                    <b>RETOUR :</b> Le {{ event.tspEnd | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.tspEnd|date('H:i') }} (heure estimée){% endif %}
+                    <b>RETOUR :</b> Le {{ event.endDate | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.endDate|date('H:i') }} (heure estimée){% endif %}
                 </li>
             </ul>
 
@@ -932,72 +940,26 @@
 
         <ul class="nice-list">
             <li class="wide">
-                <b>SORTIE DÉPOSÉE PAR :</b>
+                <b>SORTIE PROPOSÉE PAR :</b>
                 <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
                     {{ event.user.nickname }}
                 </a>
                 <span class="mini">
-                - le {{ event.tspCrea | date('d/m/y') }}{% if event.tspEdit %}, modifiée le {{ event.tspEdit | date('d/m/y à H:i') }} {% endif %}
+                - le {{ event.createdAt | date('d/m/y') }}{% if event.updatedAt %}, modifiée le {{ event.updatedAt | date('d/m/y à H:i') }} {% endif %}
             </span>
             </li>
 
+            {% if event.publicStatusValide and (is_granted('SORTIE_UPDATE', event) or is_granted('SORTIE_DELETE', event) or is_granted('SORTIE_CANCEL', event)) %}
             <li class="wide">
-                <b>SORTIE PUBLIÉE PAR :</b>
+                <b>SORTIE APPROUVÉE PAR :</b>
                 {% if event.status is same as (constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE')) and event.statusWho %}
                     <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.statusWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
                         {{ event.statusWho.nickname }}
                     </a>
                 {% else %}
-                    <span class="mini">non publiée</span>
+                    <span class="mini">non approuvée</span>
                 {% endif %}
             </li>
-
-            {% if event.encadrants('encadrant') | length > 0 %}
-                <li class="wide"><b>ENCADRANTS :</b>
-                    {% for encadrant in event.encadrants('encadrant') %}
-                        {% if loop.index > 1 %}, {% endif %}
-                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
-                            {{ encadrant.user.nickname }}
-                        </a>
-                    {% endfor %}
-                </li>
-                <br style="clear:both" />
-            {% endif %}
-
-            {% if event.encadrants('stagiaire') | length > 0 %}
-                <li class="wide"><b>STAGIAIRE :</b>
-                    {% for stagiaire in event.encadrants('stagiaire') %}
-                        {% if loop.index > 1 %}, {% endif %}
-                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ stagiaire.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
-                            {{ stagiaire.user.nickname }}
-                        </a>
-                    {% endfor %}
-                </li>
-                <br style="clear:both" />
-            {% endif %}
-
-            {% if event.encadrants('coencadrant') | length > 0 %}
-                <li class="wide"><b>CO-ENCADRANTS :</b>
-                    {% for encadrant in event.encadrants('coencadrant') %}
-                        {% if loop.index > 1 %}, {% endif %}
-                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
-                            {{ encadrant.user.nickname }}
-                        </a>
-                    {% endfor %}
-                </li>
-                <br style="clear:both" />
-            {% endif %}
-
-            {% if event.encadrants('benevole_encadrement') | length > 0 %}
-                <li class="wide"><b>BÉNÉVOLES D'ENCADREMENT :</b>
-                    {% for encadrant in event.encadrants('benevole_encadrement') %}
-                        {% if loop.index > 1 %}, {% endif %}
-                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ encadrant.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
-                            {{ encadrant.user.nickname }}
-                        </a>
-                    {% endfor %}
-                </li>
-                <br style="clear:both" />
             {% endif %}
 
             <br style="clear:both" />
@@ -1040,13 +1002,23 @@
         {% endif %}
 
         {% if not event.cancelled %}
+            {% set isRegistrationPossible = true %}
             {% set nPlacesRestantesOnline = max(0, event.joinMax - nInscritsTotal) %}
             {% set nEnAttente = event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length %}
+            {% set nbWaitingListAvailableSpot = max(0, event.joinMax - event.ngensMax - nEnAttente) %}
+
+            {% if nPlacesRestantesOnline <= 0 or event.isInWaitingList(nInscritsTotal) and nbWaitingListAvailableSpot <= 0 %}
+                {% set isRegistrationPossible = false %}
+            {% endif %}
 
             <hr />
             <ul class="nice-list">
                 <li class="wide"><b>NOMBRE MAXIMUM DE PLACES :</b> {{ event.ngensMax }}
-                <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}
+                {% if event.withWaitingList() and nInscritsTotal >= event.ngensMax %}
+                    <li class="wide"><b>DISPONIBLES EN FILE D'ATTENTE :</b> {{ nbWaitingListAvailableSpot }}</li>
+                {% else %}
+                    <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}
+                {% endif %}
             </ul>
 
             <br style="clear:both" /><hr />
@@ -1060,21 +1032,22 @@
                     SUR  {{ event.ngensMax }} PLACE{{ event.ngensMax ? 'S' : '' }} MAXIMUM
                     ({{ event.ngensMax > 0 ? (100 * nInscritsTotal / event.ngensMax) | round : 0 }}%)
                 </span><br />
-                {{ nPlacesRestantesOnline }} place{{ nPlacesRestantesOnline > 1 ? 's' : '' }} restante{{ nPlacesRestantesOnline > 1 ? 's' : '' }}
-                pour les inscriptions en ligne
-                {{ nEnAttente > 0 ? ' et '~nEnAttente~' inscription'~ (nEnAttente > 1 ? 's' : '' ) ~' en attente de confirmation' : '' }}
+                {{ nEnAttente > 0 ? nEnAttente~' inscription'~ (nEnAttente > 1 ? 's' : '' ) ~' en attente de confirmation' : '' }}
             </p>
 
             {% if app.user and nInscritsTotal > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
                 <table class="big-lines-table" style="width:570px; margin: 0 auto;">
 
                     {% for inscrit in event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) | sort((a, b) => a.user.firstname <=> b.user.firstname) %}
-                        <td>
+                        <tr>
                         <td>
                             {% if allowed('user_read_private', event.commission.code) %}
-                                <p class="mini">{{ inscrit.user.lastname|upper }}, {{ inscrit.user.firstname|capitalize }}</p>
+                                <p class="mini">{{ inscrit.user.firstname|capitalize }} {{ inscrit.user.lastname|upper }}</p>
                             {% endif %}
                             <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
+                        </td>
+                        <td class="small">
+                            {{ inscrit.role|trans }}
                         </td>
                         <td class="small">
                             {% if allowed('user_read_private', event.commission.code) %}
@@ -1098,44 +1071,11 @@
                         </tr>
                     {% endfor %}
 
-                    {% for inscrit in event.participations(null, constant('App\\Entity\\EventParticipation::ROLE_MANUEL')) %}
-
-                        <tr>
-                            <td>
-                                {% if allowed('user_read_private', event.commission.code) %}
-                                    <p class="mini">{{ inscrit.user.lastname|upper }}, {{ inscrit.user.firstname|capitalize }}</p>
-                                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
-                                {% else %}
-                                    {{ inscrit.user.nickname }}
-                                {% endif %}
-                            </td>
-                            <td class="small">
-                                {% if allowed('user_read_private', event.commission.code) %}
-                                    {{ inscrit.user.tel }}
-                                {% endif %}
-                            <td class="small">
-                                {% if allowed('user_read_private', event.commission.code) %}
-                                    {{ inscrit.user.tel2 }}
-                                {% endif %}
-                            </td>
-                            <td class="small">
-                                {% if allowed('user_read_private', event.commission.code) %}
-                                    {{ inscrit.user.email }}
-                                {% endif %}
-                            </td>
-                            <td class="small">
-                                {% if allowed('user_read_limited', event.commission.code) and inscrit.isCovoiturage %}
-                                    <img src="/img/voiture.png" title="Covoiturage" width="16px">
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-
                 </table>
             {% endif %}
 
             {# si utilisateur est inscrit, il a accès #}
-            {% if nPlacesRestantesOnline > 0 or event.participation(app.user) %}
+            {% if isRegistrationPossible or event.participation(app.user) %}
 
                 {% if allowed('evt_join') %}
 
@@ -1242,7 +1182,7 @@
                             {% else %}
                                 <hr />
                                 <h2>Inscriptions :</h2>
-                                <p>Les inscriptions pour cette sortie commenceront le {{ event.joinStart | date('d/m/y') }}</p>
+                                <p>Les demandes d'inscription pour cette sortie commenceront le {{ event.joinStartDate | date('d/m/Y à H:i') }}</p>
                             {% endif %}
                         {% else %}
                             {{ easy_include('info-inscription-passee', 'vide') }}
@@ -1255,7 +1195,7 @@
                 {% endif %}
 
             {% else %}
-                <p>Le nombre de places disponibles à la réservation depuis internet est atteint.</p>
+                <p>Le nombre de places disponibles à la réservation depuis internet ou en file d'attente est atteint.</p>
             {% endif %}
         {% endif %}
     </div>

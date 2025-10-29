@@ -115,9 +115,9 @@ class SortieControllerTest extends WebTestCase
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
         $this->assertEmailTextBodyContains($emails[0], 'Félicitations, votre sortie');
-        $this->assertEmailTextBodyContains($emails[0], 'a été publiée par les responsables.');
+        $this->assertEmailTextBodyContains($emails[0], 'a été approuvée par les responsables.');
         $this->assertEmailHtmlBodyContains($emails[0], 'Félicitations, votre sortie');
-        $this->assertEmailHtmlBodyContains($emails[0], 'a été publiée par les responsables.');
+        $this->assertEmailHtmlBodyContains($emails[0], 'a été approuvée par les responsables.');
 
         $messages = self::getContainer()->get(MessageBusInterface::class)->getDispatchedMessages();
         $this->assertCount(2, $messages);
@@ -229,7 +229,7 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
-        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Sortie validée] ' . $event->getTitre() . ' du ' . date('d/m/Y', $event->getTsp()));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Sortie validée] ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
         $this->assertEmailTextBodyContains($emails[0], 'Félicitations, votre sortie');
         $this->assertEmailHtmlBodyContains($emails[0], 'Félicitations, votre sortie');
     }
@@ -284,7 +284,7 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
-        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Sortie refusée] ' . $event->getTitre() . ' du ' . date('d/m/Y', $event->getTsp()));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Sortie refusée] ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
         $this->assertEmailTextBodyContains($emails[0], 'Désolé, votre sortie');
         $this->assertEmailHtmlBodyContains($emails[0], 'Désolé, votre sortie');
     }
@@ -325,7 +325,7 @@ class SortieControllerTest extends WebTestCase
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setCancelled(true)
-            ->setCancelledWhen(time())
+            ->setCancellationDate(new \DateTimeImmutable())
             ->setCancelledWho($userOwner);
 
         $this->signin($userOwner);
@@ -340,7 +340,7 @@ class SortieControllerTest extends WebTestCase
         $em->refresh($event);
 
         $this->assertFalse($event->getCancelled());
-        $this->assertNull($event->getCancelledWhen());
+        $this->assertNull($event->getCancellationDate());
         $this->assertNull($event->getCancelledWho());
     }
 
@@ -349,7 +349,7 @@ class SortieControllerTest extends WebTestCase
         $userOwner = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setCancelled(true)
-            ->setCancelledWhen(time())
+            ->setCancellationDate(new \DateTimeImmutable())
             ->setCancelledWho($userOwner);
 
         $this->signin($userOwner);
@@ -367,7 +367,7 @@ class SortieControllerTest extends WebTestCase
         $anotherUser = $this->signup();
         $event = $this->createEvent($userOwner);
         $event->setCancelled(true)
-            ->setCancelledWhen(time())
+            ->setCancellationDate(new \DateTimeImmutable())
             ->setCancelledWho($userOwner);
         $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
 
@@ -401,7 +401,7 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
-        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Message] ' . $event->getTitre() . ' du ' . date('d/m/Y', $event->getTsp()));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Message] ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
         $this->assertEmailTextBodyContains($emails[0], 'Vous avez reçu un message de');
         $this->assertEmailTextBodyContains($emails[0], 'tirelipimpon');
         $this->assertEmailHtmlBodyContains($emails[0], 'Vous avez reçu un message de');
@@ -418,7 +418,7 @@ class SortieControllerTest extends WebTestCase
 
         $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
             'csrf_token_contact' => $this->generateCsrfToken($this->client, 'contact_participants'),
-            'contact_participant' => [17861268532135512851588522 => '17861268532135512851588522'],
+            'contact_participant' => [17861268532135 => '17861268532135'],
             'objet' => 'un objet de culte',
             'message' => 'tirelipimpon',
         ]);
@@ -450,7 +450,7 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
-        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Message] ' . $event->getTitre() . ' du ' . date('d/m/Y', $event->getTsp()));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Message] ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
         $this->assertEmailTextBodyContains($emails[0], 'Vous avez reçu un message de');
         $this->assertEmailTextBodyContains($emails[0], 'Prout PROUT');
         $this->assertEmailHtmlBodyContains($emails[0], 'Vous avez reçu un message de');
@@ -486,7 +486,7 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $participant->getNickname(), $participant->getEmail()));
-        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Accepté] Votre inscription à ' . $event->getTitre() . ' du ' . date('d/m/Y', $event->getTsp()));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Acceptée] Votre demande d\'inscription à ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
         $this->assertEmailTextBodyContains($emails[0], 'confirmé(e)');
         $this->assertEmailHtmlBodyContains($emails[0], 'confirmé(e)');
     }
@@ -520,7 +520,7 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $participant->getNickname(), $participant->getEmail()));
-        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Refusé] Votre inscription à ' . $event->getTitre() . ' du ' . date('d/m/Y', $event->getTsp()));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Refusée] Votre demande d\'inscription à ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
         $this->assertEmailTextBodyContains($emails[0], 'déclinée');
         $this->assertEmailHtmlBodyContains($emails[0], 'déclinée');
     }
@@ -555,7 +555,7 @@ class SortieControllerTest extends WebTestCase
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $participant->getNickname(), $participant->getEmail()));
         $this->assertEmailHeaderSame($emails[0], 'Reply-To', sprintf('"%s" <%s>', $userOwner->getEmail(), $userOwner->getEmail()));
-        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Absent] ' . $event->getTitre() . ' du ' . date('d/m/Y', $event->getTsp()));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Absent] ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
         $this->assertEmailTextBodyContains($emails[0], 'absent à la sortie');
         $this->assertEmailHtmlBodyContains($emails[0], 'absent à la sortie');
     }

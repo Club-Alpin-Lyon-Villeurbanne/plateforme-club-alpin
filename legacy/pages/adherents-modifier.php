@@ -28,8 +28,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     $lastnameUser = strtoupper($userTab['lastname_user']);
     $nicknameUser = $userTab['nickname_user'];
     $alerteRenouvelerUser = $userTab['alerte_renouveler_user'];
-    $dateAdhesionUser = $userTab['date_adhesion_user'];
-    $birthdayUser = $userTab['birthday_user'];
+    $dateAdhesionUser = new \DateTimeImmutable($userTab['join_date']);
     $telUser = $userTab['tel_user'];
     $telSecuUser = $userTab['tel2_user'];
     $adresseUser = $userTab['adresse_user'];
@@ -90,8 +89,8 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
                 if ($alerteRenouvelerUser) {
                     echo '<span class="alerte">';
                 }
-        if ($dateAdhesionUser > 0) {
-            echo date('d/m/Y', $dateAdhesionUser);
+        if (!empty($dateAdhesionUser)) {
+            echo $dateAdhesionUser->format('d/m/Y');
         } else {
             echo 'aucune date connue.';
         }

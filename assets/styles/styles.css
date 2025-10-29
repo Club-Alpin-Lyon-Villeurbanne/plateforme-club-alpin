@@ -590,7 +590,7 @@ blockquote {
 .bold {font-weight:bold;}
 .btn-white {background-color: #fff;color: #53B4E4;}
 
-.hello-asso-payment {background-color: #53B4E4;padding: 20px; border-radius: 10px; width: 90%; margin: 15px 0}
+.hello-asso-payment {background-color: #50B7E4;padding: 20px; border-radius: 10px; width: 90%; margin: 15px 0}
 .hello-asso-payment h3 {font-size:1.1rem;}
 .hello-asso-notice {display: flex; margin-top: 15px}
 .payment-explain, .payment-button {font-size: 0.9rem}
@@ -607,4 +607,24 @@ span.request {font-size: 1.1rem;}
     width: 100%;
     margin: 20px auto;
     text-align: center;
+}
+
+.right-light-in.partners {
+    text-align: center;
+}
+.right-light-in.partners h1 {
+    text-align: left;
+}
+.right-light-in .private, .right-light-in .public {
+    display: inline-block;
+    text-align: center;
+    padding: 10px;
+    border-radius: 15px;
+    margin: 10px auto;
+}
+.right-light-in .private {
+    background-color: #f7931e; color: #201100;
+}
+.right-light-in .public {
+    background-color: #50b7e4; color: #00191E;
 }

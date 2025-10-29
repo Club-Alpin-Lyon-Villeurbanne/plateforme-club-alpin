@@ -9,9 +9,9 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Serializer\Filter\GroupFilter;
-use App\Serializer\TimeStampNormalizer;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Attribute\Context;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
@@ -19,15 +19,15 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * Article.
  */
 #[ORM\Table(name: 'caf_article')]
-#[ORM\Index(name: 'id_article', columns: ['id_article'])]
+#[ORM\Index(columns: ['id_article'], name: 'id_article')]
 #[ORM\Entity]
 #[Vich\Uploadable]
 #[ApiResource(
-    order: ['tsp' => 'DESC'],
     operations: [
         new Get(normalizationContext: ['groups' => ['article:read', 'media:read', 'article:details', 'user:read']]),
         new GetCollection(normalizationContext: ['groups' => ['article:read', 'media:read', 'user:read']]),
     ],
+    order: ['createdAt' => 'DESC'],
     security: "is_granted('ROLE_USER')",
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact'])]
@@ -35,6 +35,8 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ApiFilter(GroupFilter::class)]
 class Article
 {
+    use TimestampableEntity;
+
     public const int STATUS_PENDING = 0;
     public const int STATUS_PUBLISHED = 1;
     public const int STATUS_REFUSED = 2;
@@ -63,32 +65,6 @@ class Article
      */
     #[ORM\Column(name: 'topubly_article', type: 'integer', nullable: false, options: ['comment' => 'Demander la publication ? Ou laisser en standby'])]
     private $topubly;
-
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'tsp_crea_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp de création de l'article"])]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    private $tspCrea;
-
-    #[ORM\Column(name: 'tsp_validate_article', type: 'integer', nullable: true)]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    private ?int $tspValidate;
-
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'tsp_article', type: 'integer', nullable: false, options: ['comment' => "Timestamp affiché de l'article"])]
-    #[Groups('article:read')]
-    #[Context(normalizationContext: [TimeStampNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
-    private $tsp;
-
-    /**
-     * @var \DateTime
-     */
-    #[ORM\Column(name: 'tsp_lastedit', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP', 'comment' => 'Date de dernière modif'])]
-    #[Groups('article:read')]
-    private $tspLastedit = 'CURRENT_TIMESTAMP';
 
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'lastedit_who', referencedColumnName: 'id_user', nullable: true, options: ['comment' => 'User de la dernière modif'])]
@@ -159,6 +135,17 @@ class Article
     #[ORM\Column(name: 'images_authorized', type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $imagesAuthorized = false;
 
+    #[ORM\Column(name: 'validation_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date de publication de l\'article'])]
+    #[Groups('event:read')]
+    private ?\DateTimeImmutable $validationDate = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
+        $this->topubly = 0;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -196,54 +183,6 @@ class Article
     public function setTopubly(int $topubly): self
     {
         $this->topubly = $topubly;
-
-        return $this;
-    }
-
-    public function getTspCrea(): ?int
-    {
-        return $this->tspCrea;
-    }
-
-    public function setTspCrea(int $tspCrea): self
-    {
-        $this->tspCrea = $tspCrea;
-
-        return $this;
-    }
-
-    public function getTspValidate(): ?int
-    {
-        return $this->tspValidate;
-    }
-
-    public function setTspValidate(?int $tspValidate): self
-    {
-        $this->tspValidate = $tspValidate;
-
-        return $this;
-    }
-
-    public function getTsp(): ?int
-    {
-        return $this->tsp;
-    }
-
-    public function setTsp(int $tsp): self
-    {
-        $this->tsp = $tsp;
-
-        return $this;
-    }
-
-    public function getTspLastedit(): ?\DateTimeInterface
-    {
-        return $this->tspLastedit;
-    }
-
-    public function setTspLastedit(\DateTimeInterface $tspLastedit): self
-    {
-        $this->tspLastedit = $tspLastedit;
 
         return $this;
     }
@@ -388,6 +327,18 @@ class Article
     public function setImagesAuthorized(bool $imagesAuthorized): self
     {
         $this->imagesAuthorized = $imagesAuthorized;
+
+        return $this;
+    }
+
+    public function getValidationDate(): ?\DateTimeImmutable
+    {
+        return $this->validationDate;
+    }
+
+    public function setValidationDate(?\DateTimeImmutable $validationDate): self
+    {
+        $this->validationDate = $validationDate;
 
         return $this;
     }
