@@ -335,3 +335,7 @@ services:
       $organizationSlug: '%hello_asso_organization_slug%'
       $baseUrl: '%hello_asso_api_base_url%'
       $activityTypeId: '%hello_asso_activity_type_id%'
+
+  App\Command\AutoRenewSpecialAccounts:
+    arguments:
+      $specialAccountsIds: '%env(SPECIAL_ACCOUNTS_IDS)%'
