@@ -230,7 +230,7 @@ class EvtRepository extends ServiceEntityRepository
             ->andWhere('e.endDate < :date')
             ->andWhere('e.startDate > :limitDate')
             ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
-            ->setParameter('date', time())
+            ->setParameter('date', (new \DateTime()))
             ->setParameter('limitDate', $limitDate)
             ->orderBy('e.startDate', 'desc')
         ;
