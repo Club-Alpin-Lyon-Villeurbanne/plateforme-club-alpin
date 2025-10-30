@@ -14,6 +14,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 #[AsCommand(
@@ -30,6 +31,7 @@ class UserDeletionCronCommand extends Command
         protected UserLicenseHelper $userLicenseHelper,
         protected LoggerInterface $logger,
         protected readonly EntityManagerInterface $manager,
+        protected ParameterBagInterface $params,
     ) {
         parent::__construct();
     }
@@ -56,7 +58,7 @@ class UserDeletionCronCommand extends Command
             $this->manager->remove($user);
 
             // image de profil
-            $filesystem->remove('../public/ftp/' . $user->getId());
+            $filesystem->remove($this->params->get('kernel.project_dir') . '/public/ftp/user/' . $user->getId());
 
             ++$deleted;
         }
@@ -77,7 +79,7 @@ class UserDeletionCronCommand extends Command
             $this->userRepository->anonymizeUser($user);
 
             // image de profil
-            $filesystem->remove('../public/ftp/' . $user->getId());
+            $filesystem->remove($this->params->get('kernel.project_dir') . '/public/ftp/user/' . $user->getId());
 
             ++$anonymized;
         }
