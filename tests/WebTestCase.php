@@ -120,6 +120,7 @@ abstract class WebTestCase extends BaseWebTestCase
         $em = $this->getContainer()->get('doctrine')->getManager();
         $userTypeRepo = $this->getContainer()->get(UsertypeRepository::class);
         $user->addAttribute($userTypeRepo->getByCode($attribute), $param);
+        $em->persist($user);
         $em->flush();
         self::getContainer()->get(UserRights::class)->reset();
     }

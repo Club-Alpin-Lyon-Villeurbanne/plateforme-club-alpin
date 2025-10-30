@@ -5,7 +5,7 @@ const CONTENU = "test de contenu de page";
 
 test("Creation d'un article", async ({ page }) => {
   // Login
-  await login(page, "test@clubalpinlyon.fr", "test");
+  await login(page, "redacteur@test-clubalpinlyon.fr", "test");
 
   // Rédiger un article
   await page.locator("#toolbar-user").hover();
