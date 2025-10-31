@@ -11,7 +11,7 @@ jobs:
   deploy:
     uses: ./.github/workflows/deploy-production.yml
     with:
-      environment: production-chambery
+      environment: production
       deployment_label: Production - Chambéry
       clever_app_id: ${{ vars.CHAMBERY_CLEVER_APP_ID }}
       last_deployed_variable: CHAMBERY_LAST_DEPLOYED_SHA
