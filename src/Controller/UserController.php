@@ -467,7 +467,7 @@ class UserController extends AbstractController
             if ($user->getValid()) {
                 $valid = 'oui';
             } else {
-                $valid = '<span style="color: darkorange; font-weight: bold;" title="Les comptes non activés ne reçoivent pas les e-mails">non</span>';
+                $valid = '<span style="color: darkorange;">non</span>';
             }
 
             // e-mail

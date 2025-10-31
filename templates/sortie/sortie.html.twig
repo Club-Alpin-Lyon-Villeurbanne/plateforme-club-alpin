@@ -690,10 +690,10 @@
                                                 compte supprimé
                                             </span><br />
                                         {% else %}
-                                            {% if participation.user.valid and participation.user.email %}
+                                            {% if participation.user.email %}
                                                 <a href="mailto:{{ participation.user.email }}">{{ participation.user.email | u.truncate(12, '...') }}</a><br />
                                             {% else %}
-                                                <span style="color: darkorange;" title="Les comptes non activés ne reçoivent pas les e-mails">compte non activé</span><br />
+                                                <span style="color: darkorange;" title="Ce compte ne peut pas recevoir les e-mails">aucun e-mail renseigné</span><br />
                                             {% endif %}
                                             {{ participation.user.tel }}
                                         {% endif %}

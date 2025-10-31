@@ -30,7 +30,7 @@ make database-init
 ## Accès
 
 - Site web : `http://127.0.0.1:8000/`
-- Compte admin : `test@clubalpinlyon.fr` / `test`
+- Compte admin : `admin@test-clubalpinlyon.fr` / `test`
 - PHPMyAdmin : `http://127.0.0.1:8080/` (accès : `root` / `test`)
 - Mailcatcher : `http://127.0.0.1:8025/`
 

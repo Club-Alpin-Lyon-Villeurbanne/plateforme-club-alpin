@@ -21,40 +21,6 @@ SET time_zone = "+00:00";
 --
 
 -- --------------------------------------------------------
-
---
--- Contenu de la table `caf_article`
---
-
-INSERT INTO `caf_article` (`id_article`, `status_article`, `status_who_article`, `topubly_article`, `tsp_crea_article`, `tsp_validate_article`, `tsp_article`, `tsp_lastedit`, `user_article`, `titre_article`, `code_article`, `commission_article`, `evt_article`, `une_article`, `cont_article`, `nb_vues_article`) VALUES
-(1, 1, 1, 1, 1395307511, 1395308586, 1395307511, '2014-03-20 09:25:11', 1, 'Vestibulum iaculis cursus lacinia', 'vestibulum-iaculis-cursus-laci', 0, 0, 1, '<p>Quisque dignissim rhoncus arcu. Praesent felis velit, gravida vitae augue et, porta mollis massa. Suspendisse potenti. Suspendisse semper tellus est, vitae adipiscing dui egestas ut. Maecenas elementum non turpis quis posuere. Aliquam gravida quis velit id hendrerit. Aliquam cursus vel nunc non dictum. Cras at augue elementum, laoreet felis a, aliquam lorem. Curabitur rhoncus at urna vitae porttitor. Nunc molestie posuere enim, non pellentesque risus ornare eu. Nulla neque odio, tincidunt at diam eu, laoreet egestas ante.</p>', 0),
-(2, 1, 1, 1, 1395308533, 1395308588, 1395308533, '2014-03-20 09:42:13', 1, 'Integer dignissim massa', 'integer-dignissim-massa', 0, 0, 1, '<p>In tincidunt, arcu quis suscipit pellentesque, orci metus feugiat sem, in imperdiet metus eros congue ipsum. Vestibulum vitae imperdiet tellus. Integer sem nisl, consequat id sem vitae, feugiat semper purus. Suspendisse viverra ligula sed nisl fermentum sollicitudin. Ut ullamcorper, mi quis tempor condimentum, tortor lacus porta arcu, sit amet gravida ipsum nulla non velit. Proin viverra scelerisque eleifend. Sed fringilla nisi accumsan metus tincidunt, ac tristique nisl dapibus. Proin quis eros sit amet libero hendrerit commodo eu vitae orci.</p>', 0),
-(3, 1, 1, 1, 1395308578, 1395308590, 1395308578, '2014-03-20 09:42:58', 1, 'Aliquam pulvinar luctus dolor', 'aliquam-pulvinar-luctus-dolor', 0, 0, 1, '<p>Nulla facilisi. Cras egestas nisi eu tincidunt cursus. Vestibulum varius justo ac tincidunt dictum. Vestibulum eget justo mauris. Aliquam consectetur a felis vel luctus. Nullam vel libero vel tellus vehicula rutrum nec ac lacus. In at dapibus turpis. Curabitur eget auctor tellus, a dapibus elit. Duis fermentum metus ac commodo molestie. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce tincidunt eu ante eget eleifend. Duis in dictum augue. Ut bibendum congue magna, sed posuere odio luctus non. Phasellus blandit molestie elit at accumsan. Vivamus quis sapien in magna aliquet elementum eu id elit.</p>', 0),
-(4, 1, 1, 1, 1395308726, 1395308799, 1395308726, '2014-03-20 09:45:26', 1, 'Sed aliquam dapibus placerat', 'sed-aliquam-dapibus-placerat', 0, 0, 0, '<p>Quisque venenatis condimentum lorem, in blandit diam mattis vitae. Praesent ac nunc massa. Nunc rhoncus condimentum sodales. Nam sit amet ipsum est. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse mattis massa lobortis volutpat volutpat. Duis urna neque, tincidunt id eleifend sit amet, rhoncus sit amet lorem. In ut massa leo. Phasellus egestas congue ullamcorper. Integer et justo a justo gravida interdum.</p>', 0),
-(5, 1, 1, 1, 1395308761, 1395308801, 1395308761, '2014-03-20 09:46:01', 1, 'In non ultricies diam', 'in-non-ultricies-diam', 0, 0, 0, '<p>Curabitur ornare mi felis, sit amet malesuada tellus feugiat a. Maecenas nunc enim, tincidunt eu nibh sed, viverra viverra libero. Maecenas sed ante quis turpis ultricies dapibus. Praesent id pretium dolor. Duis et facilisis mauris, cursus adipiscing nibh. Vestibulum eleifend, neque vitae suscipit venenatis, eros libero facilisis erat, eget dictum dui mi sit amet nisi. Sed scelerisque lorem erat, ut viverra dolor porta et. Sed nec feugiat tellus. In enim elit, hendrerit at bibendum sit amet, faucibus eu orci.</p>', 0),
-(6, 1, 1, 1, 1395308793, 1395308803, 1395308793, '2014-03-20 09:46:33', 1, 'Pellentesque urna neque', 'pellentesque-urna-neque', 0, 0, 0, '<p>Fusce condimentum sagittis ante, id laoreet sapien porta vel. Vestibulum consectetur blandit laoreet. Cras placerat nisi quis arcu pellentesque, eget iaculis ipsum fermentum. Aliquam eget mollis lacus, sit amet porttitor odio. Sed sit amet tellus ullamcorper nulla tempor adipiscing. Quisque porta, urna sed faucibus ultrices, lacus nisi bibendum ipsum, malesuada mollis libero nibh quis odio. Proin dui turpis, luctus ut nisi ac, ultrices bibendum odio.</p>', 0);
-
---
--- Contenu de la table `caf_commission`
---
-
-INSERT INTO `caf_commission` (`id_commission`, `ordre_commission`, `vis_commission`, `code_commission`, `title_commission`) VALUES
-(1, 1, 1, 'sorties-familles', 'Sorties familles'),
-(2, 2, 1, 'alpinisme', 'Alpinisme'),
-(3, 3, 1, 'ski-alpin', 'Ski alpin / Snowboard'),
-(4, 4, 1, 'ecole-d-aventure', 'École d''aventure'),
-(5, 5, 1, 'ecole-d-escalade', 'École d''escalade'),
-(6, 6, 1, 'ecole-de-ski', 'École de ski'),
-(7, 7, 1, 'escalade', 'Escalade'),
-(8, 8, 1, 'escalade-competition', 'Escalade compétition'),
-(9, 9, 1, 'handicaf', 'Handicaf'),
-(10, 10, 1, 'randonnee-pedestre', 'Randonnée pédestre'),
-(11, 11, 1, 'randonnee-raquette', 'Randonnée raquette'),
-(12, 12, 1, 'ski-de-randonnee', 'Ski de randonnée'),
-(13, 13, 1, 'protection-de-la-montagne', 'Protection de la montagne'),
-(14, 14, 1, 'formation', 'Formation');
-
--- --------------------------------------------------------
 --
 -- Contenu de la table `caf_content_html`
 --
@@ -242,13 +208,6 @@ INSERT INTO `caf_page` (`id_page`, `parent_page`, `admin_page`, `superadmin_page
 -- --------------------------------------------------------
 
 --
--- Contenu de la table `caf_user`
---
-
-INSERT INTO `caf_user` (`id_user`, `email_user`, `mdp_user`, `cafnum_user`, `cafnum_parent_user`, `firstname_user`, `lastname_user`, `nickname_user`, `created_user`, `birthday_user`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `civ_user`, `moreinfo_user`, `auth_contact_user`, `valid_user`, `cookietoken_user`, `manuel_user`, `nomade_user`, `nomade_parent_user`, `date_adhesion_user`, `doit_renouveler_user`, `alerte_renouveler_user`, `ts_insert_user`, `ts_update_user`) VALUES
-(1, 'test@clubalpinlyon.fr', '098f6bcd4621d373cade4e832627b4f6', '749999999999', '', 'Admin', 'Super', 'Admin', 1375216633, 270687600, '0950985475', '', '19 ALLEE DU LAC ST ANDRE', '73375', 'LE BOURGET DU LAC', '', 'M', '', 'users', 1, '8f7d807e1f53eff5f9efbe5cb81090fb', 0, 0, 0, 1379977200, 0, 0, 1372629601, 1395098083);
-
---
 -- Contenu de la table `caf_userright`
 --
 
@@ -338,27 +297,15 @@ INSERT INTO `caf_usertype` (`id_usertype`, `hierarchie_usertype`, `code_usertype
 (4, 60, 'encadrant', 'Encadrant', 1),
 (5, 70, 'responsable-commission', 'Resp. de commission', 1),
 (6, 90, 'president', 'Président', 0),
-(7, 80, 'vice-president', 'Vice Président', 0),
+(7, 80, 'vice-president', 'Président suppléant', 0),
 (8, 100, 'administrateur', 'Administrateur', 0),
-(9, 20, 'salarie', 'Salarié', 0),
+(9, 20, 'salarie', 'Accueil', 0),
 (10, 30, 'benevole', 'Bénévole', 1),
 (11, 50, 'coencadrant', 'Co-encadrant', 1);
 
 -- --------------------------------------------------------
 
 
-
--- --------------------------------------------------------
---
--- Contenu de la table `caf_user_attr`
---
-
-INSERT INTO `caf_user_attr` (`id_user_attr`, `user_user_attr`, `usertype_user_attr`, `params_user_attr`, `details_user_attr`) VALUES
-(1, 1, 8, '', '1375216781'),
-(2, 1, 6, '', '1375216781'),
-(3, 1, 4, 'commission:sorties-familles', '1375216781');
-
--- --------------------------------------------------------
 
 
 --
