@@ -1047,14 +1047,17 @@ class SortieController extends AbstractController
                 // E-MAIL AU PRE-INSCRIT
                 // inscription auto-acceptée
                 if ($auto_accept) {
-                    $mailer->send($user, 'transactional/sortie-participation-confirmee', [
+                    $params = [
                         'role' => $role_evt_join,
                         'event_name' => $evtName,
                         'event_url' => $evtUrl,
                         'event_date' => $evtDate,
                         'commission' => $commissionTitle,
-                        'hello_asso_url' => $paymentUrl,
-                    ]);
+                    ];
+                    if ($event->hasPaymentForm() && $event->hasPaymentSendMail()) {
+                        $params['hello_asso_url'] = $event->getPaymentUrl();
+                    }
+                    $mailer->send($user, 'transactional/sortie-participation-confirmee', $params);
                 } elseif ($hasFiliations) {
                     $mailer->send($user, 'transactional/sortie-demande-inscription-confirmation', [
                         'role' => $role_evt_join,
