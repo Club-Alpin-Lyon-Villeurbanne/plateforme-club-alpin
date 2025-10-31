@@ -274,6 +274,7 @@ class SortieController extends AbstractController
             'geovelo_encoded_coord' => urlencode($event->getLong() . ',' . $event->getLat()),
             'current_user_has_paid' => $currentUserHasPaid,
             'current_user_accepted' => $currentUserAccepted,
+            'accepted_participations' => $participationRepository->getSortedParticipations($event),
         ];
     }
 

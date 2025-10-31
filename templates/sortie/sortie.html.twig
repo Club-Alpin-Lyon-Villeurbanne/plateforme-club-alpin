@@ -1038,7 +1038,8 @@
             {% if app.user and nInscritsTotal > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
                 <table class="big-lines-table" style="width:570px; margin: 0 auto;">
 
-                    {% for inscrit in event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) | sort((a, b) => a.user.firstname <=> b.user.firstname) %}
+                    {% for participation in accepted_participations %}
+                        {% set inscrit = participation['liste'] %}
                         <tr>
                         <td>
                             {% if allowed('user_read_private', event.commission.code) %}
@@ -1047,7 +1048,9 @@
                             <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
                         </td>
                         <td class="small">
-                            {{ inscrit.role|trans }}
+                            {% if inscrit.role not in (constant('App\\Entity\\EventParticipation::ROLES_SIMPLES')) %}
+                                {{ inscrit.role|trans }}
+                            {% endif %}
                         </td>
                         <td class="small">
                             {% if allowed('user_read_private', event.commission.code) %}
