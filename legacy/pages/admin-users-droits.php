@@ -86,6 +86,11 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     // description de l'assignation
     echo '<br /><br />Description / commentaire :<br /><textarea style="width:50%;height:60px;" name="description_user_attr" id="description_user_attr" rows="2" cols="100" maxlength="200"></textarea>';
     ?>
+        <br />
+        <p class="mini help-text">
+            Visible par tous sur le profil.<br />
+            Pour les coendrants, vous pouvez indiquer par exemple <span class="italic">"charte signée le (date jj/mm/aaaa)"</span>.
+        </p>
 		<br />
 		<br />
 		<input type="submit" value="Appliquer" class="nice" />
