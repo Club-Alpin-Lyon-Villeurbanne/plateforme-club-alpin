@@ -36,14 +36,15 @@ if ($article['media_upload_id']) {
 	<p class="commission-title">
 
 		<?php
-        $creationDate = new DateTime($article['created_at']);
-
-        echo $creationDate->format('d/m/Y');
+        if (!empty($article['created_at'])) {
+            $creationDate = new \DateTime($article['created_at']);
+            echo $creationDate->format('d/m/Y') . ' - ';
+        }
 
 // une commission est bien liée
 if ($article['code_commission'] ?? null) {
     ?>
-			- <a href="/accueil/<?php echo html_utf8($article['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
+			<a href="/accueil/<?php echo html_utf8($article['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
 				<?php echo html_utf8($article['title_commission']); ?>
 			</a>
 			<?php
