@@ -168,9 +168,10 @@ class UserController extends AbstractController
 
             // liste des encadrants
             $destinataires = [];
-            $destinataires[] = $event->getUser();
+            // pour ne pas avoir 2 fois l'organisateur, on met l'id user en clé
+            $destinataires[$event->getUser()->getId()] = $event->getUser();
             foreach ($event->getEncadrants() as $encadrant) {
-                $destinataires[] = $encadrant->getUser();
+                $destinataires[$encadrant->getUser()->getId()] = $encadrant->getUser();
             }
 
             // infos sur la sortie
