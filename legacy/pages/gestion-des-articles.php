@@ -199,7 +199,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                                 // image liee
                                 . '<img src="' . $img . '" alt="" title="" style="width:100%; " />'
                             . '</a></div>'
-                            . '<div style="float:right; width:510px">'
+                            . '<div style="float:right; width:90%">'
 
                             // INFOS
                             . '<p style="padding:5px 5px; line-height:18px;">'
