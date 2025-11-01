@@ -56,6 +56,10 @@ class EventParticipation implements \JsonSerializable
         self::ROLE_COENCADRANT,
         self::ROLE_BENEVOLE,
     ];
+    public const array ROLES_SIMPLES = [
+        self::ROLE_INSCRIT,
+        self::ROLE_MANUEL,
+    ];
 
     /**
      * @var int
