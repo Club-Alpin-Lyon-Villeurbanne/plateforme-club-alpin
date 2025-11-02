@@ -11,6 +11,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Index(columns: ['cafnum_user'], name: 'idx_cafnum')]
 #[ORM\Index(columns: ['brevet_id'], name: 'idx_brevet_id')]
 #[ORM\Index(columns: ['date_obtention'], name: 'idx_date_obtention')]
+#[ORM\UniqueConstraint(name: 'UNIQ_BREVET_USER_BREVET', columns: ['user_id', 'brevet_id'])]
 #[ORM\Entity(repositoryClass: BrevetAdherentRepository::class)]
 class BrevetAdherent
 {

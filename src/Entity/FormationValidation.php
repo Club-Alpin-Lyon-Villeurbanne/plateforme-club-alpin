@@ -11,6 +11,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Index(columns: ['user_id'], name: 'IDX_FORM_VAL_USER')]
 #[ORM\Index(columns: ['code_formation'], name: 'IDX_FORM_VAL_CODE')]
 #[ORM\Index(columns: ['date_validation'], name: 'IDX_FORM_VAL_DATE')]
+#[ORM\UniqueConstraint(name: 'UNIQ_FORM_VAL_USER_ID_INTERNE', columns: ['user_id', 'id_interne'])]
 #[ORM\Entity(repositoryClass: FormationValidationRepository::class)]
 class FormationValidation
 {
