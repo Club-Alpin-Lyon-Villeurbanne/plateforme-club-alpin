@@ -23,9 +23,5 @@ if (!isset($errTab) || 0 === count($errTab)) {
     }
 }
 
-if (allowed('article_delete_notmine')) {
-    header('Location: /gestion-des-articles.html');
-} else {
-    header('Location: /profil/articles.html');
-}
+header('Location: /profil/articles.html');
 exit;
