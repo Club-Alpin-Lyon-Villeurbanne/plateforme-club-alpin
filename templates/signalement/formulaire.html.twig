@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Je souhaite signaler une violence
+{% endblock %}
+
+{% block body %}
+    <div id="left1">
+        <h1 class="page-h1">Je souhaite signaler une violence</h1>
+
+        <div class="main-type">
+            {{ easy_include('signalement-intro', '') }}<br>
+
+            {% if confirm_message is not same as (null) %}
+                <p class="info">
+                    {{ confirm_message }}
+                </p>
+            {% else %}
+                {% form_theme form with ['form/field_error.html.twig'] %}
+                {{ form_start(form, {
+                    attr: {'id': 'signalement_form'}
+                }) }}
+
+                <p class="italic">
+                    Les champs marqués d'un <span class="required">*</span> sont obligatoires.
+                </p>
+
+                {% if form.vars.errors|length > 0 %}
+                    <br>
+                    <div class="alerte has-errors">
+                        Le formulaire contient des erreurs, merci de vérifier votre saisie.<br><br>
+                        <ul>
+                            {% for error in form.vars.errors %}
+                                <li>{{ error.message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                <br class="clear">
+
+                {{ form_row(form.contact_status) }}<br>
+                {{ form_row(form.object) }}<br>
+                {{ form_row(form.content) }}<br>
+
+                Pour être recontacté.e<br>
+                <p class="mini">Vous pouvez laisser ces champs vides si vous préférez rester anonyme</p><br>
+
+                {{ form_row(form.contact_phone) }}<br>
+                {{ form_row(form.contact_email) }}
+
+                <br /><br />
+                <div style="text-align:center">
+                    {{ form_widget(form.send) }}
+                </div>
+
+                <div class="hidden">
+                    {{ form_end(form) }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(function () {
+            $('form[name=signalement]').on('submit', function (event) {
+                event.preventDefault();
+                var $this = $(this);
+                if (!window.grecaptcha) {
+                    throw new Error('Recaptcha has been disabled on this browser');
+                }
+
+                window.grecaptcha.ready(function () {
+                    window.grecaptcha.execute('{{ recaptcha.site_key }}', { action: 'signalement' }).then(function (token) {
+                        $('#signalement_recaptcha').val(token);
+                        $this.unbind('submit').submit();
+                    });
+                });
+            })
+        })
+    </script>
+{% endblock %}
