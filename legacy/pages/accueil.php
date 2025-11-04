@@ -46,7 +46,7 @@ $req .= ')
 	WHERE  status_article =1
 	';
 // commission donnée : filtre (mais on inclut les actus club, commission=0)
-$req .= ' ORDER BY caf_article.updated_at DESC
+$req .= ' ORDER BY caf_article.created_at DESC
 	LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 
