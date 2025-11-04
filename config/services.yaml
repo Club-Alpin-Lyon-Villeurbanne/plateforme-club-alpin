@@ -335,3 +335,8 @@ services:
       $organizationSlug: '%hello_asso_organization_slug%'
       $baseUrl: '%hello_asso_api_base_url%'
       $activityTypeId: '%hello_asso_activity_type_id%'
+
+  App\Controller\SignalementController:
+    arguments:
+      $recipientsEmail: '%env(SIGNALEMENT_FORM_RECIPIENTS)%'
+    tags: ['controller.service_arguments']
