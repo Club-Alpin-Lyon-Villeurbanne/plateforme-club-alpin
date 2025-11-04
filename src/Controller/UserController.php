@@ -168,9 +168,10 @@ class UserController extends AbstractController
 
             // liste des encadrants
             $destinataires = [];
-            $destinataires[] = $event->getUser();
+            // pour ne pas avoir 2 fois l'organisateur, on met l'id user en clé
+            $destinataires[$event->getUser()->getId()] = $event->getUser();
             foreach ($event->getEncadrants() as $encadrant) {
-                $destinataires[] = $encadrant->getUser();
+                $destinataires[$encadrant->getUser()->getId()] = $encadrant->getUser();
             }
 
             // infos sur la sortie
@@ -467,7 +468,7 @@ class UserController extends AbstractController
             if ($user->getValid()) {
                 $valid = 'oui';
             } else {
-                $valid = '<span style="color: darkorange; font-weight: bold;" title="Les comptes non activés ne reçoivent pas les e-mails">non</span>';
+                $valid = '<span style="color: darkorange;">non</span>';
             }
 
             // e-mail

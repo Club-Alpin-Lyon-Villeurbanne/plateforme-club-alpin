@@ -8,9 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'formation_brevet')]
-#[ORM\Index(columns: ['cafnum_user'], name: 'idx_cafnum')]
 #[ORM\Index(columns: ['brevet_id'], name: 'idx_brevet_id')]
 #[ORM\Index(columns: ['date_obtention'], name: 'idx_date_obtention')]
+#[ORM\UniqueConstraint(name: 'UNIQ_BREVET_USER_BREVET', columns: ['user_id', 'brevet_id'])]
 #[ORM\Entity(repositoryClass: BrevetAdherentRepository::class)]
 class BrevetAdherent
 {
@@ -24,9 +24,6 @@ class BrevetAdherent
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id_user', nullable: false)]
     private ?User $user;
-
-    #[ORM\Column(name: 'cafnum_user', type: Types::STRING, length: 20, nullable: false)]
-    private string $cafnum;
 
     #[ORM\ManyToOne(targetEntity: BrevetReferentiel::class)]
     #[ORM\JoinColumn(name: 'brevet_id', referencedColumnName: 'id', nullable: false)]
@@ -67,18 +64,6 @@ class BrevetAdherent
     public function setUser(?User $user): self
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    public function getCafnum(): string
-    {
-        return $this->cafnum;
-    }
-
-    public function setCafnum(string $cafnum): self
-    {
-        $this->cafnum = $cafnum;
 
         return $this;
     }

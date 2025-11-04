@@ -251,7 +251,7 @@ class Evt
         $this->user = $user;
         $this->titre = $titre;
         $this->code = $code;
-        $this->place = ''; // unused, must be dropped
+        $this->place = '';
         $this->rdv = $rdv;
         $this->lat = $rdvLat;
         $this->long = $rdvLong;
@@ -268,7 +268,7 @@ class Evt
         $this->matos = null;
         $this->itineraire = null;
         $this->detailsCaches = null;
-        $this->massif = null;
+        $this->massif = null; // unused, must be dropped
         $this->participations = new ArrayCollection();
         $this->articles = new ArrayCollection();
         $this->expenseReports = new ArrayCollection();

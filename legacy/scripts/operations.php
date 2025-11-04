@@ -12,6 +12,13 @@ $operationsDir = __DIR__ . '/operations/';
 
 $operation = $_POST['operation'] ?? null;
 
+// Protection : whitelist des opérations publiques autorisées
+$publicOperations = ['user_subscribe'];
+if ($operation && !in_array($operation, $publicOperations, true) && !user()) {
+    http_response_code(403);
+    exit('Forbidden');
+}
+
 if (user()) {
     // COMMISSIONS : ACTIVER / DESACTIVER
     if ('commission_majvis' == $operation) {

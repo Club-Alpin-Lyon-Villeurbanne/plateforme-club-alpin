@@ -45,6 +45,7 @@ import {
 	PasteFromOffice,
 	RemoveFormat,
 	SimpleUploadAdapter,
+	SourceEditing,
 	Strikethrough,
 	Subscript,
 	Superscript,
@@ -102,7 +103,9 @@ const editorConfig = {
 			'numberedList',
 			'todoList',
 			'outdent',
-			'indent'
+			'indent',
+			'|',
+			'sourceEditing'
 		],
 		shouldNotGroupWhenFull: true
 	},
@@ -147,6 +150,7 @@ const editorConfig = {
 		PasteFromOffice,
 		RemoveFormat,
 		SimpleUploadAdapter,
+		SourceEditing,
 		Strikethrough,
 		Subscript,
 		Superscript,

@@ -16,7 +16,7 @@ L'API utilise l'authentification JWT (JSON Web Tokens). Vous devez être authent
 
 ```bash
 # Obtenir un token JWT (à implémenter selon votre système d'authentification)
-POST /api/auth/login
+POST /api/auth
 Content-Type: application/json
 
 {

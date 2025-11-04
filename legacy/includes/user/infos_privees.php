@@ -16,8 +16,11 @@ if (allowed('user_read_private')) {
         }
         echo '</li>';
     }
-    $birthdate = new \DateTime($tmpUser['birthdate']);
-    $age = $birthdate->diff(new \DateTime())->y;
+    $age = 0;
+    if (!empty($tmpUser['birthdate'])) {
+        $birthdate = new \DateTime($tmpUser['birthdate']);
+        $age = $birthdate->diff(new \DateTime())->y;
+    }
     echo '<li><a href="mailto:' . html_utf8($tmpUser['email_user']) . '" title="Contact direct">' . html_utf8($tmpUser['email_user']) . '</a> </li>'
         . '<li>TEL : ' . html_utf8($tmpUser['tel_user']) . ' </li>'
         . '<li>TEL (secours) : ' . html_utf8($tmpUser['tel2_user']) . ' </li>'

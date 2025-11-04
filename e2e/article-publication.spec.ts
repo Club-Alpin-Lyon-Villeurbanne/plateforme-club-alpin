@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { login } from "./helpers/auth";
 
 test("Publication d'un article", async ({ page }) => {
-  await login(page, "test@clubalpinlyon.fr", "test");
+  await login(page, "resp.comm@test-clubalpinlyon.fr", "test");
   await page.locator("#toolbar-user").hover();
   await page.waitForTimeout(1000);
   await page.locator('a[href="/gestion-des-articles.html"]').click();

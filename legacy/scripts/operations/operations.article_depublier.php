@@ -15,5 +15,5 @@ if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
     $errTab[] = 'Aucun enregistrement affecté';
 }
 
-header('Location: /gestion-des-articles.html');
+header('Location: /profil/articles.html');
 exit;

@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UserRightController extends AbstractController
 {
-    #[Route(path: '/retirer-responsabilite/{type}/{commission}', name: 'user_right_auto_remove', requirements: ['type' => '[a-z0-9-]+'], methods: ['GET', 'POST'])]
+    #[Route(path: '/retirer-responsabilite/{type}/{commission}', name: 'user_right_auto_remove', requirements: ['type' => '[a-z0-9-_]+'], methods: ['GET', 'POST'])]
     public function autoRemoveRight(
         EntityManagerInterface $manager,
         UserRightService $userRightService,
