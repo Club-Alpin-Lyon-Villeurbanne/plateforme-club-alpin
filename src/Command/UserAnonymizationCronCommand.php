@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 #[AsCommand(
-    name: 'user-deletion-cron',
+    name: 'user-anonymization-cron',
     description: 'Anonymisation des adhérents ayant une licence trop ancienne'
 )]
 class UserAnonymizationCronCommand extends Command
@@ -38,7 +38,7 @@ class UserAnonymizationCronCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->logger->info('User deletion: find users to anonymize');
+        $this->logger->info('User anonymization: find users to anonymize');
 
         $filesystem = new Filesystem();
 
@@ -55,7 +55,7 @@ class UserAnonymizationCronCommand extends Command
         $this->logger->info('User anonymization: ' . count($usersWithActivity) . ' users with activity');
 
         $anonymized = 0;
-        $usersToAnonymize = array_merge($usersWithoutActivity, $usersWithoutActivity);
+        $usersToAnonymize = array_merge($usersWithoutActivity, $usersWithActivity);
 
         /** @var User $user */
         foreach ($usersToAnonymize as $user) {
