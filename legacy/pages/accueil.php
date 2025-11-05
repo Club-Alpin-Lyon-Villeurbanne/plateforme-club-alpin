@@ -33,7 +33,7 @@ if ($pagenum < 1) {
 } // les pages commencent à 1
 
 // premiere requete : défaut, ne considère pas les articles liés à une sortie, liée à la commission courante
-$select = 'id_article , status_article ,  status_who_article ,  caf_article.created_at ,  user_article ,  titre_article ,  code_article ,  evt_article ,  une_article ,  cont_article , media_upload_id, filename, c.code_commission, c.title_commission';
+$select = 'id_article , status_article ,  status_who_article ,  caf_article.validation_date ,  user_article ,  titre_article ,  code_article ,  evt_article ,  une_article ,  cont_article , media_upload_id, filename, c.code_commission, c.title_commission';
 $req = 'SELECT SQL_CALC_FOUND_ROWS ' . $select . '
 	FROM  caf_article
     LEFT JOIN caf_evt as e ON (e.id_evt = caf_article.evt_article)
@@ -46,7 +46,7 @@ $req .= ')
 	WHERE  status_article =1
 	';
 // commission donnée : filtre (mais on inclut les actus club, commission=0)
-$req .= ' ORDER BY caf_article.created_at DESC
+$req .= ' ORDER BY caf_article.validation_date DESC
 	LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
 $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
 

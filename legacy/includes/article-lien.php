@@ -36,8 +36,8 @@ if ($article['media_upload_id']) {
 	<p class="commission-title">
 
 		<?php
-        if (!empty($article['created_at'])) {
-            $creationDate = new \DateTime($article['created_at']);
+        if (!empty($article['validation_date'])) {
+            $creationDate = new \DateTime($article['validation_date']);
             echo $creationDate->format('d/m/Y') . ' - ';
         }
 
