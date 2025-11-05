@@ -19,9 +19,9 @@ use Symfony\Component\Filesystem\Filesystem;
 
 #[AsCommand(
     name: 'user-deletion-cron',
-    description: 'Suppression et anonymisation des adhérents ayant une licence trop ancienne'
+    description: 'Anonymisation des adhérents ayant une licence trop ancienne'
 )]
-class UserDeletionCronCommand extends Command
+class UserAnonymizationCronCommand extends Command
 {
     public function __construct(
         protected UserRepository $userRepository,
@@ -38,7 +38,7 @@ class UserDeletionCronCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->logger->info('User deletion: find users to delete or anonymize');
+        $this->logger->info('User deletion: find users to anonymize');
 
         $filesystem = new Filesystem();
 
@@ -46,29 +46,17 @@ class UserDeletionCronCommand extends Command
         // ex : pour la saison 2026-2027 (1ère occurrence de ce traitement), on conserve jusqu'au 31/08/2024 inclus
         $endDateTime = $this->userLicenseHelper->getLicenseExpirationDate(2);
 
-        // adhérents sans activité => on supprime complètement
-        $usersToDelete = $this->userRepository->findUsersToDelete($endDateTime);
-        $this->logger->info('User deletion: ' . count($usersToDelete) . ' users to delete');
+        // adhérents sans activité
+        $usersWithoutActivity = $this->userRepository->findUsersWithoutActivity($endDateTime);
+        $this->logger->info('User anonymization: ' . count($usersWithoutActivity) . ' users without activity');
 
-        $deleted = 0;
-        /** @var User $user */
-        foreach ($usersToDelete as $user) {
-            $this->brevetAdherentRepository->deleteByUser($user);
-
-            $this->manager->remove($user);
-
-            // image de profil
-            $filesystem->remove($this->params->get('kernel.project_dir') . '/public/ftp/user/' . $user->getId());
-
-            ++$deleted;
-        }
-        $this->logger->info('User deletion: ' . $deleted . ' users deleted');
-
-        // adhérents avec activité => on anonymise
-        $usersToAnonymize = $this->userRepository->findUsersToAnonymize($endDateTime);
-        $this->logger->info('User deletion: ' . count($usersToAnonymize) . ' users to anonymize');
+        // adhérents avec activité
+        $usersWithActivity = $this->userRepository->findUsersWithActivity($endDateTime);
+        $this->logger->info('User anonymization: ' . count($usersWithActivity) . ' users with activity');
 
         $anonymized = 0;
+        $usersToAnonymize = array_merge($usersWithoutActivity, $usersWithoutActivity);
+
         /** @var User $user */
         foreach ($usersToAnonymize as $user) {
             // nettoyage des tables liées
@@ -83,11 +71,11 @@ class UserDeletionCronCommand extends Command
 
             ++$anonymized;
         }
-        $this->logger->info('User deletion: ' . $anonymized . ' users anonymized');
+        $this->logger->info('User anonymization: ' . $anonymized . ' users anonymized');
 
         $this->manager->flush();
 
-        $this->logger->info('User deletion: no (more) users to delete or anonymize');
+        $this->logger->info('User anonymization: no (more) users to anonymize');
 
         return Command::SUCCESS;
     }

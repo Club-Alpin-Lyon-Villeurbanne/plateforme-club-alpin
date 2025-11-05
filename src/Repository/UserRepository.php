@@ -332,7 +332,7 @@ SQL;
         };
     }
 
-    public function findUsersToDelete(?\DateTime $end = null)
+    public function findUsersWithoutActivity(?\DateTime $end = null)
     {
         $qb = $this
             ->createQueryBuilder('u')
@@ -357,7 +357,7 @@ SQL;
         return $qb->getQuery()->getResult();
     }
 
-    public function findUsersToAnonymize(?\DateTime $end = null)
+    public function findUsersWithActivity(?\DateTime $end = null)
     {
         $qb = $this
             ->createQueryBuilder('u')
