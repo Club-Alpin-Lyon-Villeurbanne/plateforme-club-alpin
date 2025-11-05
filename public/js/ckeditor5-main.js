@@ -257,6 +257,9 @@ const editorConfig = {
 	table: {
 		contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
 	},
+	mediaEmbed: {
+		previewsInData: true // Génère des iframes au lieu de oembed
+	},
 	translations: [translations]
 };
 
