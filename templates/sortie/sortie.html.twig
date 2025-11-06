@@ -1004,21 +1004,21 @@
         {% if not event.cancelled %}
             {% set isRegistrationPossible = true %}
             {% set nPlacesRestantesOnline = max(0, event.joinMax - nInscritsTotal) %}
+            {% if event.withWaitingList() %}
+                {% set nPlacesRestantesOnline = max(0, event.ngensMax - nInscritsTotal) %}
+            {% endif %}
             {% set nEnAttente = event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length %}
-            {% set nbWaitingListAvailableSpot = max(0, event.joinMax - event.ngensMax - nEnAttente) %}
+            {% set nbWaitingListAvailableSpot = max(0, event.joinMax - nInscritsTotal - nEnAttente) %}
 
-            {% if nPlacesRestantesOnline <= 0 or event.isInWaitingList(nInscritsTotal) and nbWaitingListAvailableSpot <= 0 %}
+            {% if nPlacesRestantesOnline <= 0 or event.withWaitingList() and nbWaitingListAvailableSpot <= 0 %}
                 {% set isRegistrationPossible = false %}
             {% endif %}
 
             <hr />
             <ul class="nice-list">
-                <li class="wide"><b>NOMBRE MAXIMUM DE PLACES :</b> {{ event.ngensMax }}
-                {% if event.withWaitingList() and nInscritsTotal >= event.ngensMax %}
-                    <li class="wide"><b>DISPONIBLES EN FILE D'ATTENTE :</b> {{ nbWaitingListAvailableSpot }}</li>
-                {% else %}
-                    <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}
-                {% endif %}
+                <li class="wide"><b>NOMBRE MAXIMUM DE PLACES :</b> {{ event.ngensMax }}</li>
+                <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}</li>
+                <li class="wide"><b>DISPONIBLES EN FILE D'ATTENTE :</b> {{ nbWaitingListAvailableSpot }}</li>
             </ul>
 
             <br style="clear:both" /><hr />

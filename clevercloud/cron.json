@@ -4,5 +4,6 @@
   "54 5 * * * $ROOT/clevercloud/crons/send-reminders.sh",
   "54 8 * * * $ROOT/clevercloud/crons/clean-alerts.sh",
   "36 6 * * * $ROOT/clevercloud/crons/google-groups-sync.sh",
-  "30 7 * * * $ROOT/clevercloud/crons/license-renew-reminder.sh"
+  "30 7 * * * $ROOT/clevercloud/crons/license-renew-reminder.sh",
+  "45 2 1 9 * $ROOT/clevercloud/crons/auto-renew-special-accounts.sh"
 ]

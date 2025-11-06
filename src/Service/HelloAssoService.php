@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Evt;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -23,6 +24,7 @@ class HelloAssoService
         protected int $activityTypeId,
         protected readonly HttpClientInterface $httpClient,
         protected readonly LoggerInterface $logger,
+        protected readonly UrlGeneratorInterface $urlGenerator,
         protected HelloAssoClient $helloAssoClient,
     ) {
     }
@@ -37,12 +39,17 @@ class HelloAssoService
     public function createFormForEvent(Evt $event): array
     {
         $eventDate = $event->getStartDate();
+        $description = 'Frais d\'inscription pour la sortie ' . $event->getTitre() . ' du ' . $eventDate->format('d/m/Y');
+        $description .= "\n\n" . $this->urlGenerator->generate('sortie', [
+            'code' => $event->getCode(),
+            'id' => $event->getId(),
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
         $params = [
             'title' => '[' . $eventDate->format('Y-m-d') . '] ' . $event->getTitre(),
-            'description' => 'Frais d\'inscription pour la sortie ' . $event->getTitre() . ' du ' . $eventDate->format('d/m/Y'),
+            'description' => $description,
             'amountVisible' => true,
             'maxEntries' => (int) $event->getNgensMax(),
-            'generateTickets' => true,
+            'generateTickets' => false,
             'allowIndividualPayer' => true,
             'allowOrganismPayer' => true,
             'activityTypeId' => $this->activityTypeId,      // activityType = "Sortie"
