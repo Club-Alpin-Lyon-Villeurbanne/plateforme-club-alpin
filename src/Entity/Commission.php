@@ -71,6 +71,15 @@ class Commission
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private array $mandatoryFields = self::CONFIGURABLE_FIELDS;
 
+    #[ORM\Column(name: 'code_ffcam_brevet', type: Types::STRING, length: 5, nullable: true)]
+    private ?string $codeFfcamBrevet = null;
+
+    #[ORM\Column(name: 'code_ffcam_niveau', type: Types::STRING, length: 2, nullable: true)]
+    private ?string $codeFfcamNiveau = null;
+
+    #[ORM\Column(name: 'code_ffcam_formation', type: Types::STRING, length: 2, nullable: true)]
+    private ?string $codeFfcamFormation = null;
+
     public function __construct(string $title, string $code, int $ordre)
     {
         $this->title = $title;
@@ -156,6 +165,42 @@ class Commission
     public function setMandatoryFields(array $mandatoryFields): self
     {
         $this->mandatoryFields = $mandatoryFields;
+
+        return $this;
+    }
+
+    public function getCodeFfcamBrevet(): ?string
+    {
+        return $this->codeFfcamBrevet;
+    }
+
+    public function setCodeFfcamBrevet(?string $codeFfcamBrevet): self
+    {
+        $this->codeFfcamBrevet = $codeFfcamBrevet;
+
+        return $this;
+    }
+
+    public function getCodeFfcamNiveau(): ?string
+    {
+        return $this->codeFfcamNiveau;
+    }
+
+    public function setCodeFfcamNiveau(?string $codeFfcamNiveau): self
+    {
+        $this->codeFfcamNiveau = $codeFfcamNiveau;
+
+        return $this;
+    }
+
+    public function getCodeFfcamFormation(): ?string
+    {
+        return $this->codeFfcamFormation;
+    }
+
+    public function setCodeFfcamFormation(?string $codeFfcamFormation): self
+    {
+        $this->codeFfcamFormation = $codeFfcamFormation;
 
         return $this;
     }

@@ -5,12 +5,16 @@ namespace App\Controller;
 use App\Entity\Commission;
 use App\Entity\Evt;
 use App\Entity\UserAttr;
+use App\Entity\Usertype;
 use App\Helper\EventFormHelper;
 use App\Helper\MonthHelper;
 use App\Legacy\LegacyContainer;
 use App\Mailer\Mailer;
+use App\Repository\BrevetReferentielRepository;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
+use App\Repository\FormationNiveauReferentielRepository;
+use App\Repository\FormationReferentielRepository;
 use App\Repository\UserAttrRepository;
 use App\UserRights;
 use Doctrine\ORM\EntityManagerInterface;
@@ -122,7 +126,7 @@ class CommissionController extends AbstractController
         $myCommissionsCodes = $userRights->getCommissionListForRight('commission_config');
 
         return [
-            'commissions' => $commissionRepository->findBy(['code' => $myCommissionsCodes], ['title' => 'ASC']),
+            'commissions' => $commissionRepository->findBy(['code' => $myCommissionsCodes, 'vis' => true], ['title' => 'ASC']),
         ];
     }
 
@@ -187,6 +191,51 @@ class CommissionController extends AbstractController
             'commission' => $commission,
             'checked_fields' => $commission->getMandatoryFields(),
             'fields' => $configurableFields,
+        ];
+    }
+
+    #[Route('/commissions/{id}/brevets', name: 'commission_brevet', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    #[Template('commission/brevets.html.twig')]
+    public function brevets(
+        Commission $commission,
+        EntityManagerInterface $manager,
+        BrevetReferentielRepository $brevetReferentielRepository,
+        FormationNiveauReferentielRepository $formationNiveauReferentielRepository,
+        FormationReferentielRepository $formationReferentielRepository,
+        UserAttrRepository $userAttrRepository,
+    ): array {
+        $users = [];
+        $brevets = [];
+        $niveaux = [];
+        $formations = [];
+
+        if (!empty($commission->getCodeFfcamBrevet())) {
+            $brevets = $brevetReferentielRepository->getAllBrevetsByCommissionCode($commission->getCodeFfcamBrevet());
+        }
+        if (!empty($commission->getCodeFfcamNiveau())) {
+            $niveaux = $formationNiveauReferentielRepository->getAllNiveauxByCommissionCode($commission->getCodeFfcamNiveau());
+        }
+        if (!empty($commission->getCodeFfcamFormation())) {
+            $formations = $formationReferentielRepository->getAllFormationsByCommissionCode($commission->getCodeFfcamFormation());
+        }
+
+        $roles = $manager->getRepository(Usertype::class)->findBy(['code' => UserAttr::COMMISSION_RELATED], ['hierarchie' => 'ASC']);
+        foreach ($roles as $role) {
+            /** @var UserAttr $userRole */
+            foreach ($userAttrRepository->listAllUsersByRoleAndCommission($role, $commission->getCode()) as $userRole) {
+                $users[$userRole->getUser()->getId()] = [
+                    'user' => $userRole->getUser(),
+                    'role' => $role->getTitle(),
+                ];
+            }
+        }
+
+        return [
+            'commission' => $commission,
+            'brevets' => $brevets,
+            'niveaux' => $niveaux,
+            'formations' => $formations,
+            'users' => $users,
         ];
     }
 }
