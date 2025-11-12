@@ -101,17 +101,26 @@ SQL;
         ;
     }
 
-    public function getNomads(UserInterface $user)
+    public function getNomads(?UserInterface $user = null)
     {
-        return $this->createQueryBuilder('u')
+        $qb = $this->createQueryBuilder('u')
             ->where('u.valid = true')
             ->andWhere('u.nomade = true')
             ->andWhere('u.isDeleted = false')
-            ->andWhere('u.nomadeParent = :user')
-            ->setParameter('user', $user)
+        ;
+        if ($user) {
+            $qb
+                ->andWhere('u.nomadeParent = :user')
+                ->setParameter('user', $user)
+            ;
+        }
+        $qb
             ->orderBy('u.lastname', 'ASC')
             ->addOrderBy('u.firstname', 'ASC')
             ->addOrderBy('u.createdAt', 'DESC')
+        ;
+
+        return $qb
             ->getQuery()
             ->getResult()
         ;
