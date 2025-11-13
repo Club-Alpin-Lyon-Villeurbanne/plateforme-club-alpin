@@ -148,7 +148,7 @@
     {% if stats.errors|default(0) > 0 %}
     <div style="padding: 15px; background-color: #ffe0e0; border: 2px solid #ff6b6b; border-radius: 5px; margin: 20px 0;">
         <p style="margin: 0; color: #d00;">
-            <strong>⚠️ {{ stats.errors }} erreur(s) lors du traitement</strong> : certains adhérents n'ont pas pu être traités correctement.
+            <strong>❌ {{ stats.errors }} erreur(s) lors du traitement</strong> : certains adhérents n'ont pas pu être traités correctement.
         </p>
 
         {% if stats.error_details|default([]) %}
@@ -172,6 +172,32 @@
         </p>
         {% endif %}
     </div>
+    {% endif %}
+
+    {% if stats.warnings|default(0) > 0 %}
+        <div style="padding: 15px; background-color: #ffeaa7; border: 2px solid orange; border-radius: 5px; margin: 20px 0;">
+            <p style="margin: 0; color: orange;">
+                <strong>⚠️ {{ stats.warnings }} warning(s) lors du traitement</strong> :
+            </p>
+
+            {% if stats.warning_details|default([]) %}
+                <p style="margin: 10px 0 5px 0; color: orange; font-weight: bold;">
+                    Détails des warnings{% if stats.warnings > 10 %} (10 premiers affichés){% endif %} :
+                </p>
+                <ul style="margin: 5px 0; padding-left: 20px; color: #333;">
+                    {% for error in stats.warning_details %}
+                        <li style="margin: 3px 0;">
+                            {{ error }}
+                        </li>
+                    {% endfor %}
+                    {% if stats.warnings > 10 %}
+                        <li style="margin: 5px 0; font-style: italic;">
+                            ... et {{ stats.warnings - 10 }} autre(s) warning(s)
+                        </li>
+                    {% endif %}
+                </ul>
+            {% endif %}
+        </div>
     {% endif %}
 
     <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">

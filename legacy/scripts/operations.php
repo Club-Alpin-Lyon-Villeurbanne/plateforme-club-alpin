@@ -82,11 +82,6 @@ if (user()) {
     }
 }
 
-// SPECIAL : REINIT EMAIL : seconde étape (confirmation depuis le lien dans l'email
-if ('email-change' == $p1 && $p2) {
-    require $operationsDir . 'operations.email-change.php';
-}
-
 // SPECIAL : VALIDATION DE COMPTE USER
 elseif ('user-confirm' == $p1) {
     require $operationsDir . 'operations.user-confirm.php';
