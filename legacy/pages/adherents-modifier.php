@@ -35,7 +35,6 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     $cpUser = $userTab['cp_user'];
     $villeUser = $userTab['ville_user'];
     $paysUser = $userTab['pays_user'];
-    $validUser = $userTab['valid_user'];
     $cafnumUserNew = $userTab['cafnum_user_new'] ?? null;
     $cafnumUser = $userTab['cafnum_user'];
     $userEmail = $userTab['email_user'];

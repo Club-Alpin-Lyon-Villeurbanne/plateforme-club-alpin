@@ -316,7 +316,6 @@ class UserController extends AbstractController
                 $nomad
                     ->setNickname(NicknameGenerator::generateNickname($nomad->getFirstname(), $nomad->getLastname()))
                     ->setNomade(true)
-                    ->setValid(true)
                     ->setManuel(false)
                     ->setNomadeParent($this->getUser()->getId())
                     ->setDoitRenouveler(false)
@@ -430,7 +429,7 @@ class UserController extends AbstractController
             }
             // impersonate user
             if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
-                $tools .= ($user->getValid() && !empty($user->getEmail())) ? ' <a href="/profil.html?_switch_user=' . urlencode($user->getEmail()) . '" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png" alt="impersonifier" /></a> ' : '';
+                $tools .= (!empty($user->getEmail())) ? ' <a href="/profil.html?_switch_user=' . urlencode($user->getEmail()) . '" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png" alt="impersonifier" /></a> ' : '';
             }
 
             // âge
@@ -472,13 +471,6 @@ class UserController extends AbstractController
                 $renew = ($userRights->allowed('user_read_private') ? (!empty($joinDate) ? $joinDate->format('d/m/Y') : '-') : $img_lock);
             }
 
-            // compte activé ?
-            if ($user->getValid()) {
-                $valid = 'oui';
-            } else {
-                $valid = '<span style="color: darkorange;">non</span>';
-            }
-
             // e-mail
             if (!empty($user->getEmail())) {
                 $email = ($userRights->allowed('user_read_private') ? '<a href="mailto:' . $user->getEmail() . '" title="Contact direct">' . $user->getEmail() . '</a>' : $img_lock);
@@ -507,11 +499,9 @@ class UserController extends AbstractController
                 'age' => $age,
                 'tel' => $tel,
                 'email' => $email,
-                'active' => $valid,
                 'cp' => $user->getCp(),
                 'ville' => $user->getVille(),
                 'license' => $license,
-                'valid' => $user->getValid(),
                 'deleted' => $deleted,
             ];
         }

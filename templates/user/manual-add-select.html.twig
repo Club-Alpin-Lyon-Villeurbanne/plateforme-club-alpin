@@ -81,10 +81,7 @@
                 </thead>
                 <tbody>
                 {% for user in users %}
-                    {% set class = 'vis-off' %}
-                    {% if user.valid %}
-                        {% set class = 'vis-on' %}
-                    {% endif %}
+                    {% set class = 'vis-on' %}
                     <tr id="tr-{{ user.id }}" class="{{ class }}">
                     <td>
                         <img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />
