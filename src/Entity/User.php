@@ -25,7 +25,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
  */
 #[ORM\Table(name: 'caf_user')]
 #[ORM\Index(columns: ['id_user'], name: 'id_user')]
-#[ORM\Index(columns: ['is_deleted', 'valid_user', 'doit_renouveler_user', 'nomade_user', 'lastname_user'], name: 'idx_user_admin_listing')]
+#[ORM\Index(columns: ['is_deleted', 'doit_renouveler_user', 'nomade_user', 'lastname_user'], name: 'idx_user_admin_listing')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
     shortName: 'utilisateur',
@@ -165,9 +165,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[SerializedName('informationsSupplementaires')]
     private $moreinfo;
 
-    #[ORM\Column(name: 'valid_user', type: 'boolean', nullable: false, options: ['comment' => "0=l'user n'a pas activé son compte   1=activé"])]
-    private bool $valid = false;
-
     /**
      * @var string
      */
@@ -261,7 +258,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
             'pays' => $this->getPays(),
             'civ' => $this->getCiv(),
             'moreinfo' => $this->getMoreinfo(),
-            'valid' => $this->getValid(),
             'manuel' => $this->getManuel(),
             'nomade' => $this->getNomade(),
             'nomadeParent' => $this->getNomadeParent(),
@@ -521,18 +517,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setMoreinfo(string $moreinfo): self
     {
         $this->moreinfo = $moreinfo;
-
-        return $this;
-    }
-
-    public function getValid(): ?bool
-    {
-        return $this->valid;
-    }
-
-    public function setValid(bool $valid): self
-    {
-        $this->valid = $valid;
 
         return $this;
     }
