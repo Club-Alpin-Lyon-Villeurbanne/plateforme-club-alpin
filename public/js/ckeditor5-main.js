@@ -258,7 +258,25 @@ const editorConfig = {
 		contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
 	},
 	mediaEmbed: {
-		previewsInData: true // Génère des iframes au lieu de oembed
+		previewsInData: true, // Génère des iframes au lieu de oembed
+		providers: [
+			{
+				name: 'loom',
+				url: [
+					/^loom\.com\/share\/([^/]+)/,
+					/^loom\.com\/embed\/([^/]+)/
+				],
+				html: match => {
+					const id = match[1];
+					return (
+						'<div style="position: relative; padding-bottom: 56.25%; height: 0;">' +
+						`<iframe src="https://www.loom.com/embed/${id}" ` +
+						'style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>' +
+						'</div>'
+					);
+				}
+			}
+		]
 	},
 	translations: [translations]
 };
