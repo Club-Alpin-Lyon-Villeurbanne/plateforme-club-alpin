@@ -183,13 +183,8 @@ class FfcamSynchronizer
         ;
         // Si l'utilisateur est radié
         if (null !== $parsedUser->getRadiationDate()) {
-            // on le "supprime" et on vide son email + mot de passe (pour qu'il ne puisse plus se connecter au site)
-            // NB : vider seulement le mot de passe ne suffit pas car "mot de passe oublié" reste utilisable
-            // et permet de remettre un mdp et rendre le compte web fonctionnel à nouveau
             $existingUser
-                ->setIsDeleted(true)
-                ->setEmail(null)
-                ->setMdp(null)
+                ->setDoitRenouveler(true)
             ;
         }
 
