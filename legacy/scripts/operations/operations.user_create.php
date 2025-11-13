@@ -69,8 +69,8 @@ if (!isset($errTab) || 0 === count($errTab)) {
     if ($row[0]) {
         $errTab[] = 'Un compte existe déjà avec cette adresse e-mail. Avez-vous <a href="' . generateRoute('session_password_lost') . '" class="fancyframe" title="">oublié le mot de passe ?</a>';
     } else {
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO `caf_user` (`email_user`, `mdp_user`, `cafnum_user`, `firstname_user`, `lastname_user`, `nickname_user`, `birthdate`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `moreinfo_user`, `valid_user`, `cookietoken_user`, `manuel_user`, cafnum_parent_user, nomade_user, nomade_parent_user, doit_renouveler_user, alerte_renouveler_user, created_at, updated_at)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', '1', '', '1', null, '0', '0', '0', '0', NOW(), NOW())");
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO `caf_user` (`email_user`, `mdp_user`, `cafnum_user`, `firstname_user`, `lastname_user`, `nickname_user`, `birthdate`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `moreinfo_user`, `cookietoken_user`, `manuel_user`, cafnum_parent_user, nomade_user, nomade_parent_user, doit_renouveler_user, alerte_renouveler_user, created_at, updated_at)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', '', '1', null, '0', '0', '0', '0', NOW(), NOW())");
         $stmt->bind_param('sssssssssssss', $email_user, $mdp_user, $cafnum_user, $firstname_user, $lastname_user, $nickname_user, $birthDate?->format('Y-m-d'), $tel_user, $tel2_user, $adresse_user, $cp_user, $ville_user, $pays_user);
         if (!$stmt->execute()) {
             $errTab[] = 'Erreur SQL';

@@ -26,7 +26,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // Si ce compte est déjà existant et activé avec ce numéro de licence
     if (!isset($errTab) || 0 === count($errTab)) {
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE cafnum_user = ? AND valid_user = 1 LIMIT 1');
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE cafnum_user = ? LIMIT 1');
         $stmt->bind_param('s', $cafnum_user);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -39,7 +39,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
 
     // Si ce compte est déjà existant et activé avec cette adresse email
     if (!isset($errTab) || 0 === count($errTab)) {
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE email_user LIKE ? AND valid_user = 1 LIMIT 1');
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE email_user LIKE ? LIMIT 1');
         $stmt->bind_param('s', $email_user);
         $stmt->execute();
         $result = $stmt->get_result();

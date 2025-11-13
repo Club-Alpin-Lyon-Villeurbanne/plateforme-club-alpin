@@ -82,7 +82,6 @@
                 <th>Âge</th>
                 <th>Tél{% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %} / Tél secours{% endif %}</th>
                 <th>E-mail</th>
-                <th>Compte activé ?</th>
                 {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
                     <th>CP</th>
                     <th>Ville</th>
@@ -128,7 +127,6 @@
                     { data: 'age' },
                     { data: 'tel' },
                     { data: 'email' },
-                    { data: 'active' },
                     {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
                         { data: 'cp' },
                         { data: 'ville' },
@@ -138,7 +136,7 @@
                 ],
                 createdRow: function(row, data, dataIndex) {
                     $(row).attr('id', 'tr-' + data.id);
-                    $(row).addClass(data.valid ? 'vis-on' : 'vis-off');
+                    $(row).addClass('vis-on');
                 },
                 columnDefs: [
                     {
