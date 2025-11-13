@@ -54,6 +54,11 @@ class FfcamFileParser
             $radiationDate = \DateTimeImmutable::createFromFormat('Y-m-d', $line[30]);
         }
 
+        $email = null;
+        if (!empty(trim($line[28]))) {
+            $email = strtolower(trim($line[28]));
+        }
+
         $user
             ->setCafnum(trim($line[0]))
             ->setFirstname($firstname)
@@ -73,6 +78,12 @@ class FfcamFileParser
             ->setRadiationDate($radiationDate)
             ->setRadiationReason($radiationReason ?: null)
         ;
+        // email des affiliés
+        if (null !== $email && !empty($user->getCafnumParent())) {
+            $user->setEmail('affilie.' . $user->getCafnum() . '-' . $email);
+        } else {
+            $user->setEmail($email);
+        }
 
         return $user;
     }

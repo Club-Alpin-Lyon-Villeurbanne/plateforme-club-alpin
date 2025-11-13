@@ -27,19 +27,23 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $lastname1 = $this->faker->lastName();
         $firstname1 = $this->faker->firstName();
+        $email1 = $this->faker->email();
         $lastname2 = $this->faker->lastName();
         $firstname2 = $this->faker->firstName();
+        $email2 = $this->faker->email();
 
         $filePath = FfcamTestHelper::generateFile([
             [
                 'cafnum' => $identifiant1,
                 'lastname' => $lastname1,
                 'firstname' => $firstname1,
+                'email' => $email1,
             ],
             [
                 'cafnum' => $identifiant2,
                 'lastname' => $lastname2,
                 'firstname' => $firstname2,
+                'email' => $email2,
             ],
         ]);
 
@@ -69,16 +73,17 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $lastname1 = $this->faker->lastName();
         $firstname1 = $this->faker->firstName();
+        $email = 'test-' . bin2hex(random_bytes(10)) . '@clubalpinlyon.fr';
 
         $filePath = FfcamTestHelper::generateFile([
             [
                 'cafnum' => $identifiant1,
                 'lastname' => $lastname1,
                 'firstname' => $firstname1,
+                'email' => $email,
             ],
         ]);
 
-        $email = 'test-' . bin2hex(random_bytes(10)) . '@clubalpinlyon.fr';
         $existingUser = $this->signup();
         $existingUser
             ->setCafnum($identifiant1)
@@ -93,7 +98,8 @@ class FfcamSynchronizerTest extends WebTestCase
         $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
         $synchronizer->synchronize($filePath);
 
-        $em->refresh($existingUser);
+        // Reload the entity from the database after synchronize() clears the EntityManager
+        $existingUser = self::getContainer()->get(UserRepository::class)->find($existingUser->getId());
 
         $this->assertEquals(mb_strtolower($firstname1), mb_strtolower($existingUser->getFirstname()));
         $this->assertEquals(mb_strtolower($lastname1), mb_strtolower($existingUser->getLastname()));
@@ -132,8 +138,8 @@ class FfcamSynchronizerTest extends WebTestCase
         $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
         $synchronizer->synchronize($filePath);
 
-        $em = self::getContainer()->get(EntityManagerInterface::class);
-        $em->refresh($existingUser);
+        // Reload the entity from the database after synchronize() clears the EntityManager
+        $existingUser = self::getContainer()->get(UserRepository::class)->find($existingUser->getId());
 
         $this->assertTrue($existingUser->getAlerteRenouveler());
         $this->assertFalse($existingUser->getDoitRenouveler());
@@ -171,8 +177,8 @@ class FfcamSynchronizerTest extends WebTestCase
         $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
         $synchronizer->synchronize($filePath);
 
-        $em = self::getContainer()->get(EntityManagerInterface::class);
-        $em->refresh($existingUser);
+        // Reload the entity from the database after synchronize() clears the EntityManager
+        $existingUser = self::getContainer()->get(UserRepository::class)->find($existingUser->getId());
 
         $this->assertFalse($existingUser->getAlerteRenouveler());
         $this->assertTrue($existingUser->getDoitRenouveler());
@@ -209,7 +215,8 @@ class FfcamSynchronizerTest extends WebTestCase
         $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
         $synchronizer->synchronize($filePath);
 
-        $em->refresh($expiredUser);
+        // Reload the entity from the database after synchronize() clears the EntityManager
+        $expiredUser = self::getContainer()->get(UserRepository::class)->find($expiredUser->getId());
 
         $this->assertTrue($expiredUser->getDoitRenouveler());
     }
@@ -244,7 +251,8 @@ class FfcamSynchronizerTest extends WebTestCase
         $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
         $synchronizer->synchronize($filePath);
 
-        $em->refresh($expiredUser);
+        // Reload the entity from the database after synchronize() clears the EntityManager
+        $expiredUser = self::getContainer()->get(UserRepository::class)->find($expiredUser->getId());
 
         $this->assertFalse($expiredUser->getDoitRenouveler());
         $this->assertFalse($expiredUser->getAlerteRenouveler());
@@ -280,6 +288,7 @@ class FfcamSynchronizerTest extends WebTestCase
                 'cafnum' => $identifiant2,
                 'lastname' => $lastname1,
                 'firstname' => $firstname1,
+                'email' => $email1,
                 'birthday' => '1990-01-01', // 1990-01-01
             ],
         ]);
@@ -287,7 +296,8 @@ class FfcamSynchronizerTest extends WebTestCase
         $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
         $synchronizer->synchronize($filePath);
 
-        $em->refresh($existingUser);
+        // Reload the entity from the database after synchronize() clears the EntityManager
+        $existingUser = self::getContainer()->get(UserRepository::class)->find($existingUser->getId());
         $this->assertEquals($identifiant2, $existingUser->getCafnum());
         $this->assertEquals($email1, $existingUser->getEmail());
         $this->assertEquals('hashedpassword', $existingUser->getPassword());
@@ -303,6 +313,7 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $lastname1 = $this->faker->lastName();
         $firstname1 = $this->faker->firstName();
+        $email = 'test-' . bin2hex(random_bytes(10)) . '@clubalpinlyon.fr';
 
         $existingUser = $this->signup();
         $existingUser
@@ -310,6 +321,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ->setFirstname($firstname1)
             ->setLastname($lastname1)
             ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
+            ->setEmail($email)
             ->setDoitRenouveler(false)
             ->setAlerteRenouveler(false);
 
@@ -323,13 +335,15 @@ class FfcamSynchronizerTest extends WebTestCase
                 'lastname' => $lastname1,
                 'firstname' => $firstname1,
                 'birthday' => '1990-01-01', // 1990-01-01
+                'email' => $email,
             ],
         ]);
 
         $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
         $synchronizer->synchronize($filePath);
 
-        $em->refresh($existingUser);
+        // Reload the entity from the database after synchronize() clears the EntityManager
+        $existingUser = self::getContainer()->get(UserRepository::class)->find($existingUser->getId());
 
         // Le compte existant doit être fusionné avec le nouveau numéro même si "doit_renouveler" est à false
         $this->assertEquals($identifiant2, $existingUser->getCafnum());
@@ -346,6 +360,8 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $lastname1 = $this->faker->lastName();
         $firstname1 = $this->faker->firstName();
+        // Use a common email that will be matched by the synced member
+        $email = 'test-' . bin2hex(random_bytes(10)) . '@clubalpinlyon.fr';
 
         $now = new \DateTime();
         $minusOneHour = (clone $now)->modify('-1 hour');
@@ -356,6 +372,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ->setFirstname($firstname1)
             ->setLastname($lastname1)
             ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
+            // User1 has no email (NULL) - won't match duplicate detection
             ->setCreatedAt($minusOneHour)
             ->setUpdatedAt($minusOneHour)
             ->setDoitRenouveler(true);
@@ -366,6 +383,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ->setFirstname($firstname1)
             ->setLastname($lastname1)
             ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
+            ->setEmail($email)
             ->setCreatedAt($now)
             ->setUpdatedAt($now)
             ->setDoitRenouveler(true);
@@ -381,18 +399,21 @@ class FfcamSynchronizerTest extends WebTestCase
                 'lastname' => $lastname1,
                 'firstname' => $firstname1,
                 'birthday' => '1990-01-01',
+                'email' => $email,
             ],
         ]);
 
         $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
         $synchronizer->synchronize($filePath);
 
+        // Reload entities from the database after synchronize() clears the EntityManager
+        $existingUser2 = self::getContainer()->get(UserRepository::class)->find($existingUser2->getId());
+        $existingUser1 = self::getContainer()->get(UserRepository::class)->find($existingUser1->getId());
+
         // Vérifie que c'est bien l'utilisateur le plus récent qui a été mis à jour
-        $em->refresh($existingUser2);
         $this->assertEquals($identifiant3, $existingUser2->getCafnum());
 
         // Vérifie que l'ancien utilisateur n'a pas été modifié
-        $em->refresh($existingUser1);
         $this->assertEquals($identifiant1, $existingUser1->getCafnum());
     }
 
@@ -439,8 +460,9 @@ class FfcamSynchronizerTest extends WebTestCase
         $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
         $synchronizer->synchronize($filePath);
 
-        $em->refresh($user1);
-        $em->refresh($user2);
+        // Reload entities from the database after synchronize() clears the EntityManager
+        $user1 = self::getContainer()->get(UserRepository::class)->find($user1->getId());
+        $user2 = self::getContainer()->get(UserRepository::class)->find($user2->getId());
 
         $this->assertEquals($identifiant1, $user1->getCafnum());
         $this->assertEquals($user1->getTel(), '0606060676');

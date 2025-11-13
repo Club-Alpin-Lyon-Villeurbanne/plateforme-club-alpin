@@ -374,7 +374,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this->cafnum;
     }
 
-    public function setCafnum(string $cafnum): self
+    public function setCafnum(?string $cafnum): self
     {
         $this->cafnum = $cafnum;
 
