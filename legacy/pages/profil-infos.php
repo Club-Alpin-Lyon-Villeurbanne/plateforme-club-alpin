@@ -170,11 +170,6 @@ if (user()) {
             <br /><br />
 
             <hr style="margin: 20px 0" />
-            <h2 id="edit-email"><span class="bleucaf">&gt;</span>Modifier mon e-mail</h2>
-            <p>
-                Laissez ce champ vide si vous ne voulez pas modifier votre adresse e-mail.
-            </p>
-            <input type="text" name="email_user_mailchange" class="type1" style="width:300px" value="<?php echo inputVal('email_user_mailchange'); ?>" placeholder="<?php echo html_utf8($tmpUser['email_user']); ?>" />
 
         <div class="alerte info-container" style="width: 90%; margin-top: 10px;">
             ⚠️
