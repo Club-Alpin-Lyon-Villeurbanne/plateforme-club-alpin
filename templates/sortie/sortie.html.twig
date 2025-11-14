@@ -1036,7 +1036,7 @@
             </p>
 
             {% if app.user and nInscritsTotal > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
-                <table class="big-lines-table" style="width:570px; margin: 0 auto;">
+                <table class="big-lines-table" style="margin:0 20px;">
 
                     {% for participation in accepted_participations %}
                         {% set inscrit = participation['liste'] %}
