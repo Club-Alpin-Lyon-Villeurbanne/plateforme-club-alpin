@@ -59,9 +59,11 @@ class FfcamSynchronizer
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     public function discoverySynchronize(?string $ffcamFilePath = null): void
     {
-
         $startTime = new \DateTime();
 
         if (!$this->isFileValid($ffcamFilePath)) {
@@ -70,7 +72,7 @@ class FfcamSynchronizer
             return;
         }
 
-        $stats = $this->processDiscoveryMembers($this->fileParser->parse($ffcamFilePath, 'discovery'));
+        $stats = $this->processMembers($this->fileParser->parse($ffcamFilePath, 'discovery'));
 
         $this->archiveFile($ffcamFilePath, $stats);
         $this->logResults($ffcamFilePath, $stats);
@@ -78,23 +80,7 @@ class FfcamSynchronizer
         $endTime = new \DateTime();
 
         // Envoyer le mail de récapitulatif si le service est disponible
-//        $this->syncReportMailer?->sendDiscoverySyncReport($stats, $startTime, $endTime);
-    }
-
-    private function processDiscoveryMembers(\Generator $members): array
-    {
-        $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0, 'errors' => 0, 'error_details' => [], 'merged_details' => []];
-
-        foreach ($members as $parsedUser) {
-            try {
-                $this->logger->info("Processing CAF member {$parsedUser->getCafnum()}");
-
-                $existingUser = $this->userRepository->findOneByLicenseNumber($parsedUser->getCafnum());
-            } catch (\Exception $exception) {
-            }
-        }
-
-        return $stats;
+        $this->syncReportMailer?->sendSyncReport($stats, $startTime, $endTime);
     }
 
     private function isFileValid(string $filePath): bool
@@ -246,9 +232,10 @@ class FfcamSynchronizer
             ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$this->hasTolerancyPeriodPassed)
             ->setUpdatedAt(new \DateTime())
             ->setManuel(false)
-            ->setNomade(false)
+            ->setNomade($parsedUser->getNomade())
             ->setRadiationDate($parsedUser->getRadiationDate())
             ->setRadiationReason($parsedUser->getRadiationReason())
+            ->setValidityDuration($parsedUser->getValidityDuration())
         ;
 
         // Si l'utilisateur est radié

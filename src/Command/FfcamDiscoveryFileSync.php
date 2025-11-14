@@ -17,12 +17,15 @@ class FfcamDiscoveryFileSync extends Command
 {
     public function __construct(
         private readonly FfcamSynchronizer $synchronizer,
-        private readonly string            $ffcamFilePath,
-        ?string                            $name = null,
+        private readonly string $ffcamFilePath,
+        ?string $name = null,
     ) {
         parent::__construct($name);
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
