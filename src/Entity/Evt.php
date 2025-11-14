@@ -998,4 +998,9 @@ class Evt
     {
         return $this->withWaitingList() && $nInscritsTotal >= $this->ngensMax && $nInscritsTotal < $this->joinMax;
     }
+
+    public function getExpenseReports(): ?Collection
+    {
+        return $this->expenseReports;
+    }
 }
