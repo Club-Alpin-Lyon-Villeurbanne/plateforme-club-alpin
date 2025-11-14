@@ -230,6 +230,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(type: Types::STRING, nullable: true, options: ['comment' => 'Motif de radiation FFCAM'])]
     private ?string $radiationReason = null;
 
+    #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => 'Durée de validité (en h) de licence découverte'])]
+    private ?int $validityDuration = null;
+
     public function __construct(?int $id = null)
     {
         $this->attrs = new ArrayCollection();
@@ -813,6 +816,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setRadiationReason(?string $radiationReason): self
     {
         $this->radiationReason = $radiationReason;
+
+        return $this;
+    }
+
+    public function getValidityDuration(): ?int
+    {
+        return $this->validityDuration;
+    }
+
+    public function setValidityDuration(?int $validityDuration): self
+    {
+        $this->validityDuration = $validityDuration;
 
         return $this;
     }

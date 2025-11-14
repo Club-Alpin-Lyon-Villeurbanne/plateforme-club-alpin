@@ -59,6 +59,44 @@ class FfcamSynchronizer
         }
     }
 
+    public function discoverySynchronize(?string $ffcamFilePath = null): void
+    {
+
+        $startTime = new \DateTime();
+
+        if (!$this->isFileValid($ffcamFilePath)) {
+            $this->logger->warning("File {$ffcamFilePath} not found. Can't import new discovery-type members");
+
+            return;
+        }
+
+        $stats = $this->processDiscoveryMembers($this->fileParser->parse($ffcamFilePath, 'discovery'));
+
+        $this->archiveFile($ffcamFilePath, $stats);
+        $this->logResults($ffcamFilePath, $stats);
+
+        $endTime = new \DateTime();
+
+        // Envoyer le mail de récapitulatif si le service est disponible
+//        $this->syncReportMailer?->sendDiscoverySyncReport($stats, $startTime, $endTime);
+    }
+
+    private function processDiscoveryMembers(\Generator $members): array
+    {
+        $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0, 'errors' => 0, 'error_details' => [], 'merged_details' => []];
+
+        foreach ($members as $parsedUser) {
+            try {
+                $this->logger->info("Processing CAF member {$parsedUser->getCafnum()}");
+
+                $existingUser = $this->userRepository->findOneByLicenseNumber($parsedUser->getCafnum());
+            } catch (\Exception $exception) {
+            }
+        }
+
+        return $stats;
+    }
+
     private function isFileValid(string $filePath): bool
     {
         return file_exists($filePath) && is_file($filePath);
