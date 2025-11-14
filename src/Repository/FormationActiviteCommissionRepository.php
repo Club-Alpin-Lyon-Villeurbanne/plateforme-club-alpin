@@ -17,9 +17,10 @@ class FormationActiviteCommissionRepository extends ServiceEntityRepository
     }
 
     /**
-     * Récupère toutes les commissions associées à un code activité FFCAM
+     * Récupère toutes les commissions associées à un code activité FFCAM.
      *
      * @param string $codeActivite Le code activité FFCAM (ex: "SN" pour "SPORTS DE NEIGE")
+     *
      * @return array<Commission>
      */
     public function findCommissionsByCodeActivite(string $codeActivite): array
@@ -35,9 +36,10 @@ class FormationActiviteCommissionRepository extends ServiceEntityRepository
     }
 
     /**
-     * Récupère tous les codes activités FFCAM associés à une commission
+     * Récupère tous les codes activités FFCAM associés à une commission.
      *
      * @param Commission $commission
+     *
      * @return array<string>
      */
     public function findCodesActiviteByCommission($commission): array
