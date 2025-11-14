@@ -2,7 +2,6 @@ App\Entity\User:
     user_admin:
         firstname: 'Super'
         lastname: 'Admin'
-        valid: true
         cafnum: '749999999999'
         email: 'admin@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
@@ -10,7 +9,6 @@ App\Entity\User:
     user_resp_comm:
         firstname: 'Responsable'
         lastname: 'Commission'
-        valid: true
         cafnum: '749999999998'
         email: 'resp.comm@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
@@ -18,7 +16,6 @@ App\Entity\User:
     user_encadrant:
         firstname: 'Jean'
         lastname: 'Cadre'
-        valid: true
         cafnum: '749999999997'
         email: 'encadrant@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
@@ -26,7 +23,6 @@ App\Entity\User:
     user_redacteur:
         firstname: 'Ray'
         lastname: 'Dacteur'
-        valid: true
         cafnum: '749999999996'
         email: 'redacteur@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
@@ -34,7 +30,6 @@ App\Entity\User:
     user_coencadrant:
         firstname: 'Ko'
         lastname: 'Kadre'
-        valid: true
         cafnum: '749999999995'
         email: 'coencadrant@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
@@ -42,7 +37,6 @@ App\Entity\User:
     user_benevole:
         firstname: 'Benny'
         lastname: 'Volle'
-        valid: true
         cafnum: '749999999994'
         email: 'benevole.encadrement@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
@@ -50,7 +44,6 @@ App\Entity\User:
     user_president:
         firstname: 'Machin'
         lastname: 'Truc'
-        valid: true
         cafnum: '749999999993'
         email: 'president@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
@@ -58,7 +51,6 @@ App\Entity\User:
     user_president_suppleant:
         firstname: 'Jean Michel'
         lastname: 'Vépais'
-        valid: true
         cafnum: '749999999992'
         email: 'vp@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
@@ -66,7 +58,6 @@ App\Entity\User:
     user_accueil:
         firstname: 'Carmen'
         lastname: 'Hoffman'
-        valid: true
         cafnum: '749999999991'
         email: 'accueil@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
@@ -74,7 +65,6 @@ App\Entity\User:
     user_stagiaire:
         firstname: 'Initiateur'
         lastname: 'Stagiaire'
-        valid: true
         cafnum: '749999999990'
         email: 'stagiaire@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
@@ -82,7 +72,6 @@ App\Entity\User:
     user_{11..20}:
         firstname: '<firstname()>'
         lastname: '<lastname()>'
-        valid: true
         cafnum: '7499999999<current()>'
         email: '<email()>'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
