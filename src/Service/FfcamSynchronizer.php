@@ -103,9 +103,7 @@ class FfcamSynchronizer
                         'new_cafnum' => $parsedUser->getCafnum(),
                         'name' => sprintf('%s %s', $parsedUser->getFirstname(), $parsedUser->getLastname())
                     ];
-                } elseif ($existingUser instanceof User) {
-                    // update user
-
+                } else {
                     // vérif email
                     if (!empty($parsedUser->getEmail())) {
                         $duplicateEmailUser = $this->userRepository->findDuplicateEmailUser(
@@ -125,31 +123,34 @@ class FfcamSynchronizer
                             $parsedUser->setEmail('doublon.' . $parsedUser->getCafnum() . '-' . $parsedUser->getEmail());
                         }
                     } else {
-                        $warningMessage = sprintf('FFCAM email is empty for member Cafnum %s', $existingUser->getCafnum());
+                        $warningMessage = sprintf('FFCAM email is empty for member Cafnum %s', $parsedUser->getCafnum());
                         $this->logger->warning($warningMessage);
                         ++$stats['warnings'];
                         $stats['warning_details'][] = $warningMessage;
                     }
 
-                    if (
-                        $parsedUser->getEmail() !== $existingUser->getEmail()
-                        && empty($existingUser->getRadiationDate())
-                    ) {
-                        $warningMessage = sprintf('FFCAM email (%s) is different from database (%s) for member Cafnum %s', $parsedUser->getEmail(), $existingUser->getEmail(), $existingUser->getCafnum());
-                        $this->logger->warning($warningMessage);
-                        ++$stats['warnings'];
-                        $stats['warning_details'][] = $warningMessage;
-                    }
+                    if ($existingUser instanceof User) {
+                        // update user
+                        if (
+                            $parsedUser->getEmail() !== $existingUser->getEmail()
+                            && empty($existingUser->getRadiationDate())
+                        ) {
+                            $warningMessage = sprintf('FFCAM email (%s) is different from database (%s) for member Cafnum %s', $parsedUser->getEmail(), $existingUser->getEmail(), $existingUser->getCafnum());
+                            $this->logger->warning($warningMessage);
+                            ++$stats['warnings'];
+                            $stats['warning_details'][] = $warningMessage;
+                        }
 
-                    $this->updateExistingUser($existingUser, $parsedUser);
-                    $this->entityManager->persist($existingUser);
-                    ++$stats['updated'];
-                } else {
-                    // new user
-                    $parsedUser->setCreatedAt(new \DateTime());
-                    $parsedUser->setValid(false);
-                    $this->entityManager->persist($parsedUser);
-                    ++$stats['inserted'];
+                        $this->updateExistingUser($existingUser, $parsedUser);
+                        $this->entityManager->persist($existingUser);
+                        ++$stats['updated'];
+                    } else {
+                        // new user
+                        $parsedUser->setCreatedAt(new \DateTime());
+                        $parsedUser->setValid(false);
+                        $this->entityManager->persist($parsedUser);
+                        ++$stats['inserted'];
+                    }
                 }
 
                 try {
