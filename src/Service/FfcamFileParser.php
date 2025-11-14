@@ -8,7 +8,7 @@ use App\Utils\NicknameGenerator;
 class FfcamFileParser
 {
     /**
-     * @return \Generator<User>
+     * @throws \Exception
      */
     public function parse(string $filePath, string $fileType = 'annual'): \Generator
     {
@@ -21,11 +21,14 @@ class FfcamFileParser
             ++$lineNumber;
             try {
                 if ('discovery' === $fileType) {
-                    yield $this->parseDiscoveryLine($line, $lineNumber);
+                    $lineContent = $this->parseDiscoveryLine($line, $lineNumber);
+                } else {
+                    $lineContent = $this->parseLine($line, $lineNumber);
                 }
-                yield $this->parseLine($line, $lineNumber);
+                yield $lineContent;
             } catch (\Exception $err) {
                 \Sentry\captureException($err);
+                dump($err->getMessage());
                 continue;
             }
         }
@@ -80,6 +83,8 @@ class FfcamFileParser
             ->setJoinDate($joinDate)
             ->setRadiationDate($radiationDate)
             ->setRadiationReason($radiationReason ?: null)
+            ->setValidityDuration(null)
+            ->setNomade(false)
         ;
         // email des affiliés
         if (null !== $email && !empty($user->getCafnumParent())) {
@@ -110,25 +115,40 @@ class FfcamFileParser
         $birthdate = new \DateTimeImmutable(trim($line[4]));
         $joinDate = new \DateTimeImmutable(trim($line[2]) . ' ' . trim($line[3]));
 
+        $email = null;
+        if (!empty(trim($line[16]))) {
+            $email = strtolower(trim($line[16]));
+        }
+
         $user
             ->setCafnum(trim($line[0]))
             ->setFirstname($firstname)
             ->setLastname($lastname)
             ->setBirthdate($birthdate)
+            ->setCiv($this->normalizeNames(str_replace('MLLE', 'MME', trim($line[5]))))
+            ->setCafnumParent(null)
             ->setTel(trim($line[14]))
             ->setTel2(trim($line[18]))
-            ->setEmail(trim($line[16]))
+            ->setEmail($email)
             ->setAdresse(trim($line[8]) . " \n" . trim($line[9]) . " \n" . trim($line[10]) . " \n" . trim($line[11]))
             ->setCp($this->normalizeNames(trim($line[12])))
             ->setVille($this->normalizeNames(trim($line[13])))
             ->setNickname(NicknameGenerator::generateNickname($firstname, $lastname))
             ->setJoinDate($joinDate)
             ->setValidityDuration(trim($line[1]))
+            ->setDoitRenouveler(false)
+            ->setAlerteRenouveler(false)
+            ->setRadiationDate(null)
+            ->setRadiationReason(null)
+            ->setNomade(true)
         ;
 
         return $user;
     }
 
+    /**
+     * @throws \Exception
+     */
     private function validateDiscoveryLine(array $line, int $lineNumber): void
     {
         if (\count($line) < 24) {
@@ -139,7 +159,7 @@ class FfcamFileParser
         $birthday = $line[4];
 
         if (
-            !is_numeric($fullCafNum)
+            empty($fullCafNum)
             || !preg_match('#[0-9]{4}-[0-9]{2}-[0-9]{2}#', $birthday)
         ) {
             throw new \Exception("Can't process line $lineNumber : Multiple values are wrong");
