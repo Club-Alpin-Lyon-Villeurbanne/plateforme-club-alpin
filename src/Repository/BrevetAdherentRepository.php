@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\BrevetAdherent;
+use App\Entity\BrevetReferentiel;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,5 +19,18 @@ class BrevetAdherentRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, BrevetAdherent::class);
+    }
+
+    public function getDateByUserAndBrevet(User $user, BrevetReferentiel $brevet)
+    {
+        return $this->createQueryBuilder('b')
+            ->where('b.user = :user')
+            ->andWhere('b.brevet = :brevet')
+            ->setParameter('user', $user)
+            ->setParameter('brevet', $brevet)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
     }
 }
