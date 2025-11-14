@@ -8,9 +8,9 @@ use App\Utils\NicknameGenerator;
 class FfcamFileParser
 {
     /**
-     * @return \Generator<User>
+     * @throws \Exception
      */
-    public function parse(string $filePath): \Generator
+    public function parse(string $filePath, string $fileType = 'annual'): \Generator
     {
         if (!$handle = @fopen($filePath, 'r')) {
             throw new \Exception("Can't open '$filePath'");
@@ -20,9 +20,15 @@ class FfcamFileParser
         while (($line = fgets($handle)) !== false) {
             ++$lineNumber;
             try {
-                yield $this->parseLine($line, $lineNumber);
+                if ('discovery' === $fileType) {
+                    $lineContent = $this->parseDiscoveryLine($line, $lineNumber);
+                } else {
+                    $lineContent = $this->parseLine($line, $lineNumber);
+                }
+                yield $lineContent;
             } catch (\Exception $err) {
                 \Sentry\captureException($err);
+                dump($err->getMessage());
                 continue;
             }
         }
@@ -54,6 +60,11 @@ class FfcamFileParser
             $radiationDate = \DateTimeImmutable::createFromFormat('Y-m-d', $line[30]);
         }
 
+        $email = null;
+        if (!empty(trim($line[28]))) {
+            $email = strtolower(trim($line[28]));
+        }
+
         $user
             ->setCafnum(trim($line[0]))
             ->setFirstname($firstname)
@@ -72,9 +83,87 @@ class FfcamFileParser
             ->setJoinDate($joinDate)
             ->setRadiationDate($radiationDate)
             ->setRadiationReason($radiationReason ?: null)
+            ->setValidityDuration(null)
+            ->setNomade(false)
+        ;
+        // email des affiliés
+        if (null !== $email && !empty($user->getCafnumParent())) {
+            $user->setEmail('affilie.' . $user->getCafnum() . '-' . $email);
+        } else {
+            $user->setEmail($email);
+        }
+
+        return $user;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function parseDiscoveryLine(string $line, int $lineNumber): User
+    {
+        $line = mb_convert_encoding($line, 'UTF-8', 'ISO-8859-1');
+        $line = stripslashes($line);
+        $line = explode(';', $line);
+
+        $this->validateDiscoveryLine($line, $lineNumber);
+
+        $user = new User();
+
+        $firstname = ucfirst($this->normalizeNames(trim($line[7])));
+        $lastname = strtoupper($this->normalizeNames(trim($line[6])));
+
+        $birthdate = new \DateTimeImmutable(trim($line[4]));
+        $joinDate = new \DateTimeImmutable(trim($line[2]) . ' ' . trim($line[3]));
+
+        $email = null;
+        if (!empty(trim($line[16]))) {
+            $email = strtolower(trim($line[16]));
+        }
+
+        $user
+            ->setCafnum(trim($line[0]))
+            ->setFirstname($firstname)
+            ->setLastname($lastname)
+            ->setBirthdate($birthdate)
+            ->setCiv($this->normalizeNames(str_replace('MLLE', 'MME', trim($line[5]))))
+            ->setCafnumParent(null)
+            ->setTel(trim($line[14]))
+            ->setTel2(trim($line[18]))
+            ->setEmail($email)
+            ->setAdresse(trim($line[8]) . " \n" . trim($line[9]) . " \n" . trim($line[10]) . " \n" . trim($line[11]))
+            ->setCp($this->normalizeNames(trim($line[12])))
+            ->setVille($this->normalizeNames(trim($line[13])))
+            ->setNickname(NicknameGenerator::generateNickname($firstname, $lastname))
+            ->setJoinDate($joinDate)
+            ->setValidityDuration(trim($line[1]))
+            ->setDoitRenouveler(false)
+            ->setAlerteRenouveler(false)
+            ->setRadiationDate(null)
+            ->setRadiationReason(null)
+            ->setNomade(true)
         ;
 
         return $user;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function validateDiscoveryLine(array $line, int $lineNumber): void
+    {
+        if (\count($line) < 24) {
+            throw new \Exception("Can't process line $lineNumber : Invalid format. Expected : 24 columns. Got: " . \count($line));
+        }
+
+        $fullCafNum = $line[0];
+        $birthday = $line[4];
+
+        if (
+            empty($fullCafNum)
+            || !preg_match('#[0-9]{4}-[0-9]{2}-[0-9]{2}#', $birthday)
+        ) {
+            throw new \Exception("Can't process line $lineNumber : Multiple values are wrong");
+        }
     }
 
     private function validateLine(array $line, int $lineNumber): void
