@@ -102,6 +102,7 @@ class MemberMerger
         ->setRadiationReason($newCafUser->getRadiationReason())
             ->setEmail($newCafUser->getEmail())
             ->setValidityDuration($newCafUser->getValidityDuration())
+            ->setDiscoveryEndDatetime($newCafUser->getDiscoveryEndDatetime())
             ->setNomade($newCafUser->getNomade())
         ;
 

@@ -84,6 +84,7 @@ class FfcamFileParser
             ->setRadiationDate($radiationDate)
             ->setRadiationReason($radiationReason ?: null)
             ->setValidityDuration(null)
+            ->setDiscoveryEndDatetime(null)
             ->setNomade(false)
         ;
         // email des affiliés
@@ -114,6 +115,13 @@ class FfcamFileParser
 
         $birthdate = new \DateTimeImmutable(trim($line[4]));
         $joinDate = new \DateTimeImmutable(trim($line[2]) . ' ' . trim($line[3]));
+        $duration = trim($line[1]);
+        $endDate = (clone $joinDate)->modify('+' . $duration . ' hour');
+
+        $doitRenouveler = false;
+        if ($endDate < new \DateTimeImmutable()) {
+            $doitRenouveler = true;
+        }
 
         $email = null;
         if (!empty(trim($line[16]))) {
@@ -135,9 +143,10 @@ class FfcamFileParser
             ->setVille($this->normalizeNames(trim($line[13])))
             ->setNickname(NicknameGenerator::generateNickname($firstname, $lastname))
             ->setJoinDate($joinDate)
-            ->setValidityDuration(trim($line[1]))
-            ->setDoitRenouveler(false)
-            ->setAlerteRenouveler(false)
+            ->setValidityDuration($duration)
+            ->setDiscoveryEndDatetime($endDate)
+            ->setDoitRenouveler($doitRenouveler)
+            ->setAlerteRenouveler($doitRenouveler)
             ->setRadiationDate(null)
             ->setRadiationReason(null)
             ->setNomade(true)

@@ -236,6 +236,7 @@ class FfcamSynchronizer
             ->setRadiationDate($parsedUser->getRadiationDate())
             ->setRadiationReason($parsedUser->getRadiationReason())
             ->setValidityDuration($parsedUser->getValidityDuration())
+            ->setDiscoveryEndDatetime($parsedUser->getDiscoveryEndDatetime())
         ;
 
         // Si l'utilisateur est radié
