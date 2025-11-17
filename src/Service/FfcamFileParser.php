@@ -21,14 +21,12 @@ class FfcamFileParser
             ++$lineNumber;
             try {
                 if ('discovery' === $fileType) {
-                    $lineContent = $this->parseDiscoveryLine($line, $lineNumber);
+                    yield $this->parseDiscoveryLine($line, $lineNumber);
                 } else {
-                    $lineContent = $this->parseLine($line, $lineNumber);
+                    yield $this->parseLine($line, $lineNumber);
                 }
-                yield $lineContent;
             } catch (\Exception $err) {
                 \Sentry\captureException($err);
-                dump($err->getMessage());
                 continue;
             }
         }
