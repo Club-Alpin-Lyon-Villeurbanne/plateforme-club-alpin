@@ -181,6 +181,12 @@ class FfcamSynchronizer
             ->setRadiationDate($parsedUser->getRadiationDate())
             ->setRadiationReason($parsedUser->getRadiationReason())
         ;
+        // Si l'utilisateur est radié
+        if (null !== $parsedUser->getRadiationDate()) {
+            $existingUser
+                ->setDoitRenouveler(true)
+            ;
+        }
 
         // Ne pas effacer la date d'adhésion quand l'adhésion parsée est expirée (valeur nulle).
         // Conserver la date d'adhésion existante sauf si une nouvelle adhésion valide est fournie.

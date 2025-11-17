@@ -270,14 +270,14 @@ class UserController extends AbstractController
             throw new AccessDeniedHttpException('Not allowed');
         }
 
-        $myNomads = $userRepository->getNomads($this->getUser());
+        $nomads = $userRepository->getNomads();
 
         if (!$nomad) {
             $nomad = new User();
         }
 
         $form = $this->createForm(NomadeType::class, $nomad, [
-            'existing_users' => $myNomads,
+            'existing_users' => $nomads,
         ]);
 
         $form->handleRequest($request);
@@ -354,7 +354,7 @@ class UserController extends AbstractController
 
         return [
             'form' => $form,
-            'nomads' => $myNomads,
+            'nomads' => $nomads,
         ];
     }
 
