@@ -170,28 +170,19 @@ if (user()) {
             <br /><br />
 
             <hr style="margin: 20px 0" />
-
-        <div class="alerte info-container" style="width: 90%; margin-top: 10px;">
-            ⚠️
-            <div class="text-container">
-                Nous avons identifié des problèmes de non réception avec certains fournisseurs de messagerie, notamment Wanadoo, Orange et Free (même si cela fonctionne chez certains utilisateurs).<br>
-                Après investigation et signalement du problème aux services concernés, nous ne sommes malheureusement pas en mesure d'y remédier de notre côté.<br>
-                Nous vous recommandons de vérifier si nous ne sommes pas dans vos spams sinon, de changer d'hébergeur.
-            </div>
-        </div>
-
-            <hr style="margin: 20px 0" />
-            <h2 id="edit-password"><span class="bleucaf">&gt;</span>Modifier mon mot de passe</h2>
-            <p>
-                Vous pouvez modifier votre mot de passe <a href="<?php echo generateRoute('account_change_password'); ?>">sur cette page</a>.
-            </p>
-
-
-            <hr style="margin: 20px 0" />
             <h2 id="private"><span class="bleucaf">&gt;</span>Infos privées</h2>
 
             <div>
                 <?php inclure('infos-profil-coordonnees-perso-ffcam', 'vide'); ?>
+            </div>
+
+            <div class="alerte info-container" style="width: 90%; margin-top: 10px;">
+                ⚠️
+                <div class="text-container">
+                    Nous avons identifié des problèmes de non réception avec certains fournisseurs de messagerie, notamment Wanadoo, Orange et Free (même si cela fonctionne chez certains utilisateurs).<br>
+                    Après investigation et signalement du problème aux services concernés, nous ne sommes malheureusement pas en mesure d'y remédier de notre côté.<br>
+                    Nous vous recommandons de vérifier si nous ne sommes pas dans vos spams sinon, de changer d'hébergeur.
+                </div>
             </div>
 
             <br />
@@ -235,6 +226,12 @@ if (user()) {
                 <!-- <input type="text" name="tel2_user" class="type1" value="<?php echo html_utf8($tmpUser['tel2_user']); ?>" placeholder="" /> -->
                 <b><?php echo html_utf8($tmpUser['tel2_user']); ?></b>
             </div>
+            <br style="clear:both" />
+
+            <div style="float:left; width:45%; padding-right:5%; margin-top:10px">
+                Votre e-mail :<br />
+                <b><?php echo html_utf8($tmpUser['email_user']) ?></b>
+            </div>
 
             <div style="float:left; width:45%; padding-right:5%; margin-top:10px">
                 Votre date de naissance :<br />
@@ -251,6 +248,12 @@ if (user()) {
     echo html_utf8($tmpUser['ville_user']);
     echo '&nbsp;&nbsp;&nbsp;';
     echo html_utf8($tmpUser['pays_user']); ?></b>
+
+            <hr style="margin: 20px 0" />
+            <h2 id="edit-password"><span class="bleucaf">&gt;</span>Modifier mon mot de passe</h2>
+            <p>
+                Vous pouvez modifier votre mot de passe <a href="<?php echo generateRoute('account_change_password'); ?>">sur cette page</a>.
+            </p>
 
             <br /><br />
             <div style="text-align:center">
