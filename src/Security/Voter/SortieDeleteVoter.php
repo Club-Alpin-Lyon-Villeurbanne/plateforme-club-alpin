@@ -42,6 +42,10 @@ class SortieDeleteVoter extends Voter
             return false;
         }
 
+        if (!empty($subject->getExpenseReports())) {
+            return false;
+        }
+
         if ($user === $subject->getUser()) {
             return true;
         }
