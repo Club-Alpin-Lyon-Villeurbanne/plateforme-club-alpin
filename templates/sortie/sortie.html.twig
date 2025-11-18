@@ -476,6 +476,8 @@
                                                 title="A la date de la sortie, la licence de cet adhérent sera expirée s'il ne renouvelle pas d'ici là">Licence à renouveler (exp. 30/09)
                                             {% endif %}
                                             </p>
+                                        {% elseif participation.user.nomade %}
+                                            <p style="color:green" title="A la date de la sortie, la licence découverte de ce non-adhérent sera valide">🧐 Licence découverte valide</p>
                                         {% endif %}
                                     </td>
 
