@@ -99,13 +99,16 @@ class SortieController extends AbstractController
         }
 
         $originalEntityData = [];
+        $currentEncadrants = $currentCoencadrants = $currentStagiaires = null;
         if ($isUpdate) {
             $originalEntityData['ngensMax'] = $event->getngensMax();
             $originalEntityData['encadrants'] = [];
-            $currentEncadrants = $event->getEncadrants();
+            $currentEncadrants = $event->getEncadrants([EventParticipation::ROLE_ENCADRANT]);
             foreach ($currentEncadrants as $currentEncadrant) {
                 $originalEntityData['encadrants'][$currentEncadrant->getUser()->getId()] = $currentEncadrant->getRole();
             }
+            $currentStagiaires = $event->getEncadrants([EventParticipation::ROLE_STAGIAIRE]);
+            $currentCoencadrants = $event->getEncadrants([EventParticipation::ROLE_COENCADRANT]);
             $originalEntityData['hasPaymentForm'] = $event->hasPaymentForm();
             $originalEntityData['paymentAmount'] = $event->getPaymentAmount();
         }
@@ -143,17 +146,38 @@ class SortieController extends AbstractController
             }
             $newEncadrants = [];
             foreach ($rolesMap as $role => $roleName) {
-                $event->clearRoleParticipations($role);
                 if (!empty($formData[$roleName])) {
                     foreach ($formData[$roleName] as $participantId) {
-                        $newEncadrants[$participantId] = $role;
+                        $newEncadrants[$roleName][$participantId] = $role;
                         $participant = $entityManager->getRepository(User::class)->find($participantId);
                         // si ce participant est déjà inscrit, on met à jour son statut de participation
                         if ($participation = $event->getParticipation($participant)) {
-                            $event->removeParticipation($participation);
+                            $participation
+                                ->setRole($role)
+                                ->setStatus(EventParticipation::STATUS_VALIDE)
+                            ;
+                        } else {
+                            $event->addParticipation($participant, $role, EventParticipation::STATUS_VALIDE);
                         }
-                        $event->addParticipation($participant, $role, EventParticipation::STATUS_VALIDE);
                     }
+                }
+            }
+            // retirer les encadrants qui ne sont plus cochés
+            foreach ($currentEncadrants as $currentEncadrant) {
+                if (!in_array($currentEncadrant->getUser()->getId(), $formData['encadrants'], true)) {
+                    $event->removeParticipation($currentEncadrant);
+                }
+            }
+            // retirer les stagiaires qui ne sont plus cochés
+            foreach ($currentStagiaires as $currentStagiaire) {
+                if (!in_array($currentStagiaire->getUser()->getId(), $formData['initiateurs'], true)) {
+                    $event->removeParticipation($currentStagiaire);
+                }
+            }
+            // retirer les encadrants qui ne sont plus cochés
+            foreach ($currentCoencadrants as $currentEncadrant) {
+                if (!in_array($currentEncadrant->getUser()->getId(), $formData['coencadrants'], true)) {
+                    $event->removeParticipation($currentEncadrant);
                 }
             }
 
@@ -172,7 +196,7 @@ class SortieController extends AbstractController
                     && ($originalEntityData['ngensMax'] !== $event->getngensMax()
                     || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
                     || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
-                    || $originalEntityData['encadrants'] !== $newEncadrants)) {
+                    || $originalEntityData['encadrants'] !== $newEncadrants['encadrants'])) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
                 } else {
                     // on envoie directement le mail de mise à jour de sortie
