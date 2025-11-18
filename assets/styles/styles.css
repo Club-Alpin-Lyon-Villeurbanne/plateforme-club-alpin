@@ -58,7 +58,7 @@ ul.transport > li li{clear:both;width:auto;list-style-type:none;}
 ul.transport .parcours{margin-left:-25px;padding-top:5px;}
 ul.nice-list li b{color:#666666;}
 ul.nice-list li.wide{clear:both; width:584px;width:100%;box-sizing:border-box}
-.sitewidth{max-width:980px; margin:auto; text-align:left;}
+.sitewidth{min-width:980px; max-width:980px; margin:auto; text-align:left;}
 .fancypopup{max-width:700px; text-align:left;}
 form.running input[type="submit"], form.running input[type="submit"]:hover{background:url(../../public/img/base/travaux.gif); color:rgba(0,0,0,0.3); cursor:default !important;}
 .notification{font-family:Arial; padding:0 2px; margin-right:3px; text-decoration:none;color:#152200; background:white; border-radius:3px;}
