@@ -69,6 +69,7 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 					<?php require __DIR__ . '/../includes/user/infos_privees.php'; ?>
 				</div>
                 <br style="clear:both" />
+                <hr  />
 
                 <?php
                 // si j'ai acces ou si les données me concernent
@@ -81,7 +82,7 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
                     echo '<p>';
                     $total = $presences + $absences;
                     $fiabilite = $total > 0 ? round(($presences / $total) * 100) : 100;
-                    printf('<b>Taux de présence: %d%% - (%d absences sur %d sorties)</b>', $fiabilite, $absences, $total);
+                    printf('<b>Taux de présence : %d%% - (%d absences sur %d sorties)</b>', $fiabilite, $absences, $total);
                     if ($isMyProfile) {
                         echo '<br/>Ce taux donne une information sur le nombre d\'absences aux sorties auxquelles vous êtes inscrit.e.<br/>Il n\'est visible que par les encadrant.es.<br />Vous pouvez consulter la liste des sorties où vous avez été absent.e sur <a href="profil/sorties/prev"/>la page de vos sorties passées</a>.';
                     }
@@ -94,6 +95,11 @@ while ($row = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 				<?php
                 // REQUETES SQL POUR LES SORTIES :
                 display_sorties($id_user, 200, 'Ses sorties');
+                ?>
+
+            <br style="clear:both" />
+            <hr  />
+            <?php
                 // REQUETES SQL POUR LES ARTICLES :
                 display_articles($id_user, 200, 'Ses articles');
             }
