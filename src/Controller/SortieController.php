@@ -163,21 +163,27 @@ class SortieController extends AbstractController
                 }
             }
             // retirer les encadrants qui ne sont plus cochés
-            foreach ($currentEncadrants as $currentEncadrant) {
-                if (!in_array($currentEncadrant->getUser()->getId(), $formData['encadrants'], true)) {
-                    $event->removeParticipation($currentEncadrant);
+            if (!empty($currentEncadrants)) {
+                foreach ($currentEncadrants as $currentEncadrant) {
+                    if (!in_array($currentEncadrant->getUser()->getId(), $formData['encadrants'], true)) {
+                        $event->removeParticipation($currentEncadrant);
+                    }
                 }
             }
             // retirer les stagiaires qui ne sont plus cochés
-            foreach ($currentStagiaires as $currentStagiaire) {
-                if (!in_array($currentStagiaire->getUser()->getId(), $formData['initiateurs'], true)) {
-                    $event->removeParticipation($currentStagiaire);
+            if (!empty($currentStagiaires)) {
+                foreach ($currentStagiaires as $currentStagiaire) {
+                    if (!in_array($currentStagiaire->getUser()->getId(), $formData['initiateurs'], true)) {
+                        $event->removeParticipation($currentStagiaire);
+                    }
                 }
             }
             // retirer les encadrants qui ne sont plus cochés
-            foreach ($currentCoencadrants as $currentEncadrant) {
-                if (!in_array($currentEncadrant->getUser()->getId(), $formData['coencadrants'], true)) {
-                    $event->removeParticipation($currentEncadrant);
+            if (!empty($currentCoencadrants)) {
+                foreach ($currentCoencadrants as $currentEncadrant) {
+                    if (!in_array($currentEncadrant->getUser()->getId(), $formData['coencadrants'], true)) {
+                        $event->removeParticipation($currentEncadrant);
+                    }
                 }
             }
 
