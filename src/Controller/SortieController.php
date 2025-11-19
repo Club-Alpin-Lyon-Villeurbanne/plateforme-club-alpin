@@ -163,25 +163,25 @@ class SortieController extends AbstractController
                 }
             }
             // retirer les encadrants qui ne sont plus cochés
-            if (!empty($currentEncadrants)) {
+            if ($isUpdate && !empty($currentEncadrants)) {
                 foreach ($currentEncadrants as $currentEncadrant) {
-                    if (!in_array($currentEncadrant->getUser()->getId(), $formData['encadrants'], true)) {
+                    if (!in_array($currentEncadrant->getUser()->getId(), $formData['encadrants'], false)) {
                         $event->removeParticipation($currentEncadrant);
                     }
                 }
             }
             // retirer les stagiaires qui ne sont plus cochés
-            if (!empty($currentStagiaires)) {
+            if ($isUpdate && !empty($currentStagiaires)) {
                 foreach ($currentStagiaires as $currentStagiaire) {
-                    if (!in_array($currentStagiaire->getUser()->getId(), $formData['initiateurs'], true)) {
+                    if (!in_array($currentStagiaire->getUser()->getId(), $formData['initiateurs'], false)) {
                         $event->removeParticipation($currentStagiaire);
                     }
                 }
             }
             // retirer les encadrants qui ne sont plus cochés
-            if (!empty($currentCoencadrants)) {
+            if ($isUpdate && !empty($currentCoencadrants)) {
                 foreach ($currentCoencadrants as $currentEncadrant) {
-                    if (!in_array($currentEncadrant->getUser()->getId(), $formData['coencadrants'], true)) {
+                    if (!in_array($currentEncadrant->getUser()->getId(), $formData['coencadrants'], false)) {
                         $event->removeParticipation($currentEncadrant);
                     }
                 }
