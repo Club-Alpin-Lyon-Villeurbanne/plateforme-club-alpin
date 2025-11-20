@@ -342,4 +342,9 @@ class Article
 
         return $this;
     }
+
+    public function isPublic(): bool
+    {
+        return self::STATUS_PUBLISHED === $this->status;
+    }
 }
