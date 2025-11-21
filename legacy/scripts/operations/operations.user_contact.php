@@ -18,7 +18,7 @@ if (strlen($objet) < 4) {
     $errTab[] = 'Veuillez entrer un objet de plus de 4 caractères';
 }
 if (strlen($message) < 10) {
-    $errTab[] = 'Veuillez entrer un message valide';
+    $errTab[] = 'Veuillez entrer un message plus long';
 }
 
 // vérifications si contact non-user
@@ -111,7 +111,7 @@ if (!isset($errTab) || 0 === count($errTab)) {
         'contact_name' => $nom,
         'contact_shortname' => $shortName,
         'contact_email' => $email,
-        'contact_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $expediteur['id_user'] . '.html',
+        'contact_url' => LegacyContainer::get('legacy_router')->generate('user_full', ['id' => $expediteur['id_user']]),
         'contact_objet' => $objet,
         'message' => $message,
         'eventName' => $event ? $event['titre_evt'] : '',
