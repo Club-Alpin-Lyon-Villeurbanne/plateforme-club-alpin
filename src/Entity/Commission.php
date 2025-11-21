@@ -80,6 +80,9 @@ class Commission
     #[ORM\Column(name: 'code_ffcam_formation', type: Types::STRING, length: 2, nullable: true)]
     private ?string $codeFfcamFormation = null;
 
+    #[ORM\Column(name: 'code_ffcam_groupe_competence', type: Types::STRING, length: 2, nullable: true)]
+    private ?string $codeFfcamGroupeCompetence = null;
+
     public function __construct(string $title, string $code, int $ordre)
     {
         $this->title = $title;
@@ -201,6 +204,18 @@ class Commission
     public function setCodeFfcamFormation(?string $codeFfcamFormation): self
     {
         $this->codeFfcamFormation = $codeFfcamFormation;
+
+        return $this;
+    }
+
+    public function getCodeFfcamGroupeCompetence(): ?string
+    {
+        return $this->codeFfcamGroupeCompetence;
+    }
+
+    public function setCodeFfcamGroupeCompetence(?string $codeFfcamGroupeCompetence): self
+    {
+        $this->codeFfcamGroupeCompetence = $codeFfcamGroupeCompetence;
 
         return $this;
     }

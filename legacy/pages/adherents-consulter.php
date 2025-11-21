@@ -127,7 +127,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 			<?php
                 printTableRow('<img src="' . userImg($userTab['id_user'], 'pic') . '" alt="" title="" style="max-width:100%" />', '<h1>' . ucfirst($userTab['firstname_user']) . ' ' . strtoupper($userTab['lastname_user']) . '</h1>');
 
-    $rowValue = '<a href="/user-full/' . $userTab['id_user'] . '.html" title="Fiche profil" target="_top">' . $userTab['nickname_user'] . '</a>';
+    $rowValue = '<a href="' . LegacyContainer::get('legacy_router')->generate('user_full', ['id' => $userTab['id_user']]) . '" title="Fiche profil" target="_top">' . $userTab['nickname_user'] . '</a>';
     // possibilite de supprimer le user si pas de sortie ni articles
     if (isGranted(SecurityConstants::ROLE_ADMIN) && !is_array($userTab['sorties']) && !is_array($userTab['articles'])) {
         $rowValue .= '&nbsp;&nbsp;&nbsp;<a href="/includer.php?p=pages/adherents-supprimer.php&amp;id_user=' . (int) $userTab['id_user'] . '&amp;nom=' . urlencode(ucfirst($userTab['firstname_user']) . ' ' . strtoupper($userTab['lastname_user'])) . '" title="Supprimer le compte de cet utilisateur"><img src="/img/base/user_delete.png" alt="SUPPRIMER" title=""></a> ';

@@ -12,11 +12,13 @@
                     <td>
                         {{ commission.title }}
                     </td>
-                    <td>
-                        <a href="{{ path('commission_configuration', {'id': commission.id}) }}" title="Configurer les champs obligatoires pour {{ commission.title }}">
-                            ⚙️ Configurer
-                        </a>
-                    </td>
+                    {% if allowed('commission_config') %}
+                        <td>
+                            <a href="{{ path('commission_configuration', {'id': commission.id}) }}" title="Configurer les champs obligatoires pour {{ commission.title }}">
+                                ⚙️ Configurer
+                            </a>
+                        </td>
+                    {% endif %}
                     <td>
                         {% if commission.codeFfcamBrevet or commission.codeFfcamNiveau or commission.codeFfcamFormation %}
                             <a href="{{ path('commission_brevet', {'id': commission.id}) }}" title="Voir les brevets & formations du staff de {{ commission.title }}">
