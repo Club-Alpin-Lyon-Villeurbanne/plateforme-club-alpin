@@ -152,7 +152,7 @@ class ArticleController extends AbstractController
     #[Template('article/article.html.twig')]
     public function article(Article $article, ArticleRepository $articleRepository, CommentRepository $commentRepository): array
     {
-        if (!$this->isGranted('ARTICLE_VIEW', $article) || !$article->isPublic()) {
+        if (!$this->isGranted('ARTICLE_VIEW', $article)) {
             throw new AccessDeniedHttpException('Not found');
         }
 
