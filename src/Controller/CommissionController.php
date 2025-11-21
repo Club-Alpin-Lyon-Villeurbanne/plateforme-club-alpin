@@ -8,7 +8,6 @@ use App\Entity\UserAttr;
 use App\Entity\Usertype;
 use App\Helper\EventFormHelper;
 use App\Helper\MonthHelper;
-use App\Legacy\LegacyContainer;
 use App\Mailer\Mailer;
 use App\Repository\BrevetReferentielRepository;
 use App\Repository\CommissionRepository;
@@ -123,7 +122,7 @@ class CommissionController extends AbstractController
             throw new AccessDeniedHttpException('Not allowed');
         }
 
-        $myCommissionsCodes = $userRights->getCommissionListForRight('commission_config');
+        $myCommissionsCodes = $userRights->getCommissionListForRight('commission_list');
 
         return [
             'commissions' => $commissionRepository->findBy(['code' => $myCommissionsCodes, 'vis' => true], ['title' => 'ASC']),
@@ -178,7 +177,7 @@ class CommissionController extends AbstractController
                         [
                             'commission' => $commission->getTitle(),
                             'user' => $this->getUser()->getFullName(),
-                            'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $this->getUser()->getId() . '.html',
+                            'profile_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                         ]
                     );
                 }
