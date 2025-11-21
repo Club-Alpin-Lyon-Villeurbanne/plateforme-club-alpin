@@ -135,17 +135,6 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     printTableRow('Pseudo :', $rowValue);
 
     $rowValue = $userTab['cafnum_user'];
-    if (0 == $userTab['valid_user'] && '' !== $userTab['cookietoken_user']) {
-        $rowValue .= '<br />URL d\'activation du compte : ';
-        if (isGranted(SecurityConstants::ROLE_ADMIN)) {
-            $rowValue .= '<a href="' . LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-confirm/' . $userTab['cookietoken_user'] . '-' . $userTab['id_user'] . '.html">';
-        }
-        $rowValue .= LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-confirm/' . $userTab['cookietoken_user'] . '-' . $userTab['id_user'] . '.html';
-        if (isGranted(SecurityConstants::ROLE_ADMIN)) {
-            $rowValue .= '</a>';
-        }
-        $rowValue .= '<br />';
-    }
     printTableRow('Numéro de licence :', $rowValue);
 
     $rowValue = '';
@@ -203,7 +192,6 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     if ($userTab['nomade_user']) {
         printTableRow('Nomade :', 'OUI&nbsp;&nbsp;&nbsp;<img src="/img/base/nomade_user.png">');
     }
-    printTableRow('Statut compte internet :', (1 == $userTab['valid_user']) ? 'ACTIVÉ' : 'NON ACTIVÉ');
     if ($userTab['created_at']) {
         printTableRow('Insertion en base :', (new \DateTime($userTab['created_at']))?->format('d/m/Y'));
     }

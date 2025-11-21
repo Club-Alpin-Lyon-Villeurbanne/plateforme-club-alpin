@@ -147,7 +147,6 @@ class FfcamSynchronizer
                     } else {
                         // new user
                         $parsedUser->setCreatedAt(new \DateTime());
-                        $parsedUser->setValid(false);
                         $this->entityManager->persist($parsedUser);
                         ++$stats['inserted'];
                     }
