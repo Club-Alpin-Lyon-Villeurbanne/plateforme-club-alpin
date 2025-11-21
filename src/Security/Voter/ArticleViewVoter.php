@@ -30,6 +30,8 @@ class ArticleViewVoter extends Voter
         $user = $token->getUser();
         if ($user && $subject->getUser() === $user) {
             return true;
+        } elseif (!$subject->isPublic()) {
+            return false;
         }
 
         $commission = $subject->getCommission();
