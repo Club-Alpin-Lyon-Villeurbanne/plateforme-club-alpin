@@ -18,4 +18,19 @@ class BrevetReferentielRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, BrevetReferentiel::class);
     }
+
+    public function getAllBrevetsByCommissionCode(string $code)
+    {
+        $codePattern = 'BF%-' . $code . '%';
+
+        return $this->createQueryBuilder('b')
+            ->where('b.codeBrevet LIKE :pattern')
+            ->andWhere('b.codeBrevet NOT LIKE :code')
+            ->setParameter('pattern', $codePattern)
+            ->setParameter('code', 'BFM-%')
+            ->orderBy('b.codeBrevet', 'desc')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

@@ -15,4 +15,15 @@ class FormationCompetenceReferentielRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, FormationCompetenceReferentiel::class);
     }
+
+    public function getAllCompetencesByCommissionCode(string $code)
+    {
+        return $this->createQueryBuilder('f')
+            ->where('f.codeActivite LIKE :pattern')
+            ->setParameter('pattern', $code)
+            ->orderBy('f.intitule', 'asc')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

@@ -15,4 +15,17 @@ class FormationReferentielRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, FormationReferentiel::class);
     }
+
+    public function getAllFormationsByCommissionCode(string $code)
+    {
+        $codePattern = 'STG-F' . $code . '%';
+
+        return $this->createQueryBuilder('f')
+            ->where('f.codeFormation LIKE :pattern')
+            ->setParameter('pattern', $codePattern)
+            ->orderBy('f.codeFormation', 'asc')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
