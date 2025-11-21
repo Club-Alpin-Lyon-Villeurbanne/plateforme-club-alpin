@@ -107,11 +107,6 @@ elseif ('user_update' == $operation) {
     require $operationsDir . 'operations.user_update.php';
 }
 
-// USER : TENTATIVE D'INSCRIPTION
-elseif ('user_subscribe' == $operation) {
-    require $operationsDir . 'operations.user_subscribe.php';
-}
-
 // USER : ajout de l'attribut à l'user (type salarié, encadrant etc...)
 elseif ('user_attr_add' == $operation) {
     require $operationsDir . 'operations.user_attr_add.php';
