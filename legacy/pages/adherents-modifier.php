@@ -98,12 +98,6 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
         } ?>
 			</b><br />
 
-			<?php
-            if (isset($validUser) && 1 != $validUser) {
-                // compte non actif pour le moment (0 inactif, 1 actif)
-                echo '<br />URL d\'activation du compte : ' . LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-confirm/' . $userTab['cookietoken_user'] . '-' . $idUser . '.html<br />';
-            } ?>
-
 			<br />
 			E-mail * :<br />
 			<input type="text" name="email_user" class="type1" value="<?php echo $userEmail; ?>" placeholder="" />
