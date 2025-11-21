@@ -1,20 +1,32 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des commissions{% endblock %}
+{% block title %}Liste de mes commissions{% endblock %}
 
 {% block body %}
 <div id="left1">
     <div class="main-type">
-        <h1>Liste des commissions</h1>
-        <ul>
+        <h1>Liste de mes commissions</h1>
+        <table class="table-striped">
             {% for commission in commissions %}
-                <li>
-                    <a href="{{ path('commission_configuration', {'id': commission.id}) }}" title="Configurer les champs obligatoires pour {{ commission.title }}">
-                        ⚙️ {{ commission.title }}
-                    </a>
-                </li>
+                <tr>
+                    <td>
+                        {{ commission.title }}
+                    </td>
+                    <td>
+                        <a href="{{ path('commission_configuration', {'id': commission.id}) }}" title="Configurer les champs obligatoires pour {{ commission.title }}">
+                            ⚙️ Configurer
+                        </a>
+                    </td>
+                    <td>
+                        {% if commission.codeFfcamBrevet or commission.codeFfcamNiveau or commission.codeFfcamFormation %}
+                            <a href="{{ path('commission_brevet', {'id': commission.id}) }}" title="Voir les brevets & formations du staff de {{ commission.title }}">
+                                🎓 Brevets
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
             {% endfor %}
-        </ul>
+        </table>
     </div>
 </div>
 {% endblock %}

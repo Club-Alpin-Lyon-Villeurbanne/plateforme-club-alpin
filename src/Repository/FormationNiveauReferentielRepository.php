@@ -15,4 +15,15 @@ class FormationNiveauReferentielRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, FormationNiveauReferentiel::class);
     }
+
+    public function getAllNiveauxByCommissionCode(string $code)
+    {
+        return $this->createQueryBuilder('b')
+            ->where('b.codeActivite = :code')
+            ->setParameter('code', $code)
+            ->orderBy('b.niveauCourt', 'asc')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
