@@ -257,6 +257,13 @@ if (user()) {
     echo '&nbsp;&nbsp;&nbsp;';
     echo html_utf8($tmpUser['pays_user']); ?></b>
 
+            <br /><br />
+            <div style="text-align:center">
+                <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+                    <span class="bleucaf">&gt;</span>
+                    ENREGISTRER MES INFORMATIONS
+                </a>
+            </div>
             <br />
             <br />
         </form>
