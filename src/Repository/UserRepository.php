@@ -361,6 +361,7 @@ SQL;
     {
         $qb = $this
             ->createQueryBuilder('u')
+            ->distinct(true)
             ->leftJoin(Article::class, 'a', Join::WITH, 'u.id = a.user')
             ->leftJoin(Comment::class, 'c', Join::WITH, 'u.id = c.user')
             ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
