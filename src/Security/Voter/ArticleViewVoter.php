@@ -31,6 +31,9 @@ class ArticleViewVoter extends Voter
         if ($user && $subject->getUser() === $user) {
             return true;
         }
+        if (!$subject->isPublic()) {
+            return false;
+        }
 
         $commission = $subject->getCommission();
         if (null === $commission && $subject->getEvt()) {
