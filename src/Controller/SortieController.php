@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Form\EventType;
 use App\Helper\RoleHelper;
+use App\Helper\SlugHelper;
 use App\Legacy\LegacyContainer;
 use App\Mailer\Mailer;
 use App\Messenger\Message\SortiePubliee;
@@ -36,7 +37,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -50,6 +50,7 @@ use Twig\Error\SyntaxError;
 class SortieController extends AbstractController
 {
     public function __construct(
+        protected SlugHelper $slugHelper,
         protected float $defaultLat,
         protected float $defaultLong,
         protected string $defaultAppointmentPlace,
@@ -64,7 +65,6 @@ class SortieController extends AbstractController
     public function create(
         Request $request,
         ManagerRegistry $doctrine,
-        SluggerInterface $slugger,
         CommissionRepository $commissionRepository,
         UserRights $userRights,
         Mailer $mailer,
@@ -193,7 +193,7 @@ class SortieController extends AbstractController
             $event->setDistance($formData['distance']);
 
             if (!$isUpdate) {
-                $event->setCode(strtolower(substr($slugger->slug($event->getTitre(), '-'), 0, 30)));
+                $event->setCode($this->slugHelper->generateSlug($event->getTitre()));
             } else {
                 $event->setUpdatedAt(new \DateTime());
 
@@ -849,7 +849,6 @@ class SortieController extends AbstractController
     #[Route(path: '/sortie/{id}/printPDF', name: 'sortie_pdf', requirements: ['id' => '\d+'])]
     public function generatePdf(
         PdfGenerator $pdfGenerator,
-        SluggerInterface $slugger,
         Request $request,
         Environment $twig,
         UserAttrRepository $userAttrRepository,
@@ -862,17 +861,17 @@ class SortieController extends AbstractController
         $eventData = $this->eventDetails($request, $event, $userAttrRepository, true);
         $html = $twig->render('sortie/feuille-sortie.html.twig', $eventData);
 
-        return $pdfGenerator->generatePdf($html, $this->getFilename($event->getTitre(), $slugger) . '.pdf');
+        return $pdfGenerator->generatePdf($html, $this->getFilename($event->getTitre()) . '.pdf');
     }
 
     #[Route(path: '/sortie/{id}/printXLSX', name: 'sortie_xlsx', requirements: ['id' => '\d+'])]
-    public function generateXLSX(ExcelExport $excelExport, Evt $event, EventParticipationRepository $participationRepository, SluggerInterface $slugger): Response
+    public function generateXLSX(ExcelExport $excelExport, Evt $event, EventParticipationRepository $participationRepository): Response
     {
         $datas = $participationRepository->getSortedParticipations($event, null, EventParticipation::STATUS_VALIDE, true);
 
         $rsm = [' ', 'PARTICIPANTS (PRÉNOM, NOM)', 'LICENCE', 'AGE', 'TÉL.', 'TÉL. SECOURS', 'EMAIL'];
 
-        return $excelExport->export(substr($slugger->slug($event->getTitre(), '-'), 0, 20), $datas, $rsm, $this->getFilename($event->getTitre(), $slugger));
+        return $excelExport->export($this->slugHelper->generateSlug($event->getTitre(), 20), $datas, $rsm, $this->getFilename($event->getTitre()));
     }
 
     #[Route(path: '/sortie/{id}/rejoindre', name: 'join_event', requirements: ['id' => '\d+'], methods: ['POST'])]
@@ -1133,9 +1132,9 @@ class SortieController extends AbstractController
         return $this->redirectToRoute('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
     }
 
-    protected function getFilename(string $eventTitle, SluggerInterface $slugger): string
+    protected function getFilename(string $eventTitle): string
     {
-        return substr($slugger->slug($eventTitle, '-'), 0, 20) . '.' . date('Y-m-d.H-i-s');
+        return $this->slugHelper->generateSlug($eventTitle, 20) . '.' . date('Y-m-d.H-i-s');
     }
 
     protected function sendUpdateNotificationEmail(Mailer $mailer, ?Evt $event = null, bool $isNewEvent = true): void
