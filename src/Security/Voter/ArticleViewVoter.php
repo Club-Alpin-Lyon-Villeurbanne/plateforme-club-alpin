@@ -31,19 +31,27 @@ class ArticleViewVoter extends Voter
         if ($user && $subject->getUser() === $user) {
             return true;
         }
-        if (!$subject->isPublic()) {
-            return false;
-        }
 
         $commission = $subject->getCommission();
         if (null === $commission && $subject->getEvt()) {
             $commission = $subject->getEvt()->getCommission();
         }
-        if ($commission && $this->userRights->allowedOnCommission('article_read', $commission)) {
+
+        if (
+            !$subject->isPublic()
+            && (
+                $commission && !$this->userRights->allowedOnCommission('article_validate', $commission)
+                && !$this->userRights->allowed('article_validate_all')
+            )
+        ) {
+            return false;
+        }
+
+        if ($commission && $this->userRights->allowedOnCommission('article_read', $commission) || $this->userRights->allowedOnCommission('article_validate', $commission)) {
             return true;
         }
 
-        if ($this->userRights->allowed('article_read')) {
+        if ($this->userRights->allowed('article_read') || $this->userRights->allowed('article_validate_all')) {
             return true;
         }
 
