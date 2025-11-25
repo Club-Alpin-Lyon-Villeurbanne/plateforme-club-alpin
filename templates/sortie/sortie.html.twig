@@ -999,9 +999,6 @@
 
         {% if not event.cancelled %}
             {% set nPlacesRestantesOnline = max(0, event.joinMax - nInscritsTotal) %}
-            {% if event.withWaitingList() %}
-                {% set nPlacesRestantesOnline = max(0, event.ngensMax - nInscritsTotal) %}
-            {% endif %}
             {% set nEnAttente = event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length %}
 
             <hr />
