@@ -357,19 +357,19 @@ class EventType extends AbstractType
                 ->add('hasPaymentForm', CheckboxType::class, [
                     'label' => 'Créer un événement HelloAsso pour cette sortie',
                     'required' => false,
-                    'help' => 'Cette option permet de créer automatiquement un événement dans HelloAsso pour les paiements en ligne.',
+                    'help' => 'Cette option permet de créer automatiquement un événement sur HelloAsso pour les paiements en ligne.',
                     'help_attr' => [
                         'class' => 'mini',
                     ],
                 ])
                 ->add('paymentAmount', NumberType::class, [
-                    'label' => 'Montant de l\'événement HelloAsso <span class="revalidation">*</span>',
+                    'label' => 'Montant à régler sur HelloAsso <span class="revalidation">*</span>',
                     'label_html' => true,
                     'attr' => [
                         'placeholder' => 'ex : 35.50',
                         'class' => 'type2',
                     ],
-                    'help' => 'Ce montant sera demandé aux participants lors de leur inscription sur HelloAsso',
+                    'help' => 'Ce montant sera à régler sur HelloAsso par chaque participant lors de son inscription.',
                     'help_attr' => [
                         'class' => 'mini',
                     ],
@@ -384,7 +384,7 @@ class EventType extends AbstractType
                 ->add('hasPaymentSendMail', CheckboxType::class, [
                     'label' => 'Envoyer le lien de paiement automatiquement',
                     'required' => false,
-                    'help' => 'Cette option permet d\'envoyer automatiquement le lien de paiement HelloAsso aux participants lorsqu\'ils sont acceptés.',
+                    'help' => 'Cette option permet d\'envoyer automatiquement le lien de paiement HelloAsso à chaque participant lorsqu\'il/elle est accepté.e.',
                     'help_attr' => [
                         'class' => 'mini',
                     ],
