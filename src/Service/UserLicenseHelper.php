@@ -40,4 +40,12 @@ class UserLicenseHelper
 
         return (int) strtotime("$year-" . self::LICENSE_PERIOD_END);
     }
+
+    public function getLicenseExpirationDate(int $nbSeasonsToKeep = 2): ?\DateTime
+    {
+        $today = new \DateTime();
+        $year = ($today->format('m') >= self::LICENSE_TOLERANCY_PERIOD_END_MONTH) ? (int) $today->format('Y') - 2 : $today->format('Y') - 3;
+
+        return new \DateTime("$year-" . self::LICENSE_PERIOD_END);
+    }
 }

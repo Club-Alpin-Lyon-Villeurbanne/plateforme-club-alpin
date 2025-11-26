@@ -59,15 +59,15 @@ if (!isset($errTab) || 0 === count($errTab)) {
 if (!isset($errTab) || 0 === count($errTab)) {
     $mdp_user = LegacyContainer::get('legacy_hasher_factory')->getPasswordHasher('login_form')->hash($mdp_user);
 
-    // vérification anti doublon d'email (seulement sur comptes confirmés)
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE email_user = ? AND valid_user = 1');
+    // vérification anti doublon d'email
+    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE email_user = ?');
     $stmt->bind_param('s', $email_user);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_row();
     $stmt->close();
     if ($row[0]) {
-        $errTab[] = 'Un compte validé existe déjà avec cette adresse e-mail. Avez-vous <a href="' . generateRoute('session_password_lost') . '" class="fancyframe" title="">oublié le mot de passe ?</a>';
+        $errTab[] = 'Un compte existe déjà avec cette adresse e-mail. Avez-vous <a href="' . generateRoute('session_password_lost') . '" class="fancyframe" title="">oublié le mot de passe ?</a>';
     } else {
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("INSERT INTO `caf_user` (`email_user`, `mdp_user`, `cafnum_user`, `firstname_user`, `lastname_user`, `nickname_user`, `birthdate`, `tel_user`, `tel2_user`, `adresse_user`, `cp_user`, `ville_user`, `pays_user`, `moreinfo_user`, `valid_user`, `cookietoken_user`, `manuel_user`, cafnum_parent_user, nomade_user, nomade_parent_user, doit_renouveler_user, alerte_renouveler_user, created_at, updated_at)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', '1', '', '1', null, '0', '0', '0', '0', NOW(), NOW())");
