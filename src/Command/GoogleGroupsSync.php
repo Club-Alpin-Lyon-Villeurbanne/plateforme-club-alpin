@@ -244,8 +244,28 @@ class GoogleGroupsSync extends Command
         $this->upsertMemberToGoogleGroup($existingCommissionsAll, self::ALL_COMMISSIONS_ADRESSE, $groupKey);
     }
 
+    private function normalizeEmail(string $email): string
+    {
+        $email = strtolower(trim($email));
+
+        if (!str_ends_with($email, '@gmail.com') && !str_ends_with($email, '@googlemail.com')) {
+            return $email;
+        }
+
+        [$local, $domain] = explode('@', $email, 2);
+
+        // remove dots
+        $local = str_replace('.', '', $local);
+
+        // remove +tag
+        $local = preg_replace('/\+.*/', '', $local);
+
+        return $local . '@' . $domain;
+    }
+
     private function upsertMemberToGoogleGroup(array $existingMembers, string $groupKey, string $email, string $type = 'MEMBER'): void
     {
+        $email = $this->normalizeEmail($email);
         if (!isset($existingMembers[$email])) {
             $member = new Member();
             $member->setEmail($email);
