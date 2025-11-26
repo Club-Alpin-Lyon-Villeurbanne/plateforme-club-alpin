@@ -53,6 +53,7 @@ parameters:
   hello_asso_organization_slug: '%env(HELLO_ASSO_ORGANIZATION_SLUG)%'
   hello_asso_api_base_url: '%env(HELLO_ASSO_API_BASE_URL)%'
   hello_asso_activity_type_id: '%env(int:HELLO_ASSO_ACTIVITY_TYPE_ID)%'
+  metabase_secret_key: '%env(METABASE_SECRET_KEY)%'
 
 services:
   # default configuration for services in *this* file
