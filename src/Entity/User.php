@@ -66,13 +66,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[Ignore]
     private $mdp;
 
-    /**
-     * @var string
-     */
-    #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, nullable: true, unique: true, options: ['comment' => 'Numéro de licence'])]
+    #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, unique: true, nullable: false, options: ['comment' => 'Numéro de licence'])]
     #[Groups('user:details')]
     #[SerializedName('numeroLicence')]
-    private $cafnum;
+    private string $cafnum;
 
     /**
      * @var string
@@ -383,7 +380,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this->cafnum;
     }
 
-    public function setCafnum(?string $cafnum): self
+    public function setCafnum(string $cafnum): self
     {
         $this->cafnum = $cafnum;
 
