@@ -331,13 +331,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return null;
     }
 
-    public function addAttribute(Usertype $userType, ?string $params = null): void
+    public function addAttribute(Usertype $userType, ?string $params = null, ?string $description = null): void
     {
         if ($userType->getLimitedToComm() && null === $params) {
             throw new \InvalidArgumentException('User type is limited to commission.');
         }
 
-        $this->attrs->add(new UserAttr($this, $userType, $params));
+        $attr = new UserAttr($this, $userType, $params);
+        if (!empty($description)) {
+            $attr->setDescription($description);
+        }
+
+        // éviter les doublons
+        $commissionCode = str_replace('commission:', '', $params);
+        if (!$this->getAttribute($userType->getCode(), $commissionCode)) {
+            $this->attrs->add($attr);
+        }
     }
 
     public function getId(): ?int

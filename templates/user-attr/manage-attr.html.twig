@@ -1,0 +1,157 @@
+{% extends 'base-light.html.twig' %}
+
+{% block title %}Attribution de responsabilités à un adhérent{% endblock %}
+
+{% block body %}
+    <div id="includer-stuff">
+        <h1>Attribution de responsabilités à l'adhérent : {{ user.fullname }}</h1>
+
+        {% if user_rights is not same as ('') %}
+            <h2>Responsabilités actuelles :</h2>
+            <ul>
+                {% for right in user_rights %}
+                    {% set delete_right = false %}
+
+                    {% if right.code is same as('encadrant') and allowed('comm_delier_encadrant', right.params) %}
+                        {% set delete_right = true %}
+                    {% endif %}
+                    {% if right.code is same as('stagiaire') and allowed('comm_delier_encadrant', right.params) %}
+                        {% set delete_right = true %}
+                    {% endif %}
+                    {% if right.code is same as('benevole_encadrement') and allowed('user_giveright_1', right.params) %}
+                        {% set delete_right = true %}
+                    {% endif %}
+                    {% if right.code is same as('coencadrant') and allowed('user_giveright_1', right.params) %}
+                        {% set delete_right = true %}
+                    {% endif %}
+                    {% if right.code is same as('redacteur') and allowed('user_giveright_1', right.params) %}
+                        {% set delete_right = true %}
+                    {% endif %}
+                    {% if right.code is same as('salarie') and allowed('user_giveright_2', right.params) %}
+                        {% set delete_right = true %}
+                    {% endif %}
+                    {% if right.code is same as('responsable-commission') and allowed('comm_delier_responsable', right.params) %}
+                        {% set delete_right = true %}
+                    {% endif %}
+                    {% if right.code is same as('vice-president') and allowed('user_givepresidence', right.params) %}
+                        {% set delete_right = true %}
+                    {% endif %}
+                    {% if right.code is same as('president') and allowed('user_givepresidence', right.params) %}
+                        {% set delete_right = true %}
+                    {% endif %}
+                    {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) and right.code is not same as('adherent') %}
+                        {% set delete_right = true %}
+                    {% endif %}
+
+                    {% set commission_code = right.params|replace({'commission:': ''}) %}
+                    <li>
+                        <b>{{ right.title }}</b>{% if right.params %}, {{ right.params|replace({':': ' '}) }}{% endif %}
+
+                        {% if delete_right %}
+                            <a href="{{ path('user_right_remove', {'user': user.id, 'type': right.userType.code, 'commission':commission_code}) }}" onclick="return(confirm('Voulez-vous vraiment supprimer cette responsabilité ?\n Cet utilisateur ne sera plus {{ right.title }}'))" style="display:inline;">
+                                <img src="/img/base/x.png" alt="x" title="Supprimer cette responsabilité" class="upfade" />
+                            </a>
+                        {% endif %}
+
+                        {% if right.description %}
+                            <em>({{ right.description }})</em>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            <br /><br />
+        {% endif %}
+
+        <form action="{{ path('user_right_add', {'user': user.id}) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token('user_right_add') }}" />
+
+            <h2>Ajouter une responsabilité à cet adhérent :</h2>
+            <select name="id_usertype">
+                <option></option>
+                {% for type in usertypes %}
+                    {% set add_right = false %}
+
+                    {% if type.code is same as('encadrant') and allowed('comm_lier_encadrant') %}
+                        {% set add_right = true %}
+                    {% endif %}
+                    {% if type.code is same as('stagiaire') and allowed('comm_lier_encadrant') %}
+                        {% set add_right = true %}
+                    {% endif %}
+                    {% if type.code is same as('benevole_encadrement') and allowed('user_giveright_1') %}
+                        {% set add_right = true %}
+                    {% endif %}
+                    {% if type.code is same as('coencadrant') and allowed('user_giveright_1') %}
+                        {% set add_right = true %}
+                    {% endif %}
+                    {% if type.code is same as('redacteur') and allowed('user_giveright_1') %}
+                        {% set add_right = true %}
+                    {% endif %}
+                    {% if type.code is same as('salarie') and allowed('user_giveright_2') %}
+                        {% set add_right = true %}
+                    {% endif %}
+                    {% if type.code is same as('responsable-commission') and allowed('user_giveright_3') %}
+                        {% set add_right = true %}
+                    {% endif %}
+                    {% if type.code is same as('vice-president') and allowed('user_givepresidence') %}
+                        {% set add_right = true %}
+                    {% endif %}
+                    {% if type.code is same as('president') and allowed('user_givepresidence') %}
+                        {% set add_right = true %}
+                    {% endif %}
+                    {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
+                        {% set add_right = true %}
+                    {% endif %}
+
+                    {% if add_right %}
+                        <option value="{{ type.id }}" class="precise-comm-{{ type.limitedToComm }}">{{ type.title }}</option>
+                    {% endif %}
+
+                {% endfor %}
+            </select>
+
+            <div id="commissions-pick" class="nice-checkboxes">
+                {% for commission in commissions %}
+                    {% if allowed('user_giveright_1', 'commission:' ~ commission.code) %}
+                        <label for="commissions-pick-{{ commission.id }}"><input type="checkbox" name="commission[]" value="commission:{{ commission.code }}" id="commissions-pick-{{ commission.id }}" /> {{ commission.title }} </label>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <br /><br />
+
+            Description / commentaire :<br /><textarea style="width:50%;height:60px;" name="description_user_attr" id="description_user_attr" rows="2" cols="100" maxlength="200"></textarea>
+            <br />
+            <p class="mini help-text">
+                Visible par tous sur le profil.<br />
+                Pour les coendrants, vous pouvez indiquer par exemple <span class="italic">"charte signée le (date jj/mm/aaaa)"</span>.
+            </p>
+            <br />
+            <br />
+            <input type="submit" value="Appliquer" class="nice" />
+        </form>
+        <br><br>
+
+        <div class="explain">
+            <h3>Lorsque vous attribuez ou retirez des responsabilités aux adhérents, des notifications automatiques sont envoyées :</h3>
+            <ul>
+                <li>un adhérent reçoit ou perd des responsabilités : l'adhérent reçoit un e-mail</li>
+                <li>s'il s'agit de responsabilité "encadrant", "co-encadrant", "initiateur stagiaire" ou "responsable de commission" : les responsables (actuels) de la commission reçoivent un e-mail, ainsi que le président</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $().ready(function(){
+            // affichage des checkbox "commission" si besoin
+            $('#commissions-pick').hide();
+            $('select[name=id_usertype]').bind('change focus', function(){
+                if($(this).find('option:selected').hasClass('precise-comm-1'))
+                    $('#commissions-pick').slideDown({queue:false, duration:500});
+                else
+                    $('#commissions-pick').slideUp({queue:false, duration:500});
+            });
+        });
+    </script>
+{% endblock %}

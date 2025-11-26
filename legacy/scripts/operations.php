@@ -122,20 +122,6 @@ elseif ('user_subscribe' == $operation) {
     require $operationsDir . 'operations.user_subscribe.php';
 }
 
-// USER : ajout de l'attribut à l'user (type salarié, encadrant etc...)
-elseif ('user_attr_add' == $operation) {
-    require $operationsDir . 'operations.user_attr_add.php';
-}
-
-// USER : suppression d'attribut
-elseif ('user_attr_del' == $operation) {
-    $id_user_attr = (int) $_POST['id_user_attr'];
-    if (!$id_user_attr) {
-        $errTab[] = 'No id';
-    } else {
-        LegacyContainer::get('legacy_user_right_service')->removeRightAndNotify($id_user_attr, getUser());
-    }
-}
 // USER : CREATE (manuel)
 elseif ('user_create' == $operation) {
     require $operationsDir . 'operations.user_create.php';
@@ -255,28 +241,8 @@ elseif ('fichier_adherents_maj' == $operation) {
 }
 
 if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
-    // ADMIN : ajout de l'attribut à l'user (type admin, rédacteur etc...)
-    if ('user_attr_add_admin' == $operation) {
-        require $operationsDir . 'operations.user_attr_add_admin.php';
-    }
-
-    // ADMIN : suppression d'attribut
-    elseif ('user_attr_del_admin' == $operation) {
-        $id_user_attr = (int) $_POST['id_user_attr'];
-        if (!$id_user_attr) {
-            $errTab[] = 'No id';
-        } else {
-            LegacyContainer::get('legacy_user_right_service')->removeRightAndNotify($id_user_attr, getUser());
-        }
-
-        // log admin
-        if (0 === count($errTab)) {
-            mylog($_POST['operation'], "Suppression d'un droit à un user (id=$id_user_attr)");
-        }
-    }
-
     // ADMIN : écrasement et renouvellement de la matrice des droits
-    elseif ('usertype_attr_edit' == $operation) {
+    if ('usertype_attr_edit' == $operation) {
         /* ◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊[ BACKUP EXISTANT A FAIRE - ou pas ]◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊ */
 
         // supression des valeurs existantes
