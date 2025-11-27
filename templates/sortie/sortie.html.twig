@@ -56,7 +56,7 @@
                         <div style="display:none" id="refuser-{{ event.id }}">
                             <form action="{{ path('sortie_refus', { id: event.id }) }}" method="post" class="loading">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_refus') }}" />
-                                <p>Laissez un message à l'auteur pour lui expliquer la raison du refus :</p>
+                                <p>Laissez un message à l'organisateur pour lui expliquer la raison du refus :</p>
                                 <input type="text" name="msg" class="type1" placeholder="ex: Mauvais point de RDV" />
                                 <input type="submit" value="Refuser la sortie" class="nice2 red" />
                                 <input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
@@ -97,7 +97,7 @@
             {% endif %}
 
             {% if is_granted('SORTIE_UPDATE', event) %}
-                <a href="{{ path('modifier_sortie', {'event': event.id}) }}" title="Vous êtes l'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
+                <a href="{{ path('modifier_sortie', {'event': event.id}) }}" title="Vous êtes l'organisateur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
                     <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie
                 </a>
             {% endif %}
@@ -205,7 +205,7 @@
         </div>
 
         {% if app.user and event.user.id == app.user.id and event.isFinished %}
-            <a href="{{ path('article_new') }}?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
+            <a href="{{ path('article_new') }}?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'organisateur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
                 <img src="/img/base/pencil_add.png" alt="" title="" style="" />
                 Compte rendu
             </a><br>

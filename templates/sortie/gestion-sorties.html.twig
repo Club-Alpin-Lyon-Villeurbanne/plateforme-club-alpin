@@ -51,7 +51,7 @@
                                             <form action="{{ path('sortie_refus', { id: event.id }) }}" method="post" class="loading">
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_refus') }}" />
 
-                                                <p>Laissez un message à l'auteur pour lui expliquer la raison du refus :</p>
+                                                <p>Laissez un message à l'organisateur pour lui expliquer la raison du refus :</p>
                                                 <input type="text" name="msg" class="type1" placeholder="ex: Mauvais point de RDV" />
                                                 <input type="submit" value="Refuser la sortie" class="nice2 red" />
                                                 <input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
