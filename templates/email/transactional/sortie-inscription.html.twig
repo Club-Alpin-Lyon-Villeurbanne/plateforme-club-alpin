@@ -1,17 +1,17 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    {% if commission %}[{{ commission }}]{% endif %}[Inscrit] {{ role ? 'en tant que ' ~ role : '' }} à {{ event_name }} du {{ event_date }}
+    {% if commission %}[{{ commission }}]{% endif %}[{{ status|capitalize }}] {{ role ? 'en tant que ' ~ role : '' }} à {{ event_name }} du {{ event_date }}
 {%- endblock %}
 
 {% block inner_html %}
     <p>
-        Vous venez d'être inscrit(e) {{ role ? 'en tant que ' ~ role : '' }}
+        Vous venez d'être {{ status }}(e) {{ role ? 'en tant que ' ~ role : '' }}
         à la sortie <a href="{{ event_url }}">{{ event_name }}</a>.
     </p>
 {% endblock %}
 
 {% block inner_txt %}
-    Vous venez d'être inscrit(e) {{ role ? 'en tant que ' ~ role : '' }}
+    Vous venez d'être {{ status }}(e) {{ role ? 'en tant que ' ~ role : '' }}
     à la sortie {{ event_name }} ({{ event_url }}).
 {% endblock %}

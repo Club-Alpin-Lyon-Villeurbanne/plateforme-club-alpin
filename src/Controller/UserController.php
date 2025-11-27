@@ -208,6 +208,7 @@ class UserController extends AbstractController
                         'event_url' => $evtUrl,
                         'event_date' => $evtDate,
                         'commission' => $commissionTitle,
+                        'status' => EventParticipation::STATUS_VALIDE === $status ? 'accepté' : 'pré-inscrit',
                     ]);
                 } else {
                     $this->addFlash('error', 'La licence de ' . $user->getFullName() . ' a expiré. L\'adhésion doit être renouvelée avant l\'inscription.');
