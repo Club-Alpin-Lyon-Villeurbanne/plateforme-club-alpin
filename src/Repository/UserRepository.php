@@ -77,7 +77,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 WHERE
                     u.alerts IS NOT NULL
                     AND u.is_deleted = FALSE
-                    AND u.valid_user = 1
                     AND u.doit_renouveler_user = 0
                     AND u.email_user IS NOT NULL
                     AND u.email_user != ''

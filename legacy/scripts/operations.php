@@ -82,11 +82,6 @@ if (user()) {
     }
 }
 
-// SPECIAL : VALIDATION DE COMPTE USER
-elseif ('user-confirm' == $p1) {
-    require $operationsDir . 'operations.user-confirm.php';
-}
-
 // ARTICLES : COMMENTER
 elseif ('comment' == $operation) {
     require $operationsDir . 'operations.comment.php';
@@ -160,42 +155,6 @@ elseif ('user_delete' == $operation) {
         }
 
         mylog('user_delete', "Suppression definitive user $id_user", false);
-    }
-}
-// USER : REACTIVER
-elseif ('user_reactiver' == $operation) {
-    $id_user = (int) $_POST['id_user'];
-    if (!$id_user) {
-        $errTab[] = 'No id';
-    } elseif (!allowed('user_reactivate')) {
-        $errTab[] = "Vous n'avez pas les droits necessaires";
-    } else {
-        $req = "UPDATE `caf_user` SET  `valid_user` =  '1' WHERE  `caf_user`.`id_user` =$id_user";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur SQL';
-        }
-
-        mylog('user_reactiver', "reactivation user $id_user", false);
-    }
-}
-// USER : RESET
-elseif ('user_reset' == $operation) {
-    $id_user = (int) $_POST['id_user'];
-    if (!$id_user) {
-        $errTab[] = 'No id';
-    } elseif (!allowed('user_reset')) {
-        $errTab[] = "Vous n'avez pas les droits necessaires";
-    } else {
-        $req = "UPDATE caf_user
-				SET valid_user =  '0',
-				email_user = NULL,
-				mdp_user =  ''
-				WHERE caf_user.id_user =$id_user";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur SQL';
-        }
-
-        mylog('user_reset', "reset user $id_user", false);
     }
 }
 
