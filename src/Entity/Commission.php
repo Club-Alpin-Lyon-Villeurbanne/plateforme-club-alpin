@@ -6,6 +6,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CommissionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -71,11 +73,19 @@ class Commission
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private array $mandatoryFields = self::CONFIGURABLE_FIELDS;
 
+    /** @var Collection<int, BrevetReferentiel> */
+    #[ORM\ManyToMany(targetEntity: BrevetReferentiel::class)]
+    #[ORM\JoinTable(name: 'formation_brevet_commission')]
+    #[ORM\JoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'brevet_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    private Collection $brevets;
+
     public function __construct(string $title, string $code, int $ordre)
     {
         $this->title = $title;
         $this->code = $code;
         $this->ordre = $ordre;
+        $this->brevets = new ArrayCollection();
     }
 
     public function __toString()
@@ -156,6 +166,28 @@ class Commission
     public function setMandatoryFields(array $mandatoryFields): self
     {
         $this->mandatoryFields = $mandatoryFields;
+
+        return $this;
+    }
+
+    /** @return Collection<int, BrevetReferentiel> */
+    public function getBrevets(): Collection
+    {
+        return $this->brevets;
+    }
+
+    public function addBrevet(BrevetReferentiel $brevet): self
+    {
+        if (!$this->brevets->contains($brevet)) {
+            $this->brevets->add($brevet);
+        }
+
+        return $this;
+    }
+
+    public function removeBrevet(BrevetReferentiel $brevet): self
+    {
+        $this->brevets->removeElement($brevet);
 
         return $this;
     }
