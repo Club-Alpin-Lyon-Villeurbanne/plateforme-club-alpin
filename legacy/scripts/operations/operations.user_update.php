@@ -2,9 +2,8 @@
 
 use App\Legacy\ImageManipulator;
 use App\Legacy\LegacyContainer;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$id_user = $email_user_mailchange = null;
+$id_user = null;
 
 // check user online
 if (!user()) {
@@ -20,13 +19,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $cp_user = trim(stripslashes($_POST['cp_user'] ?? ''));
     $ville_user = trim(stripslashes($_POST['ville_user'] ?? ''));
     $pays_user = trim(stripslashes($_POST['pays_user'] ?? ''));
-    $email_user_mailchange = trim(stripslashes($_POST['email_user_mailchange'] ?? ''));
 
     if (!$id_user) {
         $errTab[] = 'Erreur technique : ID manquant';
-    }
-    if (!isMail($email_user_mailchange) && '' !== $email_user_mailchange) {
-        $errTab[] = 'Vous avez demandé à remplacer votre adresse e-mail, mais elle semble invalide.';
     }
 }
 
@@ -76,41 +71,5 @@ if ((!isset($errTab) || 0 === count($errTab)) && $_FILES['photo']['size'] > 0) {
         } else {
             $errTab[] = 'Erreur lors du déplacement du fichier';
         }
-    }
-}
-
-// si mise à jour e-mail user
-if ('' !== $email_user_mailchange) {
-    $token = $id_user_mailchange = null;
-
-    // VERIFICATIONS
-    // compte des entrées existantes avec cet e-mail
-    $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT COUNT(id_user) FROM caf_user WHERE email_user LIKE ? AND id_user != ?');
-    $stmt->bind_param('si', $email_user_mailchange, $id_user);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if (getArrayFirstValue($result->fetch_array(\MYSQLI_NUM))) {
-        $errTab[] = "Votre demande de modification d'e-mail est refusée : Un compte existe déjà avec cette adresse e-mail.";
-    }
-    $stmt->close();
-
-    // ENTRÉE DE LA DEMANDE DANS LA BD
-    if (!isset($errTab) || 0 === count($errTab)) {
-        $token = bin2hex(random_bytes(16));
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('INSERT INTO `caf_user_mailchange` (`user_user_mailchange`, `token_user_mailchange`, `email_user_mailchange`) VALUES (?, ?, ?)');
-        $stmt->bind_param('iss', $id_user, $token, $email_user_mailchange);
-        if (!$stmt->execute()) {
-            $errTab[] = 'Erreur SQL';
-        } else {
-            $id_user_mailchange = LegacyContainer::get('legacy_mysqli_handler')->insertId();
-        }
-        $stmt->close();
-    }
-
-    if (!isset($errTab) || 0 === count($errTab)) {
-        LegacyContainer::get('legacy_mailer')->send($email_user_mailchange, 'transactional/email-update', [
-            'email' => $email_user_mailchange,
-            'url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'email-change/' . $token . '-' . $id_user_mailchange . '.html',
-        ]);
     }
 }
