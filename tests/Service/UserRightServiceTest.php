@@ -29,7 +29,6 @@ class UserRightServiceTest extends TestCase
         $user->setFirstname($firstname);
         $user->setLastname($lastname);
         $user->setNickname($nickname ?? ($firstname . ' ' . $lastname));
-        $user->setValid(true);
 
         return $user;
     }

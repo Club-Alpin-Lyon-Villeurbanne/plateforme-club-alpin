@@ -35,7 +35,6 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     $cpUser = $userTab['cp_user'];
     $villeUser = $userTab['ville_user'];
     $paysUser = $userTab['pays_user'];
-    $validUser = $userTab['valid_user'];
     $cafnumUserNew = $userTab['cafnum_user_new'] ?? null;
     $cafnumUser = $userTab['cafnum_user'];
     $userEmail = $userTab['email_user'];
@@ -98,12 +97,6 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
             echo '</span>';
         } ?>
 			</b><br />
-
-			<?php
-            if (isset($validUser) && 1 != $validUser) {
-                // compte non actif pour le moment (0 inactif, 1 actif)
-                echo '<br />URL d\'activation du compte : ' . LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-confirm/' . $userTab['cookietoken_user'] . '-' . $idUser . '.html<br />';
-            } ?>
 
 			<br />
 			E-mail * :<br />
