@@ -8,9 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'formation_activite_commission')]
-#[ORM\Index(columns: ['code_activite'], name: 'IDX_FORM_ACT_COMM_ACTIVITE')]
 #[ORM\Index(columns: ['commission_id'], name: 'IDX_FORM_ACT_COMM_COMMISSION')]
-#[ORM\UniqueConstraint(name: 'UNIQ_FORM_ACT_COMM', columns: ['code_activite', 'commission_id'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_FORM_ACT_COMM_CODE', columns: ['code_activite'])]
 #[ORM\Entity(repositoryClass: FormationActiviteCommissionRepository::class)]
 class FormationActiviteCommission
 {
