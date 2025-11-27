@@ -100,6 +100,7 @@ class MemberMerger
         ->setAlerteRenouveler($newCafUser->getAlerteRenouveler())
         ->setRadiationDate($newCafUser->getRadiationDate())
         ->setRadiationReason($newCafUser->getRadiationReason())
+            ->setEmail($newCafUser->getEmail())
         ;
 
         // Mettre à jour la date d'adhésion uniquement si elle est valide

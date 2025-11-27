@@ -66,29 +66,24 @@ class FfcamSynchronizer
 
     private function processMembers(\Generator $members): array
     {
-        $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0, 'errors' => 0, 'error_details' => [], 'merged_details' => []];
-        $batchSize = 20;
-        $i = 0;
+        $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0, 'errors' => 0, 'warnings' => 0, 'error_details' => [], 'merged_details' => [], 'warning_details' => []];
 
+        /** @var User $parsedUser */
         foreach ($members as $parsedUser) {
             try {
                 $this->logger->info("Processing CAF member {$parsedUser->getCafnum()}");
 
                 $existingUser = $this->userRepository->findOneByLicenseNumber($parsedUser->getCafnum());
 
-                if ($existingUser) {
-                    $this->updateExistingUser($existingUser, $parsedUser);
-                    ++$stats['updated'];
-                    continue;
-                }
-
                 $potentialDuplicate = $this->userRepository->findDuplicateUser(
                     $parsedUser->getLastname(),
                     $parsedUser->getFirstname(),
                     $parsedUser->getBirthdate(),
-                    $parsedUser->getCafnum()
+                    $parsedUser->getCafnum(),
+                    $parsedUser->getEmail() ?: null
                 );
 
+                // merge user
                 if ($potentialDuplicate) {
                     $oldCafNum = $potentialDuplicate->getCafnum();
                     $this->logger->info(sprintf(
@@ -109,17 +104,71 @@ class FfcamSynchronizer
                         'name' => sprintf('%s %s', $parsedUser->getFirstname(), $parsedUser->getLastname())
                     ];
                 } else {
-                    $parsedUser->setCreatedAt(new \DateTime());
-                    $parsedUser->setValid(false);
-                    $this->entityManager->persist($parsedUser);
-                    ++$stats['inserted'];
+                    // vérif email
+                    if (!empty($parsedUser->getEmail())) {
+                        $duplicateEmailUser = $this->userRepository->findDuplicateEmailUser(
+                            $parsedUser->getEmail(),
+                            $parsedUser->getCafnum()
+                        );
+                        if ($duplicateEmailUser instanceof User) {
+                            $errorMessage = sprintf('Email %s is already used by another member (Cafnum: %s)', $parsedUser->getEmail(), $duplicateEmailUser->getCafnum());
+                            $this->logger->warning($errorMessage);
+                            ++$stats['errors'];
+                            $stats['error_details'][] = [
+                                'cafnum' => $parsedUser->getCafnum(),
+                                'message' => $errorMessage,
+                            ];
+
+                            // email unique même si faux
+                            $parsedUser->setEmail('doublon.' . $parsedUser->getCafnum() . '-' . $parsedUser->getEmail());
+                        }
+                    } else {
+                        $warningMessage = sprintf('FFCAM email is empty for member Cafnum %s', $parsedUser->getCafnum());
+                        $this->logger->warning($warningMessage);
+                        ++$stats['warnings'];
+                        $stats['warning_details'][] = $warningMessage;
+                    }
+
+                    if ($existingUser instanceof User) {
+                        // update user
+                        if (
+                            $parsedUser->getEmail() !== $existingUser->getEmail()
+                            && empty($existingUser->getRadiationDate())
+                        ) {
+                            $warningMessage = sprintf('FFCAM email (%s) is different from database (%s) for member Cafnum %s', $parsedUser->getEmail(), $existingUser->getEmail(), $existingUser->getCafnum());
+                            $this->logger->warning($warningMessage);
+                            ++$stats['warnings'];
+                            $stats['warning_details'][] = $warningMessage;
+                        }
+
+                        $this->updateExistingUser($existingUser, $parsedUser);
+                        $this->entityManager->persist($existingUser);
+                        ++$stats['updated'];
+                    } else {
+                        // new user
+                        $parsedUser->setCreatedAt(new \DateTime());
+                        $parsedUser->setValid(false);
+                        $this->entityManager->persist($parsedUser);
+                        ++$stats['inserted'];
+                    }
+                }
+
+                try {
+                    $this->entityManager->flush();
+                    $this->entityManager->clear();
+                } catch (\Exception $exception) {
+                    $this->logger->error('Flush error: ' . $exception->getMessage());
+                    ++$stats['errors'];
+
+                    // Clear l'entity manager pour continuer le traitement
+                    $this->entityManager->clear();
                 }
             } catch (\Exception $exception) {
                 $cafnum = $parsedUser->getCafnum() ?? 'inconnu';
                 $errorMessage = $exception->getMessage();
 
                 $this->logger->error(sprintf(
-                    'Error processing member %s: %s',
+                    'Error processing member Cafnum %s: %s',
                     $cafnum,
                     $errorMessage
                 ));
@@ -129,31 +178,12 @@ class FfcamSynchronizer
                 // Stocker les détails de l'erreur (tous pour debug)
                 $stats['error_details'][] = [
                     'cafnum' => $cafnum,
-                    'message' => substr($errorMessage, 0, 100) // Limiter la longueur du message
+                    'message' => $errorMessage,
                 ];
 
                 // Continue avec le prochain membre
                 continue;
             }
-
-            if (0 === ++$i % $batchSize) {
-                try {
-                    $this->entityManager->flush();
-                    $this->entityManager->clear();
-                } catch (\Exception $exception) {
-                    $this->logger->error('Batch flush error: ' . $exception->getMessage());
-                    ++$stats['errors'];
-                    // Clear l'entity manager pour continuer le traitement
-                    $this->entityManager->clear();
-                }
-            }
-        }
-
-        try {
-            $this->entityManager->flush();
-        } catch (\Exception $exception) {
-            $this->logger->error('Final flush error: ' . $exception->getMessage());
-            ++$stats['errors'];
         }
 
         return $stats;
@@ -169,6 +199,7 @@ class FfcamSynchronizer
             ->setCafnumParent($parsedUser->getCafnumParent())
             ->setTel($parsedUser->getTel())
             ->setTel2($parsedUser->getTel2())
+            ->setEmail($parsedUser->getEmail())
             ->setAdresse($parsedUser->getAdresse())
             ->setCp($parsedUser->getCp())
             ->setVille($parsedUser->getVille())
@@ -181,6 +212,7 @@ class FfcamSynchronizer
             ->setRadiationDate($parsedUser->getRadiationDate())
             ->setRadiationReason($parsedUser->getRadiationReason())
         ;
+
         // Si l'utilisateur est radié
         if (null !== $parsedUser->getRadiationDate()) {
             $existingUser
@@ -193,8 +225,6 @@ class FfcamSynchronizer
         if (null !== $parsedUser->getJoinDate()) {
             $existingUser->setJoinDate($parsedUser->getJoinDate());
         }
-
-        $this->entityManager->persist($existingUser);
     }
 
     private function archiveFile(string $filePath, array $stats): void
