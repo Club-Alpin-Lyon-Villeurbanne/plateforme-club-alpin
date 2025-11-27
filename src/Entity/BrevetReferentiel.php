@@ -25,7 +25,7 @@ class BrevetReferentiel
     private string $intitule;
 
     /** @var Collection<int, Commission> */
-    #[ORM\ManyToMany(targetEntity: Commission::class)]
+    #[ORM\ManyToMany(targetEntity: Commission::class, inversedBy: 'brevets')]
     #[ORM\JoinTable(name: 'formation_brevet_commission')]
     #[ORM\JoinColumn(name: 'brevet_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[ORM\InverseJoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', onDelete: 'CASCADE')]

@@ -6,6 +6,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CommissionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -71,11 +73,16 @@ class Commission
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private array $mandatoryFields = self::CONFIGURABLE_FIELDS;
 
+    /** @var Collection<int, BrevetReferentiel> */
+    #[ORM\ManyToMany(targetEntity: BrevetReferentiel::class, mappedBy: 'commissions')]
+    private Collection $brevets;
+
     public function __construct(string $title, string $code, int $ordre)
     {
         $this->title = $title;
         $this->code = $code;
         $this->ordre = $ordre;
+        $this->brevets = new ArrayCollection();
     }
 
     public function __toString()
@@ -158,5 +165,11 @@ class Commission
         $this->mandatoryFields = $mandatoryFields;
 
         return $this;
+    }
+
+    /** @return Collection<int, BrevetReferentiel> */
+    public function getBrevets(): Collection
+    {
+        return $this->brevets;
     }
 }
