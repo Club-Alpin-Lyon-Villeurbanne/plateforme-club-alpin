@@ -466,7 +466,7 @@ class GoogleGroupsSync extends Command
 
     private function getCommissionGoogleGroupMembers(string $groupEmail): array
     {
-        $members = array_map(static fn (Member $member) => $this->normalizeEmail($member->getEmail() ?? ''), $this->googleGroupsService->members->listMembers($groupEmail)->getMembers());
+        $members = array_map(fn (Member $member) => $this->normalizeEmail($member->getEmail() ?? ''), $this->googleGroupsService->members->listMembers($groupEmail)->getMembers());
 
         // return a map, more easy to process by the algo
         return array_combine($members, $members);
