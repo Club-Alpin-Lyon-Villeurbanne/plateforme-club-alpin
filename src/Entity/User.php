@@ -375,7 +375,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this;
     }
 
-    public function getCafnum(): ?string
+    public function getCafnum(): string
     {
         return $this->cafnum;
     }
