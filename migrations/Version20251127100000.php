@@ -11,55 +11,11 @@ final class Version20251127100000 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Ajoute tables de mapping formations FFCAM ↔ commissions club';
+        return 'Ajoute table liaison brevets FFCAM ↔ commissions club';
     }
 
     public function up(Schema $schema): void
     {
-        // Table de config : patterns de brevets → commissions
-        $this->addSql(<<<'SQL'
-            CREATE TABLE formation_brevet_pattern_commission (
-                id INT AUTO_INCREMENT NOT NULL,
-                code_pattern VARCHAR(50) NOT NULL COMMENT 'Pattern SQL LIKE (ex: BF%-ESC%)',
-                commission_id INT NOT NULL,
-                PRIMARY KEY(id),
-                INDEX IDX_BREVET_PATTERN_COMM (commission_id),
-                CONSTRAINT FK_BREVET_PATTERN_COMM FOREIGN KEY (commission_id)
-                    REFERENCES caf_commission (id_commission) ON DELETE CASCADE
-            ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
-        SQL);
-
-        // Table liaison N:N : niveaux ↔ commissions
-        $this->addSql(<<<'SQL'
-            CREATE TABLE formation_niveau_commission (
-                niveau_id INT NOT NULL,
-                commission_id INT NOT NULL,
-                PRIMARY KEY(niveau_id, commission_id),
-                INDEX IDX_NIV_COMM_NIVEAU (niveau_id),
-                INDEX IDX_NIV_COMM_COMMISSION (commission_id),
-                CONSTRAINT FK_NIV_COMM_NIVEAU FOREIGN KEY (niveau_id)
-                    REFERENCES formation_niveau_referentiel (id) ON DELETE CASCADE,
-                CONSTRAINT FK_NIV_COMM_COMMISSION FOREIGN KEY (commission_id)
-                    REFERENCES caf_commission (id_commission) ON DELETE CASCADE
-            ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
-        SQL);
-
-        // Table liaison N:N : compétences ↔ commissions
-        $this->addSql(<<<'SQL'
-            CREATE TABLE formation_competence_commission (
-                competence_id INT NOT NULL,
-                commission_id INT NOT NULL,
-                PRIMARY KEY(competence_id, commission_id),
-                INDEX IDX_COMP_COMM_COMPETENCE (competence_id),
-                INDEX IDX_COMP_COMM_COMMISSION (commission_id),
-                CONSTRAINT FK_COMP_COMM_COMPETENCE FOREIGN KEY (competence_id)
-                    REFERENCES formation_competence_referentiel (id) ON DELETE CASCADE,
-                CONSTRAINT FK_COMP_COMM_COMMISSION FOREIGN KEY (commission_id)
-                    REFERENCES caf_commission (id_commission) ON DELETE CASCADE
-            ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
-        SQL);
-
-        // Table liaison N:N : brevets ↔ commissions
         $this->addSql(<<<'SQL'
             CREATE TABLE formation_brevet_commission (
                 brevet_id INT NOT NULL,
@@ -78,8 +34,5 @@ final class Version20251127100000 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql('DROP TABLE formation_brevet_commission');
-        $this->addSql('DROP TABLE formation_competence_commission');
-        $this->addSql('DROP TABLE formation_niveau_commission');
-        $this->addSql('DROP TABLE formation_brevet_pattern_commission');
     }
 }
