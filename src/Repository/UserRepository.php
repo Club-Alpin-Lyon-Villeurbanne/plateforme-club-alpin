@@ -3,8 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\AlertType;
+use App\Entity\Article;
+use App\Entity\Comment;
+use App\Entity\EventParticipation;
+use App\Entity\Evt;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -168,14 +173,13 @@ SQL;
         }
     }
 
-    public function findDuplicateUser(string $lastname, string $firstname, \DateTimeImmutable $birthday, string $excludeCafnum): ?User
+    public function findDuplicateUser(string $lastname, string $firstname, \DateTimeImmutable $birthday, string $excludeCafnum, ?string $email = null): ?User
     {
-        return $this->createQueryBuilder('u')
+        $qb = $this->createQueryBuilder('u')
             ->where('LOWER(u.lastname) = LOWER(:lastname)')
             ->andWhere('LOWER(u.firstname) = LOWER(:firstname)')
             ->andWhere('u.birthdate = :birthday')
             ->andWhere('u.cafnum != :excludeCafnum')
-            ->andWhere('u.isDeleted = false')
             ->orderBy('u.createdAt', 'DESC')
             ->setMaxResults(1)
             ->setParameters([
@@ -184,8 +188,38 @@ SQL;
                 'birthday' => $birthday,
                 'excludeCafnum' => $excludeCafnum,
             ])
+        ;
+        if (null !== $email) {
+            $qb
+                ->andWhere('u.email = :email')
+                ->setParameter('email', $email)
+            ;
+        } else {
+            $qb
+                ->andWhere('u.email IS NULL')
+            ;
+        }
+
+        return $qb
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getOneOrNullResult()
+        ;
+    }
+
+    public function findDuplicateEmailUser(string $email, ?string $excludeCafnum = null)
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.email like :email')
+            ->andWhere('u.cafnum != :excludeCafnum')
+            ->orderBy('u.createdAt', 'DESC')
+            ->setMaxResults(1)
+            ->setParameters([
+                'email' => $email,
+                'excludeCafnum' => $excludeCafnum,
+            ])
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
     }
 
     public function findUsersToRegister(array $participants, string $show = 'valid')
@@ -325,5 +359,89 @@ SQL;
             13 => 'u.doitRenouveler',
             default => 'u.lastname',
         };
+    }
+
+    public function findUsersWithoutActivity(?\DateTime $end = null)
+    {
+        $qb = $this
+            ->createQueryBuilder('u')
+            ->leftJoin(Article::class, 'a', Join::WITH, 'u.id = a.user')
+            ->leftJoin(Comment::class, 'c', Join::WITH, 'u.id = c.user')
+            ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
+            ->leftJoin(EventParticipation::class, 'p', Join::WITH, 'u.id = p.user')
+            ->where('u.isDeleted = false')
+            ->andWhere('u.id != 1')     // super admin
+            ->andWhere('a.id is null')
+            ->andWhere('c.id is null')
+            ->andWhere('e.id is null')
+            ->andWhere('p.id is null')
+        ;
+        if (null !== $end) {
+            $qb
+                ->andWhere('u.joinDate <= :end')
+                ->setParameter('end', $end)
+            ;
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findUsersWithActivity(?\DateTime $end = null)
+    {
+        $qb = $this
+            ->createQueryBuilder('u')
+            ->distinct(true)
+            ->leftJoin(Article::class, 'a', Join::WITH, 'u.id = a.user')
+            ->leftJoin(Comment::class, 'c', Join::WITH, 'u.id = c.user')
+            ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
+            ->leftJoin(EventParticipation::class, 'p', Join::WITH, 'u.id = p.user')
+            ->where('u.isDeleted = false')
+            ->andWhere('u.id != 1')     // super admin
+            ->andWhere('(a.id is not null or c.id is not null or e.id is not null or p.id is not null)')
+        ;
+        if (null !== $end) {
+            $qb
+                ->andWhere('u.joinDate <= :end')
+                ->setParameter('end', $end)
+            ;
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function anonymizeUser(User $user): void
+    {
+        $this
+            ->createQueryBuilder('u')
+            ->update()
+            ->set('u.isDeleted', true)
+            ->set('u.email', ':nullValue')
+            ->set('u.mdp', ':nullValue')
+            ->set('u.firstname', ':firstname')
+            ->set('u.lastname', ':lastname')
+            ->set('u.nickname', ':nickname')
+            ->set('u.tel', ':nullValue')
+            ->set('u.tel2', ':nullValue')
+            ->set('u.adresse', ':nullValue')
+            ->set('u.cp', ':nullValue')
+            ->set('u.ville', ':nullValue')
+            ->set('u.pays', ':nullValue')
+            ->set('u.moreinfo', ':nullValue')
+            ->set('u.valid', ':falseValue')
+            ->set('u.cookietoken', ':nullValue')
+            ->set('u.doitRenouveler', ':falseValue')
+            ->set('u.alerteRenouveler', ':falseValue')
+            ->set('u.updatedAt', ':updatedAt')
+            ->where('u.id = :user')
+            ->setParameter('user', $user)
+            ->setParameter('nullValue', null)
+            ->setParameter('falseValue', false)
+            ->setParameter('firstname', 'compte')
+            ->setParameter('lastname', 'supprimé ' . $user->getId())
+            ->setParameter('nickname', 'Csuppr' . $user->getId())
+            ->setParameter('updatedAt', (new \DateTime())->format('Y-m-d H:i:s'))
+            ->getQuery()
+            ->execute()
+        ;
     }
 }

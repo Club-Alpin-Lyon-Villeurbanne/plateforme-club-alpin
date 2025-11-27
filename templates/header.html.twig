@@ -7,7 +7,7 @@
 {% endif %}
 
 <header id="mainHeader" style="{{ impersonification_style }}">
-    <div class="sitewidth" style="min-width:980px;">
+    <div class="sitewidth">
 
         {# LOGO COMMUN TTES PAGES #}
         <a id="logo" href="/" title="{{ db_content('logo-title') }}">
@@ -338,7 +338,7 @@
                             </div>
                         {% endif %}
 
-                        {% if allowed('stats_commissions_read') or allowed('stats_users_read') %}
+                        {% if allowed('stats_commissions_read') %}
                             <div class="nav-user">
                                 <p class="menutitle" style="padding-top:13px;">Statistiques</p>
                                 <ul>
@@ -349,14 +349,9 @@
                                         </a>
                                     </li>
                                 {% endif %}
-
-                                {% if allowed('stats_users_read') %}
-                                    <li>
-                                        <a href="/stats/users.html" title="">
-                                        statistiques par adhérents
-                                        </a>
-                                    </li>
-                                {% endif %}
+                                    {% if caf_id == 'lyon' %}
+                                        <li><a href="{{ path('stats_metabase') }}">statistiques sur Metabase</a></li>
+                                    {% endif %}
                                 </ul>
                             </div>
                         {% endif %}

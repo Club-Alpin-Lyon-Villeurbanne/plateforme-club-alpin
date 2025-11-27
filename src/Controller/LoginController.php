@@ -17,7 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Http\LoginLink\LoginLinkHandlerInterface;
@@ -68,6 +68,19 @@ class LoginController extends AbstractController
                     'username' => $email,
                     'form' => null,
                     'password_reset' => true,
+                ];
+            }
+
+            // empêcher les non-adhérents d'utiliser cette fonctionnalité qui leur permet "d'activer" un compte
+            // alors qu'ils ne sont pas censés en avoir
+            // (et le conservent quand ils prennent une licence annuelle, ce qui pose des problèmes)
+            if ($user->getNomade() || $user->isDeleted()) {
+                $this->addFlash('error', 'Vous ne pouvez pas utiliser cette fonctionnalité car vous n\'avez pas de licence annuelle.');
+
+                return [
+                    'username' => $email,
+                    'form' => $form->createView(),
+                    'password_reset' => false,
                 ];
             }
 

@@ -989,13 +989,8 @@ class Evt
         return $this;
     }
 
-    public function withWaitingList(): bool
+    public function getExpenseReports(): ?Collection
     {
-        return $this->joinMax > $this->ngensMax;
-    }
-
-    public function isInWaitingList(int $nInscritsTotal): bool
-    {
-        return $this->withWaitingList() && $nInscritsTotal >= $this->ngensMax && $nInscritsTotal < $this->joinMax;
+        return $this->expenseReports;
     }
 }

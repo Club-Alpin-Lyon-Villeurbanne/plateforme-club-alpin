@@ -150,4 +150,30 @@ class UserAttrRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+    public function deleteByUser(User $user, ?Usertype $right = null, ?string $commissionCode = null): void
+    {
+        $qb = $this->createQueryBuilder('ua')
+            ->delete()
+            ->where('ua.user = :user')
+            ->setParameter('user', $user)
+        ;
+        if ($right instanceof Usertype) {
+            $qb
+                ->andWhere('ua.userType = :right')
+                ->setParameter('right', $right)
+            ;
+            if ($commissionCode) {
+                $qb
+                    ->andWhere('ua.params like :commissionCode')
+                    ->setParameter('commissionCode', 'commission:' . $commissionCode)
+                ;
+            }
+        }
+
+        $qb
+            ->getQuery()
+            ->execute()
+        ;
+    }
 }

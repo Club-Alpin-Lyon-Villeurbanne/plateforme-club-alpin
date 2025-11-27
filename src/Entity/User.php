@@ -66,13 +66,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[Ignore]
     private $mdp;
 
-    /**
-     * @var string
-     */
-    #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, nullable: true, unique: true, options: ['comment' => 'Numéro de licence'])]
+    #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, unique: true, nullable: false, options: ['comment' => 'Numéro de licence'])]
     #[Groups('user:details')]
     #[SerializedName('numeroLicence')]
-    private $cafnum;
+    private string $cafnum;
 
     /**
      * @var string
@@ -331,13 +328,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return null;
     }
 
-    public function addAttribute(Usertype $userType, ?string $params = null): void
+    public function addAttribute(Usertype $userType, ?string $params = null, ?string $description = null): void
     {
         if ($userType->getLimitedToComm() && null === $params) {
             throw new \InvalidArgumentException('User type is limited to commission.');
         }
 
-        $this->attrs->add(new UserAttr($this, $userType, $params));
+        $attr = new UserAttr($this, $userType, $params);
+        if (!empty($description)) {
+            $attr->setDescription($description);
+        }
+
+        // éviter les doublons
+        $commissionCode = str_replace('commission:', '', $params);
+        if (!$this->getAttribute($userType->getCode(), $commissionCode)) {
+            $this->attrs->add($attr);
+        }
     }
 
     public function getId(): ?int

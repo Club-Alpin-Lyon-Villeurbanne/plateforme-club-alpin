@@ -34,6 +34,9 @@ class FfcamSyncReportMailer
             if (isset($limitedStats['error_details'])) {
                 $limitedStats['error_details'] = array_slice($limitedStats['error_details'], 0, 10);
             }
+            if (isset($limitedStats['warning_details'])) {
+                $limitedStats['warning_details'] = array_slice($limitedStats['warning_details'], 0, 10);
+            }
 
             $context = [
                 'stats' => $limitedStats,

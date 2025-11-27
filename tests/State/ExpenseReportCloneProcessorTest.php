@@ -81,7 +81,7 @@ class ExpenseReportCloneProcessorTest extends WebTestCase
         $this->assertStringContainsString('clone_', $clonedAttachment->getFileName());
     }
 
-    public function testCloneExpenseReportWithExistingReport(): void
+    public function testCloneExpenseReportWithExistingDraftReport(): void
     {
         $event = $this->createEvent($this->user);
 
@@ -125,11 +125,57 @@ class ExpenseReportCloneProcessorTest extends WebTestCase
         $this->assertCount(1, $clonedReport->getAttachments());
 
         $deletedReport = $this->entityManager->find(ExpenseReport::class, $existingReportId);
-        $this->assertNull($deletedReport, 'The existing report should have been deleted');
+        $this->assertNull($deletedReport, 'The existing draft report should have been deleted');
 
         $reportsCount = $this->entityManager->getRepository(ExpenseReport::class)
             ->count(['user' => $this->user, 'event' => $event]);
         $this->assertEquals(2, $reportsCount, 'Should have 2 reports: original and cloned');
+    }
+
+    public function testCloneExpenseReportWithExistingNonDraftReport(): void
+    {
+        $event = $this->createEvent($this->user);
+
+        $existingReport = new ExpenseReport();
+        $existingReport->setStatus(ExpenseReportStatusEnum::SUBMITTED);
+        $existingReport->setRefundRequired(false);
+        $existingReport->setUser($this->user);
+        $existingReport->setEvent($event);
+        $existingReport->setDetails('{"existingKey": "existingValue"}');
+
+        $this->entityManager->persist($existingReport);
+        $this->entityManager->flush();
+
+        $existingReportId = $existingReport->getId();
+
+        $originalReport = new ExpenseReport();
+        $originalReport->setStatus(ExpenseReportStatusEnum::SUBMITTED);
+        $originalReport->setRefundRequired(true);
+        $originalReport->setUser($this->user);
+        $originalReport->setEvent($event);
+        $originalReport->setDetails('{"newKey": "newValue"}');
+
+        $this->entityManager->persist($originalReport);
+        $this->entityManager->flush();
+
+        $this->createMockAttachment($originalReport);
+
+        $operation = new \ApiPlatform\Metadata\Post(name: 'clone');
+        $uriVariables = ['id' => $originalReport->getId()];
+
+        $clonedReport = $this->processor->process(null, $operation, $uriVariables);
+
+        $this->assertInstanceOf(ExpenseReport::class, $clonedReport);
+        $this->assertNotSame($originalReport->getId(), $clonedReport->getId());
+        $this->assertEquals(ExpenseReportStatusEnum::DRAFT, $clonedReport->getStatus());
+
+        $notDeletedReport = $this->entityManager->find(ExpenseReport::class, $existingReportId);
+        $this->assertNotNull($notDeletedReport, 'The existing non-draft report should NOT have been deleted');
+        $this->assertEquals(ExpenseReportStatusEnum::SUBMITTED, $notDeletedReport->getStatus());
+
+        $reportsCount = $this->entityManager->getRepository(ExpenseReport::class)
+            ->count(['user' => $this->user, 'event' => $event]);
+        $this->assertEquals(3, $reportsCount, 'Should have 3 reports: existing submitted, original, and cloned');
     }
 
     private function createMockAttachment(ExpenseReport $report): ExpenseAttachment

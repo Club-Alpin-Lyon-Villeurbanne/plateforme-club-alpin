@@ -54,6 +54,11 @@ class FfcamFileParser
             $radiationDate = \DateTimeImmutable::createFromFormat('Y-m-d', $line[30]);
         }
 
+        $email = null;
+        if (!empty(trim($line[28]))) {
+            $email = strtolower(trim($line[28]));
+        }
+
         $user
             ->setCafnum(trim($line[0]))
             ->setFirstname($firstname)
@@ -73,16 +78,11 @@ class FfcamFileParser
             ->setRadiationDate($radiationDate)
             ->setRadiationReason($radiationReason ?: null)
         ;
-        if (null !== $radiationDate) {
-            // Si l'utilisateur est radié, on le "supprime"
-            // et on vide son email + mot de passe (pour qu'il ne puisse plus se connecter au site)
-            // NB : vider seulement le mot de passe ne suffit pas car "mot de passe oublié" reste utilisable
-            // et permet de remettre un mdp et rendre le compte web fonctionnel à nouveau
-            $user
-                ->setIsDeleted(true)
-                ->setEmail(null)
-                ->setMdp(null)
-            ;
+        // email des affiliés
+        if (null !== $email && !empty($user->getCafnumParent())) {
+            $user->setEmail('affilie.' . $user->getCafnum() . '-' . $email);
+        } else {
+            $user->setEmail($email);
         }
 
         return $user;

@@ -14,11 +14,7 @@
             <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
             <span class="bleucaf">&gt;</span>
             {% if not my_status %}
-                {% if nInscritsTotal >= event.ngensMax %}
-                    JE SOUHAITE REJOINDRE LA FILE D'ATTENTE
-                {% else %}
-                    JE SOUHAITE ME PRÉ-INSCRIRE À CETTE SORTIE
-                {% endif %}
+                JE SOUHAITE ME PRÉ-INSCRIRE À CETTE SORTIE
             {% elseif my_status.isCovoiturage %}
             {% else %}
             JE METS À JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
@@ -60,7 +56,7 @@
                         <div style="display:none" id="refuser-{{ event.id }}">
                             <form action="{{ path('sortie_refus', { id: event.id }) }}" method="post" class="loading">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_refus') }}" />
-                                <p>Laissez un message à l'auteur pour lui expliquer la raison du refus :</p>
+                                <p>Laissez un message à l'organisateur pour lui expliquer la raison du refus :</p>
                                 <input type="text" name="msg" class="type1" placeholder="ex: Mauvais point de RDV" />
                                 <input type="submit" value="Refuser la sortie" class="nice2 red" />
                                 <input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
@@ -101,7 +97,7 @@
             {% endif %}
 
             {% if is_granted('SORTIE_UPDATE', event) %}
-                <a href="{{ path('modifier_sortie', {'event': event.id}) }}" title="Vous êtes l'auteur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
+                <a href="{{ path('modifier_sortie', {'event': event.id}) }}" title="Vous êtes l'organisateur de cette sortie ? Cliquez ici pour la modifier." class="nice2 noprint orange">
                     <img src="/img/base/pencil.png" alt="" title="" style="" />&nbsp;&nbsp;Modifier cette sortie
                 </a>
             {% endif %}
@@ -209,7 +205,7 @@
         </div>
 
         {% if app.user and event.user.id == app.user.id and event.isFinished %}
-            <a href="{{ path('article_new') }}?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'auteur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
+            <a href="{{ path('article_new') }}?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'organisateur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
                 <img src="/img/base/pencil_add.png" alt="" title="" style="" />
                 Compte rendu
             </a><br>
@@ -1002,23 +998,13 @@
         {% endif %}
 
         {% if not event.cancelled %}
-            {% set isRegistrationPossible = true %}
             {% set nPlacesRestantesOnline = max(0, event.joinMax - nInscritsTotal) %}
-            {% if event.withWaitingList() %}
-                {% set nPlacesRestantesOnline = max(0, event.ngensMax - nInscritsTotal) %}
-            {% endif %}
             {% set nEnAttente = event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length %}
-            {% set nbWaitingListAvailableSpot = max(0, event.joinMax - nInscritsTotal - nEnAttente) %}
-
-            {% if (event.withWaitingList() and nbWaitingListAvailableSpot <= 0 and nPlacesRestantesOnline <= 0) or event.withWaitingList() is same as (false) and nPlacesRestantesOnline <= 0 %}
-                {% set isRegistrationPossible = false %}
-            {% endif %}
 
             <hr />
             <ul class="nice-list">
                 <li class="wide"><b>NOMBRE MAXIMUM DE PLACES :</b> {{ event.ngensMax }}</li>
                 <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}</li>
-                <li class="wide"><b>DISPONIBLES EN FILE D'ATTENTE :</b> {{ nbWaitingListAvailableSpot }}</li>
             </ul>
 
             <br style="clear:both" /><hr />
@@ -1036,7 +1022,7 @@
             </p>
 
             {% if app.user and nInscritsTotal > 0 and not is_granted('MODIFICATION_SORTIE', event) %}
-                <table class="big-lines-table" style="width:570px; margin: 0 auto;">
+                <table class="big-lines-table" style="margin:0 20px;">
 
                     {% for participation in accepted_participations %}
                         {% set inscrit = participation['liste'] %}
@@ -1078,7 +1064,7 @@
             {% endif %}
 
             {# si utilisateur est inscrit, il a accès #}
-            {% if isRegistrationPossible or event.participation(app.user) %}
+            {% if nPlacesRestantesOnline > 0 or event.participation(app.user) %}
 
                 {% if allowed('evt_join') %}
 
@@ -1198,7 +1184,7 @@
                 {% endif %}
 
             {% else %}
-                <p>Le nombre de places disponibles à la réservation depuis internet ou en file d'attente est atteint.</p>
+                <p>Le nombre de places disponibles à la réservation depuis internet est atteint.</p>
             {% endif %}
         {% endif %}
     </div>

@@ -40,7 +40,32 @@ class UsertypeRepository extends ServiceEntityRepository implements PasswordUpgr
         ;
     }
 
+    public function findAllManageable()
+    {
+        return $this->createQueryBuilder('ut')
+            ->where('ut.code not in (:codes)')
+            ->setParameter('codes', ['visiteur', 'adherent'])
+            ->orderBy('ut.hierarchie', 'asc')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
+    }
+
+    public function findLowerResps(int $level, bool $limitedToComm = true): array
+    {
+        $qb = $this->createQueryBuilder('ut')
+            ->where('ut.hierarchie < :level')
+            ->setParameter('level', $level)
+            ->orderBy('ut.hierarchie', 'DESC')
+        ;
+        if ($limitedToComm) {
+            $qb->andWhere('ut.limitedToComm = true');
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

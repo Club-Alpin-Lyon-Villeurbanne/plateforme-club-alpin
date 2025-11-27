@@ -6,6 +6,7 @@ use App\Entity\Article;
 use App\Entity\Comment;
 use App\Entity\MediaUpload;
 use App\Form\ArticleType;
+use App\Helper\SlugHelper;
 use App\Mailer\Mailer;
 use App\Repository\ArticleRepository;
 use App\Repository\CommentRepository;
@@ -19,9 +20,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ArticleController extends AbstractController
 {
@@ -36,7 +36,7 @@ class ArticleController extends AbstractController
     public function new(
         Request $request,
         EntityManagerInterface $entityManager,
-        SluggerInterface $slugger,
+        SlugHelper $slugHelper,
         EvtRepository $evtRepository,
         ?Article $article = null
     ): Response {
@@ -78,7 +78,7 @@ class ArticleController extends AbstractController
 
                 if ($isNew) {
                     $article->setUser($this->getUser());
-                    $article->setCode($this->generateArticleCode($article->getTitre(), $slugger));
+                    $article->setCode($slugHelper->generateSlug($article->getTitre(), 50));
                 } else {
                     $article->setStatus(0);
                     $article->setLastEditWho($this->getUser());
@@ -235,12 +235,5 @@ class ArticleController extends AbstractController
         }
 
         return $this->redirect($articleViewRoute);
-    }
-
-    private function generateArticleCode(string $title, SluggerInterface $slugger): string
-    {
-        $code = $slugger->slug(strtolower($title));
-
-        return substr($code, 0, 50);
     }
 }

@@ -487,8 +487,8 @@ class SortieControllerTest extends WebTestCase
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $participant->getNickname(), $participant->getEmail()));
         $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Acceptée] Votre demande d\'inscription à ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
-        $this->assertEmailTextBodyContains($emails[0], 'confirmé(e)');
-        $this->assertEmailHtmlBodyContains($emails[0], 'confirmé(e)');
+        $this->assertEmailTextBodyContains($emails[0], 'accepté(e)');
+        $this->assertEmailHtmlBodyContains($emails[0], 'accepté(e)');
     }
 
     public function testSortieUpdateInscriptionsRefuse()

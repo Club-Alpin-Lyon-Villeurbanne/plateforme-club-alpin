@@ -48,7 +48,6 @@ class HelloAssoService
             'title' => '[' . $eventDate->format('Y-m-d') . '] ' . $event->getTitre(),
             'description' => $description,
             'amountVisible' => true,
-            'maxEntries' => (int) $event->getNgensMax(),
             'generateTickets' => false,
             'allowIndividualPayer' => true,
             'allowOrganismPayer' => true,
