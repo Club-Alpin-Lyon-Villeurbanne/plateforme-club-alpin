@@ -74,7 +74,10 @@ class Commission
     private array $mandatoryFields = self::CONFIGURABLE_FIELDS;
 
     /** @var Collection<int, BrevetReferentiel> */
-    #[ORM\ManyToMany(targetEntity: BrevetReferentiel::class, mappedBy: 'commissions')]
+    #[ORM\ManyToMany(targetEntity: BrevetReferentiel::class)]
+    #[ORM\JoinTable(name: 'formation_brevet_commission')]
+    #[ORM\JoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'brevet_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Collection $brevets;
 
     public function __construct(string $title, string $code, int $ordre)
@@ -171,5 +174,21 @@ class Commission
     public function getBrevets(): Collection
     {
         return $this->brevets;
+    }
+
+    public function addBrevet(BrevetReferentiel $brevet): self
+    {
+        if (!$this->brevets->contains($brevet)) {
+            $this->brevets->add($brevet);
+        }
+
+        return $this;
+    }
+
+    public function removeBrevet(BrevetReferentiel $brevet): self
+    {
+        $this->brevets->removeElement($brevet);
+
+        return $this;
     }
 }
