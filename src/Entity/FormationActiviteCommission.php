@@ -23,7 +23,7 @@ class FormationActiviteCommission
     #[ORM\Column(type: Types::STRING, length: 10, nullable: false)]
     private string $codeActivite;
 
-    #[ORM\ManyToOne(targetEntity: Commission::class)]
+    #[ORM\OneToOne(targetEntity: Commission::class)]
     #[ORM\JoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', nullable: false, onDelete: 'CASCADE')]
     private Commission $commission;
 
