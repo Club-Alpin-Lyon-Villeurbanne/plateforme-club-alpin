@@ -23,6 +23,9 @@ class UserLicenseHelper
         $year = ($adhesionDate->format('m') >= self::LICENSE_TOLERANCY_PERIOD_END_MONTH) ? (int) $adhesionDate->format('Y') + 1 : $adhesionDate->format('Y');
 
         $endAdhesionDate = (clone $adhesionDate)->setTimestamp(strtotime("$year-" . self::LICENSE_TOLERANCY_PERIOD_END));
+        if ($user->getNomade() && $user->getDiscoveryEndDatetime()) {
+            $endAdhesionDate = $user->getDiscoveryEndDatetime();
+        }
 
         // on considère la date fin de sortie pour les sorties sur plusieurs jours
         $eventEndDate = $event->getEndDate();
