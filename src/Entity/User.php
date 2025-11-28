@@ -59,6 +59,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[Groups('user:read')]
     private $email;
 
+    #[ORM\Column(name: 'gdrive_email', type: 'string', length: 200, unique: true, nullable: true)]
+    private ?string $gdriveEmail = null;
+
     /**
      * @var string
      */
@@ -223,6 +226,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     #[ORM\Column(type: Types::STRING, nullable: true, options: ['comment' => 'Motif de radiation FFCAM'])]
     private ?string $radiationReason = null;
+
+    #[ORM\ManyToOne(targetEntity: MediaUpload::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[Groups('media:read')]
+    private ?MediaUpload $mediaUpload = null;
 
     public function __construct(?int $id = null)
     {
@@ -803,6 +811,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setRadiationReason(?string $radiationReason): self
     {
         $this->radiationReason = $radiationReason;
+
+        return $this;
+    }
+
+    public function getGdriveEmail(): ?string
+    {
+        return $this->gdriveEmail;
+    }
+
+    public function setGdriveEmail(?string $gdriveEmail): self
+    {
+        $this->gdriveEmail = $gdriveEmail;
+
+        return $this;
+    }
+
+    public function getMediaUpload(): ?MediaUpload
+    {
+        return $this->mediaUpload;
+    }
+
+    public function setMediaUpload(?MediaUpload $mediaUpload): self
+    {
+        $this->mediaUpload = $mediaUpload;
 
         return $this;
     }

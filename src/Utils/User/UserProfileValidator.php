@@ -5,6 +5,7 @@ namespace App\Utils\User;
 use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 final readonly class UserProfileValidator
@@ -17,6 +18,7 @@ final readonly class UserProfileValidator
 
     public function __construct(
         private Security $security,
+        private UrlGeneratorInterface $urlGenerator,
         private string $legacyFtpPath
     ) {
     }
@@ -52,7 +54,7 @@ final readonly class UserProfileValidator
             $missingProperties['internal'][] = self::DISPLAY_LABELS['photo'];
         }
 
-        $missingProperties['message'] = self::getErrorsAsString($missingProperties);
+        $missingProperties['message'] = $this->getErrorsAsString($missingProperties);
 
         return $missingProperties;
     }
@@ -72,7 +74,7 @@ final readonly class UserProfileValidator
      *
      * @return string the formatted string
      */
-    public static function getErrorsAsString(array $errors): string
+    public function getErrorsAsString(array $errors): string
     {
         $internalError = $errors['internal'];
         $externalErrors = $errors['external'];
@@ -80,7 +82,8 @@ final readonly class UserProfileValidator
         $error = 'Merci de renseigner ';
 
         if ($internalError) {
-            $error .= sprintf('%s dans votre <a href="/profil/infos.html">espace personnel</a>', $internalError[0]);
+            $url = $this->urlGenerator->generate('my_profile');
+            $error .= sprintf('%s dans votre <a href="%s">espace personnel</a>', $internalError[0], $url);
             if ($externalErrors) {
                 $error .= ', ';
             }

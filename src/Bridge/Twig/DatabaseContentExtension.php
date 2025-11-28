@@ -49,7 +49,6 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
             new TwigFunction('get_commission', [$this, 'getCommission']),
             new TwigFunction('list_events', [$this, 'getEvents']),
             new TwigFunction('list_partenaires', [$this, 'getPartenaires']),
-            new TwigFunction('user_picto', [$this, 'getUserPicto']),
             new TwigFunction('fond_commission', [$this, 'getFondCommission']),
             new TwigFunction('notifications_counter', [$this, 'getNotificationsCounter']),
             new TwigFunction('notifications_counter_articles', [$this, 'getNotificationsValidationArticle']),
@@ -212,26 +211,5 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
         }
 
         return $rel;
-    }
-
-    public function getUserPicto(User $user, $style = ''): string
-    {
-        switch ($style) {
-            case 'pic':
-            case 'min':
-                $style .= '-';
-                break;
-            default:
-                $style = '';
-                break;
-        }
-
-        $rel = '/ftp/user/' . $user->getId() . '/' . $style . 'profil.jpg';
-
-        if (!file_exists(__DIR__ . '/../../../public' . $rel)) {
-            $rel = '/ftp/user/0/' . $style . 'profil.jpg';
-        }
-
-        return $rel . '?ct=' . time();
     }
 }

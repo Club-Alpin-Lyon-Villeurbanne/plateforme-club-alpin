@@ -22,3 +22,13 @@ liip_imagine:
             quality: 85
             filters:
                 thumbnail: { size: [198, 138], mode: outbound }
+
+        profile_thumbnail:
+            quality: 90
+            filters:
+                thumbnail: { size: [150, 150], mode: outbound }
+
+        min_profile_thumbnail:
+            quality: 85
+            filters:
+                thumbnail: { size: [55, 55], mode: outbound }
