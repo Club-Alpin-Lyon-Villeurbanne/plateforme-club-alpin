@@ -26,7 +26,6 @@ final class Version20251128095242 extends AbstractMigration
         $this->addSql('ALTER TABLE groupe_competence_commission ADD CONSTRAINT FK_7EFB817B89034830 FOREIGN KEY (groupe_competence_id) REFERENCES formation_competence_referentiel (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE niveau_commission ADD CONSTRAINT FK_48E98795202D1EB2 FOREIGN KEY (commission_id) REFERENCES caf_commission (id_commission) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE niveau_commission ADD CONSTRAINT FK_48E98795B3E9C81 FOREIGN KEY (niveau_id) REFERENCES formation_niveau_referentiel (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE caf_commission DROP code_ffcam_brevet, DROP code_ffcam_niveau, DROP code_ffcam_formation, DROP code_ffcam_groupe_competence');
         $this->addSql('ALTER TABLE formation_referentiel ADD INDEX(code_formation), DROP PRIMARY KEY, ADD PRIMARY KEY (id)');
     }
 
@@ -41,7 +40,6 @@ final class Version20251128095242 extends AbstractMigration
         $this->addSql('DROP TABLE formation_commission');
         $this->addSql('DROP TABLE groupe_competence_commission');
         $this->addSql('DROP TABLE niveau_commission');
-        $this->addSql('ALTER TABLE caf_commission ADD code_ffcam_brevet VARCHAR(5) DEFAULT NULL, ADD code_ffcam_niveau VARCHAR(2) DEFAULT NULL, ADD code_ffcam_formation VARCHAR(2) DEFAULT NULL, ADD code_ffcam_groupe_competence VARCHAR(2) DEFAULT NULL');
         $this->addSql('ALTER TABLE formation_referentiel MODIFY id INT NOT NULL');
         $this->addSql('DROP INDEX `PRIMARY` ON formation_referentiel');
         $this->addSql('ALTER TABLE formation_referentiel DROP id');
