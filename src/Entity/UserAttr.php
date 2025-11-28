@@ -32,6 +32,13 @@ class UserAttr
         self::COENCADRANT,
         self::REDACTEUR,
     ];
+    public const array SKILLS_LISTING = [
+        self::RESPONSABLE_COMMISSION,
+        self::BENEVOLE,
+        self::ENCADRANT,
+        self::STAGIAIRE,
+        self::COENCADRANT,
+    ];
 
     /**
      * @var int
