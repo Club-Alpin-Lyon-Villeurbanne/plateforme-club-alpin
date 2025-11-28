@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Commission;
 use App\Entity\Evt;
 use App\Entity\UserAttr;
+use App\Entity\Usertype;
 use App\Helper\EventFormHelper;
 use App\Helper\MonthHelper;
 use App\Legacy\LegacyContainer;
@@ -119,10 +120,10 @@ class CommissionController extends AbstractController
             throw new AccessDeniedHttpException('Not allowed');
         }
 
-        $myCommissionsCodes = $userRights->getCommissionListForRight('commission_config');
+        $myCommissionsCodes = $userRights->getCommissionListForRight('commission_list');
 
         return [
-            'commissions' => $commissionRepository->findBy(['code' => $myCommissionsCodes], ['title' => 'ASC']),
+            'commissions' => $commissionRepository->findBy(['code' => $myCommissionsCodes, 'vis' => true], ['title' => 'ASC']),
         ];
     }
 
@@ -187,6 +188,56 @@ class CommissionController extends AbstractController
             'commission' => $commission,
             'checked_fields' => $commission->getMandatoryFields(),
             'fields' => $configurableFields,
+        ];
+    }
+
+    #[Route('/commissions/{id}/brevets', name: 'commission_brevet', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    #[Template('commission/brevets.html.twig')]
+    public function brevets(
+        Commission $commission,
+        EntityManagerInterface $manager,
+        UserAttrRepository $userAttrRepository,
+    ): array {
+        $users = [];
+        $brevets = [];
+        $niveaux = $commission->getNiveaux();
+        $formations = [];
+
+        $allBrevets = $commission->getBrevets();
+        $brevetCodePattern = '/^BF.*-.*$/';
+        foreach ($allBrevets as $brevet) {
+            if (1 === preg_match($brevetCodePattern, $brevet->getCodeBrevet())) {
+                $brevets[] = $brevet;
+            }
+        }
+
+        $allFormations = $commission->getFormations();
+        $formationCodePattern = '/^STG-F.*$/';
+        foreach ($allFormations as $formation) {
+            if (1 === preg_match($formationCodePattern, $formation->getCodeFormation())) {
+                $formations[] = $formation;
+            }
+        }
+
+        $roles = $manager->getRepository(Usertype::class)->findBy(['code' => UserAttr::SKILLS_LISTING], ['hierarchie' => 'DESC']);
+        foreach ($roles as $role) {
+            /** @var UserAttr $userRole */
+            foreach ($userAttrRepository->listAllUsersByRoleAndCommission($role, $commission->getCode()) as $userRole) {
+                if (!in_array($userRole->getUser()->getId(), array_keys($users), true)) {
+                    $users[$userRole->getUser()->getId()] = [
+                        'user' => $userRole->getUser(),
+                        'role' => $role->getTitle(),
+                    ];
+                }
+            }
+        }
+
+        return [
+            'commission' => $commission,
+            'brevets' => $brevets,
+            'niveaux' => $niveaux,
+            'formations' => $formations,
+            'users' => $users,
         ];
     }
 }
