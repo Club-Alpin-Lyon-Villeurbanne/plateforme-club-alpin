@@ -2,16 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\FormationCompetenceReferentielRepository;
+use App\Repository\FormationReferentielGroupeCompetenceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Table(name: 'formation_competence_referentiel')]
+#[ORM\Table(name: 'formation_referentiel_groupe_competence')]
 #[ORM\Index(columns: ['code_activite'], name: 'IDX_COMP_REF_ACTIVITE')]
 #[ORM\UniqueConstraint(name: 'UNIQ_COMP_REF_INTITULE_ACT', columns: ['intitule', 'code_activite'])]
-#[ORM\Entity(repositoryClass: FormationCompetenceReferentielRepository::class)]
-class FormationCompetenceReferentiel
+#[ORM\Entity(repositoryClass: FormationReferentielGroupeCompetenceRepository::class)]
+class FormationReferentielGroupeCompetence
 {
     use TimestampableEntity;
 

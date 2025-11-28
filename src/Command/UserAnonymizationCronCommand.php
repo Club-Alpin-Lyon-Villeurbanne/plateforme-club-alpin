@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Entity\User;
-use App\Repository\BrevetAdherentRepository;
+use App\Repository\FormationValidationBrevetRepository;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserNotificationRepository;
 use App\Repository\UserRepository;
@@ -25,7 +25,7 @@ class UserAnonymizationCronCommand extends Command
 {
     public function __construct(
         protected UserRepository $userRepository,
-        protected BrevetAdherentRepository $brevetAdherentRepository,
+        protected FormationValidationBrevetRepository $brevetAdherentRepository,
         protected UserNotificationRepository $userNotificationRepository,
         protected UserAttrRepository $userAttrRepository,
         protected UserLicenseHelper $userLicenseHelper,

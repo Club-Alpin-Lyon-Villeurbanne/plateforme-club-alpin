@@ -2,17 +2,17 @@
 
 namespace App\Entity;
 
-use App\Repository\BrevetAdherentRepository;
+use App\Repository\FormationValidationBrevetRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Table(name: 'formation_brevet')]
+#[ORM\Table(name: 'formation_validation_brevet')]
 #[ORM\Index(columns: ['brevet_id'], name: 'idx_brevet_id')]
 #[ORM\Index(columns: ['date_obtention'], name: 'idx_date_obtention')]
 #[ORM\UniqueConstraint(name: 'UNIQ_BREVET_USER_BREVET', columns: ['user_id', 'brevet_id'])]
-#[ORM\Entity(repositoryClass: BrevetAdherentRepository::class)]
-class BrevetAdherent
+#[ORM\Entity(repositoryClass: FormationValidationBrevetRepository::class)]
+class FormationValidationBrevet
 {
     use TimestampableEntity;
 
@@ -25,9 +25,9 @@ class BrevetAdherent
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id_user', nullable: false)]
     private ?User $user;
 
-    #[ORM\ManyToOne(targetEntity: BrevetReferentiel::class)]
+    #[ORM\ManyToOne(targetEntity: FormationReferentielBrevet::class)]
     #[ORM\JoinColumn(name: 'brevet_id', referencedColumnName: 'id', nullable: false)]
-    private BrevetReferentiel $brevet;
+    private FormationReferentielBrevet $brevet;
 
     #[ORM\Column(name: 'date_obtention', type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $dateObtention;
@@ -68,12 +68,12 @@ class BrevetAdherent
         return $this;
     }
 
-    public function getBrevet(): BrevetReferentiel
+    public function getBrevet(): FormationReferentielBrevet
     {
         return $this->brevet;
     }
 
-    public function setBrevet(BrevetReferentiel $brevet): self
+    public function setBrevet(FormationReferentielBrevet $brevet): self
     {
         $this->brevet = $brevet;
 

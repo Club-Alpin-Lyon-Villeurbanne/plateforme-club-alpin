@@ -2,18 +2,18 @@
 
 namespace App\Entity;
 
-use App\Repository\FormationNiveauValidationRepository;
+use App\Repository\FormationValidationNiveauPratiqueRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Table(name: 'formation_niveau_validation')]
+#[ORM\Table(name: 'formation_validation_niveau_pratique')]
 #[ORM\Index(columns: ['user_id'], name: 'IDX_FORM_NIV_VAL_USER')]
 #[ORM\Index(columns: ['cursus_niveau_id'], name: 'IDX_FORM_NIV_VAL_CURSUS')]
 #[ORM\Index(columns: ['date_validation'], name: 'IDX_FORM_NIV_VAL_DATE')]
 #[ORM\UniqueConstraint(name: 'UNIQ_FORM_USER_NIV', columns: ['user_id', 'cursus_niveau_id'])]
-#[ORM\Entity(repositoryClass: FormationNiveauValidationRepository::class)]
-class FormationNiveauValidation
+#[ORM\Entity(repositoryClass: FormationValidationNiveauPratiqueRepository::class)]
+class FormationValidationNiveauPratique
 {
     use TimestampableEntity;
 
@@ -26,9 +26,9 @@ class FormationNiveauValidation
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id_user', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
-    #[ORM\ManyToOne(targetEntity: FormationNiveauReferentiel::class)]
+    #[ORM\ManyToOne(targetEntity: FormationReferentielNiveauPratique::class)]
     #[ORM\JoinColumn(name: 'cursus_niveau_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
-    private FormationNiveauReferentiel $niveauReferentiel;
+    private FormationReferentielNiveauPratique $niveauReferentiel;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateValidation = null;
@@ -50,12 +50,12 @@ class FormationNiveauValidation
         return $this;
     }
 
-    public function getNiveauReferentiel(): FormationNiveauReferentiel
+    public function getNiveauReferentiel(): FormationReferentielNiveauPratique
     {
         return $this->niveauReferentiel;
     }
 
-    public function setNiveauReferentiel(FormationNiveauReferentiel $niveauReferentiel): self
+    public function setNiveauReferentiel(FormationReferentielNiveauPratique $niveauReferentiel): self
     {
         $this->niveauReferentiel = $niveauReferentiel;
 

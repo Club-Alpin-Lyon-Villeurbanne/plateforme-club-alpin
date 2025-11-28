@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\FormationReferentielRepository;
+use App\Repository\FormationReferentielFormationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Table(name: 'formation_referentiel')]
-#[ORM\Entity(repositoryClass: FormationReferentielRepository::class)]
-class FormationReferentiel
+#[ORM\Table(name: 'formation_referentiel_formation')]
+#[ORM\Entity(repositoryClass: FormationReferentielFormationRepository::class)]
+class FormationReferentielFormation
 {
     #[ORM\Id]
     #[ORM\Column(type: Types::INTEGER)]
