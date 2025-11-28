@@ -2,18 +2,18 @@
 
 namespace App\Entity;
 
-use App\Repository\FormationValidationRepository;
+use App\Repository\FormationValidationFormationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Table(name: 'formation_validation')]
+#[ORM\Table(name: 'formation_validation_formation')]
 #[ORM\Index(columns: ['user_id'], name: 'IDX_FORM_VAL_USER')]
 #[ORM\Index(columns: ['code_formation'], name: 'IDX_FORM_VAL_CODE')]
 #[ORM\Index(columns: ['date_validation'], name: 'IDX_FORM_VAL_DATE')]
 #[ORM\UniqueConstraint(name: 'UNIQ_FORM_VAL_USER_ID_INTERNE', columns: ['user_id', 'id_interne'])]
-#[ORM\Entity(repositoryClass: FormationValidationRepository::class)]
-class FormationValidation
+#[ORM\Entity(repositoryClass: FormationValidationFormationRepository::class)]
+class FormationValidationFormation
 {
     use TimestampableEntity;
 
@@ -26,9 +26,9 @@ class FormationValidation
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id_user', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
-    #[ORM\ManyToOne(targetEntity: FormationReferentiel::class)]
+    #[ORM\ManyToOne(targetEntity: FormationReferentielFormation::class)]
     #[ORM\JoinColumn(name: 'code_formation', referencedColumnName: 'code_formation', nullable: true, onDelete: 'SET NULL')]
-    private ?FormationReferentiel $formation = null;
+    private ?FormationReferentielFormation $formation = null;
 
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $valide;
@@ -65,12 +65,12 @@ class FormationValidation
         return $this;
     }
 
-    public function getFormation(): ?FormationReferentiel
+    public function getFormation(): ?FormationReferentielFormation
     {
         return $this->formation;
     }
 
-    public function setFormation(?FormationReferentiel $formation): self
+    public function setFormation(?FormationReferentielFormation $formation): self
     {
         $this->formation = $formation;
 

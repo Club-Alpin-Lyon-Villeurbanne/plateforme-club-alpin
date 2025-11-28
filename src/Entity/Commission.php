@@ -73,12 +73,37 @@ class Commission
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private array $mandatoryFields = self::CONFIGURABLE_FIELDS;
 
-    /** @var Collection<int, BrevetReferentiel> */
-    #[ORM\ManyToMany(targetEntity: BrevetReferentiel::class)]
-    #[ORM\JoinTable(name: 'formation_brevet_commission')]
+    /** @var Collection<int, FormationReferentielBrevet> */
+    #[ORM\ManyToMany(targetEntity: FormationReferentielBrevet::class)]
+    #[ORM\JoinTable(name: 'formation_commission_brevet')]
     #[ORM\JoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', onDelete: 'CASCADE')]
     #[ORM\InverseJoinColumn(name: 'brevet_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\OrderBy(['codeBrevet' => 'ASC'])]
     private Collection $brevets;
+
+    /** @var Collection<int, FormationReferentielFormation> */
+    #[ORM\ManyToMany(targetEntity: FormationReferentielFormation::class)]
+    #[ORM\JoinTable(name: 'formation_commission_formation')]
+    #[ORM\JoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'formation_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\OrderBy(['codeFormation' => 'ASC'])]
+    private Collection $formations;
+
+    /** @var Collection<int, FormationReferentielGroupeCompetence> */
+    #[ORM\ManyToMany(targetEntity: FormationReferentielGroupeCompetence::class)]
+    #[ORM\JoinTable(name: 'formation_commission_groupe_competence')]
+    #[ORM\JoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'groupe_competence_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\OrderBy(['intitule' => 'ASC'])]
+    private Collection $groupesCompetences;
+
+    /** @var Collection<int, FormationReferentielNiveauPratique> */
+    #[ORM\ManyToMany(targetEntity: FormationReferentielNiveauPratique::class)]
+    #[ORM\JoinTable(name: 'formation_commission_niveau_pratique')]
+    #[ORM\JoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'niveau_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\OrderBy(['libelle' => 'ASC'])]
+    private Collection $niveaux;
 
     public function __construct(string $title, string $code, int $ordre)
     {
@@ -86,6 +111,9 @@ class Commission
         $this->code = $code;
         $this->ordre = $ordre;
         $this->brevets = new ArrayCollection();
+        $this->formations = new ArrayCollection();
+        $this->groupesCompetences = new ArrayCollection();
+        $this->niveaux = new ArrayCollection();
     }
 
     public function __toString()
@@ -170,13 +198,18 @@ class Commission
         return $this;
     }
 
-    /** @return Collection<int, BrevetReferentiel> */
+    /** @return Collection<int, FormationReferentielBrevet> */
     public function getBrevets(): Collection
     {
         return $this->brevets;
     }
 
-    public function addBrevet(BrevetReferentiel $brevet): self
+    public function hasBrevets(): bool
+    {
+        return count($this->brevets) > 0;
+    }
+
+    public function addBrevet(FormationReferentielBrevet $brevet): self
     {
         if (!$this->brevets->contains($brevet)) {
             $this->brevets->add($brevet);
@@ -185,9 +218,90 @@ class Commission
         return $this;
     }
 
-    public function removeBrevet(BrevetReferentiel $brevet): self
+    public function removeBrevet(FormationReferentielBrevet $brevet): self
     {
         $this->brevets->removeElement($brevet);
+
+        return $this;
+    }
+
+    /** @return Collection<int, FormationReferentielFormation> */
+    public function getFormations(): Collection
+    {
+        return $this->formations;
+    }
+
+    public function hasFormations(): bool
+    {
+        return count($this->formations) > 0;
+    }
+
+    public function addFormation(FormationReferentielFormation $formation): self
+    {
+        if (!$this->formations->contains($formation)) {
+            $this->formations->add($formation);
+        }
+
+        return $this;
+    }
+
+    public function removeFormation(FormationReferentielFormation $formation): self
+    {
+        $this->formations->removeElement($formation);
+
+        return $this;
+    }
+
+    /** @return Collection<int, FormationReferentielGroupeCompetence> */
+    public function getGroupesCompetences(): Collection
+    {
+        return $this->groupesCompetences;
+    }
+
+    public function hasGroupesCompetences(): bool
+    {
+        return count($this->groupesCompetences) > 0;
+    }
+
+    public function addGroupeCompetence(FormationReferentielGroupeCompetence $groupe): self
+    {
+        if (!$this->groupesCompetences->contains($groupe)) {
+            $this->groupesCompetences->add($groupe);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupeCompetence(FormationReferentielGroupeCompetence $groupe): self
+    {
+        $this->groupesCompetences->removeElement($groupe);
+
+        return $this;
+    }
+
+    /** @return Collection<int, FormationReferentielNiveauPratique> */
+    public function getNiveaux(): Collection
+    {
+        return $this->niveaux;
+    }
+
+    public function hasNiveaux(): bool
+    {
+        return count($this->niveaux) > 0;
+    }
+
+    public function addNiveau(FormationReferentielNiveauPratique $niveau): self
+    {
+        if (!$this->niveaux->contains($niveau)) {
+            $this->niveaux->add($niveau);
+        }
+
+        return $this;
+    }
+
+    public function removeNiveau(FormationReferentielNiveauPratique $niveau): self
+    {
+        $this->niveaux->removeElement($niveau);
 
         return $this;
     }

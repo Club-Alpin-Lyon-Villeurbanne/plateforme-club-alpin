@@ -2,19 +2,19 @@
 
 namespace App\Entity;
 
-use App\Repository\FormationCompetenceValidationRepository;
+use App\Repository\FormationValidationGroupeCompetenceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Table(name: 'formation_competence_validation')]
+#[ORM\Table(name: 'formation_validation_groupe_competence')]
 #[ORM\Index(columns: ['user_id'], name: 'IDX_FORM_COMP_VAL_USER')]
 #[ORM\Index(columns: ['competence_id'], name: 'IDX_FORM_COMP_VAL_COMP')]
 #[ORM\Index(columns: ['date_validation'], name: 'IDX_FORM_COMP_VAL_DATE')]
 #[ORM\Index(columns: ['est_valide'], name: 'IDX_FORM_COMP_VAL_VALID')]
 #[ORM\UniqueConstraint(name: 'UNIQ_COMP_VAL_USER_COMP', columns: ['user_id', 'competence_id'])]
-#[ORM\Entity(repositoryClass: FormationCompetenceValidationRepository::class)]
-class FormationCompetenceValidation
+#[ORM\Entity(repositoryClass: FormationValidationGroupeCompetenceRepository::class)]
+class FormationValidationGroupeCompetence
 {
     use TimestampableEntity;
 
@@ -27,9 +27,9 @@ class FormationCompetenceValidation
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id_user', nullable: false, onDelete: 'CASCADE')]
     private User $user;
 
-    #[ORM\ManyToOne(targetEntity: FormationCompetenceReferentiel::class)]
+    #[ORM\ManyToOne(targetEntity: FormationReferentielGroupeCompetence::class)]
     #[ORM\JoinColumn(name: 'competence_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
-    private FormationCompetenceReferentiel $competence;
+    private FormationReferentielGroupeCompetence $competence;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     private ?string $niveauAssocie = null;
@@ -63,12 +63,12 @@ class FormationCompetenceValidation
         return $this;
     }
 
-    public function getCompetence(): FormationCompetenceReferentiel
+    public function getCompetence(): FormationReferentielGroupeCompetence
     {
         return $this->competence;
     }
 
-    public function setCompetence(FormationCompetenceReferentiel $competence): self
+    public function setCompetence(FormationReferentielGroupeCompetence $competence): self
     {
         $this->competence = $competence;
 
