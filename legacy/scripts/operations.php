@@ -107,11 +107,6 @@ elseif ('user_update' == $operation) {
     require $operationsDir . 'operations.user_update.php';
 }
 
-// USER : TENTATIVE D'INSCRIPTION
-elseif ('user_subscribe' == $operation) {
-    require $operationsDir . 'operations.user_subscribe.php';
-}
-
 // USER : CREATE (manuel)
 elseif ('user_create' == $operation) {
     require $operationsDir . 'operations.user_create.php';
