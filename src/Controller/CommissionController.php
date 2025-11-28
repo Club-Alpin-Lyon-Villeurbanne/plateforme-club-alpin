@@ -120,7 +120,7 @@ class CommissionController extends AbstractController
             throw new AccessDeniedHttpException('Not allowed');
         }
 
-        $myCommissionsCodes = $userRights->getCommissionListForRight('commission_config');
+        $myCommissionsCodes = $userRights->getCommissionListForRight('commission_list');
 
         return [
             'commissions' => $commissionRepository->findBy(['code' => $myCommissionsCodes, 'vis' => true], ['title' => 'ASC']),
