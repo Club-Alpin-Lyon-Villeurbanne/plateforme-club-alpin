@@ -8,7 +8,6 @@ use App\Entity\UserAttr;
 use App\Entity\Usertype;
 use App\Helper\EventFormHelper;
 use App\Helper\MonthHelper;
-use App\Legacy\LegacyContainer;
 use App\Mailer\Mailer;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
@@ -175,7 +174,7 @@ class CommissionController extends AbstractController
                         [
                             'commission' => $commission->getTitle(),
                             'user' => $this->getUser()->getFullName(),
-                            'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $this->getUser()->getId() . '.html',
+                            'profile_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                         ]
                     );
                 }
