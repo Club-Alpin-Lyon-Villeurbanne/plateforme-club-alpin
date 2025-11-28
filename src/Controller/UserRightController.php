@@ -143,7 +143,7 @@ class UserRightController extends AbstractController
             $this->addFlash('error', 'Vous n\'avez pas la responsabilité ' . $type->getTitle() . ' ' . ($commission ? 'pour la commission ' . $commission->getTitle() : '') . ', vous ne pouvez donc pas la retirer.');
         }
 
-        return $this->redirect('/profil/infos.html');
+        return $this->redirectToRoute('my_profile');
     }
 
     private function removeRight(User $user, Usertype $type, ?Commission $commission = null): bool

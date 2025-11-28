@@ -19,6 +19,28 @@ class UserRightService
     ) {
     }
 
+    public function getRightsToDisplay(User $user): array
+    {
+        $userRights = $user->getAttributes();
+        $roles = [
+            'club' => [],
+            'commission' => [],
+        ];
+        foreach ($userRights as $userRight) {
+            $commissionCode = $userRight->getCommission();
+            if (empty($commissionCode)) {
+                $roles['club'][] = $userRight;
+            } else {
+                $commission = $this->manager->getRepository(Commission::class)->findOneBy(['code' => $commissionCode]);
+                if (!in_array($commission->getTitle(), array_keys($roles['commission']), true)) {
+                    $roles['commission'][$commission->getTitle()] = $userRight;
+                }
+            }
+        }
+
+        return $roles;
+    }
+
     public function removeRightAndNotify(int $idUserAttr, ?User $whoUser): void
     {
         $userRight = $this->manager->getRepository(UserAttr::class)->find($idUserAttr);
