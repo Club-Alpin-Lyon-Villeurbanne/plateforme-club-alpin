@@ -111,6 +111,8 @@ SQL;
             ->where('u.valid = true')
             ->andWhere('u.nomade = true')
             ->andWhere('u.isDeleted = false')
+            ->andWhere('u.discoveryEndDatetime >= :endDatetime')
+            ->setParameter('endDatetime', new \DateTimeImmutable())
         ;
         if ($user) {
             $qb
@@ -286,6 +288,7 @@ SQL;
             case 'all':
                 $qb
                     ->andWhere('u.isDeleted = false')
+                    ->andWhere('u.nomade = false')
                 ;
                 break;
             case 'deleted':
