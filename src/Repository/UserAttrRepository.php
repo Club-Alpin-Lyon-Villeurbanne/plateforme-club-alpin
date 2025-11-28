@@ -176,4 +176,25 @@ class UserAttrRepository extends ServiceEntityRepository
             ->execute()
         ;
     }
+
+    public function listAllUsersByRoleAndCommission(Usertype $usertype, string $commissionCode)
+    {
+        $queryBuilder = $this->createQueryBuilder('ua')
+            ->innerJoin('ua.user', 'u')
+            ->innerJoin('ua.userType', 't')
+            ->where('ua.userType = :type')
+            ->andWhere('u.isDeleted = false')
+            ->andWhere('ua.params LIKE :commissionCode')
+            ->setParameter('type', $usertype)
+            ->setParameter('commissionCode', 'commission:' . $commissionCode)
+            ->orderBy('t.hierarchie', 'desc')
+            ->addOrderBy('u.lastname', 'asc')
+            ->addOrderBy('u.firstname', 'asc')
+        ;
+
+        return $queryBuilder
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

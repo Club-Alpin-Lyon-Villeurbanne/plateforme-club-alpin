@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\FormationReferentielBrevet;
 use App\Entity\FormationValidationBrevet;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -28,6 +29,19 @@ class FormationValidationBrevetRepository extends ServiceEntityRepository
             ->setParameter('user', $user)
             ->getQuery()
             ->execute()
+        ;
+    }
+
+    public function getDateByUserAndBrevet(User $user, FormationReferentielBrevet $brevet)
+    {
+        return $this->createQueryBuilder('b')
+            ->where('b.user = :user')
+            ->andWhere('b.brevet = :brevet')
+            ->setParameter('user', $user)
+            ->setParameter('brevet', $brevet)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()
         ;
     }
 }
