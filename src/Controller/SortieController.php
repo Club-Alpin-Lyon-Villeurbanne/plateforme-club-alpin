@@ -172,6 +172,9 @@ class SortieController extends AbstractController
             }
             // retirer les stagiaires qui ne sont plus cochés
             if ($isUpdate && !empty($currentStagiaires)) {
+                if (empty($formData['initiateurs'])) {
+                    $formData['initiateurs'] = [];
+                }
                 foreach ($currentStagiaires as $currentStagiaire) {
                     if (!in_array($currentStagiaire->getUser()->getId(), $formData['initiateurs'], false)) {
                         $event->removeParticipation($currentStagiaire);
@@ -180,6 +183,9 @@ class SortieController extends AbstractController
             }
             // retirer les encadrants qui ne sont plus cochés
             if ($isUpdate && !empty($currentCoencadrants)) {
+                if (empty($formData['coencadrants'])) {
+                    $formData['coencadrants'] = [];
+                }
                 foreach ($currentCoencadrants as $currentEncadrant) {
                     if (!in_array($currentEncadrant->getUser()->getId(), $formData['coencadrants'], false)) {
                         $event->removeParticipation($currentEncadrant);
