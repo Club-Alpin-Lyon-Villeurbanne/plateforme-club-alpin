@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Table(name: 'formation_referentiel_formation')]
+#[ORM\UniqueConstraint(name: 'UNIQ_CODE_FORMATION', columns: ['code_formation'])]
 #[ORM\Entity(repositoryClass: FormationReferentielFormationRepository::class)]
 class FormationReferentielFormation
 {
