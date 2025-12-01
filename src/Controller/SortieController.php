@@ -210,7 +210,7 @@ class SortieController extends AbstractController
                     || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
                     || $originalEntityData['encadrants'] !== $newEncadrants['encadrants'])) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
-                } else {
+                } elseif (!$event->isDraft()) {
                     // on envoie directement le mail de mise à jour de sortie
                     $this->sendUpdateNotificationEmail($mailer, $event, false);
                 }
