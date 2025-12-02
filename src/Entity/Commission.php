@@ -78,7 +78,7 @@ class Commission
     #[ORM\JoinTable(name: 'formation_commission_brevet')]
     #[ORM\JoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', onDelete: 'CASCADE')]
     #[ORM\InverseJoinColumn(name: 'brevet_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    #[ORM\OrderBy(['codeBrevet' => 'ASC'])]
+    #[ORM\OrderBy(['codeBrevet' => 'DESC'])]
     private Collection $brevets;
 
     /** @var Collection<int, FormationReferentielFormation> */
