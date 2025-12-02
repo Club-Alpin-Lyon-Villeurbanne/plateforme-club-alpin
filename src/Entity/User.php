@@ -25,7 +25,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
  */
 #[ORM\Table(name: 'caf_user')]
 #[ORM\Index(columns: ['id_user'], name: 'id_user')]
-#[ORM\Index(columns: ['is_deleted', 'valid_user', 'doit_renouveler_user', 'nomade_user', 'lastname_user'], name: 'idx_user_admin_listing')]
+#[ORM\Index(columns: ['is_deleted', 'doit_renouveler_user', 'nomade_user', 'lastname_user'], name: 'idx_user_admin_listing')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
     shortName: 'utilisateur',
@@ -66,13 +66,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[Ignore]
     private $mdp;
 
-    /**
-     * @var string
-     */
-    #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, nullable: true, unique: true, options: ['comment' => 'Numéro de licence'])]
+    #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, unique: true, nullable: false, options: ['comment' => 'Numéro de licence'])]
     #[Groups('user:details')]
     #[SerializedName('numeroLicence')]
-    private $cafnum;
+    private string $cafnum;
 
     /**
      * @var string
@@ -164,9 +161,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[Groups('user:details')]
     #[SerializedName('informationsSupplementaires')]
     private $moreinfo;
-
-    #[ORM\Column(name: 'valid_user', type: 'boolean', nullable: false, options: ['comment' => "0=l'user n'a pas activé son compte   1=activé"])]
-    private bool $valid = false;
 
     /**
      * @var string
@@ -261,7 +255,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
             'pays' => $this->getPays(),
             'civ' => $this->getCiv(),
             'moreinfo' => $this->getMoreinfo(),
-            'valid' => $this->getValid(),
             'manuel' => $this->getManuel(),
             'nomade' => $this->getNomade(),
             'nomadeParent' => $this->getNomadeParent(),
@@ -331,13 +324,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return null;
     }
 
-    public function addAttribute(Usertype $userType, ?string $params = null): void
+    public function addAttribute(Usertype $userType, ?string $params = null, ?string $description = null): void
     {
         if ($userType->getLimitedToComm() && null === $params) {
             throw new \InvalidArgumentException('User type is limited to commission.');
         }
 
-        $this->attrs->add(new UserAttr($this, $userType, $params));
+        $attr = new UserAttr($this, $userType, $params);
+        if (!empty($description)) {
+            $attr->setDescription($description);
+        }
+
+        // éviter les doublons
+        $commissionCode = str_replace('commission:', '', $params);
+        if (!$this->getAttribute($userType->getCode(), $commissionCode)) {
+            $this->attrs->add($attr);
+        }
     }
 
     public function getId(): ?int
@@ -369,7 +371,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this;
     }
 
-    public function getCafnum(): ?string
+    public function getCafnum(): string
     {
         return $this->cafnum;
     }
@@ -521,18 +523,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setMoreinfo(string $moreinfo): self
     {
         $this->moreinfo = $moreinfo;
-
-        return $this;
-    }
-
-    public function getValid(): ?bool
-    {
-        return $this->valid;
-    }
-
-    public function setValid(bool $valid): self
-    {
-        $this->valid = $valid;
 
         return $this;
     }

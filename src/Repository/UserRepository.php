@@ -77,7 +77,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 WHERE
                     u.alerts IS NOT NULL
                     AND u.is_deleted = FALSE
-                    AND u.valid_user = 1
                     AND u.doit_renouveler_user = 0
                     AND u.email_user IS NOT NULL
                     AND u.email_user != ''
@@ -173,14 +172,13 @@ SQL;
         }
     }
 
-    public function findDuplicateUser(string $lastname, string $firstname, \DateTimeImmutable $birthday, string $excludeCafnum): ?User
+    public function findDuplicateUser(string $lastname, string $firstname, \DateTimeImmutable $birthday, string $excludeCafnum, ?string $email = null): ?User
     {
-        return $this->createQueryBuilder('u')
+        $qb = $this->createQueryBuilder('u')
             ->where('LOWER(u.lastname) = LOWER(:lastname)')
             ->andWhere('LOWER(u.firstname) = LOWER(:firstname)')
             ->andWhere('u.birthdate = :birthday')
             ->andWhere('u.cafnum != :excludeCafnum')
-            ->andWhere('u.isDeleted = false')
             ->orderBy('u.createdAt', 'DESC')
             ->setMaxResults(1)
             ->setParameters([
@@ -189,8 +187,38 @@ SQL;
                 'birthday' => $birthday,
                 'excludeCafnum' => $excludeCafnum,
             ])
+        ;
+        if (null !== $email) {
+            $qb
+                ->andWhere('u.email = :email')
+                ->setParameter('email', $email)
+            ;
+        } else {
+            $qb
+                ->andWhere('u.email IS NULL')
+            ;
+        }
+
+        return $qb
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getOneOrNullResult()
+        ;
+    }
+
+    public function findDuplicateEmailUser(string $email, ?string $excludeCafnum = null)
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.email like :email')
+            ->andWhere('u.cafnum != :excludeCafnum')
+            ->orderBy('u.createdAt', 'DESC')
+            ->setMaxResults(1)
+            ->setParameters([
+                'email' => $email,
+                'excludeCafnum' => $excludeCafnum,
+            ])
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
     }
 
     public function findUsersToRegister(array $participants, string $show = 'valid')

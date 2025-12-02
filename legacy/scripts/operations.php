@@ -82,16 +82,6 @@ if (user()) {
     }
 }
 
-// SPECIAL : REINIT EMAIL : seconde étape (confirmation depuis le lien dans l'email
-if ('email-change' == $p1 && $p2) {
-    require $operationsDir . 'operations.email-change.php';
-}
-
-// SPECIAL : VALIDATION DE COMPTE USER
-elseif ('user-confirm' == $p1) {
-    require $operationsDir . 'operations.user-confirm.php';
-}
-
 // ARTICLES : COMMENTER
 elseif ('comment' == $operation) {
     require $operationsDir . 'operations.comment.php';
@@ -117,25 +107,6 @@ elseif ('user_update' == $operation) {
     require $operationsDir . 'operations.user_update.php';
 }
 
-// USER : TENTATIVE D'INSCRIPTION
-elseif ('user_subscribe' == $operation) {
-    require $operationsDir . 'operations.user_subscribe.php';
-}
-
-// USER : ajout de l'attribut à l'user (type salarié, encadrant etc...)
-elseif ('user_attr_add' == $operation) {
-    require $operationsDir . 'operations.user_attr_add.php';
-}
-
-// USER : suppression d'attribut
-elseif ('user_attr_del' == $operation) {
-    $id_user_attr = (int) $_POST['id_user_attr'];
-    if (!$id_user_attr) {
-        $errTab[] = 'No id';
-    } else {
-        LegacyContainer::get('legacy_user_right_service')->removeRightAndNotify($id_user_attr, getUser());
-    }
-}
 // USER : CREATE (manuel)
 elseif ('user_create' == $operation) {
     require $operationsDir . 'operations.user_create.php';
@@ -181,42 +152,6 @@ elseif ('user_delete' == $operation) {
         mylog('user_delete', "Suppression definitive user $id_user", false);
     }
 }
-// USER : REACTIVER
-elseif ('user_reactiver' == $operation) {
-    $id_user = (int) $_POST['id_user'];
-    if (!$id_user) {
-        $errTab[] = 'No id';
-    } elseif (!allowed('user_reactivate')) {
-        $errTab[] = "Vous n'avez pas les droits necessaires";
-    } else {
-        $req = "UPDATE `caf_user` SET  `valid_user` =  '1' WHERE  `caf_user`.`id_user` =$id_user";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur SQL';
-        }
-
-        mylog('user_reactiver', "reactivation user $id_user", false);
-    }
-}
-// USER : RESET
-elseif ('user_reset' == $operation) {
-    $id_user = (int) $_POST['id_user'];
-    if (!$id_user) {
-        $errTab[] = 'No id';
-    } elseif (!allowed('user_reset')) {
-        $errTab[] = "Vous n'avez pas les droits necessaires";
-    } else {
-        $req = "UPDATE caf_user
-				SET valid_user =  '0',
-				email_user = NULL,
-				mdp_user =  ''
-				WHERE caf_user.id_user =$id_user";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur SQL';
-        }
-
-        mylog('user_reset', "reset user $id_user", false);
-    }
-}
 
 // USER (OU PAS) : CONTACT
 elseif ('user_contact' == $operation) {
@@ -255,28 +190,8 @@ elseif ('fichier_adherents_maj' == $operation) {
 }
 
 if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
-    // ADMIN : ajout de l'attribut à l'user (type admin, rédacteur etc...)
-    if ('user_attr_add_admin' == $operation) {
-        require $operationsDir . 'operations.user_attr_add_admin.php';
-    }
-
-    // ADMIN : suppression d'attribut
-    elseif ('user_attr_del_admin' == $operation) {
-        $id_user_attr = (int) $_POST['id_user_attr'];
-        if (!$id_user_attr) {
-            $errTab[] = 'No id';
-        } else {
-            LegacyContainer::get('legacy_user_right_service')->removeRightAndNotify($id_user_attr, getUser());
-        }
-
-        // log admin
-        if (0 === count($errTab)) {
-            mylog($_POST['operation'], "Suppression d'un droit à un user (id=$id_user_attr)");
-        }
-    }
-
     // ADMIN : écrasement et renouvellement de la matrice des droits
-    elseif ('usertype_attr_edit' == $operation) {
+    if ('usertype_attr_edit' == $operation) {
         /* ◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊[ BACKUP EXISTANT A FAIRE - ou pas ]◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊ */
 
         // supression des valeurs existantes

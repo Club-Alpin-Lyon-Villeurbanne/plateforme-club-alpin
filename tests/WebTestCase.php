@@ -54,7 +54,6 @@ abstract class WebTestCase extends BaseWebTestCase
         $user->setMoreinfo('');
         $user->setCookietoken('');
         $user->setNomadeParent(0);
-        $user->setValid(true);
 
         $em->persist($user);
         $em->flush();

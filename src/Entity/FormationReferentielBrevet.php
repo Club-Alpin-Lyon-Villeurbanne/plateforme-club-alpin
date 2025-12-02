@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\BrevetReferentielRepository;
+use App\Repository\FormationReferentielBrevetRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Table(name: 'formation_brevet_referentiel')]
+#[ORM\Table(name: 'formation_referentiel_brevet')]
 #[ORM\UniqueConstraint(name: 'UNIQ_CODE_BREVET', columns: ['code_brevet'])]
-#[ORM\Entity(repositoryClass: BrevetReferentielRepository::class)]
-class BrevetReferentiel
+#[ORM\Entity(repositoryClass: FormationReferentielBrevetRepository::class)]
+class FormationReferentielBrevet
 {
     #[ORM\Id]
     #[ORM\Column(name: 'id', type: Types::INTEGER, nullable: false)]

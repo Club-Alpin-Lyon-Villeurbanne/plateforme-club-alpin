@@ -12,7 +12,7 @@ class UserRightControllerTest extends WebTestCase
 {
     public function testAutoRemoveRightRequiresLogin(): void
     {
-        $this->client->request('GET', '/retirer-responsabilite/encadrant/ALPI');
+        $this->client->request('GET', '/retirer-responsabilite/auto/encadrant/ALPI');
         $this->assertResponseStatusCodeSame(403);
     }
 
@@ -34,7 +34,7 @@ class UserRightControllerTest extends WebTestCase
         ;
         self::getContainer()->set(UserRightService::class, $mock);
 
-        $this->client->request('GET', '/retirer-responsabilite/encadrant/' . $commission->getCode());
+        $this->client->request('GET', '/retirer-responsabilite/auto/encadrant/' . $commission->getCode());
         $this->assertResponseRedirects('/profil/infos.html');
 
         $repo = self::getContainer()->get(UserRepository::class);
@@ -56,7 +56,7 @@ class UserRightControllerTest extends WebTestCase
         $mock->expects($this->never())->method('notify');
         self::getContainer()->set(UserRightService::class, $mock);
 
-        $this->client->request('GET', '/retirer-responsabilite/encadrant/' . $commission->getCode());
+        $this->client->request('GET', '/retirer-responsabilite/auto/encadrant/' . $commission->getCode());
         $this->assertResponseRedirects('/profil/infos.html');
 
         $errors = $this->getSession()->getFlashBag()->peek('error');

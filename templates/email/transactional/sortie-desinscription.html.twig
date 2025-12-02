@@ -6,7 +6,7 @@
 
 {% block inner_html %}
     <p>
-        {{ username }} était inscrit(e) ou en attente pour la sortie <a href="{{ event_url }}">{{ event_name }}</a>.
+        {{ username }} était acceptée(e) ou en attente pour la sortie <a href="{{ event_url }}">{{ event_name }}</a>.
         Il(elle) vient d'annuler sa participation.
     </p>
     <p>
@@ -19,7 +19,7 @@
 {% endblock %}
 
 {% block inner_txt %}
-    {{ username }} était inscrit(e) ou en attente pour la sortie {{ event_name }} ({{ event_url }}).
+    {{ username }} était acceptée(e) ou en attente pour la sortie {{ event_name }} ({{ event_url }}).
     Il(elle) vient d'annuler sa participation.
 
     Plus d'infos : {{ reason_explanation }}

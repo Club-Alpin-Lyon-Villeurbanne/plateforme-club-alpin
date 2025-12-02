@@ -208,6 +208,7 @@ class UserController extends AbstractController
                         'event_url' => $evtUrl,
                         'event_date' => $evtDate,
                         'commission' => $commissionTitle,
+                        'status' => EventParticipation::STATUS_VALIDE === $status ? 'accepté' : 'pré-inscrit',
                     ]);
                 } else {
                     $this->addFlash('error', 'La licence de ' . $user->getFullName() . ' a expiré. L\'adhésion doit être renouvelée avant l\'inscription.');
@@ -315,7 +316,6 @@ class UserController extends AbstractController
                 $nomad
                     ->setNickname(NicknameGenerator::generateNickname($nomad->getFirstname(), $nomad->getLastname()))
                     ->setNomade(true)
-                    ->setValid(true)
                     ->setManuel(false)
                     ->setNomadeParent($this->getUser()->getId())
                     ->setDoitRenouveler(false)
@@ -411,10 +411,17 @@ class UserController extends AbstractController
                 $tools .= '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user=' . $user->getId() . '" class="fancyframe" title="Consulter cet adhérent"><img src="/img/base/report.png" alt="consulter" /></a> ';
             }
             // gestion des droits
-            if ($this->isGranted(SecurityConstants::ROLE_ADMIN)) {
-                $tools .= '<a href="/includer.php?admin=true&amp;p=pages/admin-users-droits.php&amp;id_user=' . $user->getId() . '&amp;nom=' . urlencode($user->getFullName()) . '" class="fancyframe" title="Voir / Attribuer des responsabilités à cet utilisateur"><img src="/img/base/user_star.png" alt="droits" /></a> ';
-            } elseif ($userRights->allowed('user_giveright_1') || $userRights->allowed('user_giveright_2') || $userRights->allowed('user_givepresidence')) {
-                $tools .= '<a href="/includer.php?p=pages/adherents-droits.php&amp;id_user=' . $user->getId() . '&amp;nom=' . urlencode($user->getFullName()) . '" class="fancyframe" title="Voir / Attribuer des responsabilités à cet utilisateur"><img src="/img/base/user_star.png" alt="droits" /></a> ';
+            if (
+                $this->isGranted(SecurityConstants::ROLE_ADMIN)
+                || $userRights->allowed('user_giveright_1')
+                || $userRights->allowed('user_giveright_2')
+                || $userRights->allowed('user_giveright_3')
+                || $userRights->allowed('comm_lier_encadrant')
+                || $userRights->allowed('user_givepresidence')
+                || $userRights->allowed('comm_delier_encadrant')
+                || $userRights->allowed('comm_delier_responsable')
+            ) {
+                $tools .= '<a href="' . $this->generateUrl('user_right_manage', ['user' => $user->getId()]) . '" class="fancyframe" title="Voir / Attribuer des responsabilités à cet adhérent"><img src="/img/base/user_star.png" alt="droits" /></a> ';
             }
             // edit user
             if ($userRights->allowed('user_edit_notme')) {
@@ -422,7 +429,7 @@ class UserController extends AbstractController
             }
             // impersonate user
             if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
-                $tools .= ($user->getValid() && !empty($user->getEmail())) ? ' <a href="/profil.html?_switch_user=' . urlencode($user->getEmail()) . '" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png" alt="impersonifier" /></a> ' : '';
+                $tools .= (!empty($user->getEmail())) ? ' <a href="/profil.html?_switch_user=' . urlencode($user->getEmail()) . '" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png" alt="impersonifier" /></a> ' : '';
             }
 
             // âge
@@ -464,13 +471,6 @@ class UserController extends AbstractController
                 $renew = ($userRights->allowed('user_read_private') ? (!empty($joinDate) ? $joinDate->format('d/m/Y') : '-') : $img_lock);
             }
 
-            // compte activé ?
-            if ($user->getValid()) {
-                $valid = 'oui';
-            } else {
-                $valid = '<span style="color: darkorange;">non</span>';
-            }
-
             // e-mail
             if (!empty($user->getEmail())) {
                 $email = ($userRights->allowed('user_read_private') ? '<a href="mailto:' . $user->getEmail() . '" title="Contact direct">' . $user->getEmail() . '</a>' : $img_lock);
@@ -499,11 +499,9 @@ class UserController extends AbstractController
                 'age' => $age,
                 'tel' => $tel,
                 'email' => $email,
-                'active' => $valid,
                 'cp' => $user->getCp(),
                 'ville' => $user->getVille(),
                 'license' => $license,
-                'valid' => $user->getValid(),
                 'deleted' => $deleted,
             ];
         }

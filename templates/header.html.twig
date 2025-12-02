@@ -102,7 +102,6 @@
                     {# creer un compte (vers page profil) #}
                     <div style="width:640px; float:left; border-right:1px solid #c6e39f; min-height:120px; padding:0px 5px 0 0">
                         {{ easy_include('mainmenu-creer-mon-compte', 'menucontent')}}
-                        <a class="nice2" href="/profil.html" title="">Activer mon compte</a>
                     </div>
 
                     <div style="width:290px; padding-right:10px; float:right">
@@ -349,6 +348,9 @@
                                         </a>
                                     </li>
                                 {% endif %}
+                                    {% if caf_id == 'lyon' %}
+                                        <li><a href="{{ path('stats_metabase') }}">statistiques sur Metabase</a></li>
+                                    {% endif %}
                                 </ul>
                             </div>
                         {% endif %}

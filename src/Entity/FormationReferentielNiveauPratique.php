@@ -2,16 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\FormationNiveauReferentielRepository;
+use App\Repository\FormationReferentielNiveauPratiqueRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Table(name: 'formation_niveau_referentiel')]
+#[ORM\Table(name: 'formation_referentiel_niveau_pratique')]
 #[ORM\Index(columns: ['cursus_niveau_id'], name: 'IDX_FORM_NIV_REF_CURSUS')]
 #[ORM\Index(columns: ['code_activite'], name: 'IDX_FORM_NIV_REF_ACTIVITE')]
 #[ORM\UniqueConstraint(name: 'UNIQ_FORM_CURSUS_NIV', columns: ['cursus_niveau_id'])]
-#[ORM\Entity(repositoryClass: FormationNiveauReferentielRepository::class)]
-class FormationNiveauReferentiel
+#[ORM\Entity(repositoryClass: FormationReferentielNiveauPratiqueRepository::class)]
+class FormationReferentielNiveauPratique
 {
     #[ORM\Id]
     #[ORM\Column(type: Types::INTEGER)]

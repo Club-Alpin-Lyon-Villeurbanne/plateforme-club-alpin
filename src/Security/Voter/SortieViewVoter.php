@@ -31,7 +31,7 @@ class SortieViewVoter extends Voter
             return true;
         }
 
-        if ($this->userRights->allowed('evt_validate')) {
+        if ($this->userRights->allowedOnCommission('evt_validate', $subject->getCommission())) {
             return true;
         }
 

@@ -29,7 +29,6 @@ class UserRightServiceTest extends TestCase
         $user->setFirstname($firstname);
         $user->setLastname($lastname);
         $user->setNickname($nickname ?? ($firstname . ' ' . $lastname));
-        $user->setValid(true);
 
         return $user;
     }
@@ -121,14 +120,14 @@ class UserRightServiceTest extends TestCase
         $target = $this->buildUser(11, 'target@example.org', 'Tim', 'Target', 'Tim');
 
         $adminType = $this->buildUsertype(UserAttr::ADMINISTRATEUR, 'Administrateur', 100, false);
-        $userRight = new UserAttr($target, $adminType, null);
+        $userRight = new UserAttr($target, $adminType, '');
 
         $em = $this->createMock(EntityManagerInterface::class);
         $em->method('getRepository')->willReturn($this->createMock(ObjectRepository::class));
 
         $presType = $this->buildUsertype(UserAttr::PRESIDENT, 'Président', 9, false);
         $presUser = $this->buildUser(12, 'pres@example.org', 'Paul', 'Prez', 'Paul');
-        $presAttr = new UserAttr($presUser, $presType, null);
+        $presAttr = new UserAttr($presUser, $presType, '');
 
         $attrRepo = $this->createMock(UserAttrRepository::class);
         $attrRepo->method('listAllManagement')->willReturn($this->createGenerator([$presAttr]));

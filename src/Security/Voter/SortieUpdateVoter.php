@@ -34,6 +34,10 @@ class SortieUpdateVoter extends Voter
             throw new \InvalidArgumentException(sprintf('The voter "%s" requires an event subject', __CLASS__));
         }
 
+        if ($subject->isFinished()) {
+            return false;
+        }
+
         if ($user === $subject->getUser()) {
             return true;
         }
