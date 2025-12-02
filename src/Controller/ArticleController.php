@@ -103,6 +103,9 @@ class ArticleController extends AbstractController
                     } else {
                         $errors[] = 'Si cet article est un compte rendu de sortie, veuillez sélectionner la sortie liée.';
                     }
+
+                    // pas de CR de sortie à la une
+                    $article->setUne(false);
                 }
 
                 $mediaUploadId = $form->get('mediaUploadId')->getData();
