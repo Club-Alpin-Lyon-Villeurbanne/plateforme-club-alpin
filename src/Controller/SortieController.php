@@ -94,7 +94,10 @@ class SortieController extends AbstractController
             $isUpdate = false;
         }
 
-        if (!$this->isGranted('SORTIE_UPDATE', $event)) {
+        if (!$isUpdate && !$this->isGranted('SORTIE_CREATE', $commission)) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à créer de sortie.');
+        }
+        if ($isUpdate && !$this->isGranted('SORTIE_UPDATE', $event)) {
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à modifier cette sortie.');
         }
 
