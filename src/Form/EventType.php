@@ -253,7 +253,7 @@ class EventType extends AbstractType
                 'required' => false,
                 'html5' => true,
                 'attr' => [
-                    'placeholder' => 'ex : 5',
+                    'placeholder' => 'ex : 8',
                     'class' => 'type2',
                 ],
                 'scale' => 0,
