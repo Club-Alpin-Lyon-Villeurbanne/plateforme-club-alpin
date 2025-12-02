@@ -1,6 +1,8 @@
 <div class="comment">
     <div class="left">
-        <img src="{{ user_image(comment.user, 'pic') }}" alt="Profil" title="{{ comment.user.nickname }}" />
+        {% if comment.user.profilePicture is defined %}
+            <img src="{{ media_thumbnail(comment.user.profilePicture, 'min_profile_thumbnail') }}" alt="Profil" title="{{ comment.user.nickname }}" />
+        {% endif %}
     </div>
     <div class="right">
         {% if (app.user and comment.user is same as (app.user) or allowed('comment_delete_any')) %}

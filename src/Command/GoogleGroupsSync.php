@@ -140,7 +140,7 @@ class GoogleGroupsSync extends Command
 
         foreach ($this->userAttrRepository->listAllResponsables() as $commissionMember) {
             $type = 'MEMBER';
-            $email = mb_strtolower($commissionMember->getUser()->getEmail() ?? '');
+            $email = $this->getUserEmail($commissionMember->getUser());
 
             if (!$email) {
                 $user = $commissionMember->getUser();
@@ -197,7 +197,7 @@ class GoogleGroupsSync extends Command
 
         foreach ($this->userAttrRepository->listAllEncadrants($commission) as $commissionMember) {
             $type = 'MEMBER';
-            $email = mb_strtolower($commissionMember->getUser()->getEmail() ?? '');
+            $email = $this->getUserEmail($commissionMember->getUser());
 
             if (!$email) {
                 $user = $commissionMember->getUser();
@@ -354,7 +354,7 @@ class GoogleGroupsSync extends Command
 
             // Les responsables de commission sont grant "fileOrganizer"
             foreach ($this->userAttrRepository->listAllEncadrants($commission, [UserAttr::RESPONSABLE_COMMISSION]) as $responsable) {
-                $responsableEmail = mb_strtolower($responsable->getUser()->getEmail() ?? '');
+                $responsableEmail = $this->getUserEmail($responsable->getUser());
                 if (!$this->hasUserOrganizerAccessOnDrive($responsable->getUser(), $commission->getGoogleDriveId())) {
                     if (!$this->dryRun) {
                         $this->output->writeln("\t☑️ Granting access to GoogleDrive <info>Commission " . $commission->getTitle() . '</info> as <info>fileOrganizer</info> to <info>' . $responsableEmail . '</info>');
@@ -454,7 +454,7 @@ class GoogleGroupsSync extends Command
             foreach ($list->getPermissions() as $perm) {
                 /* @var \Google\Service\Drive\Permission $perm */
                 if ('user' === $perm->getType()) {
-                    if (mb_strtolower($perm->emailAddress) === mb_strtolower($user->getEmail() ?? '')) {
+                    if (mb_strtolower($perm->emailAddress) === $this->getUserEmail($user)) {
                         return true;
                     }
                 }
@@ -531,5 +531,18 @@ class GoogleGroupsSync extends Command
             // on query sur l'ensemble l'ensemble de l'organisation associée au compte Google Workspace via 'customer' => 'my_customer'
             $this->googleGroupsService->groups->listGroups(['customer' => 'my_customer'])->getGroups()
         );
+    }
+
+    private function getUserEmail(User $user): string
+    {
+        $email = '';
+        if (!empty($user->getEmail())) {
+            $email = $user->getEmail();
+        }
+        if (!empty($user->getGdriveEmail())) {
+            $email = $user->getGdriveEmail();
+        }
+
+        return mb_strtolower($email);
     }
 }
