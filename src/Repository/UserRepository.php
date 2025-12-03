@@ -108,8 +108,7 @@ SQL;
     public function getNomads(?UserInterface $user = null)
     {
         $qb = $this->createQueryBuilder('u')
-            ->where('u.valid = true')
-            ->andWhere('u.nomade = true')
+            ->where('u.nomade = true')
             ->andWhere('u.isDeleted = false')
         ;
         if ($user) {
@@ -351,7 +350,6 @@ SQL;
             6 => 'u.birthdate',
             7 => 'u.tel',
             8 => 'u.email',
-            9 => 'u.valid',
             10 => 'u.isDeleted',
             11 => 'u.cp',
             12 => 'u.ville',
@@ -426,7 +424,6 @@ SQL;
             ->set('u.ville', ':nullValue')
             ->set('u.pays', ':nullValue')
             ->set('u.moreinfo', ':nullValue')
-            ->set('u.valid', ':falseValue')
             ->set('u.cookietoken', ':nullValue')
             ->set('u.doitRenouveler', ':falseValue')
             ->set('u.alerteRenouveler', ':falseValue')
