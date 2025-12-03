@@ -113,8 +113,9 @@ margin:5px 0px; background:white; border:1px solid silver; border-radius : 15px;
 
 .erreur {color:black;border : 1px solid #a12f2f;margin : 5px 5px 5px 0;padding : 5px;background : #f5ecec; box-shadow:0 0 15px -1px silver; }
 .info {color:black;border : 1px solid #37a12f;margin : 5px 5px 5px 0;padding : 5px;background : #ecf5ec; box-shadow:0 0 15px -1px silver; }
-.alerte {color:black;border : 1px solid #a35f2c;margin : 5px 5px 5px 0;padding : 5px;background : #f7eee2; box-shadow:0 0 15px -1px silver;font-size: 0.9rem;}
+.alerte {color:black;border : 1px solid #a35f2c;margin : 5px 5px 5px 0;padding : 5px;background : #f7eee2; box-shadow:0 0 15px -1px silver; }
 .draft {color:gray;border : 1px solid #a0a0a0;margin : 5px 5px 5px 0;padding : 5px;background : #f2f2f2; box-shadow:0 0 15px -1px silver; }
+.waiting {color:black;border : 1px solid #856404;margin : 5px 5px 5px 0;padding : 5px;background : #fff3cd; box-shadow:0 0 15px -1px silver; }
 
 input.boutonFancy, a.boutonFancy {color : black;font-weight : 100;padding : 1px 4px;border : 1px solid gray;cursor : pointer;background : #fff; border-radius : 10px; white-space:nowrap}
 input.boutonFancy:hover, a.boutonFancy:hover, input.boutonFancy:focus, a.boutonFancy:focus {text-decoration : none;background : #e2e2e2;border-color : black; outline:0; }
