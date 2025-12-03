@@ -17,10 +17,6 @@ DÉTAIL DES OPÉRATIONS
 👥 Filiations parentales supprimées : {{ stats.filiations_removed|default(0) }}
 {% if stats.errors|default(0) > 0 %}❌ Erreurs de traitement : {{ stats.errors }}{% endif %}
 
-{% if stats.inserted > 0 %}
-{{ stats.inserted }} nouveau(x) adhérent(s) ont été ajoutés à la base de données.
-{% endif %}
-
 {% if stats.merged > 0 %}
 {{ stats.merged }} doublon(s) détecté(s) : des adhérents existants ont été trouvés
 avec un nouveau numéro de licence. Les comptes ont été fusionnés automatiquement.
@@ -47,7 +43,7 @@ pour les comptes non mis à jour depuis plus de 200 jours.
 {% endif %}
 
 {% if stats.errors|default(0) > 0 %}
-⚠️ ATTENTION : {{ stats.errors }} erreur(s) lors du traitement !
+❌ ATTENTION : {{ stats.errors }} erreur(s) lors du traitement !
 Certains adhérents n'ont pas pu être traités correctement.
 
 {% if stats.error_details|default([]) %}
@@ -60,6 +56,21 @@ Détails des erreurs{% if stats.errors > 10 %} (10 premières affichées){% endi
 {% endif %}
 
 Ces adhérents devront être vérifiés manuellement.
+{% endif %}
+{% endif %}
+
+{% if stats.warnings|default(0) > 0 %}
+⚠️ {{ stats.warnings }} warning(s) lors du traitement !
+Certains adhérents n'ont pas pu être traités correctement.
+
+{% if stats.warning_details|default([]) %}
+Détails des warnings{% if stats.warnings > 10 %} (10 premiers affichés){% endif %} :
+{% for error in stats.warning_details %}
+- {{ error }}
+{% endfor %}
+{% if stats.warnings > 10 %}
+- ... et {{ stats.warnings - 10 }} autre(s) warning(s)
+{% endif %}
 {% endif %}
 {% endif %}
 
