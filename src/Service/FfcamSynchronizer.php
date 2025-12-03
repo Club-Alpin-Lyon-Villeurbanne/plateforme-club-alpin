@@ -112,7 +112,7 @@ class FfcamSynchronizer
                         );
                         if ($duplicateEmailUser instanceof User) {
                             $errorMessage = sprintf('Email %s is already used by another member (Cafnum: %s)', $parsedUser->getEmail(), $duplicateEmailUser->getCafnum());
-                            $this->logger->warning($errorMessage);
+                            $this->logger->error($errorMessage);
                             ++$stats['errors'];
                             $stats['error_details'][] = [
                                 'cafnum' => $parsedUser->getCafnum(),

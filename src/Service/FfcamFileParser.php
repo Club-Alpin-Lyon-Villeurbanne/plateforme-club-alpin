@@ -77,13 +77,8 @@ class FfcamFileParser
             ->setJoinDate($joinDate)
             ->setRadiationDate($radiationDate)
             ->setRadiationReason($radiationReason ?: null)
+            ->setEmail($email)
         ;
-        // email des affiliés
-        if (null !== $email && !empty($user->getCafnumParent())) {
-            $user->setEmail('affilie.' . $user->getCafnum() . '-' . $email);
-        } else {
-            $user->setEmail($email);
-        }
 
         return $user;
     }
