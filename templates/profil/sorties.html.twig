@@ -40,7 +40,7 @@
                                 {% if event.isDraft %}
                                     <p class="draft">Brouillon (non publiée)</p>
                                 {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_UNSEEN') %}
-                                    <p class="alerte">En attente d'approbation</p>
+                                    <p class="waiting">En attente d'approbation</p>
                                 {% elseif event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
                                     <p class="info">Publiée et validée par le président</p>
                                 {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE') %}

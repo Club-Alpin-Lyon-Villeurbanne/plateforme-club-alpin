@@ -9,9 +9,9 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'formation_validation_formation')]
 #[ORM\Index(columns: ['user_id'], name: 'IDX_FORM_VAL_USER')]
-#[ORM\Index(columns: ['code_formation'], name: 'IDX_FORM_VAL_CODE')]
+#[ORM\Index(columns: ['formation_id'], name: 'IDX_FORM_VAL_ID')]
 #[ORM\Index(columns: ['date_validation'], name: 'IDX_FORM_VAL_DATE')]
-#[ORM\UniqueConstraint(name: 'UNIQ_FORM_VAL_USER_ID_INTERNE', columns: ['user_id', 'id_interne'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_FORM_VAL_USER_FORMATION', columns: ['user_id', 'formation_id'])]
 #[ORM\Entity(repositoryClass: FormationValidationFormationRepository::class)]
 class FormationValidationFormation
 {
@@ -27,7 +27,7 @@ class FormationValidationFormation
     private User $user;
 
     #[ORM\ManyToOne(targetEntity: FormationReferentielFormation::class)]
-    #[ORM\JoinColumn(name: 'code_formation', referencedColumnName: 'code_formation', nullable: true, onDelete: 'SET NULL')]
+    #[ORM\JoinColumn(name: 'formation_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
     private ?FormationReferentielFormation $formation = null;
 
     #[ORM\Column(type: Types::BOOLEAN)]

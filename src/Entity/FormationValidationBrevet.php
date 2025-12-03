@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'formation_validation_brevet')]
+#[ORM\Index(columns: ['user_id'], name: 'IDX_BREVET_VAL_USER')]
 #[ORM\Index(columns: ['brevet_id'], name: 'idx_brevet_id')]
 #[ORM\Index(columns: ['date_obtention'], name: 'idx_date_obtention')]
 #[ORM\UniqueConstraint(name: 'UNIQ_BREVET_USER_BREVET', columns: ['user_id', 'brevet_id'])]
@@ -22,11 +23,11 @@ class FormationValidationBrevet
     private int $id;
 
     #[ORM\ManyToOne(targetEntity: 'User')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id_user', nullable: false)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id_user', nullable: false, onDelete: 'CASCADE')]
     private ?User $user;
 
     #[ORM\ManyToOne(targetEntity: FormationReferentielBrevet::class)]
-    #[ORM\JoinColumn(name: 'brevet_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'brevet_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
     private FormationReferentielBrevet $brevet;
 
     #[ORM\Column(name: 'date_obtention', type: Types::DATETIME_IMMUTABLE, nullable: true)]

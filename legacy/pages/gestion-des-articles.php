@@ -48,7 +48,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
         // articles à valider, selon la (les) commission dont nous sommes responsables
         $req = 'SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  caf_article.created_at ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
-					, id_user, nickname_user, lastname_user, firstname_user, code_commission, title_commission, media_upload_id, filename
+					, id_user, nickname_user, lastname_user, firstname_user, code_commission, title_commission, caf_article.media_upload_id, filename
 		FROM caf_article
 		LEFT JOIN media_upload ON caf_article.media_upload_id = media_upload.id
         LEFT JOIN caf_evt e ON (caf_article.evt_article = e.id_evt)
@@ -88,7 +88,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
         // articles à valider, selon la (les) commission dont nous sommes responsables
         $req = "SELECT `id_article` ,  `status_article` ,  `topubly_article` ,  a.created_at ,  `user_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `evt_article` ,  `une_article`
-					, id_user, nickname_user, lastname_user, firstname_user, media_upload_id
+					, id_user, nickname_user, lastname_user, firstname_user, a.media_upload_id
      , ce.code_commission, ce.title_commission, m.filename
         FROM caf_article a
 		    LEFT JOIN caf_user u ON (u.id_user = a.user_article)
