@@ -3,14 +3,21 @@
 namespace App\Controller;
 
 use App\Entity\AlertType;
+use App\Entity\MediaUpload;
+use App\Entity\User;
+use App\Form\UserType;
 use App\Messenger\Message\ArticlePublie;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
+use App\Repository\UserRepository;
+use App\Service\UserRightService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -124,5 +131,71 @@ class ProfilController extends AbstractController
             'page_url' => $this->generateUrl('profil_sorties_self'),
             'include_name' => 'profil-sorties-self',
         ];
+    }
+
+    #[Route(path: '/mon-compte', name: 'my_profile', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
+    #[Template('profil/mine.html.twig')]
+    public function myProfile(
+        Request $request,
+        EntityManagerInterface $manager,
+        UserRepository $userRepository,
+        UserRightService $userRightService,
+    ): array {
+        /** @var User $user */
+        $user = $this->getUser();
+        $parent = $userRepository->findOneBy(['cafnum' => $user->getCafnumParent()]);
+        $filiations = $userRepository->findBy(['cafnumParent' => $user->getCafnum()]);
+        $roles = $userRightService->getRightsToDisplay($user);
+
+        $form = $this->createForm(UserType::class, $user);
+
+        // e-mail google drive
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $form->getData();
+            $user->setUpdatedAt(new \DateTime('now'));
+
+            // photo de profil
+            $mediaUploadId = $form->get('mediaUploadId')->getData();
+            if ($mediaUploadId) {
+                $mediaUpload = $manager->getRepository(MediaUpload::class)->find($mediaUploadId);
+                if ($mediaUpload && $mediaUpload->getUploadedBy() === $this->getUser()) {
+                    $user->setProfilePicture($mediaUpload);
+                    $mediaUpload->setUsed(true);
+                    $manager->persist($mediaUpload);
+                } else {
+                    $this->addFlash('error', "Le média uploadé n'existe pas ou n'est pas lié à votre compte.");
+                }
+            }
+
+            $manager->persist($user);
+            $manager->flush();
+        }
+
+        return [
+            'user' => $user,
+            'form' => $form->createView(),
+            'filiations' => $filiations,
+            'parent' => $parent,
+            'club_roles' => $roles['club'],
+            'comm_roles' => $roles['commission'],
+        ];
+    }
+
+    #[Route(path: '/supprimer-ma-photo', name: 'remove_my_profile_picture', methods: ['GET', 'POST'])]
+    public function removeProfilPicture(Filesystem $filesystem, EntityManagerInterface $manager): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/uploads/files/' . $user->getProfilePicture()->getFilename());
+        $manager->remove($user->getProfilePicture());
+        $user->setProfilePicture(null);
+        $manager->persist($user);
+        $manager->flush();
+
+        $this->addFlash('success', 'Photo de profil supprimée avec succès !');
+
+        return $this->redirectToRoute('my_profile');
     }
 }

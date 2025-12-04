@@ -75,11 +75,6 @@ if (user()) {
     elseif ('renew_date_article' == $operation) {
         require $operationsDir . 'operations.renew_date_article.php';
     }
-
-    // USER : DELETE PROFIL IMG
-    elseif ('user_profil_img_delete' == $operation) {
-        require $operationsDir . 'operations.user_profil_img_delete.php';
-    }
 }
 
 // ARTICLES : COMMENTER
@@ -100,11 +95,6 @@ elseif ('partenaire_edit' == $operation || 'partenaire_add' == $operation) {
 // PARTENAIRE : DELETE
 elseif ('partenaire_delete' == $operation) {
     require $operationsDir . 'operations.partenaire_delete.php';
-}
-
-// USER : UPDATE PROFILE
-elseif ('user_update' == $operation) {
-    require $operationsDir . 'operations.user_update.php';
 }
 
 // USER : CREATE (manuel)

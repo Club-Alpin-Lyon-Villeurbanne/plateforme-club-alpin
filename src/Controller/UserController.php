@@ -429,7 +429,7 @@ class UserController extends AbstractController
             }
             // impersonate user
             if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
-                $tools .= (!empty($user->getEmail())) ? ' <a href="/profil.html?_switch_user=' . urlencode($user->getEmail()) . '" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png" alt="impersonifier" /></a> ' : '';
+                $tools .= (!empty($user->getEmail())) ? ' <a href="' . $this->generateUrl('my_profile') . '?_switch_user=' . urlencode($user->getEmail()) . '" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png" alt="impersonifier" /></a> ' : '';
             }
 
             // âge
