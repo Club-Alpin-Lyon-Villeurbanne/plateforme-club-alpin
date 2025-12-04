@@ -323,7 +323,14 @@ SQL;
 
         if (!empty($searchText)) {
             $qb
-                ->andWhere('u.lastname LIKE :search OR u.firstname LIKE :search OR u.nickname LIKE :search OR u.cafnum LIKE :search')
+                ->andWhere(
+                    'u.lastname LIKE :search 
+                    OR u.firstname LIKE :search 
+                    OR u.email LIKE :search 
+                    OR u.nickname LIKE :search 
+                    OR u.tel LIKE :search 
+                    OR u.cafnum LIKE :search'
+                )
                 ->setParameter('search', '%' . $searchText . '%')
             ;
         }
