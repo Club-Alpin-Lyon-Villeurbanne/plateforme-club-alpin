@@ -105,6 +105,7 @@ class SortieController extends AbstractController
         $currentEncadrants = $currentCoencadrants = $currentStagiaires = null;
         if ($isUpdate) {
             $originalEntityData['ngensMax'] = $event->getngensMax();
+            $originalEntityData['place'] = $event->getPlace();
             $originalEntityData['encadrants'] = [];
             $currentEncadrants = $event->getEncadrants([EventParticipation::ROLE_ENCADRANT]);
             foreach ($currentEncadrants as $currentEncadrant) {
@@ -209,6 +210,7 @@ class SortieController extends AbstractController
                 // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
                 if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()
                     && ($originalEntityData['ngensMax'] !== $event->getngensMax()
+                    || $originalEntityData['place'] !== $event->getPlace()
                     || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
                     || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
                     || $originalEntityData['encadrants'] !== $newEncadrants['encadrants'])) {

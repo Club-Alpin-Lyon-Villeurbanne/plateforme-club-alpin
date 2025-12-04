@@ -171,12 +171,16 @@ form.padded-form {
 	line-height:18px;
 }
 form.padded-form .wide {
-	width: 95%;
+	width: 100%;
 }
 form.padded-form .small {
 	width: 40px;
 	color: black;
 }
+.padded-form .ck-editor {
+	max-width: 100%;
+}
+
 .hidden {
 	display: none;
 }
