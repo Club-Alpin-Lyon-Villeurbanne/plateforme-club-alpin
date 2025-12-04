@@ -85,7 +85,9 @@
                     {% if notifications > 0 %}
                         <div class="notification-user"><span>{{ notifications }}</span></div>
                     {% endif %}
-                    <img src="{{ user_picto(app.user, 'pic') }}" alt="" title="" />
+                    {% if app.user.profilePicture is defined %}
+                        <img src="{{ media_thumbnail(app.user.profilePicture, 'min_profile_thumbnail') }}" alt="Profil" title="{{ app.user.nickname }}" />
+                    {% endif %}
                     <p>
                         Bonjour <br />
                         <b>{{ app.user.getFirstname() }},</b>
@@ -363,7 +365,9 @@
 
                     <div style="width:290px; float:right; padding:0px 10px 0 0; ">
 
-                        <img src="{{ user_picto(app.user, 'min') }}" alt="" title="" style="float:left; padding:0 10px 0 0;" />
+                        {% if app.user.profilePicture is defined %}
+                            <img src="{{ media_thumbnail(app.user.profilePicture, 'min_profile_thumbnail') }}" alt="Profil" title="{{ app.user.nickname }}" style="float:left; padding:0 10px 0 0;" />
+                        {% endif %}
 
                         {% if is_granted('IS_IMPERSONATOR') %}
                             <p style="border: 2px solid red; border-radius: 5px; font-size: 0.9rem; padding:10px;">
@@ -381,7 +385,7 @@
                         </a>
                         <br />
                         {# compte #}
-                        <a href="/profil.html" title="" class="nice2">
+                        <a href="{{ path('my_profile') }}" title="" class="nice2">
                             Mon compte
                         </a>
 

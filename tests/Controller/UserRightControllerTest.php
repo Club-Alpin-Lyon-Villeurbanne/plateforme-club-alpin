@@ -35,7 +35,7 @@ class UserRightControllerTest extends WebTestCase
         self::getContainer()->set(UserRightService::class, $mock);
 
         $this->client->request('GET', '/retirer-responsabilite/auto/encadrant/' . $commission->getCode());
-        $this->assertResponseRedirects('/profil/infos.html');
+        $this->assertResponseRedirects('/profil/mon-compte');
 
         $repo = self::getContainer()->get(UserRepository::class);
         $em->clear();
@@ -57,7 +57,7 @@ class UserRightControllerTest extends WebTestCase
         self::getContainer()->set(UserRightService::class, $mock);
 
         $this->client->request('GET', '/retirer-responsabilite/auto/encadrant/' . $commission->getCode());
-        $this->assertResponseRedirects('/profil/infos.html');
+        $this->assertResponseRedirects('/profil/mon-compte');
 
         $errors = $this->getSession()->getFlashBag()->peek('error');
         $this->assertNotEmpty($errors);

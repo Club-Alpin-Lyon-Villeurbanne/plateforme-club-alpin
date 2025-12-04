@@ -1,0 +1,238 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon compte{% endblock %}
+
+{% block body %}
+<div id="left1">
+    <div class="main-type">
+        <h1>Mon profil - Gestion de mon compte</h1>
+
+        {{ easy_include('profil-infos') }}
+        <hr />
+
+        <!-- Infos : statuts -->
+        {% if comm_roles|length > 0 or club_roles|length > 0 %}
+            <h2><span class="bleucaf">&gt;</span> Vos responsabilités :</h2>
+            {{ easy_include('infos-profil-statuts') }}
+            <br><br>
+
+            <h3>Responsabilité sur le site :</h3>
+            <ul class="nice-list">
+                {% if club_roles|length > 0 %}
+                    {% for role in club_roles %}
+                        <li>{{ role.usertype.title }}
+                            {% if role.description %}
+                                <img src="/img/base/info.png" title="{{ role.description }}" alt="i" />&nbsp;
+                            {% endif %}
+                            <a href="{{ path('user_right_auto_remove', {'type': role.usertype.code}) }}" onclick="return confirm('Êtes-vous sûr de vouloir vous retirer cette responsabilité ? Les responsables du site seront prévenus')">
+                                <img src="/img/base/delete.png" alt="Enlever" title="Me retirer cette responsabilité" />
+                            </a>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li>N/A</li>
+                {% endif %}
+            </ul>
+            <br style="clear:both" />
+
+            <h3>Responsabilité dans les commissions :</h3>
+            <ul class="nice-list">
+                {% if comm_roles|length > 0 %}
+                    {% for commission, role in comm_roles %}
+                        <li>{{ commission }} : {{ role.usertype.title }}
+                            {% if role.description %}
+                                <img src="/img/base/info.png" title="{{ role.description }}" alt="i" />&nbsp;
+                            {% endif %}
+                            <a href="{{ path('user_right_auto_remove', {'type': role.usertype.code}) }}" onclick="return confirm('Êtes-vous sûr de vouloir vous retirer cette responsabilité ? Les responsables du site seront prévenus')">
+                                <img src="/img/base/delete.png" alt="Enlever" title="Me retirer cette responsabilité" />
+                            </a>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li>N/A</li>
+                {% endif %}
+            </ul>
+            <br style="clear:both" />
+            <hr />
+        {% endif %}
+
+        <!-- Infos : filiations (enfants) -->
+        {% if filiations|length > 0 %}
+            <h2><span class="bleucaf">&gt;</span> Filiation :</h2>
+            {{ easy_include('infos-profil-filiation-enfants') }}
+            <ul class="nice-list">
+                {% for child in filiations %}
+                    <li><a href="/includer.php?p=includes/fiche-profil.php&id_user={{ child.id }}" class="fancyframe userlink" title="Voir le profil">{{ child.fullName }}</a></li>
+                {% endfor %}
+            </ul>
+            <br style="clear:both" />
+            <hr />
+        {% endif %}
+
+        <!-- Infos : filiations (parent) -->
+        {% if parent %}
+            <h2><span class="bleucaf">&gt;</span> Filiation :</h2>
+            {{ easy_include('infos-profil-filiation-parent') }}
+            <ul class="nice-list">
+                <li><a href="/includer.php?p=includes/fiche-profil.php&id_user={{ parent.id }}" class="fancyframe userlink" title="Voir le profil">{{ parent.fullName }}</a></li>
+            </ul>
+            <br style="clear:both" />
+            <hr />
+        {% endif %}
+
+        {{ form_start(form, {'attr': {'id': 'profile_form', 'method': 'post'}}) }}
+        <!-- Données profil -->
+        <br />
+        <h2 id="public"><span class="bleucaf">&gt;</span>Infos publiques :</h2>
+        <br />
+        <div id="edit_profil_image">
+            <!-- suppression de l'image -->
+            {% if user.profilePicture is defined %}
+                <span class="delete">
+                    <a href="{{ path('remove_my_profile_picture') }}" onclick="return confirm('Voulez-vous vraiment supprimer cette photo de profil ?')">
+                    <img src="/img/base/delete.png" alt="DELETE" title="Supprimer cette image" />
+                    </a>
+                </span>
+
+                <img class="imgprofil" src="{{ media_thumbnail(user.profilePicture, 'profile_thumbnail') }}" alt="Photo de profil" title="{{ user.nickname }}" />
+            {% endif %}
+        </div>
+
+        <b>Votre pseudonyme :</b>
+        <br />
+        <a href="/includer.php?p=includes/fiche-profil.php&id_user={{ user.id }}" class="fancyframe" title="Aperçu de votre fiche">{{ user.nickname }}</a><br />
+
+        <br />
+        <b>Modifier votre photo :</b><br />
+        <span class="mini">Format .jpg, 5Mo maximum !</span>
+        <br /><br />
+
+        <div class="tw-flex tw-gap-2">
+            {% include 'components/file_upload.html.twig' with {
+                id: 'user-image',
+                width: 'tw-w-64',
+                height: 'tw-h-32',
+                uploadUrl: '/upload-image',
+                currentImageUrl: user.profilePicture ? vich_uploader_asset(user.profilePicture, 'file') : null,
+                currentImageAlt: user.nickname,
+                mediaIdInputId: form.mediaUploadId.vars.id,
+                maxFileSize: 5,
+                accept: 'image/jpeg',
+                uploadText: 'Cliquer pour envoyer une photo'
+            } %}
+
+            {{ form_row(form.mediaUploadId) }}
+        </div>
+        <br style="clear:both" />
+
+        <div style="text-align:center">
+            <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
+                <span class="bleucaf">&gt;</span>
+                ENREGISTRER MA PHOTO
+            </a>
+        </div>
+        <br />
+
+        <hr style="margin: 20px 0" />
+        <h2 id="private"><span class="bleucaf">&gt;</span>Infos privées</h2>
+
+        <div>
+            {{ easy_include('infos-profil-coordonnees-perso-ffcam') }}
+        </div>
+
+        <div class="alerte info-container" style="width: 90%; margin-top: 10px;">
+            ⚠️
+            <div class="text-container">
+                Nous avons identifié des problèmes de non réception avec certains fournisseurs de messagerie, notamment Wanadoo, Orange et Free (même si cela fonctionne chez certains utilisateurs).<br>
+                Après investigation et signalement du problème aux services concernés, nous ne sommes malheureusement pas en mesure d'y remédier de notre côté.<br>
+                Nous vous recommandons de vérifier si nous ne sommes pas dans vos spams sinon, de changer d'hébergeur.
+            </div>
+        </div>
+
+        <br />
+
+        <div style="float:left; width:90%; padding-right:5%">
+            Votre numéro de licence FFCAM : <b>{{ user.cafnum }}</b>
+        </div>
+
+        <br /><br />
+
+        <div style="float:left; width:90%; padding-right:5%">
+            Votre date d'adhésion ou de renouvellement :
+            <b>
+                {% if user.alerteRenouveler %}
+                    <span class="alerte">
+                {% endif %}
+                {% if user.joinDate %}
+                    {{ user.joinDate|date('d/m/Y') }}
+                {% else %}
+                    aucune date connue.
+                {% endif %}
+                {% if user.alerteRenouveler %}
+                    </span>
+                {% endif %}
+            </b>
+        </div>
+
+        <br style="clear:both" /><br style="clear:both" />
+
+        <div style="float:left; width:45%; padding-right:5%">
+            Votre numéro de téléphone personnel :<br />
+            <b>{{ user.tel }}</b>
+        </div>
+
+        <div style="float:left; width:45%; padding-right:5%">
+            Numéro de téléphone de sécurité :<br />
+            <b>{{ user.tel2 }}</b>
+        </div>
+        <br style="clear:both" />
+
+        <div style="float:left; width:45%; padding-right:5%; margin-top:10px">
+            Votre e-mail :<br />
+            <b>{{ user.email }}</b>
+        </div>
+
+        <div style="float:left; width:45%; padding-right:5%; margin-top:10px">
+            Votre date de naissance :<br />
+            <b>{{ user.birthdate|date('d/m/Y') }}</b>
+        </div>
+
+        <br style="clear:both" /><br style="clear:both" />
+        Adresse <span class="mini">- N° &amp; rue - code postal - ville - pays</span><br />
+        <b>
+            {{ user.adresse }}
+            <br style="clear:both" />
+            {{ user.cp }}
+            &nbsp;&nbsp;&nbsp;
+            {{ user.ville }}
+            &nbsp;&nbsp;&nbsp;
+            {{ user.pays }}
+        </b>
+
+        <br /><br /><br />
+            <h3>{{ form_row(form.gdriveEmail) }}</h3>
+            <div class="mini">{{ easy_include('infos-profil-email-secondaire') }}</div><br />
+
+            <div style="text-align:center">
+                {{ form_widget(form.save) }}
+            </div>
+        {{ form_end(form) }}
+        <br />
+
+        <hr style="margin: 20px 0" />
+        <h2 id="edit-password"><span class="bleucaf">&gt;</span>Modifier mon mot de passe</h2>
+        <p>
+            Vous pouvez modifier votre mot de passe <a href="{{ path('account_change_password') }}">sur cette page</a>.
+        </p>
+
+        <br />
+        <br />
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="/js/file-upload-component.js"></script>
+    <script src="/js/upload-adapter.js"></script>
+{% endblock %}
