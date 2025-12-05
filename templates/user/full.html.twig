@@ -1,0 +1,208 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fiche adhérent{% endblock %}
+
+{% block body %}
+    {% import 'macros/article-link.html.twig' as article_macro %}
+    {% import 'macros/event-line.html.twig' as event_macro %}
+<div style="padding:20px">
+    {% if app.user %}
+        <!-- AVATAR-->
+        <img src="{{ media_thumbnail(user.profilePicture, 'pic_profile_thumbnail') }}" alt="" title="" style="float:left; width:35%; box-shadow: 0 0 12px -5px gray; border: 1px solid white;" />
+        <div style="float:right; width:62%">
+
+            <!-- contacter -->
+            <a href="javascript:void(0)" title="Utiliser le formulaire de contact pour écrire un message à cet adhérent" class="nice2" style="float:right" onclick="$('#trigger-userinfo, #trigger-usercontact').slideToggle()">
+                <img src="/img/base/email.png" alt="" title="" /> &nbsp; &nbsp; Contacter
+            </a>
+
+            <!-- nick -->
+            <h1 style="padding:13px 0 0 0">
+                {% if allowed('user_read_limited') %}
+                    {{ user.fullName }} ({{ user.nickname }})
+                {% else %}
+                    {{ user.nickname }}
+                {% endif %}
+            </h1>
+            <br style="clear:left;" />
+
+            <!-- formulaire de contact -->
+            <div id="trigger-userinfo" style="{{ style }}">
+                <hr  />
+                {{ form_start(form) }}
+
+                    <h2>Formulaire de contact</h2>
+                    <p>Le destinataire de ce message sera informé de votre nom et votre e-mail</p>
+
+                    <br />
+                    {{ form_row(form.objet) }}
+
+                    {{ form_row(form.message) }}
+
+                    <br />
+                    <input type="submit" class="nice" value="&gt; Envoyer mon message" onclick="$.fancybox.close()" />
+
+                {{ form_end(form) }}
+                <hr  />
+            </div>
+
+            <!-- statuts -->
+            <h3>Responsabilité sur le site :</h3>
+            <ul class="nice-list">
+                {% if club_roles %}
+                    {% for role in club_roles %}
+                <li>{{ role.usertype.title }}
+                    {% if role.description %}
+                        <img src="/img/base/info.png" title="{{ role.description }}" alt="i" />
+                    {% endif %}
+                </li>
+                    {% endfor %}
+                {% else %}
+                    <li>N/A</li>
+                {% endif %}
+            </ul>
+            <br style="clear:left;" />
+
+            <h3>Responsabilité dans les commissions :</h3>
+            <ul class="nice-list">
+                {% if comm_roles %}
+                    {% for commission, role in comm_roles %}
+                        <li>{{ commission }} : {{ role.usertype.title }}
+                            {% if role.description %}
+                                <img src="/img/base/info.png" title="{{ role.description }}" alt="i" />
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li>N/A</li>
+                {% endif %}
+            </ul>
+            <br style="clear:left;" />
+
+            <!-- infos persos-->
+            {% if allowed('user_read_private') %}
+            <hr  />
+            <h3>Infos privées : </h3>
+            <ul class="nice-list">
+                <li>NUMÉRO DE LICENCE FFCAM : {{ user.cafnum }}</a> </li>
+                {% if user.doitRenouveler %}
+                    <li class="red">LICENCE EXPIRÉE</li>
+                {% else %}
+                <li>DATE D'ADHÉSION :
+                    {% if user.joinDate %}
+                        <span class="green">{{ user.joinDate|date('d/m/Y') }}</span>
+                    {% else %}
+                        inconnue
+                    {% endif %}
+                </li>
+                {% endif %}
+                <li><a href="mailto:{{ user.email }}" title="Contact direct">{{ user.email }}</a> </li>
+                <li>TEL : {{ user.tel }}</li>
+                <li>TEL (secours) : {{ user.tel2 }}</li>
+                <li>ÂGE : {% if age_user(user) %}{{ age_user(user) }} ans{% else %}?{% endif %}</li>
+                <li class="wide">{{ user.fullAddress(true) }}</li>
+            </ul>
+            <br style="clear:both" />
+            {% endif %}
+        </div>
+        <br style="clear:both" />
+        <hr  />
+
+        <h2 id="user-skills">Ses compétences :</h2>
+        <div class="wide-table-container integrated-table-container profile-block">
+            <table class="wide-table table-striped">
+                <thead>
+                <tr>
+                    <th>Commission</th>
+                    {% for groupe in groupes_competences %}
+                        <th class="groupe-comp">
+                            {{ groupe.intitule }}
+                        </th>
+                    {% endfor %}
+                    {% for niveau in niveaux %}
+                        <th class="niveau">
+                            {{ niveau.libelle }}
+                        </th>
+                    {% endfor %}
+                    <th class="formation-generale">UFCA</th>
+                    <th class="formation-generale">PSC1</th>
+                </tr>
+                <tr class="subhead">
+                    <td>Code niveau / formation</td>
+                    {% for groupe in groupes_competences %}
+                        <td>
+                            {{ groupe.codeActivite }}
+                        </td>
+                    {% endfor %}
+                    {% for niveau in niveaux %}
+                        <td>
+                            {{ niveau.codeActivite }} - {{ niveau.niveauCourt }}
+                        </td>
+                    {% endfor %}
+                    <td>STG-UFFG10</td>
+                    <td>STG-PSC1</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for commission in commissions %}
+                    <tr>
+                        <td>{{ commission.title }}</td>
+                        {% for groupe in groupes_competences %}
+                            <td>
+                                {{ date_competence_user(user, groupe, commission) }}
+                            </td>
+                        {% endfor %}
+                        {% for niveau in niveaux %}
+                            <td>
+                                {{ date_niveau_user(user, niveau, commission) }}
+                            </td>
+                        {% endfor %}
+                        <td>{{ date_formation_user(user, 'STG-UFFG10') }}</td>
+                        <td>{{ date_formation_user(user, 'STG-PSC1') }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <br style="clear:both" />
+        <hr  />
+
+        {% if allowed('user_read_private') or app.user is same as (user) %}
+            <p>
+            <b>Taux de présence : {{ fiabilite }}% - ({{ nb_absences }} absences sur {{ total_sorties }} sorties)</b>
+            {% if app.user is same as (user) %}
+                <br/>
+                Ce taux donne une information sur le nombre d'absences aux sorties auxquelles vous êtes inscrit.e.<br/>
+                Il n'est visible que par les encadrant.es.<br />
+                Vous pouvez consulter la liste des sorties où vous avez été absent.e sur <a href="{{ path('profil_sorties_prev') }}">la page de vos sorties passées</a>.
+            {% endif %}
+            </p>
+            <br style="clear:both" />
+            <hr  />
+
+            <h2 id="user-sorties">Ses sorties :</h2>
+            <p class="mini">{{ user_events|length}} sortie(s) en tout</p>
+            <div class="profile-block">
+                <table id="agenda">
+                    {% for event in user_events %}
+                        {{ event_macro.event_line(event, user, '', false) }}
+                    {% endfor %}
+                </table>
+            </div>
+            <br style="clear:both" />
+            <hr  />
+
+            <h2 id="user-articles">Ses articles :</h2>
+            <p class="mini">{{ user_articles|length }} articles en tout</p>
+            <div class="profile-block">
+                {% for article in user_articles %}
+                    {{ article_macro.article_link(article) }}
+                {% endfor %}
+            </div>
+            <br style="clear:both" />
+        {% endif %}
+    {% else %}
+        <p class="erreur">Vous devez être connecté pour accéder à cette page.</p>
+    {% endif %}
+</div>
+{% endblock %}

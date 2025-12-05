@@ -68,7 +68,7 @@ else {
 		<?php
         if (allowed('user_read_limited')) {
             ?>
-			<a href="/user-full/<?php echo $id_user; ?>.html" title="Quitter cette page pour voir la fiche complète de cet adhérent" class="nice2" target="_top">
+			<a href="<?php echo LegacyContainer::get('legacy_router')->generate('user_full', ['id' => $id_user]); ?>" title="Quitter cette page pour voir la fiche complète de cet adhérent" class="nice2" target="_top">
 				<img src="/img/base/user.png" alt="" title="" /> &nbsp; &nbsp; Profil complet
 			</a>
 			<?php
@@ -140,7 +140,7 @@ else {
         echo '<p>';
         $total = $presences + $absences;
         $fiabilite = $total > 0 ? round(($presences / $total) * 100) : 100;
-        printf('<b>Taux de présence: %d%% - (%d absences sur %d sorties)</b>', $fiabilite, $absences, $total);
+        printf('<b>Taux de présence : %d%% - (%d absences sur %d sorties)</b>', $fiabilite, $absences, $total);
         if ($isMyProfile) {
             echo '<br/>Ce taux donne une information sur le nombre d\'absences aux sorties auxquelles vous êtes inscrit.e.<br/>Il n\'est visible que par les encadrant.es.<br />Vous pouvez consulter la liste des sorties où vous avez été absent.e sur <a target="_parent" href="profil/sorties/prev"/>la page de vos sorties passées</a>.';
         }

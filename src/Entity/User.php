@@ -838,4 +838,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
         return $this;
     }
+
+    public function getFullAddress(bool $withCountry = false): string
+    {
+        $address = $this->adresse . ' ' . $this->cp . ' ' . $this->ville;
+        if ($withCountry) {
+            $address .= ' ' . $this->pays;
+        }
+
+        return $address;
+    }
 }
