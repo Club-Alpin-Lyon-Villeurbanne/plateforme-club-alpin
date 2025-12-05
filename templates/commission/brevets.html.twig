@@ -1,0 +1,87 @@
+{% extends 'base-wide.html.twig' %}
+
+{% block title %}Brevets & formations du staff de {{ commission.title }}{% endblock %}
+
+{% block body %}
+    <h2>Brevets & formations du staff de {{ commission.title }}</h2>
+    <p>
+        Les dates correspondent à la dernière date connue soit obtention, soit recyclage.
+    </p>
+    <div class="wide-table-container">
+        <table class="wide-table table-striped">
+            <thead>
+                <tr>
+                    <th>Nom du membre de la commission</th>
+                    <th>Responsabilité</th>
+                    {% for brevet in brevets %}
+                        <th class="brevet">
+                            {{ brevet.intitule }}
+                        </th>
+                    {% endfor %}
+                    {% for formation in formations %}
+                        <th class="formation">
+                            {{ formation.intitule }}
+                        </th>
+                    {% endfor %}
+                    {% for niveau in niveaux %}
+                        <th class="niveau">
+                            {{ niveau.libelle }}
+                        </th>
+                    {% endfor %}
+                    <th class="formation-generale">UFCA</th>
+                    <th class="formation-generale">PSC1</th>
+                </tr>
+                <tr class="subhead">
+                    <td>Code brevet / formation</td>
+                    <td></td>
+                    {% for brevet in brevets %}
+                        <td>
+                            {{ brevet.codeBrevet }}
+                        </td>
+                    {% endfor %}
+                    {% for niveau in niveaux %}
+                        <td>
+                            {{ niveau.codeActivite }} - {{ niveau.niveauCourt }}
+                        </td>
+                    {% endfor %}
+                    {% for formation in formations %}
+                        <td>
+                            {{ formation.codeFormation }}
+                        </td>
+                    {% endfor %}
+                    <td>STG-UFFG10</td>
+                    <td>STG-PSC1</td>
+                </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td title="{{ user.role }}">
+                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ user.user.id }}" class="fancyframe userlink">
+                            {{ user.user.fullname }}
+                        </a>
+                    </td>
+                    <td>{{ user.role }}</td>
+                    {% for brevet in brevets %}
+                        <td>
+                            {{ date_brevet_user(user.user, brevet) }}
+                        </td>
+                    {% endfor %}
+                    {% for niveau in niveaux %}
+                        <td>
+                            {{ date_niveau_user(user.user, niveau) }}
+                        </td>
+                    {% endfor %}
+                    {% for formation in formations %}
+                        <td>
+                            {{ date_formation_user(user.user, formation.codeFormation) }}
+                        </td>
+                    {% endfor %}
+                    <td>{{ date_formation_user(user.user, 'STG-UFFG10') }}</td>
+                    <td>{{ date_formation_user(user.user, 'STG-PSC1') }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
