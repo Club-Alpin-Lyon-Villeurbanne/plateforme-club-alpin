@@ -2,11 +2,14 @@
 
 namespace App\Twig;
 
+use App\Entity\Commission;
 use App\Entity\FormationReferentielBrevet;
 use App\Entity\FormationReferentielFormation;
+use App\Entity\FormationReferentielGroupeCompetence;
 use App\Entity\FormationReferentielNiveauPratique;
 use App\Entity\FormationValidationBrevet;
 use App\Entity\FormationValidationFormation;
+use App\Entity\FormationValidationGroupeCompetence;
 use App\Entity\FormationValidationNiveauPratique;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,6 +29,7 @@ class BrevetExtension extends AbstractExtension
             new TwigFunction('date_brevet_user', [$this, 'getDateUserBrevet']),
             new TwigFunction('date_formation_user', [$this, 'getDateUserFormation']),
             new TwigFunction('date_niveau_user', [$this, 'getDateUserNiveau']),
+            new TwigFunction('date_competence_user', [$this, 'getDateUserGroupeCompetence']),
         ];
     }
 
@@ -53,10 +57,35 @@ class BrevetExtension extends AbstractExtension
         return $userFormation?->getDateValidation()->format('d/m/Y');
     }
 
-    public function getDateUserNiveau(User $user, FormationReferentielNiveauPratique $niveau): ?string
+    public function getDateUserNiveau(User $user, FormationReferentielNiveauPratique $niveau, ?Commission $commission = null): ?string
     {
         $userNiveau = $this->entityManager->getRepository(FormationValidationNiveauPratique::class)->findOneBy(['user' => $user, 'niveauReferentiel' => $niveau]);
 
+        if (null === $userNiveau) {
+            return null;
+        }
+        if (!empty($commission)) {
+            if (!in_array($niveau, $commission->getNiveaux()->toArray(), true)) {
+                return null;
+            }
+        }
+
         return $userNiveau?->getDateValidation()->format('d/m/Y');
+    }
+
+    public function getDateUserGroupeCompetence(User $user, FormationReferentielGroupeCompetence $groupe, ?Commission $commission = null): ?string
+    {
+        $userGroupeComp = $this->entityManager->getRepository(FormationValidationGroupeCompetence::class)->findOneBy(['user' => $user, 'competence' => $groupe]);
+
+        if (null === $userGroupeComp) {
+            return null;
+        }
+        if (!empty($commission)) {
+            if (!in_array($groupe, $commission->getGroupesCompetences()->toArray(), true)) {
+                return null;
+            }
+        }
+
+        return $userGroupeComp->getDateValidation()->format('d/m/Y');
     }
 }

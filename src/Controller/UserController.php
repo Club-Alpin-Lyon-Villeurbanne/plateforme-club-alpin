@@ -2,20 +2,30 @@
 
 namespace App\Controller;
 
+use App\Entity\Article;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
+use App\Entity\FormationValidationGroupeCompetence;
+use App\Entity\FormationValidationNiveauPratique;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Entity\Usertype;
 use App\Form\NomadeType;
-use App\Legacy\LegacyContainer;
+use App\Form\UserContactType;
 use App\Mailer\Mailer;
+use App\Repository\CommissionRepository;
+use App\Repository\EvtRepository;
+use App\Repository\FormationReferentielGroupeCompetenceRepository;
+use App\Repository\FormationReferentielNiveauPratiqueRepository;
+use App\Repository\FormationValidationGroupeCompetenceRepository;
+use App\Repository\FormationValidationNiveauPratiqueRepository;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
 use App\Security\SecurityConstants;
 use App\UserRights;
 use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -24,12 +34,181 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class UserController extends AbstractController
 {
+    /**
+     * @throws NonUniqueResultException
+     * @throws TransportExceptionInterface
+     */
+    #[Route(path: '/user-full/{id}.html', name: 'user_full', requirements: ['id' => '\d+'], priority: 10)]
+    #[Template('user/full.html.twig')]
+    public function full(
+        User $user,
+        UserRights $userRights,
+        EntityManagerInterface $manager,
+        Request $request,
+        CommissionRepository $commissionRepository,
+        EvtRepository $eventRepository,
+        Mailer $mailer,
+        FormationReferentielNiveauPratiqueRepository $referentielNiveauPratiqueRepository,
+        FormationReferentielGroupeCompetenceRepository $referentielGroupeCompetenceRepository,
+        FormationValidationNiveauPratiqueRepository $formationNiveauRepository,
+        FormationValidationGroupeCompetenceRepository $formationCompetenceValidationRepository,
+    ): array {
+        if (!$user || $user->isDeleted()) {
+            throw new NotFoundHttpException('Cet adhérent est introuvable');
+        }
+        if (!$userRights->allowed('user_read_limited') && !$userRights->allowed('user_read_private')) {
+            throw $this->createAccessDeniedException('Désolé. Vous n\'avez pas les droits requis pour afficher cette page');
+        }
+
+        $id_event = $id_article = 0;
+        if (!empty($request->get('id_event'))) {
+            $id_event = $request->get('id_event');
+        }
+        if (!empty($request->get('id_article'))) {
+            $id_article = $request->get('id_article');
+        }
+
+        $article = $manager->getRepository(Article::class)->find($id_article);
+        $event = $manager->getRepository(Evt::class)->find($id_event);
+
+        $defaultObject = '';
+        if ($article) {
+            $defaultObject = $article->getTitre();
+        } elseif ($event) {
+            $defaultObject = $event->getTitre();
+        }
+
+        $form = $this->createForm(UserContactType::class, null, [
+            'user_id' => $user->getId(),
+            'article_id' => $id_article,
+            'event_id' => $id_event,
+            'default_object' => $defaultObject,
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $request->request->all();
+            $formData = $data['user_contact'] ?? [];
+
+            $nom = $this->getUser()->getFullname() . ' (' . $this->getUser()->getNickname() . ')';
+            $shortName = $this->getUser()->getFullname();
+            $email = $this->getUser()->getEmail();
+            $eventLink = $articleLink = '';
+
+            if ($event instanceof Evt) {
+                $eventLink = $this->generateUrl('sortie', ['id' => $event->getId(), 'code' => $event->getCode()], UrlGeneratorInterface::ABSOLUTE_URL);
+            }
+            if ($article instanceof Article) {
+                $articleLink = $this->generateUrl('article_view', ['id' => $article->getId(), 'code' => $article->getCode()], UrlGeneratorInterface::ABSOLUTE_URL);
+            }
+
+            $mailer->send($user->getEmail(), 'transactional/contact-form', [
+                'contact_name' => $nom,
+                'contact_shortname' => $shortName,
+                'contact_email' => $email,
+                'contact_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                'contact_objet' => $formData['objet'],
+                'message' => $formData['message'],
+                'eventName' => $event instanceof Evt ? $event->getTitre() : '',
+                'eventLink' => $event instanceof Evt ? $eventLink : '',
+                'commission' => $event instanceof Evt ? $event->getCommission()->getTitle() : '',
+                'articleTitle' => $article instanceof Article ? $article->getTitre() : '',
+                'articleLink' => $article instanceof Article ? $articleLink : '',
+            ], [], null, $email);
+
+            $this->addFlash('success', 'Votre message a bien été envoyé.');
+        }
+
+        ['absences' => $absences, 'presences' => $presences] = $manager
+            ->getRepository(EventParticipation::class)
+            ->getEventPresencesAndAbsencesOfUser($user->getId())
+        ;
+        $total = $presences + $absences;
+        $fiabilite = $total > 0 ? round(($presences / $total) * 100) : 100;
+
+        $userRights = $user->getAttributes();
+        $roles = [
+            'club' => [],
+            'commission' => [],
+        ];
+        foreach ($userRights as $userRight) {
+            $commissionCode = $userRight->getCommission();
+            if (empty($commissionCode)) {
+                $roles['club'][] = $userRight;
+            } else {
+                $commission = $commissionRepository->findOneBy(['code' => $commissionCode]);
+                if (!in_array($commission->getTitle(), array_keys($roles['commission']), true)) {
+                    $roles['commission'][$commission->getTitle()] = $userRight;
+                }
+            }
+        }
+
+        $userArticles = $manager->getRepository(Article::class)->findBy(
+            [
+                'user' => $user,
+                'status' => Article::STATUS_PUBLISHED,
+            ],
+            ['updatedAt' => 'DESC'],
+        );
+        $userEvents = $eventRepository->getUserEvents($user, 0, 200, [Evt::STATUS_PUBLISHED_VALIDE]);
+
+        $commissions = [];
+        $nivRefs = [];
+        $groupesCompRefs = [];
+
+        // niveaux de pratique
+        $niveaux = $formationNiveauRepository->getAllNiveauxByUser($user);
+        /** @var FormationValidationNiveauPratique $niveau */
+        foreach ($niveaux as $niveau) {
+            $nivRefs[$niveau->getNiveauReferentiel()->getId()] = $niveau->getNiveauReferentiel();
+
+            $commissionsNiveau = $referentielNiveauPratiqueRepository->getCommissionsByReferentiel($niveau->getNiveauReferentiel());
+            foreach ($commissionsNiveau as $commission) {
+                $commissions[$commission->getId()] = $commission;
+            }
+        }
+
+        // groupes de compétences
+        $groupesComps = $formationCompetenceValidationRepository->getAllGroupesCompetencesByUser($user);
+        /** @var FormationValidationGroupeCompetence $groupesComp */
+        foreach ($groupesComps as $groupesComp) {
+            $groupesCompRefs[$groupesComp->getCompetence()->getId()] = $groupesComp->getCompetence();
+
+            $commissionsGroupeComp = $referentielGroupeCompetenceRepository->getCommissionsByReferentiel($groupesComp->getCompetence());
+            foreach ($commissionsGroupeComp as $commission) {
+                $commissions[$commission->getId()] = $commission;
+            }
+        }
+
+        return [
+            'user' => $user,
+            'fiabilite' => $fiabilite,
+            'nb_absences' => $absences,
+            'total_sorties' => $total,
+            'club_roles' => $roles['club'],
+            'comm_roles' => $roles['commission'],
+            'id_event' => $id_event,
+            'id_article' => $id_article,
+            'default_object' => $defaultObject,
+            'style' => count($form->getErrors(true, true)) > 0 ? '' : 'display: none',
+            'user_articles' => $userArticles,
+            'user_events' => $userEvents,
+            'nb_events' => $eventRepository->getUserEventsCount($user, [Evt::STATUS_PUBLISHED_VALIDE]),
+            'form' => $form,
+            'niveaux' => $nivRefs,
+            'commissions' => $commissions,
+            'groupes_competences' => $groupesCompRefs,
+        ];
+    }
+
     #[Route(path: '/statuts-adherents', name: 'user_status_list', methods: ['GET'])]
     #[Template('user/status-list.html.twig')]
     public function userStatusList(EntityManagerInterface $manager, UserAttrRepository $userAttrRepository, UserRights $userRights): array
@@ -230,7 +409,7 @@ class UserController extends AbstractController
                             'lastname' => strtoupper($cetinscrit->getLastname()),
                             'nickname' => $cetinscrit->getNickname(),
                             'email' => $cetinscrit->getEmail(),
-                            'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $cetinscrit->getId() . '.html',
+                            'profile_url' => $this->generateUrl('user_full', ['id' => $cetinscrit->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                         ];
                     }, $inscrits),
                     'firstname' => ucfirst($this->getUser()->getFirstname()),

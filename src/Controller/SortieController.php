@@ -677,7 +677,7 @@ class SortieController extends AbstractController
                     'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'event_date' => $event->getStartDate()->format('d/m/Y'),
                     'cancel_user_name' => $this->getUser()->getNickname(),
-                    'cancel_user_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $this->getUser()->getId() . '.html',
+                    'cancel_user_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'message' => $message,
                 ]);
             }
@@ -750,7 +750,7 @@ class SortieController extends AbstractController
             'commission' => $event->getCommission()->getTitle(),
             'date_sortie' => $event->getStartDate()?->format('d/m/Y'),
             'message' => $request->request->get('message'),
-            'message_author_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $this->getUser()->getId() . '.html',
+            'message_author_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
         ], [], $this->getUser(), $replyToAddresses);
 
         $this->addFlash('info', 'Votre message a bien été envoyé.');
@@ -789,7 +789,7 @@ class SortieController extends AbstractController
                     'event_date' => $event->getStartDate()->format('d/m/Y'),
                     'reason_explanation' => $reason,
                     'user' => $user,
-                    'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $user->getId() . '.html',
+                    'profile_url' => $this->generateUrl('user_full', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 ], [], null, $user->getEmail());
             }
         }
@@ -1076,7 +1076,7 @@ class SortieController extends AbstractController
                             'lastname' => strtoupper($cetinscrit->getLastname()),
                             'nickname' => $cetinscrit->getNickname(),
                             'email' => $cetinscrit->getEmail(),
-                            'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $cetinscrit->getId() . '.html',
+                            'profile_url' => $this->generateUrl('user_full', ['id' => $cetinscrit->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                         ];
                     }, $inscrits),
                     'firstname' => ucfirst($user->getFirstname()),
@@ -1157,7 +1157,7 @@ class SortieController extends AbstractController
 
             if ($isNewEvent) {
                 $mailer->send($participation->getUser(), 'transactional/sortie-publiee-inscrit', [
-                    'author_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $event->getUser()->getId() . '.html',
+                    'author_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'author_nickname' => $event->getUser()->getNickname(),
                     'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'event_name' => $event->getTitre(),

@@ -274,7 +274,7 @@ label.in_front {margin-top:15px; display:block; float:none; width:93%; backgroun
 .encart_article_small .commission-title{padding:0; text-transform:uppercase;}
 .encart_article_small .commission-title a{color:#50B7E4;}
 .encart_article_small h2{font-family:DINBold; text-transform:none; font-size: 0.9rem; line-height:18px; padding:0;}
-.encart_article_small .summup{line-height:12px; padding:2px 0 0 0;}
+.encart_article_small .summup{padding:2px 0 0 0;}
 table#agenda{width:100%; border-collapse:collapse; border-bottom:1px solid #c9c9c7;}
 table#agenda tr td{border-top:1px solid #c9c9c7; vertical-align:top;}
 table#agenda tr.up td{color:black;}
@@ -543,6 +543,12 @@ table.table-striped tr:hover, table.table-striped tbody tr:hover {
     width: 100%;
     height: 90vh;
 }
+.integrated-table-container {
+    overflow: auto;
+    height: auto;
+    max-width: 635px;
+    max-height: 400px;
+}
 
 /* fixer en-tête et 1ère colonne */
 .wide-table-container table th:first-child,
@@ -561,7 +567,7 @@ table.table-striped tr:hover, table.table-striped tbody tr:hover {
     min-height: 50px;
 }
 /* La première cellule doit être au-dessus de tout (fixe en haut ET à gauche) */
-.wide-table-container table thead th:first-child {
+.wide-table-container table thead tr:first-child th:first-child {
     z-index: 3; /* Plus haut que les autres */
     left: 0;
     background-color: #E2E4FF;
@@ -703,6 +709,10 @@ span.request {font-size: 1.1rem;}
     background-color: #50b7e4; color: #00191E;
 }
 
+.profile-block {
+    width:635px; max-height: 410px; overflow-y: auto;
+}
+
 th.brevet {
     background-color: #35C1DF !important;
 }
@@ -714,4 +724,7 @@ th.niveau {
 }
 th.formation-generale {
     background-color: #BBBDBF !important;
+}
+th.groupe-comp {
+    background-color: #EAC809 !important;
 }
