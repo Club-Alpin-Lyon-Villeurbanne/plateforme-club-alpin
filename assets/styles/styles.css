@@ -702,3 +702,16 @@ span.request {font-size: 1.1rem;}
 .right-light-in .public {
     background-color: #50b7e4; color: #00191E;
 }
+
+th.brevet {
+    background-color: #35C1DF !important;
+}
+th.formation {
+    background-color: #FAAF17 !important;
+}
+th.niveau {
+    background-color: #8CC53E !important;
+}
+th.formation-generale {
+    background-color: #BBBDBF !important;
+}
