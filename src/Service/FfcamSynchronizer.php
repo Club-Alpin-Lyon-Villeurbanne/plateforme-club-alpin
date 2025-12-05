@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Utils\MemberMerger;
+use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -146,7 +147,11 @@ class FfcamSynchronizer
                         ++$stats['updated'];
                     } else {
                         // new user
-                        $parsedUser->setCreatedAt(new \DateTime());
+                        $nickName = NicknameGenerator::generateNickname($parsedUser->getFirstname(), $parsedUser->getLastname(), $parsedUser->getCafnum());
+                        $parsedUser
+                            ->setNickname($nickName)
+                            ->setCreatedAt(new \DateTime())
+                        ;
                         $this->entityManager->persist($parsedUser);
                         ++$stats['inserted'];
                     }
@@ -202,7 +207,6 @@ class FfcamSynchronizer
             ->setAdresse($parsedUser->getAdresse())
             ->setCp($parsedUser->getCp())
             ->setVille($parsedUser->getVille())
-            ->setNickname($parsedUser->getNickname())
             ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $this->hasTolerancyPeriodPassed)
             ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$this->hasTolerancyPeriodPassed)
             ->setUpdatedAt(new \DateTime())
