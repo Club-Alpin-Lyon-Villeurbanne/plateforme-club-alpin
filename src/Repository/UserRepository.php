@@ -373,8 +373,7 @@ SQL;
             ->leftJoin(Comment::class, 'c', Join::WITH, 'u.id = c.user')
             ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
             ->leftJoin(EventParticipation::class, 'p', Join::WITH, 'u.id = p.user')
-            ->where('u.isDeleted = false')
-            ->andWhere('u.id != 1')     // super admin
+            ->where('u.id != 1')     // super admin
             ->andWhere('a.id is null')
             ->andWhere('c.id is null')
             ->andWhere('e.id is null')
@@ -399,8 +398,7 @@ SQL;
             ->leftJoin(Comment::class, 'c', Join::WITH, 'u.id = c.user')
             ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
             ->leftJoin(EventParticipation::class, 'p', Join::WITH, 'u.id = p.user')
-            ->where('u.isDeleted = false')
-            ->andWhere('u.id != 1')     // super admin
+            ->where('u.id != 1')     // super admin
             ->andWhere('(a.id is not null or c.id is not null or e.id is not null or p.id is not null)')
         ;
         if (null !== $end) {
