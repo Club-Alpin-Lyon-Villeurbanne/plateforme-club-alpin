@@ -14,22 +14,22 @@
                     <th>Nom du membre de la commission</th>
                     <th>Responsabilité</th>
                     {% for brevet in brevets %}
-                        <th>
+                        <th class="brevet">
                             {{ brevet.intitule }}
                         </th>
                     {% endfor %}
                     {% for formation in formations %}
-                        <th>
+                        <th class="formation">
                             {{ formation.intitule }}
                         </th>
                     {% endfor %}
                     {% for niveau in niveaux %}
-                        <th>
+                        <th class="niveau">
                             {{ niveau.libelle }}
                         </th>
                     {% endfor %}
-                    <th>UFCA</th>
-                    <th>PSC1</th>
+                    <th class="formation-generale">UFCA</th>
+                    <th class="formation-generale">PSC1</th>
                 </tr>
                 <tr class="subhead">
                     <td>Code brevet / formation</td>
