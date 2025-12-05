@@ -21,7 +21,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
         $req = 'SELECT
                 SQL_CALC_FOUND_ROWS
                 `id_article` ,  a.`created_at` ,  `user_article` ,  `status_article` ,  `titre_article` ,  `code_article` ,  `commission_article` ,  `une_article` ,  `cont_article`
-                , nickname_user, id_user, media_upload_id, m.filename
+                , nickname_user, id_user, a.media_upload_id, m.filename
             FROM caf_article AS a
             LEFT JOIN caf_user as u  ON a.user_article = u.id_user
             LEFT JOIN media_upload m ON a.media_upload_id = m.id
