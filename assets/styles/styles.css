@@ -322,7 +322,8 @@ table.big-lines-table td.small{font-size: 0.7rem; color:gray;}
 table.big-lines-table td a{font-weight:inherit; color:inherit;}
 #inscription {background:white; box-shadow:0 0 15px -8px black; padding:15px; margin-top:20px}
 #inscription-annuler {background:white; box-shadow:0 0 15px -8px black; padding:15px;}
-#inscription-gestion {background:white; box-shadow:0 0 15px -8px black; padding:15px;}
+#inscription-gestion {background:white; box-shadow:0 0 15px -8px black; padding:0;margin:0}
+.inscription-gestion-content {padding:15px;}
 .joinlabels {line-height:17px;}
 .joinlabels label{display:block; white-space:nowrap;}
 tr.status0 {border-top:1px solid #d3d3d3;background-image:url(../../public/img/base/braies-ultralight.png)}
