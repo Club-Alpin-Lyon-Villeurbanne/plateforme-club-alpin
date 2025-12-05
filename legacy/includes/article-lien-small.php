@@ -28,7 +28,7 @@ if ($article['media_upload_id']) {
 	</h2>
 	<!-- summup -->
 	<p class="summup">
-		<?php echo limiterTexte(strip_tags($article['cont_article']), 170); ?>
+		<?php echo limiterTexte(strip_tags($article['cont_article']), 150); ?>
 		<a target="_top" href="<?php echo $url; ?>" title="Voir cet article">
 			[...]
 		</a>
