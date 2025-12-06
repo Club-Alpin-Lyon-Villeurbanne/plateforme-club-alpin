@@ -1,0 +1,21 @@
+framework:
+    html_sanitizer:
+        sanitizers:
+            app.content_sanitizer:
+                allow_safe_elements: true
+                allow_elements:
+                    a: ['href', 'title', 'target', 'rel']
+                    img: ['src', 'alt', 'title', 'width', 'height', 'class', 'style']
+                    iframe: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen', 'title']
+                allowed_media_schemes: ['https']
+                allowed_media_hosts:
+                    - 'youtube.com'
+                    - 'www.youtube.com'
+                    - 'youtube-nocookie.com'
+                    - 'www.youtube-nocookie.com'
+                    - 'vimeo.com'
+                    - 'player.vimeo.com'
+                    - 'dailymotion.com'
+                    - 'www.dailymotion.com'
+                allow_relative_medias: false
+                force_https_urls: true
