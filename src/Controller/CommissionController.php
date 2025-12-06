@@ -191,13 +191,17 @@ class CommissionController extends AbstractController
         ];
     }
 
-    #[Route('/commissions/{id}/brevets', name: 'commission_brevet', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    #[Route('/commissions/{id}/brevets', name: 'commission_brevet', requirements: ['id' => '\d+'], methods: ['GET'])]
     #[Template('commission/brevets.html.twig')]
     public function brevets(
         Commission $commission,
         EntityManagerInterface $manager,
         UserAttrRepository $userAttrRepository,
     ): array {
+        if (!$this->isGranted('COMMISSION_CONFIG', $commission)) {
+            throw new AccessDeniedHttpException('Not allowed');
+        }
+
         $users = [];
         $brevets = [];
         $niveaux = $commission->getNiveaux();
@@ -212,7 +216,7 @@ class CommissionController extends AbstractController
         }
 
         $allFormations = $commission->getFormations();
-        $formationCodePattern = '/^STG-F.*$/';
+        $formationCodePattern = '/^STG-.*$/';
         foreach ($allFormations as $formation) {
             if (1 === preg_match($formationCodePattern, $formation->getCodeFormation())) {
                 $formations[] = $formation;
