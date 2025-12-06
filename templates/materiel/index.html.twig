@@ -14,14 +14,14 @@
             {% for message in errorMessages %}
                 <div class="erreur info-container" style="margin-right:2rem !important">
                     <img src="/img/inscrit-standby.png" alt="" title="">
-                    <div class="text-container">{{ message|raw|nl2br }}</div>
+                    <div class="text-container">{{ message|sanitize_html('app.content_sanitizer')|nl2br }}</div>
                 </div>
             {% endfor %}
             
             {% for message in successMessages %}
                 <div class="info info-container" style="margin-right:2rem !important">
                     <img src="/img/inscrit-check.png" alt="" title="">
-                    <div class="text-container">{{ message|raw|nl2br }}</div>
+                    <div class="text-container">{{ message|sanitize_html('app.content_sanitizer')|nl2br }}</div>
                 </div>
             {% endfor %}
 
