@@ -151,7 +151,7 @@
                     </a> &raquo;
                 </p>
             {% endif %}
-            {{ article.cont|raw }}
+            {{ article.cont|sanitize_html('app.content_sanitizer') }}
         </div>
 
         {% if article.status is same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) %}
