@@ -566,6 +566,11 @@ class Evt
 
     public function isFinished(): bool
     {
+        // sortie dupliquée en cours de création (pas encore de dates)
+        if (null === $this->endDate) {
+            return false;
+        }
+
         return $this->endDate < new \DateTimeImmutable();
     }
 
