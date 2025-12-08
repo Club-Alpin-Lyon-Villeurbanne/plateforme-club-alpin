@@ -419,6 +419,7 @@ SQL;
             ->set('u.isDeleted', true)
             ->set('u.email', ':nullValue')
             ->set('u.mdp', ':nullValue')
+            ->set('u.cafnumParent', ':nullValue')
             ->set('u.firstname', ':firstname')
             ->set('u.lastname', ':lastname')
             ->set('u.nickname', ':nickname')
