@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use App\Entity\User;
-use App\Utils\NicknameGenerator;
 
 class FfcamFileParser
 {
@@ -71,7 +70,6 @@ class FfcamFileParser
             ->setAdresse(trim($line[11] . " \n" . $line[12] . " \n" . $line[13] . " \n" . $line[14]))
             ->setCp($this->normalizeNames(trim($line[15])))
             ->setVille($this->normalizeNames(trim($line[16])))
-            ->setNickname(NicknameGenerator::generateNickname($firstname, $lastname))
             ->setDoitRenouveler($isLicenceExpired)
             ->setAlerteRenouveler($isLicenceExpired)
             ->setJoinDate($joinDate)

@@ -314,7 +314,7 @@ class UserController extends AbstractController
                 }
 
                 $nomad
-                    ->setNickname(NicknameGenerator::generateNickname($nomad->getFirstname(), $nomad->getLastname()))
+                    ->setNickname(NicknameGenerator::generateNickname($nomad->getFirstname(), $nomad->getLastname(), $nomad->getCafnum()))
                     ->setNomade(true)
                     ->setManuel(false)
                     ->setNomadeParent($this->getUser()->getId())
