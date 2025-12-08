@@ -17,5 +17,9 @@ framework:
                     - 'player.vimeo.com'
                     - 'dailymotion.com'
                     - 'www.dailymotion.com'
+                    - 'loom.com'
+                    - 'www.loom.com'
+                    - 'luna.loom.com'
+                    - 'cdn.loom.com'
                 allow_relative_medias: false
                 force_https_urls: true
