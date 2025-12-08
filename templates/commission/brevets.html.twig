@@ -3,7 +3,7 @@
 {% block title %}Brevets & formations du staff de {{ commission.title }}{% endblock %}
 
 {% block body %}
-    <h2>Brevets & formations du staff de {{ commission.title }}</h2>
+    <h2>Brevets, formations & niveaux de pratique du staff de {{ commission.title }}</h2>
     <p>
         Les dates correspondent à la dernière date connue soit obtention, soit recyclage.
     </p>
@@ -18,14 +18,14 @@
                             {{ brevet.intitule }}
                         </th>
                     {% endfor %}
-                    {% for formation in formations %}
-                        <th class="formation">
-                            {{ formation.intitule }}
-                        </th>
-                    {% endfor %}
                     {% for niveau in niveaux %}
                         <th class="niveau">
                             {{ niveau.libelle }}
+                        </th>
+                    {% endfor %}
+                    {% for formation in formations %}
+                        <th class="formation">
+                            {{ formation.intitule }}
                         </th>
                     {% endfor %}
                     <th class="formation-generale">UFCA</th>

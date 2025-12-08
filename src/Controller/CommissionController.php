@@ -191,13 +191,17 @@ class CommissionController extends AbstractController
         ];
     }
 
-    #[Route('/commissions/{id}/brevets', name: 'commission_brevet', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    #[Route('/commissions/{id}/brevets', name: 'commission_brevet', requirements: ['id' => '\d+'])]
     #[Template('commission/brevets.html.twig')]
     public function brevets(
         Commission $commission,
         EntityManagerInterface $manager,
         UserAttrRepository $userAttrRepository,
+        UserRights $userRights,
     ): array {
+        if (!$userRights->allowed('commission_list')) {
+            throw new AccessDeniedHttpException('Not allowed');
+        }
         $users = [];
         $brevets = [];
         $niveaux = $commission->getNiveaux();
