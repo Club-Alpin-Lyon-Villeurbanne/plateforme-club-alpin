@@ -314,7 +314,23 @@
 
                 {% if display_notes_de_frais %}
                     {% if event.finished and not event.cancelled and (my_status.role == 'encadrant' or my_status.role == 'coencadrant' or my_status.role == 'stagiaire') %}
-                        {% if event.statusLegal %}
+                        {# Date cutoff: September 30 of current year if after Dec 1, otherwise September 30 of previous year #}
+                        {% set current_month = "now"|date("n")|number_format %}
+                        {% set current_year = "now"|date("Y")|number_format %}
+                        {% set cutoff_year = current_month >= 12 ? current_year : current_year - 1 %}
+                        {% set cutoff_date = date(cutoff_year ~ '-09-30') %}
+                        {% set is_event_after_cutoff = (event.endDate ?? event.startDate) >= cutoff_date %}
+
+                        {% if not is_event_after_cutoff %}
+                            <div class="alerte info-container" style="margin-bottom:2rem !important">
+                                <img src="/img/base/cross.png" alt="" title=""/>
+                                <div class="text-container">
+                                    <b>Note de frais non disponible :</b><br />
+                                    Il n'est plus possible de déposer une note de frais pour cette sortie car les comptes du Club pour l'année {{ cutoff_year }} ont été clôturés.<br />
+                                    En cas de question, contactez la comptabilité.<br />&nbsp;
+                                </div>
+                            </div>
+                        {% elseif event.statusLegal %}
                             {% include 'vuejs/expense-report-form.twig' %}
                         {% else %}
                             <div class="alerte info-container" style="margin-bottom:2rem !important">
